@@ -87,7 +87,7 @@ Track Information Display
 .. _interface-waveform:
 
 Waveform Displays
-=================
+-----------------
 
 .. sectionauthor::
    RJ Ryan <rryan@mixxx.org>
@@ -220,7 +220,7 @@ are as follows:
 .. _interface-vc-mode:
 
 Vinyl Control Mode and Cueing controls
-======================================
+--------------------------------------
 
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
@@ -264,7 +264,7 @@ control relative mode:
 .. _interface-rate:
 
 Sync and Rate Controls
-======================
+----------------------
 
 .. sectionauthor::
    RJ Ryan <rryan@mixxx.org>
@@ -340,7 +340,7 @@ will change again in the future once Mixxx gets a proper master sync feature.
 .. _interface-transport:
 
 Transport Controls
-==================
+------------------
 
 .. sectionauthor::
    RJ Ryan <rryan@mixxx.org>
@@ -371,7 +371,7 @@ Transport Controls
 .. _interface-looping:
 
 Loop Controls
-=============
+-------------
 
 .. sectionauthor::
    RJ Ryan <rryan@mixxx.org>
@@ -438,7 +438,7 @@ loop points of a track.
 .. _interface-hotcues:
 
 Hotcue Controls
-===============
+---------------
 
 .. sectionauthor::
    RJ Ryan <rryan@mixxx.org>
@@ -458,14 +458,14 @@ buttons. You can also use keyboard shortcuts, go to :ref:`control-keyboard` for
 more informations.
 
 Setting Hotcues
----------------
+^^^^^^^^^^^^^^^
 
 Clicking on a numbered button will set a :term:`hotcue` at the current play
 position on the track. A marker with the corresponding number will appear in the
 waveform and the button will lit up to indicate that the hotcue is set.
 
 Playing Hotcues
----------------
+^^^^^^^^^^^^^^^
 
 * **While playing**: Tap a hotcue button to cause the track to instantly jump to
   the location of the hotcue and continue playing. If you are playing inside a
@@ -478,7 +478,8 @@ Playing Hotcues
   button is pressed to continue playback, then release the hotcue button.
 
 Deleting Hotcues
-----------------
+^^^^^^^^^^^^^^^^
+
 To delete a hotcue, right-click on the numbered button. The marker in the
 waveform will de deleted as well.
 
@@ -499,91 +500,296 @@ waveform will de deleted as well.
 The Mixer Section
 =================
 
-The mixer section allows you to control how the different decks and samplers are
-mixed together.
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
 
 .. figure:: ../_static/deere_mixer.png
    :align: center
-   :width: 50%
+   :width: 40%
    :figwidth: 100%
    :alt: The mixer section
    :figclass: pretty-figures
 
    The mixer section
 
-VU Meters and Channel Faders
+The mixer section of the :ref:`Mixxx user interface <interface-overview>` allows
+you to control how the different decks and samplers are mixed together.
+
+.. _interface-vu-meter:
+
+Channel Faders and VU Meters
 ----------------------------
 
-In the center above the Mixxx logo are 4 :term:`VU meters <vu meter>`. The two
-outer-most VU meters are for each deck, while the 2 inner-most VU meters are the
-left and right VU meters for the master output. The two large faders on either
-side of the VU meters are the deck volume faders. Adjusting these controls the
-volume of each deck.
+**VU meters**
+  In the center of the mixer section are 4 :term:`VU meters <vu meter>`. The
+  two outer-most VU meters are for each deck, while the 2 inner-most VU meters
+  are the left and right VU meters for the master output.
 
-Above the VU meters are the optional section expansion buttons. If you click on
-either :guilabel:`MIC`, :guilabel:`SAMPLER`, or :guilabel:`VINYL` then you will
-enable control sections for interacting with the microphone, samplers, and vinyl
-control respectively.
+  The light at the top of the VU meter indicates when the audio in the selected
+  channel is clipping. If this light goes on, reduce the gain or EQs for this
+  deck to eliminate distortion.
+
+**Line faders**
+  The two large faders on either side of the VU meters are the deck volume
+  faders, also known as Channel- or Line-faders. Adjusting these controls the
+  volume of each deck.
+
+  .. hint:: Some DJ's prefer to use the line faders over the crossfader for
+            fading between tracks. Try it, you may like it.
+
+.. _interface-expansion-buttons:
+
+Section Expansion Buttons
+-------------------------
+
+.. figure:: ../_static/deere_mixer_expansion_buttons.png
+   :align: center
+   :width: 30%
+   :figwidth: 100%
+   :alt: The section expansion buttons
+   :figclass: pretty-figures
+
+   The section expansion buttons
+
+Above the VU meters in the mixer are the optional section expansion buttons.
+
+If you click on either :guilabel:`MIC`, :guilabel:`SAMPLER`, or
+:guilabel:`VINYL` then you will enable control sections for interacting with:
+
+* :ref:`interface-mic`
+* :ref:`interface-sampler`
+* :ref:`interface-vc-mode`
+
+.. versionadded:: 1.11
+   You can also use the specific :ref:`appendix-shortcuts`.
+
+.. _interface-head-master:
 
 Headphone and Master Mix Controls
 ---------------------------------
 
-The top row of buttons control the headphones and master output. The head-mix
-knob allows you to customize how much of the master output you hear in your
-headphones. The head volume button adjusts your headphone volume. The
-:term:`balance` knob allows you to adjust the balance (left / right orientation)
-of the master output. Finally, the volume knob adjusts the volume of the master
-output.
+.. figure:: ../_static/deere_mixer_master.png
+   :align: center
+   :width: 50%
+   :figwidth: 100%
+   :alt: The headphone and master mix knobs
+   :figclass: pretty-figures
+
+   The headphone and master mix knobs
+
+**Head-Mix Knob**
+  Allows you to customize how much of the master output you hear in your
+  headphones. It works like a crossfader between the stereo Master and stereo
+  Cueing signal. If the knob is set to the left, you only hear the cueing signal
+  which can be useful for prelistening tracks.
+
+  .. note:: Don't forget to activate the :guilabel:`PFL` button on the deck you
+            want to listen to in your headphones.
+
+**Head volume Knob**
+  This button adjusts your headphone volume. You can adjust the volume of a
+  single deck's signal you listening to in the headphones with the
+  :ref:`Gain <interface-eq-gain>` knob.
+
+**Balance Knob**
+  This knob allows you to adjust the :term:`balance` (left/right orientation) of
+  the master output.
+
+**Volume Knob**
+  The Volume Knob controls the overall volume of of the master output. Adjust
+  this knob so that the :ref:`Master VU meters <interface-vu-meter>` are just
+  at the peak.
+
+  .. hint:: If the Peak indicator on top of the Master VU meter flashes, the
+            master output signal is clipping (too loud). Lower the volume with
+            using the volume knob.
+
+.. todo:: Add link to headphone cueing or add it to this section.
+
+.. _interface-pfl:
+
+PFL/Headphone Button
+--------------------
+
+.. figure:: ../_static/deere_mixer_pfl.png
+   :align: center
+   :width: 50%
+   :figwidth: 100%
+   :alt: The headphone buttons of both decks in the mixer
+   :figclass: pretty-figures
+
+   The headphone buttons of both decks in the mixer
+
+The headphone button is also known as the :term:`pre-fader listen or PFL <PFL>`
+button. Pressing this button allows you to listen and synchronize the track you
+will play next in your headphones before your audience hears the track
+(headphone cueing). You can select more than one PFL button simultaneously.
+
+.. seealso:: Headphone cueing is only available if you have configured a
+             Headphone Output in the :ref:`sound-hardware-preferences`.
+
+.. _interface-eq-gain:
 
 Equalizers and Gain Knobs
 -------------------------
 
-The low, mid, and high knobs allow you to change the filters of the audio. This
-allows you to selectively reduce or boost certain frequency ranges of the
-audio. The small boxes next to each knob are called :term:`kills <kill switch>`
-and allow you to fully remove that frequency range.
+.. figure:: ../_static/deere_mixer_eq.png
+   :align: right
+   :width: 80%
+   :figwidth: 15%
+   :alt: The EQ Controls of a deck in the mixer
+   :figclass: pretty-figures
 
-Above these knobs, the gain knob allows you to adjust the gain of the deck. In
-general, you should adjust this knob so that at full-volume the deck's audio is
-just at the peak of the center VU meters. This is so you can achieve the widest
-dynamic range for your track.
+   EQ Controls
 
-The PFL Button
---------------
+**Gain Knob**
+  Above these knobs, the gain knob allows you to adjust the gain of the deck. In
+  general, you should adjust this knob so that at full-volume the deck's audio is
+  just at the peak of the center VU meters. This is so you can achieve the widest
+  dynamic range for your track.
 
-The headphone button below the EQ knobs is called the :term:`pre-fader listen or
-PFL <PFL>` button. Selecting this button allows you to listen to the deck in
-your headphones.
+**EQ Knobs**
+  The low, mid, and high knobs allow you to change the filters of the audio.
+  This allows you to selectively reduce or boost certain frequency ranges of
+  the audio.
 
-Crossfader and Channel Volume
------------------------------
+**Kill Switches**
+
+  .. versionchanged:: 1.11 Latch mode added
+
+  The small boxes next to each EQ knob are called :term:`kills <kill switch>`.
+  Hold these buttons to fully remove that frequency range. Short click on the
+  buttons for latching. When in Latch mode, click again to restore the frequency
+  range. If the Kill switches do not work as expected, check the high/low shelf
+  EQ settings in the preferences.
+
+.. seealso:: You can customize the EQ settings in
+             :menuselection:`Preferences --> Equalizer`.
+
+.. _interface-crossfader:
+
+Crossfader
+----------
 
 .. figure:: ../_static/deere_mixer_crossfader.png
    :align: center
-   :width: 70%
+   :width: 50%
    :figwidth: 100%
-   :alt: The crossfader section of the mixer
+   :alt: The crossfader section of the mixer with Play/Pause and Cue buttons
    :figclass: pretty-figures
 
-   The crossfader section of the mixer
+   The crossfader section of the mixer with Play/Pause and Cue buttons
 
 .. versionadded:: 1.11
    Reverse crossfader (Hamster style)
 
-This section allows you control the playback of each deck and the fraction of
-each deck that is mixed into the master output. The play/pause buttons play or
-pause each deck. The :term:`cue` button sets or jumps to a cue point. The large
-fader in the center is the :term:`crossfader`. This allows you to adjust the
-proportion of the master mix which is made up by the decks and samplers on the
-left side and the decks and samplers on the right side. With the crossfader all
-the way to the left, you will only hear decks and samplers oriented towards the
-left. Similarly, with the crossfader all the way to the right you will only hear
-decks and samplers oriented towards the right.
+The :term:`crossfader` determines the actual volume of each deck when moving
+the slider from left to right. If both decks are playing and the crossfader is
+in its default center position, then you will hear both decks. Right-clicking on
+the crossfader will reset the slider to its default position.
 
-You can reverse the configuration of the crossfader in
-:menuselection:`Preferences --> Crossfader --> Reverse Crossfader`, so that the
-right deck is on the left end of the crossfader and vice versa. This is also
-known as *Hamster Style*.
+You can reverse the configuration of the crossfader, so that the right deck is
+on the left end of the crossfader and vice versa. This is also known as
+*Hamster Style*. To adjust the crossfader to your style of mixing, go to
+:menuselection:`Preferences --> Crossfader`.
+
+.. hint :: Using the :ref:`AutoDJ <djing-auto-dj>` feature in Mixxx, you can
+           automatize the crossfade between the decks.
+
+.. _interface-play-pause:
+
+Play/Pause Button
+-----------------
+Clicking the Play/Pause button starts and pauses the playback. A right-click on
+the button during playback places a :term:`Cue point <cue>` on the track, see
+:ref:`interface-cue`.
+
+.. hint :: To return to the beginning of the track, right-click on the deck's
+           :ref:`Fast-Rewind Button <interface-transport>`.
+
+.. _interface-cue:
+
+Cue Button
+----------
+If the button is pressed, the play position jumps to an existing
+:term:`Cue point <cue>` on the track or sets a new one, depending on whether a
+track is playing or not. If you have not set any custom cues yet, the default
+point is at the tracks beginning.
+
+Setting Cue points
+^^^^^^^^^^^^^^^^^^
+
+* **While playing**: The Cue point is set via :ref:`interface-play-pause`.
+  A right-click on the button places a Cue point at the current play position on
+  the track, and a Cue marker appears on the waveforms.
+
+* **While stopped**: Clicking on the Cue button places a :term:`Cue point <cue>`
+  at the current play position on the track, and a
+  :ref:`Cue marker <interface-waveform>` appears on the waveforms. A possibly
+  existing cue point will be replaced.
+
+Every track has a Cue point, by default on its beginning. Unless with
+:ref:`Hotcues <interface-hotcues>`, you cant delete, but only move Cue points.
+
+Using Cue Modes
+^^^^^^^^^^^^^^^
+
+You can switch between the CUE modes in
+:menuselction:`Preferences --> Interface`.
+
+**CDJ cue mode (default)**
+
+* **While playing**: Tapping the Cue button causes the track to instantly
+  jump to the location of the cue point where it stops the playback.
+* **While stopped**: Holding down the Cue button jumps to the cue point and
+  starts playback as long as the button is pressed. If the button is released,
+  the play position marker jumps to the cue point and the playback is paused.
+  Clicking the Play button while the Cue button is down continues the playback.
+
+**Simple mode**
+
+* **While playing**: Similar to the :ref:`Hotcues <interface-hotcues>`,
+  clicking the Cue button jumps to the cue point and continues playback.
+* **While stopped**: No action is performed.
+
+.. hint:: Use the :ref:`interface-hotcues` to place more reference points on a
+          track.
+
+.. seealso:: You can also use keyboard shortcuts for Cueing, go to
+             :ref:`control-keyboard` for more informations.
+
+.. _interface-fx:
+
+Effects Controls
+----------------
+
+.. figure:: ../_static/deere_mixer_flanger.png
+   :align: center
+   :width: 50%
+   :figwidth: 100%
+   :alt: The effect control section of the mixer
+   :figclass: pretty-figures
+
+   The effect control section of the mixer
+
+Currently, the only available internal effect in Mixxx is a :term:`flanger`.
+This effect applies a “sweeping” sound to the channel and can add extra depth
+to a mix when used tactfully.
+
+**FX Button**
+  The FX ("Effects") button enables a built-in flanger effect on the selected
+  channel.
+
+**Delay/Depth/LFO Knobs**
+  Adjusts the phase delay, intensity and the the wavelength of the flange effect.
+
+.. hint :: For the most noticeable effect, enable the FX button and turn the
+           Depth knob completely to the right.
+
+.. seealso :: As an advanced user, you can route your audio signal to external
+              software and then apply additional effects. Go to the chapter
+              :ref:`advanced-jack` for more informations.
 
 The Sampler Section
 ===================
@@ -626,6 +832,8 @@ The 4 configure buttons (in clockwise order from the top left) are:
 * Mix Orientation: M for Middle, L for Left, R for Right. Clicking cycles
   through all the options.
 * Keylock: Enable or disable keylock for the sampler.
+
+.. _interface-mic:
 
 The Microphone Section
 ======================
