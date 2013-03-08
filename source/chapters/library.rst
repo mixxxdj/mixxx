@@ -1,7 +1,7 @@
 The Library
 ***********
 
-.. figure:: ../_static/Mixxx-110-Library.png
+.. figure:: ../_static/Mixxx-111-Library.png
    :align: center
    :width: 100%
    :figwidth: 100%
