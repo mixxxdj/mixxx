@@ -52,6 +52,7 @@ You can download and share custom keyboard mappings in the
 
 .. _Mixxx User customizations forum: http://mixxx.org/forums/viewforum.php?f=6
 
+.. _advanced-jack-rack:
 
 Effects via JACK Rack
 =====================

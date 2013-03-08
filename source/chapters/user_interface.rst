@@ -506,7 +506,7 @@ The Mixer Section
 
 .. figure:: ../_static/deere_mixer.png
    :align: center
-   :width: 40%
+   :width: 50%
    :figwidth: 100%
    :alt: The mixer section
    :figclass: pretty-figures
@@ -627,7 +627,7 @@ will play next in your headphones before your audience hears the track
 (headphone cueing). You can select more than one PFL button simultaneously.
 
 .. seealso:: Headphone cueing is only available if you have configured a
-             Headphone Output in the :ref:`sound-hardware-preferences`.
+             Headphone Output in :menuselection:`Preferences --> Sound Hardware`.
 
 .. _interface-eq-gain:
 
@@ -726,8 +726,8 @@ Setting Cue points
 
 * **While stopped**: Clicking on the Cue button places a :term:`Cue point <cue>`
   at the current play position on the track, and a
-  :ref:`Cue marker <interface-waveform>` appears on the waveforms. A possibly
-  existing cue point will be replaced.
+  :ref:`Cue marker <interface-waveform>` appears on the waveforms. The existing
+  cue point will be replaced.
 
 Every track has a Cue point, by default on its beginning. Unless with
 :ref:`Hotcues <interface-hotcues>`, you cant delete, but only move Cue points.
@@ -789,7 +789,7 @@ to a mix when used tactfully.
 
 .. seealso :: As an advanced user, you can route your audio signal to external
               software and then apply additional effects. Go to the chapter
-              :ref:`advanced-jack` for more informations.
+              :ref:`advanced-jack-rack` for more informations.
 
 The Sampler Section
 ===================

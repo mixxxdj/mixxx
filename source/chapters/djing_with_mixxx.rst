@@ -186,6 +186,8 @@ in intensity (as the two kicks drift out of phase). When this happens, the beats
 can be realigned by simply tapping one of the temporary pitch bend buttons a few
 times in the appropriate direction.
 
+.. _headphone-cueing:
+
 Headphone Cueing
 ================
 
