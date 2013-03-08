@@ -220,7 +220,8 @@ Vinyl Control Mode and Cueing controls
    The Vinyl Control Mode and Cueing controls of a deck
 
 The control above the waveforms relay to the :term:`vinyl control` feature in
-Mixxx and is **hidden** by default in the Mixxx interface. Click the
+Mixxx and is **hidden** in the default
+:ref:`Mixxx user interface <interface-overview>`. Click the
 :ref:`VINYL section expansion button <interface-expansion-buttons>` in the mixer
 section, or use the specific :ref:`appendix-shortcuts`, to unhide the controls.
 
@@ -594,3 +595,55 @@ The 4 configure buttons (in clockwise order from the top left) are:
 * Mix Orientation: M for Middle, L for Left, R for Right. Clicking cycles
   through all the options.
 * Keylock: Enable or disable keylock for the sampler.
+
+The Microphone Section
+======================
+
+.. figure:: ../_static/deere_microphone.png
+   :align: center
+   :width: 40%
+   :figwidth: 100%
+   :alt: The Microphone section
+   :figclass: pretty-figures
+
+   The Microphone section
+
+The microphone section is **hidden** in the default
+:ref:`Mixxx user interface <interface-overview>`. Click the
+:ref:`MIC <interface-expansion-buttons>` button in the mixer section, or use the
+specific :ref:`appendix-shortcuts`, to unhide the controls.
+
+**Setup the microphone**
+
+* Most computers have build-in microphones, while some are connected trough USB.
+  This works ok, but don't expect them to be of high-quality.
+* Best is to connect a good external microphone to the "Mic" or "Line" input on
+  your audio device. If available, use the "Gain" knob on the device to adjust
+  the input signal.
+* Select the microphone input in
+  :menuselection:`Preference --> Sound Hardware --> Input --> Microphone` and
+  click :guilabel:`OK`.
+
+Microphone Controls
+-------------------
+
+**Talk Button**
+
+  .. versionchanged:: 1.11 Latch mode added
+
+  Hold this button and talk to mix the microphone input into the Mixxx master
+  output. Short click on the button for latching. This is handy for talking for
+  a extended period, for example when :ref:`streaming <live-broadcasting>` a
+  radio show. When in Latch mode, click again to mute the microphone input.
+
+**Mix Orientation Toogle**
+  This control determines the microphone input's mix orientation. Either to the
+  left side of crossfader, to the right side or to the center (default).
+  Clicking cycles through all the options.
+
+**Microphone Volume Meter**
+ It display the microphone volume input signal strength.
+
+**Microphone Gain Knob**
+  Use this knob to adjust the gain of the microphone output. Try to keep the
+  volume at a reasonable level to avoid signal clipping.
