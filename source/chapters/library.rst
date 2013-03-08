@@ -177,7 +177,7 @@ view, then right-click on a sessions name to access the different features:
 * **Export playlist**: Export a session in various file formats, ideal for
   processing the data in other applications.
 
-Analyze - Preparing your Tracks
+Analyze - Preparing your tracks
 ===============================
 
 .. sectionauthor::
@@ -205,7 +205,7 @@ The Analyze features in detail:
 
 .. seealso:: For more informations, go to :ref:`djing-bpm-detection`.
 
-iTunes, Traktor, Rhythmbox - Using external Libraries
+iTunes, Traktor, Rhythmbox - Using external libraries
 =====================================================
 
 .. sectionauthor::
