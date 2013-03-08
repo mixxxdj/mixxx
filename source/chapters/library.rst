@@ -111,11 +111,34 @@ playlist they cannot contain duplicate entries and do not support drag-and-drop
 within them. Crates can be created by right-clicking on :guilabel:`Crates` in
 the sidebar and selecting :guilabel:`New Crate`.
 
-Browse
-======
+Browse - Loading remote tracks
+==============================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
 
 Browse mode works like a file-manager and allows you to load tracks that are not
 necessarily already in your Mixxx library.
+
+Click the :guilabel:`Browse` sidebar item to navigate the computer and find your
+music. Depending on your :term:`operating system`, the music will usually be
+found in the “My Music” or "Music" folder. Drag the files you want to import to
+the :ref:`Library <library-root>` icon or directly to the
+:ref:`interface-waveform`.
+
+.. note:: Currently you can drag only files but not folders to the Mixxx
+          library.
+
+Quick Links - Bookmark your favorite folders
+--------------------------------------------
+
+.. versionadded:: 1.11
+
+Using the :guilabel:`Quick Links` sub-menu you can bookmark folders for direct
+access. Click the :guilabel:`Browse` sidebar item and navigate to the folder you
+would like to bookmark. Right-click and choose :guilabel:`Add to Quick Links`.
+The folder is now pinned below the :guilabel:`Quick Links`. To un-pin that
+folder, right-click and choose :guilabel:`Remove from Quick Links`.
 
 Recordings
 ==========
