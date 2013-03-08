@@ -206,7 +206,7 @@ Vinyl Control Mode and Cueing controls
 
 .. figure:: ../_static/deere_deck_vinyl_mode.png
    :align: center
-   :width: 60%
+   :width: 70%
    :figwidth: 100%
    :alt: The Vinyl Control Mode and Cueing controls of a deck
    :figclass: pretty-figures
@@ -276,6 +276,32 @@ temporarily. These can act as either a fixed :term:`pitch bend` or a
 :term:`ramping pitch bend`. You can configure their functionality in the Mixxx
 Preferences Interface section.
 
+.. _interface-transport:
+
+Transport Controls
+==================
+
+.. figure:: ../_static/deere_deck_transport.png
+   :align: center
+   :width: 70px
+   :figwidth: 100%
+   :alt: The transport controls of the deck
+   :figclass: pretty-figures
+
+   The transport controls of the deck
+
+**Fast-Rewind button**
+  As long as the button is pressed, the track will play in reverse with
+  increased speed. Right-clicking on the button will seek the play position to
+  the beginning of the track.
+
+**Fast-Forward button**
+  As long as the button is pressed, the track will play with increased speed.
+  Right-clicking on the button will seek the play position to the end of the
+  track.
+
+**Reverse button**
+  As the name suggests, this button plays a track backwards.
 
 .. _interface-looping:
 .. _interface-hotcues:
