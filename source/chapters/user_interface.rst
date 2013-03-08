@@ -26,6 +26,10 @@ figure out which one you prefer. This section will focus on Deere only.
 The Deck Sections
 =================
 
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
+
 .. figure:: ../_static/deere_deck_section.png
    :align: center
    :width: 70%
@@ -84,6 +88,10 @@ Track Information Display
 
 Waveform Displays
 =================
+
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
 
 .. figure:: ../_static/deere_deck_waveform.png
    :align: center
@@ -164,6 +172,10 @@ occur throughout the track, you can basically "see" your music.
 Deck Options Button Grid
 ------------------------
 
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
+
 .. figure:: ../_static/deere_deck_options_grid.png
    :align: center
    :width: 90px
@@ -210,6 +222,9 @@ are as follows:
 Vinyl Control Mode and Cueing controls
 ======================================
 
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
 .. figure:: ../_static/deere_deck_vinyl_mode.png
    :align: center
    :width: 70%
@@ -250,6 +265,10 @@ control relative mode:
 
 Sync and Rate Controls
 ======================
+
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
 
 .. figure:: ../_static/deere_deck_rate_control.png
    :align: right
@@ -323,6 +342,10 @@ will change again in the future once Mixxx gets a proper master sync feature.
 Transport Controls
 ==================
 
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
+
 .. figure:: ../_static/deere_deck_transport.png
    :align: center
    :width: 70px
@@ -349,6 +372,10 @@ Transport Controls
 
 Loop Controls
 =============
+
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
 
 .. figure:: ../_static/deere_deck_loops.png
    :align: center
@@ -412,6 +439,10 @@ loop points of a track.
 
 Hotcue Controls
 ===============
+
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
 
 .. figure:: ../_static/deere_deck_hotcues.png
    :align: center
@@ -598,6 +629,9 @@ The 4 configure buttons (in clockwise order from the top left) are:
 
 The Microphone Section
 ======================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
 
 .. figure:: ../_static/deere_microphone.png
    :align: center
