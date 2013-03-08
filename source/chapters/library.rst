@@ -177,14 +177,33 @@ view, then right-click on a sessions name to access the different features:
 * **Export playlist**: Export a session in various file formats, ideal for
   processing the data in other applications.
 
-Analyze
-=======
+Analyze - Preparing your Tracks
+===============================
 
-The Analyze view allows you to see a list of either all tracks in the library or
-tracks added to the library within the last 7 days. You can select certain
-tracks and run BPM and beatgrid detection on them in advance. Waveforms will be
-generated as part of a analysis as well. Also see the chapter
-:ref:`djing-bpm-detection`.
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
+
+Mixxx automatically analyzes tracks the first time you load them in a deck,
+nevertheless it is recommended to have them analyzed before you play. The
+analysis takes up a lot of CPU power and might cause lags, things you won't have
+while performing.
+
+The Analyze view allows to run :term:`BPM` and :term:`beatgrid`
+detection on certain tracks in advance. Waveforms will be generated as part of a
+analysis as well.
+
+.. versionchanged:: 1.11
+   Shows the progress in percentage and total queue length while analyzing.
+
+The Analyze features in detail:
+
+* **All / New**: Allows you to view a list of either all tracks in the library
+  or tracks added to the library within the last 7 days.
+* **Select All**: Selects all tracks in the current view.
+* **Analyze**: Starts the detection on the selected tracks.
+
+.. seealso:: For more informations, go to :ref:`djing-bpm-detection`.
 
 iTunes, Traktor, Rhythmbox - Using external Libraries
 =====================================================
