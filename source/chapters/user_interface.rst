@@ -116,6 +116,19 @@ occur throughout the track, you can basically "see" your music.
   somewhere on the waveform allows you to jump to an arbitrary position in the
   track.
 
+**Vinyl Widget**
+  The line on the vinyl widget rotates if the track moves. It is similar to the
+  position marker found on scratch records. Use the mouse on the vinyl widget to
+  pause, scratch, spin-back or throw tracks - just like a real record.
+  When performing :ref:`Loop rolls <interface-looping>` or right-clicking on the
+  vinyl during playback, a "ghost" marker hints where the playback will continue.
+  The Vinyl Widget is hidden by default and can be enabled in the
+  :ref:`interface-button-grid`.
+
+  If :term:`Vinyl control` is enabled, it can optionally display the time-coded
+  vinyl signal quality. Activate the option in :menuselection:`Preferences -->
+  Vinyl Control --> Show Signal Quality in Skin`.
+
 **Waveform Zoom**
   Using the mouse-wheel everywhere in the waveform summary will zoom the
   waveform in or out. You can choose whether or not to synchronize the zoom
@@ -165,14 +178,7 @@ the deck. Starting from the top-left and moving counterclockwise the buttons
 are as follows:
 
 **Show/Hide Vinyl Widget**
-  The line on the vinyl widget rotates if the track moves. It is similar to the
-  position marker found on scratch records. Use the mouse on the vinyl widget to
-  pause, scratch, spin-back or throw tracks - just like a real record. The Vinyl
-  Widget is hidden by default.
-
-  If :term:`Vinyl control` is enabled, it can optionally display the time-coded
-  vinyl signal quality. Activate the option in :menuselection:`Preferences -->
-  Vinyl Control --> Show Signal Quality in Skin`.
+  Toggles the visibility of the Vinyl Widget in the :ref:`interface-waveform`.
 
 **Repeat Mode Toggle**
   If enabled, the repeat mode will jump back to the beginning and continue
