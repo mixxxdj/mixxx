@@ -35,38 +35,55 @@ The Search box in the top-left filters the current library view for tracks that
 match your search query. The library search include some nice search features,
 see the chapter :ref:`djing-finding-tracks` for details.
 
+
 Missing Tracks
 ==============
 
-.. versionchanged :: 1.11
-   The feature was defunct in previous versions.
+.. sectionauthor::
+   M.Linke <n.n.>
+   S.Brandt <s.brandt@mixxx.org>
 
-The Missing Tracks view is accessible by expanding the :guilabel:`Library` tree
-item in the sidebar. Any tracks that were previously loaded into your library,
-but were later detected to be missing from your hard disk by Mixxx will appear
-here. Mixxx does not automatically delete records of missing tracks so that
-extra metadata Mixxx might have (such as hot cues and the BPM) will not be lost
-if the file is replaced.
+.. versionadded:: 1.11
+
+The Missing Tracks view is accessible by expanding the Library tree item in the
+sidebar. Any tracks that were previously loaded into your library, but were
+later detected to be missing from your hard disk by Mixxx will appear here.
+Mixxx does not automatically delete records of missing tracks so that extra
+metadata Mixxx might have (such as hot cues and the BPM) will not be lost if
+the file is replaced.
+
+The features in detail:
+
+* **Select All button**: Selects all tracks in the current view.
+* **Purge button**: Purges the selected tracks from the Mixxx library, but does
+  not remove them from your computer. This will delete all :term:`metadata`
+  Mixxx has for a track.
 
 Hidden Tracks
 =============
 
-.. versionadded:: 1.11
-
-The Hidden Tracks view is accessible by expanding Library tree item in the
-sidebar. Tracks can be hidden from the complete Library including playlists
-and crates by the context menu in any view. Once they are hidden they will
-appear in the Hidden Tracks view and con be deleted or restored from there.
-
-Deleting Tracks
-===============
+.. sectionauthor::
+   M.Linke <n.n.>
+   S.Brandt <s.brandt@mixxx.org>
 
 .. versionadded:: 1.11
 
-Tracks that appear in the Missing Tracks or Hidden Tracks view can be
-deleted from the context menu there.
+The Hidden Tracks view is also accessible by expanding the Library tree item in
+the sidebar. Any tracks that were previously loaded into your library, but were
+later set to be hidden from the library will appear here. Use the
+:guilabel:`Hide from Library` context menu item in the
+:ref:`library <library-root>` view to temporarily hide selected tracks.
 
-.. warning:: This will delete all metadata Mixxx has for a track.
+The features in detail:
+
+* **Select All button**: Selects all tracks in the current view.
+* **Purge Button**: Purges the selected tracks from the Mixxx library, but does
+  not remove them from your computer. This will delete all :term:`metadata`
+  Mixxx has for a track.
+* **Unhide Button**: Removes the selected tracks from the
+  :guilabel:`Hidden Tracks` view and makes them available in the regular track
+  list again. The tracks appears again in every playlist or crate they were
+  listed before they were hidden.
 
 Auto DJ
 =======
