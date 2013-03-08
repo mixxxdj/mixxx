@@ -146,9 +146,29 @@ tracks and run BPM and beatgrid detection on them in advance. Waveforms will be
 generated as part of a analysis as well. Also see the chapter
 :ref:`djing-bpm-detection`.
 
-iTunes, Traktor, and Rhythmbox Libraries
-========================================
+iTunes, Traktor, Rhythmbox - Using external Libraries
+=====================================================
 
-The iTunes (Windows and Mac OS X only), Traktor (Windows and Mac OS X only), and
-Rhythmbox (Linux only) views allow you to view the music libraries you have
-created in 3rd party applications.
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
+The iTunes (Windows/Mac OS X), Traktor (Windows/Mac OS X), and Rhythmbox
+(GNU/Linux) views allow you to use the music libraries you have created in these
+applications. You can access music and playlists. If available, Mixxx
+automatically loads the external librarys from their default locations on your
+hard drive.
+
+Right-click on the iTunes icon in the Library tree and select
+:guilabel:`Choose Library` to load the *iTunes Music Library.xml* from a
+different location. Select :guilabel:`Use Default Library` to reset.
+
+.. versionadded:: 1.11
+
+* Right-click on a iTunes/Rhythmbox/Traktor playlist and choose
+  :guilabel:`Import Playlist` to import it to be a regular Mixxx playlist.
+* If you have an iTunes configuration file (*.xml) from a Windows or Mac
+  partition mounted in Linux, you can load it and use your iTunes tracks and
+  playlists.
+
+.. seealso:: You can disable external libraries in
+             :menuselection:`Prefences --> Library`.
