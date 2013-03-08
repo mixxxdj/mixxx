@@ -241,40 +241,75 @@ control relative mode:
 
 .. _interface-rate:
 
-Rate Controls
--------------
+Sync and Rate Controls
+======================
 
 .. figure:: ../_static/deere_deck_rate_control.png
-   :align: left
-   :width: 70%
+   :align: right
+   :width: 70px
    :figwidth: 15%
    :alt: The rate control section of the deck
    :figclass: pretty-figures
 
-   Rate control
+   Rate controls
 
 The rate controls allow you to change the rate at which tracks are played. This
-is very useful for :term:`beatmatching` two tracks together in a mix. The slider
-adjusts the rate of the track. The percent that the track's rate is sped up or
-slowed down is noted above the slider. At the center, it is +0.0%, which
-indicates no change. The range of this slider is customizable in the Mixxx
-Preferences Interface section.
+is very useful for :term:`beatmatching` two tracks together in a mix. You can
+control rate changes also from your computers keyboard, see the chapter
+:ref:`control-keyboard` for more informations.
 
-The :term:`Sync` button changes the :term:`rate` of the track so that the
-:term:`BPM` of the track matches that of the other deck. It also adjusts the
-:term:`phase` of the track so that the two tracks' beats are aligned.
-To sync only the tempo (BPM) to that of the other track, right-click on the
-Sync button. The Sync button let you sync to the first deck (in numerical order)
-that is playing a track and has a BPM detected. If no deck is playing, it syncs
-to the first deck that has a BPM detected. Decks can't sync to samplers and
-samplers can only sync to decks.
+**SYNC button**
 
-The plus and minus buttons increase and decrease the rate, respectively. If
-right-clicked, they adjust the pitch in smaller steps. Similarly, the left and
-right arrow buttons are :term:`pitch bend` buttons, and these adjust the pitch
-temporarily. These can act as either a fixed :term:`pitch bend` or a
-:term:`ramping pitch bend`. You can configure their functionality in the Mixxx
-Preferences Interface section.
+* **Left-Click**: Changes the :term:`rate` of the track so that the :term:`BPM`
+  and :term:`phase` of the track matches the other deck.
+* **Right-Click**: Only changes the :term:`rate` of the track to match the other
+  deck but does not adjusts the :term:`phase`.
+
+  .. versionchanged:: 1.11 Changed Sync mode (Ghetto Sync™)
+
+Decks and samplers now pick which sync target to sync to on the fly. Decks
+can't sync to samplers and samplers can only sync to decks. The sync target is:
+
+* The first (in numerical order) deck that is playing (rate > 0) a track that
+  has a detected beatgrid.
+* The first (in numerical order) deck that has a track loaded with a detected
+  beatgrid (could be stopped).
+
+So basically, if you sync a sampler and both deck 1 and deck 2 are playing a
+track with a beatgrid then deck 1 will win since numerically it is first. This
+will change again in the future once Mixxx gets a proper master sync feature.
+
+**Pitch/Rate slider**
+  The slider allows you to change the speed of the song, by default up to 10%
+  from the tracks original tempos. The speed will increase as you move the
+  slider up, opposite to the behavior found on DJ turntables and :term:`CDJ`.
+  Right-clicking on the slider will reset the tempo to its original value.
+
+**Pitch Rate Display**
+  The percent that the track's rate is sped up or slowed down is noted here. Is
+  the Pitch/Rate slider positioned at the center, the pitch rate display is at
+  +0.0%, which indicates no change.
+
+**Pitch/Rate buttons**
+  The plus and minus buttons increase or decrease the tempo in steps at which a
+  song is played, same as pulling the pitch slider slightly. By right-clicking
+  the buttons you get even finer adjustments.
+
+**Temporary Pitch/Rate buttons (Nudge)**
+  Pushing the the left and right arrow buttons is like nudging the metal edge of
+  a turntable, or the outer edge of a CD player. It will give the track a push
+  or pull forwards or backwards. If the buttons are released the previous tempo
+  is restored. The buttons can act as either a fixed :term:`pitch bend` or a
+  :term:`ramping pitch bend`.
+
+.. seealso:: To customize the amount by which the buttons alter the pitch of
+             the track, the slider range as well as the direction, go to
+             :menuselection:`Preferences --> Interface`.
+
+.. hint:: If the tempo of a track changes, you'll notice that the tone changes
+          based on the pitch used (e.g. playing at faster pitch gives a chipmunk
+          sound). You can enable the :ref:`Keylock <interface-button-grid>`
+          feature to maintain a constant tone.
 
 .. _interface-transport:
 
