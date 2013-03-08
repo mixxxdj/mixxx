@@ -31,6 +31,10 @@ Tracks can be loaded into a deck in several ways:
 Finding Tracks (Search)
 =======================
 
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
+
 The search function searches for a match only in the current selected list (e.g.
 a playlist, a crate or even the whole library).
 
@@ -205,6 +209,10 @@ Mixxx's interface. See the chapter :ref:`interface-mixer`.
 BPM and Beat Detection
 ======================
 
+.. sectionauthor::
+   T.Rafreider <trafreider@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
+
 Previous versions of Mixxx were able to detect BPM values but unable to
 determine where the beats are. Consequently, the beat grids often looked
 unaligned. The DJ had to adjust the beat grid unless he or she did not make use
@@ -256,10 +264,12 @@ The table below summarizes the beat detection settings:
 |                                       | placed incorrectly.                  |
 +---------------------------------------+--------------------------------------+
 | Re-analyze beats when settings        | If enabled, Mixxx over-write old     |
-| change or beats already present       | beat grids from Mixxx 1.10.0 and     |
-|                                       | earlier. Moreover, it will           |
-|                                       | re-analyze the BPM if your beat      |
-|                                       | detection preference change          |
+| change or beat detection data is      | beat grids from Mixxx before v1.11.  |
+| outdated                              | Moreover, it will re-analyze the BPM |
+|                                       | if your beat detection preferences   |
+|                                       | change or BPM data from 3rd party    |
+|                                       | programs are present.                |
+|                                       |                                      |
 +---------------------------------------+--------------------------------------+
 
 Correcting Beat Grids
@@ -269,18 +279,9 @@ There may be situations where BPM and beat detection do not result in a proper
 beat grid. This does not necessarily originate from a false computed BPM value.
 In most cases, the BPM value is correct but the analyzer has failed to find the
 first "real" beat. Consequently, the beat markers are shifted, i.e., they are
-placed somewhere between two correct beats. To re-adjust the beat grid cue the
-track before a real beat and click the "gate" button illustrated in the
-figure below.
-
-.. figure:: ../_static/correcting_beat_grid.png
-   :align: center
-   :width: 60%
-   :figwidth: 100%
-   :alt: Mixxx preferences - Correcting beat grids
-   :figclass: pretty-figures
-
-   Correcting beat grids
+placed somewhere between two correct beats. To re-adjust the beat grid, cue the
+track before a real beat and click the :guilabel:`Beat-grid Adjust` button in
+the :ref:`interface-button-grid`.
 
 If the detected BPM value is not sufficiently accurate, the corresponding beat
 grid is not accurate, too. A deviation of 0.02 BPM units is enough -- compared
@@ -297,6 +298,9 @@ follow the note below.
 
 Recording your Mix
 ==================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
 
 With the integrated recording feature you can record your mix as an audio file
 and listen to it later, distribute it as :term:`Podcast` or burn it to CD.
@@ -364,6 +368,8 @@ Burn you recorded mix to a CD/DVD
 
 Using automatic mixing (Auto DJ)
 ================================
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
 
 Auto DJ allows you to automatically load the next track from the Auto DJ
 playlist when the current track is nearly finished, and crossfade into it.
