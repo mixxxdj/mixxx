@@ -366,6 +366,61 @@ loop points of a track.
              go to the :ref:`interface-button-grid` section for more
              informations.
 
+.. _interface-hotcues:
+
+Hotcue Controls
+===============
+
+.. figure:: ../_static/deere_deck_hotcues.png
+   :align: center
+   :width: 70px
+   :figwidth: 100%
+   :alt: The hotcue controls of the deck
+   :figclass: pretty-figures
+
+   The hotcue controls of the deck
+
+To jump in between different parts of a track, you can use these 4 numbered
+buttons. You can also use keyboard shortcuts, go to :ref:`control-keyboard` for
+more informations.
+
+Setting Hotcues
+---------------
+
+Clicking on a numbered button will set a :term:`hotcue` at the current play
+position on the track. A marker with the corresponding number will appear in the
+waveform and the button will lit up to indicate that the hotcue is set.
+
+Playing Hotcues
+---------------
+
+* **While playing**: Tap a hotcue button to cause the track to instantly jump to
+  the location of the hotcue and continue playing. If you are playing inside a
+  loop and tap a hotcue whose position is outside of the loop, then the track
+  still instantly jump to the hotcue but the loop will be deactivated.
+
+* **While stopped**: Tap a hotcue button to cause the track to instantly jump to
+  the location of the hotcue and start playing as long as the button is pressed.
+  Press the Play :ref:`keyboard shortcut <control-keyboard>` while the hotcue
+  button is pressed to continue playback, then release the hotcue button.
+
+Deleting Hotcues
+----------------
+To delete a hotcue, right-click on the numbered button. The marker in the
+waveform will de deleted as well.
+
+.. note:: Mixxx supports up to 36 hotcues per deck, 4 of them are visible in the
+          user interface. You can customize your
+          :ref:`keyboard <advanced-keyboard>` or
+          :ref:`controller <advanced-controller>` mappings to use all of them.
+
+.. seealso:: Just as with the loops (see above), if the
+             :term:`quantize <quantization>` mode is enabled, the hotcues will
+             automatically snap to the nearest beat. This is disabled by
+             default. Click on the *Quantize Mode Toggle* to enable this mode,
+             go to the :ref:`interface-button-grid` section for more
+             informations.
+
 .. _interface-mixer:
 
 The Mixer Section
