@@ -264,7 +264,10 @@ Glossary of Terms
 
    metadata
     It allows information such as the title, artist, album, track number, and
-    other information about the file to be stored in the file itself.
+    other information about the file to be stored in the audio file itself, see
+    `<https://en.wikipedia.org/wiki/ID3>`_ . Mixxx stores additional metadata
+    about a file in it's database, like :term:`beatgrid`, waveform data,
+    :term:`hotcues <hotcue>`, playlists, crates, number of plays, etc. .
 
    CDJ
      CDJ is a term used originally to describe a line of CD players from Pioneer
@@ -328,7 +331,7 @@ Glossary of Terms
      (Uniform Resource Locator) The address that defines the route to a file on
      an Internet server. URLs are typed into a Web browser to access Web pages
      and files, and URLs are embedded within the pages themselves as hypertext
-     links. One example of URLs is http://www.mixxx.org
+     links. One example of URLs is `<http://www.mixxx.org>`_ .
 
    quantization
      Quantization is the process of aligning notes and other events like loop-
