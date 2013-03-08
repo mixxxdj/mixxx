@@ -304,55 +304,67 @@ Transport Controls
   As the name suggests, this button plays a track backwards.
 
 .. _interface-looping:
-.. _interface-hotcues:
 
-Loop Controls and Hotcues
--------------------------
+Loop Controls
+=============
 
-.. figure:: ../_static/deere_deck_loop_hotcue.png
+.. figure:: ../_static/deere_deck_loops.png
    :align: center
-   :width: 70%
+   :width: 250px
    :figwidth: 100%
-   :alt: The looping, beatloop, hotcue, and fast-forward/rewind controls of the
-         deck.
+   :alt: The beatloop and looping controls of the deck
    :figclass: pretty-figures
 
-   The looping, beatloop, hotcue, and fast-forward/rewind controls of the deck.
+   The beatloop and looping controls of the deck
 
-.. versionadded:: 1.11
-   Loop roll feature
+In this section of the Mixxx interface you can control (beat-)loops and set the
+loop points of a track.
 
-In this section, you can control loops, beatloops, hotcues and the playback
-speed.  On the far left, you can :term:`fast-rewind`, :term:`fast-forward`, or
-:term:`reverse` the deck, respectively.
+**Beatlooping Buttons**
 
-The eight numbered buttons to the right of these buttons are the beatlooping
-controls. Clicking on any numbered button in this section will set a loop of
-that number of beats from the beat immediately following the current playback
-position. Right-click to temporarily setup a rolling loop over the defined
-number of beats. Playback will resume where the track would have been if it had
-not entered the loop.
+* **Instant loop**: The numbered buttons represents a different :term:`bar`
+  length. Clicking on any of that buttons will set a loop of the defined
+  number of beats from the beat immediately following the current playback
+  position. If a loop is set, a loop overlay will be drawn on the
+  :ref:`waveforms <interface-waveform>`.
+* **Loop roll**:
 
-Clicking on the minus or plus button will either halve or double the
-length of the loop. Tapping the :term:`loop <reloop>` button toggles whether the
-loop is active or not.
+  .. versionadded:: 1.11
 
-Above the :term:`loop <reloop>` button are the :term:`in <loop in>` and
-:term:`out <loop out>` buttons, which allow you to manually set the loop-in and
-loop-out point. If the :term:`quantize <quantization>` mode is enabled (see
-:ref:`interface-waveform` section), then the loop points will automatically
-snap to the nearest beat.
+  Right-click on any of the numbered loop buttons to temporarily setup a rolling
+  loop over the defined number of beats. Playback will resume where the track
+  would have been if it had not entered the loop.
+* **Double loop**: Clicking on the plus button will double the current loop's
+  length up to 64 bars. The length of the loop overlay in the waveform will
+  increase accordingly.
+* **Halve loop**: Clicking on the minus button will halve the current loop's
+  length down to 1/32 bars. The length of the loop overlay in the waveform will
+  decrease accordingly.
 
-The hotcue section, the 4 numbers on the far right, are used to set and clear
-hotcues. Clicking on a numbered button will set a hotcue. A marker with the
-corresponding number will appear in the waveform with the same number as the
-button and the button will turn red to indicate that the hotcue is set. If the
-deck is playing, you can simply tap a hotcue to cause the deck to instantly jump
-back to the location of the hotcue. To clear a hotcue, right-click on the
-numbered button. If the :term:`quantize <quantization>` mode is enabled (see
-:ref:`interface-waveform` section), then the hotcues will automatically snap to
-the nearest beat.
+**Loop Buttons**
 
+* **Loop-In**: This button allow you to manually set the start point of a loop.
+  A loop-in marker is placed on the waveform indicating the position.
+  If clicked when a loop was already set, it moves the start point of a loop
+  to a new position.
+* **Loop-Out**: This button allow you to manually set the end point of a loop.
+  A loop-in out is placed on the waveform indicating the position.If clicked when
+  a loop was already set, it moves the start point of a loop to a new position.
+* **Loop**: Also dubbed Reloop, this button toggles whether the loop is active
+  or not. This works for manually placed loops as well as automatic loops set by
+  the beatlooping buttons. Depending on the current status of the loop, the
+  loop overlay on the waveforms changes color.
+
+.. hint:: If you are playing inside a loop and want to move the end point
+          beyond its current position in the track, click on the *Loop* button
+          first and when the play position reaches the wanted position on the
+          Loop-Out button.
+
+.. seealso:: If the :term:`quantize <quantization>` mode is enabled, the loops
+             will automatically snap to the nearest beat. This is disabled by
+             default. Click on the *Quantize Mode Toggle* to enable this mode,
+             go to the :ref:`interface-button-grid` section for more
+             informations.
 
 .. _interface-mixer:
 
