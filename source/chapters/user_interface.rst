@@ -889,3 +889,53 @@ Microphone Controls
 **Microphone Gain Knob**
   Use this knob to adjust the gain of the microphone output. Try to keep the
   volume at a reasonable level to avoid signal clipping.
+
+.. _interface-preview-deck:
+
+Preview Deck Section
+====================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
+.. figure:: ../_static/Mixxx-111-Library-Previewdeck.png
+   :align: center
+   :width: 30%
+   :figwidth: 100%
+   :alt: The Preview Deck with a track loaded
+   :figclass: pretty-figures
+
+   The Preview Deck with a track loaded
+
+.. versionadded:: 1.11
+
+The Preview Deck is a special deck that allows to pre-listen to tracks in the
+headphones before using them in your mix. Pre-listening a track does not change
+the tracks's :guilabel:`Played` state as well as the play counter and is not
+logged in the :ref:`History <library-history>`. Press :kbd:`CTRL` + :kbd:`4`
+(Windows/Linux) or :kbd:`CMD` + :kbd:`4` (Mac) to display the Preview Deck.
+
+The features in detail:
+
+* **Track Artist/Title**:
+  The artist and title of the track is displayed here. This is the same
+  listed under the :guilabel:`Track` and :guilabel:`Title` column in the Mixxx
+  library. This information is initially loaded from the tracks :term:`metadata`.
+
+* **Eject Track**:
+  Clicking this button ejects the track from the deck.
+
+* **Waveform overview**:
+  Shows the various markers (Cues, Hotcues) within the track as well as the
+  waveform envelope of the entire track. Clicking somewhere on the waveform
+  allows you to jump to an arbitrary position in the track.
+
+* **Gain**:
+  Move the slider to adjust the gain of the track.
+
+* **VU-Meter**:
+  Shows the current volume of the track. If it's is too loud and distorted, a
+  peak indicator flashes red.
+
+.. seealso:: For more informations , go to the chapter
+             :ref:`djing-previewing-tracks`.

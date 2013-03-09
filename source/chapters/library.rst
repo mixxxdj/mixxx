@@ -33,7 +33,6 @@ view on the right displays the tracks in those collections.
 **Sidebar**:
 
 * **Search**: Search for tracks in your Mixxx library.
-* **Preview Deck**: Pre-listen to tracks without loading them to a regular deck.
 * **Library**: View and edit your whole collection.
 * **Auto DJ**: Automatically load and crossfade tracks for unattended mixing.
 * **Playlists**: Organize your tracks in sortable lists.
@@ -114,6 +113,11 @@ music library.
   time, and automatically detects newly added tracks on each subsequent
   run. Go to the chapter :ref:`djing-import` for detailed informations.
 
+**Previewing Tracks**
+  To pre-listen to tracks in your headphones without loading them to a regular
+  deck, click the |ic_lib_preview_play| icon in the :guilabel:`Preview` column.
+  Go to the chapter :ref:`djing-previewing-tracks` for detailed informations.
+
 **Rescan Library**
   If you want to manually refresh your library without exiting (for example
   because you added or moved files) you can do this with
@@ -121,14 +125,16 @@ music library.
   application window. You can prompt an automatic rescan in
   :menuselection:`Preferences --> Library --> Rescan on startup`.
 
-**Track list context menu**
-  Right-clicking on selected tracks in the track list reveals the context menu:
+Track list context menu
+-----------------------
+
+Right-clicking on selected tracks in the track list reveals the context menu:
 
 * **Add to Auto DJ**: Adds the content of the session to the
   :ref:`Auto DJ <library-auto-dj>` playlist for automatic mixing.
 * **Load to Deck/Sampler**: Loads a selected file to a
   :ref:`deck <interface-decks>`, :ref:`sampler <interface-sampler>` or
-  :ref:`previewdeck <library-preview-deck>`. Alternatively
+  :ref:`previewdeck <interface-preview-deck>`. Alternatively
   simply drag it to the :ref:`interface-waveform`. Note that you can't load
   multiple files at ones.
 * **Add to playlist/crate**: Add single or multiple tracks to the playlists or
@@ -205,55 +211,6 @@ The features in detail:
   list again. The tracks appears again in every playlist or crate they were
   listed before they were hidden.
 
-.. _library-preview-deck:
-
-Preview Deck - Pre-listen to tracks
-===================================
-
-.. sectionauthor::
-   S.Brandt <s.brandt@mixxx.org>
-
-.. figure:: ../_static/Mixxx-111-Library-Previewdeck.png
-   :align: center
-   :width: 190px
-   :figwidth: 100%
-   :alt: The Preview Deck with a track loaded
-   :figclass: pretty-figures
-
-   The Preview Deck with a track loaded
-
-.. versionadded:: 1.11
-
-The Preview Deck is a special deck that allows to pre-listen to tracks in the
-headphones before using them in your mix. Pre-listening a track does not change
-the tracks's :guilabel:`Played` state as well as the play counter and is not
-logged in the :ref:`History <library-history>`. Press :kbd:`CTRL` + :kbd:`4`
-(Windows/Linux) or :kbd:`CMD` + :kbd:`4` (Mac) to display the Preview Deck.
-
-The features in detail:
-
-* **Track Artist/Title**:
-  The artist and title of the track is displayed here. This is the same
-  listed under the :guilabel:`Track` and :guilabel:`Title` column in the Mixxx
-  library. This information is initially loaded from the tracks :term:`metadata`.
-
-* **Eject Track**:
-  Clicking this button ejects the track from the deck.
-
-* **Waveform overview**:
-  Shows the various markers (Cues, Hotcues) within the track as well as the
-  waveform envelope of the entire track. Clicking somewhere on the waveform
-  allows you to jump to an arbitrary position in the track.
-
-* **Gain**:
-  Move the slider to adjust the gain of the track.
-
-* **VU-Meter**:
-  Shows the current volume of the track. If it's is too loud and distorted, a
-  peak indicator flashes red.
-
-.. seealso:: For more informations , go to the chapter
-             :ref:`djing-previewing-tracks`.
 .. _library-auto-dj:
 
 Auto DJ - Automate your mix

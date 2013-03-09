@@ -180,12 +180,12 @@ Previewing Tracks
 To prelisten to a track, activate the :guilabel:`Preview` column in a library
 view. Clicking the |ic_lib_preview_play| icon in the library's
 :guilabel:`Preview` column loads the selected track in a special
-:ref:`Preview Deck <library-preview-deck>` that will only output sound in the
+:ref:`Preview Deck <interface-preview-deck>` that will only output sound in the
 :ref:`headphones <interface-head-master>` channel. Click the
 |ic_lib_preview_pause| icon to stop the playback.
 
 Alternatively, select a track from the track list of the Mixxx library, drag the
-track to the waveform view of the :ref:`Preview Deck <library-preview-deck>`
+track to the waveform view of the :ref:`Preview Deck <interface-preview-deck>`
 and hit the :guilabel:`Play` button next to the waveform.
 
 To display the Preview deck, press :kbd:`CTRL` + :kbd:`4` (Windows/Linux) or
