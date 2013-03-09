@@ -94,16 +94,50 @@ The Auto DJ queue is a special playlist that contains extra controls for
 enabling automatic mixing. This is useful for taking a break from live mixing
 or for using Mixxx as media player. Also see the chapter :ref:`djing-auto-dj`.
 
-Playlists
-=========
+.. _library-playlists:
 
-Playlists can be created by right-clicking on the :guilabel:`Playlists` sidebar
-item, and selecting :guilabel:`New Playlist`. Tracks can be added to a playlist
-by finding them in the Library, and drag-and-dropping them onto the name of a
-playlist in the sidebar, or by selecting a track in the library and
-right-clicking on it. Playlists are not directly loadable into Mixxx's decks as
-Mixxx is primarily intended for live, attended performance use. However, you can
-add the contents of a playlist to the Auto DJ queue, and use automatic mixing.
+Playlists - Organizing your Tracks
+==================================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
+|ic_lib_playlist| Playlists are ordered lists of tracks that allow you to plan
+your DJ sets. Some DJs construct playlists before they perform live, but others
+prefer to build them on-the-fly.
+
+Playlists are not directly loadable into Mixxx's decks as Mixxx is primarily
+intended for live, attended performance use. However, you can use the
+:ref:`Auto DJ <library-auto-dj>` explained below.
+
+* **Create a playlist**:  Right-click on the :guilabel:`Playlists` sidebar item
+  and select :guilabel:`New playlist`. Name the playlist and click
+  :guilabel:`OK`.
+* **Add Tracks**: Add tracks to a previously created playlist by drag-and-drop a
+  selection of tracks from the library or playlists onto the name of a playlist
+  in the sidebar. Alternatively use the right-click context menu in the library`s
+  :ref:`track list<library-root>`.
+
+Right-click on a existing playlist's name to access the different features in
+the context menu:
+
+* **Add to Auto DJ**: Adds the content of the playlist to the
+  :ref:`Auto DJ <library-auto-dj>` queue for automatic mixing.
+* **Rename**: To rename a playlist, just put in a new playlist name and click
+  :guilabel:`OK`.
+* **Duplicate**: Sometimes you want to build a playlist based on a existing one.
+  Select the playlist you would like to duplicate, choose
+  :guilabel:`Duplicate Playlist`, name the new playlist and click :guilabel:`OK`.
+* **Lock**: |ic_lib_locked| This icon indicates a locked playlist. If a playlist
+  is locked, you can not add tracks, rename or delete the playlist.Choose
+  :guilabel:`Unlock` from the context menu to revert the current state.
+* **Remove**: Removes a unlocked playlist. Tracks in the playlist are still
+  available in the library for later use.
+* **Import playlist**: Import tracks from external playlists to a playlist in
+  various file formats. For informations on how to import
+  iTunes/Rhythmbox/Traktor playlists, see :ref:`library-3rd-party`.
+* **Export playlist**: Export a playlist to an external playlist in various file
+  formats.
 
 Crates
 ======
