@@ -156,6 +156,55 @@ music library.
 .. note:: Most of the context menu items are available in file lists of other
           views like Auto DJ, Playlists, and Crates as well.
 
+Missing Tracks
+--------------
+
+.. sectionauthor::
+   M.Linke <n.n.>
+   S.Brandt <s.brandt@mixxx.org>
+
+.. versionadded:: 1.11
+
+The Missing Tracks view is accessible by expanding the Library tree item in the
+sidebar. Any tracks that were previously loaded into your library, but were
+later detected to be missing from your hard disk by Mixxx will appear here.
+Mixxx does not automatically delete records of missing tracks so that extra
+metadata Mixxx might have (such as hot cues and the BPM) will not be lost if
+the file is replaced.
+
+The features in detail:
+
+* **Select All button**: Selects all tracks in the current view.
+* **Purge button**: Purges the selected tracks from the Mixxx library, but does
+  not remove them from your computer. This will delete all :term:`metadata`
+  Mixxx has for a track.
+
+Hidden Tracks
+-------------
+
+.. sectionauthor::
+   M.Linke <n.n.>
+   S.Brandt <s.brandt@mixxx.org>
+
+.. versionadded:: 1.11
+
+The Hidden Tracks view is also accessible by expanding the Library tree item in
+the sidebar. Any tracks that were previously loaded into your library, but were
+later set to be hidden from the library will appear here. Use the
+:guilabel:`Hide from Library` context menu item in the
+:ref:`library <library-root>` view to temporarily hide selected tracks.
+
+The features in detail:
+
+* **Select All button**: Selects all tracks in the current view.
+* **Purge Button**: Purges the selected tracks from the Mixxx library, but does
+  not remove them from your computer. This will delete all :term:`metadata`
+  Mixxx has for a track.
+* **Unhide Button**: Removes the selected tracks from the
+  :guilabel:`Hidden Tracks` view and makes them available in the regular track
+  list again. The tracks appears again in every playlist or crate they were
+  listed before they were hidden.
+
 .. _library-preview-deck:
 
 Preview Deck - Pre-listen to tracks
@@ -205,56 +254,6 @@ The features in detail:
 
 .. seealso:: For more informations , go to the chapter
              :ref:`djing-previewing-tracks`.
-
-Missing Tracks
-==============
-
-.. sectionauthor::
-   M.Linke <n.n.>
-   S.Brandt <s.brandt@mixxx.org>
-
-.. versionadded:: 1.11
-
-The Missing Tracks view is accessible by expanding the Library tree item in the
-sidebar. Any tracks that were previously loaded into your library, but were
-later detected to be missing from your hard disk by Mixxx will appear here.
-Mixxx does not automatically delete records of missing tracks so that extra
-metadata Mixxx might have (such as hot cues and the BPM) will not be lost if
-the file is replaced.
-
-The features in detail:
-
-* **Select All button**: Selects all tracks in the current view.
-* **Purge button**: Purges the selected tracks from the Mixxx library, but does
-  not remove them from your computer. This will delete all :term:`metadata`
-  Mixxx has for a track.
-
-Hidden Tracks
-=============
-
-.. sectionauthor::
-   M.Linke <n.n.>
-   S.Brandt <s.brandt@mixxx.org>
-
-.. versionadded:: 1.11
-
-The Hidden Tracks view is also accessible by expanding the Library tree item in
-the sidebar. Any tracks that were previously loaded into your library, but were
-later set to be hidden from the library will appear here. Use the
-:guilabel:`Hide from Library` context menu item in the
-:ref:`library <library-root>` view to temporarily hide selected tracks.
-
-The features in detail:
-
-* **Select All button**: Selects all tracks in the current view.
-* **Purge Button**: Purges the selected tracks from the Mixxx library, but does
-  not remove them from your computer. This will delete all :term:`metadata`
-  Mixxx has for a track.
-* **Unhide Button**: Removes the selected tracks from the
-  :guilabel:`Hidden Tracks` view and makes them available in the regular track
-  list again. The tracks appears again in every playlist or crate they were
-  listed before they were hidden.
-
 .. _library-auto-dj:
 
 Auto DJ - Automate your mix
