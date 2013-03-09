@@ -1,7 +1,15 @@
 .. include:: /shortcuts.rstext
 
-The Library
-***********
+.. _interface-library:
+
+The Mixxx Library
+*****************
+
+Overview of the Library features
+================================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
 
 .. figure:: ../_static/Mixxx-111-Library.png
    :align: center
@@ -13,22 +21,122 @@ The Library
    The Mixxx Library
 
 The library manages all your music files. This is where you can find the tracks
-you want to play and load them into a channel. Alternatively, you can also use
-your external file-manager and drop files onto the waveform display. The sidebar
-on the left contains different collections of music. The view on the right
-displays the tracks in those collections.
-
-The Library displays a sortable list of all the tracks in your music
-library. Mixxx imports your music library automatically when it is run for the
+you want to play and load them into a :ref:`deck <interface-decks>` or
+:ref:`sampler <interface-sampler>`, see :ref:`djing-loading-tracks`.
+Mixxx imports your music library automatically when it is run for the
 first time, and automatically detects newly added tracks on each subsequent
-run. If you want to manually refresh your library without exiting (for example
-because you added or moved files) you can do this with
-:menuselection:`Library --> Rescan Library` in the menu.
+run, see :ref:`djing-started-import`.
 
-To load a track into a deck, you can either simply drag it to the waveform
-display or use the context menu (right-click on a track). The right-click
-context menu also allows you to add a track to the Auto DJ queue, playlists, or
-crates. Also see the chapter :ref:`djing-loading-tracks`.
+The sidebar on the left contains different collections of music. The track list
+view on the right displays the tracks in those collections.
+
+**Sidebar**:
+
+* **Search**: Search for tracks in your Mixxx library.
+* **Preview Deck**: Pre-listen to tracks without loading them to a regular deck.
+* **Library**: View and edit your whole collection.
+* **Auto DJ**: Automatically load and crossfade tracks for unattended mixing.
+* **Playlists**: Organize your tracks in sortable lists.
+* **Crates**: Manage your file in unordered track collections.
+* **Browse**: Browse and load tracks that are not necessarily already in your
+  Mixxx library.
+* **Recordings**: Record your mix and view previous recordings and the dates
+  they were made.
+* **History**: Browse lists of tracks you played in the past mixing sessions.
+* **Analyze**: Prepare your tracks for optimal mixing experience.
+* **External Libraries**: Access your existing iTunes, Traktor and Rhythmbox
+  libraries.
+
+**Track List**:
+
+* **Sort**: Display and sort track collections by different criteria.
+* **Load**: Drag tracks you want to play to the waveform display.
+* **Edit**: Rate tracks and edit track properties.
+
+.. _library-root:
+
+Library - View and edit your whole collection
+=============================================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
+|ic_lib_library| The Library displays a sortable list of all the tracks in your
+music library.
+
+**Customizing the view**
+  Move columns by clicking in a column header, holding it clicked and moving it
+  to another position. Right-click on a column header to select specific columns
+  you want to display or hide from the context menu. Adjust the column width to
+  fit the contents of the rows by double-clicking on the separator between two
+  column headers.
+
+**Sorting Tracks**
+  Tracks are automatically sorted following the active column. Click on a active
+  column header to reverse the sort order. Click on another column header to
+  change the order.
+
+**Rating tracks**
+  Make sure the :guilabel:`Rating` column is not hidden. Rate tracks by hovering
+  over the tracks rating fields and clicking the stars.
+
+**Track Inline editing**
+  Mixxx reads :term:`metadata` from the tracks if available and fills the fields
+  of the file list. Double-click in a field, type in the new data and hit
+  :kbd:`Enter`. The data will be saved to the Mixxx library, but **not** to the
+  tracks metadata itself.
+
+**Loading tracks**
+  To load a track into a :ref:`deck <interface-decks>`, you can either simply
+  drag it to the waveform display or use the context menu. Go to the chapter
+  :ref:`_djing-loading-tracks` for detailed informations.
+
+**Importing tracks**
+  Mixxx imports your music library automatically when it is run for the first
+  time, and automatically detects newly added tracks on each subsequent
+  run. Go to the chapter :ref:`_djing-import` for detailed informations.
+
+**Rescan Library**
+  If you want to manually refresh your library without exiting (for example
+  because you added or moved files) you can do this with
+  :menuselection:`Library --> Rescan Library` in the menu on top of the
+  application window. You can prompt an automatic rescan in the
+  :ref:`library-preferences`.
+
+**Track list context menu**
+  Right-clicking on selected tracks in the track list reveals the context menu:
+
+* **Add to Auto DJ**: Adds the content of the session to the
+  :ref:`Auto DJ <library-auto-dj>` playlist for automatic mixing.
+* **Load to Deck/Sampler**: Loads a selected file to a
+  :ref:`deck <interface-decks>`, :ref:`sampler <interface-sampler>` or
+  :ref:`previewdeck <interface-previewdeck>`. Alternatively
+  simply drag it to the :ref:`interface-waveform`. Note that you can't load
+  multiple files at ones.
+* **Add to playlist/crate**: Add single or multiple tracks to the playlists or
+  crates that you have created before. Alternatively, drag the selection to the
+  playlist or crate in the sidebar.
+* **Lock/Unlock BPM**: Locks/Unlocks the :term:`BPM` of selected tracks so you
+  can't edit them in the track properties. If a BPM is locked, a “lock“ icon
+  appears next to the tracks BPM.
+* **Clear BPM and Beatgrid**: Removes :term:`BPM` and :term:`beatgrid` data of
+  selected tracks from the Mixxx libary. It is recommended to
+  :ref:`analyze <library-analyze>` the tracks again.
+* **Reload Track Metadata**: If the tracks metadata change, e.g. if you used
+  iTunes to edit them, you can import the new values to the Mixxx library.
+* **Hide from Library**: Temporarily hides selected tracks from the track list.
+  Hidden tracks are listed in the :guilabel:`Hidden Tracks` menu item which is
+  explained below.
+* **Reset Play Count**: Marks selected tracks as not played in the current
+  session and set it's play counter to zero. The icon in the :guilabel:`Played`
+  column changes.
+* **Open in File Browser**: Browse for the selected files in your file manager.
+* **Properties**: Similar to inline editing explained above the dialog allows to
+  view and edit metadata such as title, artist, album, and view the full file
+  name and path. Note that you can not edit multiple files at once.
+
+.. note:: Most of the context menu items are available in file lists of other
+          views like Auto DJ, Playlists, and Crates as well.
 
 .. _library-preview-deck:
 
@@ -38,11 +146,22 @@ Preview Deck - Pre-listen to tracks
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
 
+.. figure:: ../_static/Mixxx-111-Library-Previewdeck.png
+   :align: center
+   :width: 190px
+   :figwidth: 100%
+   :alt: The Preview Deck with a track loaded
+   :figclass: pretty-figures
+
+   The Preview Deck with a track loaded
+
 .. versionadded:: 1.11
 
-The Preview Deck allows to pre-listen tracks in the headphones before using them in your mix. Pre-listen a track does not change the tracks's :guilabel:`Played` state as well as the play counter and is not logged in the
-:ref:`History <library-history>`. Press :kbd:`CTRL` + :kbd:`4` (Windows/Linux)
-or :kbd:`CMD` + :kbd:`4` (Mac) to display the Preview Deck.
+The Preview Deck is a special deck that allows to pre-listen to tracks in the
+headphones before using them in your mix. Pre-listening a track does not change
+the tracks's :guilabel:`Played` state as well as the play counter and is not
+logged in the :ref:`History <library-history>`. Press :kbd:`CTRL` + :kbd:`4`
+(Windows/Linux) or :kbd:`CMD` + :kbd:`4` (Mac) to display the Preview Deck.
 
 The features in detail:
 
@@ -73,6 +192,15 @@ The features in detail:
 
 Search - Find your tracks
 =========================
+
+.. figure:: ../_static/Mixxx-111-Library-Search.png
+   :align: center
+   :width: 190px
+   :figwidth: 100%
+   :alt: The Search box - Has focus and a search term entered
+   :figclass: pretty-figures
+
+   The Search box - Has focus and a search term entered
 
 The Search box above the sidebar filters the current library view for tracks
 that match your search query. The library search include some nice search
@@ -389,7 +517,7 @@ different location. Select :guilabel:`Use Default Library` to reset.
 
 * Right-click on a iTunes/Rhythmbox/Traktor playlist and choose
   :guilabel:`Import Playlist` to import it to be a regular Mixxx playlist.
-* If you have an iTunes configuration file (*.xml) from a Windows or Mac
+* If you have an iTunes configuration file (\*.xml) from a Windows or Mac
   partition mounted in Linux, you can load it and use your iTunes tracks and
   playlists.
 
