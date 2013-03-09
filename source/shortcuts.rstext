@@ -96,3 +96,15 @@
     :align: middle
     :height: 32px
     :alt: Library - Icon Traktor
+
+.. |ic_lib_preview_pause| image:: /_static/icons/style_library_preview_pause.png
+    :width: 23px
+    :align: middle
+    :height: 12px
+    :alt: Library - Preview Pause
+
+.. |ic_lib_preview_play| image:: /_static/icons/style_library_preview_play.png
+    :width: 23px
+    :align: middle
+    :height: 12px
+    :alt: Library - Preview Play

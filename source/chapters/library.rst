@@ -30,13 +30,53 @@ display or use the context menu (right-click on a track). The right-click
 context menu also allows you to add a track to the Auto DJ queue, playlists, or
 crates. Also see the chapter :ref:`djing-loading-tracks`.
 
-Search
-======
+.. _library-preview-deck:
 
-The Search box in the top-left filters the current library view for tracks that
-match your search query. The library search include some nice search features,
-see the chapter :ref:`djing-finding-tracks` for details.
+Preview Deck - Pre-listen to tracks
+===================================
 
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
+.. versionadded:: 1.11
+
+The Preview Deck allows to pre-listen tracks in the headphones before using them in your mix. Pre-listen a track does not change the tracks's :guilabel:`Played` state as well as the play counter and is not logged in the
+:ref:`History <library-history>`. Press :kbd:`CTRL` + :kbd:`4` (Windows/Linux)
+or :kbd:`CMD` + :kbd:`4` (Mac) to display the Preview Deck.
+
+The features in detail:
+
+* **Track Artist/Title**:
+  The artist and title of the track is displayed here. This is the same
+  listed under the :guilabel:`Track` and :guilabel:`Title` column in the Mixxx
+  library. This information is initially loaded from the tracks :term:`metadata`.
+
+* **Eject Track**:
+  Clicking this button ejects the track from the deck.
+
+* **Waveform overview**:
+  Shows the various markers (Cues, Hotcues) within the track as well as the
+  waveform envelope of the entire track. Clicking somewhere on the waveform
+  allows you to jump to an arbitrary position in the track.
+
+* **Gain**:
+  Move the slider to adjust the gain of the track.
+
+* **VU-Meter**:
+  Shows the current volume of the track. If it's is too loud and distorted, a
+  peak indicator flashes red.
+
+.. seealso:: For more informations , go to the chapter
+             :ref:`djing-previewing-tracks`.
+
+.. _library-search:
+
+Search - Find your tracks
+=========================
+
+The Search box above the sidebar filters the current library view for tracks
+that match your search query. The library search include some nice search
+features, go to the chapter :ref:`djing-finding-tracks` for details.
 
 Missing Tracks
 ==============

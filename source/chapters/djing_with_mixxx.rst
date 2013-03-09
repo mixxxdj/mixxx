@@ -1,3 +1,5 @@
+.. include:: /shortcuts.rstext
+
 DJing With Mixxx
 ****************
 
@@ -35,8 +37,8 @@ Finding Tracks (Search)
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-The search function searches for a match only in the current selected list (e.g.
-a playlist, a crate or even the whole library).
+The :ref:`search function <library-search>` searches for a match only in the
+current selected list (e.g. a playlist, a crate or even the whole library).
 
 * Activate the search input field by pressing :kbd:`CTRL+F`
   (Windows/Linux) or :kbd:`CMD+F` (Mac). Alternatively click into the
@@ -50,8 +52,8 @@ a playlist, a crate or even the whole library).
   library. Use the :kbd:`ARROW UP` and :kbd:`ARROW DOWN` keys to scroll in the
   list of results.
 
-.. note:: If the search input field has focus, the Mixxx keyboard shortcuts do
-          not work, see :ref:`control-keyboard`.
+.. note:: If the search input field has focus, the Mixxx keyboard shortcuts are
+          disabled, see :ref:`control-keyboard`.
 
 Using search operators
 ----------------------
@@ -96,17 +98,30 @@ The following example list all tracks by "Danger" that are rated 4 or 5:
 |                                      | number.                               |
 +--------------------------------------+---------------------------------------+
 
+.. _djing-previewing-tracks:
+
 Previewing Tracks
 =================
+
+.. sectionauthor::
+   M.Linke <n.n.>
+   S.Brandt <s.brandt@mixxx.org>
 
 .. versionadded:: 1.11
 
 To prelisten to a track, activate the :guilabel:`Preview` column in a library
-view and then click on the Play icon. The track will then start playing in a
-special preview deck that will only output sound in the headphones channel.
-Clicking the button again will stop the playback. Some skins support the
-preview deck to manually search in the track. If supported, :kbd:`CTRL+4`
-(Windows/Linux) or :kbd:`CMD+4` (Mac) displays the preview deck.
+view. Clicking the |ic_lib_preview_play| icon in the library's
+:guilabel:`Preview` column loads the selected track in a special
+:ref:`Preview Deck <library-preview-deck>` that will only output sound in the
+:ref:`headphones <interface-head-master>` channel. Click the
+|ic_lib_preview_pause| icon to stop the playback.
+
+Alternatively, select a track from the track list of the Mixxx library, drag the
+track to the waveform view of the :ref:`Preview Deck <library-preview-deck>`
+and hit the :guilabel:`Play` button next to the waveform.
+
+To display the Preview deck, press :kbd:`CTRL` + :kbd:`4` (Windows/Linux) or
+:kbd:`CMD` + :kbd:`4` (Mac).
 
 .. _waveform-displays:
 
