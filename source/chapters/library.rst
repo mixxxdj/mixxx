@@ -87,12 +87,39 @@ The features in detail:
   list again. The tracks appears again in every playlist or crate they were
   listed before they were hidden.
 
-Auto DJ
-=======
+.. _library-auto-dj:
 
-The Auto DJ queue is a special playlist that contains extra controls for
-enabling automatic mixing. This is useful for taking a break from live mixing
-or for using Mixxx as media player. Also see the chapter :ref:`djing-auto-dj`.
+Auto DJ - Automate your mix
+===========================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
+|ic_lib_autodj| The Auto DJ queue is a special playlist that contains extra
+controls for enabling automatic mixing. This is useful for taking a break from
+live mixing or for using Mixxx as media player.
+
+.. versionadded:: 1.11
+   Shuffle, Skip track, Fade now, Transition time, and Auto DJ Requeue
+
+The Auto DJ features in detail:
+
+* **Shuffle button**: Shuffles the content of the Auto DJ playlist.
+* **Skip track button**: Skips the next track in the Auto DJ playlist.
+* **Fade now button**: Triggers the transition to the next track.
+* **Transition time spin-box**: Determines the duration of the transition.
+* **Enable Auto DJ button**: Toggles the Auto DJ mode on or off.
+
+The :guilabel:`Skip track` and :guilabel:`Fade now` buttons are only accessible
+if the Auto DJ mode is enabled. The Search field in the upper left corner is
+disable in Auto DJ. By default, Auto DJ removes tracks after playing them but
+you have the choice of telling it not to by activating the
+:guilabel:`Auto DJ Requeue` option in :menuselection:`Preferences --> Interface`.
+
+.. hint:: Put a pause between tracks that are automatically mixed by using a
+          negative value in the :guilabel:`Transition time` spin-box.
+
+.. seealso:: For more informations , go to the chapter :ref:`djing-auto-dj`.
 
 .. _library-playlists:
 
@@ -199,6 +226,8 @@ transitions you might want to keep an ordering of tracks or repeat them
 you could use a playlist. It's all about how you want to use Mixxx, it gives you
 the tools to do whatever you need.
 
+.. _library-browse:
+
 Browse - Loading remote tracks
 ==============================
 
@@ -235,6 +264,8 @@ In this section of the library you can start and stop recordings well as view
 previous recordings and the dates they were made. Also see the chapter
 :ref:`djing-recording-your-mix`.
 
+.. _library-history:
+
 History - Keep track of your last sessions
 ==========================================
 
@@ -265,6 +296,8 @@ view, then right-click on a sessions name to access the different features:
 * **Export playlist**: Export a session in various file formats, ideal for
   processing the data in other applications.
 
+.. _library-analyze:
+
 Analyze - Preparing your tracks
 ===============================
 
@@ -292,6 +325,8 @@ The Analyze features in detail:
 * **Analyze**: Starts the detection on the selected tracks.
 
 .. seealso:: For more informations, go to :ref:`djing-bpm-detection`.
+
+.. _library-3rd-party:
 
 iTunes, Traktor, Rhythmbox - Using external libraries
 =====================================================

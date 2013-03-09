@@ -366,13 +366,10 @@ Burn you recorded mix to a CD/DVD
 
 .. _djing-auto-dj:
 
-Using automatic mixing (Auto DJ)
-================================
+Using Auto DJ for automatic mixing
+==================================
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
-
-Auto DJ allows you to automatically load the next track from the Auto DJ
-playlist when the current track is nearly finished, and crossfade into it.
 
 .. figure:: ../_static/Mixxx-111-Library-Auto-DJ.png
    :align: center
@@ -383,23 +380,9 @@ playlist when the current track is nearly finished, and crossfade into it.
 
    Mixxx library - Auto DJ view
 
-.. versionadded:: 1.11
-   New Shuffle, Skip track, Fade now and Transition time features
-
-The Auto DJ features in detail:
-
-* **Shuffle button**: Shuffles the content of the Auto DJ playlist.
-* **Skip track button**: Skips the next track in the Auto DJ playlist.
-* **Fade now button**: Triggers the transition to the next track.
-* **Transition time spin-box**: Determines the duration of the transition.
-* **Enable Auto DJ button**: Toggles the Auto DJ mode on or off.
-
-The :guilabel:`Skip track` and :guilabel:`Fade now` buttons are only accessible
-if the Auto DJ mode is enabled. The Search field in the upper left corner is
-disable in Auto DJ.
-
-.. hint:: You can put a pause between two tracks that are automatically mixed by
-          using a negative value in the :guilabel:`Transition time` spin-box.
+Auto DJ allows you to automatically load the next track from the Auto DJ
+playlist when the current track is nearly finished, and crossfade into it.
+See :ref:`library-auto-dj`.
 
 Loading tracks into Auto DJ
 ---------------------------
