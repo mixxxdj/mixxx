@@ -1,0 +1,98 @@
+.. -----------------------
+.. Mixxx library icons
+.. -----------------------
+.. |ic_lib_autodj| image:: /_static/icons/ic_library_autodj.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon AutoDJ
+
+.. |ic_lib_banshee| image:: /_static/icons/ic_library_banshee.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Banshee
+
+.. |ic_lib_browse| image:: /_static/icons/ic_library_browse.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Browse
+
+.. |ic_lib_crates| image:: /_static/icons/ic_library_crates.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon  Crates
+
+.. |ic_lib_dnd| image:: /_static/icons/ic_library_drag_and_drop.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Drag and Drop
+
+.. |ic_lib_history_current| image:: /_static/icons/ic_library_history_current.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon History current session
+
+.. |ic_lib_history| image:: /_static/icons/ic_library_history.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon History
+
+.. |ic_lib_itunes| image:: /_static/icons/ic_library_itunes.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon iTunes
+
+.. |ic_lib_library| image:: /_static/icons/ic_library_library.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Library
+
+.. |ic_lib_locked| image:: /_static/icons/ic_library_locked.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Locked
+
+.. |ic_lib_missing| image:: /_static/icons/ic_library_missingtracks.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Missing Tracks
+
+.. |ic_lib_playlist| image:: /_static/icons/ic_library_playlist.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Playlist
+
+.. |ic_lib_prepare| image:: /_static/icons/ic_library_prepare.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Analyze
+
+.. |ic_lib_recordings| image:: /_static/icons/ic_library_recordings.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Recordings
+
+.. |ic_lib_rhythmbox| image:: /_static/icons/ic_library_rhythmbox.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Rhythmbox
+
+.. |ic_lib_traktor| image:: /_static/icons/ic_library_traktor.png
+    :width: 32px
+    :align: middle
+    :height: 32px
+    :alt: Library - Icon Traktor
