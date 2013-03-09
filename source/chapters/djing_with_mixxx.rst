@@ -8,7 +8,7 @@ user interface mimics a hardware DJ mixer, but also includes several extra
 elements to gives DJs a better user experience, such as the optional parallel
 waveform displays.
 
-.. _djing-started-import:
+.. _djing-import:
 
 Importing your audio files
 ==========================

@@ -25,7 +25,7 @@ you want to play and load them into a :ref:`deck <interface-decks>` or
 :ref:`sampler <interface-sampler>`, see :ref:`djing-loading-tracks`.
 Mixxx imports your music library automatically when it is run for the
 first time, and automatically detects newly added tracks on each subsequent
-run, see :ref:`djing-started-import`.
+run, see :ref:`djing-import`.
 
 The sidebar on the left contains different collections of music. The track list
 view on the right displays the tracks in those collections.
@@ -89,19 +89,19 @@ music library.
 **Loading tracks**
   To load a track into a :ref:`deck <interface-decks>`, you can either simply
   drag it to the waveform display or use the context menu. Go to the chapter
-  :ref:`_djing-loading-tracks` for detailed informations.
+  :ref:`djing-loading-tracks` for detailed informations.
 
 **Importing tracks**
   Mixxx imports your music library automatically when it is run for the first
   time, and automatically detects newly added tracks on each subsequent
-  run. Go to the chapter :ref:`_djing-import` for detailed informations.
+  run. Go to the chapter :ref:`djing-import` for detailed informations.
 
 **Rescan Library**
   If you want to manually refresh your library without exiting (for example
   because you added or moved files) you can do this with
   :menuselection:`Library --> Rescan Library` in the menu on top of the
-  application window. You can prompt an automatic rescan in the
-  :ref:`library-preferences`.
+  application window. You can prompt an automatic rescan in
+  :menuselection:`Preferences --> Library --> Rescan on startup`.
 
 **Track list context menu**
   Right-clicking on selected tracks in the track list reveals the context menu:
@@ -110,7 +110,7 @@ music library.
   :ref:`Auto DJ <library-auto-dj>` playlist for automatic mixing.
 * **Load to Deck/Sampler**: Loads a selected file to a
   :ref:`deck <interface-decks>`, :ref:`sampler <interface-sampler>` or
-  :ref:`previewdeck <interface-previewdeck>`. Alternatively
+  :ref:`previewdeck <library-preview-deck>`. Alternatively
   simply drag it to the :ref:`interface-waveform`. Note that you can't load
   multiple files at ones.
 * **Add to playlist/crate**: Add single or multiple tracks to the playlists or
