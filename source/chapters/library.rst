@@ -53,6 +53,24 @@ view on the right displays the tracks in those collections.
 * **Load**: Drag tracks you want to play to the waveform display.
 * **Edit**: Rate tracks and edit track properties.
 
+.. _library-search:
+
+Search - Find your tracks
+=========================
+
+.. figure:: ../_static/Mixxx-111-Library-Search.png
+   :align: center
+   :width: 190px
+   :figwidth: 100%
+   :alt: The Search box - Has focus and a search term entered
+   :figclass: pretty-figures
+
+   The Search box - Has focus and a search term entered
+
+The Search box above the sidebar filters the current library view for tracks
+that match your search query. The library search include some nice search
+features, go to the chapter :ref:`djing-finding-tracks` for details.
+
 .. _library-root:
 
 Library - View and edit your whole collection
@@ -187,24 +205,6 @@ The features in detail:
 
 .. seealso:: For more informations , go to the chapter
              :ref:`djing-previewing-tracks`.
-
-.. _library-search:
-
-Search - Find your tracks
-=========================
-
-.. figure:: ../_static/Mixxx-111-Library-Search.png
-   :align: center
-   :width: 190px
-   :figwidth: 100%
-   :alt: The Search box - Has focus and a search term entered
-   :figclass: pretty-figures
-
-   The Search box - Has focus and a search term entered
-
-The Search box above the sidebar filters the current library view for tracks
-that match your search query. The library search include some nice search
-features, go to the chapter :ref:`djing-finding-tracks` for details.
 
 Missing Tracks
 ==============
