@@ -211,6 +211,19 @@ Glossary of Terms
      data compression. It is de facto standard of digital audio compression for
      music. MP3 files generally end with a .MP3 extension.
 
+   AAC
+     Advanced Audio Coding (AAC) is a patented lossy audio compression algorithm
+     which uses a form of lossy data compression. Designed to be the successor
+     :term:`MP3`, AAC generally achieves better sound quality at similar bit
+     rates. While the .AAC extension is sometimes used for AAC-encoded files,
+     they are typically saved with an .M4A file extension.
+
+   FLAC
+     Free Lossless Audio Compression (FLAC), a patent-free audio compression
+     similar to :term:`MP3` but lossless. Lossless because when audio files are
+     compressed using FLAC there is no loss in quality. FLAC files generally end
+     with a .FLAC extension.
+
    AIFF
      Short for Audio Interchange File Format. High-quality digital audio file
      format, similar to .wav files. Contains CD-quality audio stored in a
@@ -222,6 +235,14 @@ Glossary of Terms
      audio recordings to be saved with different sampling rates and bitrates;
      often saved in a 44.1 KHz, 16-bit, stereo format, which is the standard
      format used for CD audio. Wave files generally end with a .WAV extension.
+
+   DRM
+     Digital Rights Management (DRM) technologies attempt to control what you
+     can and can't do with the media and hardware you've purchased. Typically,
+     a DRM system either encrypting the data so that it can only be accessed in
+     a way authorized by copyright holders or marks content with a digital
+     watermark or similar method so that the content can not be freely
+     distributed.
 
    codec
      Short for compressor/decompressor, a codec is any technology for
