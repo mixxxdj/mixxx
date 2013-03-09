@@ -96,7 +96,7 @@ or for using Mixxx as media player. Also see the chapter :ref:`djing-auto-dj`.
 
 .. _library-playlists:
 
-Playlists - Organizing your Tracks
+Playlists - Organizing your tracks
 ==================================
 
 .. sectionauthor::
@@ -106,7 +106,7 @@ Playlists - Organizing your Tracks
 your DJ sets. Some DJs construct playlists before they perform live, but others
 prefer to build them on-the-fly.
 
-Playlists are not directly loadable into Mixxx's decks as Mixxx is primarily
+Playlists are not directly loadable into the decks as Mixxx is primarily
 intended for live, attended performance use. However, you can use the
 :ref:`Auto DJ <library-auto-dj>` explained below.
 
@@ -129,7 +129,7 @@ the context menu:
   Select the playlist you would like to duplicate, choose
   :guilabel:`Duplicate Playlist`, name the new playlist and click :guilabel:`OK`.
 * **Lock**: |ic_lib_locked| This icon indicates a locked playlist. If a playlist
-  is locked, you can not add tracks, rename or delete the playlist.Choose
+  is locked, you can not add tracks, rename or delete the playlist. Choose
   :guilabel:`Unlock` from the context menu to revert the current state.
 * **Remove**: Removes a unlocked playlist. Tracks in the playlist are still
   available in the library for later use.
@@ -137,15 +137,43 @@ the context menu:
   various file formats. For informations on how to import
   iTunes/Rhythmbox/Traktor playlists, see :ref:`library-3rd-party`.
 * **Export playlist**: Export a playlist to an external playlist in various file
-  formats.
+  formats. ideal for processing the data in other applications.
 
-Crates
-======
+.. _library-crates:
 
-Crates are unordered collections of tracks, and are similar to playlists. Unlike
-playlist they cannot contain duplicate entries and do not support drag-and-drop
-within them. Crates can be created by right-clicking on :guilabel:`Crates` in
-the sidebar and selecting :guilabel:`New Crate`.
+Crates - Working with track collections
+=======================================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
+|ic_lib_crates|  Crates are unordered collections of tracks, and are similar to
+playlists. Think of it like a DJ case where favorite vinyls are put into.
+
+* **Create a crate**: Right-click on the :guilabel:`Crates` sidebar item and
+  select :guilabel:`New Crate`. Name the crate and click :guilabel:`OK`.
+* **Add Tracks**: Add tracks to a previously created crate by drag-and-drop a
+  selection of tracks from the library or playlists onto the name of a crate in
+  the sidebar. Alternatively use the context menu in the library`s
+  :ref:`track list<library-root>`.
+
+Right-click on a existing crate's name to access the different features in the
+context menu:
+
+* **Rename**: To rename a crate, just put in a new crate name and click
+  :guilabel:`OK`.
+* **Duplicate**: Just like playlists you can duplicate an existing crate.
+  Select the crate you would like to duplicate, choose
+  :guilabel:`Duplicate Crate`, name the new crate and click :guilabel:`OK`.
+* **Lock**: If a crate is locked, you can not add tracks, rename or delete the
+  crate. An icon indicates a locked crate. Choose :guilabel:`Unlock` from the
+  context menu to revert the current state.
+* **Remove**: Removes a unlocked crate. Tracks in the crate are still available
+  in the library for later use.
+* **Import crate**: Import tracks from external playlist to a crate in various
+  file formats.
+* **Export crate**: Export a crate as playlist in various file formats, ideal
+  for processing the data in other applications.
 
 Browse - Loading remote tracks
 ==============================
