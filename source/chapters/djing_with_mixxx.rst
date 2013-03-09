@@ -8,6 +8,74 @@ user interface mimics a hardware DJ mixer, but also includes several extra
 elements to gives DJs a better user experience, such as the optional parallel
 waveform displays.
 
+.. _djing-started-import:
+
+Importing your audio files
+==========================
+
+.. sectionauthor::
+   S.Brandt <s.brandt@mixxx.org>
+
+.. figure:: ../_static/Mixxx-111-1st-run-choose-library-directory-win.png
+   :align: center
+   :width: 75%
+   :figwidth: 100%
+   :alt: Mixxx 1st run - Choose music library directory dialog
+   :figclass: pretty-figures
+
+   Mixxx 1st run on Windows 7 - Choose music library directory dialog
+
+**Setup the music library**
+  At first launch, you are requested to select a directory where your music is
+  stored. By default, the dialog points to a location where music files are
+  typically held.
+
+  Click :guilabel:`Select Folder` and Mixxx initially scans your music library.
+  It takes a moment, depending on the size of your library. All detected files
+  are then available within Mixxx and listed in the :ref:`library-root`.
+
+  Mixxx automatically detects newly added tracks on each subsequent run. If you
+  want to manually refresh your library without exiting (for example because you
+  added or moved files), you can do this with
+  :menuselection:`Library --> Rescan Library` in the menu. If you want a rescan
+  at every launch, select :menuselection:`Preferences --> Library --> Rescan on
+  startup`.
+
+  .. warning :: On Windows 7 and 8 the import dialog points to your Windows
+                "Music" Library , a special-purpose virtual folder. You can
+                **not** select these virtual folder. Select a regular folder
+                instead, usually "My Music", like pictured above.
+
+**Compatible files**
+  Mixxx supports the following file formats: :term:`Wave <WAV>` (wav),
+  :term:`Aiff <AIFF>` (aiff, aif), :term:`MP3` (mp3), :term:`Ogg vorbis` (ogg),
+  :term:`FLAC` (flac) and MPEG-4 Audio (m4p, :term:`aac <AAC>`). You cannot play
+  :term:`DRM` protected files, like \*.m4p files purchased in the iTunes Store.
+
+**Changing the music directory**
+  The Mixxx music directory can always be changed at a later time in
+  :menuselection:`Preferences --> Library`. You might want to run a library
+  rescan afterwards, select :menuselection:`Library --> Rescan Library` in the
+  menu.
+
+**Import external libraries**
+  If you have iTunes, Traktor or Rhythmbox installed, Mixxx will preselect the
+  default locations of each programs library and make them available in the
+  Mixxx library, see :ref:`library-3rd-party`.
+
+**Import remote files**
+  To import additional audio files later which are not in the selected music
+  library directory, drag them directly from your external :term:`file manager`
+  or the :ref:`Browse menu <library-browse>` to the track list.
+
+  .. note :: You can not drag complete folders to the library because currently
+             Mixxx can not recursively scan folders for compatible music files.
+
+**Import music from CDs**
+  Mixxx can not play music from Audio CDs. Convert the content to compatible
+  files in good quality and add them to them Mixxx library. See
+  `<https://en.wikipedia.org/wiki/Ripping>`_
+
 .. _djing-loading-tracks:
 
 Loading Tracks
