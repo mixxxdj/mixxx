@@ -165,15 +165,39 @@ context menu:
 * **Duplicate**: Just like playlists you can duplicate an existing crate.
   Select the crate you would like to duplicate, choose
   :guilabel:`Duplicate Crate`, name the new crate and click :guilabel:`OK`.
-* **Lock**: If a crate is locked, you can not add tracks, rename or delete the
-  crate. An icon indicates a locked crate. Choose :guilabel:`Unlock` from the
-  context menu to revert the current state.
+* **Lock**: |ic_lib_locked| This icon indicates a locked crate. If a crate is
+  locked, you can not add tracks, rename or delete the crate. Choose
+  :guilabel:`Unlock` from the context menu to revert the current state.
 * **Remove**: Removes a unlocked crate. Tracks in the crate are still available
   in the library for later use.
 * **Import crate**: Import tracks from external playlist to a crate in various
   file formats.
 * **Export crate**: Export a crate as playlist in various file formats, ideal
   for processing the data in other applications.
+
+Crates vs. Playlists
+--------------------
+
+.. sectionauthor::
+   RJ Ryan <rryan@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
+
+Crates are unordered collections of tracks. Unlike playlist, they can not
+contain duplicate entries and do not support drack-and-drop within them.
+
+Playlists serve a limited purpose of keeping an ordered list of tracks.
+You can right-click a playlist to queue it to :ref:`Auto DJ <library-auto-dj>`,
+so in a sense you can "play" it.
+
+Often DJ's keep a playlist of favorites or plan a list of tracks they want to
+play at a party. In these cases they rarely care about the order since they will
+likely choose the order at the party based on the dance floor and mood and they
+certainly don't want duplicates. This is where crates come in.
+On the other hand, if you want to specifically plan out a set and practice the
+transitions you might want to keep an ordering of tracks or repeat them
+(if you plan to mix a track back in later on in the party) so in that situation
+you could use a playlist. It's all about how you want to use Mixxx, it gives you
+the tools to do whatever you need.
 
 Browse - Loading remote tracks
 ==============================
