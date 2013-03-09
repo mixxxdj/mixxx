@@ -1,3 +1,5 @@
+.. include:: /shortcuts.rstext
+
 The Library
 ***********
 
@@ -117,8 +119,8 @@ Browse - Loading remote tracks
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
 
-Browse mode works like a file-manager and allows you to load tracks that are not
-necessarily already in your Mixxx library.
+|ic_lib_browse| Browse mode works like a file-manager and allows you to load
+tracks that are not necessarily already in your Mixxx library.
 
 Click the :guilabel:`Browse` sidebar item to navigate the computer and find your
 music. Depending on your :term:`operating system`, the music will usually be
@@ -155,13 +157,13 @@ History - Keep track of your last sessions
 
 .. versionadded:: 1.11
 
-The history section automatically keeps a list of tracks you play in your DJ
-sets. This is handy for remembering what worked in your DJ sets, posting
-set-lists, or reporting your plays to licensing organizations. Every time you
-start Mixxx, a new history section is created. If you don't play a track during
-the current session, it will be discarded.
+|ic_lib_history| The history section automatically keeps a list of tracks you
+play in your DJ sets. This is handy for remembering what worked in your DJ sets,
+posting set-lists, or reporting your plays to licensing organizations. Every
+time you start Mixxx, a new history section is created. If you don't play a
+track during the current session, it will be discarded.
 
-The "arrow" icon indicates the current session.
+|ic_lib_history_current| This icon indicates the current session.
 
 Click on the *History* icon in the sidebar to switch to the :guilabel:`History`
 view, then right-click on a sessions name to access the different features:
@@ -184,10 +186,10 @@ Analyze - Preparing your tracks
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-Mixxx automatically analyzes tracks the first time you load them in a deck,
-nevertheless it is recommended to have them analyzed before you play. The
-analysis takes up a lot of CPU power and might cause lags, things you won't have
-while performing.
+|ic_lib_prepare| Mixxx automatically analyzes tracks the first time you load
+them in a deck, nevertheless it is recommended to have them analyzed before you
+play. The analysis takes up a lot of CPU power and might cause lags, things you
+surely don't need while performing.
 
 The Analyze view allows to run :term:`BPM` and :term:`beatgrid`
 detection on certain tracks in advance. Waveforms will be generated as part of a
@@ -211,11 +213,12 @@ iTunes, Traktor, Rhythmbox - Using external libraries
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
 
-The iTunes (Windows/Mac OS X), Traktor (Windows/Mac OS X), and Rhythmbox
-(GNU/Linux) views allow you to use the music libraries you have created in these
-applications. You can access music and playlists. If available, Mixxx
-automatically loads the external librarys from their default locations on your
-hard drive.
+|ic_lib_itunes| The iTunes (Windows/Mac OS X),
+|ic_lib_traktor| Traktor (Windows/Mac OS X), and
+|ic_lib_rhythmbox| Rhythmbox (GNU/Linux) views allow you to use the music
+libraries you have created in these applications. You can access music and
+playlists. If available, Mixxx automatically loads the external libraries from
+their default locations on your hard drive.
 
 Right-click on the iTunes icon in the Library tree and select
 :guilabel:`Choose Library` to load the *iTunes Music Library.xml* from a
