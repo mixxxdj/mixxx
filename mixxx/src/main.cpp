@@ -116,7 +116,7 @@ void MessageHandler(QtMsgType type, const char *input)
                 if (QFileInfo(olderlogname).exists())
                     QFile::remove(olderlogname);
                 if (!QFile::rename(oldlogname, olderlogname))
-                    cout << "Error backing up old logfile\n" << oldlogname.toStdString();
+                    std::cout << "Error backing up old logfile\n" << oldlogname.toStdString();
             }
         }
         QFileInfo log(logFileName);
@@ -126,7 +126,7 @@ void MessageHandler(QtMsgType type, const char *input)
             if(QFileInfo(olderlogname).exists())
                 QFile::remove(olderlogname);
             if (!QFile::rename(logFileName, olderlogname))
-                cout << "Error backing up logfile\n" << logFileName.toStdString();
+                std::cout << "Error backing up logfile\n" << logFileName.toStdString();
         }
         // XXX will there ever be a case that we can't write to our current
         // working directory?
