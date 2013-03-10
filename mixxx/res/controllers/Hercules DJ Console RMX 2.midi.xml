@@ -1,13 +1,13 @@
 <MixxxMIDIPreset mixxxVersion="1.10.1+" schemaVersion="1">
 	<info>
   <!-- In Geany, go to Document and then Fold All for easier format. -->
-		<name>Hercules DJConsole RMX 2</name>
+		<name>Hercules DJ Console RMX 2</name>
 		<author>Circuitfry</author>
 		<description>This console's mapping comes with a script.</description>
 	</info>
  <controller id="DJConsole Rmx2">
 		<scriptfiles>
-			<file filename="DJConsoleRMX2Scripts.js" functionprefix="DJCRMX2"/>
+			<file filename="Hercules-DJ-Console-RMX-2-scripts.js" functionprefix="DJCRMX2"/>
 		</scriptfiles>
    <controls>
     <!-- General Controls -->
