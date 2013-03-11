@@ -19,11 +19,14 @@
 #include <unistd.h>
 #include <QFile>
 
-/* read files in 256k chunks. Limit to 250 MB/file (~25min/track) */
-#define BUFFERSIZE 262144
+/* read files in 512k chunks. Limit to 250 MB/file (~25min/track) */
+#define BUFFERSIZE 524288
 #define BUFFERSIZE_LIMIT 262144000
 
 namespace Mixxx {
+
+// reserve some static space for settings...
+ModPlug::ModPlug_Settings SoundSourceModPlug::settings;
 
 SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
     Mixxx::SoundSource(qFilename)
@@ -34,7 +37,7 @@ SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
 
     /* configure ModPlug settings */
     settings.mFlags = ModPlug::MODPLUG_ENABLE_OVERSAMPLING
-                | ModPlug::MODPLUG_ENABLE_NOISE_REDUCTION
+            //    | ModPlug::MODPLUG_ENABLE_NOISE_REDUCTION
                 | ModPlug::MODPLUG_ENABLE_MEGABASS;
 
     /* Note that ModPlug always decodes sound at 44100kHz, 32 bit, stereo and then
@@ -42,9 +45,9 @@ SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
     settings.mChannels = 2;        /* Number of channels - 1 for mono or 2 for stereo */
     settings.mBits = 16;           /* Bits per sample - 8, 16, or 32 */
     settings.mFrequency = 44100;   /* Sampling rate - 11025, 22050, or 44100 */
-    settings.mResamplingMode = ModPlug::MODPLUG_RESAMPLE_SPLINE;
+    settings.mResamplingMode = ModPlug::MODPLUG_RESAMPLE_FIR;
 
-    settings.mStereoSeparation = 128; /* Stereo separation, 1 - 256 */
+    settings.mStereoSeparation = 1; /* Stereo separation, 1 - 256 */
     settings.mMaxMixChannels = 128; /* Maximum number of mixing channels (polyphony), 32 - 256 */
 
     settings.mReverbDepth = 0;    /* Reverb level 0(quiet)-100(loud)      */
@@ -108,13 +111,12 @@ int SoundSourceModPlug::open() {
     while ((count != 0) && (smplbuf.length() < BUFFERSIZE_LIMIT))
     {
         /* Read sample data into the buffer.  Returns the number of bytes read.  If the end
-         * of the mod has been reached, zero is returned. */
+         * of the module has been reached, zero is returned. */
         count = ModPlug::ModPlug_Read(file, tmpbuf, BUFFERSIZE);
         smplbuf.append(tmpbuf, count);
-
-        qDebug() << "Filled Sample buffer with " << smplbuf.length() << " bytes.";
     }
     delete tmpbuf;
+    qDebug() << "Filled Sample buffer with " << smplbuf.length() << " bytes.";
 
     // smplbuf holds 44.1kHz 16bit integer stereo samples.
     // We count the number of samples by dividing number of
@@ -128,10 +130,9 @@ int SoundSourceModPlug::open() {
 
 long SoundSourceModPlug::seek(long filepos)
 {
-    unsigned long filepos2 = (unsigned long)filepos;
-    if (filelength>0)
+    if (filelength > 0)
     {
-        seekpos = math_min(filepos2,filelength);
+        seekpos = math_min((unsigned long)filepos, filelength);
         return seekpos;
     }
     return 0;
@@ -147,13 +148,14 @@ unsigned SoundSourceModPlug::read(unsigned long size, const SAMPLE * destination
     if (filelength > 0)
     {
         unsigned count = 0;
-        while ((seekpos < filelength) && (count < 2*size))
+        while ((seekpos < filelength) && (count < (size << 1 )))
         {
+            // copy a 16bit sample
             dest[count++] = smplbuf[seekpos << 1];
             dest[count++] = smplbuf[(seekpos << 1) + 1];
             ++seekpos;
         }
-        return count >> 1;
+        return count >> 1; ///< number of bytes divided by bytes per sample
     }
     // The file has errors or is not open. Tell the truth and return 0.
     return 0;
@@ -169,28 +171,28 @@ int SoundSourceModPlug::parseHeader()
 
     switch (ModPlug::ModPlug_GetModuleType(file))
     {
-    case 0x00: // none
+    case NONE:
         setType(QString("None"));
         break;
-    case 0x01: // mod
+    case MOD:
         setType(QString("Protracker"));
         break;
-    case 0x02: // s3m
+    case S3M:
         setType(QString("Scream Tracker 3"));
         break;
-    case 0x04: // xm
+    case XM:
         setType(QString("FastTracker2"));
         break;
-    case 0x08: // med
+    case MED:
         setType(QString("OctaMed"));
         break;
-    case 0x20: // it
+    case IT:
         setType(QString("Impulse Tracker"));
         break;
-    case 0x100: // stm
+    case STM:
         setType(QString("Scream Tracker"));
         break;
-    case 0x8000: // okt
+    case OKT:
         setType(QString("Oktalyzer"));
         break;
     default:
@@ -200,8 +202,11 @@ int SoundSourceModPlug::parseHeader()
     setComment(QString(ModPlug::ModPlug_GetMessage(file)));
     setTitle(QString(ModPlug::ModPlug_GetName(file)));
     setDuration(ModPlug::ModPlug_GetLength(file) / 1000);
+    setBitrate(320); // not really, but fill in something...
+    setSampleRate(44100);
+    setChannels(2);
     // FIXME: BPM is always 0 when track is not running
-    setBPM(ModPlug::ModPlug_GetCurrentTempo(file));
+//    setBPM(ModPlug::ModPlug_GetCurrentTempo(file));
     return OK;
 }
 

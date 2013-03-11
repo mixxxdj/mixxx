@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundsourcemodplug.h  -  description
+                          soundsourcemodplug.h  -  modplug tracker support
                              -------------------
     copyright            : (C) 2012 by Stefan Nuernberger
     email                : kabelfrickler@gmail.com
@@ -54,13 +54,26 @@ public:
     static QList<QString> supportedFileExtensions();
 
 private:
+    static ModPlug::ModPlug_Settings settings; ///< struct of parameters
+
     bool opened;
     unsigned long filelength;
     unsigned int seekpos;
     ModPlug::ModPlugFile *file; ///< pointer to ModPlugFile struct
-    ModPlug::_ModPlug_Settings settings; ///< struct of parameters
     QByteArray filebuf; ///< original module file data
     QByteArray smplbuf; ///< 16bit stereo samples, 44.1kHz
+
+    /// identification of modplug module type
+    enum ModuleTypes {
+        NONE = 0x00,
+        MOD  = 0x01,
+        S3M  = 0x02,
+        XM   = 0x04,
+        MED  = 0x08,
+        IT   = 0x20,
+        STM  = 0x100,
+        OKT  = 0x8000
+    };
 };
 
 extern "C" MY_EXPORT const char* getMixxxVersion()
