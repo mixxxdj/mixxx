@@ -120,6 +120,7 @@ ControlObject::~ControlObject() {
 
 }
 
+/*
 bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 {
     // Find src and dest objects
@@ -147,6 +148,7 @@ bool ControlObject::disconnectControl(ConfigKey key)
     else
         return false;
 }
+*/
 
 void ControlObject::addProxy(ControlObjectThread * pControlObjectThread)
 {
@@ -231,20 +233,12 @@ void ControlObject::queueFromMidi(MidiOpCode o, double v)
 void ControlObject::setValueFromEngine(double dValue)
 {
     set(dValue);
-    if (m_bTrack) {
-        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
-    }
 }
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v)
 {
     Q_UNUSED(o);
     set(v);
-    if (m_bTrack) {
-        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), v);
-    }
 }
 
 double ControlObject::GetMidiValue()
@@ -254,16 +248,7 @@ double ControlObject::GetMidiValue()
 
 void ControlObject::setValueFromThread(double dValue)
 {
-    if (m_bIgnoreNops) {
-        if (get() == dValue) {
-            return;
-        }
-    }
     set(dValue);
-    if (m_bTrack) {
-        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
-    }
 }
 
 void ControlObject::add(double dValue)
@@ -394,10 +379,21 @@ void ControlObject::sync() {
 }
 
 double ControlObject::get() {
-    return ControlObjectBase<double>::get();
+    return getValue();
 }
 
-void ControlObject::set(const double& value) {
-    ControlObjectBase<double>::set(value);
-    emit(valueChanged(value));
+void ControlObject::set(const double& value, bool emitValueChanged) {
+    if (m_bIgnoreNops) {
+        if (get() == value) {
+            return;
+        }
+    }
+    setValue(value);
+    if (emitValueChanged) {
+        emit(valueChanged(value));
+        if (m_bTrack) {
+            Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
+                        static_cast<Stat::ComputeFlags>(m_trackFlags), value);
+        }
+    }
 }

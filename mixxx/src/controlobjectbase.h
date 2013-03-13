@@ -44,7 +44,7 @@ class ControlObjectRingValue {
 template<typename T, bool ATOMIC = false>
 class ControlObjectValue {
   public:
-    inline T get() {
+    inline T getValue() {
         T value = T();
         unsigned int index = (unsigned int)m_readIndex
                 % (cReaderSlotCnt + 1);
@@ -62,7 +62,7 @@ class ControlObjectValue {
         return value;
     }
 
-    inline void set(const T& value) {
+    inline void setValue(const T& value) {
         // Test if we can read atomic
         // This test is const and will be mad only at compile time
         unsigned int index;
@@ -93,11 +93,11 @@ class ControlObjectValue {
 template<typename T>
 class ControlObjectValue<T, true> {
   public:
-    inline T get() {
+    inline T getValue() {
         return m_value;
     }
 
-    inline void set(const T& value) {
+    inline void setValue(const T& value) {
         m_value = value;
     }
 

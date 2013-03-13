@@ -32,13 +32,13 @@ class PlayerManager : public QObject {
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
-    Deck* addDeck();
+    void addDeck();
 
     // Add a sampler to the PlayerManager
-    Sampler* addSampler();
+    void addSampler();
 
     // Add a PreviewDeck to the PlayerManager
-    PreviewDeck* addPreviewDeck();
+    void addPreviewDeck();
 
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
@@ -105,6 +105,9 @@ class PlayerManager : public QObject {
 
   private:
     TrackPointer lookupTrack(QString location);
+    void addDeckInner();
+    void addSamplerInner();
+    void addPreviewDeckInner();
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;

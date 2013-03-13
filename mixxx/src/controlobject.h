@@ -59,7 +59,7 @@ struct QueueObjectMidi
 
 class ControlObject 
     : public QObject,
-      public ControlObjectBase<double> {
+      private ControlObjectBase<double> {
     Q_OBJECT
   public:
     ControlObject();
@@ -92,7 +92,7 @@ class ControlObject
     // Returns the value of the ControlObject
     double get();
     // Sets the ControlObject value in a threadsave way and updates associated proxy objects. 
-    void set(const double& value);
+    void set(const double& value, bool emmitValueChanged = true);
     /** Add to value. Not thread safe. */
     void add(double dValue);
     /** Subtract from value. Not thread safe. */
@@ -118,7 +118,6 @@ class ControlObject
 
 signals:
     void valueChanged(double);
-    void valueChangedFromEngine(double);
 
 protected:
     /** Sets the value of the object. Not thread safe. */

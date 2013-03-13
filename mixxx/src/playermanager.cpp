@@ -141,57 +141,54 @@ unsigned int PlayerManager::numPreviewDecks() {
 }
 
 void PlayerManager::slotNumDecksControlChanged(double v) {
-    // First off, undo any changes to the control.
-    m_pCONumDecks->set(m_decks.size());
-
-    int num = v;
+    int num = (int)v;
     if (num < m_decks.size()) {
         qDebug() << "Ignoring request to reduce the number of decks to" << num;
         return;
     }
 
     while (m_decks.size() < num) {
-        addDeck();
+        addDeckInner();
     }
 }
 
 void PlayerManager::slotNumSamplersControlChanged(double v) {
-    // First off, undo any changes to the control.
-    m_pCONumSamplers->set(m_samplers.size());
-
-    int num = v;
+    int num = (int)v;
     if (num < m_samplers.size()) {
         qDebug() << "Ignoring request to reduce the number of samplers to" << num;
         return;
     }
 
     while (m_samplers.size() < num) {
-        addSampler();
+        addSamplerInner();
     }
 }
 
 void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
-    // First off, undo any changes to the control.
-    m_pCONumPreviewDecks->set(m_preview_decks.size());
-
-    int num = v;
+    int num = (int)v;
     if (num < m_preview_decks.size()) {
         qDebug() << "Ignoring request to reduce the number of preview decks to" << num;
         return;
     }
 
     while (m_preview_decks.size() < num) {
-        addPreviewDeck();
+        addPreviewDeckInner();
     }
 }
 
-Deck* PlayerManager::addDeck() {
-    QString group = groupForDeck(numDecks());
-    int number = numDecks() + 1;
+void PlayerManager::addDeck() {
+    addDeckInner();
+    m_pCONumDecks->set((double)m_decks.count());
+}
+
+void PlayerManager::addDeckInner() {
+    QString group = groupForDeck(m_decks.count());
+    int number = m_decks.count() + 1;
 
     EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
-    if (number % 2 == 0)
+    if (number % 2 == 0) {
         orientation = EngineChannel::RIGHT;
+    }
 
     Deck* pDeck = new Deck(this, m_pConfig, m_pEngine, orientation, group);
     if (m_pAnalyserQueue) {
@@ -202,7 +199,6 @@ Deck* PlayerManager::addDeck() {
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pDeck;
     m_decks.append(pDeck);
-    m_pCONumDecks->add(1);
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
     m_pSoundManager->registerOutput(
@@ -214,12 +210,15 @@ Deck* PlayerManager::addDeck() {
         m_pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, number-1), m_pVCManager);
     }
-
-    return pDeck;
 }
 
-Sampler* PlayerManager::addSampler() {
-    QString group = groupForSampler(numSamplers());
+void PlayerManager::addSampler() {
+    addSamplerInner();
+    m_pCONumSamplers->set(m_samplers.count());
+}
+
+void PlayerManager::addSamplerInner() {
+    QString group = groupForSampler(m_samplers.count());
 
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
@@ -233,13 +232,15 @@ Sampler* PlayerManager::addSampler() {
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pSampler;
     m_samplers.append(pSampler);
-    m_pCONumSamplers->add(1);
-
-    return pSampler;
 }
 
-PreviewDeck* PlayerManager::addPreviewDeck() {
-    QString group = groupForPreviewDeck(numPreviewDecks());
+void PlayerManager::addPreviewDeck() {
+    addPreviewDeckInner();
+    m_pCONumPreviewDecks->set(m_preview_decks.count());
+}
+
+void PlayerManager::addPreviewDeckInner() {
+    QString group = groupForPreviewDeck(m_preview_decks.count());
 
     // All preview decks are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
@@ -253,8 +254,6 @@ PreviewDeck* PlayerManager::addPreviewDeck() {
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);
-    m_pCONumPreviewDecks->add(1);
-    return pPreviewDeck;
 }
 
 BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {

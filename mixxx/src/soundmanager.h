@@ -138,8 +138,6 @@ class SoundManager : public QObject {
     ControlObjectThreadMain* m_pControlObjectLatency;
     ControlObjectThreadMain* m_pControlObjectSampleRate;
     ControlObject* m_pControlObjectSoundStatus;
-    ControlObjectThreadMain* m_pControlObjectVinylControlMode1;
-    ControlObjectThreadMain* m_pControlObjectVinylControlMode2;
     ControlObjectThreadMain* m_pControlObjectVinylControlGain;
 };
 

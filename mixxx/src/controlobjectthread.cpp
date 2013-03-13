@@ -44,11 +44,12 @@ ControlObjectThread::~ControlObjectThread() {
 }
 
 double ControlObjectThread::get() {
-    m_dataMutex.lock();
-    double v = m_dValue;
-    m_dataMutex.unlock();
+    if (m_pControlObject) {
+        return m_pControlObject->get();
+    } else {
+        return 0.0;
+    }
 
-    return v;
 }
 
 void ControlObjectThread::slotSet(double v) {
