@@ -31,6 +31,10 @@
 #ifdef __FFMPEGFILE__
 #include "soundsourceffmpeg.h"
 #endif
+#ifdef __MODPLUG__
+#include "soundsourcemodplug.h"
+#include "dlgprefmodplug.h"
+#endif
 #include "soundsourceflac.h"
 
 #include "mixxx.h"
@@ -140,6 +144,10 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 #ifdef __COREAUDIO__
     } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(extension)) {
         return new SoundSourceCoreAudio(qFilename);
+#endif
+#ifdef __MODPLUG__
+    } else if (SoundSourceModPlug::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceModPlug(qFilename);
 #endif
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
@@ -348,6 +356,9 @@ QStringList SoundSourceProxy::supportedFileExtensions()
 #endif
 #ifdef __COREAUDIO__
     supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
+#endif
+#ifdef __MODPLUG__
+    supportedFileExtensions.append(SoundSourceModPlug::supportedFileExtensions());
 #endif
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
 

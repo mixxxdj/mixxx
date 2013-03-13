@@ -28,14 +28,6 @@ namespace ModPlug {
 #include "libmodplug/modplug.h"
 }
 
-//As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
-#ifdef Q_WS_WIN
-#define MY_EXPORT __declspec(dllexport)
-#else
-#define MY_EXPORT
-#endif
-
-namespace Mixxx {
 /*
     Class for reading tracker files using libmodplug
     The whole file is decoded at once and saved
@@ -53,7 +45,10 @@ public:
     int parseHeader();
     static QList<QString> supportedFileExtensions();
 
+    static void configure(unsigned int bufferSizeLimit,
+                          const ModPlug::ModPlug_Settings &settings);
 private:
+    static unsigned int bufferSizeLimit;
     static ModPlug::ModPlug_Settings settings; ///< struct of parameters
 
     bool opened;
@@ -75,44 +70,5 @@ private:
         OKT  = 0x8000
     };
 };
-
-extern "C" MY_EXPORT const char* getMixxxVersion()
-{
-    return VERSION;
-}
-
-extern "C" MY_EXPORT int getSoundSourceAPIVersion()
-{
-    return MIXXX_SOUNDSOURCE_API_VERSION;
-}
-
-extern "C" MY_EXPORT SoundSource* getSoundSource(QString filename)
-{
-    return new SoundSourceModPlug(filename);
-}
-
-extern "C" MY_EXPORT char** supportedFileExtensions()
-{
-    QList<QString> exts = SoundSourceModPlug::supportedFileExtensions();
-    //Convert to C string array.
-    char** c_exts = (char**)malloc((exts.count() + 1) * sizeof(char*));
-    for (int i = 0; i < exts.count(); i++)
-    {
-        QByteArray qba = exts[i].toUtf8();
-        c_exts[i] = strdup(qba.constData());
-        qDebug() << c_exts[i];
-    }
-    c_exts[exts.count()] = NULL; //NULL terminate the list
-
-    return c_exts;
-}
-
-extern "C" MY_EXPORT void freeFileExtensions(char **exts)
-{
-    for (int i(0); exts[i]; ++i) free(exts[i]);
-    free(exts);
-}
-
-} // ns Mixxx
 
 #endif

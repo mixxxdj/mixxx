@@ -1,0 +1,728 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefModplug</class>
+ <widget class="QDialog" name="DlgPrefModplug">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>593</width>
+    <height>538</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Modplug Preferences</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <item row="13" column="4">
+    <widget class="QSlider" name="surroundDelay">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>10</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="5" column="0" colspan="5">
+    <widget class="QCheckBox" name="noiseReduction">
+     <property name="text">
+      <string>Enable noise reduction</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0">
+    <widget class="QCheckBox" name="megabass">
+     <property name="text">
+      <string>Enable megabass</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="0">
+    <widget class="QCheckBox" name="reverb">
+     <property name="text">
+      <string>Enable reverb</string>
+     </property>
+    </widget>
+   </item>
+   <item row="14" column="1">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="6" column="0" colspan="3">
+    <widget class="QLabel" name="label_4">
+     <property name="text">
+      <string>Stereo separation</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="1" colspan="2">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Bass level</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="3">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Memory limit for single track (MB)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="5">
+    <widget class="QSpinBox" name="surroundDepthSpin">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>30</number>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="0" colspan="3">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Resampling mode (interpolation)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="4">
+    <widget class="QSlider" name="memoryLimit">
+     <property name="toolTip">
+      <string extracomment="1 minute of decoded audio requires about 10MB of RAM."/>
+     </property>
+     <property name="minimum">
+      <number>16</number>
+     </property>
+     <property name="maximum">
+      <number>512</number>
+     </property>
+     <property name="value">
+      <number>256</number>
+     </property>
+     <property name="sliderPosition">
+      <number>256</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="0" colspan="3">
+    <widget class="QLabel" name="label_5">
+     <property name="text">
+      <string>Maximum Number of Mixing Channels</string>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="4">
+    <widget class="QSlider" name="bassDepth">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>30</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="5">
+    <widget class="QSpinBox" name="memoryLimitSpin">
+     <property name="minimum">
+      <number>16</number>
+     </property>
+     <property name="maximum">
+      <number>512</number>
+     </property>
+     <property name="value">
+      <number>256</number>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="4">
+    <widget class="QSlider" name="bassCutoff">
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>80</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="1" colspan="2">
+    <widget class="QLabel" name="label_3">
+     <property name="text">
+      <string>Bass cutoff (Hz)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="1" colspan="2">
+    <widget class="QLabel" name="label_8">
+     <property name="text">
+      <string>Surround level</string>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="1" colspan="2">
+    <widget class="QLabel" name="label_9">
+     <property name="text">
+      <string>Surround delay (ms)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="4">
+    <widget class="QSlider" name="reverbDepth">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>30</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="4">
+    <widget class="QSlider" name="reverbDelay">
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <number>250</number>
+     </property>
+     <property name="value">
+      <number>50</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="4">
+    <widget class="QSlider" name="stereoSeparation">
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>256</number>
+     </property>
+     <property name="value">
+      <number>64</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="tickPosition">
+      <enum>QSlider::NoTicks</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="1" colspan="2">
+    <widget class="QLabel" name="label_7">
+     <property name="text">
+      <string>Reverb delay (ms)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="0">
+    <widget class="QCheckBox" name="surround">
+     <property name="text">
+      <string>Enable surround</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0" colspan="5">
+    <widget class="QCheckBox" name="oversampling">
+     <property name="text">
+      <string>Enable oversampling (*highly* recommended)</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="4">
+    <widget class="QSlider" name="maxMixChannels">
+     <property name="minimum">
+      <number>32</number>
+     </property>
+     <property name="maximum">
+      <number>256</number>
+     </property>
+     <property name="value">
+      <number>128</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="4">
+    <widget class="QSlider" name="surroundDepth">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>30</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="1" colspan="2">
+    <widget class="QLabel" name="label_6">
+     <property name="text">
+      <string>Reverb level</string>
+     </property>
+    </widget>
+   </item>
+   <item row="6" column="5">
+    <widget class="QSpinBox" name="stereoSeparationSpin">
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="maximum">
+      <number>256</number>
+     </property>
+    </widget>
+   </item>
+   <item row="7" column="5">
+    <widget class="QSpinBox" name="maxMixChannelsSpin">
+     <property name="minimum">
+      <number>32</number>
+     </property>
+     <property name="maximum">
+      <number>256</number>
+     </property>
+     <property name="value">
+      <number>128</number>
+     </property>
+    </widget>
+   </item>
+   <item row="4" column="4" colspan="2">
+    <widget class="QComboBox" name="resampleMode">
+     <property name="currentIndex">
+      <number>3</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>Nearest (very fast, extremely bad quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Linear (fast, good quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Cubic Spline (high quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>8-tap FIR (extremely high quality)</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="8" column="5">
+    <widget class="QSpinBox" name="reverbDepthSpin">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>30</number>
+     </property>
+    </widget>
+   </item>
+   <item row="9" column="5">
+    <widget class="QSpinBox" name="reverbDelaySpin">
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <number>250</number>
+     </property>
+     <property name="value">
+      <number>50</number>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="5">
+    <widget class="QSpinBox" name="bassDepthSpin">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>30</number>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="5">
+    <widget class="QSpinBox" name="bassCutoffSpin">
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>80</number>
+     </property>
+    </widget>
+   </item>
+   <item row="13" column="5">
+    <widget class="QSpinBox" name="surroundDelaySpin">
+     <property name="maximum">
+      <number>100</number>
+     </property>
+     <property name="value">
+      <number>10</number>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="5">
+    <widget class="QLabel" name="label_11">
+     <property name="text">
+      <string>Decoding options for libmodplug. Module files are decoded at once
+and kept in RAM to allow for seeking and smooth operation in Mixxx.</string>
+     </property>
+    </widget>
+   </item>
+   <item row="8" column="3">
+    <spacer name="horizontalSpacer">
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="sizeType">
+      <enum>QSizePolicy::Minimum</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>40</width>
+       <height>20</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>memoryLimit</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>memoryLimitSpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>memoryLimitSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>memoryLimit</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stereoSeparation</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>stereoSeparationSpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>186</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>186</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>stereoSeparationSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>stereoSeparation</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>186</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>186</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>maxMixChannels</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>maxMixChannelsSpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>maxMixChannelsSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>maxMixChannels</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>220</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>220</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reverbDepth</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>reverbDepthSpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reverbDepthSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>reverbDepth</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>254</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reverbDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>reverbDelaySpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bassDepth</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>bassDepthSpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>322</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>322</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bassDepthSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>bassDepth</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>322</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>322</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>reverbDelaySpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>reverbDelay</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>288</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>288</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bassCutoff</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>bassCutoffSpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>356</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>bassCutoffSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>bassCutoff</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>356</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>356</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>surroundDepth</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>surroundDepthSpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>390</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>390</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>surroundDepthSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>surroundDepth</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>390</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>390</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>surroundDelay</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>surroundDelaySpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>424</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>surroundDelaySpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>surroundDelay</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>424</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>424</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>

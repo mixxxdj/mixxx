@@ -1,5 +1,5 @@
 /***************************************************************************
-                          soundsourcemodplug.cpp  -  description
+                          soundsourcemodplug.cpp  -  module tracker support
                              -------------------
     copyright            : (C) 2012 by Stefan Nuernberger
     email                : kabelfricker@gmail.com
@@ -19,48 +19,19 @@
 #include <unistd.h>
 #include <QFile>
 
-/* read files in 512k chunks. Limit to 250 MB/file (~25min/track) */
-#define BUFFERSIZE 524288
-#define BUFFERSIZE_LIMIT 262144000
-
-namespace Mixxx {
+/* read files in 512k chunks */
+#define CHUNKSIZE 524288
 
 // reserve some static space for settings...
 ModPlug::ModPlug_Settings SoundSourceModPlug::settings;
+unsigned int SoundSourceModPlug::bufferSizeLimit;
 
 SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
-    Mixxx::SoundSource(qFilename)
+    SoundSource(qFilename)
 {
     opened = false;
     filelength = 0;
     file = 0;
-
-    /* configure ModPlug settings */
-    settings.mFlags = ModPlug::MODPLUG_ENABLE_OVERSAMPLING
-            //    | ModPlug::MODPLUG_ENABLE_NOISE_REDUCTION
-                | ModPlug::MODPLUG_ENABLE_MEGABASS;
-
-    /* Note that ModPlug always decodes sound at 44100kHz, 32 bit, stereo and then
-     * down-mixes to the settings you choose. */
-    settings.mChannels = 2;        /* Number of channels - 1 for mono or 2 for stereo */
-    settings.mBits = 16;           /* Bits per sample - 8, 16, or 32 */
-    settings.mFrequency = 44100;   /* Sampling rate - 11025, 22050, or 44100 */
-    settings.mResamplingMode = ModPlug::MODPLUG_RESAMPLE_FIR;
-
-    settings.mStereoSeparation = 1; /* Stereo separation, 1 - 256 */
-    settings.mMaxMixChannels = 128; /* Maximum number of mixing channels (polyphony), 32 - 256 */
-
-    settings.mReverbDepth = 0;    /* Reverb level 0(quiet)-100(loud)      */
-    settings.mReverbDelay = 50;   /* Reverb delay in ms, usually 40-200ms */
-    settings.mBassAmount = 30;    /* XBass level 0(quiet)-100(loud)       */
-    settings.mBassRange = 40;     /* XBass cutoff in Hz 10-100            */
-    settings.mSurroundDepth = 0;  /* Surround level 0(quiet)-100(heavy)   */
-    settings.mSurroundDelay = 5;  /* Surround delay in ms, usually 5-40ms */
-    settings.mLoopCount = 0;      /* Number of times to loop.  Zero prevents looping.
-                            -1 loops forever. */
-
-    // apply modplug settings
-    ModPlug::ModPlug_SetSettings(&settings);
 
     qDebug() << "Loading ModPlug module " << m_qFilename;
 
@@ -97,6 +68,14 @@ QList<QString> SoundSourceModPlug::supportedFileExtensions()
     return list;
 }
 
+void SoundSourceModPlug::configure(unsigned int bLimit, const ModPlug::ModPlug_Settings &config)
+{
+    bufferSizeLimit = bLimit;
+    settings = config;
+
+    ModPlug::ModPlug_SetSettings(&settings);
+}
+
 int SoundSourceModPlug::open() {
     if (file == NULL) {
         // an error occured
@@ -106,13 +85,13 @@ int SoundSourceModPlug::open() {
     }
 
     // temporary buffer to read samples
-    char *tmpbuf = new char[BUFFERSIZE];
+    char *tmpbuf = new char[CHUNKSIZE];
     int count = 1;
-    while ((count != 0) && (smplbuf.length() < BUFFERSIZE_LIMIT))
+    while ((count != 0) && (smplbuf.length() < bufferSizeLimit))
     {
         /* Read sample data into the buffer.  Returns the number of bytes read.  If the end
          * of the module has been reached, zero is returned. */
-        count = ModPlug::ModPlug_Read(file, tmpbuf, BUFFERSIZE);
+        count = ModPlug::ModPlug_Read(file, tmpbuf, CHUNKSIZE);
         smplbuf.append(tmpbuf, count);
     }
     delete tmpbuf;
@@ -202,11 +181,9 @@ int SoundSourceModPlug::parseHeader()
     setComment(QString(ModPlug::ModPlug_GetMessage(file)));
     setTitle(QString(ModPlug::ModPlug_GetName(file)));
     setDuration(ModPlug::ModPlug_GetLength(file) / 1000);
-    setBitrate(320); // not really, but fill in something...
+    setBitrate(8); // not really, but fill in something...
     setSampleRate(44100);
     setChannels(2);
-    // FIXME: BPM is always 0 when track is not running
-//    setBPM(ModPlug::ModPlug_GetCurrentTempo(file));
     return OK;
 }
 
@@ -217,5 +194,3 @@ inline long unsigned SoundSourceModPlug::length()
 {
     return filelength;
 }
-
-} // ns Mixxx
