@@ -27,11 +27,11 @@
                      potmeter is changed.
             midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue) : ControlObject(key)
-{
-    setRange(dMinValue,dMaxValue);
-    setStep(m_dValueRange/10.f);
-    setSmallStep(m_dValueRange/100.f);
+ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue)
+    : ControlObject(key) {
+    setRange(dMinValue, dMaxValue);
+    setStep(m_dValueRange / 10.f);
+    setSmallStep(m_dValueRange / 100.f);
 
     // These controls are deleted when this ControlPotmeter is since we set
     // their parent as this.
@@ -124,9 +124,9 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
 {
     m_dMinValue = dMinValue;
     m_dMaxValue = dMaxValue;
-    m_dValueRange = m_dMaxValue-m_dMinValue;
-    m_dValue = m_dMinValue + 0.5*m_dValueRange;
-    m_dDefaultValue = m_dValue;
+    m_dValueRange = m_dMaxValue - m_dMinValue;
+    m_dDefaultValue = m_dMinValue + 0.5 * m_dValueRange;
+    set(m_dDefaultValue);
     //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
@@ -138,7 +138,7 @@ double ControlPotmeter::getValueToWidget(double dValue)
 
 double ControlPotmeter::GetMidiValue()
 {
-    double out = (m_dValue-m_dMinValue)/m_dValueRange;
+    double out = (get()-m_dMinValue)/m_dValueRange;
     return (out < 0.5) ? out*128. : out*126. + 1.;
 }
 
@@ -150,44 +150,43 @@ double ControlPotmeter::getValueFromWidget(double dValue)
 
 void ControlPotmeter::setValueFromThread(double dValue)
 {
-    if (dValue == m_dValue) return;
-
-    if (dValue>m_dMaxValue)
-        m_dValue = m_dMaxValue;
-    else if (dValue<m_dMinValue)
-        m_dValue = m_dMinValue;
-    else
-        m_dValue = dValue;
-    emit(valueChanged(m_dValue));
+    if (dValue > m_dMaxValue) {
+        set(m_dMaxValue);
+    } else if (dValue < m_dMinValue) {
+        set(m_dMinValue);
+    } else {
+        set(dValue);
+    }
 }
 
 void ControlPotmeter::setValueFromEngine(double dValue)
 {
-    if (dValue>m_dMaxValue)
-        m_dValue = m_dMaxValue;
-    else if (dValue<m_dMinValue)
-        m_dValue = m_dMinValue;
-    else
-        m_dValue = dValue;
-    emit(valueChangedFromEngine(m_dValue));
+    if (dValue > m_dMaxValue) {
+        set(m_dMaxValue);
+    } else if (dValue < m_dMinValue) {
+        set(m_dMinValue);
+    } else {
+        set(dValue);
+    }
 }
 
 void ControlPotmeter::setValueFromMidi(MidiOpCode o, double v)
 {
     Q_UNUSED(o);
     double out = (v < 64) ? v / 128. : (v-1) / 126.;
-    m_dValue = m_dMinValue + out*m_dValueRange;
-    emit(valueChanged(m_dValue));
+    set(m_dMinValue + out * m_dValueRange);
 }
 
 void ControlPotmeter::incValue(double keypos)
 {
     if (keypos>0)
     {
-        m_dValue += m_dStep;
-        if (m_dValue > m_dMaxValue)
-            m_dValue = m_dMaxValue;
-        emit(valueChanged(m_dValue));
+        double value = get();
+        value += m_dStep;
+        if (value > m_dMaxValue) {
+            value = m_dMaxValue;
+        }
+        set(value);
 
         // incValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
         updateProxies(0);
@@ -198,10 +197,13 @@ void ControlPotmeter::decValue(double keypos)
 {
     if (keypos>0)
     {
-        m_dValue -= m_dStep;
-        if (m_dValue < m_dMinValue)
-            m_dValue = m_dMinValue;
-        emit(valueChanged(m_dValue));
+        double value = get();
+
+        value -= m_dStep;
+        if (value < m_dMinValue) {
+            value = m_dMinValue;
+        }
+        set(value);
 
         // decValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
         updateProxies(0);
@@ -212,10 +214,12 @@ void ControlPotmeter::incSmallValue(double keypos)
 {
     if (keypos>0)
     {
-        m_dValue += m_dSmallStep;
-        if (m_dValue > m_dMaxValue)
-            m_dValue = m_dMaxValue;
-        emit(valueChanged(m_dValue));
+        double value = get();
+        value += m_dSmallStep;
+        if (value > m_dMaxValue) {
+            value = m_dMaxValue;
+        }
+        set(value);
 
         // incSmallValue will be activated by assosiated _up_small or _down_small ControlObject, and thus it is safe to update all proxies.
         updateProxies(0);
@@ -226,10 +230,13 @@ void ControlPotmeter::decSmallValue(double keypos)
 {
     if (keypos>0)
     {
-        m_dValue -= m_dSmallStep;
-        if (m_dValue < m_dMinValue)
-            m_dValue = m_dMinValue;
-        emit(valueChanged(m_dValue));
+        double value = get();
+        value -= m_dSmallStep;
+        if (value < m_dMinValue) {
+            value = m_dMinValue;
+        }
+        set(value);
+
 
         // decSmallValue will be activated by assosiated _up_small or _down_small ControlObject, and thus it is safe to update all proxies.
         updateProxies(0);
@@ -240,8 +247,7 @@ void ControlPotmeter::setToZero(double keypos)
 {
     if (keypos>0)
     {
-        m_dValue = 0.0;
-        emit(valueChanged(m_dValue));
+        set(0.0);
         updateProxies(0);
     }
 }
@@ -250,8 +256,7 @@ void ControlPotmeter::setToOne(double keypos)
 {
     if (keypos>0)
     {
-        m_dValue = 1.0;
-        emit(valueChanged(m_dValue));
+        set(1.0);
         updateProxies(0);
     }
 }
@@ -260,50 +265,38 @@ void ControlPotmeter::setToMinusOne(double keypos)
 {
     if (keypos>0)
     {
-        m_dValue = -1.0;
-        emit(valueChanged(m_dValue));
+        set(-1.0);
         updateProxies(0);
     }
 }
 
 void ControlPotmeter::setToDefault(double v) {
     if (v > 0) {
-        m_dValue = m_dDefaultValue;
-        emit(valueChanged(m_dValue));
+        set(m_dDefaultValue);
         updateProxies(0);
     }
 }
 
-void ControlPotmeter::toggleValue(double keypos)
-{
-    if (keypos>0)
-    {
-        if (m_dValue > 0.0)
-        {
-            m_dValue = 0.0;
+void ControlPotmeter::toggleValue(double keypos) {
+    if (keypos>0) {
+        double value = get();
+        if (value > 0.0) {
+            set(0.0);
+        } else {
+            set(1.0);
         }
-        else
-        {
-            m_dValue = 1.0;
-        }
-        emit(valueChanged(m_dValue));
         updateProxies(0);
     }
 }
 
-void ControlPotmeter::toggleMinusValue(double keypos)
-{
-    if (keypos>0)
-    {
-        if (m_dValue > 0.0)
-        {
-            m_dValue = -1.0;
+void ControlPotmeter::toggleMinusValue(double keypos) {
+    if (keypos>0) {
+        double value = get();
+        if (value > 0.0) {
+            set(-1.0);
+        } else {
+            set(1.0);
         }
-        else
-        {
-            m_dValue = 1.0;
-        }
-        emit(valueChanged(m_dValue));
         updateProxies(0);
     }
 }

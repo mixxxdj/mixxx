@@ -38,29 +38,20 @@
             midino - number of the midi controller.
             midicontroller - pointer to the midi controller.
    -------- ------------------------------------------------------ */
-ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue) : ControlPotmeter(key)
-{
-    m_dMinValue = 0.;
-    m_dMaxValue = dMaxValue;
+ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue)
+    : ControlPotmeter(key, 0, dMaxValue) {
+    // Override ControlPotmeters default value of 0.5
+    m_dDefaultValue = 1.0;
+    set(m_dDefaultValue);
 
-    if (m_dMaxValue==1.)
-    {
+    if (m_dMaxValue == 1.) {
         m_bTwoState = false;
-
         m_fB1 = log10(2.)/maxPosition;
-    }
-    else
-    {
+    } else {
         m_bTwoState = true;
-
         m_fB1 = log10(2.)/middlePosition;
         m_fB2 = log10(dMaxValue)/(maxPosition-middlePosition);
     }
-
-    m_dValueRange = m_dMaxValue-m_dMinValue;
-
-    m_dValue = 1.0;
-    m_dDefaultValue = 1.0;
 }
 
 double ControlLogpotmeter::getValueFromWidget(double dValue)
@@ -94,10 +85,11 @@ double ControlLogpotmeter::getValueToWidget(double dValue)
     }
     else
     {
-        if (m_dValue>1.)
-            pos = log10(dValue)/m_fB2 + middlePosition;
-        else
-            pos = log10(dValue+1)/m_fB1;
+        if (dValue > 1.) {
+            pos = log10(dValue) / m_fB2 + middlePosition;
+        } else {
+            pos = log10(dValue+1) / m_fB1;
+        }
     }
     //qDebug() << "GetValueToWidget : " << pos;
     return pos;
@@ -107,7 +99,7 @@ double ControlLogpotmeter::GetMidiValue()
 {
     double midival = 0.;
 
-    midival = getValueToWidget(m_dValue);
+    midival = getValueToWidget(get());
     //    midival = 127.*(midival-m_dMinValue)/m_dValueRange
     //qDebug() << "GetMidiValue : " << midival;
     return midival;
@@ -115,9 +107,6 @@ double ControlLogpotmeter::GetMidiValue()
 
 void ControlLogpotmeter::setValueFromMidi(MidiOpCode o, double v) {
     Q_UNUSED(o);
-  //    m_dValue = m_dMinValue + (v/127.)*m_dValueRange;
-    m_dValue = getValueFromWidget(v);
-    //    qDebug() << "SetValueFromMidiValue : " << m_dValue;
-    emit(valueChanged(m_dValue));
+    set(getValueFromWidget(v));
 }
 

@@ -25,6 +25,7 @@
 #include "configobject.h"
 #include "controlobjectthread.h"
 #include "controllers/midi/midimessage.h"
+#include "controlobjectbase.h"
 
 class QWidget;
 class ConfigKey;
@@ -56,10 +57,11 @@ struct QueueObjectMidi
   *@author Tue and Ken Haste Andersen
   */
 
-class ControlObject : public QObject
-{
+class ControlObject 
+    : public QObject,
+      public ControlObjectBase<double> {
     Q_OBJECT
-public:
+  public:
     ControlObject();
     ControlObject(ConfigKey key, bool bIgnoreNops=true, bool track=false);
     ControlObject(const QString& group, const QString& item, bool bIgnoreNops=true);
@@ -87,8 +89,10 @@ public:
     bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);
     /** Return the key of the object */
     inline ConfigKey getKey() { return m_key; }
-    /** Return the value of the ControlObject */
-    inline double get() { return m_dValue; }
+    // Returns the value of the ControlObject
+    double get();
+    // Sets the ControlObject value in a threadsave way and updates associated proxy objects. 
+    void set(const double& value);
     /** Add to value. Not thread safe. */
     void add(double dValue);
     /** Subtract from value. Not thread safe. */
@@ -112,10 +116,6 @@ public:
         return m_dDefaultValue;
     }
 
-public slots:
-    /** Sets the value of the object and updates associated proxy objects. Not thread safe. */
-    void set(double dValue);
-
 signals:
     void valueChanged(double);
     void valueChangedFromEngine(double);
@@ -129,10 +129,9 @@ protected:
     virtual void setValueFromThread(double dValue);
 
 protected:
-    /** The actual value of the controller */
-    double m_dValue;
+    //TODO() ?? 
     double m_dDefaultValue;
-    /** Key of the object */
+    // Key of the object
     ConfigKey m_key;
 
 private:

@@ -15,7 +15,8 @@ double ControlLinPotmeter::getValueToWidget(double dValue) {
 }
 
 double ControlLinPotmeter::GetMidiValue() {
-    double out = (m_dValue-m_dMinValue)/m_dValueRange;
+    double out = get();
+    out = (out - m_dMinValue) / m_dValueRange;
     return math_min(out * 128, 127);
 }
 
@@ -27,8 +28,7 @@ double ControlLinPotmeter::getValueFromWidget(double dValue) {
 void ControlLinPotmeter::setValueFromMidi(MidiOpCode o, double v) {
     Q_UNUSED(o);
     double out = v / 128;
-    m_dValue = m_dMinValue + out * m_dValueRange;
-    emit(valueChanged(m_dValue));
+    set(m_dMinValue + out * m_dValueRange);
 }
 
 

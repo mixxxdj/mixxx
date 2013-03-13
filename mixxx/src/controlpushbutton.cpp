@@ -56,38 +56,43 @@ void ControlPushButton::setValueFromMidi(MidiOpCode o, double v) {
     if (m_buttonMode == POWERWINDOW && m_iNoStates == 2) {
         if (o == MIDI_NOTE_ON) {
             if (v > 0.) {
-                m_dValue = !m_dValue;
+                double value = get();
+                set(!value);
                 m_pushTimer.setSingleShot(true);
                 m_pushTimer.start(kPowerWindowTimeMillis);
             }
         } else if (o == MIDI_NOTE_OFF) {
             if (!m_pushTimer.isActive()) {
-                m_dValue = 0.0;
+                set(0.0);
             }
         }
     } else if (m_buttonMode == TOGGLE) {
         // This block makes push-buttons act as toggle buttons.
         if (m_iNoStates > 2) { //multistate button
             if (v > 0.) { //looking for NOTE_ON doesn't seem to work...
-                m_dValue++;
-                if (m_dValue >= m_iNoStates)
-                    m_dValue = 0;
+                double value = get();
+                value++;
+                if (value >= m_iNoStates) {
+                    set(0);
+                } else {
+                    set(value);
+                }
             }
         } else {
             if (o == MIDI_NOTE_ON) {
                 if (v > 0.) {
-                    m_dValue = !m_dValue;
+                    double value = get();
+                    set(!value);
                 }
             }
         }
     } else { //Not a toggle button (trigger only when button pushed)
         if (o == MIDI_NOTE_ON) {
-            m_dValue = !m_dValue;
+            double value = get();
+            set(!value);
         } else if (o == MIDI_NOTE_OFF) {
-            m_dValue = 0.0;
+            set(0.0);
         }
     }
-
-    emit(valueChanged(m_dValue));
 }
 

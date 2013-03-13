@@ -76,7 +76,11 @@ public slots:
 protected:
     void setValueFromMidi(MidiOpCode o, double v);
 
-    double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep, m_dSmallStep;
+    double m_dMaxValue;
+    double m_dMinValue;
+    double m_dValueRange;
+    double m_dStep;
+    double m_dSmallStep;
 };
 
 #endif

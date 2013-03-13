@@ -17,18 +17,18 @@
 
 #include "controlbeat.h"
 
-ControlBeat::ControlBeat(ConfigKey key, bool bMidiSimulateLatching) : ControlObject(key)
-{
-    m_bMidiSimulateLatching = bMidiSimulateLatching;
-    m_dValue = 0.;
-    time.start();
-    m_bPressed = false;
-    m_iValidPresses = 0;
+ControlBeat::ControlBeat(ConfigKey key, bool bMidiSimulateLatching)
+    : ControlObject(key),
+      m_bMidiSimulateLatching(bMidiSimulateLatching),
+      m_bPressed(false),
+      m_iValidPresses(0) {
 
+    time.start();
     // Filter buffer
     buffer = new CSAMPLE[filterLength];
-    for (int i=0; i<filterLength; i++)
+    for (int i = 0; i < filterLength; i++) {
         buffer[i] = 0.;
+    }
 }
 
 ControlBeat::~ControlBeat()
@@ -76,9 +76,7 @@ void ControlBeat::beatTap()
         for (int i = 0; i < m_iValidPresses; ++i)
             temp += buffer[i];
         temp /= m_iValidPresses;
-        m_dValue = temp;
-
-        emit(valueChanged(m_dValue));
+        set(temp);
     } else {
         m_iValidPresses = 0;
     }

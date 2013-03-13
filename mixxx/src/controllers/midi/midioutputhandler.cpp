@@ -41,8 +41,6 @@ bool MidiOutputHandler::validate() {
     if (m_cobj == NULL) {
         return false;
     }
-    connect(m_cobj, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(controlChanged(double)));
     connect(m_cobj, SIGNAL(valueChanged(double)),
             this, SLOT(controlChanged(double)));
     return true;

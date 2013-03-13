@@ -37,14 +37,14 @@ QQueue<QueueObjectThread*> ControlObject::m_sqQueueThread;
 QQueue<ControlObject*> ControlObject::m_sqQueueChanges;
 
 ControlObject::ControlObject()
-        : m_dValue(0),
+        : ControlObjectBase<double>(),
           m_dDefaultValue(0),
           m_bIgnoreNops(true) {
+    set(m_dDefaultValue);
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool track)
-        : m_dValue(0),
-          m_dDefaultValue(0),
+        : m_dDefaultValue(0),
           m_key(key),
           m_bIgnoreNops(bIgnoreNops),
           m_bTrack(track),
@@ -52,6 +52,7 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool track)
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                        Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+    set(m_dDefaultValue),
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
@@ -59,15 +60,15 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool track)
     if (m_bTrack) {
         // TODO(rryan): Make configurable.
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dDefaultValue);
     }
 }
 
 ControlObject::ControlObject(const QString& group, const QString& item, bool bIgnoreNops)
-        : m_dValue(0),
-          m_dDefaultValue(0),
+        : m_dDefaultValue(0),
           m_key(group, item),
           m_bIgnoreNops(bIgnoreNops) {
+    set(m_dDefaultValue);
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
@@ -125,14 +126,12 @@ bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
     ControlObject * pSrc = getControl(src);
     ControlObject * pDest = getControl(dest);
 
-    if (pSrc && pDest)
-    {
+    if (pSrc && pDest) {
         connect(pSrc, SIGNAL(valueChanged(double)), pDest, SLOT(set(double)));
-        connect(pSrc, SIGNAL(valueChangedFromEngine(double)), pDest, SLOT(set(double)));
         return true;
-    }
-    else
+    } else {
         return false;
+    }
 }
 
 bool ControlObject::disconnectControl(ConfigKey key)
@@ -178,7 +177,7 @@ bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
         if (obj!=pProxyNoUpdate)
         {
             // qDebug() << "upd" << this->getKey().item;
-            bUpdateSuccess = bUpdateSuccess && obj->setExtern(m_dValue);
+            bUpdateSuccess = bUpdateSuccess && obj->setExtern(get());
         }
     }
     return bUpdateSuccess;
@@ -231,60 +230,51 @@ void ControlObject::queueFromMidi(MidiOpCode o, double v)
 
 void ControlObject::setValueFromEngine(double dValue)
 {
-    m_dValue = dValue;
+    set(dValue);
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
     }
-    emit(valueChangedFromEngine(m_dValue));
 }
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v)
 {
     Q_UNUSED(o);
-    m_dValue = v;
+    set(v);
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), v);
     }
-    emit(valueChanged(m_dValue));
 }
 
 double ControlObject::GetMidiValue()
 {
-    return m_dValue;
+    return get();
 }
 
 void ControlObject::setValueFromThread(double dValue)
 {
-    if (m_bIgnoreNops && m_dValue == dValue)
-        return;
-
-    m_dValue = dValue;
+    if (m_bIgnoreNops) {
+        if (get() == dValue) {
+            return;
+        }
+    }
+    set(dValue);
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dValue);
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
     }
-    emit(valueChanged(m_dValue));
-}
-
-void ControlObject::set(double dValue)
-{
-    if (m_bIgnoreNops && m_dValue == dValue)
-        return;
-
-    setValueFromEngine(dValue);
-    m_sqQueueMutexChanges.lock();
-    m_sqQueueChanges.enqueue(this);
-    m_sqQueueMutexChanges.unlock();
 }
 
 void ControlObject::add(double dValue)
 {
-    if (m_bIgnoreNops && !dValue)
+    if (m_bIgnoreNops && !dValue) {
         return;
+    }
 
-    setValueFromEngine(m_dValue+dValue);
+    double value = get();
+
+    setValueFromEngine(value+dValue);
     m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
     m_sqQueueMutexChanges.unlock();
@@ -292,10 +282,11 @@ void ControlObject::add(double dValue)
 
 void ControlObject::sub(double dValue)
 {
-    if (m_bIgnoreNops && !dValue)
+    if (m_bIgnoreNops && !dValue) {
         return;
+    }
 
-    setValueFromEngine(m_dValue-dValue);
+    setValueFromEngine(get()-dValue);
     m_sqQueueMutexChanges.lock();
     m_sqQueueChanges.enqueue(this);
     m_sqQueueMutexChanges.unlock();
@@ -400,4 +391,13 @@ void ControlObject::sync() {
             m_sqQueueMutexChanges.unlock();
         }
     }
+}
+
+double ControlObject::get() {
+    return ControlObjectBase<double>::get();
+}
+
+void ControlObject::set(const double& value) {
+    ControlObjectBase<double>::set(value);
+    emit(valueChanged(value));
 }
