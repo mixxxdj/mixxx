@@ -291,6 +291,10 @@ void DlgPreferences::createIcons()
     m_pShoutcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pShoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
+    connect(contentsTreeWidget,
+            SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
+            this, SLOT(changePage(QTreeWidgetItem *, QTreeWidgetItem*)));
+}
 #ifdef __MODPLUG__
     m_pModplugButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pModplugButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_sampler.png"));
@@ -299,29 +303,24 @@ void DlgPreferences::createIcons()
     m_pModplugButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
 
-    connect(contentsTreeWidget,
-            SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
-            this, SLOT(changePage(QTreeWidgetItem *, QTreeWidgetItem*)));
-}
-
 void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
     if (!current)
         current = previous;
 
     if (current == m_pSoundButton) {
-        m_wsound->slotUpdate();
-        pagesWidget->setCurrentWidget(m_wsound->parentWidget()->parentWidget());
+    	m_wsound->slotUpdate();
+    	pagesWidget->setCurrentWidget(m_wsound->parentWidget()->parentWidget());
     } else if (current == m_pPlaylistButton) {
-        pagesWidget->setCurrentWidget(m_wplaylist->parentWidget()->parentWidget());
+    	pagesWidget->setCurrentWidget(m_wplaylist->parentWidget()->parentWidget());
     } else if (current == m_pControlsButton) {
-        pagesWidget->setCurrentWidget(m_wcontrols->parentWidget()->parentWidget());
+    	pagesWidget->setCurrentWidget(m_wcontrols->parentWidget()->parentWidget());
     } else if (current == m_pEqButton) {
-        pagesWidget->setCurrentWidget(m_weq->parentWidget()->parentWidget());
+    	pagesWidget->setCurrentWidget(m_weq->parentWidget()->parentWidget());
     } else if (current == m_pCrossfaderButton) {
-        pagesWidget->setCurrentWidget(m_wcrossfader->parentWidget()->parentWidget());
+    	pagesWidget->setCurrentWidget(m_wcrossfader->parentWidget()->parentWidget());
     } else if (current == m_pRecordingButton) {
-        pagesWidget->setCurrentWidget(m_wrecord->parentWidget()->parentWidget());
+    	pagesWidget->setCurrentWidget(m_wrecord->parentWidget()->parentWidget());
 
 #ifdef __VAMP__
     } else if (current == m_pAnalysersButton ) {
@@ -331,11 +330,11 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
         pagesWidget->setCurrentWidget(m_wbpm->parentWidget()->parentWidget());
 #endif
     } else if (current == m_pReplayGainButton) {
-        pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
+    	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
 
 #ifdef __VINYLCONTROL__
     } else if (current == m_pVinylControlButton) {
-        pagesWidget->setCurrentWidget(m_wvinylcontrol->parentWidget()->parentWidget());
+    	pagesWidget->setCurrentWidget(m_wvinylcontrol->parentWidget()->parentWidget());
 #else
     } else if (current == m_pVinylControlButton) {
            pagesWidget->setCurrentWidget(m_wnovinylcontrol->parentWidget()->parentWidget());

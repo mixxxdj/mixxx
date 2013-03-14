@@ -82,7 +82,7 @@ private:
     void setupControllerWidgets();
     int addPageWidget(QWidget* w);
     QList<DlgPrefController*> m_controllerWindows;
-
+    
     DlgPrefSound* m_wsound;
     DlgPrefPlaylist* m_wplaylist;
     DlgPrefNoControllers *m_wNoControllers;
@@ -113,7 +113,7 @@ private:
     QScrollArea* m_sanovinylcontrol;
     QScrollArea* m_sashoutcast;
     QScrollArea* m_sareplaygain;
-    */
+	*/
 
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pPlaylistButton;
