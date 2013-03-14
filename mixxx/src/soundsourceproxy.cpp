@@ -33,7 +33,6 @@
 #endif
 #ifdef __MODPLUG__
 #include "soundsourcemodplug.h"
-#include "dlgprefmodplug.h"
 #endif
 #include "soundsourceflac.h"
 
