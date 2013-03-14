@@ -495,7 +495,7 @@ class ModPlug(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('modplug', 'Set to 1 to enable libmbodplug based module tracker support.', 0)
+        vars.Add('modplug', 'Set to 1 to enable libmodplug based module tracker support.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
