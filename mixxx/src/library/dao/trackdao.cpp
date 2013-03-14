@@ -111,6 +111,29 @@ int TrackDAO::getTrackId(QString absoluteFilePath) {
     return libraryTrackId;
 }
 
+QList<int> TrackDAO::getTrackIds(QList<QFileInfo> files) {
+    QStringList pathList;
+    FieldEscaper escaper(m_database);
+    foreach (QFileInfo file, files) {
+        pathList << escaper.escapeString(file.absoluteFilePath());
+    }
+    QSqlQuery query(m_database);
+    query.prepare(QString("SELECT library.id FROM library INNER JOIN "
+                          "track_locations ON library.location = track_locations.id "
+                          "WHERE track_locations.location in (%1)").arg(pathList.join(",")));
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    QList<int> ids;
+    while (query.next()) {
+        ids.append(query.value(query.record().indexOf("id")).toInt());
+    }
+
+    return ids;
+}
+
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
 // not worth retrieving a whole TrackInfoObject.
 QString TrackDAO::getTrackLocation(int trackId) {
@@ -118,7 +141,9 @@ QString TrackDAO::getTrackLocation(int trackId) {
              << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     QString trackLocation = "";
-    query.prepare("SELECT track_locations.location FROM track_locations INNER JOIN library ON library.location = track_locations.id WHERE library.id=:id");
+    query.prepare("SELECT track_locations.location FROM track_locations "
+                  "INNER JOIN library ON library.location = track_locations.id "
+                  "WHERE library.id=:id");
     query.bindValue(":id", trackId);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -745,7 +770,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             if (pBeats) {
                 pTrack->setBeats(pBeats);
             } else {
-                pTrack->setBpm(bpm.toFloat());
+                pTrack->setBpm(bpm.toDouble());
             }
             pTrack->setBpmLock(has_bpm_lock);
 

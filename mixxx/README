@@ -44,8 +44,13 @@ Mixxx has the following dependencies:
 - taglib (New in 1.9!)
 - PortAudio-v19
 - portmidi
-- QT 4.5+
+- QT 4.6+
 - scons
+- protocol-buffers
+- libusb-1.0
+- libmp4v2 (optional, m4a support)
+- libfaad (optional, m4a support)
+- vamp-plugin-sdk (optional, internal version included)
 
 NOTE: If you want JACK support in Mixxx, make sure you
 compile PortAudio-v19 with JACK support first.
@@ -107,13 +112,13 @@ Mixxx-Manual.pdf or at:
 
 * CONTACT **************************************************
 To contact the lead developer, send an email to
-adam_d@users.sourceforge.net or subscribe to
+rryan@mixxx.org or subscribe to
 mixxx-devel@lists.sourceforge.net and send a message to the
 list.
 
 * QT *******************************************************
 On some platforms, Mixxx may come with a pre-built copy of
-Qt. This code is licensed under the GPL and source for this
+Qt. This code is licensed under the LGPL and source for this
 library may be obtained from:
 
     http://trolltech.com/products/qt/downloads

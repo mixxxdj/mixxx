@@ -19,13 +19,13 @@ SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* pare
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRendererFilteredSignal>();
-    addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
+    addRenderer<WaveformRenderMark>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
-    init();
+    m_initSuccess = init();
 }
 
 SoftwareWaveformWidget::~SoftwareWaveformWidget() {
@@ -38,9 +38,4 @@ void SoftwareWaveformWidget::castToQWidget() {
 void SoftwareWaveformWidget::paintEvent( QPaintEvent* event) {
     QPainter painter(this);
     draw(&painter,event);
-}
-
-void SoftwareWaveformWidget::updateVisualSamplingPerPixel() {
-    m_visualSamplePerPixel = m_zoomFactor;
-    m_visualSamplePerPixel = math_max( 1.0, m_visualSamplePerPixel);
 }

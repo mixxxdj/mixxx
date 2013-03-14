@@ -4,6 +4,7 @@
 		<name>Hercules DJ Console MK4</name>
 		<author>Dj kork</author>
 		<description>This is a complete mapping for Hercules DJ Console mk4 controller. Requires scripting.</description>
+		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3023</forums>
 	</info>
 	<controller id="Hercules DJ Control Mk4 gain v3" port="">
 		<scriptfiles>

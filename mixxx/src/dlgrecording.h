@@ -26,25 +26,24 @@ class DlgRecording : public QWidget, public Ui::DlgRecording, public virtual Lib
                  RecordingManager* pRecManager, MixxxKeyboard* pKeyboard);
     virtual ~DlgRecording();
 
-    virtual void setup(QDomNode node);
-    virtual void onSearchStarting();
-    virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
     virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);
-    void refreshBrowseModel();
     inline const QString currentSearch() { return m_proxyModel.currentSearch(); }
 
   public slots:
     void toggleRecording(bool toggle);
     void slotRecordingEnabled(bool);
     void slotBytesRecorded(long);
+    void refreshBrowseModel();
+    void slotRestoreSearch();
 
   signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group);
+    void loadTrackToPlayer(TrackPointer tio, QString group, bool play);
+    void restoreSearch(QString search);
 
   private:
 

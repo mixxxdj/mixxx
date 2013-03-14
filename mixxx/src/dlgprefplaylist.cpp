@@ -16,7 +16,9 @@
 ***************************************************************************/
 
 #include "dlgprefplaylist.h"
+#ifdef __PROMO__
 #include "library/promotracksfeature.h"
+#endif
 #include "soundsourceproxy.h"
 //#include "plugindownloader.h"
 #include <QtCore>
@@ -51,8 +53,11 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
     connect(pushButtonExtraPlugins, SIGNAL(clicked()), this, SLOT(slotExtraPlugins()));
 
-    if (!PromoTracksFeature::isSupported(config))
-    {
+    bool enablePromoGroupbox = false;
+#ifdef __PROMO__
+    enablePromoGroupbox = PromoTracksFeature::isSupported(config);
+#endif
+    if (!enablePromoGroupbox) {
         groupBoxBundledSongs->hide();
     }
 

@@ -105,18 +105,14 @@ void DlgPrefReplayGain::slotUpdate() {
     {
         EnableAnalyser->setChecked(false);
         EnableAnalyser->setEnabled(false);
-        SliderBoost->setValue(0);
         SliderBoost->setEnabled(false);
-        lcddB -> display(0);
     }
 }
 
 void DlgPrefReplayGain::slotApply() {
     m_COTInitialBoost.slotSet(SliderBoost->value());
     int iRGenabled = 0;
-    int iRGAnalyserEnabled = 0;
     if (EnableGain->isChecked()) iRGenabled = 1;
-    if (EnableAnalyser->isChecked()) iRGAnalyserEnabled = 1;
     m_COTEnabled.slotSet(iRGenabled);
 }
 

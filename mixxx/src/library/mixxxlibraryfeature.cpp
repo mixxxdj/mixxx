@@ -12,16 +12,25 @@
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "treeitem.h"
+#include "soundsourceproxy.h"
+#include "widget/wlibrary.h"
 
 MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
-                                         TrackCollection* pTrackCollection)
+                                         TrackCollection* pTrackCollection,
+                                         ConfigObject<ConfigValue>* pConfig)
         : LibraryFeature(parent),
           kMissingTitle(tr("Missing Tracks")),
-          kHiddenTitle(tr("Hidden Tracks")){
+          kHiddenTitle(tr("Hidden Tracks")),
+          m_pMissingView(NULL),
+          m_pHiddenView(NULL),
+          m_trackDao(pTrackCollection->getTrackDAO()),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
+            //has to be up here otherwise Played and TimesPlayed are not show
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
             << "library." + LIBRARYTABLE_ALBUM
@@ -66,17 +75,17 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
         pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackDirty(int)),
+    connect(&m_trackDao, SIGNAL(trackDirty(int)),
             pBaseTrackCache, SLOT(slotTrackDirty(int)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackClean(int)),
+    connect(&m_trackDao, SIGNAL(trackClean(int)),
             pBaseTrackCache, SLOT(slotTrackClean(int)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(trackChanged(int)),
+    connect(&m_trackDao, SIGNAL(trackChanged(int)),
             pBaseTrackCache, SLOT(slotTrackChanged(int)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(tracksAdded(QSet<int>)),
+    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
             pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(tracksRemoved(QSet<int>)),
+    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
             pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
-    connect(&pTrackCollection->getTrackDAO(), SIGNAL(dbTrackAdded(TrackPointer)),
+    connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
             pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
@@ -84,8 +93,6 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
-    m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
-    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
 
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
@@ -100,8 +107,18 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 
 MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
-    delete m_pMissingTableModel;
-    delete m_pHiddenTableModel;
+}
+
+void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
+                    MixxxKeyboard* pKeyboard) {
+    m_pHiddenView = new DlgHidden(pLibrary,
+                                  m_pConfig, m_pTrackCollection,
+                                  pKeyboard);
+    pLibrary->registerView(kHiddenTitle, m_pHiddenView);
+    m_pMissingView = new DlgMissing(pLibrary,
+                                  m_pConfig, m_pTrackCollection,
+                                  pKeyboard);
+    pLibrary->registerView(kMissingTitle, m_pMissingView);
 }
 
 QVariant MixxxLibraryFeature::title() {
@@ -121,11 +138,11 @@ void MixxxLibraryFeature::refreshLibraryModels()
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
     }
-    if (m_pMissingTableModel) {
-        m_pMissingTableModel->select();
+    if (m_pMissingView) {
+        m_pMissingView->onShow();
     }
-    if (m_pHiddenTableModel) {
-        m_pHiddenTableModel->select();
+    if (m_pHiddenView) {
+        m_pHiddenView->onShow();
     }
 }
 
@@ -136,52 +153,30 @@ void MixxxLibraryFeature::activate() {
 
 void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     QString itemName = index.data().toString();
+    emit(switchToView(itemName));
+}
 
-    /*if (itemName == m_childModel.stringList().at(0))
-        emit(showTrackModel(m_pMissingTableModel));
-     */
-    if (itemName == kMissingTitle) {
-        emit(showTrackModel(m_pMissingTableModel));
+bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+    if (pSource) {
+        return false;
+    } else {
+        QList<QFileInfo> files;
+        foreach (QUrl url, urls) {
+            // XXX: Possible WTF alert - Previously we thought we needed toString() here
+            // but what you actually want in any case when converting a QUrl to a file
+            // system path is QUrl::toLocalFile(). This is the second time we have
+            // flip-flopped on this, but I think toLocalFile() should work in any
+            // case. toString() absolutely does not work when you pass the result to a
+            files.append(url.toLocalFile());
+        }
+    
+        // Adds track, does not insert duplicates, handles unremoving logic.
+        QList<int> trackIds = m_trackDao.addTracks(files, true);
+        return trackIds.size() > 0;
     }
-    if (itemName == kHiddenTitle) {
-        emit(showTrackModel(m_pHiddenTableModel));
-    }
-}
-
-void MixxxLibraryFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
-}
-
-void MixxxLibraryFeature::onRightClickChild(const QPoint& globalPos,
-                                            QModelIndex index) {
-    Q_UNUSED(globalPos);
-    Q_UNUSED(index);
-}
-
-bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool MixxxLibraryFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    Q_UNUSED(index);
-    return false;
 }
 
 bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool MixxxLibraryFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                              QUrl url) {
-    Q_UNUSED(url);
-    Q_UNUSED(index);
-    return false;
-}
-
-void MixxxLibraryFeature::onLazyChildExpandation(const QModelIndex &index){
-    Q_UNUSED(index);
-    // Nothing to do because the childmodel is not of lazy nature.
+    QFileInfo file(url.toLocalFile());
+    return SoundSourceProxy::isFilenameSupported(file.fileName());
 }

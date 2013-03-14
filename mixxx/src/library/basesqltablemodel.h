@@ -54,6 +54,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     virtual void hideTracks(const QModelIndexList& indices);
+    // Returns true if the BaseSqlTableModel has been initialized. Calling data
+    // access methods on a BaseSqlTableModel which is not initialized is likely
+    // to cause instability / crashes.
+    bool initialized() const { return m_bInitialized; }
 
   protected:
     // Returns the row of trackId in this result set. If trackId is not present,
@@ -81,6 +85,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
   private slots:
     void tracksChanged(QSet<int> trackIds);
+    void trackLoaded(QString group, TrackPointer pTrack);
 
   private:
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
@@ -121,6 +126,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
 
     QString m_currentSearch;
     QString m_currentSearchFilter;
+
+    QString m_previewDeckGroup;
+    int m_iPreviewDeckTrackId;
 
     QVector<QHash<int, QVariant> > m_headerInfo;
 

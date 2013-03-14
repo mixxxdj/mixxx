@@ -95,15 +95,19 @@ class MixxxBuild(object):
         self.architecture_is_powerpc = self.machine.lower() in ['powerpc', 'powerpc64']
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
-        
+
+        # Currently this only works for Windows
         self.static_dependencies = int(Script.ARGUMENTS.get('staticlibs', 0))
+        self.msvcdebug = int(Script.ARGUMENTS.get('msvcdebug', 0))
 
         logging.info("Target Platform: %s" % self.platform)
         logging.info("Target Machine: %s" % self.machine)
         logging.info("Build: %s" % self.build)
         logging.info("Toolchain: %s" % self.toolchain)
         logging.info("Crosscompile: %s" % ("YES" if self.crosscompile else "NO"))
-        logging.info("Static dependencies: %s" % ("YES" if self.static_dependencies else "NO"))
+        if self.platform_is_windows:
+            logging.info("Static dependencies: %s" % ("YES" if self.static_dependencies else "NO"))
+            logging.info("MSVC Debug build: %s" % ("YES" if self.msvcdebug else "NO"))
 
         if self.crosscompile:
             logging.info("Host Platform: %s" % self.host_platform)

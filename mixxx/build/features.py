@@ -21,28 +21,25 @@ class HSS1394(Feature):
     def add_options(self, build, vars):
         if build.platform_is_windows or build.platform_is_osx:
             vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 1)
-        else:
-            vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        if build.platform_is_linux:
-            # TODO(XXX) Enable this when when FFADO back-end support is written into Mixxx
-            return
-            #have_ffado = conf.CheckLib('ffado', autoadd=False)
-            #if not have_ffado:
-            #    raise Exception('Could not find libffado.')
-        else:
+        if build.platform_is_windows or build.platform_is_osx:
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
-            if not conf.CheckLib(['libhss1394', 'hss1394']):
+            libs = ['libhss1394', 'hss1394']
+            if build.platform_is_windows:
+                if build.msvcdebug:
+                    libs = ['libhss1394-debug', 'hss1394-debug', 'libHSS1394_x64_Debug', 'libHSS1394_x86_Debug']
+                else:
+                    libs = ['libhss1394', 'hss1394', 'libHSS1394_x64_Release', 'libHSS1394_x86_Release']
+            if not conf.CheckLib(libs):
                 raise Exception('Did not find HSS1394 development library')
-                return
 
         build.env.Append(CPPDEFINES = '__HSS1394__')
-        
+
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('user32')
 
@@ -51,7 +48,7 @@ class HSS1394(Feature):
                 'controllers/midi/hss1394enumerator.cpp']
 
 class HID(Feature):
-    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.7.0'
+    HIDAPI_INTERNAL_PATH = '#lib/hidapi-0.8.0-pre'
     def description(self):
         return "HID controller support"
 
@@ -97,13 +94,47 @@ class HID(Feature):
         if build.platform_is_windows:
             # Requires setupapi.lib which is included by the above check for
             # setupapi.
-            sources.append("#lib/hidapi-0.7.0/windows/hid.c")
-            return sources
+            sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, "windows/hid.c"))
         elif build.platform_is_linux:
             sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'linux/hid-libusb.c'))
         elif build.platform_is_osx:
             sources.append(os.path.join(self.HIDAPI_INTERNAL_PATH, 'mac/hid.c'))
         return sources
+
+class Bulk(Feature):
+    def description(self):
+        return "USB Bulk controller support"
+
+    def enabled(self, build):
+        # For now only make Bulk default on Linux only. Turn on for all
+        # platforms after the 1.11.0 release.
+        is_default = 1 if build.platform_is_linux else 0
+        build.flags['bulk'] = util.get_flags(build.env, 'bulk', is_default)
+        if int(build.flags['bulk']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        is_default = 1 if build.platform_is_linux else 0
+        vars.Add('bulk', 'Set to 1 to enable USB Bulk controller support.', is_default)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.ParseConfig('pkg-config libusb-1.0 --silence-errors --cflags --libs')
+        if (not conf.CheckLib(['libusb-1.0', 'usb-1.0']) or
+            not conf.CheckHeader('libusb-1.0/libusb.h')):
+            raise Exception('Did not find the libusb 1.0 development library or its header file, exiting!')
+
+        build.env.Append(CPPDEFINES = '__BULK__')
+
+    def sources(self, build):
+        sources = ['controllers/bulk/bulkcontroller.cpp',
+                   'controllers/bulk/bulkenumerator.cpp']
+
+        return sources
+
 
 class Mad(Feature):
     def description(self):
@@ -273,6 +304,8 @@ class IPod(Feature):
         return ['wipodtracksmodel.cpp']
 
 class MSVCDebug(Feature):
+    # FIXME: this flag is also detected in mixxx.py at line 100 because it's needed sooner than this is processed
+    #   I don't know the best way to fix this and still have it show up with scons -h. - Sean, Aug 2012
     def description(self):
         return "MSVC Debugging"
 
@@ -291,10 +324,12 @@ class MSVCDebug(Feature):
             if not build.toolchain_is_msvs:
                 raise Exception("Error, msvcdebug flag set when toolchain is not MSVS.")
 
-            if build.static_dependencies:
-                build.env.Append(CCFLAGS = '/MTd')
-            else:
-                build.env.Append(CCFLAGS = '/MDd')
+            #if build.static_dependencies:
+            #    build.env.Append(CCFLAGS = '/MTd')
+            #else:
+            #    build.env.Append(CCFLAGS = '/MDd')
+            build.env.Append(CCFLAGS = '/MDd')
+
             build.env.Append(LINKFLAGS = '/DEBUG')
             build.env.Append(CPPDEFINES = 'DEBUGCONSOLE')
             if build.machine_is_64bit:
@@ -303,11 +338,11 @@ class MSVCDebug(Feature):
             else:
                 build.env.Append(CCFLAGS = '/ZI')
         elif build.toolchain_is_msvs:
-            if build.static_dependencies:
-                build.env.Append(CCFLAGS = '/MT')
-            else:
-                build.env.Append(CCFLAGS = '/MD')
-
+            #if build.static_dependencies:
+            #    build.env.Append(CCFLAGS = '/MT')
+            #else:
+            #    build.env.Append(CCFLAGS = '/MD')
+            build.env.Append(CCFLAGS = '/MD')
 
 class HifiEq(Feature):
     def description(self):
@@ -565,6 +600,8 @@ class AsmLib(Feature):
         return "Agner Fog\'s ASMLIB"
 
     def enabled(self, build):
+        if build.msvcdebug:
+            return False
         build.flags['asmlib'] = util.get_flags(build.env, 'asmlib', 0)
         if int(build.flags['asmlib']):
             return True
@@ -574,6 +611,9 @@ class AsmLib(Feature):
         vars.Add('asmlib','Set to 1 to enable linking against Agner Fog\'s hand-optimized asmlib, found at http://www.agner.org/optimize/', 0)
 
     def configure(self, build, conf):
+        if build.msvcdebug:
+            self.status = "Disabled (due to MSVC debug mode)"
+            return
         if not self.enabled(build):
             return
 
@@ -752,13 +792,13 @@ class Shoutcast(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-            
+
         libshout_found = conf.CheckLib(['libshout','shout'])
         build.env.Append(CPPDEFINES = '__SHOUTCAST__')
 
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
-        
+
         # libvorbisenc only exists on Linux, OSX and mingw32 on Windows. On
         # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
         # libogg are included from build.py so don't add here.
@@ -766,7 +806,7 @@ class Shoutcast(Feature):
             vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
             if not vorbisenc_found:
                 raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-        
+
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
             conf.CheckLib('ws2_32')
@@ -1041,3 +1081,28 @@ class Tuned(Feature):
                     build.env.Append(CCFLAGS = '/favor:' + build.machine)
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"
+
+class PromoTracks(Feature):
+    def description(self):
+        return "Promotional tracks feature."
+
+    def enabled(self, build):
+        build.flags['promo'] = util.get_flags(build.env, 'promo', 0)
+        if int(build.flags['promo']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('promo', 'Set to 1 to include promo tracks feature (deprecated, unused).', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES = '__PROMO__')
+
+    def sources(self, build):
+        return ['library/promotracksfeature.cpp',
+                'library/bundledsongswebview.cpp',
+                "library/featuredartistswebview.cpp",
+                ]
+

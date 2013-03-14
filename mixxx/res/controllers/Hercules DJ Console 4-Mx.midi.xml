@@ -3,6 +3,7 @@
       <name>Hercules DJ Console 4-Mx</name>
       <author>deusdiabolus</author>
       <description>Mapping for Hercules DJ Console 4-Mx</description>
+      <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
     </info>
     <controller id="DJ Console 4-Mx MIDI">
         <scriptfiles>
@@ -735,9 +736,6 @@
                 <group>[Channel1]</group>
                 <key>playposition</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.8</minimum>
                 <maximum>0.99</maximum>
                 <status>0x90</status>
@@ -749,9 +747,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -763,9 +758,6 @@
                 <group>[Channel1]</group>
                 <key>pfl</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -777,9 +769,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -791,9 +780,6 @@
                 <group>[Channel2]</group>
                 <key>playposition</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.8</minimum>
                 <maximum>0.99</maximum>
                 <status>0x90</status>
@@ -805,9 +791,6 @@
                 <group>[Channel2]</group>
                 <key>pfl</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -819,9 +802,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_1_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -833,9 +813,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_3_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -847,9 +824,6 @@
                 <group>[Channel2]</group>
                 <key>play</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -861,9 +835,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -875,9 +846,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_3_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -889,9 +857,6 @@
                 <group>[Channel2]</group>
                 <key>flanger</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -903,9 +868,6 @@
                 <group>[Channel1]</group>
                 <key>play</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -917,9 +879,6 @@
                 <group>[Channel2]</group>
                 <key>hotcue_2_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -931,9 +890,6 @@
                 <group>[Channel1]</group>
                 <key>flanger</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>
@@ -945,9 +901,6 @@
                 <group>[Channel1]</group>
                 <key>hotcue_4_enabled</key>
                 <description></description>
-                <options>
-                    <normal/>
-                </options>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
                 <status>0x90</status>

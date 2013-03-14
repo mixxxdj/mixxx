@@ -17,10 +17,11 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
           m_bRemain(false) {
     m_qsText = "";
 
-    m_pShowDurationRemaining = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
-    connect(m_pShowDurationRemaining, SIGNAL(valueChanged(double)),
+    m_pShowTrackTimeRemaining = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
+    connect(m_pShowTrackTimeRemaining, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetRemain(double)));
-    slotSetRemain(m_pShowDurationRemaining->get());
+    slotSetRemain(m_pShowTrackTimeRemaining->get());
 
     // TODO(xxx) possible unused m_pRateControl and m_pRateDirControl?
     m_pRateControl = new ControlObjectThreadWidget(
@@ -48,7 +49,7 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
 WNumberPos::~WNumberPos() {
     delete m_pTrackSampleRate;
     delete m_pTrackSamples;
-    delete m_pShowDurationRemaining;
+    delete m_pShowTrackTimeRemaining;
     delete m_pRateControl;
     delete m_pRateDirControl;
 }
@@ -58,7 +59,7 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
 
     if (leftClick) {
         setRemain(!m_bRemain);
-        m_pShowDurationRemaining->slotSet(m_bRemain ? 1.0f : 0.0f);
+        m_pShowTrackTimeRemaining->slotSet(m_bRemain ? 1.0f : 0.0f);
     }
 }
 

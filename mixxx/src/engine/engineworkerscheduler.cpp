@@ -44,6 +44,7 @@ void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
 }
 
 void EngineWorkerScheduler::workerStarted(EngineWorker* pWorker) {
+    Q_UNUSED(pWorker);
 }
 
 void EngineWorkerScheduler::workerFinished(EngineWorker* pWorker) {

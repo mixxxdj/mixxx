@@ -84,6 +84,7 @@
       <control> 
         <status>0x90</status>
         <midino>0x34</midino>
+        <group>[Flanger]</group>
         <key>DM2.shift</key>
         <options>
           <script-binding/>
@@ -92,6 +93,7 @@
       <control>
         <status>0xb0</status>
         <midino>0x05</midino>
+        <group>[Flanger]</group>
         <key>DM2.delay_period</key>
         <options>
           <script-binding/>

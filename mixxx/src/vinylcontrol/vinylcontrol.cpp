@@ -49,9 +49,6 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     //RIAA correction
     iRIAACorrection =  m_pConfig->getValueString(ConfigKey("[VinylControl]","InputRIAACorrection")).toInt();
 
-    //Vinyl control mode
-    iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toInt();
-
     //Enabled or not -- load from saved value in case vinyl control is restarting 
     bIsEnabled = wantenabled->get();
 
@@ -87,6 +84,26 @@ VinylControl::~VinylControl()
         //be enabled
         wantenabled->slotSet(true);
     }
+
+    delete playPos;
+    delete trackSamples;
+    delete trackSampleRate;
+    delete vinylSeek;
+    delete controlScratch;
+    delete rateSlider;
+    delete playButton;
+    delete reverseButton;
+    delete duration;
+    delete mode;
+    delete enabled;
+    delete wantenabled;
+    delete cueing;
+    delete scratching;
+    delete rateRange;
+    delete vinylStatus;
+    delete rateDir;
+    delete loopEnabled;
+    delete signalenabled;
 }
 
 float VinylControl::getSpeed()

@@ -174,6 +174,22 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
 }
 
 template <class ValueType>
+bool ConfigObject<ValueType>::exists(ConfigKey k)
+{
+    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
+    ConfigOption<ValueType>* it;
+    while (iterator.hasNext())
+    {
+        it = iterator.next();
+        if (it->key->group == k.group && it->key->item == k.item)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+template <class ValueType>
 ConfigKey *ConfigObject<ValueType>::get(ValueType v)
 {
     QListIterator<ConfigOption<ValueType>* > iterator(m_list);
@@ -238,7 +254,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
             line = text.readLine().trimmed();
 
             if (line.length() != 0)
-			{
+            {
                 if (line.startsWith("[") && line.endsWith("]"))
                 {
                     group++;
@@ -256,7 +272,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     ValueType m(val);
                     set(k, m);
                 }
-			}
+            }
         }
         configfile.close();
     }
@@ -322,8 +338,7 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getResourcePath()
-{
+QString ConfigObject<ValueType>::getResourcePath() {
     //
     // Find the config path, path where midi configuration files, skins etc. are stored.
     // On Unix the search order is whats listed in mixxx.cfg, then UNIX_SHARE_PATH
@@ -404,7 +419,7 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
     }
 }
 
-template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath()
+template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() const
 {
     QFileInfo configFileInfo(m_filename);
     return configFileInfo.absoluteDir().absolutePath();

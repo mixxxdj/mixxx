@@ -4,16 +4,23 @@
 
 #include <QDebug>
 
-PropertyBinder::PropertyBinder(QWidget* pWidget, QString propertyName, ControlObject* pControl)
+PropertyBinder::PropertyBinder(QWidget* pWidget, QString propertyName,
+        ControlObject* pControl, ConfigObject<ConfigValue>* pConfig)
         : QObject(pWidget),
           m_propertyName(propertyName),
           m_pWidget(pWidget),
-          m_pControlThreadMain(new ControlObjectThreadMain(pControl)) {
+          m_pControlThreadMain(new ControlObjectThreadMain(pControl)),
+          m_pConfig(pConfig) {
     connect(m_pControlThreadMain, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
-    connect(this, SIGNAL(setWidgetProperty(const char*, const QVariant&)),
-            pWidget, SLOT(setProperty(const char*, const QVariant&)));
-    slotValueChanged(m_pControlThreadMain->get());
+    bool ok;
+    double dValue = m_pConfig->getValueString(pControl->getKey()).toDouble(&ok);
+    if (ok) {
+        pControl->set(dValue);
+    } else {
+        dValue = m_pControlThreadMain->get();
+    }
+    slotValueChanged(dValue);
 }
 
 PropertyBinder::~PropertyBinder() {
@@ -27,4 +34,6 @@ void PropertyBinder::slotValueChanged(double dValue) {
     if (!m_pWidget->setProperty(propertyAscii.constData(), value)) {
         qDebug() << "Setting property" << m_propertyName << "to widget failed. Value:" << value;
     }
+    m_pConfig->set(m_pControlThreadMain->getControlObject()->getKey(),
+            QString::number(dValue));
 }

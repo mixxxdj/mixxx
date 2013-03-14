@@ -21,13 +21,6 @@ MidiController::~MidiController() {
     // destructors.
 }
 
-QString MidiController::defaultPreset() {
-    QString name = getName();
-    return USER_PRESETS_PATH.append(name.right(name.size()
-            -name.indexOf(" ")-1).replace(" ", "_")
-            + presetExtension());
-}
-
 QString MidiController::presetExtension() {
     return MIDI_PRESET_EXTENSION;
 }
@@ -58,6 +51,7 @@ void MidiController::visit(const HidControllerPreset* preset) {
 
 bool MidiController::matchPreset(const PresetInfo& preset) {
     // Product info mapping not implemented for MIDI devices yet
+    Q_UNUSED(preset);
     return false;
 }
 
@@ -66,9 +60,9 @@ bool MidiController::savePreset(const QString fileName) const {
     return handler.save(m_preset, getName(), fileName);
 }
 
-void MidiController::applyPreset(QString resourcePath) {
+void MidiController::applyPreset(QList<QString> scriptPaths) {
     // Handles the engine
-    Controller::applyPreset(resourcePath);
+    Controller::applyPreset(scriptPaths);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -136,7 +130,7 @@ void MidiController::createOutputHandlers() {
                     "file (.xml)\n"));
                 detailsText += QString(tr("* Make sure the MixxxControl you're trying to use actually exists."
                     " Visit this wiki page for a complete list:"));
-                detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format#ui_midi_controls_and_names");
+                detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/mixxxcontrols");
                 props->setDetails(detailsText);
                 ErrorDialogHandler::instance()->requestErrorDialog(props);
             }
@@ -347,7 +341,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
         m_st.enable(p);
     }
 
-    ControlObject::sync();
     if (opCode == MIDI_PITCH_BEND) {
         // Absolute value is calculated above on Pitch messages (-1..1)
         if (options.soft_takeover) {
@@ -365,6 +358,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
         }
         p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
     }
+
+    // If we got here then we queued a message for the control system. In the
+    // interest of quickly processing this, we request a sync. Since we are
+    // running in the controller thread, we broadcast the signal which is
+    // proxied to the main thread and handled there.
+    emit(syncControlSystem());
 }
 
 double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {

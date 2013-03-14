@@ -114,6 +114,7 @@ template <class ValueType> class ConfigObject {
     ~ConfigObject();
     ConfigOption<ValueType> *set(ConfigKey, ValueType);
     ConfigOption<ValueType> *get(ConfigKey key);
+    bool exists(ConfigKey key);
     ConfigKey *get(ValueType v);
     QString getValueString(ConfigKey k);
     QString getValueString(ConfigKey k, const QString& default_string);
@@ -122,7 +123,7 @@ template <class ValueType> class ConfigObject {
     void reopen(QString file);
     void Save();
     QString getResourcePath();
-    QString getSettingsPath();
+    QString getSettingsPath() const;
 
   protected:
     QList< ConfigOption<ValueType>* > m_list;

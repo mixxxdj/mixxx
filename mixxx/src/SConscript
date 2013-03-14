@@ -9,7 +9,7 @@ import subprocess
 import time
 import SCons.Script as SCons
 
-from build import util
+from build import util, depends
 
 mixxx_version = util.get_mixxx_version()
 branch_name = util.get_bzr_branch_name()
@@ -31,6 +31,31 @@ flags = build.flags
 #=========================
 if build.platform_is_windows:
         dist_dir = 'dist%s' % build.bitwidth
+        # Populate the stuff that changes in the .rc file
+        fo = open(File('#src/mixxx.rc.include').abspath, "w")
+
+        str_list = []
+        str_list.append('#define VER_FILEVERSION             ')
+        # Remove anything after ~ or - in the version number and replace the dots with commas
+        str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
+        str_list.append(','+str(bazaar_revision)+'\n')
+
+        str_list.append('#define VER_PRODUCTVERSION          ')
+        str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
+        str_list.append(','+str(bazaar_revision)+'\n')
+
+        import datetime
+        now = datetime.datetime.now()
+        str_list.append('#define CUR_YEAR                    "'+str(now.year)+'"\n\n')
+
+        if build.msvcdebug:
+            str_list.append('#define DEBUG                       1\n')
+        if 'pre' in mixxx_version.lower():
+            str_list.append('#define PRERELEASE                  1\n')
+
+        fo.write(''.join(str_list))
+        fo.close()
+
         mixxx_bin = env.Program('mixxx',
                             [sources, env.RES('#src/mixxx.rc')],
                             LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
@@ -76,6 +101,8 @@ def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
         # In release mode, we only use the version.
         if build.build_is_release:
                 return mixxx_version
+        elif branch_name.startswith('release-'):
+                return '%s-bzr%s' % (mixxx_version, bazaar_revision)
         # In a debug build, include the branch name and revision number
         return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
@@ -85,7 +112,7 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision,
         if build.build_is_release:
                 return "%s-%s" % (mixxx_version, ubuntu_version)
         elif branch_name.startswith('release-'):
-                return "%s-%s~bzr%s" % (mixxx_version, ubuntu_version, bazaar_revision)
+                return "%s-bzr%s" % (mixxx_version, bazaar_revision)
         # In a debug build, include the branch name and revision number
         return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
                                    branch_name, bazaar_revision)
@@ -94,6 +121,8 @@ def windows_construct_version(build, mixxx_version, branch_name, bazaar_revision
         # In release mode, we only use the version
         if build.build_is_release:
                 return mixxx_version
+        elif branch_name.startswith('release-'):
+                return '%s-bzr%s' % (mixxx_version, bazaar_revision)
         # In a debug build, include the branch name and revision number
         return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
 
@@ -171,11 +200,39 @@ elif build.crosscompile and build.platform_is_osx:
 else:
         dll_files = list() # dll_files += on the next line required dll_files to exist
 
-dll_files += Split("""$QTDIR/lib/QtWebKit4.dll""")
+if build.msvcdebug:
+    dll_files += Split("""$QTDIR/lib/QtWebKitd4.dll""")
+else:
+    dll_files += Split("""$QTDIR/lib/QtWebKit4.dll""")
 
-# if not int(build.flags['staticlibs']):
-dll_files += Split("""$QTDIR/lib/QtCore4.dll $QTDIR/lib/QtGui4.dll $QTDIR/lib/QtNetwork4.dll $QTDIR/lib/QtOpenGL4.dll $QTDIR/lib/QtSql4.dll $QTDIR/lib/QtXml4.dll $QTDIR/lib/QtXmlPatterns4.dll $QTDIR/lib/QtSvg4.dll  $QTDIR/lib/phonon4.dll $QTDIR/lib/QtScript4.dll""")
+if build.msvcdebug:
+    dll_files += Split("""$QTDIR/lib/QtCored4.dll
+                          $QTDIR/lib/QtGuid4.dll
+                          $QTDIR/lib/QtNetworkd4.dll
+                          $QTDIR/lib/QtOpenGLd4.dll
+                          $QTDIR/lib/QtSqld4.dll
+                          $QTDIR/lib/QtXmld4.dll
+                          $QTDIR/lib/QtXmlPatternsd4.dll
+                          $QTDIR/lib/QtSvgd4.dll
+                          $QTDIR/lib/phonond4.dll
+                          $QTDIR/lib/QtScriptd4.dll""")
+else:
+    # if not int(build.flags['staticlibs']):
+    dll_files += Split("""$QTDIR/lib/QtCore4.dll
+                          $QTDIR/lib/QtGui4.dll
+                          $QTDIR/lib/QtNetwork4.dll
+                          $QTDIR/lib/QtOpenGL4.dll
+                          $QTDIR/lib/QtSql4.dll
+                          $QTDIR/lib/QtXml4.dll
+                          $QTDIR/lib/QtXmlPatterns4.dll
+                          $QTDIR/lib/QtSvg4.dll
+                          $QTDIR/lib/phonon4.dll
+                          $QTDIR/lib/QtScript4.dll""")
+
 if int(flags.get('sqlitedll', 0)):
+    if build.msvcdebug:
+        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
+    else:
         sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
 if build.platform_is_linux or build.platform_is_bsd:
@@ -274,7 +331,15 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         for tfile in translation_files:
                 resource_map[str(tfile)] = 'translations'
 
+        qtdir = build.env['QTDIR']
+        qt_frameworks = depends.Qt.find_framework_path(qtdir)
+        if not qt_frameworks:
+                raise Exception('Could not find frameworks in Qt directory: %s' % qtdir)
+        #qt_menu.nib for Cocoa Qt 4.7+
+        menu_nib = os.path.join(qt_frameworks, 'QtGui.framework',
+                                'Resources', 'qt_menu.nib')
         otool_local_paths = [os.path.expanduser("~/Library/Frameworks"),
+                             qt_frameworks,
                              "/Library/Frameworks",
                              "/Network/Library/Frameworks",
                              "/usr/local/lib",
@@ -289,21 +354,24 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
 
         qtplugindir = SCons.ARGUMENTS.get('qtplugindir', None)
         if not qtplugindir:
-                qtplugindir = '/Developer/Applications/Qt/'
+                #qtplugindir = '/Developer/Applications/Qt/'
+                qtplugindir = qtdir
+        sources = [mixxx_bin,
+                   '#res/osx/application.icns',
+                   Dir('#res/skins/'),
+                   File('#res/schema.xml'),
+                   Dir('#res/controllers/'),
+                   translation_files,
+                   Dir('#res/keyboard/'),
+                   Dir('#res/ladspa_presets'),
+                   Dir('#res/doc/'),
+                   Dir('#res/promo/'),
+                   Dir(menu_nib),
+                   File("#README"),
+                   File("#LICENSE")]
         bundle = env.App(
                 "Mixxx",
-                [mixxx_bin, '#res/osx/application.icns',
-                 Dir('#res/skins/'),
-                 File('#res/schema.xml'),
-                 Dir('#res/controllers/'),
-                 translation_files,
-                 Dir('#res/keyboard/'),
-                 Dir('#res/ladspa_presets'),
-                 Dir('#res/doc/'),
-                 Dir('#res/promo/'),
-                 Dir('/Library/Frameworks/QtGui.framework/Resources/qt_menu.nib'),  #qt_menu.nib for Cocoa Qt 4.7+
-                 File("#README"),
-                 File("#LICENSE")],
+                sources,
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))
                 QT_HACK = [(p_tgt_dir, os.path.join(qtplugindir, "plugins", p_tgt_dir, p)) for p_tgt_dir, p in qt_plugins], #sigh :(
@@ -315,10 +383,25 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
-                OTOOL_SYSTEM_PATHS=otool_system_paths
+                OTOOL_SYSTEM_PATHS=otool_system_paths,
+                FOR_APP_STORE=True,
                 )
         #env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
         env.Alias('bundle', bundle)
+
+        codesign_identity = SCons.ARGUMENTS.get('osx_codesign_identity', None)
+        codesign_keychain = SCons.ARGUMENTS.get('osx_codesign_keychain', None)
+        codesign_keychain_password = SCons.ARGUMENTS.get('osx_codesign_keychain_password', None)
+        # CodeSign needs to take sources for it source so that there is an input
+        # that changse. Otherwise SCons will think the CodeSign target is up to
+        # date and not run it.
+        codesign = env.CodeSign(
+                'Mixxx',
+                sources,
+                CODESIGN_IDENTITY=codesign_identity,
+                CODESIGN_KEYCHAIN=codesign_keychain,
+                CODESIGN_KEYCHAIN_PASSWORD=codesign_keychain_password)
+        env.Alias('sign', codesign)
 
         package_name = 'mixxx'
         package_version = osx_construct_version(build, mixxx_version, branch_name, bazaar_revision)
@@ -432,9 +515,24 @@ def BuildRelease(target, source, env):
     #if (raw_input("Go ahead and build installer (yes/[no])? ") == "yes"):
     if True:
         if build.toolchain_is_msvs:
-            mssdk_path = util.get_mssdk_path()
-            print "Detected MSSDK path:", mssdk_path
-            print "Extracting Visual C++ DLL installer..."
+            redist_file = 'vcredist_%s.exe' % arch
+            print "Searching for the Visual C++ DLL installer package",redist_file
+
+            # First check one level above the winlib directory
+            redist_path = '%s' % os.path.join(os.path.dirname(mixxx_winlib_path), redist_file)
+            print "   ",redist_path,
+            if not os.path.isfile(redist_path):
+                print "not found"
+                # If it's not there, look in the MS SDK directory
+                mssdk_path = util.get_mssdk_path()
+                #print "   Detected MS SDK path:", mssdk_path
+                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
+                print "   ",redist_path,
+                if not os.path.isfile(redist_path):
+                    print "not found"
+                    raise Exception('Cannot find the Visual C++ DLL installer.')
+
+            print "Extracting needed files..."
             szip_path = None
             try:
                 szip_directory = win32_find_program_via_registry("7-Zip")
@@ -443,19 +541,16 @@ def BuildRelease(target, source, env):
                 pass
             if szip_path is None:
                 print "Cannot find 7-Zip. Do you have it installed?"
+                raise Exception('Cannot find 7-Zip. Do you have it installed?')
             else:
-                redist_file = 'vcredist_%s.exe' % arch
-                redist_path = '%s' % os.path.join(mssdk_path,'Redist','VC',redist_file)
                 output_path = '%s' % os.path.join(mixxx_winlib_path,'VC_redist')
-                args = [szip_path,"x","-y","-ir!vc_red.*",redist_path,"-o"+output_path]
+                args = [szip_path,"x","-y","-ir!vc_red.*","-ir!*.msp",redist_path,"-o"+output_path]
                 print "Executing:", ' '.join(args)
                 proc = subprocess.Popen(args)
                 data, err = proc.communicate()
                 rv = proc.wait()
                 if rv:
-                    print "====="
-                    print err
-                    print "====="
+                    raise Exception('There was a problem extracting the installer files. See above for details.')
         print "Now building installation package..."
         command_flag = None
         nsis_path = None
@@ -595,6 +690,11 @@ def BuildUbuntuPackage(target, source, env):
                 print
                 os.system('cp --dereference -r post-export-patch/* %s' % build_dir)
 
+        # Write a build.h to the exported directory. Later code looks for a
+        # build.h in the mixxx/ directory and moves it to build.build_dir/
+        # instead of generating.
+        util.write_build_header(os.path.join(build_dir, 'build.h'))
+
         os.chdir('ubuntu')
 
         # Tar the source code
@@ -658,8 +758,11 @@ def BuildUbuntuPackage(target, source, env):
                         result_path = "/var/cache/pbuilder/%s-%s/result/" % (ubuntu_distro, arch)
                         result_filename = "%s_%s_%s.deb" % (package_name, package_version, arch)
                         result_file = os.path.join(result_path, result_filename)
+                        # Since we might build for multiple distros we need to
+                        # insert the distro name into the filename.
+                        dest_filename = "%s_%s_%s_%s.deb" % (package_name, package_version, ubuntu_distro, arch)
                         # ubuntu/ is one folder up
-                        dest_file = os.path.join('..', result_filename)
+                        dest_file = os.path.join('..', dest_filename)
 
                         if result == 0 and os.path.exists(result_file):
                                 print "Done! Package and tarballs are in %s" % result_path

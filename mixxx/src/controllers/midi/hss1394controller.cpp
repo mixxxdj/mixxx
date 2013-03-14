@@ -164,7 +164,7 @@ int Hss1394Controller::close() {
 }
 
 void Hss1394Controller::send(unsigned int word) {
-    unsigned char data[2];
+    unsigned char data[3];
     data[0] = word & 0xFF;
     data[1] = (word >> 8) & 0xFF;
     data[2] = (word >> 16) & 0xFF;

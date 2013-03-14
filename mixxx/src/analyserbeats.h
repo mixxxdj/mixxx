@@ -16,8 +16,8 @@ class AnalyserBeats: public Analyser {
   public:
     AnalyserBeats(ConfigObject<ConfigValue> *_config);
     virtual ~AnalyserBeats();
-
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
+    bool loadStored(TrackPointer tio) const;
     void process(const CSAMPLE *pIn, const int iLen);
     void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
@@ -29,7 +29,6 @@ class AnalyserBeats: public Analyser {
     VampAnalyser* m_pVamp;
     QString m_pluginId;
     bool m_bShouldAnalyze;
-    bool m_bPreferencesBeatDetectionEnabled;
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesFixedTempo;
     bool m_bPreferencesOffsetCorrection;

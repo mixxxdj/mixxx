@@ -69,6 +69,8 @@ PresetInfo::PresetInfo(const QString preset_path) {
             QString protocol = product.attribute("protocol","");
             if (protocol=="hid") {
                 products.append(parseHIDProduct(product));
+            } else if (protocol=="bulk") {
+                products.append(parseBulkProduct(product));
             } else if (protocol=="midi") {
                 qDebug("MIDI product info parsing not yet implemented");
                 //products.append(parseMIDIProduct(product);
@@ -81,6 +83,18 @@ PresetInfo::PresetInfo(const QString preset_path) {
             product = product.nextSiblingElement("product");
         }
     }
+}
+
+QHash<QString,QString> PresetInfo::parseBulkProduct(const QDomElement& element) const {
+    // <product protocol="bulk" vendor_id="0x06f8" product_id="0x0b105" in_epaddr="0x82" out_epaddr="0x03">
+
+    QHash<QString,QString> product;
+    product.insert("protocol", element.attribute("protocol",""));
+    product.insert("vendor_id", element.attribute("vendor_id",""));
+    product.insert("product_id", element.attribute("product_id",""));
+    product.insert("in_epaddr", element.attribute("in_epaddr",""));
+    product.insert("out_epaddr", element.attribute("out_epaddr",""));
+    return product;
 }
 
 QHash<QString,QString> PresetInfo::parseHIDProduct(const QDomElement& element) const {
@@ -118,16 +132,18 @@ QHash<QString,QString> PresetInfo::parseOSCProduct(const QDomElement& element) c
 }
 
 PresetInfoEnumerator::PresetInfoEnumerator(ConfigObject<ConfigValue> *pConfig)
-    : m_pConfig(pConfig) {
+        : m_pConfig(pConfig) {
 
     QString configPath = m_pConfig->getResourcePath();
     controllerDirPaths.append(configPath.append("controllers/"));
-    controllerDirPaths.append(LOCAL_PRESETS_PATH);
+    QString settingsPath = m_pConfig->getSettingsPath();
+    controllerDirPaths.append(settingsPath.append("presets/"));
 
     // Static list of supported default extensions, sorted by popularity
     fileExtensions.append(QString(".midi.xml"));
     fileExtensions.append(QString(".cntrlr.xml"));
     fileExtensions.append(QString(".hid.xml"));
+    fileExtensions.append(QString(".bulk.xml"));
     fileExtensions.append(QString(".osc.xml"));
 
     loadSupportedPresets();
@@ -159,20 +175,6 @@ bool PresetInfoEnumerator::hasPresetInfo(const QString path) {
             return true;
     }
     return false;
-}
-
-PresetInfo PresetInfoEnumerator::getPresetInfo(const QString extension, const QString name) {
-    QList<PresetInfo> extension_presets;
-    if (!isValidExtension(extension))
-        return PresetInfo();
-
-    foreach (QString extension, presetsByExtension.keys()) {
-        QMap <QString,PresetInfo> presets = presetsByExtension[extension];
-        foreach (PresetInfo preset, presets.values())
-            if (name == preset.getName())
-                return preset;
-    }
-    return PresetInfo();
 }
 
 PresetInfo PresetInfoEnumerator::getPresetInfo(const QString path) {

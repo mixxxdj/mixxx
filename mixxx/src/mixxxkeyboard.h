@@ -40,6 +40,8 @@ public:
     /** Event filter */
     bool eventFilter(QObject *obj, QEvent *e);
 
+    // Set the keyboard config object. MixxxKeyboard does NOT take ownership of
+    // pKbdConfigObject.
     void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 

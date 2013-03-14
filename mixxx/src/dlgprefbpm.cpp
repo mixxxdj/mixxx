@@ -159,11 +159,13 @@ void DlgPrefBpm::slotSetAboveRange(int) {
 
 void DlgPrefBpm::slotSetBpmRangeStart(int begin)
 {
+    Q_UNUSED(begin);
     //config->set(ConfigKey("[BPM]","BPMRangeStart"),ConfigValue(begin));
 }
 
 void DlgPrefBpm::slotSetBpmRangeEnd(int end)
 {
+    Q_UNUSED(end);
     //config->set(ConfigKey("[BPM]","BPMRangeEnd"),ConfigValue(end));
 }
 

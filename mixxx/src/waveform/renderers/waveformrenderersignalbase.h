@@ -12,10 +12,10 @@ public:
     explicit WaveformRendererSignalBase( WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererSignalBase();
 
-    virtual void init();
+    virtual bool init();
     virtual void setup(const QDomNode &node);
 
-    virtual void onInit() = 0;
+    virtual bool onInit() {return true;}
     virtual void onSetup(const QDomNode &node) = 0;
 
 protected:
@@ -30,7 +30,7 @@ protected:
     ControlObjectThreadMain* m_midKillControlObject;
     ControlObjectThreadMain* m_highKillControlObject;
 
-    WaveformSignalColors m_colors;
+    const WaveformSignalColors* m_pColors;
     QColor m_axesColor;
     Qt::Alignment m_alignment;
 };

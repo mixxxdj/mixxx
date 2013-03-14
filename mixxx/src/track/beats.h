@@ -11,6 +11,7 @@ typedef QSharedPointer<Beats> BeatsPointer;
 
 class BeatIterator {
   public:
+    virtual ~BeatIterator() {}
     virtual bool hasNext() const = 0;
     virtual double next() = 0;
 };

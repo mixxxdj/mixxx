@@ -12,7 +12,6 @@ class PrepareLibraryTableModel : public LibraryTableModel
     virtual ~PrepareLibraryTableModel();
 
     virtual void search(const QString& searchText);
-    virtual bool isColumnInternal(int column);
 
   public slots:
     void showRecentSongs();

@@ -90,10 +90,15 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
             this, SLOT(addPath(AudioInput)));
     connect(m_pSoundManager, SIGNAL(inputRegistered(AudioInput, AudioDestination*)),
             this, SLOT(loadSettings()));
+
+    m_pMasterUnderflowCount =
+                    new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "underflow_count")));
+    connect(m_pMasterUnderflowCount, SIGNAL(valueChanged(double)),
+            this, SLOT(bufferUnderflow(double)));
 }
 
 DlgPrefSound::~DlgPrefSound() {
-
+    delete m_pMasterUnderflowCount;
 }
 
 /**
@@ -373,7 +378,8 @@ void DlgPrefSound::updateLatencies(int sampleRateIndex) {
     // find the first that gives us a latency >= 1 ms -- bkgood
     // no div-by-0 in the next line because we don't allow srates of 0 in our
     // srate list when we construct it in the ctor -- bkgood
-    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
+    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
+    }
     latencyComboBox->clear();
     for (unsigned int i = 0; i < SoundManagerConfig::kMaxLatency; ++i) {
         float latency = framesPerBuffer / sampleRate * 1000;
@@ -438,4 +444,9 @@ void DlgPrefSound::resetClicked() {
     newConfig.loadDefaults(m_pSoundManager, SoundManagerConfig::ALL);
     loadSettings(newConfig);
     settingChanged(); // force the apply button to enable
+}
+
+void DlgPrefSound::bufferUnderflow(double count) {
+    bufferUnderflowCount->setText(QString::number(count));
+    update();
 }

@@ -2,7 +2,6 @@
 #define WAVEFORMRENDERERENDOFTRACK_H
 
 #include <QColor>
-#include <QPixmap>
 #include <QTime>
 
 #include "util.h"
@@ -18,7 +17,7 @@ public:
             WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererEndOfTrack();
 
-    virtual void init();
+    virtual bool init();
     virtual void setup(const QDomNode& node);
     virtual void onResize();
     virtual void draw(QPainter* painter, QPaintEvent* event);

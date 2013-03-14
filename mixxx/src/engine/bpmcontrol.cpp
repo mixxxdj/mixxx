@@ -1,11 +1,15 @@
 // bpmcontrol.cpp
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QStringList>
+
 #include "controlobject.h"
 #include "controlpushbutton.h"
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
+#include "engine/enginechannel.h"
+#include "engine/enginemaster.h"
 
 const int minBpm = 30;
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
@@ -15,6 +19,8 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_tapFilter(this, filterLength, maxInterval) {
+    m_pNumDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
+
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
@@ -39,6 +45,13 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotRateChanged(double)),
             Qt::DirectConnection);
+
+    m_pLoopEnabled = ControlObject::getControl(
+        ConfigKey(_group, "loop_enabled"));
+    m_pLoopStartPosition = ControlObject::getControl(
+        ConfigKey(_group, "loop_start_position"));
+    m_pLoopEndPosition = ControlObject::getControl(
+        ConfigKey(_group, "loop_end_position"));
 
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
@@ -96,6 +109,10 @@ double BpmControl::getBpm() {
     return m_pEngineBpm->get();
 }
 
+double BpmControl::getFileBpm() {
+    return m_pFileBpm->get();
+}
+
 void BpmControl::slotFileBpmChanged(double bpm) {
     //qDebug() << this << "slotFileBpmChanged" << bpm;
     // Adjust the file-bpm with the current setting of the rate to get the
@@ -140,13 +157,15 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
 void BpmControl::slotControlBeatSyncPhase(double v) {
     if (!v)
         return;
-    syncPhase();
+    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    syncPhase(pOtherEngineBuffer);
 }
 
 void BpmControl::slotControlBeatSyncTempo(double v) {
     if (!v)
         return;
-    syncTempo();
+    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    syncTempo(pOtherEngineBuffer);
 }
 
 void BpmControl::slotControlBeatSync(double v) {
@@ -155,27 +174,25 @@ void BpmControl::slotControlBeatSync(double v) {
 
     // If the player is playing, and adjusting its tempo succeeded, adjust its
     // phase so that it plays in sync.
-    if (syncTempo() && m_pPlayButton->get() > 0) {
-        syncPhase();
+    EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+    if (syncTempo(pOtherEngineBuffer) && m_pPlayButton->get() > 0) {
+        syncPhase(pOtherEngineBuffer);
     }
 }
 
-bool BpmControl::syncTempo() {
-    EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
-
-    if(!pOtherEngineBuffer)
+bool BpmControl::syncTempo(EngineBuffer* pOtherEngineBuffer) {
+    if (!pOtherEngineBuffer) {
         return false;
+    }
 
     double fThisBpm  = m_pEngineBpm->get();
-    //double fThisRate = m_pRateDir->get() * m_pRateSlider->get() * m_pRateRange->get();
     double fThisFileBpm = m_pFileBpm->get();
 
     double fOtherBpm = pOtherEngineBuffer->getBpm();
-    double fOtherRate = pOtherEngineBuffer->getRate();
-    double fOtherFileBpm = fOtherBpm / (1.0 + fOtherRate);
+    double fOtherFileBpm = pOtherEngineBuffer->getFileBpm();
 
-    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm << "rate" << fThisRate;
-    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm << "rate" << fOtherRate;
+    //qDebug() << "this" << "bpm" << fThisBpm << "filebpm" << fThisFileBpm;
+    //qDebug() << "other" << "bpm" << fOtherBpm << "filebpm" << fOtherFileBpm;
 
     ////////////////////////////////////////////////////////////////////////////
     // Rough proof of how syncing works -- rryan 3/2011
@@ -248,8 +265,48 @@ bool BpmControl::syncTempo() {
     return false;
 }
 
-bool BpmControl::syncPhase() {
-    EngineBuffer* pOtherEngineBuffer = getOtherEngineBuffer();
+EngineBuffer* BpmControl::pickSyncTarget() {
+    EngineMaster* pMaster = getEngineMaster();
+    if (!pMaster) {
+        return NULL;
+    }
+    QString group = getGroup();
+    QStringList deckGroups;
+    EngineBuffer* pFirstNonplayingDeck = NULL;
+
+    for (int i = 0; i < m_pNumDecks->get(); ++i) {
+        // TODO(XXX) format from PlayerManager
+        QString deckGroup = QString("[Channel%1]").arg(i+1);
+        if (deckGroup == group) {
+            continue;
+        }
+        EngineChannel* pChannel = pMaster->getChannel(deckGroup);
+        // Only consider channels that have a track loaded and are in the master
+        // mix.
+        if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
+            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
+            if (pBuffer && pBuffer->getBpm() > 0) {
+                // If the deck is playing then go with it immediately.
+                if (fabs(pBuffer->getRate()) > 0) {
+                    return pBuffer;
+                }
+                // Otherwise hold out for a deck that might be playing but
+                // remember the first deck that matched our criteria.
+                if (pFirstNonplayingDeck == NULL) {
+                    pFirstNonplayingDeck = pBuffer;
+                }
+            }
+        }
+    }
+    // No playing decks have a BPM. Go with the first deck that was stopped but
+    // had a BPM.
+    return pFirstNonplayingDeck;
+}
+
+bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
+    if (!pOtherEngineBuffer) {
+        return false;
+    }
     TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
     BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
 
@@ -267,13 +324,15 @@ bool BpmControl::syncPhase() {
     double dThisPosition = getCurrentSample();
     double dOtherLength = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-    double dOtherPosition = dOtherLength * ControlObject::getControl(
+    double dOtherEnginePlayPos = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"))->get();
+    double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
 
-    if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
+    if (dThisPrevBeat == -1 || dThisNextBeat == -1 ||
+            dOtherEnginePlayPos == -1 || dOtherLength == 0) {
         return false;
     }
 
@@ -328,6 +387,51 @@ bool BpmControl::syncPhase() {
         dNewPlaypos = dThisPrevBeat + dOtherBeatFraction * dThisBeatLength;
     }
 
+    // We might be seeking outside the loop.
+    const bool loop_enabled = m_pLoopEnabled->get() > 0.0;
+    const double loop_start_position = m_pLoopStartPosition->get();
+    const double loop_end_position = m_pLoopEndPosition->get();
+
+    // Cases for sanity:
+    //
+    // CASE 1
+    // Two identical 1-beat loops, out of phase by X samples.
+    // Other deck is at its loop start.
+    // This deck is half way through. We want to jump forward X samples to the loop end point.
+    //
+    // Two identical 1-beat loop, out of phase by X samples.
+    // Other deck is
+
+    // If sync target is 50% through the beat,
+    // If we are at the loop end point and hit sync, jump forward X samples.
+
+
+    // TODO(rryan): Revise this with something that keeps a broader number of
+    // cases in sync. This at least prevents breaking out of the loop.
+    if (loop_enabled) {
+        const double loop_length = loop_end_position - loop_start_position;
+        if (loop_length <= 0.0) {
+            return false;
+        }
+
+        // TODO(rryan): If loop_length is not a multiple of dThisBeatLength should
+        // we bail and not sync phase?
+
+        // Syncing to after the loop end.
+        double end_delta = dNewPlaypos - loop_end_position;
+        if (end_delta > 0) {
+            int i = end_delta / loop_length;
+            dNewPlaypos = loop_start_position + end_delta - i * loop_length;
+        }
+
+        // Syncing to before the loop beginning.
+        double start_delta = loop_start_position - dNewPlaypos;
+        if (start_delta > 0) {
+            int i = start_delta / loop_length;
+            dNewPlaypos = loop_end_position - start_delta + i * loop_length;
+        }
+    }
+
     emit(seekAbs(dNewPlaypos));
     return true;
 }
@@ -351,6 +455,7 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
 }
 
 void BpmControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));

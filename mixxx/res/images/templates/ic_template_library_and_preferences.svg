@@ -1209,6 +1209,62 @@
        y1="-29.857143"
        x2="-4.0000005"
        y2="-13.857142" />
+    <linearGradient
+       id="linearGradient4942-5">
+      <stop
+         style="stop-color:#ff6600;stop-opacity:1;"
+         offset="0"
+         id="stop4944-9" />
+      <stop
+         style="stop-color:#de5800;stop-opacity:1;"
+         offset="1"
+         id="stop4946-5" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942-5"
+       id="linearGradient3415"
+       gradientUnits="userSpaceOnUse"
+       x1="571.46802"
+       y1="611.79181"
+       x2="591.45526"
+       y2="611.79181" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942-5"
+       id="linearGradient3417"
+       gradientUnits="userSpaceOnUse"
+       x1="571.46802"
+       y1="611.79181"
+       x2="591.45526"
+       y2="611.79181" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3440"
+       gradientUnits="userSpaceOnUse"
+       x1="-25.999994"
+       y1="34.249996"
+       x2="-25.999996"
+       y2="46.249996" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3442"
+       gradientUnits="userSpaceOnUse"
+       x1="-22.218445"
+       y1="12.624996"
+       x2="-22.218445"
+       y2="26.624996" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4942"
+       id="linearGradient3444"
+       gradientUnits="userSpaceOnUse"
+       x1="-22.218445"
+       y1="12.624996"
+       x2="-22.218445"
+       y2="26.624996" />
   </defs>
   <metadata
      id="metadata4">
@@ -1249,6 +1305,7 @@
 
 Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc:description>
         <dc:coverage />
+        <dc:language>en</dc:language>
       </cc:Work>
       <cc:License
          rdf:about="http://creativecommons.org/licenses/publicdomain/">
@@ -1307,7 +1364,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
        inkscape:groupmode="layer"
        id="layer8"
        inkscape:label="library"
-       style="display:none">
+       style="display:inline">
       <path
          inkscape:label="#path17862"
          transform="matrix(0,0.34307602,-0.3466313,0,214.73286,-189.27125)"
@@ -1325,7 +1382,10 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          id="style_branch_closed"
          style="fill:#b3b3b3;fill-opacity:1;stroke:#b3b3b3;stroke-width:2.89981961;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;display:inline"
          sodipodi:type="star"
-         inkscape:transform-center-x="-1.1666508" />
+         inkscape:transform-center-x="-1.1666508">
+        <desc
+           id="desc4263">Triangle for closed/opened branches in library treeview</desc>
+      </path>
       <path
          sodipodi:type="star"
          style="fill:#b3b3b3;fill-opacity:1;stroke:#b3b3b3;stroke-width:2.89981937;stroke-linecap:square;stroke-linejoin:miter;stroke-opacity:1;display:inline"
@@ -1343,7 +1403,10 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          d="m 582.29442,615.15754 -23.31845,0 11.65922,-20.19437 z"
          transform="matrix(-0.34307602,0,0,-0.3466313,201.27125,233.73286)"
          inkscape:label="#path17862"
-         inkscape:transform-center-y="1.1666546" />
+         inkscape:transform-center-y="1.1666546">
+        <desc
+           id="desc4261">Triangle for closed/opened branches in library treeview</desc>
+      </path>
       <rect
          style="opacity:0.25;fill:none;stroke:#b3b3b3;stroke-width:0.99999994;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;display:inline"
          id="style_checkbox_unchecked"
@@ -1351,12 +1414,23 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          height="11"
          x="12.5"
          y="2.5"
-         inkscape:label="#rect5529" />
+         inkscape:label="#rect5529"
+         inkscape:export-filename="/Users/maxi/Dropbox/Coding/Mixxx/1.11-skins/mixxx/res/skins/LateNightBlues1280x800-WXGA/style/style_checkbox_unchecked.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <desc
+           id="desc4253">Checkbox in &quot;Played&quot; library column</desc>
+      </rect>
       <g
          style="display:inline"
          id="style_checkbox_checked"
          inkscape:label="#g5541"
-         transform="translate(-8,0)">
+         transform="translate(-8,0)"
+         inkscape:export-filename="/Users/maxi/Dropbox/Coding/Mixxx/1.11-skins/mixxx/res/skins/LateNightBlues1280x800-WXGA/style/style_checkbox_checked.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <desc
+           id="desc4255">Checkbox in &quot;Played&quot; library column</desc>
         <rect
            style="fill:none;stroke:url(#linearGradient5559);stroke-width:0.99999994;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
            id="rect5533"
@@ -1377,6 +1451,8 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          id="style_handle_unchecked"
          inkscape:label="#g5549"
          transform="translate(0,2)">
+        <desc
+           id="desc4257">Splitter handle between treeview and library</desc>
         <rect
            y="0.5"
            x="28.5"
@@ -1397,6 +1473,8 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          id="style_handle_checked"
          inkscape:label="#g5553"
          transform="translate(0,18)">
+        <desc
+           id="desc4259">Splitter handle between treeview and library</desc>
         <rect
            style="fill:#b3b3b3;fill-opacity:1;stroke:#b3b3b3;stroke-width:1;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0"
            id="rect5555"
@@ -1423,7 +1501,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:role="line"
            x="16.290226"
            y="35.380806"
-           id="tspan3813-3">Select all 6 objects , then File&gt;Export Bitmap&gt;Batch export</tspan><tspan
+           id="tspan3813-3">Select all objects , then File&gt;Export Bitmap&gt;Batch export</tspan><tspan
            sodipodi:role="line"
            x="16.290226"
            y="37.213646"
@@ -1436,6 +1514,127 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            x="16.290226"
            y="40.879322"
            id="tspan5606" /></text>
+      <g
+         style="display:inline"
+         id="style_library_preview_pause"
+         inkscape:label="#g4333"
+         transform="translate(31.999996,-48)"
+         inkscape:export-filename="/Users/maxi/Dropbox/Coding/Mixxx/1.11-skins/mixxx/res/skins/Deere1280x800-WXGA/style/style_library_preview_play.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <desc
+           id="desc3883">Preview button in library</desc>
+        <path
+           inkscape:export-ydpi="90"
+           inkscape:export-xdpi="90"
+           inkscape:export-filename=""
+           inkscape:transform-center-x="-0.99997903"
+           sodipodi:type="star"
+           style="fill:#979797;fill-opacity:0.5;stroke:none;display:inline"
+           id="path4203"
+           sodipodi:sides="3"
+           sodipodi:cx="570.63519"
+           sodipodi:cy="608.42609"
+           sodipodi:r1="13.462912"
+           sodipodi:r2="6.7314558"
+           sodipodi:arg1="0.52359878"
+           sodipodi:arg2="1.5707963"
+           inkscape:flatsided="true"
+           inkscape:rounded="0"
+           inkscape:randomized="0"
+           d="m 582.29442,615.15754 -23.31845,0 11.65922,-20.19437 z"
+           transform="matrix(0,0.30019152,-0.29711255,0,167.77103,-133.29985)"
+           inkscape:label="#path17862" />
+        <g
+           id="g4247"
+           transform="matrix(0.85714286,0,0,0.85714286,-6.9556151,23.428571)"
+           inkscape:export-filename=""
+           inkscape:export-xdpi="90"
+           inkscape:export-ydpi="90"
+           style="fill:#979797;fill-opacity:0.5">
+          <path
+             id="path4249"
+             transform="matrix(1.1666667,0,0,1.1666667,8.1148843,-27.333333)"
+             d="m -26,32 c -3.376146,0 -5.8125,2.420091 -5.8125,5.75 -0.02885,0.04115 -0.0269,0.04484 0,0.0625 l 0,2.09375 C -31.95368,40.251454 -32,40.690868 -32,41.1875 c 0,1.08133 0.15281,1.96875 1.21875,1.96875 l 0,-3.9375 c -0.05826,0 -0.103077,0.02604 -0.15625,0.03125 l 0,-1.5 c 0,-0.35788 0.03255,-0.711959 0.09375,-1.03125 0.05746,-0.308575 0.173694,-0.595956 0.28125,-0.875 0.707406,-1.67368 2.381799,-2.625 4.5625,-2.625 2.180238,0 3.886417,0.95132 4.59375,2.625 0.235778,0.557893 0.34375,1.19049 0.34375,1.90625 l 0,1.46875 c -0.05502,-0.0057 -0.09568,0 -0.15625,0 l 0,3.90625 c 1.065786,0 1.21875,-0.856631 1.21875,-1.9375 0,-0.488809 -0.02108,-0.938349 -0.15625,-1.28125 l 0,-2.15625 C -20.15625,34.420091 -22.624315,32 -26,32 z"
+             style="fill:#979797;fill-opacity:0.5;fill-rule:nonzero;stroke:none"
+             inkscape:connector-curvature="0" />
+          <rect
+             ry="0.2"
+             rx="1"
+             y="18"
+             x="-20.218449"
+             height="6"
+             width="2.5"
+             id="rect4251"
+             style="color:#000000;fill:#979797;fill-opacity:0.5;fill-rule:evenodd;stroke:#979797;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.25098039;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+          <rect
+             style="color:#000000;fill:#979797;fill-opacity:0.5;fill-rule:evenodd;stroke:#979797;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.25098039;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+             id="rect4253"
+             width="2.5"
+             height="6"
+             x="-26.718449"
+             y="18"
+             rx="1"
+             ry="0.2" />
+        </g>
+      </g>
+      <g
+         id="style_library_preview_play"
+         inkscape:label="#g3450"
+         inkscape:export-filename="/Users/maxi/Dropbox/Coding/Mixxx/1.11-skins/mixxx/res/skins/Deere1280x800-WXGA/style/style_library_preview_pause.png"
+         inkscape:export-xdpi="90"
+         inkscape:export-ydpi="90">
+        <g
+           style="fill:#979797;fill-opacity:0.5"
+           inkscape:export-ydpi="90"
+           inkscape:export-xdpi="90"
+           inkscape:export-filename=""
+           transform="matrix(0.85714286,0,0,0.85714286,51.044381,-24.571429)"
+           id="g3436">
+          <path
+             inkscape:connector-curvature="0"
+             style="fill:url(#linearGradient3440);fill-opacity:1;fill-rule:nonzero;stroke:none"
+             d="m -26,32 c -3.376146,0 -5.8125,2.420091 -5.8125,5.75 -0.02885,0.04115 -0.0269,0.04484 0,0.0625 l 0,2.09375 C -31.95368,40.251454 -32,40.690868 -32,41.1875 c 0,1.08133 0.15281,1.96875 1.21875,1.96875 l 0,-3.9375 c -0.05826,0 -0.103077,0.02604 -0.15625,0.03125 l 0,-1.5 c 0,-0.35788 0.03255,-0.711959 0.09375,-1.03125 0.05746,-0.308575 0.173694,-0.595956 0.28125,-0.875 0.707406,-1.67368 2.381799,-2.625 4.5625,-2.625 2.180238,0 3.886417,0.95132 4.59375,2.625 0.235778,0.557893 0.34375,1.19049 0.34375,1.90625 l 0,1.46875 c -0.05502,-0.0057 -0.09568,0 -0.15625,0 l 0,3.90625 c 1.065786,0 1.21875,-0.856631 1.21875,-1.9375 0,-0.488809 -0.02108,-0.938349 -0.15625,-1.28125 l 0,-2.15625 C -20.15625,34.420091 -22.624315,32 -26,32 z"
+             transform="matrix(1.1666667,0,0,1.1666667,8.1148843,-27.333333)"
+             id="path3438" />
+          <rect
+             style="color:#000000;fill:url(#linearGradient3442);fill-opacity:1;fill-rule:evenodd;stroke:#979797;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.25098039;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+             id="rect3440"
+             width="2.5"
+             height="6"
+             x="-20.218449"
+             y="18"
+             rx="1"
+             ry="0.2" />
+          <rect
+             ry="0.2"
+             rx="1"
+             y="18"
+             x="-26.718449"
+             height="6"
+             width="2.5"
+             id="rect3442"
+             style="color:#000000;fill:url(#linearGradient3444);fill-opacity:1;fill-rule:evenodd;stroke:#979797;stroke-width:0;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.25098039;stroke-dasharray:none;stroke-dashoffset:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        </g>
+        <g
+           transform="translate(0,-0.49999978)"
+           id="g3407">
+          <rect
+             style="color:#000000;fill:url(#linearGradient3415);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate"
+             id="rect3370"
+             width="2"
+             height="7"
+             x="43"
+             y="-13" />
+          <rect
+             y="-13"
+             x="47"
+             height="7"
+             width="2"
+             id="rect3372"
+             style="color:#000000;fill:url(#linearGradient3417);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:0;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+        </g>
+      </g>
     </g>
     <rect
        style="opacity:0;fill:#ff9900;fill-opacity:1;stroke:#bfbfbf;stroke-width:3.99999976;stroke-linecap:square;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:1.99999988, 1.99999988;stroke-dashoffset:0"
@@ -1472,7 +1671,8 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      inkscape:groupmode="layer"
      id="layer36"
      inkscape:label="ic_library_"
-     style="display:inline">
+     style="display:inline"
+     sodipodi:insensitive="true">
     <g
        inkscape:groupmode="layer"
        id="layer66"
@@ -2122,7 +2322,8 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      inkscape:groupmode="layer"
      id="layer14"
      inkscape:label="ic_preferences_"
-     style="display:inline">
+     style="display:inline"
+     sodipodi:insensitive="true">
     <g
        inkscape:groupmode="layer"
        id="layer35"
@@ -2142,7 +2343,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="7"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="M 12,7 A 5,5 0 1 1 2,7 5,5 0 1 1 12,7 z"
+           d="M 12,7 C 12,9.7614237 9.7614237,12 7,12 4.2385763,12 2,9.7614237 2,7 2,4.2385763 4.2385763,2 7,2 c 2.7614237,0 5,2.2385763 5,5 z"
            transform="matrix(1.9222927,0,0,1.9222927,0.5439511,-13.456048)" />
         <path
            sodipodi:type="arc"
@@ -2152,7 +2353,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="6"
            sodipodi:rx="1.4933327"
            sodipodi:ry="1.4933327"
-           d="M 7.4933327,6 A 1.4933327,1.4933327 0 1 1 4.5066673,6 1.4933327,1.4933327 0 1 1 7.4933327,6 z"
+           d="M 7.4933327,6 C 7.4933327,6.8247449 6.8247449,7.4933327 6,7.4933327 5.1752551,7.4933327 4.5066673,6.8247449 4.5066673,6 4.5066673,5.1752551 5.1752551,4.5066673 6,4.5066673 6.8247449,4.5066673 7.4933327,5.1752551 7.4933327,6 z"
            transform="matrix(1.3392862,0,0,1.3392862,5.9642827,-8.0357171)" />
       </g>
     </g>

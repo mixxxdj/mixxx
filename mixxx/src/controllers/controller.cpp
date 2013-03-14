@@ -21,17 +21,13 @@ Controller::Controller()
           m_bLearning(false) {
     // Get --controllerDebug command line option
     QStringList commandLineArgs = QApplication::arguments();
-    m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive);
+    m_bDebug = commandLineArgs.contains("--controllerDebug", Qt::CaseInsensitive) ||
+            commandLineArgs.contains("--midiDebug", Qt::CaseInsensitive);
 }
 
 Controller::~Controller() {
     // Don't close the device here. Sub-classes should close the device in their
     // destructors.
-}
-
-QString Controller::defaultPreset() {
-    return USER_PRESETS_PATH.append("controllers/")
-            .append(m_sDeviceName.replace(" ", "_") + presetExtension());
 }
 
 void Controller::startEngine()
@@ -46,8 +42,7 @@ void Controller::startEngine()
     m_pEngine = new ControllerEngine(this);
 }
 
-void Controller::stopEngine()
-{
+void Controller::stopEngine() {
     if (debugging()) {
         qDebug() << "  Shutting down engine";
     }
@@ -60,7 +55,7 @@ void Controller::stopEngine()
     m_pEngine = NULL;
 }
 
-void Controller::applyPreset(QString resourcePath) {
+void Controller::applyPreset(QList<QString> scriptPaths) {
     qDebug() << "Applying controller preset...";
 
     const ControllerPreset* pPreset = preset();
@@ -76,7 +71,7 @@ void Controller::applyPreset(QString resourcePath) {
         return;
     }
 
-    m_pEngine->loadScriptFiles(resourcePath, pPreset->scriptFileNames);
+    m_pEngine->loadScriptFiles(scriptPaths, pPreset->scriptFileNames);
     m_pEngine->initializeScripts(pPreset->scriptFunctionPrefixes);
 }
 

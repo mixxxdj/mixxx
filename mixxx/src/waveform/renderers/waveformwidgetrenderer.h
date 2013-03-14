@@ -9,6 +9,7 @@
 #include "trackinfoobject.h"
 #include "util.h"
 #include "waveform/renderers/waveformrendererabstract.h"
+#include "waveform/renderers/waveformsignalcolors.h"
 
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
@@ -24,8 +25,8 @@ public:
     explicit WaveformWidgetRenderer(const char* group);
     virtual ~WaveformWidgetRenderer();
 
-    void init();
-    virtual void onInit() {}
+    bool init();
+    virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node);
     void onPreRender();
@@ -39,21 +40,19 @@ public:
 
     void setZoom(int zoom);
 
-    virtual void updateVisualSamplingPerPixel();
-    virtual void updateAudioSamplingPerPixel();
-
-    double getVisualSamplePerPixel() const;
-    double getAudioSamplePerPixel() const;
+    double getVisualSamplePerPixel() const { return m_visualSamplePerPixel;};
+    double getAudioSamplePerPixel() const { return m_audioSamplePerPixel;};
 
     //those function replace at its best sample position to an admissible
     //sample position according to the current visual resampling
     //this make mark and signal deterministic
     void regulateVisualSample(int& sampleIndex) const;
-    void regulateAudioSample(int& sampleIndex) const;
 
     //this "regulate" against visual sampling to make the position in widget
     //stable and deterministic
+    // Transform sample index to pixel in track.
     double transformSampleIndexInRendererWorld(int sampleIndex) const;
+    // Transform position (percentage of track) to pixel in track.
     double transformPositionInRendererWorld(double position) const;
 
     double getPlayPos() const { return m_playPos;}
@@ -65,6 +64,7 @@ public:
     void resize(int width, int height);
     int getHeight() const { return m_height;}
     int getWidth() const { return m_width;}
+    const WaveformSignalColors* getWaveformSignalColors() const { return &m_colors; };
 
     template< class T_Renderer>
     inline T_Renderer* addRenderer() {
@@ -81,7 +81,7 @@ protected:
     QVector<WaveformRendererAbstract*> m_rendererStack;
     int m_height;
     int m_width;
-    QColor m_axesColor;
+    WaveformSignalColors m_colors;
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
