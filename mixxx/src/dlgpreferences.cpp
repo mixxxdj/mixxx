@@ -291,10 +291,7 @@ void DlgPreferences::createIcons()
     m_pShoutcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pShoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
-    connect(contentsTreeWidget,
-            SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
-            this, SLOT(changePage(QTreeWidgetItem *, QTreeWidgetItem*)));
-}
+
 #ifdef __MODPLUG__
     m_pModplugButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pModplugButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_sampler.png"));
@@ -302,6 +299,11 @@ void DlgPreferences::createIcons()
     m_pModplugButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pModplugButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
+
+    connect(contentsTreeWidget,
+            SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
+            this, SLOT(changePage(QTreeWidgetItem *, QTreeWidgetItem*)));
+}
 
 void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * previous)
 {
