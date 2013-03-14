@@ -25,7 +25,7 @@ void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFro
                 this, SLOT(slotReset()));
 
         if (emitOption & EMIT_ON_PRESS) {
-            switch (state)
+            switch (state) {
             case Qt::NoButton:
                 connect(widget, SIGNAL(valueChangedDown(double)),
                         this, SLOT(slotSet(double)));
