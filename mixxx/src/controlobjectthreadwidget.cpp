@@ -68,7 +68,7 @@ void ControlObjectThreadWidget::slotReset() {
     if (m_pControlObject != NULL) {
         double defaultValue = m_pControlObject->defaultValue();
         // defaultValue is a control value. slotSet needs to be set with a widget
-        // value since widget value-changed signals connect to it. setExtern needs
+        // value since widget value-changed signals cslotSetonnect to it. setExtern needs
         // to be called with a control value since it is triggered by control
         // updates.
         slotSet(m_pControlObject->getValueToWidget(defaultValue));

@@ -30,6 +30,8 @@ ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject*
         m_pControlObject->addProxy(this);
         connect(m_pControlObject, SIGNAL(destroyed()),
                 this, SLOT(slotParentDead()));
+        connect(m_pControlObject, SIGNAL(valueChanged(double v)),
+                this, SIGNAL(valueChanged(double v)));
         // Initialize value
         m_dValue = m_pControlObject->get();
     }
@@ -53,24 +55,11 @@ double ControlObjectThread::get() {
 }
 
 void ControlObjectThread::slotSet(double v) {
-    m_dataMutex.lock();
-    m_dValue = v;
-    m_dataMutex.unlock();
-
-    updateControlObject(v);
+    m_pControlObject->set(v);
 }
 
 bool ControlObjectThread::setExtern(double v) {
-    bool result = false;
-
-    if (m_dataMutex.tryLock()) {
-        m_dValue = v;
-        result = true;
-        m_dataMutex.unlock();
-        emitValueChanged();
-    }
-
-    return result;
+    return true;
 }
 
 void ControlObjectThread::emitValueChanged() {
@@ -78,21 +67,11 @@ void ControlObjectThread::emitValueChanged() {
 }
 
 void ControlObjectThread::add(double v) {
-    m_dataMutex.lock();
-    double newValue = m_dValue + v;
-    m_dValue = newValue;
-    m_dataMutex.unlock();
-
-    updateControlObject(newValue);
+    m_pControlObject->add(v);
 }
 
 void ControlObjectThread::sub(double v) {
-    m_dataMutex.lock();
-    double newValue = m_dValue - v;
-    m_dValue = newValue;
-    m_dataMutex.unlock();
-
-    updateControlObject(newValue);
+    m_pControlObject->sub(v);
 }
 
 void ControlObjectThread::updateControlObject(double v) {
