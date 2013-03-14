@@ -163,28 +163,6 @@ void ControlObject::removeProxy(ControlObjectThread * pControlObjectThread) {
     m_qProxyListMutex.unlock();
 }
 
-bool ControlObject::updateProxies(ControlObjectThread * pProxyNoUpdate)
-{
-    ControlObjectThread * obj;
-    bool bUpdateSuccess = true;
-    // qDebug() << "updateProxies: Group" << m_key.group << "/ Item" << m_key.item;
-    m_qProxyListMutex.lock();
-    QList<ControlObjectThread*> proxyList = m_qProxyList;
-    m_qProxyListMutex.unlock();
-
-    QListIterator<ControlObjectThread*> it(proxyList);
-    while (it.hasNext())
-    {
-        obj = it.next();
-        if (obj!=pProxyNoUpdate)
-        {
-            // qDebug() << "upd" << this->getKey().item;
-            bUpdateSuccess = bUpdateSuccess && obj->setExtern(get());
-        }
-    }
-    return bUpdateSuccess;
-}
-
 void ControlObject::getControls(QList<ControlObject*>* pControlList) {
     m_sqCOHashMutex.lock();
     for (QHash<ConfigKey, ControlObject*>::const_iterator it = m_sqCOHash.begin();
@@ -288,6 +266,9 @@ double ControlObject::getValueToWidget(double v)
 }
 
 void ControlObject::sync() {
+
+    /*
+
     // Update control objects with values recieved from threads. We tryLock
     // because ControlObject::sync() is re-entrant (even though we just run
     // sync() in the main loop). A slot invoked by sync() can create a modal
@@ -376,10 +357,15 @@ void ControlObject::sync() {
             m_sqQueueMutexChanges.unlock();
         }
     }
+    */
 }
 
 double ControlObject::get() {
     return getValue();
+}
+
+void ControlObject::reset() {
+    set(m_dDefaultValue);
 }
 
 void ControlObject::set(const double& value, bool emitValueChanged) {

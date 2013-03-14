@@ -42,13 +42,18 @@ public:
                    EmitOption emitOption=EMIT_ON_PRESS, Qt::MouseButton state=Qt::NoButton);
     /** Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
     void setWidgetOnOff(QWidget *widget);
-    bool setExtern(double v);
+
+    virtual double get();
+
+    virtual void add(double v);
+
+    virtual void sub(double v);
 
   private slots:
     void slotReset();
-
-  private:
-    virtual void updateControlObject(double v);
+    // Receives the Value from the parent and may scales the vale and re-emit it again
+    virtual void slotSet(double v);
+    virtual void slotParentValueChanged(double v);
 };
 
 #endif

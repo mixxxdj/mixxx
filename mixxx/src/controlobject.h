@@ -84,15 +84,14 @@ class ControlObject
     void addProxy(ControlObjectThread *pControlObjectThread);
     // To get rid of a proxy when the corresponding object is being deleted for example
     void removeProxy(ControlObjectThread *pControlObjectThread);
-    /** Update proxies, execep the one given a pointer to. Returns true if all updates
-      * happend, otherwise false. */
-    bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);
     /** Return the key of the object */
     inline ConfigKey getKey() { return m_key; }
     // Returns the value of the ControlObject
     double get();
     // Sets the ControlObject value in a threadsave way and updates associated proxy objects. 
     void set(const double& value, bool emmitValueChanged = true);
+    // Sets the default value
+    void reset();
     /** Add to value. Not thread safe. */
     void add(double dValue);
     /** Subtract from value. Not thread safe. */
@@ -116,10 +115,10 @@ class ControlObject
         return m_dDefaultValue;
     }
 
-signals:
+  signals:
     void valueChanged(double);
 
-protected:
+  protected:
     /** Sets the value of the object. Not thread safe. */
     virtual void setValueFromEngine(double dValue);
     /** Called when a widget has changed value. Not thread safe. */
@@ -127,13 +126,13 @@ protected:
     /** Called when another thread has changed value. Not thread safe. */
     virtual void setValueFromThread(double dValue);
 
-protected:
+  protected:
     //TODO() ?? 
     double m_dDefaultValue;
     // Key of the object
     ConfigKey m_key;
 
-private:
+  private:
     // Whether to ignore set/add/sub()'s which would have no effect
     bool m_bIgnoreNops;
     // Whether to track value changes with the stats framework.

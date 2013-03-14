@@ -187,9 +187,6 @@ void ControlPotmeter::incValue(double keypos)
             value = m_dMaxValue;
         }
         set(value);
-
-        // incValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
-        updateProxies(0);
     }
 }
 
@@ -204,9 +201,6 @@ void ControlPotmeter::decValue(double keypos)
             value = m_dMinValue;
         }
         set(value);
-
-        // decValue will be activated by assosiated _up or _down ControlObject, and thus it is safe to update all proxies.
-        updateProxies(0);
     }
 }
 
@@ -220,9 +214,6 @@ void ControlPotmeter::incSmallValue(double keypos)
             value = m_dMaxValue;
         }
         set(value);
-
-        // incSmallValue will be activated by assosiated _up_small or _down_small ControlObject, and thus it is safe to update all proxies.
-        updateProxies(0);
     }
 }
 
@@ -236,10 +227,6 @@ void ControlPotmeter::decSmallValue(double keypos)
             value = m_dMinValue;
         }
         set(value);
-
-
-        // decSmallValue will be activated by assosiated _up_small or _down_small ControlObject, and thus it is safe to update all proxies.
-        updateProxies(0);
     }
 }
 
@@ -248,7 +235,6 @@ void ControlPotmeter::setToZero(double keypos)
     if (keypos>0)
     {
         set(0.0);
-        updateProxies(0);
     }
 }
 
@@ -257,7 +243,6 @@ void ControlPotmeter::setToOne(double keypos)
     if (keypos>0)
     {
         set(1.0);
-        updateProxies(0);
     }
 }
 
@@ -266,14 +251,12 @@ void ControlPotmeter::setToMinusOne(double keypos)
     if (keypos>0)
     {
         set(-1.0);
-        updateProxies(0);
     }
 }
 
 void ControlPotmeter::setToDefault(double v) {
     if (v > 0) {
         set(m_dDefaultValue);
-        updateProxies(0);
     }
 }
 
@@ -285,7 +268,6 @@ void ControlPotmeter::toggleValue(double keypos) {
         } else {
             set(1.0);
         }
-        updateProxies(0);
     }
 }
 
@@ -297,7 +279,6 @@ void ControlPotmeter::toggleMinusValue(double keypos) {
         } else {
             set(1.0);
         }
-        updateProxies(0);
     }
 }
 

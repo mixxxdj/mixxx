@@ -37,9 +37,6 @@ class ControlObjectThread : public QObject {
     /** Setting the value from an external controller. This happen when a ControlObject has
       * changed and its value is syncronized with this object. Thread safe, non blocking. Returns
       * true if successful, otherwise false. Thread safe, non blocking. */
-    virtual bool setExtern(double v);
-    /** Adds a value to the value property of the ControlEngine. Notification in a similar way
-     * to set. Thread safe, blocking. */
     virtual void add(double v);
     /** Subtracts a value to the value property. Notification in a similar way
      * to set. Thread safe, blocking. */
@@ -60,18 +57,15 @@ public slots:
     // ControlObject dies to avoid segfaults.
     void slotParentDead();
 
+    // Receives the Value from the parent and may scales the vale and re-emit it again
+    virtual void slotParentValueChanged(double v);
+
 signals:
     void valueChanged(double);
 
 protected:
-    /** The actual value of the object */
-    double m_dValue;
-    /** Mutex controlling access to non-static members*/
-    QMutex m_dataMutex;
-    /** Pointer to corresponding ControlObject */
+    /// Pointer to corresponding ControlObject
     ControlObject *m_pControlObject;
-    /** Update corresponding ControlObject to the value */
-    virtual void updateControlObject(double v);
 };
 
 #endif

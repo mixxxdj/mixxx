@@ -655,9 +655,6 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     if (cot != NULL && !m_st.ignore(cot->getControlObject(), newValue)) {
         cot->slotSet(newValue);
-        // We call emitValueChanged so that script functions connected to this
-        // control will get updates.
-        cot->emitValueChanged();
     }
 }
 
