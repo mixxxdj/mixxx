@@ -442,6 +442,12 @@ void LoopingControl::slotLoopStartPos(double pos) {
         newpos--;
     }
 
+
+    if (m_iLoopStartSample == newpos) {
+        //nothing to do
+        return;
+    }
+
     clearActiveBeatLoop();
 
     if (pos == -1.0f) {
@@ -467,6 +473,11 @@ void LoopingControl::slotLoopEndPos(double pos) {
     int newpos = pos;
     if (newpos != -1 && !even(newpos)) {
         newpos--;
+    }
+
+    if (m_iLoopEndSample == newpos) {
+        //nothing to do
+        return;
     }
 
     // Reject if the loop-in is not set, or if the new position is before the
