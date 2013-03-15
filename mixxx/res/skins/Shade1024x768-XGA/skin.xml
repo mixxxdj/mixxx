@@ -3354,7 +3354,7 @@
 					<!-- Collapsing Waveform, Vinylcontrol & spinning Vinyl widget-->
 					<WidgetGroup>
 						<Pos>2,43</Pos>
-						<Size>318,118</Size>
+						<Size>316,117</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
