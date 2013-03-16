@@ -160,7 +160,7 @@ Enable Keyboard Shortcuts         Ctrl + \`
 Exit Mixxx                        Ctrl + Q
 --------------------------------  --------------------------------
 **Developer menu**
------------------------------------------------------------------------
+------------------------------------------------------------------
 Reload skin                       Ctrl + Shift + R
 ================================  ================================
 
@@ -185,11 +185,9 @@ easier. Comment line options are case-sensitive.
 Option                  Description
 ======================  =================================================
 [FILE]                  Load the specified music file(s) at start-up.
-                        Each must be one of the following file types:
-                        \*.mp3 \*.ogg \*.aiff \*.aif \*.wav \*.flac
-
                         Each file you specify will be loaded into the
-                        next virtual deck.
+                        next virtual deck. Supported file types: mp3, ogg,
+                        aiff, aif, wav, flac, m4a (non-DRM), mp4 (non-DRM)
 ----------------------  -------------------------------------------------
 --resourcePath PATH     Top-level directory where Mixxx should look
                         for its resource files such as MIDI mappings,
@@ -219,5 +217,6 @@ Option                  Description
 **Example:**
 To start Mixxx in Developer mode from a custom resource directory with
 :term:`MIDI` and :term:`HID` logging enabled, type the following line into the
-terminal and hit return:
-``./mixxx --controllerDebug --developer --resourcePath res``
+terminal and hit return: ::
+
+  ./mixxx --controllerDebug --developer --resourcePath res

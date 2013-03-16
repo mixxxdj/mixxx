@@ -451,6 +451,7 @@ Burn you recorded mix to a CD/DVD
 
 Using Auto DJ for automatic mixing
 ==================================
+
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
 
