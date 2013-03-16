@@ -77,7 +77,7 @@ apparent if your audio sample rate is too low.
 Audio API
 ---------
 
-The Audio API that Mixxx uses is the method by which Mixxx talks to your
+The Audio :term:`API` that Mixxx uses is the method by which Mixxx talks to your
 :term:`Operating System` in order to deliver audio to your soundcard. Your
 choice of Audio API can drastically affect Mixxx's performance on your
 computer. *Therefore it is important to take care to choose the best Audio API
@@ -107,8 +107,8 @@ best choice is for your operating system.
 +----------------------------------------+--------------+
 
 .. note:: On Windows, if an ASIO driver is not available for your operating
-          system, you can try installing `ASIO4ALL <http://asio4all.com>`_, a
-          low-latency audio driver for WDM audio devices.
+          system, you can try installing `ASIO4ALL <http://asio4all.com>`_,
+          a low-latency audio driver for WDM audio devices.
 
 .. note:: On GNU/Linux using JACK, make sure to start your JACK daemon *before*
           running Mixxx. Otherwise JACK will not appear as a Sound API in the

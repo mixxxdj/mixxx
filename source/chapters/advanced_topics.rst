@@ -1,5 +1,10 @@
+
+.. include:: /shortcuts.rstext
+
 Advanced Topics
 ***************
+
+.. _advanced-controller:
 
 Adding support for your MIDI Controller
 =======================================
