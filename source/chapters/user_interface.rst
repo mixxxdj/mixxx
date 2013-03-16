@@ -736,7 +736,7 @@ Using Cue Modes
 ^^^^^^^^^^^^^^^
 
 You can switch between the CUE modes in
-:menuselction:`Preferences --> Interface`.
+:menuselection:`Preferences --> Interface`.
 
 **CDJ cue mode (default)**
 

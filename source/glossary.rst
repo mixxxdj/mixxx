@@ -267,9 +267,9 @@ Glossary of Terms
     ReplayGain normalizes audio data in a non-destructive way, so the tracks in
     your music library dont all play at different volume. Audio files are
     scanned by an psychoacoustic algorithm to determine the loudness of the
-    audio data. ReplayGain information is stored as metadata in a digital audio
-    file in order for the sound to be correctly played at the right level of
-    loudness.
+    audio data. ReplayGain information is stored as :term:`metadata` in a
+    digital audio file in order for the sound to be correctly played at the
+    right level of loudness.
 
    db
     Short for decibels. A Decibel is a measurement of sound level. Whispering
