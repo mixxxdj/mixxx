@@ -53,6 +53,40 @@ requirements for having a great experience with Mixxx:
 * At least 1GB of RAM
 * A soundcard with 2 audio outputs
 
+About the Mixxx Manual
+======================
+Some effort has been made to present the material in a way that is neither too
+technical nor too dumbed-down. Take some time to look through it and you'll
+find lots of hints that will enhance both your enjoyment and your productivity.
+
+Through the manual you'll find sentences like:
+
+* :menuselection:`Library --> Add new Playlist`.
+  This is to simplify the business of choosing commands in menus. The
+  instruction means “Open the *Library* menu at the top of the application
+  window and then choose the *Add new Playlist* command.”
+
+Important informations in this manual are highlighted like this:
+
+* .. note:: For anything that should receive a bit more attention.
+
+* .. hint:: For supplementary information that lightens the work load.
+
+* .. seealso:: For references to other documents or websites if they need
+               special attention.
+
+* .. warning:: For anything that needs to be done with caution.
+
+Improving the Manual
+--------------------
+
+* **Send Feedback**: If you have comments, corrections or suggestions regarding
+  the manual,
+  `write us an email <feedback@mixxx.org?subject=Mixxx-Manual>`_.
+
+* **Get the Source Code**: To download the source code for the Mixxx manual, go
+  to: `<https://code.launchpad.net/~mixxxdevelopers/mixxx/manual>`_
+
 Additional Resources
 ====================
 

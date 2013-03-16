@@ -49,7 +49,7 @@ Importing your audio files
 **Compatible files**
   Mixxx supports the following file formats: :term:`Wave <WAV>` (wav),
   :term:`Aiff <AIFF>` (aiff, aif), :term:`MP3` (mp3), :term:`Ogg vorbis` (ogg),
-  :term:`FLAC` (flac) and MPEG-4 Audio (m4p, :term:`aac <AAC>`). You cannot play
+  :term:`FLAC` (flac) and MPEG-4 Audio (m4a :term:`aac <AAC>`). You cannot play
   :term:`DRM` protected files, like \*.m4p files purchased in the iTunes Store.
 
 **Changing the music directory**
