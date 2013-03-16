@@ -52,3 +52,24 @@ requirements for having a great experience with Mixxx:
 * A 2GHz or faster CPU
 * At least 1GB of RAM
 * A soundcard with 2 audio outputs
+
+Additional Resources
+====================
+
+Got questions? Need more information? Want to :ref:`contribute <contributing>` ?
+There are a variety of other resources you can use to find out more.
+
+* **Mixxx Website**: For general information and updates, as well as the latest
+  news on Mixxx, go to: `<http://mixxx.org>`_
+
+* **Mixxx Support Websites**: To get support from the Mixxx wiki, IRC channel
+  or Developer mailing list, go to: `<http://mixxx.org/support>`_
+
+* **Mixxx Community Forums**: To search for answers, post your question or
+  answer other DJ’s questions, go to: `<http://mixxx.org/forums>`_
+
+* **Mixxx Bug Tracker**: To report a bug or request a feature, go to:
+  `<https://bugs.launchpad.net/mixxx>`_
+
+* **Mixxx Translations**: To translate Mixxx and promote your mother tongue, go
+  to: `<https://translations.launchpad.net/mixxx>`_
