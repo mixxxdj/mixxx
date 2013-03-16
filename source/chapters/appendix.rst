@@ -4,9 +4,11 @@ Appendix
 
 .. _appendix-keyboard:
 
-Mixxx Keyboard mapping table
-============================
-A list of default keyboard shortcuts for accessing Mixxx:
+Keyboard mapping table
+======================
+
+Shortcuts lets you start working more efficiently. This table lists the default
+keyboard shortcuts for accessing Mixxx:
 
 +----------------------------------------+---------------------+---------------------+--------------+
 | Function                               | Deck 1              | Deck 2              | Master       |
@@ -107,24 +109,31 @@ A list of default keyboard shortcuts for accessing Mixxx:
 
 .. _appendix-shortcuts:
 
-Mixxx application shortcuts
-===========================
+Application shortcuts
+=====================
 
-These fixed shortcuts are for menu points accessible trough the menu on top of
-the application window.
+Use these shortcuts to access features available in the menu on top of the
+application window.
 
 ================================  ================================
 Function                          Key
 ================================  ================================
+------------------------------------------------------------------
+**File menu**
+------------------------------------------------------------------
 Load Track to Deck 1              Ctrl + O
 --------------------------------  --------------------------------
 Load Track to Deck 2              Ctrl + Shift + O
 --------------------------------  --------------------------------
+**Library menu**
+------------------------------------------------------------------
 Add new Playlist                  Ctrl + N
 --------------------------------  --------------------------------
 Add new Crate                     Ctrl + Shift + N
 --------------------------------  --------------------------------
-Show Sample Deck Section          Ctrl + 1
+**View menu**
+------------------------------------------------------------------
+Show Samplers                     Ctrl + 1
 --------------------------------  --------------------------------
 Show Microphone Section           Ctrl + 2
 --------------------------------  --------------------------------
@@ -136,6 +145,8 @@ Full Screen (Windows & Linux)     F11
 --------------------------------  --------------------------------
 Full Screen (Mac OS X)            Ctrl + Shift + F
 --------------------------------  --------------------------------
+**Options menu**
+------------------------------------------------------------------
 Enable Vinyl Control 1            Ctrl + Y
 --------------------------------  --------------------------------
 Enable Vinyl Control 2            Ctrl + Z
@@ -147,8 +158,13 @@ Record Mix                        Ctrl + R
 Enable Keyboard Shortcuts         Ctrl + \`
 --------------------------------  --------------------------------
 Exit Mixxx                        Ctrl + Q
+--------------------------------  --------------------------------
+**Developer menu**
+-----------------------------------------------------------------------
+Reload skin                       Ctrl + Shift + R
 ================================  ================================
 
 .. hint:: The :kbd:`Ctrl` key on Windows & Linux is equivalent to the
           :kbd:`Command` key on Mac OS X. The :kbd:`Alt` key on Windows & Linux
-          is equivalent to the :kbd:`Option` key on Mac OS X.
+          is equivalent to the :kbd:`Option` key on Mac OS X.  Application
+          shortcuts are not customizable.
