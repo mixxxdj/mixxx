@@ -171,13 +171,16 @@ Configuring Mixxx
 
 To complete your setup you must configure Mixxx properly. Make sure you have:
 
-* specified "Deck 1" and "Deck 2" in the preferences under "Sound Hardware" to
-  route Mixxx's output directly to the external mixer,
-* specified "Vinyl Control 1" and "Vinyl Control 2" under the "Input" tab in the
-  preferences under "Sound Hardware",
-* selected the right vinyl type under "Vinyl Control" in the preferences (see
-  :ref:`control-timecode` for the list of supported control records/CDs,)
-* enabled vinyl control via the menu under "Options -> Vinyl Control -> Enable
-  Vinyl Control".
+* specified :guilabel:`Deck 1` and :guilabel:`Deck 2` in
+  :menuselection:`Preferences --> Sound Hardware` to
+  route Mixxx's output directly to the external mixer
+* specified :guilabel:`Vinyl Control 1` and :guilabel:`Vinyl Control 2` under
+  :menuselection:`Preferences --> Sound Hardware --> Input`
+* selected the correct control type under
+  :menuselection:`Preferences --> Vinyl Control --> Vinyl type` in the
+  preferences. See :ref:`control-timecode` for the list of supported control
+  records/CDs.
+* enabled vinyl control via the menu under
+  :menuselection:`Options -> Vinyl Control --> Enable Vinyl Control`.
 
 For more details, see the :ref:`configuring-mixxx` section.
