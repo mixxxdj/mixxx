@@ -132,9 +132,11 @@ controller mappings:
   have bugs or rough edges.
 
 If you run into issues with any of these mappings, please file a bug on our
-`bug tracker`_ or tell us about it on our mailing list, forums, or :term:`IRC`
+`Bug Tracker`_ or tell us about it on our mailing list, forums, or :term:`IRC`
 channel. Device support varies for each supported :term:`OS <operating system>`,
 so make sure to consult the documentation of the device.
+
+.. hint::  Additional mappings are available in the `Controller presets forum`_.
 
 .. seealso:: Before purchasing a controller to use with Mixxx, consult our
              `Hardware Compatibility wiki page`_. It contains the most
@@ -142,7 +144,7 @@ so make sure to consult the documentation of the device.
              the details of each.
 
 .. _Hardware Compatibility wiki page: http://www.mixxx.org/wiki/doku.php/hardware_compatibility
-.. _Bug tracker: http://bugs.launchpad.net/mixxx
+.. _Bug Tracker: http://bugs.launchpad.net/mixxx
 .. _Controller presets forum: http://mixxx.org/forums/viewforum.php?f=7
 
 .. _control-timecode:
@@ -151,8 +153,10 @@ Using Timecode Vinyl Records and CDs
 ====================================
 
 :term:`Vinyl control` allows a user to manipulate the playback of a track in
-Mixxx using a turntable or DJ CD player as an interface.  In effect, it
-simulates the sound and feel of having your music collection on vinyl.
+Mixxx using a turntable or :term:`CDJ` as an interface. In effect, it simulates
+the sound and feel of having your digital music collection on vinyl. Many DJs
+prefer the tactile feel of vinyl, and vinyl control allows that feel to be
+preserved while retaining the benefits of using digital audio.
 
 .. seealso:: Go to the chapter :ref:`vinyl-control` for detailed informations.
 
