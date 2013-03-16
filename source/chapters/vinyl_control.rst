@@ -1,3 +1,6 @@
+
+.. include:: /shortcuts.rstext
+
 .. _vinyl-control:
 
 Vinyl Control
@@ -38,18 +41,18 @@ What do I need to use it?
 It is possible to use Mixxx's vinyl control with several hardware setups, but
 the basic ones are:
 
-**Setup 1: Vinyl DJ** Two timecode vinyls, two turntables with phono
-pre-amplifiers (or line-out), and two sound inputs.  You can try skipping the
-phono pre-amps if you use the software pre-amp in Mixxx on the Vinyl Control
-preferences pane.  *This may not work for everyone - line-level signals are
-preferred and recommended.*
+* **Setup 1: Vinyl DJ** Two timecode vinyls, two turntables with phono
+  pre-amplifiers (or line-out), and two sound inputs. You can try skipping the
+  phono pre-amps if you use the software pre-amp in Mixxx on the Vinyl Control
+  preferences pane. *This may not work for everyone. Line-level signals are
+  preferred and recommended.*
+* **Setup 2: CDJ** Two timecode CDs, two CD decks, and two sound inputs.
 
-**Setup 2: CDJ** Two timecode CDs, two CD decks, and two sound inputs.
+For the sound inputs, you have two options:
 
-For the sound inputs, you have two options: You can either use a proper DJ sound
-card that has multiple stereo line inputs on it, or can use two sound cards
-(each with a single stereo line in).
-A single multi-channel sound card is recommended.
+* It is recommended to use a proper DJ sound card that has multiple stereo line
+  inputs on it.
+* Alternatively you can use two sound cards, each with a single stereo line in.
 
 .. note:: For best scratch performance with vinyl control, we recommend using a
           system capable of :term:`latencies <latency>` of 10ms. With higher
@@ -81,7 +84,8 @@ You can use any of the timecode media supported by Mixxx:
 +----------------------------------------+---------------------+
 
 At the present time, Serato records are recommended if you are looking to buy
-vinyl. If you want to use CDs, you can download a free copy from `Serato`_.
+vinyl. If you want to use CDs, you can download a free copy for personal use
+from `Serato`_.
 
 .. _Serato: http://serato.com/downloads/scratchlive-controlcd/
 
@@ -105,9 +109,8 @@ Turntable Input Preamp
 Many turntables provide unamplified "phono level" output which must be boosted
 to a "line level" signal. Normally, a mixer provides this amplification, but if
 you're plugging a turntable's phono output directly into your soundcard, Mixxx
-can do the amplification. The "Turntable Input Preamp" slider allows you to
-adjust the level of preamplification applied to your decks' signal.
-
+can do the amplification. The :guilabel:`Turntable Input Preamp` slider allows
+you to adjust the level of preamplification applied to your decks' signal.
 However it is always preferable to use a proper phono preamplifier if you have
 one.
 
@@ -142,10 +145,13 @@ page.
 
 Mixxx represents your timecode signal quality as a circular representation of
 the vinyl control audio signal itself. The two graphs correspond to your
-"Deck 1" and "Deck 2" input devices. If your vinyl signal is working, you should
-see a round, green circle drawn with two lines. This vinyl "doughnut" should be
-as circular as possible, and the lines should be clear with a minimum amount of
-fuzz. As the vinyl signal gets worse, you'll see the color of the doughnut
+:guilabel:`Deck 1` and :guilabel:`Deck 2` input devices.
+
+If your vinyl signal is working, you should see a round, green circle drawn with
+two lines. This vinyl "doughnut" should be as circular as possible, and the
+lines should be clear with a minimum amount of fuzz.
+
+  As the vinyl signal gets worse, you'll see the color of the doughnut
 change from green to red. An otherwise good-looking doughnut that is solid red
 indicates an incorrect choice of vinyl control source. For example, maybe you
 selected side B of the Serato vinyl, but your record is on side A.
@@ -214,17 +220,17 @@ End-Of-Record Mode
 
 Sometimes the track you are playing is longer than the timecode area on your
 record. If the needle reaches the end of the vinyl timecode, Mixxx will enter
-a special "end-of-record" mode. When this happens, the vinyl indicator (usually
-a green rectangle) will blink orange as a warning. At the same time, Mixxx
-will automatically enable "Constant Mode," and will ignore the turntable's pitch.
-At this point the track will simply continue playing until the end. When you
-load a new track, End-Of-Record mode will be automatically disabled and Constant
-Mode turned off.
+a special *End-Of-Record Mode*. When this happens, the vinyl indicator (usually
+a green rectangle) will blink as a warning. At the same time, Mixxx will
+automatically enable *Constant Mode* and will ignore the turntable's pitch. At
+this point the track will simply continue playing until the end. When you load
+a new track, *End-Of-Record Mode* will be automatically disabled and
+*Constant Mode* turned off.
 
-When you're in End-Of-Record Mode and you want to still use the turntable for
+When you're in *End-Of-Record Mode* and you want to still use the turntable for
 pitch control, simply lift the needle and place it anywhere in the main timecode
-area. Trust me, it's ok, the track won't stop playing. As soon as Mixxx detects
-that the needle has settled, it will automatically switch to Relative mode.
+area. It's ok, the track won't stop playing. As soon as Mixxx detects that the
+needle has settled, it will automatically switch to *Relative Mode*.
 
 Cueing Modes
 ============
