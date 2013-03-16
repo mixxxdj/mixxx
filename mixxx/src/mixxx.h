@@ -121,7 +121,6 @@ class MixxxApp : public QMainWindow {
     void slotToCenterOfPrimaryScreen();
 
     void onNewSkinLoaded();
-    void slotSyncControlSystem();
 
   signals:
     void newSkinLoaded();

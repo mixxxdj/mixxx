@@ -259,8 +259,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
                             .arg(QString::number(mappingKey.status, 16).toUpper(),
                                 QString::number(mappingKey.control, 16).toUpper()
                                     .rightJustified(2,'0'));
-            }
-            else {
+            } else {
                 message = QString("0x%1")
                             .arg(QString::number(mappingKey.status, 16).toUpper());
             }
@@ -300,8 +299,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
         return;
     }
 
-    double currMixxxControlValue = p->GetMidiValue();
-
     double newValue = value;
 
     //qDebug() << "MIDI Options" << QString::number(options.all, 2).rightJustified(16,'0');
@@ -311,14 +308,11 @@ void MidiController::receive(unsigned char status, unsigned char control,
         int ivalue;
         ivalue = (value << 7) | control;
 
-        currMixxxControlValue = p->get();
-
         // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
         if (options.invert) {
             newValue = 0x2000-ivalue;
             if (newValue < 0) newValue--;
-        }
-        else {
+        } else {
             newValue = ivalue-0x2000;
             if (newValue > 0) newValue++;
         }
@@ -327,6 +321,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
         // computeValue not (yet) done on pitch messages because it all assumes 7-bit numbers
     } else {
+        double currMixxxControlValue = p->GetMidiValue();
         newValue = computeValue(options, currMixxxControlValue, value);
     }
 
@@ -348,22 +343,15 @@ void MidiController::receive(unsigned char status, unsigned char control,
                 return;
             }
         }
-        p->queueFromThread(newValue);
-    }
-    else {
+        p->setValueFromThread(newValue);
+    } else {
         if (options.soft_takeover) {
             if (m_st.ignore(p, newValue, true)) {
                 return;
             }
         }
-        p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+        p->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
     }
-
-    // If we got here then we queued a message for the control system. In the
-    // interest of quickly processing this, we request a sync. Since we are
-    // running in the controller thread, we broadcast the signal which is
-    // proxied to the main thread and handled there.
-    emit(syncControlSystem());
 }
 
 double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {

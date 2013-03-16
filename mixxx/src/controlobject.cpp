@@ -186,26 +186,10 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
 
 void ControlObject::queueFromThread(double dValue, ControlObjectThread * pControlObjectThread)
 {
-    QueueObjectThread * p = new QueueObjectThread;
-    p->pControlObjectThread = pControlObjectThread;
-    p->pControlObject = this;
-    p->value = dValue;
-
-    m_sqQueueMutexThread.lock();
-    m_sqQueueThread.enqueue(p);
-    m_sqQueueMutexThread.unlock();
 }
 
 void ControlObject::queueFromMidi(MidiOpCode o, double v)
 {
-    QueueObjectMidi * p = new QueueObjectMidi;
-    p->pControlObject = this;
-    p->opcode = o;
-    p->value = v;
-
-    m_sqQueueMutexMidi.lock();
-    m_sqQueueMidi.enqueue(p);
-    m_sqQueueMutexMidi.unlock();
 }
 
 void ControlObject::setValueFromEngine(double dValue)
@@ -234,13 +218,7 @@ void ControlObject::add(double dValue)
     if (m_bIgnoreNops && !dValue) {
         return;
     }
-
-    double value = get();
-
-    setValueFromEngine(value+dValue);
-    m_sqQueueMutexChanges.lock();
-    m_sqQueueChanges.enqueue(this);
-    m_sqQueueMutexChanges.unlock();
+    setValueFromEngine(get() + dValue);
 }
 
 void ControlObject::sub(double dValue)
@@ -248,11 +226,7 @@ void ControlObject::sub(double dValue)
     if (m_bIgnoreNops && !dValue) {
         return;
     }
-
-    setValueFromEngine(get()-dValue);
-    m_sqQueueMutexChanges.lock();
-    m_sqQueueChanges.enqueue(this);
-    m_sqQueueMutexChanges.unlock();
+    setValueFromEngine(get() - dValue);
 }
 
 double ControlObject::getValueFromWidget(double v)

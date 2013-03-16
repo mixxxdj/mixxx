@@ -118,7 +118,7 @@ class ControlObject
   signals:
     void valueChanged(double);
 
-  protected:
+  public:
     /** Sets the value of the object. Not thread safe. */
     virtual void setValueFromEngine(double dValue);
     /** Called when a widget has changed value. Not thread safe. */
