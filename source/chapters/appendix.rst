@@ -166,5 +166,58 @@ Reload skin                       Ctrl + Shift + R
 
 .. hint:: The :kbd:`Ctrl` key on Windows & Linux is equivalent to the
           :kbd:`Command` key on Mac OS X. The :kbd:`Alt` key on Windows & Linux
-          is equivalent to the :kbd:`Option` key on Mac OS X.  Application
+          is equivalent to the :kbd:`Option` key on Mac OS X. Application
           shortcuts are not customizable.
+
+.. note:: The Developer menu is available if Mixxx is started using the
+          :ref:`appendix-command-line-options`.
+
+.. _appendix-command-line-options:
+
+Command line options
+====================
+
+Mixxx is designed to be as user-friendly as possible. As such, its command line
+options are only useful for development or debugging, as they make these tasks
+easier. Comment line options are case-sensitive.
+
+======================  =================================================
+Option                  Description
+======================  =================================================
+[FILE]                  Load the specified music file(s) at start-up.
+                        Each must be one of the following file types:
+                        \*.mp3 \*.ogg \*.aiff \*.aif \*.wav \*.flac
+
+                        Each file you specify will be loaded into the
+                        next virtual deck.
+----------------------  -------------------------------------------------
+--resourcePath PATH     Top-level directory where Mixxx should look
+                        for its resource files such as MIDI mappings,
+                        overriding the default installation location.
+----------------------  -------------------------------------------------
+--pluginPath PATH       Top-level directory where Mixxx should look
+                        for sound source plugins in addition to default
+                        locations.
+----------------------  -------------------------------------------------
+--settingsPath PATH     Top-level directory where Mixxx should look
+                        for settings.
+----------------------  -------------------------------------------------
+--controllerDebug       Causes Mixxx to display/log all of the controller
+                        data it receives and script functions it loads
+----------------------  -------------------------------------------------
+--developer             Enables developer-mode. Includes extra log info,
+                        stats on performance, and a Developer tools menu.
+----------------------  -------------------------------------------------
+--locale LOCALE         Use a custom locale for loading translations
+                        (e.g 'fr')
+----------------------  -------------------------------------------------
+-f, --fullScreen        Starts Mixxx in full-screen mode
+----------------------  -------------------------------------------------
+-h, --help              Display this help message and exit
+======================  =================================================
+
+**Example:**
+To start Mixxx in Developer mode from a custom resource directory with
+:term:`MIDI` and :term:`HID` logging enabled, type the following line into the
+terminal and hit return:
+``./mixxx --controllerDebug --developer --resourcePath res``
