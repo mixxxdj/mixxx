@@ -15,7 +15,7 @@
 #include "controlpotmeter.h"
 
 
-WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent, Qt::WFlags f)
+WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
         : QWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig) {
@@ -99,7 +99,7 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
         //qDebug() << "Target:" << targetPosition;
         m_pScratchPosition->slotSet(targetPosition);
     } else if (m_bBending) {
-        QPoint diff = event->pos() - m_mouseAnchor; 
+        QPoint diff = event->pos() - m_mouseAnchor;
         // start at the middle of 0-127, and emit values based on
         // how far the mouse has traveled horizontally
         double v = 64.0 + diff.x()/10.0f;
