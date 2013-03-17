@@ -24,17 +24,17 @@ BpmControl::BpmControl(const char* _group,
     m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
     m_pRateRange = ControlObject::getControl(ConfigKey(_group, "rateRange"));
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
     m_pRateDir = ControlObject::getControl(ConfigKey(_group, "rate_dir"));
     connect(m_pRateDir, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
     m_pLoopEnabled = ControlObject::getControl(
@@ -46,7 +46,7 @@ BpmControl::BpmControl(const char* _group,
 
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
     m_pEngineBpm = new ControlObject(ConfigKey(_group, "bpm"));
@@ -134,7 +134,8 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    m_pFileBpm->set(averageBpm);
+    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    m_pFileBpm->set(averageBpm / dRate);
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
@@ -419,7 +420,7 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
     return true;
 }
 
-void BpmControl::slotAdjustBpm(double) {
+void BpmControl::slotAdjustBpm() {
     // Emitted value is one of the control objects used below
 
     //qDebug() << this << "slotAdjustBpm"
