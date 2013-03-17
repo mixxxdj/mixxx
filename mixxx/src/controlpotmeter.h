@@ -51,7 +51,6 @@ public:
 
 public slots:
     void setValueFromThread(double dValue);
-    void setValueFromEngine(double dValue);
     /** Increases the value. This method is called from an associated PushButton control */
     void incValue(double);
     /** Decreases the value. This method is called from an associated PushButton control */

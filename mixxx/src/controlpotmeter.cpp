@@ -159,17 +159,6 @@ void ControlPotmeter::setValueFromThread(double dValue)
     }
 }
 
-void ControlPotmeter::setValueFromEngine(double dValue)
-{
-    if (dValue > m_dMaxValue) {
-        set(m_dMaxValue);
-    } else if (dValue < m_dMinValue) {
-        set(m_dMinValue);
-    } else {
-        set(dValue);
-    }
-}
-
 void ControlPotmeter::setValueFromMidi(MidiOpCode o, double v)
 {
     Q_UNUSED(o);

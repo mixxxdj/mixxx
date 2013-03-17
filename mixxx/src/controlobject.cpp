@@ -29,12 +29,6 @@
 QHash<ConfigKey,ControlObject*> ControlObject::m_sqCOHash;
 QMutex ControlObject::m_sqCOHashMutex;
 
-QMutex ControlObject::m_sqQueueMutexMidi;
-QMutex ControlObject::m_sqQueueMutexThread;
-QMutex ControlObject::m_sqQueueMutexChanges;
-QQueue<QueueObjectMidi*> ControlObject::m_sqQueueMidi;
-QQueue<QueueObjectThread*> ControlObject::m_sqQueueThread;
-QQueue<ControlObject*> ControlObject::m_sqQueueChanges;
 
 ControlObject::ControlObject()
         : ControlObjectBase<double>(),
@@ -88,36 +82,6 @@ ControlObject::~ControlObject() {
         obj->slotParentDead();
     }
     m_qProxyListMutex.unlock();
-
-
-    m_sqQueueMutexThread.lock();
-    QMutableListIterator<QueueObjectThread*> tit(m_sqQueueThread);
-    while (tit.hasNext()) {
-        QueueObjectThread* tobj = tit.next();
-        if (tobj->pControlObject == this) {
-            tit.remove();
-            delete tobj;
-        }
-    }
-    m_sqQueueMutexThread.unlock();
-
-    m_sqQueueMutexMidi.lock();
-    QMutableListIterator<QueueObjectMidi*> mit(m_sqQueueMidi);
-    while (mit.hasNext()) {
-        QueueObjectMidi* mobj = mit.next();
-        if (mobj->pControlObject == this) {
-            mit.remove();
-            delete mobj;
-        }
-    }
-    m_sqQueueMutexMidi.unlock();
-
-    // Remove this control object from the changes queue, since we're being
-    // deleted.
-    m_sqQueueMutexChanges.lock();
-    m_sqQueueChanges.removeAll(this);
-    m_sqQueueMutexChanges.unlock();
-
 }
 
 /*
@@ -184,19 +148,6 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
     return NULL;
 }
 
-void ControlObject::queueFromThread(double dValue, ControlObjectThread * pControlObjectThread)
-{
-}
-
-void ControlObject::queueFromMidi(MidiOpCode o, double v)
-{
-}
-
-void ControlObject::setValueFromEngine(double dValue)
-{
-    set(dValue);
-}
-
 void ControlObject::setValueFromMidi(MidiOpCode o, double v)
 {
     Q_UNUSED(o);
@@ -218,7 +169,7 @@ void ControlObject::add(double dValue)
     if (m_bIgnoreNops && !dValue) {
         return;
     }
-    setValueFromEngine(get() + dValue);
+    set(get() + dValue);
 }
 
 void ControlObject::sub(double dValue)
@@ -226,7 +177,7 @@ void ControlObject::sub(double dValue)
     if (m_bIgnoreNops && !dValue) {
         return;
     }
-    setValueFromEngine(get() - dValue);
+    set(get() - dValue);
 }
 
 double ControlObject::getValueFromWidget(double v)
@@ -237,101 +188,6 @@ double ControlObject::getValueFromWidget(double v)
 double ControlObject::getValueToWidget(double v)
 {
     return v;
-}
-
-void ControlObject::sync() {
-
-    /*
-
-    // Update control objects with values recieved from threads. We tryLock
-    // because ControlObject::sync() is re-entrant (even though we just run
-    // sync() in the main loop). A slot invoked by sync() can create a modal
-    // dialog which effectively blocks sync() but continues spinning the Qt
-    // event loop. When sync() runs again, it is re-entrant if the modal dialog
-    // is still up.
-    if (m_sqQueueMutexThread.tryLock()) {
-
-        // We have to make a copy of the queue otherwise we can get deadlocks
-        // since responding to a queued event via setValueFromThread can trigger
-        // a slot which in turn could cause a lock of m_sqQueueMutexThread.
-        QQueue<QueueObjectThread*> qQueueThread = m_sqQueueThread;
-        m_sqQueueThread.clear();
-        m_sqQueueMutexThread.unlock();
-
-        while (!qQueueThread.isEmpty()) {
-            QueueObjectThread* obj = qQueueThread.dequeue();
-            if (obj == NULL) {
-                continue;
-            }
-            if (obj->pControlObject) {
-                obj->pControlObject->setValueFromThread(obj->value);
-                obj->pControlObject->updateProxies(obj->pControlObjectThread);
-            }
-            delete obj;
-        }
-    }
-
-    // Update control objects with values recieved from MIDI. We tryLock because
-    // ControlObject::sync() is re-entrant (even though we just run sync() in
-    // the main loop). A slot invoked by sync() can create a modal dialog which
-    // effectively blocks sync() but continues spinning the Qt event loop. When
-    // sync() runs again, it is re-entrant if the modal dialog is still up.
-    if (m_sqQueueMutexMidi.tryLock()) {
-        // We have to make a copy of the queue otherwise we can get deadlocks
-        // since responding to a queued event via setValueFromMidi can trigger a
-        // slot which in turn could cause a lock of m_sqQueueMutexMidi.
-        QQueue<QueueObjectMidi*> qQueueMidi = m_sqQueueMidi;
-        m_sqQueueMidi.clear();
-        m_sqQueueMutexMidi.unlock();
-
-        while (!qQueueMidi.isEmpty()) {
-            QueueObjectMidi* obj = qQueueMidi.dequeue();
-            if (obj == NULL) {
-                continue;
-            }
-            if (obj->pControlObject) {
-                obj->pControlObject->setValueFromMidi(obj->opcode, obj->value);
-                obj->pControlObject->updateProxies(NULL);
-            }
-            delete obj;
-        }
-    }
-
-    // Update app threads (ControlObjectThread derived objects) with changes in
-    // the corresponding ControlObjects. These updates should only occour if no
-    // changes has been in the object from widgets, midi or application threads.
-    if (m_sqQueueMutexChanges.tryLock()) {
-        ScopedTimer t("ControlObject::sync qQueueChanges");
-        QSet<ControlObject*> setChanges = QSet<ControlObject*>::fromList(m_sqQueueChanges);
-        Stat::track("ControlObject::sync qQueueChanges dupes", Stat::UNSPECIFIED,
-                    Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::MIN | Stat::MAX,
-                    m_sqQueueChanges.size() - setChanges.size());
-        m_sqQueueChanges.clear();
-        m_sqQueueMutexChanges.unlock();
-
-        QList<ControlObject*> failedUpdates;
-        for (QSet<ControlObject*>::iterator it = setChanges.begin();
-             it != setChanges.end(); ++it) {
-            ControlObject* obj = *it;
-            // If update is not successful, enqueue again
-            if (!obj->updateProxies()) {
-                failedUpdates.push_back(obj);
-                Stat::track("ControlObject::sync qQueueChanges failed CO update",
-                            Stat::UNSPECIFIED, Stat::COUNT | Stat::SUM | Stat::AVERAGE, 1.0);
-
-            }
-        }
-
-        // If we cannot lock the change mutex then we will just drop these
-        // updates on the floor. We can't lock() since sync() is re-entrant
-        // (potentially across multiple threads, though that should change going
-        // forward).
-        if (failedUpdates.size() > 0 && m_sqQueueMutexChanges.tryLock()) {
-            m_sqQueueChanges.append(failedUpdates);
-            m_sqQueueMutexChanges.unlock();
-        }
-    }
-    */
 }
 
 double ControlObject::get() {
