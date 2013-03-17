@@ -1,38 +1,22 @@
-/***************************************************************************
-                          soundsourcemodplug.h  -  modplug tracker support
-                             -------------------
-    copyright            : (C) 2012 by Stefan Nuernberger
-    email                : kabelfrickler@gmail.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+// soundsourcemodplug.h  -  modplug tracker support
+// created 2012 by Stefan Nuernberger <kabelfrickler@gmail.com>
 
 #ifndef SOUNDSOURCEMODPLUG_H
 #define SOUNDSOURCEMODPLUG_H
 
-#include "soundsource.h"
-#include "defs_version.h"
 #include <QByteArray>
 #include <QList>
 #include <QString>
-#include <QtDebug>
+
+#include "soundsource.h"
 
 namespace ModPlug {
-#include "libmodplug/modplug.h"
+#include <libmodplug/modplug.h>
 }
 
-/*
-    Class for reading tracker files using libmodplug
-    The whole file is decoded at once and saved
-    in RAM to allow seeking and smooth operation in Mixxx.
- */
+// Class for reading tracker files using libmodplug.
+// The whole file is decoded at once and saved
+// in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug : public Mixxx::SoundSource
 {
 public:
@@ -45,20 +29,21 @@ public:
     int parseHeader();
     static QList<QString> supportedFileExtensions();
 
+    // apply settings for decoding
     static void configure(unsigned int bufferSizeLimit,
                           const ModPlug::ModPlug_Settings &settings);
 private:
-    static unsigned int bufferSizeLimit;
-    static ModPlug::ModPlug_Settings settings; ///< struct of parameters
+    static int s_bufferSizeLimit; // max track buffer length (bytes)
+    static ModPlug::ModPlug_Settings s_settings; // modplug decoder parameters
 
-    bool opened;
-    unsigned long filelength;
-    unsigned int seekpos;
-    ModPlug::ModPlugFile *file; ///< pointer to ModPlugFile struct
-    QByteArray filebuf; ///< original module file data
-    QByteArray smplbuf; ///< 16bit stereo samples, 44.1kHz
+    bool m_opened;
+    unsigned long m_fileLength; // length of file in samples
+    unsigned long m_seekPos; // current read position
+    ModPlug::ModPlugFile *m_pModFile; // modplug file descriptor
+    QByteArray m_fileBuf; // original module file data
+    QByteArray m_sampleBuf; // 16bit stereo samples, 44.1kHz
 
-    /// identification of modplug module type
+    // identification of modplug module type
     enum ModuleTypes {
         NONE = 0x00,
         MOD  = 0x01,

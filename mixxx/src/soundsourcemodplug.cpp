@@ -1,63 +1,50 @@
-/***************************************************************************
-                          soundsourcemodplug.cpp  -  module tracker support
-                             -------------------
-    copyright            : (C) 2012 by Stefan Nuernberger
-    email                : kabelfricker@gmail.com
-***************************************************************************/
 
-/***************************************************************************
-*                                                                         *
-*   This program is free software; you can redistribute it and/or modify  *
-*   it under the terms of the GNU General Public License as published by  *
-*   the Free Software Foundation; either version 2 of the License, or     *
-*   (at your option) any later version.                                   *
-*                                                                         *
-***************************************************************************/
-
-#include "soundsourcemodplug.h"
 #include <stdlib.h>
 #include <unistd.h>
+
 #include <QFile>
+#include <QtDebug>
+
+#include "soundsourcemodplug.h"
 
 /* read files in 512k chunks */
-#define CHUNKSIZE 524288
+#define CHUNKSIZE (1 << 19)
 
 // reserve some static space for settings...
-ModPlug::ModPlug_Settings SoundSourceModPlug::settings;
-unsigned int SoundSourceModPlug::bufferSizeLimit;
+ModPlug::ModPlug_Settings SoundSourceModPlug::s_settings;
+int SoundSourceModPlug::s_bufferSizeLimit;
 
 SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
     SoundSource(qFilename)
 {
-    opened = false;
-    filelength = 0;
-    file = 0;
+    m_opened = false;
+    m_fileLength = 0;
+    m_pModFile = 0;
 
     qDebug() << "Loading ModPlug module " << m_qFilename;
 
     // read module file to byte array
-    QFile modfile(m_qFilename);
-    modfile.open(QIODevice::ReadOnly);
-    filebuf = modfile.readAll();
-    modfile.close();
-    // get ModPlugFile
-    file = ModPlug::ModPlug_Load(filebuf.data(), filebuf.length());
+    QFile modFile(m_qFilename);
+    modFile.open(QIODevice::ReadOnly);
+    m_fileBuf = modFile.readAll();
+    modFile.close();
+    // get ModPlugFile descriptor for later access
+    m_pModFile = ModPlug::ModPlug_Load(m_fileBuf.data(), m_fileBuf.length());
 }
 
 SoundSourceModPlug::~SoundSourceModPlug()
 {
-    if (file) {
-        ModPlug::ModPlug_Unload(file);
-        file = NULL;
+    if (m_pModFile) {
+        ModPlug::ModPlug_Unload(m_pModFile);
+        m_pModFile = NULL;
     }
 }
 
 QList<QString> SoundSourceModPlug::supportedFileExtensions()
 {
     QList<QString> list;
-    /* ModPlug supports more formats but file name
-     * extensions are not always present with modules.
-     */
+    // ModPlug supports more formats but file name
+    // extensions are not always present with modules.
     list.push_back("mod");
     list.push_back("med");
     list.push_back("okt");
@@ -68,73 +55,90 @@ QList<QString> SoundSourceModPlug::supportedFileExtensions()
     return list;
 }
 
-void SoundSourceModPlug::configure(unsigned int bLimit, const ModPlug::ModPlug_Settings &config)
+void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
+                                   const ModPlug::ModPlug_Settings &settings)
 {
-    bufferSizeLimit = bLimit;
-    settings = config;
+    s_bufferSizeLimit = bufferSizeLimit;
+    s_settings = settings;
 
-    ModPlug::ModPlug_SetSettings(&settings);
+    ModPlug::ModPlug_SetSettings(&s_settings);
 }
 
 int SoundSourceModPlug::open() {
-    if (file == NULL) {
+    if (m_pModFile == NULL) {
         // an error occured
         qDebug() << "Could not load module file: "
                  << m_qFilename;
         return ERR;
     }
 
-    // temporary buffer to read samples
-    char *tmpbuf = new char[CHUNKSIZE];
-    int count = 1;
-    while ((count != 0) && (smplbuf.length() < bufferSizeLimit))
-    {
-        /* Read sample data into the buffer.  Returns the number of bytes read.  If the end
-         * of the module has been reached, zero is returned. */
-        count = ModPlug::ModPlug_Read(file, tmpbuf, CHUNKSIZE);
-        smplbuf.append(tmpbuf, count);
-    }
-    delete tmpbuf;
-    qDebug() << "Filled Sample buffer with " << smplbuf.length() << " bytes.";
+    // estimate size of sample buffer (for better performance)
+    // beware: module length estimation is unreliable due to loops
+    // song milliseconds * 2 (bytes per sample)
+    //                   * 2 (channels)
+    //                   * 44.1 (samples per millisecond)
+    //                   + some more to accomodate short loops etc.
+    // approximate and align with CHUNKSIZE yields:
+    // (((milliseconds << 2) >> 10 /* to seconds */)
+    //      div 11 /* samples to chunksize ratio */)
+    //      << 19 /* align to chunksize */
+    int estBufferSize = ((ModPlug::ModPlug_GetLength(m_pModFile) >> 8) / 11) << 19;
+    estBufferSize = std::min(estBufferSize, s_bufferSizeLimit);
+    m_sampleBuf.reserve(estBufferSize);
+    qDebug() << "Reserved " << m_sampleBuf.capacity() << " bytes for samples";
 
-    // smplbuf holds 44.1kHz 16bit integer stereo samples.
+    // decode samples to sample buffer
+    int bytesRead = -1;
+    int currentSize = m_sampleBuf.length();
+    while((bytesRead != 0) && (m_sampleBuf.length() < s_bufferSizeLimit)) {
+        // reserve enough space in sample buffer
+        m_sampleBuf.resize(currentSize + CHUNKSIZE);
+        bytesRead = ModPlug::ModPlug_Read(m_pModFile,
+                                          m_sampleBuf.data() + currentSize,
+                                          CHUNKSIZE);
+        // adapt to actual size
+        currentSize += bytesRead;
+        if (bytesRead != CHUNKSIZE) {
+            m_sampleBuf.resize(currentSize);
+        }
+    }
+    qDebug() << "Filled Sample buffer with " << m_sampleBuf.length() << " bytes.";
+    qDebug() << "Sample buffer has " << m_sampleBuf.capacity() - m_sampleBuf.length()
+             << " bytes unused capacity.";
+
+    // The sample buffer holds 44.1kHz 16bit integer stereo samples.
     // We count the number of samples by dividing number of
-    // bytes in smplbuf by 2 (bytes per sample).
-    filelength = smplbuf.length() >> 1;
-    m_iSampleRate = 44100; // ModPlug uses 44.1kHz
-    opened = true;
-    seekpos = 0;
+    // bytes in m_sampleBuf by 2 (bytes per sample).
+    m_fileLength = m_sampleBuf.length() >> 1;
+    m_iSampleRate = 44100; // ModPlug always uses 44.1kHz
+    m_opened = true;
+    m_seekPos = 0;
     return OK;
 }
 
-long SoundSourceModPlug::seek(long filepos)
+long SoundSourceModPlug::seek(long filePos)
 {
-    if (filelength > 0)
-    {
-        seekpos = math_min((unsigned long)filepos, filelength);
-        return seekpos;
+    if (m_fileLength > 0) {
+        m_seekPos = math_min((unsigned long)filePos, m_fileLength);
+        return m_seekPos;
     }
     return 0;
 }
 
-/*
-   read <size> samples into <destination>, and return the number of
-   samples actually read.
- */
-unsigned SoundSourceModPlug::read(unsigned long size, const SAMPLE * destination)
+unsigned SoundSourceModPlug::read(unsigned long size,
+                                  const SAMPLE* pDestination)
 {
-    unsigned char * dest = (unsigned char *) destination;
-    if (filelength > 0)
-    {
-        unsigned count = 0;
-        while ((seekpos < filelength) && (count < (size << 1 )))
-        {
+    unsigned char* pDest = (unsigned char*) pDestination;
+    if (m_fileLength > 0) {
+        unsigned bytes = 0;
+        while ((m_seekPos < m_fileLength) && (bytes < (size << 1))) {
             // copy a 16bit sample
-            dest[count++] = smplbuf[seekpos << 1];
-            dest[count++] = smplbuf[(seekpos << 1) + 1];
-            ++seekpos;
+            pDest[bytes++] = m_sampleBuf.at(m_seekPos << 1);
+            pDest[bytes++] = m_sampleBuf.at((m_seekPos << 1) + 1);
+            ++m_seekPos;
         }
-        return count >> 1; ///< number of bytes divided by bytes per sample
+        // return number of bytes divided by bytes per sample
+        return bytes >> 1;
     }
     // The file has errors or is not open. Tell the truth and return 0.
     return 0;
@@ -142,14 +146,13 @@ unsigned SoundSourceModPlug::read(unsigned long size, const SAMPLE * destination
 
 int SoundSourceModPlug::parseHeader()
 {
-    if (file == NULL) {
+    if (m_pModFile == NULL) {
         // an error occured
         qDebug() << "Could not parse module header of " << m_qFilename;
         return ERR;
     }
 
-    switch (ModPlug::ModPlug_GetModuleType(file))
-    {
+    switch (ModPlug::ModPlug_GetModuleType(m_pModFile)) {
     case NONE:
         setType(QString("None"));
         break;
@@ -178,19 +181,16 @@ int SoundSourceModPlug::parseHeader()
         setType(QString("Module"));
         break;
     }
-    setComment(QString(ModPlug::ModPlug_GetMessage(file)));
-    setTitle(QString(ModPlug::ModPlug_GetName(file)));
-    setDuration(ModPlug::ModPlug_GetLength(file) / 1000);
+    setComment(QString(ModPlug::ModPlug_GetMessage(m_pModFile)));
+    setTitle(QString(ModPlug::ModPlug_GetName(m_pModFile)));
+    setDuration(ModPlug::ModPlug_GetLength(m_pModFile) / 1000);
     setBitrate(8); // not really, but fill in something...
     setSampleRate(44100);
     setChannels(2);
     return OK;
 }
 
-/*
-   Return the length of the file in samples.
- */
 inline long unsigned SoundSourceModPlug::length()
 {
-    return filelength;
+    return m_fileLength;
 }
