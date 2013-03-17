@@ -53,7 +53,7 @@
 	<manifest>
 	<title>ShadeDark1024x768-XGA</title>
 	<author>jus</author>
-	<version>1.11.0.13</version>
+	<version>1.11.0.14</version>
 	<description>A 2-deck split-waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -3354,7 +3354,7 @@
 					<!-- Collapsing Waveform, Vinylcontrol & spinning Vinyl widget-->
 					<WidgetGroup>
 						<Pos>2,43</Pos>
-						<Size>318,118</Size>
+						<Size>316,117</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
@@ -3434,14 +3434,14 @@
 
 							<!-- Spinning Vinyl & Vinylcontrol -->
 							<WidgetGroup>
-								<Style>QGroupBox { border: 0px solid yellow; border-left: 1px solid #565E6B; } QWidget { margin: 0; padding: 0; }</Style>
+								<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>
 								<Children>
 									<!-- Spinning Vinyl sub-widget -->
 									<WidgetGroup>
 										<!--<Pos>296,0</Pos>-->
 										<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
-										<Size>88,82</Size>
+										<Size>86,82</Size>
 										<Children>
 											<!--
 											**********************************************
@@ -3467,7 +3467,7 @@
 									<!-- Vinylcontrol sub-widget -->
 									<WidgetGroup>
 										<Pos>0,0</Pos>
-										<Size>88,35</Size>
+										<Size>86,35</Size>
 										<Style>QGroupBox { border: 0px solid green;} QWidget { margin: 0; padding: 0; }</Style>
 										<!--<Layout>horizontal</Layout>-->
 										<Children>
@@ -3530,7 +3530,7 @@
 													<Pressed>btn_vinylcontrol_mode_const1.png</Pressed>
 													<Unpressed>btn_vinylcontrol_mode_const1.png</Unpressed>
 												</State>
-												<Pos>-1,2</Pos>
+												<Pos>0,2</Pos>
 												<Connection>
 													<ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
 												</Connection>
@@ -4698,7 +4698,7 @@
 					<!-- Collapsing Waveform, Vinylcontrol & spinning Vinyl widget-->
 					<WidgetGroup>
 						<Pos>2,43</Pos>
-						<Size>318,118</Size>
+						<Size>316,117</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
@@ -4778,14 +4778,14 @@
 
 							<!-- Spinning Vinyl & Vinylcontrol -->
 							<WidgetGroup>
-								<Style>QGroupBox { border: 0px solid yellow; border-left: 1px solid #565E6B; } QWidget { margin: 0; padding: 0; }</Style>
+								<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>
 								<Children>
 									<!-- Spinning Vinyl sub-widget -->
 									<WidgetGroup>
 										<!--<Pos>296,0</Pos>-->
 										<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
-										<Size>88,82</Size>
+										<Size>86,82</Size>
 										<Children>
 											<!--
 											**********************************************
@@ -4811,7 +4811,7 @@
 									<!-- Vinylcontrol sub-widget -->
 									<WidgetGroup>
 										<Pos>0,0</Pos>
-										<Size>88,35</Size>
+										<Size>86,35</Size>
 										<Style>QGroupBox { border: 0px solid green;} QWidget { margin: 0; padding: 0; }</Style>
 										<!--<Layout>horizontal</Layout>-->
 										<Children>
@@ -4874,7 +4874,7 @@
 													<Pressed>btn_vinylcontrol_mode_const2.png</Pressed>
 													<Unpressed>btn_vinylcontrol_mode_const2.png</Unpressed>
 												</State>
-												<Pos>-1,2</Pos>
+												<Pos>0,2</Pos>
 												<Connection>
 													<ConfigKey>[Channel2],vinylcontrol_mode</ConfigKey>
 												</Connection>
