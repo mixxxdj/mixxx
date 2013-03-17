@@ -49,15 +49,15 @@ class ControlObject
     // Adds all ControlObjects that currently exist to pControlList
     static void getControls(QList<ControlObject*>* pControlsList);
 
-    /** Used to add a pointer to the corresponding ControlObjectThread of this ControlObject */
+    // Used to add a pointer to the corresponding ControlObjectThread of this ControlObject
     void addProxy(ControlObjectThread *pControlObjectThread);
     // To get rid of a proxy when the corresponding object is being deleted for example
     void removeProxy(ControlObjectThread *pControlObjectThread);
-    /** Return the key of the object */
+    // Return the key of the object
     inline ConfigKey getKey() { return m_key; }
     // Returns the value of the ControlObject
     double get();
-    // Sets the ControlObject value in a threadsave way and updates associated proxy objects. 
+    // Sets the ControlObject value
     void set(const double& value, bool emmitValueChanged = true);
     // Sets the default value
     void reset();
@@ -82,13 +82,12 @@ class ControlObject
     void valueChanged(double);
 
   public:
-    // Called when a widget has changed value. Not thread safe.
+    // Called when a widget has changed value.
     virtual void setValueFromMidi(MidiOpCode o, double v);
-    // Called when another thread has changed value. Not thread safe.
+    // Called when another thread has changed value.
     virtual void setValueFromThread(double dValue);
 
   protected:
-    //TODO() ?? 
     double m_dDefaultValue;
     // Key of the object
     ConfigKey m_key;
