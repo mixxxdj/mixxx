@@ -5,6 +5,7 @@
 #include <QFile>
 #include <QtDebug>
 
+#include "util/timer.h"
 #include "soundsourcemodplug.h"
 
 /* read files in 512k chunks */
@@ -21,7 +22,7 @@ SoundSourceModPlug::SoundSourceModPlug(QString qFilename) :
     m_fileLength = 0;
     m_pModFile = 0;
 
-    qDebug() << "Loading ModPlug module " << m_qFilename;
+    qDebug() << "[ModPlug] Loading ModPlug module " << m_qFilename;
 
     // read module file to byte array
     QFile modFile(m_qFilename);
@@ -65,9 +66,12 @@ void SoundSourceModPlug::configure(unsigned int bufferSizeLimit,
 }
 
 int SoundSourceModPlug::open() {
+    ScopedTimer t("SoundSourceModPlug::open()");
+
     if (m_pModFile == NULL) {
         // an error occured
-        qDebug() << "Could not load module file: "
+        t.cancel();
+        qDebug() << "[ModPlug] Could not load module file: "
                  << m_qFilename;
         return ERR;
     }
@@ -82,14 +86,15 @@ int SoundSourceModPlug::open() {
     // (((milliseconds << 2) >> 10 /* to seconds */)
     //      div 11 /* samples to chunksize ratio */)
     //      << 19 /* align to chunksize */
-    int estBufferSize = ((ModPlug::ModPlug_GetLength(m_pModFile) >> 8) / 11) << 19;
-    estBufferSize = std::min(estBufferSize, s_bufferSizeLimit);
-    m_sampleBuf.reserve(estBufferSize);
-    qDebug() << "Reserved " << m_sampleBuf.capacity() << " bytes for samples";
+    int estimate = ((ModPlug::ModPlug_GetLength(m_pModFile) >> 8) / 11) << 19;
+    estimate = math_min(estimate, s_bufferSizeLimit);
+    m_sampleBuf.reserve(estimate);
+    qDebug() << "[ModPlug] Reserved " << m_sampleBuf.capacity()
+             << " bytes for samples";
 
     // decode samples to sample buffer
     int bytesRead = -1;
-    int currentSize = m_sampleBuf.length();
+    int currentSize = 0;
     while((bytesRead != 0) && (m_sampleBuf.length() < s_bufferSizeLimit)) {
         // reserve enough space in sample buffer
         m_sampleBuf.resize(currentSize + CHUNKSIZE);
@@ -100,10 +105,13 @@ int SoundSourceModPlug::open() {
         currentSize += bytesRead;
         if (bytesRead != CHUNKSIZE) {
             m_sampleBuf.resize(currentSize);
+            bytesRead = 0; // we reached the end of the file
         }
     }
-    qDebug() << "Filled Sample buffer with " << m_sampleBuf.length() << " bytes.";
-    qDebug() << "Sample buffer has " << m_sampleBuf.capacity() - m_sampleBuf.length()
+    qDebug() << "[ModPlug] Filled Sample buffer with " << m_sampleBuf.length()
+             << " bytes.";
+    qDebug() << "[ModPlug] Sample buffer has "
+             << m_sampleBuf.capacity() - m_sampleBuf.length()
              << " bytes unused capacity.";
 
     // The sample buffer holds 44.1kHz 16bit integer stereo samples.
@@ -128,20 +136,14 @@ long SoundSourceModPlug::seek(long filePos)
 unsigned SoundSourceModPlug::read(unsigned long size,
                                   const SAMPLE* pDestination)
 {
-    unsigned char* pDest = (unsigned char*) pDestination;
-    if (m_fileLength > 0) {
-        unsigned bytes = 0;
-        while ((m_seekPos < m_fileLength) && (bytes < (size << 1))) {
-            // copy a 16bit sample
-            pDest[bytes++] = m_sampleBuf.at(m_seekPos << 1);
-            pDest[bytes++] = m_sampleBuf.at((m_seekPos << 1) + 1);
-            ++m_seekPos;
-        }
-        // return number of bytes divided by bytes per sample
-        return bytes >> 1;
-    }
-    // The file has errors or is not open. Tell the truth and return 0.
-    return 0;
+    unsigned maxLength = m_sampleBuf.length() >> 1;
+    unsigned copySamples = math_min(maxLength - m_seekPos, size);
+
+    memcpy((unsigned char*) pDestination,
+           m_sampleBuf.constData() + (m_seekPos << 1), copySamples << 1);
+
+    m_seekPos += copySamples;
+    return copySamples;
 }
 
 int SoundSourceModPlug::parseHeader()
