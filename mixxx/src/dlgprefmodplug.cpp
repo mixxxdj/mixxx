@@ -109,7 +109,7 @@ void DlgPrefModplug::applySettings()
     unsigned int bufferSizeLimit = m_pUi->memoryLimit->value() << 20;
     ModPlug::ModPlug_Settings settings;
 
-    // Note that ModPlug always decodes sound at 44100kHz, 32 bit, stereo
+    // Note that ModPlug always decodes sound at 44.1kHz, 32 bit, stereo
     // and then down-mixes to the settings you choose.
     // Currently this is fixed to 16bit 44.1kHz stereo
 
