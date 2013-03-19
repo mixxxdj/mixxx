@@ -1,18 +1,5 @@
-/***************************************************************************
-                          dlgprefmodplug.h  -  modplug settings dialog
-                             -------------------
-    copyright            : (C) 2013 by Stefan Nuernberger
-    email                : kabelfrickler@gmail.com
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
+// dlgprefmodplug.h  -  modplug settings dialog
+// created 2013 by Stefan Nuernberger <kabelfrickler@gmail.com>
 
 #ifndef DLGPREFMODPLUG_H
 #define DLGPREFMODPLUG_H
@@ -42,8 +29,8 @@ public slots:
    void applySettings();
 
 private:
-    Ui::DlgPrefModplug *ui;
-    ConfigObject<ConfigValue> *config;
+    Ui::DlgPrefModplug *m_pUi;
+    ConfigObject<ConfigValue> *m_pConfig;
 };
 
 #endif // DLGPREFMODPLUG_H
