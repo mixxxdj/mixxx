@@ -19,7 +19,7 @@ namespace ModPlug {
 // in RAM to allow seeking and smooth operation in Mixxx.
 class SoundSourceModPlug : public Mixxx::SoundSource
 {
-public:
+  public:
     SoundSourceModPlug(QString qFilename);
     ~SoundSourceModPlug();
     int open();
@@ -32,7 +32,8 @@ public:
     // apply settings for decoding
     static void configure(unsigned int bufferSizeLimit,
                           const ModPlug::ModPlug_Settings &settings);
-private:
+
+  private:
     static int s_bufferSizeLimit; // max track buffer length (bytes)
     static ModPlug::ModPlug_Settings s_settings; // modplug decoder parameters
 

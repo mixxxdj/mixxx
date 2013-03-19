@@ -15,11 +15,11 @@ class DlgPrefModplug : public QDialog
 {
     Q_OBJECT
 
-public:
+  public:
     explicit DlgPrefModplug(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefModplug();
 
-public slots:
+  public slots:
     /** Apply changes to widget */
    void slotApply();
    void slotUpdate();
@@ -28,7 +28,7 @@ public slots:
    void saveSettings();
    void applySettings();
 
-private:
+  private:
     Ui::DlgPrefModplug *m_pUi;
     ConfigObject<ConfigValue> *m_pConfig;
 };
