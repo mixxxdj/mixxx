@@ -17,13 +17,6 @@
    <property name="spacing">
     <number>10</number>
    </property>
-   <item row="2" column="0" colspan="3">
-    <widget class="QLabel" name="label_10">
-     <property name="text">
-      <string>Memory limit for single track (MB)</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="5">
     <widget class="QSpinBox" name="memoryLimitSpin">
      <property name="minimum">
@@ -34,16 +27,6 @@
      </property>
      <property name="value">
       <number>256</number>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="0" colspan="5">
-    <widget class="QCheckBox" name="oversampling">
-     <property name="text">
-      <string>Enable oversampling (*highly* recommended)</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
      </property>
     </widget>
    </item>
@@ -67,55 +50,6 @@
      </property>
     </widget>
    </item>
-   <item row="2" column="3">
-    <widget class="QSlider" name="memoryLimit">
-     <property name="toolTip">
-      <string extracomment="1 minute of decoded audio requires about 10MB of RAM."/>
-     </property>
-     <property name="minimum">
-      <number>16</number>
-     </property>
-     <property name="maximum">
-      <number>512</number>
-     </property>
-     <property name="value">
-      <number>256</number>
-     </property>
-     <property name="sliderPosition">
-      <number>256</number>
-     </property>
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="3" colspan="3">
-    <widget class="QComboBox" name="resampleMode">
-     <property name="currentIndex">
-      <number>1</number>
-     </property>
-     <item>
-      <property name="text">
-       <string>Nearest (very fast, extremely bad quality)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Linear (fast, good quality)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>Cubic Spline (high quality)</string>
-      </property>
-     </item>
-     <item>
-      <property name="text">
-       <string>8-tap FIR (extremely high quality)</string>
-      </property>
-     </item>
-    </widget>
-   </item>
    <item row="0" column="0" colspan="6">
     <widget class="QLabel" name="label_11">
      <property name="text">
@@ -123,13 +57,6 @@
      </property>
      <property name="wordWrap">
       <bool>true</bool>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="0" colspan="2">
-    <widget class="QLabel" name="label">
-     <property name="text">
-      <string>Resampling mode (interpolation)</string>
      </property>
     </widget>
    </item>
@@ -476,6 +403,79 @@
        </layout>
       </item>
      </layout>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Resampling mode (interpolation)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="oversampling">
+     <property name="text">
+      <string>Enable oversampling</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3" colspan="3">
+    <widget class="QComboBox" name="resampleMode">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>Nearest (very fast, extremely bad quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Linear (fast, good quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Cubic Spline (high quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>8-tap FIR (extremely high quality)</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Memory limit for single track (MB)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2" colspan="3">
+    <widget class="QSlider" name="memoryLimit">
+     <property name="toolTip">
+      <string extracomment="1 minute of decoded audio requires about 10MB of RAM."/>
+     </property>
+     <property name="minimum">
+      <number>16</number>
+     </property>
+     <property name="maximum">
+      <number>512</number>
+     </property>
+     <property name="value">
+      <number>256</number>
+     </property>
+     <property name="sliderPosition">
+      <number>256</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
     </widget>
    </item>
   </layout>
