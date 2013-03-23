@@ -7,13 +7,14 @@
 #include "controlobject.h"
 
 class VelocityController;
+class RateIIFilter;
 
 class PositionScratchController : public QObject {
   public:
     PositionScratchController(const char* pGroup);
     virtual ~PositionScratchController();
 
-    void process(double currentSample, bool paused,
+    void process(double currentSample, double releaseRate,
             int iBufferSize, double baserate);
     bool isEnabled();
     double getRate();
@@ -25,12 +26,17 @@ class PositionScratchController : public QObject {
     ControlObject* m_pScratchPosition;
     ControlObject* m_pMasterSampleRate;
     VelocityController* m_pVelocityController;
+    RateIIFilter* m_pRateIIFilter;
     bool m_bScratching;
     bool m_bEnableInertia;
     double m_dLastPlaypos;
     double m_dPositionDeltaSum;
+    double m_dTargetDelta;
     double m_dStartScratchPosition;
     double m_dRate;
+    double m_dMoveDelay;
+    double m_dMouseSampeTime;
+    double m_scratchPosition;
 };
 
 #endif /* POSITIONSCRATCHCONTROLLER_H */
