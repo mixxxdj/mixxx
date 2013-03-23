@@ -109,8 +109,7 @@ Method A: Download
 To activate MP3 streaming on Mac OS X, follow these steps:
 
   1. Download `LAME 3.98.4 <http://mir.cr/IOTD7VBU>`_ Intel
-     (Mac OS X 10.5+ 32-bit & 64-bit) or `LAME 3.98.4 <http://mir.cr/YIBEU5R4>`_
-     PowerPC (Mac OS X 10.5 32-bit)
+     (Mac OS X 10.5+ 32-bit & 64-bit)
   #. Double-click on the downloaded zip file to unpack the file and you'll get
      an installer package file
   #. Double-click on the installer package file and follow the step-by-step
