@@ -23,7 +23,7 @@ That's right, this is you after learning how to DJ with Mixxx:
 Table of Contents
 -----------------
 
-.. Temporarily disable quickstart since it won't be ready for 1.10.0
+.. Temporarily disable quickstart since it won't be ready for 1.11.0
 .. chapters/quickstart
 
 .. toctree::
@@ -46,4 +46,14 @@ Table of Contents
    chapters/appendix
    glossary
 
-.. [#f1] Yes, free with a capital F free. Free as in beer and free as in speech. For more information about what this means, see `Wikipedia <http://en.wikipedia.org/wiki/Open-source_software>`_.
+**For documentation writers**
+
+.. toctree::
+   :numbered:
+
+   /todolist
+   /manual_guidelines
+
+.. [#f1] Yes, free with a capital F free. Free as in beer and free as in speech.
+         For more information about what this means, see
+         `Wikipedia <http://en.wikipedia.org/wiki/Open-source_software>`_.
