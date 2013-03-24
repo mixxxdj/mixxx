@@ -8,15 +8,18 @@ Mixxx |version| User Manual
 
 .. todo:: Release Checklist:
 
-          * Disable the "For documentation writers" toctree from TOC in index.rst
-          * Update the release and  version tags in conf.py
-          * Temp delete this todo ;-)
+          * Disable the "For documentation writers" toctree from TOC in
+            /index.rst
+          * Temp delete this todo in /index.rst
+          * Update the release and  version tags in /conf.py
+          * Run "make html" to produce html output for http://mixxx.org/manual/
+          * Run "make latexpdf" to produce pdf output for distribution
           * Run "make latexpdf" twice, or the TOC is missing from the resulting
             pdf
 
-Mixxx is Free [#f1]_ DJ software for Windows, Mac OS X, and Linux.  **Mixxx gives
-you everything you need to become a superstar DJ** (except talent and hard work.)
-Using Mixxx, you can rock the party with your vinyl turntables,
+Mixxx is Free [#f1]_ DJ software for Windows, Mac OS X, and Linux.
+**Mixxx gives you everything you need to become a superstar DJ** (except talent
+and hard work.) Using Mixxx, you can rock the party with your vinyl turntables,
 your MIDI controllers, or even just your keyboard.
 
 That's right, this is you after learning how to DJ with Mixxx:
