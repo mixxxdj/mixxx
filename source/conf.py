@@ -182,7 +182,8 @@ htmlhelp_basename = 'Mixxxdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Mixxx.tex', u'Mixxx User Manual', u'The Mixxx Team', 'manual', True),
+  ('index', 'Mixxx-Manual.tex', u'Mixxx User Manual', u'The Mixxx Team',
+   'manual', True),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
