@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-03-05 06:50+0200\n"
-"PO-Revision-Date: 2013-02-25 16:53+0000\n"
+"PO-Revision-Date: 2013-03-26 13:43+0000\n"
 "Last-Translator: Sid Roberts <Unknown>\n"
 "Language-Team: English (United Kingdom) <en_GB@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-06 05:13+0000\n"
-"X-Generator: Launchpad (build 16514)\n"
+"X-Launchpad-Export-Date: 2013-03-27 04:35+0000\n"
+"X-Generator: Launchpad (build 16540)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -489,7 +489,7 @@ msgstr "Lock"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "_copy"
-msgstr ""
+msgstr "_copy"
 
 #: CrateFeature#6
 msgctxt "CrateFeature#6"
@@ -1082,7 +1082,7 @@ msgstr "Double the current loop's length"
 
 #: DlgControllerLearning#71
 msgid "Toggle slip mode"
-msgstr ""
+msgstr "Toggle slip mode"
 
 #: DlgControllerLearning#72
 msgid "Preview Deck %1"
@@ -1196,7 +1196,7 @@ msgstr "Flange effect: Phase delay"
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
-msgstr ""
+msgstr "Microphone"
 
 #: DlgControllerLearning#100
 msgid "Microphone on/off"
@@ -1213,19 +1213,19 @@ msgstr "Microphone channel pan (e.g. left, right, center)"
 #: DlgControllerLearning#103
 msgctxt "DlgControllerLearning#103"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: DlgControllerLearning#104
 msgid "Shuffle the content of the Auto DJ playlist"
-msgstr ""
+msgstr "Shuffle the content of the Auto DJ playlist"
 
 #: DlgControllerLearning#105
 msgid "Skip the next track in the Auto DJ playlist"
-msgstr ""
+msgstr "Skip the next track in the Auto DJ playlist"
 
 #: DlgControllerLearning#106
 msgid "Trigger the transition to the next track"
-msgstr ""
+msgstr "Trigger the transition to the next track"
 
 #: DlgControllerLearning#107
 msgid "Toggle Auto DJ (ON/OFF)"
@@ -4668,7 +4668,7 @@ msgstr "Jumps to the end of the track."
 #: Tooltips#136
 msgctxt "Tooltips#136"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronise"
 
 #: Tooltips#137
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4719,7 +4719,7 @@ msgstr "Ejects track from the player."
 #: Tooltips#148
 msgctxt "Tooltips#148"
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: Tooltips#149
 msgid "If hotcue is set, jumps to the hotcue."
@@ -5017,7 +5017,7 @@ msgstr ""
 
 #: WOverview#3
 msgid "Finalizing .."
-msgstr ""
+msgstr "Finalising .."
 
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
