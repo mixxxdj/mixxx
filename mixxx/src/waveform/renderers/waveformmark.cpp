@@ -6,6 +6,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "xmlparse.h"
+#include "widget/wskincolor.h"
 
 WaveformMark::WaveformMark()
     : m_pointControl(NULL) {
@@ -23,6 +24,8 @@ void WaveformMark::setup(const QString& group, const QDomNode& node, const Wavef
         // As a fallback, grab the color from the parent's AxesColor
         m_color = signalColors.getAxesColor();
         qDebug() << "Didn't get mark <Color>, using parent's <AxesColor>:" << m_color;
+    } else {
+        m_color = WSkinColor::getCorrectColor(m_color);
     }
 
     m_textColor = XmlParse::selectNodeQString(node, "TextColor");
