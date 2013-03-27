@@ -15,6 +15,9 @@ class WImageStore {
     static QImage* getImageNoCache(const QString &fileName);
     static void deleteImage(QImage* p);
     static void setLoader(QSharedPointer<ImgSource> ld);
+    // For external owned images like software generated ones.
+    static void correctImageColors(QImage* p);
+
   private:
     struct ImageInfoType {
         QImage *image;
