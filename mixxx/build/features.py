@@ -132,7 +132,8 @@ class Bulk(Feature):
     def sources(self, build):
         sources = ['controllers/bulk/bulkcontroller.cpp',
                    'controllers/bulk/bulkenumerator.cpp']
-
+        if not int(build.flags['hid']):
+		    sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 

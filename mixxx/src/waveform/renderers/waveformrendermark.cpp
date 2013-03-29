@@ -10,6 +10,7 @@
 #include "waveform/waveform.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "widget/wimagestore.h"
 
 
 
@@ -67,15 +68,13 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
 void WaveformRenderMark::generateMarkImage( WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
     if( mark.m_pixmapPath != "") {
-        // TODO(XXX) We could use WPixmapStore here, which would recolor the
-        // pixmap according to the theme. Then we would have to worry about
-        // deleting it -- for now we'll just load the pixmap directly.
         QString path =  WWidget::getPath(mark.m_pixmapPath);
         QImage image = QImage(path);
         // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
         if (!image.isNull()) {
             mark.m_image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+            WImageStore::correctImageColors(&mark.m_image);
             return;
         }
     }
