@@ -4701,6 +4701,10 @@ Zum Beenden OK drücken.</translation>
             <source>Loading track ..</source>
             <translation>Titel wird geladen ..</translation>
         </message>
+        <message>
+            <source>Finalizing ..</source>
+            <translation>Fertigstellen ..</translation>
+        </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>

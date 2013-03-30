@@ -63,8 +63,7 @@
         </message>
         <message>
             <source>Duplicate Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kopiera spellista</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -96,23 +95,19 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_kopiera</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spellistan gick inte att skapa</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ett okänt fel uppstod när spellistan skapades </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spellistsfiler (*.m3u *.m3u8 *.pls *.csv</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
@@ -434,8 +429,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importera spellista</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -456,8 +450,7 @@
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lås upp</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -481,8 +474,7 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Spellistsfiler (*.m3u *.m3u8 *.pls *.csv</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
@@ -622,15 +614,15 @@ samt automatiskt visar en taktmatris som hjälper dig synkronisera spår baserat
         </message>
         <message>
             <source>Analyser Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Analysinställningar</translation>
         </message>
         <message>
             <source>Enable fast beat detection. 
 If activated Mixxx only analyzes the first minute of a track for beat information. 
 This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aktivera snabb tempo identifiering. 
+När den är aktiverad så analyserar Mixxx endast den första minuten av ett spår för takt Identifiering. 
+Detta kan snabba upp identifieringen på långsamma datorer men kan skapa taktmatriser av sämre kvalité.</translation>
         </message>
         <message>
             <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
@@ -5470,6 +5462,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>
