@@ -851,8 +851,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Toggle keylock mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activar modo de bloqueo</translation>
         </message>
         <message>
             <source>Pitch control slider</source>
@@ -1060,13 +1059,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Biblioteca</translation>
         </message>
         <message>
             <source>Expand/collapse the selected view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Expandir/colpasar la vista seleccionada (Biblioteca, Lista de reproducción..)</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -1119,8 +1116,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Micrófono</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
@@ -1136,8 +1132,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist</source>
@@ -1153,8 +1148,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Toggle Auto DJ (ON/OFF)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alternar Auto DJ (Enc./Apag.)</translation>
         </message>
         <message>
             <source>User Interface</source>
@@ -1194,8 +1188,7 @@ by analyzing the beats to discard outliers.</source>
         <name>DlgHidden</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Administrar</translation>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
@@ -1204,8 +1197,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleccionar todo</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
@@ -1224,8 +1216,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Unhide</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mostrar</translation>
         </message>
         <message>
             <source>Ctrl+S</source>
@@ -1236,8 +1227,7 @@ by analyzing the beats to discard outliers.</source>
         <name>DlgMissing</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Administrar</translation>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
@@ -1670,8 +1660,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sincronizar</translation>
         </message>
     </context>
     <context>
@@ -3285,8 +3274,7 @@ También se generarán las formas de onda como parte del análisis.</translation
         </message>
         <message>
             <source>Show Microphone Section</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mostrar seccion del microfono</translation>
         </message>
         <message>
             <source>Ctrl+2</source>
@@ -3730,8 +3718,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         <name>QMessageBox</name>
         <message>
             <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Actualizar Mixxx desde v1.9.x/1.10.x.</translation>
         </message>
         <message>
             <source>Mixxx has a new and improved beat detector.</source>
@@ -3945,8 +3932,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Waveform Display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mostrar forma de onda</translation>
         </message>
         <message>
             <source>Shows the loaded track's waveform near the playback position.</source>
@@ -4111,13 +4097,11 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Preview Deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Previsualizar mesa</translation>
         </message>
         <message>
             <source>Show/hide the Preview deck.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mostrar/Ocultar la previsualizacion de mesa</translation>
         </message>
         <message>
             <source>Microphone Volume</source>
@@ -4392,8 +4376,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Loop Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Salida del bucle</translation>
         </message>
         <message>
             <source>Turns the current loop off.</source>
@@ -4658,8 +4641,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Track Time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tiempo de pista</translation>
         </message>
         <message>
             <source>Displays the elapsed or remaining time of the track loaded.</source>
@@ -4813,13 +4795,15 @@ Clickee OK para salir.</translation>
         <name>WOverview</name>
         <message>
             <source>Ready to play, analyzing ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Listo para reproducir,analizando ..</translation>
         </message>
         <message>
             <source>Loading track ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cargando pista ..</translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
+            <translation>Terminando ..</translation>
         </message>
     </context>
     <context>

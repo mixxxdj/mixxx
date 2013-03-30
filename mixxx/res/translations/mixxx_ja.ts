@@ -101,8 +101,7 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>プレイリストの作成に失敗</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
@@ -434,8 +433,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>プレイリストをインポート</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -503,8 +501,7 @@
         </message>
         <message>
             <source>Create new crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>新規クレートを作成</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -4142,7 +4139,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>RhythmboxFeature</name>
         <message>
             <source>Rhythmbox</source>
-            <translation>リズムボックス</translation>
+            <translation>Rhythmbox</translation>
         </message>
     </context>
     <context>
@@ -5312,6 +5309,11 @@ OKを押すと終了します。</translation>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>

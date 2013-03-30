@@ -47,7 +47,7 @@
         </message>
         <message>
             <source>Remove</source>
-            <translation>Remove</translation>
+            <translation>Remover</translation>
         </message>
         <message>
             <source>Rename</source>
@@ -4772,6 +4772,11 @@ Clique em OK para sair.</translation>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>
