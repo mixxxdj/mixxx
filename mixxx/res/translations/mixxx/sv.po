@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2013-02-05 00:16+0000\n"
-"Last-Translator: Gunnar Eskilsson <gunnareskilsson@gmail.com>\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-03-26 16:48+0000\n"
+"Last-Translator: Morten Frisch <Unknown>\n"
 "Language-Team: Swedish <sv@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:38+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-27 04:35+0000\n"
+"X-Generator: Launchpad (build 16540)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -83,7 +83,7 @@ msgstr "Importera spellista"
 
 #: BasePlaylistFeature#8
 msgid "Duplicate Playlist"
-msgstr ""
+msgstr "Kopiera spellista"
 
 #: BasePlaylistFeature#9
 msgid "Export Playlist"
@@ -116,22 +116,22 @@ msgstr "Spellistans namn:"
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "_copy"
-msgstr ""
+msgstr "_kopiera"
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Spellistan gick inte att skapa"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Ett okänt fel uppstod när spellistan skapades "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Spellistsfiler (*.m3u *.m3u8 *.pls *.csv"
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
@@ -491,7 +491,7 @@ msgstr ""
 #: CrateFeature#6
 msgctxt "CrateFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importera spellista"
 
 #: CrateFeature#7
 msgid "Crates"
@@ -512,7 +512,7 @@ msgstr ""
 #: CrateFeature#11
 msgctxt "CrateFeature#11"
 msgid "Unlock"
-msgstr ""
+msgstr "Lås upp"
 
 #: CrateFeature#12
 msgid "Crate name:"
@@ -537,7 +537,7 @@ msgstr "Omdöpning av låda misslyckades"
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Spellistsfiler (*.m3u *.m3u8 *.pls *.csv"
 
 #: CrateFeature#18
 msgctxt "CrateFeature#18"
@@ -684,7 +684,7 @@ msgstr "Välj mellan olika algorytmer för att identifiera takter."
 
 #: DlgBeatsDlg#7
 msgid "Analyser Settings"
-msgstr ""
+msgstr "Analysinställningar"
 
 #: DlgBeatsDlg#8
 msgid ""
@@ -694,6 +694,11 @@ msgid ""
 "This can speed up beat detection on slower computers but may result in lower "
 "quality beatgrids."
 msgstr ""
+"Aktivera snabb tempo identifiering. \n"
+"När den är aktiverad så analyserar Mixxx endast den första minuten av ett "
+"spår för takt Identifiering. \n"
+"Detta kan snabba upp identifieringen på långsamma datorer men kan skapa "
+"taktmatriser av sämre kvalité."
 
 #: DlgBeatsDlg#9
 msgid ""
@@ -4877,6 +4882,10 @@ msgstr ""
 
 #: WOverview#2
 msgid "Loading track .."
+msgstr ""
+
+#: WOverview#3
+msgid "Finalizing .."
 msgstr ""
 
 #: WSearchLineEdit#1

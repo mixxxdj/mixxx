@@ -2,26 +2,26 @@
 # Copyright (c) 2011 Rosetta Contributors and Canonical Ltd 2011
 # This file is distributed under the same license as the mixxx package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
-# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2012.
+# Мирослав Николић <miroslavnikolic@rocketmail.com>, 2012, 2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2012-11-20 14:32+0000\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-03-09 18:21+0000\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
-"Language-Team: Serbian translators\n"
+"Language-Team: Serbian <gnom@prevod.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:38+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-10 04:42+0000\n"
+"X-Generator: Launchpad (build 16523)\n"
 "Language: sr\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Самостални Диџеј"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -84,7 +84,7 @@ msgstr "Увези списак нумера"
 
 #: BasePlaylistFeature#8
 msgid "Duplicate Playlist"
-msgstr ""
+msgstr "Удвостручи списак нумера"
 
 #: BasePlaylistFeature#9
 msgid "Export Playlist"
@@ -117,22 +117,22 @@ msgstr "Назив списка нумера:"
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "_copy"
-msgstr ""
+msgstr "_умножи"
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Стварање списка нумера није успело"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Дошло је до непознате грешке приликом стварања списка нумера: "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Спискови нумера (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
@@ -140,6 +140,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"М3У списак нумера (*.m3u);;М3У8 списак нумера (*.m3u8);;ПЛС списак нумера "
+"(*.pls);;Текстуални ЦСВ (*.csv);;Читљив текст (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -237,7 +239,7 @@ msgstr "Закључавање ТУМ-а"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "Преглед"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -488,12 +490,12 @@ msgstr "Закључај"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "_copy"
-msgstr ""
+msgstr "_умножи"
 
 #: CrateFeature#6
 msgctxt "CrateFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Увези списак нумера"
 
 #: CrateFeature#7
 msgid "Crates"
@@ -509,12 +511,12 @@ msgstr "Извези гајбицу"
 
 #: CrateFeature#10
 msgid "Duplicate Crate"
-msgstr ""
+msgstr "Удвостручи гајбицу"
 
 #: CrateFeature#11
 msgctxt "CrateFeature#11"
 msgid "Unlock"
-msgstr ""
+msgstr "Откључај"
 
 #: CrateFeature#12
 msgid "Crate name:"
@@ -539,7 +541,7 @@ msgstr "Нисам успео да преименујем гајбицу"
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Спискови нумера (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#18
 msgctxt "CrateFeature#18"
@@ -547,6 +549,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"М3У списак нумера (*.m3u);;М3У8 списак нумера (*.m3u8);;ПЛС списак нумера "
+"(*.pls);;Текстуални ЦСВ (*.csv);;Читљив текст (*.txt)"
 
 #: CrateFeature#19
 msgid ""
@@ -665,6 +669,10 @@ msgid ""
 "automatically shows a beat-grid for them, and allows you to synchronize "
 "tracks using their beat information."
 msgstr ""
+"Када је укључено откривање такта, Миксикс открива број тактова у минуту и "
+"број тактова ваших нумера, \n"
+"и сам приказује њихову мрежу тактова, и омогућава вам да ускладите нумере "
+"користећи податке о њиховим тактовима."
 
 #: DlgBeatsDlg#3
 msgid "Enable BPM and Beat Detection"
@@ -694,6 +702,11 @@ msgid ""
 "This can speed up beat detection on slower computers but may result in lower "
 "quality beatgrids."
 msgstr ""
+"Укључите брзо откривање такта. \n"
+"Ако је покренуто Миксикс анализира само први минут нумере у потрази за "
+"подацима о такту. \n"
+"Ово може убрзати откривање такта на споријим рачунарима, али може да "
+"резултира слабијим квалитетом тактне мреже."
 
 #: DlgBeatsDlg#9
 msgid ""
@@ -703,23 +716,34 @@ msgid ""
 "Often results in higher quality beatgrids, but will not do well on tracks "
 "that have tempo shifts."
 msgstr ""
+"Претвара тактове откривене анализатором у тактну мрежу сталног темпа. \n"
+"Користите ово подешавање ако ваше нумере имају стални темпо (нпр. "
+"електронска музика већим делом). \n"
+"Нуди резултате у тактној мрежи високог квалитета, али неће добро радити са "
+"нумерама које имају померај темпа."
 
 #: DlgBeatsDlg#10
 msgid ""
 "Attempts to correct the phase (first beat) of fixed-tempo beatgrids \n"
 "by analyzing the beats to discard outliers."
 msgstr ""
+"Покушаће да поправи фазу (први такт) тактне мреже сталног темпа \n"
+"анализирањем тактова да би одбацио непожељне."
 
 #: DlgBeatsDlg#11
 msgid ""
 "e.g. from 3rd-party programs or Mixxx versions before 1.11.\n"
 "(Not checked: Analyse only, if no beats exist.)"
 msgstr ""
+"нпр. из програма 3-ћих лица или издања Миксикса пре 1.11.\n"
+"(Није проверено: Обрађује само, ако не постоје тактови.)"
 
 #: DlgBeatsDlg#12
 msgid ""
 "Re-analyse beats when settings change or beat detection data is outdated"
 msgstr ""
+"Поново ће обрадити тактове када се промене подешавања или када су подаци "
+"откривања такта застарели"
 
 #: DlgBeatsDlg#13
 msgid "Enable Fast Analysis (For slow computers, may be less accurate)"
@@ -879,7 +903,7 @@ msgstr "Дугме за пуштање уназад"
 
 #: DlgControllerLearning#24
 msgid "Gain knob"
-msgstr ""
+msgstr "Дугменце појачања"
 
 #: DlgControllerLearning#25
 msgid "Headphone listen button"
@@ -947,7 +971,7 @@ msgstr "Смањи проток (фино)"
 
 #: DlgControllerLearning#41
 msgid "Pitch-bend rate up (fine)"
-msgstr ""
+msgstr "Прегиб врхунца повећања протока (фино)"
 
 #: DlgControllerLearning#42
 msgid "Adjust rate up (coarse)"
@@ -959,15 +983,15 @@ msgstr "Смањи проток (грубо)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (coarse)"
-msgstr ""
+msgstr "Прегиб врхунца повећања протока (грубо)"
 
 #: DlgControllerLearning#45
 msgid "Pitch-bend rate down (coarse)"
-msgstr ""
+msgstr "Прегиб врхунца смањења протока (грубо)"
 
 #: DlgControllerLearning#46
 msgid "Pitch-bend rate down (fine)"
-msgstr ""
+msgstr "Прегиб врхунца смањења протока (фино)"
 
 #: DlgControllerLearning#47
 msgctxt "DlgControllerLearning#47"
@@ -976,15 +1000,15 @@ msgstr "Уједначавачи"
 
 #: DlgControllerLearning#48
 msgid "High EQ knob"
-msgstr ""
+msgstr "Дугменце уједначавања високих"
 
 #: DlgControllerLearning#49
 msgid "Mid EQ knob"
-msgstr ""
+msgstr "Дугменце уједначавања средњих"
 
 #: DlgControllerLearning#50
 msgid "Low EQ knob"
-msgstr ""
+msgstr "Дугменце уједначавања ниских"
 
 #: DlgControllerLearning#51
 msgid "High EQ kill"
@@ -1073,27 +1097,27 @@ msgstr "Окини режим спавања"
 
 #: DlgControllerLearning#72
 msgid "Preview Deck %1"
-msgstr ""
+msgstr "Носач прегледа %1"
 
 #: DlgControllerLearning#73
 msgid "Single deck mode - Toggle vinyl control to next deck"
-msgstr ""
+msgstr "Режим једног носача — Пребаците управљање плочом на следећи носач"
 
 #: DlgControllerLearning#74
 msgid "Cues"
-msgstr ""
+msgstr "Наговештаји"
 
 #: DlgControllerLearning#75
 msgid "Hotcues"
-msgstr ""
+msgstr "Битни наговештаји"
 
 #: DlgControllerLearning#76
 msgid "Hotcue %1"
-msgstr ""
+msgstr "Битни наговештај %1"
 
 #: DlgControllerLearning#77
 msgid "Loop Exit button"
-msgstr ""
+msgstr "Дугме за напуштање петље"
 
 #: DlgControllerLearning#78
 msgid "Beat-Looping"
@@ -1105,7 +1129,7 @@ msgstr "Направи %1-тактну петљу"
 
 #: DlgControllerLearning#80
 msgid "Create temporary %1-beat loop roll"
-msgstr ""
+msgstr "Направи привремено %1-тактно правило петље"
 
 #: DlgControllerLearning#81
 msgid "1/32th"
@@ -1126,11 +1150,11 @@ msgstr "1/4"
 #: DlgControllerLearning#85
 msgctxt "DlgControllerLearning#85"
 msgid "Library"
-msgstr ""
+msgstr "Библиотека"
 
 #: DlgControllerLearning#86
 msgid "Expand/collapse the selected view (library, playlist..)"
-msgstr ""
+msgstr "Раширите/скупите изабрани преглед (библиотека, списак нумера..)"
 
 #: DlgControllerLearning#87
 msgid "Switch to the next view (library, playlist..)"
@@ -1150,7 +1174,7 @@ msgstr "Клизајте до претходне нумере у аудиоте�
 
 #: DlgControllerLearning#91
 msgid "Load selected track into first stopped deck"
-msgstr ""
+msgstr "Учитајте изабрану нумеру у први заустављени носач"
 
 #: DlgControllerLearning#92
 msgid "Load selected track"
@@ -1158,11 +1182,11 @@ msgstr "Учитајте изабрану нумеру"
 
 #: DlgControllerLearning#93
 msgid "Load selected track and play"
-msgstr ""
+msgstr "Учитајте изабрану нумеру и пустите је"
 
 #: DlgControllerLearning#94
 msgid "Effects"
-msgstr "Ефекти"
+msgstr "Дејства"
 
 #: DlgControllerLearning#95
 msgid "Toggle flange effect"
@@ -1183,7 +1207,7 @@ msgstr ""
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
-msgstr ""
+msgstr "Микрофон"
 
 #: DlgControllerLearning#100
 msgid "Microphone on/off"
@@ -1200,23 +1224,23 @@ msgstr "Усмерење канала микрофона (тј. лево, дес
 #: DlgControllerLearning#103
 msgctxt "DlgControllerLearning#103"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Самостални Диџеј"
 
 #: DlgControllerLearning#104
 msgid "Shuffle the content of the Auto DJ playlist"
-msgstr ""
+msgstr "Измешајте садржај списка нумера самосталног диџеја"
 
 #: DlgControllerLearning#105
 msgid "Skip the next track in the Auto DJ playlist"
-msgstr ""
+msgstr "Прескочите следећу нумеру на списку нумера самосталног диџеја"
 
 #: DlgControllerLearning#106
 msgid "Trigger the transition to the next track"
-msgstr ""
+msgstr "Окините прелаз на следећу нумеру"
 
 #: DlgControllerLearning#107
 msgid "Toggle Auto DJ (ON/OFF)"
-msgstr ""
+msgstr "Пребаците Самосталног Диџеја (Укљ./Искљ.)"
 
 #: DlgControllerLearning#108
 msgid "User Interface"
@@ -1236,7 +1260,7 @@ msgstr "Прикажи/сакриј одељак управљања плочом
 
 #: DlgControllerLearning#112
 msgid "Show/hide the preview deck"
-msgstr ""
+msgstr "Прикажи/сакриј дек прегледа"
 
 #: DlgControllerLearning#113
 msgid "Show/hide spinning vinyl widget"
@@ -1253,35 +1277,35 @@ msgstr "Успешно сам мапирао у:"
 #: DlgHidden#1
 msgctxt "DlgHidden#1"
 msgid "Manage"
-msgstr ""
+msgstr "Управљај"
 
 #: DlgHidden#2
 msgctxt "DlgHidden#2"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Изаберите све нумере из табеле испод."
 
 #: DlgHidden#3
 msgctxt "DlgHidden#3"
 msgid "Select All"
-msgstr ""
+msgstr "Изабери све"
 
 #: DlgHidden#4
 msgctxt "DlgHidden#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Избаците изабране нумере из библиотеке."
 
 #: DlgHidden#5
 msgctxt "DlgHidden#5"
 msgid "Purge"
-msgstr ""
+msgstr "Избаци"
 
 #: DlgHidden#6
 msgid "Unhide selected tracks from the library."
-msgstr ""
+msgstr "Откријте изабране нумере из библиотеке."
 
 #: DlgHidden#7
 msgid "Unhide"
-msgstr ""
+msgstr "Откриј"
 
 #: DlgHidden#8
 msgid "Ctrl+S"
@@ -1290,27 +1314,27 @@ msgstr "Ктрл+С"
 #: DlgMissing#1
 msgctxt "DlgMissing#1"
 msgid "Manage"
-msgstr ""
+msgstr "Управљај"
 
 #: DlgMissing#2
 msgctxt "DlgMissing#2"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Изаберите све нумере из табеле испод."
 
 #: DlgMissing#3
 msgctxt "DlgMissing#3"
 msgid "Select All"
-msgstr ""
+msgstr "Изабери све"
 
 #: DlgMissing#4
 msgctxt "DlgMissing#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Избаците изабране нумере из библиотеке."
 
 #: DlgMissing#5
 msgctxt "DlgMissing#5"
 msgid "Purge"
-msgstr ""
+msgstr "Избаци"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -1451,7 +1475,7 @@ msgstr "Преостаје"
 
 #: DlgPrefControls#3
 msgid "Don't load tracks into a playing deck"
-msgstr ""
+msgstr "Не учитавајте нумере у покренути дек"
 
 #: DlgPrefControls#4
 msgid "CDJ Mode"
@@ -1492,7 +1516,7 @@ msgstr "10%"
 
 #: DlgPrefControls#13
 msgid "Load tracks into a playing deck"
-msgstr ""
+msgstr "Учитајте нумере у покренути дек"
 
 #: DlgPrefControls#14
 msgid "The selected skin is bigger than your screen resolution."
@@ -1594,7 +1618,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#11
 msgid "Re-queue tracks in Auto DJ"
-msgstr ""
+msgstr "Поново постави на чекање нумере у Самосталном Диџеју"
 
 #: DlgPrefControlsDlg#12
 msgid "Locale"
@@ -1651,7 +1675,7 @@ msgstr ""
 #: DlgPrefControlsDlg#25
 msgctxt "DlgPrefControlsDlg#25"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Приказ таласног облика"
 
 #: DlgPrefControlsDlg#26
 msgid "Synchronize zoom level across all waveform displays."
@@ -1716,7 +1740,7 @@ msgstr "Видно појачање"
 #: DlgPrefControlsDlg#40
 msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr ""
+msgstr "Усклади"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -1911,12 +1935,12 @@ msgstr "Подешавање плоче"
 #: DlgPrefNoVinylDlg#9
 msgctxt "DlgPrefNoVinylDlg#9"
 msgid "Deck 1 Vinyl Type"
-msgstr ""
+msgstr "Врста плоче носача 1"
 
 #: DlgPrefNoVinylDlg#10
 msgctxt "DlgPrefNoVinylDlg#10"
 msgid "Deck 2 Vinyl Type"
-msgstr ""
+msgstr "Врста плоче носача 2"
 
 #: DlgPrefNoVinylDlg#11
 msgctxt "DlgPrefNoVinylDlg#11"
@@ -2021,7 +2045,7 @@ msgstr "Користи релативне путање за извоз спис�
 
 #: DlgPrefPlaylistDlg#10
 msgid "Other Libraries"
-msgstr ""
+msgstr "Остале библиотеке"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show Rhythmbox Library"
@@ -2331,7 +2355,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#19
 msgctxt "DlgPrefShoutcastDlg#19"
 msgid "Genre"
-msgstr ""
+msgstr "Жанр"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Live mix"
@@ -2343,17 +2367,17 @@ msgstr "Јавни ток"
 
 #: DlgPrefShoutcastDlg#22
 msgid "Use UTF-8 encoding for metadata."
-msgstr ""
+msgstr "Користите  кодирање УТФ-8 за мета податке."
 
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Encoding"
-msgstr ""
+msgstr "Кодирање"
 
 #: DlgPrefShoutcastDlg#24
 msgctxt "DlgPrefShoutcastDlg#24"
 msgid "Bitrate"
-msgstr ""
+msgstr "Проток бита"
 
 #: DlgPrefShoutcastDlg#25
 msgid "Format"
@@ -2374,12 +2398,12 @@ msgstr "Укључите произвољне метаподатке"
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Artist"
-msgstr ""
+msgstr "Извођач"
 
 #: DlgPrefShoutcastDlg#30
 msgctxt "DlgPrefShoutcastDlg#30"
 msgid "Title"
-msgstr ""
+msgstr "Наслов"
 
 #: DlgPrefShoutcastDlg#31
 msgid ""
@@ -2741,12 +2765,12 @@ msgstr "Напредак"
 #: DlgPrepare#7
 msgctxt "DlgPrepare#7"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Изаберите све нумере из табеле испод."
 
 #: DlgPrepare#8
 msgctxt "DlgPrepare#8"
 msgid "Select All"
-msgstr ""
+msgstr "Изабери све"
 
 #: DlgPrepare#9
 msgid ""
@@ -2767,7 +2791,7 @@ msgstr "Заустави анализирање"
 
 #: DlgPrepare#12
 msgid "Analyzing %1/%2 %3%"
-msgstr ""
+msgstr "Обрађујем %1/%2 %3%"
 
 #: DlgRecording#1
 msgctxt "DlgRecording#1"
@@ -3182,7 +3206,7 @@ msgstr "Издвојено"
 
 #: HSVWaveformWidget#1
 msgid "HSV"
-msgstr ""
+msgstr "ХСВ"
 
 #: HidController#1
 msgid "Generic HID Mouse"
@@ -3320,7 +3344,7 @@ msgstr "Откажи"
 
 #: LibraryScannerDlg#4
 msgid "Scanning: "
-msgstr ""
+msgstr "Прегледам: "
 
 #: MidiController#1
 msgid "MixxxControl not found"
@@ -3456,55 +3480,55 @@ msgstr "Укључи пречице на &тастатури"
 
 #: MixxxApp#22
 msgid "Show Samplers"
-msgstr ""
+msgstr "Прикажи узорчнике"
 
 #: MixxxApp#23
 msgid "Ctrl+1"
-msgstr ""
+msgstr "Ктрл+1"
 
 #: MixxxApp#24
 msgid "Show Vinyl Control Section"
-msgstr ""
+msgstr "Прикажи одељак управљања плочом"
 
 #: MixxxApp#25
 msgid "Ctrl+3"
-msgstr ""
+msgstr "Ктрл+3"
 
 #: MixxxApp#26
 msgid "Show Microphone Section"
-msgstr ""
+msgstr "Прикажи одељак микрофона"
 
 #: MixxxApp#27
 msgid "Ctrl+2"
-msgstr ""
+msgstr "Ктрл+2"
 
 #: MixxxApp#28
 msgid "Show Preview Deck"
-msgstr ""
+msgstr "Прикажи носач прегледа"
 
 #: MixxxApp#29
 msgid "Show the preview deck in the Mixxx interface."
-msgstr ""
+msgstr "Прикажите носач прегледа у сучељу Миксикса."
 
 #: MixxxApp#30
 msgid "Ctrl+4"
-msgstr ""
+msgstr "Ктрл+4"
 
 #: MixxxApp#31
 msgid "&Reload Skin"
-msgstr ""
+msgstr "&Поново учитај маску"
 
 #: MixxxApp#32
 msgid "Reload the skin"
-msgstr ""
+msgstr "Поново учитајте маску"
 
 #: MixxxApp#33
 msgid "Ctrl+Shift+R"
-msgstr ""
+msgstr "Ктрл+Помак+Р"
 
 #: MixxxApp#34
 msgid "Developer"
-msgstr ""
+msgstr "Програмер"
 
 #: MixxxApp#35
 msgid "Load track to Deck %1"
@@ -3929,11 +3953,11 @@ msgstr "Анализирај"
 
 #: QMessageBox#1
 msgid "Upgrading Mixxx from v1.9.x/1.10.x."
-msgstr ""
+msgstr "Надограђујем МИксикс са в1.9.x/1.10.x."
 
 #: QMessageBox#2
 msgid "Mixxx has a new and improved beat detector."
-msgstr ""
+msgstr "Миксикс има нови и побољшани откривач такта."
 
 #: QMessageBox#3
 msgid ""
@@ -3945,6 +3969,8 @@ msgstr ""
 #: QMessageBox#4
 msgid "This does not affect saved cues, hotcues, playlists, or crates."
 msgstr ""
+"Ово не утиче на сачуване наговештаје, битне наговештаје, спискове нумера или "
+"гајбице."
 
 #: QMessageBox#5
 msgid ""
@@ -3952,14 +3978,17 @@ msgid ""
 "Beatgrids\". You can change this setting at any time from the \"Beat "
 "Detection\" section of the Preferences."
 msgstr ""
+"Ако не желите да Миксикс поново обради ваше нумере, изаберите „Задржи "
+"тренутне мреже тактова“. Ово подешавање можете да измените било када у "
+"одељку „Откривање такта“ у поставкама."
 
 #: QMessageBox#6
 msgid "Keep Current Beatgrids"
-msgstr ""
+msgstr "Задржи тренутне мреже тактова"
 
 #: QMessageBox#7
 msgid "Generate New Beatgrids"
-msgstr ""
+msgstr "Створи нове мреже тактова"
 
 #: QObject#1
 msgid "Invalid"
@@ -4120,7 +4149,7 @@ msgstr "Десни клик"
 
 #: Tooltips#5
 msgid "Scroll-wheel"
-msgstr ""
+msgstr "Точкић миша"
 
 #: Tooltips#6
 msgid "Waveform Overview"
@@ -4141,7 +4170,7 @@ msgstr "Користите миша да огребете, завртите ун
 #: Tooltips#10
 msgctxt "Tooltips#10"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Приказ таласног облика"
 
 #: Tooltips#11
 msgid "Shows the loaded track's waveform near the playback position."
@@ -4153,7 +4182,7 @@ msgstr "Превуците мишем да обавите дотеривања �
 
 #: Tooltips#13
 msgid "Scroll to change the waveform zoom level."
-msgstr ""
+msgstr "Примакните да измените ниво увеличања таласног облика."
 
 #: Tooltips#14
 msgid "Spinning Vinyl"
@@ -4234,7 +4263,7 @@ msgstr "Дотерајте јачину звука главног излаза."
 #: Tooltips#33
 msgctxt "Tooltips#33"
 msgid "Crossfader"
-msgstr ""
+msgstr "Постепени прелаз"
 
 #: Tooltips#34
 msgid ""
@@ -4284,7 +4313,7 @@ msgstr ""
 #: Tooltips#44
 msgctxt "Tooltips#44"
 msgid "Microphone"
-msgstr ""
+msgstr "Микрофон"
 
 #: Tooltips#45
 msgid "Show/hide the Microphone section."
@@ -4301,7 +4330,7 @@ msgstr "Прикажите/сакријте одељак узорчника."
 #: Tooltips#48
 msgctxt "Tooltips#48"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Управљање плочом"
 
 #: Tooltips#49
 msgid "Show/hide the Vinyl Control section."
@@ -4309,11 +4338,11 @@ msgstr "Прикажите/сакријте одељак управљања пл
 
 #: Tooltips#50
 msgid "Preview Deck"
-msgstr ""
+msgstr "Носач прегледа"
 
 #: Tooltips#51
 msgid "Show/hide the Preview deck."
-msgstr ""
+msgstr "Прикажи/сакриј носач прегледа."
 
 #: Tooltips#52
 msgid "Microphone Volume"
@@ -4566,14 +4595,17 @@ msgid ""
 "Syncs to the first deck (in numerical order) that is playing a track and has "
 "a BPM."
 msgstr ""
+"Ускладите са првим носачем (према бројевима) који пушта нумеру и има ТПМ."
 
 #: Tooltips#112
 msgid "If no deck is playing, syncs to the first deck that has a BPM."
-msgstr ""
+msgstr "Ако ниједан носач не пушта, ускладите са првим носачем који има ТПМ."
 
 #: Tooltips#113
 msgid "Decks can't sync to samplers and samplers can only sync to decks."
 msgstr ""
+"Носачи могу да се усклађују са узорчницима а узорчници могу само да се "
+"усклађују са носачима."
 
 #: Tooltips#114
 msgid "Setup a loop over the set number of beats."
@@ -4592,11 +4624,11 @@ msgstr ""
 
 #: Tooltips#117
 msgid "Loop Exit"
-msgstr ""
+msgstr "Напусти петљу"
 
 #: Tooltips#118
 msgid "Turns the current loop off."
-msgstr ""
+msgstr "Искључите тренутну петљу."
 
 #: Tooltips#119
 msgid "Slip Mode"
@@ -4681,7 +4713,7 @@ msgstr "Скочите на крај нумере."
 #: Tooltips#136
 msgctxt "Tooltips#136"
 msgid "Synchronize"
-msgstr ""
+msgstr "Усклади"
 
 #: Tooltips#137
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4734,7 +4766,7 @@ msgstr "Избаците нумеру из програма."
 #: Tooltips#148
 msgctxt "Tooltips#148"
 msgid "Hotcue"
-msgstr ""
+msgstr "Битан наговештај"
 
 #: Tooltips#149
 msgid "If hotcue is set, jumps to the hotcue."
@@ -5031,11 +5063,15 @@ msgstr ""
 
 #: WOverview#1
 msgid "Ready to play, analyzing .."
-msgstr ""
+msgstr "Спреман сам за пуштање, обрађујем .."
 
 #: WOverview#2
 msgid "Loading track .."
-msgstr ""
+msgstr "Учитавам нумеру .."
+
+#: WOverview#3
+msgid "Finalizing .."
+msgstr "Завршавам .."
 
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
@@ -5100,11 +5136,11 @@ msgstr "Поново учитај мета податке нумере"
 
 #: WTrackTableView#13
 msgid "Load to Preview Deck"
-msgstr ""
+msgstr "Учитај на носач прегледа"
 
 #: WTrackTableView#14
 msgid "Reset Play Count"
-msgstr ""
+msgstr "Поништи број пуштања"
 
 #: WTrackTableView#15
 msgid "Lock BPM"
@@ -5125,7 +5161,7 @@ msgstr "Учитај на носач %1"
 #: WTrackTableView#19
 msgctxt "WTrackTableView#19"
 msgid "Sampler %1"
-msgstr ""
+msgstr "Узорчник %1"
 
 #: WTrackTableViewHeader#1
 msgid "Show or hide columns."
