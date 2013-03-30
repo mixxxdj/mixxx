@@ -5,15 +5,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2012-09-16 16:42+0000\n"
-"Last-Translator: Luca Fiore <Unknown>\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-03-12 08:39+0000\n"
+"Last-Translator: Mattia Migliorini <mattia.mglrn@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:36+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-13 04:34+0000\n"
+"X-Generator: Launchpad (build 16532)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -226,7 +226,7 @@ msgstr "Marca temporale"
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
 msgid "Key"
-msgstr "Chiave"
+msgstr "Parola chiave"
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
@@ -4939,6 +4939,10 @@ msgstr ""
 
 #: WOverview#2
 msgid "Loading track .."
+msgstr ""
+
+#: WOverview#3
+msgid "Finalizing .."
 msgstr ""
 
 #: WSearchLineEdit#1

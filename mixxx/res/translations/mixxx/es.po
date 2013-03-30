@@ -10,15 +10,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2013-02-23 16:44+0000\n"
-"Last-Translator: Eduardo Alberto Calvo <Unknown>\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-03-17 15:56+0000\n"
+"Last-Translator: Sarunas Zolabaitis <sarkis.92@gmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:38+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-18 04:34+0000\n"
+"X-Generator: Launchpad (build 16532)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -949,7 +949,7 @@ msgstr "Tono y frecuencia"
 
 #: DlgControllerLearning#37
 msgid "Toggle keylock mode"
-msgstr ""
+msgstr "Activar modo de bloqueo"
 
 #: DlgControllerLearning#38
 msgid "Pitch control slider"
@@ -1144,11 +1144,12 @@ msgstr "1/4th"
 #: DlgControllerLearning#85
 msgctxt "DlgControllerLearning#85"
 msgid "Library"
-msgstr ""
+msgstr "Biblioteca"
 
 #: DlgControllerLearning#86
 msgid "Expand/collapse the selected view (library, playlist..)"
 msgstr ""
+"Expandir/colpasar la vista seleccionada (Biblioteca, Lista de reproducción..)"
 
 #: DlgControllerLearning#87
 msgid "Switch to the next view (library, playlist..)"
@@ -1201,7 +1202,7 @@ msgstr "Efecto flange: Retraso de fase"
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
-msgstr ""
+msgstr "Micrófono"
 
 #: DlgControllerLearning#100
 msgid "Microphone on/off"
@@ -1218,7 +1219,7 @@ msgstr "Orientación del canal de micrófono (ej. izquierda, derecha, centro)"
 #: DlgControllerLearning#103
 msgctxt "DlgControllerLearning#103"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: DlgControllerLearning#104
 msgid "Shuffle the content of the Auto DJ playlist"
@@ -1234,7 +1235,7 @@ msgstr "Desencadenar la transición a la pista siguiente"
 
 #: DlgControllerLearning#107
 msgid "Toggle Auto DJ (ON/OFF)"
-msgstr ""
+msgstr "Alternar Auto DJ (Enc./Apag.)"
 
 #: DlgControllerLearning#108
 msgid "User Interface"
@@ -1271,7 +1272,7 @@ msgstr "Asignado correctamente a:"
 #: DlgHidden#1
 msgctxt "DlgHidden#1"
 msgid "Manage"
-msgstr ""
+msgstr "Administrar"
 
 #: DlgHidden#2
 msgctxt "DlgHidden#2"
@@ -1281,7 +1282,7 @@ msgstr ""
 #: DlgHidden#3
 msgctxt "DlgHidden#3"
 msgid "Select All"
-msgstr ""
+msgstr "Seleccionar todo"
 
 #: DlgHidden#4
 msgctxt "DlgHidden#4"
@@ -1299,7 +1300,7 @@ msgstr ""
 
 #: DlgHidden#7
 msgid "Unhide"
-msgstr ""
+msgstr "Mostrar"
 
 #: DlgHidden#8
 msgid "Ctrl+S"
@@ -1308,7 +1309,7 @@ msgstr "Ctrl+S"
 #: DlgMissing#1
 msgctxt "DlgMissing#1"
 msgid "Manage"
-msgstr ""
+msgstr "Administrar"
 
 #: DlgMissing#2
 msgctxt "DlgMissing#2"
@@ -1736,7 +1737,7 @@ msgstr "Ganancia visual"
 #: DlgPrefControlsDlg#40
 msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr ""
+msgstr "Sincronizar"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -3494,7 +3495,7 @@ msgstr ""
 
 #: MixxxApp#26
 msgid "Show Microphone Section"
-msgstr ""
+msgstr "Mostrar seccion del microfono"
 
 #: MixxxApp#27
 msgid "Ctrl+2"
@@ -3954,7 +3955,7 @@ msgstr "Analizar"
 
 #: QMessageBox#1
 msgid "Upgrading Mixxx from v1.9.x/1.10.x."
-msgstr ""
+msgstr "Actualizar Mixxx desde v1.9.x/1.10.x."
 
 #: QMessageBox#2
 msgid "Mixxx has a new and improved beat detector."
@@ -4168,7 +4169,7 @@ msgstr "Usa el ratón para scratch, spin-back o lanzar pistas."
 #: Tooltips#10
 msgctxt "Tooltips#10"
 msgid "Waveform Display"
-msgstr ""
+msgstr "Mostrar forma de onda"
 
 #: Tooltips#11
 msgid "Shows the loaded track's waveform near the playback position."
@@ -4337,11 +4338,11 @@ msgstr "Mostrar/ocultar la sección de Control de vinilo."
 
 #: Tooltips#50
 msgid "Preview Deck"
-msgstr ""
+msgstr "Previsualizar mesa"
 
 #: Tooltips#51
 msgid "Show/hide the Preview deck."
-msgstr ""
+msgstr "Mostrar/Ocultar la previsualizacion de mesa"
 
 #: Tooltips#52
 msgid "Microphone Volume"
@@ -4623,7 +4624,7 @@ msgstr ""
 
 #: Tooltips#117
 msgid "Loop Exit"
-msgstr ""
+msgstr "Salida del bucle"
 
 #: Tooltips#118
 msgid "Turns the current loop off."
@@ -4900,7 +4901,7 @@ msgstr "Hot Cue - La canción buscará el punto previo hot cue más cercano"
 
 #: Tooltips#179
 msgid "Track Time"
-msgstr ""
+msgstr "Tiempo de pista"
 
 #: Tooltips#180
 msgid "Displays the elapsed or remaining time of the track loaded."
@@ -5056,11 +5057,15 @@ msgstr ""
 
 #: WOverview#1
 msgid "Ready to play, analyzing .."
-msgstr ""
+msgstr "Listo para reproducir,analizando .."
 
 #: WOverview#2
 msgid "Loading track .."
-msgstr ""
+msgstr "Cargando pista .."
+
+#: WOverview#3
+msgid "Finalizing .."
+msgstr "Terminando .."
 
 #: WSearchLineEdit#1
 msgid "Ctrl+F"

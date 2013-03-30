@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2012-08-10 10:53+0000\n"
-"Last-Translator: otzy_007 <Unknown>\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-03-27 08:26+0000\n"
+"Last-Translator: stefan <stefan-pc@hotmail.com>\n"
 "Language-Team: Romanian <ro@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:37+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-28 04:39+0000\n"
+"X-Generator: Launchpad (build 16546)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -95,19 +95,19 @@ msgstr "Redenumește lista de redare"
 
 #: BasePlaylistFeature#11
 msgid "New playlist name:"
-msgstr ""
+msgstr "Nume nou listă de redare:"
 
 #: BasePlaylistFeature#12
 msgid "Renaming Playlist Failed"
-msgstr ""
+msgstr "Redenumirea listei de redare eşuată"
 
 #: BasePlaylistFeature#13
 msgid "A playlist by that name already exists."
-msgstr ""
+msgstr "Există deja o listă de redare cu acelaşi nume."
 
 #: BasePlaylistFeature#14
 msgid "A playlist cannot have a blank name."
-msgstr ""
+msgstr "O listă de redare nu poate fi salvată fară un nume."
 
 #: BasePlaylistFeature#15
 msgid "Playlist name:"
@@ -116,22 +116,22 @@ msgstr "Nume listă de redare:"
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "_copy"
-msgstr ""
+msgstr "_copiere"
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Creerea listei de redare eşuata"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "O eroare necunoscută a apărut în timpul creerii listei de redare: "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Fişiere listă de redare (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
@@ -142,7 +142,7 @@ msgstr ""
 
 #: BaseSqlTableModel#1
 msgid "Played"
-msgstr ""
+msgstr "Redat"
 
 #: BaseSqlTableModel#2
 msgctxt "BaseSqlTableModel#2"
@@ -232,7 +232,7 @@ msgstr ""
 
 #: BaseSqlTableModel#20
 msgid "BPM Lock"
-msgstr ""
+msgstr "Blocare BPM"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
@@ -365,12 +365,16 @@ msgstr "Atenție: Următoarele fișiere vor fi șterse permanent:"
 #: BrowseTableModel#19
 msgid "Are you sure you want to delete these files from your computer?"
 msgstr ""
+"Sunteţi sigur că vreţi să ştergeţi aceste fişiere din computerul "
+"dumneavoastră?"
 
 #: BrowseTableModel#20
 msgid ""
 "Could not delete the following file because it is in use by Mixxx or another "
 "application:"
 msgstr ""
+"Nu s-a putut şterge fişierul următor deoarece este folosit de Mixxx sau o "
+"altă aplicaţie:"
 
 #: BrowseTableModel#21
 msgid "Could not update file metadata."
@@ -477,12 +481,12 @@ msgstr "Blochează"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "_copy"
-msgstr ""
+msgstr "_copiere"
 
 #: CrateFeature#6
 msgctxt "CrateFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importă listă de redare"
 
 #: CrateFeature#7
 msgid "Crates"
@@ -528,7 +532,7 @@ msgstr "Redenumirea colecției a eșuat"
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Fişiere listă de redare (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#18
 msgctxt "CrateFeature#18"
@@ -614,7 +618,7 @@ msgstr ""
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
-msgstr ""
+msgstr "Determină durata tranziţiei."
 
 #: DlgAutoDJ#11
 msgid "Seconds"
@@ -626,7 +630,7 @@ msgstr "sec."
 
 #: DlgAutoDJ#13
 msgid "Turn Auto DJ on or off."
-msgstr ""
+msgstr "Porneste sau opreşte Auto DJ."
 
 #: DlgAutoDJ#14
 msgid "Enable Auto DJ"
@@ -4848,6 +4852,10 @@ msgstr ""
 
 #: WOverview#2
 msgid "Loading track .."
+msgstr ""
+
+#: WOverview#3
+msgid "Finalizing .."
 msgstr ""
 
 #: WSearchLineEdit#1

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2012-12-13 13:50+0000\n"
-"Last-Translator: Tasos <athomaidis@hotmail.com>\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-03-20 09:22+0000\n"
+"Last-Translator: Andreas Ntakas <Unknown>\n"
 "Language-Team: Greek <el@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:36+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-21 04:35+0000\n"
+"X-Generator: Launchpad (build 16532)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -83,7 +83,7 @@ msgstr "Εισαγωγή λίστας αναπαραγωγής"
 
 #: BasePlaylistFeature#8
 msgid "Duplicate Playlist"
-msgstr ""
+msgstr "Υπάρχουσα Λίστα"
 
 #: BasePlaylistFeature#9
 msgid "Export Playlist"
@@ -121,17 +121,17 @@ msgstr ""
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Η Δημιουργία Λίστας Απέτυχε"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Αρχεία Λίστας (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
@@ -139,6 +139,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV "
+"(*.csv);;Απλό Κείμενο (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -494,7 +496,7 @@ msgstr ""
 #: CrateFeature#6
 msgctxt "CrateFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Εισαγωγή Λίστας Αναπαραγωγής"
 
 #: CrateFeature#7
 msgid "Crates"
@@ -510,12 +512,12 @@ msgstr "Εξαγωγή Κιβωτίου"
 
 #: CrateFeature#10
 msgid "Duplicate Crate"
-msgstr ""
+msgstr "Υπάρχον Κιβώτιο"
 
 #: CrateFeature#11
 msgctxt "CrateFeature#11"
 msgid "Unlock"
-msgstr ""
+msgstr "Ξεκλείδωμα"
 
 #: CrateFeature#12
 msgid "Crate name:"
@@ -540,7 +542,7 @@ msgstr "Η Μετονομασία του Κιβωτίου Απέτυχε"
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Αρχεία Λίστας (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#18
 msgctxt "CrateFeature#18"
@@ -548,6 +550,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV "
+"(*.csv);;Απλό Κείμενο (*.txt)"
 
 #: CrateFeature#19
 msgid ""
@@ -802,6 +806,8 @@ msgstr "Έτοιμο"
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
 msgstr ""
+"Για να χαρτογραφήσετε ένα καινούριο control, πατήστε ένα κουμπί ή επιλέξτε "
+"από τη λίστα."
 
 #: DlgControllerLearning#5
 msgid "Choose Control"
@@ -863,11 +869,11 @@ msgstr "Δείκτης Έντασης"
 
 #: DlgControllerLearning#19
 msgid "Fast rewind button"
-msgstr ""
+msgstr "Κουμπί fast rewind"
 
 #: DlgControllerLearning#20
 msgid "Fast forward button"
-msgstr ""
+msgstr "Κουμπί fast forward"
 
 #: DlgControllerLearning#21
 msgid "Jump to start of track"
@@ -891,11 +897,11 @@ msgstr ""
 
 #: DlgControllerLearning#26
 msgid "Toggle repeat mode"
-msgstr ""
+msgstr "Εναλλαγή τρόπου επανάληψης"
 
 #: DlgControllerLearning#27
 msgid "Eject track"
-msgstr ""
+msgstr "Αποφόρτωση κομματιού"
 
 #: DlgControllerLearning#28
 msgid "Mix orientation (e.g. left, right, center)"
@@ -919,19 +925,19 @@ msgstr ""
 
 #: DlgControllerLearning#33
 msgid "Beat sync (tempo and phase)"
-msgstr ""
+msgstr "Συγχρονισμός beat (ρυθμός και φάση)"
 
 #: DlgControllerLearning#34
 msgid "Beat sync (tempo only)"
-msgstr ""
+msgstr "Συγχρονισμός beat (μόνο ρυθμός)"
 
 #: DlgControllerLearning#35
 msgid "Beat sync (phase only)"
-msgstr ""
+msgstr "Συγχρονισμός beat (μόνο φάση)"
 
 #: DlgControllerLearning#36
 msgid "Pitch and Rate"
-msgstr ""
+msgstr "Τόνος και Ρυθμός"
 
 #: DlgControllerLearning#37
 msgid "Toggle keylock mode"
@@ -943,11 +949,11 @@ msgstr ""
 
 #: DlgControllerLearning#39
 msgid "Adjust rate up (fine)"
-msgstr ""
+msgstr "Άυξηση ρυθμού (ακρίβεια)"
 
 #: DlgControllerLearning#40
 msgid "Adjust rate down (fine)"
-msgstr ""
+msgstr "Μείωση ρυθμού (ακρίβεια)"
 
 #: DlgControllerLearning#41
 msgid "Pitch-bend rate up (fine)"
@@ -955,11 +961,11 @@ msgstr ""
 
 #: DlgControllerLearning#42
 msgid "Adjust rate up (coarse)"
-msgstr ""
+msgstr "Άυξηση ρυθμού (χοντρικά)"
 
 #: DlgControllerLearning#43
 msgid "Adjust rate down (coarse)"
-msgstr ""
+msgstr "Μείωση ρυθμού (χοντρικά)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (coarse)"
@@ -1113,24 +1119,24 @@ msgstr ""
 
 #: DlgControllerLearning#81
 msgid "1/32th"
-msgstr ""
+msgstr "1/32"
 
 #: DlgControllerLearning#82
 msgid "1/16th"
-msgstr ""
+msgstr "1/16"
 
 #: DlgControllerLearning#83
 msgid "1/8th"
-msgstr ""
+msgstr "1/8"
 
 #: DlgControllerLearning#84
 msgid "1/4th"
-msgstr ""
+msgstr "1/4"
 
 #: DlgControllerLearning#85
 msgctxt "DlgControllerLearning#85"
 msgid "Library"
-msgstr ""
+msgstr "Βιβλιοθήκη"
 
 #: DlgControllerLearning#86
 msgid "Expand/collapse the selected view (library, playlist..)"
@@ -1138,11 +1144,11 @@ msgstr ""
 
 #: DlgControllerLearning#87
 msgid "Switch to the next view (library, playlist..)"
-msgstr ""
+msgstr "Μετάβαση στην επόμενη όψη (βιβλιοθήκη, λίστα..)"
 
 #: DlgControllerLearning#88
 msgid "Switch to the previous view (library, playlist..)"
-msgstr ""
+msgstr "Μετάβαση στην προηγούμενη όψη (βιβλιοθήκη, λίστα..)"
 
 #: DlgControllerLearning#89
 msgid "Scroll to next track in library/playlist"
@@ -1162,7 +1168,7 @@ msgstr "Φόρτωση του διαλεγμένου κομματιού"
 
 #: DlgControllerLearning#93
 msgid "Load selected track and play"
-msgstr ""
+msgstr "Φόρτωση του επιλεγμένου κομματιού και αναπαραγωγή"
 
 #: DlgControllerLearning#94
 msgid "Effects"
@@ -1170,28 +1176,28 @@ msgstr "Εφέ"
 
 #: DlgControllerLearning#95
 msgid "Toggle flange effect"
-msgstr ""
+msgstr "Ενεργοποίηση/Απενεργοποίηση εφέ flange"
 
 #: DlgControllerLearning#96
 msgid "Flange effect: Wavelength/period"
-msgstr ""
+msgstr "Εφέ flange: Μήκος κύματος/περίοδος"
 
 #: DlgControllerLearning#97
 msgid "Flange effect: Intensity"
-msgstr ""
+msgstr "Εφέ flange: ένταση"
 
 #: DlgControllerLearning#98
 msgid "Flange effect: Phase delay"
-msgstr ""
+msgstr "Εφέ flange: Καθυστέρηση φάσης"
 
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
-msgstr ""
+msgstr "Μικρόφωνο"
 
 #: DlgControllerLearning#100
 msgid "Microphone on/off"
-msgstr ""
+msgstr "Μικρόφωνο ανοιχτό/κλειστό"
 
 #: DlgControllerLearning#101
 msgid "Microphone volume"
@@ -1199,28 +1205,28 @@ msgstr "Ένταση Μικροφώνου"
 
 #: DlgControllerLearning#102
 msgid "Microphone channel orientation (e.g. left, right, center)"
-msgstr ""
+msgstr "Προσανατολισμός καναλιού μικροφώνου (π.χ. αριστερά, δεξιά, κέντρο)"
 
 #: DlgControllerLearning#103
 msgctxt "DlgControllerLearning#103"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Αυτόματος DJ"
 
 #: DlgControllerLearning#104
 msgid "Shuffle the content of the Auto DJ playlist"
-msgstr ""
+msgstr "Μίξη του περιεχόμενου της λίστας του Αυτόματου DJ"
 
 #: DlgControllerLearning#105
 msgid "Skip the next track in the Auto DJ playlist"
-msgstr ""
+msgstr "Αγνόησε το επόμενο κομμάτι στη λίστα του Αυτόματου DJ"
 
 #: DlgControllerLearning#106
 msgid "Trigger the transition to the next track"
-msgstr ""
+msgstr "Ενεργοποίηση μετάβασης στο επόμενο κομμάτι"
 
 #: DlgControllerLearning#107
 msgid "Toggle Auto DJ (ON/OFF)"
-msgstr ""
+msgstr "Ενεργοποίηση/Απενεργοποίηση Αυτόματου DJ"
 
 #: DlgControllerLearning#108
 msgid "User Interface"
@@ -1252,69 +1258,69 @@ msgstr ""
 
 #: DlgControllerLearning#115
 msgid "Successfully mapped to:"
-msgstr ""
+msgstr "Επιτυχώς χαρτογραφημένο στο:"
 
 #: DlgHidden#1
 msgctxt "DlgHidden#1"
 msgid "Manage"
-msgstr ""
+msgstr "Διαχείριση"
 
 #: DlgHidden#2
 msgctxt "DlgHidden#2"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Επιλέγει όλα τα κομμάτια στον παρακάτω πίνακα."
 
 #: DlgHidden#3
 msgctxt "DlgHidden#3"
 msgid "Select All"
-msgstr ""
+msgstr "Επιλογή Όλων"
 
 #: DlgHidden#4
 msgctxt "DlgHidden#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Διαγραφή επιλεγμενων κομματιών από τη βιβλιοθήκη."
 
 #: DlgHidden#5
 msgctxt "DlgHidden#5"
 msgid "Purge"
-msgstr ""
+msgstr "Διαγραφή"
 
 #: DlgHidden#6
 msgid "Unhide selected tracks from the library."
-msgstr ""
+msgstr "Εμφάνιση επιλεγμένων κομματιών στη βιβλιοθήκη."
 
 #: DlgHidden#7
 msgid "Unhide"
-msgstr ""
+msgstr "Εμφάνιση"
 
 #: DlgHidden#8
 msgid "Ctrl+S"
-msgstr ""
+msgstr "Ctrl+S"
 
 #: DlgMissing#1
 msgctxt "DlgMissing#1"
 msgid "Manage"
-msgstr ""
+msgstr "Διαχείριση"
 
 #: DlgMissing#2
 msgctxt "DlgMissing#2"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Επιλέγει όλα τα κομμάτια στον παρακάτω πίνακα."
 
 #: DlgMissing#3
 msgctxt "DlgMissing#3"
 msgid "Select All"
-msgstr ""
+msgstr "Επιλογή Όλων"
 
 #: DlgMissing#4
 msgctxt "DlgMissing#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Διαγραφή επιλεγμενων κομματιών από τη βιβλιοθήκη."
 
 #: DlgMissing#5
 msgctxt "DlgMissing#5"
 msgid "Purge"
-msgstr ""
+msgstr "Διαγραφή"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -1336,7 +1342,7 @@ msgstr "Ενεργοποίηση Εντοπισμού BPM"
 
 #: DlgPrefBPMDlg#4
 msgid "Detect Tracks BPM on Import"
-msgstr ""
+msgstr "Εντοπισμός BPM των Κομματιών κατά την Εισαγωγή"
 
 #: DlgPrefBPMDlg#5
 msgid "Write BPM to ID3 Tag"
@@ -1390,7 +1396,7 @@ msgstr "%1 από %2"
 
 #: DlgPrefController#3
 msgid "No Description"
-msgstr ""
+msgstr "Χωρίς Περιγραφή"
 
 #: DlgPrefController#4
 msgid "No support available."
@@ -1422,7 +1428,7 @@ msgstr ""
 
 #: DlgPrefControllerDlg#6
 msgid "Description:"
-msgstr ""
+msgstr "Περιγραφή:"
 
 #: DlgPrefControllerDlg#7
 msgid "Load Preset:"
@@ -1434,7 +1440,7 @@ msgstr "Φορτωμένη Προεπιλογή:"
 
 #: DlgPrefControllerDlg#9
 msgid "Support:"
-msgstr ""
+msgstr "Υποστήριξη:"
 
 #: DlgPrefControllerDlg#10
 msgid "Click to start the Controller Learning wizard."
@@ -1488,7 +1494,7 @@ msgstr "8% (Technics SL-1210)"
 
 #: DlgPrefControls#11
 msgid "Down increases speed (Technics SL-1210)"
-msgstr ""
+msgstr "Προς τα κάτω αυξάνει την ταχύτητα (Technics SL-1210)"
 
 #: DlgPrefControls#12
 msgid "10%"
@@ -1545,7 +1551,7 @@ msgstr "Προς τα πάνω αυξάνει την ταχύτητα"
 #: DlgPrefControls#25
 msgctxt "DlgPrefControls#25"
 msgid "Information"
-msgstr ""
+msgstr "Πληροφορίες"
 
 #: DlgPrefControls#26
 msgid "Mixxx must be restarted before the changes will take effect."
@@ -4886,6 +4892,10 @@ msgstr ""
 msgid "Loading track .."
 msgstr ""
 
+#: WOverview#3
+msgid "Finalizing .."
+msgstr ""
+
 #: WSearchLineEdit#1
 msgid "Ctrl+F"
 msgstr "Ctrl+F"
@@ -4945,7 +4955,7 @@ msgstr ""
 
 #: WTrackTableView#12
 msgid "Reload Track Metadata"
-msgstr ""
+msgstr "Επαναφόρτωση Metadata Κομματιού"
 
 #: WTrackTableView#13
 msgid "Load to Preview Deck"
@@ -4982,11 +4992,11 @@ msgstr "Εμφάνιση ή κρύψιμο στηλών"
 
 #: WaveformWidgetFactory#1
 msgid "(GLSL)"
-msgstr ""
+msgstr "(GLSL)"
 
 #: WaveformWidgetFactory#2
 msgid "(GL)"
-msgstr ""
+msgstr "(GL)"
 
 #~ msgid "Auto DJ"
 #~ msgstr "Αυτόματος DJ"
