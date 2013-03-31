@@ -14,7 +14,7 @@ contribute**.
 As a non-developer
 ==================
 
-* `Donate <http://mixxx.org/download.php>`_ to Mixxx using Paypal to help 
+* `Donate <http://mixxx.org/download.php>`_ to Mixxx using Paypal to help
   support and enhance development.
 * `Make skins <http://mixxx.org/wiki/doku.php/creating_skins>`_
 * `Make MIDI mappings
@@ -46,8 +46,9 @@ As a software developer
 * Register an account on our development platform `Launchpad
   <http://launchpad.net/mixxx>`_ and make a branch of our code. See `Launchpad
   Tutorial <http://mixxx.org/wiki/doku.php/using_bazaar>`_
-* Join the `Mixxx team <https://launchpad.net/~mixxxcontributors/+join>`_ on
-  Launchpad.
+* Join the
+  `Mixxx Development Team <https://launchpad.net/~mixxxcontributors/+join>`_
+  on Launchpad.
 * Get familiar with the code. Pick a bug off of the `Easy Bug List
   <https://bugs.launchpad.net/mixxx/+bugs?field.tag=easy>`_
 * Get help fixing the bug on IRC, talk to us about the best way to do it.

@@ -127,9 +127,9 @@ controller mappings:
 * **Mixxx Certified Mappings**: These mappings are verified by the Mixxx
   Development Team.
 * **Community Supported Mappings**: These mappings are provided and have been
-  verified as working by the Mixxx community, but the Mixxx Team is unable to
-  verify their quality because we don't have the devices ourselves. They might
-  have bugs or rough edges.
+  verified as working by the Mixxx community, but the Mixxx Development Team is
+  unable to verify their quality because we don't have the devices ourselves.
+  They might have bugs or rough edges.
 
 If you run into issues with any of these mappings, please file a bug on our
 `Bug Tracker`_ or tell us about it on our mailing list, forums, or :term:`IRC`

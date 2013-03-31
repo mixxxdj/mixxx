@@ -49,8 +49,8 @@ System Requirements
 ===================
 
 Mixxx is available for Windows, Mac OS X and GNU/Linux. Mixxx is designed to
-use very few system resources, but the Mixxx team suggests these minimum
-requirements for having a great experience with Mixxx:
+use very few system resources, but the Mixxx Development Team suggests these
+minimum requirements for having a great experience with Mixxx:
 
 * A 2GHz or faster CPU
 * At least 1GB of RAM

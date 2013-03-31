@@ -43,7 +43,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Mixxx'
-copyright = u'2011-2013, The Mixxx Team'
+copyright = u'2011-2013, The Mixxx Development Team'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -182,8 +182,8 @@ htmlhelp_basename = 'Mixxxdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'Mixxx-Manual.tex', u'Mixxx User Manual', u'The Mixxx Team',
-   'manual', True),
+  ('index', 'Mixxx-Manual.tex', u'Mixxx User Manual',
+    u'The Mixxx Development Team', 'manual', True),
 ]
 
 # The name of an image file (relative to this directory) to place at the top of
@@ -215,7 +215,7 @@ latex_domain_indices = False
 # (source start file, name, description, authors, manual section).
 man_pages = [
     ('index', 'mixxx', u'Mixxx User Manual',
-     [u'The Mixxx Team'], 1)
+     [u'The Mixxx Development Team'], 1)
 ]
 
 # If true, show URL addresses after external links.
@@ -227,7 +227,7 @@ man_pages = [
 # (source start file, target name, title, author,
 #  dir menu entry, description, category)
 texinfo_documents = [
-  ('index', 'Mixxx', u'Mixxx User Manual', u'The Mixxx Team',
+  ('index', 'Mixxx', u'Mixxx User Manual', u'The Mixxx Development Team',
    'Mixxx', 'One line description of project.', 'Miscellaneous'),
 ]
 
@@ -238,9 +238,9 @@ texinfo_appendices = []
 
 # Bibliographic Dublin Core info.
 epub_title = u'Mixxx User Manual'
-epub_author = u'The Mixxx Team'
-epub_publisher = u'The Mixxx Team'
-epub_copyright = u'2011-2013, The Mixxx Team'
+epub_author = u'The Mixxx Development Team'
+epub_publisher = u'The Mixxx Development Team'
+epub_copyright = u'2011-2013, The Mixxx Development Team'
 
 # The language of the text. It defaults to the language option
 # or en if the language is not set.
