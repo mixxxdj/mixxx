@@ -43,7 +43,7 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
-        m_analyserProgress(0),
+        m_analyserProgress(-1),
         m_trackLoaded(false),
         m_diffGain(0) {
 
@@ -189,7 +189,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         m_pWaveformSourceImage = NULL;
     }
 
-    m_analyserProgress = 0;
+    m_analyserProgress = -1;
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
@@ -426,23 +426,25 @@ void WOverview::paintEvent(QPaintEvent *) {
             }
 
             painter.drawImage(rect(), m_waveformImageScaled);
+        }
 
-            if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable
-                if (m_trackLoaded) {
-                    //: Text on waveform overview when file is cached from source
-                    paintText(tr("Ready to play, analyzing .."), &painter);
-                } else {
-                    //: Text on waveform overview when file is playable but no waveform is visible
-                    paintText(tr("Loading track .."), &painter);
-                }
-            } else if (m_analyserProgress == width() - 1) {
-                //: Text on waveform overview during finalizing of waveform analysis
-                paintText(tr("Finalizing .."), &painter);
-            } else if (m_analyserProgress + 1 < width()) {
-                // Paint analyzer Progress
-                painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
-                painter.drawLine(m_analyserProgress, height()/2, width(), height()/2);
+        if (m_analyserProgress + 1 < width()) {
+            // Paint analyzer Progress
+            painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
+            painter.drawLine(m_analyserProgress, height()/2, width(), height()/2);
+        }
+
+        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable
+            if (m_trackLoaded) {
+                //: Text on waveform overview when file is cached from source
+                paintText(tr("Ready to play, analyzing .."), &painter);
+            } else {
+                //: Text on waveform overview when file is playable but no waveform is visible
+                paintText(tr("Loading track .."), &painter);
             }
+        } else if (m_analyserProgress == width() - 1) {
+            //: Text on waveform overview during finalizing of waveform analysis
+            paintText(tr("Finalizing .."), &painter);
         }
     }
 
@@ -589,7 +591,7 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // in this deck or the settings allow to interrupt the playing deck.
     if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
         if ((m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || !(m_pGroup=="[PreviewDeck1]")) {
+            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_pGroup=="[PreviewDeck1]")) {
             event->acceptProposedAction();
         } else {
             event->ignore();

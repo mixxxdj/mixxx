@@ -7,6 +7,7 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "xmlparse.h"
+#include "widget/wskincolor.h"
 
 ControlObjectThreadMain* maybeMakeControl(ControlObject* pControl) {
     if (pControl) {
@@ -49,6 +50,8 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
         // As a fallback, grab the mark color from the parent's MarkerColor
         m_activeColor = signalColors.getAxesColor();
         qDebug() << "Didn't get mark Color, using parent's <AxesColor>:" << m_activeColor;
+    } else {
+        m_activeColor = WSkinColor::getCorrectColor(m_activeColor);
     }
 
     m_disabledColor = XmlParse::selectNodeQString(node, "DisabledColor");

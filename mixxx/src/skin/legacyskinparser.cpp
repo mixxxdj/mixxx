@@ -1276,6 +1276,11 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosi
     }
 
     QString style = XmlParse::selectNodeQString(node, "Style");
+    // Check if we should apply legacy library styling to this node.
+    if (XmlParse::selectNodeQString(node, "LegacyTableViewStyle")
+        .contains("true", Qt::CaseInsensitive)) {
+        style = getLibraryStyle(node);
+    }
     if (style != "") {
         pWidget->setStyleSheet(style);
     }

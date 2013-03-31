@@ -51,6 +51,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Latency control
     m_pMasterLatency = new ControlObject(ConfigKey(group, "latency"), true, true);
+    m_pMasterAudioBufferSize = new ControlObject(ConfigKey(group, "audio_buffer_size"));
     m_pMasterUnderflowCount = new ControlObject(ConfigKey(group, "underflow_count"), true, true);
 
     // Master rate
@@ -134,6 +135,7 @@ EngineMaster::~EngineMaster()
 
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
+    delete m_pMasterAudioBufferSize;
     delete m_pMasterRate;
     delete m_pMasterUnderflowCount;
 
