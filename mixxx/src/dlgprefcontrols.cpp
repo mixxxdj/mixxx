@@ -44,7 +44,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  ConfigObject<ConfigValue> * pConfig)
         :  QWidget(parent) {
     m_pConfig = pConfig;
-    m_timer = -1;
     m_mixxx = mixxx;
     m_pSkinLoader = pSkinLoader;
     m_pPlayerManager = pPlayerManager;
@@ -597,24 +596,14 @@ void DlgPrefControls::slotSetNormalizeOverview( bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
 }
 
-void DlgPrefControls::onShow() {
-    m_timer = startTimer(100); //refresh actual frame rate every 100 ms
+void DlgPrefControls::slotWaveformMeasured(float frameRate, int rtErrorCnt) {
+    frameRateAverage->setText(
+            QString::number((double)frameRate, 'f', 2) +
+            " e" +
+            QString::number(rtErrorCnt));
 }
 
-void DlgPrefControls::onHide() {
-    if (m_timer != -1) {
-        killTimer(m_timer);
-    }
-}
-
-void DlgPrefControls::timerEvent(QTimerEvent * /*event*/) {
-    //Just to refresh actual framrate any time the controller is modified
-    frameRateAverage->setText(QString::number(
-        WaveformWidgetFactory::instance()->getActualFrameRate()));
-}
-
-void DlgPrefControls::initWaveformControl()
-{
+void DlgPrefControls::initWaveformControl() {
     waveformTypeComboBox->clear();
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
@@ -626,15 +615,17 @@ void DlgPrefControls::initWaveformControl()
     WaveformWidgetType::Type currentType = factory->getType();
     int currentIndex = -1;
 
-    std::vector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
-    for (unsigned int i = 0; i < handles.size(); i++) {
+    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
+    for (int i = 0; i < handles.size(); i++) {
         waveformTypeComboBox->addItem(handles[i].getDisplayName());
-        if (handles[i].getType() == currentType)
+        if (handles[i].getType() == currentType) {
             currentIndex = i;
+        }
     }
 
-    if (currentIndex != -1)
+    if (currentIndex != -1) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
+    }
 
     frameRateSpinBox->setValue(factory->getFrameRate());
 
@@ -671,6 +662,8 @@ void DlgPrefControls::initWaveformControl()
     connect(normalizeOverviewCheckBox,SIGNAL(toggled(bool)),
             this,SLOT(slotSetNormalizeOverview(bool)));
 
+    connect(WaveformWidgetFactory::instance(), SIGNAL(waveformMeasured(float,int)),
+            this, SLOT(slotWaveformMeasured(float,int)));
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise

@@ -8,6 +8,7 @@
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
+#include "visualplayposition.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 
@@ -318,8 +319,8 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
     double dThisPosition = getCurrentSample();
     double dOtherLength = ControlObject::getControl(
         ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-    double dOtherEnginePlayPos = ControlObject::getControl(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"))->get();
+    double dOtherEnginePlayPos =
+            VisualPlayPosition::getVisualPlayPosition(pOtherEngineBuffer->getGroup())->getEnginePlayPos();
     double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);

@@ -37,6 +37,7 @@
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/quantizecontrol.h"
+#include "visualplayposition.h"
 #include "util/timer.h"
 
 #ifdef __VINYLCONTROL__
@@ -155,7 +156,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     connect(m_pSlipButton, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotControlSlip(double)),
             Qt::DirectConnection);
-    m_pSlipPosition = new ControlObject(ConfigKey(m_group, "slip_playposition"));
 
     // Actual rate (used in visuals, not for control)
     m_rateEngine = new ControlObject(ConfigKey(m_group, "rateEngine"));
@@ -172,8 +172,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             Qt::DirectConnection);
 
     // Control used to communicate ratio playpos to GUI thread
-    m_visualPlaypos = new ControlPotmeter(
-        ConfigKey(m_group, "visual_playposition"), kMinPlayposRange, kMaxPlayposRange);
+    m_visualPlayPos = VisualPlayPosition::getVisualPlayPosition(m_group);
 
     m_pRepeat = new ControlPushButton(ConfigKey(m_group, "repeat"));
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
@@ -258,11 +257,9 @@ EngineBuffer::~EngineBuffer()
     delete m_stopButton;
     delete m_rateEngine;
     delete m_playposSlider;
-    delete m_visualPlaypos;
     delete m_visualBpm;
 
     delete m_pSlipButton;
-    delete m_pSlipPosition;
     delete m_pRepeat;
 
     delete m_pTrackSamples;
@@ -391,7 +388,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
                                    int iTrackSampleRate,
                                    int iTrackNumSamples) {
     m_pause.lock();
-    m_visualPlaypos->set(-1);
+    m_visualPlayPos->setInvalid();
     m_pCurrentTrack = pTrack;
     m_file_srate_old = iTrackSampleRate;
     m_file_length_old = iTrackNumSamples;
@@ -534,13 +531,11 @@ void EngineBuffer::slotControlSlip(double v)
         // TODO(rryan): Should this filepos instead be the RAMAN current
         // position? filepos_play could be out of date.
         m_dSlipPosition = m_filepos_play;
-        m_pSlipPosition->set(fractionalPlayposFromAbsolute(m_dSlipPosition));
         m_dSlipRate = m_rate_old;
     } else {
         // TODO(owen) assuming that looping will get canceled properly
         slotControlSeekAbs(m_dSlipPosition);
         m_dSlipPosition = 0;
-        m_pSlipPosition->set(0);
     }
 }
 
@@ -575,7 +570,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = m_playButton->get() != 0.0f ? false : true;
 
-        bool is_scratching = false;
+        bool is_scratching;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
 
@@ -584,7 +579,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // Update the slipped position
         if (m_bSlipEnabled) {
             m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
-            m_pSlipPosition->set(fractionalPlayposFromAbsolute(m_dSlipPosition));
         }
 
         // Scratching always disables keylock because keylock sounds terrible
@@ -861,6 +855,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     m_iSamplesCalculated += iBufferSize;
 
     double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
+    if(rate > 0 && fFractionalPlaypos == 1.0) {
+        rate = 0;
+    }
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
@@ -883,7 +880,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
     // Update visual control object, this needs to be done more often than the
     // rateEngine and playpos slider
-    m_visualPlaypos->set(fFractionalPlaypos);
+    m_visualPlayPos->set(fFractionalPlaypos, rate,
+            (double)iBufferSize/m_file_length_old,
+            fractionalPlayposFromAbsolute(m_dSlipPosition));
 }
 
 void EngineBuffer::hintReader(const double dRate) {

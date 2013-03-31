@@ -7,7 +7,9 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "sharedglcontext.h"
+#include "visualplayposition.h"
 #include "wspinny.h"
+
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -16,7 +18,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pGhostImage(NULL),
           m_pPlay(NULL),
           m_pPlayPos(NULL),
-          m_pVisualPlayPos(NULL),
           m_pDuration(NULL),
           m_pTrackSamples(NULL),
           m_pScratch(NULL),
@@ -59,7 +60,6 @@ WSpinny::~WSpinny()
     WImageStore::deleteImage(m_pGhostImage);
     delete m_pPlay;
     delete m_pPlayPos;
-    delete m_pVisualPlayPos;
     delete m_pDuration;
     delete m_pTrackSamples;
     delete m_pTrackSampleRate;
@@ -100,8 +100,8 @@ void WSpinny::setup(QDomNode node, QString group)
                         ConfigKey(group, "play")));
     m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "playposition")));
-    m_pVisualPlayPos = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "visual_playposition")));
+    m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(group);
+
     m_pDuration = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "duration")));
     m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(
@@ -119,8 +119,6 @@ void WSpinny::setup(QDomNode node, QString group)
 
     m_pSlipEnabled = new ControlObjectThreadMain(ControlObject::getControl(
         ConfigKey(group, "slip_enabled")));
-    m_pSlipPosition = new ControlObjectThreadMain(ControlObject::getControl(
-        ConfigKey(group, "slip_playposition")));
 
 #ifdef __VINYLCONTROL__
     m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
@@ -215,8 +213,9 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         p.save();
     }
 
-    double playPosition = m_pVisualPlayPos->get();
-    double slipPosition = m_pSlipPosition->get();
+    double playPosition = -1;
+    double slipPosition = -1;
+    m_pVisualPlayPos->getPlaySlipAt(0, &playPosition, &slipPosition);
 
     if (playPosition != m_dAngleLastPlaypos) {
         m_fAngle = calculateAngle(playPosition);

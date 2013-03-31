@@ -25,6 +25,7 @@
 #include "sounddeviceportaudio.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
+#include "visualplayposition.h"
 #include "util/timer.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
@@ -326,6 +327,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         m_bSetThreadPriority = true;
     }
 
+    VisualPlayPosition::setTimeInfo(timeInfo);
     if (!m_undeflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
             if (m_pMasterUnderflowCount) {
