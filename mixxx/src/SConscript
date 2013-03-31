@@ -380,7 +380,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 IDENTIFIER="org.mixxx.mixxx",
                 DISPLAY_NAME="Mixxx",
                 SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
-                COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
+                COPYRIGHT="Copyright © 2011-2013 Mixxx Development Team", #FIXME: datetime.year()
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
                 OTOOL_SYSTEM_PATHS=otool_system_paths,
