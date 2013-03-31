@@ -6,19 +6,19 @@ msgstr ""
 "Project-Id-Version: Mixxx\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-03-05 06:50+0200\n"
-"PO-Revision-Date: 2013-03-12 08:39+0000\n"
-"Last-Translator: Mattia Migliorini <mattia.mglrn@gmail.com>\n"
+"PO-Revision-Date: 2013-03-30 11:12+0000\n"
+"Last-Translator: gippy88 <giuseppepetruzzellis@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-13 04:34+0000\n"
-"X-Generator: Launchpad (build 16532)\n"
+"X-Launchpad-Export-Date: 2013-03-31 05:15+0000\n"
+"X-Generator: Launchpad (build 16546)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: BaseExternalLibraryFeature#1
 msgctxt "BaseExternalLibraryFeature#1"
@@ -81,7 +81,7 @@ msgstr "Importa scaletta"
 
 #: BasePlaylistFeature#8
 msgid "Duplicate Playlist"
-msgstr ""
+msgstr "Duplica playlist"
 
 #: BasePlaylistFeature#9
 msgid "Export Playlist"
@@ -114,22 +114,22 @@ msgstr "Nome playlist:"
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "_copy"
-msgstr ""
+msgstr "_copia"
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Errore nella creazione della playlist"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Errore sconosciuto durante la creazione della playlist: "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "File playlist (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
@@ -137,6 +137,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Testo "
+"CSV (*.csv);;File testuale (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -234,7 +236,7 @@ msgstr "Blocco dei BPM"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "Preview"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -379,7 +381,7 @@ msgstr "Impossibile aggiornare i metadata del file"
 
 #: BulkController#1
 msgid "USB Controller"
-msgstr ""
+msgstr "USB Controller"
 
 #: ControllerEngine#1
 msgid "Uncaught exception at line %1 in file %2: %3"
