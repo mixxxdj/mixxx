@@ -22,9 +22,9 @@ class QtSimpleWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
     virtual void postRender();
+    virtual int render();
 
   private:
-    QtSimpleWaveformWidget() {}
     friend class WaveformWidgetFactory;
 };
 
