@@ -36,7 +36,7 @@ class ControlObjectRingValue {
    }
 
   private:
-    volatile T m_value;
+    T m_value;
     QAtomicInt m_readerSlots;
 };
 
@@ -107,7 +107,7 @@ class ControlObjectValue<T, true> {
     }
 
   private:
-    volatile T m_value;
+    T m_value;
 };
 
 // Note: Qt does not support templates for signal and slots
