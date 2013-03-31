@@ -575,7 +575,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = m_playButton->get() != 0.0f ? false : true;
 
-        bool is_scratching = false;
+        bool is_scratching;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
 
@@ -605,7 +605,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Make sure new scaler has proper position
             if (m_bScalerChanged) {
                 setNewPlaypos(m_filepos_play);
-            } else if (m_pScale != m_pScaleLinear) { //linear scaler does this part for us now
+            } else if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if ((m_rate_old <= 0 && rate > 0) ||
@@ -614,8 +614,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 }
             }
 
-            if (baserate > 0) //Prevent division by 0
-                rate = baserate*m_pScale->setTempo(rate/baserate);
+            if (baserate > 0) { // Prevent division by 0
+                rate = baserate * m_pScale->setTempo(rate/baserate);
+            }
             m_pScale->setBaseRate(baserate);
             m_rate_old = rate;
             // Scaler is up to date now.
@@ -628,9 +629,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If we're playing past the end, playing before the start, or standing
         // still then by definition the buffer is paused.
-        bCurBufferPaused = rate == 0 ||
-            //(at_start && backwards) ||
-            (at_end && !backwards);
+        bCurBufferPaused = (rate == 0 || (at_end && !backwards));
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
@@ -666,7 +665,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             m_filepos_play =
                     m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                         static_cast<int>(m_filepos_play), samplesRead);
-        } // else (bCurBufferPaused)
+        }
 
         //Crossfade if we just did a seek
         if (m_iCrossFadeSamples > 0) {
@@ -681,7 +680,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             double cross_mix = 0.0;
             double cross_inc = 1.0 / cross_len;
-
             // Do crossfade from old fadeout buffer to this new data
             for (int j = 0; j + 1 < iBufferSize && i + 1 < m_iCrossFadeSamples; i += 2, j += 2) {
                 pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
@@ -762,7 +760,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((m_playButton->get() || (m_fwdButton->get() || m_backButton->get()))
-            && end_of_track) {
+            	&& end_of_track) {
             if (repeat_enabled) {
                 double seekPosition = at_start ? m_file_length_old : 0;
                 slotControlSeek(seekPosition);
@@ -812,9 +810,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     float ramp_inc = 0;
     if (m_iRampState == ENGINE_RAMP_UP ||
         m_iRampState == ENGINE_RAMP_DOWN) {
+        // Ramp of 3.33 ms
         ramp_inc = m_iRampState * 300 / m_pSampleRate->get();
 
-        for (int i=0; i<iBufferSize; i+=2) {
+        for (int i=0; i < iBufferSize; i += 2) {
             if (bCurBufferPaused) {
                 float dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
                 m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
@@ -829,8 +828,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             if (m_fRampValue >= 1.0) {
                 m_iRampState = ENGINE_RAMP_NONE;
                 m_fRampValue = 1.0;
-            }
-            if (m_fRampValue <= 0.0) {
+            } else if (m_fRampValue <= 0.0) {
                 m_iRampState = ENGINE_RAMP_NONE;
                 m_fRampValue = 0.0;
             }
