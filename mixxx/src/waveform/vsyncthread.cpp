@@ -85,8 +85,6 @@ void VSyncThread::stop()
 void VSyncThread::run() {
     QThread::currentThread()->setObjectName("VSyncThread");
 
- //   m_glw->makeCurrent();
-
     int usRest;
     int usLast;
 
@@ -225,7 +223,7 @@ void VSyncThread::run() {
             usleep(1000);
 #endif
         } else { // if (m_vSyncMode == ST_TIMER) {
-            // This mode should be used wit vblank_mode = 0
+            // This mode should be used with vblank_mode = 0
             usRest = m_usWait - m_timer.elapsed() / 1000;
             // waiting for interval by sleep
             if (usRest > 100) {
@@ -234,12 +232,12 @@ void VSyncThread::run() {
 
             emit(vsync2()); // swaps the new waveform to front
             m_sema.acquire();
-            // This is delayed until vsync the delay is stored in m_swapWait
+            // This is delayed until vsync. The delay is stored in m_swapWait
             // <- Assume we are VSynced here ->
             usLast = m_timer.restart() / 1000;
             if (usRest < 0) {
                 // Swapping was delayed
-                // Assume the real swap happens on the following VSync
+                // Assume that the real swap happens on the following VSync
                 m_rtErrorCnt++; // Count as Real Time Error
             }
             // try to stay in right intervals

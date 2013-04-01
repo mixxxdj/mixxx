@@ -296,7 +296,7 @@ unsigned SoundSourceProxy::read(unsigned long size, const SAMPLE * p)
 long unsigned SoundSourceProxy::length()
 {
     if (!m_pSoundSource) {
-	return 0;
+        return 0;
     }
     return m_pSoundSource->length();
 }

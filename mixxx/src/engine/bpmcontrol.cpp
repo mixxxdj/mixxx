@@ -442,9 +442,7 @@ void BpmControl::slotAdjustBpm() {
 }
 
 void BpmControl::trackLoaded(TrackPointer pTrack) {
-    if (m_pTrack) {
-        trackUnloaded(m_pTrack);
-    }
+    trackUnloaded(m_pTrack);
 
     if (pTrack) {
         m_pTrack = pTrack;
@@ -459,9 +457,9 @@ void BpmControl::trackUnloaded(TrackPointer pTrack) {
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));
+        m_pTrack.clear();
+        m_pBeats.clear();
     }
-    m_pTrack.clear();
-    m_pBeats.clear();
 }
 
 void BpmControl::slotUpdatedTrackBeats()

@@ -124,10 +124,11 @@ double EngineBufferScaleST::setTempo(double dTempo)
     double dTempoOld = m_dTempo;
     m_dTempo = fabs(dTempo);
 
-    if (m_dTempo>MAX_SEEK_SPEED)
+    if (m_dTempo > MAX_SEEK_SPEED) {
         m_dTempo = MAX_SEEK_SPEED;
-    else if (m_dTempo<MIN_SEEK_SPEED)
+    } else if (m_dTempo < MIN_SEEK_SPEED) {
         m_dTempo = 0.0;
+    }
 
     m_qMutex.lock();
     //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.

@@ -57,14 +57,14 @@ double EngineBufferScaleLinear::setTempo(double _tempo)
 
     m_dTempo = _tempo;
 
-    if (m_dTempo>MAX_SEEK_SPEED) {
+    if (m_dTempo > MAX_SEEK_SPEED) {
         m_dTempo = MAX_SEEK_SPEED;
     } else if (m_dTempo < -MAX_SEEK_SPEED) {
         m_dTempo = -MAX_SEEK_SPEED;
     }
 
     // Determine playback direction
-    if (m_dTempo<0.) {
+    if (m_dTempo < 0.) {
         m_bBackwards = true;
     } else {
         m_bBackwards = false;
