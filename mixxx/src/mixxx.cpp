@@ -374,6 +374,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             this, SLOT(slotSyncControlSystem()));
 
     WaveformWidgetFactory::create();
+    WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
