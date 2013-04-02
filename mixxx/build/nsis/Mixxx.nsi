@@ -17,7 +17,7 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT_NAME "Mixxx"
 ;!define PRODUCT_VERSION ""  ; Specified by the SConscript
-!define PRODUCT_PUBLISHER "The Mixxx Team"
+!define PRODUCT_PUBLISHER "The Mixxx Development Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
 !define DEFAULT_SKIN "Deere1280x800-WXGA"

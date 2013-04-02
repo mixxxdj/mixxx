@@ -101,13 +101,11 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Çalma listesi oluşturulamadı</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liste oluşturulurken bilinmeyen bir hata oluştu: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
@@ -434,8 +432,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Çalma Listesini İçe Aktar</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -687,18 +684,15 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Min:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Asg:</translation>
         </message>
         <message>
             <source>Max:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Azm:</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fabrika Ayarları</translation>
         </message>
     </context>
     <context>
@@ -713,8 +707,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM Aralığı</translation>
         </message>
         <message>
             <source>Max</source>
@@ -744,8 +737,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Done</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitti</translation>
         </message>
         <message>
             <source>To map another control click a button or choose from the list.</source>
@@ -5613,6 +5605,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>

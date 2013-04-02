@@ -83,23 +83,19 @@
         </message>
         <message>
             <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nume nou listă de redare:</translation>
         </message>
         <message>
             <source>Renaming Playlist Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Redenumirea listei de redare eşuată</translation>
         </message>
         <message>
             <source>A playlist by that name already exists.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Există deja o listă de redare cu acelaşi nume.</translation>
         </message>
         <message>
             <source>A playlist cannot have a blank name.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>O listă de redare nu poate fi salvată fară un nume.</translation>
         </message>
         <message>
             <source>Playlist name:</source>
@@ -107,23 +103,19 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_copiere</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Creerea listei de redare eşuata</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>O eroare necunoscută a apărut în timpul creerii listei de redare: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fişiere listă de redare (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
@@ -135,8 +127,7 @@
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Redat</translation>
         </message>
         <message>
             <source>Artist</source>
@@ -213,8 +204,7 @@
         </message>
         <message>
             <source>BPM Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Blocare BPM</translation>
         </message>
         <message>
             <source>Preview</source>
@@ -341,13 +331,11 @@
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sunteţi sigur că vreţi să ştergeţi aceste fişiere din computerul dumneavoastră?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nu s-a putut şterge fişierul următor deoarece este folosit de Mixxx sau o altă aplicaţie:</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
@@ -461,13 +449,11 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_copiere</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importă listă de redare</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -513,8 +499,7 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fişiere listă de redare (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
@@ -612,8 +597,7 @@
         </message>
         <message>
             <source>Determines the duration of the transition.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Determină durata tranziţiei.</translation>
         </message>
         <message>
             <source>Seconds</source>
@@ -625,8 +609,7 @@
         </message>
         <message>
             <source>Turn Auto DJ on or off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Porneste sau opreşte Auto DJ.</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -5400,6 +5383,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>

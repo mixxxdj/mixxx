@@ -99,13 +99,11 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>La Création de la Liste de Lecture a échoué</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Une erreur inconnue est survenue lors de la création de la liste de lecture : </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
@@ -113,8 +111,7 @@
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liste de lecture M3U (*.m3u);;Liste de lecture M3U8 (*.m3u8);;Liste de lecture PLS (*.pls);;Texte CSV (*.csv);;Texte (*.txt)</translation>
         </message>
     </context>
     <context>
@@ -430,8 +427,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importer une Liste de lecture</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -452,8 +448,7 @@
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Débloquer</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -477,13 +472,11 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fichiers de liste de lecture (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liste de lecture M3U (*.m3u);;Liste de lecture M3U8 (*.m3u8);;Liste de lecture PLS (*.pls);;Texte CSV (*.csv);;Texte (*.txt)</translation>
         </message>
         <message>
             <source>Crates are a great way to help organize the music you want to DJ with.</source>
@@ -1011,8 +1004,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Hotcues</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Repères rapides</translation>
         </message>
         <message>
             <source>Hotcue %1</source>
@@ -1055,8 +1047,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bibliothèque</translation>
         </message>
         <message>
             <source>Expand/collapse the selected view (library, playlist..)</source>
@@ -1089,8 +1080,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Load selected track and play</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Charger la piste sélectionnée et la jouer</translation>
         </message>
         <message>
             <source>Effects</source>
@@ -1114,8 +1104,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Microphone</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
@@ -1131,8 +1120,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist</source>
@@ -1148,8 +1136,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Toggle Auto DJ (ON/OFF)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activer/Désactiver Auto DJ</translation>
         </message>
         <message>
             <source>User Interface</source>
@@ -1202,8 +1189,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Purger les pistes sélectionnées de la librairie</translation>
         </message>
         <message>
             <source>Purge</source>
@@ -1240,8 +1226,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Purger les pistes sélectionnées de la librairie</translation>
         </message>
         <message>
             <source>Purge</source>
@@ -1656,8 +1641,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Syncrhoniser</translation>
         </message>
     </context>
     <context>
@@ -2175,8 +2159,7 @@ Lecture et statistiques de liaison en partance</translation>
         </message>
         <message>
             <source>Dynamically update Ogg Vorbis metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mettre à jour dynamiquement les meta données Ogg Vorbis</translation>
         </message>
         <message>
             <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
@@ -2217,8 +2200,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Genre</translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -2234,13 +2216,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Encodage</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Taux d'échantillonnage</translation>
         </message>
         <message>
             <source>Format</source>
@@ -2260,13 +2240,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artiste</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Titre</translation>
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
@@ -2982,8 +2960,7 @@ Les formes d'onde seront générées comme parties intégrantes de l'analyse ég
         <name>HSVWaveformWidget</name>
         <message>
             <source>HSV</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>HSV</translation>
         </message>
     </context>
     <context>
@@ -3501,8 +3478,7 @@ Les formes d'onde seront générées comme parties intégrantes de l'analyse ég
         </message>
         <message>
             <source>Show the sample deck section of the Mixxx interface.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Afficher la section du  deck des échantillons de l'interface de Mixxx</translation>
         </message>
         <message>
             <source>Show the vinyl control section of the Mixxx interface.</source>
@@ -4013,8 +3989,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Curseur de mixage</translation>
         </message>
         <message>
             <source>Determines the master output by fading between the left and right channels.</source>
@@ -4074,8 +4049,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Contrôle Vinyle</translation>
         </message>
         <message>
             <source>Show/hide the Vinyl Control section.</source>
@@ -4345,8 +4319,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Setup a loop over the set number of beats.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Appliquer un loop sur le nombre de beats défini</translation>
         </message>
         <message>
             <source>Temporarily setup a rolling loop over the set number of beats.</source>
@@ -4370,8 +4343,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Slip Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mode glisser</translation>
         </message>
         <message>
             <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
@@ -4441,8 +4413,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Synchroniser</translation>
         </message>
         <message>
             <source>Syncs the tempo (BPM) and phase to that of the other track, </source>
@@ -4490,8 +4461,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Hotcue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Point de repère</translation>
         </message>
         <message>
             <source>If hotcue is set, jumps to the hotcue.</source>
@@ -4773,6 +4743,11 @@ Cliquez sur OK pour quitter.</translation>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>

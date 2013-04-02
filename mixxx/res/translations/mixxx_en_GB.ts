@@ -118,11 +118,11 @@
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation>Αναπαρήχθει</translation>
+            <translation>Played</translation>
         </message>
         <message>
             <source>Artist</source>
-            <translation>Καλλιτέχνης</translation>
+            <translation>Artist</translation>
         </message>
         <message>
             <source>Title</source>
@@ -423,8 +423,7 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_copy</translation>
         </message>
         <message>
             <source>Import Playlist</source>
@@ -984,8 +983,7 @@ by analysing the beats to discard outliers.</translation>
         </message>
         <message>
             <source>Toggle slip mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toggle slip mode</translation>
         </message>
         <message>
             <source>Preview Deck %1</source>
@@ -1099,8 +1097,7 @@ by analysing the beats to discard outliers.</translation>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Microphone</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
@@ -1116,23 +1113,19 @@ by analysing the beats to discard outliers.</translation>
         </message>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Shuffle the content of the Auto DJ playlist</translation>
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Skip the next track in the Auto DJ playlist</translation>
         </message>
         <message>
             <source>Trigger the transition to the next track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Trigger the transition to the next track</translation>
         </message>
         <message>
             <source>Toggle Auto DJ (ON/OFF)</source>
@@ -2269,8 +2262,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artist</translation>
         </message>
         <message>
             <source>Title</source>
@@ -4526,8 +4518,7 @@ Please select your soundcard(s) in the sound hardware preferences.</translation>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Synchronise</translation>
         </message>
         <message>
             <source>Syncs the tempo (BPM) and phase to that of the other track, </source>
@@ -4579,8 +4570,7 @@ Please select your soundcard(s) in the sound hardware preferences.</translation>
         </message>
         <message>
             <source>Hotcue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue</translation>
         </message>
         <message>
             <source>If hotcue is set, jumps to the hotcue.</source>
@@ -4869,6 +4859,10 @@ Click OK to exit.</translation>
             <source>Loading track ..</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
+            <translation>Finalising ..</translation>
         </message>
     </context>
     <context>
