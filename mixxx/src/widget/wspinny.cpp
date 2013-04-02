@@ -10,7 +10,6 @@
 #include "visualplayposition.h"
 #include "wspinny.h"
 
-
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
           m_pBgImage(NULL),

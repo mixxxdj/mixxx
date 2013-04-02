@@ -16,36 +16,36 @@
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
-WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
-    m_group(group),
-    m_trackInfoObject(0),
-    m_height(-1),
-    m_width(-1),
+WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) 
+    : m_group(group),
+      m_trackInfoObject(0),
+      m_height(-1),
+      m_width(-1),
 
-    m_firstDisplayedPosition(0.0),
-    m_lastDisplayedPosition(0.0),
-    m_rendererTransformationOffset(0.0),
-    m_rendererTransformationGain(0.0),
+      m_firstDisplayedPosition(0.0),
+      m_lastDisplayedPosition(0.0),
+      m_rendererTransformationOffset(0.0),
+      m_rendererTransformationGain(0.0),
 
-    m_zoomFactor(1.0),
-    m_rateAdjust(0.0),
-    m_visualSamplePerPixel(1.0),
-    m_audioSamplePerPixel(1.0),
+      m_zoomFactor(1.0),
+      m_rateAdjust(0.0),
+      m_visualSamplePerPixel(1.0),
+      m_audioSamplePerPixel(1.0),
 
-    // Really create some to manage those;
-    m_visualPlayPosition(NULL),
-    m_playPos(-1),
-    m_playPosVSample(0),
-    m_rateControlObject(NULL),
-    m_rate(0.0),
-    m_rateRangeControlObject(NULL),
-    m_rateRange(0.0),
-    m_rateDirControlObject(NULL),
-    m_rateDir(0.0),
-    m_gainControlObject(NULL),
-    m_gain(1.0),
-    m_trackSamplesControlObject(NULL),
-    m_trackSamples(0.0) {
+      // Really create some to manage those;
+      m_visualPlayPosition(NULL),
+      m_playPos(-1),
+      m_playPosVSample(0),
+      m_rateControlObject(NULL),
+      m_rate(0.0),
+      m_rateRangeControlObject(NULL),
+      m_rateRange(0.0),
+      m_rateDirControlObject(NULL),
+      m_rateDir(0.0),
+      m_gainControlObject(NULL),
+      m_gain(1.0),
+      m_trackSamplesControlObject(NULL),
+      m_trackSamples(0.0) {
 
     //qDebug() << "WaveformWidgetRenderer";
 

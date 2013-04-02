@@ -11,7 +11,7 @@ EmptyWaveformWidget::EmptyWaveformWidget(const char* group, QWidget* parent)
     //Empty means just a background ;)
     addRenderer<WaveformRenderBackground>();
 
-    // setAttribute(Qt::WA_NoSystemBackground);
+    setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     m_initSuccess = init();
@@ -25,7 +25,7 @@ void EmptyWaveformWidget::castToQWidget() {
 }
 
 void EmptyWaveformWidget::paintEvent(QPaintEvent* event) {
-    // Only render Qt thinks it is required
+    // Only render if Qt thinks it is required
     QPainter painter(this);
     draw(&painter,event);
 }

@@ -66,7 +66,7 @@ int GLWaveformWidget::render() {
     // glFinish();
     //t3 = timer.restart();
     //qDebug() << "GLVSyncTestWidget "<< t1 << t2 << t3;
-    return t1/1000; // return timer for painter setup
+    return t1 / 1000; // return timer for painter setup
 }
 
 void GLWaveformWidget::postRender() {

@@ -63,17 +63,12 @@ WaveformWidgetFactory::WaveformWidgetFactory() :
         m_openGLShaderAvailable(false),
         m_vsyncThread(NULL),
         m_crameCnt(0),
-        m_actualFrameRate(0),
-        m_minimumFrameRate(1000),
-        m_maximumlFrameRate(0) {
+        m_actualFrameRate(0) {
 
     m_visualGain[All] = 1.5;
     m_visualGain[Low] = 1.0;
     m_visualGain[Mid] = 1.0;
     m_visualGain[High] = 1.0;
-
-
-    m_lastRenderDuration = 0;
 
     if (QGLFormat::hasOpenGL()) {
         QGLFormat glFormat;
@@ -358,8 +353,6 @@ bool WaveformWidgetFactory::setWidgetTypeFromHandle(int handleIndex) {
         widget->setTrack(pTrack);
         widget->getWidget()->show();
         viewer->update();
-        m_maximumlFrameRate = 0;
-        m_minimumFrameRate = 2000;
 
         QGLWidget* glw = dynamic_cast<QGLWidget*>(widget);
         if (glw) {
@@ -443,37 +436,28 @@ void WaveformWidgetFactory::refresh() {
                 // Calculate play position for the new Frame in following run
                 m_waveformWidgetHolders[i].m_waveformWidget->preRender(m_vsyncThread);
             }
-     //       qDebug() << "prerender" << m_vsyncThread->elapsed();
+            //qDebug() << "prerender" << m_vsyncThread->elapsed();
 
             // It may happen that there is an artificially delayed due to
             // anti tearing driver settings
             // all render commands are delayed until the swap from the previous run is executed
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 if (i == 0) {
-                    /*
-                    if (m_vSyncType == 3) { // ST_OML_SYNC_CONTROL
-                        QGLWidget* glw = dynamic_cast<QGLWidget*>(
-                                m_waveformWidgetHolders[0].m_waveformWidget->getWidget());
-                        if (glw) {
-                            m_vsyncThread->waitUntilSwap(glw);
-                        }
-                    }
-                    */
                     paintersSetupTime0 = m_waveformWidgetHolders[0].m_waveformWidget->render();
                 } else if (i == 1) {
                     paintersSetupTime1 = m_waveformWidgetHolders[1].m_waveformWidget->render();
                 } else {
                     m_waveformWidgetHolders[i].m_waveformWidget->render();
                 }
-       //         qDebug() << "render" << i << m_vsyncThread->elapsed();
+                // qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
 
-            // if waveform 1 takes significant longer for render, assume a delay
-            // until Vsync within the driver
-            // happens at least in:
-            // xorg radeon 1:6.14.99
-            // xorg intel 2:2.9.1
             if (m_vSyncType == 1) { // ST_MESA_VBLANK_MODE_1
+                // if waveform 1 takes significant longer for render, assume a delay
+                // until Vsync within the driver
+                // happens at least in:
+                // xorg radeon 1:6.14.99
+                // xorg intel 2:2.9.1
                 if (paintersSetupTime1 && paintersSetupTime0 > (paintersSetupTime1 + 1000)) {
                     m_vsyncThread->setSwapWait(paintersSetupTime0 - paintersSetupTime1);
                     //qDebug() << "setSwapWait" << paintersSetupTime0 - paintersSetupTime1;
@@ -486,12 +470,9 @@ void WaveformWidgetFactory::refresh() {
         // Notify all other waveform-like widgets (e.g. WSpinny's) that they should
         // update.
         //int t1 = m_vsyncThread->elapsed();
-    //    if (!m_vSync) {
-            emit(waveformUpdateTick());
-     //   }
+        emit(waveformUpdateTick());
         //qDebug() << "emit" << m_vsyncThread->elapsed() - t1;
 
-        // m_lastRenderDuration = startTime;
         m_crameCnt += 1.0;
         int timeCnt = m_time.elapsed();
         if (timeCnt > 1000) {
@@ -522,7 +503,7 @@ void WaveformWidgetFactory::postRefresh() {
         // Like setting SwapbufferWait = enabled (default) in driver:
         // xorg radeon 1:6.14.99
         // xorg intel 2:2.9.1
-   //     qDebug() << "postRefresh start" << m_vsyncThread->elapsed();
+        //qDebug() << "postRefresh start" << m_vsyncThread->elapsed();
         for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
             QGLWidget* glw = dynamic_cast<QGLWidget*>(
                     m_waveformWidgetHolders[i].m_waveformWidget->getWidget());
@@ -542,7 +523,7 @@ void WaveformWidgetFactory::postRefresh() {
                     m_vsyncThread->postRender(glw, i);
                 }
             }
-  //          qDebug() << "postRefresh x" << m_vsyncThread->elapsed();
+            //qDebug() << "postRefresh x" << m_vsyncThread->elapsed();
         }
 
         if (m_vSyncType == 2) { // ST_SGI_VIDEO_SYNC
@@ -553,7 +534,7 @@ void WaveformWidgetFactory::postRefresh() {
             }
         }
     }
- //   qDebug() << "postRefresh end" << m_vsyncThread->elapsed();
+    //qDebug() << "postRefresh end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
 }
 

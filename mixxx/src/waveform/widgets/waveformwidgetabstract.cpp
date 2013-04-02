@@ -5,9 +5,9 @@
 #include <QWidget>
 
 
-WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group) :
-    WaveformWidgetRenderer(group),
-    m_initSuccess(false) {
+WaveformWidgetAbstract::WaveformWidgetAbstract( const char* group) 
+    : WaveformWidgetRenderer(group),
+      m_initSuccess(false) {
     m_widget = NULL;
 }
 
