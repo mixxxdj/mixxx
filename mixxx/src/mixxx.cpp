@@ -1460,6 +1460,7 @@ void MixxxApp::slotHelpAbout() {
 "Scott Stewart<br>"
 "Nimatek<br>"
 "Alban Bedel<br>"
+"Stefan N&uuml;rnberger<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
