@@ -380,7 +380,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 IDENTIFIER="org.mixxx.mixxx",
                 DISPLAY_NAME="Mixxx",
                 SHORT_VERSION=mixxx_version, #FIXME: parse defs_version.h???
-                COPYRIGHT="Copyright © 2011 Mixxx Development Team", #FIXME: datetime.year()
+                COPYRIGHT="Copyright © 2011-2013 Mixxx Development Team", #FIXME: datetime.year()
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
                 OTOOL_SYSTEM_PATHS=otool_system_paths,
@@ -392,6 +392,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         codesign_identity = SCons.ARGUMENTS.get('osx_codesign_identity', None)
         codesign_keychain = SCons.ARGUMENTS.get('osx_codesign_keychain', None)
         codesign_keychain_password = SCons.ARGUMENTS.get('osx_codesign_keychain_password', None)
+        codesign_entitlements = SCons.ARGUMENTS.get('osx_codesign_entitlements', None)
         # CodeSign needs to take sources for it source so that there is an input
         # that changse. Otherwise SCons will think the CodeSign target is up to
         # date and not run it.
@@ -400,7 +401,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 sources,
                 CODESIGN_IDENTITY=codesign_identity,
                 CODESIGN_KEYCHAIN=codesign_keychain,
-                CODESIGN_KEYCHAIN_PASSWORD=codesign_keychain_password)
+                CODESIGN_KEYCHAIN_PASSWORD=codesign_keychain_password,
+                CODESIGN_ENTITLEMENTS=codesign_entitlements)
         env.Alias('sign', codesign)
 
         package_name = 'mixxx'

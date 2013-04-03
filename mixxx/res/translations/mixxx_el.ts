@@ -63,8 +63,7 @@
         </message>
         <message>
             <source>Duplicate Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Υπάρχουσα Λίστα</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -101,23 +100,19 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η Δημιουργία Λίστας Απέτυχε</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αρχεία Λίστας (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV (*.csv);;Απλό Κείμενο (*.txt)</translation>
         </message>
     </context>
     <context>
@@ -434,8 +429,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εισαγωγή Λίστας Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -451,13 +445,11 @@
         </message>
         <message>
             <source>Duplicate Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Υπάρχον Κιβώτιο</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ξεκλείδωμα</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -481,13 +473,11 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αρχεία Λίστας (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV (*.csv);;Απλό Κείμενο (*.txt)</translation>
         </message>
         <message>
             <source>Crates are a great way to help organize the music you want to DJ with.</source>
@@ -728,8 +718,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>To map another control click a button or choose from the list.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Για να χαρτογραφήσετε ένα καινούριο control, πατήστε ένα κουμπί ή επιλέξτε από τη λίστα.</translation>
         </message>
         <message>
             <source>Choose Control</source>
@@ -796,13 +785,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Fast rewind button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί fast rewind</translation>
         </message>
         <message>
             <source>Fast forward button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί fast forward</translation>
         </message>
         <message>
             <source>Jump to start of track</source>
@@ -827,13 +814,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Toggle repeat mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εναλλαγή τρόπου επανάληψης</translation>
         </message>
         <message>
             <source>Eject track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αποφόρτωση κομματιού</translation>
         </message>
         <message>
             <source>Mix orientation (e.g. left, right, center)</source>
@@ -861,23 +846,19 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Beat sync (tempo and phase)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συγχρονισμός beat (ρυθμός και φάση)</translation>
         </message>
         <message>
             <source>Beat sync (tempo only)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συγχρονισμός beat (μόνο ρυθμός)</translation>
         </message>
         <message>
             <source>Beat sync (phase only)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συγχρονισμός beat (μόνο φάση)</translation>
         </message>
         <message>
             <source>Pitch and Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τόνος και Ρυθμός</translation>
         </message>
         <message>
             <source>Toggle keylock mode</source>
@@ -891,13 +872,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Adjust rate up (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Άυξηση ρυθμού (ακρίβεια)</translation>
         </message>
         <message>
             <source>Adjust rate down (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μείωση ρυθμού (ακρίβεια)</translation>
         </message>
         <message>
             <source>Pitch-bend rate up (fine)</source>
@@ -906,13 +885,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Adjust rate up (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Άυξηση ρυθμού (χοντρικά)</translation>
         </message>
         <message>
             <source>Adjust rate down (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μείωση ρυθμού (χοντρικά)</translation>
         </message>
         <message>
             <source>Pitch-bend rate up (coarse)</source>
@@ -1093,28 +1070,23 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>1/32th</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1/32</translation>
         </message>
         <message>
             <source>1/16th</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1/16</translation>
         </message>
         <message>
             <source>1/8th</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1/8</translation>
         </message>
         <message>
             <source>1/4th</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1/4</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Βιβλιοθήκη</translation>
         </message>
         <message>
             <source>Expand/collapse the selected view (library, playlist..)</source>
@@ -1123,13 +1095,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετάβαση στην επόμενη όψη (βιβλιοθήκη, λίστα..)</translation>
         </message>
         <message>
             <source>Switch to the previous view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετάβαση στην προηγούμενη όψη (βιβλιοθήκη, λίστα..)</translation>
         </message>
         <message>
             <source>Scroll to next track in library/playlist</source>
@@ -1150,8 +1120,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Load selected track and play</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Φόρτωση του επιλεγμένου κομματιού και αναπαραγωγή</translation>
         </message>
         <message>
             <source>Effects</source>
@@ -1159,33 +1128,27 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Toggle flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποίηση/Απενεργοποίηση εφέ flange</translation>
         </message>
         <message>
             <source>Flange effect: Wavelength/period</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εφέ flange: Μήκος κύματος/περίοδος</translation>
         </message>
         <message>
             <source>Flange effect: Intensity</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εφέ flange: ένταση</translation>
         </message>
         <message>
             <source>Flange effect: Phase delay</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εφέ flange: Καθυστέρηση φάσης</translation>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μικρόφωνο</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μικρόφωνο ανοιχτό/κλειστό</translation>
         </message>
         <message>
             <source>Microphone volume</source>
@@ -1193,33 +1156,27 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Microphone channel orientation (e.g. left, right, center)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσανατολισμός καναλιού μικροφώνου (π.χ. αριστερά, δεξιά, κέντρο)</translation>
         </message>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αυτόματος DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μίξη του περιεχόμενου της λίστας του Αυτόματου DJ</translation>
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αγνόησε το επόμενο κομμάτι στη λίστα του Αυτόματου DJ</translation>
         </message>
         <message>
             <source>Trigger the transition to the next track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποίηση μετάβασης στο επόμενο κομμάτι</translation>
         </message>
         <message>
             <source>Toggle Auto DJ (ON/OFF)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποίηση/Απενεργοποίηση Αυτόματου DJ</translation>
         </message>
         <message>
             <source>User Interface</source>
@@ -1257,79 +1214,65 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Successfully mapped to:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιτυχώς χαρτογραφημένο στο:</translation>
         </message>
     </context>
     <context>
         <name>DlgHidden</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διαχείριση</translation>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλέγει όλα τα κομμάτια στον παρακάτω πίνακα.</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλογή Όλων</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διαγραφή επιλεγμενων κομματιών από τη βιβλιοθήκη.</translation>
         </message>
         <message>
             <source>Purge</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διαγραφή</translation>
         </message>
         <message>
             <source>Unhide selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εμφάνιση επιλεγμένων κομματιών στη βιβλιοθήκη.</translation>
         </message>
         <message>
             <source>Unhide</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εμφάνιση</translation>
         </message>
         <message>
             <source>Ctrl+S</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+S</translation>
         </message>
     </context>
     <context>
         <name>DlgMissing</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διαχείριση</translation>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλέγει όλα τα κομμάτια στον παρακάτω πίνακα.</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλογή Όλων</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διαγραφή επιλεγμενων κομματιών από τη βιβλιοθήκη.</translation>
         </message>
         <message>
             <source>Purge</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διαγραφή</translation>
         </message>
     </context>
     <context>
@@ -1355,8 +1298,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Detect Tracks BPM on Import</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εντοπισμός BPM των Κομματιών κατά την Εισαγωγή</translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
@@ -1414,8 +1356,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>No Description</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Χωρίς Περιγραφή</translation>
         </message>
         <message>
             <source>No support available.</source>
@@ -1448,8 +1389,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Description:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Περιγραφή:</translation>
         </message>
         <message>
             <source>Load Preset:</source>
@@ -1461,8 +1401,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Support:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Υποστήριξη:</translation>
         </message>
         <message>
             <source>Click to start the Controller Learning wizard.</source>
@@ -1522,8 +1461,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Down increases speed (Technics SL-1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προς τα κάτω αυξάνει την ταχύτητα (Technics SL-1210)</translation>
         </message>
         <message>
             <source>10%</source>
@@ -1582,8 +1520,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Πληροφορίες</translation>
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
@@ -5277,6 +5214,11 @@ Click OK to exit.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Finalizing ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>
@@ -5347,8 +5289,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Reload Track Metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επαναφόρτωση Metadata Κομματιού</translation>
         </message>
         <message>
             <source>Load to Preview Deck</source>
@@ -5397,13 +5338,11 @@ Click OK to exit.</source>
         <name>WaveformWidgetFactory</name>
         <message>
             <source>(GLSL)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(GLSL)</translation>
         </message>
         <message>
             <source>(GL)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(GL)</translation>
         </message>
     </context>
 </TS>

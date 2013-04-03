@@ -10,11 +10,12 @@ class HSVWaveformWidget : public QWidget, public WaveformWidgetAbstract {
   public:
     virtual ~HSVWaveformWidget();
 
-    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::HSVWaveform;}
+    virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::HSVWaveform; }
 
-    static inline QString getWaveformWidgetName() { return tr("HSV");}
-    static inline bool useOpenGl() { return false;}
-    static inline bool useOpenGLShaders() { return false;}
+    static inline QString getWaveformWidgetName() { return tr("HSV"); }
+    static inline bool useOpenGl() { return false; }
+    static inline bool useOpenGLShaders() { return false; }
+    static inline bool developerOnly() { return false; }
 
   protected:
     virtual void castToQWidget();

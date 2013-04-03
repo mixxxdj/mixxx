@@ -197,7 +197,7 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Chiave</translation>
+            <translation>Parola chiave</translation>
         </message>
         <message>
             <source>BPM Lock</source>
@@ -5263,6 +5263,11 @@ Clicca su OK per uscire.</translation>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>

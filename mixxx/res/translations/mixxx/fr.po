@@ -2,15 +2,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Mixxx 1.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2013-02-23 19:23+0000\n"
-"Last-Translator: lann <lann@worldonline.fr>\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-03-07 21:45+0000\n"
+"Last-Translator: Tubuntu <Unknown>\n"
 "Language-Team: <tezalprod@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:35+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-08 04:34+0000\n"
+"X-Generator: Launchpad (build 16523)\n"
 "X-Poedit-Country: FRANCE\n"
 "X-Poedit-Language: French\n"
 
@@ -120,12 +120,14 @@ msgstr "_copié"
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "La Création de la Liste de Lecture a échoué"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
 msgstr ""
+"Une erreur inconnue est survenue lors de la création de la liste de lecture "
+": "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
@@ -138,6 +140,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Liste de lecture M3U (*.m3u);;Liste de lecture M3U8 (*.m3u8);;Liste de "
+"lecture PLS (*.pls);;Texte CSV (*.csv);;Texte (*.txt)"
 
 #: BaseSqlTableModel#1
 msgid "Played"
@@ -494,7 +498,7 @@ msgstr "_copié"
 #: CrateFeature#6
 msgctxt "CrateFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Importer une Liste de lecture"
 
 #: CrateFeature#7
 msgid "Crates"
@@ -515,7 +519,7 @@ msgstr ""
 #: CrateFeature#11
 msgctxt "CrateFeature#11"
 msgid "Unlock"
-msgstr ""
+msgstr "Débloquer"
 
 #: CrateFeature#12
 msgid "Crate name:"
@@ -540,7 +544,7 @@ msgstr "Le renommage du bac a échoué"
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Fichiers de liste de lecture (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#18
 msgctxt "CrateFeature#18"
@@ -548,6 +552,8 @@ msgid ""
 "M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV "
 "(*.csv);;Readable Text (*.txt)"
 msgstr ""
+"Liste de lecture M3U (*.m3u);;Liste de lecture M3U8 (*.m3u8);;Liste de "
+"lecture PLS (*.pls);;Texte CSV (*.csv);;Texte (*.txt)"
 
 #: CrateFeature#19
 msgid ""
@@ -1091,7 +1097,7 @@ msgstr "Repères"
 
 #: DlgControllerLearning#75
 msgid "Hotcues"
-msgstr ""
+msgstr "Repères rapides"
 
 #: DlgControllerLearning#76
 msgid "Hotcue %1"
@@ -1132,7 +1138,7 @@ msgstr "1/4"
 #: DlgControllerLearning#85
 msgctxt "DlgControllerLearning#85"
 msgid "Library"
-msgstr ""
+msgstr "Bibliothèque"
 
 #: DlgControllerLearning#86
 msgid "Expand/collapse the selected view (library, playlist..)"
@@ -1166,7 +1172,7 @@ msgstr "Charger le morceau sélectionné"
 
 #: DlgControllerLearning#93
 msgid "Load selected track and play"
-msgstr ""
+msgstr "Charger la piste sélectionnée et la jouer"
 
 #: DlgControllerLearning#94
 msgid "Effects"
@@ -1191,7 +1197,7 @@ msgstr "Effet flanger : déphasage"
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
-msgstr ""
+msgstr "Microphone"
 
 #: DlgControllerLearning#100
 msgid "Microphone on/off"
@@ -1208,7 +1214,7 @@ msgstr "Orientation du canal microphone (ex. gauche, droite, centre)"
 #: DlgControllerLearning#103
 msgctxt "DlgControllerLearning#103"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: DlgControllerLearning#104
 msgid "Shuffle the content of the Auto DJ playlist"
@@ -1224,7 +1230,7 @@ msgstr "Activer la transition vers le morceau suivant"
 
 #: DlgControllerLearning#107
 msgid "Toggle Auto DJ (ON/OFF)"
-msgstr ""
+msgstr "Activer/Désactiver Auto DJ"
 
 #: DlgControllerLearning#108
 msgid "User Interface"
@@ -1277,7 +1283,7 @@ msgstr "Tout sélectionner"
 #: DlgHidden#4
 msgctxt "DlgHidden#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Purger les pistes sélectionnées de la librairie"
 
 #: DlgHidden#5
 msgctxt "DlgHidden#5"
@@ -1314,7 +1320,7 @@ msgstr "Tout sélectionner"
 #: DlgMissing#4
 msgctxt "DlgMissing#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Purger les pistes sélectionnées de la librairie"
 
 #: DlgMissing#5
 msgctxt "DlgMissing#5"
@@ -1728,7 +1734,7 @@ msgstr "Gain visuel"
 #: DlgPrefControlsDlg#40
 msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr ""
+msgstr "Syncrhoniser"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -2287,7 +2293,7 @@ msgstr "Paramètre du flux"
 
 #: DlgPrefShoutcastDlg#11
 msgid "Dynamically update Ogg Vorbis metadata."
-msgstr ""
+msgstr "Mettre à jour dynamiquement les meta données Ogg Vorbis"
 
 #: DlgPrefShoutcastDlg#12
 msgid ""
@@ -2345,7 +2351,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#19
 msgctxt "DlgPrefShoutcastDlg#19"
 msgid "Genre"
-msgstr ""
+msgstr "Genre"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Live mix"
@@ -2362,12 +2368,12 @@ msgstr "Utiliser l'encodage UTF-8 pour les métadonnées."
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Encoding"
-msgstr ""
+msgstr "Encodage"
 
 #: DlgPrefShoutcastDlg#24
 msgctxt "DlgPrefShoutcastDlg#24"
 msgid "Bitrate"
-msgstr ""
+msgstr "Taux d'échantillonnage"
 
 #: DlgPrefShoutcastDlg#25
 msgid "Format"
@@ -2388,12 +2394,12 @@ msgstr "Activer les métadonnées personnalisées"
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Artist"
-msgstr ""
+msgstr "Artiste"
 
 #: DlgPrefShoutcastDlg#30
 msgctxt "DlgPrefShoutcastDlg#30"
 msgid "Title"
-msgstr ""
+msgstr "Titre"
 
 #: DlgPrefShoutcastDlg#31
 msgid ""
@@ -3196,7 +3202,7 @@ msgstr "Filtré"
 
 #: HSVWaveformWidget#1
 msgid "HSV"
-msgstr ""
+msgstr "HSV"
 
 #: HidController#1
 msgid "Generic HID Mouse"
@@ -3724,6 +3730,7 @@ msgstr "Peut-être pas supporté sur tous les thèmes"
 #: MixxxApp#84
 msgid "Show the sample deck section of the Mixxx interface."
 msgstr ""
+"Afficher la section du  deck des échantillons de l'interface de Mixxx"
 
 #: MixxxApp#85
 msgid "Show the vinyl control section of the Mixxx interface."
@@ -4260,7 +4267,7 @@ msgstr "Ajuste le volume de la sortie principale."
 #: Tooltips#33
 msgctxt "Tooltips#33"
 msgid "Crossfader"
-msgstr ""
+msgstr "Curseur de mixage"
 
 #: Tooltips#34
 msgid ""
@@ -4328,7 +4335,7 @@ msgstr "Affiche/cache la section Échantilloneur."
 #: Tooltips#48
 msgctxt "Tooltips#48"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Contrôle Vinyle"
 
 #: Tooltips#49
 msgid "Show/hide the Vinyl Control section."
@@ -4610,7 +4617,7 @@ msgstr ""
 
 #: Tooltips#114
 msgid "Setup a loop over the set number of beats."
-msgstr ""
+msgstr "Appliquer un loop sur le nombre de beats défini"
 
 #: Tooltips#115
 msgid "Temporarily setup a rolling loop over the set number of beats."
@@ -4632,7 +4639,7 @@ msgstr ""
 
 #: Tooltips#119
 msgid "Slip Mode"
-msgstr ""
+msgstr "Mode glisser"
 
 #: Tooltips#120
 msgid ""
@@ -4711,7 +4718,7 @@ msgstr "Va à la fin du morceau."
 #: Tooltips#136
 msgctxt "Tooltips#136"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchroniser"
 
 #: Tooltips#137
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4764,7 +4771,7 @@ msgstr "Ejecte le morceau du lecteur."
 #: Tooltips#148
 msgctxt "Tooltips#148"
 msgid "Hotcue"
-msgstr ""
+msgstr "Point de repère"
 
 #: Tooltips#149
 msgid "If hotcue is set, jumps to the hotcue."
@@ -5084,6 +5091,10 @@ msgstr ""
 
 #: WOverview#2
 msgid "Loading track .."
+msgstr ""
+
+#: WOverview#3
+msgid "Finalizing .."
 msgstr ""
 
 #: WSearchLineEdit#1

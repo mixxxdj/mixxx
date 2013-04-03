@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2013-01-16 13:00+0000\n"
-"Last-Translator: sahin <adim.sahin@gmail.com>\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-03-13 14:55+0000\n"
+"Last-Translator: Davut Engin <Unknown>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:38+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-03-14 04:34+0000\n"
+"X-Generator: Launchpad (build 16532)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -121,12 +121,12 @@ msgstr ""
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Çalma listesi oluşturulamadı"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Liste oluşturulurken bilinmeyen bir hata oluştu: "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
@@ -490,7 +490,7 @@ msgstr ""
 #: CrateFeature#6
 msgctxt "CrateFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Çalma Listesini İçe Aktar"
 
 #: CrateFeature#7
 msgid "Crates"
@@ -735,16 +735,16 @@ msgstr ""
 
 #: DlgBeatsDlg#17
 msgid "Min:"
-msgstr ""
+msgstr "Asg:"
 
 #: DlgBeatsDlg#18
 msgid "Max:"
-msgstr ""
+msgstr "Azm:"
 
 #: DlgBeatsDlg#19
 msgctxt "DlgBeatsDlg#19"
 msgid "Reset to Defaults"
-msgstr ""
+msgstr "Fabrika Ayarları"
 
 #: DlgBpmSchemeDlg#1
 msgid "BPM Scheme"
@@ -757,7 +757,7 @@ msgstr "Şema Adı:"
 #: DlgBpmSchemeDlg#3
 msgctxt "DlgBpmSchemeDlg#3"
 msgid "BPM Range"
-msgstr ""
+msgstr "BPM Aralığı"
 
 #: DlgBpmSchemeDlg#4
 msgid "Max"
@@ -784,7 +784,7 @@ msgstr ""
 
 #: DlgControllerLearning#3
 msgid "Done"
-msgstr ""
+msgstr "Bitti"
 
 #: DlgControllerLearning#4
 msgid "To map another control click a button or choose from the list."
@@ -4845,6 +4845,10 @@ msgstr ""
 
 #: WOverview#2
 msgid "Loading track .."
+msgstr ""
+
+#: WOverview#3
+msgid "Finalizing .."
 msgstr ""
 
 #: WSearchLineEdit#1
