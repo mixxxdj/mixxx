@@ -118,11 +118,13 @@ void MessageHandler(QtMsgType type, const char *input)
         fprintf(stderr, "Debug %s", ba.constData());
         Logfile.write("Debug ");
         Logfile.write(ba);
+        Logfile.flush();
         break;
     case QtWarningMsg:
         fprintf(stderr, "Warning %s", ba.constData());
         Logfile.write("Warning ");
         Logfile.write(ba);
+        Logfile.flush();
         // Don't use qWarning for reporting user-facing errors.
         //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
@@ -131,6 +133,11 @@ void MessageHandler(QtMsgType type, const char *input)
         Logfile.write("Critical ");
         Logfile.write(ba);
         Logfile.flush();    // Ensure the error is written to the log before exiting
+
+        // We must unlock the mutex before invoking an error dialog because it
+        // can cause re-entrancy in MessageHandler.
+        locker.unlock();
+
         dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
 //         exit(-1);    // Done in ErrorDialogHandler
         break; //NOTREACHED
@@ -139,11 +146,15 @@ void MessageHandler(QtMsgType type, const char *input)
         Logfile.write("Fatal ");
         Logfile.write(ba);
         Logfile.flush();    // Ensure the error is written to the log before aborting
+
+        // We must unlock the mutex before invoking an error dialog because it
+        // can cause re-entrancy in MessageHandler.
+        locker.unlock();
+
         dialogHandler->requestErrorDialog(DLG_FATAL,input);
 //         abort();    // Done in ErrorDialogHandler
         break; //NOTREACHED
     }
-    Logfile.flush();
 }
 
 int main(int argc, char * argv[])
