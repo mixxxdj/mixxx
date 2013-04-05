@@ -200,7 +200,7 @@ void ErrorDialogHandler::boxClosed(QString key) {
         return;
     }
 
-    QMutexLocker locker(&m_mutex);
+    QMutexLocker locker2(&m_mutex);
     if (m_dialogKeys.contains(key)) {
         if (!m_dialogKeys.removeOne(key)) {
             qWarning() << "Error dialog key removal from list failed!";
