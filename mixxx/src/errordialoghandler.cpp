@@ -108,9 +108,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
     bool keyExists = m_dialogKeys.contains(props->getKey());
     locker.unlock();
     if (keyExists) {
-        ErrorDialogProperties* dlgPropsTemp = props;
-        props = NULL;
-        delete dlgPropsTemp;
+        delete props;
         return false;
     }
 
@@ -154,13 +152,14 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     QMutexLocker locker(&m_mutex);
     // To avoid duplicate dialogs on the same error
     m_dialogKeys.append(props->m_key);
-    locker.unlock();
 
     // Signal mapper calls our slot with the key parameter so it knows which to
     // remove from the list
     connect(msgBox, SIGNAL(finished(int)),
             &m_signalMapper, SLOT(map()));
     m_signalMapper.setMapping(msgBox, props->m_key);
+
+    locker.unlock();
 
     if (props->m_modal) {
         // Blocks so the user has a chance to read it before application exit
@@ -186,10 +185,11 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 }
 
 void ErrorDialogHandler::boxClosed(QString key) {
+    QMutexLocker locker(&m_mutex);
     QMessageBox* msgBox = (QMessageBox*)m_signalMapper.mapping(key);
+    locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
-
     emit(stdButtonClicked(key, whichStdButton));
 
     // If the user clicks "Ignore," we leave the key in the list so the same
