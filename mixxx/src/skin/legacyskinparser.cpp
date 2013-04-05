@@ -904,6 +904,13 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
     WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
+    if (!spinny->isValid()) {
+        delete spinny;
+        QLabel* dummy = new QLabel(m_pParent);
+        //: Shown when Spinny can not be displayd. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
     setupWidget(node, spinny);
 
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
