@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-03-05 06:50+0200\n"
-"PO-Revision-Date: 2013-03-17 15:56+0000\n"
-"Last-Translator: Sarunas Zolabaitis <sarkis.92@gmail.com>\n"
+"PO-Revision-Date: 2013-04-04 22:10+0000\n"
+"Last-Translator: john esteban astete arambarri <john.ea@hotmail.com>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-18 04:34+0000\n"
-"X-Generator: Launchpad (build 16532)\n"
+"X-Launchpad-Export-Date: 2013-04-05 05:15+0000\n"
+"X-Generator: Launchpad (build 16550)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -1103,7 +1103,7 @@ msgstr ""
 
 #: DlgControllerLearning#75
 msgid "Hotcues"
-msgstr ""
+msgstr "Teclas rápidas"
 
 #: DlgControllerLearning#76
 msgid "Hotcue %1"
@@ -1111,7 +1111,7 @@ msgstr ""
 
 #: DlgControllerLearning#77
 msgid "Loop Exit button"
-msgstr ""
+msgstr "Botón Salida de Bucle"
 
 #: DlgControllerLearning#78
 msgid "Beat-Looping"
@@ -1314,22 +1314,22 @@ msgstr "Administrar"
 #: DlgMissing#2
 msgctxt "DlgMissing#2"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Seleccionar todas las pistas en la tabla de abajo."
 
 #: DlgMissing#3
 msgctxt "DlgMissing#3"
 msgid "Select All"
-msgstr ""
+msgstr "Seleccionar Todo"
 
 #: DlgMissing#4
 msgctxt "DlgMissing#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Limpiar las pistas seleccionadas de la biblioteca."
 
 #: DlgMissing#5
 msgctxt "DlgMissing#5"
 msgid "Purge"
-msgstr ""
+msgstr "Limpiar"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -2354,7 +2354,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#19
 msgctxt "DlgPrefShoutcastDlg#19"
 msgid "Genre"
-msgstr ""
+msgstr "Género"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Live mix"
@@ -2371,12 +2371,12 @@ msgstr "Usar codificación UTF-8 para los metadatos."
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Encoding"
-msgstr ""
+msgstr "Codificación"
 
 #: DlgPrefShoutcastDlg#24
 msgctxt "DlgPrefShoutcastDlg#24"
 msgid "Bitrate"
-msgstr ""
+msgstr "Tasa de bits"
 
 #: DlgPrefShoutcastDlg#25
 msgid "Format"
@@ -2397,12 +2397,12 @@ msgstr "Activar metadatos personalizados"
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: DlgPrefShoutcastDlg#30
 msgctxt "DlgPrefShoutcastDlg#30"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: DlgPrefShoutcastDlg#31
 msgid ""
