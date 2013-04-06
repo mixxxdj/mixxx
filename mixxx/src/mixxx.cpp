@@ -52,6 +52,7 @@
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
 #include "sharedglcontext.h"
+#include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
 
@@ -454,7 +455,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
         m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
-        qCritical("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
+        reportCriticalErrorAndQuit("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         //TODO (XXX) add dialog to warn user and launch skin choice page
         resize(640,480);

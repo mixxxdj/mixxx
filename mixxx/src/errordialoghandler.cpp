@@ -24,6 +24,7 @@
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title("Mixxx"),
           m_modal(true),
+          m_shouldQuit(false),
           m_type(DLG_NONE),
           m_icon(QMessageBox::NoIcon) {
 }
@@ -80,10 +81,14 @@ ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {
     return new ErrorDialogProperties();
 }
 
-bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message) {
+bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
+                                            bool shouldQuit) {
     ErrorDialogProperties* props = newDialogProperties();
     props->setType(type);
     props->setText(message);
+    if (shouldQuit) {
+        props->setShouldQuit(shouldQuit);
+    }
     switch (type) {
         case DLG_FATAL:     props->setTitle(tr("Fatal error")); break;
         case DLG_CRITICAL:  props->setTitle(tr("Critical error")); break;
@@ -169,7 +174,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     }
 
     // If critical/fatal, gracefully exit application if possible
-    if (props->m_type >= DLG_CRITICAL) {
+    if (props->m_shouldQuit) {
         m_errorCondition = true;
         if (QCoreApplication::instance()) {
             QCoreApplication::instance()->exit(-1);

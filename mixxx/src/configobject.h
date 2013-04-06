@@ -25,6 +25,8 @@
 #include <qmap.h>
 #include <QHash>
 
+#include "util/debug.h"
+
 /*
 typedef enum {
     MIDI_EMPTY            = 0,
@@ -69,7 +71,7 @@ public:
     ConfigValue();
     ConfigValue(QString _value);
     ConfigValue(int _value);
-    inline ConfigValue(QDomNode /* node */) { qFatal("ConfigValue from QDomNode not implemented here"); }
+    inline ConfigValue(QDomNode /* node */) { reportFatalErrorAndQuit("ConfigValue from QDomNode not implemented here"); }
     void valCopy(const ConfigValue _value);
 
     QString value;
@@ -83,7 +85,7 @@ public:
     ConfigValueKbd();
     ConfigValueKbd(QString _value);
     ConfigValueKbd(QKeySequence key);
-    inline ConfigValueKbd(QDomNode /* node */) { qFatal("ConfigValueKbd from QDomNode not implemented here"); }
+    inline ConfigValueKbd(QDomNode /* node */) { reportFatalErrorAndQuit("ConfigValueKbd from QDomNode not implemented here"); }
     void valCopy(const ConfigValueKbd v);
     friend bool operator==(const ConfigValueKbd & s1, const ConfigValueKbd & s2);
 
