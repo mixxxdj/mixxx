@@ -11,13 +11,13 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-03-05 06:50+0200\n"
-"PO-Revision-Date: 2013-04-06 04:02+0000\n"
-"Last-Translator: john esteban astete arambarri <john.ea@hotmail.com>\n"
+"PO-Revision-Date: 2013-04-07 11:26+0000\n"
+"Last-Translator: jus <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-04-07 05:11+0000\n"
+"X-Launchpad-Export-Date: 2013-04-08 05:13+0000\n"
 "X-Generator: Launchpad (build 16550)\n"
 
 #: AutoDJFeature#1
@@ -3494,7 +3494,7 @@ msgstr "Ctrl+1"
 
 #: MixxxApp#24
 msgid "Show Vinyl Control Section"
-msgstr ""
+msgstr "Mostrar la Sección de Control de Vinilo"
 
 #: MixxxApp#25
 msgid "Ctrl+3"
@@ -3765,7 +3765,7 @@ msgstr "Ay&uda"
 
 #: MixxxApp#91
 msgid "&Vinyl Control"
-msgstr "&Control por vinilos"
+msgstr "Control de &vinilo"
 
 #: MixxxApp#92
 msgid ""
@@ -4013,7 +4013,7 @@ msgstr "Deck"
 #: QObject#5
 msgctxt "QObject#5"
 msgid "Vinyl Control"
-msgstr "Vinilo de control"
+msgstr "Control de vinilo"
 
 #: QObject#6
 msgctxt "QObject#6"
@@ -4271,7 +4271,7 @@ msgstr "Ajusta el volumen maestro de salida."
 #: Tooltips#33
 msgctxt "Tooltips#33"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Tooltips#34
 msgid ""
@@ -4337,7 +4337,7 @@ msgstr "Mostrar/ocultar la sección de Sampler."
 #: Tooltips#48
 msgctxt "Tooltips#48"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Control de vinilo"
 
 #: Tooltips#49
 msgid "Show/hide the Vinyl Control section."
@@ -4769,7 +4769,7 @@ msgstr "Expulsa la pista del reproductor."
 #: Tooltips#148
 msgctxt "Tooltips#148"
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: Tooltips#149
 msgid "If hotcue is set, jumps to the hotcue."
