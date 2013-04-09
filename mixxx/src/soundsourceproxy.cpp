@@ -34,6 +34,7 @@
 #include "soundsourceflac.h"
 
 #include "mixxx.h"
+#include "util/cmdlineargs.h"
 
 #include <QLibrary>
 #include <QMutexLocker>
@@ -311,6 +312,13 @@ int SoundSourceProxy::parseHeader()
 int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 {
     QString qFilename = p->getLocation();
+
+    // Log parsing of header information in developer mode. This is useful for
+    // tracking down corrupt files.
+    if (CmdlineArgs::Instance().getDeveloper()) {
+	qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
+    }
+
     SoundSource* sndsrc = initialize(qFilename);
     if (sndsrc == NULL)
         return ERR;
