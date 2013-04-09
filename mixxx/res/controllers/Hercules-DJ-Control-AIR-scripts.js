@@ -11,12 +11,17 @@ HerculesAir.scratchEnable_intervalsPerRev = 128
 HerculesAir.scratchEnable_rpm = 33+1/3
 
 HerculesAir.shiftButtonPressed = false
+HerculesAir.enableSpinBack = false
 
-HerculesAir.wheel_multiplier = 0.3
+HerculesAir.wheel_multiplier = 0.4
 
 HerculesAir.init = function(id) {
-	HerculesAir.resetLEDs()
+    HerculesAir.id = id;
 
+	// extinguish all LEDs
+    for (var i = 79; i<79; i++) {
+        midi.sendShortMsg(0x90, i, 0x00);
+    }
 	midi.sendShortMsg(0x90, 0x3B, 0x7f) // headset volume "-" button LED (always on)
 	midi.sendShortMsg(0x90, 0x3C, 0x7f) // headset volume "+" button LED (always on)
 
@@ -26,11 +31,27 @@ HerculesAir.init = function(id) {
 		midi.sendShortMsg(0x90, 0x3A, 0x7f) // headset "Cue" button LED
 	}
 
+    // Set soft-takeover for all Sampler volumes
+    for (var i=engine.getValue("[Master]","num_samplers"); i>=1; i--) {
+        engine.softTakeover("[Sampler"+i+"]","pregain",true);
+    }
+    // Set soft-takeover for all applicable Deck controls
+    for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
+        engine.softTakeover("[Channel"+i+"]","volume",true);
+        engine.softTakeover("[Channel"+i+"]","filterHigh",true);
+        engine.softTakeover("[Channel"+i+"]","filterMid",true);
+        engine.softTakeover("[Channel"+i+"]","filterLow",true);
+    }
+
+    engine.softTakeover("[Master]","crossfader",true);
+
 	engine.connectControl("[Channel1]", "beat_active", "HerculesAir.beatProgressDeckA")
 	engine.connectControl("[Channel1]", "play", "HerculesAir.playDeckA")
 
 	engine.connectControl("[Channel2]", "beat_active", "HerculesAir.beatProgressDeckB")
 	engine.connectControl("[Channel2]", "play", "HerculesAir.playDeckB")
+    
+    print ("Hercules DJ Controll AIR: "+id+" initialized.");
 }
 
 HerculesAir.shutdown = function() {
@@ -105,18 +126,6 @@ HerculesAir.headMix = function(midino, control, value, status, group) {
 	}
 };
 
-HerculesAir.jog = function(midino, control, value, status, group) {
-	engine.setValue(
-		group,
-		'jog',
-		(value == 0x01 ? 1 : -1) * HerculesAir.wheel_multiplier
-	)
-}
-
-HerculesAir.resetLEDs = function() {
-	midi.sendShortMsg(0xB0, 0x7F, 0x00)
-}
-
 HerculesAir.sampler = function(midino, control, value, status, group) {
 	if(value != 0x00) {
 		if(HerculesAir.shiftButtonPressed) {
@@ -129,33 +138,66 @@ HerculesAir.sampler = function(midino, control, value, status, group) {
 	}
 }
 
-HerculesAir.scratch = function(midino, control, value, status, group) {
-	if(engine.getValue(group, "play") == 0) {
+HerculesAir.wheelTurn = function(midino, control, value, status, group) {
+
+    var deck = script.deckFromGroup(group);
+    var newValue=(value==0x01 ? 1: -1);
+    // See if we're scratching. If not, do wheel jog.
+    if (!engine.isScratching(deck)) {
+        engine.setValue(group, "jog", newValue* HerculesAir.wheel_multiplier);
+        return;
+    }
+
+    if (engine.getValue(group, "play") == 0) {
 		var new_position = engine.getValue(group,"playposition") + 0.008 * (value == 0x01 ? 1 : -1)
 		if(new_position<0) new_position = 0
 		if(new_position>1) new_position = 1
 		engine.setValue(group,"playposition",new_position);
-	} else {
-		engine.scratchTick(group == "[Channel1]" ? 1 : 2, value == 0x01 ? 1 : -1)
-	}
+    } else {
+        // Register the movement
+        engine.scratchTick(deck,newValue);
+    }
+
+}
+
+HerculesAir.jog = function(midino, control, value, status, group) {
+    if (HerculesAir.enableSpinBack) {
+        HerculesAir.wheelTurn(midino, control, value, status, group);
+    } else {
+        var deck = script.deckFromGroup(group);
+        var newValue = (value==0x01 ? 1:-1);
+        engine.setValue(group, "jog", newValue* HerculesAir.wheel_multiplier);
+    }
 }
 
 HerculesAir.scratch_enable = function(midino, control, value, status, group) {
+    var deck = script.deckFromGroup(group);
 	if(value == 0x7f) {
 		engine.scratchEnable(
-			group == "[Channel1]" ? 1 : 2,
+			deck,
 			HerculesAir.scratchEnable_intervalsPerRev,
 			HerculesAir.scratchEnable_rpm,
 			HerculesAir.scratchEnable_alpha,
 			HerculesAir.scratchEnable_beta
-		)
+		);
 	} else {
-		engine.scratchDisable(
-			group == "[Channel1]" ? 1 : 2
-		)
+		engine.scratchDisable(deck);
 	}
 }
 
 HerculesAir.shift = function(midino, control, value, status, group) {
-	HerculesAir.shiftButtonPressed = (value == 0x7f)
+	HerculesAir.shiftButtonPressed = (value == 0x7f);
+    midi.sendShortMsg(status, control, value);
+}
+
+
+HerculesAir.spinback= function(midino, control, value, status,group) {
+    if (value==0x7f) {
+        HerculesAir.enableSpinBack = !HerculesAir.enableSpinBack;
+        if (HerculesAir.enableSpinBack) {
+            midi.sendShortMsg(status,control, 0x7f);
+        } else {
+            midi.sendShortMsg(status,control, 0x0);
+        }
+    }
 }

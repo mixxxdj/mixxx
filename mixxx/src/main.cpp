@@ -123,24 +123,16 @@ void MessageHandler(QtMsgType type, const char *input)
         fprintf(stderr, "Warning %s", ba.constData());
         Logfile.write("Warning ");
         Logfile.write(ba);
-        // Don't use qWarning for reporting user-facing errors.
-        //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
         fprintf(stderr, "Critical %s", ba.constData());
         Logfile.write("Critical ");
         Logfile.write(ba);
-        Logfile.flush();    // Ensure the error is written to the log before exiting
-        dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
-//         exit(-1);    // Done in ErrorDialogHandler
         break; //NOTREACHED
     case QtFatalMsg:
         fprintf(stderr, "Fatal %s", ba.constData());
         Logfile.write("Fatal ");
         Logfile.write(ba);
-        Logfile.flush();    // Ensure the error is written to the log before aborting
-        dialogHandler->requestErrorDialog(DLG_FATAL,input);
-//         abort();    // Done in ErrorDialogHandler
         break; //NOTREACHED
     }
     Logfile.flush();

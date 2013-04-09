@@ -352,50 +352,55 @@ QString ConfigObject<ValueType>::getResourcePath() {
 
     if (qResourcePath.isNull() || qResourcePath.isEmpty()) {
 #ifdef __UNIX__
-    // On Linux, check if the path is stored in the configuration database.
-    if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
-        qResourcePath = getValueString(ConfigKey("[Config]","Path"));
-    else
-    {
-        // Set the path according to the compile time define, UNIX_SHARE_PATH
-        qResourcePath = UNIX_SHARE_PATH;
-    }
+        // On Linux, check if the path is stored in the configuration database.
+        if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
+            qResourcePath = getValueString(ConfigKey("[Config]","Path"));
+        else
+        {
+            // Set the path according to the compile time define, UNIX_SHARE_PATH
+            qResourcePath = UNIX_SHARE_PATH;
+        }
 #endif
 #ifdef __WINDOWS__
-    // On Windows, set the config dir relative to the application dir
-    qResourcePath = QCoreApplication::applicationDirPath();
+        // On Windows, set the config dir relative to the application dir
+        qResourcePath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
-    /*
-    // Set the path relative to the bundle directory
-    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
-    char utf8path[256];
-    //Attempt to decode obtain the macPath string as UTF-8
-    if (CFStringGetCString(macPath, utf8path, sizeof(utf8path), kCFStringEncodingUTF8))
-    {
+        /*
+        // Set the path relative to the bundle directory
+        CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+        CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
+        char utf8path[256];
+        //Attempt to decode obtain the macPath string as UTF-8
+        if (CFStringGetCString(macPath, utf8path, sizeof(utf8path), kCFStringEncodingUTF8))
+        {
         qConfigPath.fromUtf8(utf8path);
-    }
-    else {
+        }
+        else {
         //Fallback on the "system encoding"... (this is just our old code, which probably doesn't make any sense
-         //since it plays roullette with the type of text encoding)
+        //since it plays roullette with the type of text encoding)
         qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
-    }
-    qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
-    */
-    QString mixxxPath = QCoreApplication::applicationDirPath();
-    if (mixxxPath.endsWith("osx_build"))   //Development configuration
-        qResourcePath = mixxxPath + "/../res";
-    else //Release configuraton
-	    qResourcePath = mixxxPath + "/../Resources";
+        }
+        qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
+        */
+        QString mixxxPath = QCoreApplication::applicationDirPath();
+        if (mixxxPath.endsWith("osx_build"))   //Development configuration
+            qResourcePath = mixxxPath + "/../res";
+        else //Release configuraton
+            qResourcePath = mixxxPath + "/../Resources";
 #endif
     } else {
         qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
     }
-	if (qResourcePath.length() == 0) qCritical() << "qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??";
+
+    if (qResourcePath.length() == 0) {
+        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
+    }
+
     // If the directory does not end with a "/", add one
-    if (!qResourcePath.endsWith("/"))
+    if (!qResourcePath.endsWith("/")) {
         qResourcePath.append("/");
+    }
 
     return qResourcePath;
 }

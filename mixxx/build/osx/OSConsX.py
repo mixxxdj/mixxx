@@ -351,6 +351,7 @@ def emit_app(target, source, env):
         bundle = Bundle(str(bundle)+".app")
 
     bundle_identifier = env['IDENTIFIER']
+    bundle_version = env['VERSION']
     bundle_display_name = env['DISPLAY_NAME']
     bundle_short_version_string = env['SHORT_VERSION']
     human_readable_copyright = env['COPYRIGHT']
@@ -386,6 +387,7 @@ def emit_app(target, source, env):
                   'CFBundleSignature': bundle_signature,
                   'CFBundleIdentifier': bundle_identifier,
                   'CFBundleDisplayName': bundle_display_name,
+                  'CFBundleVersion': bundle_version,
                   'CFBundleShortVersionString' : bundle_short_version_string,
                   'NSHumanReadableCopyright' : human_readable_copyright,
                   'LSApplicationCategoryType' : application_category_type}
