@@ -104,20 +104,20 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>balance</key>
+                <key>MIXER1.xfaderCurve</key>
                 <status>0xB5</status>
                 <midino>0x0E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
                 <group>[Master]</group>
-                <key>balance</key>
+                <key>MIXER1.xfaderCurve</key>
                 <status>0xB7</status>
                 <midino>0x0E</midino>
                 <options>
-                    <normal/>
+                    <script-binding/>
                 </options>
             </control>
             <control>
@@ -227,7 +227,7 @@
 
  <!--CHANNEL C-->
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>pregain</key>
                 <status>0xB7</status>
                 <midino>0x10</midino>
@@ -236,7 +236,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>filterHigh</key>
                 <status>0xB7</status>
                 <midino>0x11</midino>
@@ -245,7 +245,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>filterMid</key>
                 <status>0xB7</status>
                 <midino>0x12</midino>
@@ -254,7 +254,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>filterLow</key>
                 <status>0xB7</status>
                 <midino>0x13</midino>
@@ -263,7 +263,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>filterLowKill</key>
                 <status>0x97</status>
                 <midino>0x08</midino>
@@ -272,7 +272,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>filterMidKill</key>
                 <status>0x97</status>
                 <midino>0x09</midino>
@@ -281,7 +281,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>filterHighKill</key>
                 <status>0x97</status>
                 <midino>0x06</midino>
@@ -290,7 +290,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>pfl</key>
                 <status>0x97</status>
                 <midino>0x07</midino>
@@ -299,7 +299,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler1]</group>
+                <group>[Channel3]</group>
                 <key>volume</key>
                 <status>0xB7</status>
                 <midino>0x14</midino>
@@ -393,7 +393,7 @@
 
 <!--CHANNEL D-->
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>pregain</key>
                 <status>0xB8</status>
                 <midino>0x15</midino>
@@ -402,7 +402,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>filterHigh</key>
                 <status>0xB8</status>
                 <midino>0x16</midino>
@@ -411,7 +411,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>filterMid</key>
                 <status>0xB8</status>
                 <midino>0x17</midino>
@@ -420,7 +420,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>filterLow</key>
                 <status>0xB8</status>
                 <midino>0x18</midino>
@@ -429,7 +429,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>filterLowKill</key>
                 <status>0x98</status>
                 <midino>0x04</midino>
@@ -438,7 +438,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>filterMidKill</key>
                 <status>0x98</status>
                 <midino>0x01</midino>
@@ -447,7 +447,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>filterHighKill</key>
                 <status>0x98</status>
                 <midino>0x02</midino>
@@ -456,7 +456,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>pfl</key>
                 <status>0x98</status>
                 <midino>0x03</midino>
@@ -465,7 +465,7 @@
                 </options>
             </control>
             <control>
-                <group>[Sampler2]</group>
+                <group>[Channel4]</group>
                 <key>volume</key>
                 <status>0xB8</status>
                 <midino>0x19</midino>
@@ -521,7 +521,7 @@
 
 <!--Channel C-->
 			<output>
-				<group>[Sampler1]</group>
+				<group>[Channel3]</group>
 				<key>filterLowKill</key>
 				<status>0x97</status>  <!-- First byte sent to device -->
 				<midino>0x08</midino>  <!-- Second byte -->
@@ -530,7 +530,7 @@
 				<minimum>.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler1]</group>
+				<group>[Channel3]</group>
 				<key>filterMidKill</key>
 				<status>0x97</status>  <!-- First byte sent to device -->
 				<midino>0x09</midino>  <!-- Second byte -->
@@ -539,7 +539,7 @@
 				<minimum>.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler1]</group>
+				<group>[Channel3]</group>
 				<key>filterHighKill</key>
 				<status>0x97</status>  <!-- First byte sent to device -->
 				<midino>0x06</midino>  <!-- Second byte -->
@@ -548,7 +548,7 @@
 				<minimum>.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler1]</group>
+				<group>[Channel3]</group>
 				<key>pfl</key>
 				<status>0x97</status>  <!-- First byte sent to device -->
 				<midino>0x07</midino>  <!-- Second byte -->
@@ -599,7 +599,7 @@
 
 <!--Channel D-->
 			<output>
-				<group>[Sampler2]</group>
+				<group>[Channel4]</group>
 				<key>filterLowKill</key>
 				<status>0x98</status>  <!-- First byte sent to device -->
 				<midino>0x04</midino>  <!-- Second byte -->
@@ -608,7 +608,7 @@
 				<minimum>.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler2]</group>
+				<group>[Channel4]</group>
 				<key>filterMidKill</key>
 				<status>0x98</status>  <!-- First byte sent to device -->
 				<midino>0x01</midino>  <!-- Second byte -->
@@ -617,7 +617,7 @@
 				<minimum>.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler2]</group>
+				<group>[Channel4]</group>
 				<key>filterHighKill</key>
 				<status>0x98</status>  <!-- First byte sent to device -->
 				<midino>0x02</midino>  <!-- Second byte -->
@@ -626,7 +626,7 @@
 				<minimum>.5</minimum>
 			</output>
 			<output>
-				<group>[Sampler2]</group>
+				<group>[Channel4]</group>
 				<key>pfl</key>
 				<status>0x98</status>  <!-- First byte sent to device -->
 				<midino>0x03</midino>  <!-- Second byte -->
