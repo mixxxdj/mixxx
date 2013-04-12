@@ -34,11 +34,11 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void shufflePlaylistButton(bool buttonChecked);
     void skipNextButton(bool buttonChecked);
     void fadeNowButton(bool buttonChecked);
-    void toggleAutoDJButton(bool toggle);
+    void toggleAutoDJButton(bool enable);
+    void enableAutoDJCo(double value);
     void shufflePlaylist(double value);
     void skipNext(double value);
     void fadeNow(double value);
-    void toggleAutoDJ(double value);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
     void player1PlayChanged(double value);
@@ -100,11 +100,11 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     ControlObjectThreadMain* m_pCOTSkipNext;
     ControlObjectThreadMain* m_pCOTFadeNow;
     ControlObjectThreadMain* m_pCOTShufflePlaylist;
-    ControlObjectThreadMain* m_pCOTToggleAutoDJ;
+    ControlObjectThreadMain* m_pCOTEnabledAutoDJ;
     ControlPushButton* m_pCOSkipNext;
     ControlPushButton* m_pCOFadeNow;
     ControlPushButton* m_pCOShufflePlaylist;
-    ControlPushButton* m_pCOToggleAutoDJ;
+    ControlPushButton* m_pCOEnabledAutoDJ;
 };
 
 #endif //DLGAUTODJ_H
