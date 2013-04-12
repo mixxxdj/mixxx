@@ -321,20 +321,20 @@ manpage.1: manpage.sgml
           <para>
             The directory where &dhpackage; stores any additional analysis data
             that can't fit into the library file. Currently only the waveforms
-            are saved here. If you delete your library file you should also deleted
-            this folder as the waveforms around 1MB each and mixxx will won't know
-            about these then.
+            are saved here. If you delete your library file you should also
+            delete this folder as the waveforms around 1MB each and are unusable
+            without the library that generated them.
           </para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>
-          <filename class='directory'>~/.mixxx/contollers</filename>
+          <filename class='directory'>~/.mixxx/controllers</filename>
         </term>
         <listitem>
           <para>
             The directory where &dhpackage; stores user controller mappings.
-            All mappings that are created with the midi learning wizard are
+            All mappings that are created with the MIDI learning wizard are
             saved here. If there are mappings for a controller in the default
             resource directory and this directory &dhpackage; will use
             the one saved here.
@@ -376,9 +376,9 @@ manpage.1: manpage.sgml
 
   <refsect1>
     <title>AUTHORS</title>
-    <para>Until that day, over 150 Developers, artists and translators have
+    <para>Since 2000, over 150 developers, artists and translators have
       helped create &dhpackage;. The current &dhpackage; development team is
-      lead by RJ Ryan <email>rryan@mixxx.org</email>.
+      led by RJ Ryan <email>rryan@mixxx.org</email>.
     </para>
     <para>
       This manual page was written by &dhusername; &dhemail; for the &debian;
