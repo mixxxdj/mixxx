@@ -47,7 +47,7 @@
 	<manifest>
 	<title>Outline1024x600-Netbook</title>
 	<author>jus</author>
-	<version>1.11.0.14</version>
+	<version>1.11.0.15</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>GNU General Public License, version 2 or later</license>
@@ -616,7 +616,6 @@
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#19ABFB</SignalColor>
 						<BeatColor>#191919</BeatColor>
-						<BeatHighlightColor></BeatHighlightColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<Align></Align>
 						<AxesColor>#00FF00</AxesColor>
@@ -674,7 +673,6 @@
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#FF0000</SignalColor>
 						<BeatColor>#191919</BeatColor>
-						<BeatHighlightColor></BeatHighlightColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<Align></Align>
 						<AxesColor>#00FF00</AxesColor>

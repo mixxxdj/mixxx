@@ -16,6 +16,10 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see http://www.gnu.org/licenses
 
 CHANGELOG
+v1.11.0.11  (13/04/2013)
+* Fix: Removes <BeatHighlightColor> from the waveforms, which blinks for a brief about of
+  time to indicate when the beat is near the playposition. Fixes lp:1112396
+  
 v1.11.0.10  (20/01/2013)
 * Feature: Add <PlayPosColor> to improve visibility of play position marker. Part of lp:1099182 & lp:1094791
 * Fix: Correct <Size> attributes and margins in sampler decks so they don't break the layout on skin change
