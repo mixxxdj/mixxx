@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-03-05 06:50+0200\n"
-"PO-Revision-Date: 2013-03-13 14:55+0000\n"
-"Last-Translator: Davut Engin <Unknown>\n"
+"PO-Revision-Date: 2013-04-11 20:21+0000\n"
+"Last-Translator: Muzaffer Tolga <tolga@ozses.net>\n"
 "Language-Team: Turkish <tr@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-14 04:34+0000\n"
-"X-Generator: Launchpad (build 16532)\n"
+"X-Launchpad-Export-Date: 2013-04-12 05:13+0000\n"
+"X-Generator: Launchpad (build 16564)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -35,12 +35,12 @@ msgstr "Oto DJ Kuyruğuna Ekle (üste)"
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr "Çalma Listesini Al"
+msgstr "Çalma Listesini İçe Aktar"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "Çalma listesi oluşturulamadı"
+msgstr "Çalma listesi oluşturma başarısız oldu"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
@@ -54,12 +54,12 @@ msgstr "Yeni Çalma Listesi"
 #: BasePlaylistFeature#2
 msgctxt "BasePlaylistFeature#2"
 msgid "Add to Auto DJ Queue (bottom)"
-msgstr "Oto DJ Sırasına Ekle(Alt Sıra)"
+msgstr "Oto DJ Kuyruğuna Ekle (alta)"
 
 #: BasePlaylistFeature#3
 msgctxt "BasePlaylistFeature#3"
 msgid "Add to Auto DJ Queue (top)"
-msgstr "Oto DJ Sırasına Ekle(Üst Sıra)"
+msgstr "Oto DJ Kuyruğuna Ekle (üste)"
 
 #: BasePlaylistFeature#4
 msgctxt "BasePlaylistFeature#4"
