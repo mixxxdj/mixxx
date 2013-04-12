@@ -53,7 +53,7 @@
 	<manifest>
 	<title>Deere1920x1080-FullHD</title>
 	<author>jus</author>
-	<version>1.11.0.15</version>
+	<version>1.11.0.16</version>
 	<description>A 2-deck split-waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -4986,7 +4986,6 @@
 						<SignalLowColor></SignalLowColor>
 						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor></BeatHighlightColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<AxesColor></AxesColor>
@@ -6085,7 +6084,6 @@
 						<SignalLowColor></SignalLowColor>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor></BeatHighlightColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<AxesColor></AxesColor>
