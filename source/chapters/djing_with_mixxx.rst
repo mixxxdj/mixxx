@@ -49,16 +49,17 @@ Importing your audio files
 **Compatible files**
   Mixxx supports the following file formats: :term:`Wave <WAV>` (wav),
   :term:`Aiff <AIFF>` (aiff, aif), :term:`MP3` (mp3), :term:`Ogg vorbis` (ogg),
-  :term:`FLAC` (flac), and optional :term:`AAC` (aac, m4a). You
+  :term:`FLAC` (flac), and optional unprotected :term:`AAC` (aac, m4a). You
   cannot play :term:`DRM` protected files, like m4p files purchased in the
   iTunes Store.
 
-  AAC (M4A) is supported on Windows Vista and Mac OSX 10.5 onwards.
+  AAC (M4A) is supported on Windows Vista and Mac OSX 10.5 onwards. On Linux,
+  Mixxx does not have AAC (M4A) playback support enabled by default due to
+  licensing restrictions.
 
-  .. seealso ::  On Linux, Mixxx does not have AAC (M4A) playback support
-                 enabled by default due to licensing restrictions. To enable
-                 playback of unprotected AAC (M4A) files, you can build Mixxx
-                 from source. `<http://www.mixxx.org/wiki/doku.php/compiling_on_linux#build_with_m4a_file_support>`_
+  .. seealso :: To enable playback of AAC (M4A) files, you can build Mixxx from
+                source.
+                `<http://www.mixxx.org/wiki/doku.php/compiling_on_linux#build_with_m4a_file_support>`_
 
 **Changing the music directory**
   The Mixxx music directory can always be changed at a later time in
