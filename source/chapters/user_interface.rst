@@ -912,8 +912,8 @@ Preview Deck Section
 The Preview Deck is a special deck that allows to pre-listen to tracks in the
 headphones before using them in your mix. Pre-listening a track does not change
 the tracks's :guilabel:`Played` state as well as the play counter and is not
-logged in the :ref:`History <library-history>`. Press :kbd:`CTRL` + :kbd:`4`
-(Windows/Linux) or :kbd:`CMD` + :kbd:`4` (Mac) to display the Preview Deck.
+logged in the :ref:`History <library-history>`. Press :kbd:`CTRL+4`
+(Windows/Linux) or :kbd:`CMD+4` (Mac) to display the Preview Deck.
 
 The features in detail:
 

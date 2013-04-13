@@ -196,8 +196,8 @@ Alternatively, select a track from the track list of the Mixxx library, drag the
 track to the waveform view of the :ref:`Preview Deck <interface-preview-deck>`
 and hit the :guilabel:`Play` button next to the waveform.
 
-To display the Preview deck, press :kbd:`CTRL` + :kbd:`4` (Windows/Linux) or
-:kbd:`CMD` + :kbd:`4` (Mac).
+To display the Preview deck, press :kbd:`CTRL+4` (Windows/Linux) or
+:kbd:`CMD+4` (Mac).
 
 .. _waveform-displays:
 
