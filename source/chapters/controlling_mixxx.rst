@@ -51,6 +51,8 @@ Using a Keyboard
 
    Mixxx Keyboard shortcuts (for en-us keyboard layout)
 
+   :download:`Download the image <../_static/Mixxx-111-Keyboard-Mapping.png>`
+
 Controlling Mixxx with a keyboard is handy. Unlike mouse control, the keyboard
 allows you to manage things simultaneously. For example, you can start playing
 a track on deck 1 whilst stopping deck 2 at the same time.
@@ -59,10 +61,9 @@ The default mapping for English keyboards is depicted in the figure above. It's
 divided into a left-hand side for deck 1 and right-hand side for deck 2. Please
 note that you can also access the functions through Mixxx's interface.
 
-.. note:: For some user groups, like those using midi controllers or vinyl
-          control, it might be useful to enable/disable the keyboard mapping at
-          runtime. You can do so by clicking
-          :menuselection:`Options --> Enable Keyboard Shortcuts`.
+For some user groups, like those using midi controllers or vinyl control, it
+might be useful to enable/disable the keyboard mapping at runtime. You can do so
+by clicking :menuselection:`Options --> Enable Keyboard Shortcuts`.
 
 .. hint::  If you hover with the mouse over a control (e.g. the crossfader) in
            the Mixxx user interface, the tooltip lists the keyboard shortcuts of
