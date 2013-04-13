@@ -127,7 +127,8 @@ The following admonitions are in use:
 
 .. rst:directive:: seealso
 
-   For references to other documents or websites if they need special attention. References to other documents can also be included in the text inline.
+   For references to other documents or websites if they need special attention.
+   References to other documents can also be included in the text inline.
    Example markup: ::
 
       .. seealso::
@@ -143,7 +144,8 @@ The following admonitions are in use:
 
 .. rst:directive:: todo
 
-   Allow inserting todo items into documents and to keep a :ref:`automatically generated TODO list <todo-list>` Example markup: ::
+   Allow inserting todo items into documents and to keep a
+   :ref:`automatically generated TODO list <todo-list>` Example markup: ::
 
       .. todo::
          some task
@@ -273,7 +275,8 @@ The user manual for Mixxx is written in `reStructuredText (reST)
 `Sphinx <http://sphinx.pocoo.org/>`_.
 
 The `Mixxx user manual repostitory <https://code.launchpad.net/~mixxxdevelopers/mixxx/manual>`_
-contains the Sphinx source to generate the manual as found at `<http://mixxx.org/manual/latest/>`_.
+contains the Sphinx source to generate the manual as found at
+`<http://mixxx.org/manual/latest/>`_.
 
 Sphinx and RST syntax guides:
 
@@ -300,7 +303,8 @@ Editors with Restructured Text (reST) syntax highlighting:
 * Mac OSX: `Sublime <http://www.sublimetext.com/2>`_
 * Linux: `Kate <http://kate-editor.org/>`_ or
   `Retext <http://sourceforge.net/p/retext/>`_
-* Windows: `Ìntype <http://inotai.com/intype/>`_
+* Windows: `Sublime <http://www.sublimetext.com/2>`_ or
+  `Ìntype <http://inotai.com/intype/>`_
 
 Still not enough? Even more resources:
 `<http://stackoverflow.com/questions/2746692/restructuredtext-tool-support>`_

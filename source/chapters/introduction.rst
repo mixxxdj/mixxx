@@ -70,7 +70,7 @@ Today, Mixxx development is driven by the simple idea that together we can
 create a better way to DJ, and that has brought Mixxx to the cutting edge.
 
 Mixxx is the only free cross-platform vinyl control software and has the most
-advanced MIDI/HID controller support via our innovative Javascript-based
+advanced MIDI/HID controller support via our innovative JavaScript-based
 scripting engine. We are continuing to pursue new and exciting features that
 give DJs more tools to create better live mixes.
 
@@ -91,8 +91,8 @@ great DJ software, and this growth is a sign of our success.
 In 2011, RJ Ryan took over as Lead Developer to successfully continue the teams
 endeavor to make Mixxx a world-class DJ software.
 
-As our user community grows, so does our development team - Until that day, over
-150 Developers, artists and translators have helped create Mixxx!
+As our user community grows, so does our development team - Over 150 developers,
+artists, and translators have helped create Mixxx!
 
 About the Mixxx Manual
 ======================

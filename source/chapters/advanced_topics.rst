@@ -10,11 +10,11 @@ Adding support for your MIDI Controller
 =======================================
 
 So your shiny :term:`MIDI controller` isn't supported in Mixxx?  If you know
-some basic Javascript, then adding support for your controller is not hard at
+some basic JavaScript, then adding support for your controller is not hard at
 all!
 
 Mixxx has an advanced scripting system that allows you to add support for MIDI
-controllers by writing some simple Javascript. For more information, see the
+controllers by writing some simple JavaScript. For more information, see the
 `MIDI Scripting <http://mixxx.org/wiki/doku.php/midi_scripting>`_ topic on the
 Mixxx Wiki.
 
