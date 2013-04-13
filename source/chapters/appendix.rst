@@ -187,7 +187,8 @@ Option                  Description
 [FILE]                  Load the specified music file(s) at start-up.
                         Each file you specify will be loaded into the
                         next virtual deck. Supported file types: mp3, ogg,
-                        aiff, aif, wav, flac, m4a (non-DRM), mp4 (non-DRM)
+                        aiff, aif, wav, flac, and optional unprotected 
+                        aac (m4a)
 ----------------------  -------------------------------------------------
 --resourcePath PATH     Top-level directory where Mixxx should look
                         for its resource files such as MIDI mappings,
