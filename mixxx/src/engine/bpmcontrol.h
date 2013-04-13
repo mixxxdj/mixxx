@@ -10,6 +10,7 @@
 
 class ControlObject;
 class ControlPushButton;
+class EngineBuffer;
 
 class BpmControl : public EngineControl {
     Q_OBJECT
@@ -18,6 +19,7 @@ class BpmControl : public EngineControl {
     BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
     double getBpm();
+    double getFileBpm();
 
   public slots:
 
@@ -26,25 +28,33 @@ class BpmControl : public EngineControl {
 
   private slots:
     void slotSetEngineBpm(double);
-    void slotFileBpmChanged(double);
     void slotControlBeatSync(double);
     void slotControlBeatSyncPhase(double);
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotRateChanged(double);
+    void slotAdjustBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
 
   private:
-    bool syncTempo();
-    bool syncPhase();
+    EngineBuffer* pickSyncTarget();
+    bool syncTempo(EngineBuffer* pOtherEngineBuffer);
+    bool syncPhase(EngineBuffer* pOtherEngineBuffer);
+
+    // ControlObjects that come from PlayerManager
+    ControlObject* m_pNumDecks;
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
+
+    // ControlObjects that come from LoopingControl
+    ControlObject* m_pLoopEnabled;
+    ControlObject* m_pLoopStartPosition;
+    ControlObject* m_pLoopEndPosition;
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;

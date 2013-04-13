@@ -276,6 +276,10 @@ AudioOutput::AudioOutput(AudioPathType type /* = INVALID */,
     }
 }
 
+AudioOutput::~AudioOutput() {
+    
+}
+
 /**
  * Writes this AudioOutput's data to an XML element, preallocated from an XML
  * DOM document.
@@ -337,6 +341,10 @@ AudioInput::AudioInput(AudioPathType type /* = INVALID */,
     } else {
         m_index = 0;
     }
+}
+
+AudioInput::~AudioInput() {
+    
 }
 
 /**

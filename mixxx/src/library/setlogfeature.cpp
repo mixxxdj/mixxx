@@ -10,8 +10,9 @@
 #include "controlobject.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/treeitem.h"
 #include "playerinfo.h"
-#include "treeitem.h"
+
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
@@ -47,13 +48,6 @@ SetlogFeature::SetlogFeature(QObject* parent,
         qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
     }
 
-    // Setup the sidebar playlist model
-    m_playlistTableModel.setTable("Playlists");
-    m_playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
-    m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("id"),
-                                 Qt::AscendingOrder);
-    m_playlistTableModel.select();
-
     //construct child model
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
@@ -61,6 +55,13 @@ SetlogFeature::SetlogFeature(QObject* parent,
 }
 
 SetlogFeature::~SetlogFeature() {
+    // If the history playlist we created doesn't have any tracks in it then
+    // delete it so we don't end up with tons of empty playlists. This is mostly
+    // for developers since they regularly open Mixxx without loading a track.
+    if (m_playlistId != -1 &&
+        m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
+        m_playlistDao.deletePlaylist(m_playlistId);
+    }
 }
 
 QVariant SetlogFeature::title() {
@@ -71,11 +72,9 @@ QIcon SetlogFeature::getIcon() {
     return QIcon(":/images/library/ic_library_history.png");
 }
 
-void SetlogFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget,
+void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
-    BasePlaylistFeature::bindWidget(sidebarWidget,
-                                    libraryWidget,
+    BasePlaylistFeature::bindWidget(libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotPlayingDeckChanged(int)));
@@ -127,62 +126,39 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     menu.exec(globalPos);
 }
 
-bool SetlogFeature::dropAcceptChild(const QModelIndex& index, QUrl url){
-    Q_UNUSED(url);
-    Q_UNUSED(index);
-    return false;
+
+void SetlogFeature::buildPlaylistList() {
+    m_playlistList.clear();
+    // Setup the sidebar playlist model
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+    playlistTableModel.setTable("Playlists");
+    playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
+    playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
+                               Qt::AscendingOrder);
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
+    }
+    int nameColumn = playlistTableModel.record().indexOf("name");
+    int idColumn = playlistTableModel.record().indexOf("id");
+
+    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+        int id = playlistTableModel.data(
+            playlistTableModel.index(row, idColumn)).toInt();
+        QString name = playlistTableModel.data(
+            playlistTableModel.index(row, nameColumn)).toString();
+        m_playlistList.append(qMakePair(id, name));
+    }
 }
 
-bool SetlogFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(url);
-    Q_UNUSED(index);
-    return false;
-}
-
-/**
-  * Purpose: When inserting or removing playlists,
-  * we require the sidebar model not to reset.
-  * This method queries the database and does dynamic insertion
-*/
-QModelIndex SetlogFeature::constructChildModel(int selected_id)
-{
-    QList<TreeItem*> data_list;
-    int nameColumn = m_playlistTableModel.record().indexOf("name");
-    int idColumn = m_playlistTableModel.record().indexOf("id");
-    int selected_row = -1;
-    // Access the invisible root item
-    TreeItem* root = m_childModel.getItem(QModelIndex());
-
-    // Create new TreeItems for the playlists in the database
-    for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
-        QModelIndex ind = m_playlistTableModel.index(row, nameColumn);
-        QString playlist_name = m_playlistTableModel.data(ind).toString();
-        ind = m_playlistTableModel.index(row, idColumn);
-        int playlist_id = m_playlistTableModel.data(ind).toInt();
-
-        if ( selected_id == playlist_id) {
-            // save index for selection
-            selected_row = row;
-        }
-
-        // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
-        if (playlist_id == m_playlistId) {
-            item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
-        } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-            item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
-        } else {
-            item->setIcon(QIcon());
-        }
-        data_list.append(item);
+void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
+    if (playlist_id == m_playlistId) {
+        item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
+    } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
+        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+    } else {
+        item->setIcon(QIcon());
     }
-
-    // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());
-    if (selected_row == -1) {
-        return QModelIndex();
-    }
-    return m_childModel.index(selected_row, 0);
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
@@ -295,7 +271,6 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (type == PlaylistDAO::PLHT_SET_LOG ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
-        m_playlistTableModel.select();
         m_lastRightClickedIndex = constructChildModel(playlistId);
 
         if (type != PlaylistDAO::PLHT_UNKNOWN) {

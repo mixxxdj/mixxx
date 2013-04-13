@@ -4,6 +4,7 @@
 		<name>Hercules DJ Console MK4</name>
 		<author>Dj kork</author>
 		<description>This is a complete mapping for Hercules DJ Console mk4 controller. Requires scripting.</description>
+		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3023</forums>
 	</info>
 	<controller id="Hercules DJ Control Mk4 gain v3" port="">
 		<scriptfiles>
@@ -317,15 +318,6 @@
                     </options>
                 </control>
                 <control>
-                    <status>0x90</status>
-                    <midino>0xf</midino>
-                    <group>[Channel1]</group>
-                    <key>play</key>
-                    <options>
-                        <Button/>
-                    </options>
-                </control>
-                <control>
                     <status>0xb0</status>
                     <midino>0x38</midino>
                     <group>[Master]</group>
@@ -386,24 +378,6 @@
                     <key>back</key>
                     <options>
                         <Button/>
-                    </options>
-                </control>
-                <control>
-                    <status>0x90</status>
-                    <midino>0xd</midino>
-                    <group>[Channel1]</group>
-                    <key>fwd</key>
-                    <options>
-                        <Button/>
-                    </options>
-                </control>
-                <control>
-                    <status>0x90</status>
-                    <midino>0x0E</midino>
-                    <group>[Channel1]</group>
-                    <key>HerculesMk4.cue</key>
-                    <options>
-                        <Script-Binding/>
                     </options>
                 </control>
                 <control>
@@ -492,24 +466,6 @@
                     <midino>0x20</midino>
                     <group>[Channel2]</group>
                     <key>back</key>
-                    <options>
-                        <Button/>
-                    </options>
-                </control>
-                <control>
-                    <status>0x90</status>
-                    <midino>0x21</midino>
-                    <group>[Channel2]</group>
-                    <key>fwd</key>
-                    <options>
-                        <Button/>
-                    </options>
-                </control>
-                <control>
-                    <status>0x90</status>
-                    <midino>0x23</midino>
-                    <group>[Channel2]</group>
-                    <key>play</key>
                     <options>
                         <Button/>
                     </options>

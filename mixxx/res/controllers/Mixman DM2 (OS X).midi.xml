@@ -1,6 +1,8 @@
 <MixxxMIDIPreset mixxxVersion="1.7.0-beta1+" schemaVersion="1" >
   <info>
     <name>Mixman DM2 (OS X)</name>
+    <author>Joe M.</author>
+    <description>MIDI Mapping for Mixman DM2 (OS/X Version)</description>
   </info>
 	<controller id="Mixman DM2" >
 		<scriptfiles>

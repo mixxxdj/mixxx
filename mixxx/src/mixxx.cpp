@@ -48,10 +48,21 @@
 #include "trackinfoobject.h"
 #include "upgrade.h"
 #include "waveform/waveformwidgetfactory.h"
+#include "widget/wwaveformviewer.h"
+#include "widget/wwidget.h"
+#include "widget/wspinny.h"
+#include "sharedglcontext.h"
+#include "util/debug.h"
+#include "util/statsmanager.h"
+#include "util/timer.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#endif
+
+#ifdef __MODPLUG__
+#include "dlgprefmodplug.h"
 #endif
 
 extern "C" void crashDlg()
@@ -84,10 +95,11 @@ bool loadTranslations(const QLocale& systemLocale, QString userLocale,
     return pTranslator->load(translation + prefix + userLocale, translationPath);
 }
 
-
-MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
-{
-    m_pApp = a;
+MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
+        : m_runtime_timer("MixxxApp::runtime"),
+          m_cmdLineArgs(args) {
+    ScopedTimer t("MixxxApp::MixxxApp");
+    m_runtime_timer.start();
 
     QString buildBranch, buildRevision, buildFlags;
 #ifdef BUILD_BRANCH
@@ -116,6 +128,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     }
     QString buildInfoFormatted = QString("(%1)").arg(buildInfo.join("; "));
 
+    // This is the first line in mixxx.log
     qDebug() << "Mixxx" << VERSION << buildInfoFormatted << "is starting...";
     qDebug() << "Qt version is:" << qVersion();
 
@@ -132,23 +145,29 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 #endif
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
+    // Only record stats in developer mode.
+    if (m_cmdLineArgs.getDeveloper()) {
+        StatsManager::create();
+    }
+
     //Reset pointer to players
     m_pSoundManager = NULL;
     m_pPrefDlg = NULL;
-    m_pControllerManager = 0;
+    m_pControllerManager = NULL;
     m_pRecordingManager = NULL;
 
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
-    m_pConfig = upgrader.versionUpgrade();
+    m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
     bool bFirstRun = upgrader.isFirstRun();
     bool bUpgraded = upgrader.isUpgraded();
-    QString qConfigPath = m_pConfig->getConfigPath();
-    QString translationsFolder = qConfigPath + "translations/";
+
+    QString resourcePath = m_pConfig->getResourcePath();
+    QString translationsFolder = resourcePath + "translations/";
 
     // Load Qt base translations
-    QString userLocale = args.locale;
+    QString userLocale = args.getLocale();
     QLocale systemLocale = QLocale::system();
 
     // Attempt to load user locale from config
@@ -158,29 +177,29 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Load Qt translations for this locale from the system translation
     // path. This is the lowest precedence QTranslator.
-    QTranslator* qtTranslator = new QTranslator(a);
+    QTranslator* qtTranslator = new QTranslator(pApp);
     if (loadTranslations(systemLocale, userLocale, "qt", "_",
                          QLibraryInfo::location(QLibraryInfo::TranslationsPath),
                          qtTranslator)) {
-        a->installTranslator(qtTranslator);
+        pApp->installTranslator(qtTranslator);
     } else {
         delete qtTranslator;
     }
 
     // Load Qt translations for this locale from the Mixxx translations
     // folder.
-    QTranslator* mixxxQtTranslator = new QTranslator(a);
+    QTranslator* mixxxQtTranslator = new QTranslator(pApp);
     if (loadTranslations(systemLocale, userLocale, "qt", "_",
                          translationsFolder,
                          mixxxQtTranslator)) {
-        a->installTranslator(mixxxQtTranslator);
+        pApp->installTranslator(mixxxQtTranslator);
     } else {
         delete mixxxQtTranslator;
     }
 
     // Load Mixxx specific translations for this locale from the Mixxx
     // translations folder.
-    QTranslator* mixxxTranslator = new QTranslator(a);
+    QTranslator* mixxxTranslator = new QTranslator(pApp);
     bool mixxxLoaded = loadTranslations(systemLocale, userLocale, "mixxx", "_",
                                         translationsFolder, mixxxTranslator);
     qDebug() << "Loading translations for locale"
@@ -188,13 +207,16 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
              << "from translations folder" << translationsFolder << ":"
              << (mixxxLoaded ? "success" : "fail");
     if (mixxxLoaded) {
-        a->installTranslator(mixxxTranslator);
+        pApp->installTranslator(mixxxTranslator);
     } else {
         delete mixxxTranslator;
     }
 
+    // Set the visibility of tooltips
+    m_tooltips = m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips")).toInt();
+
     // Store the path in the config database
-    m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(qConfigPath));
+    m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
 
     // Set the default value in settings file
     if (m_pConfig->getValueString(ConfigKey("[Keyboard]","Enabled")).length() == 0)
@@ -202,9 +224,7 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     // Read keyboard configuration and set kdbConfig object in WWidget
     // Check first in user's Mixxx directory
-    QString userKeyboard =
-        QDir::homePath().append("/").append(SETTINGS_PATH)
-            .append("Custom.kbd.cfg");
+    QString userKeyboard = args.getSettingsPath() + "Custom.kbd.cfg";
 
     //Empty keyboard configuration
     m_pKbdConfigEmpty = new ConfigObject<ConfigValueKbd>("");
@@ -217,13 +237,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         QLocale locale = QApplication::keyboardInputLocale();
 
         // check if a default keyboard exists
-        QString defaultKeyboard = QString(qConfigPath).append("keyboard/");
+        QString defaultKeyboard = QString(resourcePath).append("keyboard/");
         defaultKeyboard += locale.name();
         defaultKeyboard += ".kbd.cfg";
 
         if (!QFile::exists(defaultKeyboard)) {
             qDebug() << defaultKeyboard << " not found, using en_US.kbd.cfg";
-            defaultKeyboard = QString(qConfigPath).append("keyboard/").append("en_US.kbd.cfg");
+            defaultKeyboard = QString(resourcePath).append("keyboard/").append("en_US.kbd.cfg");
             if (!QFile::exists(defaultKeyboard)) {
                 qDebug() << defaultKeyboard << " not found, starting without shortcuts";
                 defaultKeyboard = "";
@@ -284,13 +304,11 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             hasChanged_MusicDir = true;
         }
     }
-    /*
-     * Do not write meta data back to ID3 when meta data has changed
-     * Because multiple TrackDao objects can exists for a particular track
-     * writing meta data may ruine your MP3 file if done simultaneously.
-     * see Bug #728197
-     * For safety reasons, we deactivate this feature.
-     */
+    // Do not write meta data back to ID3 when meta data has changed
+    // Because multiple TrackDao objects can exists for a particular track
+    // writing meta data may ruine your MP3 file if done simultaneously.
+    // see Bug #728197
+    // For safety reasons, we deactivate this feature.
     m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
 
@@ -298,72 +316,47 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // sqlite driver if this path doesn't exist. Normally config->Save()
     // above would make it but if it doesn't get run for whatever reason
     // we get hosed -- bkgood
-    if (!QDir(QDir::homePath().append("/").append(SETTINGS_PATH)).exists()) {
-        QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
+    if (!QDir(args.getSettingsPath()).exists()) {
+        QDir().mkpath(args.getSettingsPath());
     }
 
-    m_pLibrary = new Library(this, m_pConfig,
-                             bFirstRun || bUpgraded,
-                             m_pRecordingManager);
+    // Register TrackPointer as a metatype since we use it in signals/slots
+    // regularly.
     qRegisterMetaType<TrackPointer>("TrackPointer");
-
-    // Create the player manager.
-    m_pPlayerManager = new PlayerManager(m_pConfig, m_pEngine, m_pLibrary);
-    m_pPlayerManager->addDeck();
-    m_pPlayerManager->addDeck();
-    m_pPlayerManager->addDeck();
-    m_pPlayerManager->addDeck();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-    m_pPlayerManager->addSampler();
-
-    // register the engine's outputs
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::MASTER),
-        m_pEngine);
-    m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
-        m_pEngine);
-    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
-        // TODO(bkgood) make this look less dumb by putting channelBase after
-        // index in the AudioOutput() params
-        m_pSoundManager->registerOutput(
-            AudioOutput(AudioOutput::DECK, 0, deck), m_pEngine);
-    }
 
 #ifdef __VINYLCONTROL__
     m_pVCManager = new VinylControlManager(this, m_pConfig);
-    for (unsigned int deck = 0; deck < m_pPlayerManager->numDecks(); ++deck) {
-        m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, deck),
-            m_pVCManager);
-    }
 #else
     m_pVCManager = NULL;
 #endif
 
-    //Scan the library directory.
-    m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
+    // Create the player manager.
+    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
+                                         m_pVCManager);
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addPreviewDeck();
 
-    //Refresh the library models when the library (re)scan is finished.
-    connect(m_pLibraryScanner, SIGNAL(scanFinished()),
-            m_pLibrary, SLOT(slotRefreshLibraryModels()));
+#ifdef __VINYLCONTROL__
+    m_pVCManager->init();
+#endif
 
-    //Scan the library for new files and directories
-    bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
-    // rescan the library if we get a new plugin
-    QSet<QString> prev_plugins = QSet<QString>::fromList(m_pConfig->getValueString(
-        ConfigKey("[Library]", "SupportedFileExtensions")).split(",", QString::SkipEmptyParts));
-    QSet<QString> curr_plugins = QSet<QString>::fromList(
-        SoundSourceProxy::supportedFileExtensions());
-    rescan = rescan || (prev_plugins != curr_plugins);
+#ifdef __MODPLUG__
+    // restore the configuration for the modplug library before trying to load a module
+    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, m_pConfig);
+    pModplugPrefs->loadSettings();
+    pModplugPrefs->applySettings();
+    delete pModplugPrefs; // not needed anymore
+#endif
 
-    if(rescan || hasChanged_MusicDir){
-        m_pLibraryScanner->scan(
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
-        qDebug() << "Rescan finished";
-    }
-    m_pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
-        QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
+    m_pLibrary = new Library(this, m_pConfig,
+                             bFirstRun || bUpgraded,
+                             m_pRecordingManager);
+    m_pPlayerManager->bindToLibrary(m_pLibrary);
 
     // Call inits to invoke all other construction parts
 
@@ -386,18 +379,21 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
-    //ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh1")).toDouble());
-    //ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->queueFromThread(m_pConfig->getValueString(ConfigKey("[Controls]","TrackEndModeCh2")).toDouble());
-
     // Initialize controller sub-system,
     //  but do not set up controllers until the end of the application startup
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(m_pConfig);
+    connect(m_pControllerManager, SIGNAL(syncControlSystem()),
+            this, SLOT(slotSyncControlSystem()));
 
     WaveformWidgetFactory::create();
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
+    connect(this, SIGNAL(newSkinLoaded()),
+            this, SLOT(onNewSkinLoaded()));
+    connect(this, SIGNAL(newSkinLoaded()),
+            m_pLibrary, SLOT(onSkinLoadFinished()));
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
@@ -436,10 +432,13 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Load tracks in args.qlMusicFiles (command line arguments) into player
     // 1 and 2:
     for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-            && i < args.qlMusicFiles.count(); ++i) {
-        m_pPlayerManager->slotLoadToDeck(args.qlMusicFiles.at(i), i+1);
+            && i < args.getMusicFiles().count(); ++i) {
+        if ( SoundSourceProxy::isFilenameSupported(args.getMusicFiles().at(i))) {
+            m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
+        }
     }
 
+#ifdef __PROMO__
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
@@ -449,9 +448,16 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
             m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
         }
     }
+#endif
 
     initActions();
     initMenuBar();
+
+    // Before creating the first skin we need to create a QGLWidget so that all
+    // the QGLWidget's we create can use it as a shared QGLContext.
+    QGLWidget* pContextWidget = new QGLWidget(this);
+    pContextWidget->hide();
+    SharedGLContext::setWidget(pContextWidget);
 
     // Use frame as container for view, needed for fullscreen display
     m_pView = new QFrame();
@@ -461,21 +467,20 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
         m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
-        qCritical("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
+        reportCriticalErrorAndQuit("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         //TODO (XXX) add dialog to warn user and launch skin choice page
         resize(640,480);
     } else {
-        // this has to be after the OpenGL widgets are created or depending on a
-        // million different variables the first waveform may be horribly
-        // corrupted. See bug 521509 -- bkgood ?? -- vrince
-        setCentralWidget(m_pView);
-
         // keep gui centered (esp for fullscreen)
         m_pView->setLayout( new QHBoxLayout(m_pView));
         m_pView->layout()->setContentsMargins(0,0,0,0);
         m_pView->layout()->addWidget(m_pWidgetParent);
-        resize(m_pView->size());
+
+        // this has to be after the OpenGL widgets are created or depending on a
+        // million different variables the first waveform may be horribly
+        // corrupted. See bug 521509 -- bkgood ?? -- vrince
+        setCentralWidget(m_pView);
     }
 
     //move the app in the center of the primary screen
@@ -486,13 +491,15 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
 
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
-    m_pApp->installEventFilter(this); // The eventfilter is located in this
+    pApp->installEventFilter(this); // The eventfilter is located in this
                                       // Mixxx class as a callback.
 
     // If we were told to start in fullscreen mode on the command-line,
     // then turn on fullscreen mode.
-    if (args.bStartInFullscreen)
-        slotOptionsFullScreen(true);
+    if (args.getStartInFullscreen()) {
+        slotViewFullScreen(true);
+    }
+    emit(newSkinLoaded());
 
     // Refresh the GUI (workaround for Qt 4.6 display bug)
     /* // TODO(bkgood) delete this block if the moving of setCentralWidget
@@ -509,32 +516,51 @@ MixxxApp::MixxxApp(QApplication *a, struct CmdlineArgs args)
     // Wait until all other ControlObjects are set up
     //  before initializing controllers
     m_pControllerManager->setUpDevices();
+
+    // Scan the library for new files and directories
+    bool rescan = (bool)m_pConfig->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt();
+    // rescan the library if we get a new plugin
+    QSet<QString> prev_plugins = QSet<QString>::fromList(m_pConfig->getValueString(
+        ConfigKey("[Library]", "SupportedFileExtensions")).split(",", QString::SkipEmptyParts));
+    QSet<QString> curr_plugins = QSet<QString>::fromList(
+        SoundSourceProxy::supportedFileExtensions());
+    rescan = rescan || (prev_plugins != curr_plugins);
+    m_pConfig->set(ConfigKey("[Library]", "SupportedFileExtensions"),
+        QStringList(SoundSourceProxy::supportedFileExtensions()).join(","));
+
+    // Scan the library directory. Initialize this after the skinloader has
+    // loaded a skin, see Bug #1047435
+    m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
+    connect(m_pLibraryScanner, SIGNAL(scanFinished()),
+            this, SLOT(slotEnableRescanLibraryAction()));
+
+    //Refresh the library models when the library (re)scan is finished.
+    connect(m_pLibraryScanner, SIGNAL(scanFinished()),
+            m_pLibrary, SLOT(slotRefreshLibraryModels()));
+
+    if (rescan || hasChanged_MusicDir) {
+        m_pLibraryScanner->scan(
+            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
+        qDebug() << "Rescan finished";
+    }
 }
 
 MixxxApp::~MixxxApp()
 {
+    // TODO(rryan): Get rid of QTime here.
     QTime qTime;
     qTime.start();
+    Timer t("MixxxApp::~MixxxApp");
+    t.start();
 
     qDebug() << "Destroying MixxxApp";
 
     qDebug() << "save config " << qTime.elapsed();
     m_pConfig->Save();
 
-    // Save state of End of track controls in config database
-    //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh1"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel1]","TrackEndMode"))->get()));
-    //m_pConfig->set(ConfigKey("[Controls]","TrackEndModeCh2"), ConfigValue((int)ControlObject::getControl(ConfigKey("[Channel2]","TrackEndMode"))->get()));
-
     // SoundManager depend on Engine and Config
     qDebug() << "delete soundmanager " << qTime.elapsed();
     delete m_pSoundManager;
-
-#ifdef __VINYLCONTROL__
-    // VinylControlManager depends on a CO the engine owns
-    // (vinylcontrol_enabled in VinylControlControl)
-    qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
-    delete m_pVCManager;
-#endif
 
     // View depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view " << qTime.elapsed();
@@ -549,7 +575,13 @@ MixxxApp::~MixxxApp()
     m_pControllerManager->shutdown();
     delete m_pControllerManager;
 
-    // PlayerManager depends on Engine, Library, and Config
+#ifdef __VINYLCONTROL__
+    // VinylControlManager depends on a CO the engine owns
+    // (vinylcontrol_enabled in VinylControlControl)
+    qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
+    delete m_pVCManager;
+#endif
+    // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
 
@@ -608,6 +640,56 @@ MixxxApp::~MixxxApp()
    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
    delete m_pKeyboard;
+   delete m_pKbdConfig;
+   delete m_pKbdConfigEmpty;
+
+   WaveformWidgetFactory::destroy();
+   t.elapsed(true);
+   // Report the total time we have been running.
+   m_runtime_timer.elapsed(true);
+   StatsManager::destroy();
+}
+
+void toggleVisibility(ConfigKey key, bool enable) {
+    ControlObject* pShowControl = ControlObject::getControl(key);
+    if (pShowControl == NULL) {
+        return;
+    }
+    qDebug() << "Setting visibility for" << key.group << key.item << enable;
+    pShowControl->set(enable ? 1.0 : 0.0);
+}
+
+void MixxxApp::slotViewShowSamplers(bool enable) {
+    toggleVisibility(ConfigKey("[Samplers]", "show_samplers"), enable);
+}
+
+void MixxxApp::slotViewShowVinylControl(bool enable) {
+    toggleVisibility(ConfigKey("[Vinylcontrol]", "show_vinylcontrol"), enable);
+}
+
+void MixxxApp::slotViewShowMicrophone(bool enable) {
+    toggleVisibility(ConfigKey("[Microphone]", "show_microphone"), enable);
+}
+
+void MixxxApp::slotViewShowPreviewDeck(bool enable) {
+    toggleVisibility(ConfigKey("[PreviewDeck]", "show_previewdeck"), enable);
+}
+
+void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
+    ControlObject* pVisibilityControl = ControlObject::getControl(key);
+    pAction->setEnabled(pVisibilityControl != NULL);
+    pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
+}
+
+void MixxxApp::onNewSkinLoaded() {
+    setVisibilityOptionState(m_pViewVinylControl,
+                             ConfigKey("[Vinylcontrol]", "show_vinylcontrol"));
+    setVisibilityOptionState(m_pViewShowSamplers,
+                             ConfigKey("[Samplers]", "show_samplers"));
+    setVisibilityOptionState(m_pViewShowMicrophone,
+                             ConfigKey("[Microphone]", "show_microphone"));
+    setVisibilityOptionState(m_pViewShowPreviewDeck,
+                             ConfigKey("[PreviewDeck]", "show_previewdeck"));
 }
 
 int MixxxApp::noSoundDlg(void)
@@ -743,7 +825,7 @@ void MixxxApp::initActions()
 
     QString player1LoadStatusText = loadTrackStatusText.arg(QString::number(1));
     m_pFileLoadSongPlayer1 = new QAction(loadTrackText.arg(QString::number(1)), this);
-    m_pFileLoadSongPlayer1->setShortcut(tr("Ctrl+O"));
+    m_pFileLoadSongPlayer1->setShortcut(QKeySequence(tr("Ctrl+O")));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileLoadSongPlayer1->setStatusTip(player1LoadStatusText);
     m_pFileLoadSongPlayer1->setWhatsThis(
@@ -753,7 +835,7 @@ void MixxxApp::initActions()
 
     QString player2LoadStatusText = loadTrackStatusText.arg(QString::number(2));
     m_pFileLoadSongPlayer2 = new QAction(loadTrackText.arg(QString::number(2)), this);
-    m_pFileLoadSongPlayer2->setShortcut(tr("Ctrl+Shift+O"));
+    m_pFileLoadSongPlayer2->setShortcut(QKeySequence(tr("Ctrl+Shift+O")));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileLoadSongPlayer2->setStatusTip(player2LoadStatusText);
     m_pFileLoadSongPlayer2->setWhatsThis(
@@ -764,7 +846,7 @@ void MixxxApp::initActions()
     QString quitTitle = tr("&Exit");
     QString quitText = tr("Quits Mixxx");
     m_pFileQuit = new QAction(quitTitle, this);
-    m_pFileQuit->setShortcut(tr("Ctrl+Q"));
+    m_pFileQuit->setShortcut(QKeySequence(tr("Ctrl+Q")));
     m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileQuit->setStatusTip(quitText);
     m_pFileQuit->setWhatsThis(buildWhatsThis(quitTitle, quitText));
@@ -778,13 +860,11 @@ void MixxxApp::initActions()
     m_pLibraryRescan->setCheckable(false);
     connect(m_pLibraryRescan, SIGNAL(triggered()),
             this, SLOT(slotScanLibrary()));
-    connect(m_pLibraryScanner, SIGNAL(scanFinished()),
-            this, SLOT(slotEnableRescanLibraryAction()));
 
     QString createPlaylistTitle = tr("Add &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
-    m_pPlaylistsNew->setShortcut(tr("Ctrl+N"));
+    m_pPlaylistsNew->setShortcut(QKeySequence(tr("Ctrl+N")));
     m_pPlaylistsNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pPlaylistsNew->setStatusTip(createPlaylistText);
     m_pPlaylistsNew->setWhatsThis(buildWhatsThis(createPlaylistTitle, createPlaylistText));
@@ -794,7 +874,7 @@ void MixxxApp::initActions()
     QString createCrateTitle = tr("Add New &Crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
-    m_pCratesNew->setShortcut(tr("Ctrl+Shift+N"));
+    m_pCratesNew->setShortcut(QKeySequence(tr("Ctrl+Shift+N")));
     m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pCratesNew->setStatusTip(createCrateText);
     m_pCratesNew->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
@@ -803,21 +883,21 @@ void MixxxApp::initActions()
 
     QString fullScreenTitle = tr("&Full Screen");
     QString fullScreenText = tr("Display Mixxx using the full screen");
-    m_pOptionsFullScreen = new QAction(fullScreenTitle, this);
+    m_pViewFullScreen = new QAction(fullScreenTitle, this);
 #ifdef __APPLE__
-    m_pOptionsFullScreen->setShortcut(tr("Ctrl+Shift+F"));
+    m_pViewFullScreen->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
 #else
-    m_pOptionsFullScreen->setShortcut(tr("F11"));
+    m_pViewFullScreen->setShortcut(QKeySequence(tr("F11")));
 #endif
-    m_pOptionsFullScreen->setShortcutContext(Qt::ApplicationShortcut);
+    m_pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
     // connect(shortcut, SIGNAL(triggered()), this, SLOT(slotQuitFullScreen()));
-    m_pOptionsFullScreen->setCheckable(true);
-    m_pOptionsFullScreen->setChecked(false);
-    m_pOptionsFullScreen->setStatusTip(fullScreenText);
-    m_pOptionsFullScreen->setWhatsThis(buildWhatsThis(fullScreenTitle, fullScreenText));
-    connect(m_pOptionsFullScreen, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsFullScreen(bool)));
+    m_pViewFullScreen->setCheckable(true);
+    m_pViewFullScreen->setChecked(false);
+    m_pViewFullScreen->setStatusTip(fullScreenText);
+    m_pViewFullScreen->setWhatsThis(buildWhatsThis(fullScreenTitle, fullScreenText));
+    connect(m_pViewFullScreen, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewFullScreen(bool)));
 
     QString keyboardShortcutTitle = tr("Enable &Keyboard Shortcuts");
     QString keyboardShortcutText = tr("Toggles keyboard shortcuts on or off");
@@ -836,7 +916,7 @@ void MixxxApp::initActions()
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
     m_pOptionsPreferences = new QAction(preferencesTitle, this);
-    m_pOptionsPreferences->setShortcut(tr("Ctrl+P"));
+    m_pOptionsPreferences->setShortcut(QKeySequence(tr("Ctrl+P")));
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsPreferences->setStatusTip(preferencesText);
     m_pOptionsPreferences->setWhatsThis(buildWhatsThis(preferencesTitle, preferencesText));
@@ -885,7 +965,7 @@ void MixxxApp::initActions()
     QString vinylControlTitle2 = tr("Enable Vinyl Control &2");
 
     m_pOptionsVinylControl = new QAction(vinylControlTitle1, this);
-    m_pOptionsVinylControl->setShortcut(tr("Ctrl+Y"));
+    m_pOptionsVinylControl->setShortcut(QKeySequence(tr("Ctrl+Y")));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
@@ -934,6 +1014,52 @@ void MixxxApp::initActions()
             this, SLOT(slotOptionsShoutcast(bool)));
 #endif
 
+    QString mayNotBeSupported = tr("May not be supported on all skins.");
+    QString showSamplersTitle = tr("Show Samplers");
+    QString showSamplersText = tr("Show the sample deck section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShowSamplers = new QAction(showSamplersTitle, this);
+    m_pViewShowSamplers->setCheckable(true);
+    m_pViewShowSamplers->setShortcut(tr("Ctrl+1", "Menubar|View|Show Samplers"));
+    m_pViewShowSamplers->setStatusTip(showSamplersText);
+    m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
+    connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowSamplers(bool)));
+
+    QString showVinylControlTitle = tr("Show Vinyl Control Section");
+    QString showVinylControlText = tr("Show the vinyl control section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewVinylControl = new QAction(showVinylControlTitle, this);
+    m_pViewVinylControl->setCheckable(true);
+    m_pViewVinylControl->setShortcut(tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"));
+    m_pViewVinylControl->setStatusTip(showVinylControlText);
+    m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
+    connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowVinylControl(bool)));
+
+    QString showMicrophoneTitle = tr("Show Microphone Section");
+    QString showMicrophoneText = tr("Show the microphone section of the Mixxx interface.") +
+            " " + mayNotBeSupported;
+    m_pViewShowMicrophone = new QAction(showMicrophoneTitle, this);
+    m_pViewShowMicrophone->setCheckable(true);
+    m_pViewShowMicrophone->setShortcut(tr("Ctrl+2", "Menubar|View|Show Microphone Section"));
+    m_pViewShowMicrophone->setStatusTip(showMicrophoneText);
+    m_pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
+    connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowMicrophone(bool)));
+
+    QString showPreviewDeckTitle = tr("Show Preview Deck");
+    QString showPreviewDeckText = tr("Show the preview deck in the Mixxx interface.") +
+    " " + mayNotBeSupported;
+    m_pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
+    m_pViewShowPreviewDeck->setCheckable(true);
+    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+4", "Menubar|View|Show Preview Deck"));
+    m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
+    m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
+    connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
+            this, SLOT(slotViewShowPreviewDeck(bool)));
+
+
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
@@ -944,6 +1070,18 @@ void MixxxApp::initActions()
     m_pOptionsRecord->setWhatsThis(buildWhatsThis(recordTitle, recordText));
     connect(m_pOptionsRecord, SIGNAL(toggled(bool)),
             this, SLOT(slotOptionsRecord(bool)));
+
+    QString reloadSkinTitle = tr("&Reload Skin");
+    QString reloadSkinText = tr("Reload the skin");
+    m_pDeveloperReloadSkin = new QAction(reloadSkinTitle, this);
+    m_pDeveloperReloadSkin->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
+    m_pDeveloperReloadSkin->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperReloadSkin->setCheckable(true);
+    m_pDeveloperReloadSkin->setChecked(false);
+    m_pDeveloperReloadSkin->setStatusTip(reloadSkinText);
+    m_pDeveloperReloadSkin->setWhatsThis(buildWhatsThis(reloadSkinTitle, reloadSkinText));
+    connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
+            this, SLOT(slotDeveloperReloadSkin(bool)));
 }
 
 void MixxxApp::initMenuBar()
@@ -954,6 +1092,7 @@ void MixxxApp::initMenuBar()
     m_pLibraryMenu = new QMenu(tr("&Library"),menuBar());
     m_pViewMenu = new QMenu(tr("&View"), menuBar());
     m_pHelpMenu = new QMenu(tr("&Help"), menuBar());
+    m_pDeveloperMenu = new QMenu(tr("Developer"), menuBar());
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
@@ -968,14 +1107,17 @@ void MixxxApp::initMenuBar()
     m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl2);
+
     m_pOptionsMenu->addMenu(m_pVinylControlMenu);
+    m_pOptionsMenu->addSeparator();
 #endif
+
     m_pOptionsMenu->addAction(m_pOptionsRecord);
 #ifdef __SHOUTCAST__
     m_pOptionsMenu->addAction(m_pOptionsShoutcast);
 #endif
+    m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsKeyboard);
-    m_pOptionsMenu->addAction(m_pOptionsFullScreen);
     m_pOptionsMenu->addSeparator();
     m_pOptionsMenu->addAction(m_pOptionsPreferences);
 
@@ -986,6 +1128,15 @@ void MixxxApp::initMenuBar()
 
     // menuBar entry viewMenu
     //viewMenu->setCheckable(true);
+    m_pViewMenu->addAction(m_pViewShowSamplers);
+    m_pViewMenu->addAction(m_pViewShowMicrophone);
+    m_pViewMenu->addAction(m_pViewVinylControl);
+    m_pViewMenu->addAction(m_pViewShowPreviewDeck);
+    m_pViewMenu->addSeparator();
+    m_pViewMenu->addAction(m_pViewFullScreen);
+
+    // Developer Menu
+    m_pDeveloperMenu->addAction(m_pDeveloperReloadSkin);
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
@@ -997,13 +1148,15 @@ void MixxxApp::initMenuBar()
 
     menuBar()->addMenu(m_pFileMenu);
     menuBar()->addMenu(m_pLibraryMenu);
+    menuBar()->addMenu(m_pViewMenu);
     menuBar()->addMenu(m_pOptionsMenu);
 
-    //    menuBar()->addMenu(viewMenu);
+    if (m_cmdLineArgs.getDeveloper()) {
+        menuBar()->addMenu(m_pDeveloperMenu);
+    }
+
     menuBar()->addSeparator();
     menuBar()->addMenu(m_pHelpMenu);
-
-    m_NativeMenuBarSupport = menuBar()->isNativeMenuBar();
 }
 
 void MixxxApp::slotFileLoadSongPlayer(int deck) {
@@ -1044,7 +1197,7 @@ void MixxxApp::slotFileLoadSongPlayer1() {
 }
 
 void MixxxApp::slotFileLoadSongPlayer2() {
-    slotFileLoadSongPlayer(1);
+    slotFileLoadSongPlayer(2);
 }
 
 void MixxxApp::slotFileQuit()
@@ -1068,10 +1221,15 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
     }
 }
 
-void MixxxApp::slotOptionsFullScreen(bool toggle)
+void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
+    Q_UNUSED(toggle);
+    rebootMixxxView();
+}
+
+void MixxxApp::slotViewFullScreen(bool toggle)
 {
-    if (m_pOptionsFullScreen)
-        m_pOptionsFullScreen->setChecked(toggle);
+    if (m_pViewFullScreen)
+        m_pViewFullScreen->setChecked(toggle);
 
     if (isFullScreen() == toggle) {
         return;
@@ -1090,19 +1248,33 @@ void MixxxApp::slotOptionsFullScreen(bool toggle)
          //m_winpos.setX(m_winpos.x() + (geometry().x() - x()));
          //m_winpos.setY(m_winpos.y() + (geometry().y() - y()));
 #endif
+        showFullScreen();
 #ifdef __LINUX__
         // Fix for "No menu bar with ubuntu unity in full screen mode" Bug #885890
         // Not for Mac OS because the native menu bar will unhide when moving
         // the mouse to the top of screen
-        menuBar()->setNativeMenuBar(false);
+
+        //menuBar()->setNativeMenuBar(false);
+        // ^ This leaves a broken native Menu Bar with Ubuntu Unity Bug #1076789#
+        // it is only allowed to change this prior initMenuBar()
+
+        m_NativeMenuBarSupport = menuBar()->isNativeMenuBar();
+        if (m_NativeMenuBarSupport) {
+            setMenuBar(new QMenuBar(this));
+            menuBar()->setNativeMenuBar(false);
+            initMenuBar();
+        }
 #endif
-        showFullScreen();
     } else {
-        showNormal();
 #ifdef __LINUX__
-        menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
+        if (m_NativeMenuBarSupport) {
+            setMenuBar(new QMenuBar(this));
+            menuBar()->setNativeMenuBar(m_NativeMenuBarSupport);
+            initMenuBar();
+        }
         //move(m_winpos);
 #endif
+        showNormal();
     }
 }
 
@@ -1206,18 +1378,16 @@ void MixxxApp::slotHelpAbout() {
     }
     about->version_label->setText(version.join(" "));
 
-    QString s_devTeam=QString(tr("Mixxx %1 Development Team")).arg(VERSION);
-    QString s_contributions=tr("With contributions from:");
-    QString s_specialThanks=tr("And special thanks to:");
-    QString s_pastDevs=tr("Past Developers");
-    QString s_pastContribs=tr("Past Contributors");
+    QString s_devTeam = QString(tr("Mixxx %1 Development Team")).arg(VERSION);
+    QString s_contributions = tr("With contributions from:");
+    QString s_specialThanks = tr("And special thanks to:");
+    QString s_pastDevs = tr("Past Developers");
+    QString s_pastContribs = tr("Past Contributors");
 
     QString credits = QString("<p align=\"center\"><b>%1</b></p>"
 "<p align=\"center\">"
-"Adam Davison<br>"
 "Albert Santoni<br>"
 "RJ Ryan<br>"
-"Garth Dahlstrom<br>"
 "Sean Pappalardo<br>"
 "Phillip Whelan<br>"
 "Tobias Rafreider<br>"
@@ -1227,6 +1397,8 @@ void MixxxApp::slotHelpAbout() {
 "Vittorio Colao<br>"
 "Daniel Sch&uuml;rmann<br>"
 "Thomas Vincent<br>"
+"Ilkka Tuohela<br>"
+"Max Linke<br>"
 
 "</p>"
 "<p align=\"center\"><b>%2</b></p>"
@@ -1281,9 +1453,15 @@ void MixxxApp::slotHelpAbout() {
 "Pascal Bleser<br>"
 "Florian Mahlknecht<br>"
 "Ben Clark<br>"
-"Ilkka Tuohela<br>"
 "Tom Gascoigne<br>"
-"Max Linke<br>"
+"Neale Pickett<br>"
+"Aaron Mavrinac<br>"
+"Markus H&auml;rer<br>"
+"Andrey Smelov<br>"
+"Scott Stewart<br>"
+"Nimatek<br>"
+"Alban Bedel<br>"
+"Stefan N&uuml;rnberger<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1320,8 +1498,8 @@ void MixxxApp::slotHelpAbout() {
 "Tom Care<br>"
 "Pawel Bartkiewicz<br>"
 "Nick Guenther<br>"
-"Bruno Buccolo<br>"
-"Ryan Baker<br>"
+"Adam Davison<br>"
+"Garth Dahlstrom<br>"
 "</p>"
 
 "<p align=\"center\"><b>%5</b></p>"
@@ -1358,6 +1536,8 @@ void MixxxApp::slotHelpAbout() {
 "Michael Pujos<br>"
 "Claudio Bantaloukas<br>"
 "Pavol Rusnak<br>"
+"Bruno Buccolo<br>"
+"Ryan Baker<br>"
     "</p>").arg(s_devTeam,s_contributions,s_specialThanks,s_pastDevs,s_pastContribs);
 
     about->textBrowser->setHtml(credits);
@@ -1384,7 +1564,7 @@ void MixxxApp::slotHelpTranslation() {
 }
 
 void MixxxApp::slotHelpManual() {
-    QDir configDir(m_pConfig->getConfigPath());
+    QDir resourceDir(m_pConfig->getResourcePath());
     // Default to the mixxx.org hosted version of the manual.
     QUrl qManualUrl(MIXXX_MANUAL_URL);
 #if defined(__APPLE__)
@@ -1392,21 +1572,25 @@ void MixxxApp::slotHelpManual() {
     // web-hosted version.
 #elif defined(__WINDOWS__)
     // On Windows, the manual PDF sits in the same folder as the 'skins' folder.
-    if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
+    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
-            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }
 #elif defined(__LINUX__)
     // On GNU/Linux, the manual is installed to e.g. /usr/share/mixxx/doc/
-    configDir.cd("doc");
-    if (configDir.exists(MIXXX_MANUAL_FILENAME)) {
+    resourceDir.cd("doc");
+    if (resourceDir.exists(MIXXX_MANUAL_FILENAME)) {
         qManualUrl = QUrl::fromLocalFile(
-            configDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
+                resourceDir.absoluteFilePath(MIXXX_MANUAL_FILENAME));
     }
 #else
     // No idea, default to the mixxx.org hosted version.
 #endif
     QDesktopServices::openUrl(qManualUrl);
+}
+
+void MixxxApp::setToolTips(int tt) {
+    m_tooltips = tt;
 }
 
 void MixxxApp::rebootMixxxView() {
@@ -1428,16 +1612,13 @@ void MixxxApp::rebootMixxxView() {
     // mode. If you change skins while in fullscreen (on Linux, at least) the
     // window returns to 0,0 but and the backdrop disappears so it looks as if
     // it is not fullscreen, but acts as if it is.
-    bool wasFullScreen = m_pOptionsFullScreen->isChecked();
-    slotOptionsFullScreen(false);
-
-    // TODO(XXX) Make getSkinPath not public
-    QString qSkinPath = m_pSkinLoader->getConfiguredSkinPath();
+    bool wasFullScreen = m_pViewFullScreen->isChecked();
+    slotViewFullScreen(false);
 
     //delete the view cause swaping central widget do not remove the old one !
-    if( m_pView)
+    if (m_pView) {
         delete m_pView;
-
+    }
     m_pView = new QFrame();
 
     // assignment in next line intentional
@@ -1453,26 +1634,24 @@ void MixxxApp::rebootMixxxView() {
                               tr("The selected skin cannot be loaded."));
     }
     else {
-        // don't move this before loadDefaultSkin above. bug 521509 --bkgood
-        // NOTE: (vrince) I don't know this comment is relevant now ...
-        setCentralWidget(m_pView);
-
         // keep gui centered (esp for fullscreen)
         m_pView->setLayout( new QHBoxLayout(m_pView));
         m_pView->layout()->setContentsMargins(0,0,0,0);
         m_pView->layout()->addWidget(m_pWidgetParent);
 
-         //qDebug() << "view size" << m_pView->size();
-
-        //TODO: (vrince) size is good but resize do not append !!
-        resize(m_pView->size());
+        // don't move this before loadDefaultSkin above. bug 521509 --bkgood
+        // NOTE: (vrince) I don't know this comment is relevant now ...
+        setCentralWidget(m_pView);
+        update();
+        adjustSize();
+        //qDebug() << "view size" << m_pView->size() << size();
     }
 
     if( wasFullScreen) {
-        slotOptionsFullScreen(true);
+        slotViewFullScreen(true);
     } else {
-        move(initPosition.x() + (initSize.width() - width()) / 2,
-             initPosition.y() + (initSize.height() - height()) / 2);
+        move(initPosition.x() + (initSize.width() - m_pView->width()) / 2,
+             initPosition.y() + (initSize.height() - m_pView->height()) / 2);
     }
 
     WaveformWidgetFactory::instance()->start();
@@ -1485,6 +1664,7 @@ void MixxxApp::rebootMixxxView() {
 #endif
 
     qDebug() << "rebootMixxxView DONE";
+    emit(newSkinLoaded());
 }
 
 /** Event filter to block certain events. For example, this function is used
@@ -1493,16 +1673,22 @@ void MixxxApp::rebootMixxxView() {
   */
 bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
 {
-    static int tooltips =
-        m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips")).toInt();
-
     if (event->type() == QEvent::ToolTip) {
-        // QKeyEvent *keyEvent = static_cast<QKeyEvent *>(event);
-        // unused, remove? TODO(bkgood)
-        if (tooltips == 1)
+        // return true for no tool tips
+        if (m_tooltips == 2) {
+            // ON (only in Library)
+            WWidget* pWidget = dynamic_cast<WWidget*>(obj);
+            WWaveformViewer* pWfViewer = dynamic_cast<WWaveformViewer*>(obj);
+            WSpinny* pSpinny = dynamic_cast<WSpinny*>(obj);
+            QLabel* pLabel = dynamic_cast<QLabel*>(obj);
+            return (pWidget || pWfViewer || pSpinny || pLabel);
+        } else if (m_tooltips == 1) {
+            // ON
             return false;
-        else
+        } else {
+            // OFF
             return true;
+        }
     } else {
         // standard event processing
         return QObject::eventFilter(obj, event);
@@ -1519,7 +1705,7 @@ void MixxxApp::slotScanLibrary()
 {
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
+        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
 }
 
 void MixxxApp::slotEnableRescanLibraryAction()
@@ -1652,4 +1838,9 @@ bool MixxxApp::confirmExit() {
         }
     }
     return true;
+}
+
+void MixxxApp::slotSyncControlSystem() {
+    ScopedTimer t("MixxxApp::slotSyncControlSystem");
+    ControlObject::sync();
 }

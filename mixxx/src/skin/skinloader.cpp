@@ -11,6 +11,7 @@
 #include "controllers/controllermanager.h"
 #include "library/library.h"
 #include "playermanager.h"
+#include "util/debug.h"
 
 SkinLoader::SkinLoader(ConfigObject<ConfigValue>* pConfig) :
         m_pConfig(pConfig) {
@@ -24,7 +25,7 @@ SkinLoader::~SkinLoader() {
 
 QString SkinLoader::getConfiguredSkinPath() {
 
-    QString qSkinPath = m_pConfig->getConfigPath();
+    QString qSkinPath = m_pConfig->getResourcePath();
     qSkinPath.append("skins/");
 
     QString configSkin = m_pConfig->getValueString(ConfigKey("[Config]","Skin"));
@@ -51,7 +52,7 @@ QString SkinLoader::getConfiguredSkinPath() {
 
     QDir skinPath(qSkinPath);
     if (!skinPath.exists()) {
-        qCritical() << "Skin directory does not exist:" << qSkinPath;
+        reportCriticalErrorAndQuit("Skin directory does not exist: " + qSkinPath);
     }
 
     return qSkinPath;

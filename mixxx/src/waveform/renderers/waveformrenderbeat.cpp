@@ -22,9 +22,10 @@ WaveformRenderBeat::~WaveformRenderBeat() {
         delete m_beatActive;
 }
 
-void WaveformRenderBeat::init() {
+bool WaveformRenderBeat::init() {
     m_beatActive = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"beat_active")));
+    return true;
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node) {
@@ -39,10 +40,10 @@ void WaveformRenderBeat::setup(const QDomNode& node) {
     m_highBeatColor = WSkinColor::getCorrectColor(m_highBeatColor);
 
     if (m_beatColor.alphaF() > 0.99)
-        m_beatColor.setAlphaF(0.4);
+        m_beatColor.setAlphaF(0.8);
 
     if (m_highBeatColor.alphaF() > 0.99)
-        m_highBeatColor.setAlphaF(0.6);
+        m_highBeatColor.setAlphaF(0.9);
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {

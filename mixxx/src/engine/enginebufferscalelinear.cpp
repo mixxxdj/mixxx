@@ -57,14 +57,14 @@ double EngineBufferScaleLinear::setTempo(double _tempo)
 
     m_dTempo = _tempo;
 
-    if (m_dTempo>MAX_SEEK_SPEED) {
+    if (m_dTempo > MAX_SEEK_SPEED) {
         m_dTempo = MAX_SEEK_SPEED;
     } else if (m_dTempo < -MAX_SEEK_SPEED) {
         m_dTempo = -MAX_SEEK_SPEED;
     }
 
     // Determine playback direction
-    if (m_dTempo<0.) {
+    if (m_dTempo < 0.) {
         m_bBackwards = true;
     } else {
         m_bBackwards = false;
@@ -108,7 +108,7 @@ void EngineBufferScaleLinear::clear()
 {
     m_bClear = true;
     // Clear out buffer and saved sample data
-    buffer_int_size = 0; 
+    buffer_int_size = 0;
     m_dNextSampleIndex = 0;
     m_fPrevSample[0] = 0;
     m_fPrevSample[1] = 0;
@@ -128,17 +128,15 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 
 /** Determine if we're changing directions (scratching) and then perform
     a stretch */
-CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
-                                         CSAMPLE* pBase, unsigned long iBaseLength)
-{
+CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
     int samples_read = 0;
-    new_playpos = 0;
+    m_samplesRead = 0;
 
     // Guard against buf_size == 0
     if ((int)buf_size == 0)
-        return buffer;
+        return m_buffer;
 
     if (rate_add_new * rate_add_old < 0) {
         //calculate half buffer going one way, and half buffer going
@@ -147,7 +145,7 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         //first half: rate goes from old rate to zero
         m_fOldBaseRate = rate_add_old;
         m_dBaseRate = 0.0;
-        buffer = do_scale(buffer, buf_size/2, pBase, iBaseLength, &samples_read);
+        m_buffer = do_scale(m_buffer, buf_size/2, &samples_read);
 
         // reset prev sample so we can now read in the other direction (may not
         // be necessary?)
@@ -179,23 +177,20 @@ CSAMPLE * EngineBufferScaleLinear::scale(double playpos, unsigned long buf_size,
         m_fOldBaseRate = 0.0;
         m_dBaseRate = rate_add_new;
         //pass the address of the sample at the halfway point
-        do_scale(&buffer[buf_size/2], buf_size/2, pBase, iBaseLength, &samples_read);
+        do_scale(&m_buffer[buf_size/2], buf_size/2, &samples_read);
 
-        new_playpos = samples_read;
-        return buffer;
+        m_samplesRead = samples_read;
+        return m_buffer;
     }
 
-    CSAMPLE* result = do_scale(buffer, buf_size, pBase, iBaseLength, &samples_read);
-    new_playpos = samples_read;
+    CSAMPLE* result = do_scale(m_buffer, buf_size, &samples_read);
+    m_samplesRead = samples_read;
     return result;
 }
 
 /** Stretch a specified buffer worth of audio using linear interpolation */
-CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size,
-                                            CSAMPLE* pBase, unsigned long iBaseLength,
-                                            int* samples_read)
-{
-
+CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
+        unsigned long buf_size, int* samples_read) {
     long unscaled_samples_needed;
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
@@ -218,7 +213,9 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf, unsigned long buf_size
 
     // We check for scratch condition in the public function, so this shouldn't
     // happen
-    Q_ASSERT(rate_add_new * rate_add_old >= 0);
+    if (rate_add_new * rate_add_old < 0) {
+        qDebug() << "ERROR: EBSL did not detect scratching correctly.";
+    }
 
     //special case -- no scaling needed!
     if (rate_add_old == 1.0 && rate_add_new == 1.0) {

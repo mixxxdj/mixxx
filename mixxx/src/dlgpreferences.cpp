@@ -37,6 +37,11 @@
     #include "dlgprefbpm.h"
 #endif
 #include "dlgprefkey.h"
+
+#ifdef __MODPLUG__
+    #include "dlgprefmodplug.h"
+#endif
+
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "controllers/dlgprefmappablecontroller.h"
@@ -111,6 +116,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     m_wshoutcast = new DlgPrefShoutcast(this, config);
     addPageWidget(m_wshoutcast);
 #endif
+#ifdef __MODPLUG__
+    m_wmodplug = new DlgPrefModplug(this, config);
+    addPageWidget(m_wmodplug);
+#endif
     m_wNoControllers = new DlgPrefNoControllers(this, config);
     addPageWidget(m_wNoControllers);
     setupControllerWidgets();
@@ -154,6 +163,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(this, SIGNAL(showDlg()), m_wshoutcast,SLOT(slotUpdate()));
 #endif
 
+#ifdef __MODPLUG__
+    connect(this, SIGNAL(showDlg()), m_wmodplug,SLOT(slotUpdate()));
+#endif
+
 #ifdef __VINYLCONTROL__
     connect(buttonBox, SIGNAL(accepted()), m_wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
                                                                                  //connect for wsound...
@@ -174,6 +187,9 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(buttonBox, SIGNAL(accepted()), m_wrecord,   SLOT(slotApply()));
 #ifdef __SHOUTCAST__
     connect(buttonBox, SIGNAL(accepted()), m_wshoutcast,SLOT(slotApply()));
+#endif
+#ifdef __MODPLUG__
+    connect(buttonBox, SIGNAL(accepted()), m_wmodplug,SLOT(slotApply()));
 #endif
 
     //Update the library when you change the options
@@ -285,6 +301,15 @@ void DlgPreferences::createIcons()
     m_pShoutcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pShoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
+
+#ifdef __MODPLUG__
+    m_pModplugButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pModplugButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_sampler.png"));
+    m_pModplugButton->setText(0, tr("Modplug Decoder"));
+    m_pModplugButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pModplugButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif
+
     connect(contentsTreeWidget,
             SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
             this, SLOT(changePage(QTreeWidgetItem *, QTreeWidgetItem*)));
@@ -331,6 +356,10 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
 #ifdef __SHOUTCAST__
     } else if (current == m_pShoutcastButton) {
            pagesWidget->setCurrentWidget(m_wshoutcast->parentWidget()->parentWidget());
+#endif
+#ifdef __MODPLUG__
+    } else if (current == m_pModplugButton) {
+           pagesWidget->setCurrentWidget(m_wmodplug->parentWidget()->parentWidget());
 #endif
     //Handle selection of controller items
     } else if (m_controllerWindowLinks.indexOf(current) >= 0) {

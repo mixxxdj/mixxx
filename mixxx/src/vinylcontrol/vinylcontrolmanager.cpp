@@ -9,6 +9,7 @@
 #include "vinylcontrolxwax.h"
 #include "soundmanager.h"
 #include "controlpushbutton.h"
+#include "util/timer.h"
 
 const int kNumberOfDecks = 4; // set to 4 because it will ideally not be more
 // or less than the number of vinyl-controlled decks but will probably be
@@ -24,23 +25,6 @@ VinylControlManager::VinylControlManager(QObject *pParent,
   , m_proxies(kNumberOfDecks, NULL)
   , m_pToggle(new ControlPushButton(ConfigKey("[VinylControl]", "Toggle")))
 {
-    // load a bunch of stuff
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
-        ->queueFromThread(0);
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
-        ->queueFromThread(0);
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","mode")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
-        ->queueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
     connect(m_pToggle, SIGNAL(valueChanged(double)), SLOT(toggleDeck(double)));
 }
 
@@ -62,12 +46,6 @@ VinylControlManager::~VinylControlManager() {
     // turn off vinyl control so it won't be enabled on load (this is redundant to mixxx.cpp)
     m_pConfig->set(ConfigKey("[Channel 1]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey("[Channel 2]","vinylcontrol_enabled"), false);
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel1]","vinylcontrol_mode"))->get()));
-    m_pConfig->set(ConfigKey("[VinylControl]","mode"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel2]","vinylcontrol_mode"))->get()));
     m_pConfig->set(ConfigKey("[VinylControl]","cueing_ch1"),
         ConfigValue((int)ControlObject::getControl(
             ConfigKey("[Channel1]","vinylcontrol_cueing"))->get()));
@@ -77,20 +55,55 @@ VinylControlManager::~VinylControlManager() {
     delete m_pToggle;
 }
 
+void VinylControlManager::init()
+{
+    // Load saved preferences now that the objects exist
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
+        ->queueFromThread(0);
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
+        ->queueFromThread(0);
+
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","mode")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","mode")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
+    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
+        ->queueFromThread(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
+}
+
 void VinylControlManager::receiveBuffer(AudioInput input,
         const short *pBuffer, unsigned int nFrames) {
-    Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
+    ScopedTimer t("VinylControlManager::receiveBuffer");
+    if (input.getType() != AudioInput::VINYLCONTROL) {
+        qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring incoming buffer.";
+        return;
+    }
     if (m_proxiesLock.tryLockForRead()) {
-        Q_ASSERT(input.getIndex() < m_proxies.size());
-        VinylControlProxy *pProxy(m_proxies.at(input.getIndex()));
-        Q_ASSERT(pProxy);
+        if (input.getIndex() >= m_proxies.size()) {
+            qDebug() << "WARNING: AudioInput index out of bounds. Ignoring incoming buffer.";
+            return;
+        }
+        VinylControlProxy* pProxy = m_proxies.at(input.getIndex());
+        if (pProxy == NULL) {
+            qDebug() << "WARNING: AudioInput index proxy does not exist. Ignoring incoming buffer.";
+            return;
+        }
         pProxy->AnalyseSamples(pBuffer, nFrames);
         m_proxiesLock.unlock();
     }
 }
 
 void VinylControlManager::onInputConnected(AudioInput input) {
-    Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
+    if (input.getType() != AudioInput::VINYLCONTROL) {
+        qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
+        return;
+    }
     unsigned char index = input.getIndex();
     VinylControlProxy *pNewVC = new VinylControlProxy(m_pConfig,
             kVCProxyGroup.arg(index + 1));
@@ -108,13 +121,18 @@ void VinylControlManager::onInputConnected(AudioInput input) {
 }
 
 void VinylControlManager::onInputDisconnected(AudioInput input) {
-    Q_ASSERT(input.getType() == AudioInput::VINYLCONTROL);
+    if (input.getType() != AudioInput::VINYLCONTROL) {
+        qDebug() << "WARNING: AudioInput type is not VINYLCONTROL. Ignoring.";
+        return;
+    }
     m_proxiesLock.lockForWrite();
-    Q_ASSERT(input.getIndex() < m_proxies.size());
-    Q_ASSERT(m_proxies.at(input.getIndex()));
-
-    delete m_proxies.at(input.getIndex());
+    if (input.getIndex() >= m_proxies.size()) {
+        qDebug() << "AudioInput index out of bounds. Ignoring.";
+        return;
+    }
+    VinylControlProxy* pVC = m_proxies.at(input.getIndex());
     m_proxies.replace(input.getIndex(), NULL);
+    delete pVC;
     m_proxiesLock.unlock();
 }
 
@@ -158,7 +176,7 @@ VinylControlProxy* VinylControlManager::getVinylControlProxyForChannel(QString c
     {
         return m_proxies.at(1);
     }
-    
+
     return NULL;
 }
 

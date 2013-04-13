@@ -14,6 +14,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
+#include "preparefeature.h"
 
 class TrackModel;
 class TrackCollection;
@@ -24,7 +25,6 @@ class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;
 class MixxxLibraryFeature;
-class PromoTracksFeature;
 class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
@@ -38,9 +38,10 @@ public:
             bool firstRun, RecordingManager* pRecordingManager);
     virtual ~Library();
 
-    void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget,
+    void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* pKeyboard);
+    void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
+
     void addFeature(LibraryFeature* feature);
     QList<TrackPointer> getTracksToAutoLoad();
 
@@ -54,23 +55,29 @@ public:
 
     //static Library* buildDefaultLibrary();
 
-public slots:
+  public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
     void slotLoadTrack(TrackPointer pTrack);
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play);
+    void slotLoadLocationToPlayer(QString location, QString group);
     void slotRestoreSearch(const QString& text);
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-signals:
+    void onSkinLoadFinished();
+
+  signals:
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
-    void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group);
+    void loadTrack(TrackPointer pTrack);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
+    void search(const QString& text);
+    void searchCleared();
+    void searchStarting();
 
-private:
+  private:
     ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
@@ -80,7 +87,11 @@ private:
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+#ifdef __PROMO__
+    class PromoTracksFeature;
     PromoTracksFeature* m_pPromoTracksFeature;
+#endif
+    PrepareFeature* m_pPrepareFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
 };

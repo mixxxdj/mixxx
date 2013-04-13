@@ -10,7 +10,6 @@ public:
     explicit GLWaveformRendererSimpleSignal( WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~GLWaveformRendererSimpleSignal();
 
-    virtual void onInit();
     virtual void onSetup(const QDomNode &node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 };

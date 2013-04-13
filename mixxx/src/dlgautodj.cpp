@@ -23,8 +23,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_pTrackTableView(
-              new WTrackTableView(this, pConfig, m_pTrackCollection)),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+              new WTrackTableView(this, pConfig, m_pTrackCollection, false)), // no sorting
           m_bFadeNow(false),
           m_eState(ADJ_DISABLED),
           m_posThreshold1(1.0f),
@@ -34,8 +33,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackTableView->installEventFilter(pKeyboard);
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -45,10 +44,11 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                  "mixxx.db.model.autodj");
-    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    PlaylistDAO& playlistDao = pTrackCollection->getPlaylistDAO();
+    int playlistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (playlistId < 0) {
-        playlistId = m_playlistDao.createPlaylist(AUTODJ_TABLE,
-                                                  PlaylistDAO::PLHT_AUTO_DJ);
+        playlistId = playlistDao.createPlaylist(AUTODJ_TABLE,
+                                                PlaylistDAO::PLHT_AUTO_DJ);
     }
     m_pAutoDJTableModel->setPlaylist(playlistId);
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
@@ -58,26 +58,43 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     // Do not set this because it disables auto-scrolling
     //m_pTrackTableView->setDragDropMode(QAbstractItemView::InternalMove);
 
-    // Disallow sorting.
-    m_pTrackTableView->disableSorting();
-
     pushButtonFadeNow->setEnabled(false);
     pushButtonSkipNext->setEnabled(false);
 
+    m_pCOShufflePlaylist = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "shuffle_playlist"));
+    m_pCOTShufflePlaylist = new ControlObjectThreadMain(m_pCOShufflePlaylist);
+    connect(m_pCOTShufflePlaylist, SIGNAL(valueChanged(double)),
+            this, SLOT(shufflePlaylist(double)));
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
-            this, SLOT(shufflePlaylist(bool)));
+            this, SLOT(shufflePlaylistButton(bool)));
 
+    m_pCOSkipNext = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "skip_next"));
+    m_pCOTSkipNext = new ControlObjectThreadMain(m_pCOSkipNext);
+    connect(m_pCOTSkipNext, SIGNAL(valueChanged(double)),
+            this, SLOT(skipNext(double)));
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
-            this, SLOT(skipNext(bool)));
+            this, SLOT(skipNextButton(bool)));
 
+    m_pCOFadeNow = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "fade_now"));
+    m_pCOTFadeNow = new ControlObjectThreadMain(m_pCOFadeNow);
+    connect(m_pCOTFadeNow, SIGNAL(valueChanged(double)),
+            this, SLOT(fadeNow(double)));
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
-            this, SLOT(fadeNow(bool)));
+            this, SLOT(fadeNowButton(bool)));
 
     connect(spinBoxTransition, SIGNAL(valueChanged(int)),
             this, SLOT(transitionValueChanged(int)));
 
+    m_pCOToggleAutoDJ = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "toggle_autodj"));
+    m_pCOTToggleAutoDJ = new ControlObjectThreadMain(m_pCOToggleAutoDJ);
+    connect(m_pCOToggleAutoDJ, SIGNAL(valueChanged(double)),
+            this, SLOT(toggleAutoDJ(double)));
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleAutoDJ(bool))); _blah;
+            this,  SLOT(toggleAutoDJButton(bool))); _blah;
 
     // playposition is from -0.14 to + 1.14
     m_pCOPlayPos1 = new ControlObjectThreadMain(
@@ -98,6 +115,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
         ControlObject::getControl(ConfigKey("[Channel2]", "repeat")));
     m_pCOCrossfader = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey("[Master]", "crossfader")));
+    m_pCOCrossfaderReverse = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Mixer Profile]", "xFaderReverse")));
 
     QString str_autoDjTransition = m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY, kTransitionPreferenceName));
@@ -106,6 +125,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     } else {
         spinBoxTransition->setValue(str_autoDjTransition.toInt());
     }
+    m_backUpTransition = spinBoxTransition->value();
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -119,6 +139,15 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pCORepeat1;
     delete m_pCORepeat2;
     delete m_pCOCrossfader;
+    delete m_pCOCrossfaderReverse;
+    delete m_pCOSkipNext;
+    delete m_pCOShufflePlaylist;
+    delete m_pCOToggleAutoDJ;
+    delete m_pCOFadeNow;
+    delete m_pCOTSkipNext;
+    delete m_pCOTShufflePlaylist;
+    delete m_pCOTToggleAutoDJ;
+    delete m_pCOTFadeNow;
     // Delete m_pTrackTableView before the table model. This is because the
     // table view saves the header state using the model.
     delete m_pTrackTableView;
@@ -129,85 +158,60 @@ void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
-void DlgAutoDJ::onHide() {
-}
-
-void DlgAutoDJ::setup(QDomNode node) {
-    QPalette pal = palette();
-
-    // Row colors
-    if (!WWidget::selectNode(node, "BgColorRowEven").isNull() &&
-        !WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
-        QColor r1;
-        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-        r1 = WSkinColor::getCorrectColor(r1);
-        QColor r2;
-        r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-        r2 = WSkinColor::getCorrectColor(r2);
-
-        // For now make text the inverse of the background so it's readable In
-        // the future this should be configurable from the skin with this as the
-        // fallback option
-        QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-        QColor fgColor;
-        fgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-        fgColor = WSkinColor::getCorrectColor(fgColor);
-
-        pal.setColor(QPalette::Base, r1);
-        pal.setColor(QPalette::AlternateBase, r2);
-        pal.setColor(QPalette::Text, text);
-        pal.setColor(QPalette::WindowText, fgColor);
-    }
-
-    setPalette(pal);
-
-    pushButtonAutoDJ->setPalette(pal);
-
-    // Since we're getting this passed into us already created, shouldn't need
-    // to set the palette.
-    //m_pTrackTableView->setPalette(pal);
-}
-
-void DlgAutoDJ::onSearchStarting() {
-}
-
-void DlgAutoDJ::onSearchCleared() {
-}
-
 void DlgAutoDJ::onSearch(const QString& text) {
-    Q_UNUSED(text);
     // Do not allow filtering the Auto DJ playlist, because
     // Auto DJ will work from the filtered table
+    Q_UNUSED(text);
+}
+
+double DlgAutoDJ::getCrossfader() const {
+    if (m_pCOCrossfaderReverse->get() > 0) {
+        return m_pCOCrossfader->get() * -1.0;
+    }
+    return m_pCOCrossfader->get();
+}
+
+void DlgAutoDJ::setCrossfader(double value) {
+    if (m_pCOCrossfaderReverse->get() > 0) {
+        value *= -1.0;
+    }
+    m_pCOCrossfader->slotSet(value);
 }
 
 void DlgAutoDJ::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgAutoDJ::loadSelectedTrackToGroup(QString group) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group);
+void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
+    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 
 void DlgAutoDJ::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
 }
 
-void DlgAutoDJ::shufflePlaylist(bool buttonChecked) {
-    Q_UNUSED(buttonChecked);
-    qDebug() << "Shuffling AutoDJ playlist";
-    int row;
-    if(m_eState == ADJ_DISABLED) {
-        row = 0;
-    } else {
-        row = 1;
-    }
-    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
-    qDebug() << "Shuffling done";
+void DlgAutoDJ::shufflePlaylistButton(bool) {
+    // Activate regardless of button being checked
+    shufflePlaylist(1.0);
 }
 
-void DlgAutoDJ::skipNext(bool buttonChecked) {
-    Q_UNUSED(buttonChecked);
-    qDebug() << "Skip Next";
+void DlgAutoDJ::shufflePlaylist(double value) {
+    if (value <= 0.0) {
+        return;
+    }
+    int row = m_eState == ADJ_DISABLED ? 0 : 1;
+    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
+}
+
+void DlgAutoDJ::skipNextButton(bool) {
+    // Activate regardless of button being checked
+    skipNext(1.0);
+}
+
+void DlgAutoDJ::skipNext(double value) {
+    if (value <= 0.0 || m_eState == ADJ_DISABLED) {
+        return;
+    }
     // Load the next song from the queue.
     if (m_pCOPlay1Fb->get() == 0.0f) {
         removePlayingTrackFromQueue("[Channel1]");
@@ -218,12 +222,18 @@ void DlgAutoDJ::skipNext(bool buttonChecked) {
     }
 }
 
-void DlgAutoDJ::fadeNow(bool buttonChecked) {
-    Q_UNUSED(buttonChecked);
-    qDebug() << "Fade Now";
+void DlgAutoDJ::fadeNowButton(bool) {
+    // Activate regardless of button being checked
+    fadeNow(1.0);
+}
+
+void DlgAutoDJ::fadeNow(double value) {
+    if (value <= 0.0) {
+        return;
+    }
     if (m_eState == ADJ_IDLE) {
         m_bFadeNow = true;
-        double crossfader = m_pCOCrossfader->get();
+        double crossfader = getCrossfader();
         if (crossfader <= 0.3f && m_pCOPlay1Fb->get() == 1.0f) {
             m_posThreshold1 = m_pCOPlayPos1->get() -
                     ((crossfader + 1.0f) / 2 * (m_fadeDuration1));
@@ -238,7 +248,13 @@ void DlgAutoDJ::fadeNow(bool buttonChecked) {
     }
 }
 
-void DlgAutoDJ::toggleAutoDJ(bool toggle) {
+void DlgAutoDJ::toggleAutoDJ(double v) {
+    if (v > 0) {
+        pushButtonAutoDJ->toggle();
+    }
+}
+
+void DlgAutoDJ::toggleAutoDJButton(bool toggle) {
     bool deck1Playing = m_pCOPlay1Fb->get() == 1.0f;
     bool deck2Playing = m_pCOPlay2Fb->get() == 1.0f;
 
@@ -338,7 +354,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
     if (m_eState == ADJ_ENABLE_P1LOADED) {
         // Auto DJ Start
         if (!deck1Playing && !deck2Playing) {
-            m_pCOCrossfader->slotSet(-1.0f);  // Move crossfader to the left!
+            setCrossfader(-1.0f);  // Move crossfader to the left!
             m_pCOPlay1->slotSet(1.0f);  // Play the track in player 1
             removePlayingTrackFromQueue("[Channel1]");
         } else {
@@ -361,8 +377,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
     if (m_eState == ADJ_P2FADING) {
         if (deck1Playing && !deck2Playing) {
             // End State
-            m_pCOCrossfader->slotSet(-1.0f);  // Move crossfader to the left!
-            // qDebug() << "1: m_pCOCrossfader->slotSet(_-1.0f_);";
+            setCrossfader(-1.0f);  // Move crossfader to the left!
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
             loadNextTrackFromQueue();
@@ -398,7 +413,6 @@ void DlgAutoDJ::player1PositionChanged(double value) {
 
         if (value >= posFadeEnd) {
             // Pre-EndState
-            // m_pCOCrossfader->slotSet(1.0f); //Move crossfader to the right!
 
             m_pCOPlay1->slotSet(0.0f);  // Stop the player
             //m_posThreshold = 1.0f - fadeDuration; // back to default
@@ -412,8 +426,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
                     2*(value-m_posThreshold1)/(posFadeEnd-m_posThreshold1);
             // crossfadeValue = -1.0f -> + 1.0f
             // Move crossfader to the right!
-            m_pCOCrossfader->slotSet(crossfadeValue);
-            // qDebug() << "1: m_pCOCrossfader->slotSet " << crossfadeValue;
+            setCrossfader(crossfadeValue);
         }
     }
 }
@@ -438,8 +451,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
         if (!deck1Playing && deck2Playing) {
             // End State
             // Move crossfader to the right!
-            m_pCOCrossfader->slotSet(1.0f);
-            // qDebug() << "1: m_pCOCrossfader->slotSet(_1.0f_);";
+            setCrossfader(1.0f);
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
             loadNextTrackFromQueue();
@@ -474,7 +486,6 @@ void DlgAutoDJ::player2PositionChanged(double value) {
 
         if (value >= posFadeEnd) {
             // Pre-End State
-            //m_pCOCrossfader->slotSet(-1.0f); //Move crossfader to the left!
 
             m_pCOPlay2->slotSet(0.0f);  // Stop the player
 
@@ -488,8 +499,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             float crossfadeValue = 1.0f -
                     2*(value-m_posThreshold2)/(posFadeEnd-m_posThreshold2);
             // crossfadeValue = 1.0f -> + -1.0f
-            m_pCOCrossfader->slotSet(crossfadeValue); //Move crossfader to the right!
-            // qDebug() << "2: m_pCOCrossfader->slotSet " << crossfadeValue;
+            setCrossfader(crossfadeValue); //Move crossfader to the right!
         }
     }
 }
@@ -497,6 +507,11 @@ void DlgAutoDJ::player2PositionChanged(double value) {
 TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     // Get the track at the top of the playlist...
     TrackPointer nextTrack;
+    int tmp = m_backUpTransition;
+    // This will also signal valueChanged and by that change m_backUpTransition
+    // so we need to copy to orignal value back
+    spinBoxTransition->setValue(m_backUpTransition);
+    m_backUpTransition = tmp;
 
     while (true) {
         nextTrack = m_pAutoDJTableModel->getTrack(
@@ -505,6 +520,9 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
         if (nextTrack) {
             if (nextTrack->exists()) {
                 // found a valid Track
+                if (nextTrack->getDuration() < m_backUpTransition)
+                    spinBoxTransition->setValue(nextTrack->getDuration()/2);
+                    m_backUpTransition = tmp;
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist
@@ -563,6 +581,10 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     // remove the top track
     m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
+    // Re-queue if configured
+    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
+        m_pAutoDJTableModel->appendTrack(loadedId);
+    }
     return true;
 }
 
@@ -575,7 +597,10 @@ void DlgAutoDJ::player1PlayChanged(double value) {
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;
 
-            int autoDjTransition = spinBoxTransition->value();
+            // The track might be shorter than the transition period. Use a
+            // sensibile cap.
+            int autoDjTransition = math_min(spinBoxTransition->value(),
+                                            TrackDuration/2);
 
             if (TrackDuration > autoDjTransition) {
                 m_fadeDuration1 = static_cast<float>(autoDjTransition) /
@@ -604,7 +629,10 @@ void DlgAutoDJ::player2PlayChanged(double value) {
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;
 
-            int autoDjTransition = spinBoxTransition->value();
+            // The track might be shorter than the transition period. Use a
+            // sensibile cap.
+            int autoDjTransition = math_min(spinBoxTransition->value(),
+                                            TrackDuration/2);
 
             if (TrackDuration > autoDjTransition) {
                 m_fadeDuration2 = static_cast<float>(autoDjTransition) /
@@ -635,8 +663,5 @@ void DlgAutoDJ::transitionValueChanged(int value) {
     }
     m_pConfig->set(ConfigKey(CONFIG_KEY, kTransitionPreferenceName),
                    ConfigValue(value));
-}
-
-bool DlgAutoDJ::appendTrack(int trackId) {
-    return m_pAutoDJTableModel->appendTrack(trackId);
+    m_backUpTransition = value;
 }

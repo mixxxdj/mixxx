@@ -99,6 +99,10 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     stream_public->setChecked((bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toInt());
 
+    // OGG "dynamicupdate" checkbox
+    ogg_dynamicupdate->setChecked((bool)m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt());
+
     // Encoding bitrate combobox
     QString kbps_pattern = QString("%1 kbps");
     QList<int> valid_kpbs;
@@ -112,7 +116,8 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
                << SHOUTCAST_BITRATE_96KBPS
                << SHOUTCAST_BITRATE_80KBPS
                << SHOUTCAST_BITRATE_64KBPS
-               << SHOUTCAST_BITRATE_48KBPS;
+               << SHOUTCAST_BITRATE_48KBPS
+               << SHOUTCAST_BITRATE_32KBPS;
     foreach (int kbps, valid_kpbs) {
         comboBoxEncodingBitrate->addItem(
             kbps_pattern.arg(QString::number(kbps)), kbps);
@@ -143,6 +148,12 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     if (tmp_index < 0) //Set default to stereo if invalid.
         tmp_index = 0;
     comboBoxEncodingChannels->setCurrentIndex(tmp_index);
+
+    // "Enable UTF-8 metadata" checkbox
+    // TODO(rryan): allow arbitrary codecs in the future?
+    QString charset = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"));
+    enableUtf8Metadata->setChecked(charset == "UTF-8");
 
     // "Enable custom metadata" checkbox
     enableCustomMetadata->setChecked((bool)m_pConfig->getValueString(
@@ -189,9 +200,24 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc"),   ConfigValue(stream_desc->toPlainText()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre"),  ConfigValue(stream_genre->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_public"), ConfigValue(stream_public->isChecked()));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "ogg_dynamicupdate"), ConfigValue(ogg_dynamicupdate->isChecked()));
 
+    QString charset = "";
+    if (enableUtf8Metadata->isChecked()) {
+        charset = "UTF-8";
+    }
+    QString current_charset = m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"));
 
-    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));
+    // Only allow setting the config value if the current value is either empty
+    // or "UTF-8". This way users can customize the charset to something else by
+    // setting the value in their mixxx.cfg. Not sure if this will be useful but
+    // it's good to leave the option open.
+    if (current_charset.length() == 0 || current_charset == "UTF-8") {
+        m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "metadata_charset"), ConfigValue(charset));
+    }
+
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata"),ConfigValue(enableCustomMetadata->isChecked()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"), ConfigValue(custom_artist->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"),  ConfigValue(custom_title->text()));
 

@@ -11,7 +11,6 @@ class WaveformRendererPreroll : public WaveformRendererAbstract {
     explicit WaveformRendererPreroll(WaveformWidgetRenderer* waveformWidgetRenderer);
     virtual ~WaveformRendererPreroll();
 
-    virtual void init();
     virtual void setup(const QDomNode& node);
     virtual void draw(QPainter* painter, QPaintEvent* event);
 

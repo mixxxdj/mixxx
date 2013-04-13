@@ -28,18 +28,17 @@
 
 const int PB_SHORTKLICKTIME = 200;
 
-WPushButton::WPushButton(QWidget * parent) : WWidget(parent)
-{
-    m_pPixmaps = 0;
-    m_pPixmapBack = 0;
-    m_leftButtonMode = ControlPushButton::PUSH;
-    m_rightButtonMode = ControlPushButton::PUSH;
+WPushButton::WPushButton(QWidget * parent) :
+        WWidget(parent),
+        m_pPixmaps(NULL),
+        m_pPixmapBack(NULL),
+        m_leftButtonMode(ControlPushButton::PUSH),
+        m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
     //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
 }
 
-WPushButton::~WPushButton()
-{
+WPushButton::~WPushButton() {
     for (int i = 0; i < 2*m_iNoStates; i++) {
         WPixmapStore::deletePixmap(m_pPixmaps[i]);
     }
@@ -49,22 +48,20 @@ WPushButton::~WPushButton()
     WPixmapStore::deletePixmap(m_pPixmapBack);
 }
 
-void WPushButton::setup(QDomNode node)
-{
+void WPushButton::setup(QDomNode node) {
     // Number of states
     int iNumStates = selectNodeInt(node, "NumberStates");
     setStates(iNumStates);
 
     // Set background pixmap if available
-    if (!selectNode(node, "BackPath").isNull())
+    if (!selectNode(node, "BackPath").isNull()) {
         setPixmapBackground(getPath(selectNodeQString(node, "BackPath")));
+    }
 
     // Load pixmaps for associated states
     QDomNode state = selectNode(node, "State");
-    while (!state.isNull())
-    {
-        if (state.isElement() && state.nodeName() == "State")
-        {
+    while (!state.isNull()) {
+        if (state.isElement() && state.nodeName() == "State") {
             setPixmap(selectNodeInt(state, "Number"), true, getPath(selectNodeQString(state, "Pressed")));
             setPixmap(selectNodeInt(state, "Number"), false, getPath(selectNodeQString(state, "Unpressed")));
         }
@@ -79,8 +76,7 @@ void WPushButton::setup(QDomNode node)
 
 
     QDomNode con = selectNode(node, "Connection");
-    while (!con.isNull())
-    {
+    while (!con.isNull()) {
         // Get ConfigKey
         QString key = selectNodeQString(con, "ConfigKey");
 
@@ -101,12 +97,10 @@ void WPushButton::setup(QDomNode node)
 
         bool isLeftButton = false;
         bool isRightButton = false;
-        if (!selectNode(con, "ButtonState").isNull())
-        {
+        if (!selectNode(con, "ButtonState").isNull()) {
             if (selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
                 isLeftButton = true;
-            }
-            else if (selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
+            } else if (selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
                 isRightButton = true;
             }
         }
@@ -122,8 +116,7 @@ void WPushButton::setup(QDomNode node)
     }
 }
 
-void WPushButton::setStates(int iStates)
-{
+void WPushButton::setStates(int iStates) {
     m_iNoStates = iStates;
     m_fValue = 0.;
     m_bPressed = false;
@@ -132,64 +125,62 @@ void WPushButton::setStates(int iStates)
     delete [] m_pPixmaps;
     m_pPixmaps = NULL;
 
-    if (iStates>0)
-    {
-        m_pPixmaps = new QPixmap*[2*m_iNoStates];
-        for (int i=0; i<2*m_iNoStates; ++i)
-            m_pPixmaps[i] = 0;
+    if (iStates > 0) {
+        m_pPixmaps = new QPixmap*[2 * m_iNoStates];
+        for (int i = 0; i < (2 * m_iNoStates); ++i) {
+            m_pPixmaps[i] = NULL;
+        }
     }
 }
 
-void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename)
-{
-    int pixIdx = (iState*2)+bPressed;
-    m_pPixmaps[pixIdx] = WPixmapStore::getPixmap(filename);
-    if (!m_pPixmaps[pixIdx])
-        qDebug() << "WPushButton: Error loading pixmap:" << filename;
-
-    // Set size of widget equal to pixmap size
-    setFixedSize(m_pPixmaps[pixIdx]->size());
+void WPushButton::setPixmap(int iState, bool bPressed, const QString &filename) {
+    int pixIdx = (iState * 2) + (bPressed ? 1 : 0);
+    if (pixIdx < 2 * m_iNoStates) {
+        m_pPixmaps[pixIdx] = WPixmapStore::getPixmap(filename);
+        if (!m_pPixmaps[pixIdx]) {
+            qDebug() << "WPushButton: Error loading pixmap:" << filename;
+        } else {
+            // Set size of widget equal to pixmap size
+            setFixedSize(m_pPixmaps[pixIdx]->size());
+        }
+    }
 }
 
-void WPushButton::setPixmapBackground(const QString &filename)
-{
+void WPushButton::setPixmapBackground(const QString &filename) {
     // Load background pixmap
     m_pPixmapBack = WPixmapStore::getPixmap(filename);
-    if (!m_pPixmapBack)
+    if (!m_pPixmapBack) {
         qDebug() << "WPushButton: Error loading background pixmap:" << filename;
+    }
 }
 
-void WPushButton::setValue(double v)
-{
+void WPushButton::setValue(double v) {
     m_fValue = v;
 
-    if (m_iNoStates==1)
-    {
-        if (m_fValue==1.)
+    if (m_iNoStates==1) {
+        if (m_fValue==1.) {
             m_bPressed = true;
-        else
+        } else {
             m_bPressed = false;
+        }
     }
-
     update();
 }
 
-void WPushButton::paintEvent(QPaintEvent *)
-{
-    if (m_iNoStates>0)
-    {
-        int idx = (((int)m_fValue%m_iNoStates)*2)+m_bPressed;
-        if (m_pPixmaps[idx])
-        {
+void WPushButton::paintEvent(QPaintEvent *) {
+    if (m_iNoStates>0)     {
+        int idx = (((int)m_fValue % m_iNoStates) * 2) + m_bPressed;
+        if (m_pPixmaps[idx]) {
             QPainter p(this);
-            if(m_pPixmapBack) p.drawPixmap(0, 0, *m_pPixmapBack);
+            if(m_pPixmapBack) {
+                p.drawPixmap(0, 0, *m_pPixmapBack);
+            }
             p.drawPixmap(0, 0, *m_pPixmaps[idx]);
         }
     }
 }
 
-void WPushButton::mousePressEvent(QMouseEvent * e)
-{
+void WPushButton::mousePressEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
 
@@ -253,12 +244,12 @@ void WPushButton::mousePressEvent(QMouseEvent * e)
 }
 
 void WPushButton::focusOutEvent(QFocusEvent* e) {
+    Q_UNUSED(e);
     m_bPressed = false;
     update();
 }
 
-void WPushButton::mouseReleaseEvent(QMouseEvent * e)
-{
+void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
     const bool leftPowerWindowStyle = m_leftButtonMode == ControlPushButton::POWERWINDOW;

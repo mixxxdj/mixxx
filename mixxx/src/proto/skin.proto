@@ -1,0 +1,18 @@
+package mixxx.skin;
+
+option optimize_for = LITE_RUNTIME;
+
+message SkinManifest {
+  optional string title = 1;
+  optional string author = 2;
+  optional string version = 3;
+  optional string language = 4;
+  optional string description = 5;
+  optional string license = 6;
+
+  message Attribute {
+    optional string config_key = 1;
+    optional string value = 2;
+  }
+  repeated Attribute attribute = 7;
+}

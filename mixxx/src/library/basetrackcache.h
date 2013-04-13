@@ -65,13 +65,16 @@ class BaseTrackCache : public QObject {
     void slotTrackDirty(int trackId);
     void slotTrackClean(int trackId);
     void slotTrackChanged(int trackId);
+    void slotDbTrackAdded(TrackPointer pTrack);
 
   private:
     TrackPointer lookupCachedTrack(int trackId) const;
     bool updateIndexWithQuery(QString query);
+    bool updateIndexWithTrackpointer(TrackPointer pTrack);
     void updateTrackInIndex(int trackId);
     void updateTracksInIndex(QSet<int> trackIds);
-    QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
+    void getTrackValueForColumn(TrackPointer pTrack, int column,
+                                    QVariant& trackValue) const;
 
     QString filterClause(QString query, QString extraFilter,
                          QStringList idStrings) const;
@@ -84,6 +87,11 @@ class BaseTrackCache : public QObject {
                             QVariant val1, QVariant val2) const;
     bool trackMatches(const TrackPointer& pTrack,
                       const QRegExp& matcher) const;
+    bool trackMatchesNumeric(const TrackPointer& pTrack,
+                             const QStringList& numberMatchers) const;
+    bool trackMatchesNamedString(const TrackPointer& pTrack,
+                             const QStringList& numberMatchers) const;
+    bool evaluateNumeric(const int value, const QString& expression) const;
 
     const QString m_tableName;
     const QString m_idColumn;
@@ -107,6 +115,11 @@ class BaseTrackCache : public QObject {
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;
     SearchQueryParser* m_pQueryParser;
+    
+    QStringList m_numericFilters;
+    QRegExp m_operatorMatcher;
+    QRegExp m_numericFilterMatcher;
+    QRegExp m_stringFilterMatcher;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };

@@ -58,6 +58,7 @@ private:
     ControlObjectThread m_COTMode;
     ControlObjectThread m_COTCurve;
     ControlObjectThread m_COTCalibration;
+    ControlObjectThread m_COTReverse;
 };
 
 #endif

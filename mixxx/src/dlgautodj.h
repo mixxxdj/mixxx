@@ -4,6 +4,7 @@
 #include <QItemSelection>
 #include "ui_dlgautodj.h"
 #include "configobject.h"
+#include "controlpushbutton.h"
 #include "trackinfoobject.h"
 #include "library/dao/playlistdao.h"
 #include "library/libraryview.h"
@@ -16,29 +17,28 @@ class AnalyserQueue;
 class QSqlTableModel;
 class ControlObjectThreadMain;
 
-class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryView {
+class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
   public:
     DlgAutoDJ(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
               TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
     virtual ~DlgAutoDJ();
 
-    virtual void setup(QDomNode node);
-    virtual void onSearchStarting();
-    virtual void onSearchCleared();
-    virtual void onSearch(const QString& text);
-    virtual void onShow();
-    virtual void onHide();
-    virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
-    virtual void moveSelection(int delta);
-    virtual bool appendTrack(int trackId);
+    void onShow();
+    void loadSelectedTrack();
+    void onSearch(const QString& text);
+    void loadSelectedTrackToGroup(QString group, bool play);
+    void moveSelection(int delta);
 
   public slots:
-    void shufflePlaylist(bool buttonChecked);
-    void skipNext(bool buttonChecked);
-    void fadeNow(bool buttonChecked);
-    void toggleAutoDJ(bool toggle);
+    void shufflePlaylistButton(bool buttonChecked);
+    void skipNextButton(bool buttonChecked);
+    void fadeNowButton(bool buttonChecked);
+    void toggleAutoDJButton(bool toggle);
+    void shufflePlaylist(double value);
+    void skipNext(double value);
+    void fadeNow(double value);
+    void toggleAutoDJ(double value);
     void player1PositionChanged(double value);
     void player2PositionChanged(double value);
     void player1PlayChanged(double value);
@@ -47,7 +47,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
 
   signals:
     void loadTrack(TrackPointer tio);
-    void loadTrackToPlayer(TrackPointer tio, QString group);
+    void loadTrackToPlayer(TrackPointer tio, QString group, bool);
 
   private:
     enum ADJstates {
@@ -59,6 +59,13 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
         ADJ_DISABLED
     };
 
+    // Gets or sets the crossfader position while normalizing it so that -1 is
+    // all the way mixed to the left side and 1 is all the way mixed to the
+    // right side. (prevents AutoDJ logic from having to check for hamster mode
+    // every time)
+    double getCrossfader() const;
+    void setCrossfader(double value);
+
     TrackPointer getNextTrackFromQueue();
     bool loadNextTrackFromQueue();
     bool removePlayingTrackFromQueue(QString group);
@@ -67,7 +74,6 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     PlaylistTableModel* m_pAutoDJTableModel;
-    PlaylistDAO& m_playlistDao;
 
     // Makes our Auto DJ logic assume the next track that should be played is
     // already loaded. We need this flag to make our
@@ -80,6 +86,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     float m_posThreshold2;
     float m_fadeDuration1;
     float m_fadeDuration2;
+    int m_backUpTransition;
     ControlObjectThreadMain* m_pCOPlayPos1;
     ControlObjectThreadMain* m_pCOPlayPos2;
     ControlObjectThreadMain* m_pCOPlay1;
@@ -89,9 +96,18 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public virtual LibraryVi
     ControlObjectThreadMain* m_pCORepeat1;
     ControlObjectThreadMain* m_pCORepeat2;
     ControlObjectThreadMain* m_pCOCrossfader;
+    ControlObjectThreadMain* m_pCOCrossfaderReverse;
+    ControlObjectThreadMain* m_pCOTSkipNext;
+    ControlObjectThreadMain* m_pCOTFadeNow;
+    ControlObjectThreadMain* m_pCOTShufflePlaylist;
+    ControlObjectThreadMain* m_pCOTToggleAutoDJ;
+    ControlPushButton* m_pCOSkipNext;
+    ControlPushButton* m_pCOFadeNow;
+    ControlPushButton* m_pCOShufflePlaylist;
+    ControlPushButton* m_pCOToggleAutoDJ;
 };
 
-#endif //DLGTRIAGE_H
+#endif //DLGAUTODJ_H
 
 
 

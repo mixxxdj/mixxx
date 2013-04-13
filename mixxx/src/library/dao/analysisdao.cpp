@@ -16,8 +16,9 @@ const QString AnalysisDao::s_analysisTableName = "track_analysis";
 // CPU time so I think we should stick with the default. rryan 4/3/2012
 const int kCompressionLevel = -1;
 
-AnalysisDao::AnalysisDao(QSqlDatabase& database)
-        : m_db(database) {
+AnalysisDao::AnalysisDao(QSqlDatabase& database, ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig),
+          m_db(database) {
     QDir storagePath = getAnalysisStoragePath();
     if (!QDir().mkpath(storagePath.absolutePath())) {
         qDebug() << "WARNING: Could not create analysis storage path. Mixxx will be unable to store analyses.";
@@ -206,8 +207,8 @@ void AnalysisDao::deleteAnalysises(QList<int> ids) {
         idList << QString::number(id);
     }
     QSqlQuery query(m_db);
-    query.prepare("SELECT track_analysis.id FROM track_analysis WHERE "
-                  "track_id in (" + idList.join(",")+ ")");
+    query.prepare(QString("SELECT track_analysis.id FROM track_analysis WHERE "
+                          "track_id in (%1)").arg(idList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
@@ -251,7 +252,9 @@ bool AnalysisDao::deleteAnalysesForTrack(int trackId) {
 }
 
 QDir AnalysisDao::getAnalysisStoragePath() const {
-    return QDir(QDir::homePath().append("/").append(SETTINGS_PATH).append("analysis/"));
+    QString settingsPath = m_pConfig->getSettingsPath();
+    QDir dir(settingsPath.append("/analysis/"));
+    return dir.absolutePath().append("/");
 }
 
 QByteArray AnalysisDao::loadDataFromFile(QString filename) const {

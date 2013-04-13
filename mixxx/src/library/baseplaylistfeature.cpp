@@ -6,9 +6,9 @@
 #include "library/parsercsv.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/treeitem.h"
 #include "mixxxkeyboard.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 
 BasePlaylistFeature::BasePlaylistFeature(
@@ -21,7 +21,6 @@ BasePlaylistFeature::BasePlaylistFeature(
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(NULL),
-          m_playlistTableModel(this, pTrackCollection->getDatabase()),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
@@ -51,6 +50,10 @@ BasePlaylistFeature::BasePlaylistFeature(
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
 
+    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate Playlist"), this);
+    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotDuplicatePlaylist()));
+
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
@@ -74,6 +77,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
     delete m_pExportPlaylistAction;
+    delete m_pDuplicatePlaylistAction;
     delete m_pAddToAutoDJAction;
     delete m_pAddToAutoDJTopAction;
     delete m_pRenamePlaylistAction;
@@ -144,6 +148,53 @@ void BasePlaylistFeature::slotRenamePlaylist() {
     m_playlistDao.renamePlaylist(playlistId, newName);
 }
 
+void BasePlaylistFeature::slotDuplicatePlaylist() {
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);
+
+
+    QString name;
+    bool validNameGiven = false;
+
+    do {
+        bool ok = false;
+        name = QInputDialog::getText(NULL,
+                                        tr("Duplicate Playlist"),
+                                        tr("Playlist name:"),
+                                        QLineEdit::Normal,
+                                        //: Appendix to default name when duplicating a playlist
+                                        oldName + tr("_copy" , "[noun]"),
+                                        &ok).trimmed();
+
+        if (!ok || oldName == name) {
+            return;
+        }
+
+        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("A playlist by that name already exists."));
+        }
+        else if (name.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("A playlist cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
+
+    int newPlaylistId = m_playlistDao.createPlaylist(name);
+    m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId);
+
+    if (newPlaylistId != -1) {
+        emit(showTrackModel(m_pPlaylistTableModel));
+    }
+}
+
 void BasePlaylistFeature::slotTogglePlaylistLock() {
     QString playlistName = m_lastRightClickedIndex.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
@@ -203,6 +254,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     }
 }
 
+
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
@@ -221,15 +273,6 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     }
 }
 
-bool BasePlaylistFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool BasePlaylistFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
 
 void BasePlaylistFeature::slotImportPlaylist() {
     qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
@@ -365,29 +408,74 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     }
 }
 
-void BasePlaylistFeature::onLazyChildExpandation(const QModelIndex &index){
-    Q_UNUSED(index);
-    //Nothing to do because the childmodel is not of lazy nature.
-}
 
 TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BasePlaylistFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                 WLibrary* libraryWidget,
-                                 MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
+void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
+                                     MixxxKeyboard* keyboard) {
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
+    edit->setOpenLinks(false);
+    connect(edit,SIGNAL(anchorClicked(const QUrl)),
+        this,SLOT(htmlLinkClicked(const QUrl))
+    );
     libraryWidget->registerView(m_rootViewName, edit);
+}
+
+void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
+    if (QString(link.path())=="create") {
+        slotCreatePlaylist();
+    } else {
+        qDebug() << "Unknonw playlist link clicked" << link.path();
+    }
+}
+
+/**
+  * Purpose: When inserting or removing playlists,
+  * we require the sidebar model not to reset.
+  * This method queries the database and does dynamic insertion
+*/
+QModelIndex BasePlaylistFeature::constructChildModel(int selected_id)
+{
+    buildPlaylistList();
+    QList<TreeItem*> data_list;
+    int selected_row = -1;
+    // Access the invisible root item
+    TreeItem* root = m_childModel.getItem(QModelIndex());
+
+    int row = 0;
+    for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
+         it != m_playlistList.end(); ++it, ++row) {
+        int playlist_id = it->first;
+        QString playlist_name = it->second;
+
+        if (selected_id == playlist_id) {
+            // save index for selection
+            selected_row = row;
+            m_childModel.index(selected_row, 0);
+        }
+
+        // Create the TreeItem whose parent is the invisible root item
+        TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
+        decorateChild(item, playlist_id);
+        data_list.append(item);
+    }
+
+    // Append all the newly created TreeItems in a dynamic way to the childmodel
+    m_childModel.insertRows(data_list, 0, m_playlistList.size());
+    if (selected_row == -1) {
+        return QModelIndex();
+    }
+    return m_childModel.index(selected_row, 0);
 }
 
 /**
   * Clears the child model dynamically, but the invisible root item remains
   */
 void BasePlaylistFeature::clearChildModel() {
-    m_childModel.removeRows(0,m_playlistTableModel.rowCount());
+    m_childModel.removeRows(0, m_playlistList.size());
 }
 

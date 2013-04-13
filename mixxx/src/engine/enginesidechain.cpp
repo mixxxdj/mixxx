@@ -30,6 +30,7 @@
 #include "engine/enginesidechain.h"
 #include "engine/enginebuffer.h"
 #include "recording/enginerecord.h"
+#include "util/timer.h"
 
 #ifdef __SHOUTCAST__
 #include "engine/engineshoutcast.h"
@@ -91,6 +92,7 @@ EngineSideChain::~EngineSideChain() {
 /** Submit a buffer of samples to be processed in the sidechain*/
 void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
 {
+    ScopedTimer t("EngineSideChain:submitSamples");
     //Copy samples into m_buffer.
     if (m_iBufferEnd + buffer_size <= SIDECHAIN_BUFFER_SIZE)    //FIXME: is <= correct?
     {

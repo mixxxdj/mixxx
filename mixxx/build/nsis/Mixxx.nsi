@@ -17,7 +17,7 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT_NAME "Mixxx"
 ;!define PRODUCT_VERSION ""  ; Specified by the SConscript
-!define PRODUCT_PUBLISHER "The Mixxx Team"
+!define PRODUCT_PUBLISHER "The Mixxx Development Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
 !define DEFAULT_SKIN "Deere1280x800-WXGA"
@@ -123,12 +123,15 @@ Function InstallVCRedist
   ; Put the VC redist installer files there
   File ${WINLIB_PATH}\VC_redist\vc_red.cab
   File ${WINLIB_PATH}\VC_redist\vc_red.msi
+  File ${WINLIB_PATH}\VC_redist\msp_kb2565063.msp
 
   ClearErrors
   ; Call it & wait for it to install
   ExecWait 'msiexec /i $TEMP\vc_red.msi'
+  ExecWait 'msiexec /update $TEMP\msp_kb2565063.msp'
   Delete "$TEMP\vc_red.cab"
   Delete "$TEMP\vc_red.msi"
+  Delete "$TEMP\msp_kb2565063.msp"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -403,7 +406,6 @@ Section "Start Menu Shortcuts" SecStartMenu
   SetOutPath $INSTDIR
   CreateShortCut "$SMPROGRAMS\Mixxx\Mixxx.lnk" "$INSTDIR\mixxx.exe" "" "$INSTDIR\mixxx.exe" 0
   CreateShortCut "$SMPROGRAMS\Mixxx\Manual.lnk" "$INSTDIR\Mixxx-Manual.pdf" "" "$INSTDIR\Mixxx-Manual.pdf" 0
-  CreateShortCut "$SMPROGRAMS\Mixxx\Uninstall.lnk" "$INSTDIR\UninstallMixxx.exe" "" "$INSTDIR\UninstallMixxx.exe" 0
 
 SectionEnd
 
@@ -526,7 +528,6 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\American-Audio-VMS4-scripts.js"
   Delete "$INSTDIR\controllers\Behringer BCD3000.midi.xml"
   Delete "$INSTDIR\controllers\Behringer-BCD3000-scripts.js"
-  Delete "$INSTDIR\controllers\BindableConfigKeys.txt"
   Delete "$INSTDIR\controllers\convertToXMLSchemaV1.php"
   Delete "$INSTDIR\controllers\DJ-Tech i-Mix Reload.midi.xml"
   Delete "$INSTDIR\controllers\DJ-Tech-i-Mix-Reload-scripts.js"
@@ -534,7 +535,6 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\DJTechTools-MIDIFighter-scripts.js"
   Delete "$INSTDIR\controllers\Evolution_Xsession.midi.xml"
   Delete "$INSTDIR\controllers\FaderFoxDJ2.midi.xml"
-  Delete "$INSTDIR\controllers\format.txt"
   Delete "$INSTDIR\controllers\Hercules DJ Console Mac Edition.midi.xml"
   Delete "$INSTDIR\controllers\Hercules DJ Console Mk2.midi.xml"
   Delete "$INSTDIR\controllers\Hercules-DJ-Console-Mk2-scripts.js"
@@ -575,6 +575,7 @@ Section "Uninstall"
   Delete "$INSTDIR\controllers\Pioneer-CDJ-350-scripts.js"
   Delete "$INSTDIR\controllers\Pioneer CDJ-850.midi.xml"
   Delete "$INSTDIR\controllers\Pioneer-CDJ-850-scripts.js"
+  Delete "$INSTDIR\controllers\README.txt"
   Delete "$INSTDIR\controllers\Reloop Digital Jockey 2 Controller Edition.midi.xml"
   Delete "$INSTDIR\controllers\Reloop-Digital-Jockey2-Controller-scripts.js"
   Delete "$INSTDIR\controllers\Stanton SCS.1d.midi.xml"
@@ -615,6 +616,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\skins\Deere1440x900-WXGA+"
   RMDir /r "$INSTDIR\skins\Deere1920x1080-FullHD"
   RMDir /r "$INSTDIR\skins\Deere1920x1200-WUXGA"
+  RMDir /r "$INSTDIR\skins\Deere-Samplegrid-1280x800-WXGA"
   RMDir /r "$INSTDIR\skins\LateNight1280x1024-SXGA"
   RMDir /r "$INSTDIR\skins\LateNight1280x800-WXGA"
   RMDir /r "$INSTDIR\skins\LateNight1366x768-WXGA"

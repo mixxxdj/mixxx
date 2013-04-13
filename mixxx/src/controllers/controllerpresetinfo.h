@@ -39,6 +39,7 @@ class PresetInfo {
     inline const QList< QHash<QString,QString> > getProducts() const { return products; };
 
   private:
+    QHash<QString,QString> parseBulkProduct(const QDomElement& element) const;
     QHash<QString,QString> parseHIDProduct(const QDomElement& element) const;
     // Note - following are just stubs, not yet implemented
     QHash<QString,QString> parseMIDIProduct(const QDomElement& element) const;
@@ -64,7 +65,6 @@ class PresetInfoEnumerator {
     bool hasPresetInfo(const QString extension, const QString name);
     bool hasPresetInfo(const QString path);
 
-    PresetInfo getPresetInfo(const QString extension, const QString name);
     PresetInfo getPresetInfo(const QString path);
 
     // Return cached list of presets for this extension

@@ -18,6 +18,7 @@ VinylControlProxy::VinylControlProxy(ConfigObject<ConfigValue> * pConfig, QStrin
     xwax_timecodes.push_back(MIXXX_VINYL_SERATOCD);
     xwax_timecodes.push_back(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     xwax_timecodes.push_back(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+    xwax_timecodes.push_back(MIXXX_VINYL_MIXVIBESDVS);
 
     //Figure out which type of timecoded vinyl we're using.
     strVinylType = m_pConfig->getValueString(ConfigKey(m_group,"vinylcontrol_vinyl_type"));

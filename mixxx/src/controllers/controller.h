@@ -28,8 +28,7 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Returns the extension for the controller (type) preset files.  This is
     // used by the ControllerManager to display only relevant preset files for
     // the controller (type.)
-    virtual QString presetExtension();
-    inline QString defaultPreset();
+    virtual QString presetExtension() = 0;
 
     void setPreset(const ControllerPreset& preset) {
         // We don't know the specific type of the preset so we need to ask
@@ -73,6 +72,8 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Emitted when a new preset is loaded. pPreset is a /clone/ of the loaded
     // preset, not a pointer to the preset itself.
     void presetLoaded(ControllerPresetPointer pPreset);
+    // Emitted when the MIDI controller requests that the control system sync.
+    void syncControlSystem();
 
   // Making these slots protected/private ensures that other parts of Mixxx can
   // only signal them which allows us to use no locks.
@@ -83,7 +84,7 @@ class Controller : public QObject, ControllerPresetVisitor {
     virtual void receive(const QByteArray data);
 
     // Initializes the controller engine
-    virtual void applyPreset(QString configPath);
+    virtual void applyPreset(QList<QString> scriptPaths);
 
     void learn(MixxxControl control);
     void cancelLearn();

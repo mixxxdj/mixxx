@@ -18,6 +18,7 @@
 #ifndef TRACKINFOOBJECT_H
 #define TRACKINFOOBJECT_H
 
+#include <QAtomicInt>
 #include <QList>
 #include <QDateTime>
 #include <QObject>
@@ -54,8 +55,8 @@ public:
     /** Initialize a new track with the filename. */
     TrackInfoObject(const QString sLocation="", bool parseHeader=true);
     // Initialize track with a QFileInfo class
-    TrackInfoObject(QFileInfo& fileInfo, bool parseHeader=true);
-    /** Creates a new track given information from the xml file. */
+    TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader=true);
+    // Creates a new track given information from the xml file.
     TrackInfoObject(const QDomNode &);
     virtual ~TrackInfoObject();
 
@@ -83,7 +84,7 @@ public:
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
-    Q_PROPERTY(float bpm READ getBpm WRITE setBpm)
+    Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
@@ -110,9 +111,9 @@ public:
     /** Set ReplayGain*/
     void setReplayGain(float);
     /** Returns BPM */
-    float getBpm() const;
+    double getBpm() const;
     /** Set BPM */
-    void setBpm(float);
+    void setBpm(double);
     /** Returns BPM as a string */
     QString getBpmStr() const;
     // A track with a locked BPM will not be re-analyzed by the beats or bpm
@@ -210,12 +211,14 @@ public:
     void setURL(QString url);
 
     Waveform* getWaveform();
-    const Waveform* getWaveform() const;
-    void setWaveform(Waveform* pWaveform);
+    void waveformNew();
 
     Waveform* getWaveformSummary();
     const Waveform* getWaveformSummary() const;
-    void setWaveformSummary(Waveform* pWaveformSummary);
+    void waveformSummaryNew();
+
+    void setAnalyserProgress(int progress);
+    int getAnalyserProgress() const;
 
     /** Save the cue point (in samples... I think) */
     void setCuePoint(float cue);
@@ -256,6 +259,7 @@ public:
 signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
+    void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     //void bpmUpdated(double bpm);
     void beatsUpdated();
@@ -277,7 +281,7 @@ private:
     void initialize(bool parseHeader);
 
     // Initialize all the location variables.
-    void populateLocation(QFileInfo& fileInfo);
+    void populateLocation(const QFileInfo& fileInfo);
 
     // Method for parsing information from knowing only the file name.  It
     // assumes that the filename is written like: "artist - trackname.xxx"
@@ -378,8 +382,10 @@ private:
     BeatsPointer m_pBeats;
 
     //Visual waveform data
-    Waveform* m_waveform;
-    Waveform* m_waveformSummary;
+    Waveform* const m_waveform;
+    Waveform* const m_waveformSummary;
+
+    QAtomicInt m_analyserProgress; // in 0.1%
 
     friend class TrackDAO;
 };

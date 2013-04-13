@@ -15,8 +15,8 @@
 #include "widget/wlibrarytextbrowser.h"
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"
+#include "library/treeitem.h"
 #include "mixxxkeyboard.h"
-#include "treeitem.h"
 #include "soundsourceproxy.h"
 
 PlaylistFeature::PlaylistFeature(QObject* parent,
@@ -26,12 +26,6 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
                               "PLAYLISTHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.playlist");
-    // Setup the sidebar playlist model
-    m_playlistTableModel.setTable("Playlists");
-    m_playlistTableModel.setFilter("hidden=0");
-    m_playlistTableModel.setSort(m_playlistTableModel.fieldIndex("name"),
-                                 Qt::AscendingOrder);
-    m_playlistTableModel.select();
 
     //construct child model
     TreeItem *rootItem = new TreeItem();
@@ -80,6 +74,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
     menu.addAction(m_pRenamePlaylistAction);
+    menu.addAction(m_pDuplicatePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
     menu.addSeparator();
@@ -88,35 +83,43 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
-bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+                                      QWidget *pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
-
-    // If a track is dropped onto a playlist's name, but the track isn't in the
-    // library, then add the track to the library before adding it to the
-    // playlist.
-    QFileInfo file(url.toLocalFile());
-
-    // XXX: Possible WTF alert - Previously we thought we needed toString() here
-    // but what you actually want in any case when converting a QUrl to a file
-    // system path is QUrl::toLocalFile(). This is the second time we have
-    // flip-flopped on this, but I think toLocalFile() should work in any
-    // case. toString() absolutely does not work when you pass the result to a
-    // QFileInfo. rryan 9/2010
-
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    int trackId = m_trackDao.addTrack(file, true);
-
-    // Do nothing if the location still isn't in the database.
-    if (trackId < 0) {
-        return false;
+    QList<QFileInfo> files;
+    foreach (QUrl url, urls) {
+        // XXX: Possible WTF alert - Previously we thought we needed toString() here
+        // but what you actually want in any case when converting a QUrl to a file
+        // system path is QUrl::toLocalFile(). This is the second time we have
+        // flip-flopped on this, but I think toLocalFile() should work in any
+        // case. toString() absolutely does not work when you pass the result to a
+        files.append(url.toLocalFile());
     }
 
-    // appendTrackToPlaylist doesn't return whether it succeeded, so assume it
+    QList<int> trackIds;
+    if (pSource) {
+        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+    } else {
+        // If a track is dropped onto a playlist's name, but the track isn't in the
+        // library, then add the track to the library before adding it to the
+        // playlist.
+        // Adds track, does not insert duplicates, handles unremoving logic.
+        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    }
+
+    // remove tracks that could not be added
+    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
+        if (trackIds.at(trackId) < 0) {
+            trackIds.removeAt(trackId--);
+        }
+    }
+
+    // appendTracksToPlaylist doesn't return whether it succeeded, so assume it
     // did.
-    m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
+    m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     return true;
 }
 
@@ -132,45 +135,36 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     return !locked && formatSupported;
 }
 
-
-/**
-  * Purpose: When inserting or removing playlists,
-  * we require the sidebar model not to reset.
-  * This method queries the database and does dynamic insertion
-*/
-QModelIndex PlaylistFeature::constructChildModel(int selected_id)
-{
-    QList<TreeItem*> data_list;
-    int nameColumn = m_playlistTableModel.record().indexOf("name");
-    int idColumn = m_playlistTableModel.record().indexOf("id");
-    int selected_row = -1;
-    // Access the invisible root item
-    TreeItem* root = m_childModel.getItem(QModelIndex());
-    // Create new TreeItems for the playlists in the database
-    for (int row = 0; row < m_playlistTableModel.rowCount(); ++row) {
-        QModelIndex ind = m_playlistTableModel.index(row, nameColumn);
-        QString playlist_name = m_playlistTableModel.data(ind).toString();
-        ind = m_playlistTableModel.index(row, idColumn);
-        int playlist_id = m_playlistTableModel.data(ind).toInt();
-        bool locked = m_playlistDao.isPlaylistLocked(playlist_id);
-
-        if (selected_id == playlist_id) {
-            // save index for selection
-            selected_row = row;
-        }
-
-        // Create the TreeItem whose parent is the invisible root item
-        TreeItem* item = new TreeItem(playlist_name, playlist_name, this, root);
-        item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
-        data_list.append(item);
+void PlaylistFeature::buildPlaylistList() {
+    m_playlistList.clear();
+    // Setup the sidebar playlist model
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+    playlistTableModel.setTable("Playlists");
+    playlistTableModel.setFilter("hidden=0");
+    playlistTableModel.setSort(playlistTableModel.fieldIndex("name"),
+                               Qt::AscendingOrder);
+    playlistTableModel.select();
+    while (playlistTableModel.canFetchMore()) {
+        playlistTableModel.fetchMore();
     }
+    int nameColumn = playlistTableModel.record().indexOf("name");
+    int idColumn = playlistTableModel.record().indexOf("id");
 
-    // Append all the newly created TreeItems in a dynamic way to the childmodel
-    m_childModel.insertRows(data_list, 0, m_playlistTableModel.rowCount());
-    if (selected_row == -1) {
-        return QModelIndex();
+    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+        int id = playlistTableModel.data(
+            playlistTableModel.index(row, idColumn)).toInt();
+        QString name = playlistTableModel.data(
+            playlistTableModel.index(row, nameColumn)).toString();
+        m_playlistList.append(qMakePair(id, name));
     }
-    return m_childModel.index(selected_row, 0);
+}
+
+void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
+    if (m_playlistDao.isPlaylistLocked(playlist_id)) {
+        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+    } else {
+        item->setIcon(QIcon());
+    }
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
@@ -180,14 +174,12 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (   type == PlaylistDAO::PLHT_NOT_HIDDEN
-        || type == PlaylistDAO::PLHT_UNKNOWN      // In case of a deleted Playlist
-    ){
+    if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
+        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
-        m_playlistTableModel.select();
         m_lastRightClickedIndex = constructChildModel(playlistId);
 
-        if(type != PlaylistDAO::PLHT_UNKNOWN) {
+        if (type != PlaylistDAO::PLHT_UNKNOWN) {
             // Switch the view to the playlist.
             m_pPlaylistTableModel->setPlaylist(playlistId);
             // Update selection
@@ -202,6 +194,7 @@ QString PlaylistFeature::getRootViewHtml() const {
     QString playlistsSummary2 = tr("Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.");
     QString playlistsSummary3 = tr("When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.");
     QString playlistsSummary4 = tr("It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.");
+    QString createPlaylistLink = tr("Create new playlist");
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(playlistsTitle));
@@ -210,6 +203,11 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append(QString("<p>%1</p>").arg(playlistsSummary2));
     html.append(QString("<p>%1 %2</p>").arg(playlistsSummary3,
                                             playlistsSummary4));
+    html.append("</td></tr>");
+    html.append(
+        QString("<tr><td><a href=\"create\">%1</a>")
+        .arg(createPlaylistLink)
+    );
     html.append("</td></tr></table>");
     return html;
 }

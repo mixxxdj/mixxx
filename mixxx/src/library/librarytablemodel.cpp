@@ -5,8 +5,8 @@
 #include "library/trackcollection.h"
 #include "library/librarytablemodel.h"
 #include "library/queryutil.h"
-
 #include "mixxxutils.cpp"
+#include "playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
         "mixxx_deleted=0 AND fs_deleted=0";
@@ -20,6 +20,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()) {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
+    columns << "'' as preview";
 
     QSqlQuery query(pTrackCollection->getDatabase());
     QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS library_view AS "
@@ -34,6 +35,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
+    tableColumns << "preview";
     setTable("library_view", LIBRARYTABLE_ID, tableColumns,
              pTrackCollection->getTrackSource("default"));
 
@@ -72,6 +74,7 @@ int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locati
         fileInfoList.append(QFileInfo(fileLocation));
     }
     QList<int> trackIds = m_trackDao.addTracks(fileInfoList, true);
+    select();
     return trackIds.size();
 }
 
@@ -111,9 +114,11 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
         (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
-        (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED))) {
+        (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) ||
+        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
+
     return false;
 }
 
@@ -122,8 +127,6 @@ bool LibraryTableModel::isColumnHiddenByDefault(int column) {
         return true;
     return false;
 }
-
-
 
 TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
     return TRACKMODELCAPS_NONE
@@ -134,6 +137,7 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_RELOADMETADATA
             | TRACKMODELCAPS_LOADTODECK
             | TRACKMODELCAPS_LOADTOSAMPLER
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_HIDE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS

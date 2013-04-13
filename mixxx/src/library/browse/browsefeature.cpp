@@ -17,7 +17,6 @@
 #include "library/dao/trackdao.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 const QString kQuickLinksSeparator = "-+-";
@@ -80,19 +79,17 @@ BrowseFeature::BrowseFeature(QObject* parent,
     rootItem->appendChild(root_folder_item);
 #endif
 
-    /*
-     * Just a word about how the TreeItem objects are used for the BrowseFeature:
-     * The constructor has 4 arguments:
-     * 1. argument represents the folder name shown in the sidebar later on
-     * 2. argument represents the folder path which MUST end with '/'
-     * 3. argument is the library feature itself
-     * 4. the parent TreeItem object
-     *
-     * Except the invisible root item, you must always state all 4 arguments.
-     *
-     * Once the TreeItem objects are inserted to models, the models take care of their
-     * deletion.
-     */
+    // Just a word about how the TreeItem objects are used for the BrowseFeature:
+    // The constructor has 4 arguments:
+    // 1. argument represents the folder name shown in the sidebar later on
+    // 2. argument represents the folder path which MUST end with '/'
+    // 3. argument is the library feature itself
+    // 4. the parent TreeItem object
+    //
+    // Except the invisible root item, you must always state all 4 arguments.
+    //
+    // Once the TreeItem objects are inserted to models, the models take care of their
+    // deletion.
 
     loadQuickLinks();
 
@@ -151,32 +148,8 @@ TreeItemModel* BrowseFeature::getChildModel() {
     return &m_childModel;
 }
 
-bool BrowseFeature::dropAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool BrowseFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
-bool BrowseFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool BrowseFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
-void BrowseFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget,
+void BrowseFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
     Q_UNUSED(keyboard);
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
@@ -188,20 +161,14 @@ void BrowseFeature::activate() {
     emit(restoreSearch(QString()));
 }
 
-/*
- * Note: This is executed whenever you single click on an child item
- * Single clicks will not populate sub folders
- */
+// Note: This is executed whenever you single click on an child item
+// Single clicks will not populate sub folders
 void BrowseFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "BrowseFeature::activateChild " << item->data() << " "
              << item->dataPath();
     m_browseModel.setPath(item->dataPath().toString());
     emit(showTrackModel(&m_proxyModel));
-}
-
-void BrowseFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
 }
 
 void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
@@ -237,10 +204,8 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      onLazyChildExpandation(index);
 }
 
-/*
- * This is called whenever you double click or use the triangle symbol to expand
- * the subtree. The method will read the subfolders.
- */
+// This is called whenever you double click or use the triangle symbol to expand
+// the subtree. The method will read the subfolders.
 void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     if (!item) {
@@ -276,7 +241,8 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
                 item);
             folders << driveLetter;
         }
-    } else {  // we assume that the path refers to a folder in the file system
+    } else {
+        // we assume that the path refers to a folder in the file system
         // populate childs
         QDir dir(path);
         QFileInfoList all = dir.entryInfoList(
@@ -294,7 +260,7 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
             // the models takes ownership of them and ensures their deletion
             TreeItem* folder = new TreeItem(
                 one.fileName(),
-                one.absoluteFilePath() +"/",
+                one.absoluteFilePath() + "/",
                 this, item);
             folders << folder;
         }
@@ -303,13 +269,14 @@ void BrowseFeature::onLazyChildExpandation(const QModelIndex &index){
     // On Ubuntu 10.04, otherwise, this will draw an icon although the folder
     // has no subfolders
     if (!folders.isEmpty()) {
-        m_childModel.insertRows(folders, 0, folders.size() , index);
+        m_childModel.insertRows(folders, 0, folders.size(), index);
     }
 }
 
 QString BrowseFeature::getRootViewHtml() const {
     QString browseTitle = tr("Browse");
-    QString browseSummary = tr("Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.");
+    QString browseSummary = tr("Browse lets you navigate, view, and load tracks"
+                        " from folders on your hard disk and external devices.");
 
     QString html;
     html.append(QString("<h2>%1</h2>").arg(browseTitle));
@@ -356,7 +323,7 @@ QStringList BrowseFeature::getDefaultQuickLinks() const {
     result << mixxx_music_dir+"/";
 
     if (mixxx_music_dir != os_music_folder_dir) {
-        result << os_music_folder_dir;
+        result << os_music_folder_dir + "/";
     }
 
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it

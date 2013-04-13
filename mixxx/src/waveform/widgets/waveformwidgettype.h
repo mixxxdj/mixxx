@@ -12,7 +12,8 @@ class WaveformWidgetType {
         GLSimpleWaveform,
         GLWaveform,
         GLSLWaveform,
-        Count_WaveformwidgetType
+        HSVWaveform,
+        Count_WaveformwidgetType // Also used as invalid value
     };
 };
 

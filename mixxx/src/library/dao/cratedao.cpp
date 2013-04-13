@@ -177,6 +177,25 @@ unsigned int CrateDAO::crateSize(int crateId) {
     return 0;
 }
 
+void CrateDAO::copyCrateTracks(int sourceCrateId, int targetCrateId) {
+    // Query Tracks from the source Playlist
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id FROM crate_tracks "
+                  "WHERE crate_id = :cid");
+    query.bindValue(":cid", sourceCrateId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    QList<int> trackIds;
+    while (query.next()) {
+        trackIds.append(query.value(0).toInt());
+    }
+    addTracksToCrate(trackIds, targetCrateId);
+}
+
 bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO " CRATE_TRACKS_TABLE
@@ -244,6 +263,27 @@ bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
     return true;
 }
 
+bool CrateDAO::removeTracksFromCrate(QList<int> ids, int crateId) {
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+    QSqlQuery query(m_database);
+    query.prepare(QString("DELETE FROM " CRATE_TRACKS_TABLE " WHERE "
+                          "crate_id = :crate_id AND track_id in (%1)")
+                  .arg(idList.join(",")));
+    query.bindValue(":crate_id", crateId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+    foreach (int trackId, ids) {
+        emit(trackRemoved(crateId, trackId));
+    }
+    emit(changed(crateId));
+    return true;
+}
 
 void CrateDAO::removeTracksFromCrates(QList<int> ids) {
     QStringList idList;

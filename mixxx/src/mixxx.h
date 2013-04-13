@@ -22,6 +22,7 @@
 #include <QList>
 #include <QMainWindow>
 #include <QString>
+#include <QDir>
 
 // REMOVE ME
 #include <QtDebug>
@@ -36,10 +37,13 @@ class PlayerManager;
 class RecordingManager;
 class SkinLoader;
 class VinylControlManager;
+
 class DlgPreferences;
 class SoundManager;
 
 #include "configobject.h"
+#include "util/cmdlineargs.h"
+#include "util/timer.h"
 
 /**
   * This Class is the base class for Mixxx. It sets up the main
@@ -52,9 +56,8 @@ class MixxxApp : public QMainWindow {
 
   public:
     /** Construtor. files is a list of command line arguments */
-    MixxxApp(QApplication *app, struct CmdlineArgs args);
+    MixxxApp(QApplication *app, const CmdlineArgs& args);
     virtual ~MixxxApp();
-
     /** initializes all QActions of the application */
     void initActions();
     /** initMenuBar creates the menu_bar and inserts the menuitems */
@@ -62,6 +65,7 @@ class MixxxApp : public QMainWindow {
 
     void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
 
+    void setToolTips(int tt);
     void rebootMixxxView();
 
   public slots:
@@ -84,8 +88,6 @@ class MixxxApp : public QMainWindow {
     void slotOptionsRecord(bool toggle);
     /** toogle keyboard on-off */
     void slotOptionsKeyboard(bool toggle);
-    /** toogle full screen mode */
-    void slotOptionsFullScreen(bool toggle);
     /** Preference dialog */
     void slotOptionsPreferences();
     /** shows an about dlg*/
@@ -106,8 +108,23 @@ class MixxxApp : public QMainWindow {
     void slotOptionsMenuShow();
     /** toggles Livebroadcasting **/
     void slotOptionsShoutcast(bool value);
+    /** toogle on-screen widget visibility */
+    void slotViewShowSamplers(bool);
+    void slotViewShowVinylControl(bool);
+    void slotViewShowMicrophone(bool);
+    void slotViewShowPreviewDeck(bool);
+    /** toogle full screen mode */
+    void slotViewFullScreen(bool toggle);
+    // Reload the skin.
+    void slotDeveloperReloadSkin(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
+
+    void onNewSkinLoaded();
+    void slotSyncControlSystem();
+
+  signals:
+    void newSkinLoaded();
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
@@ -121,8 +138,6 @@ class MixxxApp : public QMainWindow {
     // Pointer to the root GUI widget
     QWidget* m_pView;
     QWidget* m_pWidgetParent;
-
-    QApplication *m_pApp;
 
     // The mixing engine.
     EngineMaster *m_pEngine;
@@ -161,6 +176,8 @@ class MixxxApp : public QMainWindow {
     QMenu *m_pViewMenu;
     /** view_menu contains all items of the menubar entry "Help" */
     QMenu *m_pHelpMenu;
+    // Developer options.
+    QMenu* m_pDeveloperMenu;
 
     QAction *m_pFileLoadSongPlayer1;
     QAction *m_pFileLoadSongPlayer2;
@@ -175,16 +192,23 @@ class MixxxApp : public QMainWindow {
 #endif
     QAction *m_pOptionsRecord;
     QAction *m_pOptionsKeyboard;
-    QAction *m_pOptionsFullScreen;
+
     QAction *m_pOptionsPreferences;
 #ifdef __SHOUTCAST__
     QAction *m_pOptionsShoutcast;
 #endif
+    QAction *m_pViewShowSamplers;
+    QAction *m_pViewVinylControl;
+    QAction *m_pViewShowMicrophone;
+    QAction *m_pViewShowPreviewDeck;
+    QAction *m_pViewFullScreen;
     QAction *m_pHelpAboutApp;
     QAction *m_pHelpSupport;
     QAction *m_pHelpFeedback;
     QAction *m_pHelpTranslation;
     QAction *m_pHelpManual;
+
+    QAction *m_pDeveloperReloadSkin;
 
     int m_iNoPlaylists;
 
@@ -199,15 +223,13 @@ class MixxxApp : public QMainWindow {
 
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
-};
 
-//A structure to store the parsed command-line arguments
-struct CmdlineArgs
-{
-    QList<QString> qlMusicFiles;    /* List of files to load into players at startup */
-    bool bStartInFullscreen;        /* Start in fullscreen mode */
-    QString locale;
-};
+    int m_tooltips; //0=OFF, 1=ON, 2=ON (only in Library)
+    // Timer that tracks how long Mixxx has been running.
+    Timer m_runtime_timer;
 
+    const CmdlineArgs& m_cmdLineArgs;
+};
 
 #endif
+

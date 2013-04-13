@@ -15,23 +15,21 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "mixxxkeyboard.h"
-#include "controlobject.h"
 #include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QEvent>
 
-MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent)
-{
+#include "mixxxkeyboard.h"
+#include "controlobject.h"
+#include "util/cmdlineargs.h"
+
+MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent) {
     m_pKbdConfigObject = pKbdConfigObject;
     setObjectName(name);
 }
 
-MixxxKeyboard::~MixxxKeyboard()
-{
-   // TODO(XXX) ugly workaround to get no leak
-   delete m_pKbdConfigObject;
+MixxxKeyboard::~MixxxKeyboard() {
 }
 
 bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
@@ -97,8 +95,8 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
     } else {
         if (e->type() == QEvent::KeyboardLayoutChange) {
             // This event is not fired on ubunty natty, why?
-			// TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811 
-            qDebug() << "QEvent::KeyboardLayoutChange";
+			// TODO(XXX): find a way to support KeyboardLayoutChange Bug #997811
+            //qDebug() << "QEvent::KeyboardLayoutChange";
         }
     }
     return false;
@@ -132,7 +130,9 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e) {
     keyseq = QKeySequence(e->key()).toString();
     k = QKeySequence(modseq + keyseq);
 
-    qDebug() << "keyboard press: " << k.toString();
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        qDebug() << "keyboard press: " << k.toString();
+    }
     return k;
 }
 

@@ -16,7 +16,9 @@
 ***************************************************************************/
 
 #include "dlgprefplaylist.h"
+#ifdef __PROMO__
 #include "library/promotracksfeature.h"
+#endif
 #include "soundsourceproxy.h"
 //#include "plugindownloader.h"
 #include <QtCore>
@@ -51,8 +53,11 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
     connect(pushButtonExtraPlugins, SIGNAL(clicked()), this, SLOT(slotExtraPlugins()));
 
-    if (!PromoTracksFeature::isSupported(config))
-    {
+    bool enablePromoGroupbox = false;
+#ifdef __PROMO__
+    enablePromoGroupbox = PromoTracksFeature::isSupported(config);
+#endif
+    if (!enablePromoGroupbox) {
         groupBoxBundledSongs->hide();
     }
 
@@ -147,8 +152,6 @@ void DlgPrefPlaylist::slotUpdate()
     checkBox_show_rhythmbox->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt());
     checkBox_show_itunes->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     checkBox_show_traktor->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
-
-
 }
 
 void DlgPrefPlaylist::slotBrowseDir()
