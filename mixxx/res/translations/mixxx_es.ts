@@ -874,13 +874,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Adjust rate up (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Aumentar velocidad (bruto)</translation>
         </message>
         <message>
             <source>Adjust rate down (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Disminuir velocidad (bruto)</translation>
         </message>
         <message>
             <source>Pitch-bend rate up (coarse)</source>
@@ -995,8 +993,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Toggle slip mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cambiar a modo deslizamiento</translation>
         </message>
         <message>
             <source>Preview Deck %1</source>
@@ -1010,23 +1007,19 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Cues</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Señales</translation>
         </message>
         <message>
             <source>Hotcues</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Teclas rápidas</translation>
         </message>
         <message>
             <source>Hotcue %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tecla rápida %1</translation>
         </message>
         <message>
             <source>Loop Exit button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Botón Salida de Bucle</translation>
         </message>
         <message>
             <source>Beat-Looping</source>
@@ -1091,8 +1084,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Load selected track and play</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cargar la pista seleccionada y reproducir</translation>
         </message>
         <message>
             <source>Effects</source>
@@ -1192,8 +1184,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleccionar todas las pistas en la tabla de abajo.</translation>
         </message>
         <message>
             <source>Select All</source>
@@ -1201,18 +1192,15 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Limpiar las pistas seleccionadas de la biblioteca.</translation>
         </message>
         <message>
             <source>Purge</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Limpiar</translation>
         </message>
         <message>
             <source>Unhide selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desocultar las pistas seleccionadas de la biblioteca.</translation>
         </message>
         <message>
             <source>Unhide</source>
@@ -1231,23 +1219,19 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleccionar todas las pistas en la tabla de abajo.</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleccionar Todo</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Limpiar las pistas seleccionadas de la biblioteca.</translation>
         </message>
         <message>
             <source>Purge</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Limpiar</translation>
         </message>
     </context>
     <context>
@@ -1545,8 +1529,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Locale</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Configuración regional</translation>
         </message>
         <message>
             <source>Temporary rate change when left-clicking</source>
@@ -1933,8 +1916,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Other Libraries</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Otras Librerias</translation>
         </message>
         <message>
             <source>Show Rhythmbox Library</source>
@@ -2081,8 +2063,7 @@ reproducción y visita de las páginas de los temas incluidos.</translation>
         </message>
         <message>
             <source>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esto puede tomar algunos segundos después de que el análisis de las pistas haya finalizado para que la repetición de ganancia recientemente calculada sea aplicada. Para evitar cambios bruscos de volumen Mixxx no cambia la repetición de ganancia de la reproducción de las pistas.</translation>
         </message>
         <message>
             <source>Apply volume normalization to loaded tracks.</source>
@@ -2180,13 +2161,11 @@ reproducción y visita de las páginas de los temas incluidos.</translation>
         </message>
         <message>
             <source>Dynamically update Ogg Vorbis metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Actualizar dinámicamente los metadatos Ogg Vorbis.</translation>
         </message>
         <message>
             <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Debido a fallas en algunos clientes de transmisión, actualizar dinámicamente los metadatos Ogg Vorbis puede causar interferencias y desconexiones a los oyentes. Marque esta casilla para actualizar los metadatos de todos modos.</translation>
         </message>
         <message>
             <source>Stream name</source>
@@ -2222,8 +2201,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Género</translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -2239,13 +2217,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Codificación</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tasa de bits</translation>
         </message>
         <message>
             <source>Format</source>
@@ -2265,13 +2241,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artista</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Título</translation>
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
@@ -2331,8 +2305,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Buffer Underflow Count</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Contador de Subdesbordamiento de Buffer</translation>
         </message>
         <message>
             <source>0</source>
@@ -2587,13 +2560,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleccionar todas las pistas en la tabla de abajo.</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleccionar Todo</translation>
         </message>
         <message>
             <source>Runs the BPM and beatgrid detection on the selected tracks.
@@ -3259,18 +3230,15 @@ También se generarán las formas de onda como parte del análisis.</translation
         </message>
         <message>
             <source>Ctrl+1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+1</translation>
         </message>
         <message>
             <source>Show Vinyl Control Section</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mostrar la Sección de Control de Vinilo</translation>
         </message>
         <message>
             <source>Ctrl+3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+3</translation>
         </message>
         <message>
             <source>Show Microphone Section</source>
@@ -3278,8 +3246,7 @@ También se generarán las formas de onda como parte del análisis.</translation
         </message>
         <message>
             <source>Ctrl+2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+2</translation>
         </message>
         <message>
             <source>Show Preview Deck</source>
@@ -3293,28 +3260,23 @@ También se generarán las formas de onda como parte del análisis.</translation
         </message>
         <message>
             <source>Ctrl+4</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+4</translation>
         </message>
         <message>
             <source>&amp;Reload Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Recargar Skin</translation>
         </message>
         <message>
             <source>Reload the skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Recargar el skin</translation>
         </message>
         <message>
             <source>Ctrl+Shift+R</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Mayús+R</translation>
         </message>
         <message>
             <source>Developer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desarrollador</translation>
         </message>
         <message>
             <source>Load track to Deck %1</source>
@@ -3543,7 +3505,7 @@ También se generarán las formas de onda como parte del análisis.</translation
         </message>
         <message>
             <source>&amp;Vinyl Control</source>
-            <translation>&amp;Control por vinilos</translation>
+            <translation>Control de &amp;vinilo</translation>
         </message>
         <message>
             <source>No input device(s) select.
@@ -3771,7 +3733,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation>Vinilo de control</translation>
+            <translation>Control de vinilo</translation>
         </message>
         <message>
             <source>Microphone</source>
@@ -4025,8 +3987,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader</translation>
         </message>
         <message>
             <source>Determines the master output by fading between the left and right channels.</source>
@@ -4071,8 +4032,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Micrófono</translation>
         </message>
         <message>
             <source>Show/hide the Microphone section.</source>
@@ -4088,8 +4048,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Control de vinilo</translation>
         </message>
         <message>
             <source>Show/hide the Vinyl Control section.</source>
@@ -4509,8 +4468,7 @@ Por favor seleccione su(s) placa de sonido en las preferencias de hardware de so
         </message>
         <message>
             <source>Hotcue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue</translation>
         </message>
         <message>
             <source>If hotcue is set, jumps to the hotcue.</source>

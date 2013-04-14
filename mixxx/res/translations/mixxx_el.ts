@@ -591,8 +591,8 @@
         <message>
             <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
 automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Όταν η η ανίχνευση ρυθμού είναι ενεργοποιημένη, το Mixxx ανιχνεύει το ρυθμό ανά λεπτό και το ρυθμό των κομματιών σας, 
+και αυτόματα δείχνει ενα beat-grid για αυτά, που σας επιτρέπει να συγχρονίσετε τα κομμάτια χρησιμοποιόντας τις δικές τους πληφορίες ρυθμού.</translation>
         </message>
         <message>
             <source>Enable BPM and Beat Detection</source>
@@ -618,8 +618,9 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
             <source>Enable fast beat detection. 
 If activated Mixxx only analyzes the first minute of a track for beat information. 
 This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποιήστε την γρήγορη ανίχνευση ρυθμού. 
+Εαν ενεργοποιηθεί το Mixxx αναλύει μόνο το πρώτο λεπτό του κομματιού για πληροφορίες σχετικά με τον ρυθμό. 
+Αυτό μπορεί να επιταχύνει την ανίχνευση ρυθμού σε πιο αργούς υπολογιστές αλλά μπορεί να οδηγήσει σε χαμηλότερης ποιότητας beatgrids.</translation>
         </message>
         <message>
             <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
