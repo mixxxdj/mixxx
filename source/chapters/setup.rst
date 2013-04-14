@@ -134,11 +134,6 @@ For turntables a typical setup is depicted in the figure below.  First, connect
 the RCA cables from the turntables to the inputs on your sound card.  Second,
 connect the outputs of your sound card to the inputs on your mixer.
 
-.. note:: You must set the input mode of your sound card to *phono* if you have
-          standard turntables. Many modern turntables have a *Line/Phono* select
-          switch.  If yours does, make sure it matches the input or switch
-          setting on your sound card.
-
 .. figure:: ../_static/mixxx_setup_timecode_vc.png
    :align: center
    :width: 90%
@@ -147,6 +142,11 @@ connect the outputs of your sound card to the inputs on your mixer.
    :figclass: pretty-figures
 
    Using Mixxx together with turntables and external mixer
+
+.. note:: You must set the input mode of your sound card to *phono* if you have
+          standard turntables. Many modern turntables have a *Line/Phono* select
+          switch.  If yours does, make sure it matches the input or switch
+          setting on your sound card.
 
 CDJs
 ^^^^
