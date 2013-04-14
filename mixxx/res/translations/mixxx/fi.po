@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-03-05 06:50+0200\n"
-"PO-Revision-Date: 2012-11-20 17:25+0000\n"
+"PO-Revision-Date: 2013-04-13 13:08+0000\n"
 "Last-Translator: Juho Kurronen <juhokurre@hotmail.com>\n"
 "Language-Team: Finnish <fi@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-06 05:10+0000\n"
-"X-Generator: Launchpad (build 16514)\n"
+"X-Launchpad-Export-Date: 2013-04-14 05:10+0000\n"
+"X-Generator: Launchpad (build 16564)\n"
 "X-Language: fi_FI\n"
 "X-Source-Language: C\n"
 
@@ -42,7 +42,7 @@ msgstr "Tuo soittolista"
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
 msgid "Playlist Creation Failed"
-msgstr "Soittolistan luonti epäonnistui"
+msgstr "Soittolistan luominen epäonnistui"
 
 #: BaseExternalLibraryFeature#5
 msgctxt "BaseExternalLibraryFeature#5"
@@ -118,22 +118,22 @@ msgstr "Soittolistan nimi:"
 #: BasePlaylistFeature#16
 msgctxt "BasePlaylistFeature#16"
 msgid "_copy"
-msgstr ""
+msgstr "_kopioi"
 
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Soittolistan luominen epäonnistui"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Soittolistan luonnissa tapahtui tuntematon virhe: "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Soittolistan tiedostot (*.m3u *.m3u8 *.pls *.csv)"
 
 #: BasePlaylistFeature#20
 msgctxt "BasePlaylistFeature#20"
@@ -238,7 +238,7 @@ msgstr "BPM-lukitus"
 
 #: BaseSqlTableModel#21
 msgid "Preview"
-msgstr ""
+msgstr "Esikatselu"
 
 #: BaseTrackPlayer#1
 msgid "Couldn't load track."
@@ -269,6 +269,8 @@ msgid ""
 "Browse lets you navigate, view, and load tracks from folders on your hard "
 "disk and external devices."
 msgstr ""
+"Selain mahdollistaa etsimisen, esikatselun ja kappaleiden lataamisen "
+"kovalevyltä tai ulkoisista laitteista"
 
 #: BrowseFeature#7
 msgid "Browse"
@@ -486,12 +488,12 @@ msgstr "Lukitse"
 #: CrateFeature#5
 msgctxt "CrateFeature#5"
 msgid "_copy"
-msgstr ""
+msgstr "_kopioi"
 
 #: CrateFeature#6
 msgctxt "CrateFeature#6"
 msgid "Import Playlist"
-msgstr ""
+msgstr "Tuo soittolista"
 
 #: CrateFeature#7
 msgid "Crates"
@@ -512,7 +514,7 @@ msgstr ""
 #: CrateFeature#11
 msgctxt "CrateFeature#11"
 msgid "Unlock"
-msgstr ""
+msgstr "Poista lukitus"
 
 #: CrateFeature#12
 msgid "Crate name:"
@@ -537,7 +539,7 @@ msgstr "Levylaukun uudelleennimeäminen epäonnistui"
 #: CrateFeature#17
 msgctxt "CrateFeature#17"
 msgid "Playlist Files (*.m3u *.m3u8 *.pls *.csv)"
-msgstr ""
+msgstr "Soittolistan tiedostot (*.m3u *.m3u8 *.pls *.csv)"
 
 #: CrateFeature#18
 msgctxt "CrateFeature#18"
@@ -1127,7 +1129,7 @@ msgstr "1/4"
 #: DlgControllerLearning#85
 msgctxt "DlgControllerLearning#85"
 msgid "Library"
-msgstr ""
+msgstr "Kokoelma"
 
 #: DlgControllerLearning#86
 msgid "Expand/collapse the selected view (library, playlist..)"
@@ -1159,7 +1161,7 @@ msgstr "Lataa valittu kappale"
 
 #: DlgControllerLearning#93
 msgid "Load selected track and play"
-msgstr ""
+msgstr "Lataa valittu kappale ja soita"
 
 #: DlgControllerLearning#94
 msgid "Effects"
@@ -1184,7 +1186,7 @@ msgstr "Flange-efekti: vaiheviive"
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofoni"
 
 #: DlgControllerLearning#100
 msgid "Microphone on/off"
@@ -1201,15 +1203,15 @@ msgstr "Mikrofonikanavan sijainti (vasen, oikea, keskitetty)"
 #: DlgControllerLearning#103
 msgctxt "DlgControllerLearning#103"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto-DJ"
 
 #: DlgControllerLearning#104
 msgid "Shuffle the content of the Auto DJ playlist"
-msgstr ""
+msgstr "Sekoita valittu Auto-DJ soittolista"
 
 #: DlgControllerLearning#105
 msgid "Skip the next track in the Auto DJ playlist"
-msgstr ""
+msgstr "Ohita seuraava kappale Auto-DJ soittolistasta"
 
 #: DlgControllerLearning#106
 msgid "Trigger the transition to the next track"
@@ -1264,7 +1266,7 @@ msgstr ""
 #: DlgHidden#3
 msgctxt "DlgHidden#3"
 msgid "Select All"
-msgstr ""
+msgstr "Valitse kaikki"
 
 #: DlgHidden#4
 msgctxt "DlgHidden#4"
@@ -1278,11 +1280,11 @@ msgstr ""
 
 #: DlgHidden#6
 msgid "Unhide selected tracks from the library."
-msgstr ""
+msgstr "Näytä valitut kappaleet kokoelmassa"
 
 #: DlgHidden#7
 msgid "Unhide"
-msgstr ""
+msgstr "Näytä"
 
 #: DlgHidden#8
 msgid "Ctrl+S"
@@ -1301,7 +1303,7 @@ msgstr ""
 #: DlgMissing#3
 msgctxt "DlgMissing#3"
 msgid "Select All"
-msgstr ""
+msgstr "Valitse kaikki"
 
 #: DlgMissing#4
 msgctxt "DlgMissing#4"
@@ -1715,7 +1717,7 @@ msgstr "Näytettävä herkkyys"
 #: DlgPrefControlsDlg#40
 msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synkronoi"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
