@@ -51,7 +51,8 @@ int nearestSuperiorPowerOfTwo(int v);
 #include <float.h>  // for _isnan() on VC++
 #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
 #else
-//#include <math.h>  // for isnan() everywhere else
+#include <cmath>
+using std::isnan;
 #endif
 
 

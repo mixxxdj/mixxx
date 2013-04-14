@@ -492,7 +492,6 @@ class MixxxCore(Feature):
                    "analyserbpm.cpp",
                    "analyserwaveform.cpp",
                    "analyserkey.cpp",
-                   "analysergainvamp.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",

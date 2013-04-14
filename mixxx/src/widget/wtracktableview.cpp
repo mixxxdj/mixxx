@@ -650,9 +650,6 @@ void WTrackTableView::onSearchCleared() {
 void WTrackTableView::onShow() {
 }
 
-void WTrackTableView::onHide() {
-}
-
 void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     // Only use this for drag and drop if the LeftButton is pressed we need to
     // check for this because mousetracking is activated and this function is

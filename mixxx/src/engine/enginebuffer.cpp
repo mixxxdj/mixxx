@@ -50,7 +50,8 @@
 #include <float.h>  // for _isnan() on VC++
 #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
 #else
-#include <math.h>  // for isnan() everywhere else
+#include <cmath>  // for isnan() everywhere else
+using std::isnan;
 #endif
 
 const double kMaxPlayposRange = 1.14;
@@ -953,11 +954,11 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
         if (m_iUiSlowTick == 0) {
             m_visualBpm->set(m_pBpmControl->getBpm());
         }
-        //visualKey->set(m_pKeyControl->getKey());
+        //m_visualKey->set(m_pKeyControl->getKey());
        // qDebug()<<"here";
         //qDebug()<<m_pKeyControl->getKey();
-        visualKey->set(m_pKeyControl->getKey());
-        //visualKey->set(0);
+        m_visualKey->set(m_pKeyControl->getKey());
+        //m_visualKey->set(0);
         // Reset sample counter
         m_iSamplesCalculated = 0;
     }

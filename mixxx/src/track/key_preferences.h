@@ -4,22 +4,16 @@
 #define VAMP_CONFIG_KEY "[Vamp]"
 
 // VAMP_CONFIG_KEY Preferences
-#define VAMP_ANALYSER_KEY_LIBRARY "AnalyserBeatLibrary"
-#define VAMP_ANALYSER_KEY_PLUGIN_ID "AnalyserBeatPluginID"
+#define VAMP_ANALYSER_KEY_LIBRARY "AnalyserKeyLibrary"
+#define VAMP_ANALYSER_KEY_PLUGIN_ID "AnalyserKeyPluginID"
 
-#define KEY_CONFIG_KEY "[BPM]"
+#define KEY_CONFIG_KEY "[Key]"
 
-// BPM_CONFIG_KEY Preferences
-#define KEY_DETECTION_ENABLED "KEYDetectionEnabled"
-//#define KEY_WRITE_TAGS "WriteTags"
-#define KEY_FAST_ANALYSIS "FastAnalysis"
+// KEY_CONFIG_KEY Preferences
+#define KEY_DETECTION_ENABLED "KeyDetectionEnabled"
+#define KEY_FAST_ANALYSIS "FastAnalysisEnabled"
 #define KEY_FIRST_LAST "FirstLast"
-#define KEY_REANALYZE "Reanalyze"
+#define KEY_REANALYZE "ReanalyzeWhenSettingsChange"
 #define KEY_SKIP_RELEVANT "SkipRelevant"
-
-//#define BPM_RANGE_START "BPMRangeStart"
-//#define BPM_RANGE_END "BPMRangeEnd"
-//#define BPM_ABOVE_RANGE_ENABLED "BPMAboveRangeEnabled"
-
 
 #endif // KEY_PREFERENCES_H

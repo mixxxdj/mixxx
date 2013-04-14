@@ -1,10 +1,3 @@
-/*
- * analyservamptest.cpp
- *
- *  Created on: 16/mar/2011
- *      Author: vittorio
- */
-
 #include <QtDebug>
 #include <QList>
 #include <QVector>
@@ -14,10 +7,8 @@
 #include <iostream>
 #include <stdio.h>
 
-#include "trackinfoobject.h"
+
 #include "analyserkey.h"
-//#include "track/beatmatrix.h"
-#include "track/beatfactory.h"
 #include "track/key_preferences.h"
 
 
@@ -45,16 +36,18 @@ AnalyserKey::~AnalyserKey(){
     delete m_pVamp;
 }
 
-bool AnalyserKey::initialise(TrackPointer tio, int sampleRate,
-        int totalSamples) {
-    m_bShouldAnalyze=false;
-    if (totalSamples == 0)
+bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
+    m_bShouldAnalyze = false;
+    if (loadStored(tio) || totalSamples == 0) {
         return false;
+    }
 
     QString library = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyLibrary"));
     QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyPluginID"));
+
     if(library.isEmpty() || library.isNull())
       library = "libmixxxminimal";
+
     if(pluginID.isEmpty() || pluginID.isNull())
       pluginID="qm-keydetector:0";
 
@@ -122,6 +115,11 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate,
 
 
     //   m_iStartTime = clock();*/
+}
+
+bool AnalyserKey::loadStored(TrackPointer tio) const {
+    // TODO(rryan): implement.
+    return false;
 }
 
 void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {

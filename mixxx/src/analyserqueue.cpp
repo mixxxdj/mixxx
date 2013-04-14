@@ -19,7 +19,6 @@
 #ifdef __VAMP__
 #include "analyserbeats.h"
 #include "analyserkey.h"
-#include "analysergainvamp.h"
 #include "vamp/vampanalyser.h"
 #endif
 
@@ -349,7 +348,7 @@ void AnalyserQueue::run() {
 
 // This is called from the AnalyserQueue thread
 void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
-    if (!m_exit) {    
+    if (!m_exit) {
         // First tryAcqire will have always success because sema is initialized with on
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue

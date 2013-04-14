@@ -22,7 +22,6 @@ class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual Library
 
     virtual void onSearch(const QString& text);
     virtual void onShow();
-    virtual void onHide();
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);

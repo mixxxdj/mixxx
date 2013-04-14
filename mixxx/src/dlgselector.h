@@ -28,7 +28,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual Libra
     virtual void onShow();
     virtual void onHide();
     virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);
 
   public slots:

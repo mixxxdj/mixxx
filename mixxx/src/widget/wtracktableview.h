@@ -30,7 +30,6 @@ class WTrackTableView : public WLibraryTableView {
     void onSearchCleared();
     void onSearch(const QString& text);
     void onShow();
-    void onHide();
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);

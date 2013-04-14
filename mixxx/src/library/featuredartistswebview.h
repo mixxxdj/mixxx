@@ -34,7 +34,6 @@ class FeaturedArtistsWebView : public QWebView, public LibraryView
         ~FeaturedArtistsWebView();
         virtual void onSearch(const QString&) {};
         virtual void onShow() {};
-        virtual void onHide() {};
         virtual QWidget* getWidgetForMIDIControl() { return this; };
         virtual void keyPressEvent(QKeyEvent* event);
 

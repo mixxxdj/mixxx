@@ -64,7 +64,7 @@ DlgSelector::DlgSelector(QWidget* parent,
     // Getting info on current decks playing etc
     connect(m_pSelectorLibraryTableModel, SIGNAL(currentTrackInfoChanged()),
            this, SLOT(slotCurrentTrackInfoChanged()));
-            
+
 
 }
 
@@ -126,15 +126,15 @@ void DlgSelector::loadSelectedTrack() {
     m_pSelectorLibraryTableView->loadSelectedTrack();
 }
 
-void DlgSelector::loadSelectedTrackToGroup(QString group) {
-    m_pSelectorLibraryTableView->loadSelectedTrackToGroup(group);
+void DlgSelector::loadSelectedTrackToGroup(QString group, bool play) {
+    m_pSelectorLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
 void DlgSelector::moveSelection(int delta) {
     m_pSelectorLibraryTableView->moveSelection(delta);
 }
 
-void DlgSelector::tableSelectionChanged(const QItemSelection& selected, 
+void DlgSelector::tableSelectionChanged(const QItemSelection& selected,
 	const QItemSelection& deselected)
 {
 }

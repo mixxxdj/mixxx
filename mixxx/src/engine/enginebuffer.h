@@ -61,7 +61,7 @@ struct Hint;
 // Length of audio beat marks in samples
 const int audioBeatMarkLen = 40;
 
-// Temporary buffer length
+
 const int kiTempLength = 200000;
 
 // Rate at which the playpos slider is updated (using a sample rate of 44100 Hz):
@@ -241,6 +241,7 @@ private:
     ControlPotmeter* m_visualPlaypos;
     ControlObject* m_pSampleRate;
     ControlPushButton* m_pKeylock;
+    ControlPushButton* m_pTempolock;
 
     ControlPushButton* m_pEject;
 
