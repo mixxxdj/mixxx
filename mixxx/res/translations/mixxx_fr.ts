@@ -443,8 +443,7 @@
         </message>
         <message>
             <source>Duplicate Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Dupliquer le Bac</translation>
         </message>
         <message>
             <source>Unlock</source>
@@ -492,8 +491,7 @@
         </message>
         <message>
             <source>Create new crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Créer un nouveau Bac</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -591,8 +589,8 @@
         <message>
             <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
 automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quand la détection rythmique est engagée, Mixx détecte le nombre de &quot;battement&quot; par minute et les &quot;battements&quot; de votre chanson, 
+cela fait apparaitre automatiquement une grille de battement, et vous permet de synchroniser les chansons en utilisant leurs informations rythmiques.</translation>
         </message>
         <message>
             <source>Enable BPM and Beat Detection</source>
@@ -618,32 +616,33 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
             <source>Enable fast beat detection. 
 If activated Mixxx only analyzes the first minute of a track for beat information. 
 This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Engager la détection rythmique rapide. 
+Si engagée, Mixx analyse seulement la première minute de la chanson pour les informations rythmiques. 
+Ceci peut accélérer la détection rythmique sur des ordinateurs plus lents mais peut donner des grilles rythmiques de moins bonne qualité.</translation>
         </message>
         <message>
             <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
 Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Convertis les &quot;battements&quot; détecté par l'analyseur vers une grille rythmique fixe. 
+Utilisez ce réglage si vos chansons ont un tempo constant (ex: la plupart de la musique électronique). 
+Résulte souvent en de meilleures grilles rythmiques, mais ne marchera pas bien en cas de &quot;glissement rythmique&quot;.</translation>
         </message>
         <message>
             <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
 by analyzing the beats to discard outliers.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Essaye de corriger la &quot;phase&quot; (les premières mesures) d'une grille rythmique fixe 
+en analysant les &quot;battements&quot; pour extraire les valeurs aberrantes.</translation>
         </message>
         <message>
             <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
 (Not checked: Analyse only, if no beats exist.)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>ex: depuis des programmes tierces ou des versions de Mixxx avant la 1.11.
+(Non vérifié: Analyse seulement, si aucun tempo existant.)</translation>
         </message>
         <message>
             <source>Re-analyse beats when settings change or beat detection data is outdated</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Re-analyser le rythme lors de changements de réglages ou quand les informations de détection rythmique sont anciennes</translation>
         </message>
         <message>
             <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
@@ -985,18 +984,15 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Toggle slip mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Activer le mode &quot;Glissement&quot;</translation>
         </message>
         <message>
             <source>Preview Deck %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pré-écoute Platine %1</translation>
         </message>
         <message>
             <source>Single deck mode - Toggle vinyl control to next deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mode Platine Unique - Active le contrôle Vinyl sur la platine suivante</translation>
         </message>
         <message>
             <source>Cues</source>
@@ -1008,13 +1004,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Hotcue %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hotcue %1</translation>
         </message>
         <message>
             <source>Loop Exit button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bouton de Sortie de Boucle</translation>
         </message>
         <message>
             <source>Beat-Looping</source>
@@ -1026,8 +1020,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Create temporary %1-beat loop roll</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Créer un boucle tournante temporaire sur %1-mesure</translation>
         </message>
         <message>
             <source>1/32th</source>
@@ -1051,8 +1044,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Expand/collapse the selected view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Etendre/réduire la vue sélectionnée (librairie, playlist..)</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -1156,8 +1148,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Show/hide the preview deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Montrer/masquer la platine précédente</translation>
         </message>
         <message>
             <source>Show/hide spinning vinyl widget</source>
@@ -1180,8 +1171,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sélectionne toutes les chansons dans la table ci-dessous.</translation>
         </message>
         <message>
             <source>Select All</source>
@@ -1197,8 +1187,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Unhide selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Dévoilerles chansons sélectionnées de la librairie</translation>
         </message>
         <message>
             <source>Unhide</source>
@@ -1217,8 +1206,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sélectionne toutes les chansons dans la table ci-dessous.</translation>
         </message>
         <message>
             <source>Select All</source>
@@ -1523,8 +1511,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Re-queue tracks in Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Remettre les chansons dans la file d'attente lors de l' Auto DJ</translation>
         </message>
         <message>
             <source>Locale</source>
@@ -1580,8 +1567,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Waveform Display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Affichage en forme d'onde</translation>
         </message>
         <message>
             <source>Synchronize zoom level across all waveform displays.</source>
@@ -1680,8 +1666,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Reverse crossfader (hamster style)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Inverser le crossfader (àla hamster style)</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
@@ -2060,8 +2045,7 @@ Lecture et statistiques de liaison en partance</translation>
         </message>
         <message>
             <source>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Il peut se passer quelques secondes après qu'une chanson ait été analysé avant qu'un nouveau calcul de Gain ne soit appliqué. Pour éviter des changements de volume abrupts, Mixxx ne change pas le Gain des chansons en train de jouer.</translation>
         </message>
         <message>
             <source>Apply volume normalization to loaded tracks.</source>
@@ -2163,8 +2147,7 @@ Lecture et statistiques de liaison en partance</translation>
         </message>
         <message>
             <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A cause de défauts chez certains clients de diffusion, la mise à jour dynamique des métadonnées du format Ogg Vorbis peut causer pour ceux qui écoutent des interférences et des déconnexions. Cochez cette zone pour mettre à jour les métadonnées quand même.</translation>
         </message>
         <message>
             <source>Stream name</source>
@@ -2304,8 +2287,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Buffer Underflow Count</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Compteur Sous-alimentation du Tampon</translation>
         </message>
         <message>
             <source>0</source>
@@ -2320,8 +2302,10 @@ p, li { white-space: pre-wrap; }
 &lt;li&gt;Increase your latency if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;ul&gt;
+&lt;li&gt;Augmentez votre latence si le compteur de sous-alimentation tampon augmente ou si vous entendez des PoPs pendant la lecture&lt;/li&gt;
+&lt;li&gt;Réduisez la latence pour améliorer la réactivé de Mixxx&lt;/li&gt;
+&lt;/ul&gt;</translation>
         </message>
         <message>
             <source>Output</source>
@@ -2560,8 +2544,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sélectionne toutes les chansons dans la table ci-dessous.</translation>
         </message>
         <message>
             <source>Select All</source>
@@ -2983,8 +2966,7 @@ Les formes d'onde seront générées comme parties intégrantes de l'analyse ég
         </message>
         <message>
             <source>Generic HID Multiaxis Controller</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Controlleur HID Multiaxis Générique</translation>
         </message>
         <message>
             <source>Unknown HID Desktop Device</source>
@@ -3226,8 +3208,7 @@ Les formes d'onde seront générées comme parties intégrantes de l'analyse ég
         </message>
         <message>
             <source>Show Samplers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Montrer les Sampleurs</translation>
         </message>
         <message>
             <source>Ctrl+1</source>
@@ -3235,8 +3216,7 @@ Les formes d'onde seront générées comme parties intégrantes de l'analyse ég
         </message>
         <message>
             <source>Show Vinyl Control Section</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Montrer la Section de Contrôle Vynil</translation>
         </message>
         <message>
             <source>Ctrl+3</source>
@@ -3252,13 +3232,11 @@ Les formes d'onde seront générées comme parties intégrantes de l'analyse ég
         </message>
         <message>
             <source>Show Preview Deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Montrer la platine de prévisualisation</translation>
         </message>
         <message>
             <source>Show the preview deck in the Mixxx interface.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Montrer la platine de prévisualisation dans l'interface de Mixxx.</translation>
         </message>
         <message>
             <source>Ctrl+4</source>
@@ -3681,38 +3659,31 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         <name>QMessageBox</name>
         <message>
             <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mise à jour de Mixxx de la v1.9.x/1.10.x.</translation>
         </message>
         <message>
             <source>Mixxx has a new and improved beat detector.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mixxx a un nouveau détecteur de tempo amélioré.</translation>
         </message>
         <message>
             <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quand vous chargez des chansons, Mixxx peut les ré-analyser et générer de nouvelles grilles rythmiques, plus précises. Ceci rendra la synchronisation automatique et les boucles plus fiables.</translation>
         </message>
         <message>
             <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Cela ne touche ni les point cues, hotcues, playlistes, ou sets</translation>
         </message>
         <message>
             <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Si vous ne voulez pas que Mixxx ré-analyse vos chansons, choisissez &quot;Garder les Grilles Rythmiques Courantes&quot;. Vous pouvez changer ce réglages n'importe quand depuis la section &quot;Détection Rythmique&quot; des Préférences.</translation>
         </message>
         <message>
             <source>Keep Current Beatgrids</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Garder les Grilles Rythmiques Courantes</translation>
         </message>
         <message>
             <source>Generate New Beatgrids</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Génerer de Nouvelle Grilles Rythmiques</translation>
         </message>
     </context>
     <context>
@@ -3895,8 +3866,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Waveform Display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Affichage en forme d'onde</translation>
         </message>
         <message>
             <source>Shows the loaded track's waveform near the playback position.</source>
@@ -3908,8 +3878,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Scroll to change the waveform zoom level.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Faire défiler pour changer le niveau de grossissement de la forme d'onde.</translation>
         </message>
         <message>
             <source>Spinning Vinyl</source>
@@ -4057,13 +4026,11 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Preview Deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Prévisualiser la platine</translation>
         </message>
         <message>
             <source>Show/hide the Preview deck.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Montrer/cacher la platine de Prévisualisation</translation>
         </message>
         <message>
             <source>Microphone Volume</source>
@@ -4279,8 +4246,7 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>(while stopped)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(pendant qu'il est stoppé)</translation>
         </message>
         <message>
             <source>Cue</source>
@@ -4304,18 +4270,15 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Synchronise sur la première platine (dans l'ordre numérique) qui joue une chanson et qui ait un BPM</translation>
         </message>
         <message>
             <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Si aucune platine ne joue, synchronise sur la première platine qui ait un BPM</translation>
         </message>
         <message>
             <source>Decks can't sync to samplers and samplers can only sync to decks.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Les platines ne peuvent se synchroniser aux samplers et les samplers peuvent uniquement se synchroniser aux platines.</translation>
         </message>
         <message>
             <source>Setup a loop over the set number of beats.</source>
@@ -4323,23 +4286,19 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>Temporarily setup a rolling loop over the set number of beats.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Met en place temporairement une boucle tournante sur le nombre de &quot;beats&quot; définis.</translation>
         </message>
         <message>
             <source>Playback will resume where the track would have been if it had not entered the loop.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Le playback reprendra ou la chanson était si elle n'est pas rentrée dans la boucle.</translation>
         </message>
         <message>
             <source>Loop Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sortir de la boucle</translation>
         </message>
         <message>
             <source>Turns the current loop off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Coupe la boucle courante</translation>
         </message>
         <message>
             <source>Slip Mode</source>
@@ -4347,13 +4306,11 @@ Vérifier les choix de carte de son dans les préférences.</translation>
         </message>
         <message>
             <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Quand activé, le playback continu en sourdine dans le fond ruant la boucle, l'inversion, le scratch etc.</translation>
         </message>
         <message>
             <source>Once disabled, the audible playback will resume where the track would have been.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Une fois désactivé, le retour reprendra de manière audible où la chanson se trouvait.</translation>
         </message>
         <message>
             <source>Clock</source>
@@ -4738,18 +4695,15 @@ Cliquez sur OK pour quitter.</translation>
         <name>WOverview</name>
         <message>
             <source>Ready to play, analyzing ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Prêt à jouer, analyse en cours ..</translation>
         </message>
         <message>
             <source>Loading track ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Chargement chanson ..</translation>
         </message>
         <message>
             <source>Finalizing ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Finalisation ..</translation>
         </message>
     </context>
     <context>
@@ -4819,8 +4773,7 @@ Cliquez sur OK pour quitter.</translation>
         </message>
         <message>
             <source>Load to Preview Deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Charger sur la Platine de Prévisualisation</translation>
         </message>
         <message>
             <source>Reset Play Count</source>
@@ -4844,8 +4797,7 @@ Cliquez sur OK pour quitter.</translation>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Échantillonneur %1</translation>
         </message>
     </context>
     <context>
