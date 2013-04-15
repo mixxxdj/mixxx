@@ -18,23 +18,6 @@ EngineBufferScaleDummy::~EngineBufferScaleDummy()
 
 }
 
-void EngineBufferScaleDummy::setBaseRate(double baserate)
-{
-	m_dBaseRate = baserate;
-}
-
-double EngineBufferScaleDummy::setTempo(double tempo)
-{
-	m_dTempo = tempo;
-	return m_dTempo;
-}
-
-double EngineBufferScaleDummy::setKey(double key)
-{
-        m_dKey = key;
-        return m_dKey;
-}
-
 double EngineBufferScaleDummy::getNewPlaypos()
 {
 	return m_samplesRead;
@@ -47,14 +30,15 @@ void EngineBufferScaleDummy::clear()
 
 CSAMPLE *EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
-    if (m_dBaseRate * m_dTempo == 0.0f) {
+    double rate = m_dRateAdjust * m_dTempoAdjust * m_dPitchAdjust;
+    if (rate == 0.0f) {
         memset(m_buffer, 0, sizeof(CSAMPLE) * buf_size);
         return m_buffer;
     }
     int samples_remaining = buf_size;
     CSAMPLE* buffer_back = m_buffer;
     while (samples_remaining > 0) {
-        int read_samples = m_pReadAheadManager->getNextSamples(m_dBaseRate*m_dTempo,
+        int read_samples = m_pReadAheadManager->getNextSamples(rate,
                                                                buffer_back,
                                                                samples_remaining);
         samples_remaining -= read_samples;

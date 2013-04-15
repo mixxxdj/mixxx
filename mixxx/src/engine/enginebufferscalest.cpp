@@ -30,30 +30,25 @@
 
 using namespace soundtouch;
 
-EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager) :
-    EngineBufferScale(),
-    m_bBackwards(false),
-    m_bPitchIndpTimeStretch(false),
-    m_bTimeIndpPitchStretch(false),
-    m_bClear(true),
-    m_pReadAheadManager(pReadAheadManager)
-{
+EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
+    : EngineBufferScale(),
+      m_bBackwards(false),
+      m_bClear(true),
+      m_pReadAheadManager(pReadAheadManager) {
     m_qMutex.lock();
     m_pSoundTouch = new soundtouch::SoundTouch();
-    m_dBaseRate = 1.;
-    m_dTempo = 1.;
-    m_dKey = 0;
 
     m_pSoundTouch->setChannels(2);
-    m_pSoundTouch->setRate(m_dBaseRate);
-    m_pSoundTouch->setTempo(m_dTempo);
-    m_pSoundTouch->setPitchSemiTones(float(m_dKey));
+    m_pSoundTouch->setRate(1.0);
+    m_pSoundTouch->setTempo(1.0);
+    m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_qMutex.unlock();
 
     slotSetSamplerate(44100.);
     ControlObject * p = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
-    connect(p, SIGNAL(valueChanged(double)), this, SLOT(slotSetSamplerate(double)));
+    connect(p, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetSamplerate(double)));
 
     buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
 }
@@ -64,61 +59,50 @@ EngineBufferScaleST::~EngineBufferScaleST()
     delete [] buffer_back;
 }
 
-void EngineBufferScaleST::setPitchIndpTimeStretch(bool b)
-{
-    m_bPitchIndpTimeStretch = b;
-    //qDebug()<<b<<"pl";
-    m_qMutex.lock();
-    if (m_bPitchIndpTimeStretch)
-        m_pSoundTouch->setRate(1.);
-    else
-        m_pSoundTouch->setTempo(1.);
-    m_qMutex.unlock();
-}
+void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
+                                             double* tempo_adjust,
+                                             double* pitch_adjust) {
+    // Assumes rate_adjust is just baserate (which cannot be negative) and
+    // pitch_adjust cannot be negative because octave change conversion to pitch
+    // ratio is an exp(x) function.
+    m_bBackwards = *tempo_adjust < 0;
 
-bool EngineBufferScaleST::getPitchIndpTimeStretch(void)
-{
-    return m_bPitchIndpTimeStretch;
-}
+    m_dRateAdjust = *rate_adjust;
 
-void EngineBufferScaleST::setTimeIndpPitchStretch(bool b)
-{
-    m_bTimeIndpPitchStretch = b;
-    //qDebug()<<b<<"tl";
-    m_qMutex.lock();
-    if (m_bTimeIndpPitchStretch)
-        m_pSoundTouch->setRate(1.);
-    else
-        m_pSoundTouch->setPitchSemiTones(0);
-    m_qMutex.unlock();
-}
-
-bool EngineBufferScaleST::getTimeIndpPitchStretch(void)
-{
-    return m_bTimeIndpPitchStretch;
-}
-
-
-void EngineBufferScaleST::setBaseRate(double dBaseRate)
-{
-    m_dBaseRate = dBaseRate;
-
-    m_qMutex.lock();
-    if (m_bPitchIndpTimeStretch) {
-        m_pSoundTouch->setRate(m_dBaseRate);
+    // It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to
+    // SoundTouch (see definition of MIN_SEEK_SPEED for more details).
+    double tempo_abs = fabs(*tempo_adjust);
+    if (tempo_abs > MAX_SEEK_SPEED) {
+        tempo_abs = MAX_SEEK_SPEED;
+    } else if (tempo_abs < MIN_SEEK_SPEED) {
+        tempo_abs = 0;
     }
-    //or if if we use ST for linear interpolation...
-    else if (m_dBaseRate >= MIN_SEEK_SPEED) {
-        m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
-    }
-    //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
-    //if (m_dBaseRate <= MIN_SEEK_SPEED)
-    //    m_pSoundTouch->setRate(0.010f);
-    //else if(m_dBaseRate >= MIN_SEEK_SPEED)
-    //    m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
-    m_qMutex.unlock();
-}
 
+    // Let the caller know we clamped their value.
+    *tempo_adjust = m_bBackwards ? -tempo_abs : tempo_abs;
+
+    m_qMutex.lock();
+    // Note that we do not set the tempo if it is zero. This is because of the
+    // above clamping which prevents us from going below MIN_SEEK_SPEED. I think
+    // we should handle this better but I have left the logic in place. rryan
+    // 4/2013.
+    if (tempo_abs != m_dTempoAdjust && tempo_abs != 0) {
+        m_pSoundTouch->setTempo(tempo_abs);
+        m_dTempoAdjust = tempo_abs;
+    }
+    if (*rate_adjust != m_dRateAdjust) {
+        m_pSoundTouch->setRate(*rate_adjust);
+        m_dRateAdjust = *rate_adjust;
+    }
+    if (*pitch_adjust != m_dPitchAdjust) {
+        m_pSoundTouch->setPitch(*pitch_adjust);
+        m_dPitchAdjust = *pitch_adjust;
+    }
+    m_qMutex.unlock();
+
+    // NOTE(rryan) : There used to be logic here that clear()'d when the player
+    // changed direction. I removed it because this is handled by EngineBuffer.
+}
 
 void EngineBufferScaleST::clear()
 {
@@ -138,89 +122,6 @@ void EngineBufferScaleST::slotSetSamplerate(double dSampleRate)
     else
         m_pSoundTouch->setSampleRate(44100);
     m_qMutex.unlock();
-}
-
-double EngineBufferScaleST::setTempo(double dTempo)
-{
-    double dTempoOld = m_dTempo;
-    m_dTempo = fabs(dTempo);
-
-    if (m_dTempo > MAX_SEEK_SPEED) {
-        m_dTempo = MAX_SEEK_SPEED;
-    } else if (m_dTempo < MIN_SEEK_SPEED) {
-        m_dTempo = 0.0;
-    }
-
-    m_qMutex.lock();
-    //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
-    if (dTempoOld != m_dTempo && m_dTempo != 0.0)
-    {
-        qDebug()<<m_bPitchIndpTimeStretch;
-        if (m_bPitchIndpTimeStretch)
-            m_pSoundTouch->setTempo(m_dTempo);
-        else
-            m_pSoundTouch->setRate(m_dBaseRate*m_dTempo);
-    }
-    m_qMutex.unlock();
-
-    if (dTempo<0.)
-    {
-        if (!m_bBackwards)
-            clear();
-
-        m_bBackwards = true;
-        return -m_dTempo;
-    }
-    else
-    {
-        if (m_bBackwards)
-            clear();
-
-        m_bBackwards = false;
-        return m_dTempo;
-    }
-}
-
-double EngineBufferScaleST::setKey(double dKey) {
-    double dKeyOld = m_dKey;
-    m_dKey = fabs(dKey);
-
-    /*if (m_dKey>MAX_SEEK_SPEED)
-        m_dKey = MAX_SEEK_SPEED;
-    else if (m_dKey<MIN_SEEK_SPEED)
-        m_dKey = 0.0;*/
-    qDebug()<<"setkeyscalest";
-    m_qMutex.lock();
-
-    //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
-    //if (dKeyOld != m_dKey && m_dKey != 0.0)
-    //{   //qDebug()<<m_dKey;
-    if (m_bTimeIndpPitchStretch){
-        //qDebug()<<"key"<<m_dKey;
-        m_pSoundTouch->setPitchSemiTones(float(dKey*120));
-        }
-        //else
-          //  m_pSoundTouch->setRate(m_dBaseRate*m_dKey);
-    //}
-    m_qMutex.unlock();
-
-    /*if (dKey<0.)
-    {
-        if (!m_bBackwards)
-            clear();
-
-        m_bBackwards = true;
-        return -m_dKey;
-    }
-    else
-    {
-        if (m_bBackwards)
-            clear();
-
-        m_bBackwards = false;
-        return m_dKey;
-    }*/
-    return dKey;
 }
 
 CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
@@ -258,9 +159,11 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
             // math_min(kiSoundTouchReadAheadLength,remaining_source_frames);
             unsigned long iLenFrames = kiSoundTouchReadAheadLength;
             unsigned long iAvailSamples = m_pReadAheadManager
-                ->getNextSamples((m_bBackwards ? -1.0f : 1.0f) * m_dBaseRate * m_dTempo,
-                                 buffer_back,
-                                 iLenFrames * 2);
+                    ->getNextSamples(
+                        (m_bBackwards ? -1.0f : 1.0f) * m_dRateAdjust *
+                        m_dTempoAdjust * m_dPitchAdjust,
+                        buffer_back,
+                        iLenFrames * 2);
             unsigned long iAvailFrames = iAvailSamples / 2;
 
             if (iAvailFrames > 0) {
@@ -301,8 +204,8 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     // new_playpos is now interpreted as the total number of virtual samples
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
-    m_samplesRead = m_dTempo*m_dBaseRate*total_received_frames*2;
-
+    m_samplesRead = m_dTempoAdjust * m_dRateAdjust * m_dPitchAdjust *
+            total_received_frames * 2;
     m_qMutex.unlock();
 
     return m_buffer;

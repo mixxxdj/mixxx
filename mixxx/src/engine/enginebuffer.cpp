@@ -70,6 +70,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pReader(NULL),
     m_filepos_play(0.),
     m_rate_old(0.),
+    m_speed_old(0),
+    m_pitch_old(0),
+    m_baserate_old(0),
     m_file_length_old(-1),
     m_file_srate_old(0),
     m_iSamplesCalculated(0),
@@ -227,23 +230,18 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
-    setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
-    setTimeIndpPitchStretch(false);
+    enableSoundTouch(false); // default to VE, let the user specify PITS in their mix
     setNewPlaypos(0.);
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
     m_pKeylock->set(false);
 
-    m_pTempolock = new ControlPushButton(ConfigKey(m_group, "tempolock"));
-    m_pTempolock->setButtonMode(ControlPushButton::TOGGLE);
-    m_pTempolock->set(false);
-
     m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
     connect(m_pEject, SIGNAL(valueChanged(double)),
             this, SLOT(slotEjectTrack(double)),
             Qt::DirectConnection);
-    first=true;
+
     //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
     df.setFileName("mixxx-debug.csv");
@@ -284,7 +282,6 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleST;
 
     delete m_pKeylock;
-    delete m_pTempolock;
     delete m_pEject;
 
     delete [] m_pDitherBuffer;
@@ -307,8 +304,7 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     return fFractionalPlaypos;
 }
 
-void EngineBuffer::setPitchIndpTimeStretch(bool b)
-{
+void EngineBuffer::enableSoundTouch(bool b) {
     // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // Change sound scale mode
@@ -324,55 +320,10 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //the waveform the roll in a weird way or fire an ASSERT from
     //visualchannel.cpp or something. Need to valgrind this or something.
 
-    //if (b == true) {
-      //  m_pScale = m_pScaleST;
-        //qDebug()<<"true";
-        ((EngineBufferScaleST *)m_pScaleST)->setPitchIndpTimeStretch(b);
-    //} else {
-   //     m_pScale = m_pScaleLinear;
-    //}
-    //m_bScalerChanged = true;
-}
-
-void EngineBuffer::setTimeIndpPitchStretch(bool b)
-{
-    // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
-
-    // Change sound scale mode
-
-    //SoundTouch's linear interpolation code doesn't sound very good.
-    //Our own EngineBufferScaleLinear sounds slightly better, but it's
-    //not working perfectly. Eventually we should have our own working
-    //better, so scratching sounds good.
-
-    //Update Dec 30/2007
-    //If we delete the m_pScale object and recreate it, it eventually
-    //causes some weird bad pointer somewhere, which will either cause
-    //the waveform the roll in a weird way or fire an ASSERT from
-    //visualchannel.cpp or something. Need to valgrind this or something.
-
-    //if (b == true) {
-      //  m_pScale = m_pScaleST;
-        ((EngineBufferScaleST *)m_pScaleST)->setTimeIndpPitchStretch(b);
-       // qDebug()<<"true";
-    //} else {
-      //  m_pScale = m_pScaleLinear;
-    //}
-    //m_bScalerChanged = true;
-}
-
-void EngineBuffer::enableSoundTouch(bool b)
-{
-    if (b==true){
-      //  qDebug()<<"a";
+    if (b) {
         m_pScale = m_pScaleST;
-        if(m_pTempolock->get())setTimeIndpPitchStretch(true);
-        else if (m_pKeylock->get())setPitchIndpTimeStretch(true);
-    }
-    else{
+    } else {
         m_pScale = m_pScaleLinear;
-        setTimeIndpPitchStretch(false);
-        setPitchIndpTimeStretch(false);
     }
     m_bScalerChanged = true;
 }
@@ -623,7 +574,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     CSAMPLE * pOutput = (CSAMPLE *)pOut; // strip const attribute TODO(XXX): avoid this hack
     bool bCurBufferPaused = false;
     double rate = 0;
-    double keyrate = 0;
 
     bool bTrackLoading = m_iTrackLoading != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
@@ -636,13 +586,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
 
         bool paused = m_playButton->get() != 0.0f ? false : true;
-
         bool is_scratching = false;
-        rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
-                                             &is_scratching);
-        keyrate = m_pKeyControl->getRawRate();
-        //qDebug()<<m_pKeylock->get() << " " << m_pTempolock->get();
-        //qDebug()<<(m_pScale!=m_pScaleST)<<" ";
+        bool keylock_enabled = m_pKeylock->get() > 0;
+
+        // speed is the percentage change in player speed. Depending on whether
+        // keylock is enabled, this is applied to either the rate or the tempo.
+        double speed = m_pRateControl->calculateRate(
+            baserate, paused, iBufferSize, &is_scratching);
+        double pitch = m_pKeyControl->getPitchAdjust();
 
         // Update the slipped position
         if (m_bSlipEnabled) {
@@ -653,32 +604,26 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // Scratching always disables keylock because keylock sounds terrible
         // when not going at a constant rate.
         if (is_scratching && m_pScale != m_pScaleLinear) {
-            //setPitchIndpTimeStretch(false);
-            //setTimeIndpPitchStretch(false);
-            //qDebug()<<"5";
             enableSoundTouch(false);
-            //qDebug()<<"6";
-            } else if (!is_scratching) {
-            if ((m_pKeylock->get() || m_pTempolock->get()) && m_pScale != m_pScaleST) {
-                //setPitchIndpTimeStretch(true);
-                //setTimeIndpPitchStretch(false);
-                qDebug()<<"1";
+        } else if (!is_scratching) {
+            // If either keylock is enabled or the pitch slider is non-zero then
+            // we need to use SoundTouch to scale the audio.
+            bool should_use_soundtouch = keylock_enabled || pitch != 0;
+            // If we should be using SoundTouch and it's not enabled, enable
+            // it. If we should not be using SoundTouch and it is enabled,
+            // disable it.
+            if (should_use_soundtouch && m_pScale != m_pScaleST) {
                 enableSoundTouch(true);
-                //qDebug()<<"1";
-            }else if ((!m_pKeylock->get() && !m_pTempolock->get()) && m_pScale == m_pScaleST) {
-                qDebug()<<"3";
+            } else if (!should_use_soundtouch && m_pScale == m_pScaleST) {
                 enableSoundTouch(false);
-                //setPitchIndpTimeStretch(false);
-                //setTimeIndpPitchStretch(false);
-                //qDebug()<<"3";
             }
-
         }
-       // qDebug()<<keyrate;
-        if(m_pTempolock->get())m_pScale->setKey(keyrate);
 
-        // If the rate has changed, set it in the scale object
-        if (rate != m_rate_old || m_bScalerChanged) {
+        // If the baserate, rate, or pitch has changed, we need to update the
+        // scaler. Also, if we have changed scalers then we need to update the
+        // scaler.
+        if (baserate != m_baserate_old || speed != m_speed_old ||
+            pitch != m_pitch_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
             // Make sure new scaler has proper position
             if (m_bScalerChanged) {
@@ -686,22 +631,58 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             } else if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
-                if ((m_rate_old <= 0 && rate > 0) ||
-                    (m_rate_old >= 0 && rate < 0)) {
+                if ((m_speed_old <= 0 && speed > 0) ||
+                    (m_speed_old >= 0 && speed < 0)) {
                     setNewPlaypos(m_filepos_play);
                 }
             }
 
-            if (baserate > 0) { // Prevent division by 0
-                rate = baserate * m_pScale->setTempo(rate/baserate);
+            // At this point, rate is baserate multiplied by the speed
+            // adjustment, or the speed above normal that the engine should play
+            // the track. Baserate accounts for re-sampling the source audio to
+            // match our output sample rate (file_samplerate /
+            // master_samplerate).
+            //
+            // The rate adjustment in percentage of rate (1.0 being normal
+            // rate).
+            double rate_adjust = speed;
+            // The tempo adjustment in percentage of tempo (1.0 being normal
+            // temppo).
+            double tempo_adjust = 1.0;
+            // The pitch adjustment in percentage of pitch (1.0 being normal
+            // pitch -- note, this is not measured in octaves or semitones).
+            double pitch_adjust = pitch;
+
+            if (keylock_enabled) {
+                // If keylock is enabled, then we need to take the speed
+                // adjustment that is currently built into the rate and instead
+                // control the tempo by that amount.
+                rate_adjust = baserate;
+                // Protect against division by 0.
+                tempo_adjust = speed;
             }
-            m_pScale->setBaseRate(baserate);
-            m_rate_old = rate;
+
+            m_pScale->setScaleParameters(&rate_adjust,
+                                         &tempo_adjust,
+                                         &pitch_adjust);
+
+            m_baserate_old = baserate;
+            m_speed_old = speed;
+            m_pitch_old = pitch;
+
+            // The way we treat rate inside of EngineBuffer is actually a
+            // description of "sample consumption rate" or percentage of samples
+            // consumed relative to playing back the track at its native sample
+            // rate and normal speed.
+            m_rate_old = rate = rate_adjust * tempo_adjust * pitch_adjust;
+
             // Scaler is up to date now.
             m_bScalerChanged = false;
+        } else {
+            // Scaler did not need updating. By definition this means we are at
+            // our old rate.
+            rate = m_rate_old;
         }
-       // qDebug()<<keyrate<<"pr";
-        //if (keyrate!=0)
 
         bool at_start = m_filepos_play <= 0;
         bool at_end = m_filepos_play >= m_file_length_old;

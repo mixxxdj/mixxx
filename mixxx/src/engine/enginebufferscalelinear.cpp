@@ -20,14 +20,11 @@
 #include "mathstuff.h"
 #include "sampleutil.h"
 
-EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager) :
-    EngineBufferScale(),
-    m_pReadAheadManager(pReadAheadManager)
-{
-    m_dBaseRate = 0.0f;
-    m_dTempo = 0.0f;
-    m_fOldTempo = 1.0f;
-    m_fOldBaseRate = 1.0f;
+EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager)
+        : EngineBufferScale(),
+          m_pReadAheadManager(pReadAheadManager) {
+    m_dRate = 1.0;
+    m_dOldRate = 1.0f;
     m_dCurSampleIndex = 0.0f;
     m_dNextSampleIndex = 0.0f;
 
@@ -50,62 +47,25 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear()
     delete [] buffer_int;
 }
 
-double EngineBufferScaleLinear::setTempo(double _tempo)
-{
-//    if (m_fOldTempo != m_dTempo)
-        m_fOldTempo = m_dTempo; //Save the old tempo when the tempo changes
-
-    m_dTempo = _tempo;
-
-    if (m_dTempo > MAX_SEEK_SPEED) {
-        m_dTempo = MAX_SEEK_SPEED;
-    } else if (m_dTempo < -MAX_SEEK_SPEED) {
-        m_dTempo = -MAX_SEEK_SPEED;
+void EngineBufferScaleLinear::setScaleParameters(double* rate_adjust,
+                                                 double* tempo_adjust,
+                                                 double* pitch_adjust) {
+    // EBSL doesn't support tempo adjustment so we assume it is 1.
+    if (*tempo_adjust != 1.0) {
+        qDebug() << "WARNING: EngineBufferScaleLinear being used with tempo != 1. Ignoring.";
+        *tempo_adjust = 1.0;
     }
+
+    // TODO(rryan) MAX_SEEK_SPEED?
+
+    m_dOldRate = m_dRate;
+    m_dRate = *rate_adjust * *pitch_adjust;
 
     // Determine playback direction
-    if (m_dTempo < 0.) {
-        m_bBackwards = true;
-    } else {
-        m_bBackwards = false;
-    }
-
-    return m_dTempo;
+    m_bBackwards = m_dRate < 0.0;
 }
 
-double EngineBufferScaleLinear::setKey(double _key)
-{
-//    if (m_fOldTempo != m_dTempo)
-        m_fOldKey = m_dKey; //Save the old tempo when the tempo changes
-
-    m_dKey = _key;
-
-    if (m_dKey>MAX_SEEK_SPEED) {
-        m_dKey = MAX_SEEK_SPEED;
-    } else if (m_dKey < -MAX_SEEK_SPEED) {
-        m_dKey = -MAX_SEEK_SPEED;
-    }
-
-    // Determine playback direction
-    if (m_dKey<0.) {
-        m_bBackwards = true;
-    } else {
-        m_bBackwards = false;
-    }
-
-    return m_dKey;
-}
-
-void EngineBufferScaleLinear::setBaseRate(double dBaseRate)
-{
-//    if (m_fOldBaseRate != m_dBaseRate)
-        m_fOldBaseRate = m_dBaseRate; //Save the old baserate when it changes
-
-    m_dBaseRate = dBaseRate*m_dTempo;
-}
-
-void EngineBufferScaleLinear::clear()
-{
+void EngineBufferScaleLinear::clear() {
     m_bClear = true;
     // Clear out buffer and saved sample data
     buffer_int_size = 0;
@@ -113,7 +73,6 @@ void EngineBufferScaleLinear::clear()
     m_fPrevSample[0] = 0;
     m_fPrevSample[1] = 0;
 }
-
 
 // laurent de soras - punked from musicdsp.org (mad props)
 inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
@@ -129,8 +88,8 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 /** Determine if we're changing directions (scratching) and then perform
     a stretch */
 CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
-    float rate_add_new = m_dBaseRate;
-    float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
+    float rate_add_new = m_dRate;
+    float rate_add_old = m_dOldRate; //Smoothly interpolate to new playback rate
     int samples_read = 0;
     m_samplesRead = 0;
 
@@ -143,8 +102,8 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         //the other way.
 
         //first half: rate goes from old rate to zero
-        m_fOldBaseRate = rate_add_old;
-        m_dBaseRate = 0.0;
+        m_dOldRate = rate_add_old;
+        m_dRate = 0.0;
         m_buffer = do_scale(m_buffer, buf_size/2, &samples_read);
 
         // reset prev sample so we can now read in the other direction (may not
@@ -174,8 +133,8 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         m_dNextSampleIndex = 1.0 - (m_dNextSampleIndex - floor(m_dNextSampleIndex));
 
         //second half: rate goes from zero to new rate
-        m_fOldBaseRate = 0.0;
-        m_dBaseRate = rate_add_new;
+        m_dOldRate = 0.0;
+        m_dRate = rate_add_new;
         //pass the address of the sample at the halfway point
         do_scale(&m_buffer[buf_size/2], buf_size/2, &samples_read);
 
@@ -192,15 +151,15 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
 CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         unsigned long buf_size, int* samples_read) {
     long unscaled_samples_needed;
-    float rate_add_new = m_dBaseRate;
-    float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
+    float rate_add_new = m_dRate;
+    float rate_add_old = m_dOldRate; //Smoothly interpolate to new playback rate
     float rate_add = rate_add_new;
     float rate_add_diff = rate_add_new - rate_add_old;
     double rate_add_abs;
 
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
-    m_fOldBaseRate = m_dBaseRate;
+    m_dOldRate = m_dRate;
 
     // Determine position in read_buffer to start from. (This is always 0 with
     // the new EngineBuffer implementation)

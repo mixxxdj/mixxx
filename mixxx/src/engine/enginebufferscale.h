@@ -42,11 +42,24 @@ public:
     EngineBufferScale();
     virtual ~EngineBufferScale();
 
-    /** Set base tempo, ie. normal playback speed. */
-    virtual void setBaseRate(double dBaseRate) = 0;
-    /** Set tempo */
-    virtual double setTempo(double dTempo) = 0;
-    virtual double setKey(double dKey) = 0;
+    // Sets the scaling parameters.
+    // * The rate adjustment describes the rate change in percentage of original
+    //   rate. For example, a rate adjustment of 1.0 is no change.
+    // * The tempo adjustment describes the tempo change in percentage of
+    //   original tempo. For example, a tempo adjustment of 1.0 is no change.
+    // * The pitch adjustment describes the pitch adjustment in percentage of
+    //   octaves. For example, a pitch adjustment of 1.0 is no change.
+    //
+    // If parameter settings are outside of acceptable limits, each setting will
+    // be set to the value it was clamped to.
+    virtual void setScaleParameters(double* rate_adjust,
+                                    double* tempo_adjust,
+                                    double* pitch_adjust) {
+        m_dRateAdjust = *rate_adjust;
+        m_dTempoAdjust = *tempo_adjust;
+        m_dPitchAdjust = *pitch_adjust;
+    }
+
     /** Get new playpos after call to scale() */
     double getSamplesRead();
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
@@ -55,8 +68,7 @@ public:
     virtual CSAMPLE *getScaled(unsigned long buf_size) = 0;
 
 protected:
-    /** Tempo and base rate */
-    double m_dTempo, m_dBaseRate,m_dKey;
+    double m_dRateAdjust, m_dTempoAdjust, m_dPitchAdjust;
     /** Pointer to internal buffer */
     CSAMPLE *m_buffer;
     /** New playpos after call to scale */

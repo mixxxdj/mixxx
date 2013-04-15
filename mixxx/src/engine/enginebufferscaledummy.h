@@ -30,11 +30,6 @@ public:
     EngineBufferScaleDummy(ReadAheadManager* pReadAheadManager);
     ~EngineBufferScaleDummy();
 
-    /** Set base tempo, ie. normal playback speed. */
-    void setBaseRate(double dBaseRate);
-    /** Set tempo */
-    double setTempo(double dTempo);
-    double setKey(double dKey);
     /** Get new playpos after call to scale() */
     double getNewPlaypos();
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
@@ -42,9 +37,8 @@ public:
     /** Scale buffer */
     CSAMPLE* getScaled(unsigned long buf_size);
 
-private:
+  private:
     ReadAheadManager* m_pReadAheadManager;
-
 };
 
 #endif

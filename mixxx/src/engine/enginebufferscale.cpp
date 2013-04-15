@@ -18,19 +18,17 @@
 #include "engine/enginebufferscale.h"
 
 EngineBufferScale::EngineBufferScale()
-{
-    m_dTempo = 1.;
-    m_dKey = 0;
-    m_buffer = new CSAMPLE[MAX_BUFFER_LEN];
-    m_samplesRead = 0;
+        : m_dRateAdjust(1.0),
+          m_dTempoAdjust(1.0),
+          m_dPitchAdjust(1.0),
+          m_buffer(new CSAMPLE[MAX_BUFFER_LEN]),
+          m_samplesRead(0) {
 }
 
-EngineBufferScale::~EngineBufferScale()
-{
+EngineBufferScale::~EngineBufferScale() {
     delete [] m_buffer;
 }
 
-double EngineBufferScale::getSamplesRead()
-{
+double EngineBufferScale::getSamplesRead() {
     return m_samplesRead;
 }

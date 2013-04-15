@@ -49,20 +49,12 @@ public:
     EngineBufferScaleST(ReadAheadManager* pReadAheadManager);
     ~EngineBufferScaleST();
 
-    /** Toggle pitch independent time stretch */
-    void setPitchIndpTimeStretch(bool b);
-    bool getPitchIndpTimeStretch(void);
-    void setTimeIndpPitchStretch(bool b);
-    bool getTimeIndpPitchStretch(void);
+    void setScaleParameters(double* rate_adjust,
+                            double* tempo_adjust,
+                            double* pitch_adjust);
 
     /** Scale buffer */
     CSAMPLE* getScaled(unsigned long buf_size);
-
-    /** Set tempo */
-    double setTempo(double dTempo);
-    double setKey(double dKey);//{ return dKey;};
-    /** Set base rate */
-    void setBaseRate(double dBaseRate);
 
     /** Flush buffer */
     void clear();
@@ -80,9 +72,6 @@ private:
     /** SoundTouch time/pitch scaling lib */
     soundtouch::SoundTouch* m_pSoundTouch;
 
-    /** True if in pitch independent time stretch mode */
-    bool m_bPitchIndpTimeStretch;
-    bool m_bTimeIndpPitchStretch;
     /** Used when clear is called */
     bool m_bClear;
 

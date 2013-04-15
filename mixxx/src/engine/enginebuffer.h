@@ -156,9 +156,7 @@ public:
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
 
-private:
-    void setPitchIndpTimeStretch(bool b);
-    void setTimeIndpPitchStretch(bool b);
+  private:
     void enableSoundTouch(bool b);
 
     void updateIndicators(double rate, int iBufferSize);
@@ -200,8 +198,19 @@ private:
 
     /** The current sample to play in the file. */
     double m_filepos_play;
-    /** Copy of rate_exchange, used to check if rate needs to be updated */
+
+    // The previous callback's rate.
     double m_rate_old;
+
+    // The previous callback's speed. Used to check if the scaler parameters
+    // need updating.
+    double m_speed_old;
+
+    // need updating.
+    double m_pitch_old;
+    // The previous callback's baserate. Used to check if the scaler parameters
+    // need updating.
+    double m_baserate_old;
     /** Copy of length of file */
     long int m_file_length_old;
     /** Copy of file sample rate*/
@@ -241,7 +250,6 @@ private:
     ControlPotmeter* m_visualPlaypos;
     ControlObject* m_pSampleRate;
     ControlPushButton* m_pKeylock;
-    ControlPushButton* m_pTempolock;
 
     ControlPushButton* m_pEject;
 
