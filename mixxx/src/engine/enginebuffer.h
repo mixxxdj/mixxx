@@ -205,7 +205,7 @@ public:
     // The previous callback's speed. Used to check if the scaler parameters
     // need updating.
     double m_speed_old;
-
+    // The previous callback's pitch. Used to check if the scaler parameters
     // need updating.
     double m_pitch_old;
     // The previous callback's baserate. Used to check if the scaler parameters

@@ -653,7 +653,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // pitch -- note, this is not measured in octaves or semitones).
             double pitch_adjust = pitch;
 
-            if (keylock_enabled) {
+            if (keylock_enabled && !is_scratching) {
                 // If keylock is enabled, then we need to take the speed
                 // adjustment that is currently built into the rate and instead
                 // control the tempo by that amount.
