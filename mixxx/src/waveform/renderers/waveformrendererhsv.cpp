@@ -24,7 +24,7 @@ void WaveformRendererHSV::onSetup(const QDomNode& node) {
     Q_UNUSED(node);
 }
 
-void  WaveformRendererHSV::draw(QPainter* painter,
+void WaveformRendererHSV::draw(QPainter* painter,
                                           QPaintEvent* /*event*/) {
     const TrackPointer trackInfo = m_waveformRenderer->getTrackInfo();
     if (!trackInfo) {
@@ -72,7 +72,7 @@ void  WaveformRendererHSV::draw(QPainter* painter,
     double h,s,v;
 
     // Get base color of waveform in the HSV format (s and v isn't use)
-    m_colors.getLowColor().getHsvF(&h,&s,&v);
+    m_pColors->getLowColor().getHsvF(&h,&s,&v);
 
     QColor color;
     float lo, hi, total;

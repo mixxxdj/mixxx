@@ -17,7 +17,7 @@ SetCompressor /SOLID lzma
 
 !define PRODUCT_NAME "Mixxx"
 ;!define PRODUCT_VERSION ""  ; Specified by the SConscript
-!define PRODUCT_PUBLISHER "The Mixxx Team"
+!define PRODUCT_PUBLISHER "The Mixxx Development Team"
 !define PRODUCT_WEB_SITE "http://www.mixxx.org"
 
 !define DEFAULT_SKIN "Deere1280x800-WXGA"
@@ -616,6 +616,7 @@ Section "Uninstall"
   RMDir /r "$INSTDIR\skins\Deere1440x900-WXGA+"
   RMDir /r "$INSTDIR\skins\Deere1920x1080-FullHD"
   RMDir /r "$INSTDIR\skins\Deere1920x1200-WUXGA"
+  RMDir /r "$INSTDIR\skins\Deere-Samplegrid-1280x800-WXGA"
   RMDir /r "$INSTDIR\skins\LateNight1280x1024-SXGA"
   RMDir /r "$INSTDIR\skins\LateNight1280x800-WXGA"
   RMDir /r "$INSTDIR\skins\LateNight1366x768-WXGA"

@@ -27,7 +27,6 @@ class MidiController : public Controller {
     virtual ~MidiController();
 
     virtual QString presetExtension();
-    inline QString defaultPreset();
 
     virtual ControllerPresetPointer getPreset() const {
         MidiControllerPreset* pClone = new MidiControllerPreset();
@@ -69,7 +68,7 @@ class MidiController : public Controller {
 
   private slots:
     // Initializes the engine and static output mappings.
-    void applyPreset(QString resourcePath);
+    void applyPreset(QList<QString> scriptPaths);
 
   private:
     virtual void send(unsigned int word) = 0;

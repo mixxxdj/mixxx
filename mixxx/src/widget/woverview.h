@@ -36,34 +36,32 @@ class Waveform;
 class WOverview : public WWidget
 {
     Q_OBJECT
-public:
+  public:
     WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget *parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
 
-    QColor getMarkerColor();
-
-protected:
+  protected:
     void mouseMoveEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
     void mousePressEvent(QMouseEvent *e);
     void paintEvent(QPaintEvent *);
     void resizeEvent(QResizeEvent *);
 
-public slots:
+  public slots:
     void setValue(double);
     void slotLoadNewTrack(TrackPointer pTrack);
     void slotTrackLoaded(TrackPointer pTrack);
     void slotUnloadTrack(TrackPointer pTrack);
 
-signals:
+  signals:
     void trackDropped(QString filename, QString group);
 
-protected:
+  protected:
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dropEvent(QDropEvent* event);
 
-private slots:
+  private slots:
     void onEndOfTrackChange(double v);
 
     void onMarkChanged(double v);
@@ -75,6 +73,7 @@ private slots:
   private:
     /** append the waveform overview pixmap according to available data in waveform */
     bool drawNextPixmapPart();
+    void paintText(const QString &text, QPainter *painter);
     inline int valueToPosition(float value) const {
         return (int)(m_a * value - m_b + 0.5);
     }
@@ -111,7 +110,6 @@ private slots:
     QPixmap m_backgroundPixmap;
     QString m_backgroundPixmapPath;
     QColor m_qColorBackground;
-    QColor m_qColorMarker;
     QColor m_endOfTrackColor;
 
     WaveformSignalColors m_signalColors;

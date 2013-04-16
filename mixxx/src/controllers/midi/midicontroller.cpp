@@ -21,13 +21,6 @@ MidiController::~MidiController() {
     // destructors.
 }
 
-QString MidiController::defaultPreset() {
-    QString name = getName();
-    return USER_PRESETS_PATH.append(name.right(name.size()
-            -name.indexOf(" ")-1).replace(" ", "_")
-            + presetExtension());
-}
-
 QString MidiController::presetExtension() {
     return MIDI_PRESET_EXTENSION;
 }
@@ -66,9 +59,9 @@ bool MidiController::savePreset(const QString fileName) const {
     return handler.save(m_preset, getName(), fileName);
 }
 
-void MidiController::applyPreset(QString resourcePath) {
+void MidiController::applyPreset(QList<QString> scriptPaths) {
     // Handles the engine
-    Controller::applyPreset(resourcePath);
+    Controller::applyPreset(scriptPaths);
 
     // Only execute this code if this is an output device
     if (isOutputDevice()) {
@@ -117,29 +110,25 @@ void MidiController::createOutputHandlers() {
         if (!moh->validate()) {
             QString errorLog = QString("Invalid MixxxControl: %1, %2")
                                         .arg(group, key).toUtf8();
-            if (debugging()) {
-                qCritical() << errorLog;
-            } else {
-                qWarning() << errorLog;
-                ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-                props->setType(DLG_WARNING);
-                props->setTitle(tr("MixxxControl not found"));
-                props->setText(QString(tr("The MixxxControl '%1, %2' specified in the "
-                                "loaded mapping is invalid."))
-                                .arg(group, key));
-                props->setInfoText(QString(tr("The MIDI output message 0x%1 0x%2 will not be bound."
-                                "\n(Click Show Details for hints.)"))
-                                   .arg(QString::number(status, 16).toUpper(),
-                                        QString::number(control, 16).toUpper().rightJustified(2,'0')));
-                QString detailsText = QString(tr("* Check to see that the "
-                    "MixxxControl name is spelled correctly in the mapping "
-                    "file (.xml)\n"));
-                detailsText += QString(tr("* Make sure the MixxxControl you're trying to use actually exists."
-                    " Visit this wiki page for a complete list:"));
-                detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/mixxxcontrols");
-                props->setDetails(detailsText);
-                ErrorDialogHandler::instance()->requestErrorDialog(props);
-            }
+
+            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+            props->setType(DLG_WARNING);
+            props->setTitle(tr("MixxxControl not found"));
+            props->setText(QString(tr("The MixxxControl '%1, %2' specified in the "
+                                      "loaded mapping is invalid."))
+                           .arg(group, key));
+            props->setInfoText(QString(tr("The MIDI output message 0x%1 0x%2 will not be bound."
+                                          "\n(Click Show Details for hints.)"))
+                               .arg(QString::number(status, 16).toUpper(),
+                                    QString::number(control, 16).toUpper().rightJustified(2,'0')));
+            QString detailsText = QString(tr("* Check to see that the "
+                                             "MixxxControl name is spelled correctly in the mapping "
+                                             "file (.xml)\n"));
+            detailsText += QString(tr("* Make sure the MixxxControl you're trying to use actually exists."
+                                      " Visit this wiki page for a complete list:"));
+            detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/mixxxcontrols");
+            props->setDetails(detailsText);
+            ErrorDialogHandler::instance()->requestErrorDialog(props);
             delete moh;
             continue;
         }

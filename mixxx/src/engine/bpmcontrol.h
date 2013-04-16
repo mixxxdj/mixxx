@@ -26,9 +26,9 @@ class BpmControl : public EngineControl {
     void userTweakingSync(bool tweakActive);
     double getPhaseOffset();
     double getPhaseOffset(double reference_position);
-
+    
   public slots:
-
+    void slotRateChanged(double);
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
@@ -41,7 +41,7 @@ class BpmControl : public EngineControl {
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotRateChanged(double);
+    void slotAdjustBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotMasterBeatDistanceChanged(double);

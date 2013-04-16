@@ -22,7 +22,7 @@ function KANE_QuNeo () {}
    3) Functionality
    
        (JL) Jump, Sync, and/or Loop over 1,2,4,8 Beats
-       (SM) Slider Modes
+       (VS) Vertical Sliders
        (ZC) Zoom and Cursor
        (VN) Visual Nudging
        (RN) Periodic and Regular Rate Nudging
@@ -60,7 +60,7 @@ END INDEX*/
 
 // Settings
 
-KANE_QuNeo.assertionDelayTimer = 60; // time(ms) to wait before asserting LEDs
+KANE_QuNeo.assertionDelayTimer = 60; // default time(ms) to wait on asserting LEDs
 KANE_QuNeo.jumpLoopTimer = 70; // time(ms) to wait before executing a jumped loop 
 KANE_QuNeo.jumpSyncTimer = 30; // time(ms) to wait before executing a jumped sync 
 KANE_QuNeo.beatOffset = 70; // time(ms) to wait before signaling a beat, used
@@ -69,18 +69,23 @@ KANE_QuNeo.beatOffset = 70; // time(ms) to wait before signaling a beat, used
 KANE_QuNeo.minBrightness = .2 // minimum value for flashing LEDs, 0...1
 KANE_QuNeo.numDecks = 8 // number of decks we are supporting. currently 4 decks +
                         // 4 samplers = 8 total decks
+KANE_QuNeo.doubleTapWindow = 700; // time(ms) window in which to consider
+                                  // two note presses as a double tap
 KANE_QuNeo.numHotcues = 16; // total hotcues we are currently supporting
 KANE_QuNeo.pregain = 1.0 // initialize deck gains to this value
 KANE_QuNeo.scratchSpeed = 5.0 // Scratch ticks per rotary sense
 KANE_QuNeo.rateNudgeHoldTime = 500 // time(ms) to hold nudges for scroll toggle
+KANE_QuNeo.jumpHoldTime = 70 // time(ms) to hold for continued jumping
 KANE_QuNeo.visualNudgeHoldTime = 500 // time(ms) to hold nudges for scroll toggle
 KANE_QuNeo.visualNudgeDist = .0000005 // setting (%) for how far each press of visual
                                    // nudge moves the current play position
+KANE_QuNeo.checkLoopDelay = 50; // time(ms) to wait before checking for a loop break
 KANE_QuNeo.mode = 13; // assumes we start in mode 13 on the quneo
 KANE_QuNeo.totalBeats = 16; // number of beats over which to sequence the LEDs
-KANE_QuNeo.visualNudgeSpeed = 20 // time(ms) to wait for each tick while scrolling
+KANE_QuNeo.autoJumpSpeed = 300; // time(ms) to wait for each tick of auto jump
+KANE_QuNeo.visualNudgeSpeed = 20; // time(ms) to wait for each tick while scrolling
 KANE_QuNeo.rateNudgeSpeed = 800; // ms to wait between each auto nudge
-KANE_QuNeo.rateNudgeTolerance = 0.16*0.025+.005 // determines how close rate must
+KANE_QuNeo.rateNudgeTolerance = .006251/2 // determines how close rate must
                                // be to 0 in order to trigger turning off auto nudge
 
 // LED Sequencers for each deck - easy to edit!
@@ -268,6 +273,7 @@ KANE_QuNeo.hotcuePressed =
 
 // Stores which beat each deck is on, loops 1...KANE_QuNeo.totalBeats
 KANE_QuNeo.wholeBeat = KANE_QuNeo.makeVar(KANE_QuNeo.totalBeats);
+KANE_QuNeo.trackSamples = KANE_QuNeo.makeVar(-1); // total samples of tracks in decks
 KANE_QuNeo.lastBeatPosition = 
     KANE_QuNeo.makeVar(-4000);  // position in samples of last real beat on each deck
 KANE_QuNeo.beatLEDsOn = 1; // 1 if beat LEDs are on
@@ -281,8 +287,6 @@ KANE_QuNeo.loopingLED =
     KANE_QuNeo.makeVar([]); // stores which looping LEDs to light
 KANE_QuNeo.horizArrowLEDs = 
     KANE_QuNeo.makeVar([]); // stores which horiz arrow LEDs to light
-KANE_QuNeo.regularCueLEDs = 
-    KANE_QuNeo.makeVar([]); // stores which regular cue LEDs to light
 KANE_QuNeo.jumpSyncLED = 
     KANE_QuNeo.makeVar([]); // stores which jumpsync LEDs to light
 KANE_QuNeo.assertLED = []; // stores assert LED if it's on
@@ -323,9 +327,13 @@ KANE_QuNeo.trackPlaying =
     KANE_QuNeo.makeVar(0); // 1 if track is currently playing
 KANE_QuNeo.slipEnabled = KANE_QuNeo.makeVar(0) // 1 if slip is enabled
 
+KANE_QuNeo.verticalSliderDoubleTap = [0,0,0,0]; // 1 when a the next tap will
+                                                // activate the double tap
+
 // the following hold arrays of timers which may be stopped
 KANE_QuNeo.nextBeatTimer = KANE_QuNeo.makeVar([]);
 KANE_QuNeo.scheduledBeats = KANE_QuNeo.makeVar([]);
+KANE_QuNeo.jumpHoldTimers = KANE_QuNeo.makeVar([]) // hold timers for continued jumps
 	    
 /***** (IS) Initialization and Shutdown *****/
 
@@ -391,6 +399,7 @@ KANE_QuNeo.shutdown = function () {
 KANE_QuNeo.sliderCycle = function (channel, control, value, status, group) {
     KANE_QuNeo.closeSliderMode() // close old mode
     KANE_QuNeo.sliderMode = (KANE_QuNeo.sliderMode + 1) % 4; // cycle 0,1,2,3,0,...
+    KANE_QuNeo.verticalSliderDoubleTap = [0,0,0,0] // reset vert slider double taps
     KANE_QuNeo.openSliderMode() // initiate new mode
 }
 
@@ -443,6 +452,10 @@ KANE_QuNeo.play = function (deck) {
     }
     else {    // If not currently playing,
         engine.setValue(channelName,"play",1);    // Start
+
+	// then sync if we are in jumpsync mode
+	if (KANE_QuNeo.trackJumpSync[channel])
+	    KANE_QuNeo.syncTrack(deck,"phase",0);
     }
     // update global value
     var hotcuePressed = KANE_QuNeo.hotcuePressed[channel];
@@ -491,7 +504,17 @@ KANE_QuNeo.toggleRecord = function (channel, control, value, status, group) {
     var old = KANE_QuNeo.recordToggle;
     KANE_QuNeo.recordToggle = (old + 1) % 2 // toggle global on/off
     engine.setValue("[Recording]","toggle_recording",1) // toggle engine
-    KANE_QuNeo.assertRecordLED() // update LED
+    
+    // for each deck, print out the sample at which recording started
+    for (var deck = 1; deck <= 2; deck++) {
+	var channelName = KANE_QuNeo.getChannelName(deck);
+	var samples = engine.getValue(channelName,"track_samples");
+	var position = engine.getValue(channelName,"visual_playposition");
+	var samplePosition = samples * position;
+	print("Recording started with deck "+deck+ " at sample: "+samplePosition)
+    }
+    
+    KANE_QuNeo.assertRecordLED() // update record LED
 }
 
 // -------------------------------------
@@ -503,6 +526,13 @@ KANE_QuNeo.toggleRecord = function (channel, control, value, status, group) {
 KANE_QuNeo.jumpLoop = function (deck, numBeats) {
     var channel = deck - 1; // track channels start at 0 to properly reference arrays
     var channelName = KANE_QuNeo.getChannelName(deck)
+
+    // first set a hold timer if none exist
+    if (KANE_QuNeo.jumpHoldTimers[channel].length < 1)
+	KANE_QuNeo.jumpHoldTimers[channel].push(
+	    engine.beginTimer(KANE_QuNeo.jumpHoldTime,
+			      "KANE_QuNeo.jumpHeld("+deck+","+numBeats+")",
+			      true));
 
     // calculate samples per beat
     var samplerate = engine.getValue(channelName,"track_samplerate");
@@ -536,7 +566,7 @@ KANE_QuNeo.jumpLoop = function (deck, numBeats) {
 	else if (newBeat > 16)
 	    newBeat -= totalBeats
 
-	KANE_QuNeo.wholeBeat[channel] = newBeat // then set us to that beat
+	KANE_QuNeo.wholeBeat[channel] = newBeat // set the new beat number
 	KANE_QuNeo.trackJumped[channel] = 1; // say that we jumped
     }
 
@@ -566,16 +596,43 @@ KANE_QuNeo.jumpLoop = function (deck, numBeats) {
     }
 }
 
-KANE_QuNeo.scheduleSync = function (deck) {
-    engine.beginTimer(KANE_QuNeo.jumpSyncTimer,"KANE_QuNeo.doSync("+deck+")",true)
+KANE_QuNeo.scheduleSync = function (deck, syncType) {
+    engine.beginTimer(
+	KANE_QuNeo.jumpSyncTimer,
+	"KANE_QuNeo.doSync("+deck+", \"" + syncType + "\")",true)
 }
 
-KANE_QuNeo.doSync = function (deck) {
-    var channelName = KANE_QuNeo.getChannelName(deck)
-    engine.setValue(channelName,"beatsync_phase",1); // do the sync
-    // update LEDs
-    KANE_QuNeo.assertJumpSyncLED(deck);
-    KANE_QuNeo.assertBeatCounterLEDs(deck);
+KANE_QuNeo.doSync = function (deck, syncType) {
+    var deckType = KANE_QuNeo.getDeckType(deck);
+
+    if (deckType == "deck" && deck <= 2) { // regular sync works only for decks,
+	                                   // and we only have 2 decks atm
+	var channelName = KANE_QuNeo.getChannelName(deck)
+	// store start loop status
+	var loopEnabled = engine.getValue(channelName,"loop_enabled");
+	engine.setValue(channelName,"beatsync_"+syncType,1); // do the sync
+
+	// if our operation somehow changed loop enabling, immediately change it back
+	engine.beginTimer(KANE_QuNeo.checkLoopDelay,
+			  "KANE_QuNeo.checkLoop("+deck+","+loopEnabled+")", true);
+    }
+}
+
+KANE_QuNeo.syncTrack = function (deck, type, scheduleFlag) {
+    var channel = deck - 1; // confusing, yes. channels start from 0.
+
+    // verify other track is playing before syncing to avoid glitchy jumpsync loops
+    var otherDeck = ((channel + 1) % 2) + 1;
+    var otherTrackPlaying = engine.getValue("[Channel"+otherDeck+"]","play")
+    if (otherTrackPlaying) {
+	// flash jumpsync LED to signify the sync
+	// KANE_QuNeo.syncLEDRed(deck);
+	print("==============> SYNCING DECK "+deck+" WITH SYNC TYPE: "+type);
+	if (scheduleFlag) // if this sync should be scheduled
+	    KANE_QuNeo.scheduleSync(deck, type); // then schedule it
+	else
+	    KANE_QuNeo.doSync(deck,type); // else do it now
+    }
 }
 
 KANE_QuNeo.scheduleLoop = function (deck, numBeats) {
@@ -600,6 +657,7 @@ KANE_QuNeo.deckReloop = function (deck) {
 
 KANE_QuNeo.deckMultiplyLoop = function (deck, factor) {
     var channelName = KANE_QuNeo.getChannelName(deck)
+    // store start loop status
     var loopEnabled = engine.getValue(channelName,"loop_enabled");
 
     // determine which operation to perform
@@ -610,30 +668,82 @@ KANE_QuNeo.deckMultiplyLoop = function (deck, factor) {
     engine.setValue(channelName,control,1)
     
     // if our operation somehow changed loop enabling, immediately change it back
-    if (engine.getValue(channelName,"loop_enabled") != loopEnabled) {
-	print("retoggling loop")
-	KANE_QuNeo.deckReloop(deck) // toggle the loop back to what it was
-    }
+    engine.beginTimer(KANE_QuNeo.checkLoopDelay,
+		      "KANE_QuNeo.checkLoop("+deck+","+loopEnabled+")", true);
+
     // emit LED updates, timer because engine is slow at registering loop stuffs
     KANE_QuNeo.delayedAssertion("KANE_QuNeo.assertBeatLEDs("+deck+")",true);
 }
 
-/***** (SM) Slider Modes *****/
+KANE_QuNeo.checkLoop = function (deck, loopEnabled) {
+    var channelName = KANE_QuNeo.getChannelName(deck)
+
+    // if the loop status is different than given, reloop
+    if (engine.getValue(channelName,"loop_enabled") != loopEnabled) {
+	print("retoggling loop")
+	KANE_QuNeo.deckReloop(deck) // toggle the loop back to what it was
+    }
+}
+
+// function that is reached only when one of the beat jump buttons is held
+KANE_QuNeo.jumpHeld = function (deck, numBeats) {
+    var channel = deck - 1;
+    // ensure we are only in jump mode and not in looping mode
+    if (KANE_QuNeo.trackJump[channel] != 0 &&
+	KANE_QuNeo.trackLooping[channel] == 0) {
+	print("=====> AUTO JUMPING ACTIVATED WITH NUMBEATS: "+numBeats)
+	KANE_QuNeo.jumpHoldTimers[channel].push(
+	    engine.beginTimer(KANE_QuNeo.autoJumpSpeed,
+			      "KANE_QuNeo.jumpLoop("+deck+","+numBeats+")"));
+    }
+}
+
+// function that is called when one of the beat jump buttons is released
+KANE_QuNeo.jumpOff = function (deck, numBeats) {
+    var channel = deck - 1;
+    var channelName = KANE_QuNeo.getChannelName(deck);
+    KANE_QuNeo.cancelTimers(KANE_QuNeo.jumpHoldTimers[channel]);
+    KANE_QuNeo.jumpHoldTimers[channel] = [];
+    KANE_QuNeo.assertBeatLEDs(deck);
+}
+
+/***** (VS) Vertical Sliders *****/
 
 KANE_QuNeo.verticalSliderTouch = function (slider, value) {
-    var mode = KANE_QuNeo.sliderMode
-    // determine 0...4 value
-    if (value < 63.5) // first half of the knob, 0...1
-	var zeroToFour = value / 63.5;
-    else // second half of the knob, 1...4
-	var zeroToFour = ( (3 / 63.5) * value ) - 2;
-    // determine 0...1 denormalized from 0...127 value
-    var denormalized = value / 127;
-    // determine -1...1
-    var negOneToOne = value / 63.5 - 1;
+    
+    // if this is the first press:
+    if (!KANE_QuNeo.verticalSliderDoubleTap[slider - 1]) {
+	// record this press,
+	KANE_QuNeo.verticalSliderDoubleTap[slider - 1] = 1;
+	// then begin the reset timer
+	engine.beginTimer(KANE_QuNeo.doubleTapWindow,
+			  "KANE_QuNeo.resetDoubleTap("+slider+")",
+			  true);
+    }
+
+    // if this is the second press:
+    else {
+	// reset the double tap
+	KANE_QuNeo.resetDoubleTap(slider);
+	// reset the pressed slider's level
+	KANE_QuNeo.verticalSliderMove(slider, 0, 1);
+    }
+}
+
+KANE_QuNeo.resetDoubleTap = function (slider) {
+    KANE_QuNeo.verticalSliderDoubleTap[slider - 1] = 0;
+}
+
+KANE_QuNeo.verticalSliderMove = function (slider, value, resetFlag) {
+    // print("resetflag on vertical slider move: "+resetFlag);
+    // define values
+    if (resetFlag) // if this is a call to reset the vertical slider,
+	var values = KANE_QuNeo.getVerticalSliderResetValues(); // get reset values
+    else // else get normal values
+	var values = KANE_QuNeo.getReverseValues(value);
     
     // make sliders interact with mixxx based on mode and slider touched
-    switch (mode) {
+    switch (KANE_QuNeo.sliderMode) {
     case 0: // mode 0
 	switch (slider) {
 	case 1:
@@ -648,35 +758,35 @@ KANE_QuNeo.verticalSliderTouch = function (slider, value) {
     case 1: // mode 1
 	switch (slider) {
 	case 1:
-	    engine.setValue("[Channel1]","pregain",zeroToFour); break;
+	    engine.setValue("[Channel1]","pregain",values.zeroToFour); break;
 	case 2:
-	    engine.setValue("[Channel2]","pregain",zeroToFour); break;
+	    engine.setValue("[Channel2]","pregain",values.zeroToFour); break;
 	case 3:
-	    engine.setValue("[Channel1]","rate",negOneToOne); break;
+	    engine.setValue("[Channel1]","rate",values.negOneToOne); break;
 	case 4:
-	    engine.setValue("[Channel2]","rate",negOneToOne); break;
+	    engine.setValue("[Channel2]","rate",values.negOneToOne); break;
 	} break;
     case 2: // mode 2
 	switch (slider) {
 	case 1:
-	    engine.setValue("[Channel1]","volume",denormalized); break;
+	    engine.setValue("[Channel1]","volume",values.denormalized); break;
 	case 2:
-	    engine.setValue("[Channel2]","volume",denormalized); break;
+	    engine.setValue("[Channel2]","volume",values.denormalized); break;
 	case 3:
-	    engine.setValue("[Channel1]","filterHigh",zeroToFour); break;
+	    engine.setValue("[Channel1]","filterHigh",values.zeroToFour); break;
 	case 4:
-	    engine.setValue("[Channel2]","filterHigh",zeroToFour); break;
+	    engine.setValue("[Channel2]","filterHigh",values.zeroToFour); break;
 	} break;
     case 3: // mode 3
 	switch (slider) {
 	case 1:
-	    engine.setValue("[Channel1]","filterMid",zeroToFour); break;
+	    engine.setValue("[Channel1]","filterMid",values.zeroToFour); break;
 	case 2:
-	    engine.setValue("[Channel2]","filterMid",zeroToFour); break;
+	    engine.setValue("[Channel2]","filterMid",values.zeroToFour); break;
 	case 3:
-	    engine.setValue("[Channel1]","filterLow",zeroToFour); break;
+	    engine.setValue("[Channel1]","filterLow",values.zeroToFour); break;
 	case 4:
-	    engine.setValue("[Channel2]","filterLow",zeroToFour); break;
+	    engine.setValue("[Channel2]","filterLow",values.zeroToFour); break;
 	} break;
     }
 }
@@ -874,16 +984,23 @@ KANE_QuNeo.rateNudgeHeld = function (deck, direction) {
 
 KANE_QuNeo.rateNudgeAll = function (callingDeck, direction) {
     var channelName = KANE_QuNeo.getChannelName(callingDeck);
-    // first nudge all decks
-    for (var deck = 1; deck <= (KANE_QuNeo.numDecks + 1); deck++)
-	KANE_QuNeo.doRateNudge(deck, direction)
+    // do the calling deck's nudge 
+    KANE_QuNeo.doRateNudge(callingDeck, direction)
+
+    // then sync the tempo of the other decks to the calling deck.
+    // The point of this is to ensure that each nudge amount is
+    // consistent between all decks
+    for (var deck = 1; deck <= KANE_QuNeo.numDecks; deck++) {
+	if (deck != callingDeck)
+	    KANE_QuNeo.doSync(deck, "tempo");
+    }
 
     // now check if rate of calling deck is near 0%. if so, turn off auto nudging.
     // NOTE: extra rate factor is for looking ahead 1 tick because the engine is
     // slow to update.
     var rate = engine.getValue(channelName, "rate") + 0.16 * direction * 0.05;
     var tolerance = KANE_QuNeo.rateNudgeTolerance
-    if ((rate < 0 && rate > -tolerance) || // if near 0% adjustment,
+    if ((rate < 0 && rate >= -tolerance) || // if near 0% adjustment,
 	(rate > 0 && rate < tolerance))
 	KANE_QuNeo.cancelRateNudge() // cancel rate nudging
 }
@@ -1037,15 +1154,11 @@ KANE_QuNeo.resetBeat = function (deck) {
 
 /***** (QC) Quantize Cues *****/
 
-KANE_QuNeo.quantizeCues = function (deck) {
+KANE_QuNeo.quantizeCues = function (deck, LEDControl) {
     var channelName = KANE_QuNeo.getChannelName(deck);
 
     // light LED to indicate button press
-    var LEDGroup = KANE_QuNeo.getLEDGroup(deck);
-    var control;
-    if (LEDGroup == 1) control = [0x28];
-    if (LEDGroup == 2) control = [0x29];
-    KANE_QuNeo.LEDs(0x90,control,0x7f)
+    KANE_QuNeo.LEDs(0x90,LEDControl,0x7f)
     
     // find out our current position, assume it's on the beatgrid
     var trackSamples = engine.getValue(channelName,"track_samples")
@@ -1064,16 +1177,14 @@ KANE_QuNeo.quantizeCues = function (deck) {
 
 	// if cue is enabled, reset it
 	if (cuePosition >= 0) {
-	    print("setting cue " + cue)
 	    var diffBeats = Math.round((cuePosition - position) / spb)
 	    var newPosition = position + (diffBeats * spb)
 	    engine.setValue(channelName,"hotcue_"+cue+"_position",newPosition)
-	    print("old position: "+cuePosition)
-	    print("new position: "+newPosition)
-	    print("diffBeats: "+diffBeats)
 	}
     }
-    // turn off LED to indicate completion
+}
+
+KANE_QuNeo.quantizeCuesOff = function (deck, control) {
     KANE_QuNeo.LEDs(0x90,control,0x00)
 }
 
@@ -1101,6 +1212,16 @@ KANE_QuNeo.timeKeeper = function (deck, value) {
 	    [engine.beginTimer(KANE_QuNeo.beatOffset,
 			      "KANE_QuNeo.handleBeat("+deck+")",
 			      true)];
+
+    // now determine whether or not the track has changed
+    var channelName = KANE_QuNeo.getChannelName(deck);
+    var trackSamples = engine.getValue(channelName, "track_samples");
+    // if the old and new values are not the same, the track must have changed
+    if (trackSamples != KANE_QuNeo.trackSamples[channel]) {
+	KANE_QuNeo.trackSamples[channel] = trackSamples; // so update to new value
+	KANE_QuNeo.delayedAssertion("KANE_QuNeo.assertHotcueLEDs("+deck+")"
+				    ,true, 200);
+    }
 
     // if we're at the end of the song, set track to not playing
     if (value == 1) {
@@ -1163,24 +1284,17 @@ KANE_QuNeo.handleBeat = function (deck) {
     else if (diff >= 1.1*spb || (diff <= 0)) { // diff == 0 means repeat beat
 	print("non consecutive beat on deck "+deck)
 	print("diff: "+diff)
+	KANE_QuNeo.cancelScheduledBeats(deck); // first cancel any scheduled beats
 	
-	if (!(KANE_QuNeo.trackJumped[channel])) { // if we did not just jump,
+	if (!(KANE_QuNeo.trackJumped[channel])) { // if there was not a jump press,
 	    KANE_QuNeo.wholeBeat[channel] = 1; // restart at beat 1
-	    KANE_QuNeo.cancelScheduledBeats(deck); // cancel any scheduled beats
-
-	    // then schedule a sync if we are in JumpSync mode;
-	    // verifying other track is playing to avoid glitchy jumpsync loops
-	    var otherDeck = ((channel + 1) % 2) + 1;
-	    var otherTrackPlaying = engine.getValue("[Channel"+otherDeck+"]","play")
-	    if (KANE_QuNeo.trackJumpSync[channel] &&
-		otherTrackPlaying) {
-		print("Syncing deck "+deck)
-		KANE_QuNeo.syncLEDRed(deck);
-		KANE_QuNeo.scheduleSync(deck);
-	    }
-
-	} else // we just jumped, so reset status
+	} else // we just jumped, so reset status and don't touch beat counters
 	    KANE_QuNeo.trackJumped[channel] = 0;
+
+	// schedule a sync if we are in JumpSync mode
+	if (KANE_QuNeo.trackJumpSync[channel]) {
+	    KANE_QuNeo.syncTrack(deck,"phase",1);
+	}
 
 	// update hotcue LEDs
 	KANE_QuNeo.assertHotcueLEDs(deck);
@@ -1198,6 +1312,7 @@ KANE_QuNeo.handleBeat = function (deck) {
     KANE_QuNeo.scheduleBeat(deck, KANE_QuNeo.wholeBeat[channel], 1);
     // update beat counter LEDs no matter what happened
     KANE_QuNeo.assertBeatCounterLEDs(deck);
+    KANE_QuNeo.assertBeatLEDs(deck);
     // set the last beat to this position
     KANE_QuNeo.lastBeatPosition[channel] = position;
 }
@@ -1285,8 +1400,12 @@ KANE_QuNeo.getSliderControl = function (deck, side) {
     } else print("ERROR: getSliderControl called with improper args.")
 }
 
-KANE_QuNeo.delayedAssertion = function (functionName, oneShotFlag) {
-    engine.beginTimer(KANE_QuNeo.assertionDelayTimer,functionName,oneShotFlag)
+KANE_QuNeo.delayedAssertion = function (functionName, oneShotFlag, delay) {
+    // if no delay is given, assume default
+    if (delay == undefined)
+	delay = KANE_QuNeo.assertionDelayTimer
+
+    engine.beginTimer(delay,functionName,oneShotFlag)
 }
 
 KANE_QuNeo.powerNeverOff = function (value,power) {
@@ -1300,7 +1419,7 @@ KANE_QuNeo.scaleToSlider = function (value) {
     return value * 127
 }
 
-KANE_QuNeo.defineValues = function (value) {
+KANE_QuNeo.getForwardValues = function (value) {
     return {squared: KANE_QuNeo.scaleToSlider(Math.pow(value, 2)),
 	    cubed: KANE_QuNeo.scaleToSlider(Math.pow(value, 3)),
 	    fourth:  KANE_QuNeo.scaleToSlider(Math.pow(value, 4)),
@@ -1310,6 +1429,30 @@ KANE_QuNeo.defineValues = function (value) {
 		value, 3)),
 	    fourthNeverOff: KANE_QuNeo.scaleToSlider(KANE_QuNeo.powerNeverOff(
 		value, 4))
+	   }
+}
+
+KANE_QuNeo.getReverseValues = function (value) {
+
+    // determine 0...4 value
+    if (value < 63.5) // first half of the knob, 0...1
+	var zeroToFour1 = value / 63.5;
+    else // second half of the knob, 1...4
+	var zeroToFour1 = ( (3 / 63.5) * value ) - 2;
+    // determine 0...1 denormalized from 0...127 value
+    var denormalized1 = value / 127;
+    // determine -1...1
+    var negOneToOne1 = value / 63.5 - 1;
+    return {zeroToFour: zeroToFour1,
+	    denormalized: denormalized1,
+	    negOneToOne: negOneToOne1
+	   }
+}
+
+KANE_QuNeo.getVerticalSliderResetValues = function () {
+    return {zeroToFour: 1,
+	    denormalized: 1,
+	    negOneToOne: 0
 	   }
 }
 
@@ -1328,13 +1471,24 @@ KANE_QuNeo.getLEDGroup = function (deck) {
 }
 
 KANE_QuNeo.getChannelName = function (deck) {
-    if (deck == 0) // master deck
+    var deckType = KANE_QuNeo.getDeckType(deck);
+    if (deckType == "master") // master deck
 	return "[Master]"
-    else if (deck < 5) // if dealing with actual decks
+    else if (deckType == "deck") // if dealing with actual decks
 	return "[Channel"+deck+"]"
-    else // if dealing with samplers
+    else if (deckType == "sampler") // if dealing with samplers
 	return "[Sampler"+(deck - 4)+"]"
 }
+
+KANE_QuNeo.getDeckType = function (deck) {
+    if (deck == 0) // master deck
+	return "master"
+    else if (deck < 5) // if dealing with actual decks
+	return "deck"
+    else // if dealing with samplers
+	return "sampler"
+}
+
 // -------------------------------------------------------
 // Begin LED section
 // -------------------------------------------------------
@@ -1433,11 +1587,7 @@ KANE_QuNeo.assertJumpLEDs = function (deck, numBeats) {
     old.splice(old.indexOf(off[0]),1) // turn off the off stuff
     KANE_QuNeo.jumpLoopLEDs[channel] = old.concat(on); // turn on the new stuff
     KANE_QuNeo.LEDs(0x91,off,0x00); // update offs
-}
-
-KANE_QuNeo.jumpOff = function (deck, numBeats) {
-    var channelName = KANE_QuNeo.getChannelName(deck);
-    KANE_QuNeo.assertBeatLEDs(deck);
+    KANE_QuNeo.triggerVuMeter(deck); // update ons
 }
 
 /****** (RLED) Rotary LEDs ******/
@@ -1495,8 +1645,6 @@ KANE_QuNeo.assertLEDs = function (mode) {
     KANE_QuNeo.assertPlayScratchLED();
     KANE_QuNeo.assertRecordLED();
     KANE_QuNeo.assertNudgeLEDs();
-    KANE_QuNeo.assertHotcueLEDs(1);
-    KANE_QuNeo.assertHotcueLEDs(2);
     KANE_QuNeo.assertHorizArrowLEDs(1);
     KANE_QuNeo.assertHorizArrowLEDs(2);
     engine.trigger("[Master]","headVolume");
@@ -1557,21 +1705,20 @@ KANE_QuNeo.assertMode13 = function () {
 	KANE_QuNeo.assertJumpDirectionLEDs(deck);
 	KANE_QuNeo.assertBeatLEDs(deck);
 	KANE_QuNeo.LEDSequencing[deck - 1] = 0; // turn off sequencers
+	KANE_QuNeo.assertHotcueLEDs(deck);
 	// filter kills
 	KANE_QuNeo.assertKillLEDs(deck);
-	// regular cue LEDs
-	KANE_QuNeo.assertRegularCueLEDs(deck);
 	// beat counter LEDs
 	KANE_QuNeo.assertBeatCounterLEDs(deck);
     }
 }
 
 KANE_QuNeo.assertMode14 = function () {
-    KANE_QuNeo.assertMode13(); // same as main dj but with no fx leds
+    KANE_QuNeo.assertMode13(); // same as main dj but with no fx or slip leds
 }
 
 KANE_QuNeo.assertMode15 = function () {
-    KANE_QuNeo.assertMode13(); // same as main dj but with no fx leds
+    KANE_QuNeo.assertMode13(); // same as main dj but with no fx or slip leds
 }
 
 KANE_QuNeo.assertMode16 = function () {
@@ -1598,19 +1745,22 @@ KANE_QuNeo.closeMode = function (mode) {
     case 13: case 14: case 15:
 	// stop the flashing LEDs
 	KANE_QuNeo.closeSliderMode()
-	for (var channel = 0; channel < KANE_QuNeo.numDecks; channel++) {
+	for (var channel = 0; channel < 2; channel++) {
+	    var deck = channel + 1;
+	    KANE_QuNeo.hotcueActivateLEDs[channel] = [];
+	    KANE_QuNeo.hotcueClearLEDs[channel] = [];
+	    KANE_QuNeo.clearHotcueLEDs(deck);
 	    KANE_QuNeo.jumpLoopLEDs[channel] = [];
 	    KANE_QuNeo.loopingLED[channel] = [];
 	    KANE_QuNeo.horizArrowLEDs[channel] = [];
-	    KANE_QuNeo.regularCueLEDs[channel] = [];
 	    KANE_QuNeo.jumpSyncLED[channel] = [];
 	    KANE_QuNeo.reloopLEDs[channel] = [];
 	    KANE_QuNeo.jumpDirectionLEDs[channel] = [];
 	    KANE_QuNeo.beatCounterLEDs[channel] = [];
-	    KANE_QuNeo.triggerVuMeter(channel+1)
+	    KANE_QuNeo.triggerVuMeter(channel + 1); // trigger the corresponding deck
 	} break;
     case 16:
-	KANE_QuNeo.playScratchToggle = 1; // return to scratch off
+	KANE_QuNeo.playScratchToggle = 1; // go back to having scratch off
 	KANE_QuNeo.loadLEDs = []; // reset Load LEDs
 	var LEDs = [[0x08,0x09],[0x0e,0x0f],[undefined,undefined],[undefined,undefined],[0x00,0x01],[0x02,0x03],[0x04,0x05],[0x06,0x07]];
 	for (var i = 0; i < LEDs.length; i++)
@@ -1646,9 +1796,9 @@ KANE_QuNeo.assertHotcueLEDs = function (deck) {
     KANE_QuNeo.LEDs(0x91,KANE_QuNeo.hotcueClearLEDs[channel],0x00);
     KANE_QuNeo.hotcueClearLEDs[channel] = [];
 
-    if (mode == 13) // if in main dj mode
-    KANE_QuNeo.assertHotcueActivateLEDs(deck); // light activate hotcues
-
+    if (mode == 13) {// if in main dj mode 
+	KANE_QuNeo.assertHotcueActivateLEDs(deck); // light activate hotcues
+    }
     else if (mode == 14 && LEDGroup == 1) { // if in cue left mode, and group is 1
 	KANE_QuNeo.assertHotcueActivateLEDs(deck); // assert this deck's activates
 	KANE_QuNeo.assertHotcueClearLEDs(deck); // and this deck's clears
@@ -1681,8 +1831,9 @@ KANE_QuNeo.assertHotcueActivateLEDs = function (deck) {
 	var cuePosition = engine.getValue(channelName,"hotcue_"+cue+"_position") /
 	    trackSamples;
 
-	// if cue is enabled
-	if (cuePosition >= 0) {
+	// if cue is enabled and deck has a track loaded,
+	if (!((cuePosition < 0 && cuePosition > -1e-7) ||
+	      cuePosition == -Infinity)) {
 
 	    // if in main DJ mode, light past hotcues red,
 	    // upcoming hotcues green, and the next hotcue orange.
@@ -1723,8 +1874,8 @@ KANE_QuNeo.assertHotcueActivateLEDs = function (deck) {
     KANE_QuNeo.numNextHotcues[channel] = cuesToCome;
 
     // but don't forget to emit LED updates!
-    KANE_QuNeo.hotcueActivateLEDs[channel] = on;
-    KANE_QuNeo.triggerVuMeter(deck); // trigger deck VuMeter
+    KANE_QuNeo.hotcueActivateLEDs[channel] = on; // then turn on the new ones
+    KANE_QuNeo.triggerVuMeter(deck); // finally trigger deck VuMeter
 }
 
 KANE_QuNeo.assertHotcueClearLEDs = function (deck) {
@@ -1747,27 +1898,21 @@ KANE_QuNeo.assertHotcueClearLEDs = function (deck) {
     KANE_QuNeo.triggerVuMeter(deck); // trigger deck VuMeter
 }
 
-KANE_QuNeo.assertRegularCueLEDs = function (deck) {
+KANE_QuNeo.clearHotcueLEDs = function (deck) {
     var channel = deck - 1;
-    var on = [], off = [];
-    var channelName = KANE_QuNeo.getChannelName(deck)
-    var LEDGroup = KANE_QuNeo.getLEDGroup(deck);
-
-    // light LED if cue is on
-    if (engine.getValue(channelName, "cue_point") != -1) {
-	switch (LEDGroup) {
-	case 1: on = [0x06]; break;
-	case 2: on = [0x08]; break;
-	}
-    } else  {// cue is off
-	switch (LEDGroup) {
-	case 1: off = [0x06]; break;
-	case 2: off = [0x08]; break;	 
-	}
+    var LEDs = [[0x79,0x7b,0x7d,0x7f,
+		 0x69,0x6b,0x6d,0x6f,
+		 0x59,0x5b,0x5d,0x5f,
+		 0x49,0x4b,0x4d,0x4f],
+		[0x71,0x73,0x75,0x77,
+		 0x61,0x63,0x65,0x67,
+		 0x51,0x53,0x55,0x57,
+		 0x41,0x43,0x45,0x47]];
+    for (var i = 0; i < LEDs[channel].length; i++) {  // for all LEDs of this deck
+	var red = LEDs[channel][i];
+	var green = red - 1;
+	KANE_QuNeo.LEDs(0x91,[red,green],0x00); // reset green and red
     }
-    // emit updates
-//    KANE_QuNeo.regularCueLEDs[channel] = on;
-//    KANE_QuNeo.triggerVuMeter(deck);
 }
 
 KANE_QuNeo.assertHorizArrowLEDs = function (deck) {
@@ -1782,7 +1927,7 @@ KANE_QuNeo.assertSamplerHorizArrowLEDs = function (deck) {
 }
 
 KANE_QuNeo.assertDeckHorizArrowLEDs = function (deck) {
-    var on = []
+    var on = [];
     var mode = KANE_QuNeo.mode;
     if (mode != 9 && mode != 10) { // if not in sampler mode
 	var channel = deck - 1;
@@ -1791,10 +1936,11 @@ KANE_QuNeo.assertDeckHorizArrowLEDs = function (deck) {
 
 	// nested arrays of controls,LEDs for deck1,LEDs for deck2
 	var controls = [["keylock",0x24,0x25],
-			["pfl",0x26,0x27],
-			["slip_enabled",0x28,0x29]];
-	if (mode != 14 && mode != 15) // if in neither cuing mode,
-	    controls.push(["flanger",0x2a,0x2b]); // assert flanger
+			["pfl",0x26,0x27]];
+	if (mode != 14 && mode != 15) { // if in neither cuing mode,
+	    controls.push(["flanger",0x2a,0x2b]); // assert fx leds
+	    controls.push(["slip_enabled",0x28,0x29]); // and assert slip leds
+	}
 
 	// check which controls are enabled
 	for (var i = 0; i < controls.length; i++) {
@@ -1971,6 +2117,7 @@ KANE_QuNeo.assertLoopingLED = function (deck) {
 
 KANE_QuNeo.assertBeatCounterLEDs = function (deck) {
     var channel = deck - 1;
+    var channelName = KANE_QuNeo.getChannelName(deck)
     var beat = KANE_QuNeo.wholeBeat[channel];
     var mode = KANE_QuNeo.mode
 
@@ -1986,12 +2133,10 @@ KANE_QuNeo.assertBeatCounterLEDs = function (deck) {
 	    fours = [0x0a,0x0b];
 	} else print("ERROR: incompatible deck given to assertBeatCounterLEDs")
 
-	// now if the track is playing or
-	// a hotcue is pressed, decide what to do with those LEDs
-	if (KANE_QuNeo.trackPlaying[channel] ||
-	    KANE_QuNeo.hotcuePressed[channel]) {
+	// now, if a track is loaded, decide which LEDs to turn on
+	if (engine.getValue(channelName,"duration") != 0) {
 
-	    // ones counter first
+	    // first deal with the ones counter
 	    var beatmod4 = ((beat - 1) % 4) + 1;
 	    switch (beatmod4) {
 	    case 1: break; // off on beat 1
@@ -2014,7 +2159,8 @@ KANE_QuNeo.assertBeatCounterLEDs = function (deck) {
 		on.push(fours[1]) // red on
 	    else 
 		on = on.concat(fours) // orange on
-	}
+	} else // if a track is not loaded, no beat counter LEDs should be on
+	    on = [];
 
 	// emit updates
 	KANE_QuNeo.LEDs(0x91,ones.concat(fours),0x00) // old LEDs off
@@ -2024,6 +2170,11 @@ KANE_QuNeo.assertBeatCounterLEDs = function (deck) {
 }
 
 KANE_QuNeo.assertBeatLEDs = function (deck) {
+    // do nothing if not in these modes
+    var mode = KANE_QuNeo.mode
+    if (!(mode == 13 || mode == 14 || mode == 15))
+	return;
+
     var channel = deck - 1;
     var channelName = KANE_QuNeo.getChannelName(deck)
     // arrays to control which LEDs to change
@@ -2126,7 +2277,7 @@ KANE_QuNeo.deckVuMeter = function (deck, value) {
     var channelName = KANE_QuNeo.getChannelName(deck);
     var channel = deck - 1;
     // adjust from 0...1 to 0...127
-    var values = KANE_QuNeo.defineValues(value);
+    var values = KANE_QuNeo.getForwardValues(value);
 
     // Cue Visualizer Region's Beat LEDs
     if (KANE_QuNeo.beatLEDsOn)
@@ -2164,8 +2315,6 @@ KANE_QuNeo.deckVuMeter = function (deck, value) {
     KANE_QuNeo.LEDs(0x91,KANE_QuNeo.reloopLEDs[channel],values.cubedNeverOff);
     // Horizontal Arrow LEDs
     KANE_QuNeo.LEDs(0x90,KANE_QuNeo.horizArrowLEDs[channel],values.cubedNeverOff);
-    // Regular Cue LEDs
-    KANE_QuNeo.LEDs(0x91,KANE_QuNeo.regularCueLEDs[channel],values.cubedNeverOff);
     // Jump Sync LED
     KANE_QuNeo.LEDs(0x91,KANE_QuNeo.jumpSyncLED[channel],values.cubedNeverOff);
     // Beat Counter LEDs
@@ -2174,7 +2323,7 @@ KANE_QuNeo.deckVuMeter = function (deck, value) {
 
 KANE_QuNeo.masterVuMeter = function (value) {
     // adjust from 0...1 to 0...127
-    var values = KANE_QuNeo.defineValues(value);
+    var values = KANE_QuNeo.getForwardValues(value);
     
     // top horizontal slider: master volume
     var level = -1; // -1 for no playing decks
@@ -2333,6 +2482,21 @@ KANE_QuNeo.crossFader = function (value) {
 
 /***** (VSD) Vertical Slider Dispatches *****/
 
+// Moves
+KANE_QuNeo.verticalSlider1Move = function (channel, control, value, status, group) {
+    KANE_QuNeo.verticalSliderMove(1, value, 0); // 1 for deck 1, 0 for no reset
+}
+KANE_QuNeo.verticalSlider2Move = function (channel, control, value, status, group) {
+    KANE_QuNeo.verticalSliderMove(2, value, 0);
+}
+KANE_QuNeo.verticalSlider3Move = function (channel, control, value, status, group) {
+    KANE_QuNeo.verticalSliderMove(3, value, 0);
+}
+KANE_QuNeo.verticalSlider4Move = function (channel, control, value, status, group) {
+    KANE_QuNeo.verticalSliderMove(4, value, 0);
+}
+
+//Touches (taps)
 KANE_QuNeo.verticalSlider1Touch = function (channel, control, value, status, group) {
     KANE_QuNeo.verticalSliderTouch(1, value); // 1 for deck 1
 }
@@ -2687,12 +2851,21 @@ KANE_QuNeo.reset2Beat = function (channel, control, value, status, group) {
 
 //Quantize Cues
 KANE_QuNeo.quantize1Cues = function (channel, control, value, status, group) {
-    KANE_QuNeo.quantizeCues(1)
+    KANE_QuNeo.quantizeCues(1, [0x28]);
 }
 
 KANE_QuNeo.quantize2Cues = function (channel, control, value, status, group) {
-    KANE_QuNeo.quantizeCues(2)
+    KANE_QuNeo.quantizeCues(2, [0x29]);
 }
+
+KANE_QuNeo.quantize1CuesOff = function (channel, control, value, status, group) {
+    KANE_QuNeo.quantizeCuesOff(1, [0x28]);
+}
+
+KANE_QuNeo.quantize2CuesOff = function (channel, control, value, status, group) {
+    KANE_QuNeo.quantizeCuesOff(2, [0x29]);
+}
+
 	    
 /***** (SD) Sampler Dispatches *****/
 

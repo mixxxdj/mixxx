@@ -5,35 +5,30 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation>Αυτόματος DJ</translation>
+            <translation>Αυτόματου DJ</translation>
         </message>
     </context>
     <context>
         <name>BaseExternalLibraryFeature</name>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσθήκη στην Λίστα του Αυτόματου DJ (στο τέλος)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσθήκη στην Λίστα του Αυτόματου DJ (στην αρχή)</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εισαγωγή Λίστας Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η Δημιουργία Λίστας Απέτυχε</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: </translation>
         </message>
     </context>
     <context>
@@ -44,17 +39,15 @@
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσθήκη στην Λίστα του Αυτόματου DJ (στο τέλος)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσθήκη στην Λίστα του Αυτόματου DJ (στην αρχή)</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation>Αφαίρεση</translation>
+            <translation>Διαγραφή</translation>
         </message>
         <message>
             <source>Rename</source>
@@ -69,16 +62,20 @@
             <translation>Εισαγωγή λίστας αναπαραγωγής</translation>
         </message>
         <message>
+            <source>Duplicate Playlist</source>
+            <translation>Υπάρχουσα Λίστα</translation>
+        </message>
+        <message>
             <source>Export Playlist</source>
             <translation>Εξαγωγή λίστας αναπαραγωγής</translation>
         </message>
         <message>
             <source>Rename Playlist</source>
-            <translation>Μετονομασία Λίστας</translation>
+            <translation>Μετονομασία Λίστας Αναπαραγωγής</translation>
         </message>
         <message>
             <source>New playlist name:</source>
-            <translation>Νέο όνομα λίστας:</translation>
+            <translation>Όνομα νέας λίστας αναπαραγωγής</translation>
         </message>
         <message>
             <source>Renaming Playlist Failed</source>
@@ -94,26 +91,28 @@
         </message>
         <message>
             <source>Playlist name:</source>
-            <translation>Όνομα λίστας:</translation>
+            <translation>Όνομα λίστας αναπαραγωγής:</translation>
+        </message>
+        <message>
+            <source>_copy</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η Δημιουργία Λίστας Απέτυχε</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προκλήθηκε άγνωστο σφάλμα κατά την δημιουργία λίστας: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation>Αρχεία λίστας αναπαραγωγής (*.m3u *.m3u8 *.pls *.csv)</translation>
+            <translation>Αρχεία Λίστας (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV (*.csv);;Απλό Κείμενο (*.txt)</translation>
         </message>
     </context>
     <context>
@@ -132,7 +131,7 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Άλμπουμ</translation>
+            <translation>Συλλογή</translation>
         </message>
         <message>
             <source>Genre</source>
@@ -172,7 +171,7 @@
         </message>
         <message>
             <source>BPM</source>
-            <translation>BPM</translation>
+            <translation>Beats Ανά Λεπτό</translation>
         </message>
         <message>
             <source>Track #</source>
@@ -198,6 +197,10 @@
             <source>BPM Lock</source>
             <translation>Κλείδωμα BPM</translation>
         </message>
+        <message>
+            <source>Preview</source>
+            <translation>Προεπισκόπιση</translation>
+        </message>
     </context>
     <context>
         <name>BaseTrackPlayer</name>
@@ -210,13 +213,11 @@
         <name>BrowseFeature</name>
         <message>
             <source>Add to Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσθήκη στους Γρήγορυος Συνδέσμους</translation>
         </message>
         <message>
             <source>Remove from Quick Links</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αφαίρεση από τους Γρήγορους Συνδέσμους</translation>
         </message>
         <message>
             <source>Quick Links</source>
@@ -232,12 +233,11 @@
         </message>
         <message>
             <source>Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ο περιηγητής σας επιτρέπει να πλοηγήστε,να βλέπετε και να φορτώνετε κομμάτια από φακέλους του σκληρου δίσκου η από εξωτερικές συσκευές.</translation>
         </message>
         <message>
             <source>Browse</source>
-            <translation>Εξερεύνηση</translation>
+            <translation>Περιηγηθείτε</translation>
         </message>
     </context>
     <context>
@@ -256,7 +256,7 @@
         </message>
         <message>
             <source>Album</source>
-            <translation>Άλμπουμ</translation>
+            <translation>Συλλογή</translation>
         </message>
         <message>
             <source>Track #</source>
@@ -304,8 +304,7 @@
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Βιβλιοθήκη του Mixxx</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -329,78 +328,72 @@
         </message>
     </context>
     <context>
+        <name>BulkController</name>
+        <message>
+            <source>USB Controller</source>
+            <translation>Ελεγκτής USB</translation>
+        </message>
+    </context>
+    <context>
         <name>ControllerEngine</name>
         <message>
             <source>Uncaught exception at line %1 in file %2: %3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uncaught exception at line %1 in file %2: %3</translation>
         </message>
         <message>
             <source>Uncaught exception at line %1 in passed code: %2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Uncaught exception at line %1 in passed code: %2</translation>
         </message>
         <message>
             <source>Controller script error</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Controller script error</translation>
         </message>
         <message>
             <source>A control you just used is not working properly.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κάποιος Ελεγκτής που χρησιμοποιήσατε δε λειτουργεί σωστά</translation>
         </message>
         <message>
             <source>&lt;html&gt;(The script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&lt;html&gt;(Ο κώδικας αυτου του script πρεπει να διορθωθεί.)&lt;br&gt;Προς το παρόν, μπορείτε να:&lt;ul&gt;&lt;li&gt;Αγνοήσετε αυτο το σφάλμα σε αυτή τη συνεδρία αλλα υπάρχει περίπτωση να λάβετε εσφαλμένη απόκριση&lt;/li&gt;&lt;li&gt;Προσπαθήστε να επιδιορθώσετε επανεκκινόντας τον ελεγκτή σας&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</translation>
         </message>
     </context>
     <context>
         <name>ControllerMappingDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διάλογος</translation>
         </message>
         <message>
             <source>Input</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Είσοδος</translation>
         </message>
         <message>
             <source>The below box is under construction and will remain empty in this version of Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Το παρακάτω κουτί είναι υπό κατασκευή και θα παραμείνει άδειο σε αυτήν την έκδοση του Mixxx.</translation>
         </message>
         <message>
             <source>Controls</source>
-            <translation>Στοιχεία Ελέγχου</translation>
+            <translation>Ελεγκτές</translation>
         </message>
         <message>
             <source>Add</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσθήκη</translation>
         </message>
         <message>
             <source>Remove</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αφαίρεση</translation>
         </message>
         <message>
             <source>Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Οδηγός εκμάθησης</translation>
         </message>
         <message>
             <source>Clear all</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Καθαρισμός όλων</translation>
         </message>
         <message>
             <source>Output</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Έξοδος</translation>
         </message>
         <message>
             <source>Outputs</source>
@@ -423,15 +416,20 @@
         </message>
         <message>
             <source>Rename</source>
-            <translation>Μετοναμασία</translation>
+            <translation>Μετονομασία</translation>
         </message>
         <message>
             <source>Lock</source>
             <translation>Κλείδωμα</translation>
         </message>
         <message>
+            <source>_copy</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Import Playlist</source>
-            <translation>Εισαγωγή λίστας αναπαραγωγής</translation>
+            <translation>Εισαγωγή Λίστας Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -444,6 +442,10 @@
         <message>
             <source>Export Crate</source>
             <translation>Εξαγωγή Κιβωτίου</translation>
+        </message>
+        <message>
+            <source>Duplicate Crate</source>
+            <translation>Υπάρχον Κιβώτιο</translation>
         </message>
         <message>
             <source>Unlock</source>
@@ -471,32 +473,31 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αρχεία Λίστας (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Λίστα M3U (*.m3u);;Λίστα M3U8 (*.m3u8);;Λίστα PLS (*.pls);;Κείμενο CSV (*.csv);;Απλό Κείμενο (*.txt)</translation>
         </message>
         <message>
             <source>Crates are a great way to help organize the music you want to DJ with.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τα κιβώτια ειναι ενας φοβερός τρόπος που βοηθάει την οργάνωση της μουσικής που θέλετε να αναπαράγετε</translation>
         </message>
         <message>
             <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Δημιουργήστε ενα κιβώτιο για την επόμενη σας παρουσίαση, για τα αγαπημένα σας electrohouse κομμάτια ή για τα πιό πολυζητημένα τραγούδια.</translation>
         </message>
         <message>
             <source>Crates let you organize your music however you'd like!</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τα κιβώτια σας επιτρέπουν να οργανώσετε τη μουσική σας όπως σας αρέσει!</translation>
+        </message>
+        <message>
+            <source>Create new crate</source>
+            <translation>Δημιουργία Νέου Κιβωτίου</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
-            <translation>Το κιβώτιο δεν μπορεί να έχει άδειο όνομα.</translation>
+            <translation>Το όνομα ενός Κιβωτίου δε μπορεί να είναι Κενό</translation>
         </message>
         <message>
             <source>Creating Crate Failed</source>
@@ -526,17 +527,15 @@
         </message>
         <message>
             <source>One deck must be stopped to enable Auto-DJ mode.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ένα Deck πρεπει να σταματήσει για να ενεργοποιηθεί η λειτουργία Αυτόματου DJ.</translation>
         </message>
         <message>
             <source>Disable Auto DJ</source>
-            <translation>Απενεργοποίηση</translation>
+            <translation>Απενεργοποίηση Αυτόματου DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ανακατέψτε το περιεχόμενο της λίστας του Αυτόματου DJ.</translation>
         </message>
         <message>
             <source>Shuffle</source>
@@ -572,8 +571,7 @@
         </message>
         <message>
             <source>Turn Auto DJ on or off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποίηση / Απενεργοποίηση του Αυτόματου DJ.</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -588,63 +586,73 @@
         <name>DlgBeatsDlg</name>
         <message>
             <source>Beat Detection Settings</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ρυθμίσεις ανίχνευσης ρυθμού</translation>
         </message>
         <message>
-            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-            <translation type="unfinished">
-            </translation>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
+automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation>Όταν η η ανίχνευση ρυθμού είναι ενεργοποιημένη, το Mixxx ανιχνεύει το ρυθμό ανά λεπτό και το ρυθμό των κομματιών σας, 
+και αυτόματα δείχνει ενα beat-grid για αυτά, που σας επιτρέπει να συγχρονίσετε τα κομμάτια χρησιμοποιόντας τις δικές τους πληφορίες ρυθμού.</translation>
         </message>
         <message>
             <source>Enable BPM and Beat Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποιηση Χτυπων ανα λεπτό και ανίχνευση ρυθμού</translation>
         </message>
         <message>
             <source>Choose Analyser</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλογή Αναλυτή</translation>
         </message>
         <message>
             <source>Beat Analyser:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αναλυτής ρυθμού</translation>
         </message>
         <message>
             <source>Choose between different algorithms to detect beats.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλογή ανάμεσα σε διαφορετικούς αλγόριθμους ανίχνευσης ρυθμού</translation>
         </message>
         <message>
             <source>Analyser Settings</source>
+            <translation>Ρυθμίσεις Αναλυτή</translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. 
+If activated Mixxx only analyzes the first minute of a track for beat information. 
+This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation>Ενεργοποιήστε την γρήγορη ανίχνευση ρυθμού. 
+Εαν ενεργοποιηθεί το Mixxx αναλύει μόνο το πρώτο λεπτό του κομματιού για πληροφορίες σχετικά με τον ρυθμό. 
+Αυτό μπορεί να επιταχύνει την ανίχνευση ρυθμού σε πιο αργούς υπολογιστές αλλά μπορεί να οδηγήσει σε χαμηλότερης ποιότητας beatgrids.</translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Enable fast beat detection. If activated Mixxx only analyzes the first minute of a track for beat information. This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
+by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
+(Not checked: Analyse only, if no beats exist.)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beat detection data is outdated</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. Use this setting if your tracks have a constant tempo (e.g. most electronic music). Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποίηση Γρήγορης Ανάλυσης (Για αργούς υπολογιστές, μπορεί να είναι λιγότερο ακριβής)</translation>
         </message>
         <message>
             <source>Assume constant tempo (Recommended)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids by analyzing the beats to discard outliers.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Υποθέτει Σταθερό Μέτρο (Ρυθμό) (Προτείνεται)</translation>
         </message>
         <message>
             <source>Enable Offset Correction (Recommended)</source>
@@ -652,35 +660,20 @@
             </translation>
         </message>
         <message>
-            <source>If enabled, re-analyses beatgrids when you change preferences on this page. If set, this setting will also re-analyse beatgrids generated by 3rd-party programs or previous versions of Mixxx.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Re-analyse beats when settings change or beats already present
-(e.g. from 3rd-party programs or older Mixxx versions)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εύρος BPM</translation>
         </message>
         <message>
             <source>Min:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ελάχιστο:</translation>
         </message>
         <message>
             <source>Max:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μέγιστο:</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επαναφορά Αρχικών Ρυθμίσεων</translation>
         </message>
     </context>
     <context>
@@ -695,8 +688,7 @@
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εύρος BPM</translation>
         </message>
         <message>
             <source>Max</source>
@@ -708,36 +700,30 @@
         </message>
         <message>
             <source>Analyze Entire Track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ανάλυση ολόκληρου του κομματιού</translation>
         </message>
     </context>
     <context>
         <name>DlgControllerLearning</name>
         <message>
             <source>Controller Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Οδηγός Εκμάθησης Ελεγκτή</translation>
         </message>
         <message>
             <source>Click any control in the Mixxx interface or choose one from the list. Then move a control on your controller to map it. Repeat this as many times as you wish. When you are finished mapping controls, click Done.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κάντε κλικ σε οποιαδήποτε επιλογή ελέγχου στην διεπαφή του Mixx, ή επιλέξτε κάποια από την λίστα. Κατόπιν, μετακινήστε αυτή την επιλογή ελέγχου επάνω στον δικό σας ελεγκτή (controller), για να χαρτογραφηθεί (map). Επαναλάβετε αυτή τη διαδικασία όσες φορές θέλετε. Όταν τελειώσετε με τους ελέγχους χαρτογράφησης (maping controls), πατήστε Ολοκληρώθηκε.</translation>
         </message>
         <message>
             <source>Done</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Έτοιμο</translation>
         </message>
         <message>
             <source>To map another control click a button or choose from the list.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Για να χαρτογραφήσετε ένα καινούριο control, πατήστε ένα κουμπί ή επιλέξτε από τη λίστα.</translation>
         </message>
         <message>
             <source>Choose Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλέξτε Έλεγχο</translation>
         </message>
         <message>
             <source>Deck %1</source>
@@ -751,13 +737,11 @@
         </message>
         <message>
             <source>Reset to default</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επαναφορά προκαθορισμένης τιμής</translation>
         </message>
         <message>
             <source>Mixer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μείκτης</translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -775,8 +759,7 @@
         </message>
         <message>
             <source>Headphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ένταση Ακουστικών</translation>
         </message>
         <message>
             <source>Headphone mix (pre/main)</source>
@@ -795,43 +778,35 @@
         </message>
         <message>
             <source>Play button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Volume fader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Δείκτης Έντασης</translation>
         </message>
         <message>
             <source>Fast rewind button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί fast rewind</translation>
         </message>
         <message>
             <source>Fast forward button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί fast forward</translation>
         </message>
         <message>
             <source>Jump to start of track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετάβαση στην αρχή του κομματιού</translation>
         </message>
         <message>
             <source>Jump to end of track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετάβαση στο τέλος του κομματιού</translation>
         </message>
         <message>
             <source>Play reverse button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί Αντίστροφης Αναπαραγωγής</translation>
         </message>
         <message>
             <source>Gain knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί ρύθμισης του gain</translation>
         </message>
         <message>
             <source>Headphone listen button</source>
@@ -840,13 +815,11 @@
         </message>
         <message>
             <source>Toggle repeat mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εναλλαγή τρόπου επανάληψης</translation>
         </message>
         <message>
             <source>Eject track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αποφόρτωση κομματιού</translation>
         </message>
         <message>
             <source>Mix orientation (e.g. left, right, center)</source>
@@ -855,8 +828,7 @@
         </message>
         <message>
             <source>BPM and Sync</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM και Συγχρονισμός</translation>
         </message>
         <message>
             <source>BPM tap button</source>
@@ -875,23 +847,19 @@
         </message>
         <message>
             <source>Beat sync (tempo and phase)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συγχρονισμός beat (ρυθμός και φάση)</translation>
         </message>
         <message>
             <source>Beat sync (tempo only)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συγχρονισμός beat (μόνο ρυθμός)</translation>
         </message>
         <message>
             <source>Beat sync (phase only)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συγχρονισμός beat (μόνο φάση)</translation>
         </message>
         <message>
             <source>Pitch and Rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τόνος και Ρυθμός</translation>
         </message>
         <message>
             <source>Toggle keylock mode</source>
@@ -905,13 +873,11 @@
         </message>
         <message>
             <source>Adjust rate up (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Άυξηση ρυθμού (ακρίβεια)</translation>
         </message>
         <message>
             <source>Adjust rate down (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μείωση ρυθμού (ακρίβεια)</translation>
         </message>
         <message>
             <source>Pitch-bend rate up (fine)</source>
@@ -920,13 +886,11 @@
         </message>
         <message>
             <source>Adjust rate up (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Άυξηση ρυθμού (χοντρικά)</translation>
         </message>
         <message>
             <source>Adjust rate down (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μείωση ρυθμού (χοντρικά)</translation>
         </message>
         <message>
             <source>Pitch-bend rate up (coarse)</source>
@@ -945,8 +909,7 @@
         </message>
         <message>
             <source>Equalizers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ισοσταθμιστές</translation>
         </message>
         <message>
             <source>High EQ knob</source>
@@ -965,23 +928,19 @@
         </message>
         <message>
             <source>High EQ kill</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Σίγαση Χαμηλού Ισοσταθμιστή</translation>
         </message>
         <message>
             <source>Mid EQ kill</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Σίγαση Μεσαίου Ισοσταθμιστή</translation>
         </message>
         <message>
             <source>Low EQ kill</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Σίγαση Υψηλού Ισοσταθμιστή</translation>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Έλεγχος Βινυλίου</translation>
         </message>
         <message>
             <source>Toggle vinyl-control (ON/OFF)</source>
@@ -995,11 +954,6 @@
         </message>
         <message>
             <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Cues / Hotcues</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1040,18 +994,15 @@
         </message>
         <message>
             <source>Looping</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επανάληψη</translation>
         </message>
         <message>
             <source>Loop In button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί Εισόδου στην Επανάληψη</translation>
         </message>
         <message>
             <source>Loop Out button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κουμπί Εξόδου από την Επανάληψη</translation>
         </message>
         <message>
             <source>Reloop / Exit button</source>
@@ -1069,6 +1020,41 @@
             </translation>
         </message>
         <message>
+            <source>Toggle slip mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Preview Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Single deck mode - Toggle vinyl control to next deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Cues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Beat-Looping</source>
             <translation type="unfinished">
             </translation>
@@ -1079,29 +1065,50 @@
             </translation>
         </message>
         <message>
+            <source>Create temporary %1-beat loop roll</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/32th</source>
+            <translation>1/32</translation>
+        </message>
+        <message>
+            <source>1/16th</source>
+            <translation>1/16</translation>
+        </message>
+        <message>
+            <source>1/8th</source>
+            <translation>1/8</translation>
+        </message>
+        <message>
+            <source>1/4th</source>
+            <translation>1/4</translation>
+        </message>
+        <message>
             <source>Library</source>
+            <translation>Βιβλιοθήκη</translation>
+        </message>
+        <message>
+            <source>Expand/collapse the selected view (library, playlist..)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετάβαση στην επόμενη όψη (βιβλιοθήκη, λίστα..)</translation>
         </message>
         <message>
             <source>Switch to the previous view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετάβαση στην προηγούμενη όψη (βιβλιοθήκη, λίστα..)</translation>
         </message>
         <message>
             <source>Scroll to next track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετακίνηση στο επόμενο κομμάτι της συλλογής/λίστα αναπαραγωγής</translation>
         </message>
         <message>
             <source>Scroll to previous track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετακίνηση στο προηγούμενο κομμάτι της συλλογής/λίστα αναπαραγωγής</translation>
         </message>
         <message>
             <source>Load selected track into first stopped deck</source>
@@ -1110,58 +1117,71 @@
         </message>
         <message>
             <source>Load selected track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Φόρτωση του διαλεγμένου κομματιού</translation>
+        </message>
+        <message>
+            <source>Load selected track and play</source>
+            <translation>Φόρτωση του επιλεγμένου κομματιού και αναπαραγωγή</translation>
         </message>
         <message>
             <source>Effects</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εφέ</translation>
         </message>
         <message>
             <source>Toggle flange effect</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενεργοποίηση/Απενεργοποίηση εφέ flange</translation>
         </message>
         <message>
             <source>Flange effect: Wavelength/period</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εφέ flange: Μήκος κύματος/περίοδος</translation>
         </message>
         <message>
             <source>Flange effect: Intensity</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εφέ flange: ένταση</translation>
         </message>
         <message>
             <source>Flange effect: Phase delay</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εφέ flange: Καθυστέρηση φάσης</translation>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μικρόφωνο</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μικρόφωνο ανοιχτό/κλειστό</translation>
         </message>
         <message>
             <source>Microphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ένταση Μικροφώνου</translation>
         </message>
         <message>
             <source>Microphone channel orientation (e.g. left, right, center)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προσανατολισμός καναλιού μικροφώνου (π.χ. αριστερά, δεξιά, κέντρο)</translation>
+        </message>
+        <message>
+            <source>Auto DJ</source>
+            <translation>Αυτόματος DJ</translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist</source>
+            <translation>Μίξη του περιεχόμενου της λίστας του Αυτόματου DJ</translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist</source>
+            <translation>Αγνόησε το επόμενο κομμάτι στη λίστα του Αυτόματου DJ</translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track</source>
+            <translation>Ενεργοποίηση μετάβασης στο επόμενο κομμάτι</translation>
+        </message>
+        <message>
+            <source>Toggle Auto DJ (ON/OFF)</source>
+            <translation>Ενεργοποίηση/Απενεργοποίηση Αυτόματου DJ</translation>
         </message>
         <message>
             <source>User Interface</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διεπαφή χρήστη</translation>
         </message>
         <message>
             <source>Show/hide the sampler section</source>
@@ -1179,6 +1199,11 @@
             </translation>
         </message>
         <message>
+            <source>Show/hide the preview deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Show/hide spinning vinyl widget</source>
             <translation type="unfinished">
             </translation>
@@ -1190,8 +1215,65 @@
         </message>
         <message>
             <source>Successfully mapped to:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιτυχώς χαρτογραφημένο στο:</translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgHidden</name>
+        <message>
+            <source>Manage</source>
+            <translation>Διαχείριση</translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation>Επιλέγει όλα τα κομμάτια στον παρακάτω πίνακα.</translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation>Επιλογή Όλων</translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation>Διαγραφή επιλεγμενων κομματιών από τη βιβλιοθήκη.</translation>
+        </message>
+        <message>
+            <source>Purge</source>
+            <translation>Διαγραφή</translation>
+        </message>
+        <message>
+            <source>Unhide selected tracks from the library.</source>
+            <translation>Εμφάνιση επιλεγμένων κομματιών στη βιβλιοθήκη.</translation>
+        </message>
+        <message>
+            <source>Unhide</source>
+            <translation>Εμφάνιση</translation>
+        </message>
+        <message>
+            <source>Ctrl+S</source>
+            <translation>Ctrl+S</translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgMissing</name>
+        <message>
+            <source>Manage</source>
+            <translation>Διαχείριση</translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation>Επιλέγει όλα τα κομμάτια στον παρακάτω πίνακα.</translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation>Επιλογή Όλων</translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation>Διαγραφή επιλεγμενων κομματιών από τη βιβλιοθήκη.</translation>
+        </message>
+        <message>
+            <source>Purge</source>
+            <translation>Διαγραφή</translation>
         </message>
     </context>
     <context>
@@ -1217,8 +1299,7 @@
         </message>
         <message>
             <source>Detect Tracks BPM on Import</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εντοπισμός BPM των Κομματιών κατά την Εισαγωγή</translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
@@ -1242,8 +1323,7 @@
         </message>
         <message>
             <source>Edit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επεξεργασία</translation>
         </message>
         <message>
             <source>Delete</source>
@@ -1269,16 +1349,18 @@
         <name>DlgPrefController</name>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κανένα</translation>
         </message>
         <message>
             <source>%1 by %2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>%1 από %2</translation>
         </message>
         <message>
-            <source>Custom Preset</source>
+            <source>No Description</source>
+            <translation>Χωρίς Περιγραφή</translation>
+        </message>
+        <message>
+            <source>No support available.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1287,13 +1369,11 @@
         <name>DlgPrefControllerDlg</name>
         <message>
             <source>Dialog</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διάλογος</translation>
         </message>
         <message>
             <source>Controller Name</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Όνομα Ελεγκτή</translation>
         </message>
         <message>
             <source>Enabled</source>
@@ -1301,8 +1381,16 @@
         </message>
         <message>
             <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
+            <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;Αντιμετώπιση προβλημάτων&lt;/a&gt;</translation>
+        </message>
+        <message>
+            <source>TextLabel</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Description:</source>
+            <translation>Περιγραφή:</translation>
         </message>
         <message>
             <source>Load Preset:</source>
@@ -1310,8 +1398,11 @@
         </message>
         <message>
             <source>Loaded Preset:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Φορτωμένη Προεπιλογή:</translation>
+        </message>
+        <message>
+            <source>Support:</source>
+            <translation>Υποστήριξη:</translation>
         </message>
         <message>
             <source>Click to start the Controller Learning wizard.</source>
@@ -1328,8 +1419,7 @@
         <name>DlgPrefControls</name>
         <message>
             <source>Position</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Θέση</translation>
         </message>
         <message>
             <source>Remaining</source>
@@ -1346,8 +1436,7 @@
         </message>
         <message>
             <source>Simple</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Απλή</translation>
         </message>
         <message>
             <source>On</source>
@@ -1360,36 +1449,20 @@
             </translation>
         </message>
         <message>
-            <source>Mixxx Detected a WVGA Screen</source>
-            <translation>Το Mixxx Εντόπισε μια Οθόνη WVGA</translation>
-        </message>
-        <message>
-            <source>Mixxx has detected that your screen has a resolution of </source>
-            <translation>Το Mixxx εντόπισε ότι η οθόνη σας έχει ανάλυση </translation>
-        </message>
-        <message>
-            <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>This skin does not support schemes</source>
             <translation>Αυτό το skin δεν υποστηρίζει σχήματα</translation>
         </message>
         <message>
             <source>6%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>6%</translation>
         </message>
         <message>
             <source>8% (Technics SL-1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>8% (Technics SL-1210)</translation>
         </message>
         <message>
             <source>Down increases speed (Technics SL-1210)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προς τα κάτω αυξάνει την ταχύτητα (Technics SL-1210)</translation>
         </message>
         <message>
             <source>10%</source>
@@ -1397,6 +1470,16 @@
         </message>
         <message>
             <source>Load tracks into a playing deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>The selected skin is bigger than your screen resolution.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>On (only in Library)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1438,8 +1521,7 @@
         </message>
         <message>
             <source>Information</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Πληροφορίες</translation>
         </message>
         <message>
             <source>Mixxx must be restarted before the changes will take effect.</source>
@@ -1447,8 +1529,7 @@
         </message>
         <message>
             <source>OpenGL not available</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η OpenGL δεν είναι διαθέσιμη</translation>
         </message>
     </context>
     <context>
@@ -1472,16 +1553,6 @@
         <message>
             <source>Tool tips</source>
             <translation>Tool tips</translation>
-        </message>
-        <message>
-            <source>On</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Off</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Pitch/Rate slider range</source>
@@ -1508,9 +1579,13 @@
             </translation>
         </message>
         <message>
-            <source>Locale</source>
+            <source>Re-queue tracks in Auto DJ</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Locale</source>
+            <translation>Γλώσσα</translation>
         </message>
         <message>
             <source>Temporary rate change when left-clicking</source>
@@ -1534,6 +1609,11 @@
         </message>
         <message>
             <source>Displays the actual frame rate.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Normalize Overview</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1626,8 +1706,7 @@
         </message>
         <message>
             <source>Frame rate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ρυθμός καρέ</translation>
         </message>
         <message>
             <source>Default zoom</source>
@@ -1657,12 +1736,9 @@
             </translation>
         </message>
         <message>
-            <source>Slow fade</source>
-            <translation>Αργή εξασθένιση</translation>
-        </message>
-        <message>
-            <source>Fast cut</source>
-            <translation>Γρήγορο κόψιμο</translation>
+            <source>Slow fade/Fast cut (additive)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Constant power</source>
@@ -1684,6 +1760,11 @@
         <message>
             <source>Logarithmic</source>
             <translation>Λογαριθμικό</translation>
+        </message>
+        <message>
+            <source>Reverse crossfader (hamster style)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
@@ -1731,8 +1812,7 @@
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επαναφορά Αρχικών Ρυθμίσεων</translation>
         </message>
     </context>
     <context>
@@ -1769,8 +1849,7 @@ Apply settings and continue?</source>
         <name>DlgPrefNoControllersDlg</name>
         <message>
             <source>Form3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Φόρμα3</translation>
         </message>
         <message>
             <source>No controllers available.</source>
@@ -1880,7 +1959,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation>Επιλογή φακέλου μουσικής βιβλιοθήκης</translation>
+            <translation>Επιλογή καταλόγου μουσικής συλλογής</translation>
         </message>
     </context>
     <context>
@@ -1920,10 +1999,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Rescan library on start-up</source>
-            <translation>Επανεξέταση της βιβλιοθήκης κατά την εκκίνηση</translation>
+            <translation>Επανεξέταση της συλλογής κατά την εκκίνηση</translation>
         </message>
         <message>
             <source>Use relative paths for playlist export if possible</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Other Libraries</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1939,6 +2023,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Show Traktor Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>    You will need to restart Mixxx for this to take effect</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1979,13 +2068,11 @@ playback and outbound link statistics</source>
         <name>DlgPrefRecord</name>
         <message>
             <source>kbps</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>kbps</translation>
         </message>
         <message>
             <source>Choose recordings directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διαλέψτε κατάλογο εγγραφής</translation>
         </message>
     </context>
     <context>
@@ -1996,23 +2083,19 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Recordings Directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κατάλογος εγγραφής</translation>
         </message>
         <message>
             <source>Recordings Directory:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κατάλογος Εγγραφής:</translation>
         </message>
         <message>
             <source>Browse...</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Περιήγηση…</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κωδικοποίηση</translation>
         </message>
         <message>
             <source>Quality</source>
@@ -2032,8 +2115,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τίτλος</translation>
         </message>
         <message>
             <source>Author</source>
@@ -2041,13 +2123,11 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Δίσκος</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διάφορα</translation>
         </message>
         <message>
             <source>Create a CUE file</source>
@@ -2084,17 +2164,17 @@ playback and outbound link statistics</source>
             </translation>
         </message>
         <message>
+            <source>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Apply volume normalization to loaded tracks.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>On older computers, it may take a few seconds before volume normalization is applied to a new track. You may wish to wait before adjusting the pregain and volume.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2114,8 +2194,7 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επαναφορά Αρχικών Ρυθμίσεων</translation>
         </message>
     </context>
     <context>
@@ -2186,13 +2265,21 @@ playback and outbound link statistics</source>
         </message>
         <message>
             <source>Stream settings</source>
+            <translation>Ρυθμίσεις Ροής</translation>
+        </message>
+        <message>
+            <source>Dynamically update Ogg Vorbis metadata.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Stream name</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Όνομα Ροής</translation>
         </message>
         <message>
             <source>Mixxx Icecast Testing</source>
@@ -2230,6 +2317,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Public stream</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Use UTF-8 encoding for metadata.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2329,18 +2421,26 @@ p, li { white-space: pre-wrap; }
             <translation>Ρυθμός Δειγματοληψίας</translation>
         </message>
         <message>
+            <source>Buffer Underflow Count</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>0</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Latency Tips</source>
             <translation>Τρικ Καθυστέρησης</translation>
         </message>
         <message>
             <source>&lt;ul&gt;
-&lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
+&lt;li&gt;Increase your latency if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
-            <translation>&lt;ul&gt;
-&lt;li&gt;Μεγαλώστε την καθυστέρηση αν ακούτε πηδήματα κατά την αναπαραγωγή&lt;/li&gt;
-&lt;li&gt;Μειώστε την καθυστέρηση για να βελτιώσετε την ταχύτητα αντίδρασης του Mixxx&lt;/li&gt;
-&lt;/ul&gt;</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Output</source>
@@ -2349,7 +2449,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Input</source>
-            <translation>Είσοδος</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Query Devices</source>
@@ -2362,7 +2463,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Apply</source>
-            <translation>Εφαρμογή</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Latency</source>
@@ -2494,8 +2596,7 @@ p, li { white-space: pre-wrap; }
         <name>DlgPreferences</name>
         <message>
             <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Προτιμήσεις</translation>
         </message>
         <message>
             <source>Sound Hardware</source>
@@ -2503,13 +2604,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Controllers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ελεγκτές</translation>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Συλλογή</translation>
         </message>
         <message>
             <source>Interface</source>
@@ -2517,8 +2616,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Equalizers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ισοσταθμιστές</translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -2527,8 +2625,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Recording</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Εγγραφή</translation>
         </message>
         <message>
             <source>Beat Detection</source>
@@ -2537,8 +2634,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ανίχνευση BPM</translation>
         </message>
         <message>
             <source>Normalization</source>
@@ -2546,8 +2642,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Έλεγχος Βινυλίου</translation>
         </message>
         <message>
             <source>Live Broadcasting</source>
@@ -2602,7 +2697,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Select All</source>
-            <translation>Επιλογή Όλων</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Runs the BPM and beatgrid detection on the selected tracks.
@@ -2620,8 +2716,9 @@ Waveforms will be generated as part of a analysis as well.</source>
             <translation>Διακοπή Ανάλυσης</translation>
         </message>
         <message>
-            <source>Analyzing %1%</source>
-            <translation>Ανάλυση %1%</translation>
+            <source>Analyzing %1/%2 %3%</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3024,7 +3121,12 @@ Waveforms will be generated as part of a analysis as well.</source>
     <context>
         <name>GLSLWaveformWidget</name>
         <message>
-            <source>Filtered (experimental)</source>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>experimental</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3046,6 +3148,67 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
     </context>
     <context>
+        <name>HSVWaveformWidget</name>
+        <message>
+            <source>HSV</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>HidController</name>
+        <message>
+            <source>Generic HID Mouse</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Joystick</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Gamepad</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Keyboard</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Multiaxis Controller</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unknown HID Desktop Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Infrared Control</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unknown Apple HID Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Unknown Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Interface Number</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>ITunesFeature</name>
         <message>
             <source>iTunes</source>
@@ -3053,7 +3216,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Select your iTunes library</source>
-            <translation>Επιλέξτε την βιβλιοθήκη του iTunes σας</translation>
+            <translation>Επιλέξτε την συλλογή του iTunes σας</translation>
         </message>
         <message>
             <source>(loading) iTunes</source>
@@ -3061,19 +3224,19 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Use Default Library</source>
-            <translation>Χρησιμοποιήστε την προεπιλεγμένη βιβλιοθήκη</translation>
+            <translation>Χρησιμοποιήστε την Προεπιλεγμένη Συλλογή</translation>
         </message>
         <message>
             <source>Choose Library...</source>
-            <translation>Επιλέξτε βιβλιοθήκη</translation>
+            <translation>Επιλέξτε Συλλογή</translation>
         </message>
         <message>
             <source>Error Loading iTunes Library</source>
-            <translation>Σφάλμα στην Φόρτωση της Βιβλιοθήκης του iTunes</translation>
+            <translation>Σφάλμα στην Φόρτωση της Συλλογής του iTunes</translation>
         </message>
         <message>
             <source>There was an error loading your iTunes library. Some of your iTunes tracks or playlists may not have loaded.</source>
-            <translation>Προκλήθηκε ένα σφάλμα κατά την φόρτωση της βιβλιοθήκης του iTunes. Κάποια από τα κομμάτια ή τις λίστες αναπαραγωγής του iTunes μπορεί να μη φορτώθηκαν.</translation>
+            <translation>Προκλήθηκε ένα σφάλμα κατά την φόρτωση της συλλογής του iTunes. Κάποια από τα κομμάτια ή τις λίστες αναπαραγωγής του iTunes μπορεί να μη φορτώθηκαν.</translation>
         </message>
     </context>
     <context>
@@ -3085,11 +3248,68 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
     </context>
     <context>
+        <name>LegacySkinParser</name>
+        <message>
+            <source>activate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>toggle</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>right</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>left</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>right small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>left small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>up</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>down</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>up small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>down small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shortcut</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Σαρωτής της Συλλογής</translation>
         </message>
         <message>
             <source>It's taking Mixxx a minute to scan your music library, please wait...</source>
@@ -3099,6 +3319,11 @@ Waveforms will be generated as part of a analysis as well.</source>
         <message>
             <source>Cancel</source>
             <translation>Άκυρο</translation>
+        </message>
+        <message>
+            <source>Scanning: </source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3143,8 +3368,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επιλογή καταλόγου μουσικής συλλογής</translation>
         </message>
         <message>
             <source>Sound Device Busy</source>
@@ -3211,6 +3435,91 @@ Waveforms will be generated as part of a analysis as well.</source>
             <translation>Συνέχεια</translation>
         </message>
         <message>
+            <source>Load Track to Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add &amp;New Playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add New &amp;Crate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable &amp;Keyboard Shortcuts</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Samplers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Vinyl Control Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+3</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Microphone Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+2</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the preview deck in the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+4</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Reload Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reload the skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+Shift+R</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Developer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Load track to Deck %1</source>
             <translation type="unfinished">
             </translation>
@@ -3248,8 +3557,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>&amp;Rescan Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Επανεξέταση της Συλλογής</translation>
         </message>
         <message>
             <source>Rescans library folders for changes to tracks.</source>
@@ -3257,18 +3565,8 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>Add &amp;new playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+N</source>
             <translation>Ctrl+N</translation>
-        </message>
-        <message>
-            <source>Add new &amp;crate</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Deck %1 is currently playing a track.</source>
@@ -3326,11 +3624,6 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>&amp;Translate this application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
@@ -3373,11 +3666,6 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Enable Vinyl Control &amp;2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Enable live &amp;broadcasting</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3434,11 +3722,6 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>Enable &amp;keyboard shortcuts</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Toggles keyboard shortcuts on or off</source>
             <translation type="unfinished">
             </translation>
@@ -3449,13 +3732,42 @@ Waveforms will be generated as part of a analysis as well.</source>
             </translation>
         </message>
         <message>
-            <source>&amp;Options</source>
+            <source>&amp;Translate This Application</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
+            <source>Enable Live &amp;Broadcasting</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>May not be supported on all skins.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the sample deck section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the vinyl control section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the microphone section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Options</source>
+            <translation>&amp;Επιλογές</translation>
+        </message>
+        <message>
             <source>&amp;Library</source>
-            <translation>&amp;Βιβλιοθήκη</translation>
+            <translation>&amp;Συλλογή</translation>
         </message>
         <message>
             <source>&amp;View</source>
@@ -3530,11 +3842,26 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>The preferences window is still open.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Discard any changes and exit Mixxx?</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
             <source>Missing Tracks</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hidden Tracks</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3553,13 +3880,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Playlist Export Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η Εξαγωγή της Λίστας Αναπαραγωγής απέτυχε</translation>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αδύνατη δημιουργία αρχείου</translation>
         </message>
         <message>
             <source>Readable text Export Failed</source>
@@ -3571,8 +3896,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>ParserM3u</name>
         <message>
             <source>Playlist Export Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η Εξαγωγή της Λίστας Αναπαραγωγής απέτυχε</translation>
         </message>
         <message>
             <source>File path contains characters, not allowed in m3u playlists.
@@ -3588,16 +3912,14 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Could not create file</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αδύνατη δημιουργία αρχείου</translation>
         </message>
     </context>
     <context>
         <name>ParserPls</name>
         <message>
             <source>Playlist Export Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Η Εξαγωγή της Λίστας Αναπαραγωγής απέτυχε</translation>
         </message>
         <message>
             <source>Could not create file</source>
@@ -3608,8 +3930,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>PlaylistFeature</name>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κλείδωμα</translation>
         </message>
         <message>
             <source>Playlists</source>
@@ -3617,8 +3938,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ξεκλείδωμα</translation>
         </message>
         <message>
             <source>Playlists are ordered lists of songs that allow you to plan your DJ sets.</source>
@@ -3640,12 +3960,55 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Create new playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>PrepareFeature</name>
         <message>
             <source>Analyze</source>
             <translation>Ανάλυση</translation>
+        </message>
+    </context>
+    <context>
+        <name>QMessageBox</name>
+        <message>
+            <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx has a new and improved beat detector.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keep Current Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generate New Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3673,18 +4036,30 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μικρόφωνο</translation>
         </message>
         <message>
             <source>Passthrough</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διέλευση</translation>
         </message>
         <message>
             <source>Unknown path type %1</source>
             <translation type="unfinished">
             </translation>
+        </message>
+    </context>
+    <context>
+        <name>QtSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation>Απλή</translation>
+        </message>
+    </context>
+    <context>
+        <name>QtWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation>Φιλτραρισμένη</translation>
         </message>
     </context>
     <context>
@@ -3698,8 +4073,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>RhythmboxFeature</name>
         <message>
             <source>Rhythmbox</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rhythmbox</translation>
         </message>
     </context>
     <context>
@@ -3744,23 +4118,19 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>SetlogFeature</name>
         <message>
             <source>Join with previous</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ένωση με προηγούμενη</translation>
         </message>
         <message>
             <source>History</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ιστορικό</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ξεκλείδωμα</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κλείδωμα</translation>
         </message>
         <message>
             <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
@@ -3787,6 +4157,10 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>SoftwareWaveformWidget</name>
         <message>
             <source>Filtered</source>
+            <translation>Φιλτραρισμένη</translation>
+        </message>
+        <message>
+            <source>Software</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3795,38 +4169,36 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>Tooltips</name>
         <message>
             <source>Drop tracks from library or external file manager here.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ρίξτε κομμάτια από την συλλογή ή από εξωτερικό διαχειριστή αρχείων εδώ.</translation>
         </message>
         <message>
             <source>Reset to default value.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επαναφορά προκαθορισμένης τιμής</translation>
         </message>
         <message>
             <source>Left-click</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αριστερό-κλικ</translation>
         </message>
         <message>
             <source>Right-click</source>
+            <translation>Δεξί-κλικ</translation>
+        </message>
+        <message>
+            <source>Scroll-wheel</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Waveform Overview</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επισκόπηση Κυματομορφής</translation>
         </message>
         <message>
             <source>Shows information about the track currently loaded in this channel.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Δείχνει πληροφορίες για το κομμάτι που είναι φορτωμένο σε αυτό το κανάλι.</translation>
         </message>
         <message>
             <source>Jump around in the track by clicking somewhere on the waveform.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μετακινηθείτε στο κομμάτι πατώντας κάπου πάνω στην κυματομορφή.</translation>
         </message>
         <message>
             <source>Use the mouse to scratch, spin-back or throw tracks.</source>
@@ -3849,6 +4221,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
+            <source>Scroll to change the waveform zoom level.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Spinning Vinyl</source>
             <translation type="unfinished">
             </translation>
@@ -3860,8 +4237,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Gain</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ενίσχυση</translation>
         </message>
         <message>
             <source>Adjusts the pre-fader gain of the track (to avoid clipping).</source>
@@ -3925,23 +4301,19 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Volume Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Έλεγχος έντασης</translation>
         </message>
         <message>
             <source>Adjusts the volume of the selected channel.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ρυθμίζει την ένταση του διαλεγμένου καναλιού.</translation>
         </message>
         <message>
             <source>Master Volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Κύρια ένταση</translation>
         </message>
         <message>
             <source>Adjusts the master output volume.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ρυθμίζει την ένταση της κύριας εξόδου.</translation>
         </message>
         <message>
             <source>Crossfader</source>
@@ -3955,8 +4327,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Balance</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ισορροπία</translation>
         </message>
         <message>
             <source>Adjusts the left/right channel balance on the master output.</source>
@@ -3965,13 +4336,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Headphone Volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ένταση Ακουστικών</translation>
         </message>
         <message>
             <source>Adjusts the headphone output volume.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ρυθμίζει την ένταση της εξόδου των ακουστικών.</translation>
         </message>
         <message>
             <source>Headphone Mix</source>
@@ -4029,14 +4398,22 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
-            <source>Microphone Volume</source>
+            <source>Preview Deck</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Adjusts the microphone volume.</source>
+            <source>Show/hide the Preview deck.</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Microphone Volume</source>
+            <translation>Ένταση Μικροφώνου</translation>
+        </message>
+        <message>
+            <source>Adjusts the microphone volume.</source>
+            <translation>Ρυθμίζει την ένταση του μικροφώνου</translation>
         </message>
         <message>
             <source>Microphone Talk-Over</source>
@@ -4055,33 +4432,27 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Raise Pitch</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αύξηση του Τόνου</translation>
         </message>
         <message>
             <source>Sets the pitch higher.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Θέτει τον τόνο ψηλότερα</translation>
         </message>
         <message>
             <source>Sets the pitch higher in small steps.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Θέτει τον τόνο ψηλότερα σε μικρά βήματα</translation>
         </message>
         <message>
             <source>Lower Pitch</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μείωση του Τόνου</translation>
         </message>
         <message>
             <source>Sets the pitch lower.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Θέτει τον τόνο χαμηλότερα</translation>
         </message>
         <message>
             <source>Sets the pitch lower in small steps.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Θέτει τον τόνο χαμηλότερα σε μικρά βήματα</translation>
         </message>
         <message>
             <source>Raise Pitch Temporary (Nudge)</source>
@@ -4115,8 +4486,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Low EQ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Χαμηλός Ισοσταθμιστής</translation>
         </message>
         <message>
             <source>Adjusts the gain of the low EQ filter.</source>
@@ -4125,8 +4495,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Mid EQ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Μεσαίος Ισοσταθμιστής</translation>
         </message>
         <message>
             <source>Adjusts the gain of the mid EQ filter.</source>
@@ -4135,8 +4504,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>High EQ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Υψηλός Ισοσταθμιστής</translation>
         </message>
         <message>
             <source>Adjusts the gain of the high EQ filter.</source>
@@ -4294,6 +4662,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
+            <source>(while stopped)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Cue</source>
             <translation type="unfinished">
             </translation>
@@ -4315,6 +4688,71 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Sends the selected channel's audio to the headphone output.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Decks can't sync to samplers and samplers can only sync to decks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Setup a loop over the set number of beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Temporarily setup a rolling loop over the set number of beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Playback will resume where the track would have been if it had not entered the loop.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Turns the current loop off.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Slip Mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Once disabled, the audible playback will resume where the track would have been.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clock</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the current time.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4420,8 +4858,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Repeat</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Επανάληψη</translation>
         </message>
         <message>
             <source>When active the track will repeat if you go past the end or reverse before the start.</source>
@@ -4430,8 +4867,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Eject</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Αποβολή</translation>
         </message>
         <message>
             <source>Ejects track from the player.</source>
@@ -4554,11 +4990,6 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             </translation>
         </message>
         <message>
-            <source>Setup a loop over X beats.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Reloop/Exit</source>
             <translation type="unfinished">
             </translation>
@@ -4600,8 +5031,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Track Time</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Χρόνος κομματιού</translation>
         </message>
         <message>
             <source>Displays the elapsed or remaining time of the track loaded.</source>
@@ -4615,8 +5045,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Track Duration</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Διάρκεια κομματιού</translation>
         </message>
         <message>
             <source>Displays the duration of the loaded track.</source>
@@ -4630,8 +5059,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Track Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Καλλιτέχνης κομματιού</translation>
         </message>
         <message>
             <source>Displays the artist of the loaded track.</source>
@@ -4640,8 +5068,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Track Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τίτλος Κομματιού</translation>
         </message>
         <message>
             <source>Displays the title of the loaded track.</source>
@@ -4650,8 +5077,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Track Album</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Τίτλος Δίσκου</translation>
         </message>
         <message>
             <source>Displays the album name of the loaded track.</source>
@@ -4724,15 +5150,38 @@ Click OK to exit.</source>
 Πατήστε OK για έξοδο.</translation>
         </message>
         <message>
+            <source>Click OK to exit.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Cannot upgrade database schema</source>
             <translation>Αδυναμία αναβάθμισης σχήματος βάσης δεδομένων</translation>
         </message>
         <message>
-            <source>Unable to upgrade your database schema to version %1.
-Your mixxx.db file may be corrupt.
-Try renaming it and restarting Mixxx.
-Click OK to exit.</source>
-            <translation>Πατήστε ΟΚ για έξοδο</translation>
+            <source>Unable to upgrade your database schema to version %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be outdated.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your mixxxdb.sqlite file may be corrupt.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Try renaming it and restarting Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be missing or invalid.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -4747,11 +5196,29 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Error Loading Traktor Library</source>
-            <translation>Σφάλμα Φόρτωσης της Βιβλιοθήκης του Traktor</translation>
+            <translation>Σφάλμα Φόρτωσης της Συλλογής του Traktor</translation>
         </message>
         <message>
             <source>There was an error loading your Traktor library. Some of your Traktor tracks or playlists may not have loaded.</source>
-            <translation>Προκλήθηκε ένα σφάλμα κατά την ανάγνωση της βιβλιοθήκης του Traktor. Κάποια από τα κομμάτια ή τις λίστες αναπαραγωγής του Traktor μπορεί να μη φορτώθηκαν.</translation>
+            <translation>Προκλήθηκε ένα σφάλμα κατά την ανάγνωση της συλλογής του Traktor. Κάποια από τα κομμάτια ή τις λίστες αναπαραγωγής του Traktor μπορεί να μη φορτώθηκαν.</translation>
+        </message>
+    </context>
+    <context>
+        <name>WOverview</name>
+        <message>
+            <source>Ready to play, analyzing ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -4762,8 +5229,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Esc</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esc</translation>
         </message>
         <message>
             <source>Search...</source>
@@ -4790,13 +5256,27 @@ Click OK to exit.</source>
             <translation>Διαγραφή</translation>
         </message>
         <message>
-            <source>Properties...</source>
-            <translation>Ρυθμίσεις</translation>
-        </message>
-        <message>
-            <source>Open in file browser</source>
+            <source>Hide from Library</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Unhide from Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge from Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Properties</source>
+            <translation>Ιδιότητες</translation>
+        </message>
+        <message>
+            <source>Open in File Browser</source>
+            <translation>Άνοιξε το στο πρόγραμμα περιήγησης αρχείων</translation>
         </message>
         <message>
             <source>Add to Auto-DJ Queue (bottom)</source>
@@ -4810,6 +5290,10 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Reload Track Metadata</source>
+            <translation>Επαναφόρτωση Metadata Κομματιού</translation>
+        </message>
+        <message>
+            <source>Load to Preview Deck</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -4843,11 +5327,6 @@ Click OK to exit.</source>
             <translation type="unfinished">
             </translation>
         </message>
-        <message>
-            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
     </context>
     <context>
         <name>WTrackTableViewHeader</name>
@@ -4860,13 +5339,11 @@ Click OK to exit.</source>
         <name>WaveformWidgetFactory</name>
         <message>
             <source>(GLSL)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(GLSL)</translation>
         </message>
         <message>
             <source>(GL)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>(GL)</translation>
         </message>
     </context>
 </TS>

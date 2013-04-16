@@ -177,6 +177,25 @@ unsigned int CrateDAO::crateSize(int crateId) {
     return 0;
 }
 
+void CrateDAO::copyCrateTracks(int sourceCrateId, int targetCrateId) {
+    // Query Tracks from the source Playlist
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id FROM crate_tracks "
+                  "WHERE crate_id = :cid");
+    query.bindValue(":cid", sourceCrateId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    QList<int> trackIds;
+    while (query.next()) {
+        trackIds.append(query.value(0).toInt());
+    }
+    addTracksToCrate(trackIds, targetCrateId);
+}
+
 bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO " CRATE_TRACKS_TABLE

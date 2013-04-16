@@ -19,7 +19,6 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
 
   private:
     QColor m_beatColor;
-    QColor m_highBeatColor;
     ControlObjectThreadMain* m_beatActive;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);

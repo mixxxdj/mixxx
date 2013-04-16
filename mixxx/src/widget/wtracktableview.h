@@ -32,17 +32,17 @@ class WTrackTableView : public WLibraryTableView {
     void onShow();
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void loadSelectedTrackToGroup(QString group, bool play);
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
+    void slotUnhide();
+    void slotPurge();
 
   private slots:
     void slotRemove();
     void slotHide();
-    void slotUnhide();
-    void slotPurge();
     void slotOpenInFileBrowser();
     void slotShowTrackInfo();
     void slotNextTrackInfo();
@@ -53,7 +53,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
-    void loadSelectionToGroup(QString group);
+    void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection);
     void slotLockBpm();
     void slotUnlockBpm();

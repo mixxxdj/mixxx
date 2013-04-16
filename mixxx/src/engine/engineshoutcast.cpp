@@ -63,7 +63,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_format_is_ov(false),
           m_protocol_is_icecast1(false),
           m_protocol_is_icecast2(false),
-          m_protocol_is_shoutcast(false) {
+          m_protocol_is_shoutcast(false),
+          m_ogg_dynamic_update(false) {
 
 #ifndef __WINDOWS__
     // Ignore SIGPIPE signals that we get when the remote streaming server
@@ -165,6 +166,7 @@ void EngineShoutcast::updateFromPreferences()
     m_protocol_is_icecast1 = false;
     m_protocol_is_icecast2 = false;
     m_protocol_is_shoutcast = false;
+    m_ogg_dynamic_update = false;
 
     // Convert a bunch of QStrings to QByteArrays so we can get regular C char*
     // strings to pass to libshout.
@@ -210,6 +212,9 @@ void EngineShoutcast::updateFromPreferences()
         ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
     QByteArray baStreamPublic = encodeString(m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")));
+
+    // Dynamic Ogg metadata update
+    m_ogg_dynamic_update = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
@@ -584,8 +589,9 @@ void EngineShoutcast::updateMetaData() {
       */
 
 
-    //If we use MP3 streaming and want dynamic metadata changes
-    if (!m_custom_metadata && m_format_is_mp3) {
+    //If we use either MP3 streaming or OGG streaming with dynamic update of metadata being enabled,
+    //we want dynamic metadata changes
+    if (!m_custom_metadata && (m_format_is_mp3 || m_ogg_dynamic_update)) {
         if (m_pMetaData != NULL) {
             QString artist = m_pMetaData->getArtist();
             QString title = m_pMetaData->getTitle();

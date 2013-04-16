@@ -20,11 +20,12 @@ class EngineMaster;
 class AnalyserQueue;
 class SoundManager;
 class VinylControlManager;
+class TrackCollection;
 
 class PlayerManager : public QObject {
     Q_OBJECT
   public:
-    PlayerManager(ConfigObject<ConfigValue> *pConfig,
+    PlayerManager(ConfigObject<ConfigValue>* pConfig,
                   SoundManager* pSoundManager,
                   EngineMaster* pEngine,
                   VinylControlManager* pVCManager);
@@ -80,7 +81,7 @@ class PlayerManager : public QObject {
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void slotLoadToPlayer(QString location, QString group);
 
     // Slots for loading tracks to decks
@@ -119,4 +120,4 @@ class PlayerManager : public QObject {
     QMap<QString, BaseTrackPlayer*> m_players;
 };
 
-#endif /* PLAYERMANAGER_H */
+#endif // PLAYERMANAGER_H

@@ -83,7 +83,7 @@ class LibraryFeature : public QObject {
     void showTrackModel(QAbstractItemModel* model);
     void switchToView(const QString& view);
     void loadTrack(TrackPointer pTrack);
-    void loadTrackToPlayer(TrackPointer pTrack, QString group);
+    void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     void featureIsLoading(LibraryFeature*);

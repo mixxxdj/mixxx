@@ -27,6 +27,7 @@ class ImgSource {
     virtual ~ImgSource() {};
     virtual QImage* getImage(QString img) = 0;
     virtual inline QColor getCorrectColor(QColor c) { return c; }
+    virtual void correctImageColors(QImage* p) { (void)p; };
 };
 
 class ImgProcessor : public ImgSource {
@@ -38,6 +39,7 @@ class ImgProcessor : public ImgSource {
     inline QColor getCorrectColor(QColor c) {
         return doColorCorrection(m_parent->getCorrectColor(c));
     }
+    virtual void correctImageColors(QImage* p) { (void)p; };
 
   protected:
 	ImgSource* m_parent;
@@ -49,11 +51,16 @@ public:
     virtual ~ImgColorProcessor() {};
 
     inline ImgColorProcessor(ImgSource* parent) : ImgProcessor(parent) {}
+
     inline virtual QImage* getImage(QString img) {
         QImage* i = m_parent->getImage(img);
+        correctImageColors(i);
+        return i;
+    }
 
+    virtual void correctImageColors(QImage* i) {
         if (i == NULL || i->isNull()) {
-            return i;
+            return;
         }
 
         QColor col;
@@ -103,7 +110,7 @@ public:
             // Handling Indexed color or mono colors requires different logic
             qDebug() << "ImgColorProcessor aborting on unsupported color format:"
                      << i->format();
-            return i;
+            return;
         }
 
         for (int y = 0; y < i->height(); y++) {
@@ -121,8 +128,6 @@ public:
                 line++;
             }
         }
-
-        return i;
     }
 };
 

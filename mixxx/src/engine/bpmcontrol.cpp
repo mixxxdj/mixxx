@@ -38,26 +38,26 @@ BpmControl::BpmControl(const char* _group,
     
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
     connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
     m_pRateRange = ControlObject::getControl(ConfigKey(_group, "rateRange"));
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
     connect(m_pRateRange, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
     m_pRateDir = ControlObject::getControl(ConfigKey(_group, "rate_dir"));
     connect(m_pRateDir, SIGNAL(valueChanged(double)),
-            this, SLOT(slotRateChanged(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
     connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotRateChanged(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
     m_pLoopEnabled = ControlObject::getControl(
@@ -69,7 +69,7 @@ BpmControl::BpmControl(const char* _group,
 
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileBpmChanged(double)),
+            this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
     m_pEngineBpm = new ControlObject(ConfigKey(_group, "bpm"));
@@ -157,12 +157,12 @@ void BpmControl::slotFileBpmChanged(double bpm) {
 
 void BpmControl::slotSetEngineBpm(double bpm) {
     double filebpm = m_pFileBpm->get();
+    double ratedir = m_pRateDir->get();
+    double raterange = m_pRateRange->get();
 
-    if (filebpm != 0.0) {
-        double newRate = bpm / filebpm - 1.0f;
-        newRate = math_max(-1.0f, math_min(1.0f, newRate));
-        m_dFileBpm = newRate;
-        m_pRateSlider->set(newRate * m_pRateDir->get());
+    if (filebpm && ratedir && raterange) {
+        double newRate = bpm / filebpm;
+        m_pRateSlider->set((newRate - 1.0) / ratedir / raterange);
     }
 }
 
@@ -185,9 +185,9 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     // (60 seconds per minute) * (1000 milliseconds per second) / (X millis per
     // beat) = Y beats/minute
     double averageBpm = 60.0 * 1000.0 / averageLength;
-    m_pFileBpm->set(averageBpm);
-    m_dFileBpm = averageBpm;
-    slotFileBpmChanged(averageBpm);
+    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    m_pFileBpm->set(averageBpm / dRate);
+    slotAdjustBpm(); 
 }
 
 void BpmControl::slotControlPlay(double v)
@@ -293,7 +293,7 @@ bool BpmControl::syncTempo() {
 
     if (fOtherBpm > 0.0 && fThisBpm > 0.0) {
         // The desired rate is the other decks effective rate divided by this
-        // deck's file BPM. This gives us the playback rate that will produe an
+        // deck's file BPM. This gives us the playback rate that will produce an
         // effective BPM equivalent to the other decks.
         double fDesiredRate = fOtherBpm / fThisFileBpm;
 
@@ -302,10 +302,10 @@ bool BpmControl::syncTempo() {
         // algorithm sometimes finding double or half BPMs. This avoids drastic
         // scales.
 
-        float fFileBpmDelta = fabs(fThisFileBpm-fOtherFileBpm);
-        if (fabs(fThisFileBpm*2.0 - fOtherFileBpm) < fFileBpmDelta) {
+        float fFileBpmDelta = fabs(fThisFileBpm - fOtherFileBpm);
+        if (fabs(fThisFileBpm * 2.0 - fOtherFileBpm) < fFileBpmDelta) {
             fDesiredRate /= 2.0;
-        } else if (fabs(fThisFileBpm - 2.0*fOtherFileBpm) < fFileBpmDelta) {
+        } else if (fabs(fThisFileBpm - 2.0 * fOtherFileBpm) < fFileBpmDelta) {
             fDesiredRate *= 2.0;
         }
 
@@ -322,7 +322,7 @@ bool BpmControl::syncTempo() {
         {
             // Adjust the rateScale. We have to divide by the range and
             // direction to get the correct rateScale.
-            fDesiredRate = fDesiredRate/(m_pRateRange->get() * m_pRateDir->get());
+            fDesiredRate = fDesiredRate / (m_pRateRange->get() * m_pRateDir->get());
 
             // And finally, set the slider
             m_pRateSlider->set(fDesiredRate);
@@ -688,6 +688,16 @@ void BpmControl::slotRateChanged(double) {
     m_dFileBpm = dFileBpm;
 }
 
+void BpmControl::slotAdjustBpm() {
+    // Emitted value is one of the control objects used below
+
+    //qDebug() << this << "slotAdjustBpm"
+    // Adjust the file-bpm with the current setting of the rate to get the
+    // engine BPM.
+    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    m_pEngineBpm->set(m_pFileBpm->get() * dRate);
+}
+
 void BpmControl::trackLoaded(TrackPointer pTrack) {
     if (m_pTrack) {
         trackUnloaded(m_pTrack);
@@ -705,6 +715,7 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
 }
 
 void BpmControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
     if (m_pTrack) {
         disconnect(m_pTrack.data(), SIGNAL(beatsUpdated()),
                    this, SLOT(slotUpdatedTrackBeats()));

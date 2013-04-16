@@ -1,7 +1,7 @@
-<MixxxMIDIPreset mixxxVersion="1.8.0~beta2-pre+" schemaVersion="1">
+<MixxxMIDIPreset mixxxVersion="1.10.0+" schemaVersion="1">
 	<info>
-        <name>Reloop Digital Jockey 2 Controller Edition</name>
-        <author>Tobias Rafreider</author>
+        <name>Reloop Digital Jockey 2 Controller</name>
+        <author>Tobias Rafreider and Sandor Ivicsics</author>
         <description>This is a complete mapping for a Reloop Digital Jockey 2 Controller Edition or Reloop Digital Jockey 2 Interface Editiion </description>
         <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=1226</forums>
     </info>
@@ -595,6 +595,26 @@
                 <midino>0x3E</midino>
                 <group>[Channel2]</group>
                 <key>DigitalJockey2Controller.KeyLock2</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+		<!-- Loop +/- channel 1 -->
+	    	<control>
+                <status>0xb0</status>
+                <midino>0x0a</midino>
+                <group>[Channel1]</group>
+                <key>DigitalJockey2Controller.LoopPlusMinusChannel1</key>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+		<!-- Loop +/- channel 2 -->
+	    	<control>
+                <status>0xb0</status>
+                <midino>0x45</midino>
+                <group>[Channel2]</group>
+                <key>DigitalJockey2Controller.LoopPlusMinusChannel2</key>
                 <options>
                     <script-binding/>
                 </options>

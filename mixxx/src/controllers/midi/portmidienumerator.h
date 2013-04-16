@@ -22,4 +22,8 @@ class PortMidiEnumerator : public MidiEnumerator {
     QList<Controller*> m_devices;
 };
 
+// For testing.
+bool shouldLinkInputToOutput(const QString input_name,
+                             const QString output_name);
+
 #endif

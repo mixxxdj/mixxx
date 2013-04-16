@@ -30,7 +30,7 @@ protected:
     ControlObjectThreadMain* m_midKillControlObject;
     ControlObjectThreadMain* m_highKillControlObject;
 
-    WaveformSignalColors m_colors;
+    const WaveformSignalColors* m_pColors;
     QColor m_axesColor;
     Qt::Alignment m_alignment;
 };

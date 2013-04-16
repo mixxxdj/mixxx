@@ -132,7 +132,8 @@ class Bulk(Feature):
     def sources(self, build):
         sources = ['controllers/bulk/bulkcontroller.cpp',
                    'controllers/bulk/bulkenumerator.cpp']
-
+        if not int(build.flags['hid']):
+		    sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 
@@ -201,7 +202,8 @@ class MediaFoundation(Feature):
             return True
         return False
     def add_options(self, build, vars):
-        vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
+        if build.platform_is_windows:
+            vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
     def configure(self, build, conf):
         if not self.enabled(build):
             return
@@ -1047,3 +1049,28 @@ class Tuned(Feature):
                     build.env.Append(CCFLAGS = '/favor:' + build.machine)
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"
+
+class PromoTracks(Feature):
+    def description(self):
+        return "Promotional tracks feature."
+
+    def enabled(self, build):
+        build.flags['promo'] = util.get_flags(build.env, 'promo', 0)
+        if int(build.flags['promo']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('promo', 'Set to 1 to include promo tracks feature (deprecated, unused).', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES = '__PROMO__')
+
+    def sources(self, build):
+        return ['library/promotracksfeature.cpp',
+                'library/bundledsongswebview.cpp',
+                "library/featuredartistswebview.cpp",
+                ]
+

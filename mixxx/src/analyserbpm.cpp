@@ -72,10 +72,10 @@ void AnalyserBPM::finalise(TrackPointer tio) {
         return;
     }
 
-    float bpm = m_pDetector->getBpm();
+    double bpm = m_pDetector->getBpm();
     if (bpm != 0) {
         // Shift it by 2's until it is in the desired range
-        float newbpm = BeatUtils::constrainBpm(
+        double newbpm = BeatUtils::constrainBpm(
             bpm, m_iMinBpm, m_iMaxBpm,
             static_cast<bool>(m_pConfig->getValueString(
                 ConfigKey("[BPM]", "BPMAboveRangeEnabled")).toInt()));

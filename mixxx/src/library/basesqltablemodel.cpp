@@ -177,15 +177,6 @@ void BaseSqlTableModel::select() {
     QTime time;
     time.start();
 
-    // Remove all the rows from the table.
-    // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
-        m_rowInfo.clear();
-        m_trackIdToRows.clear();
-        endRemoveRows();
-    }
-
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
@@ -204,6 +195,17 @@ void BaseSqlTableModel::select() {
     if (!query.exec()) {
         qDebug() << this << "select() error:" << __FILE__ << __LINE__
                  << query.executedQuery() << query.lastError();
+        return;
+    }
+
+    // Remove all the rows from the table. We wait to do this until after the
+    // table query has succeeded. See Bug #1090888.
+    // TODO(rryan) we could edit the table in place instead of clearing it?
+    if (m_rowInfo.size() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+        m_rowInfo.clear();
+        m_trackIdToRows.clear();
+        endRemoveRows();
     }
 
     QSqlRecord record = query.record();
@@ -215,8 +217,7 @@ void BaseSqlTableModel::select() {
         tableColumnIndices.push_back(record.indexOf(column));
     }
 
-	// sqlite does not set size and m_rowInfo was just cleared
-    //int rows = query.size();
+    // sqlite does not set size and m_rowInfo was just cleared
     //if (sDebug) {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
     //}
@@ -692,7 +693,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
         // QVariant::toFloat needs >= QT 4.6.x
-        pTrack->setBpm(static_cast<float>(value.toDouble()));
+        pTrack->setBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
         pTrack->setPlayedAndUpdatePlaycount(value.toBool());
     } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
@@ -814,5 +815,3 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // there.
     select(); //Repopulate the data model.
 }
-
-

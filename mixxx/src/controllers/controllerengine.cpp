@@ -9,7 +9,6 @@
 #include "controllers/controllerengine.h"
 
 #include "controllers/controller.h"
-#include "controllers/defs_controllers.h"
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
@@ -215,7 +214,7 @@ void ControllerEngine::initializeScriptEngine() {
    Input:   Global ConfigObject, QString list of file names to load
    Output:  -
    -------- ------------------------------------------------------ */
-void ControllerEngine::loadScriptFiles(QString configPath,
+void ControllerEngine::loadScriptFiles(QList<QString> scriptPaths,
                                        QList<QString> scriptFileNames) {
     // Set the Debug flag
     if (m_pController)
@@ -223,14 +222,9 @@ void ControllerEngine::loadScriptFiles(QString configPath,
 
     qDebug() << "ControllerEngine: Loading & evaluating all script code";
 
-    m_lastConfigPath = configPath;
+    m_lastScriptPaths = scriptPaths;
 
     // scriptPaths holds the paths to search in when we're looking for scripts
-    QList<QString> scriptPaths;
-    scriptPaths.append(USER_PRESETS_PATH);
-    scriptPaths.append(LOCAL_PRESETS_PATH);
-    scriptPaths.append(configPath.append("controllers/"));
-
     foreach (QString curScriptFileName, scriptFileNames) {
         evaluate(curScriptFileName, scriptPaths);
 
@@ -265,7 +259,7 @@ void ControllerEngine::scriptHasChanged(QString scriptFilename) {
     }
 
     initializeScriptEngine();
-    loadScriptFiles(m_lastConfigPath, pPreset->scriptFileNames);
+    loadScriptFiles(m_lastScriptPaths, pPreset->scriptFileNames);
 
     qDebug() << "Re-initializing scripts";
     initializeScripts(pPreset->scriptFunctionPrefixes);
@@ -360,11 +354,7 @@ bool ControllerEngine::internalExecute(QScriptValue thisObject,
                      QString::number(result.errorColumnNumber()),
                      scriptCode);
 
-        if (m_bDebug) {
-            qCritical() << "ControllerEngine:" << error;
-        } else {
-            scriptErrorDialog(error);
-        }
+        scriptErrorDialog(error);
         return false;
     }
 
@@ -487,7 +477,7 @@ bool ControllerEngine::execute(QString function, const QByteArray data) {
     }
 
     if (!m_pEngine->canEvaluate(function)) {
-        qCritical() << "ControllerEngine: ?Syntax error in function" << function;
+        qWarning() << "ControllerEngine: ?Syntax error in function" << function;
         return false;
     }
 
@@ -551,11 +541,8 @@ bool ControllerEngine::checkException() {
             errorText = QString(tr("Uncaught exception at line %1 in passed code: %2"))
                         .arg(QString::number(line), errorMessage);
 
-        if (m_bDebug)
-            qCritical() << "ControllerEngine:" << errorText
-                        << "\nBacktrace:\n"
-                        << backtrace;
-        else scriptErrorDialog(errorText);
+        scriptErrorDialog(m_bDebug ? QString("%1\nBacktrace:\n%2")
+                          .arg(errorText, backtrace.join("\n")) : errorText);
         return true;
     }
     return false;
@@ -912,21 +899,17 @@ bool ControllerEngine::evaluate(QString scriptName, QList<QString> scriptPaths) 
             QString("ControllerEngine: Problem opening the script file: %1, error # %2, %3")
                 .arg(filename, QString("%1").arg(input.error()), input.errorString());
 
-        if (m_bDebug) {
-            qCritical() << errorLog;
-        } else {
-            qWarning() << errorLog;
-            if (m_bPopups) {
-                // Set up error dialog
-                ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-                props->setType(DLG_WARNING);
-                props->setTitle("Controller script file problem");
-                props->setText(QString("There was a problem opening the controller script file %1.").arg(filename));
-                props->setInfoText(input.errorString());
+        qWarning() << errorLog;
+        if (m_bPopups) {
+            // Set up error dialog
+            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+            props->setType(DLG_WARNING);
+            props->setTitle("Controller script file problem");
+            props->setText(QString("There was a problem opening the controller script file %1.").arg(filename));
+            props->setInfoText(input.errorString());
 
-                // Ask above layer to display the dialog & handle user response
-                ErrorDialogHandler::instance()->requestErrorDialog(props);
-            }
+            // Ask above layer to display the dialog & handle user response
+            ErrorDialogHandler::instance()->requestErrorDialog(props);
         }
         return false;
     }
@@ -955,20 +938,16 @@ bool ControllerEngine::evaluate(QString scriptName, QList<QString> scriptPaths) 
                          QString::number(result.errorColumnNumber()),
                          filename, result.errorMessage());
 
-        if (m_bDebug) {
-            qCritical() << "ControllerEngine:" << error;
-        } else {
-            qWarning() << "ControllerEngine:" << error;
-            if (m_bPopups) {
-                ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-                props->setType(DLG_WARNING);
-                props->setTitle("Controller script file error");
-                props->setText(QString("There was an error in the controller script file %1.").arg(filename));
-                props->setInfoText("The functionality provided by this script file will be disabled.");
-                props->setDetails(error);
+        qWarning() << "ControllerEngine:" << error;
+        if (m_bPopups) {
+            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+            props->setType(DLG_WARNING);
+            props->setTitle("Controller script file error");
+            props->setText(QString("There was an error in the controller script file %1.").arg(filename));
+            props->setInfoText("The functionality provided by this script file will be disabled.");
+            props->setDetails(error);
 
-                ErrorDialogHandler::instance()->requestErrorDialog(props);
-            }
+            ErrorDialogHandler::instance()->requestErrorDialog(props);
         }
         return false;
     }

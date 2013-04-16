@@ -41,6 +41,7 @@ class CrateFeature : public LibraryFeature {
     void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
+    void slotDuplicateCrate();
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
@@ -59,6 +60,7 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pDeleteCrateAction;
     QAction *m_pRenameCrateAction;
     QAction *m_pLockCrateAction;
+    QAction *m_pDuplicateCrateAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
     QList<QPair<int, QString> > m_crateList;

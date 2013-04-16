@@ -52,6 +52,7 @@
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
 #include "sharedglcontext.h"
+#include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
 
@@ -424,6 +425,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
         }
     }
+
+#ifdef __PROMO__
     //Automatically load specially marked promotional tracks on first run
     if (bFirstRun || bUpgraded) {
         QList<TrackPointer> tracksToAutoLoad =
@@ -433,6 +436,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
         }
     }
+#endif
 
     initActions();
     initMenuBar();
@@ -451,7 +455,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
         m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
-        qCritical("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
+        reportCriticalErrorAndQuit("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         //TODO (XXX) add dialog to warn user and launch skin choice page
         resize(640,480);
@@ -1443,6 +1447,9 @@ void MixxxApp::slotHelpAbout() {
 "Markus H&auml;rer<br>"
 "Andrey Smelov<br>"
 "Scott Stewart<br>"
+"Nimatek<br>"
+"Alban Bedel<br>"
+"Steven Boswell<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"

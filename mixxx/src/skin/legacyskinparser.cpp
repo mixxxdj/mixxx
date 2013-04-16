@@ -688,10 +688,15 @@ QWidget* LegacySkinParser::parseText(QDomElement node) {
 
     WTrackText* p = new WTrackText(m_pParent);
     setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
     if (p->getComposedWidget()) {
         setupWidget(node, p->getComposedWidget(), false);
     }
-    p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -720,10 +725,15 @@ QWidget* LegacySkinParser::parseTrackProperty(QDomElement node) {
 
     WTrackProperty* p = new WTrackProperty(m_pParent);
     setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
     if (p->getComposedWidget()) {
         setupWidget(node, p->getComposedWidget(), false);
     }
-    p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -787,10 +797,15 @@ QWidget* LegacySkinParser::parseNumberRate(QDomElement node) {
 
     WNumberRate * p = new WNumberRate(pSafeChannelStr, m_pParent);
     setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
     if (p->getComposedWidget()) {
         setupWidget(node, p->getComposedWidget(), false);
     }
-    p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -806,10 +821,15 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
 
     WNumberPos* p = new WNumberPos(pSafeChannelStr, m_pParent);
     setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
     if (p->getComposedWidget()) {
         setupWidget(node, p->getComposedWidget(), false);
     }
-    p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -819,10 +839,15 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
 QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     WNumber* p = new WNumber(m_pParent);
     setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
     if (p->getComposedWidget()) {
         setupWidget(node, p->getComposedWidget(), false);
     }
-    p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -832,10 +857,15 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
 QWidget* LegacySkinParser::parseLabel(QDomElement node) {
     WLabel * p = new WLabel(m_pParent);
     setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
     if (p->getComposedWidget()) {
         setupWidget(node, p->getComposedWidget(), false);
     }
-    p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -845,10 +875,15 @@ QWidget* LegacySkinParser::parseLabel(QDomElement node) {
 QWidget* LegacySkinParser::parseTime(QDomElement node) {
     WTime *p = new WTime(m_pParent);
     setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
     if (p->getComposedWidget()) {
         setupWidget(node, p->getComposedWidget(), false);
     }
-    p->setup(node);
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
@@ -869,6 +904,13 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
     WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
+    if (!spinny->isValid()) {
+        delete spinny;
+        QLabel* dummy = new QLabel(m_pParent);
+        //: Shown when Spinny can not be displayd. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
     setupWidget(node, spinny);
 
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
@@ -908,17 +950,12 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary, SIGNAL(search(const QString&)),
             pLibraryWidget, SLOT(search(const QString&)));
-    connect(m_pLibrary, SIGNAL(searchCleared()),
-            pLibraryWidget, SLOT(searchCleared()));
-    connect(m_pLibrary, SIGNAL(searchStarting()),
-            pLibraryWidget, SLOT(searchStarting()));
 
     m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
 
     // This must come after the bindWidget or we will not style any of the
     // LibraryView's because they have not been added yet.
     setupWidget(node, pLibraryWidget);
-    pLibraryWidget->setup(node);
 
     return pLibraryWidget;
 }
@@ -1256,6 +1293,11 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosi
     }
 
     QString style = XmlParse::selectNodeQString(node, "Style");
+    // Check if we should apply legacy library styling to this node.
+    if (XmlParse::selectNodeQString(node, "LegacyTableViewStyle")
+        .contains("true", Qt::CaseInsensitive)) {
+        style = getLibraryStyle(node);
+    }
     if (style != "") {
         pWidget->setStyleSheet(style);
     }
