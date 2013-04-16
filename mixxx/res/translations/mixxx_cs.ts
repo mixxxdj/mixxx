@@ -5,31 +5,26 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
     </context>
     <context>
         <name>BaseExternalLibraryFeature</name>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Přidat do Auto DJ fronty (dolu)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Přidat do Auto DJ fronty (nahoru)</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importovat seznam skladeb</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Vytvoření playlistu selhalo</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
@@ -45,8 +40,7 @@
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Přidat do Auto DJ fronty (dolů)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
@@ -71,8 +65,7 @@
         </message>
         <message>
             <source>Duplicate Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duplikovat playlist</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -152,8 +145,7 @@
         </message>
         <message>
             <source>Composer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Skladatel</translation>
         </message>
         <message>
             <source>Year</source>
@@ -210,8 +202,7 @@
         </message>
         <message>
             <source>BPM Lock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>BPM Lock</translation>
         </message>
         <message>
             <source>Preview</source>
@@ -326,8 +317,7 @@
         </message>
         <message>
             <source>Mixxx Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Knihovna Mixxxu</translation>
         </message>
         <message>
             <source>Could not load the following file because it is in use by Mixxx or another application.</source>
@@ -698,23 +688,19 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rozsah BPM</translation>
         </message>
         <message>
             <source>Min:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Min:</translation>
         </message>
         <message>
             <source>Max:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Max:</translation>
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Obnovit výchozí hodnoty</translation>
         </message>
     </context>
     <context>
@@ -729,8 +715,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>BPM Range</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Rozsah BPM</translation>
         </message>
         <message>
             <source>Max</source>
@@ -775,13 +760,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Deck %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Deck %1</translation>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sampler %1</translation>
         </message>
         <message>
             <source>Reset to default</source>
@@ -795,8 +778,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader</translation>
         </message>
         <message>
             <source>Master volume</source>
@@ -808,8 +790,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Headphone volume</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Hlasitost sluchátek</translation>
         </message>
         <message>
             <source>Headphone mix (pre/main)</source>
@@ -828,33 +809,27 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Play button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tlačítko play</translation>
         </message>
         <message>
             <source>Volume fader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Fader hlasitosti</translation>
         </message>
         <message>
             <source>Fast rewind button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tlačítko rychlého přetáčení</translation>
         </message>
         <message>
             <source>Fast forward button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tlačítko rychlého posunu vpřed</translation>
         </message>
         <message>
             <source>Jump to start of track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Skočit na začátek skladby</translation>
         </message>
         <message>
             <source>Jump to end of track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Skočit na konec skladby</translation>
         </message>
         <message>
             <source>Play reverse button</source>
@@ -5340,6 +5315,11 @@ Stiskněte OK pro ukončení.</translation>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>

@@ -20,7 +20,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation>プレイリストのインポート</translation>
+            <translation>プレイリストをインポート</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
@@ -51,15 +51,15 @@
         </message>
         <message>
             <source>Rename</source>
-            <translation>名前の変更</translation>
+            <translation>名前を変更</translation>
         </message>
         <message>
             <source>Lock</source>
-            <translation>ロック</translation>
+            <translation>ロックする</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation>プレイリストのインポート</translation>
+            <translation>プレイリストをインポート</translation>
         </message>
         <message>
             <source>Duplicate Playlist</source>
@@ -101,13 +101,11 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>プレイリストの作成に失敗しました</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>プレイリストの作成中に不明なエラーが発生しました </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
@@ -188,11 +186,11 @@
         </message>
         <message>
             <source>#</source>
-            <translation>番号</translation>
+            <translation>#</translation>
         </message>
         <message>
             <source>Timestamp</source>
-            <translation>タイムスタンプ</translation>
+            <translation>更新日時</translation>
         </message>
         <message>
             <source>Key</source>
@@ -434,8 +432,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>プレイリストをインポート</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -451,8 +448,7 @@
         </message>
         <message>
             <source>Duplicate Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>レコードボックスを複製</translation>
         </message>
         <message>
             <source>Unlock</source>
@@ -503,8 +499,7 @@
         </message>
         <message>
             <source>Create new crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>新規レコードボックスを作成</translation>
         </message>
         <message>
             <source>A crate cannot have a blank name.</source>
@@ -543,11 +538,11 @@
         </message>
         <message>
             <source>Disable Auto DJ</source>
-            <translation>Auto DJを無効</translation>
+            <translation>オートDJを無効にする</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist.</source>
-            <translation>オートDJプレイリストの内容をシャッフル。</translation>
+            <translation>オートDJプレイリストをシャッフルする</translation>
         </message>
         <message>
             <source>Shuffle</source>
@@ -555,13 +550,11 @@
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>オートDJプレイリストの次の曲をスキップする</translation>
         </message>
         <message>
             <source>Skip Track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>トラックをスキップ</translation>
         </message>
         <message>
             <source>Trigger the transition to the next track.</source>
@@ -570,8 +563,7 @@
         </message>
         <message>
             <source>Fade Now</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>今すぐフェードする</translation>
         </message>
         <message>
             <source>Determines the duration of the transition.</source>
@@ -599,8 +591,7 @@
         </message>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>管理</translation>
         </message>
     </context>
     <context>
@@ -4142,7 +4133,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>RhythmboxFeature</name>
         <message>
             <source>Rhythmbox</source>
-            <translation>リズムボックス</translation>
+            <translation>Rhythmbox</translation>
         </message>
     </context>
     <context>
@@ -5312,6 +5303,11 @@ OKを押すと終了します。</translation>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>

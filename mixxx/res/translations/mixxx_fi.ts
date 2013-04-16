@@ -25,7 +25,7 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation>Soittolistan luonti epäonnistui</translation>
+            <translation>Soittolistan luominen epäonnistui</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
@@ -97,23 +97,19 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_kopioi</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soittolistan luominen epäonnistui</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soittolistan luonnissa tapahtui tuntematon virhe: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soittolistan tiedostot (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
@@ -205,8 +201,7 @@
         </message>
         <message>
             <source>Preview</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Esikatselu</translation>
         </message>
     </context>
     <context>
@@ -240,8 +235,7 @@
         </message>
         <message>
             <source>Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Selain mahdollistaa etsimisen, esikatselun ja kappaleiden lataamisen kovalevyltä tai ulkoisista laitteista</translation>
         </message>
         <message>
             <source>Browse</source>
@@ -432,13 +426,11 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_kopioi</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tuo soittolista</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -459,8 +451,7 @@
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Poista lukitus</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -484,8 +475,7 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Soittolistan tiedostot (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
@@ -1066,8 +1056,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kokoelma</translation>
         </message>
         <message>
             <source>Expand/collapse the selected view (library, playlist..)</source>
@@ -1100,8 +1089,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Load selected track and play</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Lataa valittu kappale ja soita</translation>
         </message>
         <message>
             <source>Effects</source>
@@ -1125,8 +1113,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofoni</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
@@ -1142,18 +1129,15 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto-DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sekoita valittu Auto-DJ soittolista</translation>
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ohita seuraava kappale Auto-DJ soittolistasta</translation>
         </message>
         <message>
             <source>Trigger the transition to the next track</source>
@@ -1213,8 +1197,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Valitse kaikki</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
@@ -1228,13 +1211,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Unhide selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä valitut kappaleet kokoelmassa</translation>
         </message>
         <message>
             <source>Unhide</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Näytä</translation>
         </message>
         <message>
             <source>Ctrl+S</source>
@@ -1255,8 +1236,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Valitse kaikki</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
@@ -1686,8 +1666,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Synkronoi</translation>
         </message>
     </context>
     <context>
@@ -4914,6 +4893,11 @@ Valitse OK poistuaksesi.</translation>
         </message>
         <message>
             <source>Loading track ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>

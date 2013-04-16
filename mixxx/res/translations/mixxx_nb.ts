@@ -5530,6 +5530,11 @@ Click OK to exit.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>Finalizing ..</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>

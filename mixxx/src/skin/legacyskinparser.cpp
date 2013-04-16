@@ -908,6 +908,13 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
     WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
+    if (!spinny->isValid()) {
+        delete spinny;
+        QLabel* dummy = new QLabel(m_pParent);
+        //: Shown when Spinny can not be displayd. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
     setupWidget(node, spinny);
 
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
@@ -1290,6 +1297,11 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosi
     }
 
     QString style = XmlParse::selectNodeQString(node, "Style");
+    // Check if we should apply legacy library styling to this node.
+    if (XmlParse::selectNodeQString(node, "LegacyTableViewStyle")
+        .contains("true", Qt::CaseInsensitive)) {
+        style = getLibraryStyle(node);
+    }
     if (style != "") {
         pWidget->setStyleSheet(style);
     }

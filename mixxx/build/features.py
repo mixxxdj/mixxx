@@ -132,7 +132,8 @@ class Bulk(Feature):
     def sources(self, build):
         sources = ['controllers/bulk/bulkcontroller.cpp',
                    'controllers/bulk/bulkenumerator.cpp']
-
+        if not int(build.flags['hid']):
+		    sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 
@@ -201,7 +202,8 @@ class MediaFoundation(Feature):
             return True
         return False
     def add_options(self, build, vars):
-        vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
+        if build.platform_is_windows:
+            vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
     def configure(self, build, conf):
         if not self.enabled(build):
             return

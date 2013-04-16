@@ -24,6 +24,7 @@
 ErrorDialogProperties::ErrorDialogProperties()
         : m_title("Mixxx"),
           m_modal(true),
+          m_shouldQuit(false),
           m_type(DLG_NONE),
           m_icon(QMessageBox::NoIcon) {
 }
@@ -80,10 +81,14 @@ ErrorDialogProperties* ErrorDialogHandler::newDialogProperties() {
     return new ErrorDialogProperties();
 }
 
-bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message) {
+bool ErrorDialogHandler::requestErrorDialog(DialogType type, QString message,
+                                            bool shouldQuit) {
     ErrorDialogProperties* props = newDialogProperties();
     props->setType(type);
     props->setText(message);
+    if (shouldQuit) {
+        props->setShouldQuit(shouldQuit);
+    }
     switch (type) {
         case DLG_FATAL:     props->setTitle(tr("Fatal error")); break;
         case DLG_CRITICAL:  props->setTitle(tr("Critical error")); break;
@@ -108,9 +113,7 @@ bool ErrorDialogHandler::requestErrorDialog(ErrorDialogProperties* props) {
     bool keyExists = m_dialogKeys.contains(props->getKey());
     locker.unlock();
     if (keyExists) {
-        ErrorDialogProperties* dlgPropsTemp = props;
-        props = NULL;
-        delete dlgPropsTemp;
+        delete props;
         return false;
     }
 
@@ -154,13 +157,14 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     QMutexLocker locker(&m_mutex);
     // To avoid duplicate dialogs on the same error
     m_dialogKeys.append(props->m_key);
-    locker.unlock();
 
     // Signal mapper calls our slot with the key parameter so it knows which to
     // remove from the list
     connect(msgBox, SIGNAL(finished(int)),
             &m_signalMapper, SLOT(map()));
     m_signalMapper.setMapping(msgBox, props->m_key);
+
+    locker.unlock();
 
     if (props->m_modal) {
         // Blocks so the user has a chance to read it before application exit
@@ -170,7 +174,7 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
     }
 
     // If critical/fatal, gracefully exit application if possible
-    if (props->m_type >= DLG_CRITICAL) {
+    if (props->m_shouldQuit) {
         m_errorCondition = true;
         if (QCoreApplication::instance()) {
             QCoreApplication::instance()->exit(-1);
@@ -186,10 +190,11 @@ void ErrorDialogHandler::errorDialog(ErrorDialogProperties* pProps) {
 }
 
 void ErrorDialogHandler::boxClosed(QString key) {
+    QMutexLocker locker(&m_mutex);
     QMessageBox* msgBox = (QMessageBox*)m_signalMapper.mapping(key);
+    locker.unlock();
 
     QMessageBox::StandardButton whichStdButton = msgBox->standardButton(msgBox->clickedButton());
-
     emit(stdButtonClicked(key, whichStdButton));
 
     // If the user clicks "Ignore," we leave the key in the list so the same
@@ -200,7 +205,7 @@ void ErrorDialogHandler::boxClosed(QString key) {
         return;
     }
 
-    QMutexLocker locker(&m_mutex);
+    QMutexLocker locker2(&m_mutex);
     if (m_dialogKeys.contains(key)) {
         if (!m_dialogKeys.removeOne(key)) {
             qWarning() << "Error dialog key removal from list failed!";

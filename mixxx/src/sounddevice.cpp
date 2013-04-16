@@ -20,6 +20,7 @@
 #include "soundmanagerutil.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
+#include "util/debug.h"
 
 SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
 {
@@ -80,14 +81,14 @@ void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
         // framesPerBuffer * 2 because a frame will generally end up
         // being 2 samples and MAX_BUFFER_LEN is a number of samples
         // this isn't checked elsewhere, so...
-        qFatal("framesPerBuffer too big in "
-                "SoundDevice::setFramesPerBuffer(uint)");
+        reportFatalErrorAndQuit("framesPerBuffer too big in "
+                                "SoundDevice::setFramesPerBuffer(uint)");
     }
     m_framesPerBuffer = framesPerBuffer;
 }
 
 SoundDeviceError SoundDevice::addOutput(const AudioOutput &out)
-{ 
+{
     //Check if the output channels are already used
     foreach (AudioOutput myOut, m_audioOutputs) {
         if (out.channelsClash(myOut)) {

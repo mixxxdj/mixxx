@@ -53,7 +53,7 @@
 	<manifest>
 	<title>DeereSamplegrid-1280x800-WXGA</title>
 	<author>jus</author>
-	<version>1.11.0.15</version>
+	<version>1.11.0.16</version>
 	<description>A 2-deck split-waveform skin with a basic 2x8 sample-grid.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -5622,7 +5622,6 @@
 						<SignalLowColor></SignalLowColor>
 						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor></BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -6723,7 +6722,6 @@
 						<SignalLowColor></SignalLowColor>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor></BeatHighlightColor>
 						<MarkerColor>#00FF00</MarkerColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>

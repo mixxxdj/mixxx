@@ -78,6 +78,15 @@ void WImageStore::deleteImage(QImage * p)
 }
 
 // static
+void WImageStore::correctImageColors(QImage* p) {
+    if (m_loader) {
+        m_loader->correctImageColors(p);
+    }
+}
+
+// static
 void WImageStore::setLoader(QSharedPointer<ImgSource> ld) {
     m_loader = ld;
 }
+
+

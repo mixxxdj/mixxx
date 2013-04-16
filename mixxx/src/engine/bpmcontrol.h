@@ -29,12 +29,11 @@ class BpmControl : public EngineControl {
 
   private slots:
     void slotSetEngineBpm(double);
-    void slotFileBpmChanged(double);
     void slotControlBeatSyncPhase(double);
     void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotRateChanged(double);
+    void slotAdjustBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
 

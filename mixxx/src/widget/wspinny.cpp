@@ -19,7 +19,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pVisualPlayPos(NULL),
           m_pDuration(NULL),
           m_pTrackSamples(NULL),
-          m_pBPM(NULL),
           m_pScratch(NULL),
           m_pScratchToggle(NULL),
           m_pScratchPos(NULL),
@@ -44,40 +43,35 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
 #endif
     //Drag and drop
     setAcceptDrops(true);
-    qDebug() << "Created QGLWidget. Context"
+    qDebug() << "WSpinny(): Created QGLWidget, Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
 }
 
-WSpinny::~WSpinny()
-{
-    //Don't delete these because the image store takes care of them.
-    //delete m_pBgImage;
-    //delete m_pFgImage;
-    //delete m_pGhostImage;
-    WImageStore::deleteImage(m_pBgImage);
-    WImageStore::deleteImage(m_pFgImage);
-    WImageStore::deleteImage(m_pGhostImage);
-    delete m_pPlay;
-    delete m_pPlayPos;
-    delete m_pVisualPlayPos;
-    delete m_pDuration;
-    delete m_pTrackSamples;
-    delete m_pTrackSampleRate;
-    delete m_pBPM;
-    delete m_pScratch;
-    delete m_pScratchToggle;
-    delete m_pScratchPos;
-#ifdef __VINYLCONTROL__
-    delete m_pVinylControlSpeedType;
-    delete m_pVinylControlEnabled;
-    delete m_pSignalEnabled;
-#endif
-
+WSpinny::~WSpinny() {
+    // No need to delete anything if m_group is empty because setup() was not called.
+    if (!m_group.isEmpty()) {
+        WImageStore::deleteImage(m_pBgImage);
+        WImageStore::deleteImage(m_pFgImage);
+        WImageStore::deleteImage(m_pGhostImage);
+        delete m_pPlay;
+        delete m_pPlayPos;
+        delete m_pVisualPlayPos;
+        delete m_pDuration;
+        delete m_pTrackSamples;
+        delete m_pTrackSampleRate;
+        delete m_pScratch;
+        delete m_pScratchToggle;
+        delete m_pScratchPos;
+    #ifdef __VINYLCONTROL__
+        delete m_pVinylControlSpeedType;
+        delete m_pVinylControlEnabled;
+        delete m_pSignalEnabled;
+    #endif
+    }
 }
 
-void WSpinny::setup(QDomNode node, QString group)
-{
+void WSpinny::setup(QDomNode node, QString group) {
     m_group = group;
 
     // Set images
@@ -111,8 +105,6 @@ void WSpinny::setup(QDomNode node, QString group)
     m_pTrackSampleRate = new ControlObjectThreadMain(
                                     ControlObject::getControl(
                                     ConfigKey(group, "track_samplerate")));
-    m_pBPM = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "bpm")));
 
     m_pScratch = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "scratch2")));
