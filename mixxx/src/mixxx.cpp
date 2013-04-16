@@ -64,6 +64,10 @@
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
 
+#ifdef __MODPLUG__
+#include "dlgprefmodplug.h"
+#endif
+
 extern "C" void crashDlg()
 {
     QMessageBox::critical(0, "Mixxx",
@@ -356,6 +360,14 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
+#endif
+
+#ifdef __MODPLUG__
+    // restore the configuration for the modplug library before trying to load a module
+    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, m_pConfig);
+    pModplugPrefs->loadSettings();
+    pModplugPrefs->applySettings();
+    delete pModplugPrefs; // not needed anymore
 #endif
 
     m_pLibrary = new Library(this, m_pConfig,
@@ -1512,6 +1524,7 @@ void MixxxApp::slotHelpAbout() {
 "Nimatek<br>"
 "Alban Bedel<br>"
 "Steven Boswell<br>"
+"Stefan N&uuml;rnberger<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"

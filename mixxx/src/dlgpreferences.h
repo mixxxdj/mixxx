@@ -45,6 +45,9 @@ class ControllerManager;
 class SkinLoader;
 class PlayerManager;
 class VinylControlManager;
+#ifdef __MODPLUG__
+class DlgPrefModplug;
+#endif
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -93,6 +96,9 @@ private:
     DlgPrefNoVinyl* m_wnovinylcontrol;
     DlgPrefShoutcast* m_wshoutcast;
     DlgPrefReplayGain* m_wreplaygain;
+#ifdef __MODPLUG__
+    DlgPrefModplug* m_wmodplug;
+#endif
 
     /*
     QScrollArea* m_sasound;
@@ -120,6 +126,9 @@ private:
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
+#ifdef __MODPLUG__
+    QTreeWidgetItem* m_pModplugButton;
+#endif
     QTreeWidgetItem* m_pControllerTreeItem;
     QList<QTreeWidgetItem*> m_controllerWindowLinks;
 

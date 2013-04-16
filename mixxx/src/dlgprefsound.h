@@ -57,6 +57,7 @@ public slots:
     void slotApply();  // called on ok button
     void forceApply(); // called by DlgPrefVinyl to make slotApply call setupDevices
     void bufferUnderflow(double count);
+    void masterLatencyChanged(double latency);
 private:
     void initializePaths();
     void connectSoundItem(DlgPrefSoundItem *item);
@@ -67,6 +68,7 @@ private:
     ConfigObject<ConfigValue> *m_pConfig;
     ControlObjectThreadMain* m_pflDelay;
     ControlObjectThreadMain* m_pMasterUnderflowCount;
+    ControlObjectThreadMain* m_pMasterLatency;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;
@@ -80,9 +82,9 @@ private slots:
     void apiChanged(int index);
     void updateAPIs();
     void sampleRateChanged(int index);
-    void latencyChanged(int index);
     void pflDelayChanged(int delay_fraction);
-    void updateLatencies(int sampleRateIndex);
+    void audioBufferChanged(int index);
+    void updateAudioBufferSizes(int sampleRateIndex);
     void refreshDevices();
     void settingChanged();
     void queryClicked();
