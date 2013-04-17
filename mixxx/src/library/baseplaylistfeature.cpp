@@ -50,6 +50,10 @@ BasePlaylistFeature::BasePlaylistFeature(
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
 
+    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate Playlist"), this);
+    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotDuplicatePlaylist()));
+
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
@@ -73,6 +77,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
     delete m_pExportPlaylistAction;
+    delete m_pDuplicatePlaylistAction;
     delete m_pAddToAutoDJAction;
     delete m_pAddToAutoDJTopAction;
     delete m_pRenamePlaylistAction;
@@ -143,6 +148,53 @@ void BasePlaylistFeature::slotRenamePlaylist() {
     m_playlistDao.renamePlaylist(playlistId, newName);
 }
 
+void BasePlaylistFeature::slotDuplicatePlaylist() {
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);
+
+
+    QString name;
+    bool validNameGiven = false;
+
+    do {
+        bool ok = false;
+        name = QInputDialog::getText(NULL,
+                                        tr("Duplicate Playlist"),
+                                        tr("Playlist name:"),
+                                        QLineEdit::Normal,
+                                        //: Appendix to default name when duplicating a playlist
+                                        oldName + tr("_copy" , "[noun]"),
+                                        &ok).trimmed();
+
+        if (!ok || oldName == name) {
+            return;
+        }
+
+        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("A playlist by that name already exists."));
+        }
+        else if (name.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("A playlist cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
+
+    int newPlaylistId = m_playlistDao.createPlaylist(name);
+    m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId);
+
+    if (newPlaylistId != -1) {
+        emit(showTrackModel(m_pPlaylistTableModel));
+    }
+}
+
 void BasePlaylistFeature::slotTogglePlaylistLock() {
     QString playlistName = m_lastRightClickedIndex.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
@@ -201,6 +253,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
                               + name);
     }
 }
+
 
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();

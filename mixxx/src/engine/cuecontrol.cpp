@@ -15,9 +15,9 @@
 CueControl::CueControl(const char * _group,
                        ConfigObject<ConfigValue> * _config) :
         EngineControl(_group, _config),
+        m_bHotcueCancel(false),
         m_bPreviewing(false),
         m_bPreviewingHotcue(false),
-        m_bHotcueCancel(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
         m_iCurrentlyPreviewingHotcues(0),
         m_iNumHotCues(NUM_HOT_CUES),

@@ -33,12 +33,12 @@
 
 WVuMeter::WVuMeter(QWidget * parent) :
         WWidget(parent),
+        m_iNoPos(0),
         m_pPixmapBack(NULL),
         m_pPixmapVu(NULL),
         m_iPeakHoldSize(0),
         m_iPeakPos(0),
-        m_iPeakHoldCountdown(0),
-        m_iNoPos(0) {
+        m_iPeakHoldCountdown(0) {
 }
 
 WVuMeter::~WVuMeter()

@@ -47,22 +47,19 @@ public:
     /** Set tempo */
     virtual double setTempo(double dTempo) = 0;
     /** Get new playpos after call to scale() */
-    double getNewPlaypos();
+    double getSamplesRead();
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     virtual void clear() = 0;
     /** Scale buffer */
-    virtual CSAMPLE *scale(double playpos,
-                           unsigned long buf_size,
-                           CSAMPLE* pBase,
-                           unsigned long iBaseLength) = 0;
+    virtual CSAMPLE *getScaled(unsigned long buf_size) = 0;
 
 protected:
     /** Tempo and base rate */
     double m_dTempo, m_dBaseRate;
     /** Pointer to internal buffer */
-    CSAMPLE *buffer;
+    CSAMPLE *m_buffer;
     /** New playpos after call to scale */
-    double new_playpos;
+    double m_samplesRead;
 };
 
 #endif

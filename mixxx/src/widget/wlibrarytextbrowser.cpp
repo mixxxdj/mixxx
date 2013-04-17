@@ -3,9 +3,6 @@
 
 #include "widget/wlibrarytextbrowser.h"
 
-#include "widget/wwidget.h"
-#include "widget/wskincolor.h"
-
 WLibraryTextBrowser::WLibraryTextBrowser(QWidget* parent)
         : QTextBrowser(parent) {
 }

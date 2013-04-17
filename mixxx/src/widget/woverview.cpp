@@ -43,7 +43,7 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
-        m_analyserProgress(0),
+        m_analyserProgress(-1),
         m_trackLoaded(false),
         m_diffGain(0) {
 
@@ -158,7 +158,15 @@ void WOverview::slotAnalyserProgress(int progress) {
     if (!m_pCurrentTrack) {
         return;
     }
-    const int analyserProgress = width() * progress / 1000;
+
+    int analyserProgress;
+    if (progress == 999) {
+        // Finalize
+        analyserProgress = width() - 1;
+    } else {
+        analyserProgress = width() * progress / 1000;
+    }
+
     bool updateNeeded = drawNextPixmapPart();
     // progress 0 .. 1000
     if (updateNeeded || (m_analyserProgress != analyserProgress)) {
@@ -181,7 +189,7 @@ void WOverview::slotLoadNewTrack(TrackPointer pTrack) {
         m_pWaveformSourceImage = NULL;
     }
 
-    m_analyserProgress = 0;
+    m_analyserProgress = -1;
     m_actualCompletion = 0;
     m_waveformPeak = -1.0;
     m_pixmapDone = false;
@@ -399,35 +407,6 @@ void WOverview::paintEvent(QPaintEvent *) {
         painter.setPen(QPen(m_signalColors.getAxesColor(), 1));
         painter.drawLine(0, height()/2, width(), height()/2);
 
-        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable (10 pixel)
-            // We have a valid m_waveform, so here we have a track in analysis queue
-            QColor lowColor = m_signalColors.getLowColor();
-            lowColor.setAlphaF(0.5);
-            QPen lowColorPen(QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
-            painter.setPen(lowColorPen);
-            QString text;
-            if (m_trackLoaded) {
-                //: Text on waveform overview when file is cached from source                
-                text = tr("Ready to play, analyzing ..");
-            } else {
-                //: Text on waveform overview when file is playable but no waveform is visible
-                text = tr("Loading track ..");
-            }
-            QFont font = painter.font();
-            QFontMetrics fm(font);
-            int textWidth = fm.width(text);
-            if (textWidth > width()) {
-                qreal pointSize = font.pointSizeF();
-                pointSize = pointSize * (width() - 5) / textWidth;
-                if (pointSize < 6) {
-                    pointSize = 6;
-                }
-                font.setPointSizeF(pointSize);
-                painter.setFont(font);
-            }
-            painter.drawText(1, 12, text);
-        }
-
         if (m_pWaveformSourceImage) {
             int diffGain;
             bool normalize = widgetFactory->isOverviewNormalized();
@@ -447,12 +426,25 @@ void WOverview::paintEvent(QPaintEvent *) {
             }
 
             painter.drawImage(rect(), m_waveformImageScaled);
+        }
 
+        if (m_analyserProgress + 1 < width()) {
             // Paint analyzer Progress
-            if (m_analyserProgress < width()) {
-                painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
-                painter.drawLine(m_analyserProgress, height()/2, width(), height()/2);
+            painter.setPen(QPen(m_signalColors.getAxesColor(), 3));
+            painter.drawLine(m_analyserProgress, height()/2, width(), height()/2);
+        }
+
+        if (m_analyserProgress <= 50) { // remove text after progress by wf is recognizable
+            if (m_trackLoaded) {
+                //: Text on waveform overview when file is cached from source
+                paintText(tr("Ready to play, analyzing .."), &painter);
+            } else {
+                //: Text on waveform overview when file is playable but no waveform is visible
+                paintText(tr("Loading track .."), &painter);
             }
+        } else if (m_analyserProgress == width() - 1) {
+            //: Text on waveform overview during finalizing of waveform analysis
+            paintText(tr("Finalizing .."), &painter);
         }
     }
 
@@ -566,6 +558,26 @@ void WOverview::paintEvent(QPaintEvent *) {
     painter.end();
 }
 
+void WOverview::paintText(const QString &text, QPainter *painter) {
+    QColor lowColor = m_signalColors.getLowColor();
+    lowColor.setAlphaF(0.5);
+    QPen lowColorPen(QBrush(lowColor), 1.25, Qt::SolidLine, Qt::RoundCap);
+    painter->setPen(lowColorPen);
+    QFont font = painter->font();
+    QFontMetrics fm(font);
+    int textWidth = fm.width(text);
+    if (textWidth > width()) {
+        qreal pointSize = font.pointSizeF();
+        pointSize = pointSize * (width() - 5) / textWidth;
+        if (pointSize < 6) {
+            pointSize = 6;
+        }
+        font.setPointSizeF(pointSize);
+        painter->setFont(font);
+    }
+    painter->drawText(10, 12, text);
+}
+
 void WOverview::resizeEvent(QResizeEvent *) {
     //Those coeficient map position from [0;width-1] to value [14;114]
     m_a = (float)((width()-1))/( 114.f - 14.f);
@@ -579,7 +591,7 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // in this deck or the settings allow to interrupt the playing deck.
     if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
         if ((m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || !(m_pGroup=="[PreviewDeck1]")) {
+            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_pGroup=="[PreviewDeck1]")) {
             event->acceptProposedAction();
         } else {
             event->ignore();

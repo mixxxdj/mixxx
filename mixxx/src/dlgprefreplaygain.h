@@ -11,36 +11,33 @@
 #include "configobject.h"
 #include "controlobjectthread.h"
 
-
 class QWidget;
 
 class DlgPrefReplayGain: public QWidget, public Ui::DlgPrefReplayGainDlg  {
     Q_OBJECT
-public:
+  public:
     DlgPrefReplayGain(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefReplayGain();
-public slots:
-/** Update initial gain increment */
-void slotUpdateBoost();
-void slotSetRGEnabled();
-void slotSetRGAnalyserEnabled();
+  public slots:
+    // Update initial gain increment
+    void slotUpdateBoost();
+    void slotSetRGEnabled();
+    void slotSetRGAnalyserEnabled();
 
-void slotApply();
-void slotUpdate();
-void setDefaults();
-signals:
-void apply(const QString &);
-private:
+    void slotApply();
+    void slotUpdate();
+    void setDefaults();
+  signals:
+    void apply(const QString &);
+  private:
+    // Determines whether or not to gray out the preferences
+    void loadSettings();
 
-// Determines whether or not to gray out the preferences
-void loadSettings();
+    // Pointer to config object
+    ConfigObject<ConfigValue> *config;
 
-/** Pointer to config object */
-ConfigObject<ConfigValue> *config;
-
-ControlObjectThread m_COTInitialBoost;
-ControlObjectThread m_COTEnabled;
-
+    ControlObjectThread m_COTInitialBoost;
+    ControlObjectThread m_COTEnabled;
 };
 
 

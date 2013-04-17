@@ -49,6 +49,10 @@ CrateFeature::CrateFeature(QObject* parent,
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
+    m_pDuplicateCrateAction = new QAction(tr("Duplicate Crate"),this);
+    connect(m_pDuplicateCrateAction, SIGNAL(triggered()),
+            this, SLOT(slotDuplicateCrate()));
+
     connect(&m_crateDao, SIGNAL(added(int)),
             this, SLOT(slotCrateTableChanged(int)));
 
@@ -72,6 +76,7 @@ CrateFeature::~CrateFeature() {
     delete m_pCreateCrateAction;
     delete m_pDeleteCrateAction;
     delete m_pRenameCrateAction;
+    delete m_pDuplicateCrateAction;
     delete m_pLockCrateAction;
     delete m_pImportPlaylistAction;
 }
@@ -180,6 +185,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pCreateCrateAction);
     menu.addSeparator();
     menu.addAction(m_pRenameCrateAction);
+    menu.addAction(m_pDuplicateCrateAction);
     menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
@@ -222,9 +228,9 @@ void CrateFeature::slotCreateCrate() {
 
     } while (!validNameGiven);
 
-    int crate_id = m_crateDao.createCrate(name);
+    int crateId = m_crateDao.createCrate(name);
 
-    if (crate_id != -1) {
+    if (crateId != -1) {
         emit(showTrackModel(&m_crateTableModel));
     } else {
         qDebug() << "Error creating crate with name " << name;
@@ -301,6 +307,59 @@ void CrateFeature::slotRenameCrate() {
 
     if (!m_crateDao.renameCrate(crateId, newName)) {
         qDebug() << "Failed to rename crateId" << crateId;
+    }
+}
+
+void CrateFeature::slotDuplicateCrate() {
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int oldCrateId = m_crateDao.getCrateIdByName(oldName);
+
+    QString name;
+    bool validNameGiven = false;
+
+    do {
+        bool ok = false;
+        name = QInputDialog::getText(NULL,
+                                        tr("Duplicate Crate"),
+                                        tr("New crate name:"),
+                                        QLineEdit::Normal,
+                                        //: Appendix to default name when duplicating a crate
+                                        oldName + tr("_copy" , "[noun]"),
+                                        &ok).trimmed();
+
+        if (!ok || name == oldName) {
+            return;
+        }
+
+        int existingId = m_crateDao.getCrateIdByName(name);
+
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Crate Failed"),
+                                tr("A crate by that name already exists."));
+        }
+        else if (name.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Renaming Crate Failed"),
+                                tr("A crate cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
+
+    int newCrateId = m_crateDao.createCrate(name);
+    m_crateDao.copyCrateTracks(oldCrateId, newCrateId);
+
+    if (newCrateId != -1) {
+        emit(showTrackModel(&m_crateTableModel));
+    } else {
+        qDebug() << "Error creating crate with name " << name;
+        QMessageBox::warning(NULL,
+                             tr("Creating Crate Failed"),
+                             tr("An unknown error occurred while creating crate: ")
+                             + name);
+
     }
 }
 
