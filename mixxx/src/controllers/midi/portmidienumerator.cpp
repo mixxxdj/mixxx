@@ -37,7 +37,33 @@ bool namesMatchMidiPattern(const QString input_name,
     // Some platforms format MIDI device names as "deviceName MIDI ###" where
     // ### is the instance # of the device. Therefore we want to link two
     // devices that have an equivalent "deviceName" and ### section.
-    QRegExp deviceNamePattern("^(.*) MIDI (\\d+).*$");
+    QRegExp deviceNamePattern("^(.*) MIDI (\\d+)( .*)?$");
+
+    int inputMatch = deviceNamePattern.indexIn(input_name);
+    if (inputMatch == 0) {
+        QString inputDeviceName = deviceNamePattern.cap(1);
+        QString inputDeviceIndex = deviceNamePattern.cap(2);
+        int outputMatch = deviceNamePattern.indexIn(output_name);
+        if (outputMatch == 0) {
+            QString outputDeviceName = deviceNamePattern.cap(1);
+            QString outputDeviceIndex = deviceNamePattern.cap(2);
+            if (outputDeviceName.compare(inputDeviceName, Qt::CaseInsensitive) == 0 &&
+                outputDeviceIndex == inputDeviceIndex) {
+                return true;
+            }
+        }
+    }
+    return false;
+}
+
+bool namesMatchPattern(const QString input_name,
+                       const QString output_name) {
+    // This is a broad pattern that matches a text blob followed by a numeral
+    // potentially followed by non-numeric text. The non-numeric requirement is
+    // meant to avoid corenr cases around devices with names like "Hercules RMX
+    // 2" where we would potentially confuse the number in the device name as
+    // the ordinal index of the device.
+    QRegExp deviceNamePattern("^(.*) (\\d+)( [^0-9]+)?$");
 
     int inputMatch = deviceNamePattern.indexIn(input_name);
     if (inputMatch == 0) {
@@ -81,7 +107,9 @@ bool shouldLinkInputToOutput(const QString input_name,
 
     if (input_name_stripped == output_name_stripped ||
         namesMatchMidiPattern(input_name_stripped, output_name_stripped) ||
-        namesMatchMidiPattern(input_name, output_name)) {
+        namesMatchMidiPattern(input_name, output_name) ||
+        namesMatchPattern(input_name_stripped, output_name_stripped) ||
+        namesMatchPattern(input_name, output_name)) {
         return true;
     }
     return false;
