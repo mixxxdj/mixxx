@@ -146,6 +146,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlObject* m_pHeadVolume;
     ControlObject* m_pMasterSampleRate;
     ControlObject* m_pMasterLatency;
+    ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pMasterUnderflowCount;
     ControlPotmeter* m_pMasterRate;
     EngineClipping *clipping, *head_clipping;

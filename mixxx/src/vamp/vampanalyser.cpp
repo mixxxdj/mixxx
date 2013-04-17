@@ -141,7 +141,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
         qDebug() << "Please copy libmixxxminimal.so from build dir to one of the following:";
 
         std::vector<std::string> path = PluginHostAdapter::getPluginPath();
-        for (int i = 0; i < path.size(); i++) {
+        for (unsigned int i = 0; i < path.size(); i++) {
             qDebug() << QString::fromStdString(path[i]);
         }
         return false;
@@ -304,12 +304,14 @@ bool VampAnalyser::End() {
 }
 
 bool VampAnalyser::SetParameter(const QString parameter, const double value) {
+    Q_UNUSED(parameter);
+    Q_UNUSED(value);
     return true;
 }
 
-void VampAnalyser::SelectOutput(int outputnumber) {
+void VampAnalyser::SelectOutput(const int outputnumber) {
     Plugin::OutputList outputs = m_plugin->getOutputDescriptors();
-    if (outputnumber >= 0 && outputnumber < outputs.size()) {
+    if (outputnumber >= 0 && outputnumber < int(outputs.size())) {
         m_iOutput = outputnumber;
     }
 }

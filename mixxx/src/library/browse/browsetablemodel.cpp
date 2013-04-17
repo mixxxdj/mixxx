@@ -381,6 +381,8 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
 }
 
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
+    Q_UNUSED(i);
+    Q_UNUSED(pParent);
     return NULL;
 }
 

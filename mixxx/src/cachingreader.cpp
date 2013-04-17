@@ -243,11 +243,11 @@ void CachingReader::processChunkReadRequest(ChunkReadRequest* request,
                                             ReaderStatusUpdate* update) {
     int chunk_number = request->chunk->chunk_number;
     //qDebug() << "Processing ChunkReadRequest for" << chunk_number;
-    update->status = CHUNK_READ_INVALID;
     update->chunk = request->chunk;
     update->chunk->length = 0;
 
     if (m_pCurrentSoundSource == NULL || chunk_number < 0) {
+        update->status = CHUNK_READ_INVALID;
         return;
     }
 

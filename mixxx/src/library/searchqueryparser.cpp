@@ -66,6 +66,7 @@ bool SearchQueryParser::searchFieldsForPhrase(const QString& phrase,
 }
 
 bool SearchQueryParser::parseFuzzyMatch(QString field, QStringList* output) const {
+    Q_UNUSED(output);
     if (field == "bpm") {
         // Look up the current track's bpms and add something like
         // "bpm > X AND bpm" < Y to 'output'
@@ -206,6 +207,10 @@ bool SearchQueryParser::parseSpecialFilter(QString field, QString argument,
     // key. The handling here will depend on how we represent the keys in the
     // database but it should ideally automatically deal with all the different
     // representations there are for keys.
+    Q_UNUSED(field);
+    Q_UNUSED(argument);
+    Q_UNUSED(tokens);
+    Q_UNUSED(output);
     return false;
 }
 

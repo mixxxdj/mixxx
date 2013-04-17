@@ -19,10 +19,10 @@
 #ifndef MATHSTUFF_H
 #define MATHSTUFF_H
 
-#include "defs.h"
-#include <math.h>
+#include <cmath>
 #include <algorithm>
 
+#include "defs.h"
 
 CSAMPLE besseli(CSAMPLE);
 int sign(CSAMPLE);
