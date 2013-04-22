@@ -209,6 +209,13 @@ latex_use_parts = False
 # If false, no module index is generated.
 latex_domain_indices = False
 
+# Remove blank duplex printing pages from generated PDF
+# http://stackoverflow.com/questions/5422997
+latex_elements = {
+    'classoptions': ',openany,oneside',
+    'babel' : '\\usepackage[english]{babel}'
+}
+
 # -- Options for manual page output --------------------------------------------
 
 # One entry per manual page. List of tuples
