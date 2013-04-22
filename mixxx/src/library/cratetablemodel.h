@@ -23,17 +23,18 @@ class CrateTableModel : public BaseSqlTableModel {
     }
 
     // From TrackModel
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual void search(const QString& searchText);
-    virtual bool isColumnInternal(int column);
-    virtual bool isColumnHiddenByDefault(int column);
-    virtual void removeTrack(const QModelIndex& index);
-    virtual void removeTracks(const QModelIndexList& indices);
-    virtual bool addTrack(const QModelIndex& index, QString location);
+    TrackPointer getTrack(const QModelIndex& index) const;
+    void search(const QString& searchText);
+    bool isColumnInternal(int column);
+    bool isColumnHiddenByDefault(int column);
+    void removeTrack(const QModelIndex& index);
+    void removeTracks(const QModelIndexList& indices);
+    bool addTrack(const QModelIndex& index, QString location);
     // Returns the number of unsuccessful track additions
-    virtual int addTracks(const QModelIndex& index, QList <QString> locations);
-    virtual void moveTrack(const QModelIndex& sourceIndex,
-                           const QModelIndex& destIndex);
+    int addTracks(const QModelIndex& index,
+                  const QList <QString> &locations);
+    void moveTrack(const QModelIndex& sourceIndex,
+                   const QModelIndex& destIndex);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private slots:
