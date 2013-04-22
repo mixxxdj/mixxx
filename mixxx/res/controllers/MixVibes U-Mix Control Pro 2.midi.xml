@@ -4,7 +4,7 @@
         <name>MixVibes U-Mix Control Pro 2</name>
         <author>tomtom (thomas-8)</author>
 	<description>V1.0.0 -> Please visit Forum and Wiki for more details.</description>
-        <forums>http://mixxx.org/forums/viewtopic.php?f=7&t=4892</forums>
+        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=4892</forums>
         <wiki>http://www.mixxx.org/wiki/doku.php/umix_control_pro_2</wiki>
     </info>
     <controller id="MixVibes">
