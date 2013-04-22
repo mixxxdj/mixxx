@@ -25,7 +25,7 @@ Mixxx works with ALSA, JACK, OSS and supports many popular DJ controllers.
   - Parallel or split scratchable waveform displays
   - Waveform summaries
   - Spinning vinyl widgets
-  - MP3, OGG, WAVE, M4A / AAC, and FLAC playback
+  - MP3, OGG, WAVE, FLAC, and optional unprotected aac (m4a) playback
   - Extra playback formats through plugins
   - Wave and Ogg recording with optional MP3 support
   - Fast, database-powered library
@@ -45,8 +45,8 @@ Mixxx works with ALSA, JACK, OSS and supports many popular DJ controllers.
   - Bulk BPM analysis
   - Adjustable EQ shelves
   - Crossfader curve control
-  - 4 Sampler Decks
-  - Vinyl emulation with Serato and Traktor Scratch timecode support
+  - Sampler Decks
+  - Vinyl emulation with Serato, Traktor, and Mixvibes timecode support
   - Multichannel soundcard support (playback and capture)
   - Headphone cueing with multiple soundcard support
   - Skinnable interface with several skins bundled
