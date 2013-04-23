@@ -1450,6 +1450,7 @@ void MixxxApp::slotHelpAbout() {
 "Nimatek<br>"
 "Alban Bedel<br>"
 "Steven Boswell<br>"
+"Jo&atilde;o Reys Santos<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
