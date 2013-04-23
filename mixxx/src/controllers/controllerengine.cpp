@@ -12,19 +12,13 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
+#include "mathstuff.h"
 
 // #include <QScriptSyntaxCheckResult>
 
 // Used for id's inside controlConnection objects
 // (closure compatible version of connectControl)
 #include <QUuid>
-
-#ifdef _MSC_VER
-    #include <float.h>  // for _isnan() on VC++
-    #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
-#else
-    #include <math.h>  // for isnan() everywhere else
-#endif
 
 const int kDecks = 16;
 
