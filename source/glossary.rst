@@ -236,14 +236,6 @@ Glossary of Terms
      often saved in a 44.1 KHz, 16-bit, stereo format, which is the standard
      format used for CD audio. Wave files generally end with a .WAV extension.
 
-   DRM
-     Digital Rights Management (DRM) technologies attempt to control what you
-     can and can't do with the media and hardware you've purchased. Typically,
-     a DRM system either encrypting the data so that it can only be accessed in
-     a way authorized by copyright holders or marks content with a digital
-     watermark or similar method so that the content can not be freely
-     distributed.
-
    codec
      Short for compressor/decompressor, a codec is any technology for
      compressing and decompressing audio and video data. Some popular
@@ -348,6 +340,34 @@ Glossary of Terms
      to subscribe to the feed and automatically download content to their
      portable audio players as it becomes available.
 
+   DRM
+     Digital Rights Management (DRM) technologies attempt to control what you
+     can and can't do with the media and hardware you've purchased. Typically,
+     a DRM system either encrypting the data so that it can only be accessed in
+     a way authorized by copyright holders or marks content with a digital
+     watermark or similar method so that the content can not be freely
+     distributed.
+
+   shoutcast
+     Shoutcast is proprietary software that allows digital audio content to be
+     broadcast to and from media †player software, enabling the creation of
+     Internet radio stations.
+
+   icecast
+     Icecast is free and :term:`open-source` software that allows digital audio
+     content to be broadcast to and from media player software, enabling the
+     creation of Internet radio stations. Unlike :term:`Shoutcast <shoutcast>`,
+     the software provides the ability to stream in free file formats like
+     :term:`Ogg Vorbis` and run your own directory server.
+
+   open-source
+     Generically, open-source refers to a program in which the source code is
+     available to the public for use and/or modification from its original
+     design free of charge. Open source code is typically created as a
+     collaborative effort in which programmers improve upon the code and share
+     the changes within the community. Open source sprouted in the technological
+     community as a response to proprietary software owned by corporations.
+
    url
      (Uniform Resource Locator) The address that defines the route to a file on
      an Internet server. URLs are typed into a Web browser to access Web pages
@@ -359,3 +379,16 @@ Glossary of Terms
      or cuepoints points so that they start or finish exact on beats or exact
      fractions of beats.
 
+   HSV
+     HSV stands for hue, saturation, and value, and is also often called HSB
+     (B for brightness). The HSV Color Model represents color in a way more
+     suited to the human perception of color. For example, the relationships
+     "stronger than", "darker than", and "the opposite of" are easily expressed
+     in HSV. In contrast, the representation of the hardware-oriented :term:`RGB`
+     model is close to what most monitors show.
+
+   RGB
+     The RGB color model is an additive color model in which red, green, and
+     blue light are added together in various ways to reproduce a broad array of
+     colors. The name of the model comes from the initials of the three additive
+     primary colors, red, green, and blue.
