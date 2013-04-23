@@ -92,7 +92,7 @@ To activate MP3 streaming on Windows, follow these steps:
           in the LAME zip file. You don't want that file! Also, make sure the
           version of LAME you use (x86=32-bit vs. x64=64-bit) matches the
           version of Mixxx you use.
-          Select :menuselection: ``Help --> About`` to find out whether you have
+          Select :menuselection: `Help --> About` to find out whether you have
           installed the 32 bit or 64 bit version of Mixxx.
 
 .. warning:: Some websites like `Audacity <http://audacity.sourceforge.net/>`_
