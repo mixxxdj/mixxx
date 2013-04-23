@@ -117,8 +117,8 @@ Finding Tracks (Search)
 The :ref:`search function <library-search>` searches for a match only in the
 current selected list (e.g. a playlist, a crate or even the whole library).
 
-* Activate the search input field by pressing :kbd:`CTRL+F`
-  (Windows/Linux) or :kbd:`CMD+F` (Mac). Alternatively click into the
+* Activate the search input field by pressing :kbd:`CTRL` + :kbd:`F`
+  (Windows/Linux) or :kbd:`CMD` + :kbd:`F` (Mac). Alternatively click into the
   search box.
 * Type in your search term, as soon as you type Mixxx filters the tracks and
   retains only the ones that match with the search term. Search terms can
@@ -197,8 +197,8 @@ Alternatively, select a track from the track list of the Mixxx library, drag the
 track to the waveform view of the :ref:`Preview Deck <interface-preview-deck>`
 and hit the :guilabel:`Play` button next to the waveform.
 
-To display the Preview deck, press :kbd:`CTRL+4` (Windows/Linux) or
-:kbd:`CMD+4` (Mac).
+To display the Preview deck, press :kbd:`CTRL` + :kbd:`4` (Windows/Linux) or
+:kbd:`CMD` + :kbd:`4` (Mac).
 
 .. _waveform-displays:
 

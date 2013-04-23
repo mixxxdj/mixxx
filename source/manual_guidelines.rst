@@ -234,9 +234,9 @@ different style. Nonetheless, use them:
 
 .. rst:role:: kbd
 
-   Mark a sequence of keystrokes. Example markup: :kbd:`STRG + G` ::
+   Mark a sequence of keystrokes. Example markup: :kbd:`STRG` + :kbd:`G` ::
 
-     :kbd:`STRG + G`
+     :kbd:`STRG` + :kbd:`G`
 
 .. rst:role:: menuselection
 
