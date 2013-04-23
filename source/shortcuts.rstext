@@ -197,6 +197,68 @@
     :alt: Preferences - Icon Vinyl Control
 
 .. ---------------------------------------
+.. Signal quality images for vinyl control
+.. ---------------------------------------
+.. |ok| image:: /_static/vinyl_control_scope_signal_ok.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Receives good signal
+
+.. |wrong_dir| image:: /_static/vinyl_control_scope_signal_wrong_direction.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Signal goes in wrong direction
+
+.. |no_signal| image:: /_static/vinyl_control_scope_no_signal.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Receives no signal
+
+.. |bad_signal| image:: /_static/vinyl_control_scope_signal_bad.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Receives bad signal
+
+.. |miss_config| image:: /_static/vinyl_control_scope_no_input_configured.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - No input configured
+
+.. |not_timecode| image:: /_static/vinyl_control_scope_signal_not_timecode.png
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Receives no timecode signal
+
+.. |wrong_type| image:: /_static/vinyl_control_scope_vinyl_type_wrong.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Receives signal from wrong vinyl type
+
+.. |unbalanced| image:: /_static/vinyl_control_scope_signal_unbalanced.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Receives mono signal
+
+.. |too_loud| image:: /_static/vinyl_control_scope_signal_too_loud.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Receives too loud input signal
+
+.. |too_quiet| image:: /_static/vinyl_control_scope_signal_too_quiet.png
+    :width: 75px
+    :align: middle
+    :height: 75px
+    :alt: Vinyl Control - Receives too quiet signal
+
+.. ---------------------------------------
 .. Demos for documentation guidelines
 .. ---------------------------------------
 .. |logo| image:: /_static/icons/mixxx-icon.*
