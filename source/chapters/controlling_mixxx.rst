@@ -148,6 +148,15 @@ so make sure to consult the documentation of the device.
 .. _Bug Tracker: http://bugs.launchpad.net/mixxx
 .. _Controller presets forum: http://mixxx.org/forums/viewforum.php?f=7
 
+Map your own your controller
+----------------------------
+
+There is no mapping available for your controller or you want to change an
+existing mapping? You can map your controller by using the Midi Learning Wizard
+or take full control with the scripting support in Mixxx.
+
+.. seealso:: Go to the chapter :ref:`advanced-controller` for detailed informations.
+
 .. _control-timecode:
 
 Using Timecode Vinyl Records and CDs
