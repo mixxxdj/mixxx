@@ -36,6 +36,10 @@ TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
 
     // Ports that match the pattern "$DEVICE MIDI $INSTANCE ..." should link.
 
+    ASSERT_TRUE(shouldLinkInputToOutput(
+        "Vestax VCI-100 MIDI 1",
+        "Vestax VCI-100 MIDI 1"));
+
     // Stuff after $INSTANCE doesn't matter.
     ASSERT_TRUE(shouldLinkInputToOutput(
         "Vestax VCI-100 MIDI 1 OtherJunk",
@@ -61,8 +65,31 @@ TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
         "Vestax VCI-100 MIDI 12",
         "Vestax VCI-100 MIDI 12 123 Something Else"));
 
+    // Dangling numerals after the device name but before MIDI are fine.
+    ASSERT_TRUE(shouldLinkInputToOutput(
+        "Vestax VCI-100 2 MIDI 12",
+        "Vestax VCI-100 2 MIDI 12 123 Something Else"));
+
     // Different $DEVICE matters.
     ASSERT_FALSE(shouldLinkInputToOutput(
         "Vestax VCI-100 MIDI 1",
         "Vestax VCI-300 MIDI 1"));
+
+    // Non-numeral extra stuff following a lone numeral after the device name
+    // doesn't matter.
+    ASSERT_TRUE(shouldLinkInputToOutput(
+        "nanoKONTROL2 1 CTRL",
+        "nanoKONTROL2 1 SLIDER/KNOB"));
+
+    // Extra stuff with a numeral following a lone numeral after the device name
+    // doesn't get linked.
+    ASSERT_FALSE(shouldLinkInputToOutput(
+        "nanoKONTROL2 1 1 CTRL",
+        "nanoKONTROL2 1 SLIDER/KNOB"));
+
+    // If the device name has a numeral dangling off of it we should not get
+    // confused by that.
+    ASSERT_FALSE(shouldLinkInputToOutput(
+        "nanoKONTROL 2 1 CTRL",
+        "nanoKONTROL 2 3 SLIDER/KNOB"));
 }

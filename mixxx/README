@@ -121,7 +121,7 @@ On some platforms, Mixxx may come with a pre-built copy of
 Qt. This code is licensed under the LGPL and source for this
 library may be obtained from:
 
-    http://trolltech.com/products/qt/downloads
+    http://qt-project.org/downloads
 
 * Microsoft Runtimes ***************************************
 On Microsoft platforms, Mixxx may come with runtime dlls

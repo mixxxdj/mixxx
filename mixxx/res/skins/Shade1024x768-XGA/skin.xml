@@ -53,7 +53,7 @@
 	<manifest>
 	<title>Shade1024x768-XGA</title>
 	<author>jus</author>
-	<version>1.11.0.14</version>
+	<version>1.11.0.15</version>
 	<description>A 2-deck split-waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -3386,7 +3386,6 @@
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#191F24</SignalColor>
 								<BeatColor>#FFFFFF</BeatColor>
-								<BeatHighlightColor></BeatHighlightColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<AxesColor>#00FF00</AxesColor>
@@ -4730,7 +4729,6 @@
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#191F24</SignalColor>
 								<BeatColor>#FFFFFF</BeatColor>
-								<BeatHighlightColor></BeatHighlightColor>
 								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<AxesColor>#00FF00</AxesColor>

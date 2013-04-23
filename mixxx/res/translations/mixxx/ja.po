@@ -8,14 +8,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-03-05 06:50+0200\n"
-"PO-Revision-Date: 2013-03-26 11:48+0000\n"
-"Last-Translator: nogajun <nogajun@gmail.com>\n"
+"PO-Revision-Date: 2013-04-01 16:07+0000\n"
+"Last-Translator: polamjag <indirectgeeks@gmail.com>\n"
 "Language-Team: Japanese <ja@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-27 04:35+0000\n"
-"X-Generator: Launchpad (build 16540)\n"
+"X-Launchpad-Export-Date: 2013-04-02 05:09+0000\n"
+"X-Generator: Launchpad (build 16546)\n"
 "X-Poedit-Bookmarks: 599,-1,-1,-1,-1,-1,-1,-1,-1,-1\n"
 
 #: AutoDJFeature#1
@@ -36,7 +36,7 @@ msgstr "オートDJの先頭に追加"
 #: BaseExternalLibraryFeature#3
 msgctxt "BaseExternalLibraryFeature#3"
 msgid "Import Playlist"
-msgstr "プレイリストのインポート"
+msgstr "プレイリストをインポート"
 
 #: BaseExternalLibraryFeature#4
 msgctxt "BaseExternalLibraryFeature#4"
@@ -70,17 +70,17 @@ msgstr "リストから削除"
 #: BasePlaylistFeature#5
 msgctxt "BasePlaylistFeature#5"
 msgid "Rename"
-msgstr "名前の変更"
+msgstr "名前を変更"
 
 #: BasePlaylistFeature#6
 msgctxt "BasePlaylistFeature#6"
 msgid "Lock"
-msgstr "ロック"
+msgstr "ロックする"
 
 #: BasePlaylistFeature#7
 msgctxt "BasePlaylistFeature#7"
 msgid "Import Playlist"
-msgstr "プレイリストのインポート"
+msgstr "プレイリストをインポート"
 
 #: BasePlaylistFeature#8
 msgid "Duplicate Playlist"
@@ -122,12 +122,12 @@ msgstr ""
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr "プレイリストの作成に失敗"
+msgstr "プレイリストの作成に失敗しました"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "プレイリストの作成中に不明なエラーが発生しました "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
@@ -220,11 +220,11 @@ msgstr "追加日時"
 
 #: BaseSqlTableModel#17
 msgid "#"
-msgstr "番号"
+msgstr "#"
 
 #: BaseSqlTableModel#18
 msgid "Timestamp"
-msgstr "タイムスタンプ"
+msgstr "更新日時"
 
 #: BaseSqlTableModel#19
 msgctxt "BaseSqlTableModel#19"
@@ -499,7 +499,7 @@ msgstr "レコードボックスのエクスポート"
 
 #: CrateFeature#10
 msgid "Duplicate Crate"
-msgstr ""
+msgstr "レコードボックスを複製"
 
 #: CrateFeature#11
 msgctxt "CrateFeature#11"
@@ -555,7 +555,7 @@ msgstr "Cratesはあなたがしたいあなたの音楽を整理しましょう
 
 #: CrateFeature#22
 msgid "Create new crate"
-msgstr "新規クレートを作成"
+msgstr "新規レコードボックスを作成"
 
 #: CrateFeature#23
 msgid "A crate cannot have a blank name."
@@ -587,11 +587,11 @@ msgstr ""
 
 #: DlgAutoDJ#3
 msgid "Disable Auto DJ"
-msgstr "Auto DJを無効"
+msgstr "オートDJを無効にする"
 
 #: DlgAutoDJ#4
 msgid "Shuffle the content of the Auto DJ playlist."
-msgstr "オートDJプレイリストの内容をシャッフル。"
+msgstr "オートDJプレイリストをシャッフルする"
 
 #: DlgAutoDJ#5
 msgid "Shuffle"
@@ -599,11 +599,11 @@ msgstr "シャッフル"
 
 #: DlgAutoDJ#6
 msgid "Skip the next track in the Auto DJ playlist."
-msgstr ""
+msgstr "オートDJプレイリストの次の曲をスキップする"
 
 #: DlgAutoDJ#7
 msgid "Skip Track"
-msgstr ""
+msgstr "トラックをスキップ"
 
 #: DlgAutoDJ#8
 msgid "Trigger the transition to the next track."
@@ -611,7 +611,7 @@ msgstr ""
 
 #: DlgAutoDJ#9
 msgid "Fade Now"
-msgstr ""
+msgstr "今すぐフェードする"
 
 #: DlgAutoDJ#10
 msgid "Determines the duration of the transition."
@@ -636,7 +636,7 @@ msgstr "Auto DJを有効"
 #: DlgAutoDJ#15
 msgctxt "DlgAutoDJ#15"
 msgid "Manage"
-msgstr ""
+msgstr "管理"
 
 #: DlgBeatsDlg#1
 msgid "Beat Detection Settings"

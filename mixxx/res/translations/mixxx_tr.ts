@@ -20,11 +20,11 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation>Çalma Listesini Al</translation>
+            <translation>Çalma Listesini İçe Aktar</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation>Çalma listesi oluşturulamadı</translation>
+            <translation>Çalma listesi oluşturma başarısız oldu</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
@@ -39,11 +39,11 @@
         </message>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation>Oto DJ Sırasına Ekle(Alt Sıra)</translation>
+            <translation>Oto DJ Kuyruğuna Ekle (alta)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation>Oto DJ Sırasına Ekle(Üst Sıra)</translation>
+            <translation>Oto DJ Kuyruğuna Ekle (üste)</translation>
         </message>
         <message>
             <source>Remove</source>
