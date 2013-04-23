@@ -457,29 +457,29 @@ def do_codesign(target, source, env):
 
     keychain = env.get('CODESIGN_KEYCHAIN', None)
     keychain_password = env.get('CODESIGN_KEYCHAIN_PASSWORD', None)
-    identity = env.get('CODESIGN_IDENTITY', None)
+    installer_identity = env.get('CODESIGN_INSTALLER_IDENTITY', None)
+    application_identity = env.get('CODESIGN_APPLICATION_IDENTITY', None)
     entitlements = env.get('CODESIGN_ENTITLEMENTS', None)
-    if identity is not None:
+    if application_identity is not None:
         if keychain and keychain_password is not None:
             print "Unlocking keychain:"
             if system("security unlock-keychain -p '%s' %s" % (keychain_password, keychain)) != 0:
                 raise Exception('Could not unlock keychain.')
-        codesign_path(identity, keychain, entitlements, bundle)
+        codesign_path(application_identity, keychain, entitlements, bundle)
         for root, dirs, files in os.walk(frameworks_path):
             for framework in dirs + files:
-                codesign_path(identity, keychain, entitlements, os.path.join(root, framework))
+                codesign_path(application_identity, keychain, entitlements, os.path.join(root, framework))
             # Don't descend.
             del dirs[:]
         # Codesign binaries.
         for root, dirs, files in os.walk(binary_path):
             for filename in files:
-                codesign_path(identity, keychain, entitlements, os.path.join(root, filename))
+                codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
         # Codesign plugins.
         for root, dirs, files in os.walk(plugins_path):
             for filename in files:
-                codesign_path(identity, keychain, entitlements, os.path.join(root, filename))
+                codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
 CodeSign = Builder(action = do_codesign)
-
 
 def build_plist(target, source, env):
     d = env['PLIST']
