@@ -265,8 +265,6 @@ Meta-information markup
 
       .. sectionauthor:: Jon Doe <name@domain.tld>
 
-.. todo:: Add CSS rules for these markups
-
 Resources
 =========
 

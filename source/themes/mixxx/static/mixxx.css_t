@@ -299,21 +299,28 @@ pre {
 tt {
     background-color: #ecf0f3;
     color: #222;
-    padding: 1px;
+    padding:1px 5px 1px 5px;
     font-size: 1.2em;
     font-family: monospace;
-    -webkit-border-radius: 2px;
-    -moz-border-radius: 2px;
-    border-radius: 2px;
-    -webkit-box-shadow: #666 1px 1px 3px;
-    -moz-box-shadow: #666 1px 1px 3px;
-    box-shadow: #666 1px 1px 3px;
-    background: #EEF3EC;
 }
 
-/* Style the :kbd: role. Makes nice borders around shorcuts */
+.menuselection {
+    font-weight:normal;
+    border:1px solid #ddd;
+    background-color:#eeeeee;
+    padding:1px 5px 1px 5px;
+}
 
-tt.kbd.docutils.literal {
+.guilabel {
+    font-weight:normal;
+    border:1px solid #ddd;
+    background:#eee;
+    color:#08C;
+    padding-left:3px;
+    padding-right:5px;
+}
+
+.kbd {
     white-space:nowrap;
     color:#000;
     background:#eee;
