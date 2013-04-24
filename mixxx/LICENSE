@@ -8,11 +8,11 @@ Depending on your platform, you may receive a copy of PortAudio
 (http://www.portaudio.com/) which is distributed under the
 PortAudio as-is license which can be found on their website.
 
-This may also be in turn compiled with ASIO support
-(http://www.steinberg.de) which is provided by the ASIO SDK, the
-license for which can currently be found at:
-
-	http://www.steinberg.de/534+M52087573ab0.html
+This may also be in turn compiled with ASIO support, which is provided
+by the Steinberg ASIO SDK. The Steinberg ASIO SDK and Steinberg VST
+PlugIn SDK are Copyright Steinberg Media Technologies GmbH. ASIO and VST
+are trademarks of Steinberg Media Technologies GmbH. The license is 
+available at http://www.steinberg.net/en/company/developer.html .
 
 On Windows you may receive a copy of the Microsoft Visual Studio runtime
 libraries. These are distributed only for the purpose of allowing
@@ -43,13 +43,12 @@ Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 Mixxx comes with ABSOLUTELY NO WARRANTY;
 
 
-
-
 		    GNU GENERAL PUBLIC LICENSE
 		       Version 2, June 1991
 
  Copyright (C) 1989, 1991 Free Software Foundation, Inc.
-                       59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
  Everyone is permitted to copy and distribute verbatim copies
  of this license document, but changing it is not allowed.
 
@@ -331,6 +330,7 @@ if the source code is made available on the Mixxx Website under the
 terms of the GPL.
 
 		     END OF TERMS AND CONDITIONS
+
 
 Fidlib License
 =================
@@ -792,7 +792,9 @@ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
 
 		     END OF TERMS AND CONDITIONS
-Google Test License
+
+
+Google Test License
 =====================
 
 Copyright 2008, Google Inc.
@@ -1303,6 +1305,7 @@ DAMAGES.
 
 		     END OF TERMS AND CONDITIONS
 
+
 FLAC License
 ================
 
@@ -1367,7 +1370,6 @@ DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
 THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
 OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-
 
 
 libshout License
@@ -2309,7 +2311,6 @@ CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 
-
 HSS1394 License
 ==================
 
@@ -2945,6 +2946,7 @@ DAMAGES.
 
                      END OF TERMS AND CONDITIONS
 
+
 Qt License
 ==============
 
@@ -3406,7 +3408,6 @@ SUCH HOLDER OR OTHER PARTY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH
 DAMAGES.
 
 		     END OF TERMS AND CONDITIONS
-
 
 
 Nokia Qt LGPL Exception version 1.1

@@ -101,13 +101,11 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tworzenie listy odtwarzania nie powiodło się</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Wystąpił nieznany błąd podczas tworzenia listy odtwarzania: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
@@ -1113,8 +1111,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofon</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
@@ -1130,8 +1127,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist</source>
@@ -1658,8 +1654,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Synchronizuj</translation>
         </message>
     </context>
     <context>
@@ -2218,8 +2213,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gatunek</translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -2235,13 +2229,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kodowanie</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Bitrate</translation>
         </message>
         <message>
             <source>Format</source>
@@ -2261,13 +2253,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Wykonawca</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Tytuł</translation>
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
@@ -4017,8 +4007,7 @@ Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku.</translati
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader</translation>
         </message>
         <message>
             <source>Determines the master output by fading between the left and right channels.</source>
@@ -4062,8 +4051,7 @@ Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku.</translati
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mikrofon</translation>
         </message>
         <message>
             <source>Show/hide the Microphone section.</source>
@@ -4079,8 +4067,7 @@ Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku.</translati
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Kontrola vinylem</translation>
         </message>
         <message>
             <source>Show/hide the Vinyl Control section.</source>
@@ -4443,8 +4430,7 @@ Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku.</translati
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Synchronizuj</translation>
         </message>
         <message>
             <source>Syncs the tempo (BPM) and phase to that of the other track, </source>
@@ -4493,8 +4479,7 @@ Wybierz kartę/karty dźwiękowe w ustawieniach urządzeń dźwięku.</translati
         </message>
         <message>
             <source>Hotcue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Szybiki znacznik (Hotcue)</translation>
         </message>
         <message>
             <source>If hotcue is set, jumps to the hotcue.</source>

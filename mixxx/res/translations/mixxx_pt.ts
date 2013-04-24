@@ -63,8 +63,7 @@
         </message>
         <message>
             <source>Duplicate Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duplicar Playlist</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -101,13 +100,11 @@
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A criação da Lista de reprodução falhou</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ocorreu um erro desconhecido ao criar a Playlist </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
@@ -434,8 +431,7 @@
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Importar Playlist</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -456,8 +452,7 @@
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desbloquear</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -1008,8 +1003,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Cues</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Marcas</translation>
         </message>
         <message>
             <source>Hotcues</source>
@@ -1055,13 +1049,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Biblioteca</translation>
         </message>
         <message>
             <source>Expand/collapse the selected view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Expandir/minimizar a vista selecionada (biblioteca, playlist..)</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -1089,8 +1081,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Load selected track and play</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Carregar faixa selecionada e reproduzir</translation>
         </message>
         <message>
             <source>Effects</source>
@@ -1114,8 +1105,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Microfone</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
@@ -1131,8 +1121,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist</source>
@@ -1168,8 +1157,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Show/hide the preview deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mostrar/esconder o leitor anterior</translation>
         </message>
         <message>
             <source>Show/hide spinning vinyl widget</source>
@@ -1188,18 +1176,15 @@ by analyzing the beats to discard outliers.</source>
         <name>DlgHidden</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gerir</translation>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleciona todas as faixas da tabela abaixo</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Selecionar Tudo</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
@@ -1213,13 +1198,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Unhide selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Revelar faixas selecionadas da biblioteca</translation>
         </message>
         <message>
             <source>Unhide</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Revelar</translation>
         </message>
         <message>
             <source>Ctrl+S</source>
@@ -1230,18 +1213,15 @@ by analyzing the beats to discard outliers.</source>
         <name>DlgMissing</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Gerir</translation>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleciona todas as faixas da tabela abaixo</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Selecionar Tudo</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
@@ -1544,8 +1524,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Re-queue tracks in Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Re-ordenar faixas no Auto DJ</translation>
         </message>
         <message>
             <source>Locale</source>
@@ -1662,8 +1641,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sincronizar</translation>
         </message>
     </context>
     <context>
@@ -1934,8 +1912,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Other Libraries</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Outras Bibliotecas</translation>
         </message>
         <message>
             <source>Show Rhythmbox Library</source>
@@ -2219,8 +2196,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Género</translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -2236,8 +2212,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Codificação</translation>
         </message>
         <message>
             <source>Bitrate</source>
@@ -2262,13 +2237,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Artista</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Título</translation>
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
@@ -2581,13 +2554,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Seleciona todas as faixas da tabela abaixo</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Selecionar Tudo</translation>
         </message>
         <message>
             <source>Runs the BPM and beatgrid detection on the selected tracks.
@@ -3248,13 +3219,11 @@ Também serão geradas as formas de onda como parte da análise.</translation>
         </message>
         <message>
             <source>Show Samplers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mostrar Samplers</translation>
         </message>
         <message>
             <source>Ctrl+1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+1</translation>
         </message>
         <message>
             <source>Show Vinyl Control Section</source>
@@ -3263,8 +3232,7 @@ Também serão geradas as formas de onda como parte da análise.</translation>
         </message>
         <message>
             <source>Ctrl+3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+3</translation>
         </message>
         <message>
             <source>Show Microphone Section</source>
@@ -3273,8 +3241,7 @@ Também serão geradas as formas de onda como parte da análise.</translation>
         </message>
         <message>
             <source>Ctrl+2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+2</translation>
         </message>
         <message>
             <source>Show Preview Deck</source>
@@ -3288,8 +3255,7 @@ Também serão geradas as formas de onda como parte da análise.</translation>
         </message>
         <message>
             <source>Ctrl+4</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+4</translation>
         </message>
         <message>
             <source>&amp;Reload Skin</source>
@@ -3303,13 +3269,11 @@ Também serão geradas as formas de onda como parte da análise.</translation>
         </message>
         <message>
             <source>Ctrl+Shift+R</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ctrl+Shift+R</translation>
         </message>
         <message>
             <source>Developer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Programador</translation>
         </message>
         <message>
             <source>Load track to Deck %1</source>
@@ -3906,8 +3870,7 @@ Seleccione a(s) sua(s) placa(s) de som nas preferências.</translation>
         </message>
         <message>
             <source>Scroll-wheel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Roda do rato</translation>
         </message>
         <message>
             <source>Waveform Overview</source>
@@ -4021,8 +3984,7 @@ Seleccione a(s) sua(s) placa(s) de som nas preferências.</translation>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader</translation>
         </message>
         <message>
             <source>Determines the master output by fading between the left and right channels.</source>
@@ -4066,8 +4028,7 @@ Seleccione a(s) sua(s) placa(s) de som nas preferências.</translation>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Microfone</translation>
         </message>
         <message>
             <source>Show/hide the Microphone section.</source>
@@ -4367,8 +4328,7 @@ Seleccione a(s) sua(s) placa(s) de som nas preferências.</translation>
         </message>
         <message>
             <source>Turns the current loop off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Desliga o loop</translation>
         </message>
         <message>
             <source>Slip Mode</source>
@@ -4440,8 +4400,7 @@ Seleccione a(s) sua(s) placa(s) de som nas preferências.</translation>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sincronizar</translation>
         </message>
         <message>
             <source>Syncs the tempo (BPM) and phase to that of the other track, </source>
@@ -4767,18 +4726,15 @@ Clique em OK para sair.</translation>
         <name>WOverview</name>
         <message>
             <source>Ready to play, analyzing ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Pronto para reproduzir, a analisar ..</translation>
         </message>
         <message>
             <source>Loading track ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A carregar faixa ..</translation>
         </message>
         <message>
             <source>Finalizing ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>A finalizar ..</translation>
         </message>
     </context>
     <context>
