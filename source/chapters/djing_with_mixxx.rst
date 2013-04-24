@@ -414,7 +414,7 @@ the microphone.
 Mixxx can record your mix in various audio formats and quality settings. You can
 split your recordings, generate :term:`cue files <cue sheet>`, choose a custom
 recording directory and even set you own :term:`metadata`. By default, Mixxx
-saves your recordings as lossless :term:`wav` files to a ``Mixxx/Recordings``
+saves your recordings as lossless :term:`wav` files to a :file:`Mixxx/Recordings`
 sub-folder in the Mixxx music directory. Before you start recording, it is
 recommended to adjust the settings according to your requirements in the
 recording preferences.

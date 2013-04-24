@@ -85,15 +85,15 @@ Nice screenshot tools with build-in editor for annotations:
 
 Alternatively, import your screenshots into
 `Inkscape <http://www.incscape.org>`_, add annotations and export as .png to
-``/static``. Then save the original work as .svg to ``/static`` as well, so
-any future contributor can work on your annotations at a later time.
+:file:`/static`. Then save the original work as .svg to :file:`/static` as well,
+so any future contributor can work on your annotations at a later time.
 
 File naming
 -----------
 
 As the manual grows over the time with new versions of Mixxx and new screenshots,
-it is important to have files named consistently. Save files to the ``/static``
-folder or create a sub-folder in there.
+it is important to have files named consistently. Save files to the
+:file:`/static` folder or create a sub-folder in there.
 
 ::
 
@@ -101,7 +101,7 @@ folder or create a sub-folder in there.
 
 This scheme makes it easy to know which version a screenshot was taken from and
 where it belongs and if it must replaced, like e.g.
-``Mixxx-111-Preferences-Recording.png``
+:file:`Mixxx-111-Preferences-Recording.png`
 
 .. warning:: Do not include any dot in the file names of your screenshots your
              file name or you wont be able to generate PDF with LaTeX.
@@ -158,11 +158,11 @@ a substitution (aka alias). This may be appropriate when the replacement image
 or text is repeated many times throughout one or more documents, especially if
 it may need to change later.
 
-All replacements are kept in the file ``shortcuts.rstext`` which is included at
-the beginning of each file in which a substitution is used.
+All replacements are kept in the file :file:`shortcuts.rstext` which is included
+at the beginning of each file in which a substitution is used.
 
 To use an alias for the Mixxx logo, simply put the definition into
-``shortcuts.rstext``.
+:file:`shortcuts.rstext`.
 
 ::
 
@@ -249,13 +249,11 @@ different style. Nonetheless, use them:
 
        :menuselection:`Options --> Enable Live Broadcasting`
 
+.. rst:role:: file
 
-Short code snippets like terminal commands or paths like ``Mixxx/Recordings``
-are highlighted as inline literals using
+   The name of a file or directory. Example markup: :file:`Mixxx/Recordings` ::
 
-::
-
-   ``Mixxx/Recordings``
+       :file:`Mixxx/Recordings`
 
 Meta-information markup
 -----------------------
@@ -290,9 +288,9 @@ Steps for use:
 #. Install Sphinx (``python-sphinx`` package in Debian/Ubuntu) and GNU make
 #. Download Mixxx manual source from
    `launchpad.net <https://code.launchpad.net/~mixxxdevelopers/mixxx/manual>`_
-#. Edit .rst files in ``source/``
+#. Edit .rst files in :file:`source/`
 #. Run ``make html``
-#. Open the file ``build/html/index.html`` in your Web browser to view the
+#. Open the file :file:`build/html/index.html` in your Web browser to view the
    results
 
 .. hint:: Run ``make linkcheck`` in the terminal.

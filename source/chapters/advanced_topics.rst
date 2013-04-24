@@ -26,27 +26,27 @@ Making a Custom Keyboard Mapping
 The :ref:`default keyboard mappings<appendix-keyboard>` are defined in a text
 file which can be found at the following location:
 
-* Linux: ``/usr/local/share/mixxx/keyboard/en_US.kbd.cfg``
-* Mac OS X: ``/Applications/Mixxx.app/Contents/Resources/keyboard/en_US.kbd.cfg``
-* Windows: ``<Mixxx installation directory>\keyboard\en_US.kbd.cfg``
+* Linux: :file:`/usr/local/share/mixxx/keyboard/en_US.kbd.cfg`
+* Mac OS X: :file:`/Applications/Mixxx.app/Contents/Resources/keyboard/en_US.kbd.cfg`
+* Windows: :file:`<Mixxx installation directory>\\keyboard\\en_US.kbd.cfg`
 
 Depending on your systems language settings, Mixxx might use a different
-file as default, e.g. ``de_DE.kbd.cfg`` for German or ``es_ES.kbd.cfg`` for
-Spanish.
+file as default, e.g. :file:`de_DE.kbd.cfg` for German or :file:`es_ES.kbd.cfg`
+for Spanish.
 
 There are two ways to customize the default Mixxx keyboard mapping:
 
-1. Edit your systems default mapping file directly, e.g. ``en_US.kbd.cfg``.
+1. Edit your systems default mapping file directly, e.g. :file:`en_US.kbd.cfg`.
 2. Copy the default mapping file to the following location:
 
-* Linux: ``~/.mixxx/Custom.kbd.cfg``
-* Mac OS X: ``/Library/Application\ Support/Mixxx/Custom.kbd.cfg``
-* Windows: ``%USERPROFILE%\Local Settings\Application Data\Mixxx\Custom.kbd.cfg``
+* Linux: :file:`~/.mixxx/Custom.kbd.cfg`
+* Mac OS X: :file:`/Library/Application\ Support/Mixxx/Custom.kbd.cfg`
+* Windows: :file:`%USERPROFILE%\\Local Settings\\Application Data\\Mixxx\\Custom.kbd.cfg`
 
 Then edit this file and save the changes. On the next startup, Mixxx will check
-if ``Custom.kbd.cfg`` is present and load that file instead of the default
+if :file:`Custom.kbd.cfg` is present and load that file instead of the default
 mapping file. This has the advantage, that you can always revert back to the
-default mapping, just by deleting ``Custom.kbd.cfg``.
+default mapping, just by deleting :file:`Custom.kbd.cfg`.
 
 For a list of controls that can be used in a keyboard mapping, see the
 `MixxxControls <http://www.mixxx.org/wiki/doku.php/mixxxcontrols>`_ topic on the
@@ -85,25 +85,25 @@ The library file is stored in the following places depending on your
 Windows
 -------
 
-The Mixxx library is stored in the ``C:\Users\%USER%\Local Settings\Application
-Data\Mixxx\`` folder. To delete your library on Windows, delete the
-``mixxxdb.sqlite`` file in this folder.
+The Mixxx library is stored in the
+:file:`C:\\Users\\%USER%\\Local Settings\\Application Data\\Mixxx\\` folder.
+To delete your library on Windows, delete the :file:`mixxxdb.sqlite` file in
+this folder.
 
 Mac OS X
 --------
 
-The Mixxx library is stored in the ``Library/Application Support/Mixxx`` folder
-in your home directory. To delete your library on Mac OS X type the following
-command into a terminal: ::
+The Mixxx library is stored in the :file:`Library/Application Support/Mixxx`
+folder in your home directory. To delete your library on Mac OS X type the
+following command into a terminal: ::
 
      rm ~/Library/Application\ Support/Mixxx/mixxxdb.sqlite
-
 
 GNU/Linux
 ---------
 
-The Mixxx library is stored in the ``.mixxx`` folder in your home directory. To
-delete your library on GNU/Linux type the following command into a terminal: ::
+The Mixxx library is stored in the :file:`.mixxx` folder in your home directory.
+To delete your library on GNU/Linux type the following command into a terminal: ::
 
      rm ~/.mixxx/mixxxdb.sqlite
 

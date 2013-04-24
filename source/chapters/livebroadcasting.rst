@@ -78,7 +78,7 @@ To activate MP3 streaming on Windows, follow these steps:
      like the free `7zip <http://www.7-zip.org/>`_.
   #. If you have the 32-bit version of Mixxx, copy the file libmp3lame.dll from
      the x86 folder to the location you have installed Mixxx, for example
-     ``C:\Program Files\Mixxx\``
+     :file:`C:\Program Files\Mixxx\`
   #. Alternatively, if you have the 64-bit version of Mixxx, copy
      the file libmp3lame.dll from the x64 folder to the location you have
      installed Mixxx
@@ -92,7 +92,7 @@ To activate MP3 streaming on Windows, follow these steps:
           in the LAME zip file. You don't want that file! Also, make sure the
           version of LAME you use (x86=32-bit vs. x64=64-bit) matches the
           version of Mixxx you use.
-          Select :menuselection: `Help --> About` to find out whether you have
+          Select :menuselection:`Help --> About` to find out whether you have
           installed the 32 bit or 64 bit version of Mixxx.
 
 .. warning:: Some websites like `Audacity <http://audacity.sourceforge.net/>`_
