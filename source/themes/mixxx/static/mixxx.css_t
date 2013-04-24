@@ -346,6 +346,12 @@ tt {
     margin-bottom:4px;
 }
 
+.file {
+}
+
+.command {
+}
+
 .viewcode-back {
     font-family: Arial, sans-serif;
 }
