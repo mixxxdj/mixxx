@@ -58,11 +58,15 @@ keyboard/mouse or a MIDI controller. A latency below 10 ms is recommended when
 vinyl control is used because Mixxx will feel unresponsive otherwise.
 
 Keep in mind that *lower latencies require better soundcards and faster CPUs*
-and that *zero latency DJ software is a myth* (although Mixxx is capable of
+and that zero latency DJ software is a myth (although Mixxx is capable of
 sub-1ms operation).
 
 Sample Rate
 -----------
+
+.. versionchanged:: 1.11
+   Mixxx automatically selects a default sample rate for your soundcard, most
+   likely 44100 Hz
 
 The sample rate setting in Mixxx determines how many samples per second are
 produced by Mixxx. In general, a higher sample rate means that Mixxx produces
