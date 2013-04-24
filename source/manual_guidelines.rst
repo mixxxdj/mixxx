@@ -228,7 +228,10 @@ different style. Nonetheless, use them:
 
    Any label used in the interface should be marked with this role, including
    button labels, window titles, field names, menu and menu selection names,
-   and even values in selection lists. Example markup: :guilabel:`&Cancel` ::
+   and even values in selection lists. An accelerator key for the GUI label can
+   be included using an ampersand; this will be stripped and displayed
+   underlined in the output. To include a literal ampersand, double it. Example
+   markup: :guilabel:`&Cancel` ::
 
      :guilabel:`&Cancel`
 
