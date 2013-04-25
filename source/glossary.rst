@@ -83,9 +83,9 @@ Glossary of Terms
 
    beatgrid
      A series of markers that point to the location of beats within the track.
-     Beatgrids are used for advanced mixing functions such as track sync,
-     precise effects synchronization, looping and accurate :term:`BPM`
-     representation.
+     Beatgrids are used for advanced mixing functions such as track
+     :term:`sync`, precise effects synchronization, looping and accurate
+     :term:`BPM` representation.
 
    MIDI
      Short for for Musical Instrument Digital Interface. A digital
@@ -101,19 +101,19 @@ Glossary of Terms
    MIDI controller
      An external hardware device that generates and transmits :term:`MIDI` data
      to MIDI-enabled hardware or software (e.g. Mixxx). Usually connected to
-     your computer via USB, MIDI controllers allows you to control audio
+     your computer via USB, MIDI controllers allow you to control audio
      applications among others. Many DJs prefer to control DJ software using
      physical knobs, faders, and wheels instead of using a computer keyboard.
 
    HID controller
      An external hardware device that generates and transmits :term:`HID` data
      to HID-enabled hardware or software (e.g. Mixxx). Connected to your
-     computer via USB, HID controllers allows you to control audio
-     applications among others. Many DJs prefer to control DJ software using
-     physical knobs, faders, and wheels instead of using a computer keyboard.
-     Besides the known DJ controllers also keyboards, mice and game controllers
-     are some of the most popular HID devices. Compared to :term:`MIDI` it
-     also allows to use of advanced features like found on modern :term:`CDJ`,
+     computer via USB, HID controllers allow you to control audio applications
+     among others. Many DJs prefer to control DJ software using physical knobs,
+     faders, and wheels instead of using a computer keyboard.  Besides the known
+     DJ controllers also keyboards, mice and game controllers are some of the
+     most popular HID devices. Compared to :term:`MIDI` it also allows use of
+     advanced features such as those found on modern :term:`CDJs <CDJ>`,
      e.g. display screens and high-resolution jogwheels.
 
    vinyl control
@@ -129,30 +129,30 @@ Glossary of Terms
      playback.
 
    sync
-     Sync allows you to automatically adjust the sync'd tracks :term:`tempo`
-     and :term:`phase` to be in sync with another deck that is playing.
+     Sync allows you to automatically adjust a track's :term:`tempo` and
+     :term:`phase` to be in sync with another deck that is playing.
 
    rate
      The speed at which a track is played back, usually expressed in terms of a
      percentage of the speed relative to the tracks normal rate. Often while
      mixing, DJs adjust the rates of tracks so that they can play at the same
-     tempo as other tracks. This allows DJs to beatmix, and is an essential part
-     of DJing.
+     tempo as other tracks. This allows DJs to :term:`beatmix <beatmatching>`,
+     and is an essential part of DJing.
 
    fast-forward
-     It means to cause something to advance at quicker than normal speed. In
-     terms of audio software that means if you press the fast forward button
+     To cause something to advance at quicker than normal speed. In
+     terms of audio software that means if you press the fast-forward button
      the audio will play with increased speed as long as the button is pressed.
      This is useful to seek trough a track.
 
    fast-rewind
-     The opposite of :term:`fast-forward`. If you press the fast rewind button
+     The opposite of :term:`fast-forward`. If you press the fast-rewind button
      the audio will play in reverse with increased speed as long as the button
      is pressed.
 
    phase
      The phase of a track is its position relative to another track. If two
-     tracks are sync'd to the same tempo and in-phase then they should be
+     tracks are :term:`sync'd <sync>` to the same tempo and in-phase then they should be
      playing so that their beats are aligned.
 
    pitch bend
@@ -167,18 +167,18 @@ Glossary of Terms
      Basically identical to the regular :term:`pitch bend` with the difference
      that the pitch changes gradually, instead of all at once. Often uses for
      temporary pitch changes. It simulates the effect of touching a turntable
-     to temporary slow down or speed up a record.
+     to temporarily slow down or speed up a record.
 
    latency
      Latency refers to a short period of delay (usually measured in milliseconds)
      between when an audio signal enters and when it emerges from a system.
-     Being able to lower the Latency as much as possible makes a huge difference
+     Being able to lower the latency as much as possible makes a huge difference
      in responsiveness.
 
    kill switch
-     A button to turn on and off output or individual frequency ranges within a
-     channel, i.e. treble, mid and bass. Useful for effects where the DJ drops
-     a track out for a period or creates room for a transition.
+     A button to turn on and off individual frequency ranges within a channel,
+     i.e. treble, mid and bass. Useful for effects where the DJ drops a track
+     out for a period or creates room for a transition.
 
    vu meter
      The volume unit (VU) meter is used to show the relative levels of audio
@@ -186,8 +186,8 @@ Glossary of Terms
      'loud' a sound from a channel is.
 
    balance
-     A balance control on a mixer allows to adjust the balance between the left
-     and right channel. The balance refers to the relative volume of the
+     A balance control on a mixer allows you to adjust the balance between the
+     left and right channel. The balance refers to the relative volume of the
      corresponding channel in a stereo audio signal.
 
    tempo
@@ -201,40 +201,48 @@ Glossary of Terms
      Reverse plays a track backwards.
 
    Ogg Vorbis
-     A patent-free lossy audio compression algorithm which uses a form of lossy
-     data compression. It is designed to provide for efficient streaming and
+     A patent-free audio compression algorithm which uses a form of lossy data
+     compression. It is designed to provide for efficient streaming and
      manipulation of high quality digital audio. Ogg Vorbis files generally end
      with a .OGG or .OGA extension.
 
+   lossless
+     Used when describing audio compression algorithms, a lossless algorithm is
+     one which results in no loss in audio quality when used.
+
+   lossy
+     Used when describing audio compression algorithms, a lossy algorithm is one
+     which results in a loss in audio quality when used.
+
    MP3
-     A patented lossy audio compression algorithm which uses a form of lossy
-     data compression. It is de facto standard of digital audio compression for
+     A patented audio compression algorithm which uses a form of :term:`lossy`
+     data compression. It is de-facto standard of digital audio compression for
      music. MP3 files generally end with a .MP3 extension.
 
    AAC
-     Advanced Audio Coding (AAC) is a patented lossy audio compression algorithm
-     which uses a form of lossy data compression. Designed to be the successor
+     Advanced Audio Coding (AAC) is a patented audio compression algorithm which
+     uses a form of :term:`lossy` data compression. Designed to be the successor
      :term:`MP3`, AAC generally achieves better sound quality at similar bit
      rates. While the .AAC extension is sometimes used for AAC-encoded files,
      they are typically saved with an .M4A file extension.
 
    FLAC
      Free Lossless Audio Compression (FLAC), a patent-free audio compression
-     similar to :term:`MP3` but lossless. Lossless because when audio files are
-     compressed using FLAC there is no loss in quality. FLAC files generally end
-     with a .FLAC extension.
+     similar to :term:`MP3` but :term:`lossless` (i.e. there is no loss in audio
+     quality when used). FLAC files generally end with a .FLAC extension.
 
    AIFF
      Short for Audio Interchange File Format. High-quality digital audio file
      format, similar to .wav files. Contains CD-quality audio stored in a
-     non-compressed, lossless format. AIFF files generally end with a .AIFF or
-     .AIF extension.
+     non-compressed, :term:`lossless` format. AIFF files generally end with a
+     .AIFF or .AIF extension.
 
    WAV
      Standard digital audio file format used for storing waveform data; allows
      audio recordings to be saved with different sampling rates and bitrates;
      often saved in a 44.1 KHz, 16-bit, stereo format, which is the standard
-     format used for CD audio. Wave files generally end with a .WAV extension.
+     format used for CD audio. Wave files are not compressed, and are therefore
+     :term:`lossless`. Wave files generally end with a .WAV extension.
 
    codec
      Short for compressor/decompressor, a codec is any technology for
@@ -243,7 +251,7 @@ Glossary of Terms
 
    LAME
      LAME is a free software :term:`codec` used to encode/compress audio into
-     the lossy :term:`MP3` file format.
+     the :term:`lossy` :term:`MP3` file format.
 
    bitrate
      Describe the quality of an audio or video file. For audio data the bitrate
@@ -264,10 +272,10 @@ Glossary of Terms
     right level of loudness.
 
    db
-    Short for decibels. A Decibel is a measurement of sound level. Whispering
-    is around 25 dB while unbearable sound like an starting aircraft is around
-    160 db. Rule of thumb: An increase of the volume by 10 dB is perceived as
-    twice as loud.
+    Short for decibels. A Decibel is a logarithmic measurement of sound
+    level. Whispering is around 25 dB while unbearable sound such as a jet
+    engine is around 160 db. Rule of thumb: A volume increase of 10 dB is
+    perceived as twice as loud.
 
    cue sheet
     A cue sheet (or CUE file, CUE sheet, etc.) is a formatted plain text file
@@ -276,63 +284,63 @@ Glossary of Terms
     CD to burn.
 
    metadata
-    It allows information such as the title, artist, album, track number, and
-    other information about the file to be stored in the audio file itself, see
+    In general, any piece of information about a music file that Mixxx uses
+    (e.g. title, artist, album, hotcue locations, loops, etc.). Various file
+    metadata formats allow information such as the title, artist, album, and
+    track number to be stored in the audio file itself, see
     `<https://en.wikipedia.org/wiki/ID3>`_ . Mixxx stores additional metadata
-    about a file in it's database, like :term:`beatgrid`, waveform data,
-    :term:`hotcues <hotcue>`, playlists, crates, number of plays, etc. .
+    about music files in its database, like :term:`beatgrid`, waveform data,
+    :term:`hotcues <hotcue>`, playlists, crates, number of plays, etc.
 
    CDJ
-     CDJ is a term used originally to describe a line of CD players from Pioneer
-     Electronics. Today CDJ is generally use for DJ CD players that works like a
-     record player. They allow analog control of music from CDs, usually using
-     an touch sensitive emulated vinyl control surface.
+     CDJ is a term originally used to describe a line of CD players from Pioneer
+     Electronics. Today CDJ generally refers to DJ CD players that work like a
+     record player. They allow analog control of music using CDs, usually using
+     a touch sensitive emulated vinyl control surface.
 
    OpenGL
-     It's a way to draw stuff in 3D and is used in Mixxx for drawing the
-     waveform display. OpenGL serves as a interpreter for graphics cards where
-     the 3D computation happens.
+     An :term:`operating system` feature used to draw hardware-accelerated
+     graphics. Mixxx uses OpenGL to draw the waveform displays and spinning
+     vinyl widgets.
 
    bug report
      Every software has bugs. When you come across a bug in this software, you
-     should submit a report about it to the developer. They can use this to
+     should submit a report about it to the developers. They can use this to
      identify, replicate and fix the issue.
 
    binaries
      Files that contain compiled computer code, which was compiled from source
-     code. Source code, which is usually a bunch o text files, must be feed to a
-     compiler. Compiling then generates a binary, which is something like an an
-     exe or a .dll file. So by using binaries you are relieved of the task of
-     having to compile the code by yourself.
+     code. Source code, which is usually a bunch of text files, is processed
+     with a program called a compiler. The compiler then generates a binary,
+     which is something like an an .exe or a .dll file. By using binaries you
+     are relieved of the task of having to compile the code by yourself.
 
    soundcard
-     Also known as an audio card. Is an internal computer expansion card or
+     Also known as an audio card, it is an internal computer expansion card or
      external expansion device that facilitates the input and output of audio
-     signals to and from a computer under control of computer programs. Today
-     DJ-soundcard are usually connected via USB and have at least 2 stereo audio
-     outputs to support :term:`cueing`.
+     signals to and from a computer. Today DJ-soundcards are usually connected
+     via USB and have at least 2 stereo audio outputs to support :term:`cueing`.
 
    cue
      A Cue or Cue point is a reference point in the track usually placed on the
-     position the DJ wants the track to start by default. This is useful to
+     position the DJ wants the track to start at by default. This is useful to
      instantly jump to that point without seeking through the track.
 
    hotcue
-     Similar to the main :term:`cue` point, a Hotcue is a reference point in the
-     track. DJs usually place these hotcues at distinctive positions within a
-     track such as drops, breaks or kicks and snares. Mixxx allows to have up to
-     36 hotcues.
+     Similar to the main :term:`cue` point, a hotcue is a reference point in the
+     track. DJs usually place hotcues at distinctive positions within a track
+     such as drops, breaks or kicks and snares. Mixxx supports up to 36 hotcues.
 
    bar
      In musical notation, a bar (or measure) is a segment of time defined by a
-     given number of beats, each of which are assigned a particular note value.
-     Typically, a piece consists of several bars of the same length.
+     given number of beats. Typically, a piece consists of several bars of the
+     same length.
 
    flanger
      A flanger is an effect that mixes the input signal with a delayed copy of
      itself which leads to interferences in the signal and creates a comb-filter
-     like effect. By routing the output of the effect back into the input
-     (feedback), this effect can be enhanced.
+     effect. By routing the output of the effect back into the input (feedback),
+     the effect is enhanced.
 
    podcast
      A podcast is a feed of audio or video files made available for free or for
@@ -342,15 +350,16 @@ Glossary of Terms
 
    DRM
      Digital Rights Management (DRM) technologies attempt to control what you
-     can and can't do with the media and hardware you've purchased. Typically,
-     a DRM system either encrypting the data so that it can only be accessed in
-     a way authorized by copyright holders or marks content with a digital
+     can and can't do with the media and hardware you've purchased. Typically, a
+     DRM system either encrypts the data so that it can only be accessed in a
+     way authorized by copyright holders or marks content with a digital
      watermark or similar method so that the content can not be freely
-     distributed.
+     distributed. For information about how you can get involved in activism
+     against DRM, see `Defective by Design <http://www.defectivebydesign.org>`_.
 
    shoutcast
      Shoutcast is proprietary software that allows digital audio content to be
-     broadcast to and from media †player software, enabling the creation of
+     broadcast to and from media player software, enabling the creation of
      Internet radio stations.
 
    icecast
@@ -361,7 +370,7 @@ Glossary of Terms
      :term:`Ogg Vorbis` and run your own directory server.
 
    open-source
-     Generically, open-source refers to a program in which the source code is
+     Generically, open-source refers to a program for which the source code is
      available to the public for use and/or modification from its original
      design free of charge. Open source code is typically created as a
      collaborative effort in which programmers improve upon the code and share
@@ -369,15 +378,15 @@ Glossary of Terms
      community as a response to proprietary software owned by corporations.
 
    url
-     (Uniform Resource Locator) The address that defines the route to a file on
+     Uniform Resource Locator. The address that defines the route to a file on
      an Internet server. URLs are typed into a Web browser to access Web pages
      and files, and URLs are embedded within the pages themselves as hypertext
-     links. One example of URLs is `<http://www.mixxx.org>`_ .
+     links. One example of a URL is `<http://www.mixxx.org>`_ .
 
    quantization
-     Quantization is the process of aligning notes and other events like loop-
-     or cuepoints points so that they start or finish exact on beats or exact
-     fractions of beats.
+     Quantization is the process of aligning notes and other events like loops
+     or cuepoints so that they start or finish exactly on beats or fractions of
+     beats.
 
    HSV
      HSV stands for hue, saturation, and value, and is also often called HSB
