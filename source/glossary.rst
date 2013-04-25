@@ -375,7 +375,9 @@ Glossary of Terms
      design free of charge. Open source code is typically created as a
      collaborative effort in which programmers improve upon the code and share
      the changes within the community. Open source sprouted in the technological
-     community as a response to proprietary software owned by corporations.
+     community as a response to proprietary software owned by corporations. For
+     more information, see `Wikipedia
+     <http://en.wikipedia.org/wiki/Open-source_software>`_.
 
    url
      Uniform Resource Locator. The address that defines the route to a file on
