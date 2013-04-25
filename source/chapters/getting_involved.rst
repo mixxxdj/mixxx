@@ -41,8 +41,8 @@ As a software developer
 * Join our mailing list: `mixxx-devel
   <https://lists.sourceforge.net/lists/listinfo/mixxx-devel>`_
 * Join our :term:`IRC` channel, #mixxx on `Freenode <http://www.freenode.net/>`_
-* Tell us your ideas! Email us, talk on IRC, file wishlist bugs, or post on the
-  forums.
+* Tell us your ideas! Email us, talk on IRC, file wishlist :term:`bugs <bug
+  report>`, or post on the forums.
 * Register an account on our development platform `Launchpad
   <http://launchpad.net/mixxx>`_ and make a branch of our code. See `Launchpad
   Tutorial <http://mixxx.org/wiki/doku.php/using_bazaar>`_
