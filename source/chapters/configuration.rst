@@ -3,38 +3,84 @@
 Configuring Mixxx
 *****************
 
+Sound Hardware Preferences
+==========================
+
+.. figure:: ../_static/Mixxx-111-Preferences-Soundhardware.png
+   :align: center
+   :width: 80%
+   :figwidth: 100%
+   :alt: Mixxx Sound Hardware Preferences
+   :figclass: pretty-figures
+
+   Mixxx Sound Hardware Preferences
+
+:menuselection:`Preferences --> Sound Hardware` allows you to select the audio
+in- and outputs to be used.
+
+* **Sound API**: Depending your :term:`Operating System`, select the :term:`API`
+  that Mixxx uses to deliver audio to your audio device. Your choice can
+  drastically affect how smooth Mixxx performs on your computer.
+
+* **Sample Rate**: Allows to manually select the sample rate for the audio input.
+  The sample rate value should be set to the sample rate of your audio interface.
+  By default, Mixxx try's the system default first, which is most likely 44.1
+  kHz. Otherwise, Mixxx will pick a different default.
+
+* **Latency**: Latency is the lag time in milliseconds that it takes for Mixxx
+  to process your input. Lower latency means Mixxx will be more responsive but
+  on slower computers it might cause glitches.
+
+* **Buffer Underflow Count**: Underflows (no data is available when needed)
+  indicate that some of the subsystems in Mixxx can't keep up with
+  real-time deadlines. This is useful to tune the latency settings. If the
+  counter increases, then increase your latency setting, decrease the sample
+  rate setting or change the sound API setting if available.
+
 Audio Outputs
 =============
 
 Mixxx's mixing engine can be used two ways:
 
-* Internal Mixer Mode: In this mode, Mixxx performs the mixing of the decks,
-  microphone, and samplers in software and outputs them to a single output.
+**Internal Mixer Mode**
+  In this mode, Mixxx performs the mixing of the decks, microphone, and samplers
+  in software and outputs them to a single output. To enable internal mixer mode
+  assign a valid audio output to the :guilabel:`Master` output in
+  :menuselection:`Preferences --> Sound Hardware --> Output`.
 
-* External Mixer Mode: In this mode, Mixxx outputs the audio from each deck to a
-  separate soundcard output. This allows you to route the deck outputs through a
-  hardware mixer.
+  Internal mode is used in the following configurations:
 
-To enable external mixer mode, simply select a valid audio output for the
-:guilabel:`Deck` outputs in :menuselection:`Preferences --> Sound Hardware -->
-Output`. Similarly, to enable internal mixer mode assign a valid audio output to
-the :guilabel:`Master` output.
+  * :ref:`setup-laptop-only`
+  * :ref:`setup-laptop-and-external-card`
+  * :ref:`setup-controller-and-external-card`
+
+**External Mixer Mode**
+  In this mode, Mixxx outputs the audio from each deck to a separate soundcard
+  output. This allows you to route the deck outputs through a hardware mixer.
+  Similarly, to enable external mixer mode, simply select a valid audio output
+  for the :guilabel:`Deck` outputs in
+  :menuselection:`Preferences --> Sound Hardware --> Output`.
+
+  External mode is used in the following configuration:
+
+  * :ref:`setup-vinyl-control`
 
 Headphone Output
 ----------------
 
 In both internal and external mixer mode, you can choose a headphone output for
-:term:`pre-fader listening <PFL>` or :term:`headphone cueing <cueing>`. This
+:term:`pre-fader listening <PFL>` or :term:`headphone cueing <cueing>` in
+:menuselection:`Preferences --> Sound Hardware --> Output --> Microphone`. This
 allows you to listen and synchronize the track you will play next in your
-headphones before your audience hears the track.
+headphones before your audience hears the track. See also :ref:`interface-pfl`.
 
 .. _configuration-latency-samplerate-audioapi:
 
 Latency, Sample Rate, and Audio API
 ===================================
 
-*To achieve the best performance with Mixxx it is essential to configure your
-latency, samplerate, and audio API*. These three factors largely determine
+To achieve the best performance with Mixxx it is essential to configure your
+*latency*, *samplerate*, and *audio API*. These three factors largely determine
 Mixxx's responsiveness and audio quality and the optimal settings will vary
 based on your computer and hardware quality.
 
@@ -111,13 +157,12 @@ best choice is for your operating system.
 | GNU Linux / JACK (Advanced)            | Good         |
 +----------------------------------------+--------------+
 
-.. note:: On Windows, if an ASIO driver is not available for your operating
-          system, you can try installing `ASIO4ALL <http://asio4all.com>`_,
-          a low-latency audio driver for WDM audio devices.
+On Windows, if an ASIO driver is not available for your operating system, you
+can try installing `ASIO4ALL <http://asio4all.com>`_, a low-latency audio driver
+for WDM audio devices.
 
-.. note:: On GNU/Linux using JACK, make sure to start your JACK daemon *before*
-          running Mixxx. Otherwise JACK will not appear as a Sound API in the
-          preferences.
+On GNU/Linux using JACK, make sure to start your JACK daemon *before* running
+Mixxx. Otherwise JACK will not appear as a Sound API in the preferences.
 
 .. warning:: On GNU/Linux do *not* use the ``pulse`` device with the ALSA Audio
              API. This is an emulation layer for ALSA provided by PulseAudio and
