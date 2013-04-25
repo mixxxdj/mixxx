@@ -351,7 +351,7 @@ lift the needle and drop it anywhere in the main timecode area to load the
 track.
 
 Troubleshooting
----------------
+===============
 
 **Configuration**
 
