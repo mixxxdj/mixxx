@@ -97,7 +97,7 @@ it is important to have files named consistently. Save files to the
 
 ::
 
-   Mixxx-<mayor><minor>-<where>-<what>.png
+   Mixxx-<major><minor>-<where>-<what>.png
 
 This scheme makes it easy to know which version a screenshot was taken from and
 where it belongs and if it must replaced, like e.g.

@@ -45,13 +45,14 @@ Latency
 
 Latency is the lag time in milliseconds that it takes for Mixxx to process your
 input (turning knobs, sliding the crossfader, etc.). For example, a latency of
-36 ms indicates that it will take approximately 36 ms for Mixxx to stop the
-audio after you toggle the play button. Additionally, latency determines how
-quickly your :term:`Operating System` expects Mixxx to react. Lower latency
-means Mixxx will be more responsive. On the other hand, setting your latency too
-low may be too much for your computer to handle. In this situation, Mixxx
-playback will be choppy and very clearly distorted as your computer will not be
-able to keep up with how frequently Mixxx is processing audio.
+36 ms indicates that it will take approximately 36 milliseconds for Mixxx to
+stop the audio after you toggle the play button. Additionally, latency
+determines how quickly your :term:`Operating System` expects Mixxx to
+react. Lower latency means Mixxx will be more responsive. On the other hand,
+setting your latency too low may be too much for your computer to handle. In
+this situation, Mixxx playback will be choppy and very clearly distorted as your
+computer will not be able to keep up with how frequently Mixxx is processing
+audio.
 
 A latency between 36-64 ms is acceptable if you are using Mixxx with a
 keyboard/mouse or a MIDI controller. A latency below 10 ms is recommended when

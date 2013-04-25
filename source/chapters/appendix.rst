@@ -7,8 +7,9 @@ Appendix
 Keyboard mapping table
 ======================
 
-Shortcuts lets you start working more efficiently. This table lists the default
-keyboard shortcuts for accessing Mixxx:
+Shortcuts let you work more efficiently. This table lists the default keyboard
+shortcuts for accessing Mixxx with an English keyboard layout. Depending on your
+language settings the defaults may be different.
 
 +----------------------------------------+---------------------+---------------------+--------------+
 | Function                               | Deck 1              | Deck 2              | Master       |
@@ -187,7 +188,7 @@ Option                  Description
 [FILE]                  Load the specified music file(s) at start-up.
                         Each file you specify will be loaded into the
                         next virtual deck. Supported file types: mp3, ogg,
-                        aiff, aif, wav, flac, and optional unprotected 
+                        aiff, aif, wav, flac, and optional unprotected
                         aac (m4a)
 ----------------------  -------------------------------------------------
 --resourcePath PATH     Top-level directory where Mixxx should look
@@ -199,7 +200,8 @@ Option                  Description
                         locations.
 ----------------------  -------------------------------------------------
 --settingsPath PATH     Top-level directory where Mixxx should look
-                        for settings.
+                        for user settings files such as the library
+                        database and preferences config file.
 ----------------------  -------------------------------------------------
 --controllerDebug       Causes Mixxx to display/log all of the controller
                         data it receives and script functions it loads
