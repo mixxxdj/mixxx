@@ -26,12 +26,10 @@ simultaneously.  Depending on your budget and application area your sound setup
 and requirements may vary.  This section provides useful information for club,
 hobby and radio DJs alike.
 
+.. _setup-laptop-only:
+
 Laptop Only
 -----------
-
-There is absolutely no need to buy an additional, expensive sound card **if you
-do not require headphone cueing**. The built-in soundcard on most computers and
-laptops comes with a single line-out and microphone input.
 
 .. figure:: ../_static/Mixxx-111-Preferences-Soundhardware.png
    :align: center
@@ -42,23 +40,35 @@ laptops comes with a single line-out and microphone input.
 
    Using Mixxx with your built-in sound card
 
+There is absolutely no need to buy an additional, expensive sound card **if you
+do not require headphone cueing**. The built-in soundcard on most computers and
+laptops comes with a single line-out and microphone input.
+
 The figure above depicts how the sound configuration might look. The stereo
 output of your soundcard (channels 1-2) will be connected to the **master
-out**. Depending on your soundcard you can specify a microphone under the
-:guilabel:`Input` tab.
+out**.
+
+#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Select the :guilabel:`Output` tab
+#. From the :guilabel:`Master` drop-down menus, select your build-in soundcard,
+   then :guilabel:`Channels 1-2`
+#. Depending on your soundcard, you can specify a
+   :ref:`microphone <interface-mic>`
+
+   a. Use your build-in microphone or connect a microphone to your computer
+   b. Is it detected by your :term:`OS <operating system>`, open the
+      :guilabel:`Input` tab
+   c. From the :guilabel:`Microphone` drop-down menu, select the input your
+      microphone is connected to
+#. Click :guilabel:`Apply` to save the changes.
 
 This minimal configuration may be suitable for **radio DJs** that do not need
-headphone cueing.
+headphone :term:`cueing`.
+
+.. _setup-laptop-and-external-card:
 
 Laptop and an External USB Soundcard
 ------------------------------------
-
-The most common setup for DJing is a laptop and a soundcard with 2 stereo
-outputs (4 channels). The first stereo output (channels 1-2) is used as the
-**Master out** and supplies the main mix to the room. With the 2nd stereo output
-(channels 3-4) you can cue and preview the next track in your headphones. If
-your soundcard does not have 2 stereo outputs, you can use multiple soundcards
-to achieve the same setup.
 
 .. figure:: ../_static/mixxx_setup_ext_soundcard.png
    :align: center
@@ -69,14 +79,44 @@ to achieve the same setup.
 
    Using Mixxx together with an external soundcard
 
+The most common setup for DJing is a laptop and a soundcard with 2 stereo
+outputs (4 channels). The first stereo output (channels 1-2) is used as the
+**Master out** and supplies the main mix to the room. With the 2nd stereo output
+(channels 3-4) you can :term:`cue <cueing>` and
+:ref:`preview <djing-previewing-tracks>` the next track in your headphones. If
+your soundcard does not have 2 stereo outputs, you can use multiple soundcards
+to achieve the same setup.
+
 The depicted configuration above uses two soundcards. This setup is the bare
 minimum for serious DJing. Without any extra gear, the DJ can control Mixxx via
 mouse and keyboard. For more information see :ref:`controlling mixxx`.
 
+**Using external multi-channel soundcard**
+
+#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Select the :guilabel:`Output` tab
+#. From the :guilabel:`Master` drop-down menus, select the external soundcard,
+   then :guilabel:`Channels 1-2`
+#. From the :guilabel:`Headphones` drop-down menus, select the external
+   soundcard, then :guilabel:`Channels 3-4`
+#. Click :guilabel:`Apply` to save the changes.
+
+**Using two soundcards (build-in + external)**
+
+#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Select the :guilabel:`Output` tab
+#. From the :guilabel:`Master` drop-down menus, select the external soundcard,
+   then :guilabel:`Channels 1-2`
+#. From the :guilabel:`Headphones` drop-down menus, select the build-in
+   soundcard, then :guilabel:`Channels 1-2`
+#. Click :guilabel:`Apply` to save the changes.
+
+.. _setup-controller-and-external-card:
+
 Laptop, MIDI Controller, and External USB Soundcard
 ---------------------------------------------------
 
-Mixxx can work with any MIDI controller that has drivers for your
+Mixxx can work with any :term:`MIDI controller` that has drivers for your
 :term:`OS <operating system>`, as long as there is a MIDI mapping file to tell
 Mixxx how to understand it. Mixxx comes bundled with a number of MIDI mapping
 presets. To see the full list, see :ref:`control-midi`.
@@ -90,6 +130,16 @@ presets. To see the full list, see :ref:`control-midi`.
 
    Using Mixxx together with a MIDI controller and external soundcard
 
+**Using a controller without integrated multi-channel soundcard**
+
+#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Select the :guilabel:`Output` tab
+#. From the :guilabel:`Master` drop-down menus, select the external soundcard,
+   then :guilabel:`Channels 1-2`
+#. From the :guilabel:`Headphones` drop-down menus, select the build-in
+   soundcard, then :guilabel:`Channels 1-2`
+#. Click :guilabel:`Apply` to save the changes.
+
 Your MIDI controller may have an integrated *multi-channel* soundcard. If yours
 does not, your sound setup may look like the figure above. Otherwise, an
 alternative sound setup may look like the figure below:
@@ -102,6 +152,16 @@ alternative sound setup may look like the figure below:
    :figclass: pretty-figures
 
    Using Mixxx together with a MIDI controller and integrated soundcard
+
+**Using a controller with integrated multi-channel soundcard**
+
+#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Select the :guilabel:`Output` tab
+#. From the :guilabel:`Master` drop-down menus, select your controllers
+   soundcard, then :guilabel:`Channels 1-2`
+#. From the :guilabel:`Headphones` drop-down menus, select your controllers
+   soundcard, then :guilabel:`Channels 3-4`
+#. Click :guilabel:`Apply` to save the changes.
 
 .. note:: You can connect as many MIDI controllers as you have ports on your
           computer. Just follow the steps in :ref:`control-midi` for each
