@@ -37,6 +37,8 @@ in- and outputs to be used.
   counter increases, then increase your latency setting, decrease the sample
   rate setting or change the sound API setting if available.
 
+.. _configuring-mixer-mode:
+
 Audio Outputs
 =============
 

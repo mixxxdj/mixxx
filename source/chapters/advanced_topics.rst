@@ -57,19 +57,85 @@ You can download and share custom keyboard mappings in the
 
 .. _Mixxx User customizations forum: http://mixxx.org/forums/viewforum.php?f=6
 
-.. _advanced-jack-rack:
+.. _advanced-external-fx:
 
-Effects via JACK Rack
-=====================
+Additional Effects via external Mixer Mode
+==========================================
 
-Mixxx does not have an effects engine yet (work on one is in progress). To hold
-you over, on GNU/Linux you can use a tool called JACK Rack. External mixer mode
-can be used with `Jack
-<http://en.wikipedia.org/wiki/JACK_Audio_Connection_Kit>`_ to route each deck
-directly through `JACK Rack <http://jack-rack.sourceforge.net/>`_ effect racks,
-or for more control you can use Ardour (or other DAWs) using sends for
-effects. This gives Mixxx access to the extensive collection of LADSPA
-plugins. For more information, see the `Mixxx Wiki <http://mixxx.org/wiki>`_.
+Mixxx does not have an effects engine yet (work on one is in progress).
+To hold you over you can use some external tools. Using the
+:ref:`external mixer mode <configuring-mixer-mode>` you route each deck
+directly to 3rd party effect hosts.
+
+The following examples are only intended to encourage experimentation, they are
+no definitive guidance.
+
+Effects via AU Lab on Mac OS X
+-------------------------------
+
+.. figure:: ../_static/Mixxx-111-external-fx-aulab-setup.png
+   :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: The Au Lab routing for external effects
+   :figclass: pretty-figures
+
+   The Au Lab routing for external effects on Mac OS X
+
+On Mac OS X there is a pretty simple and free way to give Mixxx access to the
+collection of AU/VST/MAS plugins that are installed on your system.
+
+* Install the free `Soundflower <https://code.google.com/p/soundflower/>`_,
+  a system extension for inter-application audio routing.
+* Download AU Lab.app standalone from Apple (you will need an free Apple
+  Developer Login though), go to the
+  `Downloads for Developers <https://developer.apple.com/downloads/index.action>`_
+  page and search for “AU Lab” to get it.
+
+**In Mixxx**
+
+* Go to :menuselection:`Preferences --> Sound Hardware--> Output`
+* Select for :guilabel:`Deck 1` the :guilabel:`Soundflower 16` device with
+  :guilabel:`Channel 1-2`
+* Select for :guilabel:`Deck 2` the :guilabel:`Soundflower 16` device with
+  :guilabel:`Channel 3-4`
+* Click the :guilabel:`Apply` button
+
+**In AU Lab**
+
+* Click on the :guilabel:`+` button to create a new configuration
+* Add 2 stereo inputs tracks in the :guilabel:`Audio Input Tab`
+* Add 2 stereo output tracks in the :guilabel:`Audio Output Tab`
+* Click :guilabel:`OK`
+* Change the audio input device to :guilabel:`Soundflower 16`
+* Changethe audio output device for example to :guilabel:`Built-in Output`
+* Click :guilabel:`Create document`
+* In the :guilabel:`Output 1` channel, select an effect from the drop-down
+  menu, for example :guilabel:`Apple > AUCompressor`
+
+The effect should now react if you play a track in Mixxx.
+
+Effects via JACK Rack on GNU/Linux
+----------------------------------
+
+.. figure:: ../_static/Mixxx-111-external-fx-jackrack-setup.png
+   :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: The Jack routing for external effects
+   :figclass: pretty-figures
+
+   The Jack routing for external effects on GNU/Linux
+
+Use `Jack <http://en.wikipedia.org/wiki/JACK_Audio_Connection_Kit>`_ to route
+each deck directly through `JACK Rack <http://jack-rack.sourceforge.net/>`_
+effect racks, or for more control you can use Ardour (or other DAW) using sends
+for effects. This gives Mixxx access to the extensive collection of LADSPA
+plugins.
+
+Make sure the correct multichannel sound card has been selected in Jack
+(Jack settings visible bottom left). Note that Mixxx possibly labels it's Jack
+ports as “Portaudio”.
 
 Deleting Your Library
 =====================
