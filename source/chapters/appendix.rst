@@ -11,6 +11,9 @@ Shortcuts let you work more efficiently. This table lists the default keyboard
 shortcuts for accessing Mixxx with an English keyboard layout. Depending on your
 language settings the defaults may be different.
 
+.. versionadded:: 1.11
+   Auto DJ and Preview Deck shortcuts
+
 +----------------------------------------+---------------------+---------------------+--------------+
 | Function                               | Deck 1              | Deck 2              | Master       |
 +========================================+=====================+=====================+==============+
