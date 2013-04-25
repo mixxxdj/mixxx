@@ -74,36 +74,29 @@ plugins. For more information, see the `Mixxx Wiki <http://mixxx.org/wiki>`_.
 Deleting Your Library
 =====================
 
-.. warning:: Deleting your library will lose all of your :term:`metadata`. This
-             includes saved **hotcues**, **loops**, **comments**, **ratings**,
-             and other library related metadata. Only delete your library if you
-             are fine with losing these.
-
 The library file is stored in the following places depending on your
-:term:`operating system`.
+:term:`operating system`:
 
-Windows
--------
+**Windows**
+  The Mixxx library is stored in the
+  :file:`%USERPROFILE%\\Local Settings\\Application Data\\Mixxx\\` folder.
+  To delete your library on Windows, delete the :file:`mixxxdb.sqlite` file in
+  this folder.
 
-The Mixxx library is stored in the
-:file:`%USERPROFILE%\\Local Settings\\Application Data\\Mixxx\\` folder.
-To delete your library on Windows, delete the :file:`mixxxdb.sqlite` file in
-this folder.
+**Mac OS X**
+  The Mixxx library is stored in the :file:`Library/Application Support/Mixxx`
+  folder in your home directory. To delete your library on Mac OS X type the
+  following command into a terminal: ::
 
-Mac OS X
---------
+       rm ~/Library/Application\ Support/Mixxx/mixxxdb.sqlite
 
-The Mixxx library is stored in the :file:`Library/Application Support/Mixxx`
-folder in your home directory. To delete your library on Mac OS X type the
-following command into a terminal: ::
+**GNU/Linux**
+  The Mixxx library is stored in the ``.mixxx`` folder in your home directory.
+  To delete your library on GNU/Linux type the following command into a terminal: ::
 
-     rm ~/Library/Application\ Support/Mixxx/mixxxdb.sqlite
+       rm ~/.mixxx/mixxxdb.sqlite
 
-GNU/Linux
----------
-
-The Mixxx library is stored in the :file:`.mixxx` folder in your home directory.
-To delete your library on GNU/Linux type the following command into a terminal: ::
-
-     rm ~/.mixxx/mixxxdb.sqlite
-
+.. warning:: Deleting your library will lose all of your :term:`metadata`. This
+             includes saved hotcues, loops, comments, ratings, and other library
+             related metadata. Only delete your library if you are fine with
+             losing these.
