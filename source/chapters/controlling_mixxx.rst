@@ -107,15 +107,14 @@ Without loading the correct preset, your controller does not work with Mixxx.
 
 #. Connect your controller(s) to your computer
 #. Start Mixxx
-#. Open the :menuselection:`Preferences`
-#. Select the :guilabel:`Controllers` preference item
+#. Go to :menuselection:`Preferences --> Controllers`
 #. Select your device from the list of available devices on the left and the
    right pane will change
-#. Click the :guilabel:`Enable` checkbox
+#. Activate the :guilabel:`Enabled` checkbox
 #. Select the mapping for your controller from the :guilabel:`Presets`
-   drop-down-menu
+   drop-down menu
 #. Click :guilabel:`OK` and Mixxx can now be controlled by your controller(s).
-#. Repeat step 5-8 for any of the controllers you want to use
+#. Repeat step 4-7 for any of the controllers you want to use
 
 .. hint:: If you do not find a connected device in the list, make sure to
           install any necessary drivers for that device.
