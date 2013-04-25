@@ -3,14 +3,14 @@
 Controlling Mixxx
 *****************
 
-Mixxx can be controlled with a keyboard, a mouse, MIDI/HID controllers,
-time-code records/CDs, or a combination of these. The choice usually depends on
-your budget or style of DJing.
+Mixxx can be controlled with a keyboard, a mouse, :term:`MIDI`/:term:`HID`
+controllers, time-code records/CDs, or a combination of these. The choice
+usually depends on your budget or style of DJing.
 
 .. _control-mouse:
 
-Using Mouse and Trackpad
-========================
+Using a Mouse and Trackpad
+==========================
 
 Use your mouse to interact with the controls in the
 :ref:`Mixxx User Interface <interface-overview>` on your computer screen. You
@@ -25,13 +25,16 @@ can perform actions by pointing and clicking with your mouse.
   default value by right-clicking that control.
 * **Mouse Drag**: Click on a knob or fader, hold the left mouse button and move
   your cursor to change the value of the control. Use mouse drag to drop tracks
-  from the file list to the decks, crates, playlists etc.
+  from the file list to the decks, crates, playlists, etc.
 * **Mouse Wheel**: Just like Mouse Drag, you can change knob and fader values
   by placing the cursor over the control and moving the mouse wheel.
 
 .. hint::  If you hover with the mouse over a control (e.g the crossfader) in
            the Mixxx user interface, the tooltip lists the left- and right-click
            action respectively.
+
+.. hint::  On a Macbook or a computer with a touchpad that lacks mouse buttons,
+           a two-finger click gesture is often treated as a right click.
 
 .. seealso:: Using the Mouse drag/wheel on the waveforms you can adjust zoom and
              playback rate of the tracks. For more informations, go to
@@ -57,13 +60,14 @@ Controlling Mixxx with a keyboard is handy. Unlike mouse control, the keyboard
 allows you to manage things simultaneously. For example, you can start playing
 a track on deck 1 whilst stopping deck 2 at the same time.
 
-The default mapping for English keyboards is depicted in the figure above. It's
+The default mapping for English keyboards is depicted in the figure above. It is
 divided into a left-hand side for deck 1 and right-hand side for deck 2. Please
 note that you can also access the functions through Mixxx's interface.
 
-For some user groups, like those using midi controllers or vinyl control, it
-might be useful to enable/disable the keyboard mapping at runtime. You can do so
-by clicking :menuselection:`Options --> Enable Keyboard Shortcuts`.
+For some user groups, like those using :term:`MIDI <MIDI Controller>`/:term:`HID
+<HID Controller>` controllers or vinyl control, it might be useful to
+enable/disable the keyboard mappings at runtime. You can do so by clicking
+:menuselection:`Options --> Enable Keyboard Shortcuts`.
 
 .. hint::  If you hover with the mouse over a control (e.g. the crossfader) in
            the Mixxx user interface, the tooltip lists the keyboard shortcuts of
@@ -132,10 +136,10 @@ controller mappings:
   unable to verify their quality because we don't have the devices ourselves.
   They might have bugs or rough edges.
 
-If you run into issues with any of these mappings, please file a bug on our
-`Bug Tracker`_ or tell us about it on our mailing list, forums, or :term:`IRC`
-channel. Device support varies for each supported :term:`OS <operating system>`,
-so make sure to consult the documentation of the device.
+If you run into issues with any of these mappings, please file a :term:`bug
+report` on our `Bug Tracker`_ or tell us about it on our mailing list, forums,
+or :term:`IRC` channel. Device support varies for each supported :term:`OS
+<operating system>`, so make sure to consult the documentation of the device.
 
 .. hint::  Additional mappings are available in the `Controller presets forum`_.
 
