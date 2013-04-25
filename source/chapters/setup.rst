@@ -1,6 +1,10 @@
 Hardware Setup
 **************
 
+.. sectionauthor::
+   T.Rafreider <trafreider@mixxx.org>
+   S.Brandt <s.brandt@mixxx.org>
+
 This chapter describes the most common hardware setups to serve as examples. We
 will go over the setup of timecode records/CDs, MIDI control and keyboard
 control.
@@ -48,7 +52,7 @@ The figure above depicts how the sound configuration might look. The stereo
 output of your soundcard (channels 1-2) will be connected to the **master
 out**.
 
-#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Open :menuselection:`Preferences --> Sound Hardware`
 #. Select the :guilabel:`Output` tab
 #. From the :guilabel:`Master` drop-down menus, select your build-in soundcard,
    then :guilabel:`Channels 1-2`
@@ -93,7 +97,7 @@ mouse and keyboard. For more information see :ref:`controlling mixxx`.
 
 **Using external multi-channel soundcard**
 
-#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Open :menuselection:`Preferences --> Sound Hardware`
 #. Select the :guilabel:`Output` tab
 #. From the :guilabel:`Master` drop-down menus, select the external soundcard,
    then :guilabel:`Channels 1-2`
@@ -103,7 +107,7 @@ mouse and keyboard. For more information see :ref:`controlling mixxx`.
 
 **Using two soundcards (build-in + external)**
 
-#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Open :menuselection:`Preferences --> Sound Hardware`
 #. Select the :guilabel:`Output` tab
 #. From the :guilabel:`Master` drop-down menus, select the external soundcard,
    then :guilabel:`Channels 1-2`
@@ -132,7 +136,7 @@ presets. To see the full list, see :ref:`control-midi`.
 
 **Using a controller without integrated multi-channel soundcard**
 
-#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Open :menuselection:`Preferences --> Sound Hardware`
 #. Select the :guilabel:`Output` tab
 #. From the :guilabel:`Master` drop-down menus, select the external soundcard,
    then :guilabel:`Channels 1-2`
@@ -155,7 +159,7 @@ alternative sound setup may look like the figure below:
 
 **Using a controller with integrated multi-channel soundcard**
 
-#. Go to :menuselection:`Preferences --> Sound Hardware`
+#. Open :menuselection:`Preferences --> Sound Hardware`
 #. Select the :guilabel:`Output` tab
 #. From the :guilabel:`Master` drop-down menus, select your controllers
    soundcard, then :guilabel:`Channels 1-2`
@@ -181,66 +185,4 @@ For best results, when using this setup you should ensure your system is capable
 of latencies under 10ms. Otherwise scratching may sound distorted. For more
 information about latency and how to improve it, see :ref:`configuration-latency`.
 
-.. note:: It is strongly recommended to use a soundcard that comes with native
-          low latency drivers such as ASIO (Windows) or CoreAudio (Mac). Linux
-          users depend on the quality of the corresponding open source driver.
-
-.. seealso:: Go to the chapter :ref:`vinyl-control` for more informations.
-
-Turntables
-^^^^^^^^^^
-
-For turntables a typical setup is depicted in the figure below.  First, connect
-the RCA cables from the turntables to the inputs on your sound card.  Second,
-connect the outputs of your sound card to the inputs on your mixer.
-
-.. figure:: ../_static/mixxx_setup_timecode_vc.png
-   :align: center
-   :width: 90%
-   :figwidth: 100%
-   :alt: Using Mixxx together with turntables and external mixer
-   :figclass: pretty-figures
-
-   Using Mixxx together with turntables and external mixer
-
-.. note:: You must set the input mode of your sound card to *phono* if you have
-          standard turntables. Many modern turntables have a *Line/Phono* select
-          switch.  If yours does, make sure it matches the input or switch
-          setting on your sound card.
-
-CDJs
-^^^^
-
-Setting up CDJs for use with time-code CDs is similar to setting up
-turntables. The figure below outlines a typical configuration. First,
-connect the RCA cables of the CDJs to an inputs of your sound card. Second,
-connect the inputs of your mixer to the outputs of your sound card. Make sure
-the input mode of your sound card is set to *Line*.
-
-.. figure:: ../_static/mixxx_setup_timecode_cdj.png
-   :align: center
-   :width: 90%
-   :figwidth: 100%
-   :alt: Using Mixxx together with CDJs and external mixer
-   :figclass: pretty-figures
-
-   Using Mixxx together with CDJs and external mixer
-
-Configuring Mixxx
-=================
-
-To complete your setup you must configure Mixxx properly. Make sure you have:
-
-* specified :guilabel:`Deck 1` and :guilabel:`Deck 2` in
-  :menuselection:`Preferences --> Sound Hardware` to
-  route Mixxx's output directly to the external mixer
-* specified :guilabel:`Vinyl Control 1` and :guilabel:`Vinyl Control 2` under
-  :menuselection:`Preferences --> Sound Hardware --> Input`
-* selected the correct control type under
-  :menuselection:`Preferences --> Vinyl Control --> Vinyl type` in the
-  preferences. See :ref:`control-timecode` for the list of supported control
-  records/CDs.
-* enabled vinyl control via the menu under
-  :menuselection:`Options -> Vinyl Control --> Enable Vinyl Control`.
-
-For more details, see the :ref:`configuring-mixxx` section.
+.. seealso:: Go to the chapter :ref:`vinyl-control` for detailed informations.

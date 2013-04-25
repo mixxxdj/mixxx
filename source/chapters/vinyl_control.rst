@@ -8,6 +8,7 @@ Vinyl Control
 
 .. sectionauthor::
    Owen Williams <owilliams@mixxx.org>
+   T.Rafreider <trafreider@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
 Vinyl control allows a user to manipulate the playback of a track in Mixxx using
@@ -31,25 +32,69 @@ What do I need to use it?
 It is possible to use Mixxx's vinyl control with several hardware setups, but
 the basic ones are:
 
-* **Setup 1: Vinyl DJ** Two timecode vinyls, two turntables with phono
-  pre-amplifiers (or line-out), and two stereo sound inputs. You can try
-  skipping the phono pre-amps if you use the software pre-amp in Mixxx on the
-  Vinyl Control preferences pane. This may not work for everyone. Line-level
-  signals are preferred and recommended.
-* **Setup 2: CDJ** Two timecode CDs, two CD decks, and two stereo sound inputs.
+**Setup 1: Vinyl DJ**
+  Two timecode vinyls, two turntables with phono pre-amplifiers (or line-out),
+  and two stereo sound inputs.
 
-For the sound inputs, you have two options:
+  You can try skipping the phono pre-amps if you use the software pre-amp in
+  Mixxx on the Vinyl Control preferences pane. This may not work for everyone.
+  Line-level signals are preferred and recommended.
+
+  For turntables a typical setup is depicted in the figure below.  First,
+  connect the RCA cables from the turntables to the inputs on your sound card.
+  Second, connect the outputs of your sound card to the inputs on your mixer.
+
+.. figure:: ../_static/mixxx_setup_timecode_vc.png
+   :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: Using Mixxx together with turntables and external mixer
+   :figclass: pretty-figures
+
+   Using Mixxx together with turntables and external mixer
+
+.. note:: You must set the input mode of your sound card to *phono* if you have
+          standard turntables. Many modern turntables have a *Line/Phono* select
+          switch.  If yours does, make sure it matches the input or switch
+          setting on your sound card.
+
+**Setup 2: CDJ**
+  Two timecode CDs, two CD decks, and two stereo sound inputs.
+
+  Setting up CDJs for use with time-code CDs is similar to setting up
+  turntables. The figure below outlines a typical configuration. First,
+  connect the RCA cables of the CDJs to an inputs of your sound card. Second,
+  connect the inputs of your mixer to the outputs of your sound card. Make sure
+  the input mode of your sound card is set to *Line*.
+
+.. figure:: ../_static/mixxx_setup_timecode_cdj.png
+   :align: center
+   :width: 90%
+   :figwidth: 100%
+   :alt: Using Mixxx together with CDJs and external mixer
+   :figclass: pretty-figures
+
+   Using Mixxx together with CDJs and external mixer
+
+**Sound inputs**
 
 * It is recommended to use a proper DJ sound card that has **multiple** stereo
   line inputs on it.
 * Alternatively you can use two sound cards, each with a single stereo line in.
 
+Mixxx supports vinyl control input through a single soundcard with at least
+4-channels of input (two stereo line-in jacks), or through two separate
+soundcards which each have 2-channels of input (a single stereo line-in jack).
+Vinyl control requires the use of stereo line-in jacks - Mono or microphone
+inputs will not work.
+
+It is strongly recommended to use a soundcard that comes with native low latency
+drivers such as ASIO (Windows) or CoreAudio (Mac). Linux users depend on the
+quality of the corresponding open source driver.
+
 .. note:: For best scratch performance with vinyl control, we recommend using a
           system capable of :term:`latencies <latency>` of 10ms. With higher
           latencies the scratch sound will start to become distorted.
-
-.. seealso:: To learn how to connect your turntables or :term:`CDJ`, go to the
-             chapter :ref:`setup-vinyl-control`.
 
 Supported Timecode media
 ------------------------
@@ -82,26 +127,24 @@ from `Serato`_.
 Configuring Input and Output devices
 ====================================
 
-Input Device Selection
-----------------------
-
-.. todo:: Add screenshot
+.. todo:: Add screenshot, proofread connection guide below, add note about
+          empty MASTER drop-down menu
 
 Mixxx can be controlled by up to 2 decks with either timecoded vinyl or
-timecoded CDs. In the Sound Hardware Input tab in the Mixxx Preferences, select
-the soundcard(s) which your decks are plugged into for Vinyl Control 1 and
-2. In the channel selection drop-down menu, select the channel pairs
-corresponding to the plug on your soundcard that your deck(s) are plugged into.
+timecoded CDs.
 
-Mixxx supports vinyl control input through a single soundcard with 4-channels of
-input (two stereo line-in jacks), or through two separate soundcards which each
-have 2-channels of input (a single stereo line-in jack). Vinyl control requires
-the use of stereo line-in jacks - Mono or microphone inputs will not work.
-
-Output Device Selection
------------------------
-
-.. todo:: Add screenshot
+#. Open :menuselection:`Preferences --> Sound Hardware`
+#. Select the :guilabel:`Input` tab
+#. From the :guilabel:`Vinyl Control 1` and :guilabel:`Vinyl Control 2`
+   drop-down menus, select the soundcard(s) which your decks are plugged into
+#. In the channel selection drop-down menu, select the channel pairs
+   corresponding to the plug on your soundcard that your deck(s) are plugged
+   into, typically :guilabel:`Channels 1-2` and :guilabel:`Channels 3-4`
+#. Click :guilabel:`Apply` to save the changes.
+#. Select the :guilabel:`Output` tab
+#. Specified :guilabel:`Deck 1` and :guilabel:`Deck 2` to route Mixxx's output
+   directly to the external mixer
+#. Click :guilabel:`Apply` to save the changes.
 
 .. _vinyl-control-config:
 
@@ -229,67 +272,14 @@ If your vinyl signal is working, you should see a round, green circle drawn with
 two lines. This vinyl "doughnut" should be as circular as possible, and the
 lines should be clear with a minimum amount of fuzz.
 
-==============  ====================================  ====================================
-Signal          Meaning                               Troubleshooting
-==============  ====================================  ====================================
-|miss_config|   Vinyl control input channels not      Open Preferences/ Sound Hardware and
-                correctly set up. Vinyl control       set up the devices you want to use,
-                will not work.                        see `Input Device Selection`_
---------------  ------------------------------------  ------------------------------------
-|no_signal|     Vinyl control input channels set up   Start your turntable or CDJ with the
-                correctly. Waiting for timecode       selected timecode vinyl or CD.
-                input signal.
---------------  ------------------------------------  ------------------------------------
-|ok|            Everything is OK. Nearly perfect      Nothing to do. Go spin some beats.
-                green doughnut about half the width
-                of the graph. Rotating radar sweeps
-                in the direction your record on the
-                turntable is spinning .
---------------  ------------------------------------  ------------------------------------
-|wrong_type|    Incorrect choice of vinyl control     Select the correct vinyl type in the
-                source. Doughnut looks good but has   preferences. E.g. maybe you selected
-                a solid red color.                    side B of the Serato Vinyl but your
-                                                      record is on side A.
---------------  ------------------------------------  ------------------------------------
-|bad_signal|    Input signal is bad. As the vinyl     Check the wiring / grounding on your
-                signal gets worse, you'll see the     turntable / CDJ. You timecode record
-                color of the doughnut change from     / CD might be worn out or the needle
-                green over orange to red.             on your turntable is dirty.
---------------  ------------------------------------  ------------------------------------
-|wrong_dir|     Wrong direction. The green doughnut   You probably have a wiring problem.
-                looks good but the radar sweeps       Try reversing the left and right
-                in the opposite direction of the      inputs on your turntable. You may
-                record on your turntable / CDJ.       also have to rewire the headshell.
---------------  ------------------------------------  ------------------------------------
-|not_timecode|  Input signal is no timecode signal.   Start your turntable or CDJ with the
-                Mixxx receives a normal audio signal  selected timecode vinyl or CD. You
-                while it expects a timecode signal.   may want to check if the inputs
-                                                      devices are set up correctly in the
-                                                      preferences.
---------------  ------------------------------------  ------------------------------------
-|unbalanced|    Left or right channel is missing.     Check the wiring on your turntable /
-                Mixxx recives only a mono signal but  CDJ and also the headshell and
-                needs a stereo timecode signal to     needle on your turntable.
-                operate.
---------------  ------------------------------------  ------------------------------------
-|too_loud|      Timecode signal too loud.             Lower the amplification, either on
-                Mixxx receives a signal which has     your external Mixer, soundcard or
-                too much amplification.               with the `Turntable Input Preamp`_
---------------  ------------------------------------  ------------------------------------
-|too_quiet|     Timecode signal too quiet.            Boost the amplification, either on
-                Mixxx receives a signal which has     your external Mixer, soundcard or
-                not enough amplification.             with the `Turntable Input Preamp`_
-==============  ====================================  ====================================
-
 .. hint:: You can display the signal quality in the Mixxx user interface while
           mixing, see :ref:`vinyl-control-config` .
 
 Enabling Vinyl Control
 ======================
 
-For each deck select
-:menuselection:`Options --> Vinyl Control --> Enable Vinyl Control` or use the
-:ref:`appendix-shortcuts`.
+For each deck, select :menuselection:`Options --> Vinyl Control -->
+Enable Vinyl Control` or use the :ref:`appendix-shortcuts`.
 
 Vinyl Control Status Display
 ----------------------------
@@ -359,3 +349,79 @@ Just drop the needle in the control area and let the record play forward or
 backward. The highlighted row in the library should move up or down. Simply
 lift the needle and drop it anywhere in the main timecode area to load the
 track.
+
+Troubleshooting
+---------------
+
+**Configuration**
+
+To complete your setup you must configure Mixxx properly. Make sure you have:
+
+* specified :guilabel:`Deck 1` and :guilabel:`Deck 2` in
+  :menuselection:`Preferences --> Sound Hardware` to
+  route Mixxx's output directly to the external mixer
+* specified :guilabel:`Vinyl Control 1` and :guilabel:`Vinyl Control 2` under
+  :menuselection:`Preferences --> Sound Hardware --> Input`
+* selected the correct control type under
+  :menuselection:`Preferences --> Vinyl Control --> Vinyl type` in the
+  preferences. See :ref:`control-timecode` for the list of supported control
+  records/CDs.
+* enabled vinyl control via the menu under
+  :menuselection:`Options -> Vinyl Control --> Enable Vinyl Control`.
+
+**Signal Quality**
+
+The graph is displayed in :menuselection:`Preferences --> Vinyl Control`, see
+:ref:`vinyl-control-signal-quality`.
+
+==============  ====================================  ====================================
+Signal          Meaning                               Troubleshooting
+==============  ====================================  ====================================
+|miss_config|   Vinyl control input channels not      Open Preferences/ Sound Hardware and
+                correctly set up. Vinyl control       set up the devices you want to use,
+                will not work.                        see `Input Device Selection`_
+--------------  ------------------------------------  ------------------------------------
+|no_signal|     Vinyl control input channels set up   Start your turntable or CDJ with the
+                correctly. Waiting for timecode       selected timecode vinyl or CD.
+                input signal.
+--------------  ------------------------------------  ------------------------------------
+|ok|            Everything is OK. Nearly perfect      Nothing to do. Go spin some beats.
+                green doughnut about half the width
+                of the graph. Rotating radar sweeps
+                in the direction your record on the
+                turntable is spinning .
+--------------  ------------------------------------  ------------------------------------
+|wrong_type|    Incorrect choice of vinyl control     Select the correct vinyl type in the
+                source. Doughnut looks good but has   preferences. E.g. maybe you selected
+                a solid red color.                    side B of the Serato Vinyl but your
+                                                      record is on side A.
+--------------  ------------------------------------  ------------------------------------
+|bad_signal|    Input signal is bad. As the vinyl     Check the wiring / grounding on your
+                signal gets worse, you'll see the     turntable / CDJ. You timecode record
+                color of the doughnut change from     / CD might be worn out or the needle
+                green over orange to red.             on your turntable is dirty.
+--------------  ------------------------------------  ------------------------------------
+|wrong_dir|     Wrong direction. The green doughnut   You probably have a wiring problem.
+                looks good but the radar sweeps       Try reversing the left and right
+                in the opposite direction of the      inputs on your turntable. You may
+                record on your turntable / CDJ.       also have to rewire the headshell.
+--------------  ------------------------------------  ------------------------------------
+|not_timecode|  Input signal is no timecode signal.   Start your turntable or CDJ with the
+                Mixxx receives a normal audio signal  selected timecode vinyl or CD. You
+                while it expects a timecode signal.   may want to check if the inputs
+                                                      devices are set up correctly in the
+                                                      preferences.
+--------------  ------------------------------------  ------------------------------------
+|unbalanced|    Left or right channel is missing.     Check the wiring on your turntable /
+                Mixxx recives only a mono signal but  CDJ and also the headshell and
+                needs a stereo timecode signal to     needle on your turntable.
+                operate.
+--------------  ------------------------------------  ------------------------------------
+|too_loud|      Timecode signal too loud.             Lower the amplification, either on
+                Mixxx receives a signal which has     your external Mixer, soundcard or
+                too much amplification.               with the `Turntable Input Preamp`_
+--------------  ------------------------------------  ------------------------------------
+|too_quiet|     Timecode signal too quiet.            Boost the amplification, either on
+                Mixxx receives a signal which has     your external Mixer, soundcard or
+                not enough amplification.             with the `Turntable Input Preamp`_
+==============  ====================================  ====================================
