@@ -272,8 +272,8 @@ Sync and Rate Controls
 
 .. figure:: ../_static/deere_deck_rate_control.png
    :align: right
-   :width: 70px
-   :figwidth: 15%
+   :width: 60%
+   :figwidth: 100px
    :alt: The rate control section of the deck
    :figclass: pretty-figures
 
@@ -291,7 +291,7 @@ control rate changes also from your computers keyboard, see the chapter
 * **Right-Click**: Only changes the :term:`rate` of the track to match the other
   deck but does not adjusts the :term:`phase`.
 
-  .. versionchanged:: 1.11 Changed Sync mode (Ghetto Sync™)
+.. versionchanged:: 1.11 Changed Sync mode (Ghetto Sync™)
 
 Decks and samplers now pick which sync target to sync to on the fly. Decks
 can't sync to samplers and samplers can only sync to decks. The sync target is:
@@ -301,9 +301,9 @@ can't sync to samplers and samplers can only sync to decks. The sync target is:
 * The first (in numerical order) deck that has a track loaded with a detected
   beatgrid (could be stopped).
 
-So basically, if you sync a sampler and both deck 1 and deck 2 are playing a
-track with a beatgrid then deck 1 will win since numerically it is first. This
-will change again in the future once Mixxx gets a proper master sync feature.
+  So basically, if you sync a sampler and both deck 1 and deck 2 are playing a
+  track with a beatgrid then deck 1 will win since numerically it is first. This
+  will change again in the future once Mixxx gets a proper master sync feature.
 
 **Pitch/Rate slider**
   The slider allows you to change the speed of the song, by default up to 10%
@@ -481,7 +481,7 @@ Deleting Hotcues
 ^^^^^^^^^^^^^^^^
 
 To delete a hotcue, right-click on the numbered button. The marker in the
-waveform will de deleted as well.
+waveform will be deleted as well.
 
 .. note:: Mixxx supports up to 36 hotcues per deck, 4 of them are visible in the
           user interface. You can customize your
@@ -735,8 +735,8 @@ Every track has a Cue point, by default on its beginning. Unless with
 Using Cue Modes
 ^^^^^^^^^^^^^^^
 
-You can switch between the CUE modes in
-:menuselection:`Preferences --> Interface`.
+You can switch between the CUE modes in :menuselection:`Preferences -->
+Interface`.
 
 **CDJ cue mode (default)**
 
@@ -789,7 +789,9 @@ to a mix when used tactfully.
 
 .. seealso :: As an advanced user, you can route your audio signal to external
               software and then apply additional effects. Go to the chapter
-              :ref:`advanced-jack-rack` for more informations.
+              :ref:`advanced-external-fx` for more informations.
+
+.. interface-sampler
 
 The Sampler Section
 ===================
@@ -864,7 +866,7 @@ specific :ref:`appendix-shortcuts`, to unhide the controls.
   the input signal.
 * Select the microphone input in
   :menuselection:`Preference --> Sound Hardware --> Input --> Microphone` and
-  click :guilabel:`OK`.
+  click :guilabel:`Apply`.
 
 Microphone Controls
 -------------------
@@ -878,7 +880,7 @@ Microphone Controls
   a extended period, for example when :ref:`streaming <live-broadcasting>` a
   radio show. When in Latch mode, click again to mute the microphone input.
 
-**Mix Orientation Toogle**
+**Mix Orientation Toggle**
   This control determines the microphone input's mix orientation. Either to the
   left side of crossfader, to the right side or to the center (default).
   Clicking cycles through all the options.
@@ -912,8 +914,8 @@ Preview Deck Section
 The Preview Deck is a special deck that allows to pre-listen to tracks in the
 headphones before using them in your mix. Pre-listening a track does not change
 the tracks's :guilabel:`Played` state as well as the play counter and is not
-logged in the :ref:`History <library-history>`. Press :kbd:`CTRL+4`
-(Windows/Linux) or :kbd:`CMD+4` (Mac) to display the Preview Deck.
+logged in the :ref:`History <library-history>`. Press :kbd:`CTRL` + :kbd:`4`
+(Windows/Linux) or :kbd:`CMD` + :kbd:`4` (Mac) to display the Preview Deck.
 
 The features in detail:
 
