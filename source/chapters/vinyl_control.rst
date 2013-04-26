@@ -124,6 +124,8 @@ from `Serato`_.
 
 .. _Serato: http://serato.com/downloads/scratchlive-controlcd/
 
+.. _vinyl-control-config:
+
 Configuring Input and Output devices
 ====================================
 
@@ -379,16 +381,17 @@ Signal          Meaning                               Troubleshooting
 ==============  ====================================  ====================================
 |miss_config|   Vinyl control input channels not      Open Preferences/ Sound Hardware and
                 correctly set up. Vinyl control       set up the devices you want to use,
-                will not work.                        see `Input Device Selection`_
+                will not work.                        see `Configuring Input and Output
+                                                      devices`_
 --------------  ------------------------------------  ------------------------------------
 |no_signal|     Vinyl control input channels set up   Start your turntable or CDJ with the
                 correctly. Waiting for timecode       selected timecode vinyl or CD.
                 input signal.
 --------------  ------------------------------------  ------------------------------------
-|ok|            Everything is OK. Nearly perfect      Nothing to do. Go spin some beats.
-                green doughnut about half the width
-                of the graph. Rotating radar sweeps
-                in the direction your record on the
+|ok|            Nearly perfect green doughnut about   Everything is OK, nothing to do. Go
+                about half the width of the graph.    spin some beats.
+                Rotating radar sweeps in the
+                direction your record on the
                 turntable is spinning .
 --------------  ------------------------------------  ------------------------------------
 |wrong_type|    Incorrect choice of vinyl control     Select the correct vinyl type in the
