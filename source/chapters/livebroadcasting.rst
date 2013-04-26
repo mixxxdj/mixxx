@@ -1,6 +1,6 @@
 .. _live-broadcasting:
 
-Live Broadcasting − Start your own Internet radio
+Live Broadcasting - Start your own Internet radio
 *************************************************
 
 .. sectionauthor::
