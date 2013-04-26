@@ -221,7 +221,7 @@ units as well as normal text:
 
 Other semantic markup
 ---------------------
-The following roles don’t do anything special except formatting the text in a
+The following roles don't do anything special except formatting the text in a
 different style. Nonetheless, use them:
 
 .. rst:role:: guilabel

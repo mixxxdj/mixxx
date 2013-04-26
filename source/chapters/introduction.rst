@@ -126,8 +126,7 @@ Improving the Manual
 --------------------
 
 * **Send Feedback**: If you have comments, corrections or suggestions regarding
-  the manual,
-  `write us an email <feedback@mixxx.org?subject=Mixxx-Manual>`_.
+  the manual, `write us an email <feedback@mixxx.org?subject=Mixxx-Manual>`_.
 
 * **Get the Source Code**: To download the source code for the Mixxx manual, go
   to: `<https://code.launchpad.net/~mixxxdevelopers/mixxx/manual>`_
@@ -148,7 +147,7 @@ There are a variety of other resources you can use to find out more.
   or Developer mailing list, go to: `<http://mixxx.org/support>`_
 
 * **Mixxx Community Forums**: To search for answers, post your question or
-  answer other DJ’s questions, go to: `<http://mixxx.org/forums>`_
+  answer other DJ's questions, go to: `<http://mixxx.org/forums>`_
 
 * **Mixxx Bug Tracker**: To report a bug or request a feature, go to:
   `<https://bugs.launchpad.net/mixxx>`_
