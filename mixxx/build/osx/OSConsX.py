@@ -465,12 +465,14 @@ def do_codesign(target, source, env):
             print "Unlocking keychain:"
             if system("security unlock-keychain -p '%s' %s" % (keychain_password, keychain)) != 0:
                 raise Exception('Could not unlock keychain.')
-        codesign_path(application_identity, keychain, entitlements, bundle)
+
+        # Codesign the frameworks.
         for root, dirs, files in os.walk(frameworks_path):
             for framework in dirs + files:
                 codesign_path(application_identity, keychain, entitlements, os.path.join(root, framework))
             # Don't descend.
             del dirs[:]
+
         # Codesign binaries.
         for root, dirs, files in os.walk(binary_path):
             for filename in files:
@@ -479,6 +481,8 @@ def do_codesign(target, source, env):
         for root, dirs, files in os.walk(plugins_path):
             for filename in files:
                 codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
+        # Codesign the bundle.
+        codesign_path(application_identity, keychain, entitlements, bundle)
 CodeSign = Builder(action = do_codesign)
 
 def build_plist(target, source, env):
