@@ -33,6 +33,7 @@ It is possible to use Mixxx's vinyl control with several hardware setups, but
 the basic ones are:
 
 **Setup 1: Vinyl DJ**
+
   Two timecode vinyls, two turntables with phono pre-amplifiers (or line-out),
   and two stereo sound inputs.
 
@@ -59,6 +60,7 @@ the basic ones are:
           setting on your sound card.
 
 **Setup 2: CDJ**
+
   Two timecode CDs, two CD decks, and two stereo sound inputs.
 
   Setting up CDJs for use with time-code CDs is similar to setting up
@@ -147,8 +149,6 @@ timecoded CDs.
 #. Specified :guilabel:`Deck 1` and :guilabel:`Deck 2` to route Mixxx's output
    directly to the external mixer
 #. Click :guilabel:`Apply` to save the changes.
-
-.. _vinyl-control-config:
 
 Configuring Vinyl Control
 =========================
