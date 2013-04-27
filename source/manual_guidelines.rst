@@ -321,6 +321,3 @@ Editors with Restructured Text (reST) syntax highlighting:
 
 Still not enough? Even more resources:
 `<http://stackoverflow.com/questions/2746692/restructuredtext-tool-support>`_
-
-
-.. todo:: Streamline this document, nobody reads this much isht.
