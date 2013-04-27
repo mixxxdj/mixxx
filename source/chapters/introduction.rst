@@ -104,12 +104,23 @@ Some effort has been made to present the material in a way that is neither too
 technical nor too dumbed-down. Take some time to look through it and you'll
 find lots of hints that will enhance both your enjoyment and your productivity.
 
-Through the manual you'll find sentences like:
+Through the manual you'll find text formatted like this:
 
-* :menuselection:`Library --> Add new Playlist`.
-  This is to simplify the business of choosing commands in menus. The
-  instruction means “Open the *Library* menu at the top of the application
-  window and then choose the *Add new Playlist* command.”
+* :menuselection:`Library --> Add new Playlist`
+
+  This is to simplify the business of choosing commands in menus. In this
+  example, the instruction means “Open the *Library* menu at the top of the
+  application window and then choose the *Add new Playlist* command”.
+
+* :guilabel:`Apply`
+
+  This is used to indicate a certain area of the :term:`GUI`, including button
+  labels, tabs, checkboxes, field names, values in selection lists etc. .
+
+* :kbd:`STRG` + :kbd:`G`
+
+  This is used to mark a keystroke, or a sequence of keystrokes. In this
+  example, you would have to hold down the *STRG* key, then to press *G*.
 
 Important informations in this manual are highlighted like this:
 
