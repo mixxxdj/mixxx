@@ -16,7 +16,6 @@ namespace {
 class ControllerEngineTest : public testing::Test {
   protected:
     virtual void SetUp() {
-        QApplication *app;
         qDebug() << "SetUp";
         static int argc = 1;
         static char* argv[2] = { "test", NULL };
@@ -41,9 +40,6 @@ class ControllerEngineTest : public testing::Test {
 };
 
 TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {
-    // ConfigObject<ConfigValue> config("~/.mixxx/mixxx.cfg");
-    // QString commonScript = config.getConfigPath() + "/" +
-    //         "/midi/midi-mappings-scripts.js";
     QString commonScript = "./res/controllers/common-controller-scripts.js";
     cEngine->evaluate(commonScript);
     EXPECT_FALSE(cEngine->hasErrors(commonScript));
@@ -286,12 +282,12 @@ TEST_F(ControllerEngineTest, getInvalidControlObject) {
     f.open(QIODevice::ReadWrite | QIODevice::Truncate);
     f.write("getValue = function() { return engine.getValue('[Nothing]', 'nothing'); }\n");
     f.close();
-    
+
     cEngine->evaluate(script);
     EXPECT_FALSE(cEngine->hasErrors(script));
 
     EXPECT_TRUE(cEngine->execute("getValue"));
-    
+
     f.remove();
 }
 
@@ -334,7 +330,7 @@ TEST_F(ControllerEngineTest, oneShotTimedReaction) {
                                      else print('TEST FAILED!  TEST FAILED!  TEST FAILED: '+(new Date()-global.date));\
                                      return (new Date()-global.date); }\n");
     f.close();
-    
+
     cEngine->evaluate(script);
     EXPECT_FALSE(cEngine->hasErrors(script));
 
