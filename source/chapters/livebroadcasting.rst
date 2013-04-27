@@ -145,8 +145,8 @@ Live Broadcasting Preferences
 
 **Custom metadata**
 
- By default, Mixxx broadcasts any artist and track title information of the
- files that you play. You can disable this feature and use your own custom
+ By default, Mixxx broadcasts artist and title information of the files that you
+ play to your listeners. You can disable this feature and use your own custom
  metadata. For technical reasons, broadcasting artist and title information is
  not supported for OGG streams.
 
@@ -197,10 +197,6 @@ Troubleshooting
   next port also.
 * You may need to configure port forwarding if you are behind a router or your
   router will block requests to ex. port 8000.
-
-By default, Mixxx broadcasts artist and title information to your listeners. You
-can disable this behavior by selecting :guilabel:`Enable custom metadata` in the
-:ref:`live-broadcasting-preferences`.
 
 .. _MP3 Streaming:
 
