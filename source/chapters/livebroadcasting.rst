@@ -22,22 +22,22 @@ Streaming Servers
   hosts is available at
   `broadcastingworld.net <http://www.broadcastingworld.net/reviews/stream-hosting>`_.
 
-      .. digraph:: remote_streaming
-         :caption: Mixxx as client-side streaming source broadcasting to an
-                   remote streaming server
-         :alt: Mixxx as client-side streaming source broadcasting to an
+  .. digraph:: remote_streaming
+     :caption: Mixxx as client-side streaming source broadcasting to an
                remote streaming server
+     :alt: Mixxx as client-side streaming source broadcasting to an
+           remote streaming server
 
-         rankdir=LR;
-         size="6,6";
-         StreamingServer [shape = rectangle, style=filled, fillcolor=gainsboro];
-         Router [shape = box, style=dashed] ;
-         node [shape = box];
-         Mixxx -> Router [ label = "Lan" ];
-         Router -> StreamingServer [ label = "Internet" ];
-         StreamingServer -> Listener1 [ dir=left, label = "Internet" ];
-         StreamingServer -> Listener2 [ dir=left, label = "Internet" ];
-         StreamingServer -> Listener3 [ dir=left, label = "Internet" ];
+     rankdir=LR;
+     size="6,6";
+     StreamingServer [shape = rectangle, style=filled, fillcolor=gainsboro];
+     Router [shape = box, style=dashed] ;
+     node [shape = box];
+     Mixxx -> Router [ label = "Lan" ];
+     Router -> StreamingServer [ label = "Internet" ];
+     StreamingServer -> Listener1 [ dir=left, label = "Internet" ];
+     StreamingServer -> Listener2 [ dir=left, label = "Internet" ];
+     StreamingServer -> Listener3 [ dir=left, label = "Internet" ];
 
 **Local streaming server**
   For experienced users, it may be interesting to set up an own local streaming
@@ -53,22 +53,22 @@ Streaming Servers
   `Icecast documentation <http://www.icecast.org/docs.php>`_ for server setup
   instructions.
 
-      .. digraph:: local_streaming
-         :caption: Mixxx as client-side streaming source broadcasting to an
-                   local streaming server
-         :alt: Mixxx as client-side streaming source broadcasting to an
-               remote streaming server
+  .. digraph:: local_streaming
+     :caption: Mixxx as client-side streaming source broadcasting to an
+               local streaming server
+     :alt: Mixxx as client-side streaming source broadcasting to an
+           remote streaming server
 
-         rankdir=LR;
-         size="5.5,6";
-         Router [shape = box, style=dashed] ;
-         StreamingServer [shape = rectangle, style=filled, fillcolor=gainsboro];
-         node [shape = box];
-         Mixxx -> StreamingServer [ label = "" ];
-         StreamingServer -> Router [ dir=left, label = "Lan" ];
-         Router -> Listener1 [ dir=left, label = "Internet" ];
-         Router -> Listener2 [ dir=left, label = "Internet" ];
-         Router -> Listener3 [ dir=left, label = "Internet" ];
+     rankdir=LR;
+     size="5.5,6";
+     Router [shape = box, style=dashed] ;
+     StreamingServer [shape = rectangle, style=filled, fillcolor=gainsboro];
+     node [shape = box];
+     Mixxx -> StreamingServer [ label = "" ];
+     StreamingServer -> Router [ dir=left, label = "Lan" ];
+     Router -> Listener1 [ dir=left, label = "Internet" ];
+     Router -> Listener2 [ dir=left, label = "Internet" ];
+     Router -> Listener3 [ dir=left, label = "Internet" ];
 
 Configuring Mixxx
 =================
