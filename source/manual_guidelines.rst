@@ -286,6 +286,10 @@ Sphinx and RST syntax guides:
 Steps for use:
 
 #. Install Sphinx (``python-sphinx`` package in Debian/Ubuntu) and GNU make
+#. Install Graphviz, needed to draw some diagrams (``graphviz`` and
+   ``libgraphviz4`` package in Debian/Ubuntu, ``graphviz`` on OSX macports,
+   http://graphviz.org/Download_windows.php on Windows. There is no need to
+   install python-graphviz)
 #. Download Mixxx manual source from
    `launchpad.net <https://code.launchpad.net/~mixxxdevelopers/mixxx/manual>`_
 #. Edit .rst files in :file:`source/`
