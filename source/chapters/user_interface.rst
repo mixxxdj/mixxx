@@ -636,12 +636,14 @@ Equalizers and Gain Knobs
 
 .. figure:: ../_static/deere_mixer_eq.png
    :align: right
-   :width: 80%
-   :figwidth: 15%
+   :width: 70%
+   :figwidth: 100px
    :alt: The EQ Controls of a deck in the mixer
    :figclass: pretty-figures
 
    EQ Controls
+
+.. versionadded:: 1.11 Latch mode for Kill Switches
 
 **Gain Knob**
   Above these knobs, the gain knob allows you to adjust the gain of the deck. In
@@ -655,17 +657,14 @@ Equalizers and Gain Knobs
   the audio.
 
 **Kill Switches**
-
-  .. versionchanged:: 1.11 Latch mode added
-
   The small boxes next to each EQ knob are called :term:`kills <kill switch>`.
   Hold these buttons to fully remove that frequency range. Short click on the
   buttons for latching. When in Latch mode, click again to restore the frequency
   range. If the Kill switches do not work as expected, check the high/low shelf
   EQ settings in the preferences.
 
-.. seealso:: You can customize the EQ settings in
-             :menuselection:`Preferences --> Equalizer`.
+.. seealso:: You can customize the EQ settings in :menuselection:`Preferences
+             --> Equalizer`.
 
 .. _interface-crossfader:
 
