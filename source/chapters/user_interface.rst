@@ -103,7 +103,7 @@ Waveform Displays
    The waveform summary and waveform overview of the deck
 
 The waveform section of a deck allows you to visualize the audio changes that
-occur throughout the track, you can basically "see" your music.
+occur throughout the track, you can basically “see” your music.
 
 **Waveform summary**
   The big waveform summary shows the waveform envelope of the track near the
@@ -129,7 +129,7 @@ occur throughout the track, you can basically "see" your music.
   position marker found on scratch records. Use the mouse on the vinyl widget to
   pause, scratch, spin-back or throw tracks - just like a real record.
   When performing :ref:`Loop rolls <interface-looping>` or right-clicking on the
-  vinyl during playback, a "ghost" marker hints where the playback will continue.
+  vinyl during playback, a “ghost” marker hints where the playback will continue.
   The Vinyl Widget is hidden by default and can be enabled in the
   :ref:`interface-button-grid`.
 
@@ -214,7 +214,7 @@ are as follows:
 **Keylock Toggle**
   :term:`Keylock <key lock>` locks the track's pitch so that adjustments to its
   tempo via the rate slider do not affect its pitch. This is useful if you would
-  like to speed up or slow down a track and avoid the "chipmunk" affect that
+  like to speed up or slow down a track and avoid the “chipmunk” affect that
   speeding up vocals has.
 
 .. _interface-vc-mode:
@@ -777,7 +777,7 @@ This effect applies a “sweeping” sound to the channel and can add extra dept
 to a mix when used tactfully.
 
 **FX Button**
-  The FX ("Effects") button enables a built-in flanger effect on the selected
+  The FX (“Effects”) button enables a built-in flanger effect on the selected
   channel.
 
 **Delay/Depth/LFO Knobs**
@@ -860,8 +860,8 @@ specific :ref:`appendix-shortcuts`, to unhide the controls.
 
 * Most computers have build-in microphones, while some are connected trough USB.
   This works ok, but don't expect them to be of high-quality.
-* Best is to connect a good external microphone to the "Mic" or "Line" input on
-  your audio device. If available, use the "Gain" knob on the device to adjust
+* Best is to connect a good external microphone to the “Mic” or “Line” input on
+  your audio device. If available, use the “Gain” knob on the device to adjust
   the input signal.
 * Select the microphone input in
   :menuselection:`Preference --> Sound Hardware --> Input --> Microphone` and

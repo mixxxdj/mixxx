@@ -20,8 +20,8 @@ Glossary of Terms
      The headphone output is what you hear in your headphones.
 
    PFL
-     ``PFL`` or "pre-fader listen" is a fancy word for whether or not you are
-     "pre-listening" to a deck in your headphones. See also:
+     ``PFL`` or “pre-fader listen” is a fancy word for whether or not you are
+     “pre-listening” to a deck in your headphones. See also:
      :term:`headphone button`.
 
    waveform summary
@@ -394,7 +394,7 @@ Glossary of Terms
      HSV stands for hue, saturation, and value, and is also often called HSB
      (B for brightness). The HSV Color Model represents color in a way more
      suited to the human perception of color. For example, the relationships
-     "stronger than", "darker than", and "the opposite of" are easily expressed
+     “stronger than”, “darker than”, and “the opposite of” are easily expressed
      in HSV. In contrast, the representation of the hardware-oriented :term:`RGB`
      model is close to what most monitors show.
 
@@ -405,7 +405,7 @@ Glossary of Terms
      primary colors, red, green, and blue.
 
    GUI
-     Short for "Graphical User Interface" and is pronounced "gooey". It refers
+     Short for “Graphical User Interface” and is pronounced “gooey”. It refers
      to a user interface based on graphics (icons, pictures and menus) instead
      of text. In Mixxx, it uses a mouse, keyboard, or
      :term:`MIDI <MIDI controller>` / :term:`HID <HID controller>` controllers

@@ -8,13 +8,13 @@ Mixxx |version| User Manual
 
 .. todo:: Release Checklist:
 
-          * Disable the "For documentation writers" toctree from TOC in
-            /index.rst
-          * Temp delete this todo in /index.rst
-          * Update the release and  version tags in /conf.py
-          * Run "make html" to produce html output for http://mixxx.org/manual/
-          * Run "make latexpdf" to produce pdf output for distribution
-          * Run "make latexpdf" twice, or the TOC is missing from the resulting
+          * Disable the *For documentation writers* toctree from TOC in
+            :file:`/index.rst`
+          * Temp delete this todo in :file:`/index.rst`
+          * Update the release and  version tags in :file:`/conf.py`
+          * Run :command:`make html` to produce html output for http://mixxx.org/manual/
+          * Run :command:`make latexpdf` to produce pdf output for distribution
+          * Run :command:`make latexpdf` twice, or the TOC is missing from the resulting
             pdf
 
 Mixxx is Free [#f1]_ DJ software for Windows, Mac OS X, and Linux.

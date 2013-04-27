@@ -41,9 +41,9 @@ Importing your audio files
   :menuselection:`Preferences --> Library --> Rescan on startup`.
 
   .. warning :: On Windows 7 and 8 the import dialog points to your Windows
-                "Music" Library , a special-purpose virtual folder. You can
+                “Music“ Library , a special-purpose virtual folder. You can
                 **not** use these virtual folders. Select a regular folder
-                instead, usually "My Music", like pictured above.
+                instead, usually “My Music“, like pictured above.
 
 **Compatible files**
   Mixxx supports a variety of file formats: :term:`Wave <WAV>` (wav),
@@ -143,8 +143,8 @@ Mixxx supports the following filters:
 * **Text filtering**: For artist, album, genre, title, composer, comment, key
 * **Numeric filtering**: For year, track, bpm, duration, played, rating, bitrate
 
-You can combine operators but there's no way to do an "OR" search right now.
-The following example list all tracks by "Danger" that are rated 4 or 5:
+You can combine operators but there's no way to do an “OR” search right now.
+The following example list all tracks by “Danger” that are rated 4 or 5:
 
 ::
 
@@ -153,7 +153,7 @@ The following example list all tracks by "Danger" that are rated 4 or 5:
 +--------------------------------------+---------------------------------------+
 | Examples for text filtering          | Examples for numeric filtering        |
 +======================================+=======================================+
-| artist: "com truise"                 | bpm:140                               |
+| artist: “com truise”                 | bpm:140                               |
 +--------------------------------------+---------------------------------------+
 | album:Danger                         | bpm: >140                             |
 +--------------------------------------+---------------------------------------+
@@ -272,10 +272,10 @@ a track forwards or backwards, so they can be aligned with another track. See
 the chapter :ref:`interface-rate`.
 
 Two tracks are beatmatched once their tempos are matched and their beats beats
-are aligned. A "perfect" beatmatch is nearly impossible - there will always be a
+are aligned. A “perfect” beatmatch is nearly impossible - there will always be a
 tiny difference in the playback rates. A keen DJ will keep his or her ears open
-and listen for the beats drifting out of alignment. This has a distinct "double
-bass kick" sound which is often preceded by the kick weakening in intensity as
+and listen for the beats drifting out of alignment. This has a distinct “double
+bass kick” sound which is often preceded by the kick weakening in intensity as
 the two kicks drift out of phase. When this happens, the beats can be realigned
 by simply tapping one of the temporary pitch bend buttons a few times in the
 appropriate direction.
@@ -320,7 +320,7 @@ Analyser Settings
 BPM and beat detection is a complex operation. Depending on your computer and
 the track's bitrate and duration this may take some time. By default Mixxx
 analyzes the complete track. To accelerate beat detection on slower computers, a
-"Fast Analysis" option is available. If enabled, the BPM is computed by
+“Fast Analysis” option is available. If enabled, the BPM is computed by
 analyzing the first minute of the track. In most cases this does not affect the
 beat detection negatively because most of today's dance music is written in a
 4/4 signature with a fixed tempo.

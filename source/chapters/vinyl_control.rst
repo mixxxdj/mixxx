@@ -168,8 +168,8 @@ You can configure vinyl control in
 Turntable Input Preamp
 ----------------------
 
-Many turntables provide unamplified "phono level" output which must be boosted
-to a "line level" signal. Normally, a mixer provides this amplification, but if
+Many turntables provide unamplified “phono level” output which must be boosted
+to a “line level” signal. Normally, a mixer provides this amplification, but if
 you're plugging a turntable's phono output directly into your soundcard, Mixxx
 can do the amplification. The :guilabel:`Turntable Input Preamp` slider allows
 you to adjust the level of preamplification applied to your decks' signal.
@@ -218,12 +218,12 @@ Mixxx has three control modes regardless of which control records you use.
 * **Relative Mode**: Takes the position to be relative to your deck's starting
   point, and only controls the pitch in Mixxx. It is not possible to seek using
   your deck in relative mode, with one exception.  If you drop the needle in the
-  "Lead-in Time" area (see "Vinyl Configuration" above), Mixxx will seek back to
+  “Lead-in Time” area (see `Vinyl Configuration`_), Mixxx will seek back to
   the beginning of the track.
 * **Constant Mode**: This special mode is usually only activated when Mixxx
   needs to keep playing a track even if the vinyl control signal isn't present.
   Constant mode is automatically enabled when the needle reaches the end of a
-  vinyl control record, or if "Needle-skip Prevention" is enabled and a needle
+  vinyl control record, or if “Needle-skip Prevention” is enabled and a needle
   skip is detected.
 
 Cueing Modes
@@ -271,7 +271,7 @@ the vinyl control audio signal itself. The two graphs correspond to your
 :guilabel:`Deck 1` and :guilabel:`Deck 2` input devices.
 
 If your vinyl signal is working, you should see a round, green circle drawn with
-two lines. This vinyl "doughnut" should be as circular as possible, and the
+two lines. This vinyl “doughnut” should be as circular as possible, and the
 lines should be clear with a minimum amount of fuzz.
 
 .. hint:: You can display the signal quality in the Mixxx user interface while

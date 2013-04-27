@@ -139,7 +139,7 @@ Right-clicking on selected tracks in the track list reveals the context menu:
   crates that you have created before. Alternatively, drag the selection to the
   playlist or crate in the sidebar.
 * **Lock/Unlock BPM**: Locks/Unlocks the :term:`BPM` of selected tracks so you
-  can't edit them in the track properties. If a BPM is locked, a “lock“ icon
+  can't edit them in the track properties. If a BPM is locked, a “lock” icon
   appears next to the tracks BPM.
 * **Clear BPM and Beatgrid**: Removes :term:`BPM` and :term:`beatgrid` data of
   selected tracks from the Mixxx libary. After doing this we recommended you
@@ -338,7 +338,7 @@ contain duplicate entries and do not support drack-and-drop within them.
 
 Playlists serve a limited purpose of keeping an ordered list of tracks.
 You can right-click a playlist to queue it to :ref:`Auto DJ <library-auto-dj>`,
-so in a sense you can "play" it.
+so in a sense you can “play” it.
 
 Often DJ's keep a playlist of favorites or plan a list of tracks they want to
 play at a party. In these cases they rarely care about the order since they will
@@ -364,7 +364,7 @@ tracks that are not necessarily already in your Mixxx library.
 
 Click the :guilabel:`Browse` sidebar item to navigate the computer and find your
 music. Depending on your :term:`operating system`, the music will usually be
-found in the “My Music” or "Music" folder. Drag the files you want to import to
+found in the “My Music” or “Music” folder. Drag the files you want to import to
 the :ref:`Library <library-root>` icon or directly to the
 :ref:`interface-waveform`.
 

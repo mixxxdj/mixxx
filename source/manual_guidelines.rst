@@ -32,7 +32,7 @@ to explore the software and get creative.
 
 Group problems the user might hit in a particular task right there with the
 instruction for that task. Do not force a user to go to a separate
-"Troubleshooting" section. We can have such separate sections, but as a author
+“Troubleshooting” section. We can have such separate sections, but as a author
 you should duplicate pitfalls and problems and include a solution in the task.
 
 Technical conventions
@@ -105,6 +105,16 @@ where it belongs and if it must replaced, like e.g.
 
 .. warning:: Do not include any dot in the file names of your screenshots your
              file name or you wont be able to generate PDF with LaTeX.
+
+Double quotes
+-------------
+
+Use curly double quotes (“ ”). Avoid typewriter double quotes (" ")
+produced by the convenient quotation mark button on your keyboard.
+For details and key combinations, see
+`Wikipedia <https://en.wikipedia.org/wiki/Quotation_mark#Typing_quotation_marks_on_a_computer_keyboard>`_
+and
+`maxeroni.com <http://maxeroni.com/2011/10/18/proper-quotation-marks-%E2%80%93-rules-of-typography-1/>_ .
 
 Admonitions
 -----------
