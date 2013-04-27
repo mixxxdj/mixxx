@@ -403,3 +403,10 @@ Glossary of Terms
      blue light are added together in various ways to reproduce a broad array of
      colors. The name of the model comes from the initials of the three additive
      primary colors, red, green, and blue.
+
+   GUI
+     Short for "Graphical User Interface" and is pronounced "gooey". It refers
+     to a user interface based on graphics (icons, pictures and menus) instead
+     of text. In Mixxx, it uses a mouse, keyboard, or
+     :term:`MIDI <MIDI controller>` / :term:`HID <HID controller>` controllers
+     as input devices.
