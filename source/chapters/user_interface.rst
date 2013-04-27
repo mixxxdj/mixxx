@@ -790,7 +790,7 @@ to a mix when used tactfully.
               software and then apply additional effects. Go to the chapter
               :ref:`advanced-external-fx` for more informations.
 
-.. interface-sampler
+.. _interface-sampler:
 
 The Sampler Section
 ===================
