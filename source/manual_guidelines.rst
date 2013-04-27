@@ -78,13 +78,13 @@ elements, use color ``#FF1F90`` if possible for consistency.
 
 Nice screenshot tools with build-in editor for annotations:
 
-* MacOSX: `Skitch <http://skitch.com/>`_
+* MacOSX: `Skitch <http://evernote.com/skitch/>`_
 * Linux: `Shutter <http://shutter-project.org/>`_
 * Windows: `PickPic <http://www.picpick.org/download>`_ or
   `Screenshotcaptor <http://www.donationcoder.com/Software/Mouser/screenshotcaptor/>`_
 
 Alternatively, import your screenshots into
-`Inkscape <http://www.incscape.org>`_, add annotations and export as .png to
+`Inkscape <http://inkscape.org/>`_, add annotations and export as .png to
 :file:`/static`. Then save the original work as .svg to :file:`/static` as well,
 so any future contributor can work on your annotations at a later time.
 
@@ -280,8 +280,8 @@ Resources
 =========
 
 The user manual for Mixxx is written in `reStructuredText (reST)
-<http://docutils.sourceforge.net/rst.html/>`_ format using
-`Sphinx <http://sphinx.pocoo.org/>`_.
+<http://docutils.sourceforge.net/rst.html>`_ format using
+`Sphinx <http://sphinx-doc.org>`_.
 
 The `Mixxx user manual repostitory <https://code.launchpad.net/~mixxxdevelopers/mixxx/manual>`_
 contains the Sphinx source to generate the manual as found at
@@ -289,7 +289,7 @@ contains the Sphinx source to generate the manual as found at
 
 Sphinx and RST syntax guides:
 
-* `<http://sphinx.pocoo.org/rest.html>`_
+* `<http://sphinx-doc.org/rest.html>`_
 * `<http://www.siafoo.net/help/reST>`_
 * `<http://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html>`_
 

@@ -132,7 +132,7 @@ At the present time, Serato records are recommended if you are looking to buy
 vinyl. If you want to use CDs, you can download a free copy for personal use
 from `Serato`_.
 
-.. _Serato: http://serato.com/downloads/scratchlive-controlcd/
+.. _Serato: http://serato.com/scratchlive/downloads/scratchlive-controlcd
 
 .. _vinyl-control-config:
 
