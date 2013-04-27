@@ -171,11 +171,11 @@ alternative sound setup may look like the figure below:
           computer. Just follow the steps in :ref:`control-midi` for each
           controller you want to use.
 
-.. _setup-vinyl-control:
-
 .. raw:: pdf
 
    PageBreak
+
+.. _setup-vinyl-control:
 
 Laptop, External Hardware Mixer and Vinyl Control
 -------------------------------------------------
