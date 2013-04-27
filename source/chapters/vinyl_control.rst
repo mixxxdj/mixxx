@@ -26,6 +26,10 @@ computer on which Mixxx is running. When a record is played on one of the
 attached turntables, Mixxx reads the timecode from the record and uses the
 information to manipulate whatever track is loaded.
 
+.. raw:: pdf
+
+   PageBreak
+
 What do I need to use it?
 =========================
 
@@ -58,6 +62,10 @@ the basic ones are:
           standard turntables. Many modern turntables have a *Line/Phono* select
           switch.  If yours does, make sure it matches the input or switch
           setting on your sound card.
+
+.. raw:: pdf
+
+   PageBreak
 
 **Setup 2: CDJ**
 

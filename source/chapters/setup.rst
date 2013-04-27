@@ -173,6 +173,10 @@ alternative sound setup may look like the figure below:
 
 .. _setup-vinyl-control:
 
+.. raw:: pdf
+
+   PageBreak
+
 Laptop, External Hardware Mixer and Vinyl Control
 -------------------------------------------------
 
