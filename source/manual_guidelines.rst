@@ -114,7 +114,7 @@ produced by the convenient quotation mark button on your keyboard.
 For details and key combinations, see
 `Wikipedia <https://en.wikipedia.org/wiki/Quotation_mark#Typing_quotation_marks_on_a_computer_keyboard>`_
 and
-`maxeroni.com <http://maxeroni.com/2011/10/18/proper-quotation-marks-%E2%80%93-rules-of-typography-1/>_ .
+`maxeroni.com <http://maxeroni.com/2011/10/18/proper-quotation-marks-%E2%80%93-rules-of-typography-1/>`_ .
 
 Admonitions
 -----------
