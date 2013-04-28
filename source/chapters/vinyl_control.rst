@@ -294,7 +294,7 @@ Enable Vinyl Control` or use the :ref:`appendix-shortcuts`.
 Vinyl Control Status Display
 ----------------------------
 
-.. figure:: ../_static/deere_deck_vinylcontrol_status.png
+.. figure:: ../_static/Mixxx-111-Deere-Vinylcontrol-Status.png
    :align: center
    :width: 50%
    :figwidth: 100%

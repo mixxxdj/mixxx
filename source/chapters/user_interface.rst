@@ -8,7 +8,7 @@ You are going to want to get very familiar with this interface because it is
 the main way to use Mixxx. In this chapter, we present the default interface of
 Mixxx and describe its elements, knobs and faders.
 
-.. figure:: ../_static/deere_large.png
+.. figure:: ../_static/Mixxx-111-Deere-1440x900.png
    :align: center
    :width: 100%
    :figwidth: 100%
@@ -30,9 +30,9 @@ The Deck Sections
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_deck_section.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck.png
    :align: center
-   :width: 70%
+   :width: 60%
    :figwidth: 100%
    :alt: A deck
    :figclass: pretty-figures
@@ -47,7 +47,7 @@ turntable :term:`deck`. We are going to break this down into sections.
 Track Information Display
 -------------------------
 
-.. figure:: ../_static/deere_deck_track_info.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck-Track-Info.png
    :align: center
    :width: 60%
    :figwidth: 100%
@@ -93,7 +93,7 @@ Waveform Displays
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_deck_waveform.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck-Waveform.png
    :align: center
    :width: 60%
    :figwidth: 100%
@@ -176,7 +176,7 @@ Deck Options Button Grid
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_deck_options_grid.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck-Button-Grid.png
    :align: center
    :width: 90px
    :figwidth: 100%
@@ -225,7 +225,7 @@ Vinyl Control Mode and Cueing controls
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_deck_vinyl_mode.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck-Vinyl-Mode.png
    :align: center
    :width: 70%
    :figwidth: 100%
@@ -270,9 +270,9 @@ Sync and Rate Controls
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_deck_rate_control.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck-Rate-Control.png
    :align: right
-   :width: 60%
+   :width: 64px
    :figwidth: 100px
    :alt: The rate control section of the deck
    :figclass: pretty-figures
@@ -346,9 +346,9 @@ Transport Controls
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_deck_transport.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck-Transport.png
    :align: center
-   :width: 70px
+   :width: 66px
    :figwidth: 100%
    :alt: The transport controls of the deck
    :figclass: pretty-figures
@@ -377,9 +377,9 @@ Loop Controls
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_deck_loops.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck-Loops.png
    :align: center
-   :width: 250px
+   :width: 236px
    :figwidth: 100%
    :alt: The beatloop and looping controls of the deck
    :figclass: pretty-figures
@@ -444,9 +444,9 @@ Hotcue Controls
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_deck_hotcues.png
+.. figure:: ../_static/Mixxx-111-Deere-Deck-Hotcues.png
    :align: center
-   :width: 70px
+   :width: 65px
    :figwidth: 100%
    :alt: The hotcue controls of the deck
    :figclass: pretty-figures
@@ -504,9 +504,9 @@ The Mixer Section
    RJ Ryan <rryan@mixxx.org>
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_mixer.png
+.. figure:: ../_static/Mixxx-111-Deere-Mixer.png
    :align: center
-   :width: 50%
+   :width: 321px
    :figwidth: 100%
    :alt: The mixer section
    :figclass: pretty-figures
@@ -543,9 +543,9 @@ Channel Faders and VU Meters
 Section Expansion Buttons
 -------------------------
 
-.. figure:: ../_static/deere_mixer_expansion_buttons.png
+.. figure:: ../_static/Mixxx-111-Deere-Mixer-Expansion-Buttons.png
    :align: center
-   :width: 30%
+   :width: 154px
    :figwidth: 100%
    :alt: The section expansion buttons
    :figclass: pretty-figures
@@ -569,9 +569,9 @@ If you click on either :guilabel:`MIC`, :guilabel:`SAMPLER`, or
 Headphone and Master Mix Controls
 ---------------------------------
 
-.. figure:: ../_static/deere_mixer_master.png
+.. figure:: ../_static/Mixxx-111-Deere-Mixer-Master.png
    :align: center
-   :width: 50%
+   :width: 321px
    :figwidth: 100%
    :alt: The headphone and master mix knobs
    :figclass: pretty-figures
@@ -610,9 +610,9 @@ Headphone and Master Mix Controls
 PFL/Headphone Button
 --------------------
 
-.. figure:: ../_static/deere_mixer_pfl.png
+.. figure:: ../_static/Mixxx-111-Deere-Mixer-PFL.png
    :align: center
-   :width: 50%
+   :width: 321px
    :figwidth: 100%
    :alt: The headphone buttons of both decks in the mixer
    :figclass: pretty-figures
@@ -632,9 +632,9 @@ will play next in your headphones before your audience hears the track
 Equalizers and Gain Knobs
 -------------------------
 
-.. figure:: ../_static/deere_mixer_eq.png
+.. figure:: ../_static/Mixxx-111-Deere-Mixer-EQ.png
    :align: right
-   :width: 70%
+   :width: 81px
    :figwidth: 100px
    :alt: The EQ Controls of a deck in the mixer
    :figclass: pretty-figures
@@ -669,9 +669,9 @@ Equalizers and Gain Knobs
 Crossfader
 ----------
 
-.. figure:: ../_static/deere_mixer_crossfader.png
+.. figure:: ../_static/Mixxx-111-Deere-Mixer-Crossfader.png
    :align: center
-   :width: 50%
+   :width: 449px
    :figwidth: 100%
    :alt: The crossfader section of the mixer with Play/Pause and Cue buttons
    :figclass: pretty-figures
@@ -761,9 +761,9 @@ Interface`.
 Effects Controls
 ----------------
 
-.. figure:: ../_static/deere_mixer_flanger.png
+.. figure:: ../_static/Mixxx-111-Deere-Mixer-FX.png
    :align: center
-   :width: 50%
+   :width: 321px
    :figwidth: 100%
    :alt: The effect control section of the mixer
    :figclass: pretty-figures
@@ -793,9 +793,9 @@ to a mix when used tactfully.
 The Sampler Section
 ===================
 
-.. figure:: ../_static/Mixxx-111-Deere-Samplerdeck.png
+.. figure:: ../_static/Mixxx-111-Deere-Sampler-Deck.png
    :align: center
-   :width: 60%
+   :width: 304px
    :figwidth: 100%
    :alt: A sample deck
    :figclass: pretty-figures
@@ -840,9 +840,9 @@ The Microphone Section
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/deere_microphone.png
+.. figure:: ../_static/Mixxx-111-Deere-Microphone.png
    :align: center
-   :width: 40%
+   :width: 286px
    :figwidth: 100%
    :alt: The Microphone section
    :figclass: pretty-figures
@@ -897,7 +897,7 @@ Preview Deck Section
 .. sectionauthor::
    S.Brandt <s.brandt@mixxx.org>
 
-.. figure:: ../_static/Mixxx-111-Library-Previewdeck.png
+.. figure:: ../_static/Mixxx-111-Deere-Preview-Deck.png
    :align: center
    :width: 30%
    :figwidth: 100%
