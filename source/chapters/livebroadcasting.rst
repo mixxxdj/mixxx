@@ -251,8 +251,6 @@ To activate MP3 streaming on Windows, follow these steps:
 Activate MP3 streaming support on Mac OS X
 ------------------------------------------
 
-.. todo:: Add better links to Lame, mir.cr sucks. Best would be self-hosted.
-
 Method A: Download
 ^^^^^^^^^^^^^^^^^^
 To activate MP3 streaming on Mac OS X, follow these steps:
