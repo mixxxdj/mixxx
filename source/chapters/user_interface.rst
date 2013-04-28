@@ -605,8 +605,6 @@ Headphone and Master Mix Controls
             master output signal is clipping (too loud). Lower the volume with
             using the volume knob.
 
-.. todo:: Add link to headphone cueing or add it to this section.
-
 .. _interface-pfl:
 
 PFL/Headphone Button
