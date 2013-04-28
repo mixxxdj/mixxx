@@ -213,6 +213,9 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     QApplication a(argc, argv);
 
+    //Support utf-8 for all translation strings
+    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
 #ifdef __LADSPA__
