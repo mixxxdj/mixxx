@@ -90,8 +90,8 @@ Live Broadcasting Preferences
 
 .. figure:: ../_static/Mixxx-111-Preferences-Livebroadcasting.png
    :align: center
-   :width: 100%
-   :figwidth: 90%
+   :width: 75%
+   :figwidth: 100%
    :alt: Mixxx preferences - Setting up live broadcasting
    :figclass: pretty-figures
 

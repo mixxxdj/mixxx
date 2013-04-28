@@ -327,7 +327,7 @@ beat detection negatively because most of today's dance music is written in a
 
 .. figure:: ../_static/Mixxx-111-Preferences-Beatdetection.png
    :align: center
-   :width: 100%
+   :width: 75%
    :figwidth: 100%
    :alt: Mixxx preferences - BPM settings
    :figclass: pretty-figures
@@ -397,7 +397,7 @@ the microphone.
 
 .. figure:: ../_static/Mixxx-111-Library-Recordings.png
    :align: center
-   :width: 85%
+   :width: 100%
    :figwidth: 100%
    :alt: Mixxx library - Recordings view
    :figclass: pretty-figures
@@ -481,7 +481,7 @@ playlist. The Auto DJ playlist is empty by default.
 
 .. figure:: ../_static/Mixxx-111-Library-Add-to-Auto-DJ.png
    :align: center
-   :width: 60%
+   :width: 50%
    :figwidth: 100%
    :alt: Mixxx library - Adding a playlist to Auto DJ
    :figclass: pretty-figures

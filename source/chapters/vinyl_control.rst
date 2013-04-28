@@ -51,7 +51,7 @@ the basic ones are:
 
 .. figure:: ../_static/mixxx_setup_timecode_vc.png
    :align: center
-   :width: 90%
+   :width: 75%
    :figwidth: 100%
    :alt: Using Mixxx together with turntables and external mixer
    :figclass: pretty-figures
@@ -79,7 +79,7 @@ the basic ones are:
 
 .. figure:: ../_static/mixxx_setup_timecode_cdj.png
    :align: center
-   :width: 90%
+   :width: 75%
    :figwidth: 100%
    :alt: Using Mixxx together with CDJs and external mixer
    :figclass: pretty-figures

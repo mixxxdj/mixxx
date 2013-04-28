@@ -37,7 +37,7 @@ Laptop Only
 
 .. figure:: ../_static/Mixxx-111-Preferences-Soundhardware.png
    :align: center
-   :width: 90%
+   :width: 75%
    :figwidth: 100%
    :alt: Using Mixxx with your built-in sound card
    :figclass: pretty-figures
@@ -76,7 +76,7 @@ Laptop and an External USB Soundcard
 
 .. figure:: ../_static/mixxx_setup_ext_soundcard.png
    :align: center
-   :width: 90%
+   :width: 75%
    :figwidth: 100%
    :alt: Using Mixxx together with an external soundcard
    :figclass: pretty-figures
@@ -127,7 +127,7 @@ presets. To see the full list, see :ref:`control-midi`.
 
 .. figure:: ../_static/mixxx_setup_midi_with_ext_sound.png
    :align: center
-   :width: 90%
+   :width: 75%
    :figwidth: 100%
    :alt: Using Mixxx together with a MIDI controller and external soundcard
    :figclass: pretty-figures
@@ -150,7 +150,7 @@ alternative sound setup may look like the figure below:
 
 .. figure:: ../_static/mixxx_setup_midi_integrated_sound.png
    :align: center
-   :width: 90%
+   :width: 75%
    :figwidth: 100%
    :alt: Using Mixxx together with a MIDI controller and integrated soundcard
    :figclass: pretty-figures

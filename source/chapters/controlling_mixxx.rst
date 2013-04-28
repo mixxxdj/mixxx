@@ -96,7 +96,7 @@ Loading a controller preset
 ---------------------------
 .. figure:: ../_static/Mixxx-111-Preferences-Controllers.png
    :align: center
-   :width: 85%
+   :width: 75%
    :figwidth: 100%
    :alt: Mixxx Preferences - Loading a controller preset
    :figclass: pretty-figures
