@@ -5,6 +5,7 @@
 
 #include "library/trackcollection.h"
 #include "library/searchqueryparser.h"
+#include "library/queryutil.h"
 
 namespace {
 
@@ -190,9 +191,7 @@ bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
     query.prepare(queryString);
 
     if (!query.exec()) {
-        qDebug() << this << "updateIndexWithQuery error:"
-                 << __FILE__ << __LINE__
-                 << query.executedQuery() << query.lastError();
+        LOG_FAILED_QUERY(query);
         return false;
     }
 
@@ -522,6 +521,11 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
                                    QString extraFilter, int sortColumn,
                                    Qt::SortOrder sortOrder,
                                    QHash<int, int>* trackToIndex) {
+    // Skip processing if there are no tracks to filter or sort.
+    if (trackIds.size() == 0) {
+        return;
+    }
+
     if (!m_bIndexBuilt) {
         buildIndex();
     }
@@ -559,8 +563,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
     query.prepare(queryString);
 
     if (!query.exec()) {
-        qDebug() << this << "select() error:" << __FILE__ << __LINE__
-                 << query.executedQuery() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
 
     QSqlRecord record = query.record();
@@ -711,7 +714,9 @@ QString BaseTrackCache::orderByClause(int sortColumn,
     QString queryString = QString("SELECT %1 FROM %2 LIMIT 1")
             .arg(m_columnsJoined, m_tableName);
     query.prepare(queryString);
-    query.exec();
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
 
     QString s;
     QSqlField f = query.record().field(sortColumn);

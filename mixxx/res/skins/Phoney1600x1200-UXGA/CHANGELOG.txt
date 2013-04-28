@@ -22,6 +22,10 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.09  (13/04/2013)
+* Fix: Removes <BeatHighlightColor> from the waveforms, which blinks for a brief about of
+  time to indicate when the beat is near the playposition. Fixes lp:1112396
+  
 v1.11.0.08  (20/01/2013)
 * Feature: Add <PlayPosColor> to improve visibility of play position marker. Part of lp:1099182 & lp:1094791
 * Fix: Remove deprecated <CueColor> key, Set empty <BeatHighlightColor> to reduce "on-beat" flicker in waveform

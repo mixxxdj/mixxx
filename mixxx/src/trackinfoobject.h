@@ -86,6 +86,7 @@ public:
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
+    Q_PROPERTY(QString key READ getKey WRITE setKey)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
 

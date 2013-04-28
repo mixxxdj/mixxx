@@ -93,10 +93,11 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     }
 }
 
-int CrateTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int CrateTableModel::addTracks(const QModelIndex& index,
+                               const QList<QString> &locations) {
     Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
-    // the user probably dropped a file from outside Mixxx into this playlist.
+    // the user probably dropped a file from outside Mixxx into this crate.
     QList<QFileInfo> fileInfoList;
     foreach(QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));

@@ -5,8 +5,7 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
     </context>
     <context>
@@ -64,8 +63,7 @@
         </message>
         <message>
             <source>Duplicate Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Duplica playlist</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -97,28 +95,23 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_copia</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Errore nella creazione della playlist</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Errore sconosciuto durante la creazione della playlist: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>File playlist (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Playlist M3U (*.m3u);;Playlist M3U8 (*.m3u8);;Playlist PLS (*.pls);;Testo CSV (*.csv);;File testuale (*.txt)</translation>
         </message>
     </context>
     <context>
@@ -205,8 +198,7 @@
         </message>
         <message>
             <source>Preview</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Preview</translation>
         </message>
     </context>
     <context>
@@ -339,8 +331,7 @@
         <name>BulkController</name>
         <message>
             <source>USB Controller</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>USB Controller</translation>
         </message>
     </context>
     <context>
