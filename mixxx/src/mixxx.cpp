@@ -1157,7 +1157,7 @@ void MixxxApp::slotFileLoadSongPlayer(int deck) {
             .arg(QString::number(deck));
     QString areYouSure = tr("Are you sure you want to load a new track?");
 
-    if (play->get() == 1.) {
+    if (play && play->get() > 0.0) {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
             deckWarningMessage + "\n" + areYouSure,
             QMessageBox::Yes | QMessageBox::No,
