@@ -10,7 +10,7 @@ your computer.
 
 Installation on Windows
 =======================
-.. figure:: ../_static/Mixxx-110-Installation-Windows.png
+.. figure:: ../_static/Mixxx-111-Installation-Windows.png
    :align: center
    :width: 50%
    :figwidth: 100%
@@ -30,8 +30,8 @@ Installation on Windows
 Mixxx is supported on Windows 8, Windows 7, Windows Vista or Windows XP, with
 native 32 and 64-bit versions.
 
-.. note:: If you are not sure about 32-bit versus 64-bit, pick the 32-bit version
-          when downloading the Mixxx installer.
+.. note:: If you are not sure about 32-bit versus 64-bit, pick the 32-bit
+          version when downloading the Mixxx installer.
 
 Installation on Mac OS X
 ========================

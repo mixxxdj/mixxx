@@ -39,12 +39,13 @@ Importing your audio files
 
 .. figure:: ../_static/Mixxx-111-1st-run-choose-library-directory-win.png
    :align: center
-   :width: 75%
+   :width: 50%
    :figwidth: 100%
    :alt: Mixxx 1st run - Choose music library directory dialog
    :figclass: pretty-figures
 
-   Mixxx 1st run on Windows 7 - Choose music library directory dialog
+   Mixxx running on Windows 8 - Choose music library directory dialog
+
 
 **Setup the music library**
   The first time you run Mixxx, you are asked to select a directory where your
@@ -193,7 +194,6 @@ The following example list all tracks by “Danger” that are rated 4 or 5:
 | argument or not. Quotes must be used | no space between the operator and the |
 | for multi-word text arguments.       | number.                               |
 +--------------------------------------+---------------------------------------+
-
 
 .. _djing-previewing-tracks:
 
