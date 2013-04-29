@@ -17,19 +17,10 @@ Mixxx |version| User Manual
           * Run :command:`make latexpdf` twice, or the TOC is missing from the resulting
             pdf
 
-Mixxx is Free [#f1]_ DJ software for Windows, Mac OS X, and Linux.
-**Mixxx gives you everything you need to become a superstar DJ** (except talent
-and hard work). Using Mixxx, you can rock the party with your vinyl turntables,
-your :term:`MIDI`/:term:`HID` controllers, or even just your keyboard.
-
-That's right, this is you after learning how to DJ with Mixxx:
-
-.. figure:: _static/armin-jesus.jpg
-   :align: center
-   :width: 60%
-   :figwidth: 100%
-   :alt: Armin van Buuren doing the Jesus pose.
-   :figclass: pretty-figures
+Mixxx is Free [#f1]_ DJ software for Windows, Mac OS X, and Linux. **Mixxx gives
+you everything you need to become a professional DJ** (except talent and hard
+work). Using Mixxx, you can rock the party with your vinyl turntables, your
+:term:`MIDI`/:term:`HID` controllers, or even just your keyboard.
 
 Table of Contents
 -----------------
