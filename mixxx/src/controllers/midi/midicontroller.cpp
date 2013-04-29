@@ -79,6 +79,7 @@ void MidiController::createOutputHandlers() {
     }
 
     QHashIterator<MixxxControl, MidiOutput> outIt(m_preset.outputMappings);
+    QList<QString> failures;
     while (outIt.hasNext()) {
         outIt.next();
 
@@ -108,31 +109,54 @@ void MidiController::createOutputHandlers() {
                                                        min, max, status, control,
                                                        on, off);
         if (!moh->validate()) {
-            QString errorLog = QString("Invalid MixxxControl: %1, %2")
-                                        .arg(group, key).toUtf8();
+            QString errorLog =
+                QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
+                        .arg(QString::number(status, 16).toUpper(),
+                             QString::number(control, 16).toUpper().rightJustified(2,'0'))
+                        .arg(group, key).toUtf8();
+            qWarning() << errorLog;
 
-            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-            props->setType(DLG_WARNING);
-            props->setTitle(tr("MixxxControl not found"));
-            props->setText(QString(tr("The MixxxControl '%1, %2' specified in the "
-                                      "loaded mapping is invalid."))
-                           .arg(group, key));
-            props->setInfoText(QString(tr("The MIDI output message 0x%1 0x%2 will not be bound."
-                                          "\n(Click Show Details for hints.)"))
-                               .arg(QString::number(status, 16).toUpper(),
-                                    QString::number(control, 16).toUpper().rightJustified(2,'0')));
-            QString detailsText = QString(tr("* Check to see that the "
-                                             "MixxxControl name is spelled correctly in the mapping "
-                                             "file (.xml)\n"));
-            detailsText += QString(tr("* Make sure the MixxxControl you're trying to use actually exists."
-                                      " Visit this wiki page for a complete list:"));
-            detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/mixxxcontrols");
-            props->setDetails(detailsText);
-            ErrorDialogHandler::instance()->requestErrorDialog(props);
+            if (debugging()) {
+                failures.append(errorLog);
+            }
+            else if (group.startsWith("[Channel")) {
+                // Don't complain if the preset specifies more decks than we have available
+                int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt();
+                ControlObjectThread* mcNumDecks = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "num_decks")));
+                if (mcNumDecks != NULL) {
+                    int numDecks = mcNumDecks->get();
+                    if (deckNum <= numDecks) {
+                        failures.append(errorLog);
+                    }
+                    delete mcNumDecks;
+                }
+            }
+
             delete moh;
             continue;
         }
         m_outputs.append(moh);
+    }
+
+    if (!failures.isEmpty()) {
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(tr("MixxxControl(s) not found"));
+        props->setText(QString(tr("One or more MixxxControls specified in the "
+                                "outputs section of the loaded preset were invalid.")));
+        props->setInfoText(QString(tr("Some LEDs or other feedback may not work correctly.")));
+        QString detailsText = QString(tr("* Check to see that the MixxxControl "
+                                        "names are spelled correctly in the mapping "
+                                        "file (.xml)\n"));
+        detailsText += QString(tr("* Make sure the MixxxControls in question actually exist."
+                                " Visit this wiki page for a complete list: "));
+        detailsText += QString("http://mixxx.org/wiki/doku.php/mixxxcontrols\n");
+        while (!failures.isEmpty()) {
+            detailsText += QString("\n");
+            detailsText += failures.takeFirst();
+        }
+        props->setDetails(detailsText);
+        ErrorDialogHandler::instance()->requestErrorDialog(props);
     }
 }
 
