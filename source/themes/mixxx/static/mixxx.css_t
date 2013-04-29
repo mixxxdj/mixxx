@@ -223,6 +223,13 @@ div.body h4 { font-size: 110%; background-color: #E7EBEE; }
 div.body h5 { font-size: 100%; background-color: #F6F8F9; }
 div.body h6 { font-size: 100%; background-color: #F6F8F9; }
 
+/* Mark external links */
+a.external:after {
+    content: "\21D7";
+    margin: 0 0 0 5px;
+}
+
+}
 a.headerlink {
     color: #c60f0f;
     font-size: 0.8em;
@@ -361,5 +368,3 @@ div.viewcode-block:target {
     border-top: 1px solid #ac9;
     border-bottom: 1px solid #ac9;
 }
-
-

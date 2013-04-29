@@ -122,6 +122,10 @@ Through the manual you'll find text formatted like this:
   This is used to mark a keystroke, or a sequence of keystrokes. In this
   example, you would have to hold down the *STRG* key, then to press *G*.
 
+* `<http:wikipedia.com>`_
+
+  Links to external websites are marked like this.
+
 Important informations in this manual are highlighted like this:
 
 * .. note:: For anything that should receive a bit more attention.
