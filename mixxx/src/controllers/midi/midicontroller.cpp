@@ -11,6 +11,7 @@
 #include "controllers/defs_controllers.h"
 #include "controlobject.h"
 #include "errordialoghandler.h"
+#include "playermanager.h"
 
 MidiController::MidiController() : Controller() {
 }
@@ -79,7 +80,7 @@ void MidiController::createOutputHandlers() {
     }
 
     QHashIterator<MixxxControl, MidiOutput> outIt(m_preset.outputMappings);
-    QList<QString> failures;
+    QStringList failures;
     while (outIt.hasNext()) {
         outIt.next();
 
@@ -116,19 +117,13 @@ void MidiController::createOutputHandlers() {
                         .arg(group, key).toUtf8();
             qWarning() << errorLog;
 
+            int deckNum = 0;
             if (debugging()) {
                 failures.append(errorLog);
-            }
-            else if (group.startsWith("[Channel")) {
-                // Don't complain if the preset specifies more decks than we have available
-                int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt();
-                ControlObjectThread* mcNumDecks = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "num_decks")));
-                if (mcNumDecks != NULL) {
-                    int numDecks = mcNumDecks->get();
-                    if (deckNum <= numDecks) {
-                        failures.append(errorLog);
-                    }
-                    delete mcNumDecks;
+            } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
+                int numDecks = PlayerManager::numDecks();
+                if (deckNum <= numDecks) {
+                    failures.append(errorLog);
                 }
             }
 
@@ -142,19 +137,16 @@ void MidiController::createOutputHandlers() {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(tr("MixxxControl(s) not found"));
-        props->setText(QString(tr("One or more MixxxControls specified in the "
-                                "outputs section of the loaded preset were invalid.")));
-        props->setInfoText(QString(tr("Some LEDs or other feedback may not work correctly.")));
-        QString detailsText = QString(tr("* Check to see that the MixxxControl "
-                                        "names are spelled correctly in the mapping "
-                                        "file (.xml)\n"));
-        detailsText += QString(tr("* Make sure the MixxxControls in question actually exist."
-                                " Visit this wiki page for a complete list: "));
-        detailsText += QString("http://mixxx.org/wiki/doku.php/mixxxcontrols\n");
-        while (!failures.isEmpty()) {
-            detailsText += QString("\n");
-            detailsText += failures.takeFirst();
-        }
+        props->setText(tr("One or more MixxxControls specified in the "
+                          "outputs section of the loaded preset were invalid."));
+        props->setInfoText(tr("Some LEDs or other feedback may not work correctly."));
+        QString detailsText = tr("* Check to see that the MixxxControl "
+                                 "names are spelled correctly in the mapping "
+                                 "file (.xml)\n");
+        detailsText += tr("* Make sure the MixxxControls in question actually exist."
+                          " Visit this wiki page for a complete list: ");
+        detailsText += "http://mixxx.org/wiki/doku.php/mixxxcontrols\n\n";
+        detailsText += failures.join("\n");
         props->setDetails(detailsText);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
     }
