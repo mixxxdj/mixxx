@@ -3,10 +3,31 @@
 DJing With Mixxx
 ****************
 
-Mixxx was designed to be easy to learn for both novice and experienced DJs. The
-user interface mimics a hardware DJ mixer, but also includes several extra
-elements to give DJs a better user experience, such as the optional parallel
-waveform displays.
+Mixxx was designed to be easy to learn for both novice and experienced DJs.
+
+This part of the manual provides you with directions for importing and managing
+you music collection and playing your tracks.
+
+.. _djing-open:
+
+Opening Mixxx
+=============
+|logo| Once you've :ref:`installed Mixxx <installing-mixxx>` , start by opening
+Mixxx and import your music to the Mixxx library.
+
+**Windows**
+  Double-click the Mixxx icon on the Desktop. Alternatively, browse your Windows
+  start menu and click the Mixxx icon, or perform a search for :file:`Mixxx.exe`.
+
+**Mac OSX**
+  Double-click the Mixxx icon in the :file:`Applications` folder. Alternatively,
+  drag the Mixxx icon to the dock and double-click it there, or perform a search
+  for :file:`Mixxx.app`.
+
+**GNU/Linux**
+  Simply type :command:`mixxx` into the terminal, then hit :kbd:`Return`. With
+  some distributions like Ubuntu you can also double-click the Mixxx icon in the
+  launcher. Alternatively, perform a search for :file:`mixxx`.
 
 .. _djing-import:
 

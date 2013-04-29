@@ -1,4 +1,3 @@
-
 .. include:: /shortcuts.rstext
 
 .. _installing-mixxx:
@@ -57,7 +56,6 @@ Method A: Direct Download
   your :file:`Applications` folder.
 * Eject the Mixxx installation volume from the Finder by clicking on the icon
   right next to *Mixxx* volume name.
-* Launch Mixxx from your :file:`Application` folder.
 
 Mixxx requires an Intel Mac running Mac OS X 10.5 or newer.
 
@@ -81,7 +79,6 @@ The Mac App Store makes getting new apps easier than ever.
 * Select Mixxx and click the :guilabel:`Install` button.
 * Type in your administrator password if asked.
 * Mixxx will be installed to your :file:`Applications` folder.
-* Launch Mixxx from your :file:`Application` folder.
 
 The App Store version of Mixxx is under some circumstances out of date,
 therefore using `Method A: Direct Download`_ is preferable.
@@ -152,3 +149,12 @@ If your operating system isn't listed here, then it's likely you're going to
 have to build Mixxx from the source code. For more information, go to:
 
 * `<http://mixxx.org/wiki/doku.php#build_mixxx>`_
+
+Where to go from here?
+======================
+
+* :doc:`Set up your audio devices and controllers <setup>`
+* :doc:`Open Mixxx and start importing your audio file <djing_with_mixxx>`
+* :doc:`Get familiar with the Mixxx user interface <user_interface>`
+
+
