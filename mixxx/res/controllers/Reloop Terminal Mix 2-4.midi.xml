@@ -3,7 +3,7 @@
     <info>
         <name>Reloop Terminal Mix 2/4</name>
         <author>Sean M. Pappalardo</author>
-        <description>A complete preset (decks 3 &amp; 4 disabled) for a single Reloop Terminal Mix 2 or 4. Uses scripting.</description>
+        <description>A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4. Uses scripting.</description>
         <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix</wiki>
     </info>
     <controller id="TerminalMix">
@@ -121,7 +121,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-<!-- *** Decks 3 & 4 not available in v1.11.x ***
+
             <control>
                 <group>[Channel3]</group>
                 <key>TerminalMix.cfAssignL</key>
@@ -176,7 +176,7 @@
                     <Script-Binding/>
                 </options>
             </control>
--->
+
             <!-- *** Deck 1 *** -->
             <control>   <!-- With vinyl button active -->
                 <group>[Channel1]</group>
@@ -1490,9 +1490,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-            <!-- *** Decks 3 & 4 not available in v1.11.x *** -->
             <!-- *** Deck 3 *** -->
-<!--
             <control>
                 <group>[Channel3]</group>
                 <key>TerminalMix.wheelTouch</key>
@@ -1583,7 +1581,6 @@
                     <normal/>
                 </options>
             </control>
--->
             <!--    Samplers    -->
             <control>
                 <group>[Sampler1]</group>
@@ -1793,7 +1790,6 @@
                 </options>
             </control>
             <!--    Hot cues    -->
-<!-- *** Decks 3 & 4 not available in v1.11.x ***
             <control>
                 <group>[Channel3]</group>
                 <key>hotcue_1_activate</key>
@@ -2172,9 +2168,7 @@
                     <soft-takeover/>
                 </options>
             </control>
--->
             <!-- *** Deck 4 *** -->
-<!-- *** Decks 3 & 4 not available in v1.11.x ***
             <control>
                 <group>[Channel4]</group>
                 <key>TerminalMix.wheelTouch</key>
@@ -2412,7 +2406,6 @@
                 </options>
             </control>
             <!--    Hot cues    -->
-<!-- *** Decks 3 & 4 not available in v1.11.x ***            
             <control>
                 <group>[Channel4]</group>
                 <key>hotcue_1_activate</key>
@@ -2793,7 +2786,6 @@
                     <soft-takeover/>
                 </options>
             </control>
--->
         </controls>
         <outputs>
             <!-- *** Deck 1 *** -->
@@ -3207,7 +3199,6 @@
                 <minimum>0.1</minimum>
             </output>
             <!-- *** Deck 3 *** -->
-<!-- *** Decks 3 & 4 not available in v1.11.x ***
             <output>
                 <group>[Channel3]</group>
                 <key>flanger</key>
@@ -3412,9 +3403,7 @@
                 <midino>0x61</midino>
                 <minimum>0.1</minimum>
             </output>
--->
             <!-- *** Deck 4 *** -->
-<!-- *** Decks 3 & 4 not available in v1.11.x ***
             <output>
                 <group>[Channel4]</group>
                 <key>flanger</key>
@@ -3562,7 +3551,7 @@
                 <midino>0x1B</midino>
                 <minimum>0.1</minimum>
             </output>
-            
+            <!-- Hot cues -->
             <output>
                 <group>[Channel4]</group>
                 <key>hotcue_1_enabled</key>
@@ -3619,7 +3608,6 @@
                 <midino>0x61</midino>
                 <minimum>0.1</minimum>
             </output>
--->
         </outputs>
     </controller>
 </MixxxMIDIPreset>
