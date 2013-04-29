@@ -38,8 +38,13 @@ the basic ones are:
 
 **Setup 1: Vinyl DJ**
 
-  Two timecode vinyls, two turntables with phono pre-amplifiers (or line-out),
-  and two stereo sound inputs.
+  Two timecode vinyls, two turntables with phono pre-amplifiers (or line-level
+  output), and two stereo sound inputs.
+
+  Your sound card inputs must match the turntable outputs.  Older turntables only
+  have phono-level outputs, and you should find a sound card that has a phono
+  pre-amplifier built in.  Some turntables have line-level output, and these can
+  be used with any sound card.
 
   You can try skipping the phono pre-amps if you use the software pre-amp in
   Mixxx on the Vinyl Control preferences pane. This may not work for everyone.
@@ -58,10 +63,9 @@ the basic ones are:
 
    Using Mixxx together with turntables and external mixer
 
-.. note:: You must set the input mode of your sound card to *phono* if you have
-          standard turntables. Many modern turntables have a *Line/Phono* select
-          switch.  If yours does, make sure it matches the input or switch
-          setting on your sound card.
+.. note:: Many modern turntables have a *Line/Phono* select switch.  If yours
+          does, make sure it matches the input or switch setting on your sound
+          card.
 
 .. raw:: pdf
 
@@ -71,7 +75,7 @@ the basic ones are:
 
   Two timecode CDs, two CD decks, and two stereo sound inputs.
 
-  Setting up CDJs for use with time-code CDs is similar to setting up
+  Setting up CDJs for use with timecode CDs is similar to setting up
   turntables. The figure below outlines a typical configuration. First,
   connect the RCA cables of the CDJs to an inputs of your sound card. Second,
   connect the inputs of your mixer to the outputs of your sound card. Make sure
@@ -90,7 +94,8 @@ the basic ones are:
 
 * It is recommended to use a proper DJ sound card that has **multiple** stereo
   line inputs on it.
-* Alternatively you can use two sound cards, each with a single stereo line in.
+* Alternatively you can use two sound cards, each with a single stereo line in,
+  but this is strongly discouraged.
 
 Mixxx supports vinyl control input through a single soundcard with at least
 4-channels of input (two stereo line-in jacks), or through two separate
@@ -177,12 +182,12 @@ Turntable Input Preamp
 ----------------------
 
 Many turntables provide unamplified “phono level” output which must be boosted
-to a “line level” signal. Normally, a mixer provides this amplification, but if
-you're plugging a turntable's phono output directly into your soundcard, Mixxx
-can do the amplification. The :guilabel:`Turntable Input Preamp` slider allows
-you to adjust the level of preamplification applied to your decks' signal.
-However it is always preferable to use a proper phono preamplifier if you have
-one.
+to a “line level” signal. Normally, a mixer or soundcard provides this amplification,
+but if you're plugging a turntable's phono output directly into a soundcard,
+that doesn't support phono input, Mixxx can do the amplification. The
+:guilabel:`Turntable Input Preamp` slider allows you to adjust the level of
+preamplification applied to your decks' signal. However it is always preferable to
+use a proper phono preamplifier if you have one.
 
 Vinyl Configuration
 -------------------
@@ -204,7 +209,7 @@ Vinyl Configuration
   until you run out of groove area, thereby decreasing your record replacement
   frequency.
 * **Show Signal Quality in Skins**: If enabled, a circular representation of the
-  incoming time-code signal is displayed in real-time on the
+  incoming timecode signal is displayed in real-time on the
   :ref:`Vinyl Widget <interface-button-grid>` in the Mixxx Interface.
 
 .. hint:: Although not recommended, you can use different kinds of timecode
@@ -219,15 +224,16 @@ Mixxx has three control modes regardless of which control records you use.
 
 * **Absolute Mode**: Provides Mixxx with both pitch and position information
   from the timecode, and allows you to seek by needle dropping on your vinyl or
-  seeking on your CDJ. Once a track is playing, Mixxx will not allow you to
-  select Absolute mode. Otherwise, the track would suddenly jump to a new
-  position.  Make sure the record is stopped and then you're free to select
-  Absolute mode.
+  seeking on your CDJ.
 * **Relative Mode**: Takes the position to be relative to your deck's starting
   point, and only controls the pitch in Mixxx. It is not possible to seek using
   your deck in relative mode, with one exception.  If you drop the needle in the
   “Lead-in Time” area (see `Vinyl Configuration`_), Mixxx will seek back to
-  the beginning of the track.
+  the beginning of the track.  Once a track is playing in Relative Mode, Mixxx
+  will not allow you to
+  select Absolute mode. Otherwise, the track would suddenly jump to a new
+  position.  Make sure the record is stopped and then you're free to select
+  Absolute mode.
 * **Constant Mode**: This special mode is usually only activated when Mixxx
   needs to keep playing a track even if the vinyl control signal isn't present.
   Constant mode is automatically enabled when the needle reaches the end of a
@@ -308,7 +314,7 @@ deck.
 
 * **Off**: Vinyl control disabled on the deck.
 * **Green**: Vinyl control is enable on the deck.
-* **Yellow**: The needle reaches the end of the record soon.
+* **Yellow**: The needle has reached End-Of-Record.
 * **Red**: A needle skip was detected.
 
 Single Deck Control
@@ -324,9 +330,8 @@ and start mixing. When you're ready to cue up the next record, just disable
 vinyl control on the first deck and enable it on the second deck. Playback
 will continue on the first deck without interruption. Cue up the second track
 and mix it in. When you're ready to cue the first deck again, just toggle the
-second deck off and the first deck on again. Future versions of Mixxx will have
-a single button to toggle vinyl control between the two decks to make this
-transition easier.
+second deck off and the first deck on again. You can bind a key to [VinylControl], Toggle
+to automatically swap from one deck to the other.
 
 End-Of-Record Mode
 ==================
@@ -334,7 +339,7 @@ End-Of-Record Mode
 Sometimes the track you are playing is longer than the timecode area on your
 record. If the needle reaches the end of the vinyl timecode, Mixxx will enter
 a special *End-Of-Record Mode*. When this happens, the vinyl indicator (usually
-a green rectangle) will blink as a warning. At the same time, Mixxx will
+a green rectangle) will blink yellow as a warning. At the same time, Mixxx will
 automatically enable *Constant Mode* and will ignore the turntable's pitch. At
 this point the track will simply continue playing until the end. When you load
 a new track, *End-Of-Record Mode* will be automatically disabled and
