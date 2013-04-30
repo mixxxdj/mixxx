@@ -1451,6 +1451,7 @@ void MixxxApp::slotHelpAbout() {
 "Alban Bedel<br>"
 "Steven Boswell<br>"
 "Jo&atilde;o Reys Santos<br>"
+"Carl Pillot<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1461,6 +1462,7 @@ void MixxxApp::slotHelpAbout() {
 "EKS<br>"
 "Echo Digital Audio<br>"
 "JP Disco<br>"
+"Google Summer of Code<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
 "Melanie Thielker<br>"

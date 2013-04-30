@@ -766,7 +766,7 @@ void WTrackTableView::dropEvent(QDropEvent * event){
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(),
                     Qt::CaseInsensitive);
     for (int i=0; i<urls.size(); i++) {
-        if (!fileRx.indexIn(urls.at(i).path())) {
+        if (fileRx.indexIn(urls.at(i).path()) == -1) {
             // remove invalid urls and decrease i because the size of
             // urls has changed.
             urls.removeAt(i--);
