@@ -9,30 +9,59 @@ Advanced Topics
 Adding support for your MIDI/HID Controller
 ===========================================
 
-.. advanced-controller-midiscript
+.. _advanced-controller-midiscript:
 
-Using MIDI Scripting
---------------------
+MIDI Scripting
+--------------
 
 In order to support the advanced features of many :term:`MIDI` / :term:`HID`
 controllers, Mixxx offers what we call MIDI Scripting.
 
-It enables MIDI controls to be mapped to QtScript (aka Javascript/EMCAScript)
-functions stored in function library files, freeing Mixxx from a one-to-one MIDI
-mapping ideology. These user-created functions can then do anything desired with
-the MIDI event info such as have a single controller button simultaneously
-affect two or more Mixxx properties (“controls”,) adjust incoming control values
-to work better with Mixxx (scratching,) display a complex LED sequence, or even
+It enables MIDI controls to be mapped to `QtScript
+<https://en.wikipedia.org/wiki/QtScript>`_ (aka Javascript/EMCAScript) functions
+stored in function library files, freeing Mixxx from a one-to-one MIDI mapping
+ideology. These user-created functions can then do anything desired with the
+MIDI event info such as have a single controller button simultaneously affect
+two or more Mixxx properties (“controls”,) adjust incoming control values to
+work better with Mixxx (scratching,) display a complex LED sequence, or even
 send messages to text displays on the controller.
 
 For more information, go to `<http://mixxx.org/wiki/doku.php/midi_scripting>`_ .
 
-.. _advanced-controller-midiwizard:
+.. _advanced-controller-wizard:
 
-Using the MIDI Wizard
----------------------
+Controller Wizard
+-----------------
 
-.. todo:: Fill stub and add screenshot
+.. figure:: ../_static/Mixxx-111-Controller-Learning-Wizard.png
+   :align: center
+   :width: 50%
+   :figwidth: 100%
+   :alt: Mixxx Controller Wizard -  Mapping a control
+   :figclass: pretty-figures
+
+   Mixxx Controller Wizard -  Mapping a control
+
+
+.. todo:: Add intro and proofread
+
+#. Connect your controller(s) to your computer
+#. Start Mixxx
+#. Go to :menuselection:`Preferences --> Controllers`
+#. Select your device from the list of available devices on the left, and the
+   right pane will change
+#. Activate the :guilabel:`Enabled` checkbox
+#. Click on :guilabel:`Learning Wizard` to open the selection dialog
+#. Click any control in the Mixxx :term:`GUI`
+#. Alternatively, click the :guilabel:`Choose Control` button and choose one
+   from the selection list
+#. Move a control on your controller to map it. Repeat this as many times as you
+   wish.
+#. When you are finished mapping controls, click :guilabel:`Done`
+
+The Controller Wizard works only for :term:`MIDI` devices. Currently you can't
+map modifier (shift) keys and platter rotations. Use :ref:`MIDI Scripting
+<advanced-controller-midiscript>` instead.
 
 .. _advanced-keyboard:
 

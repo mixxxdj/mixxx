@@ -108,7 +108,7 @@ Without loading the correct preset, your controller does not work with Mixxx.
 #. Connect your controller(s) to your computer
 #. Start Mixxx
 #. Go to :menuselection:`Preferences --> Controllers`
-#. Select your device from the list of available devices on the left and the
+#. Select your device from the list of available devices on the left, and the
    right pane will change
 #. Activate the :guilabel:`Enabled` checkbox
 #. Select the mapping for your controller from the :guilabel:`Presets`
@@ -155,8 +155,8 @@ Map your own your controller
 ----------------------------
 
 There is no mapping available for your controller or you want to change an
-existing mapping? You can map your controller by using the Midi Learning Wizard
-or take full control with the scripting support in Mixxx.
+existing mapping? You can map your controller by using the Controller Wizard or
+take full control with the MIDI Scripting support in Mixxx.
 
 .. seealso:: Go to the chapter :ref:`advanced-controller` for detailed informations.
 

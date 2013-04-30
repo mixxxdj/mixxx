@@ -341,9 +341,8 @@ You can bind a key to the ``[VinylControl],Toggle`` `control
 <http://www.mixxx.org/wiki/doku.php/mixxxcontrols>`_ to automatically swap from
 one deck to the other.
 
-* In the :ref:`MIDI mapping wizard <advanced-controller-midiwizard>`, select
-  :menuselection:`Vinyl Control --> Single Deck mode` to assign the control to a
-  key on your MIDI device.
+* In the :ref:`advanced-controller-wizard`, select :menuselection:`Vinyl
+  --> Single Deck mode` to assign the control to a key on your MIDI device.
 * To assign the control to a keyboard shortcut like :kbd:`Shift` + :kbd:`T` ,
   you just need to add the following lines on top of your :ref:`custom keyboard
   mapping <advanced-keyboard>` file. ::
