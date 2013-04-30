@@ -1,4 +1,3 @@
-
 .. include:: /shortcuts.rstext
 
 .. _vinyl-control:
@@ -182,12 +181,12 @@ Turntable Input Preamp
 ----------------------
 
 Many turntables provide unamplified “phono level” output which must be boosted
-to a “line level” signal. Normally, a mixer or soundcard provides this amplification,
-but if you're plugging a turntable's phono output directly into a soundcard,
-that doesn't support phono input, Mixxx can do the amplification. The
-:guilabel:`Turntable Input Preamp` slider allows you to adjust the level of
-preamplification applied to your decks' signal. However it is always preferable to
-use a proper phono preamplifier if you have one.
+to a “line level” signal. Normally, a mixer or soundcard provides this
+amplification, but if you're plugging a turntable's phono output directly into
+a soundcard, that doesn't support phono input, Mixxx can do the amplification.
+The :guilabel:`Turntable Input Preamp` slider allows you to adjust the level of
+preamplification applied to your decks' signal. However it is always preferable
+to use a proper phono preamplifier if you have one.
 
 Vinyl Configuration
 -------------------
@@ -330,8 +329,21 @@ and start mixing. When you're ready to cue up the next record, just disable
 vinyl control on the first deck and enable it on the second deck. Playback
 will continue on the first deck without interruption. Cue up the second track
 and mix it in. When you're ready to cue the first deck again, just toggle the
-second deck off and the first deck on again. You can bind a key to [VinylControl], Toggle
-to automatically swap from one deck to the other.
+second deck off and the first deck on again.
+
+You can bind a key to the ``[VinylControl],Toggle`` `control
+<http://www.mixxx.org/wiki/doku.php/mixxxcontrols>`_ to automatically swap from
+one deck to the other.
+
+* In the :ref:`MIDI mapping wizard <advanced-controller-midiwizard>`, select
+  :menuselection:`Vinyl Control --> Single Deck mode` to assign the control to a
+  key on your MIDI device.
+* To assign the control to a keyboard shortcut like :kbd:`Shift` + :kbd:`T` ,
+  you just need to add the following lines on top of your :ref:`custom keyboard
+  mapping <advanced-keyboard>` file. ::
+
+    [VinylControl]
+    Toggle Shift+T
 
 End-Of-Record Mode
 ==================
