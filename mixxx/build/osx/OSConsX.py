@@ -356,6 +356,7 @@ def emit_app(target, source, env):
     bundle_short_version_string = env['SHORT_VERSION']
     human_readable_copyright = env['COPYRIGHT']
     application_category_type = env['CATEGORY']
+    minimum_osx_version = env['MINIMUM_OSX_VERSION']
 
 
     #BUG: if the icon file is changed but nothing else then the plist doesn't get rebuilt (but since it's a str() and not a Node() there's no clean way to hook this in)
@@ -388,9 +389,10 @@ def emit_app(target, source, env):
                   'CFBundleIdentifier': bundle_identifier,
                   'CFBundleDisplayName': bundle_display_name,
                   'CFBundleVersion': bundle_version,
-                  'CFBundleShortVersionString' : bundle_short_version_string,
-                  'NSHumanReadableCopyright' : human_readable_copyright,
-                  'LSApplicationCategoryType' : application_category_type}
+                  'CFBundleShortVersionString': bundle_short_version_string,
+                  'NSHumanReadableCopyright': human_readable_copyright,
+                  'LSApplicationCategoryType': application_category_type,
+                  'LSMinimumSystemVersion': minimum_osx_version}
     if env['FOR_APP_STORE']:
         plist_data['ForAppStore'] = 'yes'
     env.Plist(os.path.join(str(contents), "Info"), PLIST=plist_data)
@@ -465,12 +467,14 @@ def do_codesign(target, source, env):
             print "Unlocking keychain:"
             if system("security unlock-keychain -p '%s' %s" % (keychain_password, keychain)) != 0:
                 raise Exception('Could not unlock keychain.')
-        codesign_path(application_identity, keychain, entitlements, bundle)
+
+        # Codesign the frameworks.
         for root, dirs, files in os.walk(frameworks_path):
             for framework in dirs + files:
                 codesign_path(application_identity, keychain, entitlements, os.path.join(root, framework))
             # Don't descend.
             del dirs[:]
+
         # Codesign binaries.
         for root, dirs, files in os.walk(binary_path):
             for filename in files:
@@ -479,6 +483,8 @@ def do_codesign(target, source, env):
         for root, dirs, files in os.walk(plugins_path):
             for filename in files:
                 codesign_path(application_identity, keychain, entitlements, os.path.join(root, filename))
+        # Codesign the bundle.
+        codesign_path(application_identity, keychain, entitlements, bundle)
 CodeSign = Builder(action = do_codesign)
 
 def build_plist(target, source, env):
