@@ -2,7 +2,7 @@
 // 26/06/2011 - v1.0b
 // Matteo <matteo@magm3.com>
 // With contributions from
-//    uncleeugene 
+//    uncleeugene
 //    RAWRR
 function NumarkMixTrack() {}
 
@@ -17,7 +17,7 @@ NumarkMixTrack.init = function(id) {    // called when the MIDI device is opened
     NumarkMixTrack.leds = [
             // Common
             { "directory": 0x73, "file": 0x72 },
-            // Deck 1                      
+            // Deck 1
             { "rate": 0x70, "scratchMode": 0x48, "keylock": 0x51, "manualLoop": 0x61, "loopIn": 0x53, "loopOut": 0x54, "reLoop": 0x55 },
             // Deck 2
             { "rate": 0x71, "scratchMode": 0x50, "keylock": 0x52, "manualLoop": 0x62, "loopIn": 0x56, "loopOut": 0x57, "reLoop": 0x58 }
@@ -110,13 +110,13 @@ NumarkMixTrack.loopOut = function(channel, control, value, status, group) {
         var end = engine.getValue(group, "loop_end_position");
 
         if(NumarkMixTrack.manualLooping[deck-1]) {
-            // Set loop to current Bar 
+            // Set loop to current Bar
             var bar = NumarkMixTrack.samplesPerBeat(group);
             start = Math.ceil((engine.getValue(group, "playposition")*engine.getValue(group, "track_samples")/bar)-1)*bar;
-	
+
             engine.setValue(group,"loop_start_position",start);
             engine.setValue(group,"loop_end_position", start + bar);
-            engine.setValue(group, "reloop_exit",1); 
+            engine.setValue(group, "reloop_exit",1);
             NumarkMixTrack.setLED(NumarkMixTrack.leds[deck]["loopIn"],true);
             NumarkMixTrack.setLED(NumarkMixTrack.leds[deck]["loopOut"],true);
         } else {
@@ -141,7 +141,7 @@ NumarkMixTrack.reLoop = function(channel, control, value, status, group) {
         var deck = NumarkMixTrack.groupToDeck(group);
     if (value) {
         if(NumarkMixTrack.manualLooping[deck-1]) {
-                // Multiply Loop by Two 
+                // Multiply Loop by Two
                 var start = engine.getValue(group, "loop_start_position");
                 var end = engine.getValue(group, "loop_end_position");
                 if((start != -1) && (end != -1)) {
@@ -172,14 +172,13 @@ NumarkMixTrack.jogWheel = function(channel, control, value, status, group) {
         posNeg = -1;
         adjustedJog = value - 128;
     }
-    
+
 
     if (NumarkMixTrack.scratching[deck-1]) {
-        engine.setValue(group, "keylock", 0);
         engine.scratchTick(deck, adjustedJog);
     }
-        
-    else 
+
+    else
     {
         var gammaInputRange = 23;    // Max jog speed
         var maxOutFraction = 0.5;    // Where on the curve it should peak; 0.5 is half-way
@@ -230,9 +229,6 @@ NumarkMixTrack.WheelTouch = function (channel, control, value, status, group) {
         }
         else {    // Wheel left
             engine.scratchDisable(deck);
-            if (NumarkMixTrack.KeyIsLocked[deck-1]) {
-                engine.setValue(group, "keylock", 1);
-            }
             NumarkMixTrack.scratching[deck-1] = false;
         }
     }

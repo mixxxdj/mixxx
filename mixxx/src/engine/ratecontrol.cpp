@@ -374,6 +374,7 @@ double RateControl::getJogFactor() {
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
                                   bool* isScratching) {
     double rate = (paused ? 0 : 1.0);
+    *isScratching = false;
 
     double searching = m_pRateSearch->get();
     if (searching) {
@@ -385,7 +386,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
-
 
         double scratchFactor = m_pScratch->get();
         // Don't trust values from m_pScratch
@@ -400,8 +400,10 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             oldScratchFactor = 0.0;
         }
 
-        // If vinyl control is enabled and scratching then also set isScratching
-        if (m_bVinylControlEnabled && m_bVinylControlScratching) {
+        // If controller scratching or vinyl control is enabled and scratching
+        // then also set isScratching.
+        if (m_pScratchToggle->get() != 0.0 ||
+            (m_bVinylControlEnabled && m_bVinylControlScratching)) {
             *isScratching = true;
         }
 
