@@ -143,8 +143,14 @@ from `Serato`_.
 Configuring Input and Output devices
 ====================================
 
-.. todo:: Add screenshot, proofread connection guide below, add note about
-          empty MASTER drop-down menu
+.. figure:: ../_static/Mixxx-111-Preferences-Soundhardware-VC.png
+   :align: center
+   :width: 75%
+   :figwidth: 100%
+   :alt: Mixxx preferences - Setting up Input and Output devices for Vinyl Control
+   :figclass: pretty-figures
+
+   Mixxx preferences - Setting up Input and Output devices for Vinyl Control
 
 Mixxx can be controlled by up to 2 decks with either timecoded vinyl or
 timecoded CDs.
