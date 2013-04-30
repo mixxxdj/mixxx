@@ -238,7 +238,8 @@ The control above the waveforms relay to the :term:`vinyl control` feature in
 Mixxx and is **hidden** in the default
 :ref:`Mixxx user interface <interface-overview>`. Click the
 :ref:`VINYL section expansion button <interface-expansion-buttons>` in the mixer
-section, or use the specific :ref:`appendix-shortcuts`, to unhide the controls.
+section, or use the specific :ref:`appendix-shortcuts` to show or hide the
+section.
 
 **Abs/Rel/Const button**
 
@@ -802,35 +803,98 @@ The Sampler Section
 
    A sample deck
 
-.. versionadded:: 1.11
-   Samplers can sync to decks
-
 Samplers are miniature decks. They allow you to play short samples and jingles
-in your mix. They come with a small overview waveform and a limited number of
-controls. The title of the track and its BPM are displayed along the top row.
+but also additional tracks in your mix. They come with a small overview waveform
+and a limited number of controls. All controls work just like on the regular
+decks, see :ref:`interface-decks`.
 
-.. hint:: Tap the BPM to set the BPM to the speed you are tapping.
+The Sampler section is **hidden** in the default
+:ref:`Mixxx user interface <interface-overview>`. Click the
+:ref:`SAMPLER <interface-expansion-buttons>` button in the mixer section, or use
+the specific :ref:`appendix-shortcuts` to show or hide the section.
 
-Clicking the Play button starts and pauses playback. Right-clicking on the
-button will seek the play position to the beginning of the track.
+Waveform Display
+----------------
 
-The Sync button syncs the Sampler deck to a regular deck, as described in
-:ref:`interface-rate`.
+**Waveform overview**
+  The waveform shows the various markers within the track as well as the
+  waveform envelope of the entire track. Clicking somewhere on the waveform
+  allows you to jump to an arbitrary position in the track.
 
-The numbered buttons are hotcues and work just like deck hotcues as described in
-:ref:`interface-hotcues`. The headphone button is a :term:`PFL` button and the
-knob to the right of it is a :term:`volume` knob for the sampler. The fader on
-the far right controls the playback rate of the sampler, and the :term:`VU
-meter` to the left of it visualizes the audio intensity of the sampler, allowing
-you to adjust it as necessary.
+**Waveform Marker**
+  While mixing, some additional markers can appear on the waveforms:
 
-The 4 configure buttons (in clockwise order from the top left) are:
+* **Position marker**: A vertical line indicates the playback point of the
+  sample deck.
+* **Hotcue marker**: Indicate the position and number of a :term:`hotcue`
+  point if set.
 
-* Repeat: Enable repeat for the sample.
-* Eject: Eject the track from this deck.
-* Mix Orientation: M for Middle, L for Left, R for Right. Clicking cycles
-  through all the options.
-* Keylock: Enable or disable keylock for the sampler.
+Track Information Display
+-------------------------
+
+**Track Artist/Title**
+  The artist and title of the track that was loaded into a sampler deck is
+  displayed here.
+
+**BPM (Tempo)**
+  The number at the top right is the effective :term:`BPM` of the track. Tap the
+  BPM to set the BPM to the speed you are tapping.
+
+Deck Options Button Grid
+------------------------
+The buttons grid next to the waveform overview allow you to configure the
+sampler deck. Starting from the top-left and moving counterclockwise the buttons
+are as follows:
+
+**Repeat Mode Toggle**
+  If enabled, the repeat mode will jump back to the beginning and continue
+  playing when the track finishes.
+
+**Eject Track Button**
+  Clicking this button ejects the track from the deck.
+
+**Mix Orientation Toggle**
+  This control determines the microphone input's mix orientation.
+
+**Keylock Toggle**
+  :term:`Keylock <key lock>` locks the track's pitch so that adjustments to its
+  tempo via the rate slider do not affect its pitch.
+
+Sample Deck Controls
+--------------------
+
+.. versionadded:: 1.11
+   Samplers can sync to decks.
+
+**Play/Pause button**
+  Clicking the button starts and stops playback. Right-clicking on the button
+  will seek the play position to the beginning of the sample.
+
+**Sync Button**
+  Syncs the Sampler deck to a regular deck, as described in :ref:`interface-rate`.
+
+* **Left-Click**: Changes the :term:`rate` of the track so that the :term:`BPM`
+  and :term:`phase` of the track matches the sync target.
+* **Right-Click**: Only changes the :term:`rate` of the track to match the sync
+  target but does not adjusts the :term:`phase`.
+
+**Hotcue Controls**
+  To jump in between different parts of a sample, you can use these numbered
+  hotcue buttons.
+
+**PFL/Headphone Button**
+  If active, the :term:`pre-fader listen or PFL <PFL>` button allows you to
+  listen to the track in your headphones.
+
+**Gain Knob**
+  Allows you to adjust the volume of the track.
+
+**VU Meter**
+  Shows the level of the signal and can be adjusted with the Gain knob.
+
+**Pitch/Rate slider**
+  The slider allows you to change the speed of the sample. Right-clicking on the
+  slider will reset the tempo to its original value.
 
 .. _interface-mic:
 
@@ -852,7 +916,7 @@ The Microphone Section
 The microphone section is **hidden** in the default
 :ref:`Mixxx user interface <interface-overview>`. Click the
 :ref:`MIC <interface-expansion-buttons>` button in the mixer section, or use the
-specific :ref:`appendix-shortcuts`, to unhide the controls.
+specific :ref:`appendix-shortcuts` to show or hide the section..
 
 **Setup the microphone**
 
