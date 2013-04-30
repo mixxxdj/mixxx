@@ -6,17 +6,33 @@ Advanced Topics
 
 .. _advanced-controller:
 
-Adding support for your MIDI Controller
-=======================================
+Adding support for your MIDI/HID Controller
+===========================================
 
-So your shiny :term:`MIDI controller` isn't supported in Mixxx?  If you know
-some basic JavaScript, then adding support for your controller is not hard at
-all!
+.. advanced-controller-midiscript
 
-Mixxx has an advanced scripting system that allows you to add support for
-:term:`MIDI` controllers by writing some simple JavaScript. For more
-information, see the `MIDI Scripting
-<http://mixxx.org/wiki/doku.php/midi_scripting>`_ topic on the Mixxx Wiki.
+Using MIDI Scripting
+--------------------
+
+In order to support the advanced features of many :term:`MIDI` / :term:`HID`
+controllers, Mixxx offers what we call MIDI Scripting.
+
+It enables MIDI controls to be mapped to QtScript (aka Javascript/EMCAScript)
+functions stored in function library files, freeing Mixxx from a one-to-one MIDI
+mapping ideology. These user-created functions can then do anything desired with
+the MIDI event info such as have a single controller button simultaneously
+affect two or more Mixxx properties (“controls”,) adjust incoming control values
+to work better with Mixxx (scratching,) display a complex LED sequence, or even
+send messages to text displays on the controller.
+
+For more information, go to `<http://mixxx.org/wiki/doku.php/midi_scripting>`_ .
+
+.. _advanced-controller-midiwizard:
+
+Using the MIDI Wizard
+---------------------
+
+.. todo:: Fill stub and add screenshot
 
 .. _advanced-keyboard:
 
