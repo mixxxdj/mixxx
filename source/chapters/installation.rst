@@ -111,7 +111,8 @@ Method A: Personal Package Archive (ppa)
     sudo apt-get update
     sudo apt-get install libportaudio2 mixxx
 
-* Start Mixxx by simply typing :file:`mixxx` into the terminal, then hit return.
+* Start Mixxx by simply typing :file:`mixxx` into the terminal, then hit
+  :kbd:`Return` .
 
 Method B: The Ubuntu Software Center
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^

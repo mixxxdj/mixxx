@@ -49,8 +49,8 @@ do not require headphone cueing**. The built-in soundcard on most computers and
 laptops comes with a single line-out and microphone input.
 
 The figure above depicts how the sound configuration might look. The stereo
-output of your soundcard (channels 1-2) will be connected to the **master
-out**.
+output of your soundcard (Channels 1-2) will be connected to the **Master
+Out**.
 
 #. Open :menuselection:`Preferences --> Sound Hardware`
 #. Select the :guilabel:`Output` tab
