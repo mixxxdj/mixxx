@@ -49,8 +49,8 @@ do not require headphone cueing**. The built-in soundcard on most computers and
 laptops comes with a single line-out and microphone input.
 
 The figure above depicts how the sound configuration might look. The stereo
-output of your soundcard (Channels 1-2) will be connected to the **Master
-Out**.
+output of your soundcard (channels 1-2) will be connected to the **Master
+out**.
 
 #. Open :menuselection:`Preferences --> Sound Hardware`
 #. Select the :guilabel:`Output` tab
@@ -182,7 +182,7 @@ Laptop, External Hardware Mixer and Vinyl Control
 
 This setup is usually preferred by DJs who work in clubs. Instead of carrying
 large and heavy CD bags or a MIDI controller, all you need to have is a
-professional soundcard together with a pair of timecode records and
+professional soundcard together with a pair of :term:`timecode` records and
 headphones.
 
 For best results, when using this setup you should ensure your system is capable
