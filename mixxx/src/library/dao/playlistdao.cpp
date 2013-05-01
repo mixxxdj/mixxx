@@ -301,7 +301,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT id FROM PlaylistTracks WHERE playlist_id=:id "
+    query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
                   "AND position=:position");
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
@@ -316,7 +316,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
                  << position << "in playlist:" << playlistId;
         return;
     }
-    int trackId = query.value(query.record().indexOf("id")).toInt();
+    int trackId = query.value(query.record().indexOf("track_id")).toInt();
 
     //Delete the track from the playlist.
     query.prepare("DELETE FROM PlaylistTracks "
@@ -352,7 +352,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions)
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     foreach (int position , positions) {
-        query.prepare("SELECT id FROM PlaylistTracks WHERE playlist_id=:id "
+        query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
                     "AND position=:position");
         query.bindValue(":id", playlistId);
         query.bindValue(":position", position);
@@ -367,7 +367,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions)
                     << position << "in playlist:" << playlistId;
             return;
         }
-        int trackId = query.value(query.record().indexOf("id")).toInt();
+        int trackId = query.value(query.record().indexOf("track_id")).toInt();
 
         //Delete the track from the playlist.
         query.prepare("DELETE FROM PlaylistTracks "
