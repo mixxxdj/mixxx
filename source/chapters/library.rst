@@ -385,9 +385,10 @@ folder, right-click and choose :guilabel:`Remove from Quick Links`.
 Recordings
 ==========
 
-In this section of the library you can start and stop recordings well as view
-previous recordings and the dates they were made. Also see the chapter
-:ref:`djing-recording-your-mix`.
+|ic_lib_recordings| In this section of the library you can start and stop
+recordings well as view previous recordings and the dates they were made.
+
+.. seealso:: For more informations, go to :ref:`djing-recording-your-mix`.
 
 .. _library-history:
 
