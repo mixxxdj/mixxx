@@ -12,7 +12,7 @@ shortcuts for accessing Mixxx with an English keyboard layout. Depending on your
 language settings the defaults may be different.
 
 .. versionadded:: 1.11
-   Auto DJ and Preview Deck shortcuts
+   :index:`Auto DJ and Preview Deck shortcuts <pair: ! New in v1.11 ; Auto DJ and Preview Deck shortcuts>`.
 
 +----------------------------------------+---------------------+---------------------+--------------+
 | Function                               | Deck 1              | Deck 2              | Master       |

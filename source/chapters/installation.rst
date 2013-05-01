@@ -33,6 +33,13 @@ native 32 and 64-bit versions.
 .. note:: If you are not sure about 32-bit versus 64-bit, pick the 32-bit
           version when downloading the Mixxx installer.
 
+.. warning:: You may encounter a warning message similar to “Security Warning -
+             Publisher could not be verified”. This is because the Mixxx
+             installer is not digitally signed. Ignore the message and continue
+             the installation. It does not indicate a security risk, if you
+             can trust the source website such as `www.mixxx.org
+             <http://mixxx.org/download.php>`_ .
+
 Installation on Mac OS X
 ========================
 
