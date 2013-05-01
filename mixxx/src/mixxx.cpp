@@ -1169,7 +1169,7 @@ void MixxxApp::slotFileLoadSongPlayer(int deck) {
             .arg(QString::number(deck));
     QString areYouSure = tr("Are you sure you want to load a new track?");
 
-    if (play->get() == 1.) {
+    if (play && play->get() > 0.0) {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
             deckWarningMessage + "\n" + areYouSure,
             QMessageBox::Yes | QMessageBox::No,
@@ -1464,6 +1464,7 @@ void MixxxApp::slotHelpAbout() {
 "Stefan N&uuml;rnberger<br>"
 "Steven Boswell<br>"
 "Jo&atilde;o Reys Santos<br>"
+"Carl Pillot<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"
@@ -1474,6 +1475,7 @@ void MixxxApp::slotHelpAbout() {
 "EKS<br>"
 "Echo Digital Audio<br>"
 "JP Disco<br>"
+"Google Summer of Code<br>"
 "Adam Bellinson<br>"
 "Alexandre Bancel<br>"
 "Melanie Thielker<br>"

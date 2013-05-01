@@ -43,6 +43,10 @@ class PlayerManager : public QObject {
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
 
+    // Returns true if the group is a deck group. If index is non-NULL,
+    // populates it with the deck number (1-indexed).
+    static bool isDeckGroup(const QString& group, int* number=NULL);
+
     // Return the number of samplers. Thread-safe.
     static unsigned int numSamplers();
 

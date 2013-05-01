@@ -16,7 +16,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_trackDao(m_pTrackCollection->getTrackDAO()) {
 
-    QSqlQuery query;
+    QSqlQuery query(pTrackCollection->getDatabase());
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
     QString tableName("missing_songs");
