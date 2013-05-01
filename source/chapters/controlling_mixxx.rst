@@ -73,7 +73,7 @@ enable/disable the keyboard mappings at runtime. You can do so by clicking
            the Mixxx user interface, the tooltip lists the keyboard shortcuts of
            the control among a description of the control.
 
-.. seealso:: For a list of default shortcuts, go to: :ref:`appendix-keyboard`
+.. seealso:: For a list of default shortcuts, go to :ref:`appendix-keyboard`.
 
 Customizing the keyboard mapping
 --------------------------------
@@ -158,7 +158,7 @@ There is no mapping available for your controller or you want to change an
 existing mapping? You can map your controller by using the Controller Wizard or
 take full control with the MIDI Scripting support in Mixxx.
 
-.. seealso:: Go to the chapter :ref:`advanced-controller` for detailed informations.
+.. seealso:: Go to :ref:`advanced-controller` for detailed informations.
 
 .. _control-timecode:
 
@@ -171,5 +171,5 @@ the sound and feel of having your digital music collection on vinyl. Many DJs
 prefer the tactile feel of vinyl, and vinyl control allows that feel to be
 preserved while retaining the benefits of using digital audio.
 
-.. seealso:: Go to the chapter :ref:`vinyl-control` for detailed informations.
+.. seealso:: Go to :ref:`vinyl-control` for detailed informations.
 
