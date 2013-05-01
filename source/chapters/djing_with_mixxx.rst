@@ -112,10 +112,10 @@ Loading Tracks
 
 Tracks can be loaded into a deck in several ways:
 
-* Right-click the library track table: Right-clicking on a track in the table
-  will present the options :guilabel:`Load in Deck 1` and
-  :guilabel:`Load in Deck 2`, among others. Making either selection will load a
-  track into a deck.
+* Right-click the :ref:`library track table <interface-library>`: Right-clicking
+  on a track in the table will present the options :guilabel:`Load in Deck 1`
+  and :guilabel:`Load in Deck 2`, among others. Making either selection will
+  load a track into a deck.
 * By :ref:`control-keyboard` to load the selected track from library track table.
 * Drag-and-drop from library track table: Dragging-and-dropping a track from the
   track table onto a waveform display will load a track into a deck.
@@ -139,7 +139,7 @@ current selected list (e.g. a playlist, a crate or even the whole library).
 
 * Activate the search input field by pressing :kbd:`CTRL` + :kbd:`F`
   (Windows/Linux) or :kbd:`CMD` + :kbd:`F` (Mac). Alternatively click into the
-  search box.
+  :ref:`search box <library-search>`.
 * Type your search term. Mixxx filters the tracks and retains only the ones that
   match the search term. Search terms can include an artist's name, a song
   title, BPM, etc.
@@ -259,8 +259,9 @@ The mouse can be used on the waveforms to scratch, spin-back or throw the
 tracks.  Right-clicking and dragging on the waveforms allows you to nudge the
 track and make temporary pitch adjustments. Using the mouse-wheel on the
 waveform zooms the waveform in or out. You can choose whether or not to
-synchronize the zoom level between the decks in the preferences. The waveform
-display is updated in realtime upon seeking.
+synchronize the zoom level between the decks in :menuselection:`Preferences -->
+Interface --> Waveform Display --> Synchronize`. The waveform display is updated
+in realtime upon seeking.
 
 There are two smaller waveform summary displays located adjacent to the main
 waveform displays. Clicking on a waveform summary allows you to seek through the
