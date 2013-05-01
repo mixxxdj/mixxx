@@ -240,7 +240,7 @@ To activate MP3 streaming on Windows, follow these steps:
           :file:`lame_enc.dll` in the LAME zip file. You don't want that file!
           Also, make sure the version of LAME you use (x86=32-bit vs. x64=64-bit)
           matches the version of Mixxx you use. Select :menuselection:`Help -->
-          About` to find out whether you have installed the 32 bit or 64 bit
+          About` to find out whether you have installed the 32-bit or 64-bit
           version of Mixxx.
 
 .. warning:: Some websites like `Audacity <http://audacity.sourceforge.net/>`_
@@ -266,9 +266,10 @@ To activate MP3 streaming on Mac OS X, follow these steps:
 Method B: Macports
 ^^^^^^^^^^^^^^^^^^
 Another easy way to activate MP3 streaming is to use `MacPorts
-<http://www.macports.org/>`_ which is a repository manager (like apt on
-Debian/Ubuntu) for Open Source software. Having installed this piece of
-software, installing MP3 support is rather simple.
+<http://www.macports.org/>`_ which is a repository manager (like `apt
+<https://en.wikipedia.org/wiki/Advanced_Packaging_Tool>`_ on Debian/Ubuntu) for
+Open Source software. Having installed this piece of software, installing MP3
+support is rather simple.
 
   1. Open a terminal and type the following commands::
 
