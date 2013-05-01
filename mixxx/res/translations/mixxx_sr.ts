@@ -5,8 +5,7 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Самостални Диџеј</translation>
         </message>
     </context>
     <context>
@@ -64,8 +63,7 @@
         </message>
         <message>
             <source>Duplicate Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Удвостручи списак нумера</translation>
         </message>
         <message>
             <source>Export Playlist</source>
@@ -97,28 +95,23 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_умножи</translation>
         </message>
         <message>
             <source>Playlist Creation Failed</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Стварање списка нумера није успело</translation>
         </message>
         <message>
             <source>An unknown error occurred while creating playlist: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Дошло је до непознате грешке приликом стварања списка нумера: </translation>
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Спискови нумера (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>М3У списак нумера (*.m3u);;М3У8 списак нумера (*.m3u8);;ПЛС списак нумера (*.pls);;Текстуални ЦСВ (*.csv);;Читљив текст (*.txt)</translation>
         </message>
     </context>
     <context>
@@ -205,8 +198,7 @@
         </message>
         <message>
             <source>Preview</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Преглед</translation>
         </message>
     </context>
     <context>
@@ -431,13 +423,11 @@
         </message>
         <message>
             <source>_copy</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>_умножи</translation>
         </message>
         <message>
             <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Увези списак нумера</translation>
         </message>
         <message>
             <source>Crates</source>
@@ -453,13 +443,11 @@
         </message>
         <message>
             <source>Duplicate Crate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Удвостручи гајбицу</translation>
         </message>
         <message>
             <source>Unlock</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Откључај</translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -483,13 +471,11 @@
         </message>
         <message>
             <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Спискови нумера (*.m3u *.m3u8 *.pls *.csv)</translation>
         </message>
         <message>
             <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>М3У списак нумера (*.m3u);;М3У8 списак нумера (*.m3u8);;ПЛС списак нумера (*.pls);;Текстуални ЦСВ (*.csv);;Читљив текст (*.txt)</translation>
         </message>
         <message>
             <source>Crates are a great way to help organize the music you want to DJ with.</source>
@@ -603,8 +589,8 @@
         <message>
             <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
 automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Када је укључено откривање такта, Миксикс открива број тактова у минуту и број тактова ваших нумера, 
+и сам приказује њихову мрежу тактова, и омогућава вам да ускладите нумере користећи податке о њиховим тактовима.</translation>
         </message>
         <message>
             <source>Enable BPM and Beat Detection</source>
@@ -630,32 +616,33 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
             <source>Enable fast beat detection. 
 If activated Mixxx only analyzes the first minute of a track for beat information. 
 This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Укључите брзо откривање такта. 
+Ако је покренуто Миксикс анализира само први минут нумере у потрази за подацима о такту. 
+Ово може убрзати откривање такта на споријим рачунарима, али може да резултира слабијим квалитетом тактне мреже.</translation>
         </message>
         <message>
             <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
 Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Претвара тактове откривене анализатором у тактну мрежу сталног темпа. 
+Користите ово подешавање ако ваше нумере имају стални темпо (нпр. електронска музика већим делом). 
+Нуди резултате у тактној мрежи високог квалитета, али неће добро радити са нумерама које имају померај темпа.</translation>
         </message>
         <message>
             <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
 by analyzing the beats to discard outliers.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Покушаће да поправи фазу (први такт) тактне мреже сталног темпа 
+анализирањем тактова да би одбацио непожељне.</translation>
         </message>
         <message>
             <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
 (Not checked: Analyse only, if no beats exist.)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>нпр. из програма 3-ћих лица или издања Миксикса пре 1.11.
+(Није проверено: Обрађује само, ако не постоје тактови.)</translation>
         </message>
         <message>
             <source>Re-analyse beats when settings change or beat detection data is outdated</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Поново ће обрадити тактове када се промене подешавања или када су подаци откривања такта застарели</translation>
         </message>
         <message>
             <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
@@ -809,8 +796,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Gain knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Дугменце појачања</translation>
         </message>
         <message>
             <source>Headphone listen button</source>
@@ -878,8 +864,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Pitch-bend rate up (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прегиб врхунца повећања протока (фино)</translation>
         </message>
         <message>
             <source>Adjust rate up (coarse)</source>
@@ -891,18 +876,15 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Pitch-bend rate up (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прегиб врхунца повећања протока (грубо)</translation>
         </message>
         <message>
             <source>Pitch-bend rate down (coarse)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прегиб врхунца смањења протока (грубо)</translation>
         </message>
         <message>
             <source>Pitch-bend rate down (fine)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прегиб врхунца смањења протока (фино)</translation>
         </message>
         <message>
             <source>Equalizers</source>
@@ -910,18 +892,15 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>High EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Дугменце уједначавања високих</translation>
         </message>
         <message>
             <source>Mid EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Дугменце уједначавања средњих</translation>
         </message>
         <message>
             <source>Low EQ knob</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Дугменце уједначавања ниских</translation>
         </message>
         <message>
             <source>High EQ kill</source>
@@ -1009,33 +988,27 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Preview Deck %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Носач прегледа %1</translation>
         </message>
         <message>
             <source>Single deck mode - Toggle vinyl control to next deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Режим једног носача — Пребаците управљање плочом на следећи носач</translation>
         </message>
         <message>
             <source>Cues</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Наговештаји</translation>
         </message>
         <message>
             <source>Hotcues</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Битни наговештаји</translation>
         </message>
         <message>
             <source>Hotcue %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Битни наговештај %1</translation>
         </message>
         <message>
             <source>Loop Exit button</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Дугме за напуштање петље</translation>
         </message>
         <message>
             <source>Beat-Looping</source>
@@ -1047,8 +1020,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Create temporary %1-beat loop roll</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Направи привремено %1-тактно правило петље</translation>
         </message>
         <message>
             <source>1/32th</source>
@@ -1068,13 +1040,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Library</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Библиотека</translation>
         </message>
         <message>
             <source>Expand/collapse the selected view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Раширите/скупите изабрани преглед (библиотека, списак нумера..)</translation>
         </message>
         <message>
             <source>Switch to the next view (library, playlist..)</source>
@@ -1094,8 +1064,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Load selected track into first stopped deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Учитајте изабрану нумеру у први заустављени носач</translation>
         </message>
         <message>
             <source>Load selected track</source>
@@ -1103,12 +1072,11 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Load selected track and play</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Учитајте изабрану нумеру и пустите је</translation>
         </message>
         <message>
             <source>Effects</source>
-            <translation>Ефекти</translation>
+            <translation>Дејства</translation>
         </message>
         <message>
             <source>Toggle flange effect</source>
@@ -1132,8 +1100,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Микрофон</translation>
         </message>
         <message>
             <source>Microphone on/off</source>
@@ -1149,28 +1116,23 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Самостални Диџеј</translation>
         </message>
         <message>
             <source>Shuffle the content of the Auto DJ playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Измешајте садржај списка нумера самосталног диџеја</translation>
         </message>
         <message>
             <source>Skip the next track in the Auto DJ playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прескочите следећу нумеру на списку нумера самосталног диџеја</translation>
         </message>
         <message>
             <source>Trigger the transition to the next track</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Окините прелаз на следећу нумеру</translation>
         </message>
         <message>
             <source>Toggle Auto DJ (ON/OFF)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Пребаците Самосталног Диџеја (Укљ./Искљ.)</translation>
         </message>
         <message>
             <source>User Interface</source>
@@ -1190,8 +1152,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Show/hide the preview deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прикажи/сакриј дек прегледа</translation>
         </message>
         <message>
             <source>Show/hide spinning vinyl widget</source>
@@ -1210,38 +1171,31 @@ by analyzing the beats to discard outliers.</source>
         <name>DlgHidden</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Управљај</translation>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Изаберите све нумере из табеле испод.</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Изабери све</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Избаците изабране нумере из библиотеке.</translation>
         </message>
         <message>
             <source>Purge</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Избаци</translation>
         </message>
         <message>
             <source>Unhide selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Откријте изабране нумере из библиотеке.</translation>
         </message>
         <message>
             <source>Unhide</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Откриј</translation>
         </message>
         <message>
             <source>Ctrl+S</source>
@@ -1252,28 +1206,23 @@ by analyzing the beats to discard outliers.</source>
         <name>DlgMissing</name>
         <message>
             <source>Manage</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Управљај</translation>
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Изаберите све нумере из табеле испод.</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Изабери све</translation>
         </message>
         <message>
             <source>Purge selected tracks from the library.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Избаците изабране нумере из библиотеке.</translation>
         </message>
         <message>
             <source>Purge</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Избаци</translation>
         </message>
     </context>
     <context>
@@ -1423,8 +1372,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Don't load tracks into a playing deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Не учитавајте нумере у покренути дек</translation>
         </message>
         <message>
             <source>CDJ Mode</source>
@@ -1464,8 +1412,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Load tracks into a playing deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Учитајте нумере у покренути дек</translation>
         </message>
         <message>
             <source>The selected skin is bigger than your screen resolution.</source>
@@ -1569,8 +1516,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Re-queue tracks in Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Поново постави на чекање нумере у Самосталном Диџеју</translation>
         </message>
         <message>
             <source>Locale</source>
@@ -1628,8 +1574,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Waveform Display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Приказ таласног облика</translation>
         </message>
         <message>
             <source>Synchronize zoom level across all waveform displays.</source>
@@ -1689,8 +1634,7 @@ by analyzing the beats to discard outliers.</source>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Усклади</translation>
         </message>
     </context>
     <context>
@@ -1864,13 +1808,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Deck 1 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Врста плоче носача 1</translation>
         </message>
         <message>
             <source>Deck 2 Vinyl Type</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Врста плоче носача 2</translation>
         </message>
         <message>
             <source>Lead-in time</source>
@@ -1964,8 +1906,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Other Libraries</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Остале библиотеке</translation>
         </message>
         <message>
             <source>Show Rhythmbox Library</source>
@@ -2253,8 +2194,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Жанр</translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -2266,18 +2206,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Use UTF-8 encoding for metadata.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Користите  кодирање УТФ-8 за мета податке.</translation>
         </message>
         <message>
             <source>Encoding</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Кодирање</translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Проток бита</translation>
         </message>
         <message>
             <source>Format</source>
@@ -2297,13 +2234,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Artist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Извођач</translation>
         </message>
         <message>
             <source>Title</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Наслов</translation>
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
@@ -2620,13 +2555,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Selects all tracks in the table below.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Изаберите све нумере из табеле испод.</translation>
         </message>
         <message>
             <source>Select All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Изабери све</translation>
         </message>
         <message>
             <source>Runs the BPM and beatgrid detection on the selected tracks.
@@ -2644,8 +2577,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Analyzing %1/%2 %3%</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Обрађујем %1/%2 %3%</translation>
         </message>
     </context>
     <context>
@@ -3022,8 +2954,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         <name>HSVWaveformWidget</name>
         <message>
             <source>HSV</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>ХСВ</translation>
         </message>
     </context>
     <context>
@@ -3172,8 +3103,7 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Scanning: </source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прегледам: </translation>
         </message>
     </context>
     <context>
@@ -3291,68 +3221,55 @@ Waveforms will be generated as part of a analysis as well.</source>
         </message>
         <message>
             <source>Show Samplers</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прикажи узорчнике</translation>
         </message>
         <message>
             <source>Ctrl+1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ктрл+1</translation>
         </message>
         <message>
             <source>Show Vinyl Control Section</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прикажи одељак управљања плочом</translation>
         </message>
         <message>
             <source>Ctrl+3</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ктрл+3</translation>
         </message>
         <message>
             <source>Show Microphone Section</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прикажи одељак микрофона</translation>
         </message>
         <message>
             <source>Ctrl+2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ктрл+2</translation>
         </message>
         <message>
             <source>Show Preview Deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прикажи носач прегледа</translation>
         </message>
         <message>
             <source>Show the preview deck in the Mixxx interface.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прикажите носач прегледа у сучељу Миксикса.</translation>
         </message>
         <message>
             <source>Ctrl+4</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ктрл+4</translation>
         </message>
         <message>
             <source>&amp;Reload Skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>&amp;Поново учитај маску</translation>
         </message>
         <message>
             <source>Reload the skin</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Поново учитајте маску</translation>
         </message>
         <message>
             <source>Ctrl+Shift+R</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ктрл+Помак+Р</translation>
         </message>
         <message>
             <source>Developer</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Програмер</translation>
         </message>
         <message>
             <source>Load track to Deck %1</source>
@@ -3755,13 +3672,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <name>QMessageBox</name>
         <message>
             <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Надограђујем МИксикс са в1.9.x/1.10.x.</translation>
         </message>
         <message>
             <source>Mixxx has a new and improved beat detector.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Миксикс има нови и побољшани откривач такта.</translation>
         </message>
         <message>
             <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
@@ -3770,23 +3685,19 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ово не утиче на сачуване наговештаје, битне наговештаје, спискове нумера или гајбице.</translation>
         </message>
         <message>
             <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ако не желите да Миксикс поново обради ваше нумере, изаберите „Задржи тренутне мреже тактова“. Ово подешавање можете да измените било када у одељку „Откривање такта“ у поставкама.</translation>
         </message>
         <message>
             <source>Keep Current Beatgrids</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Задржи тренутне мреже тактова</translation>
         </message>
         <message>
             <source>Generate New Beatgrids</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Створи нове мреже тактова</translation>
         </message>
     </context>
     <context>
@@ -3949,8 +3860,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Scroll-wheel</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Точкић миша</translation>
         </message>
         <message>
             <source>Waveform Overview</source>
@@ -3970,8 +3880,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Waveform Display</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Приказ таласног облика</translation>
         </message>
         <message>
             <source>Shows the loaded track's waveform near the playback position.</source>
@@ -3983,8 +3892,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Scroll to change the waveform zoom level.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Примакните да измените ниво увеличања таласног облика.</translation>
         </message>
         <message>
             <source>Spinning Vinyl</source>
@@ -4064,8 +3972,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Постепени прелаз</translation>
         </message>
         <message>
             <source>Determines the master output by fading between the left and right channels.</source>
@@ -4109,8 +4016,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Microphone</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Микрофон</translation>
         </message>
         <message>
             <source>Show/hide the Microphone section.</source>
@@ -4126,8 +4032,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Управљање плочом</translation>
         </message>
         <message>
             <source>Show/hide the Vinyl Control section.</source>
@@ -4135,13 +4040,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Preview Deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Носач прегледа</translation>
         </message>
         <message>
             <source>Show/hide the Preview deck.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Прикажи/сакриј носач прегледа.</translation>
         </message>
         <message>
             <source>Microphone Volume</source>
@@ -4382,18 +4285,15 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ускладите са првим носачем (према бројевима) који пушта нумеру и има ТПМ.</translation>
         </message>
         <message>
             <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Ако ниједан носач не пушта, ускладите са првим носачем који има ТПМ.</translation>
         </message>
         <message>
             <source>Decks can't sync to samplers and samplers can only sync to decks.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Носачи могу да се усклађују са узорчницима а узорчници могу само да се усклађују са носачима.</translation>
         </message>
         <message>
             <source>Setup a loop over the set number of beats.</source>
@@ -4409,13 +4309,11 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Loop Exit</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Напусти петљу</translation>
         </message>
         <message>
             <source>Turns the current loop off.</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Искључите тренутну петљу.</translation>
         </message>
         <message>
             <source>Slip Mode</source>
@@ -4487,8 +4385,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Synchronize</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Усклади</translation>
         </message>
         <message>
             <source>Syncs the tempo (BPM) and phase to that of the other track, </source>
@@ -4536,8 +4433,7 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Hotcue</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Битан наговештај</translation>
         </message>
         <message>
             <source>If hotcue is set, jumps to the hotcue.</source>
@@ -4822,13 +4718,15 @@ Click OK to exit.</source>
         <name>WOverview</name>
         <message>
             <source>Ready to play, analyzing ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Спреман сам за пуштање, обрађујем ..</translation>
         </message>
         <message>
             <source>Loading track ..</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Учитавам нумеру ..</translation>
+        </message>
+        <message>
+            <source>Finalizing ..</source>
+            <translation>Завршавам ..</translation>
         </message>
     </context>
     <context>
@@ -4898,13 +4796,11 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Load to Preview Deck</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Учитај на носач прегледа</translation>
         </message>
         <message>
             <source>Reset Play Count</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Поништи број пуштања</translation>
         </message>
         <message>
             <source>Lock BPM</source>
@@ -4924,8 +4820,7 @@ Click OK to exit.</source>
         </message>
         <message>
             <source>Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Узорчник %1</translation>
         </message>
     </context>
     <context>

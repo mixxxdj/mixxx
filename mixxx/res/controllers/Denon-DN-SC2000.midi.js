@@ -8,6 +8,7 @@ DenonDNSC2000.Deck = function (deckNumber, group) {
 }
 
 DenonDNSC2000.init = function (id) {
+	engine.setValue("[Master]", "num_decks", 4);
 	var leds = [0x11,0x13,0x15,0x17,0x19,0x1B,0x1D,0x20,/* cues */
 				0x24,0x40,0x2B,/* loops */
 				0x27,0x26,/* play,cue */
@@ -57,7 +58,7 @@ DenonDNSC2000.newValue = function(currentVal,min,max,increment,ticksCount) {
 
 DenonDNSC2000.flanger = function (midino, control, value, status, group) {
 	DenonDNSC2000.toggleBinaryValue(group,'flanger');
-	engine.beginTimer(100, 'DenonDNSC2000.handleFlangerLed("'+group+'")', true);	
+	engine.beginTimer(100, 'DenonDNSC2000.handleFlangerLed("'+group+'")', true);
 }
 
 DenonDNSC2000.changeDepth = function (midino, control, value, status, group) {
@@ -185,7 +186,7 @@ DenonDNSC2000.loopOut = function(group, value, shift) {
 	engine.beginTimer(100, 'DenonDNSC2000.handleLoopAndHotcuesLeds("'+group+'")', true);
 }
 
-DenonDNSC2000.reloop = function(group, value, shift) {	
+DenonDNSC2000.reloop = function(group, value, shift) {
 	var loopInPosition = engine.getValue(group,'loop_start_position');
 	var loopOutPosition = engine.getValue(group,'loop_end_position');
 	if(loopInPosition != -1 && loopOutPosition!=-1) {
@@ -226,7 +227,7 @@ DenonDNSC2000.resizeLoop = function(midino, control, value, status, group) {
 		var samplesPerBeat = DenonDNSC2000.samplesPerBeat(group);
 		var deltaSamples = loopOutPosition - loopInPosition;
 		var newLoopOutPosition = loopOutPosition;
-		var loopLengthes = [ 
+		var loopLengthes = [
 						Math.floor(0.5 + samplesPerBeat * 1 / 32),
 						Math.floor(0.5 + samplesPerBeat * 1 / 16),
 						Math.floor(0.5 + samplesPerBeat * 1 / 8),
@@ -239,7 +240,7 @@ DenonDNSC2000.resizeLoop = function(midino, control, value, status, group) {
 						Math.floor(0.5 + samplesPerBeat * 16),
 						Math.floor(0.5 + samplesPerBeat * 32)
 						];
-		
+
 		if(increment) {
 			for(var index = 0, count = loopLengthes.length;index < count; index++) {
 				if(deltaSamples < loopLengthes[index]) {
@@ -265,12 +266,12 @@ DenonDNSC2000.resizeLoop = function(midino, control, value, status, group) {
 DenonDNSC2000.moveLoopLeft = function(midino, control, value, status, group) {
 	var samplesPerBeat = Math.floor(0.5 + DenonDNSC2000.samplesPerBeat(group));
 	var loopInPosition = engine.getValue(group,'loop_start_position');
-	var loopOutPosition = engine.getValue(group,'loop_end_position'); 
+	var loopOutPosition = engine.getValue(group,'loop_end_position');
 	if(loopInPosition != -1 && loopOutPosition != -1 && loopInPosition > samplesPerBeat) {
 		loopInPosition = loopInPosition - samplesPerBeat;
 		loopInPosition = Math.max(0,loopInPosition - loopInPosition % 2);
 		loopOutPosition = loopOutPosition - samplesPerBeat;
-		loopOutPosition = Math.max(0,loopOutPosition - loopOutPosition % 2);		
+		loopOutPosition = Math.max(0,loopOutPosition - loopOutPosition % 2);
 		engine.setValue(group, 'loop_start_position', loopInPosition);
 		engine.setValue(group, 'loop_end_position', loopOutPosition);
 	}
@@ -279,12 +280,12 @@ DenonDNSC2000.moveLoopLeft = function(midino, control, value, status, group) {
 DenonDNSC2000.moveLoopRight = function(midino, control, value, status, group) {
 	var samplesPerBeat = Math.floor(0.5 + DenonDNSC2000.samplesPerBeat(group));
 	var loopInPosition = engine.getValue(group,'loop_start_position');
-	var loopOutPosition = engine.getValue(group,'loop_end_position'); 
+	var loopOutPosition = engine.getValue(group,'loop_end_position');
 	if(loopInPosition != -1 && loopOutPosition != -1 && loopOutPosition + samplesPerBeat < engine.getValue(group,'track_samples')) {
 		loopInPosition = loopInPosition + samplesPerBeat;
 		loopInPosition = Math.max(0,loopInPosition - loopInPosition % 2);
 		loopOutPosition = loopOutPosition + samplesPerBeat;
-		loopOutPosition = Math.max(0,loopOutPosition - loopOutPosition % 2);		
+		loopOutPosition = Math.max(0,loopOutPosition - loopOutPosition % 2);
 		engine.setValue(group, 'loop_start_position', loopInPosition);
 		engine.setValue(group, 'loop_end_position', loopOutPosition);
 	}
@@ -312,7 +313,7 @@ DenonDNSC2000.cue = function (midino, control, value, status, group) {
 		engine.setValue(group, 'cue_default', 1);
 		midi.sendShortMsg(ledChannel,0x4A,0x26);
 	}
-	else 
+	else
 	if ((status & 0xF0) == 0x80) {
 		engine.setValue(group, 'cue_default', 0);
 		midi.sendShortMsg(ledChannel,0x4B,0x26);
@@ -368,10 +369,10 @@ DenonDNSC2000.handleLoopAndHotcuesLeds = function(group) {
 	for(var index = 0, count = cueLeds.length;index < count; index ++) {
 		DenonDNSC2000.handleLed(ledChannel,(engine.getValue(group,'hotcue_' + (index + 1) + '_position') != -1),cueLeds[index],0x4A,0x4B);
 	}
-	
+
 	var ledChannel = DenonDNSC2000.getLedChannelByGroup(group);
 	DenonDNSC2000.handleLed(ledChannel,(engine.getValue(group, 'loop_start_position') != -1),0x24,0x4A,0x4B);
-	DenonDNSC2000.handleLed(ledChannel,(engine.getValue(group, 'loop_end_position') != -1),0x40,0x4A,0x4B);	
+	DenonDNSC2000.handleLed(ledChannel,(engine.getValue(group, 'loop_end_position') != -1),0x40,0x4A,0x4B);
 	DenonDNSC2000.handleLed(ledChannel,(engine.getValue(group, 'loop_enabled') == 1),0x2B,0x4A,0x4B);
 }
 
@@ -440,7 +441,7 @@ DenonDNSC2000.Deck.prototype.picthJog = function(value) {
 	if(value > 0) {
 		value = value * value;
 	} else {
-		value = -value * value; 
+		value = -value * value;
 	}
 	engine.setValue(this.group,"jog", value);
 }
@@ -450,11 +451,11 @@ DenonDNSC2000.Deck.prototype.jogTouch = function (midino, control, value, status
 		engine.scratchEnable(this.deckNumber, 2048, 33+1/3, 1.0/8, (1.0/8)/32);
 		this.scratchMode = true;
 	}
-	else 
+	else
 	if ((status & 0xF0) == 0x80) {
 		engine.scratchDisable(this.deckNumber);
 		this.scratchMode = false;
-	}	
+	}
 }
 
 DenonDNSC2000.Deck.prototype.scratchJog = function (value) {

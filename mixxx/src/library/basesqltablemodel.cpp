@@ -10,6 +10,7 @@
 #include "library/stardelegate.h"
 #include "library/starrating.h"
 #include "library/previewbuttondelegate.h"
+#include "library/queryutil.h"
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 #include "playerinfo.h"
@@ -177,15 +178,6 @@ void BaseSqlTableModel::select() {
     QTime time;
     time.start();
 
-    // Remove all the rows from the table.
-    // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
-        m_rowInfo.clear();
-        m_trackIdToRows.clear();
-        endRemoveRows();
-    }
-
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
@@ -202,8 +194,18 @@ void BaseSqlTableModel::select() {
     query.prepare(queryString);
 
     if (!query.exec()) {
-        qDebug() << this << "select() error:" << __FILE__ << __LINE__
-                 << query.executedQuery() << query.lastError();
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    // Remove all the rows from the table. We wait to do this until after the
+    // table query has succeeded. See Bug #1090888.
+    // TODO(rryan) we could edit the table in place instead of clearing it?
+    if (m_rowInfo.size() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+        m_rowInfo.clear();
+        m_trackIdToRows.clear();
+        endRemoveRows();
     }
 
     QSqlRecord record = query.record();
@@ -215,8 +217,7 @@ void BaseSqlTableModel::select() {
         tableColumnIndices.push_back(record.indexOf(column));
     }
 
-	// sqlite does not set size and m_rowInfo was just cleared
-    //int rows = query.size();
+    // sqlite does not set size and m_rowInfo was just cleared
     //if (sDebug) {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
     //}
@@ -464,9 +465,13 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
                 value = value.toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
-                value = value.toDateTime();
+                QDateTime gmtDate = value.toDateTime();
+                gmtDate.setTimeSpec(Qt::UTC);
+                value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-                value = value.toDateTime().time();
+                QDateTime gmtDate = value.toDateTime();
+                gmtDate.setTimeSpec(Qt::UTC);
+                value = gmtDate.toLocalTime().time();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             }

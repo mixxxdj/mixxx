@@ -53,7 +53,7 @@
 	<manifest>
 	<title>PhoneyDark1600x1200-UXGA</title>
 	<author>jus</author>
-	<version>1.11.0.08</version>
+	<version>1.11.0.09</version>
 	<description>A 2-deck parallel waveform skin.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -209,7 +209,6 @@
 		<SignalLowColor></SignalLowColor>
 		<SignalColor>#0099FF</SignalColor>
 		<BeatColor>#CCCCCC</BeatColor>
-		<BeatHighlightColor></BeatHighlightColor>
 		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#FFFFFF</AxesColor>
@@ -266,7 +265,6 @@
 		<SignalLowColor></SignalLowColor>
 		<SignalColor>#CC6600</SignalColor>
 		<BeatColor>#CCCCCC</BeatColor>
-		<BeatHighlightColor></BeatHighlightColor>
 		<PlayPosColor>#00FF00</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#FFFFFF</AxesColor>

@@ -31,9 +31,13 @@
 #ifdef __FFMPEGFILE__
 #include "soundsourceffmpeg.h"
 #endif
+#ifdef __MODPLUG__
+#include "soundsourcemodplug.h"
+#endif
 #include "soundsourceflac.h"
 
 #include "mixxx.h"
+#include "util/cmdlineargs.h"
 
 #include <QLibrary>
 #include <QMutexLocker>
@@ -138,6 +142,10 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 #ifdef __COREAUDIO__
     } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(extension)) {
         return new SoundSourceCoreAudio(qFilename);
+#endif
+#ifdef __MODPLUG__
+    } else if (SoundSourceModPlug::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceModPlug(qFilename);
 #endif
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
@@ -311,6 +319,13 @@ int SoundSourceProxy::parseHeader()
 int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 {
     QString qFilename = p->getLocation();
+
+    // Log parsing of header information in developer mode. This is useful for
+    // tracking down corrupt files.
+    if (CmdlineArgs::Instance().getDeveloper()) {
+	qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
+    }
+
     SoundSource* sndsrc = initialize(qFilename);
     if (sndsrc == NULL)
         return ERR;
@@ -367,6 +382,9 @@ QStringList SoundSourceProxy::supportedFileExtensions()
 #endif
 #ifdef __COREAUDIO__
     supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
+#endif
+#ifdef __MODPLUG__
+    supportedFileExtensions.append(SoundSourceModPlug::supportedFileExtensions());
 #endif
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
 

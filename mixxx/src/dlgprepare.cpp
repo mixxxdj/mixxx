@@ -117,7 +117,7 @@ void DlgPrepare::tableSelectionChanged(const QItemSelection& selected,
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
     bool tracksSelected = m_pPrepareLibraryTableView->selectionModel()->hasSelection();
-    pushButtonAnalyze->setEnabled(tracksSelected);
+    pushButtonAnalyze->setEnabled(tracksSelected || m_bAnalysisActive);
 }
 
 void DlgPrepare::selectAll() {

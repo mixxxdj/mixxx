@@ -117,6 +117,23 @@ unsigned int PlayerManager::numDecks() {
 }
 
 // static
+bool PlayerManager::isDeckGroup(const QString& group, int* number) {
+    if (!group.startsWith("[Channel")) {
+        return false;
+    }
+
+    bool ok = false;
+    int deckNum = group.mid(8,group.lastIndexOf("]")-8).toInt(&ok);
+    if (!ok || deckNum <= 0) {
+        return false;
+    }
+    if (number != NULL) {
+        *number = deckNum;
+    }
+    return true;
+}
+
+// static
 unsigned int PlayerManager::numSamplers() {
     // We do this to cache the control once it is created so callers don't incur
     // a hashtable lookup every time they call this.

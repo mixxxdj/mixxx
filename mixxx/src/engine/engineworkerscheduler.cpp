@@ -66,7 +66,7 @@ void EngineWorkerScheduler::run() {
                 m_workerThreadPool.start(pWorker);
             }
         }
-        m_waitCondition.wait(&m_mutex);
+        m_waitCondition.wait(&m_mutex); // unlock mutex and wait
         m_mutex.unlock();
     }
 }

@@ -7,15 +7,15 @@ msgid ""
 msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
-"POT-Creation-Date: 2013-02-23 15:00+0200\n"
-"PO-Revision-Date: 2013-02-23 19:48+0000\n"
-"Last-Translator: Mike08 <micou8@gmail.com>\n"
+"POT-Creation-Date: 2013-03-05 06:50+0200\n"
+"PO-Revision-Date: 2013-04-07 11:19+0000\n"
+"Last-Translator: jus <Unknown>\n"
 "Language-Team: Polish <pl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-02-24 04:37+0000\n"
-"X-Generator: Launchpad (build 16506)\n"
+"X-Launchpad-Export-Date: 2013-04-08 05:12+0000\n"
+"X-Generator: Launchpad (build 16550)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -121,12 +121,12 @@ msgstr ""
 #: BasePlaylistFeature#17
 msgctxt "BasePlaylistFeature#17"
 msgid "Playlist Creation Failed"
-msgstr ""
+msgstr "Tworzenie listy odtwarzania nie powiodło się"
 
 #: BasePlaylistFeature#18
 msgctxt "BasePlaylistFeature#18"
 msgid "An unknown error occurred while creating playlist: "
-msgstr ""
+msgstr "Wystąpił nieznany błąd podczas tworzenia listy odtwarzania: "
 
 #: BasePlaylistFeature#19
 msgctxt "BasePlaylistFeature#19"
@@ -1180,7 +1180,7 @@ msgstr "Efekt flangera: Opóźnienie Frazy"
 #: DlgControllerLearning#99
 msgctxt "DlgControllerLearning#99"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: DlgControllerLearning#100
 msgid "Microphone on/off"
@@ -1197,7 +1197,7 @@ msgstr "Orientacja kanału mikrofonu (np. lewo, prawo, środek)"
 #: DlgControllerLearning#103
 msgctxt "DlgControllerLearning#103"
 msgid "Auto DJ"
-msgstr ""
+msgstr "Auto DJ"
 
 #: DlgControllerLearning#104
 msgid "Shuffle the content of the Auto DJ playlist"
@@ -1715,7 +1715,7 @@ msgstr "Wizualne wzmocnienie"
 #: DlgPrefControlsDlg#40
 msgctxt "DlgPrefControlsDlg#40"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronizuj"
 
 #: DlgPrefCrossfaderDlg#1
 msgctxt "DlgPrefCrossfaderDlg#1"
@@ -2333,7 +2333,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#19
 msgctxt "DlgPrefShoutcastDlg#19"
 msgid "Genre"
-msgstr ""
+msgstr "Gatunek"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Live mix"
@@ -2350,12 +2350,12 @@ msgstr "Użyj kodowania UTF-8 dla metadanych."
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Encoding"
-msgstr ""
+msgstr "Kodowanie"
 
 #: DlgPrefShoutcastDlg#24
 msgctxt "DlgPrefShoutcastDlg#24"
 msgid "Bitrate"
-msgstr ""
+msgstr "Bitrate"
 
 #: DlgPrefShoutcastDlg#25
 msgid "Format"
@@ -2376,12 +2376,12 @@ msgstr "Włącz własne metadane"
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Artist"
-msgstr ""
+msgstr "Wykonawca"
 
 #: DlgPrefShoutcastDlg#30
 msgctxt "DlgPrefShoutcastDlg#30"
 msgid "Title"
-msgstr ""
+msgstr "Tytuł"
 
 #: DlgPrefShoutcastDlg#31
 msgid ""
@@ -4241,7 +4241,7 @@ msgstr "Reguluje głośność na wyjściu głównym."
 #: Tooltips#33
 msgctxt "Tooltips#33"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Tooltips#34
 msgid ""
@@ -4291,7 +4291,7 @@ msgstr "Z lewej strony  crossfadera, z prawej strony lub środka (domyślnie)."
 #: Tooltips#44
 msgctxt "Tooltips#44"
 msgid "Microphone"
-msgstr ""
+msgstr "Mikrofon"
 
 #: Tooltips#45
 msgid "Show/hide the Microphone section."
@@ -4308,7 +4308,7 @@ msgstr "Pokaż/ukryj sekcję samplera."
 #: Tooltips#48
 msgctxt "Tooltips#48"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Kontrola vinylem"
 
 #: Tooltips#49
 msgid "Show/hide the Vinyl Control section."
@@ -4700,7 +4700,7 @@ msgstr "Przeskakuje do końca utworu."
 #: Tooltips#136
 msgctxt "Tooltips#136"
 msgid "Synchronize"
-msgstr ""
+msgstr "Synchronizuj"
 
 #: Tooltips#137
 msgid "Syncs the tempo (BPM) and phase to that of the other track, "
@@ -4751,7 +4751,7 @@ msgstr "Wysuwa ścieżkę z odtwarzacza."
 #: Tooltips#148
 msgctxt "Tooltips#148"
 msgid "Hotcue"
-msgstr ""
+msgstr "Szybiki znacznik (Hotcue)"
 
 #: Tooltips#149
 msgid "If hotcue is set, jumps to the hotcue."
@@ -5052,6 +5052,10 @@ msgstr ""
 
 #: WOverview#2
 msgid "Loading track .."
+msgstr ""
+
+#: WOverview#3
+msgid "Finalizing .."
 msgstr ""
 
 #: WSearchLineEdit#1
