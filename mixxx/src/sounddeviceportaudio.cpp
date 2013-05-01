@@ -106,8 +106,8 @@ int SoundDevicePortAudio::open()
 
     //Get latency in milleseconds
     qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
-    double latencyMSec = m_framesPerBuffer / m_dSampleRate * 1000;
-    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:" << latencyMSec << "ms";
+    double bufferMSec = m_framesPerBuffer / m_dSampleRate * 1000;
+    qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:" << bufferMSec << "ms";
 
     qDebug() << "Output channels:" << m_outputParams.channelCount << "| Input channels:"
         << m_inputParams.channelCount;
@@ -147,12 +147,12 @@ int SoundDevicePortAudio::open()
     //Fill out the rest of the info.
     m_outputParams.device = m_devId;
     m_outputParams.sampleFormat = paFloat32;
-    m_outputParams.suggestedLatency = latencyMSec / 1000.0;
+    m_outputParams.suggestedLatency = bufferMSec / 1000.0;
     m_outputParams.hostApiSpecificStreamInfo = NULL;
 
     m_inputParams.device  = m_devId;
     m_inputParams.sampleFormat  = paInt16; //This is how our vinyl control stuff like samples.
-    m_inputParams.suggestedLatency = latencyMSec / 1000.0;
+    m_inputParams.suggestedLatency = bufferMSec / 1000.0;
     m_inputParams.hostApiSpecificStreamInfo = NULL;
 
     qDebug() << "Opening stream with id" << m_devId;
@@ -162,12 +162,12 @@ int SoundDevicePortAudio::open()
 
     // Try open device using iChannelMax
     err = Pa_OpenStream(&m_pStream,
-                        pInputParams,                           // Input parameters
-                        pOutputParams,                      // Output parameters
-                        m_dSampleRate,                      // Sample rate
-                        m_framesPerBuffer,                       // Frames per buffer
-                        paClipOff,                                      // Stream flags
-                        callback,                                       // Stream callback
+                        pInputParams,
+                        pOutputParams,
+                        m_dSampleRate,
+                        m_framesPerBuffer,
+                        paClipOff, // Stream flags
+                        callback,    
                         (void*) this); // pointer passed to the callback function
 
     if (err != paNoError)
@@ -214,8 +214,8 @@ int SoundDevicePortAudio::open()
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(m_pStream);
     m_dSampleRate = streamDetails->sampleRate;
-    latencyMSec = streamDetails->outputLatency*1000;
-    qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:" << latencyMSec << "ms";
+    double currentLatencyMSec = streamDetails->outputLatency * 1000;
+    qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:" << currentLatencyMSec << "ms";
 
     //Update the samplerate and latency ControlObjects, which allow the waveform view to properly correct
     //for the latency.
@@ -224,15 +224,19 @@ int SoundDevicePortAudio::open()
         new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","samplerate")));
     ControlObjectThreadMain* pControlObjectLatency =
         new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
+    ControlObjectThreadMain* pControlObjectAudioBufferSize =
+        new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","audio_buffer_size")));
 
-    pControlObjectLatency->slotSet(latencyMSec);
+    pControlObjectLatency->slotSet(currentLatencyMSec);
     pControlObjectSampleRate->slotSet(m_dSampleRate);
+    pControlObjectAudioBufferSize->slotSet(bufferMSec);
 
     //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
     //qDebug() << "Latency" << pControlObjectLatency->get();
 
     delete pControlObjectLatency;
     delete pControlObjectSampleRate;
+    delete pControlObjectAudioBufferSize;
 
     if (m_pMasterUnderflowCount) {
         ControlObjectThreadMain* pMasterUnderflowCount =

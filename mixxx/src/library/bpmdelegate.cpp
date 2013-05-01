@@ -1,11 +1,11 @@
 #include "bpmdelegate.h"
 
 BPMDelegate::BPMDelegate(QObject *parent, int column, int columnLock)
-                     : QStyledItemDelegate(parent),
-                       m_pEditor(new BPMEditor(BPMEditor::ReadOnly,
-                                     qobject_cast<QWidget *>(parent))),
-                       m_column(column),
-                       m_columnLock(columnLock){
+            : QStyledItemDelegate(parent),
+              m_pEditor(new BPMEditor(BPMEditor::ReadOnly,
+                        qobject_cast<QWidget *>(parent))),
+              m_column(column),
+              m_columnLock(columnLock) {
     m_pEditor->hide();
 }
 
@@ -13,8 +13,8 @@ BPMDelegate::~BPMDelegate() {
 }
 
 QWidget* BPMDelegate::createEditor(QWidget *parent,
-                                    const QStyleOptionViewItem &option,
-                                    const QModelIndex &index) const {
+                                   const QStyleOptionViewItem &option,
+                                   const QModelIndex &index) const {
     // Populate the correct colors based on the styling
     QStyleOptionViewItem newOption = option;
     initStyleOption(&newOption, index);
@@ -39,9 +39,8 @@ void BPMDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
                    qVariantFromValue(pEditor->getLock()));
 }
 
-void BPMDelegate::paint(QPainter *painter,
-                                  const QStyleOptionViewItem &option,
-                                  const QModelIndex &index) const {
+void BPMDelegate::paint(QPainter *painter,const QStyleOptionViewItem &option,
+                        const QModelIndex &index) const {
 
     m_pEditor->setData(index,m_columnLock);
     m_pEditor->setPalette(option.palette);

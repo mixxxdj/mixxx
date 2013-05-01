@@ -52,12 +52,17 @@
 #include "widget/wwidget.h"
 #include "widget/wspinny.h"
 #include "sharedglcontext.h"
+#include "util/debug.h"
 #include "util/statsmanager.h"
 #include "util/timer.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
+#endif
+
+#ifdef __MODPLUG__
+#include "dlgprefmodplug.h"
 #endif
 
 extern "C" void crashDlg()
@@ -340,6 +345,14 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pVCManager->init();
 #endif
 
+#ifdef __MODPLUG__
+    // restore the configuration for the modplug library before trying to load a module
+    DlgPrefModplug* pModplugPrefs = new DlgPrefModplug(0, m_pConfig);
+    pModplugPrefs->loadSettings();
+    pModplugPrefs->applySettings();
+    delete pModplugPrefs; // not needed anymore
+#endif
+
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,
                              m_pRecordingManager);
@@ -454,7 +467,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
         m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
-        qCritical("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
+        reportCriticalErrorAndQuit("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         //TODO (XXX) add dialog to warn user and launch skin choice page
         resize(640,480);
@@ -1447,6 +1460,10 @@ void MixxxApp::slotHelpAbout() {
 "Andrey Smelov<br>"
 "Scott Stewart<br>"
 "Nimatek<br>"
+"Alban Bedel<br>"
+"Stefan N&uuml;rnberger<br>"
+"Steven Boswell<br>"
+"Jo&atilde;o Reys Santos<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"

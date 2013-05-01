@@ -22,6 +22,13 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.15  (13/04/2013)
+* Fix: Removes <BeatHighlightColor> from the waveforms, which blinks for a brief about of
+  time to indicate when the beat is near the playposition. Fixes lp:1112396
+
+v1.11.0.14  (10/03/2013)
+* Fix: Waveform was too big and escaped frame on Windows & Linux. Fixes lp:1100453
+
 v1.11.0.13  (16/02/2013)
 * Fix: Remove background graphic for Deck 1&2 waveform overview. Fixes lp:1099180
 

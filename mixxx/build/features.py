@@ -132,7 +132,8 @@ class Bulk(Feature):
     def sources(self, build):
         sources = ['controllers/bulk/bulkcontroller.cpp',
                    'controllers/bulk/bulkenumerator.cpp']
-
+        if not int(build.flags['hid']):
+		    sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 
@@ -201,7 +202,8 @@ class MediaFoundation(Feature):
             return True
         return False
     def add_options(self, build, vars):
-        vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
+        if build.platform_is_windows:
+            vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
     def configure(self, build, conf):
         if not self.enabled(build):
             return
@@ -482,6 +484,40 @@ class Vamp(Feature):
                             '%s/PluginWrapper.cpp',
                             '%s/RealTime.cpp'])
         return sources
+
+
+class ModPlug(Feature):
+    def description(self):
+        return "Modplug module decoder plugin"
+
+    def enabled(self, build):
+        build.flags['modplug'] = util.get_flags(build.env, 'modplug', 0)
+        if int(build.flags['modplug']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('modplug', 'Set to 1 to enable libmodplug based module tracker support.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.Append(CPPDEFINES = '__MODPLUG__')
+
+        have_modplug_h = conf.CheckHeader('libmodplug/modplug.h')
+        have_modplug = conf.CheckLib(['modplug','libmodplug'], autoadd=True)
+
+        if not have_modplug_h:
+            raise Exception('Could not find libmodplug development headers.')
+
+        if not have_modplug:
+            raise Exception('Could not find libmodplug shared library.')
+
+    def sources(self, build):
+        build.env.Uic4('dlgprefmodplugdlg.ui')
+        return ['soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
+
 
 class FAAD(Feature):
     def description(self):

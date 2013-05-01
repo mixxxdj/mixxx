@@ -39,10 +39,7 @@ public:
     /** Called from EngineBuffer when seeking, to ensure the buffers are flushed */
     void clear();
     /** Scale buffer */
-    CSAMPLE* scale(double playpos,
-                   unsigned long buf_size,
-                   CSAMPLE* pBase,
-                   unsigned long iBaseLength);
+    CSAMPLE* getScaled(unsigned long buf_size);
 
 private:
     ReadAheadManager* m_pReadAheadManager;

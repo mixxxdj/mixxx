@@ -904,6 +904,13 @@ QWidget* LegacySkinParser::parseSpinny(QDomElement node) {
     QString channelStr = lookupNodeGroup(node);
     const char* pSafeChannelStr = safeChannelString(channelStr);
     WSpinny* spinny = new WSpinny(m_pParent, m_pVCManager);
+    if (!spinny->isValid()) {
+        delete spinny;
+        QLabel* dummy = new QLabel(m_pParent);
+        //: Shown when Spinny can not be displayd. Please keep \n unchanged
+        dummy->setText(tr("No OpenGL\nsupport."));
+        return dummy;
+    }
     setupWidget(node, spinny);
 
     WaveformWidgetFactory::instance()->addTimerListener(spinny);
@@ -943,10 +950,6 @@ QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
     // Connect Library search signals to the WLibrary
     connect(m_pLibrary, SIGNAL(search(const QString&)),
             pLibraryWidget, SLOT(search(const QString&)));
-    connect(m_pLibrary, SIGNAL(searchCleared()),
-            pLibraryWidget, SLOT(searchCleared()));
-    connect(m_pLibrary, SIGNAL(searchStarting()),
-            pLibraryWidget, SLOT(searchStarting()));
 
     m_pLibrary->bindWidget(pLibraryWidget, m_pKeyboard);
 
@@ -1061,8 +1064,8 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
     // Style the library BPM Button with a default image
     styleHack.append(QString(
         "QPushButton#LibraryBPMButton { background: transparent; border: 0; }"
-        "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/checked.png);}"
-        "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/unchecked.png);}"));
+        "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/ic_library_checked.png);}"
+        "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/ic_library_unchecked.png);}"));
         
     if (!XmlParse::selectNode(node, "FgColor").isNull()) {
         color.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));
@@ -1295,6 +1298,11 @@ void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosi
     }
 
     QString style = XmlParse::selectNodeQString(node, "Style");
+    // Check if we should apply legacy library styling to this node.
+    if (XmlParse::selectNodeQString(node, "LegacyTableViewStyle")
+        .contains("true", Qt::CaseInsensitive)) {
+        style = getLibraryStyle(node);
+    }
     if (style != "") {
         pWidget->setStyleSheet(style);
     }

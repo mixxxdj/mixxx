@@ -344,9 +344,11 @@ LPD8RK.hotcueButton = function (channel, control, value, status, group) {
 	var thecue = LPD8RK.hotcues[status.toString(16).toLowerCase()+control.toString(16).toLowerCase()][LPD8RK.hotcueBank];
 	if (LPD8RK.hotcueClear){
 		engine.setValue(thecue[0], "hotcue_"+thecue[1]+"_clear", 1);
+		engine.setValue(thecue[0], "hotcue_"+thecue[1]+"_clear", 0);
 		if (LPD8RK.debug){print("cleared")};
 		} else {
 		engine.setValue(thecue[0], "hotcue_"+thecue[1]+"_activate", 1);
+		engine.setValue(thecue[0], "hotcue_"+thecue[1]+"_activate", 0);
 		if (LPD8RK.debug){print("###"+status.toString(16).toLowerCase()+control.toString(16).toLowerCase()+"--activated")};
 		};
 
@@ -459,7 +461,7 @@ LPD8RK.looplenDial = function (channel, control, value, status, group) {
 
 LPD8RK.loopminus = function (channel, control, value, status, group) {
 	//shrinks loop or moves loop back
-	if (LPD8RK.loopbuttonDown !== true){engine.setValue(group, "loop_halve", 1); return false;}//shrink loop if no loop button down 
+	if (LPD8RK.loopbuttonDown !== true){engine.setValue(group, "loop_halve", 1);engine.setValue(group, "loop_halve", 0); return false;}//shrink loop if no loop button down 
 	else if (engine.getValue(group, "loop_start_position")>=0 && engine.getValue(group, "loop_end_position")>=0 ){
 		//move loop
 		var interval =	LPD8RK.loopmove*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
@@ -473,7 +475,7 @@ LPD8RK.loopminus = function (channel, control, value, status, group) {
 
 LPD8RK.loopplus = function (channel, control, value, status, group) {
 	//grows loop or moves loop forward
-	if (LPD8RK.loopbuttonDown !== true){engine.setValue(group, "loop_double", 1); return false;}//shrink loop if no loop button down 
+	if (LPD8RK.loopbuttonDown !== true){engine.setValue(group, "loop_double", 1); engine.setValue(group, "loop_double", 0); return false;}//shrink loop if no loop button down 
 	else if (engine.getValue(group, "loop_start_position")>=0 && engine.getValue(group, "loop_end_position")>=0 ){
 		//move loop
 		var interval =	LPD8RK.loopmove*engine.getValue(group, "track_samples")/engine.getValue(group, "duration");
@@ -544,7 +546,7 @@ LPD8RK.progChng = function (channel, control, value, status, group) {
 	};
 
 LPD8RK.toggleplay = function (group, state) {
-	if (state==true){engine.setValue(group, "play", false);} else {engine.setValue(group, "play", true);};
+	if (state==true){engine.setValue(group, "reverse",0);engine.setValue(group, "play", false);} else {engine.setValue(group, "reverse",0);engine.setValue(group, "play", true);};
 	};
 
 LPD8RK.togglepfl = function (group, state) {

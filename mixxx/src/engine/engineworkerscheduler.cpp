@@ -44,6 +44,7 @@ void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
 }
 
 void EngineWorkerScheduler::workerStarted(EngineWorker* pWorker) {
+    Q_UNUSED(pWorker);
 }
 
 void EngineWorkerScheduler::workerFinished(EngineWorker* pWorker) {
@@ -65,7 +66,7 @@ void EngineWorkerScheduler::run() {
                 m_workerThreadPool.start(pWorker);
             }
         }
-        m_waitCondition.wait(&m_mutex);
+        m_waitCondition.wait(&m_mutex); // unlock mutex and wait
         m_mutex.unlock();
     }
 }

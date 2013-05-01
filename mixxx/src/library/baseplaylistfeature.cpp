@@ -162,7 +162,8 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
                                         tr("Duplicate Playlist"),
                                         tr("Playlist name:"),
                                         QLineEdit::Normal,
-                                        oldName + tr("_copy"),
+                                        //: Appendix to default name when duplicating a playlist
+                                        oldName + tr("_copy" , "[noun]"),
                                         &ok).trimmed();
 
         if (!ok || oldName == name) {
@@ -173,12 +174,12 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
-                                tr(" Playlist creation Failed"),
+                                tr("Playlist Creation Failed"),
                                 tr("A playlist by that name already exists."));
         }
         else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
-                                tr("Playlist creation Failed"),
+                                tr("Playlist Creation Failed"),
                                 tr("A playlist cannot have a blank name."));
         }
         else {
@@ -305,9 +306,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
     QList<QString> entries = playlist_parser->parse(playlist_file);
 
     // Iterate over the List that holds URLs of playlist entires
-    for (int i = 0; i < entries.size(); ++i) {
-        m_pPlaylistTableModel->addTrack(QModelIndex(), entries[i]);
-    }
+    m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
 
     // delete the parser object
     if (playlist_parser) {

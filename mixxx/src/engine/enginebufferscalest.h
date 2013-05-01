@@ -54,8 +54,7 @@ public:
     bool getPitchIndpTimeStretch(void);
 
     /** Scale buffer */
-    CSAMPLE* scale(double playpos, unsigned long buf_size,
-                   CSAMPLE* pBase, unsigned long iBaseLength);
+    CSAMPLE* getScaled(unsigned long buf_size);
 
     /** Set tempo */
     double setTempo(double dTempo);

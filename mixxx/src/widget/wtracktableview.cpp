@@ -598,13 +598,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         }
         bool allowClear = true;
         int column = trackModel->fieldIndex("bpm_lock");
-        for (int i = 0; i < indices.size(); ++i) {
+        for (int i = 0; i < indices.size() && allowClear; ++i) {
             int row = indices.at(i).row();
             QModelIndex index = indices.at(i).sibling(row,column);
             if (index.data().toBool()) {
                 allowClear = false;
-                // once it's set to false don't look any further
-                break;
             }
         }
         m_pClearBeatsAction->setEnabled(allowClear);

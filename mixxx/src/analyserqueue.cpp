@@ -23,9 +23,10 @@
 
 #include <typeinfo>
 
-#define FINALISE_PERCENT 100 // in 0.1%,
+#define FINALIZE_PERCENT 1 // in 0.1%,
                            // 0 for no progress during finalize
-                           // 100 for 10% step after finalise
+                           // 1 to display the text "finalizing"
+                           // 100 for 10% step after finalize
 
 
 AnalyserQueue::AnalyserQueue(TrackCollection* pTrackCollection) :
@@ -197,12 +198,12 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         }
 
         // emit progress updates
-        // During the doAnalysis function it goes only to 100% - FINALISE_PERCENT
+        // During the doAnalysis function it goes only to 100% - FINALIZE_PERCENT
         // because the finalise functions will take also some time
         processedSamples += read;
         //fp div here prevents insane signed overflow
         progress = (int)(((float)processedSamples)/totalSamples *
-                         (1000 - FINALISE_PERCENT));
+                         (1000 - FINALIZE_PERCENT));
 
         if (m_progressInfo.track_progress != progress) {
             if (progressUpdateInhibitTimer.elapsed() > 60) {
@@ -317,7 +318,8 @@ void AnalyserQueue::run() {
                 queueAnalyseTrack(nextTrack);
                 emitUpdateProgress(nextTrack, 0);
             } else {
-                // 100% - FINALISE_PERCENT finished
+                // 100% - FINALIZE_PERCENT finished
+                emitUpdateProgress(nextTrack, 1000 - FINALIZE_PERCENT);
                 // This takes around 3 sec on a Atom Netbook
                 QListIterator<Analyser*> itf(m_aq);
                 while (itf.hasNext()) {
@@ -346,11 +348,11 @@ void AnalyserQueue::run() {
 // This is called from the AnalyserQueue thread
 void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
     if (!m_exit) {    
-        // First tryAcqire will have always success because sema is initalised with on
+        // First tryAcqire will have always success because sema is initialized with on
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
         // 100 % is emitted in any case
-        if (progress < 1000 && progress > 0 ) {
+        if (progress < 1000 - FINALIZE_PERCENT && progress > 0 ) {
             // Signals during processing are not required in any case
             if (!m_progressInfo.sema.tryAcquire()) {
                return;

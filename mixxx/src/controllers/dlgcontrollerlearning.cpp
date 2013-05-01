@@ -201,7 +201,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[AutoDJ]", "shuffle_playlist", tr("Shuffle the content of the Auto DJ playlist"), autodjMenu);
     addControl("[AutoDJ]", "skip_next", tr("Skip the next track in the Auto DJ playlist"), autodjMenu);
     addControl("[AutoDJ]", "fade_now", tr("Trigger the transition to the next track"), autodjMenu);
-    addControl("[AutoDJ]", "toggle_autodj", tr("Toggle Auto DJ (ON/OFF)"), autodjMenu);
+    addControl("[AutoDJ]", "enabled", tr("Toggle Auto DJ (ON/OFF)"), autodjMenu);
 
     // Skin Controls
     QMenu* guiMenu = addSubmenu(tr("User Interface"));
