@@ -468,14 +468,14 @@ playlists. If available, Mixxx automatically loads the external libraries from
 their default locations on your hard drive.
 
 Right-click on the iTunes icon in the Library tree and select
-:guilabel:`Choose Library` to load the *iTunes Music Library.xml* from a
+:guilabel:`Choose Library` to load the :file:`iTunes Music Library.xml` from a
 different location. Select :guilabel:`Use Default Library` to reset.
 
 .. versionadded:: 1.11
 
 * Right-click on a iTunes/Rhythmbox/Traktor playlist and choose
   :guilabel:`Import Playlist` to import it to be a regular Mixxx playlist.
-* If you have an iTunes configuration file (\*.xml) from a Windows or Mac
+* If you have an iTunes configuration file (:file:`\*.xml`) from a Windows or Mac
   partition mounted in Linux, you can load it and use your iTunes tracks and
   playlists.
 
