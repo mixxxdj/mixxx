@@ -285,10 +285,10 @@ the context menu:
 * **Remove**: Removes an unlocked playlist. Tracks in the playlist are still
   available in the library for later use.
 * **Import playlist**: Import tracks from external playlists to a playlist in
-  various file formats. For informations on how to import
-  iTunes/Rhythmbox/Traktor playlists, see :ref:`library-3rd-party`.
-* **Export playlist**: Export a playlist to an external playlist in various file
-  formats. Ideal for processing the data in other applications.
+  various file formats. For more informations, go to :ref:`library-3rd-party`.
+* **Export playlist**: Export a playlist in various file formats, such as
+  :file:`m3u`, :file:`pls`, or :file:`csv`. Ideal for processing the data in
+  other applications.
 
 .. _library-crates:
 
@@ -323,8 +323,9 @@ context menu:
   in the library for later use.
 * **Import crate**: Import tracks from an external playlist to a crate in various
   file formats.
-* **Export crate**: Export a crate as playlist in various file formats. Ideal
-  for processing the data in other applications.
+* **Export crate**: Export a crate in various file formats, such as
+  :file:`m3u`, :file:`pls`, or :file:`csv`. Ideal for processing the data in
+  other applications.
 
 Crates vs. Playlists
 --------------------
@@ -365,7 +366,7 @@ tracks that are not necessarily already in your Mixxx library.
 Click the :guilabel:`Browse` sidebar item to navigate the computer and find your
 music. Depending on your :term:`operating system`, the music will usually be
 found in the “My Music” or “Music” folder. Drag the files you want to import to
-the :ref:`Library <library-root>` icon or directly to the
+the |ic_lib_library| :ref:`Library <library-root>` icon or directly to the
 :ref:`interface-waveform`.
 
 .. note:: Currently you can drag only files but not folders to the Mixxx
