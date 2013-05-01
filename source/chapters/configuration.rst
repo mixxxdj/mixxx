@@ -113,7 +113,7 @@ sub-1ms operation).
 Sample Rate
 -----------
 
-.. versionchanged:: 1.11
+.. versionadded:: 1.11
    Mixxx automatically selects a default sample rate for your soundcard, most
    likely 44100 Hz
 
@@ -133,8 +133,8 @@ Audio API
 The Audio :term:`API` that Mixxx uses is the method by which Mixxx talks to your
 :term:`Operating System` in order to deliver audio to your soundcard. Your
 choice of Audio API can drastically affect Mixxx's performance on your
-computer. *Therefore it is important to take care to choose the best Audio API
-available to you.* Refer to the following table of Audio APIs to see what the
+computer. **Therefore it is important to take care to choose the best Audio API
+available to you.** Refer to the following table of Audio APIs to see what the
 best choice is for your operating system.
 
 +----------------------------------------+--------------+
