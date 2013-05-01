@@ -6,8 +6,8 @@ MIXER1.init = function init(id, debug) { // called when the device is opened & s
 	engine.connectControl("[Master]", "VuMeterR", "MIXER1.volumeLEDs");
 	engine.connectControl("[Channel1]", "VuMeter", "MIXER1.volumeLEDs");
 	engine.connectControl("[Channel2]", "VuMeter", "MIXER1.volumeLEDs");
-	engine.connectControl("[Sampler1]", "VuMeter", "MIXER1.volumeLEDs");
-	engine.connectControl("[Sampler2]", "VuMeter", "MIXER1.volumeLEDs");
+	engine.connectControl("[Channel3]", "VuMeter", "MIXER1.volumeLEDs");
+	engine.connectControl("[Channel4]", "VuMeter", "MIXER1.volumeLEDs");
 	};
 
 MIXER1.shutdown = function shutdown() {
@@ -16,8 +16,8 @@ MIXER1.shutdown = function shutdown() {
 	engine.connectControl("[Master]", "VuMeterR", "MIXER1.volumeLEDs", true);
 	engine.connectControl("[Channel1]", "VuMeter", "MIXER1.volumeLEDs", true);
 	engine.connectControl("[Channel2]", "VuMeter", "MIXER1.volumeLEDs", true);
-	engine.connectControl("[Sampler1]", "VuMeter", "MIXER1.volumeLEDs", true);
-	engine.connectControl("[Sampler2]", "VuMeter", "MIXER1.volumeLEDs", true);
+	engine.connectControl("[Channel3]", "VuMeter", "MIXER1.volumeLEDs", true);
+	engine.connectControl("[Channel4]", "VuMeter", "MIXER1.volumeLEDs", true);
 	};
 
 MIXER1.volumeLEDs = function volumeLEDs(value, group, control){
@@ -27,8 +27,8 @@ MIXER1.volumeLEDs = function volumeLEDs(value, group, control){
 	if (group=="[Master]" && control=="VuMeterR"){ch=0xB5;midino=0x20;midi.sendShortMsg(ch, midino, value);ch=0xB7;midino=0x20;midi.sendShortMsg(ch, midino, value);}
 	if (group=="[Channel1]" && control=="VuMeter"){ch=0xB5;midino=0x22;midi.sendShortMsg(ch, midino, value);}
 	if (group=="[Channel2]" && control=="VuMeter"){ch=0xB6;midino=0x23;midi.sendShortMsg(ch, midino, value);}
-	if (group=="[Sampler1]" && control=="VuMeter"){ch=0xB7;midino=0x22;midi.sendShortMsg(ch, midino, value);}
-	if (group=="[Sampler2]" && control=="VuMeter"){ch=0xB8;midino=0x23;midi.sendShortMsg(ch, midino, value);}
+	if (group=="[Channel3]" && control=="VuMeter"){ch=0xB7;midino=0x22;midi.sendShortMsg(ch, midino, value);}
+	if (group=="[Channel4]" && control=="VuMeter"){ch=0xB8;midino=0x23;midi.sendShortMsg(ch, midino, value);}
 	};
 
 MIXER1.clearVolumeLEDs = function clearVolumeLEDs(){
@@ -59,4 +59,10 @@ MIXER1.mute = function mute(channel, control, value){
 		midi.sendShortMsg(0x97, 0x05, 0);//turn off Inverse LED
 		midi.sendShortMsg(0x95, 0x05, 0);//turn off Inverse LED
 		}
+	};
+
+MIXER1.xfaderCurve = function xfaderCurve(channel, control, value){
+	//set xfader curve
+	script.crossfaderCurve(value, 0, 127);
+	print("########XFADE###########"+value);
 	};

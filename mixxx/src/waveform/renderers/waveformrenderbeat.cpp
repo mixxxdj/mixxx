@@ -32,18 +32,8 @@ void WaveformRenderBeat::setup(const QDomNode& node) {
     m_beatColor.setNamedColor(WWidget::selectNodeQString(node, "BeatColor"));
     m_beatColor = WSkinColor::getCorrectColor(m_beatColor);
 
-    m_highBeatColor = Qt::black;
-    QString highlight = WWidget::selectNodeQString(node, "BeatHighlightColor");
-    if (highlight != "") {
-        m_highBeatColor.setNamedColor(highlight);
-    }
-    m_highBeatColor = WSkinColor::getCorrectColor(m_highBeatColor);
-
     if (m_beatColor.alphaF() > 0.99)
-        m_beatColor.setAlphaF(0.8);
-
-    if (m_highBeatColor.alphaF() > 0.99)
-        m_highBeatColor.setAlphaF(0.9);
+        m_beatColor.setAlphaF(0.9);
 }
 
 void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -81,20 +71,13 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
 
     QPen beatPen(m_beatColor);
     beatPen.setWidth(1.5);
-    QPen highBeatPen(m_highBeatColor);
-    highBeatPen.setWidth(1.5);
 
     while (it->hasNext()) {
         int beatPosition = it->next();
         // m_waveformRenderer->regulateVisualSample(beatPosition);
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
-        //NOTE: (vRince) RJ should we keep this ?
-        if (m_beatActive && m_beatActive->get() > 0.0 &&
-            abs(xBeatPoint - m_waveformRenderer->getWidth()/2) < 20)
-            painter->setPen(highBeatPen);
-        else
-            painter->setPen(beatPen);
+        painter->setPen(beatPen);
 
         painter->drawLine(QPointF(xBeatPoint, 0.f),
                           QPointF(xBeatPoint,

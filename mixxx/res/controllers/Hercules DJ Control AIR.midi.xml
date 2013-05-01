@@ -54,7 +54,7 @@
                 <status>0xb0</status>
                 <midino>0x32</midino>
                 <group>[Channel1]</group>
-                <key>HerculesAir.scratch</key>
+                <key>HerculesAir.wheelTurn</key>
                 <description>Jog Scratch Deck A</description>
                 <options>
                     <script-binding/>
@@ -74,7 +74,7 @@
                 <status>0xb0</status>
                 <midino>0x33</midino>
                 <group>[Channel2]</group>
-                <key>HerculesAir.scratch</key>
+                <key>HerculesAir.wheelTurn</key>
                 <description>Jog Scratch Deck B</description>
                 <options>
                     <script-binding/>
@@ -632,10 +632,20 @@
             </control>
             <control>
                 <status>0x90</status>
-                <midino>0x2d</midino>
+                <midino>0x2e</midino>
                 <group>[Master]</group>
                 <key>HerculesAir.shift</key>
-                <description>Use Scratch Button as Shift Button</description>
+                <description>Use Magic Button as Shift Button</description>
+                <options>
+                    <script-binding/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x2d</midino>
+                <group>[Master]</group>
+                <key>HerculesAir.spinback</key>
+                <description>Use Scratch Button to toogle spinback effect</description>
                 <options>
                     <script-binding/>
                 </options>

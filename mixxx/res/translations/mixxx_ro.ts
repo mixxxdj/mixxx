@@ -5,21 +5,18 @@
         <name>AutoDJFeature</name>
         <message>
             <source>Auto DJ</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Auto DJ</translation>
         </message>
     </context>
     <context>
         <name>BaseExternalLibraryFeature</name>
         <message>
             <source>Add to Auto DJ Queue (bottom)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Adaugaţi in selecţia Auto DJ (jos)</translation>
         </message>
         <message>
             <source>Add to Auto DJ Queue (top)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Adaugaţi in selecţia Auto DJ (sus)</translation>
         </message>
         <message>
             <source>Import Playlist</source>

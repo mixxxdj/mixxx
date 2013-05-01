@@ -48,10 +48,13 @@ static const CSAMPLE two_pi = (2.f*acos(-1.f));
 int nearestSuperiorPowerOfTwo(int v);
 
 #ifdef _MSC_VER
-#include <float.h>  // for _isnan() on VC++
-#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
+// VC++ uses _isnan() instead of isnan()
+#include <float.h>
+#define isnan(x) _isnan(x)
 #else
-//#include <math.h>  // for isnan() everywhere else
+// for isnan() everywhere else
+#include <cmath>
+using std::isnan;
 #endif
 
 

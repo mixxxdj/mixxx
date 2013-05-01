@@ -1,20 +1,29 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxMIDIPreset mixxxVersion="1.11.0" schemaVersion="1">
     <info>
-        <name>Reloop TerminalMix4</name>
+        <name>Reloop Terminal Mix 2/4</name>
         <author>Sean M. Pappalardo</author>
-        <description>A complete 4-deck preset for a single Reloop TerminalMix4. Uses scripting.</description>
-        <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix4</wiki>
+        <description>A complete 4-deck preset for a single Reloop Terminal Mix 2 or 4. Uses scripting.</description>
+        <wiki>http://mixxx.org/wiki/doku.php/reloop_terminal_mix</wiki>
     </info>
-    <controller id="TerminalMix4">
+    <controller id="TerminalMix">
         <scriptfiles>
-            <file filename="Reloop TerminalMix4.js" functionprefix="TerminalMix4"/>
+            <file filename="Reloop Terminal Mix 2-4.js" functionprefix="TerminalMix"/>
         </scriptfiles>
         <controls>
             <!-- Center Mixer -->
             <control>
                 <group>[Master]</group>
-                <key>TerminalMix4.crossFader</key>
+                <key>headMix</key>
+                <status>0xB0</status>
+                <midino>0x33</midino>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>TerminalMix.crossFader</key>
                 <status>0xB0</status>
                 <midino>0x3A</midino>
                 <options>
@@ -23,7 +32,7 @@
             </control>
             <control> <!-- Sampler volume knob -->
                 <group>[Sampler1]</group>
-                <key>TerminalMix4.samplerVolume</key>
+                <key>TerminalMix.samplerVolume</key>
                 <status>0xB0</status>
                 <midino>0x34</midino>
                 <options>
@@ -32,7 +41,7 @@
             </control>
             <control> <!-- Trax knob turn -->
                 <group>[Playlist]</group>
-                <key>TerminalMix4.traxKnobTurn</key>
+                <key>TerminalMix.traxKnobTurn</key>
                 <status>0xB0</status>
                 <midino>0x39</midino>
                 <options>
@@ -41,7 +50,7 @@
             </control>
             <control> <!-- Trax knob press -->
                 <group>[Playlist]</group>
-                <key>TerminalMix4.traxKnobPress</key>
+                <key>TerminalMix.traxKnobPress</key>
                 <status>0x90</status>
                 <midino>0x39</midino>
                 <options>
@@ -50,7 +59,7 @@
             </control>
             <control> <!-- Back button -->
                 <group>[Playlist]</group>
-                <key>TerminalMix4.backButton</key>
+                <key>TerminalMix.backButton</key>
                 <status>0x90</status>
                 <midino>0x37</midino>
                 <options>
@@ -60,7 +69,7 @@
             <!-- Cross-fader assign switches -->
             <control>
                 <group>[Channel1]</group>
-                <key>TerminalMix4.cfAssignL</key>
+                <key>TerminalMix.cfAssignL</key>
                 <status>0x90</status>
                 <midino>0x3B</midino>
                 <options>
@@ -69,7 +78,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>TerminalMix4.cfAssignM</key>
+                <key>TerminalMix.cfAssignM</key>
                 <status>0x90</status>
                 <midino>0x3C</midino>
                 <options>
@@ -78,7 +87,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>TerminalMix4.cfAssignR</key>
+                <key>TerminalMix.cfAssignR</key>
                 <status>0x90</status>
                 <midino>0x3D</midino>
                 <options>
@@ -87,7 +96,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>TerminalMix4.cfAssignL</key>
+                <key>TerminalMix.cfAssignL</key>
                 <status>0x90</status>
                 <midino>0x3E</midino>
                 <options>
@@ -96,7 +105,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>TerminalMix4.cfAssignM</key>
+                <key>TerminalMix.cfAssignM</key>
                 <status>0x90</status>
                 <midino>0x3F</midino>
                 <options>
@@ -105,16 +114,17 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>TerminalMix4.cfAssignR</key>
+                <key>TerminalMix.cfAssignR</key>
                 <status>0x90</status>
                 <midino>0x40</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
+
             <control>
                 <group>[Channel3]</group>
-                <key>TerminalMix4.cfAssignL</key>
+                <key>TerminalMix.cfAssignL</key>
                 <status>0x90</status>
                 <midino>0x41</midino>
                 <options>
@@ -123,7 +133,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>TerminalMix4.cfAssignM</key>
+                <key>TerminalMix.cfAssignM</key>
                 <status>0x90</status>
                 <midino>0x42</midino>
                 <options>
@@ -132,7 +142,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>TerminalMix4.cfAssignR</key>
+                <key>TerminalMix.cfAssignR</key>
                 <status>0x90</status>
                 <midino>0x43</midino>
                 <options>
@@ -141,7 +151,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.cfAssignL</key>
+                <key>TerminalMix.cfAssignL</key>
                 <status>0x90</status>
                 <midino>0x44</midino>
                 <options>
@@ -150,7 +160,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.cfAssignM</key>
+                <key>TerminalMix.cfAssignM</key>
                 <status>0x90</status>
                 <midino>0x45</midino>
                 <options>
@@ -159,17 +169,18 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.cfAssignR</key>
+                <key>TerminalMix.cfAssignR</key>
                 <status>0x90</status>
                 <midino>0x46</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
+
             <!-- *** Deck 1 *** -->
             <control>   <!-- With vinyl button active -->
                 <group>[Channel1]</group>
-                <key>TerminalMix4.wheelTouch</key>
+                <key>TerminalMix.wheelTouch</key>
                 <status>0x90</status>
                 <midino>0x28</midino>
                 <options>
@@ -178,7 +189,7 @@
             </control>
             <control> <!-- With vinyl button NOT active -->
                 <group>[Channel1]</group>
-                <key>TerminalMix4.wheelTurn</key>
+                <key>TerminalMix.wheelTurn</key>
                 <status>0xB0</status>
                 <midino>0x27</midino>
                 <options>
@@ -187,7 +198,7 @@
             </control>
             <control> <!-- With vinyl button active -->
                 <group>[Channel1]</group>
-                <key>TerminalMix4.wheelTurn</key>
+                <key>TerminalMix.wheelTurn</key>
                 <status>0xB0</status>
                 <midino>0x28</midino>
                 <options>
@@ -196,7 +207,7 @@
             </control>
             <control> <!-- Filter knob turn -->
                 <group>[Channel1]</group>
-                <key>TerminalMix4.filterTurn</key>
+                <key>TerminalMix.filterTurn</key>
                 <status>0xB0</status>
                 <midino>0x2F</midino>
                 <options>
@@ -205,7 +216,7 @@
             </control>
             <control> <!-- Filter knob reset -->
                 <group>[Channel1]</group>
-                <key>TerminalMix4.filterReset</key>
+                <key>TerminalMix.filterReset</key>
                 <status>0x90</status>
                 <midino>0x2F</midino>
                 <options>
@@ -214,7 +225,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>TerminalMix4.crossfaderCurve</key>
+                <key>TerminalMix.crossfaderCurve</key>
                 <status>0xB0</status>
                 <midino>0x46</midino>
                 <options>
@@ -223,7 +234,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>TerminalMix4.pitchRange</key>
+                <key>TerminalMix.pitchRange</key>
                 <status>0x90</status>
                 <midino>0x01</midino>
                 <options>
@@ -250,7 +261,7 @@
             </control>
             <control> <!-- Fader start -->
                 <group>[Channel1]</group>
-                <key>TerminalMix4.faderStart</key>
+                <key>TerminalMix.faderStart</key>
                 <status>0x90</status>
                 <midino>0x78</midino>
                 <options>
@@ -577,7 +588,7 @@
             </control>
             <control> <!-- Loop Length knob -->
                 <group>[Channel1]</group>
-                <key>TerminalMix4.loopLengthKnob</key>
+                <key>TerminalMix.loopLengthKnob</key>
                 <status>0xB0</status>
                 <midino>0x0B</midino>
                 <options>
@@ -595,7 +606,7 @@
             </control>
             <control> <!-- Loop Move knob -->
                 <group>[Channel1]</group>
-                <key>TerminalMix4.loopMoveKnob</key>
+                <key>TerminalMix.loopMoveKnob</key>
                 <status>0xB0</status>
                 <midino>0x0E</midino>
                 <options>
@@ -784,7 +795,7 @@
             </control>
             <control>
                 <group>[Channel1]</group>
-                <key>TerminalMix4.channelFader</key>
+                <key>TerminalMix.channelFader</key>
                 <status>0xB0</status>
                 <midino>0x31</midino>
                 <options>
@@ -821,7 +832,7 @@
             <!-- *** Deck 2 *** -->
             <control>   <!-- With vinyl button active -->
                 <group>[Channel2]</group>
-                <key>TerminalMix4.wheelTouch</key>
+                <key>TerminalMix.wheelTouch</key>
                 <status>0x91</status>
                 <midino>0x28</midino>
                 <options>
@@ -830,7 +841,7 @@
             </control>
             <control> <!-- With vinyl button NOT active -->
                 <group>[Channel2]</group>
-                <key>TerminalMix4.wheelTurn</key>
+                <key>TerminalMix.wheelTurn</key>
                 <status>0xB1</status>
                 <midino>0x27</midino>
                 <options>
@@ -839,7 +850,7 @@
             </control>
             <control> <!-- With vinyl button active -->
                 <group>[Channel2]</group>
-                <key>TerminalMix4.wheelTurn</key>
+                <key>TerminalMix.wheelTurn</key>
                 <status>0xB1</status>
                 <midino>0x28</midino>
                 <options>
@@ -848,7 +859,7 @@
             </control>
             <control> <!-- Filter knob turn -->
                 <group>[Channel2]</group>
-                <key>TerminalMix4.filterTurn</key>
+                <key>TerminalMix.filterTurn</key>
                 <status>0xB1</status>
                 <midino>0x2F</midino>
                 <options>
@@ -857,7 +868,7 @@
             </control>
             <control> <!-- Filter knob reset -->
                 <group>[Channel2]</group>
-                <key>TerminalMix4.filterReset</key>
+                <key>TerminalMix.filterReset</key>
                 <status>0x91</status>
                 <midino>0x2F</midino>
                 <options>
@@ -866,7 +877,7 @@
             </control>
             <control>
                 <group>[Master]</group>
-                <key>TerminalMix4.crossfaderCurve</key>
+                <key>TerminalMix.crossfaderCurve</key>
                 <status>0xB1</status>
                 <midino>0x46</midino>
                 <options>
@@ -875,7 +886,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>TerminalMix4.pitchRange</key>
+                <key>TerminalMix.pitchRange</key>
                 <status>0x91</status>
                 <midino>0x01</midino>
                 <options>
@@ -902,7 +913,7 @@
             </control>
             <control> <!-- Fader start -->
                 <group>[Channel2]</group>
-                <key>TerminalMix4.faderStart</key>
+                <key>TerminalMix.faderStart</key>
                 <status>0x91</status>
                 <midino>0x78</midino>
                 <options>
@@ -1229,7 +1240,7 @@
             </control>
             <control> <!-- Loop Length knob -->
                 <group>[Channel2]</group>
-                <key>TerminalMix4.loopLengthKnob</key>
+                <key>TerminalMix.loopLengthKnob</key>
                 <status>0xB1</status>
                 <midino>0x0B</midino>
                 <options>
@@ -1247,7 +1258,7 @@
             </control>
             <control> <!-- Loop Move knob -->
                 <group>[Channel2]</group>
-                <key>TerminalMix4.loopMoveKnob</key>
+                <key>TerminalMix.loopMoveKnob</key>
                 <status>0xB1</status>
                 <midino>0x0E</midino>
                 <options>
@@ -1436,7 +1447,7 @@
             </control>
             <control>
                 <group>[Channel2]</group>
-                <key>TerminalMix4.channelFader</key>
+                <key>TerminalMix.channelFader</key>
                 <status>0xB1</status>
                 <midino>0x31</midino>
                 <options>
@@ -1470,71 +1481,71 @@
                     <soft-takeover/>
                 </options>
             </control>
-            <!-- *** Deck 3 *** -->
-            <control>   <!-- With vinyl button active -->
-                <group>[Channel3]</group>
-                <key>TerminalMix4.wheelTouch</key>
-                <status>0x92</status>
-                <midino>0x28</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control> <!-- With vinyl button NOT active -->
-                <group>[Channel3]</group>
-                <key>TerminalMix4.wheelTurn</key>
-                <status>0xB2</status>
-                <midino>0x27</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control> <!-- With vinyl button active -->
-                <group>[Channel3]</group>
-                <key>TerminalMix4.wheelTurn</key>
-                <status>0xB2</status>
-                <midino>0x28</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control> <!-- Filter knob turn -->
-                <group>[Channel3]</group>
-                <key>TerminalMix4.filterTurn</key>
-                <status>0xB2</status>
-                <midino>0x2F</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control> <!-- Filter knob reset -->
-                <group>[Channel3]</group>
-                <key>TerminalMix4.filterReset</key>
-                <status>0x92</status>
-                <midino>0x2F</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
             <control>
                 <group>[Master]</group>
-                <key>TerminalMix4.crossfaderCurve</key>
+                <key>TerminalMix.crossfaderCurve</key>
                 <status>0xB2</status>
                 <midino>0x46</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
+            <!-- *** Deck 3 *** -->
             <control>
                 <group>[Channel3]</group>
-                <key>TerminalMix4.pitchRange</key>
+                <key>TerminalMix.wheelTouch</key>
+                <status>0x92</status>
+                <midino>0x28</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>TerminalMix.wheelTurn</key>
+                <status>0xB2</status>
+                <midino>0x27</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>TerminalMix.wheelTurn</key>
+                <status>0xB2</status>
+                <midino>0x28</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>TerminalMix.filterTurn</key>
+                <status>0xB2</status>
+                <midino>0x2F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>TerminalMix.filterReset</key>
+                <status>0x92</status>
+                <midino>0x2F</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
+            <control>
+                <group>[Channel3]</group>
+                <key>TerminalMix.pitchRange</key>
                 <status>0x92</status>
                 <midino>0x01</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
-            <control> <!-- Beats knob press -->
+            <control>
                 <group>[Channel3]</group>
                 <key>beats_translate_curpos</key>
                 <status>0x92</status>
@@ -1552,9 +1563,9 @@
                     <normal/>
                 </options>
             </control>
-            <control> <!-- Fader start -->
+            <control>
                 <group>[Channel3]</group>
-                <key>TerminalMix4.faderStart</key>
+                <key>TerminalMix.faderStart</key>
                 <status>0x92</status>
                 <midino>0x78</midino>
                 <options>
@@ -1715,6 +1726,69 @@
                     <normal/>
                 </options>
             </control>
+            <control>
+                <group>[Flanger]</group>
+                <key>lfoDelay</key>
+                <status>0xB2</status>
+                <midino>0x03</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Flanger]</group>
+                <key>lfoDepth</key>
+                <status>0xB2</status>
+                <midino>0x04</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Flanger]</group>
+                <key>lfoPeriod</key>
+                <status>0xB2</status>
+                <midino>0x05</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Flanger]</group>
+                <key>lfoDelay</key>
+                <status>0xB3</status>
+                <midino>0x03</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Flanger]</group>
+                <key>lfoPeriod</key>
+                <status>0xB3</status>
+                <midino>0x05</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Flanger]</group>
+                <key>lfoDepth</key>
+                <status>0xB3</status>
+                <midino>0x04</midino>
+                <options>
+                    <soft-takeover/>
+                </options>
+            </control>
+            <control>
+                <group>[Master]</group>
+                <key>TerminalMix.crossfaderCurve</key>
+                <status>0xB3</status>
+                <midino>0x46</midino>
+                <options>
+                    <Script-Binding/>
+                </options>
+            </control>
             <!--    Hot cues    -->
             <control>
                 <group>[Channel3]</group>
@@ -1860,7 +1934,6 @@
                     <normal/>
                 </options>
             </control>
-            <!--    -->
             <control>
                 <group>[Channel3]</group>
                 <key>beatsync</key>
@@ -1871,24 +1944,15 @@
                 </options>
             </control>
             <control>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
-                <status>0xB2</status>
-                <midino>0x03</midino>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control> <!-- Loop Length knob -->
                 <group>[Channel3]</group>
-                <key>TerminalMix4.loopLengthKnob</key>
+                <key>TerminalMix.loopLengthKnob</key>
                 <status>0xB2</status>
                 <midino>0x0B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <control> <!-- Loop Length knob press -->
+            <control>
                 <group>[Channel3]</group>
                 <key>reloop_exit</key>
                 <status>0x92</status>
@@ -1897,16 +1961,16 @@
                     <normal/>
                 </options>
             </control>
-            <control> <!-- Loop Move knob -->
+            <control>
                 <group>[Channel3]</group>
-                <key>TerminalMix4.loopMoveKnob</key>
+                <key>TerminalMix.loopMoveKnob</key>
                 <status>0xB2</status>
                 <midino>0x0E</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <control> <!-- Loop Move knob press -->
+            <control>
                 <group>[Channel3]</group>
                 <key>beatloop_4_toggle</key>
                 <status>0x92</status>
@@ -1915,7 +1979,7 @@
                     <button/>
                 </options>
             </control>
-            <control> <!-- Shifted Loop Move knob press -->
+            <control>
                 <group>[Channel3]</group>
                 <key>quantize</key>
                 <status>0x92</status>
@@ -2051,15 +2115,6 @@
                 </options>
             </control>
             <control>
-                <group>[Flanger]</group>
-                <key>lfoPeriod</key>
-                <status>0xB2</status>
-                <midino>0x05</midino>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel3]</group>
                 <key>filterHigh</key>
                 <status>0xB2</status>
@@ -2088,7 +2143,7 @@
             </control>
             <control>
                 <group>[Channel3]</group>
-                <key>TerminalMix4.channelFader</key>
+                <key>TerminalMix.channelFader</key>
                 <status>0xB2</status>
                 <midino>0x31</midino>
                 <options>
@@ -2105,15 +2160,6 @@
                 </options>
             </control>
             <control>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
-                <status>0xB2</status>
-                <midino>0x04</midino>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel3]</group>
                 <key>pregain</key>
                 <status>0xB2</status>
@@ -2123,45 +2169,45 @@
                 </options>
             </control>
             <!-- *** Deck 4 *** -->
-            <control>   <!-- With vinyl button active -->
+            <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.wheelTouch</key>
+                <key>TerminalMix.wheelTouch</key>
                 <status>0x93</status>
                 <midino>0x28</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
-            <control> <!-- With vinyl button NOT active -->
+            <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.wheelTurn</key>
+                <key>TerminalMix.wheelTurn</key>
                 <status>0xB3</status>
                 <midino>0x27</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
-            <control> <!-- With vinyl button active -->
+            <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.wheelTurn</key>
+                <key>TerminalMix.wheelTurn</key>
                 <status>0xB3</status>
                 <midino>0x28</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
-            <control> <!-- Filter knob turn -->
+            <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.filterTurn</key>
+                <key>TerminalMix.filterTurn</key>
                 <status>0xB3</status>
                 <midino>0x2F</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
-            <control> <!-- Filter knob reset -->
+            <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.filterReset</key>
+                <key>TerminalMix.filterReset</key>
                 <status>0x93</status>
                 <midino>0x2F</midino>
                 <options>
@@ -2169,24 +2215,15 @@
                 </options>
             </control>
             <control>
-                <group>[Master]</group>
-                <key>TerminalMix4.crossfaderCurve</key>
-                <status>0xB3</status>
-                <midino>0x46</midino>
-                <options>
-                    <Script-Binding/>
-                </options>
-            </control>
-            <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.pitchRange</key>
+                <key>TerminalMix.pitchRange</key>
                 <status>0x93</status>
                 <midino>0x01</midino>
                 <options>
                     <Script-Binding/>
                 </options>
             </control>
-            <control> <!-- Beats knob press -->
+            <control>
                 <group>[Channel4]</group>
                 <key>beats_translate_curpos</key>
                 <status>0x93</status>
@@ -2204,9 +2241,9 @@
                     <normal/>
                 </options>
             </control>
-            <control> <!-- Fader start -->
+            <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.faderStart</key>
+                <key>TerminalMix.faderStart</key>
                 <status>0x93</status>
                 <midino>0x78</midino>
                 <options>
@@ -2222,6 +2259,7 @@
                     <normal/>
                 </options>
             </control>
+-->
             <!--    Samplers    -->
             <control>
                 <group>[Sampler1]</group>
@@ -2512,7 +2550,7 @@
                     <normal/>
                 </options>
             </control>
-            <!--    -->
+
             <control>
                 <group>[Channel4]</group>
                 <key>beatsync</key>
@@ -2523,24 +2561,15 @@
                 </options>
             </control>
             <control>
-                <group>[Flanger]</group>
-                <key>lfoDelay</key>
-                <status>0xB3</status>
-                <midino>0x03</midino>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
-            <control> <!-- Loop Length knob -->
                 <group>[Channel4]</group>
-                <key>TerminalMix4.loopLengthKnob</key>
+                <key>TerminalMix.loopLengthKnob</key>
                 <status>0xB3</status>
                 <midino>0x0B</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <control> <!-- Loop Length knob press -->
+            <control>
                 <group>[Channel4]</group>
                 <key>reloop_exit</key>
                 <status>0x93</status>
@@ -2549,16 +2578,16 @@
                     <normal/>
                 </options>
             </control>
-            <control> <!-- Loop Move knob -->
+            <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.loopMoveKnob</key>
+                <key>TerminalMix.loopMoveKnob</key>
                 <status>0xB3</status>
                 <midino>0x0E</midino>
                 <options>
                     <script-binding/>
                 </options>
             </control>
-            <control> <!-- Loop Move knob press -->
+            <control>
                 <group>[Channel4]</group>
                 <key>beatloop_4_toggle</key>
                 <status>0x93</status>
@@ -2567,7 +2596,7 @@
                     <button/>
                 </options>
             </control>
-            <control> <!-- Shifted Loop Move knob press -->
+            <control>
                 <group>[Channel4]</group>
                 <key>quantize</key>
                 <status>0x93</status>
@@ -2702,15 +2731,7 @@
                     <normal/>
                 </options>
             </control>
-            <control>
-                <group>[Flanger]</group>
-                <key>lfoPeriod</key>
-                <status>0xB3</status>
-                <midino>0x05</midino>
-                <options>
-                    <soft-takeover/>
-                </options>
-            </control>
+
             <control>
                 <group>[Channel4]</group>
                 <key>filterHigh</key>
@@ -2740,7 +2761,7 @@
             </control>
             <control>
                 <group>[Channel4]</group>
-                <key>TerminalMix4.channelFader</key>
+                <key>TerminalMix.channelFader</key>
                 <status>0xB3</status>
                 <midino>0x31</midino>
                 <options>
@@ -2754,15 +2775,6 @@
                 <midino>0x07</midino>
                 <options>
                     <normal/>
-                </options>
-            </control>
-            <control>
-                <group>[Flanger]</group>
-                <key>lfoDepth</key>
-                <status>0xB3</status>
-                <midino>0x04</midino>
-                <options>
-                    <soft-takeover/>
                 </options>
             </control>
             <control>
@@ -3334,7 +3346,7 @@
                 <midino>0x1B</midino>
                 <minimum>0.1</minimum>
             </output>
-            <!-- Hot cues (shifted) -->
+
             <output>
                 <group>[Channel3]</group>
                 <key>hotcue_1_enabled</key>
@@ -3539,7 +3551,7 @@
                 <midino>0x1B</midino>
                 <minimum>0.1</minimum>
             </output>
-            <!-- Hot cues (shifted) -->
+            <!-- Hot cues -->
             <output>
                 <group>[Channel4]</group>
                 <key>hotcue_1_enabled</key>

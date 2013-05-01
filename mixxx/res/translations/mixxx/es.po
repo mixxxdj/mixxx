@@ -11,14 +11,14 @@ msgstr ""
 "Project-Id-Version: mixxx\n"
 "Report-Msgid-Bugs-To: FULL NAME <EMAIL@ADDRESS>\n"
 "POT-Creation-Date: 2013-03-05 06:50+0200\n"
-"PO-Revision-Date: 2013-03-17 15:56+0000\n"
-"Last-Translator: Sarunas Zolabaitis <sarkis.92@gmail.com>\n"
+"PO-Revision-Date: 2013-04-07 11:26+0000\n"
+"Last-Translator: jus <Unknown>\n"
 "Language-Team: Galician <gl@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Launchpad-Export-Date: 2013-03-18 04:34+0000\n"
-"X-Generator: Launchpad (build 16532)\n"
+"X-Launchpad-Export-Date: 2013-04-08 05:13+0000\n"
+"X-Generator: Launchpad (build 16550)\n"
 
 #: AutoDJFeature#1
 msgctxt "AutoDJFeature#1"
@@ -969,11 +969,11 @@ msgstr ""
 
 #: DlgControllerLearning#42
 msgid "Adjust rate up (coarse)"
-msgstr ""
+msgstr "Aumentar velocidad (bruto)"
 
 #: DlgControllerLearning#43
 msgid "Adjust rate down (coarse)"
-msgstr ""
+msgstr "Disminuir velocidad (bruto)"
 
 #: DlgControllerLearning#44
 msgid "Pitch-bend rate up (coarse)"
@@ -1087,7 +1087,7 @@ msgstr "Duplicar el largo actual del Loop"
 
 #: DlgControllerLearning#71
 msgid "Toggle slip mode"
-msgstr ""
+msgstr "Cambiar a modo deslizamiento"
 
 #: DlgControllerLearning#72
 msgid "Preview Deck %1"
@@ -1099,19 +1099,19 @@ msgstr ""
 
 #: DlgControllerLearning#74
 msgid "Cues"
-msgstr ""
+msgstr "Señales"
 
 #: DlgControllerLearning#75
 msgid "Hotcues"
-msgstr ""
+msgstr "Teclas rápidas"
 
 #: DlgControllerLearning#76
 msgid "Hotcue %1"
-msgstr ""
+msgstr "Tecla rápida %1"
 
 #: DlgControllerLearning#77
 msgid "Loop Exit button"
-msgstr ""
+msgstr "Botón Salida de Bucle"
 
 #: DlgControllerLearning#78
 msgid "Beat-Looping"
@@ -1177,7 +1177,7 @@ msgstr "Cargar la pista seleccionada"
 
 #: DlgControllerLearning#93
 msgid "Load selected track and play"
-msgstr ""
+msgstr "Cargar la pista seleccionada y reproducir"
 
 #: DlgControllerLearning#94
 msgid "Effects"
@@ -1277,7 +1277,7 @@ msgstr "Administrar"
 #: DlgHidden#2
 msgctxt "DlgHidden#2"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Seleccionar todas las pistas en la tabla de abajo."
 
 #: DlgHidden#3
 msgctxt "DlgHidden#3"
@@ -1287,16 +1287,16 @@ msgstr "Seleccionar todo"
 #: DlgHidden#4
 msgctxt "DlgHidden#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Limpiar las pistas seleccionadas de la biblioteca."
 
 #: DlgHidden#5
 msgctxt "DlgHidden#5"
 msgid "Purge"
-msgstr ""
+msgstr "Limpiar"
 
 #: DlgHidden#6
 msgid "Unhide selected tracks from the library."
-msgstr ""
+msgstr "Desocultar las pistas seleccionadas de la biblioteca."
 
 #: DlgHidden#7
 msgid "Unhide"
@@ -1314,22 +1314,22 @@ msgstr "Administrar"
 #: DlgMissing#2
 msgctxt "DlgMissing#2"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Seleccionar todas las pistas en la tabla de abajo."
 
 #: DlgMissing#3
 msgctxt "DlgMissing#3"
 msgid "Select All"
-msgstr ""
+msgstr "Seleccionar Todo"
 
 #: DlgMissing#4
 msgctxt "DlgMissing#4"
 msgid "Purge selected tracks from the library."
-msgstr ""
+msgstr "Limpiar las pistas seleccionadas de la biblioteca."
 
 #: DlgMissing#5
 msgctxt "DlgMissing#5"
 msgid "Purge"
-msgstr ""
+msgstr "Limpiar"
 
 #: DlgPluginDownloader#1
 msgid "Missing Audio Plugin Downloader"
@@ -1617,7 +1617,7 @@ msgstr ""
 
 #: DlgPrefControlsDlg#12
 msgid "Locale"
-msgstr ""
+msgstr "Configuración regional"
 
 #: DlgPrefControlsDlg#13
 msgid "Temporary rate change when left-clicking"
@@ -2044,7 +2044,7 @@ msgstr ""
 
 #: DlgPrefPlaylistDlg#10
 msgid "Other Libraries"
-msgstr ""
+msgstr "Otras Librerias"
 
 #: DlgPrefPlaylistDlg#11
 msgid "Show Rhythmbox Library"
@@ -2198,6 +2198,10 @@ msgid ""
 "calculated replaygain to be applied. To avoid abrupt volume changes Mixxx "
 "does not change the replaygain of playing tracks."
 msgstr ""
+"Esto puede tomar algunos segundos después de que el análisis de las pistas "
+"haya finalizado para que la repetición de ganancia recientemente calculada "
+"sea aplicada. Para evitar cambios bruscos de volumen Mixxx no cambia la "
+"repetición de ganancia de la reproducción de las pistas."
 
 #: DlgPrefReplayGainDlg#6
 msgid "Apply volume normalization to loaded tracks."
@@ -2296,7 +2300,7 @@ msgstr "Configuración de la emisión"
 
 #: DlgPrefShoutcastDlg#11
 msgid "Dynamically update Ogg Vorbis metadata."
-msgstr ""
+msgstr "Actualizar dinámicamente los metadatos Ogg Vorbis."
 
 #: DlgPrefShoutcastDlg#12
 msgid ""
@@ -2304,6 +2308,9 @@ msgid ""
 "dynamically can cause listener glitches and disconnections. Check this box "
 "to update the metadata anyway."
 msgstr ""
+"Debido a fallas en algunos clientes de transmisión, actualizar dinámicamente "
+"los metadatos Ogg Vorbis puede causar interferencias y desconexiones a los "
+"oyentes. Marque esta casilla para actualizar los metadatos de todos modos."
 
 #: DlgPrefShoutcastDlg#13
 msgid "Stream name"
@@ -2354,7 +2361,7 @@ msgstr ""
 #: DlgPrefShoutcastDlg#19
 msgctxt "DlgPrefShoutcastDlg#19"
 msgid "Genre"
-msgstr ""
+msgstr "Género"
 
 #: DlgPrefShoutcastDlg#20
 msgid "Live mix"
@@ -2371,12 +2378,12 @@ msgstr "Usar codificación UTF-8 para los metadatos."
 #: DlgPrefShoutcastDlg#23
 msgctxt "DlgPrefShoutcastDlg#23"
 msgid "Encoding"
-msgstr ""
+msgstr "Codificación"
 
 #: DlgPrefShoutcastDlg#24
 msgctxt "DlgPrefShoutcastDlg#24"
 msgid "Bitrate"
-msgstr ""
+msgstr "Tasa de bits"
 
 #: DlgPrefShoutcastDlg#25
 msgid "Format"
@@ -2397,12 +2404,12 @@ msgstr "Activar metadatos personalizados"
 #: DlgPrefShoutcastDlg#29
 msgctxt "DlgPrefShoutcastDlg#29"
 msgid "Artist"
-msgstr ""
+msgstr "Artista"
 
 #: DlgPrefShoutcastDlg#30
 msgctxt "DlgPrefShoutcastDlg#30"
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: DlgPrefShoutcastDlg#31
 msgid ""
@@ -2464,7 +2471,7 @@ msgstr "Tasa de muestreo"
 
 #: DlgPrefSoundDlg#3
 msgid "Buffer Underflow Count"
-msgstr ""
+msgstr "Contador de Subdesbordamiento de Buffer"
 
 #: DlgPrefSoundDlg#4
 msgid "0"
@@ -2762,12 +2769,12 @@ msgstr "Progreso"
 #: DlgPrepare#7
 msgctxt "DlgPrepare#7"
 msgid "Selects all tracks in the table below."
-msgstr ""
+msgstr "Seleccionar todas las pistas en la tabla de abajo."
 
 #: DlgPrepare#8
 msgctxt "DlgPrepare#8"
 msgid "Select All"
-msgstr ""
+msgstr "Seleccionar Todo"
 
 #: DlgPrepare#9
 msgid ""
@@ -3483,15 +3490,15 @@ msgstr ""
 
 #: MixxxApp#23
 msgid "Ctrl+1"
-msgstr ""
+msgstr "Ctrl+1"
 
 #: MixxxApp#24
 msgid "Show Vinyl Control Section"
-msgstr ""
+msgstr "Mostrar la Sección de Control de Vinilo"
 
 #: MixxxApp#25
 msgid "Ctrl+3"
-msgstr ""
+msgstr "Ctrl+3"
 
 #: MixxxApp#26
 msgid "Show Microphone Section"
@@ -3499,7 +3506,7 @@ msgstr "Mostrar seccion del microfono"
 
 #: MixxxApp#27
 msgid "Ctrl+2"
-msgstr ""
+msgstr "Ctrl+2"
 
 #: MixxxApp#28
 msgid "Show Preview Deck"
@@ -3511,23 +3518,23 @@ msgstr ""
 
 #: MixxxApp#30
 msgid "Ctrl+4"
-msgstr ""
+msgstr "Ctrl+4"
 
 #: MixxxApp#31
 msgid "&Reload Skin"
-msgstr ""
+msgstr "&Recargar Skin"
 
 #: MixxxApp#32
 msgid "Reload the skin"
-msgstr ""
+msgstr "Recargar el skin"
 
 #: MixxxApp#33
 msgid "Ctrl+Shift+R"
-msgstr ""
+msgstr "Ctrl+Mayús+R"
 
 #: MixxxApp#34
 msgid "Developer"
-msgstr ""
+msgstr "Desarrollador"
 
 #: MixxxApp#35
 msgid "Load track to Deck %1"
@@ -3758,7 +3765,7 @@ msgstr "Ay&uda"
 
 #: MixxxApp#91
 msgid "&Vinyl Control"
-msgstr "&Control por vinilos"
+msgstr "Control de &vinilo"
 
 #: MixxxApp#92
 msgid ""
@@ -4006,7 +4013,7 @@ msgstr "Deck"
 #: QObject#5
 msgctxt "QObject#5"
 msgid "Vinyl Control"
-msgstr "Vinilo de control"
+msgstr "Control de vinilo"
 
 #: QObject#6
 msgctxt "QObject#6"
@@ -4264,7 +4271,7 @@ msgstr "Ajusta el volumen maestro de salida."
 #: Tooltips#33
 msgctxt "Tooltips#33"
 msgid "Crossfader"
-msgstr ""
+msgstr "Crossfader"
 
 #: Tooltips#34
 msgid ""
@@ -4313,7 +4320,7 @@ msgstr ""
 #: Tooltips#44
 msgctxt "Tooltips#44"
 msgid "Microphone"
-msgstr ""
+msgstr "Micrófono"
 
 #: Tooltips#45
 msgid "Show/hide the Microphone section."
@@ -4330,7 +4337,7 @@ msgstr "Mostrar/ocultar la sección de Sampler."
 #: Tooltips#48
 msgctxt "Tooltips#48"
 msgid "Vinyl Control"
-msgstr ""
+msgstr "Control de vinilo"
 
 #: Tooltips#49
 msgid "Show/hide the Vinyl Control section."
@@ -4762,7 +4769,7 @@ msgstr "Expulsa la pista del reproductor."
 #: Tooltips#148
 msgctxt "Tooltips#148"
 msgid "Hotcue"
-msgstr ""
+msgstr "Hotcue"
 
 #: Tooltips#149
 msgid "If hotcue is set, jumps to the hotcue."

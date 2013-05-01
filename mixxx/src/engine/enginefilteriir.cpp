@@ -16,13 +16,7 @@
 
 #include "engine/enginefilteriir.h"
 #include "util/counter.h"
-
-#ifdef _MSC_VER
-    #include <float.h>  // for _isnan() on VC++
-    #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
-#else
-    #include <math.h>  // for isnan() everywhere else
-#endif
+#include "mathstuff.h"
 
 EngineFilterIIR::EngineFilterIIR(const double * pCoefs, int iOrder)
 {

@@ -100,6 +100,8 @@ QModelIndex SidebarModel::parent(const QModelIndex& index) const {
             return QModelIndex();
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
+            if (tree_item == NULL)
+                return QModelIndex();
             TreeItem* tree_item_parent = tree_item->parent();
             // if we have selected an item at the first level of a childnode
 

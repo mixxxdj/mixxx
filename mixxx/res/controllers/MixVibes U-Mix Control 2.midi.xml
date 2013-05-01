@@ -2,136 +2,16 @@
     <info>
       <name>MixVibes U-Mix Control 2</name>
       <author>peper</author>
-      <description>A beta preset for the MixVibes U-Mix Control 2.</description>
+      <description>A beta v0.2 preset for the MixVibes U-Mix Control 2.</description>
       <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=4469</forums>
     </info>
     <controller id="MixVibes U-MIX CONTROL 2 MIDI 1">
         <scriptfiles/>
         <controls>
             <control>
-                <status>0x91</status>
-                <midino>0x1</midino>
-                <group>[Channel2]</group>
-                <key>cue_default</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x91</status>
-                <midino>0x2</midino>
-                <group>[Channel2]</group>
-                <key>play</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x91</status>
-                <midino>0x3</midino>
-                <group>[Channel2]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x91</status>
-                <midino>0x4</midino>
-                <group>[Channel2]</group>
-                <key>back</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x1</midino>
+                <status>0xb0</status>
+                <midino>0x15</midino>
                 <group>[Channel1]</group>
-                <key>cue_default</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x91</status>
-                <midino>0x5</midino>
-                <group>[Channel2]</group>
-                <key>fwd</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x2</midino>
-                <group>[Channel1]</group>
-                <key>play</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x3</midino>
-                <group>[Channel1]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb2</status>
-                <midino>0x1</midino>
-                <group>[Master]</group>
-                <key>crossfader</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x4</midino>
-                <group>[Channel1]</group>
-                <key>back</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x91</status>
-                <midino>0x8</midino>
-                <group>[Channel2]</group>
-                <key>keylock</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0x5</midino>
-                <group>[Channel1]</group>
-                <key>fwd</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb2</status>
-                <midino>0x3</midino>
-                <group>[Master]</group>
                 <key>volume</key>
                 <description></description>
                 <options>
@@ -139,13 +19,73 @@
                 </options>
             </control>
             <control>
-                <status>0xb2</status>
-                <midino>0x4</midino>
-                <group>[Playlist]</group>
-                <key>SelectTrackKnob</key>
+                <status>0xb0</status>
+                <midino>0x16</midino>
+                <group>[Channel1]</group>
+                <key>jog</key>
                 <description></description>
                 <options>
-                    <selectknob/>
+                    <spread64/>
+                </options>
+            </control>
+            <control>
+                <status>0x80</status>
+                <midino>0x1</midino>
+                <group>[Channel1]</group>
+                <key>cue_default</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x80</status>
+                <midino>0x2</midino>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x80</status>
+                <midino>0x3</midino>
+                <group>[Channel1]</group>
+                <key>beatsync</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x80</status>
+                <midino>0x4</midino>
+                <group>[Channel1]</group>
+                <key>back</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x80</status>
+                <midino>0x5</midino>
+                <group>[Channel1]</group>
+                <key>fwd</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x94</status>
+                <midino>0x7f</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_6_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
                 </options>
             </control>
             <control>
@@ -153,6 +93,176 @@
                 <midino>0x8</midino>
                 <group>[Channel1]</group>
                 <key>keylock</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x93</status>
+                <midino>0x7f</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_6_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x80</status>
+                <midino>0xe</midino>
+                <group>[Channel1]</group>
+                <key>flanger</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x80</status>
+                <midino>0x10</midino>
+                <group>[Channel1]</group>
+                <key>pfl</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x94</status>
+                <midino>0xa</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_1_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x94</status>
+                <midino>0xb</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_2_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x94</status>
+                <midino>0xc</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_3_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x93</status>
+                <midino>0xa</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_1_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x92</status>
+                <midino>0x5</midino>
+                <group>[Channel1]</group>
+                <key>LoadSelectedTrack</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x93</status>
+                <midino>0xb</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_2_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x92</status>
+                <midino>0x6</midino>
+                <group>[Channel2]</group>
+                <key>LoadSelectedTrack</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x93</status>
+                <midino>0xc</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_3_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0x1</midino>
+                <group>[Channel2]</group>
+                <key>cue_default</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0x2</midino>
+                <group>[Channel2]</group>
+                <key>play</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0x3</midino>
+                <group>[Channel2]</group>
+                <key>beatsync</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0x4</midino>
+                <group>[Channel2]</group>
+                <key>back</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0x5</midino>
+                <group>[Channel2]</group>
+                <key>fwd</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x94</status>
+                <midino>0x18</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_4_clear</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -163,6 +273,106 @@
                 <midino>0x1</midino>
                 <group>[Channel1]</group>
                 <key>cue_default</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x94</status>
+                <midino>0x19</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_5_clear</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0x8</midino>
+                <group>[Channel2]</group>
+                <key>keylock</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x2</midino>
+                <group>[Channel1]</group>
+                <key>play</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x3</midino>
+                <group>[Channel1]</group>
+                <key>beatsync</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0xa</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_1_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x4</midino>
+                <group>[Channel1]</group>
+                <key>back</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0xb</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_2_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x5</midino>
+                <group>[Channel1]</group>
+                <key>fwd</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0xc</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_3_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x93</status>
+                <midino>0x18</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_4_clear</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -180,9 +390,19 @@
             </control>
             <control>
                 <status>0x90</status>
-                <midino>0x2</midino>
+                <midino>0x7</midino>
+                <group>[Channel2]</group>
+                <key>scratch_enable</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x93</status>
+                <midino>0x19</midino>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>hotcue_5_clear</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -200,19 +420,9 @@
             </control>
             <control>
                 <status>0x90</status>
-                <midino>0x3</midino>
+                <midino>0x8</midino>
                 <group>[Channel1]</group>
-                <key>beatsync</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x4</midino>
-                <group>[Channel1]</group>
-                <key>back</key>
+                <key>keylock</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -229,10 +439,10 @@
                 </options>
             </control>
             <control>
-                <status>0x80</status>
-                <midino>0xd</midino>
+                <status>0x90</status>
+                <midino>0xa</midino>
                 <group>[Channel1]</group>
-                <key>reloop_exit</key>
+                <key>hotcue_1_activate</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -240,19 +450,9 @@
             </control>
             <control>
                 <status>0x90</status>
-                <midino>0x5</midino>
+                <midino>0xb</midino>
                 <group>[Channel1]</group>
-                <key>fwd</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x80</status>
-                <midino>0xe</midino>
-                <group>[Channel1]</group>
-                <key>flanger</key>
+                <key>hotcue_2_activate</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -269,6 +469,16 @@
                 </options>
             </control>
             <control>
+                <status>0x90</status>
+                <midino>0xc</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_3_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <status>0x91</status>
                 <midino>0x13</midino>
                 <group>[Channel2]</group>
@@ -279,7 +489,27 @@
                 </options>
             </control>
             <control>
-                <status>0x80</status>
+                <status>0x91</status>
+                <midino>0x14</midino>
+                <group>[Channel2]</group>
+                <key>filterLowKill</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0xe</midino>
+                <group>[Channel1]</group>
+                <key>flanger</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
                 <midino>0x10</midino>
                 <group>[Channel1]</group>
                 <key>pfl</key>
@@ -289,10 +519,20 @@
                 </options>
             </control>
             <control>
+                <status>0x91</status>
+                <midino>0x18</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_4_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
                 <status>0x90</status>
-                <midino>0x8</midino>
+                <midino>0x12</midino>
                 <group>[Channel1]</group>
-                <key>keylock</key>
+                <key>filterHighKill</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -300,9 +540,69 @@
             </control>
             <control>
                 <status>0x91</status>
-                <midino>0x14</midino>
+                <midino>0x19</midino>
                 <group>[Channel2]</group>
+                <key>hotcue_5_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x13</midino>
+                <group>[Channel1]</group>
+                <key>filterMidKill</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x91</status>
+                <midino>0x1a</midino>
+                <group>[Channel2]</group>
+                <key>hotcue_6_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x14</midino>
+                <group>[Channel1]</group>
                 <key>filterLowKill</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x18</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_4_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x19</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_5_activate</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0x90</status>
+                <midino>0x1a</midino>
+                <group>[Channel1]</group>
+                <key>hotcue_6_activate</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -329,93 +629,83 @@
                 </options>
             </control>
             <control>
-                <status>0x90</status>
+                <status>0xb2</status>
+                <midino>0x1</midino>
+                <group>[Master]</group>
+                <key>crossfader</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb2</status>
+                <midino>0x3</midino>
+                <group>[Master]</group>
+                <key>volume</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb2</status>
+                <midino>0x4</midino>
+                <group>[Playlist]</group>
+                <key>SelectTrackKnob</key>
+                <description></description>
+                <options>
+                    <selectknob/>
+                </options>
+            </control>
+            <control>
+                <status>0xb1</status>
+                <midino>0xf</midino>
+                <group>[Flanger]</group>
+                <key>lfoDepth</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb1</status>
+                <midino>0x11</midino>
+                <group>[Channel2]</group>
+                <key>pregain</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb1</status>
+                <midino>0x12</midino>
+                <group>[Channel2]</group>
+                <key>filterHigh</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb1</status>
+                <midino>0x13</midino>
+                <group>[Channel2]</group>
+                <key>filterMid</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb0</status>
                 <midino>0xd</midino>
                 <group>[Channel1]</group>
                 <key>reloop_exit</key>
                 <description></description>
                 <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0xe</midino>
-                <group>[Channel1]</group>
-                <key>flanger</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x10</midino>
-                <group>[Channel1]</group>
-                <key>pfl</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x12</midino>
-                <group>[Channel1]</group>
-                <key>filterHighKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x13</midino>
-                <group>[Channel1]</group>
-                <key>filterMidKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x90</status>
-                <midino>0x14</midino>
-                <group>[Channel1]</group>
-                <key>filterLowKill</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb1</status>
-                <midino>0x11</midino>
-                <group>[Channel2]</group>
-                <key>pregain</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb1</status>
-                <midino>0x12</midino>
-                <group>[Channel2]</group>
-                <key>filterHigh</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb1</status>
-                <midino>0x13</midino>
-                <group>[Channel2]</group>
-                <key>filterMid</key>
-                <description></description>
-                <options>
-                    <normal/>
+                    <selectknob/>
                 </options>
             </control>
             <control>
@@ -433,6 +723,16 @@
                 <midino>0x15</midino>
                 <group>[Channel2]</group>
                 <key>volume</key>
+                <description></description>
+                <options>
+                    <normal/>
+                </options>
+            </control>
+            <control>
+                <status>0xb0</status>
+                <midino>0xf</midino>
+                <group>[Flanger]</group>
+                <key>lfoDepth</key>
                 <description></description>
                 <options>
                     <normal/>
@@ -483,46 +783,6 @@
                 <midino>0x14</midino>
                 <group>[Channel1]</group>
                 <key>filterLow</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x15</midino>
-                <group>[Channel1]</group>
-                <key>volume</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0xb0</status>
-                <midino>0x16</midino>
-                <group>[Channel1]</group>
-                <key>jog</key>
-                <description></description>
-                <options>
-                    <spread64/>
-                </options>
-            </control>
-            <control>
-                <status>0x92</status>
-                <midino>0x5</midino>
-                <group>[Channel1]</group>
-                <key>LoadSelectedTrack</key>
-                <description></description>
-                <options>
-                    <normal/>
-                </options>
-            </control>
-            <control>
-                <status>0x92</status>
-                <midino>0x6</midino>
-                <group>[Channel2]</group>
-                <key>LoadSelectedTrack</key>
                 <description></description>
                 <options>
                     <normal/>
