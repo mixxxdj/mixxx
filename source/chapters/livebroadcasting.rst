@@ -18,7 +18,7 @@ Streaming Servers
   Depending on the number of listeners, streaming audio requires a significant
   amount of bandwidth. Streaming servers provide the required bandwidth and
   broadcast the stream to your listeners. A popular free streaming service is
-  `Caster.fm <http://www.caster.fm>`_, a review of several free and paid stream
+  `Caster.fm <http://www.caster.fm>`_. A review of several free and paid stream
   hosts is available at
   `broadcastingworld.net <http://www.broadcastingworld.net/reviews/stream-hosting>`_.
 
@@ -41,9 +41,9 @@ Streaming Servers
 
 **Local streaming server**
   For experienced users, it may be interesting to set up an own local streaming
-  server. This turns you personal computer into a radio station and listeners
-  connect directly to your server. Mixxx as streaming source does not need to
-  run on the same computer as your streaming local server. However, professional
+  server. This turns your personal computer into a radio station and listeners
+  connect directly to your server. Mixxx as a streaming source does not need to
+  run on the same computer as your streaming server. However, professional
   stations often run the streaming source on the same computer as the streaming
   server for stability and reliability reasons. Keep in mind that if want to
   stream audio to a significant number of listeners, you'll need enough
@@ -73,7 +73,7 @@ Streaming Servers
 Configuring Mixxx
 =================
 
-Start by suppling Mixxx with all information needed to establish a connection
+Start by supplying Mixxx with all information needed to establish a connection
 to the streaming server:
 
 * Open :menuselection:`Preferences --> Live Broadcasting`.
@@ -126,8 +126,8 @@ Live Broadcasting Preferences
   Shoutcast/Icecast directory.
 * **Enable UTF-8 metadata**: If enabled, this option fixes broken accented and
   foreign language symbols in :term:`metadata`, assuming the streaming provider
-  has configured the server to support utf-8 metadata.
-* **Stream name**: So, whats the name of your show?
+  has configured the server to support UTF-8 metadata.
+* **Stream name**: So, what's the name of your show?
 * **Website**: The website you would like your listeners to visit.
 * **Description**: Enter your DJ name and a short tagline.
 * **Genre**: List the main genres you play. This attracts search hits on stream
@@ -136,7 +136,7 @@ Live Broadcasting Preferences
 **Encoding**
 
 * **Bitrate**: Selecting a :term:`bitrate` of 128 or 160 :term:`kbps` is common
-  and provide sufficient quality to your listeners. Higher bitrates will use a
+  and provides sufficient quality to your listeners. Higher bitrates will use a
   larger chunk in your Internet connection bandwidth to stream and for your
   listeners to receive the stream.
 * **Format**: Mixxx supports streaming to Icecast servers either in :term:`MP3`
@@ -154,7 +154,7 @@ Live Broadcasting Preferences
 * **Artist**: Insert your custom artist metadata here, your DJ name for example.
 * **Title**: Insert your custom title metadata here.
 
-.. note:: Due to licensing restrictions, MP3 streaming is not enabled per
+.. note:: Due to licensing restrictions, MP3 streaming is not enabled by
           default. For informations on how to enable MP3 streaming, go to
           the chapter :ref:`MP3 streaming`.
 
@@ -163,8 +163,8 @@ Icecast vs. Shoutcast
 
 Both essentially serve the same purpose. An Icecast server can stream either
 :term:`MP3` or :term:`Ogg Vorbis`. However, although Ogg is more efficient and
-effective - you get a better sound than MP3 at a lower data rate - not all
-players can play Ogg streams. As a result MP3 is probably a save choice unless
+effective (you get higher-fidelity sound than MP3 at lower data rates) not all
+players can play Ogg streams. As a result MP3 is probably a safe choice unless
 you know your listeners can hear an Ogg stream successfully.
 
 Broadcast directories
@@ -177,9 +177,9 @@ in :menuselection:`Preferences --> Live Broadcasting --> Stream Settings`.
 * **Shoutcast radio directory**: `www.shoutcast.com <http://www.shoutcast.com/>`_
 * **Icecast radio directory**: `dir.xiph.org <http://dir.xiph.org/>`_
 
-Often your streaming host runs its own directory, look after in its FAQ.
+Often streaming hosts will run their own directories. Check your host's FAQ to find out.
 If you want to promote your streaming radio station even more, register at
-services like `streamfinder.com <http://streamfinder.com>`_. A overview
+services like `streamfinder.com <http://streamfinder.com>`_. An overview
 of different internet radio directories is available at
 `shoutcheap.com <http://www.shoutcheap.com/internet-radio-directories-submitting-and-promoting/>`_
 
@@ -193,17 +193,17 @@ Troubleshooting
 * You may have selected the :term:`Ogg Vorbis` format that is unsupported by
   Shoutcast servers.
 * You may need to check your firewall settings. Both Icecast and Shoutcast use
-  two ports. If you are streaming on ex. port 8000 then you need to open up the
-  next port also.
+  two ports. If you are streaming on a port (for example, port 8000) then you
+  need to open up the next port (port 8001) as well.
 * You may need to configure port forwarding if you are behind a router or your
-  router will block requests to ex. port 8000.
+  router will block requests to your streaming port (for example, port 8000)
 
 .. _MP3 Streaming:
 
 Activate MP3 streaming support
 ==============================
 
-Due to licensing restrictions, :term:`MP3` streaming is not enabled per default.
+Due to licensing restrictions, :term:`MP3` streaming is not enabled by default.
 In order to enable MP3 streaming you must install the :term:`LAME` MP3
 :term:`codec` yourself. The following section explains how you can do that.
 
