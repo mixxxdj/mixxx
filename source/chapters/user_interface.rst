@@ -430,11 +430,10 @@ loop points of a track.
           first and when the play position reaches the wanted position on the
           Loop-Out button.
 
-.. seealso:: If the :term:`quantize <quantization>` mode is enabled, the loops
+.. seealso:: If the :term:`Quantize <quantization>` mode is enabled, the loops
              will automatically snap to the nearest beat. This is disabled by
-             default. Click on the *Quantize Mode Toggle* to enable this mode,
-             go to the :ref:`interface-button-grid` section for more
-             informations.
+             default, click on the :ref:`Quantize Mode Toggle
+             <interface-button-grid>` to enable it.
 
 .. _interface-hotcues:
 
@@ -454,7 +453,7 @@ Hotcue Controls
 
    The hotcue controls of the deck
 
-To jump in between different parts of a track, you can use these 4 numbered
+To jump in between different parts of a track, you can use these numbered
 buttons. You can also use keyboard shortcuts, go to :ref:`control-keyboard` for
 more informations.
 
@@ -475,7 +474,7 @@ Playing Hotcues
 
 * **While stopped**: Tap a hotcue button to cause the track to instantly jump to
   the location of the hotcue and start playing as long as the button is pressed.
-  Press the Play :ref:`keyboard shortcut <control-keyboard>` while the hotcue
+  Press the :ref:`Play <control-keyboard>` keyboard shortcut while the hotcue
   button is pressed to continue playback, then release the hotcue button.
 
 Deleting Hotcues
@@ -484,17 +483,16 @@ Deleting Hotcues
 To delete a hotcue, right-click on the numbered button. The marker in the
 waveform will be deleted as well.
 
-.. note:: Mixxx supports up to 36 hotcues per deck, 4 of them are visible in the
-          user interface. You can customize your
-          :ref:`keyboard <advanced-keyboard>` or
-          :ref:`controller <advanced-controller>` mappings to use all of them.
+.. note:: Mixxx supports up to 36 hotcues per deck. By default, only some of
+          them are visible in the user interface. You can customize your
+          :ref:`keyboard <advanced-keyboard>` or :ref:`controller
+          <advanced-controller>` mappings to use all of them.
 
 .. seealso:: Just as with the loops (see above), if the
              :term:`quantize <quantization>` mode is enabled, the hotcues will
              automatically snap to the nearest beat. This is disabled by
-             default. Click on the *Quantize Mode Toggle* to enable this mode,
-             go to the :ref:`interface-button-grid` section for more
-             informations.
+             default, click on the :ref:`Quantize Mode Toggle
+             <interface-button-grid>` to enable it.
 
 .. _interface-mixer:
 
@@ -720,15 +718,15 @@ Setting Cue points
 
 * **While playing**: The Cue point is set via :ref:`interface-play-pause`.
   A right-click on the button places a Cue point at the current play position on
-  the track, and a Cue marker appears on the waveforms.
+  the track, and a :ref:`Cue marker <interface-waveform>` appears on the
+  waveforms.
 
-* **While stopped**: Clicking on the Cue button places a :term:`Cue point <cue>`
-  at the current play position on the track, and a
-  :ref:`Cue marker <interface-waveform>` appears on the waveforms. The existing
-  cue point will be replaced.
+* **While stopped**: Clicking on the Cue button places a Cue point at the
+  current play position on the track, and a Cue marker appears on the waveforms.
+  The existing cue point will be replaced.
 
-Every track has a Cue point, by default on its beginning. Unless with
-:ref:`Hotcues <interface-hotcues>`, you cant delete, but only move Cue points.
+Every track has a Cue point, by default on its beginning. Unlike with
+:ref:`Hotcues <interface-hotcues>`, you can't delete, but only move Cue points.
 
 Using Cue Modes
 ^^^^^^^^^^^^^^^
@@ -754,7 +752,7 @@ Interface`.
 .. hint:: Use the :ref:`interface-hotcues` to place more reference points on a
           track.
 
-.. seealso:: You can also use keyboard shortcuts for Cueing, go to
+.. seealso:: You can also use keyboard shortcuts for Cueing. Go to
              :ref:`control-keyboard` for more informations.
 
 .. _interface-fx:
@@ -786,7 +784,7 @@ to a mix when used tactfully.
            Depth knob completely to the right.
 
 .. seealso :: As an advanced user, you can route your audio signal to external
-              software and then apply additional effects. Go to the chapter
+              software and then apply additional effects. Go to
               :ref:`advanced-external-fx` for more informations.
 
 .. _interface-sampler:
@@ -916,7 +914,7 @@ The Microphone Section
 The microphone section is **hidden** in the default
 :ref:`Mixxx user interface <interface-overview>`. Click the
 :ref:`MIC <interface-expansion-buttons>` button in the mixer section, or use the
-specific :ref:`appendix-shortcuts` to show or hide the section..
+specific :ref:`appendix-shortcuts` to show or hide the section.
 
 **Setup the microphone**
 
