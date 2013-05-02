@@ -157,39 +157,29 @@ div.sphinxsidebar input[type=text]{
 
 .pretty-figures {
        border: none;
-      }
+}
 
 .pretty-figures img {
-       background-color: #FFFFFF;
-       padding: 5px 5px 5px 5px;
-       margin-right: 10px;
-       border: 1px solid #C0C0C0;
-       -webkit-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
-       -moz-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
-
-       }
+    background-color: #FFFFFF;
+    padding: 5px 5px 5px 5px;
+    margin-right: 10px;
+    border: 1px solid #C0C0C0;
+    -webkit-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+}
 
 .pretty-figures img:hover {
-       background-color: #FFFFFF;
-       padding: 5px 5px 5px 5px;
-       margin-right: 10px;
-       border: 1px solid #212224;
-       -webkit-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
-       -moz-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
-       -webkit-transform: scale(1.33);
-       -moz-transform: scale(1.33);
-       position: relative;
-       z-index: 5;
-       }
-
-.pretty-figures p.caption {
-       align: center;
-       font: normal 13px/15px Arial, Helvetica, sans-serif !important;;
-       color: #212224;
-       margin: 0;
-       padding: 10px;
-       }
-
+    background-color: #FFFFFF;
+    padding: 5px 5px 5px 5px;
+    margin-right: 10px;
+    border: 1px solid #212224;
+    -webkit-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+    -moz-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+    -webkit-transform: scale(1.33);
+    -moz-transform: scale(1.33);
+    position: relative;
+    z-index: 5;
+}
 
 a {
     color: #005B81;
@@ -289,6 +279,14 @@ p.admonition-title {
 
 p.admonition-title:after {
     content: ":";
+}
+
+p.caption {
+    align: center;
+    font: normal 13px/15px Arial, Helvetica, sans-serif !important;;
+    color: #212224;
+    margin: 0;
+    padding: 10px;
 }
 
 pre {
