@@ -11,6 +11,7 @@
 #include "controllers/defs_controllers.h"
 #include "controlobject.h"
 #include "errordialoghandler.h"
+#include "playermanager.h"
 
 MidiController::MidiController() : Controller() {
 }
@@ -80,6 +81,7 @@ void MidiController::createOutputHandlers() {
     }
 
     QHashIterator<MixxxControl, MidiOutput> outIt(m_preset.outputMappings);
+    QStringList failures;
     while (outIt.hasNext()) {
         outIt.next();
 
@@ -109,31 +111,45 @@ void MidiController::createOutputHandlers() {
                                                        min, max, status, control,
                                                        on, off);
         if (!moh->validate()) {
-            QString errorLog = QString("Invalid MixxxControl: %1, %2")
-                                        .arg(group, key).toUtf8();
+            QString errorLog =
+                QString("MIDI output message 0x%1 0x%2 has invalid MixxxControl %3, %4")
+                        .arg(QString::number(status, 16).toUpper(),
+                             QString::number(control, 16).toUpper().rightJustified(2,'0'))
+                        .arg(group, key).toUtf8();
+            qWarning() << errorLog;
 
-            ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-            props->setType(DLG_WARNING);
-            props->setTitle(tr("MixxxControl not found"));
-            props->setText(QString(tr("The MixxxControl '%1, %2' specified in the "
-                                      "loaded mapping is invalid."))
-                           .arg(group, key));
-            props->setInfoText(QString(tr("The MIDI output message 0x%1 0x%2 will not be bound."
-                                          "\n(Click Show Details for hints.)"))
-                               .arg(QString::number(status, 16).toUpper(),
-                                    QString::number(control, 16).toUpper().rightJustified(2,'0')));
-            QString detailsText = QString(tr("* Check to see that the "
-                                             "MixxxControl name is spelled correctly in the mapping "
-                                             "file (.xml)\n"));
-            detailsText += QString(tr("* Make sure the MixxxControl you're trying to use actually exists."
-                                      " Visit this wiki page for a complete list:"));
-            detailsText += QString("\nhttp://mixxx.org/wiki/doku.php/mixxxcontrols");
-            props->setDetails(detailsText);
-            ErrorDialogHandler::instance()->requestErrorDialog(props);
+            int deckNum = 0;
+            if (debugging()) {
+                failures.append(errorLog);
+            } else if (PlayerManager::isDeckGroup(group, &deckNum)) {
+                int numDecks = PlayerManager::numDecks();
+                if (deckNum <= numDecks) {
+                    failures.append(errorLog);
+                }
+            }
+
             delete moh;
             continue;
         }
         m_outputs.append(moh);
+    }
+
+    if (!failures.isEmpty()) {
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle(tr("MixxxControl(s) not found"));
+        props->setText(tr("One or more MixxxControls specified in the "
+                          "outputs section of the loaded preset were invalid."));
+        props->setInfoText(tr("Some LEDs or other feedback may not work correctly."));
+        QString detailsText = tr("* Check to see that the MixxxControl "
+                                 "names are spelled correctly in the mapping "
+                                 "file (.xml)\n");
+        detailsText += tr("* Make sure the MixxxControls in question actually exist."
+                          " Visit this wiki page for a complete list: ");
+        detailsText += "http://mixxx.org/wiki/doku.php/mixxxcontrols\n\n";
+        detailsText += failures.join("\n");
+        props->setDetails(detailsText);
+        ErrorDialogHandler::instance()->requestErrorDialog(props);
     }
 }
 
