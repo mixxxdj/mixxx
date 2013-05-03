@@ -21,11 +21,14 @@ class AnalyserKey : public Analyser {
     ConfigObject<ConfigValue> *m_pConfig;
     bool m_bPass;
     VampAnalyser* m_pVamp;
+    QString m_pluginId;
+    int m_iSampleRate;
+    int m_iTotalSamples;
     QVector<double> m_frames;
     QVector<double> m_keys;
 
     bool m_bPreferencesKeyDetectionEnabled;
-    bool m_bPreferencesfastAnalysisEnabled;
+    bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesfirstLastEnabled;
     bool m_bPreferencesreanalyzeEnabled;
     bool m_bPreferencesskipRelevantEnabled;

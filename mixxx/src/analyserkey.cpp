@@ -7,29 +7,21 @@
 #include <iostream>
 #include <stdio.h>
 
-
 #include "analyserkey.h"
 #include "track/key_preferences.h"
-
+#include "proto/keys.pb.h"
+#include "track/keyfactory.h"
 
 using namespace std;
 static bool sDebug = false;
 
-AnalyserKey::AnalyserKey(ConfigObject<ConfigValue> *_config):m_pConfig(_config) {
-    m_bShouldAnalyze = false;
+using mixxx::track::io::key::ChromaticKey;
+using mixxx::track::io::key::ChromaticKey_IsValid;
 
-    //"pluginID"
-    //tested key detection features with vamp-plugins:
-    // qm-vamp-plugins:qm-keydetector (GPLed)
-//QString library = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserKeyLibrary"));
-//QString pluginID = m_pConfigAVT->getValueString(ConfigKey("[Vamp]","AnalyserKeyPluginID"));
-//if(library.isEmpty() || library.isNull())
-//        library = "libmixxxminimal";
-//    if(pluginID.isEmpty() || pluginID.isNull())
-//        pluginID="qm-keydetector:0";
-
-// 	mvamp = new VampAnalyser(m_pConfigAVT);
-
+AnalyserKey::AnalyserKey(ConfigObject<ConfigValue> *_config)
+        : m_pConfig(_config),
+          m_iTotalSamples(0),
+          m_bShouldAnalyze(false) {
 }
 
 AnalyserKey::~AnalyserKey(){
@@ -38,6 +30,8 @@ AnalyserKey::~AnalyserKey(){
 
 bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     m_bShouldAnalyze = false;
+    m_iSampleRate = sampleRate;
+    m_iTotalSamples = totalSamples;
     if (loadStored(tio) || totalSamples == 0) {
         return false;
     }
@@ -46,40 +40,36 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     QString pluginID = m_pConfig->getValueString(ConfigKey("[Vamp]","AnalyserKeyPluginID"));
 
     if(library.isEmpty() || library.isNull())
-      library = "libmixxxminimal";
+        library = "libmixxxminimal";
 
     if(pluginID.isEmpty() || pluginID.isNull())
-      pluginID="qm-keydetector:0";
+        pluginID="qm-keydetector:3";
+    m_pluginId = pluginID;
 
     m_pVamp = new VampAnalyser(m_pConfig);
 
-     m_bPreferencesfastAnalysisEnabled = static_cast<bool>(
-         m_pConfig->getValueString(
-         ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
+    m_bPreferencesFastAnalysisEnabled = static_cast<bool>(
+        m_pConfig->getValueString(
+            ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
 
     m_bPreferencesfirstLastEnabled = static_cast<bool>(
-         m_pConfig->getValueString(
-         ConfigKey(KEY_CONFIG_KEY, KEY_FIRST_LAST)).toInt());
+        m_pConfig->getValueString(
+            ConfigKey(KEY_CONFIG_KEY, KEY_FIRST_LAST)).toInt());
 
     m_bPreferencesreanalyzeEnabled = static_cast<bool>(
-         m_pConfig->getValueString(
-         ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE)).toInt());
+        m_pConfig->getValueString(
+            ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE)).toInt());
 
     m_bPreferencesskipRelevantEnabled = static_cast<bool>(
-         m_pConfig->getValueString(
-         ConfigKey(KEY_CONFIG_KEY, KEY_SKIP_RELEVANT)).toInt());
+        m_pConfig->getValueString(
+            ConfigKey(KEY_CONFIG_KEY, KEY_SKIP_RELEVANT)).toInt());
 
     m_bPreferencesKeyDetectionEnabled = static_cast<bool>(
-         m_pConfig->getValueString(
-         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
-
+        m_pConfig->getValueString(
+            ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
 
     if (!m_bPreferencesKeyDetectionEnabled) {
         qDebug() << "Key detection is deactivated";
-        m_bShouldAnalyze = false;
-        return false;
-    }
-    if (m_bPreferencesskipRelevantEnabled && (tio->getKey() != 0)){
         m_bShouldAnalyze = false;
         return false;
     }
@@ -95,12 +85,13 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
  keyfinderAudio.addToSampleCount(totSamples);*/
 
  //int fastAnalyse=1;
-   // m_bPass = mvamp->Init(library, pluginID,sampleRate, totalSamples, m_bPreferencesfastAnalysisEnabled);
-     m_bShouldAnalyze = m_pVamp->Init(library, pluginID,sampleRate, totalSamples, m_bPreferencesfastAnalysisEnabled);
-     m_pVamp->SelectOutput(2);
+   // m_bPass = mvamp->Init(library, pluginID,sampleRate, totalSamples, m_bPreferencesFastAnalysisEnabled);
+     m_bShouldAnalyze = m_pVamp->Init(library, pluginID,sampleRate, totalSamples, m_bPreferencesFastAnalysisEnabled);
 
-     if (!m_bShouldAnalyze)
-     {
+     if (m_bShouldAnalyze) {
+         // Specific to QM KeyDetect.
+         m_pVamp->SelectOutput(2);
+     } else {
          delete m_pVamp;
          m_pVamp = NULL;
      }
@@ -123,9 +114,6 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
 }
 
 void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {
-    //if(!m_bPass) return;
-    //qDebug()<< "key detecasdasdt";
-    //qDebug()<<"key 1";
     if (!m_bShouldAnalyze || m_pVamp == NULL)
         return;
 
@@ -135,50 +123,15 @@ void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {
         delete m_pVamp;
         m_pVamp = NULL;
     }
-
-    //m_bPass = m_pVamp->Process(pIn, iLen);
-    //qDebug()<< "key detecasdasdt";
- /*   int iIN=0;
-    //SRC_DATA *src_in;
-    //long k = iLen;
-    //qDebug()<< "key detecasdasdt 1";
-    //src_in->input_frames = iLen ;
-    src_in.data_in = pIn;
-    //qDebug()<< "key detecasdasdt asda 2";
-
-    const float *output = new float[iLen];
-    //qDebug()<< "key detecasdasdt 3";
-    src_in.data_out = output;
-    //qDebug()<< "key detecasdasdt asda 3";
-    src_in.output_frames = iLen;//iLen*downsamplingRatio;
-    //qDebug()<< "key detecasdasdt asda 4";
-    src_in.src_ratio = downsamplingRatio;
-    src_in.end_of_input = 0;
-    src_in.input_frames = iLen+5 ;
-    //qDebug()<< "key ";
-//    if (error = src_process(src_state,&src_in))
-       // qDebug() << "Error  : "<< src_strerror (error);
-    //qDebug()<<src_in.src_ratio;
-
-    while (iIN < iLen / 10 && outSamples<totSamples/10) {
-        keyfinderAudio.setSample(outSamples,output[2*iIN]);
-        iIN++;
-        outSamples++;
-    }
-    delete[] output;*/
-
-
 }
 
 void AnalyserKey::finalise(TrackPointer tio) {
-    //if(!m_bPass) return;
-
     if (!m_bShouldAnalyze || m_pVamp == NULL) {
         return;
     }
 
     //enum {'C','C#','D','D#','E','F','F#','G','G#','A','A#','B','c','c#','d','d#','e','f','f#','g','g#','a','a#','b'}keys;
-    static const char *keys[] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B","c","c#","d","d#","e","f","f#","g","g#","a","a#","b"};
+    static const char *keyNames[] = {"C","C#","D","D#","E","F","F#","G","G#","A","A#","B","c","c#","d","d#","e","f","f#","g","g#","a","a#","b"};
    // static const char *keyfind[] = {"A","a","A#","a#","B","b","C","c","C#","c#","D","d","D#","d#","E","e","F","f","F#","f#","G","g","G#","g#","SILENCE"};
     //keyfinderParams.setHopSize(8192);
    // keyfinderResult = keyfinderKey.findKey(keyfinderAudio,keyfinderParams);
@@ -187,35 +140,59 @@ void AnalyserKey::finalise(TrackPointer tio) {
     //if(mvamp->GetInitFramesVector(&m_frames)){
       //  if(mvamp->GetLastValuesVector(&m_keys))
     bool success = m_pVamp->End();
-    qDebug() << "Beat Calculation" << (success ? "complete" : "failed");
+    qDebug() << "Key Detection" << (success ? "complete" : "failed");
 
-    m_frames= m_pVamp->GetInitFramesVector();
-    m_keys= m_pVamp->GetLastValuesVector();
+    m_frames = m_pVamp->GetInitFramesVector();
+    m_keys = m_pVamp->GetLastValuesVector();
+    delete m_pVamp;
+    m_pVamp = NULL;
 
-    vector<float> key_times(24,0);
-    map<float,int> key_time;
-    map<float,int>::reverse_iterator it;
-    //qDebug()<<""<<tio->getKey();
-    //qDebug()<<"key 3";
-    //qDebug()<<""<<tio->getKey();
-    for (int i=0;i<(m_keys.size()-1);i++){
-         key_times[m_keys[i]-1] = key_times[m_keys[i]-1]+ (m_frames[i+1]-m_frames[i]) ;
+    if (m_frames.size() == 0 || m_frames.size() != m_keys.size()) {
+        qWarning() << "AnalyserKey: Key sequence and list of times do not match.";
+        return;
     }
 
-    for(int i=0;i<24;i++)
-        key_time.insert(pair<float,int>(key_times[i],i));
-    it = key_time.rbegin();
-    qDebug() << keys[(*it).second]<<" at "<<(*it).first;
-    it++;
-    qDebug() << keys[(*it).second]<<"  "<<(*it).first;
-    it--;
-    qDebug()<<tio->getKey();
-    //qDebug()<<m_bPreferencesKeyDetectionEnabled<<m_bPreferenceswriteTagsEnabled<<m_bPreferencesfirstLastEnabled<<m_bPreferencesreanalyzeEnabled<<m_bPreferencesskipRelevantEnabled;
-   // qDebug()<<m_bPreferenceswriteTagsEnabled;
-    //qDebug()<<"key 4";
-    tio->setKey(keys[(*it).second]);
-    //tio->setKey("a");
-    //qDebug()<<"key 5";
+    KeyChangeList key_changes;
+
+    QMap<int, double> key_histogram;
+    for (int i = 0; i < m_keys.size(); ++i) {
+        const double frames = (i == m_keys.size() - 1) ?
+                m_iTotalSamples/2 - m_frames[i] : m_frames[i+1] - m_frames[i];
+        key_histogram[m_keys[i]] += frames;
+
+        if (ChromaticKey_IsValid(m_keys[i])) {
+            key_changes.push_back(qMakePair(
+                static_cast<ChromaticKey>(m_keys[i]), m_frames[i]));
+        }
+    }
+
+    QHash<QString, QString> extraVersionInfo;
+    extraVersionInfo["vamp_plugin_id"] = m_pluginId;
+    if (m_bPreferencesFastAnalysisEnabled) {
+        extraVersionInfo["fast_analysis"] = "1";
+    }
+
+    Keys keys = KeyFactory::makePreferredKeys(
+        tio, key_changes, extraVersionInfo,
+        m_iSampleRate, m_iTotalSamples);
+    tio->setKeys(keys);
+
+    qDebug() << "Key Histogram";
+    double max_delta = 0;
+    int max_key = 0;
+    for (QMap<int, double>::const_iterator it = key_histogram.begin();
+         it != key_histogram.end(); ++it) {
+        qDebug() << it.key() << ":" << keyNames[it.key()-1] << it.value();
+        if (it.value() > max_delta) {
+            max_key = it.key();
+            max_delta = it.value();
+        }
+    }
+
+    if (max_key > 0) {
+        qDebug() << "Setting key to:" << max_key << keyNames[max_key-1];
+        //tio->setKey(keyNames[max_key-1]);
+    }
     //tio->setKey(keyfind[keyfinderResult.globalKeyEstimate]);
             //key_time.insert(pair<float,int>(m_frames[i+1]-m_frames[i],m_keys[i]))
                   //  mymap.insert ( pair<char,int>('a',100) );
@@ -225,6 +202,8 @@ void AnalyserKey::finalise(TrackPointer tio) {
     //}
 
     m_bShouldAnalyze = m_pVamp->End();
+    m_iSampleRate = 0;
+    m_iTotalSamples = 0;
     m_frames.clear();
     m_keys.clear();
     //src_delete(src_state);

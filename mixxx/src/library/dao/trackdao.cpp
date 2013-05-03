@@ -302,7 +302,6 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
 
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
-    m_pQueryLibraryInsert->bindValue(":key", pTrack->convertK(pTrack->getKey()));
 
     // We no longer store the wavesummary in the library table.
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
@@ -329,6 +328,8 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":beats_version", blobVersion);
     m_pQueryLibraryInsert->bindValue(":beats", pBeatsBlob ? *pBeatsBlob : QVariant(QVariant::ByteArray));
     delete pBeatsBlob;
+
+    m_pQueryLibraryInsert->bindValue(":key", pTrack->getKeyText());
 }
 
 void TrackDAO::addTracksPrepare() {
@@ -814,7 +815,6 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             pTrack->setComposer(composer);
             pTrack->setTrackNumber(tracknumber);
             pTrack->setRating(rating);
-            pTrack->setKey(key);
 
             pTrack->setComment(comment);
             pTrack->setURL(url);
@@ -834,6 +834,9 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
                 pTrack->setBpm(bpm.toDouble());
             }
             pTrack->setBpmLock(has_bpm_lock);
+
+            // Same deal for keys. TODO(rryan) source.
+            pTrack->setKeyText(key, mixxx::track::io::key::USER);
 
             pTrack->setTimesPlayed(timesplayed);
             pTrack->setDateAdded(datetime_added);
@@ -978,7 +981,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":cuepoint", pTrack->getCuePoint());
 
     query.bindValue(":replaygain", pTrack->getReplayGain());
-    query.bindValue(":key", pTrack->convertK(pTrack->getKey()));
     query.bindValue(":rating", pTrack->getRating());
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->getPlayed());
@@ -1006,6 +1008,9 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":beats_sub_version", beatsSubVersion);
     query.bindValue(":bpm", dBpm);
     delete pBeatsBlob;
+
+    // Same style thing for BPM.
+    query.bindValue(":key", pTrack->getKeyText());
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

@@ -116,9 +116,7 @@ void LegacyLibraryImporter::import()
                 trackInfo17.setYear(trackInfoNew.getYear());
                 trackInfo17.setType(trackInfoNew.getType());
                 trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
-                double key = trackInfoNew.getKey();
-                qDebug()<<trackInfoNew.convertK(key);
-                trackInfo17.setKey(trackInfoNew.convertK(key));
+                trackInfo17.setKeys(trackInfoNew.getKeys());
                 trackInfo17.setHeaderParsed(true);
 
                 // Import the track's saved cue point if it is non-zero.

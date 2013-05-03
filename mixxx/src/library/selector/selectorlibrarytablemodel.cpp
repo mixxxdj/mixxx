@@ -41,7 +41,7 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_channelBpm = NULL;
     m_bActive = false;
     m_rate = 0;
-    
+
     m_sCurrentTrackGenre = "";
     m_fCurrentTrackBpm = 0;
     m_sCurrentTrackYear = "";
@@ -141,7 +141,7 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     m_channelBpm = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
     // listen for slider change events
-    connect(m_channelBpm, SIGNAL(valueChanged(double)), this, 
+    connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
         SLOT(slotChannel1BpmChanged(double)));
 
     m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
@@ -150,7 +150,7 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     m_fCurrentTrackBpm = m_pLoadedTrack->getBpm();
     m_sCurrentTrackYear = m_pLoadedTrack->getYear();
     m_iCurrentTrackRating = m_pLoadedTrack->getRating();
-    m_sCurrentTrackKey = m_pLoadedTrack->convertK(m_pLoadedTrack->getKey());
+    m_sCurrentTrackKey = m_pLoadedTrack->getKeyText();
 
     emit(currentTrackInfoChanged());
 
@@ -210,11 +210,11 @@ void SelectorLibraryTableModel::updateFilterText() {
         // Bpm
         if (m_bFilterBpm) {
             //float trackBpm = pChannel1Bpm->get();
-            if (currentBpm > 0) 
+            if (currentBpm > 0)
                 filters << QString("(Bpm > %1 AND Bpm < %2)").arg(
                     floor(currentBpm - m_iFilterBpmRange)).arg(
                     ceil(currentBpm + m_iFilterBpmRange));
-        } 
+        }
 
         // Keys
 
@@ -227,7 +227,7 @@ void SelectorLibraryTableModel::updateFilterText() {
 		QString hKeys = getHarmonicKeys(trackKey);
 		if (hKeys!="")
             filters << QString("Key in (%1)").arg(hKeys);
-                    
+
         QString filterString = filters.join(" AND ");
         if (m_filterString != filterString) {
             m_filterString = filterString;
@@ -248,7 +248,7 @@ void SelectorLibraryTableModel::setRate() {
         ControlObject::getControl(ConfigKey(m_pChannel, "rate_dir")));
 
     if (rateSlider != NULL && rateRange != NULL && rateDirection != NULL) {
-        m_rate = (1 + rateSlider->get() * rateRange->get() * rateDirection->get());        
+        m_rate = (1 + rateSlider->get() * rateRange->get() * rateDirection->get());
     }
 }
 
@@ -262,14 +262,14 @@ QString SelectorLibraryTableModel::getHarmonicKeys(QString trackKey) const {
 
 	QStringList keys1 = (isMinor ? m_minors : m_majors);
 	QStringList keys2 = (isMinor ? m_majors : m_minors);
-	
+
     int index = keys1.indexOf(trackKey);
     int len = keys1.count();
     if (index < 0) return QString("");
     int lower = index-1;
-    if (lower < 0) lower += len; 
+    if (lower < 0) lower += len;
     int upper = index+1;
-    if (upper >= len) upper -= len; 
+    if (upper >= len) upper -= len;
 
 	QStringList keyfilters;
 	// Tonic Key
@@ -284,7 +284,7 @@ QString SelectorLibraryTableModel::getHarmonicKeys(QString trackKey) const {
 	// Relative Minor/Major
     if (m_bFilterKeyRelative)
 		keyfilters << QString("'%1'").arg(keys2[index]);
-    
+
     return keyfilters.join(",");
 }
 

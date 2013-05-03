@@ -356,7 +356,8 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setBitrate(sndsrc->getBitrate());
         p->setSampleRate(sndsrc->getSampleRate());
         p->setChannels(sndsrc->getChannels());
-        p->setKey(sndsrc->getKey());
+        p->setKeyText(sndsrc->getKey(),
+		      mixxx::track::io::key::FILE_METADATA);
         p->setHeaderParsed(true);
     }
     else

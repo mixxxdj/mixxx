@@ -30,7 +30,7 @@
 #include "controlobject.h"
 #include "waveform/waveform.h"
 #include "track/beatfactory.h"
-
+#include "track/keyfactory.h"
 #include "mixxxutils.cpp"
 
 TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
@@ -134,7 +134,6 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_fCuePoint = 0.0f;
     m_dCreateDate = m_dateAdded = QDateTime::currentDateTime();
     m_Rating = 0;
-    m_key = "";
     m_bBpmLock = false;
 
     // parse() parses the metadata from file. This is not a quick operation!
@@ -396,16 +395,6 @@ void TrackInfoObject::slotBeatsUpdated() {
     emit(bpmUpdated(bpm));
     emit(beatsUpdated());
 }
-
-void TrackInfoObject::slotKeyUpdated() {
-    QMutexLocker lock(&m_qMutex);
-    setDirty(true);
-    double key = convertKey(m_key);
-    lock.unlock();
-    emit(keyUpdated(key));
-    //emit(beatsUpdated());
-}
-
 
 bool TrackInfoObject::getHeaderParsed()  const
 {
@@ -897,21 +886,65 @@ void TrackInfoObject::setRating (int rating){
         setDirty(true);
 }
 
-//double TrackInfoObject::getKey() const{
-double TrackInfoObject::getKey() {
+void TrackInfoObject::setKeys(Keys keys) {
     QMutexLocker lock(&m_qMutex);
-    //return m_key;
-    double key = convertKey(m_key);
-    return key;
+    setDirty(true);
+    m_keys = keys;
+    lock.unlock();
+    emit(keysUpdated());
 }
 
-void TrackInfoObject::setKey(QString key){
+const Keys& TrackInfoObject::getKeys() const {
     QMutexLocker lock(&m_qMutex);
-    bool dirty = key != m_key;
-    m_key = key;
-    //qDebug()<<m_key;
-    if (dirty)
+    return m_keys;
+}
+
+mixxx::track::io::key::ChromaticKey TrackInfoObject::getKey() const {
+    QMutexLocker lock(&m_qMutex);
+    if (!m_keys.isValid()) {
+        return mixxx::track::io::key::INVALID;
+    }
+    return m_keys.getGlobalKey();
+}
+
+// TODO(rryan): Take an optional source.
+void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
+                             mixxx::track::io::key::Source source) {
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = false;
+    if (key == mixxx::track::io::key::INVALID) {
+        m_keys = Keys();
+        dirty = true;
+    } else if (m_keys.getGlobalKey() != key) {
+        m_keys = KeyFactory::makeBasicKeys(
+            this, key, mixxx::track::io::key::USER);
+    }
+
+    if (dirty) {
         setDirty(true);
+    }
+
+    lock.unlock();
+    emit(keysUpdated());
+}
+
+// TODO(rryan): Take an optional source.
+void TrackInfoObject::setKeyText(QString key,
+                                 mixxx::track::io::key::Source source) {
+    QMutexLocker lock(&m_qMutex);
+    bool dirty = !m_keys.isValid() || m_keys.getGlobalKeyText() != key;
+
+    if (dirty) {
+        m_keys = KeyFactory::makeBasicKeysFromText(this, key, source);
+        setDirty(true);
+        lock.unlock();
+        emit(keysUpdated());
+    }
+}
+
+QString TrackInfoObject::getKeyText() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_keys.getGlobalKeyText();
 }
 
 void TrackInfoObject::setBpmLock(bool bpmLock) {
@@ -927,7 +960,7 @@ bool TrackInfoObject::hasBpmLock() const {
     return m_bBpmLock;
 }
 
-double TrackInfoObject::convertKey(QString dValue)
+double TrackInfoObject::convertKey(QString dValue) const
 {
     double key=0;
     if(dValue == "C") key=1;

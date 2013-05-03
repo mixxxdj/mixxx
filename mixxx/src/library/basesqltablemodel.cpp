@@ -706,8 +706,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
-        pTrack->setKey(value.toString());
-        //pTrack->setKey("a");
+        pTrack->setKeyText(value.toString(),
+                           mixxx::track::io::key::USER);
     } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLock(value.toBool());
     }
