@@ -93,14 +93,11 @@ if :file:`Custom.kbd.cfg` is present and load that file instead of the default
 mapping file. This has the advantage, that you can always revert back to the
 default mapping, just by deleting :file:`Custom.kbd.cfg`.
 
-For a list of controls that can be used in a keyboard mapping, see the
-`Controls <http://www.mixxx.org/wiki/doku.php/mixxxcontrols>`_ topic on the
-Mixxx Wiki.
+For a list of controls that can be used in a keyboard mapping, see
+`<http://www.mixxx.org/wiki/doku.php/mixxxcontrols>`_.
 
 You can download and share custom keyboard mappings in the
-`Mixxx User customizations forum`_.
-
-.. _Mixxx User customizations forum: http://mixxx.org/forums/viewforum.php?f=6
+`Mixxx User customizations forums <http://mixxx.org/forums/viewforum.php?f=6>`_.
 
 .. _advanced-external-fx:
 
