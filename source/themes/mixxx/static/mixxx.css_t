@@ -22,21 +22,33 @@ body {
     margin: 0;
     padding: 0;
 }
-/* Override  basic table layout in basic.css */
+
+/* change default tables to booktabs/APA style */
+table.docutils th {
+    padding: 12px 17px 12px 17px;
+    font-weight: bold;
+    font-size: 14px;
+    color: ;
+    border-bottom: 1px solid #b6b6b6;
+}
+table.docutils td {
+    padding: 7px 17px 7px 17px;
+    color: ;
+    border: none ;
+}
+table.docutils tbody tr:hover td {
+    background: #d0dafd;
+}
 table.docutils {
-    border: 1px solid;
-    width: 100%;
+    font-size: 12px;
+    text-align: left;
     border-collapse: collapse;
+    border-bottom: 1px solid #b6b6b6;
+    padding: 0px 0px 12px 0px;
+    width:90%;
+    margin-left:5%;
+    margin-right:5%;
 }
-
-table.docutils td, table.docutils th {
-    padding: 1px 8px 1px 5px;
-    border-top: 1px solid;
-    border-left: 1px solid;
-    border-right: 1px solid;
-    border-bottom: 1px solid #aaa;
-}
-
 
 div.documentwrapper {
     width: 760px;
@@ -159,7 +171,7 @@ div.sphinxsidebar input[type=text]{
 }
 
 .pretty-figures img, table.docutils img {
-    padding: .2em;
+    padding: .3em;
     border: 1px solid #e6e6e6;
     background: #fff;
     -webkit-border-radius: 2px;
