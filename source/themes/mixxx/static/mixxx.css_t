@@ -153,13 +153,12 @@ div.sphinxsidebar input[type=text]{
 /* -- body styles ----------------------------------------------------------- */
 
 
-/* Style the .. figure: directive. Makes nice borders around screenshots */
-
+/* Style the “figure” directive and images inside tables */
 .pretty-figures {
        border: none;
 }
 
-.pretty-figures img {
+.pretty-figures img, table.docutils img {
     background-color: #FFFFFF;
     padding: 5px 5px 5px 5px;
     margin-right: 10px;
