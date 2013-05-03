@@ -577,6 +577,21 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_BPMLOCK)) {
         m_pMenu->addAction(m_pBpmLockAction);
         m_pMenu->addAction(m_pBpmUnlockAction);
+        if (oneSongSelected) {
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel == NULL) {
+                return;
+            }
+            int column = trackModel->fieldIndex("bpm_lock");
+            QModelIndex index = indices.at(0).sibling(indices.at(0).row(),column);
+            if (index.data().toBool()){
+                m_pBpmLockAction->setEnabled(false);
+                m_pBpmUnlockAction->setEnabled(true);
+            } else {
+                m_pBpmUnlockAction->setEnabled(false);
+                m_pBpmLockAction->setEnabled(true);
+            }
+        }
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
@@ -586,7 +601,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         }
         bool allowClear = true;
         int column = trackModel->fieldIndex("bpm_lock");
-        for (int i = 0; i < indices.size(); ++i) {
+        for (int i = 0; i < indices.size() && allowClear; ++i) {
             int row = indices.at(i).row();
             QModelIndex index = indices.at(i).sibling(row,column);
             if (index.data().toBool()) {
