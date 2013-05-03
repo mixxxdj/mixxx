@@ -159,21 +159,27 @@ div.sphinxsidebar input[type=text]{
 }
 
 .pretty-figures img, table.docutils img {
-    background-color: #FFFFFF;
-    padding: 5px 5px 5px 5px;
-    margin-right: 10px;
-    border: 1px solid #C0C0C0;
-    -webkit-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+    padding: .2em;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.2);
 }
 
 .pretty-figures img:hover {
-    background-color: #FFFFFF;
-    padding: 5px 5px 5px 5px;
-    margin-right: 10px;
-    border: 1px solid #212224;
-    -webkit-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
-    -moz-box-shadow: 0 5px 5px -5px rgba(0, 0, 0, 0.5);
+    padding: .2em;
+    border: 1px solid #e6e6e6;
+    background: #fff;
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    -webkit-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+    -moz-box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
+    box-shadow: 0 1px 0 0 rgba(0, 0, 0, 0.1);
     -webkit-transform: scale(1.33);
     -moz-transform: scale(1.33);
     position: relative;
