@@ -5,6 +5,8 @@
 #include "track/keys.h"
 #include "track/keyutils.h"
 
+using mixxx::track::io::key::KeyMap;
+
 // static
 Keys KeyFactory::loadKeysFromByteArray(TrackPointer pTrack,
                                        QString keysVersion,
@@ -24,7 +26,7 @@ Keys KeyFactory::loadKeysFromByteArray(TrackPointer pTrack,
 Keys KeyFactory::makeBasicKeys(TrackInfoObject* pTrack,
                                mixxx::track::io::key::ChromaticKey global_key,
                                mixxx::track::io::key::Source source) {
-    mixxx::track::io::key::KeyMap key_map;
+    KeyMap key_map;
     key_map.set_global_key(global_key);
     key_map.set_source(source);
     return Keys(key_map);
@@ -34,7 +36,7 @@ Keys KeyFactory::makeBasicKeys(TrackInfoObject* pTrack,
 Keys KeyFactory::makeBasicKeysFromText(TrackInfoObject* pTrack,
                                        QString global_key_text,
                                        mixxx::track::io::key::Source source) {
-    mixxx::track::io::key::KeyMap key_map;
+    KeyMap key_map;
     key_map.set_global_key_text(global_key_text.toStdString());
     key_map.set_source(source);
     mixxx::track::io::key::ChromaticKey global_key = guessKeyFromText(
@@ -87,7 +89,19 @@ Keys KeyFactory::makePreferredKeys(
 
 
     if (version == KEY_MAP_VERSION) {
-        Keys keys(key_changes, mixxx::track::io::key::ANALYSER);
+        KeyMap key_map;
+        for (KeyChangeList::const_iterator it = key_changes.begin();
+             it != key_changes.end(); ++it) {
+            // Key position is in frames. Do not accept fractional frames.
+            double frame = floorf(it->second);
+
+            KeyMap::KeyChange* pChange = key_map.add_key_change();
+            pChange->set_key(it->first);
+            pChange->set_frame_position(frame);
+        }
+        key_map.set_global_key(calculateGlobalKey(key_changes, iTotalSamples));
+        key_map.set_source(mixxx::track::io::key::ANALYSER);
+        Keys keys(key_map);
         keys.setSubVersion(subVersion);
         return keys;
     }

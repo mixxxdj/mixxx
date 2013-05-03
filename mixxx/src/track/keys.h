@@ -17,8 +17,6 @@ class KeyFactory;
 class Keys {
   public:
     explicit Keys(const QByteArray* pByteArray=NULL);
-    explicit Keys(const KeyChangeList& key_changes,
-                  mixxx::track::io::key::Source source);
     Keys(const Keys& other);
     virtual ~Keys();
 
@@ -51,7 +49,6 @@ class Keys {
     Keys(const mixxx::track::io::key::KeyMap& m_keyMap);
 
     void readByteArray(const QByteArray* pByteArray);
-    void createFromKeyChanges(const KeyChangeList& key_changes);
 
     mutable QMutex m_mutex;
     QString m_subVersion;

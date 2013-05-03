@@ -13,12 +13,6 @@ Keys::Keys(const QByteArray* pByteArray) {
     }
 }
 
-Keys::Keys(const KeyChangeList& key_changes,
-           mixxx::track::io::key::Source source) {
-    createFromKeyChanges(key_changes);
-    m_keyMap.set_source(source);
-}
-
 Keys::Keys(const KeyMap& keyMap)
         : m_keyMap(keyMap) {
 }
@@ -69,18 +63,6 @@ ChromaticKey Keys::getGlobalKey() const {
 
 QString Keys::getGlobalKeyText() const {
     return QString::fromStdString(m_keyMap.global_key_text());
-}
-
-void Keys::createFromKeyChanges(const KeyChangeList& key_changes) {
-    for (KeyChangeList::const_iterator it = key_changes.begin();
-         it != key_changes.end(); ++it) {
-        // Key position is in frames. Do not accept fractional frames.
-        double frame = floorf(it->second);
-
-        KeyMap::KeyChange* pChange = m_keyMap.add_key_change();
-        pChange->set_key(it->first);
-        pChange->set_frame_position(frame);
-    }
 }
 
 void Keys::readByteArray(const QByteArray* pByteArray) {
