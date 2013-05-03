@@ -290,6 +290,7 @@ contains the Sphinx source to generate the manual as found at
 Sphinx and RST syntax guides:
 
 * `<http://sphinx-doc.org/rest.html>`_
+* `<http://docutils.sourceforge.net/docs/ref/rst/restructuredtext.html>`_
 * `<http://www.siafoo.net/help/reST>`_
 * `<http://thomas-cokelaer.info/tutorials/sphinx/rest_syntax.html>`_
 
