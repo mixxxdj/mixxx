@@ -691,6 +691,9 @@ class MixxxCore(Feature):
                    "track/beatmap.cpp",
                    "track/beatfactory.cpp",
                    "track/beatutils.cpp",
+                   "track/keys.cpp",
+                   "track/keyfactory.cpp",
+                   "track/keyutils.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
