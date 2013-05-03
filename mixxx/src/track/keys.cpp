@@ -19,9 +19,16 @@ Keys::Keys(const KeyChangeList& key_changes,
     m_keyMap.set_source(source);
 }
 
+Keys::Keys(const KeyMap& keyMap)
+        : m_keyMap(keyMap) {
+}
+
 Keys::Keys(const Keys& other)
         : m_subVersion(other.m_subVersion),
           m_keyMap(other.m_keyMap) {
+}
+
+Keys::~Keys() {
 }
 
 Keys& Keys::operator=(const Keys& other) {

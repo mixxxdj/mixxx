@@ -48,7 +48,7 @@ class Keys {
     virtual QString getGlobalKeyText() const;
 
   private:
-    Keys(mixxx::track::io::key::KeyMap m_keyMap);
+    Keys(const mixxx::track::io::key::KeyMap& m_keyMap);
 
     void readByteArray(const QByteArray* pByteArray);
     void createFromKeyChanges(const KeyChangeList& key_changes);
