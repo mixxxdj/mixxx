@@ -51,10 +51,10 @@ QString KeyFactory::getPreferredVersion() {
 }
 
 // static
-const char* kSubVersionKeyValueSeparator = "=";
-const char* kSubVersionFragmentSeparator = "|";
 QString KeyFactory::getPreferredSubVersion(
     const QHash<QString, QString> extraVersionInfo) {
+    const char* kSubVersionKeyValueSeparator = "=";
+    const char* kSubVersionFragmentSeparator = "|";
     QStringList fragments;
 
     QHashIterator<QString, QString> it(extraVersionInfo);
