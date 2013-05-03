@@ -201,7 +201,7 @@ void AnalyserKey::finalise(TrackPointer tio) {
                // qDebug()<<" "<<m_keys[i]<<" at frame "<<m_frames[i];
     //}
 
-    m_bShouldAnalyze = m_pVamp->End();
+    m_bShouldAnalyze = false;
     m_iSampleRate = 0;
     m_iTotalSamples = 0;
     m_frames.clear();
