@@ -31,6 +31,7 @@
 #include "waveform/waveform.h"
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
+#include "track/keyutils.h"
 #include "mixxxutils.cpp"
 
 TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
@@ -944,7 +945,15 @@ void TrackInfoObject::setKeyText(QString key,
 
 QString TrackInfoObject::getKeyText() const {
     QMutexLocker lock(&m_qMutex);
-    return m_keys.getGlobalKeyText();
+
+    mixxx::track::io::key::ChromaticKey key = m_keys.getGlobalKey();
+    if (key != mixxx::track::io::key::INVALID) {
+        return keyDebugName(key);
+    }
+
+    // Fall back on text global name.
+    QString keyText = m_keys.getGlobalKeyText();
+    return keyText;
 }
 
 void TrackInfoObject::setBpmLock(bool bpmLock) {
