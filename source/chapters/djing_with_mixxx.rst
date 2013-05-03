@@ -434,8 +434,8 @@ split your recordings, generate :term:`cue files <cue sheet>`, choose a custom
 recording directory and even set your own :term:`metadata`. By default, Mixxx
 saves your recordings as lossless :term:`wav` files to a
 :file:`Mixxx/Recordings` sub-folder in the Mixxx music directory. Before you
-start recording, we recommend that you adjust the settings in the recording
-preferences.
+start recording, we recommend that you adjust the settings in
+:menuselection:`Preferences --> Recording`.
 
 If you click on the *Recordings* icon in the sidebar of the Mixxx library, the
 track table to the right displays the content of your recordings directory. New
