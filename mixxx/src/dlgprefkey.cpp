@@ -31,6 +31,7 @@
 #include "xmlparse.h"
 #include "controlobject.h"
 #include "vamp/vampanalyser.h"
+#include "vamp/vamppluginloader.h"
 
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
@@ -43,9 +44,9 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
           Ui::DlgPrefKeyDlg(),
           m_pconfig(_config) {
     setupUi(this);
-    //m_selectedAnalyser = "qm-tempotracker:0";
 
-   // populate();
+    m_selectedAnalyser = "qm-keydetector:2";
+    populate();
     loadSettings();
 
     // Connections
@@ -162,61 +163,46 @@ void DlgPrefKey::slotUpdate()
     //plugincombo->setCurrentIndex(comboselected);
 }
 
-//void DlgPrefBeats::populate() {
-  //  VampAnalyser::initializePluginPaths();
-//    QString selectedAnalyser = m_selectedAnalyser;
-//    m_listIdentifier.clear();
-//    m_listName.clear();
-//    m_listLibrary.clear();
-//    disconnect(plugincombo, SIGNAL(currentIndexChanged(int)),
-//            this, SLOT(pluginSelected(int)));
-//    plugincombo->clear();
-//    plugincombo->setDuplicatesEnabled(false);
-//    connect(plugincombo, SIGNAL(currentIndexChanged(int)),
-//            this, SLOT(pluginSelected(int)));
-//    VampPluginLoader *loader = VampPluginLoader::getInstance();
-//    std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
-//    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
-//    for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
-//        Plugin *plugin = loader->loadPlugin(plugins[iplugin], 48000);
-//        //TODO: find a way to add beat trackers only
-//        if (plugin) {
-//            Plugin::OutputList outputs = plugin->getOutputDescriptors();
-//            for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {
-//                QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
-//                                            + QString::number(ioutput);
-//                QString displaynametext = QString::fromStdString(plugin->getName());
-//                qDebug() << "Plugin output displayname:" << displayname << displaynametext;
-//                bool goodones = ((displayname.contains("mixxxbpmdetection")||
-//                                  displayname.contains("qm-tempotracker:0"))||
-//                                 displayname.contains("beatroot:0")||
-//                                 displayname.contains("marsyas_ibt:0")||
-//                                 displayname.contains("aubiotempo:0")
-//                                 );
+void DlgPrefKey::populate() {
+   VampAnalyser::initializePluginPaths();
+   m_listIdentifier.clear();
+   m_listName.clear();
+   m_listLibrary.clear();
+   disconnect(plugincombo, SIGNAL(currentIndexChanged(int)),
+              this, SLOT(pluginSelected(int)));
+   plugincombo->clear();
+   plugincombo->setDuplicatesEnabled(false);
+   connect(plugincombo, SIGNAL(currentIndexChanged(int)),
+           this, SLOT(pluginSelected(int)));
+   VampPluginLoader *loader = VampPluginLoader::getInstance();
+   std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
+   qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
+   for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
+       // TODO(XXX): WTF, 48000
+       Plugin *plugin = loader->loadPlugin(plugins[iplugin], 48000);
+       //TODO: find a way to add key detectors only
+       if (plugin) {
+           Plugin::OutputList outputs = plugin->getOutputDescriptors();
+           for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {
+               QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
+                                           + QString::number(ioutput);
+               QString displaynametext = QString::fromStdString(plugin->getName());
+               qDebug() << "Plugin output displayname:" << displayname << displaynametext;
+               bool goodones = displayname.contains("qm-keydetector:2");
 
-//                bool goodones = ((displaynametext.contains("Beat Track")));
-                //validate and add rows to qcombobox
-
-//                m_listVersion << QString::number(plugin->getPluginVersion());
-//                m_listMaker << QString::fromStdString(plugin->getMaker());
-//                m_listCopyright << QString::fromStdString(plugin->getCopyright());
-//                m_listOutput << QString::number(ioutput);
-//                m_listDescription << QString::fromStdString(outputs[ioutput].description);
-
-//                if (goodones) {
-//                    m_listName << displaynametext;
-//                    QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
-//                    m_listLibrary << pluginlibrary;
-//                    QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
-//                            + QString::number(ioutput);
-//                    m_listIdentifier << displayname;
-//                    plugincombo->addItem(displaynametext, displayname);
-//                }
-//            }
-//            delete plugin;
-//            plugin = 0;
-//        }
-//    }
-//    m_selectedAnalyser = selectedAnalyser;
-//}
+               if (goodones) {
+                   m_listName << displaynametext;
+                   QString pluginlibrary = QString::fromStdString(plugins[iplugin]).section(":",0,0);
+                   m_listLibrary << pluginlibrary;
+                   QString displayname = QString::fromStdString(plugin->getIdentifier()) + ":"
+                           + QString::number(ioutput);
+                   m_listIdentifier << displayname;
+                   plugincombo->addItem(displaynametext, displayname);
+               }
+           }
+           delete plugin;
+           plugin = 0;
+       }
+   }
+}
 

@@ -29,6 +29,7 @@ class DlgPrefKey : public QWidget, Ui::DlgPrefKeyDlg {
     void apply(const QString &);
 
   private:
+    void populate();
     void loadSettings();
 
     ConfigObject<ConfigValue>* m_pconfig;
