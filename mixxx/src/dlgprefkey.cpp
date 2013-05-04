@@ -30,7 +30,6 @@
 #include "dlgprefkey.h"
 #include "xmlparse.h"
 #include "controlobject.h"
-//#include "dlgprefbeats.h"
 #include "vamp/vampanalyser.h"
 
 using Vamp::Plugin;
@@ -39,47 +38,29 @@ using Vamp::HostExt::PluginLoader;
 using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
-
-#define CONFIG_KEY "[KEY]"
-bool firs = true;
-DlgPrefKey::DlgPrefKey(QWidget * parent,
-                       ConfigObject<ConfigValue> * _config) : QWidget(parent),m_pconfig(_config)
-  //Ui::DlgPrefKey()
-{
-    //config = _config;
-    //m_pconfig = _config;
+DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
+        : QWidget(parent),
+          Ui::DlgPrefKeyDlg(),
+          m_pconfig(_config) {
     setupUi(this);
     //m_selectedAnalyser = "qm-tempotracker:0";
-    //setupUi(this);
 
    // populate();
     loadSettings();
-    //Connections
-  //  connect(plugincombo, SIGNAL(currentIndexChanged(int)),
+
+    // Connections
+    //connect(plugincombo, SIGNAL(currentIndexChanged(int)),
     //        this, SLOT(pluginSelected(int)));
     connect(banalyserenabled, SIGNAL(stateChanged(int)),
           this, SLOT(analyserEnabled(int)));
     connect(bfastAnalysisEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(fastAnalysisEnabled(int)));
-    connect(bfirstLastEnabled, SIGNAL(stateChanged(int)),
-            this, SLOT(firstLastEnabled(int)));
    // connect(reset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
-
     connect(breanalyzeEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(reanalyzeEnabled(int)));
-
-    connect(bskipRelevantEnabled, SIGNAL(stateChanged(int)),
-            this, SLOT(skipRelevantEnabled(int)));
-   // connect(txtMaxBpm, SIGNAL(valueChanged(int)),
-      //      this, SLOT(maxBpmRangeChanged(int)));
-
-    //connect(bReanalyse,SIGNAL(stateChanged(int)),
-        //    this, SLOT(slotReanalyzeChanged(int)));
-
 }
 
-DlgPrefKey::~DlgPrefKey()
-{
+DlgPrefKey::~DlgPrefKey() {
 }
 
 void DlgPrefKey::loadSettings(){
@@ -91,29 +72,22 @@ void DlgPrefKey::loadSettings(){
     //}
 
    // QString pluginid = m_pconfig->getValueString(
-     //   ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
+     //   ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
     //m_selectedAnalyser = pluginid;
 
-    m_banalyserEnabled = static_cast<bool>(m_pconfig->getValueString(
+    m_bAnalyserEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
 
-    m_bfastAnalysisEnabled = static_cast<bool>(m_pconfig->getValueString(
+    m_bFastAnalysisEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS)).toInt());
 
-    m_bfirstLastEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(KEY_CONFIG_KEY, KEY_FIRST_LAST)).toInt());
-
-    m_breanalyzeEnabled =  static_cast<bool>(m_pconfig->getValueString(
+    m_bReanalyzeEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
 
-    m_bskipRelevantEnabled = static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(KEY_CONFIG_KEY, KEY_SKIP_RELEVANT)).toInt());
     slotApply();
   //  if (!m_listIdentifier.contains(pluginid)) {
     //    setDefaults();
     //}
-   // m_minBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START)).toInt();
-    //m_maxBpm = m_pconfig->getValueString(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END)).toInt();
 
     slotUpdate();
 }
@@ -124,98 +98,60 @@ void DlgPrefKey::setDefaults() {
         //return;
     //}
     //m_selectedAnalyser = "qm-tempotracker:0";
-    m_banalyserEnabled = false;
-    m_bfastAnalysisEnabled = false;
-    m_bfirstLastEnabled = false;
-    m_breanalyzeEnabled = false;
-    //m_FastAnalysisEnabled = false;
-    m_bskipRelevantEnabled = false;
+    m_bAnalyserEnabled = true;
+    m_bFastAnalysisEnabled = false;
+    m_bReanalyzeEnabled = false;
 
-    //m_minBpm = 70;
-    //m_maxBpm = 140;
     //slotApply();
     slotUpdate();
 }
 
 void  DlgPrefKey::analyserEnabled(int i){
-    m_banalyserEnabled = static_cast<bool>(i);
+    m_bAnalyserEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
 void  DlgPrefKey::fastAnalysisEnabled(int i){
-    m_bfastAnalysisEnabled = static_cast<bool>(i);
-    slotUpdate();
-}
-
-void DlgPrefKey::firstLastEnabled(int i){
-    m_bfirstLastEnabled = static_cast<bool>(i);
+    m_bFastAnalysisEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
 void DlgPrefKey::reanalyzeEnabled(int i){
-    m_breanalyzeEnabled = static_cast<bool>(i);
+    m_bReanalyzeEnabled = static_cast<bool>(i);
     slotUpdate();
 }
 
-void DlgPrefKey::skipRelevantEnabled(int i){
-    m_bskipRelevantEnabled = static_cast<bool>(i);
-    qDebug()<<m_bskipRelevantEnabled;
-    slotUpdate();
-    }
-
-
-
-void DlgPrefKey::slotApply()
-{
+void DlgPrefKey::slotApply() {
     //int selected = m_listIdentifier.indexOf(m_selectedAnalyser);
     //if (selected == -1)
      //   return;
 
     //m_pconfig->set(ConfigKey(
-      //  VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_LIBRARY), ConfigValue(m_listLibrary[selected]));
+      //  VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY), ConfigValue(m_listLibrary[selected]));
     //m_pconfig->set(ConfigKey(
-      //  VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID), ConfigValue(m_selectedAnalyser));
-    m_pconfig->set(ConfigKey(
-        KEY_CONFIG_KEY, KEY_DETECTION_ENABLED), ConfigValue(m_banalyserEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        KEY_CONFIG_KEY, KEY_FAST_ANALYSIS), ConfigValue(m_bfastAnalysisEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        KEY_CONFIG_KEY, KEY_FIRST_LAST), ConfigValue(m_bfirstLastEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE), ConfigValue(m_breanalyzeEnabled ? 1 : 0));
-    m_pconfig->set(ConfigKey(
-        KEY_CONFIG_KEY, KEY_SKIP_RELEVANT), ConfigValue(m_bskipRelevantEnabled ? 1 : 0));
-
-    // m_pconfig->set(ConfigKey(
-     //   KEY_CONFIG_KEY, KEY_SKIP_RELEVANT), ConfigValue(1));
-    //  m_pconfig->set(ConfigKey(
-    //    BPM_CONFIG_KEY, BPM_FAST_ANALYSIS_ENABLED), ConfigValue(m_FastAnalysisEnabled ? 1 : 0));
-
-    //m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_START), ConfigValue(m_minBpm));
-    //m_pconfig->set(ConfigKey(BPM_CONFIG_KEY, BPM_RANGE_END), ConfigValue(m_maxBpm));
+      //  VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID), ConfigValue(m_selectedAnalyser));
+    m_pconfig->set(
+        ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED),
+        ConfigValue(m_bAnalyserEnabled ? 1 : 0));
+    m_pconfig->set(
+        ConfigKey(KEY_CONFIG_KEY, KEY_FAST_ANALYSIS),
+        ConfigValue(m_bFastAnalysisEnabled ? 1 : 0));
+    m_pconfig->set(
+        ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE),
+        ConfigValue(m_bReanalyzeEnabled ? 1 : 0));
     m_pconfig->Save();
 }
 
 void DlgPrefKey::slotUpdate()
 {
-    //bfixedtempo->setEnabled(m_banalyserEnabled);
-    //boffset->setEnabled((m_banalyserEnabled && m_bfixedtempoEnabled));
     //plugincombo->setEnabled(m_banalyserEnabled);
-    banalyserenabled->setChecked(m_banalyserEnabled);
-    bfastAnalysisEnabled->setChecked(m_bfastAnalysisEnabled);
-    //txtMaxBpm->setEnabled(m_banalyserEnabled && m_bfixedtempoEnabled);
-    // txtMinBpm->setEnabled(m_banalyserEnabled && m_bfixedtempoEnabled);
-    bfirstLastEnabled->setChecked(m_bfirstLastEnabled);
-    breanalyzeEnabled->setChecked(m_breanalyzeEnabled);
-    bskipRelevantEnabled->setChecked(m_bskipRelevantEnabled);
+    banalyserenabled->setChecked(m_bAnalyserEnabled);
+    bfastAnalysisEnabled->setChecked(m_bFastAnalysisEnabled);
+    breanalyzeEnabled->setChecked(m_bReanalyzeEnabled);
     slotApply();
 
     //if(!m_banalyserEnabled)
       //  return;
-
-    //bfixedtempo->setChecked(m_bfixedtempoEnabled);
-    //boffset->setChecked(m_boffsetEnabled);
-    //bFastAnalysis->setChecked(m_FastAnalysisEnabled);
 
     //int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
     //if( comboselected==-1){
@@ -224,9 +160,6 @@ void DlgPrefKey::slotUpdate()
     //}
 
     //plugincombo->setCurrentIndex(comboselected);
-    //txtMaxBpm->setValue(m_maxBpm);
-    //txtMinBpm->setValue(m_minBpm);
-    //bReanalyse->setChecked(m_bReanalyze);
 }
 
 //void DlgPrefBeats::populate() {

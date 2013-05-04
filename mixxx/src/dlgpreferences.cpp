@@ -266,7 +266,7 @@ void DlgPreferences::createIcons()
 
     m_pKeyNotationFormatButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pKeyNotationFormatButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keynotation.png"));
-    m_pKeyNotationFormatButton->setText(0, tr("Key Notation Format"));
+    m_pKeyNotationFormatButton->setText(0, tr("Key Detection"));
     m_pKeyNotationFormatButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyNotationFormatButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 

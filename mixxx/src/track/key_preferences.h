@@ -12,8 +12,6 @@
 // KEY_CONFIG_KEY Preferences
 #define KEY_DETECTION_ENABLED "KeyDetectionEnabled"
 #define KEY_FAST_ANALYSIS "FastAnalysisEnabled"
-#define KEY_FIRST_LAST "FirstLast"
 #define KEY_REANALYZE_WHEN_SETTINGS_CHANGE "ReanalyzeWhenSettingsChange"
-#define KEY_SKIP_RELEVANT "SkipRelevant"
 
 #endif // KEY_PREFERENCES_H

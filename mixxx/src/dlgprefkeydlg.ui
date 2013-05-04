@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>DlgPrefKEYDlg</class>
- <widget class="QWidget" name="DlgPrefKEYDlg">
+ <class>DlgPrefKeyDlg</class>
+ <widget class="QWidget" name="DlgPrefKeyDlg">
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>433</width>
-    <height>499</height>
+    <width>536</width>
+    <height>500</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -15,112 +15,88 @@
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
-    <widget class="QGroupBox" name="grpMisc">
-     <property name="title">
-      <string/>
+    <widget class="QCheckBox" name="banalyserenabled">
+     <property name="toolTip">
+      <string>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
+automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</string>
      </property>
-     <widget class="QCheckBox" name="bskipRelevantEnabled">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>70</y>
-        <width>310</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Skip file with existing key data</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="bfastAnalysisEnabled">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>30</y>
-        <width>377</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Enable Fast Analysis (For slow computers)</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="bfirstLastEnabled">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>50</y>
-        <width>377</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Analyse only first and last 30 seconds of each track</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="breanalyzeEnabled">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>90</y>
-        <width>377</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Reanalyse key values from 3rd party software</string>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="banalyserenabled">
-      <property name="geometry">
-       <rect>
-        <x>20</x>
-        <y>10</y>
-        <width>482</width>
-        <height>22</height>
-       </rect>
-      </property>
-      <property name="toolTip">
-       <string>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</string>
-      </property>
-      <property name="text">
-       <string>Enable Key Detection</string>
-      </property>
-     </widget>
+     <property name="text">
+      <string>Enable Key Detection</string>
+     </property>
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="grpFormat">
+    <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Preferred Key format</string>
+      <string>Choose Analyser</string>
      </property>
-     <layout class="QGridLayout" name="gridLayout_2">
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="radioButton_2">
-        <property name="text">
-         <string>Sharp (e.g. Bb = A#)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="radioButton">
-        <property name="text">
-         <string>Flat (e.g. A# = Bb)</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QLabel" name="label">
+        <property name="minimumSize">
          <size>
-          <width>40</width>
-          <height>20</height>
+          <width>150</width>
+          <height>0</height>
          </size>
         </property>
-       </spacer>
+        <property name="maximumSize">
+         <size>
+          <width>120</width>
+          <height>16777215</height>
+         </size>
+        </property>
+        <property name="text">
+         <string>Key Analyser:</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QComboBox" name="plugincombo">
+        <property name="minimumSize">
+         <size>
+          <width>200</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>2600</width>
+          <height>26</height>
+         </size>
+        </property>
+        <property name="toolTip">
+         <string>Choose between different algorithms to detect beats.</string>
+        </property>
+        <property name="layoutDirection">
+         <enum>Qt::LeftToRight</enum>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="grpMisc">
+     <property name="title">
+      <string>Analyser Settings</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QCheckBox" name="bfastAnalysisEnabled">
+        <property name="text">
+         <string>Enable Fast Analysis (For slow computers, may be less accurate)</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QCheckBox" name="breanalyzeEnabled">
+        <property name="text">
+         <string>Re-analyse keys when settings change or 3rd-party keys are present</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
@@ -134,7 +110,7 @@
       </size>
      </property>
      <property name="title">
-      <string>Notation</string>
+      <string>Key Notation</string>
      </property>
      <layout class="QGridLayout">
       <item row="0" column="0">
