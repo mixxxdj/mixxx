@@ -471,7 +471,6 @@ class MixxxCore(Feature):
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
-                   "engine/enginepassthrough.cpp",
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
