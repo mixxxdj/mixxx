@@ -40,12 +40,14 @@ Keys KeyFactory::makeBasicKeysFromText(TrackInfoObject* pTrack,
                                        mixxx::track::io::key::Source source) {
     Q_UNUSED(pTrack);
     KeyMap key_map;
-    key_map.set_global_key_text(global_key_text.toStdString());
     key_map.set_source(source);
     mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(
         global_key_text);
     if (global_key != mixxx::track::io::key::INVALID) {
         key_map.set_global_key(global_key);
+    } else {
+        // If we couldn't understand the key, save it as text.
+        key_map.set_global_key_text(global_key_text.toStdString());
     }
     return Keys(key_map);
 }
