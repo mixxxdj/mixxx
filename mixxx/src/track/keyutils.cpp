@@ -1,6 +1,7 @@
 #include <QtDebug>
 #include <QMap>
 #include <QRegExp>
+#include <QMutexLocker>
 
 #include "track/keyutils.h"
 #include "mathstuff.h"
@@ -11,13 +12,13 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
 const char* s_openKeyPattern = "(1[0-2]|[1-9])([dm])";
 
-// Lancelot notation, the numbers 1-12 followed by A (minor) or B (major).
+// Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
 const char* s_lancelotKeyPattern = "(1[0-2]|[1-9])([ab])";
 
 // a-g followed by any number of sharps or flats.
 const char* s_keyPattern = "([a-g])([#b]*)";
 
-
+// Maps an OpenKey number to its major and minor key.
 const ChromaticKey s_openKeyToKeys[][2] = {
     // 0 is not a valid OpenKey number.
     { mixxx::track::io::key::INVALID,       mixxx::track::io::key::INVALID },
@@ -35,7 +36,9 @@ const ChromaticKey s_openKeyToKeys[][2] = {
     { mixxx::track::io::key::F_MAJOR,       mixxx::track::io::key::D_MINOR } // 12
 };
 
-// This is a quick hack to convert a letter into a key.
+// This is a quick hack to convert an ASCII letter into a key. Lookup the key
+// using (letter.toLower() - 'a') as the index. Make sure the letter matches
+// [a-gA-G] first.
 const ChromaticKey s_letterToMajorKey[] = {
     mixxx::track::io::key::A_MAJOR,
     mixxx::track::io::key::B_MAJOR,
@@ -46,6 +49,10 @@ const ChromaticKey s_letterToMajorKey[] = {
     mixxx::track::io::key::G_MAJOR
 };
 
+QMutex KeyUtils::s_notationMutex;
+QMap<ChromaticKey, QString> KeyUtils::s_notation;
+QMap<QString, ChromaticKey> KeyUtils::s_reverseNotation;
+
 // static
 const char* KeyUtils::keyDebugName(ChromaticKey key) {
     static const char *keyNames[] = {"INVALID", "C","C#","D","D#","E","F","F#","G","G#","A","A#","B","c","c#","d","d#","e","f","f#","g","g#","a","a#","b"};
@@ -53,6 +60,28 @@ const char* KeyUtils::keyDebugName(ChromaticKey key) {
         return keyNames[0];
     }
     return keyNames[static_cast<int>(key)];
+}
+
+void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
+    QMutexLocker locker(&s_notationMutex);
+    s_notation = notation;
+    s_reverseNotation.clear();
+
+    for (QMap<ChromaticKey, QString>::const_iterator it = s_notation.begin();
+         it != s_notation.end(); ++it) {
+        if (s_reverseNotation.contains(it.value())) {
+            qWarning() << "Key notation is surjective (has duplicate values).";
+        }
+        s_reverseNotation.insert(it.value(), it.key());
+    }
+}
+
+QString KeyUtils::keyToString(ChromaticKey key) {
+    QMap<ChromaticKey, QString>::const_iterator it = s_notation.find(key);
+    if (it != s_notation.end()) {
+        return it.value();
+    }
+    return keyDebugName(key);
 }
 
 // static
