@@ -1,6 +1,9 @@
 #ifndef ANALYSERKEY_H
 #define ANALYSERKEY_H
 
+#include <QHash>
+#include <QString>
+
 #include "analyser.h"
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -18,19 +21,19 @@ class AnalyserKey : public Analyser {
     void cleanup(TrackPointer tio);
 
   private:
-    ConfigObject<ConfigValue> *m_pConfig;
-    bool m_bPass;
+    static QHash<QString, QString> getExtraVersionInfo(
+        QString pluginId, bool bPreferencesFastAnalysis);
+
+    ConfigObject<ConfigValue>* m_pConfig;
     VampAnalyser* m_pVamp;
     QString m_pluginId;
     int m_iSampleRate;
     int m_iTotalSamples;
-    QVector<double> m_frames;
-    QVector<double> m_keys;
 
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesfirstLastEnabled;
-    bool m_bPreferencesreanalyzeEnabled;
+    bool m_bPreferencesReanalyzeEnabled;
     bool m_bPreferencesskipRelevantEnabled;
     bool m_bShouldAnalyze;
 };

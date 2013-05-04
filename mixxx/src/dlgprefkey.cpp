@@ -104,7 +104,7 @@ void DlgPrefKey::loadSettings(){
         ConfigKey(KEY_CONFIG_KEY, KEY_FIRST_LAST)).toInt());
 
     m_breanalyzeEnabled =  static_cast<bool>(m_pconfig->getValueString(
-        ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE)).toInt());
+        ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
 
     m_bskipRelevantEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_SKIP_RELEVANT)).toInt());
@@ -182,7 +182,7 @@ void DlgPrefKey::slotApply()
     m_pconfig->set(ConfigKey(
         KEY_CONFIG_KEY, KEY_FIRST_LAST), ConfigValue(m_bfirstLastEnabled ? 1 : 0));
     m_pconfig->set(ConfigKey(
-        KEY_CONFIG_KEY, KEY_REANALYZE), ConfigValue(m_breanalyzeEnabled ? 1 : 0));
+        KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE), ConfigValue(m_breanalyzeEnabled ? 1 : 0));
     m_pconfig->set(ConfigKey(
         KEY_CONFIG_KEY, KEY_SKIP_RELEVANT), ConfigValue(m_bskipRelevantEnabled ? 1 : 0));
 
