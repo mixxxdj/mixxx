@@ -12,6 +12,7 @@ Keys KeyFactory::loadKeysFromByteArray(TrackPointer pTrack,
                                        QString keysVersion,
                                        QString keysSubVersion,
                                        QByteArray* keysSerialized) {
+    Q_UNUSED(pTrack);
     if (keysVersion == KEY_MAP_VERSION) {
         Keys keys(keysSerialized);
         keys.setSubVersion(keysSubVersion);
@@ -26,6 +27,7 @@ Keys KeyFactory::loadKeysFromByteArray(TrackPointer pTrack,
 Keys KeyFactory::makeBasicKeys(TrackInfoObject* pTrack,
                                mixxx::track::io::key::ChromaticKey global_key,
                                mixxx::track::io::key::Source source) {
+    Q_UNUSED(pTrack);
     KeyMap key_map;
     key_map.set_global_key(global_key);
     key_map.set_source(source);
@@ -36,6 +38,7 @@ Keys KeyFactory::makeBasicKeys(TrackInfoObject* pTrack,
 Keys KeyFactory::makeBasicKeysFromText(TrackInfoObject* pTrack,
                                        QString global_key_text,
                                        mixxx::track::io::key::Source source) {
+    Q_UNUSED(pTrack);
     KeyMap key_map;
     key_map.set_global_key_text(global_key_text.toStdString());
     key_map.set_source(source);
@@ -83,6 +86,7 @@ Keys KeyFactory::makePreferredKeys(
     TrackPointer pTrack, const KeyChangeList& key_changes,
     const QHash<QString, QString> extraVersionInfo,
     const int iSampleRate, const int iTotalSamples) {
+    Q_UNUSED(pTrack);
 
     const QString version = getPreferredVersion();
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);

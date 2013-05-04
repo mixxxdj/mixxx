@@ -933,6 +933,8 @@ void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
 void TrackInfoObject::setKeyText(QString key,
                                  mixxx::track::io::key::Source source) {
     QMutexLocker lock(&m_qMutex);
+    // TODO(rryan): This equality comparison should use the key-formatting
+    // preference.
     bool dirty = !m_keys.isValid() || m_keys.getGlobalKeyText() != key;
 
     if (dirty) {
