@@ -13,5 +13,5 @@ WKey::~WKey() {
 void WKey::setValue(double dValue) {
     mixxx::track::io::key::ChromaticKey key =
             static_cast<mixxx::track::io::key::ChromaticKey>(dValue);
-    m_pLabel->setText(keyDebugName(key));
+    m_pLabel->setText(KeyUtils::keyDebugName(key));
 }

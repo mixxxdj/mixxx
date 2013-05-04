@@ -1,6 +1,3 @@
-// bpmcontrol.cpp
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #include <QtDebug>
 
 #include "engine/keycontrol.h"
@@ -9,6 +6,7 @@
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 #include "engine/enginebuffer.h"
+#include "track/keyutils.h"
 
 KeyControl::KeyControl(const char* _group,
                        ConfigObject<ConfigValue>* _config)
@@ -48,14 +46,19 @@ double KeyControl::getKey() {
     return m_pEngineKey->get();
 }
 
-void KeyControl::slotFileKeyChanged(double key) {
-    // TODO(rryan): Adjust the file key by the number of octaves specified by
-    // m_pPitch.
-    double dRate = 1.0 + m_pPitch->get();
-    m_pEngineKey->set(key * dRate);
+void KeyControl::slotFileKeyChanged(double value) {
+    mixxx::track::io::key::ChromaticKey key =
+            KeyUtils::keyFromNumericValue(value);
+
+    // TODO(rryan): Also adjust by the rate change.
+    mixxx::track::io::key::ChromaticKey adjusted =
+            KeyUtils::scaleKeyOctaves(key, m_pPitch->get());
+
+    m_pEngineKey->set(KeyUtils::keyToNumericValue(adjusted));
 }
 
 void KeyControl::slotSetEngineKey(double key) {
+    Q_UNUSED(key);
     // TODO(rryan): set m_pPitch to match the desired key.
 }
 

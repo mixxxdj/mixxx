@@ -1,9 +1,6 @@
 #ifndef KEYCONTROL_H
 #define KEYCONTROL_H
 
-// bpmcontrol.h
-// Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
-
 #include "engine/enginecontrol.h"
 #include "tapfilter.h"
 

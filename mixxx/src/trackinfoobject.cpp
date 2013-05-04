@@ -894,7 +894,7 @@ void TrackInfoObject::setKeys(Keys keys) {
     // Might be INVALID. We don't care.
     mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
     lock.unlock();
-    emit(keyUpdated(newKey));
+    emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
     emit(keysUpdated());
 }
 
@@ -930,7 +930,7 @@ void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
     // Might be INVALID. We don't care.
     mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
     lock.unlock();
-    emit(keyUpdated(newKey));
+    emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
     emit(keysUpdated());
 }
 
@@ -948,7 +948,7 @@ void TrackInfoObject::setKeyText(QString key,
         // Might be INVALID. We don't care.
         mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
         lock.unlock();
-        emit(keyUpdated(newKey));
+        emit(keyUpdated(KeyUtils::keyToNumericValue(newKey)));
         emit(keysUpdated());
     }
 }
@@ -958,7 +958,7 @@ QString TrackInfoObject::getKeyText() const {
 
     mixxx::track::io::key::ChromaticKey key = m_keys.getGlobalKey();
     if (key != mixxx::track::io::key::INVALID) {
-        return keyDebugName(key);
+        return KeyUtils::keyDebugName(key);
     }
 
     // Fall back on text global name.

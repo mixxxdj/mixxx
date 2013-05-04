@@ -42,7 +42,7 @@ Keys KeyFactory::makeBasicKeysFromText(TrackInfoObject* pTrack,
     KeyMap key_map;
     key_map.set_global_key_text(global_key_text.toStdString());
     key_map.set_source(source);
-    mixxx::track::io::key::ChromaticKey global_key = guessKeyFromText(
+    mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(
         global_key_text);
     if (global_key != mixxx::track::io::key::INVALID) {
         key_map.set_global_key(global_key);
@@ -103,7 +103,7 @@ Keys KeyFactory::makePreferredKeys(
             pChange->set_key(it->first);
             pChange->set_frame_position(frame);
         }
-        key_map.set_global_key(calculateGlobalKey(key_changes, iTotalSamples));
+        key_map.set_global_key(KeyUtils::calculateGlobalKey(key_changes, iTotalSamples));
         key_map.set_source(mixxx::track::io::key::ANALYSER);
         Keys keys(key_map);
         keys.setSubVersion(subVersion);
