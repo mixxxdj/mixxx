@@ -958,7 +958,7 @@ QString TrackInfoObject::getKeyText() const {
 
     mixxx::track::io::key::ChromaticKey key = m_keys.getGlobalKey();
     if (key != mixxx::track::io::key::INVALID) {
-        return KeyUtils::keyDebugName(key);
+        return KeyUtils::keyToString(key);
     }
 
     // Fall back on text global name.
