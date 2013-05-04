@@ -45,18 +45,17 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
           m_pconfig(_config) {
     setupUi(this);
 
-    m_selectedAnalyser = "qm-keydetector:2";
     populate();
     loadSettings();
 
     // Connections
-    //connect(plugincombo, SIGNAL(currentIndexChanged(int)),
-    //        this, SLOT(pluginSelected(int)));
+    connect(plugincombo, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(pluginSelected(int)));
     connect(banalyserenabled, SIGNAL(stateChanged(int)),
-          this, SLOT(analyserEnabled(int)));
+            this, SLOT(analyserEnabled(int)));
     connect(bfastAnalysisEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(fastAnalysisEnabled(int)));
-   // connect(reset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
+    // connect(reset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
     connect(breanalyzeEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(reanalyzeEnabled(int)));
 }
@@ -65,16 +64,16 @@ DlgPrefKey::~DlgPrefKey() {
 }
 
 void DlgPrefKey::loadSettings(){
-    //if(m_pconfig->getValueString(
-      //  ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID))==QString("")) {
-        //setDefaults();
-           // Write to config file so AnalyzerBeats can get the data
-        //return;
-    //}
+    if(m_pconfig->getValueString(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID))==QString("")) {
+        setDefaults();
+        slotApply(); // Write to config file so AnalyserKey can get the data
+        return;
+    }
 
-   // QString pluginid = m_pconfig->getValueString(
-     //   ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
-    //m_selectedAnalyser = pluginid;
+   QString pluginid = m_pconfig->getValueString(
+       ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
+    m_selectedAnalyser = pluginid;
 
     m_bAnalyserEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
@@ -85,23 +84,21 @@ void DlgPrefKey::loadSettings(){
     m_bReanalyzeEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
 
-    slotApply();
-  //  if (!m_listIdentifier.contains(pluginid)) {
-    //    setDefaults();
-    //}
-
+    if (!m_listIdentifier.contains(pluginid)) {
+        setDefaults();
+    }
     slotUpdate();
 }
 
 void DlgPrefKey::setDefaults() {
-    //if (!m_listIdentifier.contains("qm-tempotracker:0")) {
-      //  qDebug() << "DlgPrefBeats: qm-tempotracker Vamp plugin not found";
-        //return;
-    //}
-    //m_selectedAnalyser = "qm-tempotracker:0";
     m_bAnalyserEnabled = true;
     m_bFastAnalysisEnabled = false;
     m_bReanalyzeEnabled = false;
+    m_selectedAnalyser = VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID;
+    if (!m_listIdentifier.contains(m_selectedAnalyser)) {
+        qDebug() << "DlgPrefBeats: qm-tempotracker Vamp plugin not found";
+        m_bAnalyserEnabled = false;
+    }
 
     //slotApply();
     slotUpdate();
@@ -123,14 +120,16 @@ void DlgPrefKey::reanalyzeEnabled(int i){
 }
 
 void DlgPrefKey::slotApply() {
-    //int selected = m_listIdentifier.indexOf(m_selectedAnalyser);
-    //if (selected == -1)
-     //   return;
+    int selected = m_listIdentifier.indexOf(m_selectedAnalyser);
+    if (selected == -1)
+        return;
 
-    //m_pconfig->set(ConfigKey(
-      //  VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY), ConfigValue(m_listLibrary[selected]));
-    //m_pconfig->set(ConfigKey(
-      //  VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID), ConfigValue(m_selectedAnalyser));
+    m_pconfig->set(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY),
+        ConfigValue(m_listLibrary[selected]));
+    m_pconfig->set(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID),
+        ConfigValue(m_selectedAnalyser));
     m_pconfig->set(
         ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED),
         ConfigValue(m_bAnalyserEnabled ? 1 : 0));
@@ -143,24 +142,22 @@ void DlgPrefKey::slotApply() {
     m_pconfig->Save();
 }
 
-void DlgPrefKey::slotUpdate()
-{
-    //plugincombo->setEnabled(m_banalyserEnabled);
+void DlgPrefKey::slotUpdate() {
+    plugincombo->setEnabled(m_bAnalyserEnabled);
     banalyserenabled->setChecked(m_bAnalyserEnabled);
     bfastAnalysisEnabled->setChecked(m_bFastAnalysisEnabled);
     breanalyzeEnabled->setChecked(m_bReanalyzeEnabled);
     slotApply();
 
-    //if(!m_banalyserEnabled)
-      //  return;
+    if (!m_bAnalyserEnabled)
+        return;
 
-    //int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
-    //if( comboselected==-1){
-      //  qDebug()<<"DlgPrefBeats: Plugin not found in slotUpdate()";
-        //return;
-    //}
-
-    //plugincombo->setCurrentIndex(comboselected);
+    int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
+    if (comboselected == -1){
+        qDebug() << "DlgPrefBeats: Plugin not found in slotUpdate()";
+        return;
+    }
+    plugincombo->setCurrentIndex(comboselected);
 }
 
 void DlgPrefKey::populate() {
@@ -188,7 +185,7 @@ void DlgPrefKey::populate() {
                                            + QString::number(ioutput);
                QString displaynametext = QString::fromStdString(plugin->getName());
                qDebug() << "Plugin output displayname:" << displayname << displaynametext;
-               bool goodones = displayname.contains("qm-keydetector:2");
+               bool goodones = displayname.contains(VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID);
 
                if (goodones) {
                    m_listName << displaynametext;

@@ -57,7 +57,7 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
 
     // TODO(rryan): This belongs elsewhere.
     if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID="qm-keydetector:2";
+        pluginID = VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID;
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
@@ -128,7 +128,7 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
 
     // TODO(rryan): This belongs elsewhere.
     if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID="qm-keydetector:2";
+        pluginID = VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID;
 
     const Keys& keys = tio->getKeys();
     if (keys.isValid()) {

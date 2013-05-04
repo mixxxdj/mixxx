@@ -29,13 +29,13 @@ using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
         : QWidget(parent),
-          m_selectedAnalyser() {
-    m_pconfig = _config;
+          m_pconfig(_config) {
     setupUi(this);
 
     populate();
     loadSettings();
-    //Connections
+
+    // Connections
     connect(plugincombo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(pluginSelected(int)));
     connect(banalyserenabled, SIGNAL(stateChanged(int)),
@@ -269,6 +269,5 @@ void DlgPrefBeats::populate() {
             plugin = 0;
         }
     }
-    // m_selectedAnalyser = selectedAnalyser;
 }
 
