@@ -8,9 +8,22 @@
 
 class KeyUtils {
   public:
+    enum KeyNotation {
+        // The default notation (set with setNotation).
+        DEFAULT = 0,
+        OPEN_KEY = 1,
+        LANCELOT = 2
+    };
+
     static const char* keyDebugName(mixxx::track::io::key::ChromaticKey key);
 
-    static QString keyToString(mixxx::track::io::key::ChromaticKey key);
+    static inline bool keyIsMajor(mixxx::track::io::key::ChromaticKey key) {
+        return key > mixxx::track::io::key::INVALID &&
+                key < mixxx::track::io::key::C_MINOR;
+    }
+
+    static QString keyToString(mixxx::track::io::key::ChromaticKey key,
+                               KeyNotation notation=DEFAULT);
 
     static mixxx::track::io::key::ChromaticKey keyFromNumericValue(double value);
 

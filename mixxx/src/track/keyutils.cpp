@@ -53,6 +53,68 @@ QMutex KeyUtils::s_notationMutex;
 QMap<ChromaticKey, QString> KeyUtils::s_notation;
 QMap<QString, ChromaticKey> KeyUtils::s_reverseNotation;
 
+inline int keyToOpenKeyNumber(ChromaticKey key) {
+    switch (key) {
+        case mixxx::track::io::key::C_MAJOR:
+        case mixxx::track::io::key::A_MINOR:
+            return 1;
+        case mixxx::track::io::key::G_MAJOR:
+        case mixxx::track::io::key::E_MINOR:
+            return 2;
+        case mixxx::track::io::key::D_MAJOR:
+        case mixxx::track::io::key::B_MINOR:
+            return 3;
+        case mixxx::track::io::key::A_MAJOR:
+        case mixxx::track::io::key::F_SHARP_MINOR:
+            return 4;
+        case mixxx::track::io::key::E_MAJOR:
+        case mixxx::track::io::key::C_SHARP_MINOR:
+            return 5;
+        case mixxx::track::io::key::B_MAJOR:
+        case mixxx::track::io::key::G_SHARP_MINOR:
+            return 6;
+        case mixxx::track::io::key::F_SHARP_MAJOR:
+        case mixxx::track::io::key::E_FLAT_MINOR:
+            return 7;
+        case mixxx::track::io::key::D_FLAT_MAJOR:
+        case mixxx::track::io::key::B_FLAT_MINOR:
+            return 8;
+        case mixxx::track::io::key::A_FLAT_MAJOR:
+        case mixxx::track::io::key::F_MINOR:
+            return 9;
+        case mixxx::track::io::key::E_FLAT_MAJOR:
+        case mixxx::track::io::key::C_MINOR:
+            return 10;
+        case mixxx::track::io::key::B_FLAT_MAJOR:
+        case mixxx::track::io::key::G_MINOR:
+            return 11;
+        case mixxx::track::io::key::F_MAJOR:
+        case mixxx::track::io::key::D_MINOR:
+            return 12;
+        default:
+            return 0;
+    }
+}
+
+// Lancelot notation is OpenKey notation rotated counter-clockwise by 5.
+inline int openKeyNumberToLancelotNumber(const int okNumber)  {
+    int lancelotNumber = okNumber - 5;
+    if (lancelotNumber < 1) {
+        lancelotNumber += 12;
+    }
+    return lancelotNumber;
+}
+
+// Lancelot notation is OpenKey notation rotated counter-clockwise by 5.
+inline int lancelotNumberToOpenKeyNumber(const int lancelotNumber)  {
+    int okNumber = lancelotNumber + 5;
+    if (okNumber > 12) {
+        okNumber -= 12;
+    }
+    return okNumber;
+}
+
+
 // static
 const char* KeyUtils::keyDebugName(ChromaticKey key) {
     static const char *keyNames[] = {"INVALID", "C","C#","D","D#","E","F","F#","G","G#","A","A#","B","c","c#","d","d#","e","f","f#","g","g#","a","a#","b"};
@@ -76,10 +138,28 @@ void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
     }
 }
 
-QString KeyUtils::keyToString(ChromaticKey key) {
-    QMap<ChromaticKey, QString>::const_iterator it = s_notation.find(key);
-    if (it != s_notation.end()) {
-        return it.value();
+QString KeyUtils::keyToString(ChromaticKey key,
+                              KeyNotation notation) {
+    if (!ChromaticKey_IsValid(key) ||
+        key == mixxx::track::io::key::INVALID) {
+        // TODO(rryan): Maybe just the empty string?
+        return "INVALID";
+    }
+
+    if (notation == DEFAULT) {
+        QMutexLocker locker(&s_notationMutex);
+        QMap<ChromaticKey, QString>::const_iterator it = s_notation.find(key);
+        if (it != s_notation.end()) {
+            return it.value();
+        }
+    } else if (notation == OPEN_KEY) {
+        bool major = keyIsMajor(key);
+        int number = keyToOpenKeyNumber(key);
+        return QString::number(number) + (major ? "d" : "m");
+    } else if (notation == LANCELOT) {
+        bool major = keyIsMajor(key);
+        int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
+        return QString::number(number) + (major ? "B" : "A");
     }
     return keyDebugName(key);
 }
@@ -114,11 +194,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
             return mixxx::track::io::key::INVALID;
         }
 
-        // Lancelot notation is OpenKey notation rotated counter-clockwise by 5.
-        int openKeyTonic = tonic + 5;
-        if (openKeyTonic > 12) {
-            openKeyTonic -= 12;
-        }
+        int openKeyTonic = lancelotNumberToOpenKeyNumber(tonic);
 
         bool major = lancelotKeyMatcher.cap(2)
                 .compare("b", Qt::CaseInsensitive) == 0;
@@ -195,7 +271,7 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
 
     // We know the key is in the set of valid values. Save whether or not the
     // value is minor.
-    bool minor = key >= mixxx::track::io::key::C_MINOR;
+    bool minor = !keyIsMajor(key);
 
     // Tonic, 0-indexed.
     int tonic = static_cast<int>(key) - (minor ? 13 : 1);
