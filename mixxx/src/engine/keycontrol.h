@@ -22,20 +22,12 @@ class KeyControl : public EngineControl {
     double getPitchAdjust();
     double getKey();
 
-  public slots:
-
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
-
   private slots:
     void slotSetEngineKey(double);
     void slotFileKeyChanged(double);
     void slotPitchChanged(double);
-    void slotUpdatedTrackKey();
 
   private:
-    double convertKey(QString);
-
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;
     ControlPotmeter* m_pPitch;
