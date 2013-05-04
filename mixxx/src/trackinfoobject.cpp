@@ -891,7 +891,10 @@ void TrackInfoObject::setKeys(Keys keys) {
     QMutexLocker lock(&m_qMutex);
     setDirty(true);
     m_keys = keys;
+    // Might be INVALID. We don't care.
+    mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
     lock.unlock();
+    emit(keyUpdated(newKey));
     emit(keysUpdated());
 }
 
@@ -925,7 +928,10 @@ void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
         setDirty(true);
     }
 
+    // Might be INVALID. We don't care.
+    mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
     lock.unlock();
+    emit(keyUpdated(newKey));
     emit(keysUpdated());
 }
 
@@ -940,7 +946,10 @@ void TrackInfoObject::setKeyText(QString key,
     if (dirty) {
         m_keys = KeyFactory::makeBasicKeysFromText(this, key, source);
         setDirty(true);
+        // Might be INVALID. We don't care.
+        mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
         lock.unlock();
+        emit(keyUpdated(newKey));
         emit(keysUpdated());
     }
 }
