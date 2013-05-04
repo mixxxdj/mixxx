@@ -10,6 +10,9 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 // static
 const char* KeyUtils::keyDebugName(ChromaticKey key) {
     static const char *keyNames[] = {"INVALID", "C","C#","D","D#","E","F","F#","G","G#","A","A#","B","c","c#","d","d#","e","f","f#","g","g#","a","a#","b"};
+    if (!ChromaticKey_IsValid(key)) {
+        return keyNames[0];
+    }
     return keyNames[static_cast<int>(key)];
 }
 
@@ -20,7 +23,7 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
 
 // static
 ChromaticKey KeyUtils::keyFromNumericValue(double value) {
-    int value_floored = int(floorf(value));
+    int value_floored = int(value);
 
     if (!ChromaticKey_IsValid(value_floored)) {
         return mixxx::track::io::key::INVALID;
@@ -37,8 +40,9 @@ double KeyUtils::keyToNumericValue(ChromaticKey key) {
 // static
 ChromaticKey KeyUtils::scaleKeyOctaves(ChromaticKey key, double octave_change) {
     // Invalid scales to invalid.
-    if (key == mixxx::track::io::key::INVALID) {
-        return key;
+    if (!ChromaticKey_IsValid(key) ||
+        key == mixxx::track::io::key::INVALID) {
+        return mixxx::track::io::key::INVALID;
     }
 
     // We know the key is in the set of valid values. Save whether or not the
