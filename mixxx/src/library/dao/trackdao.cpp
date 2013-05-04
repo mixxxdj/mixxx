@@ -9,6 +9,7 @@
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
+#include "track/keyfactory.h"
 #include "trackinfoobject.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -329,7 +330,26 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":beats", pBeatsBlob ? *pBeatsBlob : QVariant(QVariant::ByteArray));
     delete pBeatsBlob;
 
-    m_pQueryLibraryInsert->bindValue(":key", pTrack->getKeyText());
+    const Keys& keys = pTrack->getKeys();
+    QByteArray* pKeysBlob = NULL;
+    QString keysVersion = "";
+    QString keysSubVersion = "";
+    QString keyText = "";
+
+    if (keys.isValid()) {
+        pKeysBlob = keys.toByteArray();
+        keysVersion = keys.getVersion();
+        keysSubVersion = keys.getSubVersion();
+        // TODO(rryan): Get this logic out of TIO.
+        keyText = pTrack->getKeyText();
+    }
+
+    m_pQueryLibraryInsert->bindValue(
+        ":keys", pKeysBlob ? *pKeysBlob : QVariant(QVariant::ByteArray));
+    m_pQueryLibraryInsert->bindValue(":keys_version", keysVersion);
+    m_pQueryLibraryInsert->bindValue(":keys_sub_version", keysSubVersion);
+    m_pQueryLibraryInsert->bindValue(":key", keyText);
+    delete pKeysBlob;
 }
 
 void TrackDAO::addTracksPrepare() {
@@ -362,13 +382,17 @@ void TrackDAO::addTracksPrepare() {
             "filetype, location, comment, url, duration, rating, key, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, "
-            "channels, mixxx_deleted, header_parsed, beats_version, beats_sub_version, beats, bpm_lock) "
+            "channels, mixxx_deleted, header_parsed, "
+            "beats_version, beats_sub_version, beats, bpm_lock, "
+            "keys_version, keys_sub_version, keys) "
             "VALUES ("
             ":artist, :title, :album, :year, :genre, :tracknumber, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
             ":timesplayed, "
-            ":channels, :mixxx_deleted, :header_parsed, :beats_version, :beats_sub_version, :beats, :bpm_lock)");
+            ":channels, :mixxx_deleted, :header_parsed, "
+            ":beats_version, :beats_sub_version, :beats, :bpm_lock, "
+            ":keys_version, :keys_sub_version, :keys)");
 
     m_pQueryLibraryUpdate->prepare("UPDATE library SET mixxx_deleted = 0 "
             "WHERE id = :id");
@@ -762,7 +786,9 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
         "filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
-        "header_parsed, timesplayed, played, beats_version, beats_sub_version, beats, datetime_added, bpm_lock "
+        "header_parsed, timesplayed, played, "
+        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock "
+        "keys_version, keys_sub_version, keys "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -835,8 +861,21 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             }
             pTrack->setBpmLock(has_bpm_lock);
 
-            // Same deal for keys. TODO(rryan) source.
-            pTrack->setKeyText(key, mixxx::track::io::key::USER);
+            QString keysVersion = query.value(query.record().indexOf("keys_version")).toString();
+            QString keysSubVersion = query.value(query.record().indexOf("keys_sub_version")).toString();
+            QByteArray keysBlob = query.value(query.record().indexOf("keys")).toByteArray();
+            Keys keys = KeyFactory::loadKeysFromByteArray(
+                pTrack, keysVersion, keysSubVersion, &keysBlob);
+
+            if (keys.isValid()) {
+                pTrack->setKeys(keys);
+            } else {
+                // Typically this happens if we are upgrading from an older
+                // (<1.12.0) version of Mixxx that didn't support Keys. We treat
+                // all legacy data as user-generated because that way it will be
+                // treated sensitively.
+                pTrack->setKeyText(key, mixxx::track::io::key::USER);
+            }
 
             pTrack->setTimesPlayed(timesplayed);
             pTrack->setDateAdded(datetime_added);
@@ -963,7 +1002,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "timesplayed=:timesplayed, played=:played, "
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats_sub_version=:beats_sub_version, beats=:beats, "
-                  "bpm_lock=:bpm_lock "
+                  "bpm_lock=:bpm_lock, "
+                  "keys_version=:keys_version, keys_sub_version=:keys_sub_version, keys=:keys "
                   "WHERE id=:track_id");
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -1009,8 +1049,25 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":bpm", dBpm);
     delete pBeatsBlob;
 
-    // Same style thing for BPM.
-    query.bindValue(":key", pTrack->getKeyText());
+    const Keys& keys = pTrack->getKeys();
+    QByteArray* pKeysBlob = NULL;
+    QString keysVersion = "";
+    QString keysSubVersion = "";
+    QString keyText = "";
+
+    if (keys.isValid()) {
+        pKeysBlob = keys.toByteArray();
+        keysVersion = keys.getVersion();
+        keysSubVersion = keys.getSubVersion();
+        // TODO(rryan): Get this logic out of TIO.
+        keyText = pTrack->getKeyText();
+    }
+
+    query.bindValue(":keys", pKeysBlob ? *pKeysBlob : QVariant(QVariant::ByteArray));
+    query.bindValue(":keys_version", keysVersion);
+    query.bindValue(":keys_sub_version", keysSubVersion);
+    query.bindValue(":key", keyText);
+    delete pKeysBlob;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
