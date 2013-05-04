@@ -54,7 +54,8 @@ void Keys::setSubVersion(QString subVersion) {
 }
 
 bool Keys::isValid() const {
-    return m_keyMap.has_global_key();
+    return m_keyMap.global_key() != mixxx::track::io::key::INVALID ||
+            m_keyMap.global_key_text().length() > 0;
 }
 
 ChromaticKey Keys::getGlobalKey() const {
