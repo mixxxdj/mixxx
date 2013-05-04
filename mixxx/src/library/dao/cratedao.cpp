@@ -56,7 +56,7 @@ bool CrateDAO::renameCrate(int crateId, const QString& newName) {
         LOG_FAILED_QUERY(query);
         return false;
     }
-    emit(renamed(crateId));
+    emit(renamed(crateId, newName));
     return true;
 }
 
@@ -91,6 +91,83 @@ bool CrateDAO::isCrateLocked(int crateId) {
     }
 
     return false;
+}
+
+bool CrateDAO::setCrateInAutoDj(int a_iCrateId, bool a_bIn) {
+    // SQLite3 doesn't support boolean value. Using integer instead.
+    int iIn = a_bIn ? 1 : 0;
+
+    // Mark this crate as being in/out-of the auto-DJ list.
+    QSqlQuery query(m_database);
+    // UPDATE crates SET autodj = :in WHERE id = :id AND autodj = :existing;
+    query.prepare(QString("UPDATE " CRATE_TABLE
+        " SET %1 = :in WHERE %2 = :id AND %1 = :existing")
+        .arg(CRATETABLE_AUTODJ)     // %1
+        .arg(CRATETABLE_ID));       // %2
+    query.bindValue(":in", iIn);
+    query.bindValue(":id", a_iCrateId);
+    query.bindValue(":existing", 1 - iIn);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
+    }
+
+    // Notify listeners if the auto-DJ status of a crate has changed.
+    bool bChange = (query.numRowsAffected() > 0);
+    if (bChange)
+        emit(autoDjChanged(a_iCrateId,a_bIn));
+
+    // Let our caller know if there was a change.
+    return bChange;
+}
+
+bool CrateDAO::isCrateInAutoDj(int a_iCrateId) {
+    // Query the database for this crate's auto-DJ status.
+    QSqlQuery query(m_database);
+    query.setForwardOnly (true);
+    // SELECT autodj FROM crates WHERE id = :id;
+    query.prepare(QString("SELECT %1 FROM " CRATE_TABLE " WHERE %2 = :id")
+        .arg(CRATETABLE_AUTODJ)     // %1
+        .arg(CRATETABLE_ID));       // %2
+    query.bindValue(":id", a_iCrateId);
+
+    if (query.exec()) {
+        if (query.next()) {
+            //SQLite3 doesn't support boolean values, so convert the integer.
+            int inValue = query.value(0).toInt();
+            return inValue == 1;
+        }
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+
+    return false;
+}
+
+QList<int> CrateDAO::getCrateTracks(int a_iCrateId)
+{
+    // Get all track IDs that belong to this crate.
+    QSqlQuery query(m_database);
+    query.setForwardOnly (true);
+    // SELECT track_id FROM crate_tracks WHERE crate_id = :id;
+    query.prepare(QString("SELECT %1 FROM " CRATE_TRACKS_TABLE
+        " WHERE %2 = :id")
+        .arg(CRATETRACKSTABLE_TRACKID)      // %1
+        .arg(CRATETRACKSTABLE_CRATEID));    // %2
+    query.bindValue(":id", a_iCrateId);
+    QList<int> ids;
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return ids;
+    }
+
+    // Put all those track IDs into a list.
+    while (query.next())
+        ids.append(query.value(0).toInt());
+
+    // Return the list to our caller.
+    return ids;
 }
 
 bool CrateDAO::deleteCrate(int crateId) {

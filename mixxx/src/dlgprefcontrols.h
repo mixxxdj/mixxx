@@ -59,6 +59,7 @@ public slots:
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
     void slotSetAutoDjRequeue(int);
+    void slotSetAutoDjActivePercentage(int);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);

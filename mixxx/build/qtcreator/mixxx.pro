@@ -237,6 +237,7 @@ $$BASE_DIR/src/library/browsefilter.h \
 $$BASE_DIR/src/library/browsetablemodel.h \
 $$BASE_DIR/src/library/cratefeature.h \
 $$BASE_DIR/src/library/cratetablemodel.h \
+$$BASE_DIR/src/library/dao/autodjcratesdao.h \
 $$BASE_DIR/src/library/dao/cratedao.h \
 $$BASE_DIR/src/library/dao/cuedao.h \
 $$BASE_DIR/src/library/dao/cue.h \
@@ -469,6 +470,7 @@ $$BASE_DIR/src/library/browsefilter.cpp \
 $$BASE_DIR/src/library/browsetablemodel.cpp \
 $$BASE_DIR/src/library/cratefeature.cpp \
 $$BASE_DIR/src/library/cratetablemodel.cpp \
+$$BASE_DIR/src/library/dao/autodjcratesdao.cpp \
 $$BASE_DIR/src/library/dao/cratedao.cpp \
 $$BASE_DIR/src/library/dao/cue.cpp \
 $$BASE_DIR/src/library/dao/cuedao.cpp \

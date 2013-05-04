@@ -595,6 +595,7 @@ class MixxxCore(Feature):
                    "library/library.cpp",
                    "library/searchthread.cpp",
 
+                   "library/dao/autodjcratesdao.cpp",
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",
                    "library/dao/cuedao.cpp",

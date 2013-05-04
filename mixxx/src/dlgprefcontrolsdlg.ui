@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>519</width>
-    <height>728</height>
+    <height>877</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -280,6 +280,23 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="autoDjActivePercentageLabel">
+       <property name="text">
+        <string>Auto DJ active percentage</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="2">
+      <widget class="QSpinBox" name="autoDjActivePercentageSpinBox">
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>20</number>
        </property>
       </widget>
      </item>

@@ -16,6 +16,8 @@
 #include "trackinfoobject.h"
 #include "util.h"
 
+#define LIBRARY_TABLE "library"
+
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
 const QString LIBRARYTABLE_TITLE = "title";

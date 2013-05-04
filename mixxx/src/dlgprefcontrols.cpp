@@ -212,6 +212,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
 
+    // The auto-DJ active-percentage for randomly-selected tracks
+    autoDjActivePercentageSpinBox->setValue (m_pConfig->getValueString
+        (ConfigKey("[Auto DJ]", "ActivePercentage"), "20").toInt());
+    connect(autoDjActivePercentageSpinBox, SIGNAL(valueChanged(int)),
+            this, SLOT(slotSetAutoDjActivePercentage(int)));
+
     //
     // Skin configurations
     //
@@ -427,6 +433,13 @@ void DlgPrefControls::slotSetCueRecall(int)
 void DlgPrefControls::slotSetAutoDjRequeue(int)
 {
     m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"), ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
+}
+
+void DlgPrefControls::slotSetAutoDjActivePercentage(int a_iValue)
+{
+    QString str;
+    str.setNum (a_iValue);
+    m_pConfig->set(ConfigKey("[Auto DJ]","ActivePercentage"),str);
 }
 
 void DlgPrefControls::slotSetTooltips(int)

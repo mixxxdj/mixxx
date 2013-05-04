@@ -42,10 +42,13 @@ class CrateFeature : public LibraryFeature {
     void slotDeleteCrate();
     void slotRenameCrate();
     void slotDuplicateCrate();
+    void slotAddCrateToAutoDj();
+    void slotRemoveCrateFromAutoDj();
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
     void slotCrateTableChanged(int playlistId);
+    void slotCrateTableRenamed(int playlistId, QString a_strName);
     void htmlLinkClicked(const QUrl & link);
 
   private:
@@ -61,6 +64,8 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pRenameCrateAction;
     QAction *m_pLockCrateAction;
     QAction *m_pDuplicateCrateAction;
+    QAction *m_pAddCrateToAutoDj;
+    QAction *m_pRemoveCrateFromAutoDj;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
     QList<QPair<int, QString> > m_crateList;

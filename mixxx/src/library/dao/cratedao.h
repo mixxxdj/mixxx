@@ -13,6 +13,13 @@
 #define CRATE_TABLE "crates"
 #define CRATE_TRACKS_TABLE "crate_tracks"
 
+const QString CRATETABLE_ID = "id";
+const QString CRATETABLE_NAME = "name";
+const QString CRATETABLE_COUNT = "count";
+const QString CRATETABLE_SHOW = "show";
+const QString CRATETABLE_LOCKED = "locked";
+const QString CRATETABLE_AUTODJ = "autodj";
+
 const QString CRATETRACKSTABLE_TRACKID = "track_id";
 const QString CRATETRACKSTABLE_CRATEID = "crate_id";
 
@@ -33,6 +40,9 @@ class CrateDAO : public QObject, public virtual DAO {
     bool renameCrate(int crateId, const QString& newName);
     bool setCrateLocked(int crateId, bool locked);
     bool isCrateLocked(int crateId);
+    bool setCrateInAutoDj(int a_iCrateId, bool a_bIn);
+    bool isCrateInAutoDj(int a_iCrateId);
+    QList<int> getCrateTracks(int a_iCrateId);
     int getCrateIdByName(const QString& name);
     int getCrateId(int position);
     QString crateName(int crateId);
@@ -49,12 +59,13 @@ class CrateDAO : public QObject, public virtual DAO {
 
   signals:
     void added(int crateId);
+    void renamed(int crateId, QString a_strName);
     void deleted(int crateId);
     void changed(int crateId);
     void trackAdded(int crateId, int trackId);
     void trackRemoved(int crateId, int trackId);
-    void renamed(int crateId);
     void lockChanged(int crateId);
+    void autoDjChanged(int a_iCrateId, bool a_bIn);
 
   private:
     QSqlDatabase& m_database;
