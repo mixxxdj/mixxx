@@ -32,9 +32,7 @@ class AnalyserKey : public Analyser {
 
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
-    bool m_bPreferencesfirstLastEnabled;
     bool m_bPreferencesReanalyzeEnabled;
-    bool m_bPreferencesskipRelevantEnabled;
     bool m_bShouldAnalyze;
 };
 

@@ -11,6 +11,7 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 AnalyserKey::AnalyserKey(ConfigObject<ConfigValue> *_config)
         : m_pConfig(_config),
+          m_pVamp(NULL),
           m_iSampleRate(0),
           m_iTotalSamples(0),
           m_bShouldAnalyze(false) {
@@ -44,15 +45,6 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     m_bPreferencesReanalyzeEnabled = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
-
-    // TODO(rryan): Delete these two?
-    m_bPreferencesfirstLastEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_FIRST_LAST)).toInt());
-    m_bPreferencesskipRelevantEnabled = static_cast<bool>(
-        m_pConfig->getValueString(
-            ConfigKey(KEY_CONFIG_KEY, KEY_SKIP_RELEVANT)).toInt());
-
 
     QString library = m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY));
