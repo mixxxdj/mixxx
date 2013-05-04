@@ -37,7 +37,7 @@ enum ChromaticKey {
 };
 
 message KeyMap {
-  optional ChromaticKey global_key = 1;
+  optional ChromaticKey global_key = 1 [ default = INVALID ];
   optional string global_key_text = 2;
 
   message KeyChange {
