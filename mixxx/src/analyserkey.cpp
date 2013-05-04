@@ -57,7 +57,7 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
 
     // TODO(rryan): This belongs elsewhere.
     if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID="qm-keydetector:3";
+        pluginID="qm-keydetector:2";
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
@@ -107,9 +107,6 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         m_pVamp = NULL;
     }
 
-    // TODO(rryan): Specific to QM KeyDetect.
-    m_pVamp->SelectOutput(2);
-
     return m_bShouldAnalyze;
 }
 
@@ -131,7 +128,7 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
 
     // TODO(rryan): This belongs elsewhere.
     if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID="qm-keydetector:3";
+        pluginID="qm-keydetector:2";
 
     const Keys& keys = tio->getKeys();
     if (keys.isValid()) {
