@@ -31,12 +31,6 @@ StarDelegate::StarDelegate(QObject *pParent)
             this, SLOT(cellEntered(QModelIndex)));
 }
 
-/*
- * The function is invoked once for each item, represented by a QModelIndex object from the model.
- * If the data stored in the item is a StarRating, we paint it use a star editor for displaying;
- * otherwise, we let QStyledItemDelegate paint it for us.
- * This ensures that the StarDelegate can handle the most common data types.
- */
 void StarDelegate::paint(QPainter *painter, const QStyleOptionViewItem &option, const QModelIndex &index) const
 {
     //let the editor to the painting if this is true

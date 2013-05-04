@@ -36,6 +36,8 @@
         <file>images/library/ic_library_traktor.png</file>
         <file>images/library/ic_library_preview_play.png</file>
         <file>images/library/ic_library_preview_pause.png</file>
+        <file>images/library/ic_library_checked.png</file>
+        <file>images/library/ic_library_unchecked.png</file>
         <file>shaders/computemaxsignal.frag</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>

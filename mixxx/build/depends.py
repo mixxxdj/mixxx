@@ -471,7 +471,6 @@ class MixxxCore(Feature):
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
-                   "engine/enginepassthrough.cpp",
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
@@ -611,6 +610,8 @@ class MixxxCore(Feature):
                    "library/starrating.cpp",
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
+                   "library/bpmdelegate.cpp",
+                   "library/bpmeditor.cpp",
                    "library/previewbuttondelegate.cpp",
                    "audiotagger.cpp",
 

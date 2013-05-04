@@ -162,7 +162,11 @@ void SoundManager::closeDevices() {
         // Need to tell all registered AudioDestinations for this AudioInput
         // that the input was disconnected.
         if (m_registeredDestinations.contains(in)) {
-            m_registeredDestinations[in]->onInputDisconnected(in);
+            QList<AudioDestination*> destList = m_registeredDestinations.values(in);
+            AudioDestination* dest;
+            foreach(dest, destList) {
+                dest->onInputDisconnected(in);
+            }
         }
 
         short *buffer = m_inputBuffers[in];
@@ -308,7 +312,11 @@ int SoundManager::setupDevices() {
             // Check if any AudioDestination is registered for this AudioInput,
             // and call the onInputConnected method.
             if (m_registeredDestinations.contains(in)) {
-                m_registeredDestinations[in]->onInputConnected(in);
+                QList<AudioDestination*> destList = m_registeredDestinations.values(in);
+                AudioDestination* dest;
+                foreach(dest, destList) {
+                    dest->onInputConnected(in);
+                }
             }
         }
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
@@ -573,15 +581,16 @@ void SoundManager::pushBuffer(const QList<AudioInput>& inputs, short * inputBuff
             short* pInputBuffer = m_inputBuffers[in];
 
             if (m_registeredDestinations.contains(in)) {
-                AudioDestination* destination = m_registeredDestinations[in];
-                if (destination) {
-                    destination->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
+                QList<AudioDestination*> destList = m_registeredDestinations.values(in);
+                AudioDestination* dest;
+                foreach(dest, destList) {
+                    if (dest) {
+                        dest->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
+                    }
                 }
             }
         }
     }
-    //TODO: Add pass-through option here (and push it into EngineMaster)...
-    //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
 }
 
 void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
@@ -598,7 +607,9 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
         // AudioInput to be going to a different AudioDest -bkgood
         qDebug() << "WARNING: AudioInput already registered!";
     }
-    m_registeredDestinations[input] = dest;
+
+    m_registeredDestinations.insertMulti(input, dest);
+
     emit(inputRegistered(input, dest));
 }
 
