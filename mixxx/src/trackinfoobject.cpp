@@ -920,8 +920,7 @@ void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
         m_keys = Keys();
         dirty = true;
     } else if (m_keys.getGlobalKey() != key) {
-        m_keys = KeyFactory::makeBasicKeys(
-            this, key, mixxx::track::io::key::USER);
+        m_keys = KeyFactory::makeBasicKeys(this, key, source);
     }
 
     if (dirty) {
