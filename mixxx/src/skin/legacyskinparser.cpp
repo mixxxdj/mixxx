@@ -1144,7 +1144,15 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
 QWidget* LegacySkinParser::parseKey(QDomElement node) {
     WKey* p = new WKey(m_pParent);
     setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
     p->setup(node);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
