@@ -1,52 +1,18 @@
-/***************************************************************************
-                          wnumber.h  -  description
-                             -------------------
-    begin                : Wed Jun 18 2003
-    copyright            : (C) 2003 by Tue & Ken Haste Andersen
-    email                : haste@diku.dk
- ***************************************************************************/
-
-/***************************************************************************
- *                                                                         *
- *   This program is free software; you can redistribute it and/or modify  *
- *   it under the terms of the GNU General Public License as published by  *
- *   the Free Software Foundation; either version 2 of the License, or     *
- *   (at your option) any later version.                                   *
- *                                                                         *
- ***************************************************************************/
-
 #ifndef WKEY_H
 #define WKEY_H
 
-#include "wwidget.h"
-#include <qlabel.h>
-#include <qevent.h>
+#include <QLabel>
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
+#include "widget/wlabel.h"
 
-class WKey : public WWidget  {
+class WKey : public WLabel  {
     Q_OBJECT
-public:
-    WKey(QWidget *parent=0);
+  public:
+    WKey(QWidget* pParent=NULL);
     virtual ~WKey();
-    void setup(QDomNode node);
-    //void setNumDigits(int);
-    //void setConstFactor(double);
 
-public slots:
+  private slots:
     void setValue(double dValue);
-private:
-    QString convertKey(double dValue);
-protected:
-    QLabel *m_pLabel;
-    QString m_qsText;
-    //int m_iNoDigits;
-    /** Foreground and background colors */
-    QColor m_qFgColor, m_qBgColor;
-    /** Constant factor added to value */
-    //double m_dConstFactor;
 };
 
-#endif
+#endif /* WKEY_H */
