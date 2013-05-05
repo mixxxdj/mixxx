@@ -197,7 +197,8 @@ void AnalyserKey::finalise(TrackPointer tio) {
     for (int i = 0; i < keys.size(); ++i) {
         if (ChromaticKey_IsValid(keys[i])) {
             key_changes.push_back(qMakePair(
-                static_cast<ChromaticKey>(keys[i]), frames[i]));
+                // int() intermediate cast required by MSVC.
+                static_cast<ChromaticKey>(int(keys[i])), frames[i]));
         }
     }
 
