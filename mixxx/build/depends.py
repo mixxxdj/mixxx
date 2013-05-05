@@ -444,7 +444,6 @@ class MixxxCore(Feature):
                    "dlgprefcrossfader.cpp",
                    "dlgtrackinfo.cpp",
                    "dlgprepare.cpp",
-                   "dlgselector.cpp",
                    "dlgautodj.cpp",
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
@@ -552,7 +551,6 @@ class MixxxCore(Feature):
                    "widget/wlibrary.cpp",
                    "widget/wlibrarytableview.cpp",
                    "widget/wpreparelibrarytableview.cpp",
-                   "widget/wselectorlibrarytableview.cpp",
                    "widget/wpreparecratestableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",
                    "library/preparecratedelegate.cpp",
@@ -583,9 +581,6 @@ class MixxxCore(Feature):
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
-
-                   "library/selector/selectorfeature.cpp",
-                   "library/selector/selectorlibrarytablemodel.cpp",
 
                    # External Library Features
                    "library/baseexternallibraryfeature.cpp",
@@ -767,7 +762,6 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgaboutdlg.ui')
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
-        build.env.Uic4('dlgselector.ui')
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
         build.env.Uic4('dlgrecording.ui')
