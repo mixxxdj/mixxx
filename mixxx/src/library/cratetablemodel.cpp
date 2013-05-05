@@ -186,8 +186,6 @@ bool CrateTableModel::isColumnInternal(int column) {
 }
 
 bool CrateTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
-        return true;
     return false;
 }
 

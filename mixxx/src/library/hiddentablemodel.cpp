@@ -122,9 +122,6 @@ bool HiddenTableModel::isColumnInternal(int column) {
     return false;
 }
 bool HiddenTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
-        return true;
-    }
     return false;
 }
 

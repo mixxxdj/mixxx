@@ -360,9 +360,6 @@ bool PlaylistTableModel::isColumnInternal(int column) {
     return false;
 }
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
-        return true;
-    }
     if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
         return true;
     }

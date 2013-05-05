@@ -123,8 +123,6 @@ bool LibraryTableModel::isColumnInternal(int column) {
 }
 
 bool LibraryTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
-        return true;
     return false;
 }
 
