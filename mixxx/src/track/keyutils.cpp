@@ -168,6 +168,16 @@ QString KeyUtils::keyToString(ChromaticKey key,
 ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
     QString trimmed = text.trimmed();
 
+    // Try using the user's custom notation.
+    {
+        QMutexLocker locker(&s_notationMutex);
+        QMap<QString, ChromaticKey>::const_iterator it = s_reverseNotation.find(text);
+        if (it != s_reverseNotation.end()) {
+            return it.value();
+        }
+    }
+
+
     QRegExp openKeyMatcher(s_openKeyPattern, Qt::CaseInsensitive);
     if (openKeyMatcher.exactMatch(trimmed)) {
         bool ok = false;
