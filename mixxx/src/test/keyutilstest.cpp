@@ -58,6 +58,18 @@ TEST_F(KeyUtilsTest, KeyNameNotation) {
     EXPECT_EQ(mixxx::track::io::key::C_MINOR,
               KeyUtils::guessKeyFromText("c#bb#"));
 
+    // No matter what ending in m is minor.
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("CM"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("cm"));
+    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
+              KeyUtils::guessKeyFromText("C#m"));
+    EXPECT_EQ(mixxx::track::io::key::C_SHARP_MINOR,
+              KeyUtils::guessKeyFromText("Dbm"));
+    EXPECT_EQ(mixxx::track::io::key::C_MINOR,
+              KeyUtils::guessKeyFromText("C#bb#m"));
+
     // Test going across the edges.
     EXPECT_EQ(mixxx::track::io::key::B_MAJOR,
               KeyUtils::guessKeyFromText("Cb"));

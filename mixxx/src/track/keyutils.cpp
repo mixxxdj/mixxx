@@ -16,7 +16,7 @@ const char* s_openKeyPattern = "(1[0-2]|[1-9])([dm])";
 const char* s_lancelotKeyPattern = "(1[0-2]|[1-9])([ab])";
 
 // a-g followed by any number of sharps or flats.
-const char* s_keyPattern = "([a-g])([#b]*)";
+const char* s_keyPattern = "([a-g])([#b]*m?)";
 
 // Maps an OpenKey number to its major and minor key.
 const ChromaticKey s_openKeyToKeys[][2] = {
@@ -222,16 +222,21 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         int letterIndex = letter.toLower().toAscii() - 'a';
         bool major = letter.isUpper();
 
-        ChromaticKey letterKey = static_cast<ChromaticKey>(
-            s_letterToMajorKey[letterIndex] + (major ? 0 : 12));
-
         // Now apply sharps and flats to the letter key.
         QString adjustments = keyMatcher.cap(2);
         int steps = 0;
         for (QString::const_iterator it = adjustments.begin();
              it != adjustments.end(); ++it) {
+            // An m only comes at the end and
+            if (it->toLower() == 'm') {
+                major = false;
+                break;
+            }
             steps += *it == '#' ? 1 : -1;
         }
+
+        ChromaticKey letterKey = static_cast<ChromaticKey>(
+            s_letterToMajorKey[letterIndex] + (major ? 0 : 12));
         return scaleKeySteps(letterKey, steps);
     }
 
