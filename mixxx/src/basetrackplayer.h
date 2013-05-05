@@ -5,6 +5,7 @@
 #include "trackinfoobject.h"
 #include "baseplayer.h"
 #include "engine/enginechannel.h"
+#include "engine/enginedeck.h"
 
 class EngineMaster;
 class ControlObject;
@@ -25,6 +26,7 @@ class BaseTrackPlayer : public BasePlayer {
     virtual ~BaseTrackPlayer();
 
     TrackPointer getLoadedTrack() const;
+    EngineDeck* getEngineDeck() const;
 
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay=false);
@@ -56,6 +58,7 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThreadMain* m_pKey;
     ControlObjectThreadMain* m_pReplayGain;
     ControlObjectThreadMain* m_pPlay;
+    EngineDeck* m_pChannel;
 };
 
 

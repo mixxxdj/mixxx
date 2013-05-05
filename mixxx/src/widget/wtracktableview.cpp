@@ -332,10 +332,11 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
     if (indices.size() > 0) {
         // If the track load override is disabled, check to see if a track is
         // playing before trying to load it
-        if ( !(m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) ) {
-            bool groupPlaying = !(group=="[PreviewDeck1]") && (ControlObject::getControl(
-                ConfigKey(group, "play"))->get() == 1.0f);
-            if (groupPlaying){
+        if (!(m_pConfig->getValueString(
+            ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
+            ControlObject* pPlayCO = ControlObject::getControl(ConfigKey(group, "play"));
+            // TODO(XXX): Check for other than just the first preview deck.
+            if (group != "[PreviewDeck1]" && pPlayCO && pPlayCO->get() > 0.0f) {
                 return;
             }
         }
@@ -477,8 +478,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
                 QString deckGroup = QString("[Channel%1]").arg(i);
-                bool deckPlaying = ControlObject::getControl(
-                    ConfigKey(deckGroup, "play"))->get() == 1.0f;
+                ControlObject* pPlayCO = ControlObject::getControl(
+                    ConfigKey(deckGroup, "play"));
+                bool deckPlaying = pPlayCO && pPlayCO->get() > 0.0;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
                     ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
@@ -497,8 +499,9 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
                 QString samplerGroup = QString("[Sampler%1]").arg(i);
-                bool samplerPlaying = ControlObject::getControl(
-                    ConfigKey(samplerGroup, "play"))->get() == 1.0f;
+                ControlObject* pPlayCO = ControlObject::getControl(
+                    ConfigKey(samplerGroup, "play"));
+                bool samplerPlaying = pPlayCO && pPlayCO->get() > 0.0;
                 bool samplerEnabled = !samplerPlaying && oneSongSelected;
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
@@ -574,6 +577,21 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_BPMLOCK)) {
         m_pMenu->addAction(m_pBpmLockAction);
         m_pMenu->addAction(m_pBpmUnlockAction);
+        if (oneSongSelected) {
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel == NULL) {
+                return;
+            }
+            int column = trackModel->fieldIndex("bpm_lock");
+            QModelIndex index = indices.at(0).sibling(indices.at(0).row(),column);
+            if (index.data().toBool()){
+                m_pBpmLockAction->setEnabled(false);
+                m_pBpmUnlockAction->setEnabled(true);
+            } else {
+                m_pBpmUnlockAction->setEnabled(false);
+                m_pBpmLockAction->setEnabled(true);
+            }
+        }
     }
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
@@ -583,7 +601,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         }
         bool allowClear = true;
         int column = trackModel->fieldIndex("bpm_lock");
-        for (int i = 0; i < indices.size(); ++i) {
+        for (int i = 0; i < indices.size() && allowClear; ++i) {
             int row = indices.at(i).row();
             QModelIndex index = indices.at(i).sibling(row,column);
             if (index.data().toBool()) {
@@ -763,7 +781,7 @@ void WTrackTableView::dropEvent(QDropEvent * event){
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(),
                     Qt::CaseInsensitive);
     for (int i=0; i<urls.size(); i++) {
-        if (!fileRx.indexIn(urls.at(i).path())) {
+        if (fileRx.indexIn(urls.at(i).path()) == -1) {
             // remove invalid urls and decrease i because the size of
             // urls has changed.
             urls.removeAt(i--);
