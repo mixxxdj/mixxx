@@ -95,6 +95,7 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
                         const int samplerate, const int TotalSamples, bool bFastAnalysis) {
     m_iOutput = 0;
     m_rate = 0;
+    m_iMaxSamplesToAnalyse = 0;
     m_iRemainingSamples = TotalSamples;
     m_rate = samplerate;
     m_iSampleCount = 0;
@@ -187,10 +188,6 @@ bool VampAnalyser::Init(const QString pluginlibrary, const QString pluginid,
     if (m_FastAnalysisEnabled) {
         qDebug() << "Using fast analysis methods for BPM and Replay Gain.";
         m_iMaxSamplesToAnalyse = 120 * m_rate; //only consider the first minute
-    } else {
-        // Analyse 10 minutes otherwise. If track is longer than 10 min do not
-        // care. It might be some recorded mix.
-        m_iMaxSamplesToAnalyse = 1200 * m_rate;
     }
     return true;
 }
@@ -275,9 +272,9 @@ bool VampAnalyser::Process(const CSAMPLE *pIn, const int iLen) {
                 m_iOUT++;
             }
 
-            // If a track has a duration of more than 10minutes do not analyse
-            // more. It may be a recorded mix.
-            if (m_iSampleCount >= m_iMaxSamplesToAnalyse) {
+            // If a track has a duration of more than our set limit, do not
+            // analyse more.
+            if (m_iMaxSamplesToAnalyse > 0 && m_iSampleCount >= m_iMaxSamplesToAnalyse) {
                 m_bDoNotAnalyseMoreSamples = true;
                 m_iRemainingSamples = 0;
             }
