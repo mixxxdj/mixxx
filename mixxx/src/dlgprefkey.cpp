@@ -42,8 +42,36 @@ using Vamp::HostExt::PluginInputDomainAdapter;
 DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
         : QWidget(parent),
           Ui::DlgPrefKeyDlg(),
-          m_pconfig(_config) {
+          m_pconfig(_config),
+          m_bAnalyserEnabled(false),
+          m_bFastAnalysisEnabled(false),
+          m_bReanalyzeEnabled(false) {
     setupUi(this);
+
+    m_keyLineEdits.insert(mixxx::track::io::key::C_MAJOR, c_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::D_FLAT_MAJOR, d_flat_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::D_MAJOR, d_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::E_FLAT_MAJOR, e_flat_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::E_MAJOR, e_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::F_MAJOR, f_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::F_SHARP_MAJOR, f_sharp_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::G_MAJOR, g_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::A_FLAT_MAJOR, a_flat_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::A_MAJOR, a_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::B_FLAT_MAJOR, b_flat_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::B_MAJOR, b_major_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::C_MINOR, c_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::C_SHARP_MINOR, c_sharp_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::D_MINOR, d_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::E_FLAT_MINOR, e_flat_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::E_MINOR, e_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::F_MINOR, f_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::F_SHARP_MINOR, f_sharp_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::G_MINOR, g_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::G_SHARP_MINOR, g_sharp_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::A_MINOR, a_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::B_FLAT_MINOR, b_flat_minor_edit);
+    m_keyLineEdits.insert(mixxx::track::io::key::B_MINOR, b_minor_edit);
 
     populate();
     loadSettings();
@@ -58,14 +86,26 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
     // connect(reset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
     connect(breanalyzeEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(reanalyzeEnabled(int)));
+
+    connect(radioNotationOpenKey, SIGNAL(toggled(bool)),
+            this, SLOT(setNotationOpenKey(bool)));
+    connect(radioNotationLancelot, SIGNAL(toggled(bool)),
+            this, SLOT(setNotationLancelot(bool)));
+    connect(radioNotationCustom, SIGNAL(toggled(bool)),
+            this, SLOT(setNotationCustom(bool)));
 }
 
 DlgPrefKey::~DlgPrefKey() {
 }
 
 void DlgPrefKey::loadSettings(){
+    qDebug() << "DlgPrefKey::loadSettings";
+
+    qDebug() << "Key plugin ID:" << m_pconfig->getValueString(
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
+
     if(m_pconfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID))==QString("")) {
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID)) == "") {
         setDefaults();
         slotApply(); // Write to config file so AnalyserKey can get the data
         return;
@@ -84,6 +124,30 @@ void DlgPrefKey::loadSettings(){
     m_bReanalyzeEnabled = static_cast<bool>(m_pconfig->getValueString(
         ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
 
+    QString notation = m_pconfig->getValueString(
+        ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION));
+    if (notation == KEY_NOTATION_OPEN_KEY) {
+        radioNotationOpenKey->setChecked(true);
+        setNotationOpenKey(true);
+    } else if (notation == KEY_NOTATION_LANCELOT) {
+        radioNotationLancelot->setChecked(true);
+        setNotationLancelot(true);
+    } else if (notation == KEY_NOTATION_CUSTOM) {
+        radioNotationCustom->setChecked(true);
+        for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
+                     m_keyLineEdits.begin();
+             it != m_keyLineEdits.end(); ++it) {
+            it.value()->setText(m_pconfig->getValueString(
+                ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION_CUSTOM_PREFIX +
+                          QString::number(it.key()))));
+        }
+        setNotationCustom(true);
+    } else {
+        radioNotationOpenKey->setChecked(true);
+        setNotationOpenKey(true);
+    }
+
+    qDebug() << "loadSettings" << pluginid << m_bAnalyserEnabled << m_bFastAnalysisEnabled << m_bReanalyzeEnabled << notation;
     if (!m_listIdentifier.contains(pluginid)) {
         setDefaults();
     }
@@ -91,16 +155,27 @@ void DlgPrefKey::loadSettings(){
 }
 
 void DlgPrefKey::setDefaults() {
+    qDebug() << "DlgPrefKey::setDefaults";
     m_bAnalyserEnabled = true;
     m_bFastAnalysisEnabled = false;
     m_bReanalyzeEnabled = false;
     m_selectedAnalyser = VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID;
     if (!m_listIdentifier.contains(m_selectedAnalyser)) {
-        qDebug() << "DlgPrefBeats: qm-tempotracker Vamp plugin not found";
+        qDebug() << "DlgPrefKey: qm-keydetector Vamp plugin not found";
         m_bAnalyserEnabled = false;
     }
 
+    radioNotationOpenKey->setChecked(true);
+    setNotationOpenKey(true);
+
     //slotApply();
+    slotUpdate();
+}
+
+void DlgPrefKey::pluginSelected(int i){
+    if (i==-1)
+        return;
+    m_selectedAnalyser = m_listIdentifier[i];
     slotUpdate();
 }
 
@@ -120,6 +195,7 @@ void DlgPrefKey::reanalyzeEnabled(int i){
 }
 
 void DlgPrefKey::slotApply() {
+    qDebug() << "DlgPrefKey::slotApply";;
     int selected = m_listIdentifier.indexOf(m_selectedAnalyser);
     if (selected == -1)
         return;
@@ -139,10 +215,58 @@ void DlgPrefKey::slotApply() {
     m_pconfig->set(
         ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE),
         ConfigValue(m_bReanalyzeEnabled ? 1 : 0));
+
+    QMap<mixxx::track::io::key::ChromaticKey, QString> notation;
+    if (radioNotationLancelot->isChecked()) {
+        m_pconfig->set(
+            ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION),
+            ConfigValue(KEY_NOTATION_LANCELOT));
+
+        // This is just a handy way to iterate the keys. We don't use the QLineEdits.
+        for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
+                     m_keyLineEdits.begin();
+             it != m_keyLineEdits.end(); ++it) {
+            notation[it.key()] = KeyUtils::keyToString(
+                it.key(), KeyUtils::LANCELOT);
+        }
+    } else if (radioNotationCustom->isChecked()) {
+        m_pconfig->set(
+            ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION),
+            ConfigValue(KEY_NOTATION_CUSTOM));
+
+        for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
+                     m_keyLineEdits.begin();
+             it != m_keyLineEdits.end(); ++it) {
+            notation[it.key()] = it.value()->text();
+            m_pconfig->set(
+                ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION_CUSTOM_PREFIX +
+                          QString::number(it.key())),
+                ConfigValue(it.value()->text()));
+        }
+    } else {
+        // Either OpenKey was chosen or somehow no radio button was chosen.
+        m_pconfig->set(
+            ConfigKey(KEY_CONFIG_KEY, KEY_NOTATION),
+            ConfigValue(KEY_NOTATION_OPEN_KEY));
+
+        // This is just a handy way to iterate the keys. We don't use the QLineEdits.
+        for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
+                     m_keyLineEdits.begin();
+             it != m_keyLineEdits.end(); ++it) {
+            notation[it.key()] = KeyUtils::keyToString(
+                it.key(), KeyUtils::OPEN_KEY);
+        }
+    }
+
+    KeyUtils::setNotation(notation);
+    // TODO(rryan): Re-draw the whole GUI somehow to repaint every notation
+    // change?
+
     m_pconfig->Save();
 }
 
 void DlgPrefKey::slotUpdate() {
+    qDebug() << "DlgPrefKey::slotUpdate";
     plugincombo->setEnabled(m_bAnalyserEnabled);
     banalyserenabled->setChecked(m_bAnalyserEnabled);
     bfastAnalysisEnabled->setChecked(m_bFastAnalysisEnabled);
@@ -154,7 +278,7 @@ void DlgPrefKey::slotUpdate() {
 
     int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
     if (comboselected == -1){
-        qDebug() << "DlgPrefBeats: Plugin not found in slotUpdate()";
+        qDebug() << "DlgPrefKey: Plugin not found in slotUpdate()";
         return;
     }
     plugincombo->setCurrentIndex(comboselected);
@@ -165,12 +289,8 @@ void DlgPrefKey::populate() {
    m_listIdentifier.clear();
    m_listName.clear();
    m_listLibrary.clear();
-   disconnect(plugincombo, SIGNAL(currentIndexChanged(int)),
-              this, SLOT(pluginSelected(int)));
    plugincombo->clear();
    plugincombo->setDuplicatesEnabled(false);
-   connect(plugincombo, SIGNAL(currentIndexChanged(int)),
-           this, SLOT(pluginSelected(int)));
    VampPluginLoader *loader = VampPluginLoader::getInstance();
    std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
@@ -203,3 +323,45 @@ void DlgPrefKey::populate() {
    }
 }
 
+void DlgPrefKey::setNotationCustom(bool active) {
+    if (!active) {
+        return;
+    }
+
+    for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
+                 m_keyLineEdits.begin();
+         it != m_keyLineEdits.end(); ++it) {
+        it.value()->setEnabled(true);
+    }
+    slotUpdate();
+}
+
+void DlgPrefKey::setNotationOpenKey(bool active) {
+    if (!active) {
+        return;
+    }
+
+    for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
+                 m_keyLineEdits.begin();
+         it != m_keyLineEdits.end(); ++it) {
+        it.value()->setText(KeyUtils::keyToString(
+            it.key(), KeyUtils::OPEN_KEY));
+        it.value()->setEnabled(false);
+    }
+    slotUpdate();
+}
+
+void DlgPrefKey::setNotationLancelot(bool active) {
+    if (!active) {
+        return;
+    }
+
+    for (QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*>::const_iterator it =
+                 m_keyLineEdits.begin();
+         it != m_keyLineEdits.end(); ++it) {
+        it.value()->setText(KeyUtils::keyToString(
+            it.key(), KeyUtils::LANCELOT));
+        it.value()->setEnabled(false);
+    }
+    slotUpdate();
+}

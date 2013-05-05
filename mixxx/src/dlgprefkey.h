@@ -3,9 +3,11 @@
 
 #include <QList>
 #include <QWidget>
+#include <QMap>
 
 #include "ui_dlgprefkeydlg.h"
 #include "configobject.h"
+#include "track/keyutils.h"
 
 class DlgPrefKey : public QWidget, Ui::DlgPrefKeyDlg {
     Q_OBJECT
@@ -19,11 +21,15 @@ class DlgPrefKey : public QWidget, Ui::DlgPrefKeyDlg {
     void slotUpdate();
 
   private slots:
-    //void pluginSelected(int i);
+    void pluginSelected(int i);
     void analyserEnabled(int i);
     void fastAnalysisEnabled(int i);
     void setDefaults();
     void reanalyzeEnabled(int i);
+
+    void setNotationOpenKey(bool);
+    void setNotationLancelot(bool);
+    void setNotationCustom(bool);
 
   signals:
     void apply(const QString &);
@@ -33,6 +39,7 @@ class DlgPrefKey : public QWidget, Ui::DlgPrefKeyDlg {
     void loadSettings();
 
     ConfigObject<ConfigValue>* m_pconfig;
+    QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;
     QString m_selectedAnalyser;

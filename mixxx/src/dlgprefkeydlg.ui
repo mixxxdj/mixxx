@@ -26,7 +26,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBox">
+    <widget class="QGroupBox" name="groupPlugin">
      <property name="title">
       <string>Choose Analyser</string>
      </property>
@@ -79,7 +79,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="grpMisc">
+    <widget class="QGroupBox" name="groupOptions">
      <property name="title">
       <string>Analyser Settings</string>
      </property>
@@ -102,7 +102,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="grpCodes">
+    <widget class="QGroupBox" name="groupNotation">
      <property name="minimumSize">
       <size>
        <width>409</width>
@@ -112,38 +112,36 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
      <property name="title">
       <string>Key Notation</string>
      </property>
-     <layout class="QGridLayout">
-      <item row="0" column="0">
-       <widget class="QRadioButton" name="radioOpenNotation">
-        <property name="text">
-         <string>Open Notation</string>
-        </property>
-       </widget>
+     <layout class="QVBoxLayout" name="verticalLayout_3">
+      <item>
+       <layout class="QHBoxLayout" name="notationChoice">
+        <item>
+         <widget class="QRadioButton" name="radioNotationOpenKey">
+          <property name="text">
+           <string>OpenKey Notation</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioNotationLancelot">
+          <property name="text">
+           <string>Lancelot Notation</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QRadioButton" name="radioNotationCustom">
+          <property name="text">
+           <string>Custom Notation</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
-      <item row="0" column="1">
-       <widget class="QRadioButton" name="radioCustomNotation">
-        <property name="text">
-         <string>Custom Notation</string>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <spacer name="horizontalSpacer">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-      <item row="1" column="0" colspan="2">
-       <layout class="QGridLayout" name="gridLayout">
+      <item>
+       <layout class="QGridLayout" name="customNotation">
         <item row="0" column="0">
-         <widget class="QLabel" name="label_01">
+         <widget class="QLabel" name="a_major_label">
           <property name="text">
            <string>A</string>
           </property>
@@ -153,7 +151,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="1">
-         <widget class="QLineEdit" name="lineEdit_01">
+         <widget class="QLineEdit" name="a_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -166,7 +164,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="2">
-         <widget class="QLabel" name="label_02">
+         <widget class="QLabel" name="b_flat_major_label">
           <property name="text">
            <string>Bb</string>
           </property>
@@ -176,7 +174,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="3">
-         <widget class="QLineEdit" name="lineEdit_02">
+         <widget class="QLineEdit" name="b_flat_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -189,7 +187,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="4">
-         <widget class="QLabel" name="label_03">
+         <widget class="QLabel" name="b_major_label">
           <property name="text">
            <string>B</string>
           </property>
@@ -199,7 +197,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="5">
-         <widget class="QLineEdit" name="lineEdit_03">
+         <widget class="QLineEdit" name="b_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -212,7 +210,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="6">
-         <widget class="QLabel" name="label_04">
+         <widget class="QLabel" name="c_major_label">
           <property name="text">
            <string>C</string>
           </property>
@@ -222,7 +220,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="7">
-         <widget class="QLineEdit" name="lineEdit_04">
+         <widget class="QLineEdit" name="c_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -235,7 +233,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="8">
-         <widget class="QLabel" name="label_05">
+         <widget class="QLabel" name="d_flat_major_label">
           <property name="text">
            <string>Db</string>
           </property>
@@ -245,7 +243,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="9">
-         <widget class="QLineEdit" name="lineEdit_05">
+         <widget class="QLineEdit" name="d_flat_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -258,7 +256,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="10">
-         <widget class="QLabel" name="label_06">
+         <widget class="QLabel" name="d_major_label">
           <property name="text">
            <string>D</string>
           </property>
@@ -268,7 +266,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="0" column="11">
-         <widget class="QLineEdit" name="lineEdit_06">
+         <widget class="QLineEdit" name="d_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -281,7 +279,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="0">
-         <widget class="QLabel" name="label_07">
+         <widget class="QLabel" name="e_flat_major_label">
           <property name="text">
            <string>Eb</string>
           </property>
@@ -291,7 +289,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="1">
-         <widget class="QLineEdit" name="lineEdit_07">
+         <widget class="QLineEdit" name="e_flat_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -304,7 +302,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="2">
-         <widget class="QLabel" name="label_08">
+         <widget class="QLabel" name="e_major_label">
           <property name="text">
            <string>E</string>
           </property>
@@ -314,7 +312,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="3">
-         <widget class="QLineEdit" name="lineEdit_08">
+         <widget class="QLineEdit" name="e_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -327,7 +325,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="4">
-         <widget class="QLabel" name="label_09">
+         <widget class="QLabel" name="f_major_label">
           <property name="text">
            <string>F</string>
           </property>
@@ -337,7 +335,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="5">
-         <widget class="QLineEdit" name="lineEdit_09">
+         <widget class="QLineEdit" name="f_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -350,9 +348,9 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="6">
-         <widget class="QLabel" name="label_10">
+         <widget class="QLabel" name="f_sharp_major_label">
           <property name="text">
-           <string>Gb</string>
+           <string>F#</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -360,7 +358,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="7">
-         <widget class="QLineEdit" name="lineEdit_10">
+         <widget class="QLineEdit" name="f_sharp_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -373,7 +371,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="8">
-         <widget class="QLabel" name="label_11">
+         <widget class="QLabel" name="g_major_label">
           <property name="text">
            <string>G</string>
           </property>
@@ -383,7 +381,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="9">
-         <widget class="QLineEdit" name="lineEdit_11">
+         <widget class="QLineEdit" name="g_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -396,7 +394,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="10">
-         <widget class="QLabel" name="label_12">
+         <widget class="QLabel" name="a_flat_major_label">
           <property name="text">
            <string>Ab</string>
           </property>
@@ -406,7 +404,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="1" column="11">
-         <widget class="QLineEdit" name="lineEdit_12">
+         <widget class="QLineEdit" name="a_flat_major_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -419,7 +417,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="0">
-         <widget class="QLabel" name="label_13">
+         <widget class="QLabel" name="a_minor_label">
           <property name="text">
            <string>Am</string>
           </property>
@@ -429,7 +427,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="1">
-         <widget class="QLineEdit" name="lineEdit_13">
+         <widget class="QLineEdit" name="a_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -442,7 +440,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="2">
-         <widget class="QLabel" name="label_14">
+         <widget class="QLabel" name="b_flat_minor_label">
           <property name="text">
            <string>Bbm</string>
           </property>
@@ -452,7 +450,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="3">
-         <widget class="QLineEdit" name="lineEdit_14">
+         <widget class="QLineEdit" name="b_flat_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -465,7 +463,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="4">
-         <widget class="QLabel" name="label_15">
+         <widget class="QLabel" name="b_minor_label">
           <property name="text">
            <string>Bm</string>
           </property>
@@ -475,7 +473,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="5">
-         <widget class="QLineEdit" name="lineEdit_15">
+         <widget class="QLineEdit" name="b_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -488,7 +486,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="6">
-         <widget class="QLabel" name="label_16">
+         <widget class="QLabel" name="c_minor_label">
           <property name="text">
            <string>Cm</string>
           </property>
@@ -498,7 +496,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="7">
-         <widget class="QLineEdit" name="lineEdit_16">
+         <widget class="QLineEdit" name="c_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -511,9 +509,9 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="8">
-         <widget class="QLabel" name="label_17">
+         <widget class="QLabel" name="c_sharp_minor_label">
           <property name="text">
-           <string>Dbm</string>
+           <string>C#m</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -521,7 +519,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="9">
-         <widget class="QLineEdit" name="lineEdit_17">
+         <widget class="QLineEdit" name="c_sharp_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -534,7 +532,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="10">
-         <widget class="QLabel" name="label_18">
+         <widget class="QLabel" name="d_minor_label">
           <property name="text">
            <string>Dm</string>
           </property>
@@ -544,7 +542,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="2" column="11">
-         <widget class="QLineEdit" name="lineEdit_18">
+         <widget class="QLineEdit" name="d_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -557,7 +555,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="0">
-         <widget class="QLabel" name="label_19">
+         <widget class="QLabel" name="e_flat_minor_label">
           <property name="text">
            <string>Ebm</string>
           </property>
@@ -567,7 +565,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="1">
-         <widget class="QLineEdit" name="lineEdit_19">
+         <widget class="QLineEdit" name="e_flat_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -580,7 +578,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="2">
-         <widget class="QLabel" name="label_20">
+         <widget class="QLabel" name="e_minor_label">
           <property name="text">
            <string>Em</string>
           </property>
@@ -590,7 +588,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="3">
-         <widget class="QLineEdit" name="lineEdit_20">
+         <widget class="QLineEdit" name="e_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -603,7 +601,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="4">
-         <widget class="QLabel" name="label_21">
+         <widget class="QLabel" name="f_minor_label">
           <property name="text">
            <string>Fm</string>
           </property>
@@ -613,7 +611,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="5">
-         <widget class="QLineEdit" name="lineEdit_21">
+         <widget class="QLineEdit" name="f_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -626,9 +624,9 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="6">
-         <widget class="QLabel" name="label_22">
+         <widget class="QLabel" name="f_sharp_minor_label">
           <property name="text">
-           <string>Gbm</string>
+           <string>F#m</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -636,7 +634,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="7">
-         <widget class="QLineEdit" name="lineEdit_22">
+         <widget class="QLineEdit" name="f_sharp_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -649,7 +647,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="8">
-         <widget class="QLabel" name="label_23">
+         <widget class="QLabel" name="g_minor_label">
           <property name="text">
            <string>Gm</string>
           </property>
@@ -659,7 +657,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="9">
-         <widget class="QLineEdit" name="lineEdit_23">
+         <widget class="QLineEdit" name="g_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
@@ -672,9 +670,9 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="10">
-         <widget class="QLabel" name="label_24">
+         <widget class="QLabel" name="g_sharp_minor_label">
           <property name="text">
-           <string>Abm</string>
+           <string>G#m</string>
           </property>
           <property name="alignment">
            <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
@@ -682,7 +680,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </widget>
         </item>
         <item row="3" column="11">
-         <widget class="QLineEdit" name="lineEdit_24">
+         <widget class="QLineEdit" name="g_sharp_minor_edit">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
             <horstretch>0</horstretch>
