@@ -4329,31 +4329,6 @@
 
 			<!--
 			**********************************************
-			Button- Tempo lock
-			**********************************************
-			-->
-			<PushButton>
-				<TooltipId>tempolock</TooltipId>
-				<Style></Style>
-				<NumberStates>2</NumberStates>
-				<State>
-					<Number>0</Number>
-					<Pressed>btn_keylock1.png</Pressed>
-					<Unpressed>btn_keylock1.png</Unpressed>
-				</State>
-				<State>
-					<Number>1</Number>
-					<Pressed>btn_keylock1_over.png</Pressed>
-					<Unpressed>btn_keylock1_over.png</Unpressed>
-				</State>
-				<Pos>409,193</Pos>
-				<Connection>
-					<ConfigKey>[Channel1],tempolock</ConfigKey>
-				</Connection>
-			</PushButton>
-
-			<!--
-			**********************************************
 			Button - Quantize
 			**********************************************
 			-->
