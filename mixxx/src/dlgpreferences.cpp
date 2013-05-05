@@ -149,6 +149,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(this, SIGNAL(showDlg()),
             m_wbpm, SLOT(slotUpdate()));
 #endif
+    connect(this, SIGNAL(showDlg()),
+            m_wkey, SLOT(slotUpdate()));
 
     connect(this, SIGNAL(showDlg()), m_wreplaygain,SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wrecord,    SLOT(slotUpdate()));
@@ -183,6 +185,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #else
     connect(buttonBox, SIGNAL(accepted()), m_wbpm,      SLOT(slotApply()));
 #endif
+    connect(buttonBox, SIGNAL(accepted()), m_wkey,      SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wreplaygain,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wrecord,   SLOT(slotApply()));
 #ifdef __SHOUTCAST__
