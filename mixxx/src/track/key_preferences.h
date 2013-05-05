@@ -15,4 +15,10 @@
 #define KEY_FAST_ANALYSIS "FastAnalysisEnabled"
 #define KEY_REANALYZE_WHEN_SETTINGS_CHANGE "ReanalyzeWhenSettingsChange"
 
+#define KEY_NOTATION "KeyNotation"
+#define KEY_NOTATION_OPEN_KEY "OpenKey"
+#define KEY_NOTATION_LANCELOT "Lancelot"
+#define KEY_NOTATION_CUSTOM "Custom"
+#define KEY_NOTATION_CUSTOM_PREFIX "CustomKeyNotation"
+
 #endif // KEY_PREFERENCES_H
