@@ -28,7 +28,7 @@ class BpmControl : public EngineControl {
     double getPhaseOffset(double reference_position);
     
   public slots:
-    void slotRateChanged(double);
+    //void slotRateChanged(double);
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
