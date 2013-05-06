@@ -65,9 +65,7 @@ void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
     // Assumes rate_adjust is just baserate (which cannot be negative) and
     // pitch_adjust cannot be negative because octave change conversion to pitch
     // ratio is an exp(x) function.
-    m_bBackwards = *tempo_adjust < 0;
-
-    m_dRateAdjust = *rate_adjust;
+    m_bBackwards = (*tempo_adjust * *rate_adjust) < 0;
 
     // It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to
     // SoundTouch (see definition of MIN_SEEK_SPEED for more details).
@@ -81,6 +79,13 @@ void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
     // Let the caller know we clamped their value.
     *tempo_adjust = m_bBackwards ? -tempo_abs : tempo_abs;
 
+    if (*pitch_adjust <= 0.0) {
+        qWarning() << "EngineBufferScaleST: Ignoring non-positive pitch adjust.";
+        *pitch_adjust = 1.0;
+    }
+
+    double rate_abs = fabs(*rate_adjust);
+
     m_qMutex.lock();
     // Note that we do not set the tempo if it is zero. This is because of the
     // above clamping which prevents us from going below MIN_SEEK_SPEED. I think
@@ -90,9 +95,9 @@ void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
         m_pSoundTouch->setTempo(tempo_abs);
         m_dTempoAdjust = tempo_abs;
     }
-    if (*rate_adjust != m_dRateAdjust) {
-        m_pSoundTouch->setRate(*rate_adjust);
-        m_dRateAdjust = *rate_adjust;
+    if (rate_abs != m_dRateAdjust) {
+        m_pSoundTouch->setRate(rate_abs);
+        m_dRateAdjust = rate_abs;
     }
     if (*pitch_adjust != m_dPitchAdjust) {
         m_pSoundTouch->setPitch(*pitch_adjust);
@@ -127,6 +132,11 @@ void EngineBufferScaleST::slotSetSamplerate(double dSampleRate)
 CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     m_samplesRead = 0.0;
 
+    if (m_dPitchAdjust == 0 || m_dRateAdjust == 0 || m_dTempoAdjust == 0) {
+        memset(m_buffer, 0, sizeof(m_buffer[0]) * buf_size);
+        return m_buffer;
+    }
+
     m_qMutex.lock();
 
     //If we've just cleared SoundTouch's FIFO of unprocessed samples,
@@ -142,6 +152,7 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     // }
     //Q_ASSERT(m_iReadAheadPos >= 0);
 
+    const int iNumChannels = 2;
     unsigned long total_received_frames = 0;
     unsigned long total_read_frames = 0;
 
@@ -150,21 +161,23 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     CSAMPLE* read = m_buffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
-        unsigned long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read, remaining_frames);
+        unsigned long received_frames = m_pSoundTouch->receiveSamples(
+            (SAMPLETYPE*)read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
-        read += received_frames*2;
+        read += received_frames * iNumChannels;
 
         if (remaining_frames > 0) {
             // math_min(kiSoundTouchReadAheadLength,remaining_source_frames);
             unsigned long iLenFrames = kiSoundTouchReadAheadLength;
             unsigned long iAvailSamples = m_pReadAheadManager
                     ->getNextSamples(
-                        (m_bBackwards ? -1.0f : 1.0f) * m_dRateAdjust *
-                        m_dTempoAdjust * m_dPitchAdjust,
+                        // The value doesn't matter here. All that matters is we
+                        // are going forward or backward.
+                        (m_bBackwards ? -1.0f : 1.0f) * m_dRateAdjust * m_dTempoAdjust,
                         buffer_back,
-                        iLenFrames * 2);
-            unsigned long iAvailFrames = iAvailSamples / 2;
+                        iLenFrames * iNumChannels);
+            unsigned long iAvailFrames = iAvailSamples / iNumChannels;
 
             if (iAvailFrames > 0) {
                 last_read_failed = false;
@@ -179,11 +192,10 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
         }
     }
 
-    //Feed more samples into SoundTouch until it has processed enough to
-    //fill the audio buffer that we need to fill.
-    //SoundTouch::numSamples() returns the number of _FRAMES_ that
-    //are in its FIFO audio buffer...
-
+    // Feed more samples into SoundTouch until it has processed enough to
+    // fill the audio buffer that we need to fill.
+    // SoundTouch::numSamples() returns the number of _FRAMES_ that
+    // are in its FIFO audio buffer...
 
     // Calculate new playpos
 
@@ -204,8 +216,12 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     // new_playpos is now interpreted as the total number of virtual samples
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
-    m_samplesRead = m_dTempoAdjust * m_dRateAdjust * m_dPitchAdjust *
+    // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
+    // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
+    // (*m_dPitchAdjust) so these two cancel out.
+    m_samplesRead = m_dTempoAdjust * m_dRateAdjust *
             total_received_frames * 2;
+
     m_qMutex.unlock();
 
     return m_buffer;

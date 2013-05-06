@@ -37,8 +37,8 @@ KeyControl::~KeyControl() {
 }
 
 double KeyControl::getPitchAdjust() {
-    // The pitch control is measured in percentage pitch change measured in
-    // octaves (-1.0 to 1.0). This conversion exponent is taken from SoundTouch.
+    // The pitch control is key change measured in percentage of an octave (-1.0
+    // to 1.0). This conversion exponent is taken from SoundTouch.
     return exp(0.69314718056f * m_pPitch->get());
 }
 

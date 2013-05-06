@@ -637,7 +637,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             //
             // The rate adjustment in percentage of rate (1.0 being normal
             // rate).
-            double rate_adjust = speed;
+            double rate_adjust = speed * baserate;
             // The tempo adjustment in percentage of tempo (1.0 being normal
             // temppo).
             double tempo_adjust = 1.0;
