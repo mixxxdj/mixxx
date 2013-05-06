@@ -127,7 +127,6 @@ bool ControlObject::connectControls(ConfigKey src, ConfigKey dest)
 
     if (pSrc && pDest)
     {
-       // qDebug()<<"connect";
         connect(pSrc, SIGNAL(valueChanged(double)), pDest, SLOT(set(double)));
         connect(pSrc, SIGNAL(valueChangedFromEngine(double)), pDest, SLOT(set(double)));
         return true;
