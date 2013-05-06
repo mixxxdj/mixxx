@@ -50,16 +50,12 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     //uses them is called from the GUI thread (stuff like opening soundcards).
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
-    m_pControlObjectLatency = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "latency")));
-    m_pControlObjectSampleRate = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
     m_pControlObjectSoundStatus = new ControlObject(ConfigKey("[SoundManager]", "status"));
     m_pControlObjectSoundStatus->set(SOUNDMANAGER_DISCONNECTED);
     m_pControlObjectVinylControlMode1 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode")));
+        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode"))); // TODO(XXX) returning Null
     m_pControlObjectVinylControlMode2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode")));
+        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode"))); // TODO(XXX) returning Null
     m_pControlObjectVinylControlGain = new ControlObjectThreadMain(
         new ControlObject(ConfigKey("[VinylControl]", "gain")));
 
@@ -76,12 +72,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     }
     checkConfig();
     m_config.writeToDisk(); // in case anything changed by applying defaults
-
-    // TODO(bkgood) do these really need to be here? they're set in
-    // SoundDevicePortAudio::open
-    m_pControlObjectLatency->slotSet(
-        m_config.getFramesPerBuffer() / m_config.getSampleRate() * 1000);
-    m_pControlObjectSampleRate->slotSet(m_config.getSampleRate());
 }
 
 SoundManager::~SoundManager() {
@@ -97,8 +87,6 @@ SoundManager::~SoundManager() {
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
 
-    delete m_pControlObjectLatency;
-    delete m_pControlObjectSampleRate;
     delete m_pControlObjectSoundStatus;
     delete m_pControlObjectVinylControlMode1;
     delete m_pControlObjectVinylControlMode2;
@@ -127,8 +115,8 @@ QList<SoundDevice*> SoundManager::getDeviceList(
         // we want input devices, or don't have output channels when we want
         // output devices.
         if (device->getHostAPI() != filterAPI ||
-            (bOutputDevices && device->getNumOutputChannels() <= 0) ||
-            (bInputDevices && device->getNumInputChannels() <= 0)) {
+                (bOutputDevices && device->getNumOutputChannels() <= 0) ||
+                (bInputDevices && device->getNumInputChannels() <= 0)) {
             continue;
         }
         filteredDeviceList.push_back(device);
@@ -174,7 +162,11 @@ void SoundManager::closeDevices() {
         // Need to tell all registered AudioDestinations for this AudioInput
         // that the input was disconnected.
         if (m_registeredDestinations.contains(in)) {
-            m_registeredDestinations[in]->onInputDisconnected(in);
+            QList<AudioDestination*> destList = m_registeredDestinations.values(in);
+            AudioDestination* dest;
+            foreach(dest, destList) {
+                dest->onInputDisconnected(in);
+            }
         }
 
         short *buffer = m_inputBuffers[in];
@@ -320,7 +312,11 @@ int SoundManager::setupDevices() {
             // Check if any AudioDestination is registered for this AudioInput,
             // and call the onInputConnected method.
             if (m_registeredDestinations.contains(in)) {
-                m_registeredDestinations[in]->onInputConnected(in);
+                QList<AudioDestination*> destList = m_registeredDestinations.values(in);
+                AudioDestination* dest;
+                foreach(dest, destList) {
+                    dest->onInputConnected(in);
+                }
             }
         }
         foreach (AudioOutput out, m_config.getOutputs().values(device->getInternalName())) {
@@ -585,15 +581,16 @@ void SoundManager::pushBuffer(const QList<AudioInput>& inputs, short * inputBuff
             short* pInputBuffer = m_inputBuffers[in];
 
             if (m_registeredDestinations.contains(in)) {
-                AudioDestination* destination = m_registeredDestinations[in];
-                if (destination) {
-                    destination->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
+                QList<AudioDestination*> destList = m_registeredDestinations.values(in);
+                AudioDestination* dest;
+                foreach(dest, destList) {
+                    if (dest) {
+                        dest->receiveBuffer(in, pInputBuffer, iFramesPerBuffer);
+                    }
                 }
             }
         }
     }
-    //TODO: Add pass-through option here (and push it into EngineMaster)...
-    //      (or maybe save it, and then have requestBuffer() push it into EngineMaster)...
 }
 
 void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
@@ -610,7 +607,9 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
         // AudioInput to be going to a different AudioDest -bkgood
         qDebug() << "WARNING: AudioInput already registered!";
     }
-    m_registeredDestinations[input] = dest;
+
+    m_registeredDestinations.insertMulti(input, dest);
+
     emit(inputRegistered(input, dest));
 }
 

@@ -457,8 +457,9 @@ class Vamp(Feature):
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
-            # Optionally link libdl. Required for some distros.
+            # Optionally link libdl and libX11. Required for some distros.
             conf.CheckLib(['dl', 'libdl'])
+            conf.CheckLib(['X11', 'libX11'])
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -484,6 +485,40 @@ class Vamp(Feature):
                             '%s/PluginWrapper.cpp',
                             '%s/RealTime.cpp'])
         return sources
+
+
+class ModPlug(Feature):
+    def description(self):
+        return "Modplug module decoder plugin"
+
+    def enabled(self, build):
+        build.flags['modplug'] = util.get_flags(build.env, 'modplug', 0)
+        if int(build.flags['modplug']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('modplug', 'Set to 1 to enable libmodplug based module tracker support.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.Append(CPPDEFINES = '__MODPLUG__')
+
+        have_modplug_h = conf.CheckHeader('libmodplug/modplug.h')
+        have_modplug = conf.CheckLib(['modplug','libmodplug'], autoadd=True)
+
+        if not have_modplug_h:
+            raise Exception('Could not find libmodplug development headers.')
+
+        if not have_modplug:
+            raise Exception('Could not find libmodplug shared library.')
+
+    def sources(self, build):
+        build.env.Uic4('dlgprefmodplugdlg.ui')
+        return ['soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
+
 
 class FAAD(Feature):
     def description(self):

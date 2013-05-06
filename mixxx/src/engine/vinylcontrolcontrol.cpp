@@ -58,6 +58,7 @@ void VinylControlControl::trackLoaded(TrackPointer pTrack) {
 }
 
 void VinylControlControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
     m_pCurrentTrack.clear();
 }
 

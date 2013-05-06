@@ -94,8 +94,7 @@ void MessageHandler(QtMsgType type, const char *input)
     ba += input;
     ba += "\n";
 
-    if(!Logfile.isOpen())
-    {
+    if (!Logfile.isOpen()) {
         // This Must be done in the Message Handler itself, to guarantee that the
         // QApplication is initialized
         QString logFileName = CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
@@ -213,6 +212,9 @@ int main(int argc, char * argv[])
     //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
     QApplication a(argc, argv);
+
+    //Support utf-8 for all translation strings
+    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();

@@ -476,13 +476,10 @@ void CrateFeature::slotImportPlaylist()
     //qDebug() << "Size of Imported Playlist: " << entries.size();
 
     //Iterate over the List that holds URLs of playlist entires
-    for (int i = 0; i < entries.size(); ++i) {
-        m_crateTableModel.addTrack(QModelIndex(), entries[i]);
-        //qDebug() << "Playlist entry: " << entries[i];
-    }
+    m_crateTableModel.addTracks(QModelIndex(), entries);
 
     //delete the parser object
-    if(playlist_parser)
+    if (playlist_parser)
         delete playlist_parser;
 }
 

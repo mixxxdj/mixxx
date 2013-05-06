@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>520</width>
-    <height>300</height>
+    <width>729</width>
+    <height>363</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -20,7 +20,7 @@
          <property name="text">
           <string>Sound API</string>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>apiComboBox</cstring>
          </property>
         </widget>
@@ -37,7 +37,7 @@
          <property name="text">
           <string>Sample Rate</string>
          </property>
-         <property name="buddy" >
+         <property name="buddy">
           <cstring>sampleRateComboBox</cstring>
          </property>
         </widget>
@@ -48,19 +48,40 @@
       </layout>
      </item>
      <item>
-      <layout class="QHBoxLayout" name="latencyHLayout">
+      <layout class="QHBoxLayout" name="audioBufferHLayout">
        <item>
-        <widget class="QLabel" name="latencyLabel">
+        <widget class="QLabel" name="audioBufferLabel">
          <property name="text">
-          <string>Latency</string>
+          <string>Audio Buffer</string>
          </property>
-         <property name="buddy" >
-          <cstring>latencyComboBox</cstring>
+         <property name="buddy">
+          <cstring>audioBufferComboBox</cstring>
          </property>
         </widget>
        </item>
        <item>
-        <widget class="QComboBox" name="latencyComboBox"/>
+        <widget class="QComboBox" name="audioBufferComboBox"/>
+       </item>
+      </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="latencyHLayout">
+       <item>
+        <widget class="QLabel" name="latencyLabel">
+         <property name="text">
+          <string>Known Latency</string>
+         </property>
+         <property name="buddy">
+          <cstring>audioBufferComboBox</cstring>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="currentLatency">
+         <property name="text">
+          <string>20 ms</string>
+         </property>
+        </widget>
        </item>
       </layout>
      </item>
@@ -70,6 +91,9 @@
         <widget class="QLabel" name="underflowLabel">
          <property name="text">
           <string>Buffer Underflow Count</string>
+         </property>
+         <property name="buddy">
+          <cstring>audioBufferComboBox</cstring>
          </property>
         </widget>
        </item>
@@ -81,6 +105,9 @@
         </widget>
        </item>
       </layout>
+     </item>
+     <item>
+      <layout class="QHBoxLayout" name="underflowHLayout"/>
      </item>
     </layout>
    </item>
@@ -94,8 +121,8 @@
        <widget class="QLabel" name="latencyTipsLabel">
         <property name="text">
          <string>&lt;ul&gt;
-&lt;li&gt;Increase your latency if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
-&lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
+&lt;li&gt;Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
+&lt;li&gt;Downsize your audio buffer to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</string>
         </property>
        </widget>

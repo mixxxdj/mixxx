@@ -6,19 +6,13 @@
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
 #include "rotary.h"
+#include "mathstuff.h"
 
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
 #include <QDebug>
-
-#ifdef _MSC_VER
- #include <float.h>  // for _isnan() on VC++
- #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
-#else
- #include <math.h>  // for isnan() everywhere else
-#endif
 
 // Static default values for rate buttons (percents)
 double RateControl::m_dTemp = 4.00; //(eg. 4.00%)

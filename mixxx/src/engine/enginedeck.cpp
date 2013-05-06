@@ -26,11 +26,30 @@
 #include "enginevumeter.h"
 #include "enginefilteriir.h"
 
+#include "sampleutil.h"
+
 EngineDeck::EngineDeck(const char* group,
                              ConfigObject<ConfigValue>* pConfig,
                              EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough_enabled"))),
+          // Need a +1 here because the CircularBuffer only allows its size-1
+          // items to be held at once (it keeps a blank spot open persistently)
+          m_sampleBuffer(MAX_BUFFER_LEN+1) {
+
+    // Set up passthrough utilities and fields
+    m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
+    m_pConversionBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_bPassthroughIsActive = false;
+    m_bPassthroughWasActive = false;
+
+    // Set up passthrough toggle button
+    connect(m_pPassing, SIGNAL(valueChanged(double)),
+            this, SLOT(slotPassingToggle(double)),
+            Qt::DirectConnection);
+
+    // Set up additional engines
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
     m_pFlanger = new EngineFlanger(group);
@@ -41,6 +60,9 @@ EngineDeck::EngineDeck(const char* group,
 }
 
 EngineDeck::~EngineDeck() {
+    SampleUtil::free(m_pConversionBuffer);
+    delete m_pPassing;
+
     delete m_pBuffer;
     delete m_pClipping;
     delete m_pFilter;
@@ -50,11 +72,40 @@ EngineDeck::~EngineDeck() {
     delete m_pVUMeter;
 }
 
-void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOut, const int iBufferSize) {
-    // Process the raw audio
-    m_pBuffer->process(0, pOut, iBufferSize);
-    // Emulate vinyl sounds
-    m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBufferSize) {
+
+    CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
+
+    // Feed the incoming audio through if passthrough is active
+    if (isPassthroughActive()) {
+        int samplesRead = m_sampleBuffer.read(pOut, iBufferSize);
+        if (samplesRead < iBufferSize) {
+            // Buffer underflow. There aren't getting samples fast enough. This
+            // shouldn't happen since PortAudio should feed us samples just as fast
+            // as we consume them, right?
+            Q_ASSERT(false);
+        }
+
+        m_bPassthroughWasActive = true;
+
+    } else {
+
+        // If passthrough is no longer enabled, zero out the buffer
+        if (m_bPassthroughWasActive) {
+            SampleUtil::applyGain(pOut, 0.0, iBufferSize);
+            m_sampleBuffer.skip(iBufferSize);
+            m_bPassthroughWasActive = false;
+            return;
+        }
+
+        // Process the raw audio
+        m_pBuffer->process(0, pOut, iBufferSize);
+        // Emulate vinyl sounds
+        m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
+
+        m_bPassthroughWasActive = false;
+    }
+
     // Apply pregain
     m_pPregain->process(pOut, pOut, iBufferSize);
     // Filter the channel with EQs
@@ -72,5 +123,79 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
 }
 
 bool EngineDeck::isActive() {
-    return m_pBuffer->isTrackLoaded();
+    if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
+        return true;
+    }
+
+    return (m_pBuffer->isTrackLoaded() || isPassthroughActive());
 }
+
+void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
+
+    // Skip receiving audio input if passthrough is not active
+    if (!m_bPassthroughIsActive) {
+        return;
+    }
+
+    if (input.getType() != AudioPath::VINYLCONTROL) {
+        // This is an error!
+        qDebug() << "WARNING: EngineDeck receieved an AudioInput for a non-vinylcontrol type!";
+        return;
+    }
+
+    // Use the conversion buffer to both convert from short and double into
+    // stereo.
+
+    // Check that the number of mono samples doesn't exceed MAX_BUFFER_LEN/2
+    // because thats our conversion buffer size.
+    if (nFrames > MAX_BUFFER_LEN / 2) {
+        qDebug() << "WARNING: Dropping passthrough samples because the input buffer is too large.";
+        nFrames = MAX_BUFFER_LEN / 2;
+    }
+
+    // There isn't a suitable SampleUtil method that can do mono->stereo and
+    // short->float in one pass.
+    // SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
+    SampleUtil::convert(m_pConversionBuffer, pBuffer, nFrames*2);
+
+    // TODO(rryan) (or bkgood?) do we need to verify the input is the one we asked for? Oh well.
+    unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, nFrames*2);
+    if (samplesWritten < nFrames*2) {
+        // Buffer overflow. We aren't processing samples fast enough. This
+        // shouldn't happen since the deck spits out samples just as fast as they
+        // come in, right?
+        Q_ASSERT(false);
+    }
+}
+
+void EngineDeck::onInputConnected(AudioInput input) {
+    if (input.getType() != AudioPath::VINYLCONTROL) {
+        // This is an error!
+        qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
+        return;
+    }
+    m_sampleBuffer.clear();
+}
+
+void EngineDeck::onInputDisconnected(AudioInput input) {
+    if (input.getType() != AudioPath::VINYLCONTROL) {
+        // This is an error!
+        qDebug() << "WARNING: EngineDeck connected to AudioInput for a non-vinylcontrol type!";
+        return;
+    }
+    m_sampleBuffer.clear();
+}
+
+bool EngineDeck::isPassthroughActive() {
+    return (m_bPassthroughIsActive && !m_sampleBuffer.isEmpty());
+}
+
+void EngineDeck::slotPassingToggle(double v) {
+    if (v > 0) {
+        m_bPassthroughIsActive = true;
+    }
+    else {
+        m_bPassthroughIsActive = false;
+    }
+}
+

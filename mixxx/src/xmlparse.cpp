@@ -11,33 +11,28 @@
 //
 
 #include "xmlparse.h"
+#include "errordialoghandler.h"
 
 #include <QFile>
 #include <QDebug>
 
-XmlParse::XmlParse()
-{
+XmlParse::XmlParse() {
 }
 
-XmlParse::~XmlParse()
-{
+XmlParse::~XmlParse() {
 }
 
-int XmlParse::selectNodeInt(const QDomNode &nodeHeader, const QString sNode)
-{
+int XmlParse::selectNodeInt(const QDomNode &nodeHeader, const QString sNode) {
     return selectNode(nodeHeader, sNode).toElement().text().toInt();
 }
 
-float XmlParse::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode)
-{
+float XmlParse::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode) {
     return selectNode(nodeHeader, sNode).toElement().text().toFloat();
 }
 
-QDomNode XmlParse::selectNode(const QDomNode &nodeHeader, const QString sNode)
-{
+QDomNode XmlParse::selectNode(const QDomNode &nodeHeader, const QString sNode) {
     QDomNode node = nodeHeader.firstChild();
-    while (!node.isNull())
-    {
+    while (!node.isNull()) {
         if (node.nodeName() == sNode)
             return node;
         node = node.nextSibling();
@@ -45,8 +40,7 @@ QDomNode XmlParse::selectNode(const QDomNode &nodeHeader, const QString sNode)
     return node;
 }
 
-QString XmlParse::selectNodeQString(const QDomNode &nodeHeader, const QString sNode)
-{
+QString XmlParse::selectNodeQString(const QDomNode &nodeHeader, const QString sNode) {
     QString ret;
     QDomNode node = selectNode(nodeHeader, sNode);
     if (!node.isNull())
@@ -56,23 +50,18 @@ QString XmlParse::selectNodeQString(const QDomNode &nodeHeader, const QString sN
     return ret;
 }
 
-QVector<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode)
-{
+QVector<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const QString sNode) {
     QString s;
     QDomNode node = selectNode(nodeHeader, sNode);
-    if (!node.isNull())
-    {
+    if (!node.isNull()) {
         QDomNode node2 = selectNode(node, "#cdata-section");
-        if (!node2.isNull())
-        {
+        if (!node2.isNull()) {
             QDomCDATASection node2cdata = node2.toCDATASection();
             s = node2cdata.data();
-        
         }
     }
     QVector<long> *data = new QVector<long>(s.length()/4);
-    for (unsigned int i=0; i<s.length()/4; ++i)
-    {
+    for (int i=0; i<s.length()/4; ++i) {
         unsigned char c4 = s.at(i*4).toLatin1();
         unsigned char c3 = s.at(i*4+1).toLatin1();
         unsigned char c2 = s.at(i*4+2).toLatin1();
@@ -85,36 +74,34 @@ QVector<long> * XmlParse::selectNodeLongArray(const QDomNode &nodeHeader, const 
     return data;
 }
 
-QVector<char> * XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode)
-{
+QVector<char> * XmlParse::selectNodeCharArray(const QDomNode &nodeHeader, const QString sNode) {
     QString s;
     QDomNode node = selectNode(nodeHeader, sNode);
-    if (!node.isNull())
-    {
+    if (!node.isNull()) {
         QDomNode node2 = selectNode(node, "#cdata-section");
-        if (!node2.isNull())
-        {
+        if (!node2.isNull()) {
             QDomCDATASection node2cdata = node2.toCDATASection();
             s = node2cdata.data();
         }
     }
-    
     QVector<char> *data = new QVector<char>(s.length());
-    for (unsigned int i=0; i<s.length(); ++i)
+    for (int i=0; i<s.length(); ++i)
         (*data)[i] = s.at(i).toLatin1();
-    
     return data;
 }
 
-QVector<char> * XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode)
-{
+QVector<char> * XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, const QString sNode) {
     QString hexdata;
     QDomNode node = selectNode(nodeHeader, sNode);
-    if (node.isNull()) { return 0; }
+    if (node.isNull()) {
+        return 0;
+    }
 
     hexdata = node.toElement().text();
     int wavebytes = hexdata.length() / 2;
-    if (wavebytes == 0) { return 0; }
+    if (wavebytes == 0) { 
+        return 0;
+    }
 
     QVector<char> *data = new QVector<char>(wavebytes);
 
@@ -126,35 +113,53 @@ QVector<char> * XmlParse::selectNodeHexCharArray(const QDomNode &nodeHeader, con
     return data;
 }
 
-QList<long> * XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode)
-{
+QList<long> * XmlParse::selectNodeLongList(const QDomNode &nodeHeader, const QString sNode) {
     QVector<long> *p = selectNodeLongArray(nodeHeader, sNode);
     QList<long> *data = new QList<long>;
-    for (unsigned int i=0; i<p->size(); ++i)
+    for (int i=0; i<p->size(); ++i)
         data->append(p->at(i));
     return data;
 }
 
-QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QString sText)
-{
+QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QString sText) {
     QDomElement element = doc.createElement(sElementName);
     element.appendChild(doc.createTextNode(sText));
     header.appendChild(element);
     return element;
 }
 
-QDomElement XmlParse::openXMLFile(QString path, QString name)
-{
+QDomElement XmlParse::openXMLFile(QString path, QString name) {
     QDomDocument doc(name);
     QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
-    {
+    if (!file.open(QIODevice::ReadOnly)) {
         qDebug() << "Could not open xml file:" << file.fileName();
         return QDomElement();
     }
-    if (!doc.setContent(&file))
+    QString error;
+    int line, col;
+    if (!doc.setContent(&file, &error, &line, &col))
     {
-        qWarning() << "Error parsing xml file:" << file.fileName();
+        QString errorString = QString("%1 at line %2, column %3")
+                                .arg(error).arg(line).arg(col);
+        
+        QString errorLog = QString("Error parsing XML file %1: %2")
+                            .arg(file.fileName(), errorString);
+        qWarning() << errorLog;
+        
+        // Set up error dialog
+        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
+        props->setType(DLG_WARNING);
+        props->setTitle("Error parsing XML file");
+        props->setText(QString("There was a problem parsing the XML file %1.").arg(file.fileName()));
+        props->setInfoText(errorString);
+        props->setModal(false); // Don't block the GUI
+
+        // Display it
+        ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
+        if (dialogHandler) {
+            dialogHandler->requestErrorDialog(props);
+        }
+        
         file.close();
         return QDomElement();
     }
@@ -163,13 +168,11 @@ QDomElement XmlParse::openXMLFile(QString path, QString name)
     return doc.documentElement();
 }
 
-QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QList<long> * pData)
-{
+QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QList<long> * pData) {
     // Create a string, binstring, that contains the data contained pointet to by pData, and save it in XML
     // by use of QDomCDATASection
     QString binstring;
-    for (unsigned int i=0; i<pData->size(); ++i)
-    {
+    for (int i=0; i<pData->size(); ++i) {
         long v = (pData->at(i));
 
         // Split long value into four chars
@@ -190,12 +193,11 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     return element;
 }
 
-QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QVector<char> * pData)
-{
+QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString sElementName, QVector<char> * pData) {
     // Create a string, binstring, that contains the data contained pointet to by pData, and save it in XML
     // by use of QDomCDATASection
     QString binstring;
-    for (unsigned int i=0; i<pData->size(); ++i)
+    for (int i=0; i<pData->size(); ++i)
         binstring.append(pData->at(i));
 
     QDomElement element = doc.createElement(sElementName);
@@ -204,8 +206,7 @@ QDomElement XmlParse::addElement(QDomDocument &doc, QDomElement &header, QString
     return element;
 }
 
-QDomElement XmlParse::addHexElement(QDomDocument &doc, QDomElement &header, QString sElementName, QVector<char> * pData)
-{
+QDomElement XmlParse::addHexElement(QDomDocument &doc, QDomElement &header, QString sElementName, QVector<char> * pData) {
     QDomElement element = doc.createElement(sElementName);
 
     QString hexdata("");
