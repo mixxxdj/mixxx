@@ -45,13 +45,6 @@
 
 #include "trackinfoobject.h"
 
-#ifdef _MSC_VER
-#include <float.h>  // for _isnan() on VC++
-#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
-#else
-#include <math.h>  // for isnan() everywhere else
-#endif
-
 const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
 

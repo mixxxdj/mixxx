@@ -4,7 +4,8 @@
 <dict>
 	<key>arch</key>
 	<array>
-		<string>x86_64</string>
+		<string>i386</string>
+                <string>x86_64</string>
 	</array>
 	<key>os</key>
 	<array>

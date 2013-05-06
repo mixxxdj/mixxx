@@ -221,16 +221,15 @@ int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO " CRATE_TRACKS_TABLE " (crate_id, track_id) VALUES (:crate_id, :track_id)");
 
-    int crateAddFails = 0;
     for (int i = 0; i < trackIdList.size(); ++i) {
         query.bindValue(":crate_id", crateId);
         query.bindValue(":track_id", trackIdList.at(i));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
-            crateAddFails++;
             // We must emit only those trackID that were added so we need to
             // remove the failed ones.
             trackIdList.removeAt(i);
+            --i; // account for reduced size of list
         }
     }
     transaction.commit();

@@ -382,6 +382,9 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                 VERSION=mixxx_version,
                 SHORT_VERSION=mixxx_version,
                 COPYRIGHT="Copyright © 2011-2013 Mixxx Development Team", #FIXME: datetime.year()
+                # WARNING(rjryan): If you change this, you must also change it
+                # in the build/osx/product_definition.plist.
+                MINIMUM_OSX_VERSION="10.6.0",
                 CATEGORY="public.app-category.music",
                 OTOOL_LOCAL_PATHS=otool_local_paths,
                 OTOOL_SYSTEM_PATHS=otool_system_paths,
@@ -390,7 +393,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         #env.Default(mixxx_bin) #todo: make the Default() just the program itself *globally* (not just for OS X); bundle should be a separate target
         env.Alias('bundle', bundle)
 
-        codesign_identity = SCons.ARGUMENTS.get('osx_codesign_identity', None)
+        codesign_installer_identity = SCons.ARGUMENTS.get('osx_codesign_installer_identity', None)
+        codesign_application_identity = SCons.ARGUMENTS.get('osx_codesign_application_identity', None)
         codesign_keychain = SCons.ARGUMENTS.get('osx_codesign_keychain', None)
         codesign_keychain_password = SCons.ARGUMENTS.get('osx_codesign_keychain_password', None)
         codesign_entitlements = SCons.ARGUMENTS.get('osx_codesign_entitlements', None)
@@ -400,7 +404,8 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         codesign = env.CodeSign(
                 'Mixxx',
                 sources,
-                CODESIGN_IDENTITY=codesign_identity,
+                CODESIGN_INSTALLER_IDENTITY=codesign_installer_identity,
+                CODESIGN_APPLICATION_IDENTITY=codesign_application_identity,
                 CODESIGN_KEYCHAIN=codesign_keychain,
                 CODESIGN_KEYCHAIN_PASSWORD=codesign_keychain_password,
                 CODESIGN_ENTITLEMENTS=codesign_entitlements)

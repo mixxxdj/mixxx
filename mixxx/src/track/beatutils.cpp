@@ -68,8 +68,8 @@ double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
     // of the middle 2 elements.
     if (sortedItems.size() % 2 == 0) {
         int item_position = sortedItems.size()/2;
-        double item_value1 = sortedItems.at(item_position);
-        double item_value2 = sortedItems.at(item_position + 1);
+        double item_value1 = sortedItems.at(item_position - 1);
+        double item_value2 = sortedItems.at(item_position);
         return (item_value1 + item_value2)/2.0;
     }
 

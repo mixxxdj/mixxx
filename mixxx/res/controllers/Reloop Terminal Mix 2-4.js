@@ -1,28 +1,28 @@
 /****************************************************************
- *      Reloop TerminalMix4 MIDI controller script v1.00        *
- *          Copyright (C) 2012, Sean M. Pappalardo              *
+ *      Reloop Terminal Mix MIDI controller script v1.01        *
+ *          Copyright (C) 2012-2013, Sean M. Pappalardo         *
  *      but feel free to tweak this to your heart's content!    *
  *      For Mixxx version 1.11.x                                *
  ****************************************************************/
 
-function TerminalMix4() {}
+function TerminalMix() {}
 
 // ----------   Customization variables ----------
 //      See http://mixxx.org/wiki/doku.php/reloop_terminalmix4_user_guide  for details
-TerminalMix4.pitchRanges = [ 0.08, 0.12, 0.25, 0.5, 1.0 ];
+TerminalMix.pitchRanges = [ 0.08, 0.12, 0.25, 0.5, 1.0 ];
 
 // ----------   Other global variables    ----------
-TerminalMix4.timers = [];
-TerminalMix4.state = [];
-TerminalMix4.faderStart = [];
-TerminalMix4.lastFader = [];   // Last value of each channel/cross fader
-TerminalMix4.lastEQs = [[]];
-TerminalMix4.traxKnobMode = "tracks";
+TerminalMix.timers = [];
+TerminalMix.state = [];
+TerminalMix.faderStart = [];
+TerminalMix.lastFader = [];   // Last value of each channel/cross fader
+TerminalMix.lastEQs = [[]];
+TerminalMix.traxKnobMode = "tracks";
 
 // ----------   Functions   ----------
 
-TerminalMix4.init = function (id,debug) {
-    TerminalMix4.id = id;
+TerminalMix.init = function (id,debug) {
+    TerminalMix.id = id;
     
     // Extinguish all LEDs
     for (var i=0; i<=3; i++) {  // 4 decks
@@ -48,24 +48,24 @@ TerminalMix4.init = function (id,debug) {
 
     engine.softTakeover("[Master]","crossfader",true);
 
-    engine.connectControl("[Channel1]","beat_active","TerminalMix4.tapLEDL");
-    engine.connectControl("[Channel2]","beat_active","TerminalMix4.tapLEDR");
+    engine.connectControl("[Channel1]","beat_active","TerminalMix.tapLEDL");
+    engine.connectControl("[Channel2]","beat_active","TerminalMix.tapLEDR");
 
-    TerminalMix4.timers["fstartflash"] = -1;
-//     TerminalMix4.timers["qtrSec"] = engine.beginTimer(250,"TerminalMix4.qtrSec");
-    TerminalMix4.timers["halfSec"] = engine.beginTimer(500,"TerminalMix4.halfSec");
+    TerminalMix.timers["fstartflash"] = -1;
+//     TerminalMix.timers["qtrSec"] = engine.beginTimer(250,"TerminalMix.qtrSec");
+    TerminalMix.timers["halfSec"] = engine.beginTimer(500,"TerminalMix.halfSec");
 
-    if (TerminalMix4.traxKnobMode == "tracks") {
+    if (TerminalMix.traxKnobMode == "tracks") {
         midi.sendShortMsg(0x90,0x37,0x7F);  // light Back button
     }
 
-    print ("Reloop TerminalMix4: "+id+" initialized.");
+    print ("Reloop TerminalMix: "+id+" initialized.");
 }
 
-TerminalMix4.shutdown = function () {
+TerminalMix.shutdown = function () {
     // Stop all timers
-    for (var i=0; i<TerminalMix4.timers.length; i++) {
-        engine.stopTimer(TerminalMix4.timers[i]);
+    for (var i=0; i<TerminalMix.timers.length; i++) {
+        engine.stopTimer(TerminalMix.timers[i]);
     }
     // Extinguish all LEDs
     for (var i=0; i<=3; i++) {  // 4 decks
@@ -73,21 +73,21 @@ TerminalMix4.shutdown = function () {
             midi.sendShortMsg(0x90+i,j,0x00);
         }
     }
-    print ("Reloop TerminalMix4: "+TerminalMix4.id+" shut down.");
+    print ("Reloop TerminalMix: "+TerminalMix.id+" shut down.");
 }
 
-TerminalMix4.qtrSec = function () {
+TerminalMix.qtrSec = function () {
     
 }
 
-TerminalMix4.halfSec = function () {
-    TerminalMix4.faderStartFlash();
-    TerminalMix4.samplerPlayFlash();
-    TerminalMix4.activeLoopFlash();
+TerminalMix.halfSec = function () {
+    TerminalMix.faderStartFlash();
+    TerminalMix.samplerPlayFlash();
+    TerminalMix.activeLoopFlash();
 }
 
 // The button that enables/disables scratching
-TerminalMix4.wheelTouch = function (channel, control, value, status, group) {
+TerminalMix.wheelTouch = function (channel, control, value, status, group) {
     var deck = script.deckFromGroup(group);
     if (value == 0x7F) {
         var alpha = 1.0/8;
@@ -100,7 +100,7 @@ TerminalMix4.wheelTouch = function (channel, control, value, status, group) {
 }
 
 // The wheel that actually controls the scratching
-TerminalMix4.wheelTurn = function (channel, control, value, status, group) {
+TerminalMix.wheelTurn = function (channel, control, value, status, group) {
     var deck = script.deckFromGroup(group);
     var newValue=(value-64);
     // See if we're scratching. If not, do wheel jog.
@@ -113,7 +113,7 @@ TerminalMix4.wheelTurn = function (channel, control, value, status, group) {
     engine.scratchTick(deck,newValue);
 }
 
-TerminalMix4.samplerVolume = function (channel, control, value) {
+TerminalMix.samplerVolume = function (channel, control, value) {
     // Link all sampler volume controls to the Sampler Volume knob
     for (var i=engine.getValue("[Master]","num_samplers"); i>=1; i--) {
         engine.setValue("[Sampler"+i+"]","pregain",
@@ -121,7 +121,7 @@ TerminalMix4.samplerVolume = function (channel, control, value) {
     }
 }
 
-TerminalMix4.pitchRange = function (channel, control, value, status, group) {
+TerminalMix.pitchRange = function (channel, control, value, status, group) {
     midi.sendShortMsg(status,control,value); // Make button light or extinguish
     if (value<=0) return;
     
@@ -129,27 +129,27 @@ TerminalMix4.pitchRange = function (channel, control, value, status, group) {
     // Round to two decimal places to avoid double-precision comparison problems
     var currentRange = Math.round(engine.getValue(group,"rateRange")*100)/100;
     var currentPitch = engine.getValue(group,"rate") * currentRange;
-    var items = TerminalMix4.pitchRanges.length;
+    var items = TerminalMix.pitchRanges.length;
     for(i=0; i<items; i++) {
-        if (currentRange<TerminalMix4.pitchRanges[i]) {
-            engine.setValue(group,"rateRange",TerminalMix4.pitchRanges[i]);
-            engine.setValue(group,"rate",currentPitch/TerminalMix4.pitchRanges[i]);
+        if (currentRange<TerminalMix.pitchRanges[i]) {
+            engine.setValue(group,"rateRange",TerminalMix.pitchRanges[i]);
+            engine.setValue(group,"rate",currentPitch/TerminalMix.pitchRanges[i]);
             set = true;
             break;
         }
     }
 
-    if (!set && currentRange>=TerminalMix4.pitchRanges[items-1]) {
-        engine.setValue(group,"rateRange",TerminalMix4.pitchRanges[0]);
-        engine.setValue(group,"rate",currentPitch/TerminalMix4.pitchRanges[0]);
+    if (!set && currentRange>=TerminalMix.pitchRanges[items-1]) {
+        engine.setValue(group,"rateRange",TerminalMix.pitchRanges[0]);
+        engine.setValue(group,"rate",currentPitch/TerminalMix.pitchRanges[0]);
     }
 }
 
-TerminalMix4.crossfaderCurve = function (channel, control, value, status, group) {
+TerminalMix.crossfaderCurve = function (channel, control, value, status, group) {
     script.crossfaderCurve(value);
 }
 
-TerminalMix4.loopLengthKnob = function (channel, control, value, status, group) {
+TerminalMix.loopLengthKnob = function (channel, control, value, status, group) {
     if ((value-64)>0) {
         engine.setValue(group,"loop_double",1);
         engine.setValue(group,"loop_double",0);
@@ -160,63 +160,63 @@ TerminalMix4.loopLengthKnob = function (channel, control, value, status, group) 
     }
 }
 
-TerminalMix4.loopMoveKnob = function (channel, control, value, status, group) {
+TerminalMix.loopMoveKnob = function (channel, control, value, status, group) {
     script.loopMove(group,value-64);
 }
 
-TerminalMix4.cfAssignL = function (channel, control, value, status, group) {
+TerminalMix.cfAssignL = function (channel, control, value, status, group) {
     engine.setValue(group,"orientation",0);
 }
 
-TerminalMix4.cfAssignM = function (channel, control, value, status, group) {
+TerminalMix.cfAssignM = function (channel, control, value, status, group) {
     engine.setValue(group,"orientation",1);
 }
 
-TerminalMix4.cfAssignR = function (channel, control, value, status, group) {
+TerminalMix.cfAssignR = function (channel, control, value, status, group) {
     engine.setValue(group,"orientation",2);
 }
 
-TerminalMix4.faderStart = function (channel, control, value, status, group) {
+TerminalMix.faderStart = function (channel, control, value, status, group) {
     if (value<=0) return;
 
-    TerminalMix4.faderStart[group]=!TerminalMix4.faderStart[group];
+    TerminalMix.faderStart[group]=!TerminalMix.faderStart[group];
 }
 
-TerminalMix4.faderStartFlash = function () {
-    TerminalMix4.state["fStartFlash"]=!TerminalMix4.state["fStartFlash"];
+TerminalMix.faderStartFlash = function () {
+    TerminalMix.state["fStartFlash"]=!TerminalMix.state["fStartFlash"];
 
     var value, group;
     for (var i=1; i<=4; i++) { // 4 decks
         value = 0x00;
         group = "[Channel"+i+"]";
-        if (TerminalMix4.faderStart[group]) {
-            if (TerminalMix4.state["fStartFlash"]) value = 0x7F;
+        if (TerminalMix.faderStart[group]) {
+            if (TerminalMix.state["fStartFlash"]) value = 0x7F;
         } else {
             if (engine.getValue(group,"duration")>0) value = 0x7F;
         }
         // Don't send redundant messages
-        if (TerminalMix4.state[group+"fStart"]==value) continue;
-        TerminalMix4.state[group+"fStart"] = value;
+        if (TerminalMix.state[group+"fStart"]==value) continue;
+        TerminalMix.state[group+"fStart"] = value;
         if (engine.getValue(group,"duration")>0 || value<=0) midi.sendShortMsg(0x90+i-1,0x32,value);
         midi.sendShortMsg(0x90+i-1,0x78,value); // Shifted
     }
 }
 
-TerminalMix4.samplerPlayFlash = function () {
-    TerminalMix4.state["sPlayFlash"]=!TerminalMix4.state["sPlayFlash"];
+TerminalMix.samplerPlayFlash = function () {
+    TerminalMix.state["sPlayFlash"]=!TerminalMix.state["sPlayFlash"];
 
     var value, group;
     for (var i=1; i<=4; i++) { // 4 samplers
         value = 0x00;
         group = "[Sampler"+i+"]";
         if (engine.getValue(group,"play")>0) {
-            if (TerminalMix4.state["sPlayFlash"]) value = 0x7F;
+            if (TerminalMix.state["sPlayFlash"]) value = 0x7F;
         } else {
             if (engine.getValue(group,"duration")>0) value = 0x7F;
         }
         // Don't send redundant messages
-        if (TerminalMix4.state[group+"sFlash"]==value) continue;
-        TerminalMix4.state[group+"sFlash"] = value;
+        if (TerminalMix.state[group+"sFlash"]==value) continue;
+        TerminalMix.state[group+"sFlash"] = value;
         for (var j=1; j<=4; j++) {  // Same buttons on all 4 controller decks
             midi.sendShortMsg(0x90+j-1,0x14+i-1,value);
             midi.sendShortMsg(0x90+j-1,0x1C+i-1,value);  // Scissor on
@@ -227,46 +227,46 @@ TerminalMix4.samplerPlayFlash = function () {
     }
 }
 
-TerminalMix4.activeLoopFlash = function () {
-    TerminalMix4.state["loopFlash"]=!TerminalMix4.state["loopFlash"];
+TerminalMix.activeLoopFlash = function () {
+    TerminalMix.state["loopFlash"]=!TerminalMix.state["loopFlash"];
     
     var value, group;
     for (var i=1; i<=4; i++) { // 4 decks
         value = 0x00;
         group = "[Channel"+i+"]";
         if (engine.getValue(group,"loop_enabled")>0) {
-            if (TerminalMix4.state["loopFlash"]) value = 0x7F;
+            if (TerminalMix.state["loopFlash"]) value = 0x7F;
         }
         // Don't send redundant messages
-        if (TerminalMix4.state[group+"loop"]==value) continue;
-        TerminalMix4.state[group+"loop"] = value;
+        if (TerminalMix.state[group+"loop"]==value) continue;
+        TerminalMix.state[group+"loop"] = value;
         midi.sendShortMsg(0x90+i-1,0x0C,value);
         midi.sendShortMsg(0x90+i-1,0x0D,value);
     }
 }
 
-TerminalMix4.channelFader = function (channel, control, value, status, group) {
+TerminalMix.channelFader = function (channel, control, value, status, group) {
     engine.setValue(group,"volume",script.absoluteLin(value,0,1));
 
     // Fader start logic
-    if (!TerminalMix4.faderStart[group]) return;
-    if (TerminalMix4.lastFader[group]==value) return;
+    if (!TerminalMix.faderStart[group]) return;
+    if (TerminalMix.lastFader[group]==value) return;
     
     if (value==0 && engine.getValue(group,"play")==1) {
         engine.setValue(group,"cue_default",1);
         engine.setValue(group,"cue_default",0);
     }
-    if (TerminalMix4.lastFader[group]==0) engine.setValue(group,"play",1);
+    if (TerminalMix.lastFader[group]==0) engine.setValue(group,"play",1);
     
-    TerminalMix4.lastFader[group]=value;
+    TerminalMix.lastFader[group]=value;
 }
 
-TerminalMix4.crossFader = function (channel, control, value, status, group) {
+TerminalMix.crossFader = function (channel, control, value, status, group) {
     var cfValue = script.absoluteNonLin(value,-1,0,1);
     engine.setValue("[Master]","crossfader",cfValue);
 
     // Fader start logic
-    if (TerminalMix4.lastFader["crossfader"]==cfValue) return;
+    if (TerminalMix.lastFader["crossfader"]==cfValue) return;
 
     var group;
 
@@ -274,7 +274,7 @@ TerminalMix4.crossFader = function (channel, control, value, status, group) {
     if (cfValue==-1.0) {
         for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
             group = "[Channel"+i+"]";
-            if (TerminalMix4.faderStart[group]
+            if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==2
                 && engine.getValue(group,"play")==1) {
                     engine.setValue(group,"cue_default",1);
@@ -287,7 +287,7 @@ TerminalMix4.crossFader = function (channel, control, value, status, group) {
         // If CF is now full right and decks assigned to L are playing, cue them
         for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
             group = "[Channel"+i+"]";
-            if (TerminalMix4.faderStart[group]
+            if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==0
                 && engine.getValue(group,"play")==1) {
                     engine.setValue(group,"cue_default",1);
@@ -297,75 +297,75 @@ TerminalMix4.crossFader = function (channel, control, value, status, group) {
     }
 
     // If the CF is moved from full left, start any decks assigned to R
-    if (TerminalMix4.lastFader["crossfader"]==-1.0) {
+    if (TerminalMix.lastFader["crossfader"]==-1.0) {
         for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
             group = "[Channel"+i+"]";
-            if (TerminalMix4.faderStart[group]
+            if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==2) {
                 engine.setValue(group,"play",1);
             }
         }
     }
 
-    if (TerminalMix4.lastFader["crossfader"]==1.0) {
+    if (TerminalMix.lastFader["crossfader"]==1.0) {
         // If the CF is moved from full right, start any decks assigned to L
         for (var i=engine.getValue("[Master]","num_decks"); i>=1; i--) {
             group = "[Channel"+i+"]";
-            if (TerminalMix4.faderStart[group]
+            if (TerminalMix.faderStart[group]
                 && engine.getValue(group,"orientation")==0) {
                 engine.setValue(group,"play",1);
             }
         }
     }
 
-    TerminalMix4.lastFader["crossfader"] = cfValue;
+    TerminalMix.lastFader["crossfader"] = cfValue;
 }
 
-TerminalMix4.filterReset = function (channel, control, value, status, group) {
+TerminalMix.filterReset = function (channel, control, value, status, group) {
     if (value>0) {
         var index = group+"high";
-        TerminalMix4.lastEQs[index] = engine.getValue(group,"filterHigh");
+        TerminalMix.lastEQs[index] = engine.getValue(group,"filterHigh");
         index = group+"mid";
-        TerminalMix4.lastEQs[index] = engine.getValue(group,"filterMid");
+        TerminalMix.lastEQs[index] = engine.getValue(group,"filterMid");
         index = group+"low";
-        TerminalMix4.lastEQs[index] = engine.getValue(group,"filterLow");
+        TerminalMix.lastEQs[index] = engine.getValue(group,"filterLow");
     }
     else {
         // Centered, so reset EQs
         var index = group+"high";
-        engine.setValue(group,"filterHigh",TerminalMix4.lastEQs[index]);
-        TerminalMix4.lastEQs[index] = undefined;
+        engine.setValue(group,"filterHigh",TerminalMix.lastEQs[index]);
+        TerminalMix.lastEQs[index] = undefined;
         index = group+"mid";
-        engine.setValue(group,"filterMid",TerminalMix4.lastEQs[index]);
-        TerminalMix4.lastEQs[index] = undefined;
+        engine.setValue(group,"filterMid",TerminalMix.lastEQs[index]);
+        TerminalMix.lastEQs[index] = undefined;
         index = group+"low";
-        engine.setValue(group,"filterLow",TerminalMix4.lastEQs[index]);
-        TerminalMix4.lastEQs[index] = undefined;
+        engine.setValue(group,"filterLow",TerminalMix.lastEQs[index]);
+        TerminalMix.lastEQs[index] = undefined;
     }
 }
 
-TerminalMix4.filterTurn = function (channel, control, value, status, group) {
+TerminalMix.filterTurn = function (channel, control, value, status, group) {
     var index = group+"high";
-    if (TerminalMix4.lastEQs[index] == undefined) return;
+    if (TerminalMix.lastEQs[index] == undefined) return;
     index = group+"low";
-    if (TerminalMix4.lastEQs[index] == undefined) return;
+    if (TerminalMix.lastEQs[index] == undefined) return;
     index = group+"mid";
-    if (TerminalMix4.lastEQs[index] == undefined) return;
+    if (TerminalMix.lastEQs[index] == undefined) return;
     
     if (value < 0x40) {
-        engine.setValue(group,"filterMid",script.absoluteLin(value,0,TerminalMix4.lastEQs[index],0x00,0x1F));
+        engine.setValue(group,"filterMid",script.absoluteLin(value,0,TerminalMix.lastEQs[index],0x00,0x1F));
         index = group+"high";
-        engine.setValue(group,"filterHigh",script.absoluteLin(value,0,TerminalMix4.lastEQs[index],0x20,0x3F));
+        engine.setValue(group,"filterHigh",script.absoluteLin(value,0,TerminalMix.lastEQs[index],0x20,0x3F));
     } else {
-        engine.setValue(group,"filterMid",script.absoluteLin(value,TerminalMix4.lastEQs[index],0,0x60,0x7F));
+        engine.setValue(group,"filterMid",script.absoluteLin(value,TerminalMix.lastEQs[index],0,0x60,0x7F));
         index = group+"low";
-        engine.setValue(group,"filterLow",script.absoluteLin(value,TerminalMix4.lastEQs[index],0,0x40,0x5F));
+        engine.setValue(group,"filterLow",script.absoluteLin(value,TerminalMix.lastEQs[index],0,0x40,0x5F));
     }
 }
 
-TerminalMix4.traxKnobTurn = function (channel, control, value, status, group) {
+TerminalMix.traxKnobTurn = function (channel, control, value, status, group) {
     var newValue = (value-64);
-    if (TerminalMix4.traxKnobMode == "tracks") {
+    if (TerminalMix.traxKnobMode == "tracks") {
         engine.setValue(group,"SelectTrackKnob",newValue);
     } else {
         if (newValue>0) engine.setValue(group,"SelectNextPlaylist",newValue);
@@ -373,37 +373,37 @@ TerminalMix4.traxKnobTurn = function (channel, control, value, status, group) {
     }
 }
 
-TerminalMix4.traxKnobPress = function (channel, control, value, status, group) {
+TerminalMix.traxKnobPress = function (channel, control, value, status, group) {
     if (value>0) {
-        if (TerminalMix4.traxKnobMode == "tracks") {
+        if (TerminalMix.traxKnobMode == "tracks") {
             engine.setValue(group,"LoadSelectedIntoFirstStopped",1);
             engine.setValue(group,"LoadSelectedIntoFirstStopped",0);
         } else {
-            TerminalMix4.traxKnobMode = "tracks";
+            TerminalMix.traxKnobMode = "tracks";
             midi.sendShortMsg(0x90,0x37,0x7F);
         }
     }
 }
 
-TerminalMix4.backButton = function (channel, control, value, status, group) {
+TerminalMix.backButton = function (channel, control, value, status, group) {
     if (value>0) {
-        TerminalMix4.traxKnobMode = "sections";
+        TerminalMix.traxKnobMode = "sections";
         midi.sendShortMsg(0x90,0x37,0);
     }
 }
 
 // ----------- LED Output functions -------------
 
-TerminalMix4.tapLED = function (deck,value) {
+TerminalMix.tapLED = function (deck,value) {
     deck--;
     if (value>0) midi.sendShortMsg(0x90+deck,0x0A,0x7F);
     else midi.sendShortMsg(0x90+deck,0x0A,0);
 }
 
-TerminalMix4.tapLEDL = function (value) {
-    TerminalMix4.tapLED(1,value);
+TerminalMix.tapLEDL = function (value) {
+    TerminalMix.tapLED(1,value);
 }
 
-TerminalMix4.tapLEDR = function (value) {
-    TerminalMix4.tapLED(2,value);
+TerminalMix.tapLEDR = function (value) {
+    TerminalMix.tapLED(2,value);
 }
