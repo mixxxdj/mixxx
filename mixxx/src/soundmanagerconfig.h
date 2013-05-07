@@ -35,10 +35,10 @@ public:
         OTHER = (1 << 2),
         ALL = (API | DEVICES | OTHER),
     };
-    static const unsigned int kMaxLatency;
+    static const unsigned int kMaxAudioBufferSizeIndex;
     static const QString kDefaultAPI;
-    static const unsigned int kDefaultSampleRate;
-    static const int kDefaultLatency;
+    static const unsigned int kFallbackSampleRate;
+    static const int kDefaultAudioBufferSizeIndex;
 
     SoundManagerConfig();
     ~SoundManagerConfig();
@@ -50,9 +50,9 @@ public:
     unsigned int getSampleRate() const;
     void setSampleRate(unsigned int sampleRate);
     bool checkSampleRate(const SoundManager &soundManager);
-    unsigned int getLatency() const;
+    unsigned int getAudioBufferSizeIndex() const;
     unsigned int getFramesPerBuffer() const;
-    void setLatency(unsigned int latency);
+    void setAudioBufferSizeIndex(unsigned int latency);
     void addOutput(const QString &device, const AudioOutput &out);
     void addInput(const QString &device, const AudioInput &in);
     QMultiHash<QString, AudioOutput> getOutputs() const;
@@ -73,7 +73,7 @@ private:
     // higher indices represent subsequently higher latencies (storing
     // latency as milliseconds or frames per buffer is bad because those
     // values vary with sample rate) -- bkgood
-    unsigned int m_latency;
+    unsigned int m_audioBufferSizeIndex;
     QMultiHash<QString, AudioOutput> m_outputs;
     QMultiHash<QString, AudioInput> m_inputs;
 };

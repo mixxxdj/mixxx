@@ -150,6 +150,7 @@ int SoundSourceCoreAudio::open() {
 
       AudioConverterPrimeInfo primeInfo;
       UInt32 piSize=sizeof(AudioConverterPrimeInfo);
+      memset(&primeInfo, 0, piSize);
       err = AudioConverterGetProperty(acRef, kAudioConverterPrimeInfo, &piSize, &primeInfo);
       if(err != kAudioConverterErr_PropertyNotSupported) // Only if decompressing
       {
@@ -195,8 +196,6 @@ unsigned int SoundSourceCoreAudio::read(unsigned long size, const SAMPLE *destin
     //if (!m_decoder) return 0;
     OSStatus err;
     SAMPLE *destBuffer(const_cast<SAMPLE*>(destination));
-    unsigned int samplesWritten = 0;
-    unsigned int i = 0;
     UInt32 numFrames = 0;//(size / 2); /// m_inputFormat.mBytesPerFrame);
     unsigned int totalFramesToRead = size/2;
     unsigned int numFramesRead = 0;
@@ -291,5 +290,3 @@ QList<QString> SoundSourceCoreAudio::supportedFileExtensions() {
     //XXX: ... but make sure you implement handling for any new format in ParseHeader!!!!!! -- asantoni
     return list;
 }
-
-

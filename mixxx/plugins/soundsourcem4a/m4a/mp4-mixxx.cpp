@@ -163,8 +163,12 @@ static int mp4_open(struct input_plugin_data *ip_data)
     //         << neaac_cfg->dontUpSampleImplicitSBR;
     faacDecSetConfiguration(priv->decoder, neaac_cfg);
 
-    /* open mpeg-4 file */
+    /* open mpeg-4 file, check for >= ver 1.9.1 */
+#if MP4V2_PROJECT_version_hex <= 0x00010901
     priv->mp4.handle = MP4Read(ip_data->filename, 0);
+#else
+    priv->mp4.handle = MP4Read(ip_data->filename);
+#endif
     if (!priv->mp4.handle) {
         qDebug() << "MP4Read failed";
         goto out;
@@ -238,7 +242,7 @@ static int mp4_close(struct input_plugin_data *ip_data)
     if (priv->sample_buf) {
         delete [] priv->sample_buf;
     }
-    
+
     if (priv->aac_data) {
         delete [] priv->aac_data;
     }

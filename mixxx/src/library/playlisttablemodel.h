@@ -16,7 +16,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     Q_OBJECT
   public:
     PlaylistTableModel(QObject* parent, TrackCollection* pTrackCollection,
-                       QString settingsNamespace);
+                       QString settingsNamespace,bool showAll=false);
     virtual ~PlaylistTableModel();
     void setPlaylist(int playlistId);
     int getPlaylist() const {
@@ -30,10 +30,13 @@ class PlaylistTableModel : public BaseSqlTableModel {
     virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
     virtual bool addTrack(const QModelIndex& index, QString location);
+    virtual bool appendTrack(int trackId);
+    // Adding multiple tracks at one to a playlist. Returns the number of
+    // successful additions.
+    virtual int addTracks(const QModelIndex& index, QList<QString> locations);
     virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
-    virtual void shuffleTracks(const QModelIndex& currentIndex);
+    virtual void shuffleTracks(const QModelIndex& shuffleStartIndex);
 
-    QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private slots:
@@ -47,6 +50,7 @@ class PlaylistTableModel : public BaseSqlTableModel {
     PlaylistDAO& m_playlistDao;
     TrackDAO& m_trackDao;
     int m_iPlaylistId;
+    bool m_showAll;
 };
 
 #endif

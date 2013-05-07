@@ -1,19 +1,11 @@
-//
-// C++ Implementation: controlobjecthreadmainp.cpp
-//
-// Description:
-//
-//
 // Author: Tue Haste Andersen <haste@diku.dk>, (C) 2004
-//
 // Copyright: See COPYING file that comes with this distribution
-//
-//
 
 #include <QApplication>
 #include <QtDebug>
-//Added by qt3to4:
 #include <QEvent>
+#include <QThread>
+
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 #include "controlevent.h"
@@ -30,19 +22,12 @@ ControlObjectThreadMain::~ControlObjectThreadMain() {
 bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
 {
     // Handle events
-    if (e->type() == MIXXXEVENT_CONTROL)
-    {
+    if (e && e->type() == MIXXXEVENT_CONTROL) {
         ControlEvent * ce = (ControlEvent *)e;
-
-        m_dataMutex.lock();
-        m_dValue = ce->value();
-        m_dataMutex.unlock();
-
         //qDebug() << "ControlEvent " << ce->value();
+        m_dValue = ce->value();
         emit(valueChanged(ce->value()));
-    }
-    else
-    {
+    } else {
         // standard event processing
         return QObject::eventFilter(o,e);
     }
@@ -51,7 +36,14 @@ bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
 
 bool ControlObjectThreadMain::setExtern(double v)
 {
-    //qDebug() << "set extern main";
-    QApplication::postEvent(this, new ControlEvent(v));
+    // If we are already running in the main thread, then go ahead and update.
+    if (QThread::currentThread() == QApplication::instance()->thread()) {
+        m_dValue = v;
+        emit(valueChanged(v));
+    } else {
+        // Otherwise, we have to post the event to the main thread event queue
+        // and then catch the event via eventFilter.
+        QApplication::postEvent(this, new ControlEvent(v));
+    }
     return true;
 }

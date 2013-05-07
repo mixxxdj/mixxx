@@ -1,9 +1,0 @@
-#Sources
-sources = Split("""ConvertUTF.c utstr.c utf8iterator.cpp""")
-
-#Import Flags
-Import('env')
-
-obj = []
-obj = env.SharedObject(sources)
-Return('obj')

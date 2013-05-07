@@ -58,6 +58,7 @@ SoundSource::SoundSource(QString qFilename)
     m_iBitrate = 0;
     m_iChannels = 0;
     m_sKey = "";
+    m_sComposer = "";
 }
 
 SoundSource::~SoundSource()
@@ -109,6 +110,10 @@ QString SoundSource::getYear()
 QString SoundSource::getGenre()
 {
     return m_sGenre;
+}
+QString SoundSource::getComposer()
+{
+    return m_sComposer;
 }
 QString SoundSource::getTrackNumber()
 {
@@ -166,6 +171,10 @@ void SoundSource::setYear(QString year)
 void SoundSource::setGenre(QString genre)
 {
     m_sGenre = genre;
+}
+void SoundSource::setComposer(QString composer)
+{
+    m_sComposer = composer;
 }
 void SoundSource::setTrackNumber(QString trackNumber)
 {
@@ -234,7 +243,7 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
             int iTrack = tag->track();
             QString trackNumber = "";
             if (iTrack > 0) {
-                trackNumber = QString("%1").arg(tag->track());
+                trackNumber = QString("%1").arg(iTrack);
                 setTrackNumber(trackNumber);
             }
 
@@ -326,6 +335,12 @@ bool SoundSource::processID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
             }
         }
     }
+    TagLib::ID3v2::FrameList composerFrame = id3v2->frameListMap()["TCOM"];
+    if (!composerFrame.isEmpty()) {
+        QString sComposer = TStringToQString(composerFrame.front()->toString());
+        setComposer(sComposer);
+    }
+
     return true;
 }
 
@@ -415,19 +430,45 @@ bool SoundSource::processMP4Tag(TagLib::MP4::Tag* mp4) {
     if (s_bDebugMetadata) {
         for(TagLib::MP4::ItemListMap::ConstIterator it = mp4->itemListMap().begin();
             it != mp4->itemListMap().end(); ++it) {
-            qDebug() << "MP4" << TStringToQString((*it).first) << "-" << TStringToQString((*it).second.toStringList().toString());
+            qDebug() << "MP4" << TStringToQString((*it).first) << "-"
+                     << TStringToQString((*it).second.toStringList().toString());
         }
     }
 
     // Get BPM
     if (mp4->itemListMap().contains("tmpo")) {
-        QString sBpm = TStringToQString(mp4->itemListMap()["tmpo"].toStringList().toString());
+        QString sBpm = TStringToQString(
+            mp4->itemListMap()["tmpo"].toStringList().toString());
+        processBpmString("MP4", sBpm);
+    } else if (mp4->itemListMap().contains("----:com.apple.iTunes:BPM")) {
+        // This is an alternate way of storing BPM.
+        QString sBpm = TStringToQString(mp4->itemListMap()[
+            "----:com.apple.iTunes:BPM"].toStringList().toString());
         processBpmString("MP4", sBpm);
     }
+
+    // Get Composer
+    if (mp4->itemListMap().contains("\251wrt")) {
+        // rryan 1/2012 I believe this is technically a list of composers. We
+        // don't support multiple composers in Mixxx, so just use them joined.
+        QString composer = TStringToQString(
+            mp4->itemListMap()["\251wrt"].toStringList().toString());
+    }
+
     // Get KEY (conforms to Rapid Evolution)
     if (mp4->itemListMap().contains("----:com.apple.iTunes:KEY")) {
-        QString key = TStringToQString(mp4->itemListMap()["----:com.apple.iTunes:KEY"].toStringList().toString());
+        QString key = TStringToQString(
+            mp4->itemListMap()["----:com.apple.iTunes:KEY"].toStringList().toString());
         setKey(key);
+    }
+
+    // Apparently iTunes stores replaygain in this property.
+    if (mp4->itemListMap().contains(
+        "----:com.apple.iTunes:replaygain_track_gain")) {
+        // TODO(XXX) find tracks with this property and check what it looks
+        // like.
+
+        //QString replaygain = TStringToQString(mp4->itemListMap()["----:com.apple.iTunes:replaygain_track_gain"].toStringList().toString());
     }
 
     return true;

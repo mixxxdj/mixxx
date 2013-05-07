@@ -11,6 +11,7 @@ public:
     return sourceModel()->index(proxyIndex.column(), proxyIndex.row());
   }
   QModelIndex index(int r, int c, const QModelIndex &ind=QModelIndex()) const{
+    Q_UNUSED(ind);
     return createIndex(r,c);
   }
   QModelIndex parent(const QModelIndex&) const {

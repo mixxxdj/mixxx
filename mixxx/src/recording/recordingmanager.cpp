@@ -3,8 +3,10 @@
  */
 #include <QMutex>
 #include <QDir>
+#include <QDebug>
 #include "recordingmanager.h"
 #include "recording/defs_recording.h"
+#include "controlpushbutton.h"
 
 #define CD_650
 
@@ -18,39 +20,12 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig) :
         m_iNumberOfBytesRecored(0),
         m_split_size(0),
         m_iNumberSplits(0) {
-    m_recReadyCO = new ControlObject(ConfigKey("[Master]", "Record"));
+    m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
+    connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
+            this, SLOT(slotToggleRecording(double)));
+    m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
     m_recReady = new ControlObjectThread(m_recReadyCO);
 
-    QDir os_music_folder_dir(m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")));
-    //Check if there's a folder Mixxx within the music directory
-    QDir mixxxDir(os_music_folder_dir.absolutePath() +"/Mixxx");
-
-    if(!mixxxDir.exists()) {
-
-        if(os_music_folder_dir.mkdir("Mixxx")) {
-            qDebug() << "Created folder 'Mixxx' within default OS Music directory";
-
-            if(mixxxDir.mkdir("Recordings"))
-                qDebug() << "Created folder 'Recordings' successfully";
-            else
-                qDebug() << "Could not create folder 'Recordings' within 'Mixxx'";
-        }
-        else{
-            qDebug() << "Failed to create folder 'Mixxx'' within default OS Music directory."
-                     << "Please verify that there's no file called 'Mixxx'.";
-        }
-    }
-    else{ // the Mixxx directory already exists
-        qDebug() << "Found folder 'Mixxx' within default OS music directory";
-        QDir recordDir(mixxxDir.absolutePath() +"Recordings");
-        if(!recordDir.exists()) {
-            if(mixxxDir.mkdir("Recordings"))
-                qDebug() << "Created folder 'Recordings' successfully";
-            else
-                qDebug() << "Could not create folder 'Recordings' within 'Mixxx'";
-        }
-    }
-    m_recordingDir = os_music_folder_dir.absolutePath() +"/Mixxx/Recordings";
     m_split_size = getFileSplitSize();
 }
 
@@ -62,18 +37,26 @@ RecordingManager::~RecordingManager()
 }
 
 QString RecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
-    // Use a format based on ISO 8601
-    QString formatted = dateTime.toString("yyyy-MM-dd_hh'h':mm'm':ss's'");
-#ifdef __WINDOWS__
-    // Windows does not support colons in filenames.
-    formatted = formatted.replace(":", "");
-#endif
+    // Use a format based on ISO 8601. Windows does not support colons in
+    // filenames so we can't use them anywhere.
+    QString formatted = dateTime.toString("yyyy-MM-dd_hh'h'mm'm'ss's'");
     return formatted;
+}
+
+void RecordingManager::slotToggleRecording(double v) {
+    if (v > 0) {
+        if (isRecordingActive()) {
+            stopRecording();
+        } else {
+            startRecording();
+        }
+    }
 }
 
 void RecordingManager::startRecording(bool generateFileName) {
     m_iNumberOfBytesRecored = 0;
     m_split_size = getFileSplitSize();
+    qDebug() << "Split size is:" << m_split_size;
     QString encodingType = m_pConfig->getValueString(
             ConfigKey("[Recording]", "Encoding"));
 
@@ -82,11 +65,10 @@ void RecordingManager::startRecording(bool generateFileName) {
         //Append file extension
         QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
         m_recordingFile = QString("%1.%2")
-                .arg(date_time_str)
-                .arg(encodingType.toLower());
+                .arg(date_time_str, encodingType.toLower());
 
-        //Storing the absolutePath of the recording file without file extension
-        m_recording_base_file = m_recordingDir;
+        // Storing the absolutePath of the recording file without file extension
+        m_recording_base_file = getRecordingDir();
         m_recording_base_file.append("/").append(date_time_str);
         //appending file extension to get the filelocation
         m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
@@ -114,7 +96,25 @@ void RecordingManager::stopRecording()
     m_iNumberOfBytesRecored = 0;
 }
 
+void RecordingManager::setRecordingDir() {
+    QDir recordDir(m_pConfig->getValueString(
+        ConfigKey("[Recording]", "Directory")));
+    // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord
+
+    if (!recordDir.exists()) {
+        if (recordDir.mkpath(recordDir.absolutePath())) {
+            qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
+        } else {
+            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
+        }
+    }
+    m_recordingDir = recordDir.absolutePath();
+    qDebug() << "Recordings folder set to" << m_recordingDir;
+}
+
 QString& RecordingManager::getRecordingDir() {
+    // Update current recording dir from preferences
+    setRecordingDir();
     return m_recordingDir;
 }
 
@@ -147,7 +147,6 @@ bool RecordingManager::isRecordingActive() {
     return m_isRecording;
 }
 
-//returns the name of the file
 QString& RecordingManager::getRecordingFile() {
     return m_recordingFile;
 }

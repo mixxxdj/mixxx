@@ -29,11 +29,10 @@
 #include "dlgprefvinyl.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
-                           ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefVinylDlg(),
-    m_COMode(ControlObject::getControl(ConfigKey("[VinylControl]", "mode"))),
-    m_COSpeed1(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_speed_type"))),
-    m_COSpeed2(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_speed_type")))
-{
+                           ConfigObject<ConfigValue> * _config)
+        : QWidget(parent),
+          m_COSpeed1(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_speed_type"))),
+          m_COSpeed2(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_speed_type"))) {
     m_pVCManager = pVCMan;
     config = _config;
 
@@ -59,12 +58,14 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     ComboBoxVinylType1->addItem(MIXXX_VINYL_SERATOCD);
     ComboBoxVinylType1->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     ComboBoxVinylType1->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+    ComboBoxVinylType1->addItem(MIXXX_VINYL_MIXVIBESDVS);
 
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_SERATOCD);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+    ComboBoxVinylType2->addItem(MIXXX_VINYL_MIXVIBESDVS);
 
     ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_45);
@@ -137,7 +138,7 @@ void DlgPrefVinyl::slotUpdate()
 
     // Honour the Needle Skip Prevention setting.
     NeedleSkipEnable->setChecked( (bool)config->getValueString( ConfigKey("[VinylControl]", "needle_skip_prevention") ).toInt() );
-    
+
     SignalQualityEnable->setChecked((bool)config->getValueString(ConfigKey("[VinylControl]", "show_signal_quality") ).toInt() );
 
     //set vinyl control gain
@@ -179,9 +180,6 @@ void DlgPrefVinyl::slotApply()
     if (RelativeMode->isChecked())
         iMode = MIXXX_VCMODE_RELATIVE;
 
-    ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode"))->set(iMode);
-    ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode"))->set(iMode);
-    m_COMode.slotSet(iMode);
     config->set(ConfigKey("[VinylControl]","mode"), ConfigValue(iMode));
     config->set(ConfigKey("[VinylControl]","needle_skip_prevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
     config->set(ConfigKey("[VinylControl]","show_signal_quality" ), ConfigValue( (int)(SignalQualityEnable->isChecked( )) ) );
@@ -190,18 +188,13 @@ void DlgPrefVinyl::slotApply()
     slotUpdate();
 }
 
-void DlgPrefVinyl::EnableRelativeModeSlotApply()
-{
-
-}
-
 void DlgPrefVinyl::VinylTypeSlotApply()
 {
     config->set(ConfigKey("[Channel1]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType1->currentText()));
     config->set(ConfigKey("[Channel2]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType2->currentText()));
     config->set(ConfigKey("[Channel1]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed1->currentText()));
     config->set(ConfigKey("[Channel2]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed2->currentText()));
-    
+
     //Save the vinylcontrol_speed_type in ControlObjects as well so it can be retrieved quickly
     //on the fly. (eg. WSpinny needs to know how fast to spin)
     if (ComboBoxVinylSpeed1->currentText() == MIXXX_VINYL_SPEED_33) {

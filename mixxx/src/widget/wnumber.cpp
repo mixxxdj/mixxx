@@ -25,6 +25,10 @@
 WNumber::WNumber(QWidget * parent) : WWidget(parent)
 {
     m_pLabel = new QLabel(this);
+    QLayout* pLayout = new QVBoxLayout(this);
+    pLayout->setContentsMargins(0, 0, 0, 0);
+    pLayout->addWidget(m_pLabel);
+    setLayout(pLayout);
     m_qsText = "";
     m_dConstFactor = 0.;
 }
@@ -41,29 +45,18 @@ void WNumber::setup(QDomNode node)
 
     // Colors
     QPalette palette = m_pLabel->palette(); //we have to copy out the palette to edit it since it's const (probably for threadsafety)
-
-    if(!WWidget::selectNode(node, "BgColor").isNull()) {
+    if (!WWidget::selectNode(node, "BgColor").isNull()) {
         m_qBgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
-        //m_pLabel->setPaletteBackgroundColor(WSkinColor::getCorrectColor(m_qBgColor));
         palette.setColor(this->backgroundRole(), WSkinColor::getCorrectColor(m_qBgColor));
         m_pLabel->setAutoFillBackground(true);
     }
     m_qFgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-    //m_pLabel->setPaletteForegroundColor(WSkinColor::getCorrectColor(m_qFgColor));
     palette.setColor(this->foregroundRole(), WSkinColor::getCorrectColor(m_qFgColor));
-
     m_pLabel->setPalette(palette);
-
-    m_pLabel->setToolTip(toolTip());
 
     // Text
     if (!selectNode(node, "Text").isNull())
         m_qsText = selectNodeQString(node, "Text");
-
-    QString size = selectNodeQString(node, "Size");
-    int x = size.left(size.indexOf(",")).toInt();
-    int y = size.mid(size.indexOf(",")+1).toInt();
-    m_pLabel->setFixedSize(x,y);
 
     // FWI: Begin of font size patch
     if (!selectNode(node, "FontSize").isNull()) {
@@ -103,7 +96,10 @@ void WNumber::setValue(double dValue)
     int d1 = (int)floor((v-floor(v))*10.);
     int d2 = (int)floor((v-floor(v))*100.)%10;
 
-    m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg((int)v,3,10).arg(d1,1,10).arg(d2,1,10));
+    m_pLabel->setText(QString(m_qsText).append("%1.%2%3").arg(
+        QString("%1").arg(static_cast<int>(v), 3, 10),
+        QString("%1").arg(d1, 1, 10),
+        QString("%1").arg(d2, 1, 10)));
 }
 
 void WNumber::setConstFactor(double c)

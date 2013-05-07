@@ -44,8 +44,11 @@ public:
     void setWidgetOnOff(QWidget *widget);
     bool setExtern(double v);
 
-private:
-    void updateControlObject();
+  private slots:
+    void slotReset();
+
+  private:
+    virtual void updateControlObject(double v);
 };
 
 #endif

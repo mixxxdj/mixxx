@@ -40,6 +40,7 @@ TreeItemModel::~TreeItemModel() {
 
 //Our Treeview Model supports exactly a single column
 int TreeItemModel::columnCount(const QModelIndex &parent) const {
+    Q_UNUSED(parent)
     return 1;
 }
 
@@ -47,11 +48,15 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     if (!index.isValid())
         return QVariant();
 
-    if (role != Qt::DisplayRole)
+    if (role != Qt::DisplayRole && role != Qt::UserRole)
         return QVariant();
 
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
 
+    // We use Qt::UserRole to ask for the datapath.
+    if (role == Qt::UserRole) {
+        return item->dataPath();
+    }
     return item->data();
 }
 
@@ -63,6 +68,9 @@ Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
 }
 
 QVariant TreeItemModel::headerData(int section, Qt::Orientation orientation, int role) const {
+    Q_UNUSED(section);
+    Q_UNUSED(orientation);
+    Q_UNUSED(role);
     return QVariant();
 }
 

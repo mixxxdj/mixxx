@@ -20,7 +20,6 @@
 
 #include <QHash>
 #include <QSharedPointer>
-#include <qpixmap.h>
 
 #include "skin/imgsource.h"
 
@@ -29,11 +28,7 @@
   *@author Tue & Ken Haste Andersen
   */
 
-typedef struct
-{
-    QPixmap *pixmap;
-    int instCount;
-} PixmapInfoType;
+class QPixmap;
 
 class WPixmapStore {
   public:
@@ -41,11 +36,15 @@ class WPixmapStore {
     static QPixmap *getPixmapNoCache(const QString &fileName);
     static void deletePixmap(QPixmap *p);
     static void setLoader(QSharedPointer<ImgSource> ld);
-    static void emptyStore();
   private:
+    struct PixmapInfoType {
+        QPixmap *pixmap;
+        int instCount;
+    };
+
     /** Dictionary of pixmaps already instantiated */
-    static QHash<QString, PixmapInfoType*> dictionary;
-    static QSharedPointer<ImgSource> loader;
+    static QHash<QString, PixmapInfoType*> m_dictionary;
+    static QSharedPointer<ImgSource> m_loader;
 };
 
 #endif

@@ -8,7 +8,6 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wlibrarytableview.h"
-#include "../library/stardelegate.h"
 
 WLibraryTableView::WLibraryTableView(QWidget* parent,
                                      ConfigObject<ConfigValue>* pConfig,
@@ -22,9 +21,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     // Editing starts when clicking on an already selected item.
     setEditTriggers(QAbstractItemView::SelectedClicked);
 
-    // This is to support rating of tracks
-    setItemDelegate(new StarDelegate(this));
-
     //Enable selection by rows and extended selection (ctrl/shift click)
     setSelectionBehavior(QAbstractItemView::SelectRows);
     setSelectionMode(QAbstractItemView::ExtendedSelection);
@@ -33,6 +29,9 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
     setShowGrid(false);
     setCornerButtonEnabled(false);
     setSortingEnabled(true);
+    // Used by delegates (e.g. StarDelegate) to tell when the mouse enters a
+    // cell.
+    setMouseTracking(true);
     //Work around a Qt bug that lets you make your columns so wide you
     //can't reach the divider to make them small again.
     setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
@@ -50,9 +49,6 @@ WLibraryTableView::WLibraryTableView(QWidget* parent,
 WLibraryTableView::~WLibraryTableView() {
     qDebug() << "~WLibraryTableView";
     saveVScrollBarPosState();
-}
-
-void WLibraryTableView::setup(QDomNode node) {
 }
 
 void WLibraryTableView::loadVScrollBarPosState() {

@@ -87,7 +87,7 @@ bool Parser::isUtf8(const char* string) {
     }
 
     const unsigned char* bytes = (const unsigned char *)string;
-    while(*bytes) {
+    while (*bytes) {
         if(     (// ASCII
                         bytes[0] == 0x09 ||
                         bytes[0] == 0x0A ||

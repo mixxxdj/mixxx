@@ -23,6 +23,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled")));
     wantenabled         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_wantenabled")));
     cueing              = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_cueing")));
+    scratching          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_scratching")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_status")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
@@ -47,9 +48,6 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
 
     //RIAA correction
     iRIAACorrection =  m_pConfig->getValueString(ConfigKey("[VinylControl]","InputRIAACorrection")).toInt();
-
-    //Vinyl control mode
-    iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toInt();
 
     //Enabled or not -- load from saved value in case vinyl control is restarting 
     bIsEnabled = wantenabled->get();
@@ -86,6 +84,26 @@ VinylControl::~VinylControl()
         //be enabled
         wantenabled->slotSet(true);
     }
+
+    delete playPos;
+    delete trackSamples;
+    delete trackSampleRate;
+    delete vinylSeek;
+    delete controlScratch;
+    delete rateSlider;
+    delete playButton;
+    delete reverseButton;
+    delete duration;
+    delete mode;
+    delete enabled;
+    delete wantenabled;
+    delete cueing;
+    delete scratching;
+    delete rateRange;
+    delete vinylStatus;
+    delete rateDir;
+    delete loopEnabled;
+    delete signalenabled;
 }
 
 float VinylControl::getSpeed()

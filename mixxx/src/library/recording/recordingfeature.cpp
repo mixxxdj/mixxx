@@ -8,13 +8,13 @@
 #include <QFileInfo>
 #include <QDesktopServices>
 
+#include "dlgrecording.h"
 #include "trackinfoobject.h"
 #include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
 #include "library/trackcollection.h"
 #include "library/dao/trackdao.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 const QString RecordingFeature::m_sRecordingViewName = QString("Recording");
@@ -23,7 +23,7 @@ RecordingFeature::RecordingFeature(QObject* parent, ConfigObject<ConfigValue>* p
                                    TrackCollection* pTrackCollection,
                                    RecordingManager* pRecordingManager)
         : LibraryFeature(parent),
-          m_pConfig(pConfig), m_pRecordingView(0),
+          m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_pRecordingManager(pRecordingManager){
 
@@ -44,55 +44,33 @@ QIcon RecordingFeature::getIcon() {
 TreeItemModel* RecordingFeature::getChildModel() {
     return &m_childModel;
 }
-void RecordingFeature::bindWidget(WLibrarySidebar *sidebarWidget,
-                             WLibrary *libraryWidget,
-                             MixxxKeyboard *keyboard)
-{
+void RecordingFeature::bindWidget(WLibrary *libraryWidget,
+                                  MixxxKeyboard *keyboard) {
     //The view will be deleted by LibraryWidget
-    m_pRecordingView = new DlgRecording(libraryWidget,
-                                           m_pConfig,
-                                           m_pTrackCollection,
-                                           m_pRecordingManager,
-                                           keyboard);
+    DlgRecording* pRecordingView = new DlgRecording(libraryWidget,
+                                                      m_pConfig,
+                                                      m_pTrackCollection,
+                                                      m_pRecordingManager,
+                                                      keyboard);
 
-    m_pRecordingView->installEventFilter(keyboard);
-    libraryWidget->registerView(m_sRecordingViewName, m_pRecordingView);
-    connect(m_pRecordingView, SIGNAL(loadTrack(TrackPointer)),
+    pRecordingView->installEventFilter(keyboard);
+    libraryWidget->registerView(m_sRecordingViewName, pRecordingView);
+    connect(pRecordingView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(pRecordingView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
+    connect(this, SIGNAL(refreshBrowseModel()),
+            pRecordingView, SLOT(refreshBrowseModel()));
+    connect(this, SIGNAL(requestRestoreSearch()),
+            pRecordingView, SLOT(slotRestoreSearch()));
+    connect(pRecordingView, SIGNAL(restoreSearch(QString)),
+            this, SIGNAL(restoreSearch(QString)));
 }
 
-bool RecordingFeature::dropAccept(QUrl url) {
-    return false;
-}
-
-bool RecordingFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
-    return false;
-}
-
-bool RecordingFeature::dragMoveAccept(QUrl url) {
-    return false;
-}
-
-bool RecordingFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    return false;
-}
 
 void RecordingFeature::activate() {
-    m_pRecordingView->refreshBrowseModel();
-    emit(switchToView("Recording"));
-}
-
-void RecordingFeature::activateChild(const QModelIndex& index) {
-
-}
-
-void RecordingFeature::onRightClick(const QPoint& globalPos) {
-}
-
-void RecordingFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-}
-void RecordingFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do here since we have no child models
+    emit(refreshBrowseModel());
+    emit(switchToView(m_sRecordingViewName));
+    // Ask the view to emit a restoreSearch signal.
+    emit(requestRestoreSearch());
 }

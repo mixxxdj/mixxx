@@ -20,7 +20,7 @@
 
 #define MIXXX
 #include "engine/engineobject.h"
-#include "../lib/fidlib-0.9.9/fidlib.h"
+#include "../lib/fidlib-0.9.10/fidlib.h"
 #include "defs.h"
 
 enum filterType{

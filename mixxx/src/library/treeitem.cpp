@@ -51,6 +51,10 @@ void TreeItem::appendChild(TreeItem *item) {
     m_childItems.append(item);
 }
 
+void TreeItem::removeChild(int index) {
+    m_childItems.removeAt(index);
+}
+
 TreeItem *TreeItem::child(int row) {
     return m_childItems.value(row);
 }
@@ -97,7 +101,7 @@ bool TreeItem::insertChildren(QList<TreeItem*> &data, int position, int count) {
 
     for (int row = 0; row < count; ++row) {
         TreeItem* item = data.at(row);
-        m_childItems.insert(row, item);
+        m_childItems.insert(position + row, item);
     }
 
     return true;

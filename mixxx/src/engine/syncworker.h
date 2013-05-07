@@ -2,6 +2,7 @@
 #define SYNCWORKER_H
 
 #include <QObject>
+#include <QEvent>
 
 #include "engine/engineworker.h"
 
@@ -15,6 +16,8 @@ class SyncWorker : public EngineWorker {
 
     void run();
     void schedule();
+
+    bool eventFilter(QObject* o, QEvent* e);
 };
 
 #endif /* SYNCWORKER_H */

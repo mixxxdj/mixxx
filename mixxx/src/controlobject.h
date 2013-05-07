@@ -21,9 +21,10 @@
 #include <QObject>
 #include <QEvent>
 #include <QMutex>
-#include "midi/midimessage.h"
+
 #include "configobject.h"
 #include "controlobjectthread.h"
+#include "controllers/midi/midimessage.h"
 
 class QWidget;
 class ConfigKey;
@@ -38,7 +39,7 @@ struct QueueObjectThread
 struct QueueObjectMidi
 {
     ControlObject *pControlObject;
-    MidiCategory category;
+    MidiOpCode opcode;
     double value;
 };
 
@@ -60,14 +61,19 @@ class ControlObject : public QObject
     Q_OBJECT
 public:
     ControlObject();
-    ControlObject(ConfigKey key, bool bIgnoreNops=true);
+    ControlObject(ConfigKey key, bool bIgnoreNops=true, bool track=false);
+    ControlObject(const QString& group, const QString& item, bool bIgnoreNops=true);
     virtual ~ControlObject();
     /** Connect two control objects dest and src, so each time src is updated, so is dest. */
     static bool connectControls(ConfigKey src, ConfigKey dest);
     /** Disonnect a control object. */
     static bool disconnectControl(ConfigKey key);
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
-    static ControlObject *getControl(ConfigKey key);
+    static ControlObject* getControl(const ConfigKey& key);
+    static inline ControlObject* getControl(const QString& group, const QString& item) {
+        ConfigKey key(group, item);
+        return getControl(key);
+    }
 
     // Adds all ControlObjects that currently exist to pControlList
     static void getControls(QList<ControlObject*>* pControlsList);
@@ -80,7 +86,7 @@ public:
       * happend, otherwise false. */
     bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);
     /** Return the key of the object */
-    inline ConfigKey getKey() { return m_Key; }
+    inline ConfigKey getKey() { return m_key; }
     /** Return the value of the ControlObject */
     inline double get() { return m_dValue; }
     /** Add to value. Not thread safe. */
@@ -92,13 +98,19 @@ public:
     /** Queue a control change from a widget. Thread safe. Blocking. */
     void queueFromThread(double dValue, ControlObjectThread *pControlObjectThread=0);
     /** Queue a control change from MIDI. Thread safe. Blocking. */
-    void queueFromMidi(MidiCategory c, double v);
+    void queueFromMidi(MidiOpCode o, double v);
     /** Return a ControlObject value, corresponding to the widget input value. Thread safe. */
     virtual double getValueFromWidget(double dValue);
     /** Return a widget value corresponding to the ControlObject input value. Thread safe. */
     virtual double getValueToWidget(double dValue);
     /** get value (range 0..127) **/
     virtual double GetMidiValue();
+    virtual void setDefaultValue(double dValue) {
+        m_dDefaultValue = dValue;
+    }
+    virtual double defaultValue() const {
+        return m_dDefaultValue;
+    }
 
 public slots:
     /** Sets the value of the object and updates associated proxy objects. Not thread safe. */
@@ -112,19 +124,25 @@ protected:
     /** Sets the value of the object. Not thread safe. */
     virtual void setValueFromEngine(double dValue);
     /** Called when a widget has changed value. Not thread safe. */
-    virtual void setValueFromMidi(MidiCategory, double v);
+    virtual void setValueFromMidi(MidiOpCode o, double v);
     /** Called when another thread has changed value. Not thread safe. */
     virtual void setValueFromThread(double dValue);
 
 protected:
     /** The actual value of the controller */
     double m_dValue;
+    double m_dDefaultValue;
     /** Key of the object */
-    ConfigKey m_Key;
+    ConfigKey m_key;
 
 private:
     // Whether to ignore set/add/sub()'s which would have no effect
     bool m_bIgnoreNops;
+    // Whether to track value changes with the stats framework.
+    bool m_bTrack;
+    QString m_trackKey;
+    int m_trackType;
+    int m_trackFlags;
     /** List of associated proxy objects */
     QList<ControlObjectThread*> m_qProxyList;
     /** Mutex for the proxy list */

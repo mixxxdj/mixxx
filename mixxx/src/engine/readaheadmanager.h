@@ -28,7 +28,7 @@ class ReadAheadManager {
   public:
     explicit ReadAheadManager(CachingReader* reader);
     virtual ~ReadAheadManager();
-    
+
     // Call this method to fill buffer with requested_samples out of the
     // lookahead buffer. Provide rate as dRate so that the manager knows the
     // direction the audio is progressing in. Returns the total number of
@@ -53,12 +53,14 @@ class ReadAheadManager {
 
     // hintReader allows the ReadAheadManager to provide hints to the reader to
     // indicate that the given portion of a song is about to be read.
-    virtual void hintReader(double dRate, QList<Hint>& hintList,
-                            int iSamplesPerBuffer);
-
+    virtual void hintReader(double dRate, QList<Hint>& hintList);
 
     virtual int getEffectiveVirtualPlaypositionFromLog(double currentVirtualPlayposition,
                                                        double numConsumedSamples);
+
+    virtual void setReader(CachingReader* pReader) {
+        m_pReader = pReader;
+    }
 
   private:
     // An entry in the read log indicates the virtual playposition the read
@@ -75,7 +77,11 @@ class ReadAheadManager {
         }
 
         bool direction() const {
-            return virtualPlaypositionStart < virtualPlaypositionEndNonInclusive;
+            // NOTE(rryan): We try to avoid 0-length ReadLogEntry's when
+            // possible but they have happened in the past. We treat 0-length
+            // ReadLogEntry's as forward reads because this prevents them from
+            // being interpreted as a seek in the common case.
+            return virtualPlaypositionStart <= virtualPlaypositionEndNonInclusive;
         }
 
         double length() const {
@@ -94,7 +100,9 @@ class ReadAheadManager {
         }
 
         bool merge(const ReadLogEntry& other) {
-            if (direction() == other.direction() &&
+            // Allow 0-length ReadLogEntry's to merge regardless of their
+            // direction if they have the right start point.
+            if ((other.length() == 0 || direction() == other.direction()) &&
                 virtualPlaypositionEndNonInclusive == other.virtualPlaypositionStart) {
                 virtualPlaypositionEndNonInclusive =
                         other.virtualPlaypositionEndNonInclusive;
@@ -114,6 +122,7 @@ class ReadAheadManager {
     QLinkedList<ReadLogEntry> m_readAheadLog;
     int m_iCurrentPosition;
     CachingReader* m_pReader;
+    CSAMPLE *m_pCrossFadeBuffer;
 };
 
 #endif // READAHEADMANGER_H

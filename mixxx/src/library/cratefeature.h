@@ -1,8 +1,9 @@
 #ifndef CRATEFEATURE_H
 #define CRATEFEATURE_H
 
-#include <QSqlTableModel>
 #include <QModelIndex>
+#include <QList>
+#include <QPair>
 #include <QAction>
 
 #include "library/libraryfeature.h"
@@ -22,45 +23,47 @@ class CrateFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
-    bool dragMoveAccept(QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+                         QWidget *pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget,
+    void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
-  signals:
-    void showPage(const QUrl& page);
 
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-    void onLazyChildExpandation(const QModelIndex& index);
 
     void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
+    void slotDuplicateCrate();
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
+    void slotCrateTableChanged(int playlistId);
+    void htmlLinkClicked(const QUrl & link);
 
   private:
-    void constructChildModel();
+    QString getRootViewHtml() const;
+    QModelIndex constructChildModel(int selected_id);
     void clearChildModel();
-  
+    void buildCrateList();
+
     TrackCollection* m_pTrackCollection;
+    CrateDAO& m_crateDao;
     QAction *m_pCreateCrateAction;
     QAction *m_pDeleteCrateAction;
     QAction *m_pRenameCrateAction;
     QAction *m_pLockCrateAction;
+    QAction *m_pDuplicateCrateAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
-    QSqlTableModel m_crateListTableModel;
+    QList<QPair<int, QString> > m_crateList;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;

@@ -4,25 +4,42 @@
 #include "track/beatgrid.h"
 #include "mathstuff.h"
 
-static int kFrameSize = 2;
+static const int kFrameSize = 2;
 
 struct BeatGridData {
 	double bpm;
 	double firstBeat;
 };
 
-BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
+class BeatGridIterator : public BeatIterator {
+  public:
+    BeatGridIterator(double dBeatLength, double dFirstBeat, double dEndSample)
+            : m_dBeatLength(dBeatLength),
+              m_dCurrentSample(dFirstBeat),
+              m_dEndSample(dEndSample) {
+    }
+
+    virtual bool hasNext() const {
+        return m_dBeatLength > 0 && m_dCurrentSample <= m_dEndSample;
+    }
+
+    virtual double next() {
+        double beat = m_dCurrentSample;
+        m_dCurrentSample += m_dBeatLength;
+        return beat;
+    }
+
+  private:
+    double m_dBeatLength;
+    double m_dCurrentSample;
+    double m_dEndSample;
+};
+
+BeatGrid::BeatGrid(TrackInfoObject* pTrack, const QByteArray* pByteArray)
         : QObject(),
           m_mutex(QMutex::Recursive),
           m_iSampleRate(pTrack->getSampleRate()),
-          m_dBpm(0.0),
-          m_dFirstBeat(0.0f),
           m_dBeatLength(0.0f) {
-    connect(pTrack.data(), SIGNAL(bpmUpdated(double)),
-            this, SLOT(slotTrackBpmUpdated(double)),
-            Qt::DirectConnection);
-    slotTrackBpmUpdated(pTrack->getBpm());
-
     qDebug() << "New BeatGrid";
     if (pByteArray != NULL) {
         readByteArray(pByteArray);
@@ -30,41 +47,71 @@ BeatGrid::BeatGrid(TrackPointer pTrack, const QByteArray* pByteArray)
 }
 
 BeatGrid::~BeatGrid() {
-
 }
 
 void BeatGrid::setGrid(double dBpm, double dFirstBeatSample) {
+    if (dBpm < 0) {
+        dBpm = 0.0;
+    }
+
     QMutexLocker lock(&m_mutex);
-    m_dBpm = dBpm;
-    m_dFirstBeat = dFirstBeatSample;
+    m_grid.mutable_bpm()->set_bpm(dBpm);
+    m_grid.mutable_first_beat()->set_frame_position(dFirstBeatSample / kFrameSize);
     // Calculate beat length as sample offsets
-    m_dBeatLength = (60.0 * m_iSampleRate / m_dBpm) * kFrameSize;
+    m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
 }
 
 QByteArray* BeatGrid::toByteArray() const {
     QMutexLocker locker(&m_mutex);
-    BeatGridData blob = { m_dBpm, (m_dFirstBeat / kFrameSize) };
-    QByteArray* pByteArray = new QByteArray((char *)&blob, sizeof(blob));
+    std::string output;
+    m_grid.SerializeToString(&output);
+    QByteArray* pByteArray = new QByteArray(output.data(), output.length());
     // Caller is responsible for delete
     return pByteArray;
 }
 
 void BeatGrid::readByteArray(const QByteArray* pByteArray) {
-    if ( pByteArray->size() != sizeof(BeatGridData))
+    mixxx::track::io::BeatGrid grid;
+    if (grid.ParseFromArray(pByteArray->constData(), pByteArray->length())) {
+        m_grid = grid;
+        m_dBeatLength = (60.0 * m_iSampleRate / bpm()) * kFrameSize;
         return;
-    BeatGridData *blob = (BeatGridData *)pByteArray->data();
+    }
+
+    // Legacy fallback for BeatGrid-1.0
+    if (pByteArray->size() != sizeof(BeatGridData))
+        return;
+    const BeatGridData* blob = (const BeatGridData*)pByteArray->constData();
+
     // We serialize into frame offsets but use sample offsets at runtime
     setGrid(blob->bpm, blob->firstBeat * kFrameSize);
 }
 
+double BeatGrid::firstBeatSample() const {
+    return m_grid.first_beat().frame_position() * kFrameSize;
+}
+
+double BeatGrid::bpm() const {
+    return m_grid.bpm().bpm();
+}
+
 QString BeatGrid::getVersion() const {
     QMutexLocker locker(&m_mutex);
-    return "BeatGrid-1.0";
+    return BEAT_GRID_2_VERSION;
+}
+
+QString BeatGrid::getSubVersion() const {
+    QMutexLocker locker(&m_mutex);
+    return m_subVersion;
+}
+
+void BeatGrid::setSubVersion(QString subVersion) {
+    m_subVersion = subVersion;
 }
 
 // internal use only
 bool BeatGrid::isValid() const {
-    return m_iSampleRate > 0 && m_dBpm > 0;
+    return m_iSampleRate > 0 && bpm() > 0;
 }
 
 // This could be implemented in the Beats Class itself.
@@ -96,7 +143,7 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
         return -1;
     }
 
-    double beatFraction = (dSamples - m_dFirstBeat) / m_dBeatLength;
+    double beatFraction = (dSamples - firstBeatSample()) / m_dBeatLength;
     double prevBeat = floorf(beatFraction);
     double nextBeat = ceilf(beatFraction);
 
@@ -114,12 +161,12 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     if (n > 0) {
         // We're going forward, so use ceilf to round up to the next multiple of
         // m_dBeatLength
-        dClosestBeat = ceilf(beatFraction) * m_dBeatLength + m_dFirstBeat;
+        dClosestBeat = ceilf(beatFraction) * m_dBeatLength + firstBeatSample();
         n = n - 1;
     } else {
         // We're going backward, so use floorf to round down to the next multiple
         // of m_dBeatLength
-        dClosestBeat = floorf(beatFraction) * m_dBeatLength + m_dFirstBeat;
+        dClosestBeat = floorf(beatFraction) * m_dBeatLength + firstBeatSample();
         n = n + 1;
     }
 
@@ -130,16 +177,18 @@ double BeatGrid::findNthBeat(double dSamples, int n) const {
     return dResult;
 }
 
-void BeatGrid::findBeats(double startSample, double stopSample, QList<double>* pBeatsList) const {
+BeatIterator* BeatGrid::findBeats(double startSample, double stopSample) const {
     QMutexLocker locker(&m_mutex);
     if (!isValid() || startSample > stopSample) {
-        return;
+        return NULL;
     }
+    // qDebug() << "BeatGrid::findBeats startSample" << startSample << "stopSample"
+    //          << stopSample << "beatlength" << m_dBeatLength << "BPM" << bpm();
     double curBeat = findNextBeat(startSample);
-    while (curBeat <= stopSample) {
-        pBeatsList->append(curBeat);
-        curBeat += m_dBeatLength;
+    if (curBeat == -1.0) {
+        return NULL;
     }
+    return new BeatGridIterator(m_dBeatLength, curBeat, stopSample);
 }
 
 bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
@@ -148,7 +197,7 @@ bool BeatGrid::hasBeatInRange(double startSample, double stopSample) const {
         return false;
     }
     double curBeat = findNextBeat(startSample);
-    if (curBeat <= stopSample) {
+    if (curBeat != -1.0 && curBeat <= stopSample) {
         return true;
     }
     return false;
@@ -159,7 +208,7 @@ double BeatGrid::getBpm() const {
     if (!isValid()) {
         return 0;
     }
-    return m_dBpm;
+    return bpm();
 }
 
 double BeatGrid::getBpmRange(double startSample, double stopSample) const {
@@ -167,20 +216,24 @@ double BeatGrid::getBpmRange(double startSample, double stopSample) const {
     if (!isValid() || startSample > stopSample) {
         return -1;
     }
-    return m_dBpm;
+    return bpm();
 }
 
 void BeatGrid::addBeat(double dBeatSample) {
+    Q_UNUSED(dBeatSample);
     //QMutexLocker locker(&m_mutex);
     return;
 }
 
 void BeatGrid::removeBeat(double dBeatSample) {
+    Q_UNUSED(dBeatSample);
     //QMutexLocker locker(&m_mutex);
     return;
 }
 
 void BeatGrid::moveBeat(double dBeatSample, double dNewBeatSample) {
+    Q_UNUSED(dBeatSample);
+    Q_UNUSED(dNewBeatSample);
     //QMutexLocker locker(&m_mutex);
     return;
 }
@@ -190,7 +243,8 @@ void BeatGrid::translate(double dNumSamples) {
     if (!isValid()) {
         return;
     }
-    m_dFirstBeat += dNumSamples;
+    double newFirstBeatFrames = (firstBeatSample() + dNumSamples) / kFrameSize;
+    m_grid.mutable_first_beat()->set_frame_position(newFirstBeatFrames);
     locker.unlock();
     emit(updated());
 }
@@ -200,13 +254,17 @@ void BeatGrid::scale(double dScalePercentage) {
     if (!isValid()) {
         return;
     }
-    m_dBpm *= dScalePercentage;
+    double newBpm = bpm() * dScalePercentage;
+    m_grid.mutable_bpm()->set_bpm(newBpm);
+    m_dBeatLength = (60.0 * m_iSampleRate / newBpm) * kFrameSize;
     locker.unlock();
     emit(updated());
 }
 
-void BeatGrid::slotTrackBpmUpdated(double dBpm) {
+void BeatGrid::setBpm(double dBpm) {
     QMutexLocker locker(&m_mutex);
-    m_dBpm = dBpm;
-    m_dBeatLength = (60.0 * m_iSampleRate / m_dBpm) * kFrameSize;
+    m_grid.mutable_bpm()->set_bpm(dBpm);
+    m_dBeatLength = (60.0 * m_iSampleRate / dBpm) * kFrameSize;
+    locker.unlock();
+    emit(updated());
 }

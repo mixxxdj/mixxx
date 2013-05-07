@@ -19,6 +19,9 @@
 
 #include "enginebufferscalest.h"
 
+// Fixes redefinition warnings from SoundTouch.
+#undef TRUE
+#undef FALSE
 #include "SoundTouch.h"
 #include "mathstuff.h"
 #include "controlobject.h"
@@ -121,10 +124,11 @@ double EngineBufferScaleST::setTempo(double dTempo)
     double dTempoOld = m_dTempo;
     m_dTempo = fabs(dTempo);
 
-    if (m_dTempo>MAX_SEEK_SPEED)
+    if (m_dTempo > MAX_SEEK_SPEED) {
         m_dTempo = MAX_SEEK_SPEED;
-    else if (m_dTempo<MIN_SEEK_SPEED)
+    } else if (m_dTempo < MIN_SEEK_SPEED) {
         m_dTempo = 0.0;
+    }
 
     m_qMutex.lock();
     //It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to SoundTouch.
@@ -155,24 +159,10 @@ double EngineBufferScaleST::setTempo(double dTempo)
     }
 }
 
-/**
- * @param playpos The play position in the EngineBuffer (in samples)
- * @param buf_size The size of the audio buffer to scale (in samples)
- * @param pBase Pointer to the source audio to scale.
- * @param iBaseLength the length of the source audio available
- */
-CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
-                                    CSAMPLE* pBase, unsigned long iBaseLength) {
-    Q_UNUSED (pBase);
-    Q_UNUSED (iBaseLength);
-    new_playpos = 0.0;
+CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
+    m_samplesRead = 0.0;
 
     m_qMutex.lock();
-
-    int iCurPos = playpos;
-    if (!even(iCurPos)) {
-        iCurPos--;
-    }
 
     //If we've just cleared SoundTouch's FIFO of unprocessed samples,
     //then reset our "read ahead position" because we probably need
@@ -192,7 +182,7 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
 
     unsigned long remaining_frames = buf_size/2;
     //long remaining_source_frames = iBaseLength/2;
-    CSAMPLE* read = buffer;
+    CSAMPLE* read = m_buffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
         unsigned long received_frames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)read, remaining_frames);
@@ -247,10 +237,10 @@ CSAMPLE* EngineBufferScaleST::scale(double playpos, unsigned long buf_size,
     // new_playpos is now interpreted as the total number of virtual samples
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
-    new_playpos = m_dTempo*m_dBaseRate*total_received_frames*2;
+    m_samplesRead = m_dTempo*m_dBaseRate*total_received_frames*2;
 
     m_qMutex.unlock();
 
-    return buffer;
+    return m_buffer;
 }
 

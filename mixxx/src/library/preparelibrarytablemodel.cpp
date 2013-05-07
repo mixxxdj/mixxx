@@ -10,8 +10,7 @@ PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.prepare") {
     m_bShowRecentSongs = true;
-    setSearch("", m_bShowRecentSongs ? RECENT_FILTER : QString());
-    select();
+    setSearch("", RECENT_FILTER);
 
     connect(this, SIGNAL(doSearch(const QString&)),
             this, SLOT(slotSearch(const QString&)));
@@ -19,10 +18,6 @@ PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
 
 
 PrepareLibraryTableModel::~PrepareLibraryTableModel() {
-}
-
-bool PrepareLibraryTableModel::isColumnInternal(int column) {
-    return LibraryTableModel::isColumnInternal(column);
 }
 
 void PrepareLibraryTableModel::search(const QString& searchText) {

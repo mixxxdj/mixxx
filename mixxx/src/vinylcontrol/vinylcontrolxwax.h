@@ -2,6 +2,7 @@
 #define __VINYLCONTROLXWAX_H__
 
 #include "vinylcontrol.h"
+#include "steadypitch.h"
 #include <time.h>
 #include <QTime>
 
@@ -63,9 +64,7 @@ class VinylControlXwax : public VinylControl
     bool bForceResync;
     int iOldMode;
     double dOldFilePos;
-    double dSteadyPitch;
-    double dOldSteadyPitch;
-    double dSteadyPitchTime;
+    SteadyPitch *m_pSteadySubtle, *m_pSteadyGross;
     QTime tSinceSteadyPitch;
     double dUiUpdateTime;
 
@@ -75,7 +74,7 @@ class VinylControlXwax : public VinylControl
     bool bTrackSelectMode;
 
     // Contains information that xwax's code needs internally about the timecode and how to process it.
-    struct timecoder_t timecoder;
+    struct timecoder timecoder;
     static QMutex s_xwaxLUTMutex; /** Static mutex that protects our creation/destruction of the xwax LUTs */
     static bool m_bLUTInitialized;
 

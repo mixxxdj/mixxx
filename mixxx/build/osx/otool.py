@@ -51,8 +51,15 @@ def system(s):
 SYSTEM_FRAMEWORKS = ["/System/Library/Frameworks"]
 SYSTEM_LIBPATH = ["/usr/lib"] #anything else?
 #paths to libs that we should copy in
-LOCAL_FRAMEWORKS = [os.path.expanduser("~/Library/Frameworks"), "/Library/Frameworks", "/Network/Library/Frameworks"]
-LOCAL_LIBPATH = ["/usr/local/lib", "/opt/local/lib", "/sw/local/lib"]
+LOCAL_FRAMEWORKS = [
+    os.path.expanduser("~/Library/Frameworks"), 
+    "/Library/Frameworks", 
+    "/Network/Library/Frameworks"
+]
+LOCAL_LIBPATH = filter(lambda x: 
+    os.path.isdir(x), 
+    ["/usr/local/lib", "/opt/local/lib", "/sw/local/lib"]
+)
 
 #however
 FRAMEWORKS = LOCAL_FRAMEWORKS + SYSTEM_FRAMEWORKS

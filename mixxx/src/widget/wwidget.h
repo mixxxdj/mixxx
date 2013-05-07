@@ -19,7 +19,6 @@
 #define WWIDGET_H
 
 #include <QtGui>
-#include <QtXml>
 
 #include "configobject.h"
 
@@ -48,29 +47,36 @@ public:
 
     /** Given a filename of a pixmap, returns its path */
     static const QString getPath(QString location);
-    static QDomElement openXMLFile(QString path, QString name);
     double getValue();
-public slots:
+    // Sometimes WWidget's compose a QWidget (like a label). This is used during
+    // skin parsing to style and size the composed widget.
+    virtual QWidget* getComposedWidget() { return NULL; }
+
+  public slots:
     virtual void setValue(double fValue);
     void updateValue(double fValue);
     void setOnOff(double);
-private slots:
+
+  private slots:
     void slotReEmitValueDown(double);
     void slotReEmitValueUp(double);
-signals:
+
+  signals:
+    void valueReset();
     void valueChangedDown(double);
     void valueChangedUp(double);
     void valueChangedLeftDown(double);
     void valueChangedLeftUp(double);
     void valueChangedRightDown(double);
     void valueChangedRightUp(double);
-protected:
+
+  protected:
     /** Value/state of widget */
     double m_fValue;
     /** Is true if widget is off */
     bool m_bOff;
 
-private:
+  private:
     /** Variable containing the path to the pixmaps */
     static QString m_qPath;
     /** Property used when connecting to ControlObject */

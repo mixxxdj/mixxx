@@ -216,3 +216,6 @@ float sigmoid_zero(double t, double max_t)
     return 1.0 / (1 + exp(0 - t1));
 }
 
+int nearestSuperiorPowerOfTwo(int v) {
+    return (int)pow(2.0,ceil(log((double)v)/log(2.0)));
+}

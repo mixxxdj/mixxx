@@ -9,11 +9,122 @@
         </message>
     </context>
     <context>
+        <name>BaseExternalLibraryFeature</name>
+        <message>
+            <source>Add to Auto DJ Queue (bottom)</source>
+            <translation>Adaugaţi in selecţia Auto DJ (jos)</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (top)</source>
+            <translation>Adaugaţi in selecţia Auto DJ (sus)</translation>
+        </message>
+        <message>
+            <source>Import Playlist</source>
+            <translation>Importă listă de redare</translation>
+        </message>
+        <message>
+            <source>Playlist Creation Failed</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>An unknown error occurred while creating playlist: </source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>BasePlaylistFeature</name>
+        <message>
+            <source>New Playlist</source>
+            <translation>Listă de redare nouă</translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (bottom)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add to Auto DJ Queue (top)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Eliminati</translation>
+        </message>
+        <message>
+            <source>Rename</source>
+            <translation>Redenumește</translation>
+        </message>
+        <message>
+            <source>Lock</source>
+            <translation>Blochează</translation>
+        </message>
+        <message>
+            <source>Import Playlist</source>
+            <translation>Importă listă de redare</translation>
+        </message>
+        <message>
+            <source>Duplicate Playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Export Playlist</source>
+            <translation>Exportare listă de redare</translation>
+        </message>
+        <message>
+            <source>Rename Playlist</source>
+            <translation>Redenumește lista de redare</translation>
+        </message>
+        <message>
+            <source>New playlist name:</source>
+            <translation>Nume nou listă de redare:</translation>
+        </message>
+        <message>
+            <source>Renaming Playlist Failed</source>
+            <translation>Redenumirea listei de redare eşuată</translation>
+        </message>
+        <message>
+            <source>A playlist by that name already exists.</source>
+            <translation>Există deja o listă de redare cu acelaşi nume.</translation>
+        </message>
+        <message>
+            <source>A playlist cannot have a blank name.</source>
+            <translation>O listă de redare nu poate fi salvată fară un nume.</translation>
+        </message>
+        <message>
+            <source>Playlist name:</source>
+            <translation>Nume listă de redare:</translation>
+        </message>
+        <message>
+            <source>_copy</source>
+            <translation>_copiere</translation>
+        </message>
+        <message>
+            <source>Playlist Creation Failed</source>
+            <translation>Creerea listei de redare eşuata</translation>
+        </message>
+        <message>
+            <source>An unknown error occurred while creating playlist: </source>
+            <translation>O eroare necunoscută a apărut în timpul creerii listei de redare: </translation>
+        </message>
+        <message>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation>Fişiere listă de redare (*.m3u *.m3u8 *.pls *.csv)</translation>
+        </message>
+        <message>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>BaseSqlTableModel</name>
         <message>
             <source>Played</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Redat</translation>
         </message>
         <message>
             <source>Artist</source>
@@ -32,6 +143,10 @@
             <translation>Gen</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation>Compozitor</translation>
+        </message>
+        <message>
             <source>Year</source>
             <translation>An</translation>
         </message>
@@ -41,7 +156,7 @@
         </message>
         <message>
             <source>Location</source>
-            <translation>Locație</translation>
+            <translation>Locația</translation>
         </message>
         <message>
             <source>Comment</source>
@@ -76,8 +191,22 @@
             <translation>#</translation>
         </message>
         <message>
+            <source>Timestamp</source>
+            <translation>Amprentă de timp</translation>
+        </message>
+        <message>
             <source>Key</source>
-            <translation>Tasta</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Lock</source>
+            <translation>Blocare BPM</translation>
+        </message>
+        <message>
+            <source>Preview</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -91,9 +220,18 @@
     <context>
         <name>BrowseFeature</name>
         <message>
-            <source>Quick Links</source>
+            <source>Add to Quick Links</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>Remove from Quick Links</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Quick Links</source>
+            <translation>Link-uri rapide</translation>
         </message>
         <message>
             <source>Devices</source>
@@ -104,25 +242,9 @@
             <translation>Medii amovibile</translation>
         </message>
         <message>
-            <source>Mixxx Library</source>
+            <source>Browse lets you navigate, view, and load tracks from folders on your hard disk and external devices.</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>Home</source>
-            <translation>Acasă</translation>
-        </message>
-        <message>
-            <source>Music</source>
-            <translation>Muzică</translation>
-        </message>
-        <message>
-            <source>Documents</source>
-            <translation>Documente</translation>
-        </message>
-        <message>
-            <source>Desktop</source>
-            <translation>Desktop</translation>
         </message>
         <message>
             <source>Browse</source>
@@ -160,6 +282,10 @@
             <translation>Gen</translation>
         </message>
         <message>
+            <source>Composer</source>
+            <translation>Compozitor</translation>
+        </message>
+        <message>
             <source>Comment</source>
             <translation>Comentariu</translation>
         </message>
@@ -173,7 +299,8 @@
         </message>
         <message>
             <source>Key</source>
-            <translation>Tasta</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Type</source>
@@ -185,7 +312,7 @@
         </message>
         <message>
             <source>Location</source>
-            <translation>Locaţia</translation>
+            <translation>Locația</translation>
         </message>
         <message>
             <source>Mixxx Library</source>
@@ -197,23 +324,105 @@
         </message>
         <message>
             <source>Warning: This will permanently delete the following files:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Atenție: Următoarele fișiere vor fi șterse permanent:</translation>
         </message>
         <message>
             <source>Are you sure you want to delete these files from your computer?</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Sunteţi sigur că vreţi să ştergeţi aceste fişiere din computerul dumneavoastră?</translation>
         </message>
         <message>
             <source>Could not delete the following file because it is in use by Mixxx or another application:</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Nu s-a putut şterge fişierul următor deoarece este folosit de Mixxx sau o altă aplicaţie:</translation>
         </message>
         <message>
             <source>Could not update file metadata.</source>
             <translation type="unfinished">
             </translation>
+        </message>
+    </context>
+    <context>
+        <name>BulkController</name>
+        <message>
+            <source>USB Controller</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>ControllerEngine</name>
+        <message>
+            <source>Uncaught exception at line %1 in file %2: %3</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Uncaught exception at line %1 in passed code: %2</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Controller script error</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>A control you just used is not working properly.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&lt;html&gt;(The script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>ControllerMappingDlg</name>
+        <message>
+            <source>Dialog</source>
+            <translation>Dialog</translation>
+        </message>
+        <message>
+            <source>Input</source>
+            <translation>Intrare</translation>
+        </message>
+        <message>
+            <source>The below box is under construction and will remain empty in this version of Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Controls</source>
+            <translation>Controale</translation>
+        </message>
+        <message>
+            <source>Add</source>
+            <translation>Adaugă</translation>
+        </message>
+        <message>
+            <source>Remove</source>
+            <translation>Elimina</translation>
+        </message>
+        <message>
+            <source>Learning Wizard</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clear all</source>
+            <translation>Șterge tot</translation>
+        </message>
+        <message>
+            <source>Output</source>
+            <translation>Ieșire</translation>
+        </message>
+        <message>
+            <source>Outputs</source>
+            <translation>Ieșiri</translation>
+        </message>
+        <message>
+            <source>Clear All</source>
+            <translation>Curăță tot</translation>
         </message>
     </context>
     <context>
@@ -225,7 +434,7 @@
         </message>
         <message>
             <source>Remove</source>
-            <translation>Elimină</translation>
+            <translation>Eliminare</translation>
         </message>
         <message>
             <source>Rename</source>
@@ -234,6 +443,10 @@
         <message>
             <source>Lock</source>
             <translation>Blochează</translation>
+        </message>
+        <message>
+            <source>_copy</source>
+            <translation>_copiere</translation>
         </message>
         <message>
             <source>Import Playlist</source>
@@ -252,8 +465,14 @@
             <translation>Exportă colecție</translation>
         </message>
         <message>
+            <source>Duplicate Crate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Unlock</source>
-            <translation>Deblochează</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Crate name:</source>
@@ -276,12 +495,31 @@
             <translation>Redenumirea colecției a eșuat</translation>
         </message>
         <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
+            <source>Playlist Files (*.m3u *.m3u8 *.pls *.csv)</source>
+            <translation>Fişiere listă de redare (*.m3u *.m3u8 *.pls *.csv)</translation>
+        </message>
+        <message>
+            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
+            <source>Crates are a great way to help organize the music you want to DJ with.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Crates let you organize your music however you'd like!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Create new crate</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -306,33 +544,69 @@
             <translation>Despre Mixxx</translation>
         </message>
         <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8.25pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;span style=&quot; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;Credits go here&lt;/span&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Sans Serif'; font-size:9pt;&quot;&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
-        </message>
-        <message>
-            <source>1.x.x</source>
-            <translation>1.x.x</translation>
-        </message>
-        <message>
             <source>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</source>
-            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Official Website&lt;/a&gt;</translation>
+            <translation>&lt;a href=&quot;http://mixxx.org/&quot;&gt;Website oficial&lt;/a&gt;</translation>
         </message>
     </context>
     <context>
         <name>DlgAutoDJ</name>
         <message>
+            <source>Auto-DJ</source>
+            <translation>Auto-DJ</translation>
+        </message>
+        <message>
+            <source>One deck must be stopped to enable Auto-DJ mode.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Disable Auto DJ</source>
             <translation>Dezactivează Auto DJ</translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shuffle</source>
+            <translation>Amestecă</translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip Track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fade Now</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Determines the duration of the transition.</source>
+            <translation>Determină durata tranziţiei.</translation>
+        </message>
+        <message>
+            <source>Seconds</source>
+            <translation>Secunde</translation>
+        </message>
+        <message>
+            <source>sec.</source>
+            <translation>sec.</translation>
+        </message>
+        <message>
+            <source>Turn Auto DJ on or off.</source>
+            <translation>Porneste sau opreşte Auto DJ.</translation>
         </message>
         <message>
             <source>Enable Auto DJ</source>
@@ -340,16 +614,109 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Manage</source>
-            <translation>Administrează</translation>
+            <translation>Gestionează</translation>
         </message>
+    </context>
+    <context>
+        <name>DlgBeatsDlg</name>
         <message>
-            <source>Shuffle playlist</source>
-            <translation>Amestecă lista de melodii</translation>
-        </message>
-        <message>
-            <source>Add tracks to the queue below...</source>
+            <source>Beat Detection Settings</source>
             <translation type="unfinished">
             </translation>
+        </message>
+        <message>
+            <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
+automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable BPM and Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose Analyser</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Beat Analyser:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Choose between different algorithms to detect beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Analyser Settings</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable fast beat detection. 
+If activated Mixxx only analyzes the first minute of a track for beat information. 
+This can speed up beat detection on slower computers but may result in lower quality beatgrids.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
+Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
+Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Attempts to correct the phase (first beat) of fixed-tempo beatgrids 
+by analyzing the beats to discard outliers.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>e.g. from 3rd-party programs or Mixxx versions before 1.11.
+(Not checked: Analyse only, if no beats exist.)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Re-analyse beats when settings change or beat detection data is outdated</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Fast Analysis (For slow computers, may be less accurate)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Assume constant tempo (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable Offset Correction (Recommended)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM Range</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Min:</source>
+            <translation>Min:</translation>
+        </message>
+        <message>
+            <source>Max:</source>
+            <translation>Max:</translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation>Restabilește valorile implicite</translation>
         </message>
     </context>
     <context>
@@ -378,86 +745,647 @@ p, li { white-space: pre-wrap; }
             <translation>Min</translation>
         </message>
         <message>
-            <source>Analyze Entire Song</source>
+            <source>Analyze Entire Track</source>
             <translation type="unfinished">
             </translation>
         </message>
     </context>
     <context>
-        <name>DlgMidiLearning</name>
+        <name>DlgControllerLearning</name>
         <message>
-            <source>Skip</source>
-            <translation>Omite</translation>
-        </message>
-        <message>
-            <source>Successfully mapped to: </source>
+            <source>Controller Learning Wizard</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Next</source>
-            <translation>Următor</translation>
-        </message>
-        <message>
-            <source>MIDI Learning Wizard</source>
+            <source>Click any control in the Mixxx interface or choose one from the list. Then move a control on your controller to map it. Repeat this as many times as you wish. When you are finished mapping controls, click Done.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Welcome to the MIDI Learning Wizard</source>
+            <source>Done</source>
+            <translation>Gata</translation>
+        </message>
+        <message>
+            <source>To map another control click a button or choose from the list.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>This wizard allows you to easily map the controls on your MIDI controller to Mixxx's controls.</source>
+            <source>Choose Control</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Begin</source>
-            <translation>Început</translation>
-        </message>
-        <message>
-            <source>Please tweak the control for:</source>
+            <source>Deck %1</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Mixxx Control</source>
+            <source>Sampler %1</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Previous</source>
-            <translation>Anterior</translation>
+            <source>Reset to default</source>
+            <translation>Restabilește la implicit</translation>
         </message>
         <message>
-            <source>Press spacebar to proceed or skip.</source>
+            <source>Mixer</source>
+            <translation>Mixer</translation>
+        </message>
+        <message>
+            <source>Crossfader</source>
+            <translation>Crossfader</translation>
+        </message>
+        <message>
+            <source>Master volume</source>
+            <translation>Volum principal</translation>
+        </message>
+        <message>
+            <source>Master balance</source>
+            <translation>Balans principal</translation>
+        </message>
+        <message>
+            <source>Headphone volume</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>MIDI learning complete!</source>
+            <source>Headphone mix (pre/main)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This wizard can be re-run at any time.&lt;/p&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Now go spin some beats!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</source>
-            <translation>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
-&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
-p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Lucida Grande'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;This wizard can be re-run at any time.&lt;/p&gt;
-&lt;p align=&quot;center&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;Now go spin some beats!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</translation>
+            <source>Transport</source>
+            <translation>Transport</translation>
         </message>
         <message>
-            <source>Finito!</source>
-            <translation>Terminat!</translation>
+            <source>Strip-search through track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Play button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Volume fader</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fast rewind button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fast forward button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Jump to start of track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Jump to end of track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Play reverse button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Gain knob</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone listen button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle repeat mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Eject track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mix orientation (e.g. left, right, center)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM and Sync</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM tap button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjust beatgrid</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle quantize mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Beat sync (tempo and phase)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Beat sync (tempo only)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Beat sync (phase only)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch and Rate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle keylock mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch control slider</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjust rate up (fine)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjust rate down (fine)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch-bend rate up (fine)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjust rate up (coarse)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjust rate down (coarse)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch-bend rate up (coarse)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch-bend rate down (coarse)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch-bend rate down (fine)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Equalizers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>High EQ knob</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mid EQ knob</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Low EQ knob</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>High EQ kill</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mid EQ kill</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Low EQ kill</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Vinyl Control</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle vinyl-control (ON/OFF)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle vinyl-control cueing mode (OFF/ONE/HOT)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle vinyl-control mode (ABS/REL/CONST)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Cue button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Set cue point</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Go to cue point and stop</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Set or jump to hotcue %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clear hotcue %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Jump to hotcue %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Jump to hotcue %1 and stop</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Looping</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop In button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Out button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reloop / Exit button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Halve the current loop's length</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Double the current loop's length</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle slip mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Preview Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Single deck mode - Toggle vinyl control to next deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Cues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcues</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit button</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Beat-Looping</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Create %1-beat loop</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Create temporary %1-beat loop roll</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/32th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/16th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/8th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>1/4th</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Expand/collapse the selected view (library, playlist..)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Switch to the next view (library, playlist..)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Switch to the previous view (library, playlist..)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Scroll to next track in library/playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Scroll to previous track in library/playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Load selected track into first stopped deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Load selected track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Load selected track and play</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Effects</source>
+            <translation>Efecte</translation>
+        </message>
+        <message>
+            <source>Toggle flange effect</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Flange effect: Wavelength/period</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Flange effect: Intensity</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Flange effect: Phase delay</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone on/off</source>
+            <translation>Microfon pornit/oprit</translation>
+        </message>
+        <message>
+            <source>Microphone volume</source>
+            <translation>Volum microfon</translation>
+        </message>
+        <message>
+            <source>Microphone channel orientation (e.g. left, right, center)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Auto DJ</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shuffle the content of the Auto DJ playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Skip the next track in the Auto DJ playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Trigger the transition to the next track</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggle Auto DJ (ON/OFF)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>User Interface</source>
+            <translation>Interfaţă utilizator</translation>
+        </message>
+        <message>
+            <source>Show/hide the sampler section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the microphone section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the vinyl control section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the preview deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide spinning vinyl widget</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ready to map: %1. Now move a control on your controller.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Successfully mapped to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgHidden</name>
+        <message>
+            <source>Manage</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unhide selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unhide</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+S</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgMissing</name>
+        <message>
+            <source>Manage</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Select All</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge selected tracks from the library.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -477,8 +1405,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>BPM Detection</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Detectare BPM</translation>
         </message>
         <message>
             <source>Enable BPM Detection</source>
@@ -486,8 +1413,9 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>Detect Song BPM on Import</source>
-            <translation>Detectează BPM la import</translation>
+            <source>Detect Tracks BPM on Import</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Write BPM to ID3 Tag</source>
@@ -514,7 +1442,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Edit</source>
-            <translation>Editează</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Delete</source>
@@ -537,19 +1466,152 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
+        <name>DlgPrefController</name>
+        <message>
+            <source>None</source>
+            <translation>Niciuna</translation>
+        </message>
+        <message>
+            <source>%1 by %2</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>No Description</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>No support available.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgPrefControllerDlg</name>
+        <message>
+            <source>Dialog</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Controller Name</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enabled</source>
+            <translation>Activat</translation>
+        </message>
+        <message>
+            <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_scripting&quot;&gt;Troubleshooting&lt;/a&gt;</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>TextLabel</source>
+            <translation>EtichetăText</translation>
+        </message>
+        <message>
+            <source>Description:</source>
+            <translation>Descriere:</translation>
+        </message>
+        <message>
+            <source>Load Preset:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loaded Preset:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Support:</source>
+            <translation>Asistență:</translation>
+        </message>
+        <message>
+            <source>Click to start the Controller Learning wizard.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Learning Wizard (MIDI Only)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>DlgPrefControls</name>
+        <message>
+            <source>Position</source>
+            <translation>Poziție</translation>
+        </message>
+        <message>
+            <source>Remaining</source>
+            <translation>Rămas</translation>
+        </message>
+        <message>
+            <source>Don't load tracks into a playing deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>CDJ Mode</source>
+            <translation>Mod CDJ</translation>
+        </message>
+        <message>
+            <source>Simple</source>
+            <translation>Simplu</translation>
+        </message>
+        <message>
+            <source>On</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Off</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
         <message>
             <source>This skin does not support schemes</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>8% (Technics SL1210)</source>
-            <translation>8% (Technics SL1210)</translation>
+            <source>6%</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>8% (Technics SL-1210)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Down increases speed (Technics SL-1210)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>10%</source>
             <translation>10%</translation>
+        </message>
+        <message>
+            <source>Load tracks into a playing deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>The selected skin is bigger than your screen resolution.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>On (only in Library)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>20%</source>
@@ -589,16 +1651,17 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>Down increases speed (Technics SL1210)</source>
+            <source>Information</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Information</source>
-            <translation>Informație</translation>
+            <source>Mixxx must be restarted before the changes will take effect.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Mixxx must be restarted before the changes will take effect.</source>
+            <source>OpenGL not available</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -618,27 +1681,12 @@ p, li { white-space: pre-wrap; }
             <translation>Schemă</translation>
         </message>
         <message>
-            <source>Waveform display</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Position display</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Tool tips</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>On</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Off</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -668,7 +1716,42 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Re-queue tracks in Auto DJ</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Locale</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Temporary rate change when left-clicking</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Temporary rate change when right-clicking</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Permanent Pitch/Rate Buttons</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays which OpenGL version is supported by the current platform.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the actual frame rate.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Normalize Overview</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -681,31 +1764,11 @@ p, li { white-space: pre-wrap; }
             <translation>Clic dreapta</translation>
         </message>
         <message>
-            <source>Permanent rate change (between 1 and 8000) when left clicking</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>%</source>
             <translation>%</translation>
         </message>
         <message>
-            <source>Permanent rate change (between 1 and 8000) when right clicking</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Temporary Pitch/Rate Buttons</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Temporary rate change (between 1 and 8000) when left clicking</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Temporary rate change (between 1 and 8000) when right clicking</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -716,6 +1779,85 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Pitchbend sensitivity</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Waveform Display</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Synchronize zoom level across all waveform displays.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>OpenGl status</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Display type</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Permanent rate change when left-clicking</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Permanent rate change when right-clicking</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Makes temporary pitch/rate buttons change the pitch gradually, instead of all at once.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Value in milliseconds</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Visual gain of the high frequencies</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Visual gain of the middle frequencies</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Visual gain of the low frequencies</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Global visual gain</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Frame rate</source>
+            <translation>Rata de cadre</translation>
+        </message>
+        <message>
+            <source>Default zoom</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Visual gain</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Synchronize</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -732,12 +1874,7 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>Slow fade</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Fast cut</source>
+            <source>Slow fade/Fast cut (additive)</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -758,16 +1895,21 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Linear</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liniar</translation>
         </message>
         <message>
             <source>Logarithmic</source>
             <translation>Logaritmic</translation>
         </message>
         <message>
-            <source>Reset</source>
-            <translation>Resetează</translation>
+            <source>Reverse crossfader (hamster style)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reset to Defaults</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -810,61 +1952,23 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>textLabel2</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>etichetăTextuală2</translation>
         </message>
         <message>
-            <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Reset to Defaults</source>
+            <translation>Restabilește la valorile implicite</translation>
         </message>
     </context>
     <context>
-        <name>DlgPrefMidiBindings</name>
+        <name>DlgPrefMappableController</name>
         <message>
-            <source>None</source>
+            <source>Apply device settings?</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Apply MIDI device settings?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Your settings must be applied before starting the MIDI learning wizard.
+            <source>Your settings must be applied before starting the learning wizard.
 Apply settings and continue?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Overwrite existing mapping?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Are you sure you'd like to load the %1 mapping?
-This will overwrite your existing MIDI mapping.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Export Mixxx MIDI Bindings</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preset Files (*.midi.xml)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Select Control Group</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Select Control</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -890,80 +1994,13 @@ This will overwrite your existing MIDI mapping.</source>
         </message>
     </context>
     <context>
-        <name>DlgPrefMidiBindingsDlg</name>
-        <message>
-            <source>Dialog</source>
-            <translation>Dialog</translation>
-        </message>
-        <message>
-            <source>Your Device Name</source>
-            <translation>Numele dispozitivului</translation>
-        </message>
-        <message>
-            <source>Load Preset:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Export</source>
-            <translation>Exportă</translation>
-        </message>
-        <message>
-            <source>Output:</source>
-            <translation>Ieșire:</translation>
-        </message>
-        <message>
-            <source>Enabled</source>
-            <translation>Activat</translation>
-        </message>
-        <message>
-            <source>Controls</source>
-            <translation>Controale</translation>
-        </message>
-        <message>
-            <source>Add</source>
-            <translation>Adaugă</translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation>Elimină</translation>
-        </message>
-        <message>
-            <source>MIDI Learning Wizard</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Clear All</source>
-            <translation>Curăță tot</translation>
-        </message>
-        <message>
-            <source>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</source>
-            <translation>&lt;a href=&quot;http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format&quot;&gt;Troubleshooting&lt;/a&gt;</translation>
-        </message>
-        <message>
-            <source>MIDI Input</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Outputs</source>
-            <translation>Ieșiri</translation>
-        </message>
-        <message>
-            <source>MIDI Output</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-    </context>
-    <context>
-        <name>DlgPrefNoMidiDlg</name>
+        <name>DlgPrefNoControllersDlg</name>
         <message>
             <source>Form3</source>
             <translation>Form3</translation>
         </message>
         <message>
-            <source>No MIDI devices available</source>
+            <source>No controllers available.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -999,13 +2036,11 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>1 (Off)</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>1 (Oprit)</translation>
         </message>
         <message>
             <source>150</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>150</translation>
         </message>
         <message>
             <source>Vinyl Configuration</source>
@@ -1038,18 +2073,15 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Control Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mod control</translation>
         </message>
         <message>
             <source>Absolute Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mod absolut</translation>
         </message>
         <message>
             <source>Relative Mode</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Mod relativ</translation>
         </message>
         <message>
             <source>Enable Needle Skip Prevention</source>
@@ -1058,8 +2090,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Signal Quality</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Calitate semnal</translation>
         </message>
         <message>
             <source>http://www.xwax.co.uk</source>
@@ -1079,54 +2110,11 @@ p, li { white-space: pre-wrap; }
         <name>DlgPrefPlaylist</name>
         <message>
             <source>Choose music library directory</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Multiple iPods Detected</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx has detected another iPod. 
-</source>
-            <translation>Mixxx a detectat un alt iPod 
-</translation>
-        </message>
-        <message>
-            <source>Choose Yes to use the newly found iPod @ </source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source> or to continue to search for other iPods. 
-</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Choose No to use the existing iPod @ </source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source> and end detection. 
-</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Choose iPod mount point</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Alege directorul bibliotecii de muzică</translation>
         </message>
     </context>
     <context>
         <name>DlgPrefPlaylistDlg</name>
-        <message>
-            <source>Form3</source>
-            <translation>Form3</translation>
-        </message>
         <message>
             <source>Audio File Formats</source>
             <translation>Formatul fișierelor audio</translation>
@@ -1147,8 +2135,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>None</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Niciuna</translation>
         </message>
         <message>
             <source>Miscellaneous</source>
@@ -1170,21 +2157,33 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>iPod</source>
-            <translation>iPod</translation>
+            <source>Other Libraries</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>iPod mountpoint</source>
+            <source>Show Rhythmbox Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show iTunes Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Traktor Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>    You will need to restart Mixxx for this to take effect</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Browse...</source>
             <translation>Răsfoiește...</translation>
-        </message>
-        <message>
-            <source>Detect</source>
-            <translation>Detectează</translation>
         </message>
         <message>
             <source>Library</source>
@@ -1196,8 +2195,7 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Built-in</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Integrat</translation>
         </message>
         <message>
             <source>Available Online...</source>
@@ -1222,12 +2220,31 @@ playback and outbound link statistics</source>
             <source>kbps</source>
             <translation>kb/s</translation>
         </message>
+        <message>
+            <source>Choose recordings directory</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>DlgPrefRecordDlg</name>
         <message>
             <source>Form3</source>
             <translation>Form3</translation>
+        </message>
+        <message>
+            <source>Recordings Directory</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Recordings Directory:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Browse...</source>
+            <translation>Răsfoiește...</translation>
         </message>
         <message>
             <source>Encoding</source>
@@ -1294,17 +2311,7 @@ playback and outbound link statistics</source>
             </translation>
         </message>
         <message>
-            <source>Apply volume normalization to loaded songs.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Enable Replay Gain</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Calculate ReplayGain normalization for songs which are missing ReplayGain metadata.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1314,7 +2321,17 @@ playback and outbound link statistics</source>
             </translation>
         </message>
         <message>
-            <source>On older computers, it may take a few seconds before volume normalization is applied to a new song. You may wish to wait before adjusting the pregain and volume.</source>
+            <source>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Apply volume normalization to loaded tracks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1333,9 +2350,35 @@ playback and outbound link statistics</source>
             <translation>dB</translation>
         </message>
         <message>
-            <source>Reset</source>
-            <translation type="unfinished">
-            </translation>
+            <source>Reset to Defaults</source>
+            <translation>Restabilește valorile implicite</translation>
+        </message>
+    </context>
+    <context>
+        <name>DlgPrefShoutcast</name>
+        <message>
+            <source>Icecast 2</source>
+            <translation>Icecast 2</translation>
+        </message>
+        <message>
+            <source>Shoutcast</source>
+            <translation>Shoutcast</translation>
+        </message>
+        <message>
+            <source>Icecast 1</source>
+            <translation>Icecast 1</translation>
+        </message>
+        <message>
+            <source>MP3</source>
+            <translation>MP3</translation>
+        </message>
+        <message>
+            <source>Ogg Vorbis</source>
+            <translation>Ogg Vorbis</translation>
+        </message>
+        <message>
+            <source>Stereo</source>
+            <translation>Stereo</translation>
         </message>
     </context>
     <context>
@@ -1359,60 +2402,38 @@ playback and outbound link statistics</source>
             <translation>Tip</translation>
         </message>
         <message>
-            <source>Icecast 2</source>
-            <translation>Icecast 2</translation>
-        </message>
-        <message>
-            <source>Shoutcast</source>
-            <translation>Shoutcast</translation>
-        </message>
-        <message>
-            <source>Icecast 1</source>
-            <translation>Icecast 1</translation>
-        </message>
-        <message>
             <source>Mount</source>
             <translation>Montează</translation>
-        </message>
-        <message>
-            <source>/mixxx.ogg</source>
-            <translation>/mixxx.ogg</translation>
         </message>
         <message>
             <source>Host</source>
             <translation>Gazdă</translation>
         </message>
         <message>
-            <source>192.168.123.8</source>
-            <translation>192.168.123.8</translation>
-        </message>
-        <message>
             <source>Port</source>
             <translation>Port</translation>
-        </message>
-        <message>
-            <source>8000</source>
-            <translation>8000</translation>
         </message>
         <message>
             <source>Login</source>
             <translation>Autentificare</translation>
         </message>
         <message>
-            <source>source</source>
-            <translation>sursa</translation>
-        </message>
-        <message>
             <source>Password</source>
             <translation>Parolă</translation>
         </message>
         <message>
-            <source>test1234</source>
-            <translation>test1234</translation>
-        </message>
-        <message>
             <source>Stream settings</source>
             <translation>Setări stream</translation>
+        </message>
+        <message>
+            <source>Dynamically update Ogg Vorbis metadata.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Stream name</source>
@@ -1448,7 +2469,8 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Genre</source>
-            <translation>Gen</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Live mix</source>
@@ -1459,82 +2481,31 @@ p, li { white-space: pre-wrap; }
             <translation>Stream public</translation>
         </message>
         <message>
+            <source>Use UTF-8 encoding for metadata.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Encoding</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Bitrate</source>
-            <translation>Bitrate</translation>
-        </message>
-        <message>
-            <source>320 kbps</source>
-            <translation>320 kbps</translation>
-        </message>
-        <message>
-            <source>256 kbps</source>
-            <translation>256 kbps</translation>
-        </message>
-        <message>
-            <source>224 kbps</source>
-            <translation>224 kbps</translation>
-        </message>
-        <message>
-            <source>192 kbps</source>
-            <translation>192 kbps</translation>
-        </message>
-        <message>
-            <source>160 kbps</source>
-            <translation>160 kbps</translation>
-        </message>
-        <message>
-            <source>128 kbps</source>
-            <translation>128 kbps</translation>
-        </message>
-        <message>
-            <source>112 kbps</source>
-            <translation>112 kbps</translation>
-        </message>
-        <message>
-            <source>96 kbps</source>
-            <translation>96 kbps</translation>
-        </message>
-        <message>
-            <source>80 kbps</source>
-            <translation>80 kbps</translation>
-        </message>
-        <message>
-            <source>64 kbps</source>
-            <translation>64 kbps</translation>
-        </message>
-        <message>
-            <source>48 kbps</source>
-            <translation>48 kbps</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Format</source>
             <translation>Format</translation>
         </message>
         <message>
-            <source>Ogg Vorbis</source>
-            <translation>Ogg Vorbis</translation>
-        </message>
-        <message>
-            <source>MP3</source>
-            <translation>MP3</translation>
-        </message>
-        <message>
             <source>Channels</source>
             <translation>Canale</translation>
         </message>
         <message>
-            <source>Stereo</source>
-            <translation>Stereo</translation>
-        </message>
-        <message>
             <source>Custom metadata</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Metadate personalizate</translation>
         </message>
         <message>
             <source>Enable custom metadata</source>
@@ -1543,20 +2514,13 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Artist</source>
-            <translation>Artist</translation>
-        </message>
-        <message>
-            <source>%mainartist</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Title</source>
-            <translation>Titlu</translation>
-        </message>
-        <message>
-            <source>%maintitle</source>
-            <translation>%maintitle</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Please note that for technical reasons changing any shoutcast settings will cause an established connection to disconnect and reconnect. </source>
@@ -1617,13 +2581,23 @@ p, li { white-space: pre-wrap; }
             <translation>Rata de probă</translation>
         </message>
         <message>
+            <source>Buffer Underflow Count</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>0</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Latency Tips</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>&lt;ul&gt;
-&lt;li&gt;Increase your latency if you hear pops during playback&lt;/li&gt;
+&lt;li&gt;Increase your latency if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Reduce your latency to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</source>
             <translation type="unfinished">
@@ -1631,11 +2605,13 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Output</source>
-            <translation>Ieșire</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Input</source>
-            <translation>Intrare</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Query Devices</source>
@@ -1644,11 +2620,13 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Reset to Defaults</source>
-            <translation>Restabilește valorile implicite</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Apply</source>
-            <translation>Aplică</translation>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Latency</source>
@@ -1780,13 +2758,18 @@ p, li { white-space: pre-wrap; }
     <context>
         <name>DlgPreferences</name>
         <message>
+            <source>Preferences</source>
+            <translation>Preferințe</translation>
+        </message>
+        <message>
             <source>Sound Hardware</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>MIDI Controllers</source>
-            <translation>Controller MIDI</translation>
+            <source>Controllers</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Library</source>
@@ -1803,12 +2786,16 @@ p, li { white-space: pre-wrap; }
         </message>
         <message>
             <source>Crossfader</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Crossfader</translation>
         </message>
         <message>
             <source>Recording</source>
             <translation>Înregistrare</translation>
+        </message>
+        <message>
+            <source>Beat Detection</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>BPM Detection</source>
@@ -1847,22 +2834,42 @@ p, li { white-space: pre-wrap; }
             <translation>Administrează</translation>
         </message>
         <message>
+            <source>Shows tracks added to the library within the last 7 days.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>New</source>
+            <translation>Nou</translation>
+        </message>
+        <message>
+            <source>Shows all tracks in the library.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>All</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Toate</translation>
         </message>
         <message>
             <source>Progress</source>
             <translation>Progres</translation>
         </message>
         <message>
+            <source>Selects all tracks in the table below.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Select All</source>
-            <translation>Selectează tot</translation>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Runs the BPM and beatgrid detection on the selected tracks.
+Waveforms will be generated as part of a analysis as well.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Analyze</source>
@@ -1873,7 +2880,7 @@ p, li { white-space: pre-wrap; }
             <translation>Oprește analiza</translation>
         </message>
         <message>
-            <source>Analyzing %1%</source>
+            <source>Analyzing %1/%2 %3%</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -1901,6 +2908,16 @@ p, li { white-space: pre-wrap; }
             <source>Stop Recording</source>
             <translation>Opreste Inregistrarea</translation>
         </message>
+        <message>
+            <source>Recording to file: </source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>MB written</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>DlgTrackInfo</name>
@@ -1909,8 +2926,8 @@ p, li { white-space: pre-wrap; }
             <translation>Editor de piste</translation>
         </message>
         <message>
-            <source>Song:</source>
-            <translation>Cântec:</translation>
+            <source>Summary</source>
+            <translation>Rezumat</translation>
         </message>
         <message>
             <source>Title:</source>
@@ -1925,10 +2942,6 @@ p, li { white-space: pre-wrap; }
             <translation>Album:</translation>
         </message>
         <message>
-            <source>Date:</source>
-            <translation>Data:</translation>
-        </message>
-        <message>
             <source>Track #:</source>
             <translation>Pista #:</translation>
         </message>
@@ -1937,24 +2950,68 @@ p, li { white-space: pre-wrap; }
             <translation>Gen:</translation>
         </message>
         <message>
+            <source>Composer:</source>
+            <translation>Compozitor:</translation>
+        </message>
+        <message>
+            <source>Year</source>
+            <translation>An</translation>
+        </message>
+        <message>
+            <source>Key</source>
+            <translation>Tastă</translation>
+        </message>
+        <message>
+            <source>Filetype:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>BPM:</source>
+            <translation>BPM:</translation>
+        </message>
+        <message>
+            <source>Location:</source>
+            <translation>Locație:</translation>
+        </message>
+        <message>
             <source>Filename:</source>
             <translation>Nume fișier:</translation>
         </message>
         <message>
+            <source>Bitrate:</source>
+            <translation>Rata de biți:</translation>
+        </message>
+        <message>
+            <source>BPM</source>
+            <translation>BPM</translation>
+        </message>
+        <message>
+            <source>Double BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Halve BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Cuepoints</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Previous</source>
+            <translation>&amp;Anterior</translation>
+        </message>
+        <message>
+            <source>&amp;Next</source>
+            <translation>&amp;Următor</translation>
+        </message>
+        <message>
             <source>Duration:</source>
             <translation>Durată:</translation>
-        </message>
-        <message>
-            <source>3:00</source>
-            <translation>3:00</translation>
-        </message>
-        <message>
-            <source>File Type:</source>
-            <translation>Tip fișier:</translation>
-        </message>
-        <message>
-            <source>77</source>
-            <translation>77</translation>
         </message>
         <message>
             <source>Comments:</source>
@@ -1966,21 +3023,8 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>Track Information (Click to Expand)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Track BPM: </source>
             <translation>BPM pistă: </translation>
-        </message>
-        <message>
-            <source>x2</source>
-            <translation>x2</translation>
-        </message>
-        <message>
-            <source>/2</source>
-            <translation>/2</translation>
         </message>
         <message>
             <source>Tap to Beat</source>
@@ -1991,10 +3035,6 @@ p, li { white-space: pre-wrap; }
             <source>Hint: Use the Library Analyze view to run BPM detection.</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>Track BPM</source>
-            <translation>BPM pistă</translation>
         </message>
         <message>
             <source>Cue Id</source>
@@ -2025,15 +3065,6 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
-            <source>Track Cuepoints</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>&lt;&lt; &amp;Prev</source>
-            <translation>&lt;&lt; &amp;Anterior</translation>
-        </message>
-        <message>
             <source>&amp;Apply</source>
             <translation>&amp;Aplică</translation>
         </message>
@@ -2042,12 +3073,15 @@ p, li { white-space: pre-wrap; }
             <translation>&amp;Anulează</translation>
         </message>
         <message>
-            <source>Alt+O</source>
-            <translation>Alt+O</translation>
+            <source>kbps</source>
+            <translation>kb/s</translation>
         </message>
+    </context>
+    <context>
+        <name>EmptyWaveformWidget</name>
         <message>
-            <source>&amp;Next &gt;&gt;</source>
-            <translation>&amp;Următor &gt;&gt;</translation>
+            <source>Empty</source>
+            <translation>Gol</translation>
         </message>
     </context>
     <context>
@@ -2110,6 +3144,81 @@ p, li { white-space: pre-wrap; }
             </translation>
         </message>
         <message>
+            <source>Error setting hostname!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting port!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting password!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting mount!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting username!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream name!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream description!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream genre!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting stream url!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Broadcasting at 96kHz with Ogg Vorbis is not currently supported. Please try a different sample-rate or switch to a different encoding.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>See https://bugs.launchpad.net/mixxx/+bug/686212 for more information.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error setting bitrate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: unknown server protocol!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error: libshout only supports Shoutcast with MP3 format!</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Lost connection to streaming server</source>
             <translation type="unfinished">
             </translation>
@@ -2164,6 +3273,95 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
+        <name>GLSLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>experimental</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>GLSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation>Simplu</translation>
+        </message>
+    </context>
+    <context>
+        <name>GLWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>HSVWaveformWidget</name>
+        <message>
+            <source>HSV</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>HidController</name>
+        <message>
+            <source>Generic HID Mouse</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Joystick</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Gamepad</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Keyboard</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generic HID Multiaxis Controller</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unknown HID Desktop Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Infrared Control</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unknown Apple HID Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Unknown Device</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>HID Interface Number</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
         <name>ITunesFeature</name>
         <message>
             <source>iTunes</source>
@@ -2204,6 +3402,57 @@ p, li { white-space: pre-wrap; }
         </message>
     </context>
     <context>
+        <name>LegacySkinParser</name>
+        <message>
+            <source>activate</source>
+            <translation>activare</translation>
+        </message>
+        <message>
+            <source>toggle</source>
+            <translation>comută</translation>
+        </message>
+        <message>
+            <source>right</source>
+            <translation>dreapta</translation>
+        </message>
+        <message>
+            <source>left</source>
+            <translation>stânga</translation>
+        </message>
+        <message>
+            <source>right small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>left small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>up</source>
+            <translation>sus</translation>
+        </message>
+        <message>
+            <source>down</source>
+            <translation>jos</translation>
+        </message>
+        <message>
+            <source>up small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>down small</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shortcut</source>
+            <translation>Scurtătură</translation>
+        </message>
+    </context>
+    <context>
         <name>LibraryScannerDlg</name>
         <message>
             <source>Library Scanner</source>
@@ -2219,139 +3468,40 @@ p, li { white-space: pre-wrap; }
             <source>Cancel</source>
             <translation>Renunţă</translation>
         </message>
-    </context>
-    <context>
-        <name>MidiInputMappingTableModel</name>
         <message>
-            <source>Midi Status Type</source>
+            <source>Scanning: </source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>Midi Note</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Midi Channel</source>
-            <translation>Canal Midi</translation>
-        </message>
-        <message>
-            <source>Control Group</source>
-            <translation>Grup de control</translation>
-        </message>
-        <message>
-            <source>Control Value</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Description</source>
-            <translation>Descriere</translation>
         </message>
     </context>
     <context>
-        <name>MidiMapping</name>
+        <name>MidiController</name>
         <message>
-            <source>MIDI script function not found</source>
+            <source>MixxxControl not found</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>The MIDI script function '%1' was not found in loaded scripts.</source>
+            <source>The MixxxControl '%1, %2' specified in the loaded mapping is invalid.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>The MIDI message %1 %2 will not be bound.
+            <source>The MIDI output message 0x%1 0x%2 will not be bound.
 (Click Show Details for hints.)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>* Check to see that the function name is spelled correctly in the mapping file (.xml) and script file (.js)
+            <source>* Check to see that the MixxxControl name is spelled correctly in the mapping file (.xml)
 </source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>* Check to see that the script file name (.js) is spelled correctly in the mapping file (.xml)</source>
+            <source>* Make sure the MixxxControl you're trying to use actually exists. Visit this wiki page for a complete list:</source>
             <translation type="unfinished">
             </translation>
-        </message>
-    </context>
-    <context>
-        <name>MidiOutputMappingTableModel</name>
-        <message>
-            <source>Midi Status</source>
-            <translation>Status Midi</translation>
-        </message>
-        <message>
-            <source>Midi Note</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Midi Channel</source>
-            <translation>Canal Midi</translation>
-        </message>
-        <message>
-            <source>Control Group</source>
-            <translation>Grup de control</translation>
-        </message>
-        <message>
-            <source>Control Value</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Description</source>
-            <translation>Descriere</translation>
-        </message>
-        <message>
-            <source>Threshold Min</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Threshold Max</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-    </context>
-    <context>
-        <name>MidiScriptEngine</name>
-        <message>
-            <source>Uncaught exception at line %1 in file %2: %3</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Uncaught exception at line %1 in passed code: %2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>MIDI script error</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A MIDI control you just used is not working properly.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>&lt;html&gt;(The MIDI script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-    </context>
-    <context>
-        <name>MidiStatusDelegate</name>
-        <message>
-            <source>Unknown</source>
-            <translation>Necunoscut</translation>
         </message>
     </context>
     <context>
@@ -2363,44 +3513,6 @@ p, li { white-space: pre-wrap; }
         <message>
             <source>Mixxx</source>
             <translation>Mixxx</translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback.  At your discretion, Mixxx can automatically send data on your user experience back to the developers. Would you like to help us make Mixxx better by enabling this feature?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Yes</source>
-            <translation>Da</translation>
-        </message>
-        <message>
-            <source>No</source>
-            <translation>Nu</translation>
-        </message>
-        <message>
-            <source>Privacy Policy</source>
-            <translation>Politica de confidenţialitate</translation>
-        </message>
-        <message>
-            <source>Mixxx: Privacy Policy</source>
-            <translation>Mixxx: Politica de confidenţialitate</translation>
-        </message>
-        <message>
-            <source>Mixxx's development is driven by community feedback. In order to help improve future versions Mixxx will with your permission collect information on your hardware and usage of Mixxx.  This information will primarily be used to fix bugs, improve features, and determine the system requirements of later versions.  Additionally this information may be used in aggregate for statistical purposes.
-The hardware information will include:
-	- CPU model and features
-	- Total/Available Amount of RAM
-	- Available disk space
-	- OS version
-Your usage information will include:
-	- Settings/Preferences
-	- Internal errors
-	- Internal debugging messages
-	- Performance statistics (average latency, CPU usage)
-This information will not be used to personally identify you, contact you, advertise to you, or otherwise bother you in any way.
-</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Choose music library directory</source>
@@ -2451,22 +3563,127 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Ieși</translation>
         </message>
         <message>
+            <source>No Output Devices</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx was configured without any output sound devices. Audio processing will be disabled without a configured output device.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&lt;b&gt;Continue&lt;/b&gt; without any outputs.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Continue</source>
             <translation>Continuă</translation>
         </message>
         <message>
-            <source>&amp;Load Song (Player 1)...</source>
+            <source>Load Track to Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add &amp;New Playlist</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add New &amp;Crate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Enable &amp;Keyboard Shortcuts</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Samplers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Vinyl Control Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+3</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Microphone Section</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+2</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the preview deck in the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+4</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Reload Skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reload the skin</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+Shift+R</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Developer</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Load track to Deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loads a track in deck %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Open</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Ctrl+O</source>
             <translation>Ctrl+O</translation>
-        </message>
-        <message>
-            <source>&amp;Load Song (Player 2)...</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Ctrl+Shift+O</source>
@@ -2477,6 +3694,11 @@ This information will not be used to personally identify you, contact you, adver
             <translation>&amp;Ieșire</translation>
         </message>
         <message>
+            <source>Quits Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Ctrl+Q</source>
             <translation>Ctrl+Q</translation>
         </message>
@@ -2485,7 +3707,7 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Rescanează biblioteca</translation>
         </message>
         <message>
-            <source>Add &amp;new playlist</source>
+            <source>Rescans library folders for changes to tracks.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2494,24 +3716,12 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Ctrl+N</translation>
         </message>
         <message>
-            <source>Add new &amp;crate</source>
-            <translation>Adaugă &amp;colecţie nouă</translation>
-        </message>
-        <message>
-            <source>Ctrl+C</source>
-            <translation>Ctrl+C</translation>
-        </message>
-        <message>
-            <source>&amp;Import playlist</source>
+            <source>Deck %1 is currently playing a track.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Ctrl+I</source>
-            <translation>Ctrl+I</translation>
-        </message>
-        <message>
-            <source>&amp;Audio Beat Marks</source>
+            <source>Are you sure you want to load a new track?</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2520,16 +3730,17 @@ This information will not be used to personally identify you, contact you, adver
             <translation>&amp;Ecran complet</translation>
         </message>
         <message>
-            <source>Ctrl+F</source>
-            <translation>Ctrl+F</translation>
-        </message>
-        <message>
             <source>F11</source>
             <translation>F11</translation>
         </message>
         <message>
             <source>&amp;Preferences</source>
             <translation>&amp;Preferințe</translation>
+        </message>
+        <message>
+            <source>Change Mixxx settings (e.g. playback, MIDI, controls)</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>Ctrl+P</source>
@@ -2545,6 +3756,11 @@ This information will not be used to personally identify you, contact you, adver
             </translation>
         </message>
         <message>
+            <source>Get help with Mixxx</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>&amp;User Manual</source>
             <translation type="unfinished">
             </translation>
@@ -2554,31 +3770,12 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Trimite-ne &amp;Feedback</translation>
         </message>
         <message>
-            <source>&amp;Translate this application</source>
-            <translation>Tradu această aplicaţie</translation>
-        </message>
-        <message>
-            <source>Enable &amp;Vinyl Control 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+Y</source>
             <translation>Ctrl+Y</translation>
         </message>
         <message>
-            <source>Enable &amp;Vinyl Control 2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Ctrl+U</source>
             <translation>Ctrl+U</translation>
-        </message>
-        <message>
-            <source>Enable live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
         </message>
         <message>
             <source>Ctrl+L</source>
@@ -2593,92 +3790,24 @@ This information will not be used to personally identify you, contact you, adver
             <translation>Ctrl+R</translation>
         </message>
         <message>
-            <source>Show Studio</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Opens a song in player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Opens a song in player 2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Open
-Opens a song in player 2</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Quits the application</source>
-            <translation>Închide aplicația</translation>
-        </message>
-        <message>
-            <source>Exit
-Quits the application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rescans the song library</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Rescan library
-Rescans the song library</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Create a new playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>New playlist
-Create a new playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Creează o nouă listă de redare</translation>
         </message>
         <message>
             <source>Create a new crate</source>
             <translation>Creează o colecţie nouă</translation>
         </message>
         <message>
-            <source>New crate
-Create a new crate.</source>
-            <translation>Colecţie nouă
-Creează o colecţie nouă.</translation>
+            <source>Ctrl+Shift+F</source>
+            <translation>Ctrl+Shift+F</translation>
         </message>
         <message>
-            <source>Import playlist</source>
+            <source>Enable Vinyl Control &amp;1</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Audio Beat Marks</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Audio Beat Marks
-Mark beats by audio clicks</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Activate Vinyl Control</source>
+            <source>Enable Vinyl Control &amp;2</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2688,50 +3817,16 @@ Mark beats by audio clicks</source>
             </translation>
         </message>
         <message>
-            <source>Activate live broadcasting</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Stream your mixes to a shoutcast or icecast server</source>
             <translation type="unfinished">
             </translation>
-        </message>
-        <message>
-            <source>Start Recording your Mix</source>
-            <translation>Începe înregistrarea mix-ului</translation>
         </message>
         <message>
             <source>Record your mix to a file</source>
             <translation>Înregistrează mix-ul într-un fişier</translation>
         </message>
         <message>
-            <source>Full Screen</source>
-            <translation>Ecran complet</translation>
-        </message>
-        <message>
             <source>Display Mixxx using the full screen</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences
-Playback and MIDI preferences</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support...</source>
-            <translation>Suport...</translation>
-        </message>
-        <message>
-            <source>Support
-Get help with Mixxx</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2741,19 +3836,7 @@ Get help with Mixxx</source>
             </translation>
         </message>
         <message>
-            <source>Support
-Read the Mixxx user manual.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Send feedback to the Mixxx team.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Support
-Send feedback to the Mixxx team.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2763,35 +3846,60 @@ Send feedback to the Mixxx team.</source>
             </translation>
         </message>
         <message>
-            <source>Support
-Help translate this application into your language.</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>About the application</source>
             <translation>Despre aplicaţie</translation>
         </message>
         <message>
-            <source>About
-About the application</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Shows the macro studio window</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Show Studio
-Makes the macro studio visible</source>
+            <source>A sampler is currently playing. Exit Mixxx?</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>&amp;File</source>
             <translation>&amp;Fișier</translation>
+        </message>
+        <message>
+            <source>Ctrl+Shift+N</source>
+            <translation>Ctrl+Shift+N</translation>
+        </message>
+        <message>
+            <source>Toggles keyboard shortcuts on or off</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Ctrl+`</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>&amp;Translate This Application</source>
+            <translation>&amp;Tradu această aplicație</translation>
+        </message>
+        <message>
+            <source>Enable Live &amp;Broadcasting</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>May not be supported on all skins.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the sample deck section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the vinyl control section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show the microphone section of the Mixxx interface.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
             <source>&amp;Options</source>
@@ -2810,48 +3918,58 @@ Makes the macro studio visible</source>
             <translation>&amp;Ajutor</translation>
         </message>
         <message>
-            <source>&amp;Macro</source>
-            <translation>&amp;Macro</translation>
-        </message>
-        <message>
             <source>&amp;Vinyl Control</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Quit...</source>
-            <translation>Ieșire...</translation>
-        </message>
-        <message>
-            <source>Do your really want to quit?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Player 1 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Load Song into Player 1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Player 2 is currently playing a song.
-Are you sure you want to load a new song?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Load Song into Player 2</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>No input device(s) select.
 Please select your soundcard(s) in the sound hardware preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx %1 Development Team</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>With contributions from:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>And special thanks to:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Developers</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Past Contributors</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Error in skin file</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>The selected skin cannot be loaded.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>OpenGL Direct Rendering</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the 'Interface' section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -2865,12 +3983,54 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
             <translation type="unfinished">
             </translation>
         </message>
+        <message>
+            <source>The preferences window is still open.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Discard any changes and exit Mixxx?</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
     </context>
     <context>
         <name>MixxxLibraryFeature</name>
         <message>
+            <source>Missing Tracks</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hidden Tracks</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Library</source>
             <translation>Bibliotecă</translation>
+        </message>
+    </context>
+    <context>
+        <name>ParserCsv</name>
+        <message>
+            <source>Location</source>
+            <translation>Locație</translation>
+        </message>
+        <message>
+            <source>Playlist Export Failed</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Could not create file</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Readable text Export Failed</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -2914,93 +4074,39 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
     <context>
         <name>PlaylistFeature</name>
         <message>
-            <source>New Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Add to Auto-DJ Queue</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Remove</source>
-            <translation>Elimină</translation>
-        </message>
-        <message>
-            <source>Rename</source>
-            <translation>Redenumește</translation>
-        </message>
-        <message>
             <source>Lock</source>
             <translation>Blochează</translation>
         </message>
         <message>
-            <source>Import Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Export Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
             <source>Playlists</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Liste de redare</translation>
         </message>
         <message>
             <source>Unlock</source>
             <translation>Deblochează</translation>
         </message>
         <message>
-            <source>Playlist name:</source>
+            <source>Playlists are ordered lists of songs that allow you to plan your DJ sets.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Playlist Creation Failed</source>
+            <source>Some DJs construct playlists before they perform live, but others prefer to build them on-the-fly.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>A playlist cannot have a blank name.</source>
+            <source>When using a playlist during a live DJ set, remember to always pay close attention to how your audience reacts to the music you've chosen to play.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>An unknown error occurred while creating playlist: </source>
+            <source>It may be necessary to skip some songs in your prepared playlist or add some different songs in order to maintain the energy of your audience.</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Rename Playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>New playlist name:</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Renaming Playlist Failed</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Playlist Files (*.m3u *.m3u8 *.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>A playlist by that name already exists.</source>
+            <source>Create new playlist</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3010,6 +4116,44 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <message>
             <source>Analyze</source>
             <translation>Analizează</translation>
+        </message>
+    </context>
+    <context>
+        <name>QMessageBox</name>
+        <message>
+            <source>Upgrading Mixxx from v1.9.x/1.10.x.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mixxx has a new and improved beat detector.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When you load tracks, Mixxx can re-analyze them and generate new, more accurate beatgrids. This will make automatic beatsync and looping more reliable.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>This does not affect saved cues, hotcues, playlists, or crates.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If you do not want Mixxx to re-analyze your tracks, choose &quot;Keep Current Beatgrids&quot;. You can change this setting at any time from the &quot;Beat Detection&quot; section of the Preferences.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Keep Current Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Generate New Beatgrids</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3047,6 +4191,21 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
         <message>
             <source>Unknown path type %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>QtSimpleWaveformWidget</name>
+        <message>
+            <source>Simple</source>
+            <translation>Simplu</translation>
+        </message>
+    </context>
+    <context>
+        <name>QtWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3104,47 +4263,1042 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         </message>
     </context>
     <context>
-        <name>ScriptStudio</name>
+        <name>SetlogFeature</name>
         <message>
-            <source>Mixxx Script Studio</source>
+            <source>Join with previous</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>File</source>
-            <translation>Fișier</translation>
+            <source>History</source>
+            <translation>Istoric</translation>
         </message>
         <message>
-            <source>Edit</source>
-            <translation>Editează</translation>
+            <source>Unlock</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Run</source>
-            <translation>Execută</translation>
+            <source>Lock</source>
+            <translation>Blochează</translation>
         </message>
         <message>
-            <source>Close</source>
-            <translation>Închide</translation>
+            <source>The history section automatically keeps a list of tracks you play in your DJ sets.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Import...</source>
-            <translation>Import...</translation>
+            <source>This is handy for remembering what worked in your DJ sets, posting set-lists, or reporting your plays to licensing organizations.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Export...</source>
-            <translation>Export...</translation>
+            <source>Every time you start Mixxx, a new history section is created. You can export it as a playlist in various formats or play it again with Auto DJ.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Delete Macro</source>
-            <translation>Şterge macro</translation>
+            <source>You can join the current history session with a previous one by right-clicking and selecting &quot;Join with previous&quot;.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+    </context>
+    <context>
+        <name>SoftwareWaveformWidget</name>
+        <message>
+            <source>Filtered</source>
+            <translation>Filtrat</translation>
         </message>
         <message>
-            <source>New Macro...</source>
-            <translation>Macro nou...</translation>
+            <source>Software</source>
+            <translation>Software</translation>
+        </message>
+    </context>
+    <context>
+        <name>Tooltips</name>
+        <message>
+            <source>Drop tracks from library or external file manager here.</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Run Macro</source>
-            <translation>Rulează macro</translation>
+            <source>Reset to default value.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Left-click</source>
+            <translation>Clic stânga</translation>
+        </message>
+        <message>
+            <source>Right-click</source>
+            <translation>Clic dreapta</translation>
+        </message>
+        <message>
+            <source>Scroll-wheel</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Waveform Overview</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shows information about the track currently loaded in this channel.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Jump around in the track by clicking somewhere on the waveform.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Use the mouse to scratch, spin-back or throw tracks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Waveform Display</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shows the loaded track's waveform near the playback position.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Drag with mouse to make temporary pitch adjustments.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Scroll to change the waveform zoom level.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Spinning Vinyl</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Rotates during playback and shows the position of a track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Gain</source>
+            <translation>Amplificare</translation>
+        </message>
+        <message>
+            <source>Adjusts the pre-fader gain of the track (to avoid clipping).</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(too loud for the hardware and is being distorted).</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Peak Indicator</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Indicates when the signal on the channel is clipping,</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Master Peak Indicator</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Indicates when the signal on the master output is clipping,</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Channel Volume Meter</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shows the current channel volume.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone Volume Meter</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shows the current microphone volume.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Master Channel Volume Meter</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shows the current master volume for the left channel.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Volume Control</source>
+            <translation>Control volum</translation>
+        </message>
+        <message>
+            <source>Adjusts the volume of the selected channel.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Master Volume</source>
+            <translation>Volum principal</translation>
+        </message>
+        <message>
+            <source>Adjusts the master output volume.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Crossfader</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Determines the master output by fading between the left and right channels.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Balance</source>
+            <translation>Balanţă</translation>
+        </message>
+        <message>
+            <source>Adjusts the left/right channel balance on the master output.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone Volume</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the headphone output volume.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone Mix</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Controls what you hear on the headphone output.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mix Orientation</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Set the channel's mix orientation.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Either to the left side of crossfader, to the right side or to the center (default).</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the Microphone section.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Sampler</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the Sampler section.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Vinyl Control</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the Vinyl Control section.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the Preview deck.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone Volume</source>
+            <translation>Volum microfon</translation>
+        </message>
+        <message>
+            <source>Adjusts the microphone volume.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Microphone Talk-Over</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hold-to-talk or short click for latching to</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>mix microphone input into the master output.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Raise Pitch</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Sets the pitch higher.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Sets the pitch higher in small steps.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Lower Pitch</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Sets the pitch lower.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Sets the pitch lower in small steps.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Raise Pitch Temporary (Nudge)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Holds the pitch higher while active.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Holds the pitch higher (small amount) while active.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Lower Pitch Temporary (Nudge)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Holds the pitch lower while active.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Holds the pitch lower (small amount) while active.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Low EQ</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the gain of the low EQ filter.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mid EQ</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the gain of the mid EQ filter.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>High EQ</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the gain of the high EQ filter.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hold-to-kill or short click for latching.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>High EQ Kill</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Holds the gain of the high EQ to zero while active.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Mid EQ Kill</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Holds the gain of the mid EQ to zero while active.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Low EQ Kill</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Holds the gain of the low EQ to zero while active.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the tempo of the loaded track in BPM (beats per minute).</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Tempo</source>
+            <translation>Tempo</translation>
+        </message>
+        <message>
+            <source>BPM Tap</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When tapped repeatedly, adjusts the BPM to match the tapped BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Tempo and BPM Tap</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Show/hide the spinning vinyl section.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjust Beatgrid</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjust beatgrid so the closest beat is aligned with the current play position.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Key-Lock</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Prevents the pitch from from changing when the rate changes.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggling key-lock during playback may result in a momentary audio glitch.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If quantize is enabled, snaps to the nearest beat.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Quantize</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggles quantization.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loops and cues snap to the nearest beat when quantization is enabled.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reverse</source>
+            <translation>Invers</translation>
+        </message>
+        <message>
+            <source>Reverses track playback during regular playback.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Play/Pause</source>
+            <translation>Redare/Pauză</translation>
+        </message>
+        <message>
+            <source>Toggles playing or pausing the track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Jumps to the beginning of the track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Places a cue-point at the current position on the waveform.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Plays or pauses the track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(while playing)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>(while stopped)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Cue</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Seeks the track to the cue-point and stops (=CDJ) OR plays (=simple).</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Seeks the track to the cue-point and stops.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Headphone</source>
+            <translation>Căști</translation>
+        </message>
+        <message>
+            <source>Sends the selected channel's audio to the headphone output.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Syncs to the first deck (in numerical order) that is playing a track and has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If no deck is playing, syncs to the first deck that has a BPM.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Decks can't sync to samplers and samplers can only sync to decks.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Setup a loop over the set number of beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Temporarily setup a rolling loop over the set number of beats.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Playback will resume where the track would have been if it had not entered the loop.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Exit</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Turns the current loop off.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Slip Mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>When active, the playback continues muted in the background during a loop, reverse, scratch etc.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Once disabled, the audible playback will resume where the track would have been.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clock</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the current time.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If Vinyl control is enabled, displays time-coded vinyl signal quality (see Preferences -&gt; Vinyl Control).</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Shows the current master volume for the right channel.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Change the crossfader curve in Preferences -&gt; Crossfader</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Activate Vinyl Control from the Menu -&gt; Options.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Change the step-size in the Preferences -&gt; Interface menu.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Change the default cue behavior in Preferences -&gt; Interface.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>selected in Preferences -&gt; Sound Hardware.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fast Rewind</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fast rewind through the track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Fast Forward</source>
+            <translation>Derulare rapidă înainte</translation>
+        </message>
+        <message>
+            <source>Fast forward through the track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Jumps to the end of the track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Synchronize</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Syncs the tempo (BPM) and phase to that of the other track, </source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>if BPM is detected on both.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Syncs the tempo (BPM) to that of the other track,</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch Control</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Changes the track playback rate.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Pitch Rate</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the current playback rate of the track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Repeat</source>
+            <translation>Repetă</translation>
+        </message>
+        <message>
+            <source>When active the track will repeat if you go past the end or reverse before the start.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Eject</source>
+            <translation>Scoate</translation>
+        </message>
+        <message>
+            <source>Ejects track from the player.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hotcue</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If hotcue is set, jumps to the hotcue.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If hotcue is not set, sets the hotcue to the current play position.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>If hotcue is set, clears the hotcue.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Vinyl Control Mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Absolute mode - track position equals needle position and speed.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Relative mode - track speed equals needle speed regardless of needle position.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Constant mode - track speed equals last known-steady speed regardless of needle input.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Vinyl Status</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Provides visual feedback for vinyl control status:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Green for control enabled.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Blinking yellow for when the needle reaches the end of the record.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Red for needle skip detected.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop-In Marker</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Sets the deck loop-in position to the current play position.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop-Out Marker</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Sets the deck loop-out position to the current play position.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Halve</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Halves the current loop's length by moving the end marker.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Deck immediately loops if past the new endpoint.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Loop Double</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Doubles the current loop's length by moving the end marker.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Beatloop</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reloop/Exit</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggles the current loop on or off.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Works only if Loop-In and Loop-Out marker are set.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Vinyl Cueing Mode</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Determines how cue points are treated in vinyl control Relative mode:</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Off - Cue points ignored.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>One Cue - If needle is dropped after the cue point, track will seek to that cue point.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Hot Cue - Track will seek to nearest previous hot cue point.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Track Time</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the elapsed or remaining time of the track loaded.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Click to toggle between time elapsed/remaining time.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Track Duration</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the duration of the loaded track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Information is loaded from the track's metadata tags.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Track Artist</source>
+            <translation>Artist piesă</translation>
+        </message>
+        <message>
+            <source>Displays the artist of the loaded track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Track Title</source>
+            <translation>Titlu piesă</translation>
+        </message>
+        <message>
+            <source>Displays the title of the loaded track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Track Album</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the album name of the loaded track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Track Artist/Title</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Displays the artist and title of the loaded track.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Flanger</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Toggles the flange effect. Use the depth/delay/lfo knobs to adjust.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Flanger Delay</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the phase delay of the flange effect (when active).</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Flanger Depth</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the intensity of the flange effect (when active).</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Flanger LFO Period</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Adjusts the wavelength of the flange effect (when active).</source>
+            <translation type="unfinished">
+            </translation>
         </message>
     </context>
     <context>
@@ -3161,15 +5315,37 @@ Click OK to exit.</source>
             </translation>
         </message>
         <message>
+            <source>Click OK to exit.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
             <source>Cannot upgrade database schema</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Unable to upgrade your database schema to version %1.
-Your mixxx.db file may be corrupt.
-Try renaming it and restarting Mixxx.
-Click OK to exit.</source>
+            <source>Unable to upgrade your database schema to version %1</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be outdated.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your mixxxdb.sqlite file may be corrupt.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Try renaming it and restarting Mixxx.</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Your %1 file may be missing or invalid.</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3196,360 +5372,33 @@ Click OK to exit.</source>
         </message>
     </context>
     <context>
-        <name>Ui</name>
+        <name>WOverview</name>
         <message>
-            <source>Position</source>
-            <translation>Poziție</translation>
-        </message>
-        <message>
-            <source>Remaining</source>
-            <translation>Rămas</translation>
-        </message>
-        <message>
-            <source>On</source>
-            <translation>On</translation>
-        </message>
-        <message>
-            <source>Off</source>
-            <translation>Off</translation>
-        </message>
-        <message>
-            <source>Don't load tracks into a playing deck</source>
+            <source>Ready to play, analyzing ..</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>Load tracks into playing decks</source>
+            <source>Loading track ..</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
-            <source>CDJ Mode</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Simple</source>
-            <translation>Simplu</translation>
-        </message>
-        <message>
-            <source>Mixxx Detected a WVGA Screen</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mixxx has detected that your screen has a resolution of </source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>The only skin compatiable with this size display is Outline800x480-WVGA.  Would you like to use that skin?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Preferences</source>
-            <translation>Preferințe</translation>
-        </message>
-        <message>
-            <source>Crossfader</source>
-            <translation>Crossfader</translation>
-        </message>
-        <message>
-            <source>Master volume</source>
-            <translation>Volum principal</translation>
-        </message>
-        <message>
-            <source>Master balance</source>
-            <translation>Balans principal</translation>
-        </message>
-        <message>
-            <source>Headphones volume</source>
-            <translation>Volum căşto</translation>
-        </message>
-        <message>
-            <source>Headphones mix (pre/main)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Cue button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Play button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Fast rewind button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Fast forward button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Play reverse button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Headphone listen button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Beat sync button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>BPM tap button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Keylock button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Pitch control slider for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Flanger effect button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Channel %1 volume fader</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Gain knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>High EQ knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Mid EQ knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Low EQ knob for Channel %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Loop In button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Loop Out button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Reloop / Exit button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Setup a loop over 4 beats for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Halves the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Doubles the current loop's length for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 1 button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 2 button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 3 button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 4 button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 1 delete button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 2 delete button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 3 delete button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 4 delete button for Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Play button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Gain knob for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Headphone listen button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>BPM tap button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Keylock button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Pitch control slider for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 1 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 2 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 3 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 4 button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 1 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 2 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 3 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Hotcue 4 delete button for Sampler %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Switch to the next view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Switch to the previous view (library, playlist..)</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Scroll to next track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Scroll to previous track in library/playlist</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Load selected track into first stopped player</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Load selected track into Player %1</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Adjusts the wavelength of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Adjusts the intensity of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Adjusts the phase delay of the flange effect</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Microphone on/off</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
-        <message>
-            <source>Microphone volume</source>
+            <source>Finalizing ..</source>
             <translation type="unfinished">
             </translation>
         </message>
     </context>
     <context>
         <name>WSearchLineEdit</name>
+        <message>
+            <source>Ctrl+F</source>
+            <translation>Ctrl+F</translation>
+        </message>
+        <message>
+            <source>Esc</source>
+            <translation>Esc</translation>
+        </message>
         <message>
             <source>Search...</source>
             <translation>Caută...</translation>
@@ -3559,8 +5408,7 @@ Click OK to exit.</source>
         <name>WTrackTableView</name>
         <message>
             <source>Add to Playlist</source>
-            <translation type="unfinished">
-            </translation>
+            <translation>Adaugă la lista de redare</translation>
         </message>
         <message>
             <source>Add to Crate</source>
@@ -3576,16 +5424,66 @@ Click OK to exit.</source>
             <translation>Elimină</translation>
         </message>
         <message>
-            <source>Properties...</source>
-            <translation>Proprietăți...</translation>
+            <source>Hide from Library</source>
+            <translation type="unfinished">
+            </translation>
         </message>
         <message>
-            <source>Add to Auto DJ Queue</source>
+            <source>Unhide from Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Purge from Library</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Properties</source>
+            <translation>Proprietăţi</translation>
+        </message>
+        <message>
+            <source>Open in File Browser</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add to Auto-DJ Queue (bottom)</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Add to Auto-DJ Queue (top)</source>
             <translation type="unfinished">
             </translation>
         </message>
         <message>
             <source>Reload Track Metadata</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Load to Preview Deck</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Reset Play Count</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Lock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Unlock BPM</source>
+            <translation type="unfinished">
+            </translation>
+        </message>
+        <message>
+            <source>Clear BPM and Beatgrid</source>
             <translation type="unfinished">
             </translation>
         </message>
@@ -3599,11 +5497,6 @@ Click OK to exit.</source>
             <translation type="unfinished">
             </translation>
         </message>
-        <message>
-            <source>Reloading track metadata on a loaded track may cause abrupt volume changes. Are you sure?</source>
-            <translation type="unfinished">
-            </translation>
-        </message>
     </context>
     <context>
         <name>WTrackTableViewHeader</name>
@@ -3611,6 +5504,17 @@ Click OK to exit.</source>
             <source>Show or hide columns.</source>
             <translation type="unfinished">
             </translation>
+        </message>
+    </context>
+    <context>
+        <name>WaveformWidgetFactory</name>
+        <message>
+            <source>(GLSL)</source>
+            <translation>(GLSL)</translation>
+        </message>
+        <message>
+            <source>(GL)</source>
+            <translation>(GL)</translation>
         </message>
     </context>
 </TS>
