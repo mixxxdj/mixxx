@@ -73,7 +73,6 @@ EngineDeck::~EngineDeck() {
 }
 
 void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBufferSize) {
-
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
 
     // Feed the incoming audio through if passthrough is active
@@ -83,13 +82,11 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
             // Buffer underflow. There aren't getting samples fast enough. This
             // shouldn't happen since PortAudio should feed us samples just as fast
             // as we consume them, right?
-            Q_ASSERT(false);
+            qWarning() << "ERROR: Buffer overflow in EngineDeck. Playing silence.";
+            SampleUtil::applyGain(pOut + samplesRead, 0.0, iBufferSize - samplesRead);
         }
-
         m_bPassthroughWasActive = true;
-
     } else {
-
         // If passthrough is no longer enabled, zero out the buffer
         if (m_bPassthroughWasActive) {
             SampleUtil::applyGain(pOut, 0.0, iBufferSize);
@@ -102,7 +99,6 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
         m_pBuffer->process(0, pOut, iBufferSize);
         // Emulate vinyl sounds
         m_pVinylSoundEmu->process(pOut, pOut, iBufferSize);
-
         m_bPassthroughWasActive = false;
     }
 
@@ -131,7 +127,6 @@ bool EngineDeck::isActive() {
 }
 
 void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
-
     // Skip receiving audio input if passthrough is not active
     if (!m_bPassthroughIsActive) {
         return;
@@ -143,28 +138,38 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
         return;
     }
 
-    // Use the conversion buffer to both convert from short and double into
-    // stereo.
+    const unsigned int iChannels = AudioInput::channelsNeededForType(input.getType());
 
     // Check that the number of mono samples doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
-    if (nFrames > MAX_BUFFER_LEN / 2) {
-        qDebug() << "WARNING: Dropping passthrough samples because the input buffer is too large.";
-        nFrames = MAX_BUFFER_LEN / 2;
+    if (nFrames > MAX_BUFFER_LEN / iChannels) {
+        qWarning() << "WARNING: Dropping passthrough samples because the input buffer is too large.";
+        nFrames = MAX_BUFFER_LEN / iChannels;
     }
 
-    // There isn't a suitable SampleUtil method that can do mono->stereo and
-    // short->float in one pass.
-    // SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
-    SampleUtil::convert(m_pConversionBuffer, pBuffer, nFrames*2);
+    if (iChannels == 1) {
+        // Do mono -> stereo conversion. There isn't a suitable SampleUtil
+        // method that can do mono->stereo and short->float in one pass.
+        for (unsigned int i = 0; i < nFrames; ++i) {
+            m_pConversionBuffer[i*2 + 0] = pBuffer[i];
+            m_pConversionBuffer[i*2 + 1] = pBuffer[i];
+        }
+    } else if (iChannels == 2) {
+        // Use the conversion buffer to both convert from short and double.
+        SampleUtil::convert(m_pConversionBuffer, pBuffer, nFrames*iChannels);
+    } else {
+        qWarning() << "EnginePassthrough got greater than stereo input. Not currently handled.";
+    }
 
-    // TODO(rryan) (or bkgood?) do we need to verify the input is the one we asked for? Oh well.
-    unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, nFrames*2);
-    if (samplesWritten < nFrames*2) {
+    const int samplesToWrite = nFrames * iChannels;
+
+    // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
+    unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, samplesToWrite);
+    if (samplesWritten < samplesToWrite) {
         // Buffer overflow. We aren't processing samples fast enough. This
         // shouldn't happen since the deck spits out samples just as fast as they
         // come in, right?
-        Q_ASSERT(false);
+        qWarning() << "ERROR: Buffer overflow in EngineMicrophone. Dropping samples on the floor.";
     }
 }
 
@@ -191,11 +196,6 @@ bool EngineDeck::isPassthroughActive() {
 }
 
 void EngineDeck::slotPassingToggle(double v) {
-    if (v > 0) {
-        m_bPassthroughIsActive = true;
-    }
-    else {
-        m_bPassthroughIsActive = false;
-    }
+    m_bPassthroughIsActive = v > 0;
 }
 
