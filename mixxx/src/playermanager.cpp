@@ -17,6 +17,7 @@
 #include "soundmanager.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "util/stat.h"
+#include "engine/enginedeck.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
@@ -231,6 +232,11 @@ Deck* PlayerManager::addDeck() {
         m_pSoundManager->registerInput(
             AudioInput(AudioInput::VINYLCONTROL, 0, number-1), m_pVCManager);
     }
+
+    // Also register vinyl input signal with deck for passthrough support.
+    EngineDeck* pEngineDeck = pDeck->getEngineDeck();
+    m_pSoundManager->registerInput(
+        AudioInput(AudioInput::VINYLCONTROL, 0, number-1), pEngineDeck);
 
     return pDeck;
 }
