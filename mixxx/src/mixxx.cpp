@@ -33,6 +33,8 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
+#include "engine/sidechain/enginesidechain.h"
+#include "engine/sidechain/engineshoutcast.h"
 #include "library/library.h"
 #include "library/libraryscanner.h"
 #include "library/librarytablemodel.h"
@@ -260,16 +262,15 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         ConfigKey("[Keyboard]", "Enabled")) == "1";
     m_pKeyboard = new MixxxKeyboard(keyboardShortcutsEnabled ? m_pKbdConfig : m_pKbdConfigEmpty);
 
-    //create RecordingManager
-    m_pRecordingManager = new RecordingManager(m_pConfig);
-
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
 
-    connect(m_pEngine, SIGNAL(isRecording(bool)),
-            m_pRecordingManager,SLOT(slotIsRecording(bool)));
-    connect(m_pEngine, SIGNAL(bytesRecorded(int)),
-            m_pRecordingManager,SLOT(slotBytesRecorded(int)));
+    m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
+
+#ifdef __SHOUTCAST__
+    // TODO(XXX): Add this to a ShoutcastManager or something.
+    m_pEngine->getSideChain()->addSideChainWorker(new EngineShoutcast(m_pConfig));
+#endif
 
     // Initialize player device
     // while this is created here, setupDevices needs to be called sometime
@@ -586,10 +587,6 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete playerManager " << qTime.elapsed();
     delete m_pPlayerManager;
 
-    // EngineMaster depends on Config
-    qDebug() << "delete m_pEngine " << qTime.elapsed();
-    delete m_pEngine;
-
     // LibraryScanner depends on Library
     qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
@@ -600,9 +597,13 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete library " << qTime.elapsed();
     delete m_pLibrary;
 
-    // RecordingManager depends on config
+    // RecordingManager depends on config, engine
     qDebug() << "delete RecordingManager " << qTime.elapsed();
     delete m_pRecordingManager;
+
+    // EngineMaster depends on Config
+    qDebug() << "delete m_pEngine " << qTime.elapsed();
+    delete m_pEngine;
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just

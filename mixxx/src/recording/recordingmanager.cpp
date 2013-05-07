@@ -6,20 +6,23 @@
 #include <QDebug>
 #include "recordingmanager.h"
 #include "recording/defs_recording.h"
+#include "engine/sidechain/enginesidechain.h"
+#include "engine/sidechain/enginerecord.h"
 #include "controlpushbutton.h"
+#include "engine/enginemaster.h"
 
 #define CD_650
 
-RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig) :
-        m_pConfig(pConfig),
-        m_recordingDir(""),
-        m_recording_base_file(""),
-        m_recordingFile(""),
-        m_recordingLocation(""),
-        m_isRecording(false),
-        m_iNumberOfBytesRecored(0),
-        m_split_size(0),
-        m_iNumberSplits(0) {
+RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine)
+        : m_pConfig(pConfig),
+          m_recordingDir(""),
+          m_recording_base_file(""),
+          m_recordingFile(""),
+          m_recordingLocation(""),
+          m_isRecording(false),
+          m_iNumberOfBytesRecored(0),
+          m_split_size(0),
+          m_iNumberSplits(0) {
     m_pToggleRecording = new ControlPushButton(ConfigKey(RECORDING_PREF_KEY, "toggle_recording"));
     connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleRecording(double)));
@@ -27,6 +30,18 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig) :
     m_recReady = new ControlObjectThread(m_recReadyCO);
 
     m_split_size = getFileSplitSize();
+
+
+    // Register EngineRecord with the engine sidechain.
+    EngineSideChain* pSidechain = pEngine->getSideChain();
+    if (pSidechain) {
+        EngineRecord* pEngineRecord = new EngineRecord(m_pConfig);
+        connect(pEngineRecord, SIGNAL(isRecording(bool)),
+                this, SLOT(slotIsRecording(bool)));
+        connect(pEngineRecord, SIGNAL(bytesRecorded(int)),
+                this, SLOT(slotBytesRecorded(int)));
+        pSidechain->addSideChainWorker(pEngineRecord);
+    }
 }
 
 RecordingManager::~RecordingManager()

@@ -152,8 +152,7 @@ bool EngineRecord::metaDataHasChanged()
     return true;
 }
 
-void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize) {
-    Q_UNUSED(pOut);
+void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     // Calculate the latency of this buffer
     m_dLatency = (double)iBufferSize / m_samplerate->get();
 
@@ -188,13 +187,13 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
     if (m_recReady->get() == RECORD_ON) {
         if (m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF) {
             if (m_sndfile != NULL) {
-                sf_write_float(m_sndfile, pIn, iBufferSize);
+                sf_write_float(m_sndfile, pBuffer, iBufferSize);
                 emit(bytesRecorded(iBufferSize));
             }
         } else {
             if (m_encoder) {
                 //Compress audio. Encoder will call method 'write()' below to write a file stream
-                m_encoder->encodeBuffer(pIn, iBufferSize);
+                m_encoder->encodeBuffer(pBuffer, iBufferSize);
             }
         }
 

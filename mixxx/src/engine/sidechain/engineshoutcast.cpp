@@ -28,7 +28,7 @@
 #include <unistd.h>
 #endif
 
-#include "engine/engineshoutcast.h"
+#include "engine/sidechain/engineshoutcast.h"
 
 #include "configobject.h"
 #include "dlgprefshoutcast.h"
@@ -497,7 +497,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
     }
 }
 
-void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize) {
+void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     QMutexLocker locker(&m_shoutMutex);
     //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
     bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
@@ -519,7 +519,7 @@ void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iB
             return;
 
         if (iBufferSize > 0 && m_encoder){
-            m_encoder->encodeBuffer(pOut, iBufferSize); //encode and send to shoutcast
+            m_encoder->encodeBuffer(pBuffer, iBufferSize); //encode and send to shoutcast
         }
         //Check if track has changed and submit its new metadata to shoutcast
         if (metaDataHasChanged())

@@ -26,39 +26,23 @@
 
 #include <QtCore>
 #include <QtDebug>
+#include <QMutexLocker>
 
 #include "engine/sidechain/enginesidechain.h"
-#include "engine/enginebuffer.h"
-#include "engine/sidechain/enginerecord.h"
+#include "engine/sidechain/sidechainworker.h"
 #include "util/timer.h"
+#include "sampleutil.h"
 
-#ifdef __SHOUTCAST__
-#include "engineshoutcast.h"
-#endif
-
-EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig) {
-    m_pConfig = pConfig;
-    m_bStopThread = false;
-
-    m_bufferFront = new CSAMPLE[SIDECHAIN_BUFFER_SIZE];
-    m_bufferBack  = new CSAMPLE[SIDECHAIN_BUFFER_SIZE];
-    m_buffer = m_bufferFront;
-
-    m_iBufferEnd = 0;
-
-#ifdef __SHOUTCAST__
-    // Shoutcast
-	m_shoutcast = new EngineShoutcast(m_pConfig);
-#endif
-
-    m_rec = new EngineRecord(m_pConfig);
-    connect(m_rec, SIGNAL(bytesRecorded(int)),
-            this, SIGNAL(bytesRecorded(int)));
-    connect(m_rec, SIGNAL(isRecording(bool)),
-            this, SIGNAL(isRecording(bool)));
-
-
-   	start(QThread::LowPriority);    //Starts the thread and goes to the "run()" function below.
+EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
+        : m_pConfig(pConfig),
+          m_bStopThread(false),
+          m_iBufferEnd(0),
+          m_bufferFront(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)),
+          m_bufferBack(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)),
+          m_buffer(m_bufferFront),
+          m_filledBuffer(NULL) {
+    // Starts the thread and goes to the "run()" function below.
+   	start(QThread::LowPriority);
 }
 
 EngineSideChain::~EngineSideChain() {
@@ -71,27 +55,28 @@ EngineSideChain::~EngineSideChain() {
 
     wait(); //Wait until the thread has finished.
 
-#ifdef __SHOUTCAST__
-    if (m_shoutcast)
-        m_shoutcast->shutdown();
-#endif
+    QMutexLocker locker(&m_workerLock);
+    while (!m_workers.empty()) {
+        SideChainWorker* pWorker = m_workers.takeLast();
+        pWorker->shutdown();
+    }
+    locker.unlock();
 
-    //Free up memory
-    delete [] m_bufferFront;
-    delete [] m_bufferBack;
-
-#ifdef __SHOUTCAST__
-    delete m_shoutcast;
-#endif
-
-    if(m_rec) delete m_rec;
+    // Free up memory
+    m_buffer = NULL;
+    m_filledBuffer = NULL;
+    SampleUtil::free(m_bufferFront);
+    SampleUtil::free(m_bufferBack);
 
     m_backBufferLock.unlock();
 }
 
-/** Submit a buffer of samples to be processed in the sidechain*/
-void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
-{
+void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
+    QMutexLocker locker(&m_workerLock);
+    m_workers.append(pWorker);
+}
+
+void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size) {
     ScopedTimer t("EngineSideChain:submitSamples");
     //Copy samples into m_buffer.
     if (m_iBufferEnd + buffer_size <= SIDECHAIN_BUFFER_SIZE)    //FIXME: is <= correct?
@@ -130,7 +115,6 @@ void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size)
     }
 }
 
-/* Swaps the buffers in the double-buffering mechanism we use */
 void EngineSideChain::swapBuffers()
 {
     if (m_buffer == m_bufferFront)
@@ -147,13 +131,13 @@ void EngineSideChain::swapBuffers()
     m_iBufferEnd = 0;
 }
 
-void EngineSideChain::run()
-{
-    unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
+void EngineSideChain::run() {
+    // the id of this thread, for debugging purposes //XXX copypasta (should
+    // factor this out somehow), -kousu 2/2009
+    unsigned static id = 0;
     QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
 
-    while (true)
-    {
+    while (true) {
         m_waitLock.lock();
         // Check to see if we're supposed to exit/stop this thread.
         if (m_bStopThread) {
@@ -187,13 +171,9 @@ void EngineSideChain::run()
         CSAMPLE* pBuffer = m_filledBuffer;
         m_backBufferLock.unlock();
 
-#ifdef __SHOUTCAST__
-        m_shoutcast->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-#endif
-        m_rec->process(pBuffer, pBuffer, SIDECHAIN_BUFFER_SIZE);
-        //m_backBufferLock.unlock();
+        QMutexLocker locker(&m_workerLock);
+        foreach (SideChainWorker* pWorker, m_workers) {
+            pWorker->process(pBuffer, SIDECHAIN_BUFFER_SIZE);
+        }
     }
-
 }
-
-

@@ -28,6 +28,7 @@
 #include "engine/engineobject.h"
 #include "recording/encoder.h"
 #include "errordialoghandler.h"
+#include "engine/sidechain/sidechainworker.h"
 
 #include "trackinfoobject.h"
 
@@ -37,12 +38,15 @@ class ControlLogpotmeter;
 class ConfigKey;
 class ControlObject;
 
-class EngineRecord : public EngineAbstractRecord {
+class EngineRecord : public EngineAbstractRecord, public SideChainWorker {
     Q_OBJECT
   public:
     EngineRecord(ConfigObject<ConfigValue> *_config);
     virtual ~EngineRecord();
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+
+    void process(const CSAMPLE* pBuffer, const int iBufferSize);
+    void shutdown() {}
+
     /** writes (un)compressed audio to file **/
     void write(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
     //creates or opens an audio file

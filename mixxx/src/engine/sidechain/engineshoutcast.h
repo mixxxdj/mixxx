@@ -26,6 +26,7 @@
 #include <shout/shout.h>
 
 #include "engine/engineabstractrecord.h"
+#include "engine/sidechain/sidechainworker.h"
 #include "configobject.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
@@ -39,7 +40,7 @@
 
 class EncoderVorbis;
 
-class EngineShoutcast : public EngineAbstractRecord {
+class EngineShoutcast : public EngineAbstractRecord, public SideChainWorker {
     Q_OBJECT
   public:
     EngineShoutcast(ConfigObject<ConfigValue> *_config);
@@ -47,7 +48,11 @@ class EngineShoutcast : public EngineAbstractRecord {
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    void process(const CSAMPLE* pBuffer, const int iBufferSize);
+
+    void shutdown() {
+        m_bQuit = true;
+    }
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
     // the server.
@@ -57,9 +62,6 @@ class EngineShoutcast : public EngineAbstractRecord {
     bool serverConnect();
     bool serverDisconnect();
     bool isConnected();
-    void shutdown() {
-        m_bQuit = true;
-    }
   public slots:
     /** Update the libshout struct with info from Mixxx's shoutcast preferences.*/
     void updateFromPreferences();

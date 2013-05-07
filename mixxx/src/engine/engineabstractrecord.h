@@ -16,14 +16,15 @@
 #ifndef ENGINEABSTRACTRECORD_H
 #define ENGINEABSTRACTRECORD_H
 
-#include "defs.h"
-#include "engine/engineobject.h"
+#include <QObject>
 
-class EngineAbstractRecord : public EngineObject {
+#include "defs.h"
+
+class EngineAbstractRecord : public QObject {
   public:
     /** writes to encoded audio to a stream, e.g., a file stream or shoutcast stream **/
     virtual void write(unsigned char *header, unsigned char *body,
-                           int headerLen, int bodyLen) = 0;
+                       int headerLen, int bodyLen) = 0;
 };
 
 #endif
