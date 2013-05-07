@@ -1026,12 +1026,52 @@
 					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
 				</Connection>
 			</PushButton>-->
+			
+			<!-- Master -->
+	        <PushButton>
+			    <TooltipId>sync_master</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_on.png</Unpressed>
+			    </State>
+			    <Pos>4,4</Pos>
+			    <Connection>
+				    <ConfigKey>[Master],sync_master</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
+			<!--
+			**********************************************
+			Text- BPM number display
+			**********************************************
+			-->
+			<NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>4,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Master],sync_bpm</ConfigKey>
+				</Connection>
+			</NumberBpm>
 			<!--
 			**********************************************
 			Mixer Controls
 			**********************************************
 			-->
-			<WidgetGroup>
+			<WidgetGroup>  <!-- Channel1 controls -->
 				<Pos>99,0</Pos>
 			    <Size>82,250</Size>
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; } </Style>
@@ -1842,10 +1882,6 @@
 			        <ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
 		        </Connection>
 	        </PushButton>
-
-	        **********************************************
-	        Vinyl- Cueing Mode
-	        **********************************************
 	        <PushButton>
 		        <TooltipId>vinylcontrol_cueing</TooltipId>
 		        <Style></Style>
@@ -1870,6 +1906,50 @@
 			        <ConfigKey>[Channel1],vinylcontrol_cueing</ConfigKey>
 		        </Connection>
 	        </PushButton>
+	        <!-- Master -->
+	        <PushButton>
+			    <TooltipId>sync_master</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_on.png</Unpressed>
+			    </State>
+			    <Pos>114,2</Pos>
+			    <Connection>
+				    <ConfigKey>[Channel1],sync_master</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
+		    <!-- Slave -->
+	        <PushButton>
+			    <TooltipId>sync_slave</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_slave_on.png</Pressed>
+				    <Unpressed>btn_mastersync_slave_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_slave_on.png</Pressed>
+				    <Unpressed>btn_mastersync_slave_on.png</Unpressed>
+			    </State>
+			    <Pos>114,18</Pos>
+			    <Connection>
+				    <ConfigKey>[Channel1],sync_slave</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -3046,6 +3126,50 @@
 			        <ConfigKey>[Channel2],vinylcontrol_cueing</ConfigKey>
 		        </Connection>
 	        </PushButton>
+	        <!-- Master -->
+	        <PushButton>
+			    <TooltipId>sync_master</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_on.png</Unpressed>
+			    </State>
+			    <Pos>114,2</Pos>
+			    <Connection>
+				    <ConfigKey>[Channel2],sync_master</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
+		    <!-- Slave -->
+	        <PushButton>
+			    <TooltipId>sync_slave</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_slave_on.png</Pressed>
+				    <Unpressed>btn_mastersync_slave_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_slave_on.png</Pressed>
+				    <Unpressed>btn_mastersync_slave_on.png</Unpressed>
+			    </State>
+			    <Pos>114,18</Pos>
+			    <Connection>
+				    <ConfigKey>[Channel2],sync_slave</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -4223,6 +4347,50 @@
 			        <ConfigKey>[Channel3],vinylcontrol_cueing</ConfigKey>
 		        </Connection>
 	        </PushButton>
+	        <!-- Master -->
+	        <PushButton>
+			    <TooltipId>sync_master</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_on.png</Unpressed>
+			    </State>
+			    <Pos>114,2</Pos>
+			    <Connection>
+				    <ConfigKey>[Channel3],sync_master</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
+		    <!-- Slave -->
+	        <PushButton>
+			    <TooltipId>sync_slave</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_slave_on.png</Pressed>
+				    <Unpressed>btn_mastersync_slave_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_slave_on.png</Pressed>
+				    <Unpressed>btn_mastersync_slave_on.png</Unpressed>
+			    </State>
+			    <Pos>114,18</Pos>
+			    <Connection>
+				    <ConfigKey>[Channel3],sync_slave</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -5399,6 +5567,50 @@
 			        <ConfigKey>[Channel4],vinylcontrol_cueing</ConfigKey>
 		        </Connection>
 	        </PushButton>
+	        <!-- Master -->
+	        <PushButton>
+			    <TooltipId>sync_master</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_master_on.png</Pressed>
+				    <Unpressed>btn_mastersync_master_on.png</Unpressed>
+			    </State>
+			    <Pos>114,2</Pos>
+			    <Connection>
+				    <ConfigKey>[Channel4],sync_master</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
+		    <!-- Slave -->
+	        <PushButton>
+			    <TooltipId>sync_slave</TooltipId>
+			    <Style></Style>
+			    <NumberStates>2</NumberStates>
+			    <State>
+				    <Number>0</Number>
+				    <Pressed>btn_mastersync_slave_on.png</Pressed>
+				    <Unpressed>btn_mastersync_slave_off.png</Unpressed>
+			    </State>
+			    <State>
+				    <Number>1</Number>
+				    <Pressed>btn_mastersync_slave_on.png</Pressed>
+				    <Unpressed>btn_mastersync_slave_on.png</Unpressed>
+			    </State>
+			    <Pos>114,18</Pos>
+			    <Connection>
+				    <ConfigKey>[Channel4],sync_slave</ConfigKey>
+				    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+				    <ButtonState>LeftButton</ButtonState>
+			    </Connection>
+		    </PushButton>
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
