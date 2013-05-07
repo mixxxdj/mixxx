@@ -2845,7 +2845,7 @@
 					<Visual>
 						<TooltipId>waveform_display</TooltipId>
 						<Style></Style>
-						<Channel>3</Channel>
+						<Channel>1</Channel>
 						<Pos>0,0</Pos>
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
@@ -2899,7 +2899,7 @@
 					<Visual>
 						<TooltipId>waveform_display</TooltipId>
 						<Style></Style>
-						<Channel>1</Channel>
+						<Channel>2</Channel>
 						<Pos>0,35</Pos>
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
@@ -2953,7 +2953,7 @@
 					<Visual>
 						<TooltipId>waveform_display</TooltipId>
 						<Style></Style>
-						<Channel>2</Channel>
+						<Channel>3</Channel>
 						<Pos>0,73</Pos>
 						<!--See comment about <Size> above-->
 						<!--<Size>i,73</Size>-->
