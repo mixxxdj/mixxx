@@ -62,6 +62,11 @@ EngineSync::EngineSync(EngineMaster *master,
             this, SLOT(slotInternalMasterChanged(double)),
             Qt::DirectConnection);
             
+    m_pSyncRateSlider = new ControlPotmeter(ConfigKey("[Master]", "rate"), 10.0, 200.0);
+    connect(m_pSyncRateSlider, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotMasterBpmChanged(double)),
+            Qt::DirectConnection);
+            
     //TODO: get this from configuration
     m_pMasterBpm->set(m_dMasterBpm); //this will initialize all our values
     updateSamplesPerBeat();
@@ -71,6 +76,7 @@ EngineSync::~EngineSync()
 {
     delete m_pMasterBpm;
     delete m_pMasterBeatDistance;
+    delete m_pSyncInternalRate;
 }
 
 void EngineSync::addDeck(QString deck)
@@ -317,6 +323,14 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist)
     setPseudoPosition(beat_dist);
 }
 
+void EngineSync::slotInternalSliderChanged(double new_bpm) {
+    if (m_iSyncSource != SYNC_INTERNAL) {
+        m_pSyncRateSlider->set(m_dMasterBpm);
+        return;
+    }
+    m_pMasterBpm->set(new_bpm);
+}
+
 void EngineSync::slotMasterBpmChanged(double new_bpm)
 {
     //qDebug() << "~~~~~~~~~~~~~~~~~~~~~~new master bpm" << new_bpm;
@@ -338,10 +352,12 @@ void EngineSync::slotMasterBpmChanged(double new_bpm)
             //a percentage.  Let's keep this to "no you can't do that" for now
             
             m_pMasterBpm->set(m_dMasterBpm);
+            
             return;
         }
         //qDebug() << "using it";
         m_dMasterBpm = new_bpm;
+        m_pSyncRateSlider->set(new_bpm);
         updateSamplesPerBeat();
         
         //this change could hypothetically push us over distance 1.0, so check

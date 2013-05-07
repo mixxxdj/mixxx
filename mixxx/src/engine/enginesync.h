@@ -75,6 +75,7 @@ class EngineSync : public EngineControl {
         ControlObject *m_pSourceRate, *m_pMasterBpm;
         ControlObject *m_pSourceBeatDistance, *m_pMasterBeatDistance;
         ControlObject *m_pSampleRate;
+        ControlPotmeter* m_pSyncRateSlider;
         ControlPushButton *m_pSyncInternalEnabled;
         
         QList<QString> m_sDeckList;

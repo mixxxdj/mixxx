@@ -67,6 +67,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     //m_pMasterSync->setInternalMaster();
     //qDebug() << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-here we are setting bpm";
     ControlObject::getControl(ConfigKey("[Master]","sync_bpm"))->set(124.0);
+    ControlObject::getControl(ConfigKey("[Master]","rate"))->set(124.0);
 
 #ifdef __LADSPA__
     // LADSPA
