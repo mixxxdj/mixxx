@@ -72,7 +72,7 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 17;
+    int requiredSchemaVersion = 18;
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
