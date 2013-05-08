@@ -1066,6 +1066,30 @@
 					<ConfigKey>[Master],sync_bpm</ConfigKey>
 				</Connection>
 			</NumberBpm>
+			<NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>50,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Master],beat_distance</ConfigKey>
+				</Connection>
+			</NumberBpm>
+			<SliderComposed>
+		        <TooltipId>rate</TooltipId>
+		        <Style></Style>
+		        <Handle>knob_pitch1.png</Handle>
+		        <Slider>slider_pitch1.png</Slider>
+		        <Pos>4,80</Pos>
+		        <Horizontal>false</Horizontal>
+		        <Connection>
+			        <ConfigKey>[Master],rate</ConfigKey>
+			        <EmitOnDownPress>false</EmitOnDownPress>
+		        </Connection>
+	        </SliderComposed>
 			<!--
 			**********************************************
 			Mixer Controls
@@ -1950,6 +1974,18 @@
 				    <ButtonState>LeftButton</ButtonState>
 			    </Connection>
 		    </PushButton>
+		    <NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>160,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Channel1],true_rate</ConfigKey>
+				</Connection>
+			</NumberBpm>
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -3170,6 +3206,18 @@
 				    <ButtonState>LeftButton</ButtonState>
 			    </Connection>
 		    </PushButton>
+		    <NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>160,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Channel2],true_rate</ConfigKey>
+				</Connection>
+			</NumberBpm>
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -4391,6 +4439,18 @@
 				    <ButtonState>LeftButton</ButtonState>
 			    </Connection>
 		    </PushButton>
+		    <NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>160,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Channel3],true_rate</ConfigKey>
+				</Connection>
+			</NumberBpm>
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -5611,6 +5671,18 @@
 				    <ButtonState>LeftButton</ButtonState>
 			    </Connection>
 		    </PushButton>
+		    <NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>160,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Channel4],true_rate</ConfigKey>
+				</Connection>
+			</NumberBpm>
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right

@@ -64,7 +64,7 @@ EngineSync::EngineSync(EngineMaster *master,
             
     m_pSyncRateSlider = new ControlPotmeter(ConfigKey("[Master]", "rate"), 10.0, 200.0);
     connect(m_pSyncRateSlider, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotMasterBpmChanged(double)),
+            this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
             
     //TODO: get this from configuration
@@ -76,7 +76,7 @@ EngineSync::~EngineSync()
 {
     delete m_pMasterBpm;
     delete m_pMasterBeatDistance;
-    delete m_pSyncInternalRate;
+    delete m_pSyncRateSlider;
 }
 
 void EngineSync::addDeck(QString deck)
@@ -189,7 +189,7 @@ bool EngineSync::setDeckMaster(QString deck)
 {
     if (deck == NULL || deck == "")
     {
-        //qDebug() << "----------------------------------------------------unsetting master (got null)";
+        qDebug() << "----------------------------------------------------unsetting master (got null)";
         disconnectMaster();
         setInternalMaster();
         return true;
@@ -199,7 +199,7 @@ bool EngineSync::setDeckMaster(QString deck)
     // Only consider channels that have a track loaded and are in the master
     // mix.
 
-    //qDebug() << "**************************************************************************asked to set a new master:" << deck;
+    qDebug() << "**************************************************************************asked to set a new master:" << deck;
     
     if (pChannel) {
         disconnectMaster();
@@ -228,7 +228,7 @@ bool EngineSync::setDeckMaster(QString deck)
                 Qt::DirectConnection);
         
         resetInternalBeatDistance(); //reset internal beat distance to equal the new master
-        //qDebug() << "----------------------------setting new master" << deck;
+        qDebug() << "----------------------------setting new master" << deck;
         m_iSyncSource = SYNC_DECK;
         m_pSyncInternalEnabled->set(FALSE);
         //this is not redundant, I swear.  Make sure lights are all up to date
@@ -304,12 +304,15 @@ void EngineSync::slotSourceRateChanged(double true_rate)
     if (m_pMasterBuffer == NULL)
         qDebug() << "but master buffer is null";
     
+    //qDebug() << "true rate: " << true_rate << " source " << m_dSourceRate;
+    
     if (true_rate != m_dSourceRate && m_pMasterBuffer != NULL)
     {
         m_dSourceRate = true_rate;
         
         double filebpm = m_pMasterBuffer->getFileBpm();
         m_dMasterBpm = true_rate * filebpm;
+        //qDebug() << "file bpm " << filebpm;
         //qDebug()<< "announcing a master bpm of" <<  m_dMasterBpm;
         
         m_pMasterBpm->set(m_dMasterBpm); //this will trigger all of the slaves to change rate
@@ -323,7 +326,7 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist)
     setPseudoPosition(beat_dist);
 }
 
-void EngineSync::slotInternalSliderChanged(double new_bpm) {
+void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
     if (m_iSyncSource != SYNC_INTERNAL) {
         m_pSyncRateSlider->set(m_dMasterBpm);
         return;
@@ -357,7 +360,7 @@ void EngineSync::slotMasterBpmChanged(double new_bpm)
         }
         //qDebug() << "using it";
         m_dMasterBpm = new_bpm;
-        m_pSyncRateSlider->set(new_bpm);
+        m_pSyncRateSlider->set(m_dMasterBpm);
         updateSamplesPerBeat();
         
         //this change could hypothetically push us over distance 1.0, so check

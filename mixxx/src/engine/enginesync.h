@@ -19,6 +19,7 @@
 #ifndef ENGINESYNC_H
 #define ENGINESYNC_H
 
+#include "controlpotmeter.h"
 #include "engine/enginecontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
@@ -56,6 +57,7 @@ class EngineSync : public EngineControl {
     private slots:
         void slotMasterBpmChanged(double);
         void slotSourceRateChanged(double);
+        void slotSyncRateSliderChanged(double);
         void slotSourceBeatDistanceChanged(double);
         void slotSampleRateChanged(double);
         void slotInternalMasterChanged(double);
@@ -75,8 +77,8 @@ class EngineSync : public EngineControl {
         ControlObject *m_pSourceRate, *m_pMasterBpm;
         ControlObject *m_pSourceBeatDistance, *m_pMasterBeatDistance;
         ControlObject *m_pSampleRate;
-        ControlPotmeter* m_pSyncRateSlider;
         ControlPushButton *m_pSyncInternalEnabled;
+        ControlPotmeter* m_pSyncRateSlider;
         
         QList<QString> m_sDeckList;
         
