@@ -681,14 +681,13 @@ double BpmControl::getPhaseOffset(double reference_position)
     return dNewPlaypos - dThisPosition;
 }
 
-//void BpmControl::slotRateChanged(double) {
-//    //wait, always???  Are we hammering this??
-//    double dFileBpm = m_pFileBpm->get();
-//    slotFileBpmChanged(dFileBpm);
-//    m_dFileBpm = dFileBpm;
-//}
-
 void BpmControl::slotAdjustBpm() {
+    double dFileBpm = m_pFileBpm->get();
+    if (dFileBpm != m_dFileBpm) {
+        slotFileBpmChanged(dFileBpm);
+        m_dFileBpm = dFileBpm;
+    }
+
     // Emitted value is one of the control objects used below
 
     //qDebug() << this << "slotAdjustBpm"
