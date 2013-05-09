@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-14 06:50+0200\n"
+"POT-Creation-Date: 2013-05-09 15:12+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1803,6 +1803,143 @@ msgstr ""
 msgid "Are you sure you want to clear all output bindings?"
 msgstr ""
 
+#: DlgPrefModplug#1
+msgid "Modplug Preferences"
+msgstr ""
+
+#: DlgPrefModplug#2
+msgid "Show advanced settings"
+msgstr ""
+
+#: DlgPrefModplug#3
+msgid ""
+"Decoding options for libmodplug. Module files are decoded at once and kept "
+"in RAM to allow for seeking and smooth operation in Mixxx. About 10MB of RAM "
+"are required for 1 minute of audio."
+msgstr ""
+
+#: DlgPrefModplug#4
+msgid ""
+"All settings take effect on next track load. Currently loaded tracks are not "
+"affected. For an explanation of these settings, see the <a "
+"href=\"http://wiki.openmpt.org/Manual:_Setup/Player\">OpenMPT manual</a>."
+msgstr ""
+
+#: DlgPrefModplug#5
+msgid "Maximum Number of Mixing Channels:"
+msgstr ""
+
+#: DlgPrefModplug#6
+msgctxt "DlgPrefModplug#6"
+msgid "Low"
+msgstr ""
+
+#: DlgPrefModplug#7
+msgid "Reverb Delay:"
+msgstr ""
+
+#: DlgPrefModplug#8
+msgctxt "DlgPrefModplug#8"
+msgid "High"
+msgstr ""
+
+#: DlgPrefModplug#9
+msgctxt "DlgPrefModplug#9"
+msgid "None"
+msgstr ""
+
+#: DlgPrefModplug#10
+msgid "Bass Expansion"
+msgstr ""
+
+#: DlgPrefModplug#11
+msgid "Bass Range:"
+msgstr ""
+
+#: DlgPrefModplug#12
+msgid "16"
+msgstr ""
+
+#: DlgPrefModplug#13
+msgid "Front/Rear Delay:"
+msgstr ""
+
+#: DlgPrefModplug#14
+msgid "Pro-Logic Surround"
+msgstr ""
+
+#: DlgPrefModplug#15
+msgid "Full"
+msgstr ""
+
+#: DlgPrefModplug#16
+msgid "Reverb"
+msgstr ""
+
+#: DlgPrefModplug#17
+msgid "Stereo separation"
+msgstr ""
+
+#: DlgPrefModplug#18
+msgid "10Hz"
+msgstr ""
+
+#: DlgPrefModplug#19
+msgid "10ms"
+msgstr ""
+
+#: DlgPrefModplug#20
+msgid "256"
+msgstr ""
+
+#: DlgPrefModplug#21
+msgid "5ms"
+msgstr ""
+
+#: DlgPrefModplug#22
+msgid "100Hz"
+msgstr ""
+
+#: DlgPrefModplug#23
+msgid "250ms"
+msgstr ""
+
+#: DlgPrefModplug#24
+msgid "50ms"
+msgstr ""
+
+#: DlgPrefModplug#25
+msgid "Noise reduction"
+msgstr ""
+
+#: DlgPrefModplug#26
+msgid "Resampling mode (interpolation)"
+msgstr ""
+
+#: DlgPrefModplug#27
+msgid "Enable oversampling"
+msgstr ""
+
+#: DlgPrefModplug#28
+msgid "Nearest (very fast, extremely bad quality)"
+msgstr ""
+
+#: DlgPrefModplug#29
+msgid "Linear (fast, good quality)"
+msgstr ""
+
+#: DlgPrefModplug#30
+msgid "Cubic Spline (high quality)"
+msgstr ""
+
+#: DlgPrefModplug#31
+msgid "8-tap FIR (extremely high quality)"
+msgstr ""
+
+#: DlgPrefModplug#32
+msgid "Memory limit for single track (MB)"
+msgstr ""
+
 #: DlgPrefNoControllersDlg#1
 msgctxt "DlgPrefNoControllersDlg#1"
 msgid "Form3"
@@ -2062,10 +2199,12 @@ msgid "Quality"
 msgstr ""
 
 #: DlgPrefRecordDlg#7
+msgctxt "DlgPrefRecordDlg#7"
 msgid "High"
 msgstr ""
 
 #: DlgPrefRecordDlg#8
+msgctxt "DlgPrefRecordDlg#8"
 msgid "Low"
 msgstr ""
 
@@ -2373,52 +2512,60 @@ msgid "Sample Rate"
 msgstr ""
 
 #: DlgPrefSoundDlg#3
-msgid "Buffer Underflow Count"
+msgid "Audio Buffer"
 msgstr ""
 
 #: DlgPrefSoundDlg#4
-msgid "0"
+msgid "Known Latency"
 msgstr ""
 
 #: DlgPrefSoundDlg#5
-msgid "Latency Tips"
+msgid "20 ms"
 msgstr ""
 
 #: DlgPrefSoundDlg#6
-msgid ""
-"<ul>\n"
-"<li>Increase your latency if the underflow counter is increasing or you hear "
-"pops during playback</li>\n"
-"<li>Reduce your latency to improve Mixxx's responsiveness</li>\n"
-"</ul>"
+msgid "Buffer Underflow Count"
 msgstr ""
 
 #: DlgPrefSoundDlg#7
-msgctxt "DlgPrefSoundDlg#7"
-msgid "Output"
+msgid "0"
 msgstr ""
 
 #: DlgPrefSoundDlg#8
-msgctxt "DlgPrefSoundDlg#8"
-msgid "Input"
+msgid "Latency Tips"
 msgstr ""
 
 #: DlgPrefSoundDlg#9
-msgid "Query Devices"
+msgid ""
+"<ul>\n"
+"<li>Enlarge your audio buffer if the underflow counter is increasing or you "
+"hear pops during playback</li>\n"
+"<li>Downsize your audio buffer to improve Mixxx's responsiveness</li>\n"
+"</ul>"
 msgstr ""
 
 #: DlgPrefSoundDlg#10
 msgctxt "DlgPrefSoundDlg#10"
-msgid "Reset to Defaults"
+msgid "Output"
 msgstr ""
 
 #: DlgPrefSoundDlg#11
 msgctxt "DlgPrefSoundDlg#11"
-msgid "Apply"
+msgid "Input"
 msgstr ""
 
 #: DlgPrefSoundDlg#12
-msgid "Latency"
+msgid "Query Devices"
+msgstr ""
+
+#: DlgPrefSoundDlg#13
+msgctxt "DlgPrefSoundDlg#13"
+msgid "Reset to Defaults"
+msgstr ""
+
+#: DlgPrefSoundDlg#14
+msgctxt "DlgPrefSoundDlg#14"
+msgid "Apply"
 msgstr ""
 
 #: DlgPrefSoundItem#1
@@ -2615,6 +2762,10 @@ msgstr ""
 
 #: DlgPreferences#13
 msgid "Live Broadcasting"
+msgstr ""
+
+#: DlgPreferences#14
+msgid "Modplug Decoder"
 msgstr ""
 
 #: DlgPreferencesDlg#1
@@ -3204,28 +3355,28 @@ msgid "Scanning: "
 msgstr ""
 
 #: MidiController#1
-msgid "MixxxControl not found"
+msgid "MixxxControl(s) not found"
 msgstr ""
 
 #: MidiController#2
-msgid "The MixxxControl '%1, %2' specified in the loaded mapping is invalid."
+msgid ""
+"One or more MixxxControls specified in the outputs section of the loaded "
+"preset were invalid."
 msgstr ""
 
 #: MidiController#3
-msgid ""
-"The MIDI output message 0x%1 0x%2 will not be bound.\n"
-"(Click Show Details for hints.)"
+msgid "Some LEDs or other feedback may not work correctly."
 msgstr ""
 
 #: MidiController#4
-msgid "* Check to see that the MixxxControl name is spelled correctly in the "
+msgid "* Check to see that the MixxxControl names are spelled correctly in the "
 "mapping file (.xml)\n"
 msgstr ""
 
 #: MidiController#5
 msgid ""
-"* Make sure the MixxxControl you're trying to use actually exists. Visit "
-"this wiki page for a complete list:"
+"* Make sure the MixxxControls in question actually exist. Visit this wiki "
+"page for a complete list: "
 msgstr ""
 
 #: MixxxApp#1
