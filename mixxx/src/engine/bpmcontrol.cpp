@@ -24,6 +24,7 @@ BpmControl::BpmControl(const char* _group,
         m_dSyncAdjustment(0.0),
         m_bUserTweakingSync(false),
         m_dUserOffset(0.0),
+        m_dLoopSize(0.0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
     m_pNumDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
@@ -396,8 +397,9 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         return;
     }
     
-    //If we aren't quantized, don't worry about offset
-    if (!m_pQuantize->get()) {
+    //If we aren't quantized or looping, don't worry about offset
+    if (!m_pQuantize->get() || (m_dLoopSize < 1.0 && m_dLoopSize > 0)) {
+        qDebug() << "not quantized or small loop";
         m_dSyncAdjustment = 0;
         return;
     }
@@ -472,10 +474,10 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         if (fabs(percent_offset - m_dUserOffset) > MAGIC_FUZZ)
         {
             double error = percent_offset - m_dUserOffset;
-            //qDebug() << "tweak to get back in sync" << percent_offset << m_dUserOffset << MAGIC_FUZZ;
+            qDebug() << "tweak to get back in sync" << percent_offset << m_dUserOffset << MAGIC_FUZZ;
             //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << percent_offset;
             m_dSyncAdjustment = (0 - error) * MAGIC_FACTOR;
-            //qDebug() << m_sGroup << "tweaking...." << m_dSyncAdjustment;
+            qDebug() << m_sGroup << "tweaking...." << m_dSyncAdjustment;
             m_dSyncAdjustment = math_max(-0.2f, math_min(0.2f, m_dSyncAdjustment));
             //qDebug() << "clamped" << m_dSyncAdjustment;
         }
@@ -484,8 +486,9 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
 
 double BpmControl::getSyncAdjustment()
 {
-    if (m_iSyncState != SYNC_SLAVE)
+    if (m_iSyncState != SYNC_SLAVE) {
         return 0.0;
+    }
 /*    if (m_dSyncAdjustment != 0)
         qDebug() << m_sGroup << "sync value" << m_dSyncAdjustment;*/
     return m_dSyncAdjustment;

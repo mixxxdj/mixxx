@@ -54,7 +54,7 @@ LoopingControl::LoopingControl(const char * _group,
 
     m_pCOLoopEnabled = new ControlObject(ConfigKey(_group, "loop_enabled"));
     m_pCOLoopEnabled->set(0.0f);
-
+    
     m_pCOLoopStartPosition =
             new ControlObject(ConfigKey(_group, "loop_start_position"));
     m_pCOLoopStartPosition->set(kNoTrigger);

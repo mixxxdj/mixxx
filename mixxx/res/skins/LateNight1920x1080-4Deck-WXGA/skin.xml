@@ -1072,7 +1072,7 @@
 				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
 				</Style>
 				<Channel>1</Channel>
-				<Pos>50,25</Pos>
+				<Pos>60,25</Pos>
 				<Size>30,33</Size>
 				<Connection>
 					<ConfigKey>[Master],beat_distance</ConfigKey>

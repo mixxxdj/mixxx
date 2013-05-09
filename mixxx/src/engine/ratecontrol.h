@@ -121,7 +121,7 @@ public:
     ControlObject *m_pSampleRate;
     
     //For Master Sync
-    ControlObject *m_pTrueRate, *m_pMasterBpm;
+    ControlObject *m_pMasterBpm;
     ControlObject *m_pSyncInternalEnabled;
     ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
     EngineMaster *m_pEngineMaster;

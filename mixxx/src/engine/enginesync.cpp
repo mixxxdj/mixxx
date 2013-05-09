@@ -28,9 +28,9 @@ EngineSync::EngineSync(EngineMaster *master,
         m_pSourceRate(NULL),
         m_pSourceBeatDistance(NULL),
         m_iSyncSource(SYNC_INTERNAL),
-        m_dPseudoBufferPos(0.0f),
         m_dSourceRate(0.0f), //has to be zero so that master bpm gets set correctly on startup
-        m_dMasterBpm(124.0f)
+        m_dMasterBpm(124.0f),
+        m_dPseudoBufferPos(0.0f)
 {
     m_pMasterBeatDistance = new ControlObject(ConfigKey("[Master]", "beat_distance"));
     
@@ -62,10 +62,13 @@ EngineSync::EngineSync(EngineMaster *master,
             this, SLOT(slotInternalMasterChanged(double)),
             Qt::DirectConnection);
             
-    m_pSyncRateSlider = new ControlPotmeter(ConfigKey("[Master]", "rate"), 10.0, 200.0);
-    connect(m_pSyncRateSlider, SIGNAL(valueChangedFromEngine(double)),
+    m_pSyncRateSlider = new ControlPotmeter(ConfigKey("[Master]", "rate"), 40.0, 200.0);
+    connect(m_pSyncRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
+    //connect(m_pSyncRateSlider, SIGNAL(valueChangedFromEngine(double)),
+    //        this, SLOT(slotSyncRateSliderChangedFromEngine(double)),
+    //        Qt::DirectConnection);
             
     //TODO: get this from configuration
     m_pMasterBpm->set(m_dMasterBpm); //this will initialize all our values
@@ -328,17 +331,31 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist)
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
     if (m_iSyncSource != SYNC_INTERNAL) {
+        qDebug() << "can't set that way silly";
         m_pSyncRateSlider->set(m_dMasterBpm);
         return;
     }
+    qDebug() << "trying to set internal master to " << new_bpm;
     m_pMasterBpm->set(new_bpm);
 }
 
+//void EngineSync::slotSyncRateSliderChangedFromEngine(double new_bpm) {
+//    if (m_iSyncSource != SYNC_INTERNAL) {
+//        qDebug() << "can't set that way silly";
+//        //m_pSyncRateSlider->set(m_dMasterBpm);
+//        return;
+//    }
+//    qDebug() << "trying to set internal master to " << new_bpm;
+//    m_pMasterBpm->set(new_bpm);
+//}
+
 void EngineSync::slotMasterBpmChanged(double new_bpm)
 {
-    //qDebug() << "~~~~~~~~~~~~~~~~~~~~~~new master bpm" << new_bpm;
+    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~new master bpm" << new_bpm;
+    m_pSyncRateSlider->set(new_bpm);
     if (new_bpm != m_dMasterBpm)
     {
+        qDebug() << "set slider";
         if (m_iSyncSource != SYNC_INTERNAL)
         {
             //qDebug() << "can't set master sync when sync isn't internal";
@@ -358,9 +375,8 @@ void EngineSync::slotMasterBpmChanged(double new_bpm)
             
             return;
         }
-        //qDebug() << "using it";
+        qDebug() << "using it";
         m_dMasterBpm = new_bpm;
-        m_pSyncRateSlider->set(m_dMasterBpm);
         updateSamplesPerBeat();
         
         //this change could hypothetically push us over distance 1.0, so check

@@ -26,6 +26,7 @@ class BpmControl : public EngineControl {
     void userTweakingSync(bool tweakActive);
     double getPhaseOffset();
     double getPhaseOffset(double reference_position);
+    void setLoopSize(double size) { m_dLoopSize = size; }
     
   public slots:
     //void slotRateChanged(double);
@@ -94,6 +95,7 @@ class BpmControl : public EngineControl {
     ControlPushButton* m_pTranslateBeats;
     
     double m_dFileBpm; // cache it
+    double m_dLoopSize; // only used to see if we shouldn't quantize position
 
     TapFilter m_tapFilter;
 
