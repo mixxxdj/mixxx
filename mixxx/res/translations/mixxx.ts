@@ -94,7 +94,7 @@
     </message>
     <message>
         <location filename="../../src/library/baseplaylistfeature.cpp" line="57"/>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="332"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="330"/>
         <source>Export Playlist</source>
         <translation type="unfinished"></translation>
     </message>
@@ -161,7 +161,7 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/baseplaylistfeature.cpp" line="334"/>
+        <location filename="../../src/library/baseplaylistfeature.cpp" line="332"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
@@ -169,107 +169,107 @@
 <context>
     <name>BaseSqlTableModel</name>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="47"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="48"/>
         <source>Played</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="49"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="50"/>
         <source>Artist</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="51"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="52"/>
         <source>Title</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="53"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="54"/>
         <source>Album</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="55"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="56"/>
         <source>Genre</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="57"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="58"/>
         <source>Composer</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="59"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="60"/>
         <source>Year</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="61"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="62"/>
         <source>Type</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="63"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="64"/>
         <source>Location</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="65"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="66"/>
         <source>Comment</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="67"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="68"/>
         <source>Duration</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="69"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="70"/>
         <source>Rating</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="71"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="72"/>
         <source>Bitrate</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="73"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="74"/>
         <source>BPM</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="75"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="76"/>
         <source>Track #</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="77"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="78"/>
         <source>Date Added</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="79"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="80"/>
         <source>#</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="81"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="82"/>
         <source>Timestamp</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="83"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="84"/>
         <source>Key</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="85"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="86"/>
         <source>BPM Lock</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/basesqltablemodel.cpp" line="88"/>
+        <location filename="../../src/library/basesqltablemodel.cpp" line="89"/>
         <source>Preview</source>
         <translation type="unfinished"></translation>
     </message>
@@ -444,27 +444,27 @@
 <context>
     <name>ControllerEngine</name>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="535"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="529"/>
         <source>Uncaught exception at line %1 in file %2: %3</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="541"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="535"/>
         <source>Uncaught exception at line %1 in passed code: %2</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="561"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="555"/>
         <source>Controller script error</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="562"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="556"/>
         <source>A control you just used is not working properly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/controllerengine.cpp" line="563"/>
+        <location filename="../../src/controllers/controllerengine.cpp" line="557"/>
         <source>&lt;html&gt;(The script code needs to be fixed.)&lt;br&gt;For now, you can:&lt;ul&gt;&lt;li&gt;Ignore this error for this session but you may experience erratic behavior&lt;/li&gt;&lt;li&gt;Try to recover by resetting your controller&lt;/li&gt;&lt;/ul&gt;&lt;/html&gt;</source>
         <translation type="unfinished"></translation>
     </message>
@@ -568,7 +568,7 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="85"/>
-        <location filename="../../src/library/cratefeature.cpp" line="562"/>
+        <location filename="../../src/library/cratefeature.cpp" line="559"/>
         <source>Crates</source>
         <translation type="unfinished"></translation>
     </message>
@@ -579,7 +579,7 @@
     </message>
     <message>
         <location filename="../../src/library/cratefeature.cpp" line="48"/>
-        <location filename="../../src/library/cratefeature.cpp" line="493"/>
+        <location filename="../../src/library/cratefeature.cpp" line="490"/>
         <source>Export Crate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -630,27 +630,27 @@
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="495"/>
+        <location filename="../../src/library/cratefeature.cpp" line="492"/>
         <source>M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="563"/>
+        <location filename="../../src/library/cratefeature.cpp" line="560"/>
         <source>Crates are a great way to help organize the music you want to DJ with.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="564"/>
+        <location filename="../../src/library/cratefeature.cpp" line="561"/>
         <source>Make a crate for your next gig, for your favorite electrohouse tracks, or for your most requested songs.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="565"/>
+        <location filename="../../src/library/cratefeature.cpp" line="562"/>
         <source>Crates let you organize your music however you&apos;d like!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/library/cratefeature.cpp" line="568"/>
+        <location filename="../../src/library/cratefeature.cpp" line="565"/>
         <source>Create new crate</source>
         <translation type="unfinished"></translation>
     </message>
@@ -3880,30 +3880,29 @@ support.</source>
 <context>
     <name>MidiController</name>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="116"/>
-        <source>MixxxControl not found</source>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="139"/>
+        <source>MixxxControl(s) not found</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="117"/>
-        <source>The MixxxControl &apos;%1, %2&apos; specified in the loaded mapping is invalid.</source>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="140"/>
+        <source>One or more MixxxControls specified in the outputs section of the loaded preset were invalid.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="120"/>
-        <source>The MIDI output message 0x%1 0x%2 will not be bound.
-(Click Show Details for hints.)</source>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="142"/>
+        <source>Some LEDs or other feedback may not work correctly.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="124"/>
-        <source>* Check to see that the MixxxControl name is spelled correctly in the mapping file (.xml)
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="143"/>
+        <source>* Check to see that the MixxxControl names are spelled correctly in the mapping file (.xml)
 </source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/controllers/midi/midicontroller.cpp" line="127"/>
-        <source>* Make sure the MixxxControl you&apos;re trying to use actually exists. Visit this wiki page for a complete list:</source>
+        <location filename="../../src/controllers/midi/midicontroller.cpp" line="146"/>
+        <source>* Make sure the MixxxControls in question actually exist. Visit this wiki page for a complete list: </source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -4298,7 +4297,7 @@ support.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1809"/>
+        <location filename="../../src/mixxx.cpp" line="1812"/>
         <source>A sampler is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -4410,44 +4409,44 @@ Please select your soundcard(s) in the sound hardware preferences.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1621"/>
+        <location filename="../../src/mixxx.cpp" line="1624"/>
         <source>Error in skin file</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1622"/>
+        <location filename="../../src/mixxx.cpp" line="1625"/>
         <source>The selected skin cannot be loaded.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1757"/>
+        <location filename="../../src/mixxx.cpp" line="1760"/>
         <source>OpenGL Direct Rendering</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1758"/>
+        <location filename="../../src/mixxx.cpp" line="1761"/>
         <source>Direct rendering is not enabled on your machine.&lt;br&gt;&lt;br&gt;This means that the waveform displays will be very&lt;br&gt;&lt;b&gt;slow and may tax your CPU heavily&lt;/b&gt;. Either update your&lt;br&gt;configuration to enable direct rendering, or disable&lt;br&gt;the waveform displays in the Mixxx preferences by selecting&lt;br&gt;&quot;Empty&quot; as the waveform display in the &apos;Interface&apos; section.&lt;br&gt;&lt;br&gt;NOTE: If you use NVIDIA hardware,&lt;br&gt;direct rendering may not be present, but you should&lt;br&gt;not experience degraded performance.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1800"/>
-        <location filename="../../src/mixxx.cpp" line="1808"/>
-        <location filename="../../src/mixxx.cpp" line="1817"/>
+        <location filename="../../src/mixxx.cpp" line="1803"/>
+        <location filename="../../src/mixxx.cpp" line="1811"/>
+        <location filename="../../src/mixxx.cpp" line="1820"/>
         <source>Confirm Exit</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1801"/>
+        <location filename="../../src/mixxx.cpp" line="1804"/>
         <source>A deck is currently playing. Exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1818"/>
+        <location filename="../../src/mixxx.cpp" line="1821"/>
         <source>The preferences window is still open.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/mixxx.cpp" line="1819"/>
+        <location filename="../../src/mixxx.cpp" line="1822"/>
         <source>Discard any changes and exit Mixxx?</source>
         <translation type="unfinished"></translation>
     </message>
@@ -6022,12 +6021,12 @@ Click OK to exit.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="485"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="487"/>
         <source>Load to Deck %1</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/widget/wtracktableview.cpp" line="503"/>
+        <location filename="../../src/widget/wtracktableview.cpp" line="506"/>
         <source>Sampler %1</source>
         <translation type="unfinished"></translation>
     </message>
