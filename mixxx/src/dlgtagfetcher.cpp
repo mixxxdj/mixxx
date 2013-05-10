@@ -8,7 +8,6 @@
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
                     : QDialog(parent),
                       m_track(NULL) {
-    // Setup dialog window
     setupUi(this);
 
     connect(btnApply, SIGNAL(clicked()),
@@ -22,7 +21,7 @@ DlgTagFetcher::DlgTagFetcher(QWidget *parent)
     connect(results, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(ResultSelected()));
 
-    //Resize columns
+    // Resize columns, this can't be set in the ui file
     results->setColumnWidth(0, 50);  // Track column
     results->setColumnWidth(1, 50);  // Year column
     results->setColumnWidth(2, 160); // Title column
@@ -62,19 +61,17 @@ void DlgTagFetcher::cancel() {
 }
 
 void DlgTagFetcher::FetchTagProgress(QString text) {
-    qDebug() << "received foo singal and called bar";
-    qDebug() << text;
     loading->setText(text);
 }
 
 void DlgTagFetcher::FetchTagFinished(const TrackPointer track,
-                                            const QList<TrackPointer>& tracks){
+                                     const QList<TrackPointer>& tracks) {
     // check if the answer is for this track
     if (m_track->getLocation() != track->getLocation()) {
         return;
     }
 
-    m_data.m_pending=false;
+    m_data.m_pending = false;
     m_data.m_results = tracks;
     // qDebug() << "number of results = " << tracks.size();
     UpdateStack();
@@ -117,9 +114,8 @@ void DlgTagFetcher::UpdateStack() {
     }
 }
 
-void DlgTagFetcher::AddTrack(const TrackPointer track,
-                                   int resultIndex,
-                                   QTreeWidget* parent) const {
+void DlgTagFetcher::AddTrack(const TrackPointer track, int resultIndex,
+                             QTreeWidget* parent) const {
     QStringList values;
     values << track->getTrackNumber() << track->getYear() << track->getTitle()
            << track->getArtist() << track->getAlbum();
