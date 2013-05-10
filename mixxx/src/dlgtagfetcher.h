@@ -4,7 +4,6 @@
 #include <QDialog>
 #include "ui_dlgtagfetcher.h"
 #include "trackinfoobject.h"
-#include "configobject.h"
 
 
 class QTreeWidget;
@@ -14,7 +13,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   Q_OBJECT
 
   public:
-    DlgTagFetcher(QWidget *parent, ConfigObject<ConfigValue>* pConfig);
+    DlgTagFetcher(QWidget *parent);
     virtual ~DlgTagFetcher();
 
     void init(const TrackPointer track);
@@ -23,21 +22,16 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     void next();
     void previous();
     void finished();
-    void StartSubmit(TrackPointer, QString);
+    void StartSubmit(TrackPointer);
 
   public slots:
     void FetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);
-    void submitProgress(QString);
     void ResultSelected();
-    void submitFinished(int,QString);
     void FetchTagProgress(QString);
 
   private slots:
     void apply();
     void cancel();
-    void submitPage();
-    void submit();
-    void getApiKey();
 
   private:
 
@@ -57,11 +51,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
 
     TrackPointer m_track;
     Data m_data;
-    bool m_submit;
     QString m_progress;
-    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif // DLGTAGFETCHER_H
-
-

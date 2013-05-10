@@ -27,7 +27,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_pTrackCollection(pTrackCollection),
           m_searchThread(this) ,
           m_TagFetcher(NULL) ,
-          m_DlgTagFetcher(NULL, pConfig) ,
+          m_DlgTagFetcher(NULL) ,
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
@@ -43,8 +43,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_TagFetcher, SIGNAL(ResultAvailable(const TrackPointer,const QList<TrackPointer>&)),
             &m_DlgTagFetcher, SLOT(FetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
     connect(&m_DlgTagFetcher, SIGNAL(finished()), &m_TagFetcher, SLOT(Cancel()));
-    connect(&m_DlgTagFetcher, SIGNAL(StartSubmit(TrackPointer, QString)),
-            &m_TagFetcher, SLOT(StartSubmit(TrackPointer, QString)));
+    connect(&m_DlgTagFetcher, SIGNAL(StartSubmit(TrackPointer)),
+            &m_TagFetcher, SLOT(StartSubmit(TrackPointer)));
     connect(&m_TagFetcher, SIGNAL(submitProgress(QString)),
             &m_DlgTagFetcher, SLOT(submitProgress(QString)));
     connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),

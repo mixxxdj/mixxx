@@ -42,22 +42,6 @@ void TagFetcher::StartFetch(const TrackPointer track) {
     }
 }
 
-void TagFetcher::StartSubmit(TrackPointer track, QString key){
-    Cancel();
-    // qDebug() << "TagFetcher received the call";
-    QList<TrackPointer> tracks;
-    tracks.append(track);
-    m_tracks = tracks;
-    m_apiKey=key;
-
-    QFuture<QString> future = QtConcurrent::mapped(m_tracks, GetFingerprint);
-    m_pFingerprintWatcher = new QFutureWatcher<QString>(this);
-    m_pFingerprintWatcher->setFuture(future);
-    connect(m_pFingerprintWatcher, SIGNAL(resultReadyAt(int)),
-                                    SLOT(submit(int)));
-    emit submitProgress(tr("Fingerprinting track"));
-}
-
 void TagFetcher::Cancel() {
     // qDebug()<< "Cancel tagfetching";
     if (m_pFingerprintWatcher) {
@@ -70,25 +54,6 @@ void TagFetcher::Cancel() {
     m_AcoustidClient.CancelAll();
     m_MusicbrainzClient.CancelAll();
     m_tracks.clear();
-}
-
-void TagFetcher::submit(int index){
-    QFutureWatcher<QString>* watcher = reinterpret_cast<QFutureWatcher<QString>*>(sender());
-    if (!watcher || index >= m_tracks.count()) {
-        qDebug() << "oops I made a mistake";
-        return;
-    }
-
-    const QString fingerprint = watcher->resultAt(index);
-    const TrackPointer ptrack = m_tracks[index];
-
-    if (fingerprint.isEmpty()) {
-        return;
-    }
-
-    // qDebug() << "call submit function of acoustIDclient";
-    emit submitProgress(tr("Submit Metadata to AcoustID Server"));
-    m_AcoustidClient.Submit(index, fingerprint,m_apiKey, ptrack);
 }
 
 void TagFetcher::FingerprintFound(int index) {

@@ -405,13 +405,6 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnSubmitPage">
-        <property name="text">
-         <string>Submit-Page</string>
-        </property>
-       </widget>
-      </item>
-      <item>
        <spacer name="horizontalSpacer">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
