@@ -199,7 +199,7 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences()
     QSqlQuery oQuery (m_rDatabase);
 
     // Rebuild the auto-DJ-playlist reference count.
-    // INSERT OR REPLACE INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs) SELECT * FROM (SELECT PlaylistTracks.track_id, craterefs, timesplayed, COUNT (*) as newautodjrefs FROM PlaylistTracks, temp_autodj_crates WHERE PlaylistTracks.playlist_id IN (SELECT id FROM Playlists WHERE hidden = 1) AND PlaylistTracks.track_id = temp_autodj_crates.track_id GROUP BY PlaylistTracks.track_id) WHERE newautodjrefs > 0;
+    // INSERT OR REPLACE INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs) SELECT * FROM (SELECT PlaylistTracks.track_id, craterefs, timesplayed, COUNT (*) AS newautodjrefs FROM PlaylistTracks, temp_autodj_crates WHERE PlaylistTracks.playlist_id IN (SELECT id FROM Playlists WHERE hidden = 1) AND PlaylistTracks.track_id = temp_autodj_crates.track_id GROUP BY PlaylistTracks.track_id) WHERE newautodjrefs > 0;
     QString strHidden;
     strHidden.setNum (PlaylistDAO::PLHT_AUTO_DJ);
     QString strQuery (QString ("INSERT OR REPLACE INTO " AUTODJCRATES_TABLE
@@ -213,7 +213,7 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences()
         " WHERE %4 = %5) AND " PLAYLIST_TRACKS_TABLE ".%1 = "
         AUTODJCRATES_TABLE "." AUTODJCRATESTABLE_TRACKID " GROUP BY "
         PLAYLIST_TRACKS_TABLE ".%1) WHERE new" AUTODJCRATESTABLE_AUTODJREFS
-		" > 0")
+        " > 0")
         .arg (PLAYLISTTRACKSTABLE_TRACKID)      // %1
         .arg (PLAYLISTTRACKSTABLE_PLAYLISTID)   // %2
         .arg (PLAYLISTTABLE_ID)                 // %3
@@ -446,7 +446,7 @@ commit:
         }
 
         // Remove all tracks that no longer have crate references.
-        //DELETE FROM temp_autodj_crates WHERE craterefs == 0;
+        //DELETE FROM temp_autodj_crates WHERE craterefs = 0;
         oQuery.prepare("DELETE FROM "AUTODJCRATES_TABLE " WHERE "
             AUTODJCRATESTABLE_CRATEREFS " = 0");
         if (!oQuery.exec())
@@ -566,7 +566,7 @@ void AutoDJCratesDAO::slotCrateTrackRemoved (int a_iCrateId, int a_iTrackId)
     }
 
     // Remove the track if it no longer has a crate reference.
-    //DELETE FROM temp_autodj_crates WHERE track_id = :track_id AND craterefs == 0;
+    //DELETE FROM temp_autodj_crates WHERE track_id = :track_id AND craterefs = 0;
     oQuery.prepare("DELETE FROM "AUTODJCRATES_TABLE " WHERE "
         AUTODJCRATESTABLE_TRACKID " = :track_id AND "
         AUTODJCRATESTABLE_CRATEREFS " = 0");
@@ -650,7 +650,7 @@ void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(QString a_strGroup,
             // Save the ID of the track in this deck.
             m_pDeckTracks[i] = iTrackId;
 
-            // Update the number of auto-DJ-playlist references to ths track.
+            // Update the number of auto-DJ-playlist references to this track.
             ScopedTransaction oTransaction(m_rDatabase);
             QSqlQuery oQuery(m_rDatabase);
             // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1 WHERE track_id = :track_id;
@@ -687,7 +687,7 @@ void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString a_strGroup,
             // Get rid of the ID of the track in this deck.
             m_pDeckTracks[i] = -1;
 
-            // Update the number of auto-DJ-playlist references to ths track.
+            // Update the number of auto-DJ-playlist references to this track.
             ScopedTransaction oTransaction(m_rDatabase);
             QSqlQuery oQuery(m_rDatabase);
             // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs - 1 WHERE track_id = :track_id;
