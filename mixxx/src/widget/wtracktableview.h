@@ -10,6 +10,8 @@
 #include "library/searchthread.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
+#include "musicbrainz/tagfetcher.h"
+#include "dlgtagfetcher.h"
 
 class ControlObjectThreadMain;
 class DlgTrackInfo;
@@ -45,8 +47,11 @@ class WTrackTableView : public WLibraryTableView {
     void slotHide();
     void slotOpenInFileBrowser();
     void slotShowTrackInfo();
+    void slotShowDlgTagFetcher();
     void slotNextTrackInfo();
+    void slotNextDlgTagFetcher();
     void slotPrevTrackInfo();
+    void slotPrevDlgTagFetcher();
     void slotSendToAutoDJ();
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
@@ -62,6 +67,7 @@ class WTrackTableView : public WLibraryTableView {
   private:
     void sendToAutoDJ(bool bTop);
     void showTrackInfo(QModelIndex index);
+    void showDlgTagFetcher(QModelIndex index);
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
@@ -80,11 +86,13 @@ class WTrackTableView : public WLibraryTableView {
     TrackCollection* m_pTrackCollection;
 
     QSignalMapper m_loadTrackMapper;
+    SearchThread m_searchThread;
 
     DlgTrackInfo* m_pTrackInfo;
+    TagFetcher m_TagFetcher;
+    DlgTagFetcher m_DlgTagFetcher;
     QModelIndex currentTrackInfoIndex;
 
-    SearchThread m_searchThread;
 
     ControlObjectThreadMain* m_pNumSamplers;
     ControlObjectThreadMain* m_pNumDecks;
@@ -96,6 +104,7 @@ class WTrackTableView : public WLibraryTableView {
 
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
+    QAction *m_pReloadMetadataFromMusicBrainzAct;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;

@@ -25,15 +25,33 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_searchThread(this),
+          m_searchThread(this) ,
+          m_TagFetcher(NULL) ,
+          m_DlgTagFetcher(NULL, pConfig) ,
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
-    m_pTrackInfo = new DlgTrackInfo(NULL);
+    m_pTrackInfo = new DlgTrackInfo(NULL,m_TagFetcher,m_DlgTagFetcher);
     connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
     connect(m_pTrackInfo, SIGNAL(previous()),
             this, SLOT(slotPrevTrackInfo()));
+    connect(&m_DlgTagFetcher, SIGNAL(next()),
+            this, SLOT(slotNextDlgTagFetcher()));
+    connect(&m_DlgTagFetcher, SIGNAL(previous()),
+            this, SLOT(slotPrevDlgTagFetcher()));
+    connect(&m_TagFetcher, SIGNAL(ResultAvailable(const TrackPointer,const QList<TrackPointer>&)),
+            &m_DlgTagFetcher, SLOT(FetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
+    connect(&m_DlgTagFetcher, SIGNAL(finished()), &m_TagFetcher, SLOT(Cancel()));
+    connect(&m_DlgTagFetcher, SIGNAL(StartSubmit(TrackPointer, QString)),
+            &m_TagFetcher, SLOT(StartSubmit(TrackPointer, QString)));
+    connect(&m_TagFetcher, SIGNAL(submitProgress(QString)),
+            &m_DlgTagFetcher, SLOT(submitProgress(QString)));
+    connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
+            &m_DlgTagFetcher, SLOT(FetchTagProgress(QString)));
+    connect(&m_TagFetcher, SIGNAL(submited(int,QString)),
+            &m_DlgTagFetcher, SLOT(submitFinished(int,QString)));
+
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
             this, SLOT(loadSelectionToGroup(QString)));
@@ -76,8 +94,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToCrate(int)));
 }
 
-WTrackTableView::~WTrackTableView()
-{
+WTrackTableView::~WTrackTableView() {
+    qDebug() << "~WTrackTableView()";
     WTrackTableViewHeader* pHeader =
             dynamic_cast<WTrackTableViewHeader*>(horizontalHeader());
     if (pHeader) {
@@ -85,6 +103,7 @@ WTrackTableView::~WTrackTableView()
     }
 
     delete m_pReloadMetadataAct;
+    delete m_pReloadMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
     delete m_pAutoDJAct;
     delete m_pAutoDJTopAct;
@@ -291,6 +310,10 @@ void WTrackTableView::createActions() {
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
 
+    m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Reload from Musicbrainz"),this);
+    connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
+            this, SLOT(slotShowDlgTagFetcher()));
+
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
     QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
@@ -354,8 +377,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
 void WTrackTableView::slotRemove()
 {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->removeTracks(indices);
@@ -365,8 +387,7 @@ void WTrackTableView::slotRemove()
 
 void WTrackTableView::slotPurge(){
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->purgeTracks(indices);
@@ -457,6 +478,43 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     m_pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;
     m_pTrackInfo->show();
+}
+
+void WTrackTableView::slotNextDlgTagFetcher() {
+    QModelIndex nextRow = currentTrackInfoIndex.sibling(
+        currentTrackInfoIndex.row()+1, currentTrackInfoIndex.column());
+    if (nextRow.isValid())
+        showDlgTagFetcher(nextRow);
+}
+
+void WTrackTableView::slotPrevDlgTagFetcher() {
+    QModelIndex prevRow = currentTrackInfoIndex.sibling(
+        currentTrackInfoIndex.row()-1, currentTrackInfoIndex.column());
+    if (prevRow.isValid())
+        showDlgTagFetcher(prevRow);
+}
+
+void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
+    TrackModel* trackModel = getTrackModel();
+
+    if (!trackModel) {
+        return;
+    }
+
+    TrackPointer pTrack = trackModel->getTrack(index);
+    // NULL is fine
+    m_TagFetcher.StartFetch(pTrack);
+    m_DlgTagFetcher.init(pTrack);
+    currentTrackInfoIndex = index;
+    m_DlgTagFetcher.show();
+}
+
+void WTrackTableView::slotShowDlgTagFetcher(){
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    if (indices.size() > 0) {
+        showDlgTagFetcher(indices[0]);
+    }
 }
 
 void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
@@ -616,8 +674,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOADMETADATA)) {
         m_pMenu->addAction(m_pReloadMetadataAct);
+        m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
+        m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
     }
-    // REMOVE and HIDE should not be at the first menu position to avoid excitedly clicks
+    // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
         m_pRemoveAct->setEnabled(!locked);
         m_pMenu->addAction(m_pRemoveAct);
