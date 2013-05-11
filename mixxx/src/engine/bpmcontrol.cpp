@@ -116,25 +116,15 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pMasterBeatDistance, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotMasterBeatDistanceChanged(double)),
                 Qt::DirectConnection);
-                
-    m_pSyncMasterEnabled = ControlObject::getControl(ConfigKey(_group, "sync_master"));
-    connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSyncMasterChanged(double)),
+                    
+    m_pSyncState = ControlObject::getControl(ConfigKey(_group, "sync_state"));
+    connect(m_pSyncState, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSyncStateChanged(double)),
                 Qt::DirectConnection);
-    connect(m_pSyncMasterEnabled, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotSyncMasterChanged(double)),
-                Qt::DirectConnection);
-                
-    m_pSyncSlaveEnabled = ControlObject::getControl(ConfigKey(_group, "sync_slave"));
-    connect(m_pSyncSlaveEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSyncSlaveChanged(double)),
-                Qt::DirectConnection);
-    connect(m_pSyncSlaveEnabled, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotSyncSlaveChanged(double)),
+    connect(m_pSyncState, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotSyncStateChanged(double)),
                 Qt::DirectConnection);
                 
-    m_pSyncMasterEnabled->set(FALSE);
-    m_pSyncSlaveEnabled->set(FALSE);
     m_iSyncState = SYNC_NONE;
 }
 
@@ -225,24 +215,8 @@ void BpmControl::slotControlBeatSync(double v) {
     }
 }
 
-void BpmControl::slotSyncMasterChanged(double state) {
-    if (state) {
-        m_iSyncState = SYNC_MASTER;    
-    } else {
-        // For now, turning off master turns on slave mode
-        m_iSyncState = SYNC_SLAVE;
-    }
-    qDebug() << m_sGroup << " master changed, state now " << m_iSyncState;
-}
-
-void BpmControl::slotSyncSlaveChanged(double state) {
-    if (state) {
-        m_iSyncState = SYNC_SLAVE;    
-    } else {
-        // For now, turning off slave turns off syncing
-        m_iSyncState = SYNC_NONE;
-    }
-    qDebug() << m_sGroup << " slave changed, state now " << m_iSyncState;
+void BpmControl::slotSyncStateChanged(double state) {
+    m_iSyncState = state;
 }
 
 bool BpmControl::syncTempo() {
@@ -384,7 +358,8 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     }
     
     if (m_pBeats == NULL) {
-        qDebug() << "null here too";
+        // probably no track loaded
+        //qDebug() << "null here too";
         return;
     }
     
@@ -394,13 +369,13 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     
     //If we aren't quantized or looping, don't worry about offset
     if (!m_pQuantize->get() || (m_dLoopSize < 1.0 && m_dLoopSize > 0)) {
-        qDebug() << "not quantized or small loop";
+        qDebug() << "not quantized or small loop" << m_pQuantize->get() << " " << m_dLoopSize;
         m_dSyncAdjustment = 1.0;
         return;
     }
 
     const double MAGIC_FUZZ = 0.01;
-    const double MAGIC_FACTOR = 0.3; //the higher this is, the more we influence sync
+    const double MAGIC_FACTOR = 0.6; //the higher this is, the more we influence sync
     
     double dThisPosition = getCurrentSample();
     
@@ -466,11 +441,11 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     } else {
         double error = percent_offset - m_dUserOffset;
         if (fabs(error) > MAGIC_FUZZ) {
-            qDebug() << "tweak to get back in sync " << percent_offset 
-                     << " " << m_dUserOffset << " " << MAGIC_FUZZ;
+            //qDebug() << "tweak to get back in sync " << error
+            //         << " " << m_dUserOffset << " " << MAGIC_FUZZ;
             //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << percent_offset;
             m_dSyncAdjustment = (0 - error) * MAGIC_FACTOR;
-            qDebug() << m_sGroup << " tweaking.... " << m_dSyncAdjustment;
+            //qDebug() << m_sGroup << " tweaking.... " << m_dSyncAdjustment;
             m_dSyncAdjustment = 1.0 + math_max(-0.2f, math_min(0.2f, m_dSyncAdjustment));
             //qDebug() << "clamped" << m_dSyncAdjustment;
         }
@@ -505,6 +480,9 @@ double BpmControl::getBeatDistance() const {
 }
 
 bool BpmControl::syncPhase() {
+    if (m_iSyncState == SYNC_MASTER) {
+        return true;
+    }
     double dThisPosition = getCurrentSample();
     double offset = getPhaseOffset();
     if (offset == 0.0)
@@ -664,6 +642,9 @@ double BpmControl::getPhaseOffset(double reference_position) {
 }
 
 void BpmControl::slotAdjustBpm() {
+    if (m_iSyncState == SYNC_SLAVE) {
+        return;
+    }
     double dFileBpm = m_pFileBpm->get();
     if (dFileBpm != m_dFileBpm) {
         slotFileBpmChanged(dFileBpm);

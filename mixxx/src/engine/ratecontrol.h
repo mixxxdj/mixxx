@@ -76,6 +76,7 @@ public:
     void slotSyncMasterChanged(double);
     void slotSyncSlaveChanged(double);
     void slotSyncInternalChanged(double);
+    void slotSyncStateChanged(double);
     void slotControlVinylScratching(double);
 
   private:
@@ -124,6 +125,7 @@ public:
     ControlObject *m_pMasterBpm;
     ControlObject *m_pSyncInternalEnabled;
     ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
+    ControlObject *m_pSyncState;
     EngineMaster *m_pEngineMaster;
     double m_dSyncedRate;
     int m_iSyncState;

@@ -501,7 +501,7 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
         if (enabled) {
             m_pActiveBeatLoop->activate();
         } else {
-            m_pActiveBeatLoop->deactivate();
+            clearActiveBeatLoop();
         }
     }
 }
@@ -592,7 +592,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (pBeatLoopControl->getSize() == beats) {
             if (m_pActiveBeatLoop &&
                 m_pActiveBeatLoop != pBeatLoopControl) {
-                m_pActiveBeatLoop->deactivate();
+                clearActiveBeatLoop();
             }
             m_pActiveBeatLoop = pBeatLoopControl;
             pBeatLoopControl->activate();
@@ -620,11 +620,11 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (keepStartPoint) {
             loop_in = m_iLoopStartSample;
         } else {
-            // loop_in is set to the closest beat if quantize is on
-            double currentClosestBeat =
-                    floorf(m_pBeats->findClosestBeat(getCurrentSample()));
-            loop_in = (m_pQuantizeEnabled->get() > 0.0 && currentClosestBeat != -1) ?
-                    currentClosestBeat : floorf(getCurrentSample());
+            // loop_in is set to the previous beat if quantize is on.
+            double prevBeat =
+                    floorf(m_pBeats->findPrevBeat(getCurrentSample()));
+            loop_in = (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) ?
+                    prevBeat : floorf(getCurrentSample());
             if (!even(loop_in)) {
                 loop_in--;
             }

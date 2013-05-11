@@ -91,7 +91,7 @@ class LoopingControl : public EngineControl {
     
     bool isLooping() const { return m_bLoopingEnabled; }
     double getLoopSize() const {
-        return m_pActiveBeatLoop != NULL ? m_pActiveBeatLoop->getSize() : 0;
+        return m_pActiveBeatLoop != NULL ? m_pActiveBeatLoop->getSize() : 0.0;
     }
 
   public slots:
