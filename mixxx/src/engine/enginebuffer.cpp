@@ -571,6 +571,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     CSAMPLE * pOutput = (CSAMPLE *)pOut; // strip const attribute TODO(XXX): avoid this hack
     bool bCurBufferPaused = false;
     double rate = 0;
+    double resample_rate = 0.0f;
 
     bool bTrackLoading = m_iTrackLoading != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
@@ -595,6 +596,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             //qDebug() << "sync adjustment " << m_pBpmControl->getSyncAdjustment();
             rate *= m_pBpmControl->getSyncAdjustment();
         }
+        resample_rate = rate * baserate;
         //qDebug() << "rate" << rate << " paused" << paused;
 
         // Update the slipped position
@@ -633,9 +635,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 m_pBpmControl->setEngineBpmByRate(rate);
             }
 
-            if (baserate > 0) { // Prevent division by 0
-                rate = baserate * m_pScale->setTempo(rate/baserate);
-            }
+            rate = m_pScale->setTempo(rate);
+            resample_rate = rate * baserate;
             //m_pTrueRate->set(rate);
             m_pScale->setBaseRate(baserate);
             m_rate_old = rate;
@@ -714,7 +715,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
             pControl->setCurrentSample(m_filepos_play, m_file_length_old);
-            double control_seek = pControl->process(rate, m_filepos_play,
+            double control_seek = pControl->process(resample_rate, m_filepos_play,
                                                     m_file_length_old, iBufferSize);
 
             if (control_seek != kNoTrigger) {
@@ -770,7 +771,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
-        updateIndicators(rate, baserate, iBufferSize);
+        updateIndicators(rate, iBufferSize);
 
         // Handle repeat mode
         at_start = m_filepos_play <= 0;
@@ -801,7 +802,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
     // Give the Reader hints as to which chunks of the current song we
     // really care about. It will try very hard to keep these in memory
-    hintReader(rate);
+    hintReader(resample_rate);
 
     const double kSmallRate = 0.005;
     if (m_bLastBufferPaused && !bCurBufferPaused) {
@@ -876,7 +877,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_iLastBufferSize = iBufferSize;
 }
 
-void EngineBuffer::updateIndicators(double rate, double baserate, int iBufferSize) {
+void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
     // Increase samplesCalculated by the buffer size
     m_iSamplesCalculated += iBufferSize;
@@ -900,9 +901,7 @@ void EngineBuffer::updateIndicators(double rate, double baserate, int iBufferSiz
 
     // Update visual control object, this needs to be done more often
     m_visualPlaypos->set(fFractionalPlaypos);
-    if(rate != m_rateEngine->get()) {
-        m_rateEngine->set(baserate != 0.0 ? rate / baserate : rate);
-    }
+    m_rateEngine->set(rate);
 }
 
 void EngineBuffer::hintReader(const double dRate) {

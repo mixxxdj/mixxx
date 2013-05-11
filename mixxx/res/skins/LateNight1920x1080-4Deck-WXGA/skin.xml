@@ -1983,7 +1983,7 @@
 				<Pos>160,25</Pos>
 				<Size>30,33</Size>
 				<Connection>
-					<ConfigKey>[Channel1],true_rate</ConfigKey>
+					<ConfigKey>[Channel1],rateEngine</ConfigKey>
 				</Connection>
 			</NumberBpm>
 			<!--
@@ -3215,7 +3215,7 @@
 				<Pos>160,25</Pos>
 				<Size>30,33</Size>
 				<Connection>
-					<ConfigKey>[Channel2],true_rate</ConfigKey>
+					<ConfigKey>[Channel2],rateEngine</ConfigKey>
 				</Connection>
 			</NumberBpm>
 			<!--
@@ -4448,7 +4448,7 @@
 				<Pos>160,25</Pos>
 				<Size>30,33</Size>
 				<Connection>
-					<ConfigKey>[Channel3],true_rate</ConfigKey>
+					<ConfigKey>[Channel3],rateEngine</ConfigKey>
 				</Connection>
 			</NumberBpm>
 			<!--
@@ -5680,7 +5680,7 @@
 				<Pos>160,25</Pos>
 				<Size>30,33</Size>
 				<Connection>
-					<ConfigKey>[Channel4],true_rate</ConfigKey>
+					<ConfigKey>[Channel4],rateEngine</ConfigKey>
 				</Connection>
 			</NumberBpm>
 			<!--

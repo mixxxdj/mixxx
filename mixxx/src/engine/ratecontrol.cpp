@@ -553,7 +553,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             m_bUserTweakingSync = (userTweak != 0.0);
             
             m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
-            return rate * baserate;
+            return rate;
         }
 
         double scratchFactor = m_pScratch->get();
@@ -628,9 +628,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
 
     m_dOldRate = rate;
     
-    // Scale the rate by the engine samplerate
-    rate *= baserate;
-
     return rate;
 }
 

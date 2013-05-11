@@ -155,7 +155,7 @@ public:
 private:
     void setPitchIndpTimeStretch(bool b);
 
-    void updateIndicators(double rate, double baserate, int iBufferSize);
+    void updateIndicators(double rate, int iBufferSize);
 
     void hintReader(const double rate);
 
