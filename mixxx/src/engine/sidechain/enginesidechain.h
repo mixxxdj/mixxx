@@ -19,47 +19,39 @@
 
 #include <QtCore>
 
-#include "defs.h"
 #include "configobject.h"
-
-#define SIDECHAIN_BUFFER_SIZE 65536
-
+#include "defs.h"
 #include "engine/sidechain/sidechainworker.h"
+#include "util/fifo.h"
 
 class EngineSideChain : public QThread {
     Q_OBJECT
   public:
     EngineSideChain(ConfigObject<ConfigValue> * pConfig);
     virtual ~EngineSideChain();
-    void submitSamples(CSAMPLE* buffer, int buffer_size);
 
+    // Not thread-safe, wait-free. Submit buffer of samples to the sidechain for
+    // processing. Should only be called from a single writer thread (typically
+    // the engine callback).
+    void writeSamples(const CSAMPLE* buffer, int buffer_size);
+
+    // Thread-safe, blocking.
     void addSideChainWorker(SideChainWorker* pWorker);
 
   private:
-    // Swaps the buffers in the double-buffering mechanism we use.
-    void swapBuffers();
     void run();
 
-    ConfigObject<ConfigValue> * m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     // Indicates that the thread should exit.
     volatile bool m_bStopThread;
-    // Index of the last valid sample in the buffer.
-    unsigned long m_iBufferEnd;
-    // Giant buffer to store audio.
-    CSAMPLE* m_bufferFront;
-    // Another giant buffer to store audio.
-    CSAMPLE* m_bufferBack;
-    // Pointer to the fillable giant buffer (for double-buffering)
-    CSAMPLE* m_buffer;
-    // Pointer to the filled giant buffer (after swapping).
-    CSAMPLE* m_filledBuffer;
 
-    // Provides thread safety for the back buffer.
-    QMutex m_backBufferLock;
+    FIFO<CSAMPLE> m_sampleFifo;
+    CSAMPLE* m_pWorkBuffer;
+
     // Provides thread safety around the wait condition below.
     QMutex m_waitLock;
-    // Allows sleeping until we have a full buffer.
-    QWaitCondition m_waitForFullBuffer;
+    // Allows sleeping until we have samples to process.
+    QWaitCondition m_waitForSamples;
 
     // Sidechain workers registered with EngineSideChain.
     QMutex m_workerLock;

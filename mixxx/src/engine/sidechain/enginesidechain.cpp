@@ -31,29 +31,28 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sidechain/sidechainworker.h"
 #include "util/timer.h"
+#include "util/counter.h"
 #include "sampleutil.h"
+
+#define SIDECHAIN_BUFFER_SIZE 65536
 
 EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
         : m_pConfig(pConfig),
           m_bStopThread(false),
-          m_iBufferEnd(0),
-          m_bufferFront(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)),
-          m_bufferBack(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)),
-          m_buffer(m_bufferFront),
-          m_filledBuffer(NULL) {
+          m_sampleFifo(SIDECHAIN_BUFFER_SIZE),
+          m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)) {
     // Starts the thread and goes to the "run()" function below.
    	start(QThread::LowPriority);
 }
 
 EngineSideChain::~EngineSideChain() {
-    m_backBufferLock.lock();
-
     m_waitLock.lock();
     m_bStopThread = true;
-    m_waitForFullBuffer.wakeAll();
+    m_waitForSamples.wakeAll();
     m_waitLock.unlock();
 
-    wait(); //Wait until the thread has finished.
+    // Wait until the thread has finished.
+    wait();
 
     QMutexLocker locker(&m_workerLock);
     while (!m_workers.empty()) {
@@ -62,13 +61,7 @@ EngineSideChain::~EngineSideChain() {
     }
     locker.unlock();
 
-    // Free up memory
-    m_buffer = NULL;
-    m_filledBuffer = NULL;
-    SampleUtil::free(m_bufferFront);
-    SampleUtil::free(m_bufferBack);
-
-    m_backBufferLock.unlock();
+    SampleUtil::free(m_pWorkBuffer);
 }
 
 void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
@@ -76,59 +69,16 @@ void EngineSideChain::addSideChainWorker(SideChainWorker* pWorker) {
     m_workers.append(pWorker);
 }
 
-void EngineSideChain::submitSamples(CSAMPLE* newBuffer, int buffer_size) {
-    ScopedTimer t("EngineSideChain:submitSamples");
-    //Copy samples into m_buffer.
-    if (m_iBufferEnd + buffer_size <= SIDECHAIN_BUFFER_SIZE)    //FIXME: is <= correct?
-    {
-        memcpy(&m_buffer[m_iBufferEnd], newBuffer, buffer_size * sizeof(CSAMPLE));
-        m_iBufferEnd += buffer_size;
-    }
-    else //If the new buffer won't fit, copy as much of it as we can over and then copy the rest after swapping.
-    {
-        memcpy(&m_buffer[m_iBufferEnd], newBuffer, (SIDECHAIN_BUFFER_SIZE - m_iBufferEnd)*sizeof(CSAMPLE));
-        //Save the number of samples written because m_iBufferEnd gets reset in swapBuffers:
-        int iNumSamplesWritten = SIDECHAIN_BUFFER_SIZE - m_iBufferEnd;
+void EngineSideChain::writeSamples(const CSAMPLE* newBuffer, int buffer_size) {
+    ScopedTimer t("EngineSideChain:writeSamples");
+    int samples_written = m_sampleFifo.write(newBuffer, buffer_size);
 
-        // This will block the callback thread if the buffering overflows. As of
-        // 10/2009 this lock is only used to protect the buffer pointers, so it
-        // won't cause blocking.
-        m_backBufferLock.lock();
-        swapBuffers(); //Swaps buffers and resets m_iBufferEnd to zero.
-        m_backBufferLock.unlock();
-
-        //Since we swapped buffers, we now have a full buffer that needs processing.
-        m_waitForFullBuffer.wakeAll(); //... so wake the thread up and get processing. :)
-
-        //Calculate how many leftover samples need to be written to the other buffer.
-        int iNumSamplesStillToWrite = buffer_size - iNumSamplesWritten;
-
-        //Check to see if the remaining samples will fit in the other empty buffer.
-        if (iNumSamplesStillToWrite > SIDECHAIN_BUFFER_SIZE)
-        {
-            iNumSamplesStillToWrite = SIDECHAIN_BUFFER_SIZE; //Drop samples if they won't fit.
-            qDebug() << "EngineSideChain warning: dropped samples";
-        }
-        memcpy(&m_buffer[m_iBufferEnd], &newBuffer[iNumSamplesWritten], iNumSamplesStillToWrite*sizeof(CSAMPLE));
-        m_iBufferEnd += iNumSamplesStillToWrite;
-
-    }
-}
-
-void EngineSideChain::swapBuffers()
-{
-    if (m_buffer == m_bufferFront)
-    {
-        m_buffer = m_bufferBack;
-        m_filledBuffer = m_bufferFront;
-    }
-    else
-    {
-        m_buffer = m_bufferFront;
-        m_filledBuffer = m_bufferBack;
+    if (samples_written != buffer_size) {
+        Counter("EngineSideChain::writeSamples buffer overrun").increment();
     }
 
-    m_iBufferEnd = 0;
+    // Signal to the sidechain that samples are available.
+    m_waitForSamples.wakeAll();
 }
 
 void EngineSideChain::run() {
@@ -138,42 +88,28 @@ void EngineSideChain::run() {
     QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
 
     while (true) {
+        // Check to see if we're supposed to exit/stop this thread.
+        if (m_bStopThread) {
+            return;
+        }
+
+        int samples_read;
+        while ((samples_read = m_sampleFifo.read(
+            m_pWorkBuffer, SIDECHAIN_BUFFER_SIZE))) {
+            QMutexLocker locker(&m_workerLock);
+            foreach (SideChainWorker* pWorker, m_workers) {
+                pWorker->process(m_pWorkBuffer, samples_read);
+            }
+        }
+
+        // Check to see if we're supposed to exit/stop this thread.
+        if (m_bStopThread) {
+            return;
+        }
+
+        // Sleep until samples are available.
         m_waitLock.lock();
-        // Check to see if we're supposed to exit/stop this thread.
-        if (m_bStopThread) {
-            m_waitLock.unlock();
-            return;
-        }
-        m_waitForFullBuffer.wait(&m_waitLock);  //Sleep until the buffer has been filled.
-        // Check to see if we're supposed to exit/stop this thread.
-        if (m_bStopThread) {
-            m_waitLock.unlock();
-            return;
-        }
+        m_waitForSamples.wait(&m_waitLock);
         m_waitLock.unlock();
-
-        //This portion of the code should be able to touch the buffer without having to use
-        //the m_bufferLock mutex, because the buffers should have been swapped.
-
-        //IMPORTANT: The filled buffer is "m_filledBuffer" - that's the audio we need to process here.
-
-        //Do CPU intensive and non-realtime processing here.
-
-        //m_backBufferLock.lock(); //This will cause the audio/callback thread to block if the buffers overflow,
-                                   //so don't even think about enabling this. (I'm leaving it here as a
-                                   //warning to anyone who wants to work on this code in the future.) - Albert
-
-        // We need to use this lock when copying the pointer to the buffer or
-        // else we could end up with a bogus pointer. We don't have to hold the
-        // lock during the processing though.
-
-        m_backBufferLock.lock();
-        CSAMPLE* pBuffer = m_filledBuffer;
-        m_backBufferLock.unlock();
-
-        QMutexLocker locker(&m_workerLock);
-        foreach (SideChainWorker* pWorker, m_workers) {
-            pWorker->process(pBuffer, SIDECHAIN_BUFFER_SIZE);
-        }
     }
 }

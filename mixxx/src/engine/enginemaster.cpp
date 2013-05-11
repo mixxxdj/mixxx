@@ -427,7 +427,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     //Submit master samples to the side chain to do shoutcasting, recording,
     //etc.  (cpu intensive non-realtime tasks)
     if (m_pSideChain != NULL) {
-        m_pSideChain->submitSamples(m_pMaster, iBufferSize);
+        m_pSideChain->writeSamples(m_pMaster, iBufferSize);
     }
 
     // Add master to headphone with appropriate gain
