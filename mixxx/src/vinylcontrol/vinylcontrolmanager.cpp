@@ -168,13 +168,14 @@ bool VinylControlManager::vinylInputEnabled(int deck) {
 VinylControlProxy* VinylControlManager::getVinylControlProxyForChannel(QString channel)
 {
     // TODO: will need update for n-deck
-    if (channel == "[Channel1]")
-    {
+    if (channel == "[Channel1]") {
         return m_proxies.at(0);
-    }
-    else if (channel == "[Channel2]")
-    {
+    } else if (channel == "[Channel2]") {
         return m_proxies.at(1);
+    } else if (channel == "[Channel3]") {
+        return m_proxies.at(2);
+    } else if (channel == "[Channel4]") {
+        return m_proxies.at(3);
     }
 
     return NULL;

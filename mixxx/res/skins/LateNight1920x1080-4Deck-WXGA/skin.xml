@@ -503,7 +503,7 @@
 					</Spinny>
 				</Children>
 				<Connection>
-					<ConfigKey>[Spinny3],show_spinny</ConfigKey>
+					<ConfigKey>[Spinny2],show_spinny</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
@@ -765,7 +765,7 @@
 					</Spinny>
 				</Children>
 				<Connection>
-					<ConfigKey>[Spinny4],show_spinny</ConfigKey>
+					<ConfigKey>[Spinny3],show_spinny</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>
@@ -791,7 +791,7 @@
 					</Spinny>
 				</Children>
 				<Connection>
-					<ConfigKey>[Spinny2],show_spinny</ConfigKey>
+					<ConfigKey>[Spinny4],show_spinny</ConfigKey>
 					<BindProperty>visible</BindProperty>
 				</Connection>
 			</WidgetGroup>

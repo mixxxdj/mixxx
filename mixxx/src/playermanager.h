@@ -32,14 +32,14 @@ class PlayerManager : public QObject {
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
-    Deck* addDeck();
+    Deck* addDeck(int total_decks);
 
     // Add a sampler to the PlayerManager
     Sampler* addSampler();
 
     // Add a PreviewDeck to the PlayerManager
     PreviewDeck* addPreviewDeck();
-
+    
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
 
@@ -100,6 +100,7 @@ class PlayerManager : public QObject {
     // Loads the location to the sampler. samplerNumber is 1-indexed
     void slotLoadToSampler(QString location, int samplerNumber);
 
+    void slotSkinNumDecksControlChanged(double v);
     void slotNumDecksControlChanged(double v);
     void slotNumSamplersControlChanged(double v);
     void slotNumPreviewDecksControlChanged(double v);
@@ -108,6 +109,7 @@ class PlayerManager : public QObject {
     void loadLocationToPlayer(QString location, QString group);
 
   private:
+    void remapDecks();
     TrackPointer lookupTrack(QString location);
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
@@ -117,7 +119,9 @@ class PlayerManager : public QObject {
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;
+    ControlObject* m_pCOSkinNumDecks;
 
+    unsigned int m_skin_decks;
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
     QList<PreviewDeck*> m_preview_decks;

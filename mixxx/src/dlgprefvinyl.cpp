@@ -32,7 +32,9 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            ConfigObject<ConfigValue> * _config)
         : QWidget(parent),
           m_COSpeed1(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_speed_type"))),
-          m_COSpeed2(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_speed_type"))) {
+          m_COSpeed2(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_speed_type"))),
+          m_COSpeed3(ControlObject::getControl(ConfigKey("[Channel3]", "vinylcontrol_speed_type"))),
+          m_COSpeed4(ControlObject::getControl(ConfigKey("[Channel4]", "vinylcontrol_speed_type"))) {
     m_pVCManager = pVCMan;
     config = _config;
 
@@ -45,11 +47,15 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
 
     m_signalWidget1.setSize(MIXXX_VINYL_SCOPE_SIZE);
     m_signalWidget2.setSize(MIXXX_VINYL_SCOPE_SIZE);
+    m_signalWidget3.setSize(MIXXX_VINYL_SCOPE_SIZE);
+    m_signalWidget4.setSize(MIXXX_VINYL_SCOPE_SIZE);
 
     delete groupBoxSignalQuality->layout();
     QHBoxLayout *layout = new QHBoxLayout;
     layout->layout()->addWidget(&m_signalWidget1);
     layout->layout()->addWidget(&m_signalWidget2);
+    layout->layout()->addWidget(&m_signalWidget3);
+    layout->layout()->addWidget(&m_signalWidget4);
     groupBoxSignalQuality->setLayout(layout);
 
     // Add vinyl types
@@ -66,12 +72,32 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
     ComboBoxVinylType2->addItem(MIXXX_VINYL_MIXVIBESDVS);
+    
+    ComboBoxVinylType3->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
+    ComboBoxVinylType3->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
+    ComboBoxVinylType3->addItem(MIXXX_VINYL_SERATOCD);
+    ComboBoxVinylType3->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
+    ComboBoxVinylType3->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+    ComboBoxVinylType3->addItem(MIXXX_VINYL_MIXVIBESDVS);
+    
+    ComboBoxVinylType4->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEA);
+    ComboBoxVinylType4->addItem(MIXXX_VINYL_SERATOCV02VINYLSIDEB);
+    ComboBoxVinylType4->addItem(MIXXX_VINYL_SERATOCD);
+    ComboBoxVinylType4->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEA);
+    ComboBoxVinylType4->addItem(MIXXX_VINYL_TRAKTORSCRATCHSIDEB);
+    ComboBoxVinylType4->addItem(MIXXX_VINYL_MIXVIBESDVS);
 
     ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed1->addItem(MIXXX_VINYL_SPEED_45);
 
     ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_33);
     ComboBoxVinylSpeed2->addItem(MIXXX_VINYL_SPEED_45);
+
+    ComboBoxVinylSpeed3->addItem(MIXXX_VINYL_SPEED_33);
+    ComboBoxVinylSpeed3->addItem(MIXXX_VINYL_SPEED_45);
+
+    ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_33);
+    ComboBoxVinylSpeed4->addItem(MIXXX_VINYL_SPEED_45);
 
     connect(applyButton, SIGNAL(clicked()), this, SLOT(slotApply()));
     connect(VinylGain, SIGNAL(sliderReleased()), this, SLOT(VinylGainSlotApply()));
@@ -90,13 +116,20 @@ void DlgPrefVinyl::slotShow()
         m_signalWidget1.setVinylControlProxy(VCProxiesList.value(0));
     if (VCProxiesList.value(1) != NULL)
         m_signalWidget2.setVinylControlProxy(VCProxiesList.value(1));
+    if (VCProxiesList.value(2) != NULL)
+        m_signalWidget3.setVinylControlProxy(VCProxiesList.value(2));
+    if (VCProxiesList.value(3) != NULL)
+        m_signalWidget4.setVinylControlProxy(VCProxiesList.value(3));
 
     //(Re)Initialize the signal quality indicators
     m_signalWidget1.resetWidget();
     m_signalWidget1.startDrawing();
     m_signalWidget2.resetWidget();
     m_signalWidget2.startDrawing();
-
+    m_signalWidget3.resetWidget();
+    m_signalWidget3.startDrawing();
+    m_signalWidget4.resetWidget();
+    m_signalWidget4.startDrawing();
 }
 
 /** @brief Performs any necessary actions that need to happen when the prefs dialog is closed */
@@ -105,6 +138,8 @@ void DlgPrefVinyl::slotClose()
     //Stop updating the vinyl control signal indicators when the prefs dialog is closed.
     m_signalWidget1.stopDrawing();
     m_signalWidget2.stopDrawing();
+    m_signalWidget3.stopDrawing();
+    m_signalWidget4.stopDrawing();
 }
 
 void DlgPrefVinyl::slotUpdate()
@@ -117,6 +152,14 @@ void DlgPrefVinyl::slotUpdate()
     combo_index = ComboBoxVinylType2->findText(config->getValueString(ConfigKey("[Channel2]","vinylcontrol_vinyl_type")));
     if (combo_index != -1)
         ComboBoxVinylType2->setCurrentIndex(combo_index);
+        
+    combo_index = ComboBoxVinylType3->findText(config->getValueString(ConfigKey("[Channel3]","vinylcontrol_vinyl_type")));
+    if (combo_index != -1)
+        ComboBoxVinylType3->setCurrentIndex(combo_index);
+        
+    combo_index = ComboBoxVinylType4->findText(config->getValueString(ConfigKey("[Channel4]","vinylcontrol_vinyl_type")));
+    if (combo_index != -1)
+        ComboBoxVinylType4->setCurrentIndex(combo_index);
 
     combo_index = ComboBoxVinylSpeed1->findText(config->getValueString(ConfigKey("[Channel1]","vinylcontrol_speed_type")));
     if (combo_index != -1)
@@ -125,6 +168,14 @@ void DlgPrefVinyl::slotUpdate()
     combo_index = ComboBoxVinylSpeed2->findText(config->getValueString(ConfigKey("[Channel2]","vinylcontrol_speed_type")));
     if (combo_index != -1)
         ComboBoxVinylSpeed2->setCurrentIndex(combo_index);
+
+    combo_index = ComboBoxVinylSpeed3->findText(config->getValueString(ConfigKey("[Channel3]","vinylcontrol_speed_type")));
+    if (combo_index != -1)
+        ComboBoxVinylSpeed3->setCurrentIndex(combo_index);
+
+    combo_index = ComboBoxVinylSpeed4->findText(config->getValueString(ConfigKey("[Channel4]","vinylcontrol_speed_type")));
+    if (combo_index != -1)
+        ComboBoxVinylSpeed4->setCurrentIndex(combo_index);
 
     // set lead-in time
     LeadinTime->setText (config->getValueString(ConfigKey("[VinylControl]","lead_in_time")) );
@@ -151,9 +202,17 @@ void DlgPrefVinyl::slotUpdate()
     if (VCProxiesList.value(1) != NULL) {
         m_signalWidget2.setVinylControlProxy(VCProxiesList.value(1));
     }
+    if (VCProxiesList.value(2) != NULL) {
+        m_signalWidget3.setVinylControlProxy(VCProxiesList.value(2));
+    }
+    if (VCProxiesList.value(3) != NULL) {
+        m_signalWidget4.setVinylControlProxy(VCProxiesList.value(3));
+    }
 
     m_signalWidget1.setVinylActive(m_pVCManager->vinylInputEnabled(1));
     m_signalWidget2.setVinylActive(m_pVCManager->vinylInputEnabled(2));
+    m_signalWidget3.setVinylActive(m_pVCManager->vinylInputEnabled(3));
+    m_signalWidget4.setVinylActive(m_pVCManager->vinylInputEnabled(4));
 }
 
 // Update the config object with parameters from dialog
@@ -192,8 +251,12 @@ void DlgPrefVinyl::VinylTypeSlotApply()
 {
     config->set(ConfigKey("[Channel1]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType1->currentText()));
     config->set(ConfigKey("[Channel2]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType2->currentText()));
+    config->set(ConfigKey("[Channel3]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType3->currentText()));
+    config->set(ConfigKey("[Channel4]","vinylcontrol_vinyl_type"), ConfigValue(ComboBoxVinylType4->currentText()));
     config->set(ConfigKey("[Channel1]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed1->currentText()));
     config->set(ConfigKey("[Channel2]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed2->currentText()));
+    config->set(ConfigKey("[Channel3]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed3->currentText()));
+    config->set(ConfigKey("[Channel4]","vinylcontrol_speed_type"), ConfigValue(ComboBoxVinylSpeed4->currentText()));
 
     //Save the vinylcontrol_speed_type in ControlObjects as well so it can be retrieved quickly
     //on the fly. (eg. WSpinny needs to know how fast to spin)
@@ -206,6 +269,16 @@ void DlgPrefVinyl::VinylTypeSlotApply()
         m_COSpeed2.slotSet(MIXXX_VINYL_SPEED_33_NUM);
     } else if (ComboBoxVinylSpeed2->currentText() == MIXXX_VINYL_SPEED_45) {
         m_COSpeed2.slotSet(MIXXX_VINYL_SPEED_45_NUM);
+    }
+    if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_33) {
+        m_COSpeed3.slotSet(MIXXX_VINYL_SPEED_33_NUM);
+    } else if (ComboBoxVinylSpeed3->currentText() == MIXXX_VINYL_SPEED_45) {
+        m_COSpeed3.slotSet(MIXXX_VINYL_SPEED_45_NUM);
+    }
+    if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_33) {
+        m_COSpeed4.slotSet(MIXXX_VINYL_SPEED_33_NUM);
+    } else if (ComboBoxVinylSpeed4->currentText() == MIXXX_VINYL_SPEED_45) {
+        m_COSpeed4.slotSet(MIXXX_VINYL_SPEED_45_NUM);
     }
 }
 
