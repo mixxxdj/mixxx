@@ -40,7 +40,7 @@ class ControlObjectRingValue {
     QAtomicInt m_readerSlots;
 };
 
-// Common implementation for all Types
+// Ring buffer based implementation for all Types > void*
 template<typename T, bool ATOMIC = false>
 class ControlObjectValue {
   public:
@@ -89,7 +89,7 @@ class ControlObjectValue {
     QAtomicInt m_writeIndex;
 };
 
-// Specialized Template for atomic types
+// Specialized Template for types store able in a native atomic types
 // It uses reinterpret_cast to store any value bit by bit into a QAtomicPointer
 // container. reinterpret_cast guarantees that the value is unchanged if you
 // cast it to a different type, and then reinterpret_cast it back to the
@@ -114,36 +114,18 @@ class ControlObjectValue<T, true> {
     QAtomicPointer<void*> m_container;
 };
 
+// This is a proxy Template to select the native atomic or the ring buffer
+// Implementation depending on the target architecture
 // Note: Qt does not support templates for signal and slots
 // So the typified ControlObject has to handle the Event Queue connections
 template<typename T>
 class ControlObjectBase
     : public ControlObjectValue<T, sizeof(T) <= sizeof(void*)> {
   public:
+
     ControlObjectBase()
         : ControlObjectValue<T, sizeof(T) <= sizeof(void*)>() {
     }
-};
-
-
-template<typename T>
-class ControlObjectThreadBase {
-  public:
-    ControlObjectThreadBase(ControlObjectBase<T>* pControlObject)
-        : m_pControlObject(pControlObject) {
-    }
-    virtual ~ControlObjectThreadBase();
-
-    inline T get() const {
-        return m_pControlObject->get();
-    }
-
-    inline void set(const T& value) {
-        return m_pControlObject->get();
-    }
-
-  private:
-    ControlObjectBase<T>* m_pControlObject;
 };
 
 
