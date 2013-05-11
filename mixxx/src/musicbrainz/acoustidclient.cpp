@@ -16,7 +16,8 @@
 #include "network.h"
 
 // TODO(kain88) get a unique API-KEY for mixxx
-const QString CLIENT_APIKEY = "ErlAvPUB";
+const QString CLIENT_APIKEY = "czKxnkyO";
+const QString CLIENT_NAME = "Mixxx1.12";
 const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
 const int AcoustidClient::m_DefaultTimeout = 5000; // msec
 
@@ -41,7 +42,7 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     QNetworkRequest req(QUrl::fromEncoded(ACOUSTID_URL.toAscii()));
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
-    req.setRawHeader("User-Agent", QString("testApp_kain880.01").toAscii());
+    req.setRawHeader("User-Agent", CLIENT_NAME.toAscii());
     
     QNetworkReply* reply = m_network.post(req, gzipCompress(url.encodedQuery()));
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
