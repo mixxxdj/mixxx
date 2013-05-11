@@ -5,7 +5,7 @@
 #include <QAtomicInt>
 #include <QObject>
 
-static const int cReaderSlotCnt = 7;
+const int cReaderSlotCnt = 7;
 
 template<typename T>
 class ControlObjectRingValue {
