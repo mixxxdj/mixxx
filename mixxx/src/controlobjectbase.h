@@ -90,24 +90,28 @@ class ControlObjectValue {
 };
 
 // Specialized Template for atomic types
+// It uses reinterpret_cast to store any value bit by bit into a QAtomicPointer
+// container. reinterpret_cast guarantees that the value is unchanged if you
+// cast it to a different type, and then reinterpret_cast it back to the
+// original type.
 template<typename T>
 class ControlObjectValue<T, true> {
   public:
     inline T getValue() {
-        return m_value;
+		return reinterpret_cast<T>(m_container);
     }
 
     inline void setValue(const T& value) {
-        m_value = value;
+        m_container = reinterpret_cast<void*>(value);
     }
 
   protected:
     ControlObjectValue()
-        : m_value(T()) {
+        : m_container(reinterpret_cast<void*>(T())) {
     }
 
   private:
-    T m_value;
+    QAtomicPointer<void*> m_container;
 };
 
 // Note: Qt does not support templates for signal and slots
