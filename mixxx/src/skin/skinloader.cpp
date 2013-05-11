@@ -24,7 +24,6 @@ SkinLoader::~SkinLoader() {
 }
 
 QString SkinLoader::getConfiguredSkinPath() {
-    const QString defaultSkin = "Deere1920x1080-FullHD";//XXX: App Store //"Outline1024x600-Netbook";
 
     QString qSkinPath = m_pConfig->getResourcePath();
     qSkinPath.append("skins/");

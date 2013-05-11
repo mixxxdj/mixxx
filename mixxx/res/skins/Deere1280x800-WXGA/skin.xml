@@ -4294,7 +4294,7 @@
 
 			<!--
 			**********************************************
-			Button - Quantize <ConfigKey>[Channel1],quantize</ConfigKey>
+			Button - Quantize
 			**********************************************
 			-->
 			<PushButton>

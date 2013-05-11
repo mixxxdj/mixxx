@@ -154,18 +154,12 @@ RateControl::RateControl(const char* _group,
     connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncMasterChanged(double)),
                 Qt::DirectConnection);
-    //connect(m_pSyncMasterEnabled, SIGNAL(valueChangedFromEngine(double)),
-    //            this, SLOT(slotSyncMasterChanged(double)),
-    //            Qt::DirectConnection);
                 
     m_pSyncSlaveEnabled = new ControlPushButton(ConfigKey(_group, "sync_slave"));
     m_pSyncSlaveEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pSyncSlaveEnabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncSlaveChanged(double)),
                 Qt::DirectConnection);
-    //connect(m_pSyncSlaveEnabled, SIGNAL(valueChangedFromEngine(double)),
-    //            this, SLOT(slotSyncSlaveChanged(double)),
-    //            Qt::DirectConnection);
                 
     m_pSyncInternalEnabled = ControlObject::getControl(ConfigKey("[Master]", "sync_master"));
     connect(m_pSyncInternalEnabled, SIGNAL(valueChanged(double)),
@@ -180,8 +174,8 @@ RateControl::RateControl(const char* _group,
                 this, SLOT(slotSyncStateChanged(double)),
                 Qt::DirectConnection);
                 
-    m_pSyncMasterEnabled->set(FALSE);
-    m_pSyncSlaveEnabled->set(FALSE);
+    m_pSyncMasterEnabled->set(false);
+    m_pSyncSlaveEnabled->set(false);
     m_iSyncState = SYNC_NONE;
 
 #ifdef __VINYLCONTROL__
@@ -257,7 +251,6 @@ void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
-
 }
 
 void RateControl::setRateRamp(bool linearMode)
@@ -408,11 +401,9 @@ void RateControl::slotFileBpmChanged(double bpm) {
     slotMasterBpmChanged(m_pMasterBpm->get());
 }
 
-void RateControl::slotMasterBpmChanged(double syncbpm)
-{
+void RateControl::slotMasterBpmChanged(double syncbpm) {
     //qDebug() << m_sGroup << "got a master bpm change" << syncbpm;
-    if (m_iSyncState == SYNC_SLAVE)
-    {
+    if (m_iSyncState == SYNC_SLAVE) {
         // if we're a slave, update the rate value -- we don't set anything here,
         // this comes into effect in the return from calculaterate
         //TODO: let's ignore x2, /2 issues for now
@@ -436,69 +427,45 @@ void RateControl::slotMasterBpmChanged(double syncbpm)
     }
 }
 
-void RateControl::slotSyncMasterChanged(double state)
-{
+void RateControl::slotSyncMasterChanged(double state) {
     //qDebug() << m_sGroup << "slot master changed";
     
-    if (state)
-    {
+    if (state) {
         if (m_iSyncState == SYNC_MASTER){
             //qDebug() << "already master";
             return;
         }
         
-        //m_iSyncState = SYNC_MASTER;
         qDebug() << m_sGroup << "setting ourselves as master";
         m_pSyncState->set(SYNC_MASTER);
-    } 
-    else
-    {
+    } else {
         // For now, turning off master turns on slave mode
         if (m_iSyncState != SYNC_MASTER) {
             return;
         }
         //unset ourselves
-        qDebug() << m_sGroup << "unsetting ourselves as master (now slave)";
-        
-        //slotMasterBpmChanged(m_pMasterBpm->get()); //make sure we have a synced rate
-        //m_pSyncSlaveEnabled->set(TRUE); //this doesn't work, no FromEngine connection
+        qDebug() << m_sGroup << "unsetting ourselves as master (now slave)";        
         m_pSyncState->set(SYNC_SLAVE);
     }
 }
 
-void RateControl::slotSyncSlaveChanged(double state)
-{
+void RateControl::slotSyncSlaveChanged(double state) {
     //qDebug() << m_sGroup << "slot slave changed";
-    if (state)
-    {
+    if (state) {
         if (m_iSyncState == SYNC_SLAVE) {
             //qDebug() << "already slave";
             return;
         }
-        //qDebug() << m_sGroup << "setting ourselves as slave";
-        //m_iSyncState = SYNC_SLAVE;
-        //slotMasterBpmChanged(m_pMasterBpm->get()); //make sure we have a synced rate
-        //m_pSyncMasterEnabled->set(FALSE); //this doesn't work, no FromEngine connection
         m_pSyncState->set(SYNC_SLAVE);
-    } 
-    else
-    {
+    } else {
         // For now, turning off slave turns off syncing
-        //qDebug() << m_sGroup << "sync off (might have been already)";
-        //m_iSyncState = SYNC_NONE;
         m_pSyncState->set(SYNC_NONE);
     }
 }
 
-void RateControl::slotSyncInternalChanged(double state)
-{
-    if (state)
-    {
-        if (m_iSyncState == SYNC_MASTER)
-        {
-            //m_iSyncState = SYNC_SLAVE;
-            //m_pSyncSlaveEnabled->set(TRUE);
-            //m_pSyncMasterEnabled->set(FALSE);  //this will happen
+void RateControl::slotSyncInternalChanged(double state) {
+    if (state) {
+        if (m_iSyncState == SYNC_MASTER) {
             m_pSyncState->set(SYNC_SLAVE);
         }
     }
@@ -532,16 +499,15 @@ double RateControl::getRawRate() {
         m_pRateDir->get();
 }
 
-double RateControl::getCurrentRate()
-{
+double RateControl::getCurrentRate() const {
     return m_dOldRate;
 }
 
-double RateControl::getWheelFactor() {
+double RateControl::getWheelFactor() const {
     return m_pWheel->get();
 }
 
-double RateControl::getJogFactor() {
+double RateControl::getJogFactor() const {
     // FIXME: Sensitivity should be configurable separately?
     const double jogSensitivity = 0.1;  // Nudges during playback
     double jogValue = m_pJog->get();
@@ -560,8 +526,7 @@ double RateControl::getJogFactor() {
     return jogFactor;
 }
 
-bool RateControl::getUserTweakingSync()
-{
+bool RateControl::getUserTweakingSync() const {
     return m_bUserTweakingSync;
 }
 
@@ -582,28 +547,13 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         qDebug() << m_sGroup << " ratecontrol sync state " << m_iSyncState;
         if (m_iSyncState == SYNC_SLAVE && !paused)
         {
-            //if (m_dSyncedRate != 0) {
-            //    //if (m_dSyncedRate != m_dOldRate) {
-            //    //    qDebug() << "we are a slave, set rate to " << m_dSyncedRate << baserate;
-            //    //}
-            //}
             m_dOldRate = m_dSyncedRate;
             rate = m_dSyncedRate;
-            //rate = ((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get();
-            //double oldrate = rate;
             double userTweak = getTempRate() + wheelFactor + jogFactor;
             rate += userTweak;
             m_bUserTweakingSync = (userTweak != 0.0);
-            //if (m_bUserTweakingSync)
-            //{
-            //    qDebug() << "ratecontrol: user is tweaking sync" << oldrate << userTweak << rate;
-            //}
             
-            //Don't set the rate slider for all changes
             m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
-            //qDebug() << m_sGroup << " setting true rate " << rate;
-            //return rate * baserate;
-            //qDebug() << m_dSyncedRate << rate;
             return rate * baserate;
         }
 

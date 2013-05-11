@@ -30,7 +30,6 @@ class BpmControl : public EngineControl {
     void setLoopSize(double size) { m_dLoopSize = size; }
     
   public slots:
-    //void slotRateChanged(double);
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
@@ -94,8 +93,8 @@ class BpmControl : public EngineControl {
     // playposition.
     ControlPushButton* m_pTranslateBeats;
     
-    double m_dFileBpm; // cache it
-    double m_dLoopSize; // only used to see if we shouldn't quantize position
+    double m_dFileBpm;
+    double m_dLoopSize; // Only used to see if we shouldn't quantize position.
 
     TapFilter m_tapFilter;
 

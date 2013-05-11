@@ -39,9 +39,9 @@ public:
                    const int bufferSamples);
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
-    double getRawRate();
-    double getCurrentRate();
-    bool getUserTweakingSync();
+    double getRawRate() const;
+    double getCurrentRate() const;
+    bool getUserTweakingSync() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -133,7 +133,7 @@ public:
     
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;
-    double m_dFileBpm; // cache it
+    double m_dFileBpm;
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.

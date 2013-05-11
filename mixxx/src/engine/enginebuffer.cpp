@@ -468,7 +468,7 @@ void EngineBuffer::slotControlSeek(double change)
         
     if (m_pQuantize->get() > 0.0) {
         int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
-        qDebug() << m_group << " syncing phase on seek" << offset;
+        //qDebug() << m_group << " syncing phase on seek" << offset;
         if (!even(offset))
             offset--;
         new_playpos += offset;
@@ -590,9 +590,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         
         m_pBpmControl->setLoopSize(m_pLoopingControl->getLoopSize());
         m_pBpmControl->userTweakingSync(m_pRateControl->getUserTweakingSync());
-        if (m_pBpmControl->getSyncState() == SYNC_MASTER) {
-            m_beatDistance->set(m_pBpmControl->getBeatDistance());
-        }
         
         if (!paused) {
             //qDebug() << "sync adjustment " << m_pBpmControl->getSyncAdjustment();
@@ -761,6 +758,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 // like the scratch controller from flipping out.
                 m_pRateControl->notifySeek(m_filepos_play);
             }
+        }
+        if (m_pBpmControl->getSyncState() == SYNC_MASTER) {
+            m_beatDistance->set(m_pBpmControl->getBeatDistance());
         }
         m_engineLock.unlock();
 

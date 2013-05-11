@@ -43,10 +43,10 @@ class EngineSync : public EngineControl {
         void setInternalMaster(void);
         bool setMidiMaster(void);
         //bool setNone(QString deck);
-        EngineBuffer* getMaster();
+        EngineBuffer* getMaster() const;
         
         void incrementPseudoPosition(int bufferSize);
-        double getInternalBeatDistance(void);
+        double getInternalBeatDistance(void) const;
         
     private slots:
         void slotMasterBpmChanged(double);
