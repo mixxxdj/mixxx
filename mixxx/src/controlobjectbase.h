@@ -15,14 +15,14 @@ class ControlObjectRingValue {
           m_readerSlots(cReaderSlotCnt) {
     }
 
-    int tryGet(T* value) {
+    bool tryGet(T* value) {
         // Read while consuming one readerSlot
-        bool originalSlots = m_readerSlots.fetchAndAddAcquire(-1);
-        if (originalSlots) {
+        bool hasSlot = (m_readerSlots.fetchAndAddAcquire(-1) > 0);
+        if (hasSlot) {
             *value = m_value;
         }
         (void)m_readerSlots.fetchAndAddRelease(1);
-        return originalSlots;
+        return hasSlot;
     }
 
     bool trySet(const T& value) {
@@ -48,11 +48,11 @@ class ControlObjectValue {
         T value = T();
         unsigned int index = (unsigned int)m_readIndex
                 % (cReaderSlotCnt + 1);
-        while (m_ring[index].tryGet(&value) == 0) {
+        while (m_ring[index].tryGet(&value) == false) {
             // We are here if
             // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
             // 2) the formerly current value is locked by a writer
-            // Case 1 is prevented by enough reader slots and schould not happen
+            // Case 1 is prevented by enough reader slots and should not happen
             // Case 2 happens when the a reader is delayed after reading the
             // m_currentIndex and the writers have written cReaderSlotCnt times so that the
             // formally current value is locked again for writing.
