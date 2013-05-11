@@ -17,7 +17,6 @@
 
 NetworkAccessManager::NetworkAccessManager(QObject* parent)
                     : QNetworkAccessManager(parent) {
-    // setCache(new ThreadSafeNetworkDiskCache(this));
 }
 
 QNetworkReply* NetworkAccessManager::createRequest(Operation op,
@@ -46,28 +45,28 @@ QNetworkReply* NetworkAccessManager::createRequest(Operation op,
 
 
 NetworkTimeouts::NetworkTimeouts(int timeout_msec, QObject* parent)
-  : timeout_msec_(timeout_msec) {
+  : m_timeout_msec(timeout_msec) {
 }
 
-void NetworkTimeouts::AddReply(QNetworkReply* reply) {
-  if (timers_.contains(reply))
-    return;
-
-  connect(reply, SIGNAL(destroyed()), SLOT(ReplyFinished()));
-  connect(reply, SIGNAL(finished()), SLOT(ReplyFinished()));
-  timers_[reply] = startTimer(timeout_msec_);
+void NetworkTimeouts::addReply(QNetworkReply* reply) {
+    if (m_timers.contains(reply))
+        return;
+  
+    connect(reply, SIGNAL(destroyed()), SLOT(ReplyFinished()));
+    connect(reply, SIGNAL(finished()), SLOT(ReplyFinished()));
+    m_timers[reply] = startTimer(m_timeout_msec);
 }
 
-void NetworkTimeouts::ReplyFinished() {
-  QNetworkReply* reply = reinterpret_cast<QNetworkReply*>(sender());
-  if (timers_.contains(reply)) {
-    killTimer(timers_.take(reply));
-  }
+void NetworkTimeouts::replyFinished() {
+    QNetworkReply* reply = reinterpret_cast<QNetworkReply*>(sender());
+    if (m_timers.contains(reply)) {
+        killTimer(m_timers.take(reply));
+    }
 }
 
 void NetworkTimeouts::timerEvent(QTimerEvent* e) {
-  QNetworkReply* reply = timers_.key(e->timerId());
-  if (reply) {
-    reply->abort();
-  }
+    QNetworkReply* reply = m_timers.key(e->timerId());
+    if (reply) {
+      reply->abort();
+    }
 }

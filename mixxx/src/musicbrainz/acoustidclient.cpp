@@ -27,7 +27,7 @@ AcoustidClient::AcoustidClient(QObject* parent)
 }
 
 void AcoustidClient::setTimeout(int msec) {
-    m_timeouts.SetTimeout(msec);
+    m_timeouts.setTimeout(msec);
 }
 
 void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
@@ -46,7 +46,7 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     connect(reply, SIGNAL(finished()), SLOT(RequestFinished()));
     m_requests[reply] = id;
     
-    m_timeouts.AddReply(reply);
+    m_timeouts.addReply(reply);
 }
 
 

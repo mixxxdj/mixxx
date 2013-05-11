@@ -40,7 +40,7 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
     connect(reply, SIGNAL(finished()), SLOT(RequestFinished()));
     m_requests[reply] = id;
 
-    m_timeouts.AddReply(reply);
+    m_timeouts.addReply(reply);
 }
 
 void MusicBrainzClient::startDiscIdRequest(const QString& discid) {
@@ -58,7 +58,7 @@ void MusicBrainzClient::startDiscIdRequest(const QString& discid) {
     connect(reply, SIGNAL(finished()), SLOT(DiscIdRequestFinished()));
     //m_requests[reply] = id;
 
-    m_timeouts.AddReply(reply);
+    m_timeouts.addReply(reply);
 }
 
 void MusicBrainzClient::cancel(int id) {
