@@ -15,7 +15,8 @@
 #include "gzip.h"
 #include "network.h"
 
-// TODO(kain88) get a unique API-KEY for mixxx
+// see API-KEY site here http://acoustid.org/application/496
+// I registered the KEY for version 1.12 -- kain88 (may 2013)
 const QString CLIENT_APIKEY = "czKxnkyO";
 const QString CLIENT_NAME = "Mixxx1.12";
 const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
