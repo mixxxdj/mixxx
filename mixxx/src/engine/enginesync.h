@@ -88,7 +88,6 @@ class EngineSync : public EngineControl {
         double m_dSourceRate, m_dMasterBpm;
         double m_dSamplesPerBeat;
         double m_dPseudoBufferPos;
-        
 };
 
 #endif

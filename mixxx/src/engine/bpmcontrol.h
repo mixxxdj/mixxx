@@ -19,13 +19,14 @@ class BpmControl : public EngineControl {
   public:
     BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
-    double getBpm();
-    double getFileBpm();
-    double getBeatDistance();
-    double getSyncAdjustment();
+    double getBpm() const;
+    double getFileBpm() const { return m_dFileBpm; }
+    double getBeatDistance() const;
+    int getSyncState() const { return m_iSyncState; }
+    double getSyncAdjustment() const;
     void userTweakingSync(bool tweakActive);
-    double getPhaseOffset();
-    double getPhaseOffset(double reference_position);
+    double getPhaseOffset() { return getPhaseOffset(getCurrentSample()); }
+    double getPhaseOffset(double reference_position) ;
     void setLoopSize(double size) { m_dLoopSize = size; }
     
   public slots:

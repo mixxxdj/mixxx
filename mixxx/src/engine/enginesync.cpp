@@ -130,7 +130,7 @@ void EngineSync::disableDeckMaster(QString deck)
             if (sync_master != NULL)
             {
                 if (sync_master->get()) {
-                    //qDebug() << "disabledeckmaster found" << deck << "was the old master, shutting it down";
+                    qDebug() << "disabledeckmaster found" << deck << "was the old master, shutting it down";
                     sync_master->set(FALSE);
                     ControlObject *sync_slave = ControlObject::getControl(ConfigKey(deck, "sync_slave"));
                     Q_ASSERT(sync_slave);
@@ -141,11 +141,11 @@ void EngineSync::disableDeckMaster(QString deck)
     }
     else
     {
-        //qDebug() << "disabling" << deck << "as master";
+        qDebug() << "disabling" << deck << "as master";
         ControlObject *sync_master = ControlObject::getControl(ConfigKey(deck, "sync_master"));
         Q_ASSERT(sync_master); //would be a programming error
         if (sync_master->get()) {
-            //qDebug() << deck << "notifying deck it is not master";
+            qDebug() << deck << "notifying deck it is not master";
             sync_master->set(FALSE);
             ControlObject *sync_slave = ControlObject::getControl(ConfigKey(deck, "sync_slave"));
             Q_ASSERT(sync_slave);
@@ -181,7 +181,7 @@ bool EngineSync::setInternalMaster(void)
     disconnectMaster();
     updateSamplesPerBeat();
     
-    //qDebug() << "*****************WHEEEEEEEEEEEEEEE INTERNAL";
+    qDebug() << "*****************WHEEEEEEEEEEEEEEE INTERNAL";
     //this is all we have to do, we'll start using the pseudoposition right away
     m_iSyncSource = SYNC_INTERNAL;
     m_pSyncInternalEnabled->set(TRUE);
@@ -422,7 +422,7 @@ void EngineSync::slotDeckMasterChanged(double state)
     Q_ASSERT(caller); //this will only fail because of a programming error
     //get the group from that
     QString group = caller->getKey().group;
-    //qDebug() << "got a master state change from" << group;
+    qDebug() << "got a master state change from" << group;
     
     if (state) {
         // Figure out who the old master was and turn them off
@@ -436,7 +436,7 @@ void EngineSync::slotDeckMasterChanged(double state)
                 continue;
             }
             if (sync_master->get()) {
-                //qDebug() << deck << "unsetting old master";
+                qDebug() << deck << "unsetting old master";
                 //XXX: I think this may cause flicker:
                 //     1. user clicked master-enable for, say, deck 2
                 //     2. mixxx notices deck 3 is already master, disables it
@@ -465,7 +465,7 @@ void EngineSync::slotDeckSlaveChanged(double state)
     Q_ASSERT(caller); //this will only fail because of a programming error
     //get the group from that
     QString group = caller->getKey().group;
-    //qDebug() << "got a slave state change from" << group;
+    qDebug() << "got a slave state change from" << group;
     
     if (state) {
         // Was this deck master before?  If so do a handoff

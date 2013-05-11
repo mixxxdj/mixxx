@@ -590,10 +590,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         
         m_pBpmControl->setLoopSize(m_pLoopingControl->getLoopSize());
         m_pBpmControl->userTweakingSync(m_pRateControl->getUserTweakingSync());
-        m_beatDistance->set(m_pBpmControl->getBeatDistance());
         
         if (!paused) {
-            rate += m_pBpmControl->getSyncAdjustment();
+            //qDebug() << "sync adjustment " << m_pBpmControl->getSyncAdjustment();
+            rate *= m_pBpmControl->getSyncAdjustment();
         }
         //qDebug() << "rate" << rate << " paused" << paused;
 
@@ -758,6 +758,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 // like the scratch controller from flipping out.
                 m_pRateControl->notifySeek(m_filepos_play);
             }
+        }
+        if (m_pBpmControl->getSyncState() == SYNC_MASTER) {
+            m_beatDistance->set(m_pBpmControl->getBeatDistance());
         }
         m_engineLock.unlock();
 
