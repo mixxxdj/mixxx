@@ -544,7 +544,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
         
         // if master sync is on, respond to it
-        qDebug() << m_sGroup << " ratecontrol sync state " << m_iSyncState;
         if (m_iSyncState == SYNC_SLAVE && !paused)
         {
             m_dOldRate = m_dSyncedRate;

@@ -369,8 +369,8 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         return;
     }
 
-    const double MAGIC_FUZZ = 0.01;
-    const double MAGIC_FACTOR = 0.6; //the higher this is, the more we influence sync
+    const double MAGIC_FUZZ = 0.05;
+    const double MAGIC_FACTOR = 0.9; //the higher this is, the more we influence sync
     
     double dThisPosition = getCurrentSample();
     
@@ -393,11 +393,11 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     // beat wraparound -- any other way to account for this?
     // if we're at .99% and the master is 0.1%, we are *not* 98% off!
     
-    ////don't do anything if we're at the edges of the beat (wraparound issues)
-//    if (my_distance < 0.1 || my_distance > 0.9 ||
-//        master_distance < 0.1 || master_distance > 0.9) {
-//            return;
-//    }
+    // Don't do anything if we're at the edges of the beat (wraparound issues)
+    if (my_distance < 0.1 || my_distance > 0.9 ||
+        master_distance < 0.1 || master_distance > 0.9) {
+            return;
+    }
         
     //e.g. if my position is .8, and theirs is .6
     //then sample_offset = beatlength * .8 - beatlength * .6
@@ -424,7 +424,7 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
             //qDebug() << "master" << master_distance << "mine" << my_distance << "diff" << percent_offset;
             m_dSyncAdjustment = (0 - error) * MAGIC_FACTOR;
             //qDebug() << m_sGroup << " tweaking.... " << m_dSyncAdjustment;
-            m_dSyncAdjustment = 1.0 + math_max(-0.2f, math_min(0.2f, m_dSyncAdjustment));
+            m_dSyncAdjustment = 1.0 + math_max(-0.1f, math_min(0.1f, m_dSyncAdjustment));
             //qDebug() << "clamped" << m_dSyncAdjustment;
         }
     }
@@ -616,8 +616,8 @@ double BpmControl::getPhaseOffset(double reference_position) {
     return dNewPlaypos - dThisPosition;
 }
 
-void BpmControl::setEngineBpm(double bpm) {
-    m_pEngineBpm->set(bpm);
+void BpmControl::setEngineBpmByRate(double rate) {
+    m_pEngineBpm->set(rate * m_pFileBpm->get());
 }
 
 void BpmControl::slotAdjustBpm() {

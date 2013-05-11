@@ -630,7 +630,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 }
             }
             if (m_pBpmControl->getSyncState() == SYNC_SLAVE) {
-                m_pBpmControl->setEngineBpm(rate);
+                m_pBpmControl->setEngineBpmByRate(rate);
             }
 
             if (baserate > 0) { // Prevent division by 0
@@ -889,8 +889,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
 
-        //if(rate != m_rateEngine->get())
-        //    m_rateEngine->set(rate);
+        if(rate != m_rateEngine->get()) {
+            m_rateEngine->set(rate);
+        }
 
         //Update the BPM even more slowly
         m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
