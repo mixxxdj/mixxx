@@ -3875,6 +3875,9 @@
 				QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
 				QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
+                QPushButton#LibraryBPMButton {background: transparent; border: 0;}
+                QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
+                QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
 				QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 
 				<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).

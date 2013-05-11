@@ -314,19 +314,22 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":header_parsed", pTrack->getHeaderParsed() ? 1 : 0);
 
     const QByteArray* pBeatsBlob = NULL;
-    QString blobVersion = "";
+    QString beatsVersion = "";
+    QString beatsSubVersion = "";
     BeatsPointer pBeats = pTrack->getBeats();
     // Fall back on cached BPM
     double dBpm = pTrack->getBpm();
 
     if (pBeats) {
         pBeatsBlob = pBeats->toByteArray();
-        blobVersion = pBeats->getVersion();
+        beatsVersion = pBeats->getVersion();
+        beatsSubVersion = pBeats->getSubVersion();
         dBpm = pBeats->getBpm();
     }
 
     m_pQueryLibraryInsert->bindValue(":bpm", dBpm);
-    m_pQueryLibraryInsert->bindValue(":beats_version", blobVersion);
+    m_pQueryLibraryInsert->bindValue(":beats_version", beatsVersion);
+    m_pQueryLibraryInsert->bindValue(":beats_sub_version", beatsSubVersion);
     m_pQueryLibraryInsert->bindValue(":beats", pBeatsBlob ? *pBeatsBlob : QVariant(QVariant::ByteArray));
     delete pBeatsBlob;
 }

@@ -380,6 +380,8 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
     // this disables vinyl control for all of the sound devices stuff
     // (prefs, etc), minimal ifdefs :) -- bkgood
     types.append(VINYLCONTROL);
+#else
+    types.append(EXTPASSTHROUGH);
 #endif
     types.append(MICROPHONE);
     return types;

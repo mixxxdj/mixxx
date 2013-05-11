@@ -9,6 +9,7 @@
 
 #include "library/stardelegate.h"
 #include "library/starrating.h"
+#include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
 #include "library/queryutil.h"
 #include "mixxxutils.cpp"
@@ -800,6 +801,8 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
+    } else if (i == fieldIndex(LIBRARYTABLE_BPM)) {
+        return new BPMDelegate(pParent, i, fieldIndex(LIBRARYTABLE_BPM_LOCK));
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
         return new PreviewButtonDelegate(pParent, i);
     }
