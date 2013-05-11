@@ -181,7 +181,7 @@ bool EngineSync::setDeckMaster(QString deck) {
             qDebug() << "master buffer is null????";
         }
             
-        m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "true_rate"));
+        m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "rateEngine"));
         if (m_pSourceRate == NULL) {
             qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
             return false;
@@ -258,19 +258,19 @@ QString EngineSync::chooseNewMaster(QString dontpick="") {
     return fallback;
 }
 
-void EngineSync::slotSourceRateChanged(double true_rate) {
+void EngineSync::slotSourceRateChanged(double rate_engine) {
     //qDebug() << "got a true rate update";
     //master buffer can be null due to timing issues
     if (m_pMasterBuffer == NULL)
         qDebug() << "but master buffer is null";
     
-    //qDebug() << "true rate: " << true_rate << " source " << m_dSourceRate;
+    //qDebug() << "true rate: " << rate_engine << " source " << m_dSourceRate;
     
-    if (true_rate != m_dSourceRate && m_pMasterBuffer != NULL) {
-        m_dSourceRate = true_rate;
+    if (rate_engine != m_dSourceRate && m_pMasterBuffer != NULL) {
+        m_dSourceRate = rate_engine;
         
         double filebpm = m_pMasterBuffer->getFileBpm();
-        m_dMasterBpm = true_rate * filebpm;
+        m_dMasterBpm = rate_engine * filebpm;
         //qDebug() << "file bpm " << filebpm;
         //qDebug()<< "announcing a master bpm of" <<  m_dMasterBpm;
         

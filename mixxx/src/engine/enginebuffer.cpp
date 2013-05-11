@@ -159,8 +159,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // how far past the last beat are we?
     m_beatDistance = new ControlObject(ConfigKey(m_group, "beat_distance"));
     
-    // the actual rate of playback as a multiple.  (ie 1.0 for native speed of file)
-    m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
+    //// the actual rate of playback as a multiple.  (ie 1.0 for native speed of file)
+    //m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
 
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
@@ -636,7 +636,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             if (baserate > 0) { // Prevent division by 0
                 rate = baserate * m_pScale->setTempo(rate/baserate);
             }
-            m_pTrueRate->set(rate / baserate);
+            //m_pTrueRate->set(rate);
             m_pScale->setBaseRate(baserate);
             m_rate_old = rate;
             // Scaler is up to date now.
@@ -770,7 +770,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
-        updateIndicators(rate, iBufferSize);
+        updateIndicators(rate, baserate, iBufferSize);
 
         // Handle repeat mode
         at_start = m_filepos_play <= 0;
@@ -876,7 +876,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_iLastBufferSize = iBufferSize;
 }
 
-void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
+void EngineBuffer::updateIndicators(double rate, double baserate, int iBufferSize) {
 
     // Increase samplesCalculated by the buffer size
     m_iSamplesCalculated += iBufferSize;
@@ -901,7 +901,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // Update visual control object, this needs to be done more often
     m_visualPlaypos->set(fFractionalPlaypos);
     if(rate != m_rateEngine->get()) {
-        m_rateEngine->set(rate);
+        m_rateEngine->set(baserate != 0.0 ? rate / baserate : rate);
     }
 }
 
