@@ -37,26 +37,8 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
     QNetworkRequest req(url);
 
     QNetworkReply* reply = m_network.get(req);
-    connect(reply, SIGNAL(finished()), SLOT(RequestFinished()));
+    connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
-
-    m_timeouts.addReply(reply);
-}
-
-void MusicBrainzClient::startDiscIdRequest(const QString& discid) {
-    typedef QPair<QString, QString> Param;
-
-    QList<Param> parameters;
-    parameters << Param("type", "xml")
-                << Param("discid", discid);
-
-    QUrl url(m_DiscUrl);
-    url.setQueryItems(parameters);
-    QNetworkRequest req(url);
-
-    QNetworkReply* reply = m_network.get(req);
-    connect(reply, SIGNAL(finished()), SLOT(DiscIdRequestFinished()));
-    //m_requests[reply] = id;
 
     m_timeouts.addReply(reply);
 }
@@ -71,58 +53,6 @@ void MusicBrainzClient::cancelAll() {
     qDeleteAll(m_requests.keys());
     m_requests.clear();
 }
-
-void MusicBrainzClient::discIdRequestFinished() {
-    QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    if (!reply)
-        return;
-    reply->deleteLater();
-
-    ResultList ret;
-    QString artist;
-    QString album;
-
-    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-        emit finished(artist, album, ret);
-        return;
-    }
-
-    // Parse xml result:
-    // -get title
-    // -get artist
-    // -get all the tracks' tags
-    QXmlStreamReader reader(reply);
-    while (!reader.atEnd()) {
-        QXmlStreamReader::TokenType type = reader.readNext();
-        if (type == QXmlStreamReader::StartElement) {
-            QStringRef name = reader.name();
-            if (name == "title") {
-                album = reader.readElementText();
-            } else if (name == "artist") {
-                parseArtist(reader, artist);
-            } else if (name == "track-list") {
-                break;
-            }
-        }
-    }
-
-    while (!reader.atEnd()) {
-        QXmlStreamReader::TokenType token = reader.readNext();
-        if (token == QXmlStreamReader::StartElement && reader.name() == "track") {
-            ResultList tracks = parseTrack(reader);
-            foreach (const Result& track, tracks) {
-                if (!track.m_title.isEmpty()) {
-                    ret << track;
-                }
-            }
-        } else if (token == QXmlStreamReader::EndElement && reader.name() == "track-list") {
-            break;
-        }
-    }
-
-    emit finished(artist, album, uniqueResults(ret));
-}
-
 
 void MusicBrainzClient::requestFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
@@ -141,7 +71,6 @@ void MusicBrainzClient::requestFinished() {
         return;
     }
 
-    // qDebug() << "received reply from musicbrainz start to parse xml now";
     QXmlStreamReader reader(reply);
     while (!reader.atEnd()) {
         if (reader.readNext() == QXmlStreamReader::StartElement 
@@ -167,7 +96,6 @@ MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& re
 
         if (type == QXmlStreamReader::StartElement) {
             QStringRef name = reader.name();
-   
             if (name == "title") {
                 result.m_title = reader.readElementText();
             } else if (name == "length") {

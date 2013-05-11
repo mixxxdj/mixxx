@@ -42,8 +42,9 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
     req.setRawHeader("User-Agent", QString("testApp_kain880.01").toAscii());
+    
     QNetworkReply* reply = m_network.post(req, gzipCompress(url.encodedQuery()));
-    connect(reply, SIGNAL(finished()), SLOT(RequestFinished()));
+    connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
     
     m_timeouts.addReply(reply);
@@ -86,7 +87,6 @@ void AcoustidClient::requestFinished() {
             }
     }
 
-    // qDebug() << "found something " << ID;
     emit finished(id, ID);
 }
 

@@ -17,7 +17,6 @@
 #include "network.h"
 #include "trackinfoobject.h"
 
-// class QNetworkReply;
 class QXmlStreamReader;
 
 class AcoustidClient : public QObject {
@@ -29,7 +28,7 @@ class AcoustidClient : public QObject {
     // Musicbrainz to get metadata.
     // You can create one AcoustidClient and make multiple requests using it.
     // IDs are provided by the caller when a request is started and included in
-    // the Finished signal - they have no meaning to AcoustidClient.
+    // the finished signal - they have no meaning to AcoustidClient.
 
   public:
     AcoustidClient(QObject* parent = 0);

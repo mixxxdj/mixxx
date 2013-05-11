@@ -43,12 +43,15 @@ class TagFetcher : public QObject {
     void tagsFetched(int index, const MusicBrainzClient::ResultList& result);
 
   private:
+    // has to be static so we can call it with QtConcurrent and have a nice
+    // responsive UI while the fingerprint is calculated
     static QString getFingerprint(const TrackPointer tio);
 
     QFutureWatcher<QString>* m_pFingerprintWatcher;
     AcoustidClient m_AcoustidClient;
     MusicBrainzClient m_MusicbrainzClient;
 
+    // Code can already be run on an arbitrary number of input tracks
     QList<TrackPointer> m_tracks;
 };
 

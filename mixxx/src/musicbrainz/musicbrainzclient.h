@@ -18,13 +18,11 @@
 
 #include "network.h"
 
-// class QNetworkReply;
-
 class MusicBrainzClient : public QObject {
   Q_OBJECT
 
   // Gets metadata for a particular MBID.
-  // An MBID is created from a fingerprint using MusicDnsClient.
+  // An MBID is created from a fingerprint using chromaprint library.
   // You can create one MusicBrainzClient and make multiple requests using it.
   // IDs are provided by the caller when a request is started and included in
   // the Finished signal - they have no meaning to MusicBrainzClient.
@@ -36,26 +34,26 @@ class MusicBrainzClient : public QObject {
         Result() : m_duration(0), m_track(0), m_year(-1) {}
 
         bool operator <(const Result& other) const {
-        #define cmp(field) \
-            if (field < other.field) return true; \
-            if (field > other.field) return false;
+            #define cmp(field) \
+                if (field < other.field) return true; \
+                if (field > other.field) return false;
 
-        cmp(m_track);
-        cmp(m_year);
-        cmp(m_title);
-        cmp(m_artist);
-        return false;
+            cmp(m_track);
+            cmp(m_year);
+            cmp(m_title);
+            cmp(m_artist);
+            return false;
 
-        #undef cmp
+            #undef cmp
         }
-
+        
         bool operator ==(const Result& other) const {
-        return m_title == other.m_title &&
-                m_artist == other.m_artist &&
-                m_album == other.m_album &&
-                m_duration == other.m_duration &&
-                m_track == other.m_track &&
-                m_year == other.m_year;
+            return m_title == other.m_title &&
+                   m_artist == other.m_artist &&
+                   m_album == other.m_album &&
+                   m_duration == other.m_duration &&
+                   m_track == other.m_track &&
+                   m_year == other.m_year;
         }
 
         QString m_title;
@@ -68,10 +66,9 @@ class MusicBrainzClient : public QObject {
     typedef QList<Result> ResultList;
 
 
-    // Starts a request and returns immediately.  Finished() will be emitted
+    // Starts a request and returns immediately.  finished() will be emitted
     // later with the same ID.
     void start(int id, const QString& mbid);
-    void startDiscIdRequest(const QString& discid);
     static void consumeCurrentElement(QXmlStreamReader& reader);
 
     // Cancels the request with the given ID.  Finished() will never be emitted
@@ -85,13 +82,9 @@ class MusicBrainzClient : public QObject {
   signals:
     // Finished signal emitted when fechting songs tags
     void finished(int id, const MusicBrainzClient::ResultList& result);
-    // Finished signal emitted when fechting album's songs tags using DiscId
-    void finished(const QString& artist, const QString album,
-                  const MusicBrainzClient::ResultList& result);
 
   private slots:
     void requestFinished();
-    void discIdRequestFinished();
 
   private:
     struct Release {

@@ -45,15 +45,16 @@ QNetworkReply* NetworkAccessManager::createRequest(Operation op,
 
 
 NetworkTimeouts::NetworkTimeouts(int timeout_msec, QObject* parent)
-  : m_timeout_msec(timeout_msec) {
+                : QObject(parent), 
+                  m_timeout_msec(timeout_msec) {
 }
 
 void NetworkTimeouts::addReply(QNetworkReply* reply) {
     if (m_timers.contains(reply))
         return;
   
-    connect(reply, SIGNAL(destroyed()), SLOT(ReplyFinished()));
-    connect(reply, SIGNAL(finished()), SLOT(ReplyFinished()));
+    connect(reply, SIGNAL(destroyed()), SLOT(replyFinished()));
+    connect(reply, SIGNAL(finished()), SLOT(replyFinished()));
     m_timers[reply] = startTimer(m_timeout_msec);
 }
 

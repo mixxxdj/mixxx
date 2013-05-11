@@ -20,16 +20,14 @@ TagFetcher::TagFetcher(QObject* parent)
             m_pFingerprintWatcher(NULL),
             m_AcoustidClient(this),
             m_MusicbrainzClient(this) {
-    connect(&m_AcoustidClient, SIGNAL(Finished(int,QString)),
-            this, SLOT(MbidFound(int,QString)));
-    connect(&m_AcoustidClient, SIGNAL(submited(int,QString)),
-            this, SIGNAL(submited(int,QString)));
-    connect(&m_MusicbrainzClient, SIGNAL(Finished(int,MusicBrainzClient::ResultList)),
-            this, SLOT(TagsFetched(int,MusicBrainzClient::ResultList)));
+    connect(&m_AcoustidClient, SIGNAL(finished(int,QString)),
+            this, SLOT(mbidFound(int,QString)));
+    connect(&m_MusicbrainzClient, SIGNAL(finished(int,MusicBrainzClient::ResultList)),
+            this, SLOT(tagsFetched(int,MusicBrainzClient::ResultList)));
 }
 
 QString TagFetcher::getFingerprint(const TrackPointer tio) {
-    return chromaprinter(NULL).getFingerPrint(tio,false);
+    return chromaprinter(NULL).getFingerPrint(tio);
 }
 
 void TagFetcher::startFetch(const TrackPointer track) {
@@ -43,7 +41,7 @@ void TagFetcher::startFetch(const TrackPointer track) {
     m_pFingerprintWatcher = new QFutureWatcher<QString>(this);
     m_pFingerprintWatcher->setFuture(future);
     connect(m_pFingerprintWatcher, SIGNAL(resultReadyAt(int)),
-            SLOT(FingerprintFound(int)));
+            SLOT(fingerprintFound(int)));
 
     foreach (const TrackPointer ptrack, m_tracks) {
         emit fetchProgress(tr("Fingerprinting track"));
@@ -79,7 +77,7 @@ void TagFetcher::fingerprintFound(int index) {
     }
 
     emit fetchProgress(tr("Identifying track"));
-    // qDebug() << "start to look it up on musicbrainz";
+    // qDebug() << "start to look up the MBID";
     m_AcoustidClient.start(index, fingerprint, ptrack->getDuration());
 }
 
@@ -96,6 +94,7 @@ void TagFetcher::mbidFound(int index, const QString& mbid) {
     }
 
     emit fetchProgress(tr("Downloading Metadata"));
+    //qDebug() << "start to fetch tags from MB";
     m_MusicbrainzClient.start(index, mbid);
 }
 
@@ -103,7 +102,7 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
     if (index >= m_tracks.count()) {
         return;
     }
-    // qDebug() << "Tagfetcher got musicbrainz results and now refurbrishs them";
+    // qDebug() << "Tagfetcher got musicbrainz results and now parses them";
     const TrackPointer originalTrack = m_tracks[index];
     QList<TrackPointer> tracksGuessed;
 
@@ -118,6 +117,5 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
         track->setYear(QString::number(result.m_year));
         tracksGuessed << track;
     }
-    // qDebug() << "send this to the world";
     emit resultAvailable(originalTrack, tracksGuessed);
 }

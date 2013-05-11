@@ -22,12 +22,12 @@ class chromaprinter: public QObject {
 
   public:
     chromaprinter(QObject* parent=NULL);
-    QString getFingerPrint(TrackPointer pTrack, bool mixxx=true);
-    QString getFingerPrint(QString location, bool mixxx=true);
+    QString getFingerPrint(TrackPointer pTrack);
+    QString getFingerPrint(QString location);
 
   private:
 
-    QString calcFingerPrint(SoundSourceProxy& soundSource, bool mixxx);
+    QString calcFingerPrint(SoundSourceProxy& soundSource);
     unsigned int m_NumSamples;
     unsigned int m_SampleRate;
 };
