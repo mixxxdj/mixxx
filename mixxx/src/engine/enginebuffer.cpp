@@ -884,14 +884,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
 
     // Update indicators that are only updated after every
-    // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
-    // rateEngine)
+    // sampleRate/kiUpdateRate samples processed.
     if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
-
-        if(rate != m_rateEngine->get()) {
-            m_rateEngine->set(rate);
-        }
 
         //Update the BPM even more slowly
         m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
@@ -903,9 +898,11 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
         m_iSamplesCalculated = 0;
     }
 
-    // Update visual control object, this needs to be done more often than the
-    // rateEngine and playpos slider
+    // Update visual control object, this needs to be done more often
     m_visualPlaypos->set(fFractionalPlaypos);
+    if(rate != m_rateEngine->get()) {
+        m_rateEngine->set(rate);
+    }
 }
 
 void EngineBuffer::hintReader(const double dRate) {
