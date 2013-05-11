@@ -27,23 +27,23 @@ class TagFetcher : public QObject {
   public:
     TagFetcher(QObject* parent = 0);
 
-    void StartFetch(const TrackPointer track);
+    void startFetch(const TrackPointer track);
 
   public slots:
-    void Cancel();
+    void cancel();
 
   signals:
-    void ResultAvailable(const TrackPointer originalTrack,
+    void resultAvailable(const TrackPointer originalTrack,
                          const QList<TrackPointer>& tracksGuessed);
     void fetchProgress(QString);
 
   private slots:
-    void FingerprintFound(int index);
-    void MbidFound(int index, const QString& mbid);
-    void TagsFetched(int index, const MusicBrainzClient::ResultList& result);
+    void fingerprintFound(int index);
+    void mbidFound(int index, const QString& mbid);
+    void tagsFetched(int index, const MusicBrainzClient::ResultList& result);
 
   private:
-    static QString GetFingerprint(const TrackPointer tio);
+    static QString getFingerprint(const TrackPointer tio);
 
     QFutureWatcher<QString>* m_pFingerprintWatcher;
     AcoustidClient m_AcoustidClient;

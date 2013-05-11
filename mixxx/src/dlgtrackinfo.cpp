@@ -8,12 +8,10 @@
 #include "trackinfoobject.h"
 
 DlgTrackInfo::DlgTrackInfo(QWidget* parent,
-                           TagFetcher& TagFetcher,
                            DlgTagFetcher& DlgTagFetcher)
             : QDialog(parent),
               m_pLoadedTrack(NULL),
-              m_DlgTagFetcher(DlgTagFetcher),
-              m_TagFetcher(TagFetcher){
+              m_DlgTagFetcher(DlgTagFetcher) {
     init();
 }
 
@@ -333,6 +331,5 @@ void DlgTrackInfo::reloadTrackMetadata() {
 
 void DlgTrackInfo::fetchTag() {
     m_DlgTagFetcher.init(m_pLoadedTrack);
-    m_TagFetcher.StartFetch(m_pLoadedTrack);
     m_DlgTagFetcher.show();
 }

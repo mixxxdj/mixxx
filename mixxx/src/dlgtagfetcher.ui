@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
  <class>DlgTagFetcher</class>
- <widget class="QDialog" name="DlgTagFetcher">
+ <widget class="QWidget" name="DlgTagFetcher">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -418,16 +418,16 @@
        </spacer>
       </item>
       <item>
-       <widget class="QPushButton" name="btnCancel">
+       <widget class="QPushButton" name="btnApply">
         <property name="text">
-         <string>Cancel</string>
+         <string>Apply</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="btnApply">
+       <widget class="QPushButton" name="btnQuit">
         <property name="text">
-         <string>Apply</string>
+         <string>Close</string>
         </property>
        </widget>
       </item>

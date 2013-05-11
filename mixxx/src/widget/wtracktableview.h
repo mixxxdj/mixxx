@@ -10,7 +10,6 @@
 #include "library/searchthread.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
-#include "musicbrainz/tagfetcher.h"
 #include "dlgtagfetcher.h"
 
 class ControlObjectThreadMain;
@@ -89,7 +88,6 @@ class WTrackTableView : public WLibraryTableView {
     SearchThread m_searchThread;
 
     DlgTrackInfo* m_pTrackInfo;
-    TagFetcher m_TagFetcher;
     DlgTagFetcher m_DlgTagFetcher;
     QModelIndex currentTrackInfoIndex;
 

@@ -28,18 +28,18 @@ TagFetcher::TagFetcher(QObject* parent)
             this, SLOT(TagsFetched(int,MusicBrainzClient::ResultList)));
 }
 
-QString TagFetcher::GetFingerprint(const TrackPointer tio) {
+QString TagFetcher::getFingerprint(const TrackPointer tio) {
     return chromaprinter(NULL).getFingerPrint(tio,false);
 }
 
-void TagFetcher::StartFetch(const TrackPointer track) {
-    Cancel();
+void TagFetcher::startFetch(const TrackPointer track) {
+    cancel();
     // qDebug() << "start to fetch track metadata";
     QList<TrackPointer> tracks;
     tracks.append(track);
     m_tracks = tracks;
 
-    QFuture<QString> future = QtConcurrent::mapped(m_tracks, GetFingerprint);
+    QFuture<QString> future = QtConcurrent::mapped(m_tracks, getFingerprint);
     m_pFingerprintWatcher = new QFutureWatcher<QString>(this);
     m_pFingerprintWatcher->setFuture(future);
     connect(m_pFingerprintWatcher, SIGNAL(resultReadyAt(int)),
@@ -50,7 +50,7 @@ void TagFetcher::StartFetch(const TrackPointer track) {
     }
 }
 
-void TagFetcher::Cancel() {
+void TagFetcher::cancel() {
     // qDebug()<< "Cancel tagfetching";
     if (m_pFingerprintWatcher) {
         m_pFingerprintWatcher->cancel();
@@ -59,12 +59,12 @@ void TagFetcher::Cancel() {
         m_pFingerprintWatcher = NULL;
     }
 
-    m_AcoustidClient.CancelAll();
-    m_MusicbrainzClient.CancelAll();
+    m_AcoustidClient.cancelAll();
+    m_MusicbrainzClient.cancelAll();
     m_tracks.clear();
 }
 
-void TagFetcher::FingerprintFound(int index) {
+void TagFetcher::fingerprintFound(int index) {
     QFutureWatcher<QString>* watcher = reinterpret_cast<QFutureWatcher<QString>*>(sender());
     if (!watcher || index >= m_tracks.count()) {
         return;
@@ -74,16 +74,16 @@ void TagFetcher::FingerprintFound(int index) {
     const TrackPointer ptrack = m_tracks[index];
 
     if (fingerprint.isEmpty()) {
-        emit ResultAvailable(ptrack, QList<TrackPointer>());
+        emit resultAvailable(ptrack, QList<TrackPointer>());
         return;
     }
 
     emit fetchProgress(tr("Identifying track"));
     // qDebug() << "start to look it up on musicbrainz";
-    m_AcoustidClient.Start(index, fingerprint, ptrack->getDuration());
+    m_AcoustidClient.start(index, fingerprint, ptrack->getDuration());
 }
 
-void TagFetcher::MbidFound(int index, const QString& mbid) {
+void TagFetcher::mbidFound(int index, const QString& mbid) {
     if (index >= m_tracks.count()) {
         return;
     }
@@ -91,15 +91,15 @@ void TagFetcher::MbidFound(int index, const QString& mbid) {
     const TrackPointer pTrack = m_tracks[index];
 
     if (mbid.isEmpty()) {
-        emit ResultAvailable(pTrack, QList<TrackPointer>());
+        emit resultAvailable(pTrack, QList<TrackPointer>());
         return;
     }
 
     emit fetchProgress(tr("Downloading Metadata"));
-    m_MusicbrainzClient.Start(index, mbid);
+    m_MusicbrainzClient.start(index, mbid);
 }
 
-void TagFetcher::TagsFetched(int index, const MusicBrainzClient::ResultList& results) {
+void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& results) {
     if (index >= m_tracks.count()) {
         return;
     }
@@ -119,5 +119,5 @@ void TagFetcher::TagsFetched(int index, const MusicBrainzClient::ResultList& res
         tracksGuessed << track;
     }
     // qDebug() << "send this to the world";
-    emit ResultAvailable(originalTrack, tracksGuessed);
+    emit resultAvailable(originalTrack, tracksGuessed);
 }

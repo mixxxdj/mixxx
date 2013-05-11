@@ -26,12 +26,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_searchThread(this) ,
-          m_TagFetcher(NULL) ,
           m_DlgTagFetcher(NULL) ,
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
-    m_pTrackInfo = new DlgTrackInfo(NULL,m_TagFetcher,m_DlgTagFetcher);
+    m_pTrackInfo = new DlgTrackInfo(NULL,m_DlgTagFetcher);
     connect(m_pTrackInfo, SIGNAL(next()),
             this, SLOT(slotNextTrackInfo()));
     connect(m_pTrackInfo, SIGNAL(previous()),
@@ -40,17 +39,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotNextDlgTagFetcher()));
     connect(&m_DlgTagFetcher, SIGNAL(previous()),
             this, SLOT(slotPrevDlgTagFetcher()));
-    connect(&m_TagFetcher, SIGNAL(ResultAvailable(const TrackPointer,const QList<TrackPointer>&)),
-            &m_DlgTagFetcher, SLOT(FetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
-    connect(&m_DlgTagFetcher, SIGNAL(finished()), &m_TagFetcher, SLOT(Cancel()));
-    connect(&m_DlgTagFetcher, SIGNAL(StartSubmit(TrackPointer)),
-            &m_TagFetcher, SLOT(StartSubmit(TrackPointer)));
-    connect(&m_TagFetcher, SIGNAL(submitProgress(QString)),
-            &m_DlgTagFetcher, SLOT(submitProgress(QString)));
-    connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
-            &m_DlgTagFetcher, SLOT(FetchTagProgress(QString)));
-    connect(&m_TagFetcher, SIGNAL(submited(int,QString)),
-            &m_DlgTagFetcher, SLOT(submitFinished(int,QString)));
 
 
     connect(&m_loadTrackMapper, SIGNAL(mapped(QString)),
@@ -503,7 +491,6 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
 
     TrackPointer pTrack = trackModel->getTrack(index);
     // NULL is fine
-    m_TagFetcher.StartFetch(pTrack);
     m_DlgTagFetcher.init(pTrack);
     currentTrackInfoIndex = index;
     m_DlgTagFetcher.show();

@@ -6,20 +6,26 @@
 #include "dlgtagfetcher.h"
 
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
-                    : QDialog(parent),
-                      m_track(NULL) {
+             : QWidget(parent),
+               m_track(NULL),
+               m_TagFetcher(parent) {
     setupUi(this);
 
     connect(btnApply, SIGNAL(clicked()),
             this, SLOT(apply()));
-    connect(btnCancel, SIGNAL(clicked()),
-            this, SLOT(cancel()));
+    connect(btnQuit, SIGNAL(clicked()),
+            this, SLOT(quit()));
     connect(btnPrev, SIGNAL(clicked()),
             this, SIGNAL(previous()));
     connect(btnNext, SIGNAL(clicked()),
             this, SIGNAL(next()));
     connect(results, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
             this, SLOT(ResultSelected()));
+
+    connect(&m_TagFetcher, SIGNAL(resultAvailable(const TrackPointer,const QList<TrackPointer>&)),
+            this, SLOT(fetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
+    connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
+            this, SLOT(fetchTagProgress(QString)));
 
     // Resize columns, this can't be set in the ui file
     results->setColumnWidth(0, 50);  // Track column
@@ -38,7 +44,8 @@ void DlgTagFetcher::init(const TrackPointer track) {
     results->clear();
     m_track = track;
     m_data = Data();
-    UpdateStack();
+    m_TagFetcher.startFetch(m_track);
+    updateStack();
 }
 
 void DlgTagFetcher::apply() {
@@ -49,22 +56,19 @@ void DlgTagFetcher::apply() {
         m_track->setTitle(m_data.m_results[resultIndex]->getTitle());
         m_track->setYear(m_data.m_results[resultIndex]->getYear());
         m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
-        m_track.clear();
     }
-    emit(finished());
-    accept();
 }
 
-void DlgTagFetcher::cancel() {
-    emit(finished());
-    reject();
+void DlgTagFetcher::quit() {
+    m_TagFetcher.cancel();
+    close();
 }
 
-void DlgTagFetcher::FetchTagProgress(QString text) {
+void DlgTagFetcher::fetchTagProgress(QString text) {
     loading->setText(text);
 }
 
-void DlgTagFetcher::FetchTagFinished(const TrackPointer track,
+void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
                                      const QList<TrackPointer>& tracks) {
     // check if the answer is for this track
     if (m_track->getLocation() != track->getLocation()) {
@@ -74,10 +78,10 @@ void DlgTagFetcher::FetchTagFinished(const TrackPointer track,
     m_data.m_pending = false;
     m_data.m_results = tracks;
     // qDebug() << "number of results = " << tracks.size();
-    UpdateStack();
+    updateStack();
 }
 
-void DlgTagFetcher::UpdateStack() {
+void DlgTagFetcher::updateStack() {
     if (m_data.m_pending) {
         stack->setCurrentWidget(loading_page);
         return;
@@ -88,19 +92,16 @@ void DlgTagFetcher::UpdateStack() {
     btnApply->setEnabled(true);
     stack->setCurrentWidget(results_page);
 
-    // Clear tree widget
     results->clear();
 
-    // Put the original tags at the top
-    AddDivider(tr("Original tags"), results);
-    AddTrack(m_track, -1, results);
+    addDivider(tr("Original tags"), results);
+    addTrack(m_track, -1, results);
 
-    // Fill tree view with songs
-    AddDivider(tr("Suggested tags"), results);
+    addDivider(tr("Suggested tags"), results);
 
     int trackIndex = 0;
     foreach (const TrackPointer track, m_data.m_results) {
-        AddTrack(track, trackIndex++, results);
+        addTrack(track, trackIndex++, results);
     }
     
     // Find the item that was selected last time
@@ -114,7 +115,7 @@ void DlgTagFetcher::UpdateStack() {
     }
 }
 
-void DlgTagFetcher::AddTrack(const TrackPointer track, int resultIndex,
+void DlgTagFetcher::addTrack(const TrackPointer track, int resultIndex,
                              QTreeWidget* parent) const {
     QStringList values;
     values << track->getTrackNumber() << track->getYear() << track->getTitle()
@@ -125,7 +126,7 @@ void DlgTagFetcher::AddTrack(const TrackPointer track, int resultIndex,
     item->setData(0, Qt::TextAlignmentRole, Qt::AlignRight);
 }
 
-void DlgTagFetcher::AddDivider(const QString& text, QTreeWidget* parent) const {
+void DlgTagFetcher::addDivider(const QString& text, QTreeWidget* parent) const {
     QTreeWidgetItem* item = new QTreeWidgetItem(parent);
     item->setFirstColumnSpanned(true);
     item->setText(0, text);
@@ -137,7 +138,7 @@ void DlgTagFetcher::AddDivider(const QString& text, QTreeWidget* parent) const {
     item->setFont(0, bold_font);
 }
 
-void DlgTagFetcher::ResultSelected() {
+void DlgTagFetcher::resultSelected() {
   if (!results->currentItem())
     return;
 

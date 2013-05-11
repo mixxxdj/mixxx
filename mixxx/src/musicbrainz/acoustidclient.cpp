@@ -26,11 +26,11 @@ AcoustidClient::AcoustidClient(QObject* parent)
                 m_timeouts(m_DefaultTimeout, this) {
 }
 
-void AcoustidClient::SetTimeout(int msec) {
+void AcoustidClient::setTimeout(int msec) {
     m_timeouts.SetTimeout(msec);
 }
 
-void AcoustidClient::Start(int id, const QString& fingerprint, int duration) {
+void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     QUrl url;
     url.addQueryItem("format", "xml");
     url.addQueryItem("client", CLIENT_APIKEY);
@@ -50,18 +50,18 @@ void AcoustidClient::Start(int id, const QString& fingerprint, int duration) {
 }
 
 
-void AcoustidClient::Cancel(int id) {
+void AcoustidClient::cancel(int id) {
     QNetworkReply* reply = m_requests.key(id);
     m_requests.remove(reply);
     delete reply;
 }
 
-void AcoustidClient::CancelAll() {
+void AcoustidClient::cancelAll() {
     qDeleteAll(m_requests.keys());
     m_requests.clear();
 }
 
-void AcoustidClient::RequestFinished() {
+void AcoustidClient::requestFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply)
         return;
@@ -73,7 +73,7 @@ void AcoustidClient::RequestFinished() {
     int id = m_requests.take(reply);
     
     if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-        emit Finished(id, QString());
+        emit finished(id, QString());
         return;
     }
 
@@ -82,15 +82,15 @@ void AcoustidClient::RequestFinished() {
     while (!reader.atEnd()) {
         if (reader.readNext() == QXmlStreamReader::StartElement 
             && reader.name()== "results") {
-                ID = ParseResult(reader);
+                ID = parseResult(reader);
             }
     }
 
     // qDebug() << "found something " << ID;
-    emit Finished(id, ID);
+    emit finished(id, ID);
 }
 
-QString AcoustidClient::ParseResult(QXmlStreamReader& reader){
+QString AcoustidClient::parseResult(QXmlStreamReader& reader){
 
     while (!reader.atEnd()) {
         QXmlStreamReader::TokenType type = reader.readNext();

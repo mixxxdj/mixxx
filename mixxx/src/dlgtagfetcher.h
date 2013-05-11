@@ -1,15 +1,16 @@
 #ifndef DLGTAGFETCHER_H
 #define DLGTAGFETCHER_H
 
-#include <QDialog>
+#include <QWidget>
 #include "ui_dlgtagfetcher.h"
 #include "trackinfoobject.h"
+#include "musicbrainz/tagfetcher.h"
 
 
 class QTreeWidget;
 
 
-class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
+class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
   Q_OBJECT
 
   public:
@@ -21,23 +22,21 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
   signals:
     void next();
     void previous();
-    void finished();
-    void StartSubmit(TrackPointer);
 
   public slots:
-    void FetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);
-    void ResultSelected();
-    void FetchTagProgress(QString);
+    void fetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);
+    void resultSelected();
+    void fetchTagProgress(QString);
 
   private slots:
     void apply();
-    void cancel();
+    void quit();
 
   private:
 
-    void UpdateStack();
-    void AddDivider(const QString& text, QTreeWidget* parent) const;
-    void AddTrack(const TrackPointer track, int resultIndex,
+    void updateStack();
+    void addDivider(const QString& text, QTreeWidget* parent) const;
+    void addTrack(const TrackPointer track, int resultIndex,
                   QTreeWidget* parent) const;
 
   private:
@@ -52,6 +51,7 @@ class DlgTagFetcher : public QDialog, public Ui::DlgTagFetcher {
     TrackPointer m_track;
     Data m_data;
     QString m_progress;
+    TagFetcher m_TagFetcher;
 };
 
 #endif // DLGTAGFETCHER_H

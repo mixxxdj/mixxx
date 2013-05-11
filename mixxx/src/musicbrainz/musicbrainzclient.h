@@ -70,28 +70,28 @@ class MusicBrainzClient : public QObject {
 
     // Starts a request and returns immediately.  Finished() will be emitted
     // later with the same ID.
-    void Start(int id, const QString& mbid);
-    void StartDiscIdRequest(const QString& discid);
-    static void ConsumeCurrentElement(QXmlStreamReader& reader);
+    void start(int id, const QString& mbid);
+    void startDiscIdRequest(const QString& discid);
+    static void consumeCurrentElement(QXmlStreamReader& reader);
 
     // Cancels the request with the given ID.  Finished() will never be emitted
     // for that ID.  Does nothing if there is no request with the given ID.
-    void Cancel(int id);
+    void cancel(int id);
 
     // Cancels all requests.  Finished() will never be emitted for any pending
     // requests.
-    void CancelAll();
+    void cancelAll();
 
   signals:
     // Finished signal emitted when fechting songs tags
-    void Finished(int id, const MusicBrainzClient::ResultList& result);
+    void finished(int id, const MusicBrainzClient::ResultList& result);
     // Finished signal emitted when fechting album's songs tags using DiscId
-    void Finished(const QString& artist, const QString album,
+    void finished(const QString& artist, const QString album,
                   const MusicBrainzClient::ResultList& result);
 
   private slots:
-    void RequestFinished();
-    void DiscIdRequestFinished();
+    void requestFinished();
+    void discIdRequestFinished();
 
   private:
     struct Release {
@@ -110,10 +110,10 @@ class MusicBrainzClient : public QObject {
         int m_year;
     };
 
-    static ResultList ParseTrack(QXmlStreamReader& reader);
-    static void ParseArtist(QXmlStreamReader& reader, QString& artist);
-    static Release ParseRelease(QXmlStreamReader& reader);
-    static ResultList UniqueResults(const ResultList& results);
+    static ResultList parseTrack(QXmlStreamReader& reader);
+    static void parseArtist(QXmlStreamReader& reader, QString& artist);
+    static Release parseRelease(QXmlStreamReader& reader);
+    static ResultList uniqueResults(const ResultList& results);
 
   private:
     static const QString m_TrackUrl;
