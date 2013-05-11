@@ -493,7 +493,7 @@ void RateControl::slotSyncStateChanged(double state) {
     }
 }
 
-double RateControl::getRawRate() {
+double RateControl::getRawRate() const {
     return m_pRateSlider->get() *
         m_pRateRange->get() *
         m_pRateDir->get();

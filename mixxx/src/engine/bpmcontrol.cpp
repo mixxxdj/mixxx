@@ -616,6 +616,10 @@ double BpmControl::getPhaseOffset(double reference_position) {
     return dNewPlaypos - dThisPosition;
 }
 
+void BpmControl::setEngineBpm(double bpm) {
+    m_pEngineBpm->set(bpm);
+}
+
 void BpmControl::slotAdjustBpm() {
     if (m_iSyncState == SYNC_SLAVE) {
         return;

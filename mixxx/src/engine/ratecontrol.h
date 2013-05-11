@@ -82,8 +82,8 @@ public:
   private:
     QString m_sGroup;
   
-    double getJogFactor();
-    double getWheelFactor();
+    double getJogFactor() const;
+    double getWheelFactor() const;
 
     /** Set rate change of the temporary pitch rate */
     void setRateTemp(double v);
