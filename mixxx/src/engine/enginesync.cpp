@@ -108,9 +108,15 @@ void EngineSync::disconnectMaster() {
 
 void EngineSync::disableDeckMaster(QString deck) {
     if (deck == "") {
-        if (m_sSyncSource != "[Master]") {
-            ControlObject *sync_state = ControlObject::getControl(ConfigKey(m_sSyncSource, "sync_state"));
-            sync_state->set(SYNC_SLAVE);
+        foreach (QString deck, m_sDeckList) {
+            if (deck != "[Master]") {
+                // Unset master on *all* other decks -- sometimes we end up with two masters
+                // for some reason.
+                ControlObject *sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
+                if (sync_state->get() == SYNC_MASTER) {
+                    sync_state->set(SYNC_SLAVE);
+                }
+            }
         }
     } else {
         qDebug() << "disabling" << deck << "as master";
@@ -364,7 +370,7 @@ void EngineSync::slotDeckStateChanged(double state) {
         // Figure out who the old master was and turn them off
         qDebug() << "disabling previous master " << m_sSyncSource;
         if (m_sSyncSource != "[Master]") {
-            disableDeckMaster(m_sSyncSource);
+            disableDeckMaster("");
         }    
         //qDebug() << "setting" << group << "to master";
         setDeckMaster(group);

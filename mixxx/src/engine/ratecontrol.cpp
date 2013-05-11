@@ -179,14 +179,14 @@ RateControl::RateControl(const char* _group,
     m_iSyncState = SYNC_NONE;
 
 #ifdef __VINYLCONTROL__
-    ControlObject* pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
+    m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(pVCEnabled);
-    connect(pVCEnabled, SIGNAL(valueChanged(double)),
+    Q_ASSERT(m_pVCEnabled);
+    connect(m_pVCEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlVinyl(double)),
             Qt::DirectConnection);
-    connect(pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
+    connect(m_pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotControlVinyl(double)),
             Qt::DirectConnection);
 
@@ -481,6 +481,8 @@ void RateControl::slotSyncStateChanged(double state) {
         case SYNC_SLAVE:
             m_pSyncMasterEnabled->set(false);
             m_pSyncSlaveEnabled->set(true);
+            // Can't be both slave and vinyl controlled at the same time.
+            m_pVCEnabled->set(false);
             break;
         case SYNC_MASTER:
             m_pSyncMasterEnabled->set(true);
@@ -784,6 +786,11 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::slotControlVinyl(double toggle) {
     m_bVinylControlEnabled = (bool)toggle;
+    if (toggle) {
+        if (m_iSyncState == SYNC_SLAVE) {
+            m_pSyncState->set(SYNC_NONE);
+        }
+    }
 }
 
 void RateControl::slotControlVinylScratching(double toggle) {

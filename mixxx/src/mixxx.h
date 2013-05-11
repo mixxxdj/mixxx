@@ -84,6 +84,10 @@ class MixxxApp : public QMainWindow {
     void slotCheckboxVinylControl(bool toggle);
     void slotControlVinylControl2(double toggle);
     void slotCheckboxVinylControl2(bool toggle);
+    void slotControlVinylControl3(double toggle);
+    void slotCheckboxVinylControl3(bool toggle);
+    void slotControlVinylControl4(double toggle);
+    void slotCheckboxVinylControl4(bool toggle);
     /** toggle recording - Don't #ifdef this because MOC is dumb**/
     void slotOptionsRecord(bool toggle);
     /** toogle keyboard on-off */
@@ -189,6 +193,8 @@ class MixxxApp : public QMainWindow {
     QMenu *m_pVinylControlMenu;
     QAction *m_pOptionsVinylControl;
     QAction *m_pOptionsVinylControl2;
+    QAction *m_pOptionsVinylControl3;
+    QAction *m_pOptionsVinylControl4;
 #endif
     QAction *m_pOptionsRecord;
     QAction *m_pOptionsKeyboard;

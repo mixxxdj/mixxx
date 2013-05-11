@@ -117,6 +117,7 @@ public:
 
     ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
+    ControlObject* m_pVCEnabled;
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;
