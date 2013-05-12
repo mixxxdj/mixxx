@@ -191,7 +191,7 @@ bool EngineSync::setDeckMaster(QString deck) {
         if (m_pSourceRate == NULL) {
             qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
             return false;
-        }
+        }       
         connect(m_pSourceRate, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotSourceRateChanged(double)),
                 Qt::DirectConnection);
@@ -209,6 +209,7 @@ bool EngineSync::setDeckMaster(QString deck) {
         qDebug() << "----------------------------setting new master" << deck;
         m_sSyncSource = deck;
         m_pSyncInternalEnabled->set(FALSE);
+        slotSourceRateChanged(m_pSourceRate->get());
         // This is not redundant, I swear.  Make sure lights are all up to date
         ControlObject::getControl(ConfigKey(deck, "sync_master"))->set(TRUE);
         ControlObject::getControl(ConfigKey(deck, "sync_slave"))->set(FALSE);
@@ -267,12 +268,13 @@ QString EngineSync::chooseNewMaster(QString dontpick="") {
 void EngineSync::slotSourceRateChanged(double rate_engine) {
     //qDebug() << "got a true rate update";
     //master buffer can be null due to timing issues
-    if (m_pMasterBuffer == NULL)
+    if (m_pMasterBuffer == NULL) {
         qDebug() << "but master buffer is null";
+    }
     
     //qDebug() << "true rate: " << rate_engine << " source " << m_dSourceRate;
     
-    if (rate_engine != m_dSourceRate && m_pMasterBuffer != NULL) {
+    if (rate_engine != 0 && rate_engine != m_dSourceRate && m_pMasterBuffer != NULL) {
         m_dSourceRate = rate_engine;
         
         double filebpm = m_pMasterBuffer->getFileBpm();
@@ -280,6 +282,7 @@ void EngineSync::slotSourceRateChanged(double rate_engine) {
         //qDebug() << "file bpm " << filebpm;
         //qDebug()<< "announcing a master bpm of" <<  m_dMasterBpm;
         
+        m_pSyncRateSlider->set(m_dMasterBpm);
         m_pMasterBpm->set(m_dMasterBpm); //this will trigger all of the slaves to change rate
     }
 }

@@ -384,7 +384,10 @@ void PlayerManager::slotLoadToSampler(QString location, int sampler) {
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack)
 {
-    int num_decks = m_decks.length();
+    int num_decks = m_pCOSkinNumDecks->get();
+    if (num_decks == 0) {
+        num_decks = m_decks.size();
+    }
     // Start with the inner two decks and work our way out.
     int deck_l = (num_decks + 1) / 2 - 1;
     int deck_r = deck_l + 1;
