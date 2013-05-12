@@ -113,7 +113,7 @@ void EngineSync::disableDeckMaster(QString deck) {
                 // Unset master on *all* other decks -- sometimes we end up with two masters
                 // for some reason.
                 ControlObject *sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
-                if (sync_state->get() == SYNC_MASTER) {
+                if (sync_state != NULL && sync_state->get() == SYNC_MASTER) {
                     sync_state->set(SYNC_SLAVE);
                 }
             }
@@ -274,7 +274,7 @@ void EngineSync::slotSourceRateChanged(double rate_engine) {
     
     //qDebug() << "true rate: " << rate_engine << " source " << m_dSourceRate;
     
-    if (rate_engine != 0 && rate_engine != m_dSourceRate && m_pMasterBuffer != NULL) {
+    if (rate_engine != m_dSourceRate && m_pMasterBuffer != NULL) {
         m_dSourceRate = rate_engine;
         
         double filebpm = m_pMasterBuffer->getFileBpm();
@@ -282,7 +282,9 @@ void EngineSync::slotSourceRateChanged(double rate_engine) {
         //qDebug() << "file bpm " << filebpm;
         //qDebug()<< "announcing a master bpm of" <<  m_dMasterBpm;
         
-        m_pSyncRateSlider->set(m_dMasterBpm);
+        if (m_dMasterBpm != 0) {
+            m_pSyncRateSlider->set(m_dMasterBpm);
+        }
         m_pMasterBpm->set(m_dMasterBpm); //this will trigger all of the slaves to change rate
     }
 }
@@ -370,13 +372,16 @@ void EngineSync::slotDeckStateChanged(double state) {
     
     // In the following logic, m_sSyncSourcea acts like "previous sync source".
     if (state == SYNC_MASTER) {
+        // TODO: don't allow setting of master if not playing
         // Figure out who the old master was and turn them off
-        qDebug() << "disabling previous master " << m_sSyncSource;
-        if (m_sSyncSource != "[Master]") {
-            disableDeckMaster("");
-        }    
-        //qDebug() << "setting" << group << "to master";
+        QString old_master = m_sSyncSource;
+        //qDebug() << "setting" << group << "to master";        
         setDeckMaster(group);
+        qDebug() << "disabling previous master " << old_master;
+        if (old_master != "[Master]") {
+            //disableDeckMaster("");
+            disableDeckMaster(old_master);
+        } 
     } else if (state == SYNC_SLAVE) {
         // Was this deck master before?  If so do a handoff
         ControlObject *sync_state = ControlObject::getControl(ConfigKey(group, "sync_state"));

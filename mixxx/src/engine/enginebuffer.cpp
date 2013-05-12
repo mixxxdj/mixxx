@@ -709,6 +709,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
             m_iCrossFadeSamples = 0;
         }
+        
+        // It doesn't make sense to me to use the position before update, but this
+        // results in better sync.
+        if (m_pBpmControl->getSyncState() == SYNC_MASTER) {
+            m_beatDistance->set(m_pBpmControl->getBeatDistance());
+        }
 
         m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
@@ -763,11 +769,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 m_pRateControl->notifySeek(m_filepos_play);
             }
         }
-        if (m_pBpmControl->getSyncState() == SYNC_MASTER) {
-            m_beatDistance->set(m_pBpmControl->getBeatDistance());
-        }
+        
         m_engineLock.unlock();
-
 
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
