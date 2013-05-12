@@ -5,6 +5,7 @@
 #include <QAtomicInt>
 #include <QObject>
 
+// for look free access, this value has to be >= the number of value using threads
 const int cReaderSlotCnt = 7;
 
 template<typename T>
@@ -40,7 +41,7 @@ class ControlObjectRingValue {
     QAtomicInt m_readerSlots;
 };
 
-// Ring buffer based implementation for all Types > void*
+// Ring buffer based implementation for all Types sizeof(T) > sizeof(void*)
 template<typename T, bool ATOMIC = false>
 class ControlObjectValue {
   public:
@@ -84,6 +85,8 @@ class ControlObjectValue {
     }
 
   private:
+    // In worst case, each reader can consume a reader slot from a different ring element.
+    // In this case there is still one ring element available for writing.
     ControlObjectRingValue<T> m_ring[cReaderSlotCnt+1];
     QAtomicInt m_readIndex;
     QAtomicInt m_writeIndex;
