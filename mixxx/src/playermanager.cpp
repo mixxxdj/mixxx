@@ -384,18 +384,22 @@ void PlayerManager::slotLoadToSampler(QString location, int sampler) {
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack)
 {
-    QList<Deck*>::iterator it_b = m_decks.begin();
-    QList<Deck*>::iterator it_e = m_decks.end();
-    bool try_b = true;
-    while (it_b != it_e) {
-        Deck* pDeck = *it_b;
-        if (try_b) {
-            ++it_b;
+    int num_decks = m_decks.length();
+    // Start with the inner two decks and work our way out.
+    int deck_l = (num_decks + 1) / 2 - 1;
+    int deck_r = deck_l + 1;
+    bool try_l = true;
+    // 
+    while (deck_l >= 0 || deck_r < num_decks) {
+        Deck* pDeck;
+        if (try_l && deck_l >= 0) {
+            pDeck = m_decks[deck_l];
+            --deck_l;
         } else {
-            --it_e;
-            pDeck = *it_e;
+            pDeck = m_decks[deck_r];
+            ++deck_r;
         }
-        try_b = !try_b;
+        try_l = !try_l;
         
         ControlObject* vinylControlEnabled =
                 ControlObject::getControl(ConfigKey(pDeck->getGroup(), 
