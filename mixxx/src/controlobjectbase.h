@@ -4,9 +4,14 @@
 
 #include <QAtomicInt>
 #include <QObject>
+#include <limits>
 
 // for look free access, this value has to be >= the number of value using threads
-const int cReaderSlotCnt = 7;
+// value must be a fraction of an integer
+const int cRingSize = 8;
+// there should always be one element free for writing
+const int cReaderSlotCnt = cRingSize - 1;
+
 
 template<typename T>
 class ControlObjectRingValue {
@@ -48,7 +53,7 @@ class ControlObjectValue {
     inline T getValue() {
         T value = T();
         unsigned int index = (unsigned int)m_readIndex
-                % (cReaderSlotCnt + 1);
+                % (cRingSize);
         while (m_ring[index].tryGet(&value) == false) {
             // We are here if
             // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
@@ -58,7 +63,7 @@ class ControlObjectValue {
             // m_currentIndex and the writers have written cReaderSlotCnt times so that the
             // formally current value is locked again for writing.
             // In both cases reading the less recent value will fix it.
-            index = (index - 1) % (cReaderSlotCnt + 1);
+            index = (index - 1) % (cRingSize);
         }
         return value;
     }
@@ -69,7 +74,7 @@ class ControlObjectValue {
         unsigned int index;
         do {
             index = (unsigned int)m_writeIndex.fetchAndAddAcquire(1)
-                    % (cReaderSlotCnt + 1);
+                    % (cRingSize);
             // This will be repeated if the value is locked
             // 1) by an other writer writing at the same time or
             // 2) a delayed reader is still blocking the formerly current value
@@ -82,12 +87,13 @@ class ControlObjectValue {
     ControlObjectValue()
         : m_readIndex(0),
           m_writeIndex(1) {
+        Q_ASSERT((std::numeric_limits<unsigned int>::max() % cRingSize) == (cRingSize - 1));
     }
 
   private:
     // In worst case, each reader can consume a reader slot from a different ring element.
     // In this case there is still one ring element available for writing.
-    ControlObjectRingValue<T> m_ring[cReaderSlotCnt+1];
+    ControlObjectRingValue<T> m_ring[cRingSize];
     QAtomicInt m_readIndex;
     QAtomicInt m_writeIndex;
 };
