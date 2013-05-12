@@ -92,7 +92,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
         errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
         return;
     }
-          }
+}
 
 EngineShoutcast::~EngineShoutcast() {
     if (m_encoder) {
@@ -380,6 +380,7 @@ bool EngineShoutcast::serverConnect() {
      */
     if(m_encoder == NULL){
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
+        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
         return false;
     }
     const int iMaxTries = 3;
@@ -404,6 +405,8 @@ bool EngineShoutcast::serverConnect() {
         if (m_pShout)
             shout_close(m_pShout);
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
+        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+        return false;
     }
     if (m_bQuit) {
         if (m_pShout)
