@@ -453,8 +453,6 @@ class Vamp(Feature):
             build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
             self.INTERNAL_LINK = True
 
-        build.env.Append(CPPDEFINES = '__VAMP__')
-
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
             # Optionally link libdl and libX11. Required for some distros.
