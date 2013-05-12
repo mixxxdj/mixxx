@@ -77,8 +77,10 @@ void EngineSideChain::writeSamples(const CSAMPLE* newBuffer, int buffer_size) {
         Counter("EngineSideChain::writeSamples buffer overrun").increment();
     }
 
-    // Signal to the sidechain that samples are available.
-    m_waitForSamples.wakeAll();
+    if (m_sampleFifo.writeAvailable() < SIDECHAIN_BUFFER_SIZE/5) {
+        // Signal to the sidechain that samples are available.
+        m_waitForSamples.wakeAll();
+    }
 }
 
 void EngineSideChain::run() {
