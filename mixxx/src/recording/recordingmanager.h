@@ -60,6 +60,7 @@ class RecordingManager : public QObject
     void slotBytesRecorded(int);
 
   private slots:
+    void slotSetRecording(bool recording);
     void slotToggleRecording(double v);
 
   private:

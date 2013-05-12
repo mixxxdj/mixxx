@@ -33,8 +33,6 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
-#include "engine/sidechain/enginesidechain.h"
-#include "engine/sidechain/engineshoutcast.h"
 #include "library/library.h"
 #include "library/libraryscanner.h"
 #include "library/librarytablemodel.h"
@@ -43,6 +41,7 @@
 #include "playermanager.h"
 #include "recording/defs_recording.h"
 #include "recording/recordingmanager.h"
+#include "shoutcast/shoutcastmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundmanager.h"
@@ -158,6 +157,9 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPrefDlg = NULL;
     m_pControllerManager = NULL;
     m_pRecordingManager = NULL;
+#ifdef __SHOUTCAST__
+    m_pShoutcastManager = NULL;
+#endif
 
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
@@ -266,10 +268,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
-
 #ifdef __SHOUTCAST__
-    // TODO(XXX): Add this to a ShoutcastManager or something.
-    m_pEngine->getSideChain()->addSideChainWorker(new EngineShoutcast(m_pConfig));
+    m_pShoutcastManager = new ShoutcastManager(m_pConfig, m_pEngine);
 #endif
 
     // Initialize player device
@@ -601,6 +601,12 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete RecordingManager " << qTime.elapsed();
     delete m_pRecordingManager;
 
+#ifdef __SHOUTCAST__
+    // ShoutcastManager depends on config, engine
+    qDebug() << "delete ShoutcastManager " << qTime.elapsed();
+    delete m_pShoutcastManager;
+#endif
+
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
@@ -609,10 +615,8 @@ MixxxApp::~MixxxApp()
     // stuff. We only really want to save it here, but the first one was just
     // a precaution. The earlier one can be removed when stuff is more stable
     // at exit.
-
-    //Disable shoutcast so when Mixxx starts again it will not connect
-    m_pConfig->set(ConfigKey("[Shoutcast]", "enabled"),0);
     m_pConfig->Save();
+
     delete m_pPrefDlg;
 
     qDebug() << "delete config " << qTime.elapsed();
@@ -1005,15 +1009,12 @@ void MixxxApp::initActions()
     m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
     m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsShoutcast->setCheckable(true);
-    bool broadcastEnabled =
-        (m_pConfig->getValueString(ConfigKey("[Shoutcast]", "enabled"))
-            .toInt() == 1);
-
-    m_pOptionsShoutcast->setChecked(broadcastEnabled);
+    m_pOptionsShoutcast->setChecked(m_pShoutcastManager->isEnabled());
     m_pOptionsShoutcast->setStatusTip(shoutcastText);
     m_pOptionsShoutcast->setWhatsThis(buildWhatsThis(shoutcastTitle, shoutcastText));
-    connect(m_pOptionsShoutcast, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsShoutcast(bool)));
+
+    connect(m_pOptionsShoutcast, SIGNAL(triggered(bool)),
+            m_pShoutcastManager, SLOT(setEnabled(bool)));
 #endif
 
     QString mayNotBeSupported = tr("May not be supported on all skins.");
@@ -1071,7 +1072,7 @@ void MixxxApp::initActions()
     m_pOptionsRecord->setStatusTip(recordText);
     m_pOptionsRecord->setWhatsThis(buildWhatsThis(recordTitle, recordText));
     connect(m_pOptionsRecord, SIGNAL(toggled(bool)),
-            this, SLOT(slotOptionsRecord(bool)));
+            m_pRecordingManager, SLOT(slotSetRecording(bool)));
 
     QString reloadSkinTitle = tr("&Reload Skin");
     QString reloadSkinText = tr("Reload the skin");
@@ -1342,17 +1343,6 @@ void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 #ifdef __VINYLCONTROL__
     ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set((double)toggle);
 #endif
-}
-
-//Also can't ifdef this (MOC again)
-void MixxxApp::slotOptionsRecord(bool toggle)
-{
-    //Only start recording if checkbox was set to true and recording is inactive
-    if(toggle && !m_pRecordingManager->isRecordingActive()) //start recording
-        m_pRecordingManager->startRecording();
-    //Only stop recording if checkbox was set to false and recording is active
-    else if(!toggle && m_pRecordingManager->isRecordingActive())
-        m_pRecordingManager->stopRecording();
 }
 
 void MixxxApp::slotHelpAbout() {
@@ -1723,24 +1713,8 @@ void MixxxApp::slotEnableRescanLibraryAction()
 void MixxxApp::slotOptionsMenuShow(){
     // Check recording if it is active.
     m_pOptionsRecord->setChecked(m_pRecordingManager->isRecordingActive());
-
 #ifdef __SHOUTCAST__
-    bool broadcastEnabled =
-        (m_pConfig->getValueString(ConfigKey("[Shoutcast]", "enabled")).toInt()
-            == 1);
-    if (broadcastEnabled)
-      m_pOptionsShoutcast->setChecked(true);
-    else
-      m_pOptionsShoutcast->setChecked(false);
-#endif
-}
-
-void MixxxApp::slotOptionsShoutcast(bool value){
-#ifdef __SHOUTCAST__
-    m_pOptionsShoutcast->setChecked(value);
-    m_pConfig->set(ConfigKey("[Shoutcast]", "enabled"),ConfigValue(value));
-#else
-    Q_UNUSED(value);
+    m_pOptionsShoutcast->setChecked(m_pShoutcastManager->isEnabled());
 #endif
 }
 

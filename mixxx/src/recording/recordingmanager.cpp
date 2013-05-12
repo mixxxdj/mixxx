@@ -57,6 +57,14 @@ QString RecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
     return formatted;
 }
 
+void RecordingManager::slotSetRecording(bool recording) {
+    if (recording && !isRecordingActive()) {
+        startRecording();
+    } else if (!recording && isRecordingActive()) {
+        stopRecording();
+    }
+}
+
 void RecordingManager::slotToggleRecording(double v) {
     if (v > 0) {
         if (isRecordingActive()) {
