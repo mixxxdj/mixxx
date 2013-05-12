@@ -19,7 +19,6 @@
 #define ENGINESHOUTCAST_H
 
 #include <QObject>
-#include <QMutex>
 #include <QMessageBox>
 #include <QTextCodec>
 
@@ -97,7 +96,6 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     ControlObjectThread* m_pMasterSamplerate;
     ControlObjectThread* m_pShoutcastStatus;
     volatile bool m_bQuit;
-    QMutex m_shoutMutex;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QByteArray m_baCustomSong;

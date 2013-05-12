@@ -16,7 +16,6 @@
  ***************************************************************************/
 
 #include <QDebug>
-#include <QMutexLocker>
 
 #include <signal.h>
 
@@ -56,7 +55,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pShoutcastStatus(new ControlObjectThread(
               new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status")))),
           m_bQuit(false),
-          m_shoutMutex(QMutex::Recursive),
           m_custom_metadata(false),
           m_firstCall(false),
           m_format_is_mp3(false),
@@ -97,8 +95,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           }
 
 EngineShoutcast::~EngineShoutcast() {
-    QMutexLocker locker(&m_shoutMutex);
-
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
@@ -119,9 +115,7 @@ EngineShoutcast::~EngineShoutcast() {
     shout_shutdown();
 }
 
-bool EngineShoutcast::serverDisconnect()
-{
-    QMutexLocker locker(&m_shoutMutex);
+bool EngineShoutcast::serverDisconnect() {
     if (m_encoder){
         m_encoder->flush();
         delete m_encoder;
@@ -138,7 +132,6 @@ bool EngineShoutcast::serverDisconnect()
 }
 
 bool EngineShoutcast::isConnected() {
-    QMutexLocker locker(&m_shoutMutex);
     if (m_pShout) {
         m_iShoutStatus = shout_get_connected(m_pShout);
         if (m_iShoutStatus == SHOUTERR_CONNECTED)
@@ -154,9 +147,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
     return string.toLatin1();
 }
 
-void EngineShoutcast::updateFromPreferences()
-{
-    QMutexLocker locker(&m_shoutMutex);
+void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
     m_pUpdateShoutcastFromPrefs->slotSet(0.0f);
@@ -369,9 +360,7 @@ void EngineShoutcast::updateFromPreferences()
     }
 }
 
-bool EngineShoutcast::serverConnect()
-{
-    QMutexLocker locker(&m_shoutMutex);
+bool EngineShoutcast::serverConnect() {
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
@@ -448,7 +437,6 @@ bool EngineShoutcast::serverConnect()
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
-    QMutexLocker locker(&m_shoutMutex);
     int ret;
 
     if (!m_pShout)
@@ -499,50 +487,54 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 }
 
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
-    QMutexLocker locker(&m_shoutMutex);
     //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
     bool prefEnabled = (m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt() == 1);
 
-    if (prefEnabled) {
-        if(!isConnected()){
-            //Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
-            updateFromPreferences();
-
-            if(serverConnect()) {
-                infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
-            } else {
-                errorDialog(tr("Mixxx could not connect to streaming server"),
-                            tr("Please check your connection to the Internet and verify that your username and password are correct."));
-            }
-        }
-        //send to shoutcast, if connection has been established
-        if (m_iShoutStatus != SHOUTERR_CONNECTED)
-            return;
-
-        if (iBufferSize > 0 && m_encoder){
-            m_encoder->encodeBuffer(pBuffer, iBufferSize); //encode and send to shoutcast
-        }
-        //Check if track has changed and submit its new metadata to shoutcast
-        if (metaDataHasChanged())
-            updateMetaData();
-
-        if (m_pUpdateShoutcastFromPrefs->get() > 0.0f){
-            /*
-             * You cannot change bitrate, hostname, etc while connected to a stream
-             */
+    if (!prefEnabled) {
+        if (isConnected()) {
+            // We are conneced but shoutcast is disabled. Disconnect.
             serverDisconnect();
-            updateFromPreferences();
-            serverConnect();
+            infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
         }
-    } else if (isConnected()) {
-        // if shoutcast is disabled but we are connected, disconnect
+        return;
+    }
+
+    // If we are here then the user wants to be connected (shoutcast is enabled
+    // in the preferences).
+
+    if (!isConnected()) {
+        //Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
+        updateFromPreferences();
+
+        if(serverConnect()) {
+            infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
+        } else {
+            errorDialog(tr("Mixxx could not connect to streaming server"),
+                        tr("Please check your connection to the Internet and verify that your username and password are correct."));
+        }
+    }
+    //send to shoutcast, if connection has been established
+    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+        return;
+
+    if (iBufferSize > 0 && m_encoder){
+        m_encoder->encodeBuffer(pBuffer, iBufferSize); //encode and send to shoutcast
+    }
+    //Check if track has changed and submit its new metadata to shoutcast
+    if (metaDataHasChanged())
+        updateMetaData();
+
+    if (m_pUpdateShoutcastFromPrefs->get() > 0.0f){
+        /*
+         * You cannot change bitrate, hostname, etc while connected to a stream
+         */
         serverDisconnect();
-        infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
+        updateFromPreferences();
+        serverConnect();
     }
 }
 
 bool EngineShoutcast::metaDataHasChanged() {
-    QMutexLocker locker(&m_shoutMutex);
     TrackPointer pTrack;
 
     if (m_iMetaDataLife < 16) {
@@ -571,7 +563,6 @@ bool EngineShoutcast::metaDataHasChanged() {
 }
 
 void EngineShoutcast::updateMetaData() {
-    QMutexLocker locker(&m_shoutMutex);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
