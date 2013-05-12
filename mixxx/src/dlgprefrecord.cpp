@@ -17,12 +17,12 @@
 
 #include <QtCore>
 #include <QtGui>
+
 #include "dlgprefrecord.h"
 #include "recording/defs_recording.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "recording/encoder.h"
-
+#include "encoder/encoder.h"
 
 DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config)
         : QWidget(parent) {

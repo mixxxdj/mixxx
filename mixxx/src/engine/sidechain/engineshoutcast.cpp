@@ -17,7 +17,7 @@
 
 #include <QDebug>
 #include <QMutexLocker>
-#include <stdio.h> // currently used for writing to stdout
+
 #include <signal.h>
 
 #ifdef __WINDOWS__
@@ -31,10 +31,10 @@
 #include "engine/sidechain/engineshoutcast.h"
 
 #include "configobject.h"
-#include "dlgprefshoutcast.h"
 #include "playerinfo.h"
-#include "recording/encodermp3.h"
-#include "recording/encodervorbis.h"
+#include "encoder/encoder.h"
+#include "encoder/encodermp3.h"
+#include "encoder/encodervorbis.h"
 #include "shoutcast/defs_shoutcast.h"
 #include "trackinfoobject.h"
 
@@ -75,7 +75,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
         ConfigKey("[Shoutcast]","update_from_prefs"));
-    m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(
+    m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
         m_pShoutcastNeedUpdateFromPrefs);
 
     // Initialize libshout
@@ -360,7 +360,7 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
-    if (m_encoder->initEncoder(iBitrate) < 0) {
+    if (m_encoder->initEncoder(iBitrate, iMasterSamplerate) < 0) {
         //e.g., if lame is not found
         //init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
@@ -489,8 +489,9 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         } else {
             //qDebug() << "yea I kinda sent footer";
         }
-        if (shout_queuelen(m_pShout) > 0)
-            printf("DEBUG: queue length: %d\n", (int)shout_queuelen(m_pShout));
+        if (shout_queuelen(m_pShout) > 0) {
+            qDebug() << "DEBUG: queue length:" << (int)shout_queuelen(m_pShout);
+        }
     } else {
         qDebug() << "Error connecting to Shoutcast server:" << shout_get_error(m_pShout);
        // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));

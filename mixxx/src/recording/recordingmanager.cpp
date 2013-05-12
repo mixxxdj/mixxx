@@ -4,14 +4,13 @@
 #include <QMutex>
 #include <QDir>
 #include <QDebug>
-#include "recordingmanager.h"
+
+#include "recording/recordingmanager.h"
 #include "recording/defs_recording.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "engine/sidechain/enginerecord.h"
 #include "controlpushbutton.h"
 #include "engine/enginemaster.h"
-
-#define CD_650
 
 RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine)
         : m_pConfig(pConfig),

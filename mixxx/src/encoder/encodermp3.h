@@ -18,34 +18,22 @@
 #ifndef ENCODERMP3_H
 #define ENCODERMP3_H
 
-#include <QObject>
-#include "defs.h"
-#include "configobject.h"
-#include "encoder.h"
-
-///#include <lame/lame.h> // may be elsewhere on other distros besides Ubuntu
 #include <QLibrary>
-/*
- * We load the library explicitly to avoid legal issues
- * On Linux make sure the file libmp3lame.so is in /usr/lib.
- * If not use your package manager to install.
- * You might need to create a hard-link with ln -l if your distro names the file other than libmp3lame.so
- */
 
-class EngineAbstractRecord;
-class TrackInfoObject;
+#include "defs.h"
+#include "encoder/encoder.h"
+#include "trackinfoobject.h"
+
+class EncoderCallback;
 
 class EncoderMp3 : public Encoder {
-    Q_OBJECT
   public:
-    EncoderMp3(EngineAbstractRecord *engine=0);
+    EncoderMp3(EncoderCallback* callback=NULL);
     virtual ~EncoderMp3();
-    int initEncoder(int bitrate);
-    /** encodes audio and calls engine->write to send it a file or over a network **/
+
+    int initEncoder(int bitrate, int samplerate);
     void encodeBuffer(const CSAMPLE *samples, const int size);
-    /** only used for audio recording. Adds metadata to the encoded auio, i.e., the ID3 tag **/
     void updateMetaData(char* artist, char* title, char* album);
-    /** called at the end when encoding is finished **/
     void flush();
 
   private:
@@ -53,8 +41,7 @@ class EncoderMp3 : public Encoder {
     int bufferOutGrow(int size);
     int bufferInGrow(int size);
 
-   
-    //For lame
+    // For lame
     struct lame_global_struct;
     typedef struct lame_global_struct lame_global_flags;
     typedef lame_global_flags *lame_t;
@@ -126,11 +113,10 @@ class EncoderMp3 : public Encoder {
     float *m_bufferIn[2];
     int m_bufferInSize;
 
-    EngineAbstractRecord *m_pEngine;
+    EncoderCallback* m_pCallback;
     TrackPointer m_pMetaData;
     QLibrary* m_library;
     QFile m_mp3file;
-    ControlObjectThread* m_samplerate;
 };
 
 #endif

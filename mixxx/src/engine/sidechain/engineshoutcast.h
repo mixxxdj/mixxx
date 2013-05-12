@@ -25,22 +25,21 @@
 
 #include <shout/shout.h>
 
-#include "engine/engineabstractrecord.h"
-#include "engine/sidechain/sidechainworker.h"
 #include "configobject.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
-#include "trackinfoobject.h"
+#include "controlobjectthread.h"
+#include "encoder/encodercallback.h"
+#include "engine/sidechain/sidechainworker.h"
 #include "errordialoghandler.h"
-#include "recording/encoder.h"
+#include "trackinfoobject.h"
 
 #define SHOUTCAST_DISCONNECTED 0
 #define SHOUTCAST_CONNECTING 1
 #define SHOUTCAST_CONNECTED 2
 
-class EncoderVorbis;
+class Encoder;
 
-class EngineShoutcast : public EngineAbstractRecord, public SideChainWorker {
+class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
   public:
     EngineShoutcast(ConfigObject<ConfigValue> *_config);
@@ -94,7 +93,7 @@ class EngineShoutcast : public EngineAbstractRecord, public SideChainWorker {
     ConfigObject<ConfigValue> *m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-    ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
+    ControlObjectThread* m_pUpdateShoutcastFromPrefs;
     ControlObjectThread* m_pMasterSamplerate;
     ControlObjectThread* m_pShoutcastStatus;
     volatile bool m_bQuit;
