@@ -4,7 +4,7 @@
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2007 by Albert Santoni
                          : (C) 2010 by Tobias Rafreider
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -21,9 +21,9 @@
 #include <signal.h>
 
 #ifdef __WINDOWS__
-    #include <windows.h>
-    //sleep on linux assumes seconds where as Sleep on Windows assumes milliseconds
-    #define sleep(x) Sleep(x*1000)
+#include <windows.h>
+//sleep on linux assumes seconds where as Sleep on Windows assumes milliseconds
+#define sleep(x) Sleep(x*1000)
 #else
 #include <unistd.h>
 #endif
@@ -94,7 +94,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
         errorDialog(tr("Error setting non-blocking mode:"), shout_get_error(m_pShout));
         return;
     }
-}
+          }
 
 EngineShoutcast::~EngineShoutcast() {
     QMutexLocker locker(&m_shoutMutex);
@@ -305,10 +305,10 @@ void EngineShoutcast::updateFromPreferences()
     int iMasterSamplerate = m_pMasterSamplerate->get();
     if (m_format_is_ov && iMasterSamplerate == 96000) {
         errorDialog(tr("Broadcasting at 96kHz with Ogg Vorbis is not currently "
-                    "supported. Please try a different sample-rate or switch "
-                    "to a different encoding."),
+                       "supported. Please try a different sample-rate or switch "
+                       "to a different encoding."),
                     tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
-                    "information."));
+                       "information."));
         return;
     }
 
@@ -389,9 +389,9 @@ bool EngineShoutcast::serverConnect()
      * If m_encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
      * It does not make sense to connect
      */
-     if(m_encoder == NULL){
-         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-         return false;
+    if(m_encoder == NULL){
+        m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
+        return false;
     }
     const int iMaxTries = 3;
     while (!m_bQuit && m_iShoutFailures < iMaxTries) {
@@ -463,10 +463,10 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                 if ( m_iShoutFailures > 3 ){
                     if(!serverConnect())
                         errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-                 }
-                 else{
+                }
+                else{
                     m_iShoutFailures++;
-                 }
+                }
 
                 return;
             } else {
@@ -478,12 +478,12 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
             if ( m_iShoutFailures > 3 ){
-                    if(!serverConnect())
-                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-             }
-             else{
+                if(!serverConnect())
+                    errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+            }
+            else{
                 m_iShoutFailures++;
-             }
+            }
 
             return;
         } else {
@@ -494,7 +494,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         }
     } else {
         qDebug() << "Error connecting to Shoutcast server:" << shout_get_error(m_pShout);
-       // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+        // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
 }
 
@@ -534,7 +534,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             updateFromPreferences();
             serverConnect();
         }
-     } else if (isConnected()) {
+    } else if (isConnected()) {
         // if shoutcast is disabled but we are connected, disconnect
         serverDisconnect();
         infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
@@ -587,7 +587,7 @@ void EngineShoutcast::updateMetaData() {
      * This was done in EncoderVorbis previously and caused interruptions on track change as well
      * which sounds awful to listeners.
      * To conlcude: Only write OGG metadata one time, i.e., if static metadata is used.
-      */
+     */
 
 
     //If we use either MP3 streaming or OGG streaming with dynamic update of metadata being enabled,
