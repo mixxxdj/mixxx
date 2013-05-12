@@ -58,6 +58,7 @@ EngineSideChain::~EngineSideChain() {
     while (!m_workers.empty()) {
         SideChainWorker* pWorker = m_workers.takeLast();
         pWorker->shutdown();
+        delete pWorker;
     }
     locker.unlock();
 
