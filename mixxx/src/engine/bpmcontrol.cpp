@@ -370,7 +370,7 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     }
 
     const double MAGIC_FUZZ = 0.01;
-    const double MAGIC_FACTOR = 0.9; //the higher this is, the more we influence sync
+    const double MAGIC_FACTOR = 0.3; //the higher this is, the more we influence sync
     
     double dThisPosition = getCurrentSample();
     
