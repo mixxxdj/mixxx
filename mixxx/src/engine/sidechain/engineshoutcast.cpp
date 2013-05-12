@@ -54,7 +54,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pMasterSamplerate(new ControlObjectThread(
               ControlObject::getControl(ConfigKey("[Master]", "samplerate")))),
           m_pShoutcastStatus(new ControlObjectThread(
-              new ControlObject(ConfigKey("[Shoutcast]", "status")))),
+              new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status")))),
           m_bQuit(false),
           m_shoutMutex(QMutex::Recursive),
           m_custom_metadata(false),
@@ -74,7 +74,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 
     m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
-        ConfigKey("[Shoutcast]","update_from_prefs"));
+        ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
     m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
         m_pShoutcastNeedUpdateFromPrefs);
 
@@ -390,8 +390,8 @@ bool EngineShoutcast::serverConnect()
      * It does not make sense to connect
      */
      if(m_encoder == NULL){
-        m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
-        return false;
+         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
+         return false;
     }
     const int iMaxTries = 3;
     while (!m_bQuit && m_iShoutFailures < iMaxTries) {
@@ -414,7 +414,7 @@ bool EngineShoutcast::serverConnect()
     if (m_iShoutFailures == iMaxTries) {
         if (m_pShout)
             shout_close(m_pShout);
-        m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
+        m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
     }
     if (m_bQuit) {
         if (m_pShout)
@@ -437,7 +437,7 @@ bool EngineShoutcast::serverConnect()
         return true;
     }
     //otherwise disable shoutcast in preferences
-    m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
     if(m_pShout){
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
@@ -501,7 +501,7 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
 void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     QMutexLocker locker(&m_shoutMutex);
     //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
-    bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+    bool prefEnabled = (m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt() == 1);
 
     if (prefEnabled) {
         if(!isConnected()){
