@@ -618,7 +618,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
 
         // If the rate has changed, set it in the scale object
-        if (rate != m_rate_old || m_bScalerChanged) {
+        if (resample_rate != m_rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
             // Make sure new scaler has proper position
             if (m_bScalerChanged) {
@@ -639,7 +639,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             resample_rate = rate * baserate;
             //m_pTrueRate->set(rate);
             m_pScale->setBaseRate(baserate);
-            m_rate_old = rate;
+            m_rate_old = resample_rate;
             // Scaler is up to date now.
             m_bScalerChanged = false;
         }
