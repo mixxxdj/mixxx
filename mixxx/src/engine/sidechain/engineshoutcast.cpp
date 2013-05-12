@@ -502,35 +502,38 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     // If we are here then the user wants to be connected (shoutcast is enabled
     // in the preferences).
 
-    if (!isConnected()) {
-        //Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
+    bool connected = isConnected();
+
+    // If we aren't connected or the user has changed their preferences,
+    // disconnect, update from prefs, and reconnect.
+    if (!connected || m_pUpdateShoutcastFromPrefs->get() > 0.0f) {
+        if (connected) {
+            serverDisconnect();
+        }
+
+        // Initialize/update the encoder and libshout setup.
         updateFromPreferences();
 
-        if(serverConnect()) {
+        if (serverConnect()) {
             infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
         } else {
             errorDialog(tr("Mixxx could not connect to streaming server"),
                         tr("Please check your connection to the Internet and verify that your username and password are correct."));
         }
     }
-    //send to shoutcast, if connection has been established
+
+    // If we aren't connected, bail.
     if (m_iShoutStatus != SHOUTERR_CONNECTED)
         return;
 
+    // If we are connected, encode the samples.
     if (iBufferSize > 0 && m_encoder){
-        m_encoder->encodeBuffer(pBuffer, iBufferSize); //encode and send to shoutcast
+        m_encoder->encodeBuffer(pBuffer, iBufferSize);
     }
-    //Check if track has changed and submit its new metadata to shoutcast
-    if (metaDataHasChanged())
-        updateMetaData();
 
-    if (m_pUpdateShoutcastFromPrefs->get() > 0.0f){
-        /*
-         * You cannot change bitrate, hostname, etc while connected to a stream
-         */
-        serverDisconnect();
-        updateFromPreferences();
-        serverConnect();
+    // Check if track metadata has changed and if so, update.
+    if (metaDataHasChanged()) {
+        updateMetaData();
     }
 }
 
