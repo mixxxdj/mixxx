@@ -98,9 +98,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     else if (format == ENCODING_MP3)
         radioMp3->setChecked(true);
 #endif
-#ifdef SF_FORMAT_FLAC
     else if (format == ENCODING_AIFF)
         radioAiff->setChecked(true);
+#ifdef SF_FORMAT_FLAC
+    else if (format == ENCODING_FLAC)
+        radioFlac->setChecked(true);
 #endif
     else //Invalid, so set default and save
     {
