@@ -66,8 +66,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     horizontalLayout->addWidget(radioOgg);
     horizontalLayout->addWidget(radioMp3);
 
-#endif
-
     //AIFF and WAVE are supported by default
     radioWav = new QRadioButton(ENCODING_WAVE);
     connect(radioWav, SIGNAL(clicked()),
@@ -78,7 +76,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     connect(radioAiff, SIGNAL(clicked()),
             this, SLOT(slotApply()));
     horizontalLayout->addWidget(radioAiff);
-
 
 #ifdef SF_FORMAT_FLAC
     radioFlac = new QRadioButton(ENCODING_FLAC);
