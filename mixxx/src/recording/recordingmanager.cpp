@@ -80,7 +80,7 @@ void RecordingManager::startRecording(bool generateFileName) {
     m_split_size = getFileSplitSize();
     qDebug() << "Split size is:" << m_split_size;
     QString encodingType = m_pConfig->getValueString(
-            ConfigKey("[Recording]", "Encoding"));
+            ConfigKey(RECORDING_PREF_KEY, "Encoding"));
 
     if(generateFileName) {
         m_iNumberSplits = 1;
@@ -94,16 +94,16 @@ void RecordingManager::startRecording(bool generateFileName) {
         m_recording_base_file.append("/").append(date_time_str);
         //appending file extension to get the filelocation
         m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
-        m_pConfig->set(ConfigKey("[Recording]", "Path"), m_recordingLocation);
-        m_pConfig->set(ConfigKey("[Recording]", "CuePath"), m_recording_base_file +".cue");
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), m_recording_base_file +".cue");
     } else {
         //This is only executed if filesplit occurs
         ++m_iNumberSplits;
         QString new_base_filename = m_recording_base_file +"part"+QString::number(m_iNumberSplits);
         m_recordingLocation = new_base_filename + "." +encodingType.toLower();
 
-        m_pConfig->set(ConfigKey("[Recording]", "Path"), m_recordingLocation);
-        m_pConfig->set(ConfigKey("[Recording]", "CuePath"), new_base_filename +".cue");
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), new_base_filename +".cue");
         m_recordingFile = QFileInfo(m_recordingLocation).fileName();
     }
     m_recReady->slotSet(RECORD_READY);
@@ -120,7 +120,7 @@ void RecordingManager::stopRecording()
 
 void RecordingManager::setRecordingDir() {
     QDir recordDir(m_pConfig->getValueString(
-        ConfigKey("[Recording]", "Directory")));
+        ConfigKey(RECORDING_PREF_KEY, "Directory")));
     // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord
 
     if (!recordDir.exists()) {
@@ -179,7 +179,7 @@ QString& RecordingManager::getRecordingLocation() {
 
 long RecordingManager::getFileSplitSize()
 {
-     QString fileSizeStr = m_pConfig->getValueString(ConfigKey("[Recording]","FileSize"));
+     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"FileSize"));
      if(fileSizeStr == SPLIT_650MB)
          return SIZE_650MB;
      else if(fileSizeStr == SPLIT_700MB)
