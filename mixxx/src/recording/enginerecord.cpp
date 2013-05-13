@@ -228,9 +228,9 @@ void EngineRecord::writeCueLine() {
         .toLatin1()
     );
 
-    m_cuefile.write(QString("    TITLE %1\n")
+    m_cuefile.write(QString("    TITLE \"%1\"\n")
         .arg(m_pCurrentTrack->getTitle()).toLatin1());
-    m_cuefile.write(QString("    PERFORMER %1\n")
+    m_cuefile.write(QString("    PERFORMER \"%1\"\n")
         .arg(m_pCurrentTrack->getArtist()).toLatin1());
 
     // Woefully inaccurate (at the seconds level anyways).
