@@ -129,6 +129,10 @@ class MixxxApp : public QMainWindow {
     void closeEvent(QCloseEvent *event);
 
   private:
+    void logBuildDetails();
+    void initializeWindow();
+    void initializeKeyboard();
+    void initializeTranslations(QApplication* pApp);
     void checkDirectRendering();
     bool confirmExit();
 
