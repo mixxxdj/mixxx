@@ -23,7 +23,7 @@
 #include "errordialoghandler.h"
 
 EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
-: m_lameFlags(NULL),
+  : m_lameFlags(NULL),
     m_metaDataTitle(NULL),
     m_metaDataArtist(NULL),
     m_metaDataAlbum(NULL),
@@ -76,7 +76,7 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
     QStringList libnames;
     QString libname = "";
 #ifdef __LINUX__
-       libnames << "mp3lame";
+    libnames << "mp3lame";
 #elif __WINDOWS__
     libnames << "lame_enc.dll";
 #elif __APPLE__
@@ -97,18 +97,17 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
         props->setTitle(QObject::tr("Encoder"));
-        QString key = "";
+        QString missingCodec = QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#%1'>Mixxx Wiki</a> for more information. </html>");
+
 #ifdef __LINUX__
-        key = QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx Wiki</a> for more information. </html>");
-        props->setText(key);
+        missingCodec = missingCodec.arg("linux");
 #elif __WINDOWS__
-        key = QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx Wiki</a> for more information. </html>");
-        props->setText(key);
+        missingCodec = missingCodec.arg("windows");
 #elif __APPLE__
-        key = QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx Wiki</a> for more information. </html>");
-        props->setText(key);
+        missingCodec = missingCodec.arg("mac_osx");
 #endif
-        props->setKey(key);
+        props->setText(missingCodec);
+        props->setKey(missingCodec);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return;
     }
