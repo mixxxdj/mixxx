@@ -8,7 +8,10 @@
 ShoutcastManager::ShoutcastManager(ConfigObject<ConfigValue>* pConfig,
                                    EngineMaster* pEngine)
         : m_pConfig(pConfig) {
-    pEngine->getSideChain()->addSideChainWorker(new EngineShoutcast(pConfig));
+    EngineSideChain* pSidechain = pEngine->getSideChain();
+    if (pSidechain) {
+        pSidechain->addSideChainWorker(new EngineShoutcast(pConfig));
+    }
 }
 
 ShoutcastManager::~ShoutcastManager() {
