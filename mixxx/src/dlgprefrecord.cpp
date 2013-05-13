@@ -109,6 +109,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
         config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
     }
 
+    loadMetaData();
+
     //Connections
     connect(SliderQuality,    SIGNAL(valueChanged(int)), this,  SLOT(slotSliderQuality()));
     connect(SliderQuality,    SIGNAL(sliderMoved(int)), this,   SLOT(slotSliderQuality()));
