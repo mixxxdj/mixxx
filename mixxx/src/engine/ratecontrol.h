@@ -69,6 +69,9 @@ public:
     void slotControlFastForward(double);
     void slotControlFastBack(double);
     void slotControlVinyl(double);
+    virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
+
     
   private slots:
     void slotFileBpmChanged(double);
@@ -121,6 +124,8 @@ public:
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;
+    
+    TrackPointer m_pTrack;
     
     //For Master Sync
     ControlObject *m_pMasterBpm;

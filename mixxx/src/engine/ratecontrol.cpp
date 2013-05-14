@@ -436,7 +436,13 @@ void RateControl::slotSyncMasterChanged(double state) {
             return;
         }
         
-        qDebug() << m_sGroup << "setting ourselves as master";
+        if (m_pTrack.isNull()) {
+            qDebug() << m_sGroup << " no track loaded, can't be master";
+            m_pSyncMasterEnabled->set(false);
+            return;    
+        }
+        
+        qDebug() << m_sGroup << " setting ourselves as master";
         m_pSyncState->set(SYNC_MASTER);
     } else {
         // For now, turning off master turns on slave mode
@@ -493,6 +499,20 @@ void RateControl::slotSyncStateChanged(double state) {
     if (state == SYNC_SLAVE) {
         slotMasterBpmChanged(m_pMasterBpm->get());
     }
+}
+
+void RateControl::trackLoaded(TrackPointer pTrack) {
+    if (m_pTrack) {
+        trackUnloaded(m_pTrack);
+    }
+    if (pTrack) {
+        m_pTrack = pTrack;
+    }
+}
+
+void RateControl::trackUnloaded(TrackPointer pTrack) {
+    Q_UNUSED(pTrack);
+    m_pTrack.clear();
 }
 
 double RateControl::getRawRate() const {
