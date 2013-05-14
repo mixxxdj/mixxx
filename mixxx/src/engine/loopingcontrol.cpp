@@ -620,11 +620,13 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (keepStartPoint) {
             loop_in = m_iLoopStartSample;
         } else {
-            // loop_in is set to the closest beat if quantize is on
-            double currentClosestBeat =
-                    floorf(m_pBeats->findClosestBeat(getCurrentSample()));
-            loop_in = (m_pQuantizeEnabled->get() > 0.0 && currentClosestBeat != -1) ?
-                    currentClosestBeat : floorf(getCurrentSample());
+            // loop_in is set to the previous beat if quantize is on.  The
+            // closest beat might be ahead of play position which would cause a seek.
+            // TODO: If in reverse, should probably choose nextBeat.
+            double prevBeat =
+                    floorf(m_pBeats->findPrevBeat(getCurrentSample()));
+            loop_in = (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) ?
+                    prevBeat : floorf(getCurrentSample());
             if (!even(loop_in)) {
                 loop_in--;
             }
