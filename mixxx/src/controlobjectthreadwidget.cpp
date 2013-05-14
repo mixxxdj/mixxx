@@ -9,7 +9,8 @@ ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObj
     // ControlObjectThread's constructor sets m_dValue to
     // m_pControlObject->get(). Since we represent the widget's value, we need
     // to reset m_dValue to be the result of getValueToWidget.
-    if (m_pControlObject != NULL) {
+    if (m_pControl != NULL) {
+        set(get());
         slotValueChanged(get(), NULL);
     }
 }
@@ -22,7 +23,7 @@ void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFro
                                           EmitOption emitOption, Qt::MouseButton state) {
     if (connectValueFromWidget) {
         connect(widget, SIGNAL(valueReset()),
-                this, SLOT(slotReset()));
+                this, SLOT(reset()));
 
         if (emitOption & EMIT_ON_PRESS) {
             switch (state) {
@@ -77,47 +78,34 @@ void ControlObjectThreadWidget::setWidgetOnOff(QWidget* widget)
     emit(valueChanged(get()));
 }
 
-void ControlObjectThreadWidget::slotReset() {
-    if (m_pControlObject) {
-        // TODO(rryan): This change will come from the wrong setter. We need to
-        // call the ControlNumericPrivate ourselves here.
-        m_pControlObject->reset();
-    }
-}
-
 double ControlObjectThreadWidget::get() {
-    if (m_pControlObject) {
-        return m_pControlObject->getValueToWidget(m_pControlObject->get());
-    } else {
-        return 0.0;
-    }
+    double value = ControlObjectThreadMain::get();
+    return m_pControlObject ? m_pControlObject->getValueToWidget(value) : value;
 }
 
-void ControlObjectThreadWidget::slotSet(double v) {
-    m_pControlObject->setValueFromThread(
-        m_pControlObject->getValueFromWidget(v), this);
+void ControlObjectThreadWidget::set(double v) {
+    double translated = m_pControlObject ? m_pControlObject->getValueFromWidget(v) : v;
+    ControlObjectThreadMain::set(translated);
 }
 
 void ControlObjectThreadWidget::add(double v) {
     // TODO(rryan): Double-check that this is ok. I think it requires
     // distributive properties of getValueFromWidget() which might not always be
     // the case.
-    // TODO(rryan): Coming from the wrong setter.
-    m_pControlObject->add(m_pControlObject->getValueFromWidget(v));
+    double translated = m_pControlObject ? m_pControlObject->getValueFromWidget(v) : v;
+    ControlObjectThreadMain::add(translated);
 }
 
 void ControlObjectThreadWidget::sub(double v) {
     // TODO(rryan): Double-check that this is ok. I think it requires
     // distributive properties of getValueFromWidget() which might not always be
     // the case.
-    // TODO(rryan): Coming from the wrong setter.
-    m_pControlObject->sub(m_pControlObject->getValueFromWidget(v));
+    double translated = m_pControlObject ? m_pControlObject->getValueFromWidget(v) : v;
+    ControlObjectThreadMain::sub(translated);
 }
 
 // Receives the Value from the parent and may scales the vale and re-emit it again
 void ControlObjectThreadWidget::slotValueChanged(double v, QObject* pSetter) {
-    if (pSetter != this && m_pControlObject) {
-        double widgetValue = m_pControlObject->getValueToWidget(v);
-        emit(valueChanged(widgetValue));
-    }
+    double translated = m_pControlObject ? m_pControlObject->getValueToWidget(v) : v;
+    ControlObjectThreadMain::slotValueChanged(translated, pSetter);
 }

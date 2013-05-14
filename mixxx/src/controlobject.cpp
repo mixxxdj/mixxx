@@ -41,7 +41,8 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
     // TODO(rryan): Set validator on m_pControl.
 
     connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
-            this, SLOT(privateValueChanged(double, QObject*)));
+            this, SLOT(privateValueChanged(double, QObject*)),
+            Qt::DirectConnection);
 
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
@@ -54,7 +55,8 @@ ControlObject::ControlObject(const QString& group, const QString& item,
           m_pControl(ControlNumericPrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
 
     connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
-            this, SLOT(privateValueChanged(double, QObject*)));
+            this, SLOT(privateValueChanged(double, QObject*)),
+            Qt::DirectConnection);
 
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
@@ -65,16 +67,6 @@ ControlObject::~ControlObject() {
     m_sqCOHashMutex.lock();
     m_sqCOHash.remove(m_key);
     m_sqCOHashMutex.unlock();
-
-    ControlObjectThread * obj;
-    m_qProxyListMutex.lock();
-    QListIterator<ControlObjectThread*> it(m_qProxyList);
-    while (it.hasNext())
-    {
-        obj = it.next();
-        obj->slotParentDead();
-    }
-    m_qProxyListMutex.unlock();
 }
 
 void ControlObject::privateValueChanged(double dValue, QObject* pSetter) {
@@ -113,26 +105,6 @@ bool ControlObject::disconnectControl(ConfigKey key)
         return false;
 }
 */
-
-void ControlObject::addProxy(ControlObjectThread * pControlObjectThread) {
-    if (m_pControl) {
-        connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
-                pControlObjectThread, SLOT(slotValueChanged(double, QObject*)));
-    }
-    m_qProxyListMutex.lock();
-    m_qProxyList.append(pControlObjectThread);
-    m_qProxyListMutex.unlock();
-}
-
-void ControlObject::removeProxy(ControlObjectThread * pControlObjectThread) {
-    if (m_pControl) {
-        disconnect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
-                   pControlObjectThread, SLOT(slotValueChanged(double, QObject*)));
-    }
-    m_qProxyListMutex.lock();
-    m_qProxyList.removeAll(pControlObjectThread);
-    m_qProxyListMutex.unlock();
-}
 
 void ControlObject::getControls(QList<ControlObject*>* pControlList) {
     m_sqCOHashMutex.lock();

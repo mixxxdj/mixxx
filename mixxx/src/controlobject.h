@@ -23,7 +23,6 @@
 #include <QMutex>
 
 #include "configobject.h"
-#include "controlobjectthread.h"
 #include "controllers/midi/midimessage.h"
 #include "controlobjectbase.h"
 #include "control.h"
@@ -48,10 +47,6 @@ class ControlObject : public QObject {
     // Adds all ControlObjects that currently exist to pControlList
     static void getControls(QList<ControlObject*>* pControlsList);
 
-    // Used to add a pointer to the corresponding ControlObjectThread of this ControlObject
-    void addProxy(ControlObjectThread *pControlObjectThread);
-    // To get rid of a proxy when the corresponding object is being deleted for example
-    void removeProxy(ControlObjectThread *pControlObjectThread);
     // Return the key of the object
     inline ConfigKey getKey() { return m_key; }
     // Returns the value of the ControlObject
@@ -89,7 +84,6 @@ class ControlObject : public QObject {
     virtual void setValueFromThread(double dValue, QObject* pSetter);
 
   protected:
-
     // Key of the object
     ConfigKey m_key;
 
@@ -100,11 +94,6 @@ class ControlObject : public QObject {
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
-
-    // List of associated proxy objects
-    QList<ControlObjectThread*> m_qProxyList;
-    // Mutex for the proxy list
-    QMutex m_qProxyListMutex;
 
     ControlNumericPrivate* m_pControl;
 

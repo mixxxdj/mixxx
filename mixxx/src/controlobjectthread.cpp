@@ -20,33 +20,66 @@
 
 #include "controlobjectthread.h"
 #include "controlobject.h"
+#include "control.h"
 
 ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
         : QObject(pParent),
-          m_pControlObject(pControlObject) {
-    // Register with the associated ControlObject
-    if (m_pControlObject != NULL) {
-        m_pControlObject->addProxy(this);
+          m_key(pControlObject ? pControlObject->getKey() : ConfigKey()),
+          m_pControlObject(pControlObject),
+          m_pControl(NULL) {
+    if (m_pControlObject) {
         connect(m_pControlObject, SIGNAL(destroyed()),
-                this, SLOT(slotParentDead()));
+                this, SLOT(slotControlObjectDead()),
+                Qt::DirectConnection);
+    }
+
+    if (pControlObject) {
+        m_pControl = ControlNumericPrivate::getControl(pControlObject->getKey(), false);
+    }
+    if (m_pControl) {
+        connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+                this, SLOT(slotValueChanged(double, QObject*)),
+                Qt::DirectConnection);
     }
     emitValueChanged();
 }
 
 ControlObjectThread::~ControlObjectThread() {
-    if (m_pControlObject) {
-        // Our parent is still around, make sure it doesn't send us any more events
-        m_pControlObject->removeProxy(this);
-    }
+}
+
+void ControlObjectThread::slotControlObjectDead() {
+    m_pControlObject = NULL;
 }
 
 double ControlObjectThread::get() {
-    return m_pControlObject ? m_pControlObject->get() : 0.0;
+    return m_pControl ? m_pControl->get() : 0.0;
 }
 
 void ControlObjectThread::slotSet(double v) {
-    if (m_pControlObject) {
-        m_pControlObject->setValueFromThread(v, this);
+    set(v);
+}
+
+void ControlObjectThread::set(double v) {
+    if (m_pControl) {
+        m_pControl->set(v, this);
+    }
+}
+
+void ControlObjectThread::reset() {
+    if (m_pControl) {
+        m_pControl->reset(this);
+    }
+}
+
+void ControlObjectThread::add(double v) {
+    if (m_pControl) {
+        m_pControl->add(v, this);
+    }
+}
+
+void ControlObjectThread::sub(double v) {
+    if (m_pControl) {
+        m_pControl->sub(v, this);
     }
 }
 
@@ -54,27 +87,9 @@ void ControlObjectThread::emitValueChanged() {
     emit(valueChanged(get()));
 }
 
-void ControlObjectThread::add(double v) {
-    m_pControlObject->add(v);
-}
-
-void ControlObjectThread::sub(double v) {
-    m_pControlObject->sub(v);
-}
-
-void ControlObjectThread::slotParentDead() {
-    // Now we've got a chance of avoiding segfaults with judicious
-    // use of if(m_pControlObject)
-    m_pControlObject = NULL;
-}
-
 void ControlObjectThread::slotValueChanged(double v, QObject* pSetter) {
     if (pSetter != this) {
         // This is base implementation of this function without scaling
         emit(valueChanged(v));
     }
-}
-
-ControlObject* ControlObjectThread::getControlObject() {
-    return m_pControlObject;
 }
