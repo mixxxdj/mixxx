@@ -22,6 +22,7 @@
 
 #include "controlobject.h"
 #include "controlevent.h"
+#include "control.h"
 #include "util/stat.h"
 #include "util/timer.h"
 
@@ -31,38 +32,30 @@ QMutex ControlObject::m_sqCOHashMutex;
 
 
 ControlObject::ControlObject()
-        : ControlObjectBase<double>(),
-          m_dDefaultValue(0),
-          m_bIgnoreNops(true) {
-    set(m_dDefaultValue);
+        : m_pControl(NULL) {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool track)
-        : m_dDefaultValue(0),
-          m_key(key),
-          m_bIgnoreNops(bIgnoreNops),
-          m_bTrack(track),
-          m_trackKey("control " + m_key.group + "," + m_key.item),
-          m_trackType(Stat::UNSPECIFIED),
-          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
-    set(m_dDefaultValue),
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
+        : m_key(key),
+          m_pControl(ControlNumericPrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
+    // TODO(rryan): Set validator on m_pControl.
+
+    connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+            this, SLOT(privateValueChanged(double, QObject*)));
+
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
-
-    if (m_bTrack) {
-        // TODO(rryan): Make configurable.
-        Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), m_dDefaultValue);
-    }
 }
 
-ControlObject::ControlObject(const QString& group, const QString& item, bool bIgnoreNops)
-        : m_dDefaultValue(0),
-          m_key(group, item),
-          m_bIgnoreNops(bIgnoreNops) {
-    set(m_dDefaultValue);
+ControlObject::ControlObject(const QString& group, const QString& item,
+                             bool bIgnoreNops, bool bTrack)
+        : m_key(group, item),
+          m_pControl(ControlNumericPrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
+
+    connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+            this, SLOT(privateValueChanged(double, QObject*)));
+
     m_sqCOHashMutex.lock();
     m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
@@ -82,6 +75,13 @@ ControlObject::~ControlObject() {
         obj->slotParentDead();
     }
     m_qProxyListMutex.unlock();
+}
+
+void ControlObject::privateValueChanged(double dValue, QObject* pSetter) {
+    // Only emit valueChanged() if we did not originate this change.
+    if (pSetter != this) {
+        emit(valueChanged(dValue));
+    }
 }
 
 /*
@@ -114,14 +114,21 @@ bool ControlObject::disconnectControl(ConfigKey key)
 }
 */
 
-void ControlObject::addProxy(ControlObjectThread * pControlObjectThread)
-{
+void ControlObject::addProxy(ControlObjectThread * pControlObjectThread) {
+    if (m_pControl) {
+        connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+                pControlObjectThread, SLOT(slotValueChanged(double, QObject*)));
+    }
     m_qProxyListMutex.lock();
     m_qProxyList.append(pControlObjectThread);
     m_qProxyListMutex.unlock();
 }
 
 void ControlObject::removeProxy(ControlObjectThread * pControlObjectThread) {
+    if (m_pControl) {
+        disconnect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+                   pControlObjectThread, SLOT(slotValueChanged(double, QObject*)));
+    }
     m_qProxyListMutex.lock();
     m_qProxyList.removeAll(pControlObjectThread);
     m_qProxyListMutex.unlock();
@@ -148,68 +155,54 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
     return NULL;
 }
 
-void ControlObject::setValueFromMidi(MidiOpCode o, double v)
-{
-    Q_UNUSED(o);
-    set(v);
-}
-
-double ControlObject::GetMidiValue()
-{
-    return get();
-}
-
-void ControlObject::setValueFromThread(double dValue)
-{
-    set(dValue);
-}
-
-void ControlObject::add(double dValue)
-{
-    if (m_bIgnoreNops && !dValue) {
-        return;
+void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
+    if (m_pControl) {
+        m_pControl->set(v, NULL);
     }
-    set(get() + dValue);
 }
 
-void ControlObject::sub(double dValue)
-{
-    if (m_bIgnoreNops && !dValue) {
-        return;
+double ControlObject::GetMidiValue() {
+    return m_pControl ? m_pControl->get() : 0.0;
+}
+
+void ControlObject::setValueFromThread(double dValue, QObject* pSender) {
+    if (m_pControl) {
+        m_pControl->set(dValue, pSender);
     }
-    set(get() - dValue);
 }
 
-double ControlObject::getValueFromWidget(double v)
-{
+void ControlObject::add(double dValue) {
+    if (m_pControl) {
+        m_pControl->add(dValue, this);
+    }
+}
+
+void ControlObject::sub(double dValue) {
+    if (m_pControl) {
+        m_pControl->sub(dValue, this);
+    }
+}
+
+double ControlObject::getValueFromWidget(double v) {
     return v;
 }
 
-double ControlObject::getValueToWidget(double v)
-{
+double ControlObject::getValueToWidget(double v) {
     return v;
 }
 
 double ControlObject::get() {
-    return getValue();
+    return m_pControl ? m_pControl->get() : 0.0;
 }
 
 void ControlObject::reset() {
-    set(m_dDefaultValue);
+    if (m_pControl) {
+        m_pControl->reset(this);
+    }
 }
 
-void ControlObject::set(const double& value, bool emitValueChanged) {
-    if (m_bIgnoreNops) {
-        if (get() == value) {
-            return;
-        }
-    }
-    setValue(value);
-    if (emitValueChanged) {
-        emit(valueChanged(value));
-        if (m_bTrack) {
-            Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                        static_cast<Stat::ComputeFlags>(m_trackFlags), value);
-        }
+void ControlObject::set(const double& value) {
+    if (m_pControl) {
+        m_pControl->set(value, this);
     }
 }

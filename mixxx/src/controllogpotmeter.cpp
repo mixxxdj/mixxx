@@ -41,8 +41,8 @@
 ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue)
     : ControlPotmeter(key, 0, dMaxValue) {
     // Override ControlPotmeters default value of 0.5
-    m_dDefaultValue = 1.0;
-    set(m_dDefaultValue);
+    setDefaultValue(1.0);
+    set(1.0);
 
     if (m_dMaxValue == 1.) {
         m_bTwoState = false;

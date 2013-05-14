@@ -26,19 +26,18 @@
 #include "controlobjectthread.h"
 #include "controllers/midi/midimessage.h"
 #include "controlobjectbase.h"
+#include "control.h"
 
-class QWidget;
-class ConfigKey;
-
-class ControlObject 
-    : public QObject,
-      private ControlObjectBase<double> {
+class ControlObject : public QObject {
     Q_OBJECT
   public:
     ControlObject();
-    ControlObject(ConfigKey key, bool bIgnoreNops=true, bool track=false);
-    ControlObject(const QString& group, const QString& item, bool bIgnoreNops=true);
+    ControlObject(ConfigKey key,
+                  bool bIgnoreNops=true, bool bTrack=false);
+    ControlObject(const QString& group, const QString& item,
+                  bool bIgnoreNops=true, bool bTrack=false);
     virtual ~ControlObject();
+
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject* getControl(const ConfigKey& key);
     static inline ControlObject* getControl(const QString& group, const QString& item) {
@@ -58,7 +57,7 @@ class ControlObject
     // Returns the value of the ControlObject
     double get();
     // Sets the ControlObject value
-    void set(const double& value, bool emmitValueChanged = true);
+    void set(const double& value);
     // Sets the default value
     void reset();
     // Add to value
@@ -71,11 +70,13 @@ class ControlObject
     virtual double getValueToWidget(double dValue);
     // get value (range 0..127)
     virtual double GetMidiValue();
-    virtual void setDefaultValue(double dValue) {
-        m_dDefaultValue = dValue;
+    inline void setDefaultValue(double dValue) {
+        if (m_pControl) {
+            m_pControl->setDefaultValue(dValue);
+        }
     }
-    virtual double defaultValue() const {
-        return m_dDefaultValue;
+    inline double defaultValue() const {
+        return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
   signals:
@@ -85,25 +86,27 @@ class ControlObject
     // Called when a widget has changed value.
     virtual void setValueFromMidi(MidiOpCode o, double v);
     // Called when another thread has changed value.
-    virtual void setValueFromThread(double dValue);
+    virtual void setValueFromThread(double dValue, QObject* pSetter);
 
   protected:
-    double m_dDefaultValue;
+
     // Key of the object
     ConfigKey m_key;
 
+  private slots:
+    void privateValueChanged(double value, QObject* pSetter);
+
   private:
-    // Whether to ignore set/add/sub()'s which would have no effect
-    bool m_bIgnoreNops;
-    // Whether to track value changes with the stats framework.
-    bool m_bTrack;
-    QString m_trackKey;
-    int m_trackType;
-    int m_trackFlags;
+    inline bool ignoreNops() const {
+        return m_pControl ? m_pControl->ignoreNops() : true;
+    }
+
     // List of associated proxy objects
     QList<ControlObjectThread*> m_qProxyList;
     // Mutex for the proxy list
     QMutex m_qProxyListMutex;
+
+    ControlNumericPrivate* m_pControl;
 
     // Hash of ControlObject instantiations
     static QHash<ConfigKey,ControlObject*> m_sqCOHash;

@@ -125,8 +125,9 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
     m_dMinValue = dMinValue;
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue - m_dMinValue;
-    m_dDefaultValue = m_dMinValue + 0.5 * m_dValueRange;
-    set(m_dDefaultValue);
+    double default_value = m_dMinValue + 0.5 * m_dValueRange;
+    setDefaultValue(default_value);
+    set(default_value);
     //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
@@ -245,7 +246,7 @@ void ControlPotmeter::setToMinusOne(double keypos)
 
 void ControlPotmeter::setToDefault(double v) {
     if (v > 0) {
-        set(m_dDefaultValue);
+        reset();
     }
 }
 

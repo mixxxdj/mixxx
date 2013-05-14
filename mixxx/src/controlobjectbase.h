@@ -21,7 +21,7 @@ class ControlObjectRingValue {
           m_readerSlots(cReaderSlotCnt) {
     }
 
-    bool tryGet(T* value) {
+    bool tryGet(T* value) const {
         // Read while consuming one readerSlot
         bool hasSlot = (m_readerSlots.fetchAndAddAcquire(-1) > 0);
         if (hasSlot) {
@@ -43,14 +43,14 @@ class ControlObjectRingValue {
 
   private:
     T m_value;
-    QAtomicInt m_readerSlots;
+    mutable QAtomicInt m_readerSlots;
 };
 
 // Ring buffer based implementation for all Types sizeof(T) > sizeof(void*)
 template<typename T, bool ATOMIC = false>
 class ControlObjectValue {
   public:
-    inline T getValue() {
+    inline T getValue() const {
         T value = T();
         unsigned int index = (unsigned int)m_readIndex
                 % (cRingSize);
@@ -102,7 +102,7 @@ class ControlObjectValue {
 template<typename T>
 class ControlObjectValue<T, true> {
   public:
-    inline T getValue() {
+    inline T getValue() const {
         return m_value;
     }
 

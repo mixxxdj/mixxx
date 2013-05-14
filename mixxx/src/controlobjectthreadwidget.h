@@ -53,7 +53,7 @@ public:
     void slotReset();
     // Receives the Value from the parent and may scales the vale and re-emit it again
     virtual void slotSet(double v);
-    virtual void slotParentValueChanged(double v);
+    virtual void slotValueChanged(double v, QObject* pSetter);
 };
 
 #endif

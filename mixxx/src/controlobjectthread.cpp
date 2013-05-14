@@ -29,8 +29,6 @@ ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject*
         m_pControlObject->addProxy(this);
         connect(m_pControlObject, SIGNAL(destroyed()),
                 this, SLOT(slotParentDead()));
-        connect(m_pControlObject, SIGNAL(valueChanged(double)),
-                this, SLOT(slotParentValueChanged(double)));
     }
     emitValueChanged();
 }
@@ -43,16 +41,13 @@ ControlObjectThread::~ControlObjectThread() {
 }
 
 double ControlObjectThread::get() {
-    if (m_pControlObject) {
-        return m_pControlObject->get();
-    } else {
-        return 0.0;
-    }
-
+    return m_pControlObject ? m_pControlObject->get() : 0.0;
 }
 
 void ControlObjectThread::slotSet(double v) {
-    m_pControlObject->set(v);
+    if (m_pControlObject) {
+        m_pControlObject->setValueFromThread(v, this);
+    }
 }
 
 void ControlObjectThread::emitValueChanged() {
@@ -73,11 +68,13 @@ void ControlObjectThread::slotParentDead() {
     m_pControlObject = NULL;
 }
 
-void ControlObjectThread::slotParentValueChanged(double v) {
-    // This is base implementation of this function without scaling
-    emit(valueChanged(v));
+void ControlObjectThread::slotValueChanged(double v, QObject* pSetter) {
+    if (pSetter != this) {
+        // This is base implementation of this function without scaling
+        emit(valueChanged(v));
+    }
 }
 
 ControlObject* ControlObjectThread::getControlObject() {
-   return m_pControlObject;
+    return m_pControlObject;
 }

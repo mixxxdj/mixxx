@@ -32,39 +32,34 @@ class ControlObjectThread : public QObject {
     ControlObjectThread(ControlObject *pControlObject, QObject* pParent=NULL);
     virtual ~ControlObjectThread();
 
-    /** Returns the value of the object. Thread safe, blocking */
+    // Returns the value of the object. Thread safe, non-blocking.
     virtual double get();
-    /** Setting the value from an external controller. This happen when a ControlObject has
-      * changed and its value is syncronized with this object. Thread safe, non blocking. Returns
-      * true if successful, otherwise false. Thread safe, non blocking. */
+    // Adds v to the control value. Thread safe, non-blocking.
     virtual void add(double v);
-    /** Subtracts a value to the value property. Notification in a similar way
-     * to set. Thread safe, blocking. */
+    // Subtracts v from the control value. Thread safe, non-blocking.
     virtual void sub(double v);
     /** Called from update(); */
     void emitValueChanged();
-
-
     // FIXME: Dangerous GED hack
     ControlObject* getControlObject();
 
-public slots:
-    /** The value is changed by the engine, and the corresponding ControlObject is updated.
-      * Thread safe, blocking. */
+  public slots:
+    // Set the control to a new value. Non-blocking.
     virtual void slotSet(double v);
 
     // The danger signal! This is for safety in wierd shutdown scenarios where the
     // ControlObject dies to avoid segfaults.
     void slotParentDead();
 
-    // Receives the Value from the parent and may scales the vale and re-emit it again
-    virtual void slotParentValueChanged(double v);
-
-signals:
+  signals:
     void valueChanged(double);
 
-protected:
-    /// Pointer to corresponding ControlObject
+  private slots:
+    // Receives the Value from the parent and may scales the vale and re-emit it again
+    virtual void slotValueChanged(double v, QObject* pSetter);
+
+  protected:
+    // Pointer to connected controls.
     ControlObject *m_pControlObject;
 };
 

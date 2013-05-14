@@ -10,7 +10,7 @@ ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObj
     // m_pControlObject->get(). Since we represent the widget's value, we need
     // to reset m_dValue to be the result of getValueToWidget.
     if (m_pControlObject != NULL) {
-        slotParentValueChanged(get());
+        slotValueChanged(get(), NULL);
     }
 }
 
@@ -79,8 +79,9 @@ void ControlObjectThreadWidget::setWidgetOnOff(QWidget* widget)
 
 void ControlObjectThreadWidget::slotReset() {
     if (m_pControlObject) {
+        // TODO(rryan): This change will come from the wrong setter. We need to
+        // call the ControlNumericPrivate ourselves here.
         m_pControlObject->reset();
-
     }
 }
 
@@ -93,20 +94,29 @@ double ControlObjectThreadWidget::get() {
 }
 
 void ControlObjectThreadWidget::slotSet(double v) {
-    m_pControlObject->set(m_pControlObject->getValueFromWidget(v));
+    m_pControlObject->setValueFromThread(
+        m_pControlObject->getValueFromWidget(v), this);
 }
 
 void ControlObjectThreadWidget::add(double v) {
+    // TODO(rryan): Double-check that this is ok. I think it requires
+    // distributive properties of getValueFromWidget() which might not always be
+    // the case.
+    // TODO(rryan): Coming from the wrong setter.
     m_pControlObject->add(m_pControlObject->getValueFromWidget(v));
 }
 
 void ControlObjectThreadWidget::sub(double v) {
+    // TODO(rryan): Double-check that this is ok. I think it requires
+    // distributive properties of getValueFromWidget() which might not always be
+    // the case.
+    // TODO(rryan): Coming from the wrong setter.
     m_pControlObject->sub(m_pControlObject->getValueFromWidget(v));
 }
 
 // Receives the Value from the parent and may scales the vale and re-emit it again
-void ControlObjectThreadWidget::slotParentValueChanged(double v) {
-    if (m_pControlObject) {
+void ControlObjectThreadWidget::slotValueChanged(double v, QObject* pSetter) {
+    if (pSetter != this && m_pControlObject) {
         double widgetValue = m_pControlObject->getValueToWidget(v);
         emit(valueChanged(widgetValue));
     }
