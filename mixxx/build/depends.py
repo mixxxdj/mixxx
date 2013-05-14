@@ -424,7 +424,6 @@ class MixxxCore(Feature):
                    "controllinpotmeter.cpp",
                    "controlpushbutton.cpp",
                    "controlttrotary.cpp",
-                   "controlbeat.cpp",
 
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
