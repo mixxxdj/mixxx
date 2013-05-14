@@ -98,9 +98,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     else if (format == ENCODING_MP3)
         radioMp3->setChecked(true);
 #endif
-#ifdef SF_FORMAT_FLAC
     else if (format == ENCODING_AIFF)
         radioAiff->setChecked(true);
+#ifdef SF_FORMAT_FLAC
+    else if (format == ENCODING_FLAC)
+        radioFlac->setChecked(true);
 #endif
     else //Invalid, so set default and save
     {
@@ -108,6 +110,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
         radioWav->setChecked(true);
         config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
     }
+
+    loadMetaData();
 
     //Connections
     connect(SliderQuality,    SIGNAL(valueChanged(int)), this,  SLOT(slotSliderQuality()));

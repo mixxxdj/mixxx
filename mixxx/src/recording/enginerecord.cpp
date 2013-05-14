@@ -38,6 +38,8 @@
  *                                                                         *
  ***************************************************************************/
 
+const int kMetaDataLifeTimeout = 16;
+
 EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
 {
     m_config = _config;
@@ -124,15 +126,13 @@ void EngineRecord::updateFromPreferences()
  */
 bool EngineRecord::metaDataHasChanged()
 {
-    TrackPointer pTrack;
-
-    if ( m_iMetaDataLife < 16 ) {
+    if (m_iMetaDataLife < kMetaDataLifeTimeout) {
         m_iMetaDataLife++;
         return false;
     }
     m_iMetaDataLife = 0;
 
-    pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    TrackPointer pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
     if ( !pTrack )
         return false;
 
@@ -173,6 +173,10 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             m_recReady->slotSet(RECORD_ON);
             emit(isRecording(true)); //will notify the RecordingManager
 
+            // Since we just started recording, timeout and clear the metadata.
+            m_iMetaDataLife = kMetaDataLifeTimeout;
+            m_pCurrentTrack = TrackPointer();
+
             if (m_bCueIsEnabled) {
                 openCueFile();
                 m_cuesamplepos = 0;
@@ -210,6 +214,10 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 }
 
 void EngineRecord::writeCueLine() {
+    if (!m_pCurrentTrack) {
+        return;
+    }
+
     // account for multiple channels
     unsigned long samplerate = m_samplerate->get() * 2;
     // CDDA is specified as having 75 frames a second
@@ -228,9 +236,9 @@ void EngineRecord::writeCueLine() {
         .toLatin1()
     );
 
-    m_cuefile.write(QString("    TITLE %1\n")
+    m_cuefile.write(QString("    TITLE \"%1\"\n")
         .arg(m_pCurrentTrack->getTitle()).toLatin1());
-    m_cuefile.write(QString("    PERFORMER %1\n")
+    m_cuefile.write(QString("    PERFORMER \"%1\"\n")
         .arg(m_pCurrentTrack->getArtist()).toLatin1());
 
     // Woefully inaccurate (at the seconds level anyways).
