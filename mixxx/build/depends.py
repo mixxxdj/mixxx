@@ -419,7 +419,6 @@ class MixxxCore(Feature):
                    "controlevent.cpp",
                    "controllogpotmeter.cpp",
                    "controlobject.cpp",
-                   "controlnull.cpp",
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
                    "controlpushbutton.cpp",
