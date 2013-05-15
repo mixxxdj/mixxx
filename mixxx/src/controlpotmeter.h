@@ -35,9 +35,9 @@ public:
     ControlPotmeter(ConfigKey key, double dMinValue=0.0, double dMaxValue=1.0);
     ~ControlPotmeter();
     /** Returns the minimum allowed value */
-    double getMin();
+    double getMin() const;
     /** Returns the maximum allowed value */
-    double getMax();
+    double getMax() const;
     /** Sets the step size of the associated PushButtons */
     void setStep(double);
     /** Sets the small step size of the associated PushButtons */

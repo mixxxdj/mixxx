@@ -48,9 +48,9 @@ class ControlObject : public QObject {
     static void getControls(QList<ControlObject*>* pControlsList);
 
     // Return the key of the object
-    inline ConfigKey getKey() { return m_key; }
+    inline ConfigKey getKey() const { return m_key; }
     // Returns the value of the ControlObject
-    double get();
+    double get() const;
     // Sets the ControlObject value
     void set(const double& value);
     // Sets the default value
@@ -59,9 +59,6 @@ class ControlObject : public QObject {
     void add(double dValue);
     // Subtract from value
     void sub(double dValue);
-
-    // get value (range 0..127)
-    virtual double GetMidiValue();
 
     inline void setDefaultValue(double dValue) {
         if (m_pControl) {
@@ -80,6 +77,7 @@ class ControlObject : public QObject {
     // DEPRECATED: Called to set the control value from the controller
     // subsystem.
     virtual void setValueFromMidi(MidiOpCode o, double v);
+    virtual double getValueToMidi() const;
     // DEPRECATED: Called to set the control value from another thread.
     virtual void setValueFromThread(double dValue, QObject* pSetter);
 
@@ -101,6 +99,5 @@ class ControlObject : public QObject {
     // Mutex guarding access to the ControlObject hash
     static QMutex m_sqCOHashMutex;
 };
-
 
 #endif

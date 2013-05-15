@@ -38,8 +38,6 @@ ControlObject::ControlObject()
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
         : m_key(key),
           m_pControl(ControlNumericPrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
-    // TODO(rryan): Set validator on m_pControl.
-
     connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);
@@ -135,7 +133,7 @@ void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     }
 }
 
-double ControlObject::GetMidiValue() {
+double ControlObject::getValueToMidi() const {
     return m_pControl ? m_pControl->getMidiParameter() : 0.0;
 }
 
@@ -157,7 +155,7 @@ void ControlObject::sub(double dValue) {
     }
 }
 
-double ControlObject::get() {
+double ControlObject::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
 }
 

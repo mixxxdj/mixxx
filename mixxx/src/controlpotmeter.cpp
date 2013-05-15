@@ -100,13 +100,11 @@ ControlPotmeter::~ControlPotmeter()
 {
 }
 
-double ControlPotmeter::getMin()
-{
+double ControlPotmeter::getMin() const {
     return m_dMinValue;
 }
 
-double ControlPotmeter::getMax()
-{
+double ControlPotmeter::getMax() const {
     return m_dMaxValue;
 }
 

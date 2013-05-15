@@ -333,7 +333,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
         // computeValue not (yet) done on pitch messages because it all assumes 7-bit numbers
     } else {
-        double currMixxxControlValue = p->GetMidiValue();
+        double currMixxxControlValue = p->getValueToMidi();
         newValue = computeValue(options, currMixxxControlValue, value);
     }
 
