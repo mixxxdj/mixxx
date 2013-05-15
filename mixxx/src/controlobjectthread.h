@@ -50,10 +50,6 @@ class ControlObjectThread : public QObject {
   public slots:
     // Set the control to a new value. Non-blocking.
     virtual void slotSet(double v);
-    // Adds v to the control value. Thread safe, non-blocking.
-    virtual void add(double v);
-    // Subtracts v from the control value. Thread safe, non-blocking.
-    virtual void sub(double v);
     // Sets the control value to v. Thread safe, non-blocking.
     virtual void set(double v);
     // Resets the control to its default value. Thread safe, non-blocking.

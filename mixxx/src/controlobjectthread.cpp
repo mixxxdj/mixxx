@@ -68,18 +68,6 @@ void ControlObjectThread::reset() {
     }
 }
 
-void ControlObjectThread::add(double v) {
-    if (m_pControl) {
-        m_pControl->add(v, this);
-    }
-}
-
-void ControlObjectThread::sub(double v) {
-    if (m_pControl) {
-        m_pControl->sub(v, this);
-    }
-}
-
 void ControlObjectThread::emitValueChanged() {
     emit(valueChanged(get()));
 }

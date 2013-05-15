@@ -12,7 +12,7 @@ class ControlObject;
 // ControlObjectThreadMain is a variant of ControlObjectThread that should only
 // ever have its methods called by the main thread. The benefit is that the
 // valueChanged() signal is proxied to the main thread automatically and the
-// get()/set()/add()/sub() methods are lock-free and performant relative to
+// get()/set() methods are lock-free and performant relative to
 // ControlObjectThread since COT requires using a mutex to maintain the
 // integrity of the control value. If you create a COTM, you must make sure to
 // only call its methods from the main thread.

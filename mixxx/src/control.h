@@ -37,10 +37,6 @@ class ControlDoublePrivate : public QObject {
     double get() const;
     // Resets the control value to its default.
     void reset(QObject* pSetter);
-    // Adds dValue to the control value.
-    void add(double dValue, QObject* pSetter);
-    // Subtracts dValue from the control value.
-    void sub(double dValue, QObject* pSetter);
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
@@ -73,7 +69,7 @@ class ControlDoublePrivate : public QObject {
 
   private:
     ConfigKey m_key;
-    // Whether to ignore set/add/sub()'s which would have no effect.
+    // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
 
     // Whether to track value changes with the stats framework.

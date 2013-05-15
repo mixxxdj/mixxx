@@ -55,10 +55,6 @@ class ControlObject : public QObject {
     void set(const double& value);
     // Sets the default value
     void reset();
-    // Add to value
-    void add(double dValue);
-    // Subtract from value
-    void sub(double dValue);
 
     inline void setDefaultValue(double dValue) {
         if (m_pControl) {

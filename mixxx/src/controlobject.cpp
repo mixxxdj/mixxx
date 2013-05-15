@@ -143,18 +143,6 @@ void ControlObject::setValueFromThread(double dValue, QObject* pSender) {
     }
 }
 
-void ControlObject::add(double dValue) {
-    if (m_pControl) {
-        m_pControl->add(dValue, this);
-    }
-}
-
-void ControlObject::sub(double dValue) {
-    if (m_pControl) {
-        m_pControl->sub(dValue, this);
-    }
-}
-
 double ControlObject::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
 }

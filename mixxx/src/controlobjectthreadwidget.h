@@ -46,8 +46,6 @@ class ControlObjectThreadWidget : public ControlObjectThreadMain {
 
   public slots:
     virtual void set(double v);
-    virtual void add(double v);
-    virtual void sub(double v);
 
   private slots:
     virtual void slotValueChanged(double v, QObject* pSetter);

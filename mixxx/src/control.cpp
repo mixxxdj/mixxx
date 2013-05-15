@@ -101,20 +101,6 @@ void ControlDoublePrivate::set(const double& value, QObject* pSender) {
     }
 }
 
-void ControlDoublePrivate::add(double dValue, QObject* pSender) {
-    if (m_bIgnoreNops && !dValue) {
-        return;
-    }
-    set(get() + dValue, pSender);
-}
-
-void ControlDoublePrivate::sub(double dValue, QObject* pSender) {
-    if (m_bIgnoreNops && !dValue) {
-        return;
-    }
-    set(get() + dValue, pSender);
-}
-
 ControlNumericBehavior* ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
     return m_pBehavior.fetchAndStoreRelaxed(pBehavior);
 }

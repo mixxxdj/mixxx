@@ -81,22 +81,6 @@ void ControlObjectThreadWidget::set(double v) {
     }
 }
 
-void ControlObjectThreadWidget::add(double v) {
-    if (m_pControl) {
-        // Add v in parameter space, not value space.
-        m_pControl->setWidgetParameter(m_pControl->getWidgetParameter() + v,
-                                       this);
-    }
-}
-
-void ControlObjectThreadWidget::sub(double v) {
-    if (m_pControl) {
-        // Subtract v in parameter space, not value space.
-        m_pControl->setWidgetParameter(m_pControl->getWidgetParameter() - v,
-                                       this);
-    }
-}
-
 // Receives the Value from the parent and may scales the vale and re-emit it again
 void ControlObjectThreadWidget::slotValueChanged(double v, QObject* pSetter) {
     Q_UNUSED(v);
