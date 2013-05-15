@@ -60,8 +60,6 @@ void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFro
     if (connectValueToWidget) {
         connect(this, SIGNAL(valueChanged(double)),
                 widget, SLOT(setValue(double)));
-        connect(this, SIGNAL(valueChangedByThis(double)),
-                widget, SLOT(setValue(double)));
     }
     emit(valueChanged(get()));
 }
