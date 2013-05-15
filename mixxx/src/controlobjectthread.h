@@ -45,6 +45,8 @@ class ControlObjectThread : public QObject {
     // Returns the value of the object. Thread safe, non-blocking.
     virtual double get();
 
+    bool valid() const;
+
   public slots:
     // Set the control to a new value. Non-blocking.
     virtual void slotSet(double v);

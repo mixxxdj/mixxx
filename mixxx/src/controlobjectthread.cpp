@@ -39,6 +39,10 @@ ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject*
 ControlObjectThread::~ControlObjectThread() {
 }
 
+bool ControlObjectThread::valid() const {
+    return m_pControl != NULL;
+}
+
 double ControlObjectThread::get() {
     return m_pControl ? m_pControl->get() : 0.0;
 }
