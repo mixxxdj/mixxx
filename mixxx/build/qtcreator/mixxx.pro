@@ -98,9 +98,7 @@ CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb wi
 }
 
 HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
-    $$UI_DIR/ui_dlgbpmschemedlg.h \
     $$UI_DIR/ui_dlgmidilearning.h \
-    $$UI_DIR/ui_dlgprefbpmdlg.h \
     $$UI_DIR/ui_dlgprefcontrolsdlg.h \
     $$UI_DIR/ui_dlgprefcrossfaderdlg.h \
     $$UI_DIR/ui_dlgprefeqdlg.h \
@@ -131,7 +129,6 @@ INCLUDEPATH += src \
 # done
 
 HEADERS += \
-$$BASE_DIR/src/analyserbpm.h \
 $$BASE_DIR/src/analyser.h \
 $$BASE_DIR/src/analyserqueue.h \
 $$BASE_DIR/src/analyserwaveform.h \
@@ -162,10 +159,8 @@ $$BASE_DIR/src/defs_urls.h \
 $$BASE_DIR/src/defs_version.h \
 $$BASE_DIR/src/dlgabout.h \
 $$BASE_DIR/src/dlgautodj.h \
-$$BASE_DIR/src/dlgbpmscheme.h \
 $$BASE_DIR/src/dlgladspa.h \
 $$BASE_DIR/src/dlgmidilearning.h \
-$$BASE_DIR/src/dlgprefbpm.h \
 $$BASE_DIR/src/dlgprefcontrols.h \
 $$BASE_DIR/src/dlgprefcrossfader.h \
 $$BASE_DIR/src/dlgprefeq.h \
@@ -373,7 +368,6 @@ $$BASE_DIR/src/xmlparse.h
 
 
 SOURCES += \
-$$BASE_DIR/src/analyserbpm.cpp \
 $$BASE_DIR/src/analyserqueue.cpp \
 $$BASE_DIR/src/analyserwaveform.cpp \
 $$BASE_DIR/src/analyserwavesummary.cpp \
@@ -396,10 +390,8 @@ $$BASE_DIR/src/controlttrotary.cpp \
 $$BASE_DIR/src/controlvaluedelegate.cpp \
 $$BASE_DIR/src/dlgabout.cpp \
 $$BASE_DIR/src/dlgautodj.cpp \
-$$BASE_DIR/src/dlgbpmscheme.cpp \
 $$BASE_DIR/src/dlgladspa.cpp \
 $$BASE_DIR/src/dlgmidilearning.cpp \
-$$BASE_DIR/src/dlgprefbpm.cpp \
 $$BASE_DIR/src/dlgprefcontrols.cpp \
 $$BASE_DIR/src/dlgprefcrossfader.cpp \
 $$BASE_DIR/src/dlgprefeq.cpp \
@@ -622,9 +614,7 @@ SOURCES += $$BASE_DIR/lib/replaygain/replaygain_analysis.c
 FORMS += \
 $$BASE_DIR/src/dlgaboutdlg.ui \
 $$BASE_DIR/src/dlgautodj.ui \
-$$BASE_DIR/src/dlgbpmschemedlg.ui \
 $$BASE_DIR/src/dlgmidilearning.ui \
-$$BASE_DIR/src/dlgprefbpmdlg.ui \
 $$BASE_DIR/src/dlgprefcontrolsdlg.ui \
 $$BASE_DIR/src/dlgprefcrossfaderdlg.ui \
 $$BASE_DIR/src/dlgprefeqdlg.ui \

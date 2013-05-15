@@ -117,10 +117,8 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         }
     }
 
-    // appendTracksToPlaylist doesn't return whether it succeeded, so assume it
-    // did.
-    m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
-    return true;
+    // Return whether appendTracksToPlaylist succeeded.
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
