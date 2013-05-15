@@ -5,9 +5,11 @@
 #include <QMutex>
 #include <QString>
 #include <QObject>
+#include <QAtomicPointer>
 
 #include "controlobjectbase.h"
 #include "configobject.h"
+#include "controlbehavior.h"
 
 class ControlNumericPrivate : public QObject {
     Q_OBJECT
@@ -40,6 +42,14 @@ class ControlNumericPrivate : public QObject {
     // Subtracts dValue from the control value.
     void sub(double dValue, QObject* pSetter);
 
+    void setBehavior(ControlNumericBehavior* pBehavior);
+
+    void setWidgetParameter(double dParam, QObject* pSetter);
+    double getWidgetParameter() const;
+
+    void setMidiParameter(MidiOpCode opcode, double dParam);
+    double getMidiParameter() const;
+
     inline bool ignoreNops() const {
         return m_bIgnoreNops;
     }
@@ -48,7 +58,8 @@ class ControlNumericPrivate : public QObject {
         m_defaultValue.setValue(dValue);
     }
     inline double defaultValue() const {
-        return m_defaultValue.getValue();
+        double default_value = m_defaultValue.getValue();
+        return m_pBehavior ? m_pBehavior->defaultValue(default_value) : default_value;
     }
 
   signals:
@@ -71,6 +82,8 @@ class ControlNumericPrivate : public QObject {
     ControlObjectBase<double> m_value;
     // The default control value.
     ControlObjectBase<double> m_defaultValue;
+
+    QAtomicPointer<ControlNumericBehavior> m_pBehavior;
 
     // Hash of ControlNumericPrivate instantiations.
     static QHash<ConfigKey,ControlNumericPrivate*> m_sqCOHash;

@@ -86,12 +86,18 @@ void ControlNumericPrivate::set(const double& value, QObject* pSender) {
     if (m_bIgnoreNops && get() == value) {
         return;
     }
-    m_value.setValue(value);
-    emit(valueChanged(value, pSender));
+
+    double dValue = value;
+    // The behavior says to ignore the set, ignore it.
+    if (m_pBehavior && !m_pBehavior->setFilter(&dValue)) {
+        return;
+    }
+    m_value.setValue(dValue);
+    emit(valueChanged(dValue, pSender));
 
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), value);
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
     }
 }
 
@@ -109,4 +115,29 @@ void ControlNumericPrivate::sub(double dValue, QObject* pSender) {
     set(get() + dValue, pSender);
 }
 
+void ControlNumericPrivate::setBehavior(ControlNumericBehavior* pBehavior) {
+    // TODO(rryan) : Leaking behavior. Return the old behavior so the caller can
+    // free?
+    m_pBehavior = pBehavior;
+}
+
+void ControlNumericPrivate::setWidgetParameter(double dParam, QObject* pSetter) {
+    set(m_pBehavior ? m_pBehavior->widgetParameterToValue(dParam) : dParam, pSetter);
+}
+
+double ControlNumericPrivate::getWidgetParameter() const {
+    return m_pBehavior ? m_pBehavior->valueToWidgetParameter(get()) : get();
+}
+
+void ControlNumericPrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
+    if (m_pBehavior) {
+        m_pBehavior->setValueFromMidiParameter(opcode, dParam, this);
+    } else {
+        set(dParam, NULL);
+    }
+}
+
+double ControlNumericPrivate::getMidiParameter() const {
+    return m_pBehavior ? m_pBehavior->valueToMidiParameter(get()) : get();
+}
 
