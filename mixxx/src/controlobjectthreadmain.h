@@ -20,6 +20,14 @@ class ControlObjectThreadMain : public ControlObjectThread {
     Q_OBJECT
   public:
     ControlObjectThreadMain(ControlObject *pControlObject, QObject* pParent=NULL);
+
+    bool eventFilter(QObject* o, QEvent* e);
+
+  protected slots:
+    // Receives the value from the master control, proxies it to the main
+    // thread, and re-emits either valueChanged(double) or
+    // valueChangedByThis(double) based on pSetter.
+    virtual void slotValueChanged(double v, QObject* pSetter);
 };
 
 #endif

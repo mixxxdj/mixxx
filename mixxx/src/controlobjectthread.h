@@ -62,7 +62,8 @@ class ControlObjectThread : public QObject {
     void valueChangedByThis(double);
 
   protected slots:
-    // Receives the Value from the parent and may scales the vale and re-emit it again
+    // Receives the value from the master control and re-emits either
+    // valueChanged(double) or valueChangedByThis(double) based on pSetter.
     virtual void slotValueChanged(double v, QObject* pSetter);
 
   protected:

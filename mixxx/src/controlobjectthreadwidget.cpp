@@ -80,11 +80,3 @@ void ControlObjectThreadWidget::set(double v) {
         m_pControl->setWidgetParameter(v, this);
     }
 }
-
-// Receives the Value from the parent and may scales the vale and re-emit it again
-void ControlObjectThreadWidget::slotValueChanged(double v, QObject* pSetter) {
-    Q_UNUSED(v);
-    // v is in value space, but we emit valueChanged() signals in parameter
-    // space. So emit the value of get() instead.
-    ControlObjectThreadMain::slotValueChanged(get(), pSetter);
-}
