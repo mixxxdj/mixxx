@@ -25,14 +25,7 @@
 ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
         : QObject(pParent),
           m_key(pControlObject ? pControlObject->getKey() : ConfigKey()),
-          m_pControlObject(pControlObject),
           m_pControl(NULL) {
-    if (m_pControlObject) {
-        connect(m_pControlObject, SIGNAL(destroyed()),
-                this, SLOT(slotControlObjectDead()),
-                Qt::DirectConnection);
-    }
-
     if (pControlObject) {
         m_pControl = ControlNumericPrivate::getControl(pControlObject->getKey(), false);
     }
@@ -41,14 +34,9 @@ ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject*
                 this, SLOT(slotValueChanged(double, QObject*)),
                 Qt::DirectConnection);
     }
-    emitValueChanged();
 }
 
 ControlObjectThread::~ControlObjectThread() {
-}
-
-void ControlObjectThread::slotControlObjectDead() {
-    m_pControlObject = NULL;
 }
 
 double ControlObjectThread::get() {
@@ -67,7 +55,7 @@ void ControlObjectThread::set(double v) {
 
 void ControlObjectThread::reset() {
     if (m_pControl) {
-        m_pControl->reset(this);
+        m_pControl->reset(NULL);
     }
 }
 

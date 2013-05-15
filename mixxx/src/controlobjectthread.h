@@ -64,15 +64,9 @@ class ControlObjectThread : public QObject {
     // Receives the Value from the parent and may scales the vale and re-emit it again
     virtual void slotValueChanged(double v, QObject* pSetter);
 
-  private slots:
-    // Called when the associated ControlObject is dead.
-    // TODO(rryan): Remove when we separate validators/translators from CO.
-    void slotControlObjectDead();
-
   protected:
     ConfigKey m_key;
     // Pointer to connected control.
-    ControlObject* m_pControlObject;
     ControlNumericPrivate* m_pControl;
 };
 

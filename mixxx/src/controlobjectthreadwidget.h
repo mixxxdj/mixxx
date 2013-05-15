@@ -22,10 +22,9 @@ class ControlObject;
 @author Tue Haste Andersen
 */
 
-class ControlObjectThreadWidget : public ControlObjectThreadMain
-{
+class ControlObjectThreadWidget : public ControlObjectThreadMain {
     Q_OBJECT
-public:
+  public:
 
     enum EmitOption {
         EMIT_NEVER                = 0x00,

@@ -6,13 +6,6 @@
 
 ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObject, QObject* pParent)
         : ControlObjectThreadMain(pControlObject, pParent) {
-    // ControlObjectThread's constructor sets m_dValue to
-    // m_pControlObject->get(). Since we represent the widget's value, we need
-    // to reset m_dValue to be the result of getValueToWidget.
-    if (m_pControl != NULL) {
-        set(get());
-        slotValueChanged(get(), NULL);
-    }
 }
 
 ControlObjectThreadWidget::~ControlObjectThreadWidget() {
@@ -79,33 +72,35 @@ void ControlObjectThreadWidget::setWidgetOnOff(QWidget* widget)
 }
 
 double ControlObjectThreadWidget::get() {
-    double value = ControlObjectThreadMain::get();
-    return m_pControlObject ? m_pControlObject->getValueToWidget(value) : value;
+    return m_pControl ? m_pControl->getWidgetParameter() : 0.0;
 }
 
 void ControlObjectThreadWidget::set(double v) {
-    double translated = m_pControlObject ? m_pControlObject->getValueFromWidget(v) : v;
-    ControlObjectThreadMain::set(translated);
+    if (m_pControl) {
+        m_pControl->setWidgetParameter(v, this);
+    }
 }
 
 void ControlObjectThreadWidget::add(double v) {
-    // TODO(rryan): Double-check that this is ok. I think it requires
-    // distributive properties of getValueFromWidget() which might not always be
-    // the case.
-    double translated = m_pControlObject ? m_pControlObject->getValueFromWidget(v) : v;
-    ControlObjectThreadMain::add(translated);
+    if (m_pControl) {
+        // Add v in parameter space, not value space.
+        m_pControl->setWidgetParameter(m_pControl->getWidgetParameter() + v,
+                                       this);
+    }
 }
 
 void ControlObjectThreadWidget::sub(double v) {
-    // TODO(rryan): Double-check that this is ok. I think it requires
-    // distributive properties of getValueFromWidget() which might not always be
-    // the case.
-    double translated = m_pControlObject ? m_pControlObject->getValueFromWidget(v) : v;
-    ControlObjectThreadMain::sub(translated);
+    if (m_pControl) {
+        // Subtract v in parameter space, not value space.
+        m_pControl->setWidgetParameter(m_pControl->getWidgetParameter() - v,
+                                       this);
+    }
 }
 
 // Receives the Value from the parent and may scales the vale and re-emit it again
 void ControlObjectThreadWidget::slotValueChanged(double v, QObject* pSetter) {
-    double translated = m_pControlObject ? m_pControlObject->getValueToWidget(v) : v;
-    ControlObjectThreadMain::slotValueChanged(translated, pSetter);
+    Q_UNUSED(v);
+    // v is in value space, but we emit valueChanged() signals in parameter
+    // space. So emit the value of get() instead.
+    ControlObjectThreadMain::slotValueChanged(get(), pSetter);
 }
