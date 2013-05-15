@@ -117,7 +117,13 @@ class ControlObjectValue<T, true> {
     }
 
   private:
+#if defined(__GNUC__)
+    T m_value __attribute__ ((aligned(sizeof(void*))));
+#elif defined(_MSC_VER)
+    T __declspec(align(sizeof(void*))) m_value;
+#else
     T m_value;
+#endif
 };
 
 // This is a proxy Template to select the native atomic or the ring buffer
