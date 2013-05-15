@@ -15,13 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <math.h>
 #include "controllogpotmeter.h"
-
-#define maxPosition 127
-#define minPosition 0
-#define middlePosition ((maxPosition-minPosition)/2)
-#define positionrange (maxPosition-minPosition)
 
 /* -------- ------------------------------------------------------
    Purpose: Creates a new logarithmic potmeter, where the value is
@@ -44,69 +38,8 @@ ControlLogpotmeter::ControlLogpotmeter(ConfigKey key, double dMaxValue)
     setDefaultValue(1.0);
     set(1.0);
 
-    if (m_dMaxValue == 1.) {
-        m_bTwoState = false;
-        m_fB1 = log10(2.)/maxPosition;
-    } else {
-        m_bTwoState = true;
-        m_fB1 = log10(2.)/middlePosition;
-        m_fB2 = log10(dMaxValue)/(maxPosition-middlePosition);
+    if (m_pControl) {
+        m_pControl->setBehavior(new ControlLogpotmeterBehavior(dMaxValue));
     }
-}
-
-double ControlLogpotmeter::getValueFromWidget(double dValue)
-{
-    double dResult = 0;
-
-    // Calculate the value linearly:
-    if (!m_bTwoState)
-    {
-        dResult = pow(10., (double)(m_fB1*dValue)) - 1;
-    }
-    else
-    {
-        if (dValue <= middlePosition)
-            dResult = pow(10., m_fB1*dValue) - 1;
-        else
-            dResult = pow(10., m_fB2*(dValue - middlePosition));
-    }
-
-    //qDebug() << "Midi: " << dValue << " ValueFromWidget : " << m_dValue;
-    return dResult;
-}
-
-double ControlLogpotmeter::getValueToWidget(double dValue)
-{
-    double pos;
-
-    if (!m_bTwoState)
-    {
-        pos = log10(dValue+1)/m_fB1;
-    }
-    else
-    {
-        if (dValue > 1.) {
-            pos = log10(dValue) / m_fB2 + middlePosition;
-        } else {
-            pos = log10(dValue+1) / m_fB1;
-        }
-    }
-    //qDebug() << "GetValueToWidget : " << pos;
-    return pos;
-}
-
-double ControlLogpotmeter::GetMidiValue()
-{
-    double midival = 0.;
-
-    midival = getValueToWidget(get());
-    //    midival = 127.*(midival-m_dMinValue)/m_dValueRange
-    //qDebug() << "GetMidiValue : " << midival;
-    return midival;
-}
-
-void ControlLogpotmeter::setValueFromMidi(MidiOpCode o, double v) {
-    Q_UNUSED(o);
-    set(getValueFromWidget(v));
 }
 

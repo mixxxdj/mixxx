@@ -126,45 +126,15 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue - m_dMinValue;
     double default_value = m_dMinValue + 0.5 * m_dValueRange;
+
+    if (m_pControl) {
+        m_pControl->setBehavior(
+            new ControlPotmeterBehavior(dMinValue, dMaxValue));
+    }
+
     setDefaultValue(default_value);
     set(default_value);
     //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
-}
-
-double ControlPotmeter::getValueToWidget(double dValue)
-{
-    double out = (dValue-m_dMinValue)/m_dValueRange;
-    return (out < 0.5) ? out*128. : out*126. + 1.;
-}
-
-double ControlPotmeter::GetMidiValue()
-{
-    double out = (get()-m_dMinValue)/m_dValueRange;
-    return (out < 0.5) ? out*128. : out*126. + 1.;
-}
-
-double ControlPotmeter::getValueFromWidget(double dValue)
-{
-    double out = (dValue < 64) ? dValue / 128. : (dValue-1) / 126.;
-    return m_dMinValue + out * m_dValueRange;
-}
-
-void ControlPotmeter::setValueFromThread(double dValue)
-{
-    if (dValue > m_dMaxValue) {
-        set(m_dMaxValue);
-    } else if (dValue < m_dMinValue) {
-        set(m_dMinValue);
-    } else {
-        set(dValue);
-    }
-}
-
-void ControlPotmeter::setValueFromMidi(MidiOpCode o, double v)
-{
-    Q_UNUSED(o);
-    double out = (v < 64) ? v / 128. : (v-1) / 126.;
-    set(m_dMinValue + out * m_dValueRange);
 }
 
 void ControlPotmeter::incValue(double keypos)

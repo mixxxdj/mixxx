@@ -129,12 +129,12 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     if (m_pControl) {
-        m_pControl->set(v, NULL);
+        m_pControl->setMidiParameter(o, v);
     }
 }
 
 double ControlObject::GetMidiValue() {
-    return m_pControl ? m_pControl->get() : 0.0;
+    return m_pControl ? m_pControl->getMidiParameter() : 0.0;
 }
 
 void ControlObject::setValueFromThread(double dValue, QObject* pSender) {
@@ -153,14 +153,6 @@ void ControlObject::sub(double dValue) {
     if (m_pControl) {
         m_pControl->sub(dValue, this);
     }
-}
-
-double ControlObject::getValueFromWidget(double v) {
-    return v;
-}
-
-double ControlObject::getValueToWidget(double v) {
-    return v;
 }
 
 double ControlObject::get() {

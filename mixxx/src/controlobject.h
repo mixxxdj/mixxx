@@ -59,12 +59,10 @@ class ControlObject : public QObject {
     void add(double dValue);
     // Subtract from value
     void sub(double dValue);
-    // Return a ControlObject value, corresponding to the widget input value.
-    virtual double getValueFromWidget(double dValue);
-    // Return a widget value corresponding to the ControlObject input value.
-    virtual double getValueToWidget(double dValue);
+
     // get value (range 0..127)
     virtual double GetMidiValue();
+
     inline void setDefaultValue(double dValue) {
         if (m_pControl) {
             m_pControl->setDefaultValue(dValue);
@@ -78,14 +76,16 @@ class ControlObject : public QObject {
     void valueChanged(double);
 
   public:
-    // Called when a widget has changed value.
+    // DEPRECATED: Called to set the control value from the controller
+    // subsystem.
     virtual void setValueFromMidi(MidiOpCode o, double v);
-    // Called when another thread has changed value.
+    // DEPRECATED: Called to set the control value from another thread.
     virtual void setValueFromThread(double dValue, QObject* pSetter);
 
   protected:
     // Key of the object
     ConfigKey m_key;
+    ControlNumericPrivate* m_pControl;
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);
@@ -94,8 +94,6 @@ class ControlObject : public QObject {
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
-
-    ControlNumericPrivate* m_pControl;
 
     // Hash of ControlObject instantiations
     static QHash<ConfigKey,ControlObject*> m_sqCOHash;
