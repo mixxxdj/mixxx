@@ -27,7 +27,7 @@ ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject*
           m_key(pControlObject ? pControlObject->getKey() : ConfigKey()),
           m_pControl(NULL) {
     if (pControlObject) {
-        m_pControl = ControlNumericPrivate::getControl(pControlObject->getKey(), false);
+        m_pControl = ControlDoublePrivate::getControl(pControlObject->getKey(), false);
     }
     if (m_pControl) {
         connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),

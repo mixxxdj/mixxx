@@ -37,7 +37,7 @@ ControlObject::ControlObject()
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
         : m_key(key),
-          m_pControl(ControlNumericPrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
+          m_pControl(ControlDoublePrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
     connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);
@@ -50,7 +50,7 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
 ControlObject::ControlObject(const QString& group, const QString& item,
                              bool bIgnoreNops, bool bTrack)
         : m_key(group, item),
-          m_pControl(ControlNumericPrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
+          m_pControl(ControlDoublePrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
 
     connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),

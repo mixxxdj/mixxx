@@ -8,7 +8,7 @@
 #include "controllers/midi/midimessage.h"
 #include "mathstuff.h"
 
-class ControlNumericPrivate;
+class ControlDoublePrivate;
 
 class ControlNumericBehavior {
   public:
@@ -36,7 +36,7 @@ class ControlNumericBehavior {
     }
 
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlNumericPrivate* pControl);
+                                           ControlDoublePrivate* pControl);
 };
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
@@ -77,7 +77,7 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     }
 
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlNumericPrivate* pControl);
+                                           ControlDoublePrivate* pControl);
 
   protected:
     double m_dMinValue;
@@ -175,7 +175,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     }
 
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlNumericPrivate* pControl);
+                                           ControlDoublePrivate* pControl);
 
   private:
     ButtonMode m_buttonMode;

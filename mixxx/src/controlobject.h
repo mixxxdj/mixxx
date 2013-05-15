@@ -84,7 +84,7 @@ class ControlObject : public QObject {
   protected:
     // Key of the object
     ConfigKey m_key;
-    ControlNumericPrivate* m_pControl;
+    ControlDoublePrivate* m_pControl;
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);

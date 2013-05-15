@@ -26,7 +26,7 @@
 
 #include "configobject.h"
 
-class ControlNumericPrivate;
+class ControlDoublePrivate;
 class ControlObject;
 
 class ControlObjectThread : public QObject {
@@ -72,7 +72,7 @@ class ControlObjectThread : public QObject {
   protected:
     ConfigKey m_key;
     // Pointer to connected control.
-    ControlNumericPrivate* m_pControl;
+    ControlDoublePrivate* m_pControl;
 };
 
 #endif

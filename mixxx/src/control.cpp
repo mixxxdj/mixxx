@@ -7,17 +7,17 @@
 #include "util/timer.h"
 
 // Static member variable definition
-QHash<ConfigKey, ControlNumericPrivate*> ControlNumericPrivate::m_sqCOHash;
-QMutex ControlNumericPrivate::m_sqCOHashMutex;
+QHash<ConfigKey, ControlDoublePrivate*> ControlDoublePrivate::m_sqCOHash;
+QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
-ControlNumericPrivate::ControlNumericPrivate()
+ControlDoublePrivate::ControlDoublePrivate()
         : m_bIgnoreNops(true),
           m_bTrack(false) {
     m_defaultValue.setValue(0);
     m_value.setValue(0);
 }
 
-ControlNumericPrivate::ControlNumericPrivate(ConfigKey key,
+ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
                                              bool bIgnoreNops, bool bTrack)
         : m_key(key),
           m_bIgnoreNops(bIgnoreNops),
@@ -41,48 +41,48 @@ ControlNumericPrivate::ControlNumericPrivate(ConfigKey key,
     }
 }
 
-ControlNumericPrivate::~ControlNumericPrivate() {
+ControlDoublePrivate::~ControlDoublePrivate() {
     m_sqCOHashMutex.lock();
     m_sqCOHash.remove(m_key);
     m_sqCOHashMutex.unlock();
 }
 
 // static
-ControlNumericPrivate* ControlNumericPrivate::getControl(
+ControlDoublePrivate* ControlDoublePrivate::getControl(
     const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
     QMutexLocker locker(&m_sqCOHashMutex);
-    QHash<ConfigKey, ControlNumericPrivate*>::const_iterator it = m_sqCOHash.find(key);
+    QHash<ConfigKey, ControlDoublePrivate*>::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {
         return it.value();
     }
     locker.unlock();
 
-    ControlNumericPrivate* pControl = NULL;
+    ControlDoublePrivate* pControl = NULL;
     if (bCreate) {
-        pControl = new ControlNumericPrivate(key, bIgnoreNops, bTrack);
+        pControl = new ControlDoublePrivate(key, bIgnoreNops, bTrack);
         locker.relock();
         m_sqCOHash.insert(key, pControl);
         locker.unlock();
     }
 
     if (pControl == NULL) {
-        qWarning() << "ControlNumericPrivate::getControl returning NULL for ("
+        qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
                    << key.group << "," << key.item << ")";
     }
 
     return pControl;
 }
 
-double ControlNumericPrivate::get() const {
+double ControlDoublePrivate::get() const {
     return m_value.getValue();
 }
 
-void ControlNumericPrivate::reset(QObject* pSender) {
+void ControlDoublePrivate::reset(QObject* pSender) {
     double defaultValue = m_defaultValue.getValue();
     set(defaultValue, pSender);
 }
 
-void ControlNumericPrivate::set(const double& value, QObject* pSender) {
+void ControlDoublePrivate::set(const double& value, QObject* pSender) {
     if (m_bIgnoreNops && get() == value) {
         return;
     }
@@ -101,33 +101,33 @@ void ControlNumericPrivate::set(const double& value, QObject* pSender) {
     }
 }
 
-void ControlNumericPrivate::add(double dValue, QObject* pSender) {
+void ControlDoublePrivate::add(double dValue, QObject* pSender) {
     if (m_bIgnoreNops && !dValue) {
         return;
     }
     set(get() + dValue, pSender);
 }
 
-void ControlNumericPrivate::sub(double dValue, QObject* pSender) {
+void ControlDoublePrivate::sub(double dValue, QObject* pSender) {
     if (m_bIgnoreNops && !dValue) {
         return;
     }
     set(get() + dValue, pSender);
 }
 
-ControlNumericBehavior* ControlNumericPrivate::setBehavior(ControlNumericBehavior* pBehavior) {
+ControlNumericBehavior* ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
     return m_pBehavior.fetchAndStoreRelaxed(pBehavior);
 }
 
-void ControlNumericPrivate::setWidgetParameter(double dParam, QObject* pSetter) {
+void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSetter) {
     set(m_pBehavior ? m_pBehavior->widgetParameterToValue(dParam) : dParam, pSetter);
 }
 
-double ControlNumericPrivate::getWidgetParameter() const {
+double ControlDoublePrivate::getWidgetParameter() const {
     return m_pBehavior ? m_pBehavior->valueToWidgetParameter(get()) : get();
 }
 
-void ControlNumericPrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
+void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
     if (m_pBehavior) {
         m_pBehavior->setValueFromMidiParameter(opcode, dParam, this);
     } else {
@@ -135,7 +135,7 @@ void ControlNumericPrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
     }
 }
 
-double ControlNumericPrivate::getMidiParameter() const {
+double ControlDoublePrivate::getMidiParameter() const {
     return m_pBehavior ? m_pBehavior->valueToMidiParameter(get()) : get();
 }
 

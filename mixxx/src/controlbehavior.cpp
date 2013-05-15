@@ -5,19 +5,19 @@
 const int ControlPushButtonBehavior::kPowerWindowTimeMillis = 300;
 
 void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                       ControlNumericPrivate* pControl) {
+                                                       ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     pControl->set(dParam, NULL);
 }
 
 void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                        ControlNumericPrivate* pControl) {
+                                                        ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
     pControl->set(widgetParameterToValue(dParam), NULL);
 }
 
 void ControlPushButtonBehavior::setValueFromMidiParameter(
-    MidiOpCode o, double dParam, ControlNumericPrivate* pControl) {
+    MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     // This block makes push-buttons act as power window buttons.
     if (m_buttonMode == POWERWINDOW && m_iNumStates == 2) {
         if (o == MIDI_NOTE_ON) {
