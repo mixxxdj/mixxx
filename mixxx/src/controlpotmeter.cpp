@@ -126,8 +126,9 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
     double default_value = m_dMinValue + 0.5 * m_dValueRange;
 
     if (m_pControl) {
-        m_pControl->setBehavior(
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
             new ControlPotmeterBehavior(dMinValue, dMaxValue));
+        delete pOldBehavior;
     }
 
     setDefaultValue(default_value);

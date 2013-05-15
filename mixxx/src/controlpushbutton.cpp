@@ -26,9 +26,11 @@ ControlPushButton::ControlPushButton(ConfigKey key) :
         m_buttonMode(PUSH),
         m_iNoStates(2) {
     if (m_pControl) {
-        m_pControl->setBehavior(new ControlPushButtonBehavior(
-            static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-            m_iNoStates));
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
+        delete pOldBehavior;
     }
 }
 
@@ -41,9 +43,11 @@ void ControlPushButton::setButtonMode(enum ButtonMode mode) {
     m_buttonMode = mode;
 
     if (m_pControl) {
-        m_pControl->setBehavior(new ControlPushButtonBehavior(
-            static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-            m_iNoStates));
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
+        delete pOldBehavior;
     }
 }
 
@@ -51,9 +55,11 @@ void ControlPushButton::setStates(int num_states) {
     m_iNoStates = num_states;
 
     if (m_pControl) {
-        m_pControl->setBehavior(new ControlPushButtonBehavior(
-            static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-            m_iNoStates));
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
+        delete pOldBehavior;
     }
 }
 

@@ -42,7 +42,11 @@ class ControlNumericPrivate : public QObject {
     // Subtracts dValue from the control value.
     void sub(double dValue, QObject* pSetter);
 
-    void setBehavior(ControlNumericBehavior* pBehavior);
+    // Set the behavior to be used when setting values and translating between
+    // parameter and value space. Returns the previously set behavior (if any).
+    // Caller must handle appropriate destruction of the previous behavior or
+    // memory will leak.
+    ControlNumericBehavior* setBehavior(ControlNumericBehavior* pBehavior);
 
     void setWidgetParameter(double dParam, QObject* pSetter);
     double getWidgetParameter() const;

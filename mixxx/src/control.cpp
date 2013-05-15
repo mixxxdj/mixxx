@@ -115,10 +115,8 @@ void ControlNumericPrivate::sub(double dValue, QObject* pSender) {
     set(get() + dValue, pSender);
 }
 
-void ControlNumericPrivate::setBehavior(ControlNumericBehavior* pBehavior) {
-    // TODO(rryan) : Leaking behavior. Return the old behavior so the caller can
-    // free?
-    m_pBehavior = pBehavior;
+ControlNumericBehavior* ControlNumericPrivate::setBehavior(ControlNumericBehavior* pBehavior) {
+    return m_pBehavior.fetchAndStoreRelaxed(pBehavior);
 }
 
 void ControlNumericPrivate::setWidgetParameter(double dParam, QObject* pSetter) {
