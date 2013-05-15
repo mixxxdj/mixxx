@@ -98,29 +98,25 @@ class ControlObjectValue {
     QAtomicInt m_writeIndex;
 };
 
-// Specialized Template for types store able in a native atomic types
-// It uses reinterpret_cast to store any value bit by bit into a QAtomicPointer
-// container. reinterpret_cast guarantees that the value is unchanged if you
-// cast it to a different type, and then reinterpret_cast it back to the
-// original type.
+// Specialized Template for atomic types.
 template<typename T>
 class ControlObjectValue<T, true> {
   public:
     inline T getValue() {
-		return reinterpret_cast<T>(m_container);
+        return m_value;
     }
 
     inline void setValue(const T& value) {
-        m_container = reinterpret_cast<void*>(value);
+        m_value = value;
     }
 
   protected:
     ControlObjectValue()
-        : m_container(reinterpret_cast<void*>(T())) {
+        : m_value(T()) {
     }
 
   private:
-    QAtomicPointer<void*> m_container;
+    T m_value;
 };
 
 // This is a proxy Template to select the native atomic or the ring buffer
