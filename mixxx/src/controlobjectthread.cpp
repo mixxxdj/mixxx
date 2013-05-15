@@ -59,6 +59,11 @@ void ControlObjectThread::set(double v) {
 
 void ControlObjectThread::reset() {
     if (m_pControl) {
+        // NOTE(rryan): This is important. The originator of this action does
+        // not know the resulting value so it makes sense that we should emit a
+        // general valueChanged() signal even though the change originated from
+        // us. For this reason, we provide NULL here so that the change is
+        // broadcast as valueChanged() and not valueChangedByThis().
         m_pControl->reset(NULL);
     }
 }
@@ -83,5 +88,7 @@ void ControlObjectThread::slotValueChanged(double v, QObject* pSetter) {
     if (pSetter != this) {
         // This is base implementation of this function without scaling
         emit(valueChanged(v));
+    } else {
+        emit(valueChangedByThis(v));
     }
 }

@@ -61,6 +61,9 @@ class ControlObjectThread : public QObject {
 
   signals:
     void valueChanged(double);
+    // This means that the control value has changed as a result of a mutation
+    // (set/add/sub/reset) originating from this object.
+    void valueChangedByThis(double);
 
   protected slots:
     // Receives the Value from the parent and may scales the vale and re-emit it again
