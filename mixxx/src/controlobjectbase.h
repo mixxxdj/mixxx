@@ -9,8 +9,9 @@
 // for look free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
 const int cRingSize = 8;
-// there should always be one element free for writing
-const int cReaderSlotCnt = cRingSize - 1;
+// there are basicly unlimited readers allowed at each ring element 
+// but we have to count them so max() is just fine.
+const int cReaderSlotCnt = std::numeric_limits<int>::max();
 
 
 template<typename T>
@@ -58,11 +59,11 @@ class ControlObjectValue {
             // We are here if
             // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
             // 2) the formerly current value is locked by a writer
-            // Case 1 is prevented by enough reader slots and should not happen
+            // Case 1 does not happen because we have enough (0x7fffffff) reader slots. 
             // Case 2 happens when the a reader is delayed after reading the
-            // m_currentIndex and the writers have written cReaderSlotCnt times so that the
-            // formally current value is locked again for writing.
-            // In both cases reading the less recent value will fix it.
+            // m_currentIndex and in the mean while a reader locks the formaly current value 
+            // because it has written cRingSize times. Reading the less recent value will fix 
+            // it because it is now actualy the current value.
             index = (index - 1) % (cRingSize);
         }
         return value;
@@ -116,7 +117,13 @@ class ControlObjectValue<T, true> {
     }
 
   private:
+#if defined(__GNUC__)
+    T m_value __attribute__ ((aligned(sizeof(void*))));
+#elif defined(_MSC_VER)
+    T __declspec(align(sizeof(void*))) m_value;
+#else
     T m_value;
+#endif
 };
 
 // This is a proxy Template to select the native atomic or the ring buffer
