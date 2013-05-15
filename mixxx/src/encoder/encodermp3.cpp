@@ -15,33 +15,41 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdlib.h> // needed for random num
-#include <time.h> // needed for random num
-#include <string.h> // needed for memcpy
-#include <QDebug>
+#include <QtDebug>
+#include <QObject>
 
-#include "recording/encodermp3.h"
-#include "engine/engineabstractrecord.h"
-#include "controlobjectthreadmain.h"
-#include "controlobject.h"
-#include "playerinfo.h"
-#include "trackinfoobject.h"
-#include "defs_recording.h"
+#include "encoder/encodermp3.h"
+#include "encoder/encodercallback.h"
 #include "errordialoghandler.h"
 
-EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
-    m_pEngine = engine;
-    m_metaDataTitle = NULL;
-    m_metaDataArtist = NULL;
-    m_metaDataAlbum = NULL;
-    m_pMetaData = TrackPointer(NULL);
+EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
+  : m_lameFlags(NULL),
+    m_metaDataTitle(NULL),
+    m_metaDataArtist(NULL),
+    m_metaDataAlbum(NULL),
+    m_bufferOut(NULL),
+    m_bufferOutSize(0),
+    /*
+     * @ Author: Tobias Rafreider
+     * Nobody has initialized the field before my code review.  At runtime the
+     * Integer field was inialized by a large random value such that the
+     * following pointer fields were never initialized in the methods
+     * 'bufferOutGrow()' and 'bufferInGrow()' --> Valgrind shows invalid writes
+     * :-)
+     *
+     * m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
+     * m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
+     * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
+     *
+     * This has solved many segfaults when using and even closing shoutcast
+     * along with LAME.  This bug was detected by using Valgrind memory analyser
+     *
+     */
+    m_bufferInSize(0),
+    m_pCallback(pCallback),
+    m_library(NULL) {
     m_bufferIn[0] = NULL;
     m_bufferIn[1] = NULL;
-    m_bufferOut = NULL;
-    m_bufferOutSize = 0;
-    m_lameFlags = NULL;
-    m_library = NULL;
-    m_samplerate = NULL;
 
     //These are the function pointers for lame
     lame_init =  0;
@@ -63,30 +71,12 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
     id3tag_set_album = 0;
 
     /*
-     * @ Author: Tobias Rafreider
-     * Nobody has initialized the field before my code review.  At runtime the
-     * Integer field was inialized by a large random value such that the
-     * following pointer fields were never initialized in the methods
-     * 'bufferOutGrow()' and 'bufferInGrow()' --> Valgrind shows invalid writes
-     * :-)
-     *
-     * m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
-     * m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
-     * m_bufferIn[1] = (float *)realloc(m_bufferIn[1], size * sizeof(float));
-     *
-     * This has solved many segfaults when using and even closing shoutcast
-     * along with LAME.  This bug was detected by using Valgrind memory analyser
-     *
-     */
-    m_bufferInSize = 0;
-
-    /*
      * Load shared library
      */
     QStringList libnames;
     QString libname = "";
 #ifdef __LINUX__
-       libnames << "mp3lame";
+    libnames << "mp3lame";
 #elif __WINDOWS__
     libnames << "lame_enc.dll";
 #elif __APPLE__
@@ -103,22 +93,21 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
         m_library = NULL;
     }
 
-    if(!m_library || !m_library->isLoaded()) {
+    if (!m_library || !m_library->isLoaded()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle(tr("Encoder"));
-        QString key = "";
+        props->setTitle(QObject::tr("Encoder"));
+        QString missingCodec = QObject::tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#%1'>Mixxx Wiki</a> for more information. </html>");
+
 #ifdef __LINUX__
-        key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#linux'>Mixxx Wiki</a> for more information. </html>");
-        props->setText(key);
+        missingCodec = missingCodec.arg("linux");
 #elif __WINDOWS__
-        key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>lame_enc.dll</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#windows'>Mixxx Wiki</a> for more information. </html>");
-        props->setText(key);
+        missingCodec = missingCodec.arg("windows");
 #elif __APPLE__
-        key = tr("<html>Mixxx cannot record or stream in MP3 without the MP3 encoder &quot;lame&quot;. Due to licensing issues, we cannot include this with Mixxx. To record or stream in MP3, you must download <b>libmp3lame</b> and install it on your system. <p>See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting#mac_osx'>Mixxx Wiki</a> for more information. </html>");
-        props->setText(key);
+        missingCodec = missingCodec.arg("mac_osx");
 #endif
-        props->setKey(key);
+        props->setText(missingCodec);
+        props->setKey(missingCodec);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return;
     }
@@ -194,20 +183,19 @@ EncoderMp3::EncoderMp3(EngineAbstractRecord *engine) {
 
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
-        props->setTitle(tr("Encoder"));
-        QString key = tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
+        props->setTitle(QObject::tr("Encoder"));
+        QString key = QObject::tr("<html>Mixxx has detected that you use a modified version of libmp3lame. See <a href='http://mixxx.org/wiki/doku.php/internet_broadcasting'>Mixxx Wiki</a> for more information.</html>");
         props->setText(key);
         props->setKey(key);
         ErrorDialogHandler::instance()->requestErrorDialog(props);
         return;
     }
     qDebug() << "Loaded libmp3lame version " << get_lame_version();
-    m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 }
 
 // Destructor
 EncoderMp3::~EncoderMp3() {
-    if(m_library != NULL && m_library->isLoaded()){
+    if (m_library != NULL && m_library->isLoaded()) {
         flush();
         lame_close(m_lameFlags);
         m_library->unload(); //unload dll, so, ...
@@ -215,9 +203,12 @@ EncoderMp3::~EncoderMp3() {
         m_library = NULL;
     }
     //free requested buffers
-    if(m_bufferIn[0] != NULL) delete m_bufferIn[0];
-    if(m_bufferIn[1] != NULL) delete m_bufferIn[1];
-    if(m_bufferOut != NULL) delete m_bufferOut;
+    if (m_bufferIn[0] != NULL)
+        delete m_bufferIn[0];
+    if (m_bufferIn[1] != NULL)
+        delete m_bufferIn[1];
+    if (m_bufferOut != NULL)
+        delete m_bufferOut;
 
     lame_init =  0;
     lame_set_num_channels = 0;
@@ -236,8 +227,6 @@ EncoderMp3::~EncoderMp3() {
     id3tag_set_title = 0;
     id3tag_set_artist = 0;
     id3tag_set_album = 0;
-    //Delete control object
-    if(m_samplerate) delete  m_samplerate;
 }
 
 /*
@@ -245,11 +234,11 @@ EncoderMp3::~EncoderMp3() {
  */
 
 int EncoderMp3::bufferOutGrow(int size) {
-    if ( m_bufferOutSize >= size )
+    if (m_bufferOutSize >= size)
         return 0;
 
     m_bufferOut = (unsigned char *)realloc(m_bufferOut, size);
-    if ( m_bufferOut == NULL )
+    if (m_bufferOut == NULL)
         return -1;
 
     m_bufferOutSize = size;
@@ -261,7 +250,7 @@ int EncoderMp3::bufferOutGrow(int size) {
  */
 
 int EncoderMp3::bufferInGrow(int size) {
-    if ( m_bufferInSize >= size )
+    if (m_bufferInSize >= size)
         return 0;
 
     m_bufferIn[0] = (float *)realloc(m_bufferIn[0], size * sizeof(float));
@@ -276,21 +265,21 @@ int EncoderMp3::bufferInGrow(int size) {
 //Using this method requires to call method 'write()' or 'sendPackages()'
 //depending on which context you use the class (shoutcast or recording to HDD)
 void EncoderMp3::flush() {
-	if(m_library == NULL || !m_library->isLoaded())
-		return;
-    int rc = 0;
- 	/**Flush also writes ID3 tags **/
-    rc = lame_encode_flush(m_lameFlags, m_bufferOut, m_bufferOutSize);
-	 if (rc < 0 ){
+    if (m_library == NULL || !m_library->isLoaded())
         return;
- 	}
-	//end encoded audio to shoutcast or file
-	m_pEngine->write(NULL, m_bufferOut, 0, rc);
+    int rc = 0;
+    /**Flush also writes ID3 tags **/
+    rc = lame_encode_flush(m_lameFlags, m_bufferOut, m_bufferOutSize);
+    if (rc < 0 ){
+        return;
+    }
+    //end encoded audio to shoutcast or file
+    m_pCallback->write(NULL, m_bufferOut, 0, rc);
 }
 
 void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
-	if(m_library == NULL || !m_library->isLoaded())
-		return;
+    if (m_library == NULL || !m_library->isLoaded())
+        return;
     int outsize = 0;
     int rc = 0;
     int i = 0;
@@ -308,12 +297,12 @@ void EncoderMp3::encodeBuffer(const CSAMPLE *samples, const int size) {
     }
 
     rc = lame_encode_buffer_float(m_lameFlags, m_bufferIn[0], m_bufferIn[1],
-            size/2, m_bufferOut, m_bufferOutSize);
+                                  size/2, m_bufferOut, m_bufferOutSize);
     if (rc < 0 ){
         return;
- 	}
-	//write encoded audio to shoutcast stream or file
-	m_pEngine->write(NULL, m_bufferOut, 0, rc);
+    }
+    //write encoded audio to shoutcast stream or file
+    m_pCallback->write(NULL, m_bufferOut, 0, rc);
 }
 
 void EncoderMp3::initStream() {
@@ -325,16 +314,17 @@ void EncoderMp3::initStream() {
     return;
 }
 
-int EncoderMp3::initEncoder(int bitrate) {
-    if(m_library == NULL || !m_library->isLoaded())
+int EncoderMp3::initEncoder(int bitrate, int samplerate) {
+    if (m_library == NULL || !m_library->isLoaded())
         return -1;
 
-    unsigned long samplerate_in = m_samplerate->get();
-    unsigned long samplerate_out = (samplerate_in>48000?48000:samplerate_in);
+    unsigned long samplerate_in = samplerate;
+    unsigned long samplerate_out =
+            (samplerate_in > 48000 ? 48000 : samplerate_in);
 
     m_lameFlags = lame_init();
 
-    if ( m_lameFlags == NULL ) {
+    if (m_lameFlags == NULL) {
         qDebug() << "Unable to initialize MP3";
         return -1;
     }
@@ -349,15 +339,15 @@ int EncoderMp3::initEncoder(int bitrate) {
 
     //ID3 Tag if fiels are not NULL
     id3tag_init(m_lameFlags);
-    if(m_metaDataTitle)
+    if (m_metaDataTitle)
         id3tag_set_title(m_lameFlags, m_metaDataTitle);
-    if(m_metaDataArtist)
+    if (m_metaDataArtist)
         id3tag_set_artist(m_lameFlags, m_metaDataArtist);
-    if(m_metaDataAlbum)
+    if (m_metaDataAlbum)
         id3tag_set_album(m_lameFlags,m_metaDataAlbum);
 
 
-    if (( lame_init_params(m_lameFlags)) < 0) {
+    if ((lame_init_params(m_lameFlags)) < 0) {
         qDebug() << "Unable to initialize MP3 parameters";
         return -1;
     }

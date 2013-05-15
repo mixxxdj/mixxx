@@ -19,27 +19,26 @@
 #define ENGINESHOUTCAST_H
 
 #include <QObject>
-#include <QMutex>
 #include <QMessageBox>
 #include <QTextCodec>
 
 #include <shout/shout.h>
 
-#include "engineabstractrecord.h"
 #include "configobject.h"
 #include "controlobject.h"
-#include "controlobjectthreadmain.h"
-#include "trackinfoobject.h"
+#include "controlobjectthread.h"
+#include "encoder/encodercallback.h"
+#include "engine/sidechain/sidechainworker.h"
 #include "errordialoghandler.h"
-#include "recording/encoder.h"
+#include "trackinfoobject.h"
 
 #define SHOUTCAST_DISCONNECTED 0
 #define SHOUTCAST_CONNECTING 1
 #define SHOUTCAST_CONNECTED 2
 
-class EncoderVorbis;
+class Encoder;
 
-class EngineShoutcast : public EngineAbstractRecord {
+class EngineShoutcast : public QObject, public EncoderCallback, public SideChainWorker {
     Q_OBJECT
   public:
     EngineShoutcast(ConfigObject<ConfigValue> *_config);
@@ -47,7 +46,11 @@ class EngineShoutcast : public EngineAbstractRecord {
 
     // This is called by the Engine implementation for each sample. Encode and
     // send the stream, as well as check for metadata changes.
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    void process(const CSAMPLE* pBuffer, const int iBufferSize);
+
+    void shutdown() {
+        m_bQuit = true;
+    }
 
     // Called by the encoder in method 'encodebuffer()' to flush the stream to
     // the server.
@@ -57,9 +60,6 @@ class EngineShoutcast : public EngineAbstractRecord {
     bool serverConnect();
     bool serverDisconnect();
     bool isConnected();
-    void shutdown() {
-        m_bQuit = true;
-    }
   public slots:
     /** Update the libshout struct with info from Mixxx's shoutcast preferences.*/
     void updateFromPreferences();
@@ -92,11 +92,10 @@ class EngineShoutcast : public EngineAbstractRecord {
     ConfigObject<ConfigValue> *m_pConfig;
     Encoder *m_encoder;
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
-    ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs;
+    ControlObjectThread* m_pUpdateShoutcastFromPrefs;
     ControlObjectThread* m_pMasterSamplerate;
     ControlObjectThread* m_pShoutcastStatus;
     volatile bool m_bQuit;
-    QMutex m_shoutMutex;
     // static metadata according to prefereneces
     bool m_custom_metadata;
     QByteArray m_baCustomSong;

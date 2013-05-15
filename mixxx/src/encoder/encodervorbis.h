@@ -18,23 +18,21 @@
 #ifndef ENCODERVORBIS_H
 #define ENCODERVORBIS_H
 
-#include <QObject>
+// this also includes vorbis/codec.h
+#include <vorbis/vorbisenc.h>
+
 #include "defs.h"
-#include "configobject.h"
-#include "encoder.h"
-#include "defs_recording.h"
+#include "encoder/encoder.h"
+#include "trackinfoobject.h"
 
-#include <vorbis/vorbisenc.h> // this also includes vorbis/codec.h
-
-class EngineAbstractRecord;
-class TrackInfoObject;
+class EncoderCallback;
 
 class EncoderVorbis : public Encoder {
-    Q_OBJECT
   public:
-    EncoderVorbis(EngineAbstractRecord *engine=0);
-    ~EncoderVorbis();
-    int initEncoder(int bitrate);
+    EncoderVorbis(EncoderCallback* pCallback=NULL);
+    virtual ~EncoderVorbis();
+
+    int initEncoder(int bitrate, int samplerate);
     void encodeBuffer(const CSAMPLE *samples, const int size);
     void updateMetaData(char* artist, char* title, char* album);
     void flush();
@@ -57,15 +55,12 @@ class EncoderVorbis : public Encoder {
     vorbis_comment m_vcomment;  /* stores all user comments */
     bool m_header_write;
 
-    EngineAbstractRecord *m_pEngine;
+    EncoderCallback* m_pCallback;
     TrackPointer m_pMetaData;
-    char *m_metaDataTitle;
-    char *m_metaDataArtist;
-    char *m_metaDataAlbum;
+    char* m_metaDataTitle;
+    char* m_metaDataArtist;
+    char* m_metaDataAlbum;
     QFile m_file;
-
-    ControlObjectThread* m_samplerate;
-
 };
 
 #endif
