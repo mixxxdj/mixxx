@@ -89,7 +89,8 @@ void ControlDoublePrivate::set(const double& value, QObject* pSender) {
 
     double dValue = value;
     // The behavior says to ignore the set, ignore it.
-    if (m_pBehavior && !m_pBehavior->setFilter(&dValue)) {
+    ControlNumericBehavior* pBehavior = m_pBehavior;
+    if (pBehavior && !pBehavior->setFilter(&dValue)) {
         return;
     }
     m_value.setValue(dValue);
@@ -106,22 +107,26 @@ ControlNumericBehavior* ControlDoublePrivate::setBehavior(ControlNumericBehavior
 }
 
 void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSetter) {
-    set(m_pBehavior ? m_pBehavior->widgetParameterToValue(dParam) : dParam, pSetter);
+    ControlNumericBehavior* pBehavior = m_pBehavior;
+    set(pBehavior ? pBehavior->widgetParameterToValue(dParam) : dParam, pSetter);
 }
 
 double ControlDoublePrivate::getWidgetParameter() const {
-    return m_pBehavior ? m_pBehavior->valueToWidgetParameter(get()) : get();
+    ControlNumericBehavior* pBehavior = m_pBehavior;
+    return pBehavior ? pBehavior->valueToWidgetParameter(get()) : get();
 }
 
 void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
-    if (m_pBehavior) {
-        m_pBehavior->setValueFromMidiParameter(opcode, dParam, this);
+    ControlNumericBehavior* pBehavior = m_pBehavior;
+    if (pBehavior) {
+        pBehavior->setValueFromMidiParameter(opcode, dParam, this);
     } else {
         set(dParam, NULL);
     }
 }
 
 double ControlDoublePrivate::getMidiParameter() const {
-    return m_pBehavior ? m_pBehavior->valueToMidiParameter(get()) : get();
+    ControlNumericBehavior* pBehavior = m_pBehavior;
+    return pBehavior ? pBehavior->valueToMidiParameter(get()) : get();
 }
 
