@@ -5,6 +5,7 @@
 #define PLAYERMANAGER_H
 
 #include <QList>
+#include <QMutex>
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -32,14 +33,14 @@ class PlayerManager : public QObject {
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
-    Deck* addDeck(int total_decks);
+    Deck* addDeck();
 
     // Add a sampler to the PlayerManager
-    Sampler* addSampler();
+    void addSampler();
 
     // Add a PreviewDeck to the PlayerManager
-    PreviewDeck* addPreviewDeck();
-    
+    void addPreviewDeck();
+
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
 
@@ -109,8 +110,20 @@ class PlayerManager : public QObject {
     void loadLocationToPlayer(QString location, QString group);
 
   private:
-    void remapDecks();
     TrackPointer lookupTrack(QString location);
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new deck.
+    void addDeckInner(int total_decks);
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new sampler.
+    void addSamplerInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new preview deck.
+    void addPreviewDeckInner();
+
+    // Used to protect access to PlayerManager state across threads.
+    mutable QMutex m_mutex;
+
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;

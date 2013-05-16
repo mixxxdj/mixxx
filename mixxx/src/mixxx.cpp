@@ -419,8 +419,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     //  but do not set up controllers until the end of the application startup
     qDebug() << "Creating ControllerManager";
     m_pControllerManager = new ControllerManager(m_pConfig);
-    connect(m_pControllerManager, SIGNAL(syncControlSystem()),
-            this, SLOT(slotSyncControlSystem()));
 
     WaveformWidgetFactory::create();
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
@@ -1756,9 +1754,4 @@ bool MixxxApp::confirmExit() {
         }
     }
     return true;
-}
-
-void MixxxApp::slotSyncControlSystem() {
-    ScopedTimer t("MixxxApp::slotSyncControlSystem");
-    ControlObject::sync();
 }

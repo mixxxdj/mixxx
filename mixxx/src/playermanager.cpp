@@ -1,5 +1,6 @@
 // playermanager.cpp
 // Created 6/1/2010 by RJ Ryan (rryan@mit.edu)
+#include <QMutexLocker>
 
 #include "playermanager.h"
 
@@ -23,6 +24,7 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
                              EngineMaster* pEngine,
                              VinylControlManager* pVCManager) :
+        m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
         m_pEngine(pEngine),
@@ -32,17 +34,20 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
         m_pAnalyserQueue(NULL),
         m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true, true)),
-        m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)),
-        m_pCOSkinNumDecks(new ControlObject(ConfigKey("[Skin]", "num_decks"), true, true)) {
+        m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)) {
 
     connect(m_pCOSkinNumDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSkinNumDecksControlChanged(double)));
+            this, SLOT(slotSkinNumDecksControlChanged(double)),
+            Qt::DirectConnection);
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumDecksControlChanged(double)));
+            this, SLOT(slotNumDecksControlChanged(double)),
+            Qt::DirectConnection);
     connect(m_pCONumSamplers, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumSamplersControlChanged(double)));
+            this, SLOT(slotNumSamplersControlChanged(double)),
+            Qt::DirectConnection);
     connect(m_pCONumPreviewDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumPreviewDecksControlChanged(double)));
+            this, SLOT(slotNumPreviewDecksControlChanged(double)),
+            Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
     SamplerBank* pSamplerBank = new SamplerBank(this);
@@ -61,6 +66,7 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
 }
 
 PlayerManager::~PlayerManager() {
+    QMutexLocker locker(&m_mutex);
     // No need to delete anything because they are all parented to us and will
     // be destroyed when we are destroyed.
     m_players.clear();
@@ -77,6 +83,7 @@ PlayerManager::~PlayerManager() {
 }
 
 void PlayerManager::bindToLibrary(Library* pLibrary) {
+    QMutexLocker locker(&m_mutex);
     connect(pLibrary, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(pLibrary, SIGNAL(loadTrack(TrackPointer)),
@@ -170,18 +177,17 @@ void PlayerManager::slotSkinNumDecksControlChanged(double v) {
 }
 
 void PlayerManager::slotNumDecksControlChanged(double v) {
-    // First off, undo any changes to the control.
-    m_pCONumDecks->set(m_decks.size());
-
-    int num = v;
-      
+    QMutexLocker locker(&m_mutex);
+    int num = (int)v;
     if (num < m_decks.size()) {
+        // The request was invalid -- reset the value.
+        m_pCONumDecks->set(m_decks.size());
         qDebug() << "Ignoring request to reduce the number of decks to" << num;
         return;
     }
 
     while (m_decks.size() < num) {
-        addDeck(num);
+        addDeckInner();
     }
     
     remapDecks();
@@ -205,44 +211,45 @@ void PlayerManager::remapDecks() {
 }
 
 void PlayerManager::slotNumSamplersControlChanged(double v) {
-    // First off, undo any changes to the control.
-    m_pCONumSamplers->set(m_samplers.size());
-
-    int num = v;
+    QMutexLocker locker(&m_mutex);
+    int num = (int)v;
     if (num < m_samplers.size()) {
+        // The request was invalid -- reset the value.
+        m_pCONumSamplers->set(m_samplers.size());
         qDebug() << "Ignoring request to reduce the number of samplers to" << num;
         return;
     }
 
     while (m_samplers.size() < num) {
-        addSampler();
+        addSamplerInner();
     }
-    
-    // Make sure the count is up to date now.
-    m_pCONumSamplers->set(m_samplers.size());
 }
 
 void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
-    // First off, undo any changes to the control.
-    m_pCONumPreviewDecks->set(m_preview_decks.size());
-
-    int num = v;
+    QMutexLocker locker(&m_mutex);
+    int num = (int)v;
     if (num < m_preview_decks.size()) {
+        // The request was invalid -- reset the value.
+        m_pCONumPreviewDecks->set(m_preview_decks.size());
         qDebug() << "Ignoring request to reduce the number of preview decks to" << num;
         return;
     }
 
     while (m_preview_decks.size() < num) {
-        addPreviewDeck();
+        addPreviewDeckInner();
     }
-    
-    // Make sure the count is up to date now.
-    m_pCONumPreviewDecks->set(m_preview_decks.size());
 }
 
-Deck* PlayerManager::addDeck(int total_decks) {
-    QString group = groupForDeck(numDecks());
-    int number = numDecks() + 1;
+void PlayerManager::addDeck() {
+    QMutexLocker locker(&m_mutex);
+    addDeckInner();
+    m_pCONumDecks->set((double)m_decks.count());
+}
+
+void PlayerManager::addDeckInner(int total_decks) {
+    // Do not lock m_mutex here.
+    QString group = groupForDeck(m_decks.count());
+    int number = m_decks.count() + 1;
 
     EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
     if (number > total_decks / 2) {
@@ -258,7 +265,6 @@ Deck* PlayerManager::addDeck(int total_decks) {
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pDeck;
     m_decks.append(pDeck);
-    m_pCONumDecks->add(1);
 
     // Register the deck output with SoundManager (deck is 0-indexed to SoundManager)
     m_pSoundManager->registerOutput(
@@ -275,12 +281,17 @@ Deck* PlayerManager::addDeck(int total_decks) {
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
         AudioInput(AudioInput::VINYLCONTROL, 0, number-1), pEngineDeck);
-
-    return pDeck;
 }
 
-Sampler* PlayerManager::addSampler() {
-    QString group = groupForSampler(numSamplers());
+void PlayerManager::addSampler() {
+    QMutexLocker locker(&m_mutex);
+    addSamplerInner();
+    m_pCONumSamplers->set(m_samplers.count());
+}
+
+void PlayerManager::addSamplerInner() {
+    // Do not lock m_mutex here.
+    QString group = groupForSampler(m_samplers.count());
 
     // All samplers are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
@@ -294,13 +305,17 @@ Sampler* PlayerManager::addSampler() {
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pSampler;
     m_samplers.append(pSampler);
-    m_pCONumSamplers->add(1);
-
-    return pSampler;
 }
 
-PreviewDeck* PlayerManager::addPreviewDeck() {
-    QString group = groupForPreviewDeck(numPreviewDecks());
+void PlayerManager::addPreviewDeck() {
+    QMutexLocker locker(&m_mutex);
+    addPreviewDeckInner();
+    m_pCONumPreviewDecks->set(m_preview_decks.count());
+}
+
+void PlayerManager::addPreviewDeckInner() {
+    // Do not lock m_mutex here.
+    QString group = groupForPreviewDeck(m_preview_decks.count());
 
     // All preview decks are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
@@ -314,11 +329,10 @@ PreviewDeck* PlayerManager::addPreviewDeck() {
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pPreviewDeck;
     m_preview_decks.append(pPreviewDeck);
-    m_pCONumPreviewDecks->add(1);
-    return pPreviewDeck;
 }
 
 BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
+    QMutexLocker locker(&m_mutex);
     if (m_players.contains(group)) {
         return m_players[group];
     }
@@ -327,6 +341,7 @@ BaseTrackPlayer* PlayerManager::getPlayer(QString group) const {
 
 
 Deck* PlayerManager::getDeck(unsigned int deck) const {
+    QMutexLocker locker(&m_mutex);
     if (deck < 1 || deck > numDecks()) {
         qWarning() << "Warning PlayerManager::getDeck() called with invalid index: "
                    << deck;
@@ -336,6 +351,7 @@ Deck* PlayerManager::getDeck(unsigned int deck) const {
 }
 
 PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const {
+    QMutexLocker locker(&m_mutex);
     if (libPreviewPlayer < 1 || libPreviewPlayer > numPreviewDecks()) {
         qWarning() << "Warning PlayerManager::getPreviewDeck() called with invalid index: "
                    << libPreviewPlayer;
@@ -345,6 +361,7 @@ PreviewDeck* PlayerManager::getPreviewDeck(unsigned int libPreviewPlayer) const 
 }
 
 Sampler* PlayerManager::getSampler(unsigned int sampler) const {
+    QMutexLocker locker(&m_mutex);
     if (sampler < 1 || sampler > numSamplers()) {
         qWarning() << "Warning PlayerManager::getSampler() called with invalid index: "
                    << sampler;
@@ -354,6 +371,8 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
 }
 
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+    // Do not lock mutex in this method unless it is changed to access
+    // PlayerManager state.
     BaseTrackPlayer* pPlayer = getPlayer(group);
 
     if (pPlayer == NULL) {
@@ -433,16 +452,17 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack)
     }
 }
 
-void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack)
-{
+void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
+    QMutexLocker locker(&m_mutex);
     QList<Sampler*>::iterator it = m_samplers.begin();
     while (it != m_samplers.end()) {
         Sampler* pSampler = *it;
         ControlObject* playControl =
                 ControlObject::getControl(ConfigKey(pSampler->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {
+            locker.unlock();
             pSampler->slotLoadTrack(pTrack, false);
-            break;
+            return;
         }
         it++;
     }
