@@ -327,8 +327,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // writing meta data may ruine your MP3 file if done simultaneously.
     // see Bug #728197
     // For safety reasons, we deactivate this feature.
-    //OWEN EDIT: No!
-    //m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
+    m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
 
     // library dies in seemingly unrelated qtsql error about not having a
@@ -352,7 +351,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // Create the player manager.
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
                                          m_pVCManager);
-    
+
     int num_decks = m_pConfig->getValueString(ConfigKey("[Master]","num_decks")).toInt();
     if (num_decks == 0) num_decks = 2;
     for (int deck = 0; deck < num_decks; ++deck) {
@@ -365,7 +364,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     for (int sampler = 0; sampler < num_samplers; ++sampler) {
         m_pPlayerManager->addSampler();
     }
-    
+
     int num_preview_decks = m_pConfig->getValueString(ConfigKey("[Master]","num_preview_decks")).toInt();
     if (num_preview_decks == 0) num_preview_decks = 1;
     for (int preview = 0; preview < num_preview_decks; ++preview) {
@@ -579,12 +578,12 @@ MixxxApp::~MixxxApp()
     t.start();
 
     qDebug() << "Destroying MixxxApp";
-    
+
     qDebug() << "save number of decks " << m_pPlayerManager->numDecks();
     m_pConfig->set(ConfigKey("[Master]","num_decks"), ConfigValue(m_pPlayerManager->numDecks()));
-    m_pConfig->set(ConfigKey("[Master]","num_samplers"), 
+    m_pConfig->set(ConfigKey("[Master]","num_samplers"),
                    ConfigValue(m_pPlayerManager->numSamplers()));
-    m_pConfig->set(ConfigKey("[Master]","num_preview_decks"), 
+    m_pConfig->set(ConfigKey("[Master]","num_preview_decks"),
                    ConfigValue(m_pPlayerManager->numPreviewDecks()));
 
     qDebug() << "save config " << qTime.elapsed();

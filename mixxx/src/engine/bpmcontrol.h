@@ -27,9 +27,9 @@ class BpmControl : public EngineControl {
     double getSyncAdjustment() const;
     void userTweakingSync(bool tweakActive);
     double getPhaseOffset() { return getPhaseOffset(getCurrentSample()); }
-    double getPhaseOffset(double reference_position) ;
+    double getPhaseOffset(double reference_position);
     void setLoopSize(double size) { m_dLoopSize = size; }
-    
+
   public slots:
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
@@ -64,14 +64,14 @@ class BpmControl : public EngineControl {
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
-    
+
     ControlObject *m_pMasterBeatDistance;
     ControlObject *m_pSyncState;
     int m_iSyncState;
     double m_dSyncAdjustment;
     bool m_bUserTweakingSync;
     double m_dUserOffset;
-    
+
     // Is vinyl control enabled?
     ControlObject* m_pVCEnabled;
     bool m_bVinylControlEnabled;
@@ -98,7 +98,7 @@ class BpmControl : public EngineControl {
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
     ControlPushButton* m_pTranslateBeats;
-    
+
     double m_dFileBpm;
     double m_dLoopSize; // Only used to see if we shouldn't quantize position.
 
@@ -106,7 +106,7 @@ class BpmControl : public EngineControl {
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
-    
+
     QString m_sGroup;
 };
 

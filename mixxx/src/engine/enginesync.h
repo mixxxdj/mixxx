@@ -1,5 +1,5 @@
 /***************************************************************************
-                          enginesync.h  -  master sync control for 
+                          enginesync.h  -  master sync control for
                           maintaining beatmatching amongst n decks
                              -------------------
     begin                : Mon Mar 12 2012
@@ -29,11 +29,11 @@ enum SYNC_STATE {
     SYNC_NONE = 0,
     SYNC_SLAVE = 1,
     SYNC_MASTER = 2
-};  
+};
 
-class EngineSync : public EngineControl { 
+class EngineSync : public EngineControl {
     Q_OBJECT
-    
+
     public:
         EngineSync(EngineMaster *master, ConfigObject<ConfigValue>* pConfig);
         ~EngineSync();
@@ -42,12 +42,11 @@ class EngineSync : public EngineControl {
         bool setDeckMaster(QString deck);
         void setInternalMaster(void);
         bool setMidiMaster(void);
-        //bool setNone(QString deck);
         EngineBuffer* getMaster() const;
-        
+
         void incrementPseudoPosition(int bufferSize);
         double getInternalBeatDistance(void) const;
-        
+
     private slots:
         void slotMasterBpmChanged(double);
         void slotSourceRateChanged(double);
@@ -56,7 +55,7 @@ class EngineSync : public EngineControl {
         void slotSampleRateChanged(double);
         void slotInternalMasterChanged(double);
         void slotDeckStateChanged(double);
-        
+
     protected:
         QString chooseNewMaster(QString dontpick);
         void disconnectMaster(void);
@@ -65,16 +64,16 @@ class EngineSync : public EngineControl {
         void setPseudoPosition(double percent);
         void resetInternalBeatDistance(void);
 
-        EngineMaster* m_pEngineMaster;    
+        EngineMaster* m_pEngineMaster;
         EngineBuffer* m_pMasterBuffer;
         ControlObject *m_pSourceRate, *m_pMasterBpm;
         ControlObject *m_pSourceBeatDistance, *m_pMasterBeatDistance;
         ControlObject *m_pSampleRate;
         ControlPushButton *m_pSyncInternalEnabled;
         ControlPotmeter* m_pSyncRateSlider;
-        
+
         QList<QString> m_sDeckList;
-        
+
         QString m_sSyncSource;
         int m_iSampleRate;
         double m_dSourceRate, m_dMasterBpm;

@@ -407,7 +407,6 @@ void RateControl::slotFileBpmChanged(double bpm) {
 }
 
 void RateControl::slotMasterBpmChanged(double syncbpm) {
-    //qDebug() << m_sGroup << "got a master bpm change" << syncbpm;
     // Vinyl overrides
     if (m_bVinylControlEnabled) {
         return;
@@ -421,7 +420,6 @@ void RateControl::slotMasterBpmChanged(double syncbpm) {
         if (m_dFileBpm == 0.0)
         {
             //XXX TODO: what to do about this case
-            qDebug() << "well fuck, what are we supposed to do with zero bpm????";
             dDesiredRate = 0.0;
         }
         else {
@@ -437,21 +435,17 @@ void RateControl::slotMasterBpmChanged(double syncbpm) {
 }
 
 void RateControl::slotSyncMasterChanged(double state) {
-    //qDebug() << m_sGroup << "slot master changed";
     
     if (state) {
         if (m_iSyncState == SYNC_MASTER){
-            //qDebug() << "already master";
             return;
         }
         
         if (m_pTrack.isNull()) {
-            qDebug() << m_sGroup << " no track loaded, can't be master";
             m_pSyncMasterEnabled->set(false);
             return;    
         }
-        
-        qDebug() << m_sGroup << " setting ourselves as master";
+
         m_pSyncState->set(SYNC_MASTER);
     } else {
         // For now, turning off master turns on slave mode
@@ -459,16 +453,13 @@ void RateControl::slotSyncMasterChanged(double state) {
             return;
         }
         //unset ourselves
-        qDebug() << m_sGroup << "unsetting ourselves as master (now slave)";        
         m_pSyncState->set(SYNC_SLAVE);
     }
 }
 
 void RateControl::slotSyncSlaveChanged(double state) {
-    //qDebug() << m_sGroup << "slot slave changed";
     if (state) {
         if (m_iSyncState == SYNC_SLAVE) {
-            //qDebug() << "already slave";
             return;
         }
         m_pSyncState->set(SYNC_SLAVE);
