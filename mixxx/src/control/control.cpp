@@ -77,9 +77,12 @@ double ControlDoublePrivate::get() const {
     return m_value.getValue();
 }
 
-void ControlDoublePrivate::reset(QObject* pSender) {
+void ControlDoublePrivate::reset() {
     double defaultValue = m_defaultValue.getValue();
-    set(defaultValue, pSender);
+    // NOTE: pSender = NULL is important. The originator of this action does
+    // not know the resulting value so it makes sense that we should emit a
+    // general valueChanged() signal even though we know the originator.
+    set(defaultValue, NULL);
 }
 
 void ControlDoublePrivate::set(const double& value, QObject* pSender) {

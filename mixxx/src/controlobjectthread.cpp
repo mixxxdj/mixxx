@@ -64,7 +64,7 @@ void ControlObjectThread::reset() {
         // general valueChanged() signal even though the change originated from
         // us. For this reason, we provide NULL here so that the change is
         // broadcast as valueChanged() and not valueChangedByThis().
-        m_pControl->reset(NULL);
+        m_pControl->reset();
     }
 }
 

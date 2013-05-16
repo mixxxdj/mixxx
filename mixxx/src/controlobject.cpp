@@ -142,7 +142,7 @@ double ControlObject::get() const {
 
 void ControlObject::reset() {
     if (m_pControl) {
-        m_pControl->reset(this);
+        m_pControl->reset();
     }
 }
 
