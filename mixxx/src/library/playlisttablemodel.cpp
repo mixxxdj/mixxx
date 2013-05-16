@@ -109,10 +109,10 @@ bool PlaylistTableModel::appendTrack(int trackId) {
         return false;
     }
 
-    m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
+    bool bSuccess = m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
 
     select(); //Repopulate the data model.
-    return true;
+    return bSuccess;
 }
 
 int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {

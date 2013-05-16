@@ -1040,6 +1040,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         playlistDao.insertTracksIntoPlaylist(trackIds,
                                             iAutoDJPlaylistId, 2);
     } else {
+        // TODO(XXX): Care whether the append succeeded.
         playlistDao.appendTracksToPlaylist(
             trackIds, iAutoDJPlaylistId);
     }
@@ -1104,6 +1105,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
         }
     }
     if (trackIds.size() > 0) {
+        // TODO(XXX): Care whether the append succeeded.
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
     }
 }

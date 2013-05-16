@@ -35,6 +35,7 @@ class ControllerManager;
 class MixxxKeyboard;
 class PlayerManager;
 class RecordingManager;
+class ShoutcastManager;
 class SkinLoader;
 class VinylControlManager;
 
@@ -84,8 +85,6 @@ class MixxxApp : public QMainWindow {
     void slotCheckboxVinylControl(bool toggle);
     void slotControlVinylControl2(double toggle);
     void slotCheckboxVinylControl2(bool toggle);
-    /** toggle recording - Don't #ifdef this because MOC is dumb**/
-    void slotOptionsRecord(bool toggle);
     /** toogle keyboard on-off */
     void slotOptionsKeyboard(bool toggle);
     /** Preference dialog */
@@ -106,8 +105,6 @@ class MixxxApp : public QMainWindow {
     void slotEnableRescanLibraryAction();
     /**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
     void slotOptionsMenuShow();
-    /** toggles Livebroadcasting **/
-    void slotOptionsShoutcast(bool value);
     /** toogle on-screen widget visibility */
     void slotViewShowSamplers(bool);
     void slotViewShowVinylControl(bool);
@@ -132,6 +129,10 @@ class MixxxApp : public QMainWindow {
     void closeEvent(QCloseEvent *event);
 
   private:
+    void logBuildDetails();
+    void initializeWindow();
+    void initializeKeyboard();
+    void initializeTranslations(QApplication* pApp);
     void checkDirectRendering();
     bool confirmExit();
 
@@ -152,6 +153,9 @@ class MixxxApp : public QMainWindow {
     PlayerManager* m_pPlayerManager;
     // RecordingManager
     RecordingManager* m_pRecordingManager;
+#ifdef __SHOUTCAST__
+    ShoutcastManager* m_pShoutcastManager;
+#endif
     ControllerManager *m_pControllerManager;
 
     ConfigObject<ConfigValue> *m_pConfig;

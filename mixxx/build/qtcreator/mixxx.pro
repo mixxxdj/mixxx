@@ -1,5 +1,5 @@
 CONFIG += debug link_pkgconfig portmidi script vinylcontrol m4a
-# ladspa
+# ladspa autodjcrates
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
@@ -232,7 +232,6 @@ $$BASE_DIR/src/library/browsefilter.h \
 $$BASE_DIR/src/library/browsetablemodel.h \
 $$BASE_DIR/src/library/cratefeature.h \
 $$BASE_DIR/src/library/cratetablemodel.h \
-$$BASE_DIR/src/library/dao/autodjcratesdao.h \
 $$BASE_DIR/src/library/dao/cratedao.h \
 $$BASE_DIR/src/library/dao/cuedao.h \
 $$BASE_DIR/src/library/dao/cue.h \
@@ -462,7 +461,6 @@ $$BASE_DIR/src/library/browsefilter.cpp \
 $$BASE_DIR/src/library/browsetablemodel.cpp \
 $$BASE_DIR/src/library/cratefeature.cpp \
 $$BASE_DIR/src/library/cratetablemodel.cpp \
-$$BASE_DIR/src/library/dao/autodjcratesdao.cpp \
 $$BASE_DIR/src/library/dao/cratedao.cpp \
 $$BASE_DIR/src/library/dao/cue.cpp \
 $$BASE_DIR/src/library/dao/cuedao.cpp \
@@ -743,15 +741,15 @@ SOURCES += $$BASE_DIR/src/vamp/vampanalyser.cpp \
     $$BASE_DIR/src/analyservamptest.cpp \
     $$BASE_DIR/src/analyservampkeytest.cpp \
     $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginBufferingAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginLoader.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/RealTime.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-sdk/PluginAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-sdk/RealTime.cpp
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginLoader.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/RealTime.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-sdk/PluginAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-sdk/RealTime.cpp
 }
 
 CONFIG(tonal) {
@@ -857,6 +855,14 @@ CONFIG(ffmpeg) {
         -logg
 }
 
+CONFIG(autodjcrates) {
+    DEFINES += __AUTODJCRATES__
+    HEADERS +=
+        $$BASE_DIR/src/library/dao/autodjcratesdao.h
+    SOURCES +=
+        $$BASE_DIR/src/library/dao/autodjcratesdao.cpp
+}
+
 # Copy Windows dependencies to DESTDIR.
 win32 {
     !exists($$DESTDIR):system( mkdir \"$$replace(DESTDIR, /,$$DIR_SEPARATOR)\" )
@@ -909,7 +915,7 @@ win32 {
 BZR_REVNO = $$system( bzr revno )
 BZR_INFO = $$system( bzr info )
 for(BZR_INFO_BITS, BZR_INFO) {
-	BZR_BRANCH_URL = $${BZR_INFO_BITS}
+    BZR_BRANCH_URL = $${BZR_INFO_BITS}
 }
 BZR_BRANCH_NAME = $$dirname(BZR_BRANCH_URL)
 BZR_BRANCH_NAME = $$basename(BZR_BRANCH_NAME)

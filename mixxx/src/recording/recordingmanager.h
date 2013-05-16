@@ -23,6 +23,7 @@
  * Note: The RecordingManager lives in the GUI thread
  */
 
+class EngineMaster;
 class ControlPushButton;
 class ControlObjectThreadMain;
 
@@ -30,7 +31,7 @@ class RecordingManager : public QObject
 {
     Q_OBJECT
   public:
-    RecordingManager(ConfigObject<ConfigValue>* pConfig);
+    RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine);
     virtual ~RecordingManager();
 
 
@@ -59,6 +60,7 @@ class RecordingManager : public QObject
     void slotBytesRecorded(int);
 
   private slots:
+    void slotSetRecording(bool recording);
     void slotToggleRecording(double v);
 
   private:
@@ -66,7 +68,7 @@ class RecordingManager : public QObject
     ControlObjectThread* m_recReady;
     ControlObject* m_recReadyCO;
     ControlPushButton* m_pToggleRecording;
-    
+
     long getFileSplitSize();
 
     ConfigObject<ConfigValue>* m_pConfig;

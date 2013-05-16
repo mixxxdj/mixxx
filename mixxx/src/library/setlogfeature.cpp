@@ -202,10 +202,11 @@ void SetlogFeature::slotJoinWithPrevious() {
                     m_playlistId = previousPlaylistId;
                 }
                 qDebug() << "slotJoinWithPrevious() current:" << currentPlaylistId << " previous:" << previousPlaylistId;
-                m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId);
-                m_playlistDao.deletePlaylist(currentPlaylistId);
-                slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                emit(showTrackModel(m_pPlaylistTableModel));
+                if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
+                    m_playlistDao.deletePlaylist(currentPlaylistId);
+                    slotPlaylistTableChanged(previousPlaylistId); // For moving selection
+                    emit(showTrackModel(m_pPlaylistTableModel));
+                }
             }
         }
     }
@@ -255,6 +256,7 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
             // View needs a refresh
             m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
         } else {
+            // TODO(XXX): Care whether the append succeeded.
             m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
                                                 m_playlistId);
         }
