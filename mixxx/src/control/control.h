@@ -7,9 +7,9 @@
 #include <QObject>
 #include <QAtomicPointer>
 
-#include "controlobjectbase.h"
+#include "control/controlbehavior.h"
+#include "control/controlvalue.h"
 #include "configobject.h"
-#include "controlbehavior.h"
 
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
@@ -79,9 +79,9 @@ class ControlDoublePrivate : public QObject {
     int m_trackFlags;
 
     // The control value.
-    ControlObjectBase<double> m_value;
+    ControlValueAtomic<double> m_value;
     // The default control value.
-    ControlObjectBase<double> m_defaultValue;
+    ControlValueAtomic<double> m_defaultValue;
 
     QAtomicPointer<ControlNumericBehavior> m_pBehavior;
 

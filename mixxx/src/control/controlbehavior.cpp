@@ -1,5 +1,5 @@
-#include "controlbehavior.h"
-#include "control.h"
+#include "control/controlbehavior.h"
+#include "control/control.h"
 
 // static
 const int ControlPushButtonBehavior::kPowerWindowTimeMillis = 300;

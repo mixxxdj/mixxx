@@ -19,7 +19,7 @@
 #include "wpixmapstore.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
-#include "controlbehavior.h"
+#include "control/controlbehavior.h"
 //Added by qt3to4:
 #include <QPixmap>
 #include <QtDebug>

@@ -20,7 +20,7 @@
 
 #include "controlobjectthread.h"
 #include "controlobject.h"
-#include "control.h"
+#include "control/control.h"
 
 ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
         : QObject(pParent),

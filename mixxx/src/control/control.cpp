@@ -1,7 +1,7 @@
 #include <QtDebug>
 #include <QMutexLocker>
 
-#include "control.h"
+#include "control/control.h"
 
 #include "util/stat.h"
 #include "util/timer.h"

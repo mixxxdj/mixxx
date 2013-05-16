@@ -24,8 +24,7 @@
 
 #include "configobject.h"
 #include "controllers/midi/midimessage.h"
-#include "controlobjectbase.h"
-#include "control.h"
+#include "control/control.h"
 
 class ControlObject : public QObject {
     Q_OBJECT
