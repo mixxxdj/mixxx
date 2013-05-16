@@ -161,6 +161,8 @@ unsigned int PlayerManager::numPreviewDecks() {
 void PlayerManager::slotNumDecksControlChanged(double v) {
     int num = (int)v;
     if (num < m_decks.size()) {
+        // The request was invalid -- reset the value.
+        m_pCONumDecks->set(m_decks.size());
         qDebug() << "Ignoring request to reduce the number of decks to" << num;
         return;
     }
@@ -173,6 +175,8 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
 void PlayerManager::slotNumSamplersControlChanged(double v) {
     int num = (int)v;
     if (num < m_samplers.size()) {
+        // The request was invalid -- reset the value.
+        m_pCONumSamplers->set(m_samplers.size());
         qDebug() << "Ignoring request to reduce the number of samplers to" << num;
         return;
     }
@@ -185,6 +189,8 @@ void PlayerManager::slotNumSamplersControlChanged(double v) {
 void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
     int num = (int)v;
     if (num < m_preview_decks.size()) {
+        // The request was invalid -- reset the value.
+        m_pCONumPreviewDecks->set(m_preview_decks.size());
         qDebug() << "Ignoring request to reduce the number of preview decks to" << num;
         return;
     }
