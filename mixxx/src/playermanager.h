@@ -33,7 +33,7 @@ class PlayerManager : public QObject {
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
-    Deck* addDeck();
+    void addDeck(int total_decks);
 
     // Add a sampler to the PlayerManager
     void addSampler();
@@ -110,6 +110,7 @@ class PlayerManager : public QObject {
     void loadLocationToPlayer(QString location, QString group);
 
   private:
+    void remapDecks();
     TrackPointer lookupTrack(QString location);
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new deck.

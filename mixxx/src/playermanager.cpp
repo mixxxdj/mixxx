@@ -187,7 +187,7 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
     }
 
     while (m_decks.size() < num) {
-        addDeckInner();
+        addDeckInner(num);
     }
     
     remapDecks();
@@ -240,9 +240,9 @@ void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
     }
 }
 
-void PlayerManager::addDeck() {
+void PlayerManager::addDeck(int total_decks) {
     QMutexLocker locker(&m_mutex);
-    addDeckInner();
+    addDeckInner(total_decks);
     m_pCONumDecks->set((double)m_decks.count());
 }
 

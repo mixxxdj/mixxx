@@ -357,12 +357,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     if (num_decks == 0) num_decks = 2;
     for (int deck = 0; deck < num_decks; ++deck) {
         // Add deck to the player manager
-        Deck* pDeck = m_pPlayerManager->addDeck(num_decks);
-#ifdef __VINYLCONTROL__
-	    EngineDeck* pEngineDeck = pDeck->getEngineDeck();
-	    // Register vinyl input signal with deck for passthrough
-	    m_pSoundManager->registerInput(AudioInput(AudioInput::VINYLCONTROL, 0, deck), pEngineDeck);
-#endif
+        m_pPlayerManager->addDeck(num_decks);
     }
 
     int num_samplers = m_pConfig->getValueString(ConfigKey("[Master]","num_samplers")).toInt();
