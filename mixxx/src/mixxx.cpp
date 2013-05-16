@@ -1474,18 +1474,6 @@ void MixxxApp::slotCheckboxVinylControl4(bool toggle)
 #endif
 }
 
-
-//Also can't ifdef this (MOC again)
-void MixxxApp::slotOptionsRecord(bool toggle)
-{
-    //Only start recording if checkbox was set to true and recording is inactive
-    if(toggle && !m_pRecordingManager->isRecordingActive()) //start recording
-        m_pRecordingManager->startRecording();
-    //Only stop recording if checkbox was set to false and recording is active
-    else if(!toggle && m_pRecordingManager->isRecordingActive())
-        m_pRecordingManager->stopRecording();
-}
-
 void MixxxApp::slotHelpAbout() {
     DlgAbout *about = new DlgAbout(this);
     about->show();
