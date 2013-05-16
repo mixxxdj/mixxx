@@ -93,6 +93,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
             // Start at position 2 because position 1 was already loaded to the deck
             playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
         } else {
+            // TODO(XXX): Care whether the append succeeded.
             playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
         }
     }
@@ -142,6 +143,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
             if (index.isValid()) {
                 qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
                 TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+                // TODO(XXX): Care whether the append succeeded.
                 playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
             }
         }
