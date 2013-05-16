@@ -1,4 +1,4 @@
-CONFIG += debug link_pkgconfig portmidi script vinylcontrol
+CONFIG += debug link_pkgconfig portmidi script vinylcontrol mad
 #CONFIG += m4a hss1394
 # ladspa
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
@@ -352,7 +352,6 @@ $$BASE_DIR/src/soundsource.h \
 $$BASE_DIR/src/soundsourcecoreaudio.h \
 $$BASE_DIR/src/soundsourceffmpeg.h \
 $$BASE_DIR/src/soundsourceflac.h \
-$$BASE_DIR/src/soundsourcemp3.h \
 $$BASE_DIR/src/soundsourceoggvorbis.h \
 $$BASE_DIR/src/soundsourceproxy.h \
 $$BASE_DIR/src/soundsourcesndfile.h \
@@ -827,9 +826,14 @@ win32 {
 		LIBS += -lportmidi_s
 	}
     LIBS += \
-		-L$$BASE_DIR/../mixxx-mingw/lib -lFLAC -logg -lvorbis -lvorbisenc \
-		-lvorbisfile -lz -lprotobuf-lite -lsndfile -lportaudio.dll -ltag.dll \
-		-lwinmm -lws2_32 -lmingw32
+		-L$$BASE_DIR/../mixxx-mingw/lib -lFLAC -logg -lvorbis \
+		-lvorbisenc -lvorbisfile
+	CONFIG(mad) {
+		LIBS += -lmad -lid3tag
+	}
+	LIBS += \
+		-lz -lprotobuf-lite -lsndfile \
+		-lportaudio.dll -ltag.dll -lwinmm -lws2_32 -lmingw32
     INCLUDEPATH += $$BASE_DIR/../mixxx-mingw/include
 }
 
@@ -953,6 +957,14 @@ CONFIG(m4a) {
         LIBS += -lmp4v2 \
             -lfaad
     }
+}
+
+CONFIG(mad) {
+    DEFINES += __MAD__
+	HEADERS += \
+		$$BASE_DIR/src/soundsourcemp3.h
+	SOURCES += \
+		$$BASE_DIR/src/soundsourcemp3.cpp
 }
 CONFIG(vinylcontrol) {
     DEFINES += __VINYLCONTROL__
