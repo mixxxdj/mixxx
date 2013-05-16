@@ -128,7 +128,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     if (m_pControl) {
-        m_pControl->setMidiParameter(o, v);
+        m_pControl->setMidiParameter(o, v, this);
     }
 }
 

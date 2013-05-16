@@ -116,12 +116,12 @@ double ControlDoublePrivate::getWidgetParameter() const {
     return pBehavior ? pBehavior->valueToWidgetParameter(get()) : get();
 }
 
-void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
+void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam, QObject* pSender) {
     ControlNumericBehavior* pBehavior = m_pBehavior;
     if (pBehavior) {
-        pBehavior->setValueFromMidiParameter(opcode, dParam, this);
+        pBehavior->setValueFromMidiParameter(opcode, dParam, this, pSender);
     } else {
-        set(dParam, NULL);
+        set(dParam, pSender);
     }
 }
 

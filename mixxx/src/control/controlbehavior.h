@@ -36,7 +36,8 @@ class ControlNumericBehavior {
     }
 
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
+                                           ControlDoublePrivate* pControl,
+                                           QObject* pSender);
 };
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
@@ -77,7 +78,8 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     }
 
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
+                                           ControlDoublePrivate* pControl,
+                                           QObject* pSender);
 
   protected:
     double m_dMinValue;
@@ -175,7 +177,8 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     }
 
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                           ControlDoublePrivate* pControl);
+                                           ControlDoublePrivate* pControl,
+                                           QObject* pSender);
 
   private:
     ButtonMode m_buttonMode;
