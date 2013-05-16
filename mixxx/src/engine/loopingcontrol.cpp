@@ -408,7 +408,7 @@ void LoopingControl::slotLoopExit(double val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
             setLoopingEnabled(false);
-        } 
+        }
     }
 }
 
@@ -744,7 +744,7 @@ BeatLoopingControl::~BeatLoopingControl() {
 }
 
 void BeatLoopingControl::deactivate() {
-    if (m_bActive != false) {
+    if (m_bActive) {
         m_bActive = false;
         m_pEnabled->set(0);
         m_pLegacy->set(0);
@@ -752,7 +752,7 @@ void BeatLoopingControl::deactivate() {
 }
 
 void BeatLoopingControl::activate() {
-    if (m_bActive != true) {
+    if (!m_bActive) {
         m_bActive = true;
         m_pEnabled->set(1);
         m_pLegacy->set(1);
