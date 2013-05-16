@@ -23,12 +23,16 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_pAutoDJView(NULL),
+          m_playlistDao(pTrackCollection->getPlaylistDAO())
+          #ifdef __AUTODJCRATES__
+          , m_pAutoDJView(NULL),
           m_autoDjCratesDao (pTrackCollection->getDatabase(),
             pTrackCollection->getTrackDAO(), pTrackCollection->getCrateDAO(),
             pTrackCollection->getPlaylistDAO(), pConfig)
+          #endif // __AUTODJCRATES__
 {
+#ifdef __AUTODJCRATES__
+
     // Create the "Crates" tree-item under the root item.
     TreeItem* root = m_childModel.getItem(QModelIndex());
     m_pCratesTreeItem = new TreeItem("Crates", "", this, root);
@@ -53,10 +57,14 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate from AutoDJ"),this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
+
+#endif // __AUTODJCRATES__
 }
 
 AutoDJFeature::~AutoDJFeature() {
+    #ifdef __AUTODJCRATES__
     delete m_pRemoveCrateFromAutoDj;
+    #endif // __AUTODJCRATES__
 }
 
 QVariant AutoDJFeature::title() {
@@ -79,6 +87,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
     connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
+#ifdef __AUTODJCRATES__
+
     // Be informed when the user wants to add another random track.
     connect (m_pAutoDJView, SIGNAL(addRandomButton(bool)),
         this, SLOT(slotAddRandomTrack(bool)));
@@ -87,6 +97,8 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
 
     // Let subscribers know whether it's possible to add a random track.
     emit enableAddRandom (m_crateList.length() > 0);
+
+#endif // __AUTODJCRATES__
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -140,6 +152,7 @@ bool AutoDJFeature::dragMoveAccept(QUrl url) {
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj()
 {
+#ifdef __AUTODJCRATES__
     // Get the crate that was right-clicked on.
     QString crateName = m_lastRightClickedIndex.data().toString();
 
@@ -148,18 +161,22 @@ void AutoDJFeature::slotRemoveCrateFromAutoDj()
 
     // Clear its auto-DJ status.
     m_crateDao.setCrateInAutoDj (crateId, false);
+#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotCrateAdded (int a_iCrateId)
 {
+#ifdef __AUTODJCRATES__
     // If this newly-added crate is in the auto-DJ queue, add it to the list.
     if (m_crateDao.isCrateInAutoDj (a_iCrateId))
         slotCrateAutoDjChanged (a_iCrateId, true);
+#endif // __AUTODJCRATES__
 }
 
 // Signaled by the crate DAO when a crate is renamed.
 void AutoDJFeature::slotCrateRenamed (int a_iCrateId, QString a_strName)
 {
+#ifdef __AUTODJCRATES__
     // Look for this crate ID in our list.  It's OK if it's not found.
     for (int i = 0; i < m_crateList.length(); ++i)
     {
@@ -176,18 +193,22 @@ void AutoDJFeature::slotCrateRenamed (int a_iCrateId, QString a_strName)
             break;
         }
     }
+#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotCrateDeleted (int a_iCrateId)
 {
+#ifdef __AUTODJCRATES__
     // The crate can't be queried for its auto-DJ status, because it's been
     // deleted by the time this code is reached.  But we can handle that.
     // Another solution would be to add a "crateDeleting" signal to CrateDAO.
     slotCrateAutoDjChanged (a_iCrateId, false);
+#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotCrateAutoDjChanged (int a_iCrateId, bool a_bIn)
 {
+#ifdef __AUTODJCRATES__
     if (a_bIn)
     {
         // Get the name of the crate being added to the auto-DJ list.
@@ -232,10 +253,12 @@ void AutoDJFeature::slotCrateAutoDjChanged (int a_iCrateId, bool a_bIn)
 
     // Let subscribers know whether it's possible to add a random track.
     emit enableAddRandom (m_crateList.length() > 0);
+#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotAddRandomTrack(bool)
 {
+#ifdef __AUTODJCRATES__
     // Get access to the auto-DJ playlist.
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
     int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
@@ -252,7 +275,10 @@ void AutoDJFeature::slotAddRandomTrack(bool)
             m_pAutoDJView->onShow();
         }
     }
+#endif // __AUTODJCRATES__
 }
+
+#ifdef __AUTODJCRATES__
 
 void AutoDJFeature::constructCrateChildModel()
 {
@@ -299,3 +325,5 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
         menu.exec(globalPos);
     }
 }
+
+#endif // __AUTODJCRATES__

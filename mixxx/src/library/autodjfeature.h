@@ -8,10 +8,13 @@
 #include <QStringListModel>
 
 #include "library/libraryfeature.h"
-#include "library/dao/autodjcratesdao.h"
 #include "configobject.h"
 #include "treeitemmodel.h"
 #include "dlgautodj.h"
+
+#ifdef __AUTODJCRATES__
+#include "library/dao/autodjcratesdao.h"
+#endif // __AUTODJCRATES__
 
 class PlaylistTableModel;
 class TrackCollection;
@@ -39,7 +42,9 @@ class AutoDJFeature : public LibraryFeature {
     void activate();
 
     // Temporary, until WCrateTableView can be written.
+    #ifdef __AUTODJCRATES__
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
+    #endif // __AUTODJCRATES__
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
@@ -49,6 +54,8 @@ class AutoDJFeature : public LibraryFeature {
     const static QString m_sAutoDJViewName;
     TreeItemModel m_childModel;
     DlgAutoDJ* m_pAutoDJView;
+
+#ifdef __AUTODJCRATES__
 
     TreeItem* m_pCratesTreeItem;
         // The "Crates" tree-item under the "Auto DJ" tree-item.
@@ -68,6 +75,8 @@ class AutoDJFeature : public LibraryFeature {
     void constructCrateChildModel();
         // Initialize the list of crates loaded into the auto-DJ queue.
 
+#endif // __AUTODJCRATES__
+
   private slots:
     void slotRemoveCrateFromAutoDj();
         // Implements the context-menu item.
@@ -81,6 +90,7 @@ class AutoDJFeature : public LibraryFeature {
         // Signaled by the crate DAO when a crate's auto-DJ status changes.
     void slotAddRandomTrack(bool);
         // Adds a random track from all loaded crates to the auto-DJ queue.
+
   signals:
     void enableAddRandom (bool a_bEnabled);
 };

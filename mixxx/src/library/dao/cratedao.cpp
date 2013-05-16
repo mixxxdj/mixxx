@@ -93,6 +93,8 @@ bool CrateDAO::isCrateLocked(int crateId) {
     return false;
 }
 
+#ifdef __AUTODJCRATES__
+
 bool CrateDAO::setCrateInAutoDj(int a_iCrateId, bool a_bIn) {
     // SQLite3 doesn't support boolean value. Using integer instead.
     int iIn = a_bIn ? 1 : 0;
@@ -169,6 +171,8 @@ QList<int> CrateDAO::getCrateTracks(int a_iCrateId)
     // Return the list to our caller.
     return ids;
 }
+
+#endif // __AUTODJCRATES__
 
 bool CrateDAO::deleteCrate(int crateId) {
     ScopedTransaction transaction(m_database);

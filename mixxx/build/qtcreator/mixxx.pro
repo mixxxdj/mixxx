@@ -1,5 +1,5 @@
-CONFIG += debug link_pkgconfig portmidi script vinylcontrol m4a
-# ladspa autodjcrates
+CONFIG += debug link_pkgconfig portmidi script vinylcontrol m4a autodjcrates
+# ladspa
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
