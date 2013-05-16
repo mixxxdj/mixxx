@@ -35,22 +35,15 @@ public:
     ControlPotmeter(ConfigKey key, double dMinValue=0.0, double dMaxValue=1.0);
     ~ControlPotmeter();
     /** Returns the minimum allowed value */
-    double getMin();
+    double getMin() const;
     /** Returns the maximum allowed value */
-    double getMax();
+    double getMax() const;
     /** Sets the step size of the associated PushButtons */
     void setStep(double);
     /** Sets the small step size of the associated PushButtons */
     void setSmallStep(double);
-    /** Sets the minimum and maximum allowed value. The control value is reset when calling
-      * this method */
-    void setRange(double dMinValue, double dMaxValue);
-    double getValueFromWidget(double dValue);
-    double getValueToWidget(double dValue);
-    double GetMidiValue();
 
 public slots:
-    void setValueFromThread(double dValue);
     /** Increases the value. This method is called from an associated PushButton control */
     void incValue(double);
     /** Decreases the value. This method is called from an associated PushButton control */
@@ -73,7 +66,9 @@ public slots:
     void toggleMinusValue(double);
 
 protected:
-    void setValueFromMidi(MidiOpCode o, double v);
+    /** Sets the minimum and maximum allowed value. The control value is reset when calling
+      * this method */
+    void setRange(double dMinValue, double dMaxValue);
 
     double m_dMaxValue;
     double m_dMinValue;

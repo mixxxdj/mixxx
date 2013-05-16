@@ -408,7 +408,7 @@ void LoopingControl::slotLoopExit(double val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
             setLoopingEnabled(false);
-        } 
+        }
     }
 }
 
@@ -635,11 +635,13 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (keepStartPoint) {
             loop_in = m_iLoopStartSample;
         } else {
-            // loop_in is set to the closest beat if quantize is on
-            double currentClosestBeat =
-                    floorf(m_pBeats->findClosestBeat(getCurrentSample()));
-            loop_in = (m_pQuantizeEnabled->get() > 0.0 && currentClosestBeat != -1) ?
-                    currentClosestBeat : floorf(getCurrentSample());
+            // loop_in is set to the previous beat if quantize is on.  The
+            // closest beat might be ahead of play position which would cause a seek.
+            // TODO: If in reverse, should probably choose nextBeat.
+            double prevBeat =
+                    floorf(m_pBeats->findPrevBeat(getCurrentSample()));
+            loop_in = (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) ?
+                    prevBeat : floorf(getCurrentSample());
             if (!even(loop_in)) {
                 loop_in--;
             }
@@ -742,7 +744,7 @@ BeatLoopingControl::~BeatLoopingControl() {
 }
 
 void BeatLoopingControl::deactivate() {
-    if (m_bActive != false) {
+    if (m_bActive) {
         m_bActive = false;
         m_pEnabled->set(0);
         m_pLegacy->set(0);
@@ -750,7 +752,7 @@ void BeatLoopingControl::deactivate() {
 }
 
 void BeatLoopingControl::activate() {
-    if (m_bActive != true) {
+    if (!m_bActive) {
         m_bActive = true;
         m_pEnabled->set(1);
         m_pLegacy->set(1);

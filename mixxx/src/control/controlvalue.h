@@ -1,28 +1,34 @@
+#ifndef CONTROLVALUE_H
+#define CONTROLVALUE_H
 
-#ifndef CONTROLOBJECTBASE_H_
-#define CONTROLOBJECTBASE_H_
+#include <limits>
 
 #include <QAtomicInt>
 #include <QObject>
-#include <limits>
 
 // for look free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
 const int cRingSize = 8;
-// there are basicly unlimited readers allowed at each ring element 
+// there are basicly unlimited readers allowed at each ring element
 // but we have to count them so max() is just fine.
 const int cReaderSlotCnt = std::numeric_limits<int>::max();
 
-
+// A single instance of a value of type T along with an atomic integer which
+// tracks the current number of readers or writers of the slot. The value
+// m_readerSlots starts at cReaderSlotCnt and counts down to 0. If the value is
+// 0 or less then reads to the value fail because there are either too many
+// readers or a write is occurring. A write to the value will fail if
+// m_readerSlots is not equal to cReaderSlotCnt (e.g. there is an active
+// reader).
 template<typename T>
-class ControlObjectRingValue {
+class ControlRingValue {
   public:
-    ControlObjectRingValue()
+    ControlRingValue()
         : m_value(T()),
           m_readerSlots(cReaderSlotCnt) {
     }
 
-    bool tryGet(T* value) {
+    bool tryGet(T* value) const {
         // Read while consuming one readerSlot
         bool hasSlot = (m_readerSlots.fetchAndAddAcquire(-1) > 0);
         if (hasSlot) {
@@ -44,14 +50,19 @@ class ControlObjectRingValue {
 
   private:
     T m_value;
-    QAtomicInt m_readerSlots;
+    mutable QAtomicInt m_readerSlots;
 };
 
 // Ring buffer based implementation for all Types sizeof(T) > sizeof(void*)
+
+// An implementation of ControlValueAtomicBase for non-atomic types T. Uses a
+// ring-buffer of ControlRingValues and a read pointer and write pointer to
+// provide getValue()/setValue() methods which *sacrifice perfect consistency*
+// for the benefit of wait-free read/write access to a value.
 template<typename T, bool ATOMIC = false>
-class ControlObjectValue {
+class ControlValueAtomicBase {
   public:
-    inline T getValue() {
+    inline T getValue() const {
         T value = T();
         unsigned int index = (unsigned int)m_readIndex
                 % (cRingSize);
@@ -59,10 +70,10 @@ class ControlObjectValue {
             // We are here if
             // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
             // 2) the formerly current value is locked by a writer
-            // Case 1 does not happen because we have enough (0x7fffffff) reader slots. 
+            // Case 1 does not happen because we have enough (0x7fffffff) reader slots.
             // Case 2 happens when the a reader is delayed after reading the
-            // m_currentIndex and in the mean while a reader locks the formaly current value 
-            // because it has written cRingSize times. Reading the less recent value will fix 
+            // m_currentIndex and in the mean while a reader locks the formaly current value
+            // because it has written cRingSize times. Reading the less recent value will fix
             // it because it is now actualy the current value.
             index = (index - 1) % (cRingSize);
         }
@@ -85,7 +96,7 @@ class ControlObjectValue {
     }
 
   protected:
-    ControlObjectValue()
+    ControlValueAtomicBase()
         : m_readIndex(0),
           m_writeIndex(1) {
         Q_ASSERT((std::numeric_limits<unsigned int>::max() % cRingSize) == (cRingSize - 1));
@@ -94,16 +105,18 @@ class ControlObjectValue {
   private:
     // In worst case, each reader can consume a reader slot from a different ring element.
     // In this case there is still one ring element available for writing.
-    ControlObjectRingValue<T> m_ring[cRingSize];
+    ControlRingValue<T> m_ring[cRingSize];
     QAtomicInt m_readIndex;
     QAtomicInt m_writeIndex;
 };
 
-// Specialized Template for atomic types.
+// Specialized template for types that are deemed to be atomic on the target
+// architecture. Instead of using a read/write ring to guarantee atomicity,
+// direct assignment/read of an aligned member variable is used.
 template<typename T>
-class ControlObjectValue<T, true> {
+class ControlValueAtomicBase<T, true> {
   public:
-    inline T getValue() {
+    inline T getValue() const {
         return m_value;
     }
 
@@ -112,8 +125,8 @@ class ControlObjectValue<T, true> {
     }
 
   protected:
-    ControlObjectValue()
-        : m_value(T()) {
+    ControlValueAtomicBase()
+            : m_value(T()) {
     }
 
   private:
@@ -126,20 +139,19 @@ class ControlObjectValue<T, true> {
 #endif
 };
 
-// This is a proxy Template to select the native atomic or the ring buffer
-// Implementation depending on the target architecture
-// Note: Qt does not support templates for signal and slots
-// So the typified ControlObject has to handle the Event Queue connections
+// ControlValueAtomic is a wrapper around ControlValueAtomicBase which uses the
+// sizeof(T) to determine which underlying implementation of
+// ControlValueAtomicBase to use. For types where sizeof(T) <= sizeof(void*),
+// the specialized implementation of ControlValueAtomicBase for types that are
+// atomic on the architecture is used.
 template<typename T>
-class ControlObjectBase
-    : public ControlObjectValue<T, sizeof(T) <= sizeof(void*)> {
+class ControlValueAtomic
+    : public ControlValueAtomicBase<T, sizeof(T) <= sizeof(void*)> {
   public:
 
-    ControlObjectBase()
-        : ControlObjectValue<T, sizeof(T) <= sizeof(void*)>() {
+    ControlValueAtomic()
+        : ControlValueAtomicBase<T, sizeof(T) <= sizeof(void*)>() {
     }
 };
 
-
-#endif // CONTROLOBJECTBASE_H_
-
+#endif /* CONTROLVALUE_H */

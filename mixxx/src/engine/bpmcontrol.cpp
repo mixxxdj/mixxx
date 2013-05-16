@@ -26,14 +26,23 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
+    connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotAdjustBpm()),
+            Qt::DirectConnection);
 
     m_pRateRange = ControlObject::getControl(ConfigKey(_group, "rateRange"));
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
+    connect(m_pRateRange, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotAdjustBpm()),
+            Qt::DirectConnection);
 
     m_pRateDir = ControlObject::getControl(ConfigKey(_group, "rate_dir"));
     connect(m_pRateDir, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAdjustBpm()),
+            Qt::DirectConnection);
+    connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
@@ -136,6 +145,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     double averageBpm = 60.0 * 1000.0 / averageLength;
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pFileBpm->set(averageBpm / dRate);
+    slotAdjustBpm();
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {

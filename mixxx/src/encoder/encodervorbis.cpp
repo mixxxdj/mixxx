@@ -27,34 +27,22 @@ A lot of stuff has been stolen from:
 http://svn.xiph.org/trunk/vorbis/examples/encoder_example.c
 */
 
-// TODO: MORE ERROR CHECKING EVERYWHERE (encoder and shoutcast classes)
-
-#include "recording/encodervorbis.h"
-
 #include <stdlib.h> // needed for random num gen
 #include <time.h> // needed for random num gen
-#include <string.h> // needed for memcpy
-#include <QDebug>
+#include <QtDebug>
 
-#include "engine/engineabstractrecord.h"
-#include "controlobjectthreadmain.h"
-#include "controlobject.h"
-#include "playerinfo.h"
-#include "trackinfoobject.h"
+#include "encoder/encodervorbis.h"
+#include "encoder/encodercallback.h"
 #include "errordialoghandler.h"
 
-// Constructor
-EncoderVorbis::EncoderVorbis(EngineAbstractRecord *engine) {
-    m_bStreamInitialized = false;
-    m_pEngine = engine;
-    m_metaDataTitle = NULL;
-    m_metaDataArtist = NULL;
-    m_metaDataAlbum = NULL;
-    m_pMetaData = TrackPointer(NULL);
-    m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
+EncoderVorbis::EncoderVorbis(EncoderCallback* pCallback)
+        : m_bStreamInitialized(false),
+          m_pCallback(pCallback),
+          m_metaDataTitle(NULL),
+          m_metaDataArtist(NULL),
+          m_metaDataAlbum(NULL) {
 }
 
-// Destructor  //call flush before any encoder gets deleted
 EncoderVorbis::~EncoderVorbis() {
     if (m_bStreamInitialized) {
         ogg_stream_clear(&m_oggs);
@@ -63,9 +51,9 @@ EncoderVorbis::~EncoderVorbis() {
         vorbis_comment_clear(&m_vcomment);
         vorbis_info_clear(&m_vinfo);
     }
-    delete m_samplerate;
 }
-//call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
+
+// call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
 void EncoderVorbis::flush() {
     vorbis_analysis_wrote(&m_vdsp, 0);
     writePage();
@@ -100,11 +88,12 @@ void EncoderVorbis::writePage() {
 
     //Write header only once after stream has been initalized
     int result;
-    if(m_header_write){
-        while (1) {
+    if (m_header_write) {
+        while (true) {
             result = ogg_stream_flush(&m_oggs, &m_oggpage);
-            if (result==0) break;
-            m_pEngine->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
+            if (result == 0)
+                break;
+            m_pCallback->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
         }
         m_header_write = false;
     }
@@ -119,28 +108,28 @@ void EncoderVorbis::writePage() {
             int eos = 0;
             while (!eos) {
                 int result = ogg_stream_pageout(&m_oggs, &m_oggpage);
-                if (result == 0) break;
-                m_pEngine->write(m_oggpage.header, m_oggpage.body, m_oggpage.header_len, m_oggpage.body_len);
-                if (ogg_page_eos(&m_oggpage)) eos = 1;
+                if (result == 0)
+                    break;
+                m_pCallback->write(m_oggpage.header, m_oggpage.body,
+                                   m_oggpage.header_len, m_oggpage.body_len);
+                if (ogg_page_eos(&m_oggpage))
+                    eos = 1;
             }
         }
     }
 }
 
 void EncoderVorbis::encodeBuffer(const CSAMPLE *samples, const int size) {
-    float **buffer;
-    int i;
-
-    buffer = vorbis_analysis_buffer(&m_vdsp, size);
+    float **buffer = vorbis_analysis_buffer(&m_vdsp, size);
 
     // Deinterleave samples
-    for (i = 0; i < size/2; ++i)
+    for (int i = 0; i < size/2; ++i)
     {
         buffer[0][i] = samples[i*2]/32768.f;
         buffer[1][i] = samples[i*2+1]/32768.f;
     }
     /** encodes audio **/
-    vorbis_analysis_wrote(&m_vdsp, i);
+    vorbis_analysis_wrote(&m_vdsp, size/2);
     /** writes the OGG page and sends it to file or stream **/
     writePage();
 }
@@ -190,14 +179,11 @@ void EncoderVorbis::initStream() {
     m_bStreamInitialized = true;
 }
 
-int EncoderVorbis::initEncoder(int bitrate) {
-    int ret;
+int EncoderVorbis::initEncoder(int bitrate, int samplerate) {
     vorbis_info_init(&m_vinfo);
 
     // initialize VBR quality based mode
-    unsigned long samplerate = m_samplerate->get();
-
-    ret = vorbis_encode_init(&m_vinfo, 2, samplerate, -1, bitrate*1000, -1);
+    int ret = vorbis_encode_init(&m_vinfo, 2, samplerate, -1, bitrate*1000, -1);
 
     if (ret == 0) {
         initStream();

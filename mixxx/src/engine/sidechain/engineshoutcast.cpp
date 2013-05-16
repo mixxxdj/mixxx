@@ -4,7 +4,7 @@
     copyright            : (C) 2007 by Wesley Stessens
                            (C) 2007 by Albert Santoni
                          : (C) 2010 by Tobias Rafreider
- ***************************************************************************/
+***************************************************************************/
 
 /***************************************************************************
  *                                                                         *
@@ -16,25 +16,24 @@
  ***************************************************************************/
 
 #include <QDebug>
-#include <QMutexLocker>
-#include <stdio.h> // currently used for writing to stdout
+
 #include <signal.h>
 
 #ifdef __WINDOWS__
-    #include <windows.h>
-    //sleep on linux assumes seconds where as Sleep on Windows assumes milliseconds
-    #define sleep(x) Sleep(x*1000)
+#include <windows.h>
+//sleep on linux assumes seconds where as Sleep on Windows assumes milliseconds
+#define sleep(x) Sleep(x*1000)
 #else
 #include <unistd.h>
 #endif
 
-#include "engine/engineshoutcast.h"
+#include "engine/sidechain/engineshoutcast.h"
 
 #include "configobject.h"
-#include "dlgprefshoutcast.h"
 #include "playerinfo.h"
-#include "recording/encodermp3.h"
-#include "recording/encodervorbis.h"
+#include "encoder/encoder.h"
+#include "encoder/encodermp3.h"
+#include "encoder/encodervorbis.h"
 #include "shoutcast/defs_shoutcast.h"
 #include "trackinfoobject.h"
 
@@ -54,9 +53,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pMasterSamplerate(new ControlObjectThread(
               ControlObject::getControl(ConfigKey("[Master]", "samplerate")))),
           m_pShoutcastStatus(new ControlObjectThread(
-              new ControlObject(ConfigKey("[Shoutcast]", "status")))),
+              new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status")))),
           m_bQuit(false),
-          m_shoutMutex(QMutex::Recursive),
           m_custom_metadata(false),
           m_firstCall(false),
           m_format_is_mp3(false),
@@ -74,8 +72,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 
     m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
-        ConfigKey("[Shoutcast]","update_from_prefs"));
-    m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(
+        ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
+    m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
         m_pShoutcastNeedUpdateFromPrefs);
 
     // Initialize libshout
@@ -97,8 +95,6 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 }
 
 EngineShoutcast::~EngineShoutcast() {
-    QMutexLocker locker(&m_shoutMutex);
-
     if (m_encoder) {
         m_encoder->flush();
         delete m_encoder;
@@ -119,9 +115,7 @@ EngineShoutcast::~EngineShoutcast() {
     shout_shutdown();
 }
 
-bool EngineShoutcast::serverDisconnect()
-{
-    QMutexLocker locker(&m_shoutMutex);
+bool EngineShoutcast::serverDisconnect() {
     if (m_encoder){
         m_encoder->flush();
         delete m_encoder;
@@ -138,7 +132,6 @@ bool EngineShoutcast::serverDisconnect()
 }
 
 bool EngineShoutcast::isConnected() {
-    QMutexLocker locker(&m_shoutMutex);
     if (m_pShout) {
         m_iShoutStatus = shout_get_connected(m_pShout);
         if (m_iShoutStatus == SHOUTERR_CONNECTED)
@@ -154,9 +147,7 @@ QByteArray EngineShoutcast::encodeString(const QString& string) {
     return string.toLatin1();
 }
 
-void EngineShoutcast::updateFromPreferences()
-{
-    QMutexLocker locker(&m_shoutMutex);
+void EngineShoutcast::updateFromPreferences() {
     qDebug() << "EngineShoutcast: updating from preferences";
 
     m_pUpdateShoutcastFromPrefs->slotSet(0.0f);
@@ -305,10 +296,10 @@ void EngineShoutcast::updateFromPreferences()
     int iMasterSamplerate = m_pMasterSamplerate->get();
     if (m_format_is_ov && iMasterSamplerate == 96000) {
         errorDialog(tr("Broadcasting at 96kHz with Ogg Vorbis is not currently "
-                    "supported. Please try a different sample-rate or switch "
-                    "to a different encoding."),
+                       "supported. Please try a different sample-rate or switch "
+                       "to a different encoding."),
                     tr("See https://bugs.launchpad.net/mixxx/+bug/686212 for more "
-                    "information."));
+                       "information."));
         return;
     }
 
@@ -360,7 +351,7 @@ void EngineShoutcast::updateFromPreferences()
         return;
     }
 
-    if (m_encoder->initEncoder(iBitrate) < 0) {
+    if (m_encoder->initEncoder(iBitrate, iMasterSamplerate) < 0) {
         //e.g., if lame is not found
         //init m_encoder itself will display a message box
         qDebug() << "**** Encoder init failed";
@@ -369,9 +360,7 @@ void EngineShoutcast::updateFromPreferences()
     }
 }
 
-bool EngineShoutcast::serverConnect()
-{
-    QMutexLocker locker(&m_shoutMutex);
+bool EngineShoutcast::serverConnect() {
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
@@ -389,8 +378,9 @@ bool EngineShoutcast::serverConnect()
      * If m_encoder is NULL, then we propably want to use MP3 streaming, however, lame could not be found
      * It does not make sense to connect
      */
-     if(m_encoder == NULL){
-        m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
+    if(m_encoder == NULL){
+        m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
+        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
         return false;
     }
     const int iMaxTries = 3;
@@ -414,7 +404,9 @@ bool EngineShoutcast::serverConnect()
     if (m_iShoutFailures == iMaxTries) {
         if (m_pShout)
             shout_close(m_pShout);
-        m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
+        m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
+        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+        return false;
     }
     if (m_bQuit) {
         if (m_pShout)
@@ -437,7 +429,7 @@ bool EngineShoutcast::serverConnect()
         return true;
     }
     //otherwise disable shoutcast in preferences
-    m_pConfig->set(ConfigKey("[Shoutcast]","enabled"),ConfigValue("0"));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
     if(m_pShout){
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
@@ -448,7 +440,6 @@ bool EngineShoutcast::serverConnect()
 
 void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                             int headerLen, int bodyLen) {
-    QMutexLocker locker(&m_shoutMutex);
     int ret;
 
     if (!m_pShout)
@@ -463,10 +454,10 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
                 if ( m_iShoutFailures > 3 ){
                     if(!serverConnect())
                         errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-                 }
-                 else{
+                }
+                else{
                     m_iShoutFailures++;
-                 }
+                }
 
                 return;
             } else {
@@ -478,70 +469,78 @@ void EngineShoutcast::write(unsigned char *header, unsigned char *body,
         if (ret != SHOUTERR_SUCCESS) {
             qDebug() << "DEBUG: Send error: " << shout_get_error(m_pShout);
             if ( m_iShoutFailures > 3 ){
-                    if(!serverConnect())
-                        errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
-             }
-             else{
+                if(!serverConnect())
+                    errorDialog(tr("Lost connection to streaming server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+            }
+            else{
                 m_iShoutFailures++;
-             }
+            }
 
             return;
         } else {
             //qDebug() << "yea I kinda sent footer";
         }
-        if (shout_queuelen(m_pShout) > 0)
-            printf("DEBUG: queue length: %d\n", (int)shout_queuelen(m_pShout));
+        if (shout_queuelen(m_pShout) > 0) {
+            qDebug() << "DEBUG: queue length:" << (int)shout_queuelen(m_pShout);
+        }
     } else {
         qDebug() << "Error connecting to Shoutcast server:" << shout_get_error(m_pShout);
-       // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
+        // errorDialog(tr("Shoutcast aborted connect after 3 tries"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
 }
 
-void EngineShoutcast::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize) {
-    QMutexLocker locker(&m_shoutMutex);
+void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     //Check to see if Shoutcast is enabled, and pass the samples off to be broadcast if necessary.
-    bool prefEnabled = (m_pConfig->getValueString(ConfigKey("[Shoutcast]","enabled")).toInt() == 1);
+    bool prefEnabled = (m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"enabled")).toInt() == 1);
 
-    if (prefEnabled) {
-        if(!isConnected()){
-            //Initialize the m_pShout structure with the info from Mixxx's m_shoutcast preferences.
-            updateFromPreferences();
-
-            if(serverConnect()) {
-                infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
-            } else {
-                errorDialog(tr("Mixxx could not connect to streaming server"),
-                            tr("Please check your connection to the Internet and verify that your username and password are correct."));
-            }
-        }
-        //send to shoutcast, if connection has been established
-        if (m_iShoutStatus != SHOUTERR_CONNECTED)
-            return;
-
-        if (iBufferSize > 0 && m_encoder){
-            m_encoder->encodeBuffer(pOut, iBufferSize); //encode and send to shoutcast
-        }
-        //Check if track has changed and submit its new metadata to shoutcast
-        if (metaDataHasChanged())
-            updateMetaData();
-
-        if (m_pUpdateShoutcastFromPrefs->get() > 0.0f){
-            /*
-             * You cannot change bitrate, hostname, etc while connected to a stream
-             */
+    if (!prefEnabled) {
+        if (isConnected()) {
+            // We are conneced but shoutcast is disabled. Disconnect.
             serverDisconnect();
-            updateFromPreferences();
-            serverConnect();
+            infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
         }
-     } else if (isConnected()) {
-        // if shoutcast is disabled but we are connected, disconnect
-        serverDisconnect();
-        infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
+        return;
+    }
+
+    // If we are here then the user wants to be connected (shoutcast is enabled
+    // in the preferences).
+
+    bool connected = isConnected();
+
+    // If we aren't connected or the user has changed their preferences,
+    // disconnect, update from prefs, and reconnect.
+    if (!connected || m_pUpdateShoutcastFromPrefs->get() > 0.0f) {
+        if (connected) {
+            serverDisconnect();
+        }
+
+        // Initialize/update the encoder and libshout setup.
+        updateFromPreferences();
+
+        if (serverConnect()) {
+            infoDialog(tr("Mixxx has successfully connected to the shoutcast server"), "");
+        } else {
+            errorDialog(tr("Mixxx could not connect to streaming server"),
+                        tr("Please check your connection to the Internet and verify that your username and password are correct."));
+        }
+    }
+
+    // If we aren't connected, bail.
+    if (m_iShoutStatus != SHOUTERR_CONNECTED)
+        return;
+
+    // If we are connected, encode the samples.
+    if (iBufferSize > 0 && m_encoder){
+        m_encoder->encodeBuffer(pBuffer, iBufferSize);
+    }
+
+    // Check if track metadata has changed and if so, update.
+    if (metaDataHasChanged()) {
+        updateMetaData();
     }
 }
 
 bool EngineShoutcast::metaDataHasChanged() {
-    QMutexLocker locker(&m_shoutMutex);
     TrackPointer pTrack;
 
     if (m_iMetaDataLife < 16) {
@@ -570,7 +569,6 @@ bool EngineShoutcast::metaDataHasChanged() {
 }
 
 void EngineShoutcast::updateMetaData() {
-    QMutexLocker locker(&m_shoutMutex);
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
@@ -586,7 +584,7 @@ void EngineShoutcast::updateMetaData() {
      * This was done in EncoderVorbis previously and caused interruptions on track change as well
      * which sounds awful to listeners.
      * To conlcude: Only write OGG metadata one time, i.e., if static metadata is used.
-      */
+     */
 
 
     //If we use either MP3 streaming or OGG streaming with dynamic update of metadata being enabled,

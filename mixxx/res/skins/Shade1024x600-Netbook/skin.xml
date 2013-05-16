@@ -4133,13 +4133,11 @@
 									<ConfigKey>[Channel1],beatloop_0.125_toggle</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatlooproll_0.125_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatloop_0.125_enabled</ConfigKey>
@@ -4167,13 +4165,11 @@
 									<ConfigKey>[Channel1],beatloop_0.25_toggle</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatlooproll_0.25_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatloop_0.25_enabled</ConfigKey>
@@ -4201,13 +4197,11 @@
 									<ConfigKey>[Channel1],beatloop_0.5_toggle</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatlooproll_0.5_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatloop_0.5_enabled</ConfigKey>
@@ -4235,13 +4229,11 @@
 									<ConfigKey>[Channel1],beatloop_1_toggle</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatlooproll_1_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatloop_1_enabled</ConfigKey>
@@ -4269,13 +4261,11 @@
 									<ConfigKey>[Channel1],beatloop_2_toggle</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatlooproll_2_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatloop_2_enabled</ConfigKey>
@@ -4303,13 +4293,11 @@
 									<ConfigKey>[Channel1],beatloop_4_toggle</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatlooproll_4_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatloop_4_enabled</ConfigKey>
@@ -4337,13 +4325,11 @@
 									<ConfigKey>[Channel1],beatloop_8_toggle</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatlooproll_8_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatloop_8_enabled</ConfigKey>
@@ -4371,13 +4357,11 @@
 									<ConfigKey>[Channel1],beatloop_16_toggle</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>LeftButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatlooproll_16_activate</ConfigKey>
 									<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 									<ButtonState>RightButton</ButtonState>
-									<ConnectValueToWidget>false</ConnectValueToWidget>
 								</Connection>
 								<Connection>
 									<ConfigKey>[Channel1],beatloop_16_enabled</ConfigKey>

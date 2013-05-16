@@ -1,5 +1,5 @@
 /****************************************************************************
-                   encoder.cpp  - encoder API for mixxx
+                   encoder.h  - encoder API for mixxx
                              -------------------
     copyright            : (C) 2009 by Phillip Whelan
     copyright            : (C) 2010 by Tobias Rafreider
@@ -14,41 +14,26 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <stdlib.h> // needed for random num gen
-#include <time.h> // needed for random num gen
-#include <string.h> // needed for memcpy
-#include <QDebug>
+#ifndef ENCODER_H
+#define ENCODER_H
 
-#include "engine/engineabstractrecord.h"
-#include "controlobjectthreadmain.h"
-#include "controlobject.h"
-#include "playerinfo.h"
-#include "trackinfoobject.h"
+#include "defs.h"
 
-#include "encoder.h"
+class Encoder {
+  public:
+    Encoder();
+    virtual ~Encoder();
 
-// Constructor
-Encoder::Encoder() {
-}
+    virtual int initEncoder(int bitrate, int samplerate) = 0;
+    // encodes the provided buffer of audio.
+    virtual void encodeBuffer(const CSAMPLE *samples, const int size) = 0;
+    // Adds metadata to the encoded auio, i.e., the ID3 tag. Currently only used
+    // by EngineRecord, EngineShoutcast does something different.
+    virtual void updateMetaData(char* artist, char* title, char* album) = 0;
+    // called at the end when encoding is finished
+    virtual void flush() = 0;
+    /**converts an OGG quality measure from 1..10 to a bitrate **/
+    static int convertToBitrate(int quality);
+};
 
-// Destructor
-Encoder::~Encoder() {
-}
-
-int Encoder::convertToBitrate(int quality) {
-    switch(quality)
-    {
-        case 1: return 48;
-        case 2: return 64;
-        case 3: return 80;
-        case 4: return 96;
-        case 5: return 112;
-        case 6: return 128;
-        case 7: return 160;
-        case 8: return 192;
-        case 9: return 224;
-        case 10: return 256;
-        case 11: return 320;
-        default: return 128;
-    }
-}
+#endif // ENCODER_H

@@ -22,10 +22,9 @@ class ControlObject;
 @author Tue Haste Andersen
 */
 
-class ControlObjectThreadWidget : public ControlObjectThreadMain
-{
+class ControlObjectThreadWidget : public ControlObjectThreadMain {
     Q_OBJECT
-public:
+  public:
 
     enum EmitOption {
         EMIT_NEVER                = 0x00,
@@ -45,15 +44,8 @@ public:
 
     virtual double get();
 
-    virtual void add(double v);
-
-    virtual void sub(double v);
-
-  private slots:
-    void slotReset();
-    // Receives the Value from the parent and may scales the vale and re-emit it again
-    virtual void slotSet(double v);
-    virtual void slotParentValueChanged(double v);
+  public slots:
+    virtual void set(double v);
 };
 
 #endif

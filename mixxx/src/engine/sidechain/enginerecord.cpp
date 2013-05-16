@@ -15,18 +15,17 @@
  *                                                                         *
  ***************************************************************************/
 
-#include "enginerecord.h"
-#include "defs_recording.h"
-#include "controllogpotmeter.h"
+#include "engine/sidechain/enginerecord.h"
+
 #include "configobject.h"
-#include "controlobjectthread.h"
 #include "controlobject.h"
-#include "trackinfoobject.h"
-#include "dlgprefrecord.h"
-#ifdef __SHOUTCAST__
-#include "encodervorbis.h"
-#include "encodermp3.h"
-#endif
+#include "controlobjectthread.h"
+#include "encoder/encoder.h"
+#include "encoder/encodermp3.h"
+#include "encoder/encodervorbis.h"
+#include "errordialoghandler.h"
+#include "playerinfo.h"
+#include "recording/defs_recording.h"
 
 /***************************************************************************
  *                                                                         *
@@ -38,29 +37,27 @@
  *                                                                         *
  ***************************************************************************/
 
-EngineRecord::EngineRecord(ConfigObject<ConfigValue> * _config)
-{
-    m_config = _config;
-    m_encoder = NULL;
-    m_sndfile = NULL;
+const int kMetaDataLifeTimeout = 16;
 
+EngineRecord::EngineRecord(ConfigObject<ConfigValue>* _config)
+        : m_config(_config),
+          m_encoder(NULL),
+          m_sndfile(NULL),
+          m_iMetaDataLife(0) {
     m_recReady = new ControlObjectThread(
-                               ControlObject::getControl(ConfigKey(RECORDING_PREF_KEY, "status")));
-    m_samplerate = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
-
-    m_iMetaDataLife = 0;
+        ControlObject::getControl(ConfigKey(RECORDING_PREF_KEY, "status")));
+    m_samplerate = new ControlObjectThread(
+        ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
 }
 
-EngineRecord::~EngineRecord()
-{
+EngineRecord::~EngineRecord() {
     closeCueFile();
     closeFile();
-    if(m_recReady)      delete m_recReady;
-    if(m_samplerate)    delete m_samplerate;
+    delete m_recReady;
+    delete m_samplerate;
 }
 
-void EngineRecord::updateFromPreferences()
-{
+void EngineRecord::updateFromPreferences() {
     m_Encoding = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding")).toLatin1();
     //returns a number from 1 .. 10
     m_OGGquality = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY,"OGG_Quality")).toLatin1();
@@ -72,41 +69,32 @@ void EngineRecord::updateFromPreferences()
     m_cuefilename = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
     m_bCueIsEnabled = m_config->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
 
-    if(m_encoder){
-        delete m_encoder;	//delete m_encoder if it has been initalized (with maybe) different bitrate
+    // delete m_encoder if it has been initalized (with maybe) different bitrate
+    if (m_encoder) {
+        delete m_encoder;
         m_encoder = NULL;
     }
 
-    if(m_Encoding == ENCODING_MP3){
-#ifdef __SHOUTCAST__
+    if (m_Encoding == ENCODING_MP3) {
         m_encoder = new EncoderMp3(this);
         m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
-        if(m_encoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt())) < 0){
+        if(m_encoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
+                                  m_samplerate->get()) < 0) {
             delete m_encoder;
             m_encoder = NULL;
             qDebug() << "MP3 recording is not supported. Lame could not be initialized";
         }
-#else
-        qDebug() << "MP3 recording requires Mixxx to build with shoutcast support";
-#endif
-
-    }
-    if(m_Encoding == ENCODING_OGG){
-#ifdef __SHOUTCAST__
+    } else if (m_Encoding == ENCODING_OGG) {
         m_encoder = new EncoderVorbis(this);
         m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
-        if(m_encoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt())) < 0){
+        if (m_encoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
+                                   m_samplerate->get()) < 0) {
             delete m_encoder;
             m_encoder = NULL;
             qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
-
         }
-#else
-        qDebug() << "OGG recording requires Mixxx to build with shoutcast support";
-#endif
-
     }
     /*
      * If we use WAVE OR AIFF
@@ -116,23 +104,15 @@ void EngineRecord::updateFromPreferences()
 
 }
 
-/*
- * Check if the metadata has changed since the previous check.
- * We also check when was the last check performed to avoid using
- * too much CPU and as well to avoid changing the metadata during
- * scratches.
- */
 bool EngineRecord::metaDataHasChanged()
 {
-    TrackPointer pTrack;
-
-    if ( m_iMetaDataLife < 16 ) {
+    if (m_iMetaDataLife < kMetaDataLifeTimeout) {
         m_iMetaDataLife++;
         return false;
     }
     m_iMetaDataLife = 0;
 
-    pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    TrackPointer pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
     if ( !pTrack )
         return false;
 
@@ -152,12 +132,8 @@ bool EngineRecord::metaDataHasChanged()
     return true;
 }
 
-void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize) {
-    Q_UNUSED(pOut);
-    // Calculate the latency of this buffer
-    m_dLatency = (double)iBufferSize / m_samplerate->get();
-
-    //if recording is disabled
+void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+    // if recording is disabled
     if (m_recReady->get() == RECORD_OFF) {
         //qDebug("Setting record flag to: OFF");
         if (fileOpen()) {
@@ -165,13 +141,19 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             emit(isRecording(false));
         }
     }
-    //if we are ready for recording, i.e, the output file has been selected, we open a new file
+
+    // if we are ready for recording, i.e, the output file has been selected, we
+    // open a new file
     if (m_recReady->get() == RECORD_READY) {
         updateFromPreferences();	//update file location from pref
         if (openFile()) {
             qDebug("Setting record flag to: ON");
             m_recReady->slotSet(RECORD_ON);
             emit(isRecording(true)); //will notify the RecordingManager
+
+            // Since we just started recording, timeout and clear the metadata.
+            m_iMetaDataLife = kMetaDataLifeTimeout;
+            m_pCurrentTrack = TrackPointer();
 
             if (m_bCueIsEnabled) {
                 openCueFile();
@@ -184,17 +166,19 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
             emit(isRecording(false));
         }
     }
-    //If recording is enabled process audio to compressed or uncompressed data.
+
+    // If recording is enabled process audio to compressed or uncompressed data.
     if (m_recReady->get() == RECORD_ON) {
         if (m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF) {
             if (m_sndfile != NULL) {
-                sf_write_float(m_sndfile, pIn, iBufferSize);
+                sf_write_float(m_sndfile, pBuffer, iBufferSize);
                 emit(bytesRecorded(iBufferSize));
             }
         } else {
             if (m_encoder) {
-                //Compress audio. Encoder will call method 'write()' below to write a file stream
-                m_encoder->encodeBuffer(pIn, iBufferSize);
+                // Compress audio. Encoder will call method 'write()' below to
+                // write a file stream
+                m_encoder->encodeBuffer(pBuffer, iBufferSize);
             }
         }
 
@@ -210,6 +194,10 @@ void EngineRecord::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
 }
 
 void EngineRecord::writeCueLine() {
+    if (!m_pCurrentTrack) {
+        return;
+    }
+
     // account for multiple channels
     unsigned long samplerate = m_samplerate->get() * 2;
     // CDDA is specified as having 75 frames a second
@@ -228,9 +216,9 @@ void EngineRecord::writeCueLine() {
         .toLatin1()
     );
 
-    m_cuefile.write(QString("    TITLE %1\n")
+    m_cuefile.write(QString("    TITLE \"%1\"\n")
         .arg(m_pCurrentTrack->getTitle()).toLatin1());
-    m_cuefile.write(QString("    PERFORMER %1\n")
+    m_cuefile.write(QString("    PERFORMER \"%1\"\n")
         .arg(m_pCurrentTrack->getArtist()).toLatin1());
 
     // Woefully inaccurate (at the seconds level anyways).
@@ -245,16 +233,15 @@ void EngineRecord::writeCueLine() {
 
 /** encoder will call this method to write compressed audio **/
 void EngineRecord::write(unsigned char *header, unsigned char *body,
-                         int headerLen, int bodyLen)
-{
+                         int headerLen, int bodyLen) {
     if (!fileOpen()) {
         return;
     }
-    //Relevant for OGG
+    // Relevant for OGG
     if (headerLen > 0) {
         m_datastream.writeRawData((const char*) header, headerLen);
     }
-    //always write body
+    // always write body
     m_datastream.writeRawData((const char*) body, bodyLen);
     emit(bytesRecorded((headerLen+bodyLen)));
 
@@ -270,12 +257,11 @@ bool EngineRecord::fileOpen() {
     }
 }
 
-//Creates a new MP3 file
 bool EngineRecord::openFile() {
-    //Unfortunately, we cannot use QFile for writing WAV and AIFF audio
-    if(m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
+    // Unfortunately, we cannot use QFile for writing WAV and AIFF audio
+    if (m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF){
         unsigned long samplerate = m_samplerate->get();
-        //set sfInfo
+        // set sfInfo
         m_sfInfo.samplerate = samplerate;
         m_sfInfo.channels = 2;
 
@@ -284,7 +270,7 @@ bool EngineRecord::openFile() {
         else
             m_sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
 
-        //creates a new WAVE or AIFF file and write header information
+        // creates a new WAVE or AIFF file and write header information
         m_sndfile = sf_open(m_filename.toLocal8Bit(), SFM_WRITE, &m_sfInfo);
         if (m_sndfile) {
             sf_command(m_sndfile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
@@ -316,7 +302,8 @@ bool EngineRecord::openFile() {
             return false;
         }
     }
-    //check if file are really open
+
+    // check if file are really open
     if (!fileOpen()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
@@ -374,7 +361,7 @@ void EngineRecord::closeFile() {
 }
 
 void EngineRecord::closeCueFile() {
-    if ( m_cuefile.handle() != -1) {
+    if (m_cuefile.handle() != -1) {
         m_cuefile.close();
     }
 }

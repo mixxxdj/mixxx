@@ -100,13 +100,11 @@ ControlPotmeter::~ControlPotmeter()
 {
 }
 
-double ControlPotmeter::getMin()
-{
+double ControlPotmeter::getMin() const {
     return m_dMinValue;
 }
 
-double ControlPotmeter::getMax()
-{
+double ControlPotmeter::getMax() const {
     return m_dMaxValue;
 }
 
@@ -125,45 +123,17 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
     m_dMinValue = dMinValue;
     m_dMaxValue = dMaxValue;
     m_dValueRange = m_dMaxValue - m_dMinValue;
-    m_dDefaultValue = m_dMinValue + 0.5 * m_dValueRange;
-    set(m_dDefaultValue);
-    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
-}
+    double default_value = m_dMinValue + 0.5 * m_dValueRange;
 
-double ControlPotmeter::getValueToWidget(double dValue)
-{
-    double out = (dValue-m_dMinValue)/m_dValueRange;
-    return (out < 0.5) ? out*128. : out*126. + 1.;
-}
-
-double ControlPotmeter::GetMidiValue()
-{
-    double out = (get()-m_dMinValue)/m_dValueRange;
-    return (out < 0.5) ? out*128. : out*126. + 1.;
-}
-
-double ControlPotmeter::getValueFromWidget(double dValue)
-{
-    double out = (dValue < 64) ? dValue / 128. : (dValue-1) / 126.;
-    return m_dMinValue + out * m_dValueRange;
-}
-
-void ControlPotmeter::setValueFromThread(double dValue)
-{
-    if (dValue > m_dMaxValue) {
-        set(m_dMaxValue);
-    } else if (dValue < m_dMinValue) {
-        set(m_dMinValue);
-    } else {
-        set(dValue);
+    if (m_pControl) {
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlPotmeterBehavior(dMinValue, dMaxValue));
+        delete pOldBehavior;
     }
-}
 
-void ControlPotmeter::setValueFromMidi(MidiOpCode o, double v)
-{
-    Q_UNUSED(o);
-    double out = (v < 64) ? v / 128. : (v-1) / 126.;
-    set(m_dMinValue + out * m_dValueRange);
+    setDefaultValue(default_value);
+    set(default_value);
+    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
 void ControlPotmeter::incValue(double keypos)
@@ -245,7 +215,7 @@ void ControlPotmeter::setToMinusOne(double keypos)
 
 void ControlPotmeter::setToDefault(double v) {
     if (v > 0) {
-        set(m_dDefaultValue);
+        reset();
     }
 }
 
