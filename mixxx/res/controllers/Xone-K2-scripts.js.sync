@@ -124,12 +124,12 @@ XoneK2.leftBottomKnob = function (channel, control, value, status) {
     }
     else
     {
-        cur_vol = engine.getValue("[Master]", "headMix");
+        cur_vol = engine.getValue("[Master]", "rate");
         if (value == 1)
-            cur_vol += 0.02;
+            cur_vol += 0.1;
         else
-            cur_vol -= 0.02;
-        engine.setValue("[Master]", "headMix", cur_vol);
+            cur_vol -= 0.1;
+        engine.setValue("[Master]", "rate", cur_vol);
     }
 }
 

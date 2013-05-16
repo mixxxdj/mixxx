@@ -487,8 +487,6 @@ void RateControl::slotSyncStateChanged(double state) {
         case SYNC_SLAVE:
             m_pSyncMasterEnabled->set(false);
             m_pSyncSlaveEnabled->set(true);
-            // Can't be both slave and vinyl controlled at the same time.
-            m_pVCEnabled->set(false);
             break;
         case SYNC_MASTER:
             m_pSyncMasterEnabled->set(true);
@@ -565,8 +563,8 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         double jogFactor = getJogFactor();
         bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
         
-        // if master sync is on, respond to it
-        if (m_iSyncState == SYNC_SLAVE && !paused)
+        // if master sync is on, respond to it -- but vinyl always overrides
+        if (m_iSyncState == SYNC_SLAVE && !paused && !m_bVinylControlEnabled)
         {
             m_dOldRate = m_dSyncedRate;
             rate = m_dSyncedRate;
@@ -806,11 +804,6 @@ void RateControl::resetRateTemp(void)
 
 void RateControl::slotControlVinyl(double toggle) {
     m_bVinylControlEnabled = (bool)toggle;
-    if (toggle) {
-        if (m_iSyncState == SYNC_SLAVE) {
-            m_pSyncState->set(SYNC_NONE);
-        }
-    }
 }
 
 void RateControl::slotControlVinylScratching(double toggle) {

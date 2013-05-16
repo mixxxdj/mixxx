@@ -408,6 +408,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 if (needsProcessing) {
                     pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
                 }
+                break;
             }
         }
     }
@@ -423,7 +424,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             continue;
         }
 
-        if (!pChannel->isActive()) {
+        if (!pChannel || !pChannel->isActive()) {
             continue;
         }
 
