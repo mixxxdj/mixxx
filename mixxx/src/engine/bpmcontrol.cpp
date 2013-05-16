@@ -120,6 +120,19 @@ BpmControl::BpmControl(const char* _group,
                 this, SLOT(slotSyncStateChanged(double)),
                 Qt::DirectConnection);
                 
+#ifdef __VINYLCONTROL__
+    m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(m_pVCEnabled);
+    connect(m_pVCEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlVinyl(double)),
+            Qt::DirectConnection);
+    connect(m_pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotControlVinyl(double)),
+            Qt::DirectConnection);
+#endif                           
+                
     m_iSyncState = SYNC_NONE;
 }
 
@@ -212,6 +225,10 @@ void BpmControl::slotControlBeatSync(double v) {
 
 void BpmControl::slotSyncStateChanged(double state) {
     m_iSyncState = state;
+}
+
+void BpmControl::slotControlVinyl(double toggle) {
+    m_bVinylControlEnabled = (bool)toggle;
 }
 
 bool BpmControl::syncTempo() {
@@ -347,6 +364,11 @@ void BpmControl::userTweakingSync(bool tweakActive) {
 
 void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
 {
+    // Vinyl overrides
+    if (m_bVinylControlEnabled) {
+        return; 
+    }
+    
     if (m_iSyncState != SYNC_SLAVE) {
         //qDebug() << m_sGroup << " not slave, don't care" << m_iSyncState;
         return;

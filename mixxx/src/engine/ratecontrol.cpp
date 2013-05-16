@@ -403,6 +403,10 @@ void RateControl::slotFileBpmChanged(double bpm) {
 
 void RateControl::slotMasterBpmChanged(double syncbpm) {
     //qDebug() << m_sGroup << "got a master bpm change" << syncbpm;
+    // Vinyl overrides
+    if (m_bVinylControlEnabled) {
+        return;
+    }
     if (m_iSyncState == SYNC_SLAVE) {
         // if we're a slave, update the rate value -- we don't set anything here,
         // this comes into effect in the return from calculaterate

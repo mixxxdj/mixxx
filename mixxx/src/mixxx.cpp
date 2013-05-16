@@ -1420,9 +1420,9 @@ void MixxxApp::slotControlVinylControl3(double toggle)
 {
 #ifdef __VINYLCONTROL__
     if (m_pVCManager->vinylInputEnabled(3)) {
-        m_pOptionsVinylControl2->setChecked((bool)toggle);
+        m_pOptionsVinylControl3->setChecked((bool)toggle);
     } else {
-        m_pOptionsVinylControl2->setChecked(false);
+        m_pOptionsVinylControl3->setChecked(false);
         if (toggle) {
             QMessageBox::warning(this, tr("Mixxx"),
                 tr("No input device(s) select.\nPlease select your soundcard(s) "

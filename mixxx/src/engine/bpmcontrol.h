@@ -48,6 +48,7 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslate(double);
     void slotMasterBeatDistanceChanged(double);
     void slotSyncStateChanged(double);
+    void slotControlVinyl(double);
 
   private:
     EngineBuffer* pickSyncTarget();
@@ -70,6 +71,10 @@ class BpmControl : public EngineControl {
     double m_dSyncAdjustment;
     bool m_bUserTweakingSync;
     double m_dUserOffset;
+    
+    // Is vinyl control enabled?
+    ControlObject* m_pVCEnabled;
+    bool m_bVinylControlEnabled;
 
     // ControlObjects that come from LoopingControl
     ControlObject* m_pLoopEnabled;
