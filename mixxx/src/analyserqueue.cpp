@@ -404,7 +404,9 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 
     ret->addAnalyser(new AnalyserWaveform(_config));
     ret->addAnalyser(new AnalyserGain(_config));
+	#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
+	#endif // __VAMP__
     ret->addAnalyser(new AnalyserBeats(_config));
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
 
@@ -419,7 +421,9 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(
 
     ret->addAnalyser(new AnalyserWaveform(_config));
     ret->addAnalyser(new AnalyserGain(_config));
+	#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
+	#endif // __VAMP__
     ret->addAnalyser(new AnalyserBeats(_config));
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
 

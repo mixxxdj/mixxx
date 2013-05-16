@@ -108,9 +108,8 @@ HEADERS += $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprefcontrolsdlg.h \
     $$UI_DIR/ui_dlgprefeqdlg.h \
     $$UI_DIR/ui_dlgprefcrossfaderdlg.h \
-    $$UI_DIR/ui_dlgprefbpmdlg.h \
+    $$UI_DIR/ui_dlgprefbeatsdlg.h \
     $$UI_DIR/ui_dlgprefreplaygaindlg.h \
-    $$UI_DIR/ui_dlgbpmschemedlg.h \
     $$UI_DIR/ui_dlgprefvinyldlg.h \
     $$UI_DIR/ui_dlgprefnovinyldlg.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
@@ -119,7 +118,6 @@ HEADERS += $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprepare.h \
     $$UI_DIR/ui_dlgautodj.h \
     $$UI_DIR/ui_dlgprefsounditem.h \
-    $$UI_DIR/ui_dlglibraryscanner.h \
     $$UI_DIR/ui_dlgrecording.h \
     $$UI_DIR/ui_dlghidden.h \
     $$UI_DIR/ui_dlgmissing.h
@@ -144,7 +142,6 @@ INCLUDEPATH += src \
 HEADERS += \
 $$BASE_DIR/src/analyser.h \
 $$BASE_DIR/src/analyserbeats.h \
-$$BASE_DIR/src/analyserbpm.h \
 $$BASE_DIR/src/analyserqueue.h \
 $$BASE_DIR/src/analyserrg.h \
 $$BASE_DIR/src/analyserwaveform.h \
@@ -201,10 +198,9 @@ $$BASE_DIR/src/defs_urls.h \
 $$BASE_DIR/src/defs_version.h \
 $$BASE_DIR/src/dlgabout.h \
 $$BASE_DIR/src/dlgautodj.h \
-$$BASE_DIR/src/dlgbpmscheme.h \
 $$BASE_DIR/src/dlghidden.h \
 $$BASE_DIR/src/dlgmissing.h \
-$$BASE_DIR/src/dlgprefbpm.h \
+$$BASE_DIR/src/dlgprefbeats.h \
 $$BASE_DIR/src/dlgprefcontrols.h \
 $$BASE_DIR/src/dlgprefcrossfader.h \
 $$BASE_DIR/src/dlgprefeq.h \
@@ -241,7 +237,8 @@ $$BASE_DIR/src/engine/enginemicrophone.h \
 $$BASE_DIR/src/engine/engineobject.h \
 $$BASE_DIR/src/engine/enginepassthrough.h \
 $$BASE_DIR/src/engine/enginepregain.h \
-$$BASE_DIR/src/engine/enginesidechain.h \
+$$BASE_DIR/src/engine/sidechain/enginesidechain.h \
+$$BASE_DIR/src/engine/sidechain/enginerecord.h \
 $$BASE_DIR/src/engine/enginevinylsoundemu.h \
 $$BASE_DIR/src/engine/enginevumeter.h \
 $$BASE_DIR/src/engine/engineworker.h \
@@ -268,7 +265,6 @@ $$BASE_DIR/src/library/browse/foldertreemodel.h \
 $$BASE_DIR/src/library/cratefeature.h \
 $$BASE_DIR/src/library/cratetablemodel.h \
 $$BASE_DIR/src/library/dao/analysisdao.h \
-$$BASE_DIR/src/library/dao/autodjcratesdao.h \
 $$BASE_DIR/src/library/dao/cratedao.h \
 $$BASE_DIR/src/library/dao/cue.h \
 $$BASE_DIR/src/library/dao/cuedao.h \
@@ -311,6 +307,8 @@ $$BASE_DIR/src/library/sidebarmodel.h \
 $$BASE_DIR/src/library/songdownloader.h \
 $$BASE_DIR/src/library/stardelegate.h \
 $$BASE_DIR/src/library/stareditor.h \
+$$BASE_DIR/src/library/bpmdelegate.h \
+$$BASE_DIR/src/library/bpmeditor.h \
 $$BASE_DIR/src/library/starrating.h \
 $$BASE_DIR/src/library/trackcollection.h \
 $$BASE_DIR/src/library/trackmodel.h \
@@ -475,12 +473,11 @@ $$BASE_DIR/src/controllers/dlgprefcontroller.cpp \
 $$BASE_DIR/src/controllers/dlgprefmappablecontroller.cpp \
 $$BASE_DIR/src/controllers/dlgcontrollerlearning.cpp \
 $$BASE_DIR/src/controllers/dlgprefnocontrollers.cpp \
+$$BASE_DIR/src/dlgprefbeats.cpp \
 $$BASE_DIR/src/dlgprefplaylist.cpp \
 $$BASE_DIR/src/dlgprefcontrols.cpp \
-$$BASE_DIR/src/dlgprefbpm.cpp \
 $$BASE_DIR/src/dlgprefreplaygain.cpp \
 $$BASE_DIR/src/dlgprefnovinyl.cpp \
-$$BASE_DIR/src/dlgbpmscheme.cpp \
 $$BASE_DIR/src/dlgabout.cpp \
 $$BASE_DIR/src/dlgprefeq.cpp \
 $$BASE_DIR/src/dlgprefcrossfader.cpp \
@@ -508,7 +505,7 @@ $$BASE_DIR/src/engine/enginedelay.cpp \
 $$BASE_DIR/src/engine/engineflanger.cpp \
 $$BASE_DIR/src/engine/enginevumeter.cpp \
 $$BASE_DIR/src/engine/enginevinylsoundemu.cpp \
-$$BASE_DIR/src/engine/enginesidechain.cpp \
+$$BASE_DIR/src/engine/sidechain/enginesidechain.cpp \
 $$BASE_DIR/src/engine/enginefilterbutterworth8.cpp \
 $$BASE_DIR/src/engine/enginexfader.cpp \
 $$BASE_DIR/src/engine/enginemicrophone.cpp \
@@ -525,8 +522,8 @@ $$BASE_DIR/src/engine/clockcontrol.cpp \
 $$BASE_DIR/src/engine/readaheadmanager.cpp \
 $$BASE_DIR/src/cachingreader.cpp \
 $$BASE_DIR/src/analyserrg.cpp \
+$$BASE_DIR/src/analyserbeats.cpp \
 $$BASE_DIR/src/analyserqueue.cpp \
-$$BASE_DIR/src/analyserbpm.cpp \
 $$BASE_DIR/src/analyserwaveform.cpp \
 $$BASE_DIR/src/controllers/controller.cpp \
 $$BASE_DIR/src/controllers/controllerengine.cpp \
@@ -612,7 +609,7 @@ $$BASE_DIR/src/library/browse/foldertreemodel.cpp \
 $$BASE_DIR/src/library/recording/recordingfeature.cpp \
 $$BASE_DIR/src/dlgrecording.cpp \
 $$BASE_DIR/src/recording/recordingmanager.cpp \
-# External Library Features
+$$BASE_DIR/src/engine/sidechain/enginerecord.cpp \
 $$BASE_DIR/src/library/baseexternallibraryfeature.cpp \
 $$BASE_DIR/src/library/baseexternaltrackmodel.cpp \
 $$BASE_DIR/src/library/baseexternalplaylistmodel.cpp \
@@ -626,7 +623,6 @@ $$BASE_DIR/src/library/libraryscannerdlg.cpp \
 $$BASE_DIR/src/library/legacylibraryimporter.cpp \
 $$BASE_DIR/src/library/library.cpp \
 $$BASE_DIR/src/library/searchthread.cpp \
-$$BASE_DIR/src/library/dao/autodjcratesdao.cpp \
 $$BASE_DIR/src/library/dao/cratedao.cpp \
 $$BASE_DIR/src/library/cratetablemodel.cpp \
 $$BASE_DIR/src/library/dao/cuedao.cpp \
@@ -642,6 +638,8 @@ $$BASE_DIR/src/library/songdownloader.cpp \
 $$BASE_DIR/src/library/starrating.cpp \
 $$BASE_DIR/src/library/stardelegate.cpp \
 $$BASE_DIR/src/library/stareditor.cpp \
+$$BASE_DIR/src/library/bpmdelegate.cpp \
+$$BASE_DIR/src/library/bpmeditor.cpp \
 $$BASE_DIR/src/library/previewbuttondelegate.cpp \
 $$BASE_DIR/src/audiotagger.cpp \
 $$BASE_DIR/src/library/treeitemmodel.cpp \
@@ -714,8 +712,9 @@ $$BASE_DIR/src/soundmanagerconfig.cpp \
 $$BASE_DIR/src/soundmanagerutil.cpp \
 $$BASE_DIR/src/dlgprefrecord.cpp \
 $$BASE_DIR/src/playerinfo.cpp \
-$$BASE_DIR/src/recording/enginerecord.cpp \
-$$BASE_DIR/src/recording/encoder.cpp \
+$$BASE_DIR/src/encoder/encoder.cpp \
+$$BASE_DIR/src/encoder/encodermp3.cpp \
+$$BASE_DIR/src/encoder/encodervorbis.cpp \
 $$BASE_DIR/src/segmentation.cpp \
 $$BASE_DIR/src/tapfilter.cpp \
 $$BASE_DIR/src/util/pa_ringbuffer.c \
@@ -759,12 +758,10 @@ $$BASE_DIR/src/controllers/dlgprefmappablecontrollerdlg.ui \
 $$BASE_DIR/src/controllers/dlgprefnocontrollersdlg.ui \
 $$BASE_DIR/src/dlgaboutdlg.ui \
 $$BASE_DIR/src/dlgautodj.ui \
-$$BASE_DIR/src/dlgbpmschemedlg.ui \
 $$BASE_DIR/src/dlghidden.ui \
-$$BASE_DIR/src/dlglibraryscanner.ui \
 $$BASE_DIR/src/dlgmissing.ui \
 $$BASE_DIR/src/dlgplugindownloader.ui \
-$$BASE_DIR/src/dlgprefbpmdlg.ui \
+$$BASE_DIR/src/dlgprefbeatsdlg.ui \
 $$BASE_DIR/src/dlgprefcontrolsdlg.ui \
 $$BASE_DIR/src/dlgprefcrossfaderdlg.ui \
 $$BASE_DIR/src/dlgprefeqdlg.ui \
@@ -888,7 +885,7 @@ CONFIG(script) {
 
 CONFIG(Vamp) {
 DEFINES += __VAMP__
-INCLUDEPATH += $$BASE_DIR/lib/vamp
+INCLUDEPATH += $$BASE_DIR/lib/vamp-2.3
 HEADERS +=
 	$$BASE_DIR/src/vamp/vamppluginloader.h \
 	$$BASE_DIR/src/dlgprefbeats.h \

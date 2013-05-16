@@ -11,9 +11,10 @@
 #include <QString>
 #include <QList>
 #include <QVector>
+#ifdef __VAMP__
 #include <vamp-hostsdk/vamp-hostsdk.h>
-
 #include "vamp/vamppluginloader.h"
+#endif // __VAMP__
 #include "sampleutil.h"
 #include "configobject.h"
 
@@ -43,6 +44,7 @@ class VampAnalyser {
   private:
     void SelectOutput(const int outputnumber);
 
+	#ifdef __VAMP__
     Vamp::HostExt::PluginLoader::PluginKey m_key;
     int m_iSampleCount, m_iOUT, m_iRemainingSamples,
         m_iBlockSize, m_iStepSize, m_rate, m_iOutput;
@@ -50,6 +52,7 @@ class VampAnalyser {
     Vamp::Plugin *m_plugin;
     Vamp::Plugin::ParameterList mParameters;
     Vamp::Plugin::FeatureList m_Results;
+	#endif // __VAMP__
 
     bool m_bDoNotAnalyseMoreSamples;
     bool m_FastAnalysisEnabled;

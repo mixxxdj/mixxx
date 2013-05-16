@@ -10,7 +10,9 @@
 #include <QList>
 
 #include "ui_dlgprefbeatsdlg.h"
+#ifdef __VAMP__
 #include "vamp/vamppluginloader.h"
+#endif // __VAMP__
 #include "configobject.h"
 
 class DlgPrefBeats : public QWidget, public Ui::DlgBeatsDlg {

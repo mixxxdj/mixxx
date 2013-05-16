@@ -139,6 +139,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     }
     qDebug() << "Beat calculation started with plugin" << pluginID;
 
+	#ifdef __VAMP__
     m_pVamp = new VampAnalyser(m_pConfig);
     m_bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples,
                                      m_bPreferencesFastAnalysis);
@@ -146,6 +147,7 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         delete m_pVamp;
         m_pVamp = NULL;
     }
+	#endif // __VAMP__
     return m_bShouldAnalyze;
 }
 
@@ -239,6 +241,7 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
 
 
 void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
+	#ifdef __VAMP__
     if (!m_bShouldAnalyze || m_pVamp == NULL)
         return;
     m_bShouldAnalyze = m_pVamp->Process(pIn, iLen);
@@ -246,6 +249,7 @@ void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
         delete m_pVamp;
         m_pVamp = NULL;
     }
+	#endif // __VAMP__
 }
 
 void AnalyserBeats::cleanup(TrackPointer tio)
@@ -265,10 +269,12 @@ void AnalyserBeats::finalise(TrackPointer tio) {
 
     // Call End() here, because the number of total samples may have been
     // estimated incorrectly.
+    QVector<double> beats;
+	#ifdef __VAMP__
     bool success = m_pVamp->End();
     qDebug() << "Beat Calculation" << (success ? "complete" : "failed");
 
-    QVector<double> beats = m_pVamp->GetInitFramesVector();
+    beats = m_pVamp->GetInitFramesVector();
     delete m_pVamp;
     m_pVamp = NULL;
 
@@ -276,6 +282,7 @@ void AnalyserBeats::finalise(TrackPointer tio) {
         qDebug() << "Could not detect beat positions from Vamp.";
         return;
     }
+	#endif // __VAMP__
 
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = m_pluginId;

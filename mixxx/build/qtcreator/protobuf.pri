@@ -18,7 +18,7 @@
 
 PROTOPATH += .
 #PROTOPATH += $$BASE_DIR/src/proto
-PROTOPATH += ..\mixxx-winsrc\src\proto
+PROTOPATH += ../mixxx-winsrc/src/proto
 PROTOPATHS =
 for(p, PROTOPATH):PROTOPATHS += --proto_path=$${p}
 
