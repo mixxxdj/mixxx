@@ -188,9 +188,9 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
     } while (!validNameGiven);
 
     int newPlaylistId = m_playlistDao.createPlaylist(name);
-    m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId);
 
-    if (newPlaylistId != -1) {
+    if (newPlaylistId != -1 &&
+        m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
         emit(showTrackModel(m_pPlaylistTableModel));
     }
 }

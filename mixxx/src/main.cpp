@@ -146,6 +146,8 @@ int main(int argc, char * argv[])
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
     QCoreApplication::setOrganizationName("Mixxx");
+    QCoreApplication::setApplicationName("Mixxx");
+    QCoreApplication::setApplicationVersion(VERSION);
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
