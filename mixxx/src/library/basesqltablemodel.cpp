@@ -157,7 +157,7 @@ QString BaseSqlTableModel::orderByClause() const {
 }
 
 void BaseSqlTableModel::select() {
-    if (!m_bInitialized) {
+    if (!m_bInitialized || this->rowCount() == 0) {
         return;
     }
 

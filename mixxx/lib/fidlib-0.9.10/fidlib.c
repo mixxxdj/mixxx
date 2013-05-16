@@ -259,10 +259,10 @@ extern FidFilter *mkfilter(char *, ...);
 //
 
 // Macro for local inline routines that shouldn't be visible externally
-#ifdef T_MSVC
+#if defined(T_MINGW) || defined(T_MSVC)
  #define STATIC_INLINE static __inline
 #else
- #define STATIC_INLINE static inline 
+ #define STATIC_INLINE static inline
 #endif
 
 // MinGW and MSVC fixes

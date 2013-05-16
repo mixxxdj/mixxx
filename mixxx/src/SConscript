@@ -38,11 +38,15 @@ if build.platform_is_windows:
         str_list.append('#define VER_FILEVERSION             ')
         # Remove anything after ~ or - in the version number and replace the dots with commas
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
-        str_list.append(','+str(bazaar_revision)+'\n')
+        if bazaar_revision:
+            str_list.append(','+str(bazaar_revision))
+        str_list.append('\n')
 
         str_list.append('#define VER_PRODUCTVERSION          ')
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
-        str_list.append(','+str(bazaar_revision)+'\n')
+        if bazaar_revision:
+            str_list.append(','+str(bazaar_revision))
+        str_list.append('\n')
 
         import datetime
         now = datetime.datetime.now()
@@ -201,33 +205,33 @@ else:
         dll_files = list() # dll_files += on the next line required dll_files to exist
 
 if build.msvcdebug:
-    dll_files += Split("""$QTDIR/lib/QtWebKitd4.dll""")
+    dll_files += Split("""$QTDIR/bin/QtWebKitd4.dll""")
 else:
-    dll_files += Split("""$QTDIR/lib/QtWebKit4.dll""")
+    dll_files += Split("""$QTDIR/bin/QtWebKit4.dll""")
 
 if build.msvcdebug:
-    dll_files += Split("""$QTDIR/lib/QtCored4.dll
-                          $QTDIR/lib/QtGuid4.dll
-                          $QTDIR/lib/QtNetworkd4.dll
-                          $QTDIR/lib/QtOpenGLd4.dll
-                          $QTDIR/lib/QtSqld4.dll
-                          $QTDIR/lib/QtXmld4.dll
-                          $QTDIR/lib/QtXmlPatternsd4.dll
-                          $QTDIR/lib/QtSvgd4.dll
-                          $QTDIR/lib/phonond4.dll
-                          $QTDIR/lib/QtScriptd4.dll""")
+    dll_files += Split("""$QTDIR/bin/QtCored4.dll
+                          $QTDIR/bin/QtGuid4.dll
+                          $QTDIR/bin/QtNetworkd4.dll
+                          $QTDIR/bin/QtOpenGLd4.dll
+                          $QTDIR/bin/QtSqld4.dll
+                          $QTDIR/bin/QtXmld4.dll
+                          $QTDIR/bin/QtXmlPatternsd4.dll
+                          $QTDIR/bin/QtSvgd4.dll
+                          $QTDIR/bin/phonond4.dll
+                          $QTDIR/bin/QtScriptd4.dll""")
 else:
     # if not int(build.flags['staticlibs']):
-    dll_files += Split("""$QTDIR/lib/QtCore4.dll
-                          $QTDIR/lib/QtGui4.dll
-                          $QTDIR/lib/QtNetwork4.dll
-                          $QTDIR/lib/QtOpenGL4.dll
-                          $QTDIR/lib/QtSql4.dll
-                          $QTDIR/lib/QtXml4.dll
-                          $QTDIR/lib/QtXmlPatterns4.dll
-                          $QTDIR/lib/QtSvg4.dll
-                          $QTDIR/lib/phonon4.dll
-                          $QTDIR/lib/QtScript4.dll""")
+    dll_files += Split("""$QTDIR/bin/QtCore4.dll
+                          $QTDIR/bin/QtGui4.dll
+                          $QTDIR/bin/QtNetwork4.dll
+                          $QTDIR/bin/QtOpenGL4.dll
+                          $QTDIR/bin/QtSql4.dll
+                          $QTDIR/bin/QtXml4.dll
+                          $QTDIR/bin/QtXmlPatterns4.dll
+                          $QTDIR/bin/QtSvg4.dll
+                          $QTDIR/bin/phonon4.dll
+                          $QTDIR/bin/QtScript4.dll""")
 
 if int(flags.get('sqlitedll', 0)):
     if build.msvcdebug:

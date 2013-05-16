@@ -140,6 +140,9 @@ void TreeItemModel::setRootItem(TreeItem *item) {
  * make sure you have initialized
  */
 bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent) {
+    if (rows == 0)
+        return true;
+
     TreeItem *parentItem = getItem(parent);
     bool success;
 
@@ -151,6 +154,9 @@ bool TreeItemModel::insertRows(QList<TreeItem*> &data, int position, int rows, c
 }
 
 bool TreeItemModel::removeRows(int position, int rows, const QModelIndex &parent) {
+    if (rows == 0)
+        return true;
+
     TreeItem *parentItem = getItem(parent);
     bool success = true;
 
