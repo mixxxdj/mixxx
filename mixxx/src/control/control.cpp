@@ -106,9 +106,9 @@ ControlNumericBehavior* ControlDoublePrivate::setBehavior(ControlNumericBehavior
     return m_pBehavior.fetchAndStoreRelaxed(pBehavior);
 }
 
-void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSetter) {
+void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSender) {
     ControlNumericBehavior* pBehavior = m_pBehavior;
-    set(pBehavior ? pBehavior->widgetParameterToValue(dParam) : dParam, pSetter);
+    set(pBehavior ? pBehavior->widgetParameterToValue(dParam) : dParam, pSender);
 }
 
 double ControlDoublePrivate::getWidgetParameter() const {

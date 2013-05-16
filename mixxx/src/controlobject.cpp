@@ -68,9 +68,9 @@ ControlObject::~ControlObject() {
 }
 
 // slot
-void ControlObject::privateValueChanged(double dValue, QObject* pSetter) {
+void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
     // Only emit valueChanged() if we did not originate this change.
-    if (pSetter != this) {
+    if (pSender != this) {
         emit(valueChanged(dValue));
     }
 }
