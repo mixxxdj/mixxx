@@ -172,6 +172,28 @@ QList<int> CrateDAO::getCrateTracks(int a_iCrateId)
     return ids;
 }
 
+void CrateDAO::getAutoDjCrates(QMap<QString,int> &ao_rCrateMap, bool a_bIn)
+{
+    // Get the name and ID number of every crate in the auto-DJ queue.
+    QSqlQuery query(m_database);
+    query.setForwardOnly (true);
+    // SELECT name, id FROM crates WHERE autodj = 1 ORDER BY name;
+    query.prepare(QString("SELECT %1, %2 FROM " CRATE_TABLE
+        " WHERE %3 = :in ORDER BY %1")
+        .arg(CRATETABLE_NAME)        // %1
+        .arg(CRATETABLE_ID)          // %2
+        .arg(CRATETABLE_AUTODJ));    // %3
+    query.bindValue(":in", (a_bIn) ? 1 : 0);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    // Create a map between the crate name and its ID number.
+    while (query.next())
+        ao_rCrateMap.insert(query.value(0).toString(), query.value(1).toInt());
+}
+
 #endif // __AUTODJCRATES__
 
 bool CrateDAO::deleteCrate(int crateId) {

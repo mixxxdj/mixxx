@@ -52,8 +52,10 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     connect(&m_crateDao, SIGNAL(autoDjChanged(int,bool)),
             this, SLOT(slotCrateAutoDjChanged(int,bool)));
 
-    // Create a context-menu item to allow crates to be removed from the
-    // auto-DJ queue.
+    // Create context-menu items to allow crates to be added to, and removed
+    // from, the auto-DJ queue.
+    connect(&m_crateMapper, SIGNAL(mapped(int)),
+            this, SLOT(slotAddCrateToAutoDj(int)));
     m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate from AutoDJ"),this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
@@ -148,6 +150,14 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
     QFileInfo file(url.toLocalFile());
     return SoundSourceProxy::isFilenameSupported(file.fileName());
+}
+
+// Add a crate to the auto-DJ queue.
+void AutoDJFeature::slotAddCrateToAutoDj(int a_iCrateId)
+{
+#ifdef __AUTODJCRATES__
+    m_crateDao.setCrateInAutoDj (a_iCrateId, true);
+#endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotRemoveCrateFromAutoDj()
@@ -319,9 +329,33 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     QString crateName = item->dataPath().toString();
     if (crateName.length() > 0)
     {
+        // A crate was right-clicked.
         // Bring up the context menu.
         QMenu menu(NULL);
         menu.addAction(m_pRemoveCrateFromAutoDj);
+        menu.exec(globalPos);
+    }
+    else
+    {
+        // The "Crates" tree-item was right-clicked.
+        // Bring up the context menu.
+        QMenu menu(NULL);
+        QMenu crateMenu(NULL);
+        crateMenu.setTitle(tr("Add crate"));
+        QMap<QString,int> crateMap;
+		m_crateDao.getAutoDjCrates(crateMap, false);
+        QMapIterator<QString,int> it(crateMap);
+        while (it.hasNext()) {
+            it.next();
+            // No leak because making the menu the parent means they will be
+            // auto-deleted
+            QAction* pAction = new QAction(it.key(), &crateMenu);
+            crateMenu.addAction(pAction);
+            m_crateMapper.setMapping(pAction, it.value());
+            connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+        }
+
+        menu.addMenu(&crateMenu);
         menu.exec(globalPos);
     }
 }

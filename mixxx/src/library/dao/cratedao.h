@@ -5,6 +5,7 @@
 #define CRATEDAO_H
 
 #include <QObject>
+#include <QMap>
 #include <QSqlDatabase>
 
 #include "library/dao/dao.h"
@@ -44,6 +45,7 @@ class CrateDAO : public QObject, public virtual DAO {
     bool setCrateInAutoDj(int a_iCrateId, bool a_bIn);
     bool isCrateInAutoDj(int a_iCrateId);
     QList<int> getCrateTracks(int a_iCrateId);
+	void getAutoDjCrates(QMap<QString,int> &ao_rCrateMap, bool a_bIn);
     #endif // __AUTODJCRATES__
     int getCrateIdByName(const QString& name);
     int getCrateId(int position);

@@ -71,6 +71,8 @@ class AutoDJFeature : public LibraryFeature {
     QAction *m_pRemoveCrateFromAutoDj;
         // A context-menu item that allows crates to be removed from the
         // auto-DJ list.
+    QSignalMapper m_crateMapper;
+        // Used to map menu-item signals.
 
     void constructCrateChildModel();
         // Initialize the list of crates loaded into the auto-DJ queue.
@@ -78,6 +80,8 @@ class AutoDJFeature : public LibraryFeature {
 #endif // __AUTODJCRATES__
 
   private slots:
+	void slotAddCrateToAutoDj(int a_iCrateId);
+		// Add a crate to the auto-DJ queue.
     void slotRemoveCrateFromAutoDj();
         // Implements the context-menu item.
     void slotCrateAdded (int a_iCrateId);
