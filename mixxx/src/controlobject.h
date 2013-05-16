@@ -66,7 +66,6 @@ class ControlObject : public QObject {
 
   signals:
     void valueChanged(double);
-    void valueChangedFromEngine(double);
 
   public:
     // DEPRECATED: Called to set the control value from the controller

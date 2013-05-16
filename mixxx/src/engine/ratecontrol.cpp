@@ -153,18 +153,12 @@ RateControl::RateControl(const char* _group,
     connect(pVCEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlVinyl(double)),
             Qt::DirectConnection);
-    connect(pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotControlVinyl(double)),
-            Qt::DirectConnection);
 
     ControlObject* pVCScratching = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_scratching"));
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
     Q_ASSERT(pVCScratching);
     connect(pVCScratching, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlVinylScratching(double)),
-            Qt::DirectConnection);
-    connect(pVCScratching, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotControlVinylScratching(double)),
             Qt::DirectConnection);
 #endif

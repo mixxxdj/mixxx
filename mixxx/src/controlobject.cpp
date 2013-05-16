@@ -67,12 +67,11 @@ ControlObject::~ControlObject() {
     m_sqCOHashMutex.unlock();
 }
 
+// slot
 void ControlObject::privateValueChanged(double dValue, QObject* pSetter) {
     // Only emit valueChanged() if we did not originate this change.
     if (pSetter != this) {
         emit(valueChanged(dValue));
-    } else {
-        emit(valueChangedFromEngine(dValue));
     }
 }
 
