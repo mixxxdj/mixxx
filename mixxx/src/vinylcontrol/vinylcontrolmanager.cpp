@@ -59,22 +59,21 @@ void VinylControlManager::init()
 {
     // Load saved preferences now that the objects exist
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
-            ->setValueFromThread(0, NULL);
+            ->set(0);
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
-            ->setValueFromThread(0, NULL);
-
+            ->set(0);
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","mode")).toDouble(), NULL);
+            ->set(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","mode")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","mode")).toDouble(), NULL);
+            ->set(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","mode")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","cueing_ch1")).toDouble(), NULL);
+            ->set(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","cueing_ch1")).toDouble());
     ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey("[VinylControl]","cueing_ch2")).toDouble(), NULL);
+            ->set(m_pConfig->getValueString(
+                ConfigKey("[VinylControl]","cueing_ch2")).toDouble());
 }
 
 void VinylControlManager::receiveBuffer(AudioInput input,

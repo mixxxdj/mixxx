@@ -136,12 +136,6 @@ double ControlObject::getValueToMidi() const {
     return m_pControl ? m_pControl->getMidiParameter() : 0.0;
 }
 
-void ControlObject::setValueFromThread(double dValue, QObject* pSender) {
-    if (m_pControl) {
-        m_pControl->set(dValue, pSender);
-    }
-}
-
 double ControlObject::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
 }

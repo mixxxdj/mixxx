@@ -72,8 +72,6 @@ class ControlObject : public QObject {
     // subsystem.
     virtual void setValueFromMidi(MidiOpCode o, double v);
     virtual double getValueToMidi() const;
-    // DEPRECATED: Called to set the control value from another thread.
-    virtual void setValueFromThread(double dValue, QObject* pSetter);
 
   protected:
     // Key of the object

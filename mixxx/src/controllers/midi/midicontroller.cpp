@@ -356,7 +356,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
                 return;
             }
         }
-        p->setValueFromThread(newValue, NULL);
+        p->set(newValue);
     } else {
         if (options.soft_takeover) {
             if (m_st.ignore(p, newValue, true)) {
