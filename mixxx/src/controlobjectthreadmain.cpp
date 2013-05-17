@@ -20,7 +20,12 @@ bool ControlObjectThreadMain::eventFilter(QObject* o, QEvent* e) {
     // Handle events
     if (e && e->type() == MIXXXEVENT_CONTROL) {
         ControlEvent * ce = (ControlEvent *)e;
-        emit(valueChanged(ce->value()));
+        QObject* pSender = ce->sender();
+        if (pSender != this) {
+            emit(valueChanged(ce->value()));
+        } else {
+            emit(valueChangedByThis(ce->value()));
+        }
     } else {
         return QObject::eventFilter(o,e);
     }
@@ -43,7 +48,7 @@ void ControlObjectThreadMain::slotValueChanged(double, QObject* pSetter) {
     } else {
         // Otherwise, we have to post the event to the main thread event queue
         // and then catch the event via eventFilter.
-        QApplication::postEvent(this, new ControlEvent(get()));
+        QApplication::postEvent(this, new ControlEvent(get(), pSetter));
     }
 
 }
