@@ -110,7 +110,6 @@ class MusicBrainzClient : public QObject {
 
   private:
     static const QString m_TrackUrl;
-    static const QString m_DiscUrl;
     static const QString m_DateRegex;
     static const int m_DefaultTimeout;
     

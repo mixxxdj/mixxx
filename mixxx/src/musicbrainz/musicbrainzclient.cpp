@@ -16,7 +16,6 @@
 #include "musicbrainzclient.h"
 
 const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
-const QString MusicBrainzClient::m_DiscUrl = "http://musicbrainz.org/ws/1/release/";
 const QString MusicBrainzClient::m_DateRegex = "^[12]\\d{3}";
 const int MusicBrainzClient::m_DefaultTimeout = 5000; // msec
 
@@ -34,6 +33,7 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
 
     QUrl url(m_TrackUrl + mbid);
     url.setQueryItems(parameters);
+    qDebug() << "kain88 look up url"<< url.toString();
     QNetworkRequest req(url);
 
     QNetworkReply* reply = m_network.get(req);
