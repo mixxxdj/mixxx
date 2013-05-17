@@ -167,7 +167,7 @@ int SoundDevicePortAudio::open()
                         m_dSampleRate,
                         m_framesPerBuffer,
                         paClipOff, // Stream flags
-                        callback,    
+                        callback,
                         (void*) this); // pointer passed to the callback function
 
     if (err != paNoError)
@@ -329,7 +329,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     if (!m_undeflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
             if (m_pMasterUnderflowCount) {
-                m_pMasterUnderflowCount->add(1);
+                m_pMasterUnderflowCount->set(
+                    m_pMasterUnderflowCount->get() + 1);
             }
             m_undeflowUpdateCount = 40;
         }

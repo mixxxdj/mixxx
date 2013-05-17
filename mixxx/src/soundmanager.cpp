@@ -52,10 +52,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     // It is possible to take them out?
     m_pControlObjectSoundStatus = new ControlObject(ConfigKey("[SoundManager]", "status"));
     m_pControlObjectSoundStatus->set(SOUNDMANAGER_DISCONNECTED);
-    m_pControlObjectVinylControlMode1 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_mode"))); // TODO(XXX) returning Null
-    m_pControlObjectVinylControlMode2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_mode"))); // TODO(XXX) returning Null
     m_pControlObjectVinylControlGain = new ControlObjectThreadMain(
         new ControlObject(ConfigKey("[VinylControl]", "gain")));
 
@@ -88,8 +84,6 @@ SoundManager::~SoundManager() {
     // by clearDeviceList -- bkgood
 
     delete m_pControlObjectSoundStatus;
-    delete m_pControlObjectVinylControlMode1;
-    delete m_pControlObjectVinylControlMode2;
     delete m_pControlObjectVinylControlGain;
 }
 

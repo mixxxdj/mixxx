@@ -9,8 +9,16 @@
 
 #include "ui_dlgtrackinfo.h"
 #include "trackinfoobject.h"
-#include "controlbeat.h"
 #include "dlgtagfetcher.h"
+
+/** Minimum allowed Beat per minute (BPM) */
+const int minBPM = 30;
+/** Maximum allowed bpm */
+const int maxBPM = 240;
+/** Maximum allowed interval between beats in milli seconds (calculated from minBPM) */
+const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBPM));
+/** Filter length */
+const int filterLength = 5;
 
 class Cue;
 

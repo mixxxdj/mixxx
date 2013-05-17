@@ -11,7 +11,7 @@
 #ifndef MIDIOUTPUTHANDLER_H
 #define MIDIOUTPUTHANDLER_H
 
-#include "controlobject.h"
+#include "controlobjectthread.h"
 
 class MidiController;   // forward declaration
 
@@ -32,7 +32,7 @@ class MidiOutputHandler : QObject {
 
   private:
     MidiController* m_pController;
-    ControlObject* m_cobj;
+    ControlObjectThread m_cobj;
     float m_min;
     float m_max;
     unsigned char m_status;
