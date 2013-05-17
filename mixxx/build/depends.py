@@ -187,8 +187,8 @@ class Qt(Dependence):
         # times.
 
         qt_modules = [
-            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
+            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSql', 'QtScript',
+            'QtNetwork'
             #'QtUiTools', #'QtDesigner',
         ]
 
@@ -810,7 +810,7 @@ class MixxxCore(Feature):
             # Set include and library paths to work with this
             build.env.Append(CPPPATH=mixxx_lib_path)
             build.env.Append(LIBPATH=mixxx_lib_path)
-			
+
             # Find executables (e.g. protoc) in the winlib path
             #build.env['ENV']['PATH'] += ";" + mixxx_lib_path
             build.env.AppendENVPath('PATH', mixxx_lib_path)

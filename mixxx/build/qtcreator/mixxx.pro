@@ -1,6 +1,5 @@
 CONFIG += debug link_pkgconfig portmidi script vinylcontrol mad
-#CONFIG += m4a hss1394
-# ladspa
+#CONFIG += m4a hss1394 ladspa
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
     __SNDFILE__ \
@@ -77,14 +76,11 @@ TEMPLATE = app
 TARGET = mixxx
 QT += core \
     gui \
-    sql \
-    xmlpatterns \
-    xml \
     network \
-    svg \
     opengl \
     script \
-    qt3support
+    sql \
+    xml
 
 CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb within QtC
     exists($$(QTDIR)/../share/qtcreator/gdbmacros/gdbmacros.cpp) {
@@ -216,7 +212,6 @@ $$BASE_DIR/src/dlgtrackinfo.h \
 $$BASE_DIR/src/engine/bpmcontrol.h \
 $$BASE_DIR/src/engine/clockcontrol.h \
 $$BASE_DIR/src/engine/cuecontrol.h \
-$$BASE_DIR/src/engine/engineabstractrecord.h \
 $$BASE_DIR/src/engine/enginebuffer.h \
 $$BASE_DIR/src/engine/enginebufferscale.h \
 $$BASE_DIR/src/engine/enginebufferscaledummy.h \
@@ -323,8 +318,6 @@ $$BASE_DIR/src/playerinfo.h \
 $$BASE_DIR/src/playermanager.h \
 $$BASE_DIR/src/previewdeck.h \
 $$BASE_DIR/src/recording/defs_recording.h \
-$$BASE_DIR/src/recording/encoder.h \
-$$BASE_DIR/src/recording/enginerecord.h \
 $$BASE_DIR/src/recording/recordingmanager.h \
 $$BASE_DIR/src/rotary.h \
 $$BASE_DIR/src/sampler.h \
@@ -735,7 +728,7 @@ SOURCES += $$BASE_DIR/src/engine/enginebufferscalest.cpp \
     $$BASE_DIR/lib/soundtouch-1.6.0/FIRFilter.cpp \
     $$BASE_DIR/lib/soundtouch-1.6.0/PeakFinder.cpp \
     $$BASE_DIR/lib/soundtouch-1.6.0/BPMDetect.cpp \
-	$$BASE_DIR/lib/soundtouch-1.6.0/cpu_detect_x86_gcc.cpp
+    $$BASE_DIR/lib/soundtouch-1.6.0/cpu_detect_x86_gcc.cpp
 
 # Fidlib
 SOURCES += $$BASE_DIR/lib/fidlib-0.9.10/fidlib.c
@@ -822,29 +815,29 @@ macx {
 }
 win32 {
     DEFINES += __WINMIDI__
-	CONFIG(portmidi) {
-		LIBS += -lportmidi_s
-	}
+    CONFIG(portmidi) {
+        LIBS += -lportmidi_s
+    }
     LIBS += \
-		-L$$BASE_DIR/../mixxx-mingw/lib -lFLAC -logg -lvorbis \
-		-lvorbisenc -lvorbisfile
-	CONFIG(mad) {
-		LIBS += -lmad -lid3tag
-	}
-	LIBS += \
-		-lz -lprotobuf-lite -lsndfile \
-		-lportaudio.dll -ltag.dll -lwinmm -lws2_32 -lmingw32
+        -L$$BASE_DIR/../mixxx-mingw/lib -lFLAC -logg -lvorbis \
+        -lvorbisenc -lvorbisfile
+    CONFIG(mad) {
+        LIBS += -lmad -lid3tag
+    }
+    LIBS += \
+        -lz -lprotobuf-lite -lsndfile \
+        -lportaudio.dll -ltag.dll -lwinmm -lws2_32 -lmingw32
     INCLUDEPATH += $$BASE_DIR/../mixxx-mingw/include
 }
 
 CONFIG(portmidi) {
-	DEFINES += __PORTMIDI__
-	HEADERS += \
-		$$BASE_DIR/src/controllers/midi/portmidicontroller.h \
-		$$BASE_DIR/src/controllers/midi/portmidienumerator.h
-	SOURCES += \
-    	$$BASE_DIR/src/controllers/midi/portmidienumerator.cpp \
-		$$BASE_DIR/src/controllers/midi/portmidicontroller.cpp
+    DEFINES += __PORTMIDI__
+    HEADERS += \
+        $$BASE_DIR/src/controllers/midi/portmidicontroller.h \
+        $$BASE_DIR/src/controllers/midi/portmidienumerator.h
+    SOURCES += \
+        $$BASE_DIR/src/controllers/midi/portmidienumerator.cpp \
+        $$BASE_DIR/src/controllers/midi/portmidicontroller.cpp
 }
 
 CONFIG(ladspa) {
@@ -891,9 +884,9 @@ CONFIG(Vamp) {
 DEFINES += __VAMP__
 INCLUDEPATH += $$BASE_DIR/lib/vamp-2.3
 HEADERS +=
-	$$BASE_DIR/src/vamp/vamppluginloader.h \
-	$$BASE_DIR/src/dlgprefbeats.h \
-	$$BASE_DIR/src/vamp/vampanalyser.h \
+    $$BASE_DIR/src/vamp/vamppluginloader.h \
+    $$BASE_DIR/src/dlgprefbeats.h \
+    $$BASE_DIR/src/vamp/vampanalyser.h \
     $$UI_DIR/ui_dlgprefbeatsdlg.h \
     $$BASE_DIR/src/analyservamptest.h \
     $$BASE_DIR/src/analyservampkeytest.h \
@@ -903,17 +896,17 @@ SOURCES += $$BASE_DIR/src/vamp/vampanalyser.cpp \
     $$BASE_DIR/src/analyservamptest.cpp \
     $$BASE_DIR/src/analyservampkeytest.cpp \
     $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginBufferingAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginLoader.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/RealTime.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-sdk/PluginAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-sdk/RealTime.cpp
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginLoader.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/RealTime.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-sdk/PluginAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-sdk/RealTime.cpp
 FORMS += \
-	$$BASE_DIR/src/dlgprefbeatsdlg.ui
+    $$BASE_DIR/src/dlgprefbeatsdlg.ui
 }
 
 CONFIG(tonal) {
@@ -961,10 +954,10 @@ CONFIG(m4a) {
 
 CONFIG(mad) {
     DEFINES += __MAD__
-	HEADERS += \
-		$$BASE_DIR/src/soundsourcemp3.h
-	SOURCES += \
-		$$BASE_DIR/src/soundsourcemp3.cpp
+    HEADERS += \
+        $$BASE_DIR/src/soundsourcemp3.h
+    SOURCES += \
+        $$BASE_DIR/src/soundsourcemp3.cpp
 }
 CONFIG(vinylcontrol) {
     DEFINES += __VINYLCONTROL__
@@ -1016,7 +1009,6 @@ CONFIG(shoutcast) {
 # CONFIG(record) {
 #    DEFINES += __RECORD__
 #    HEADERS += $$BASE_DIR/src/recording/defs_recording.h \
-#        $$BASE_DIR/src/recording/enginerecord.h \
 #        $$BASE_DIR/src/recording/writeaudiofile.h \
 #        $$BASE_DIR/src/dlgprefrecord.h
 #    SOURCES += $$BASE_DIR/src/recording/enginerecord.cpp \
@@ -1049,56 +1041,56 @@ CONFIG(ffmpeg) {
 CONFIG(hid) {
     HIDAPI_INTERNAL_PATH = $$BASE_DIR/../mixxx-winlib/lib/hidapi-0.8.0-pre
     DEFINES += __HID__
-	SOURCES += \
+    SOURCES += \
         $$BASE_DIR/src/controllers/hid/hidcontroller.cpp \
         $$BASE_DIR/src/controllers/hid/hidenumerator.cpp \
         $$BASE_DIR/src/controllers/hid/hidcontrollerpresetfilehandler.cpp
-	HEADERS += \
-		$$BASE_DIR/src/controllers/hid/hidblacklist.h \
-		$$BASE_DIR/src/controllers/hid/hidcontroller.h \
-		$$BASE_DIR/src/controllers/hid/hidcontrollerpreset.h \
-		$$BASE_DIR/src/controllers/hid/hidcontrollerpresetfilehandler.h \
-		$$BASE_DIR/src/controllers/hid/hidenumerator.h
-	win32 {
+    HEADERS += \
+        $$BASE_DIR/src/controllers/hid/hidblacklist.h \
+        $$BASE_DIR/src/controllers/hid/hidcontroller.h \
+        $$BASE_DIR/src/controllers/hid/hidcontrollerpreset.h \
+        $$BASE_DIR/src/controllers/hid/hidcontrollerpresetfilehandler.h \
+        $$BASE_DIR/src/controllers/hid/hidenumerator.h
+    win32 {
         SOURCES += $$HIDAPI_INTERNAL_PATH/windows/hid.c
-	} macx {
+    } macx {
         SOURCES += $$HIDAPI_INTERNAL_PATH/mac/hid.c
-	} else {
+    } else {
         SOURCES += $$HIDAPI_INTERNAL_PATH/linux/hid-libusb.c
-	}
+    }
 }
 
 CONFIG(bulk) {
     DEFINES += __BULK__
-	SOURCES += \
+    SOURCES += \
         $$BASE_DIR/src/controllers/bulk/bulkcontroller.cpp \
         $$BASE_DIR/src/controllers/bulk/bulkenumerator.cpp
-	HEADERS += \
-		$$BASE_DIR/src/controllers/bulk/bulkcontroller.h \
-		$$BASE_DIR/src/controllers/bulk/bulkenumerator.h \
-		$$BASE_DIR/src/controllers/bulk/bulksupported.h
-	!CONFIG(hid) {
-		SOURCES += \
-	    $$BASE_DIR/src/controllers/hid/hidcontrollerpresetfilehandler.cpp
-	}
+    HEADERS += \
+        $$BASE_DIR/src/controllers/bulk/bulkcontroller.h \
+        $$BASE_DIR/src/controllers/bulk/bulkenumerator.h \
+        $$BASE_DIR/src/controllers/bulk/bulksupported.h
+    !CONFIG(hid) {
+        SOURCES += \
+        $$BASE_DIR/src/controllers/hid/hidcontrollerpresetfilehandler.cpp
+    }
 }
 
 CONFIG(PromoTracks) {
     DEFINES += __PROMO__
-	HEADERS += \
+    HEADERS += \
         $$BASE_DIR/src/library/promotracksfeature.h \
-		$$BASE_DIR/src/library/bundledsongswebview.h \
-		$$BASE_DIR/src/library/featuredartistswebview.h
-	SOURCES += \
+        $$BASE_DIR/src/library/bundledsongswebview.h \
+        $$BASE_DIR/src/library/featuredartistswebview.h
+    SOURCES += \
         $$BASE_DIR/src/library/promotracksfeature.cpp \
         $$BASE_DIR/src/library/bundledsongswebview.cpp \
         $$BASE_DIR/src/library/featuredartistswebview.cpp
 }
 
 CONFIG(hss1394) {
-	HEADERS += \
-		$$BASE_DIR/src/controllers/midi/hss1394controller.h \
-		$$BASE_DIR/src/controllers/midi/hss1394enumerator.h
+    HEADERS += \
+        $$BASE_DIR/src/controllers/midi/hss1394controller.h \
+        $$BASE_DIR/src/controllers/midi/hss1394enumerator.h
 }
 
 # Copy Windows dependencies to DESTDIR.
@@ -1106,14 +1098,13 @@ win32 {
     !exists($$DESTDIR):system( mkdir \"$$replace(DESTDIR, /,$$DIR_SEPARATOR)\" )
     # MinGW run-time
     DLLs += $$(QTDIR)/../mingw/bin/mingwm10.dll \
-		$$(QTDIR)/../mingw/bin/libstdc++-6.dll \
-		$$(QTDIR)/../mingw/bin/libexpat-1.dll
+        $$(QTDIR)/../mingw/bin/libstdc++-6.dll \
+        $$(QTDIR)/../mingw/bin/libexpat-1.dll
     CONFIG(m4a): DLLs += $$BASE_DIR/../mixxx-winlib/mp4v2/mingw-bin/libmp4v2-0.dll \
         $$BASE_DIR/../mixxx-winlib/libfaad2.dll
     # Qt4 libraries
     debug {
-        DLLs += $$(QTDIR)/bin/Qt3Supportd4.dll \
-            $$(QTDIR)/bin/QtCored4.dll \
+        DLLs += $$(QTDIR)/bin/QtCored4.dll \
             $$(QTDIR)/bin/QtGuid4.dll \
             $$(QTDIR)/bin/QtNetworkd4.dll \
             $$(QTDIR)/bin/QtSqld4.dll \
@@ -1123,8 +1114,7 @@ win32 {
         # include GNU Debugger in debug distros
         DLLs += $$(QTDIR)/../mingw/bin/gdb.exe
     } else {
-        DLLs += $$(QTDIR)/bin/Qt3Support4.dll \
-            $$(QTDIR)/bin/QtCore4.dll \
+        DLLs += $$(QTDIR)/bin/QtCore4.dll \
             $$(QTDIR)/bin/QtGui4.dll \
             $$(QTDIR)/bin/QtNetwork4.dll \
             $$(QTDIR)/bin/QtSql4.dll \
@@ -1156,7 +1146,7 @@ win32 {
 BZR_REVNO = $$system( bzr revno )
 BZR_INFO = $$system( bzr info )
 for(BZR_INFO_BITS, BZR_INFO) {
-	BZR_BRANCH_URL = $${BZR_INFO_BITS}
+    BZR_BRANCH_URL = $${BZR_INFO_BITS}
 }
 BZR_BRANCH_NAME = $$dirname(BZR_BRANCH_URL)
 BZR_BRANCH_NAME = $$basename(BZR_BRANCH_NAME)

@@ -157,7 +157,7 @@ QString BaseSqlTableModel::orderByClause() const {
 }
 
 void BaseSqlTableModel::select() {
-    if (!m_bInitialized || this->rowCount() == 0) {
+    if (!m_bInitialized) {
         return;
     }
 
@@ -203,10 +203,10 @@ void BaseSqlTableModel::select() {
     // table query has succeeded. See Bug #1090888.
     // TODO(rryan) we could edit the table in place instead of clearing it?
     if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+        beginResetModel();
         m_rowInfo.clear();
         m_trackIdToRows.clear();
-        endRemoveRows();
+        endResetModel();
     }
 
     QSqlRecord record = query.record();
