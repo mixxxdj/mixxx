@@ -20,7 +20,7 @@ DlgTagFetcher::DlgTagFetcher(QWidget *parent)
     connect(btnNext, SIGNAL(clicked()),
             this, SIGNAL(next()));
     connect(results, SIGNAL(currentItemChanged(QTreeWidgetItem*,QTreeWidgetItem*)),
-            this, SLOT(ResultSelected()));
+            this, SLOT(resultSelected()));
 
     connect(&m_TagFetcher, SIGNAL(resultAvailable(const TrackPointer,const QList<TrackPointer>&)),
             this, SLOT(fetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
@@ -51,11 +51,21 @@ void DlgTagFetcher::init(const TrackPointer track) {
 void DlgTagFetcher::apply() {
     int resultIndex = m_data.m_selectedResult;
     if (resultIndex > -1) {
-        m_track->setAlbum(m_data.m_results[resultIndex]->getAlbum());
-        m_track->setArtist(m_data.m_results[resultIndex]->getArtist());
-        m_track->setTitle(m_data.m_results[resultIndex]->getTitle());
-        m_track->setYear(m_data.m_results[resultIndex]->getYear());
-        m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
+        if (!m_data.m_results[resultIndex]->getAlbum().isEmpty()) { 
+            m_track->setAlbum(m_data.m_results[resultIndex]->getAlbum());
+        }
+        if (!m_data.m_results[resultIndex]->getArtist().isEmpty()) { 
+            m_track->setArtist(m_data.m_results[resultIndex]->getArtist());
+        }
+        if (!m_data.m_results[resultIndex]->getTitle().isEmpty()) { 
+            m_track->setTitle(m_data.m_results[resultIndex]->getTitle());
+        }
+        if (!m_data.m_results[resultIndex]->getYear().isEmpty()) { 
+            m_track->setYear(m_data.m_results[resultIndex]->getYear());
+        }
+        if (!m_data.m_results[resultIndex]->getTrackNumber().isEmpty()) { 
+            m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
+        }
     }
 }
 

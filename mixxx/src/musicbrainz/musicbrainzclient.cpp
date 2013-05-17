@@ -33,7 +33,6 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
 
     QUrl url(m_TrackUrl + mbid);
     url.setQueryItems(parameters);
-    qDebug() << "kain88 look up url"<< url.toString();
     QNetworkRequest req(url);
 
     QNetworkReply* reply = m_network.get(req);
