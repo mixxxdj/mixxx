@@ -420,18 +420,18 @@ class MixxxCore(Feature):
         sources = ["mixxxkeyboard.cpp",
 
                    "configobject.cpp",
+                   "control/control.cpp",
+                   "control/controlbehavior.cpp",
                    "controlobjectthread.cpp",
                    "controlobjectthreadwidget.cpp",
                    "controlobjectthreadmain.cpp",
                    "controlevent.cpp",
                    "controllogpotmeter.cpp",
                    "controlobject.cpp",
-                   "controlnull.cpp",
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
                    "controlpushbutton.cpp",
                    "controlttrotary.cpp",
-                   "controlbeat.cpp",
 
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
@@ -455,7 +455,6 @@ class MixxxCore(Feature):
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
-                   "engine/syncworker.cpp",
                    "engine/enginebuffer.cpp",
                    "engine/enginebufferscale.cpp",
                    "engine/enginebufferscaledummy.cpp",
