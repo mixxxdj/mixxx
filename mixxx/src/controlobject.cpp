@@ -36,34 +36,31 @@ ControlObject::ControlObject()
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
-        : m_key(key),
-          m_pControl(ControlDoublePrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
-    connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
-            this, SLOT(privateValueChanged(double, QObject*)),
-            Qt::DirectConnection);
-
-    m_sqCOHashMutex.lock();
-    m_sqCOHash.insert(m_key, this);
-    m_sqCOHashMutex.unlock();
+        : m_pControl(NULL) {
+    initialize(key, bIgnoreNops, bTrack);
 }
 
 ControlObject::ControlObject(const QString& group, const QString& item,
                              bool bIgnoreNops, bool bTrack)
-        : m_key(group, item),
-          m_pControl(ControlDoublePrivate::getControl(m_key, true, bIgnoreNops, bTrack)) {
-
-    connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
-            this, SLOT(privateValueChanged(double, QObject*)),
-            Qt::DirectConnection);
-
-    m_sqCOHashMutex.lock();
-    m_sqCOHash.insert(m_key, this);
-    m_sqCOHashMutex.unlock();
+        : m_pControl(NULL) {
+    initialize(ConfigKey(group, item), bIgnoreNops, bTrack);
 }
 
 ControlObject::~ControlObject() {
     m_sqCOHashMutex.lock();
     m_sqCOHash.remove(m_key);
+    m_sqCOHashMutex.unlock();
+}
+
+void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
+    m_key = key;
+    m_pControl = ControlDoublePrivate::getControl(m_key, true, bIgnoreNops, bTrack);
+    connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+            this, SLOT(privateValueChanged(double, QObject*)),
+            Qt::DirectConnection);
+
+    m_sqCOHashMutex.lock();
+    m_sqCOHash.insert(m_key, this);
     m_sqCOHashMutex.unlock();
 }
 
