@@ -106,6 +106,7 @@ bool ControlObject::disconnectControl(ConfigKey key)
 }
 */
 
+// static
 void ControlObject::getControls(QList<ControlObject*>* pControlList) {
     m_sqCOHashMutex.lock();
     for (QHash<ConfigKey, ControlObject*>::const_iterator it = m_sqCOHash.begin();
@@ -115,6 +116,7 @@ void ControlObject::getControls(QList<ControlObject*>* pControlList) {
     m_sqCOHashMutex.unlock();
 }
 
+// static
 ControlObject* ControlObject::getControl(const ConfigKey& key) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
     QMutexLocker locker(&m_sqCOHashMutex);
