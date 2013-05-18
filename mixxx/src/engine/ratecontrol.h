@@ -8,6 +8,7 @@
 
 #include "configobject.h"
 #include "engine/enginecontrol.h"
+#include "engine/enginesync.h"
 
 const int RATE_TEMP_STEP = 500;
 const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
@@ -29,7 +30,7 @@ class RateControl : public EngineControl {
 public:
     RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~RateControl();
-
+    void setEngineMaster(EngineMaster* pEngineMaster);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     double process(const double dRate,
@@ -38,7 +39,9 @@ public:
                    const int bufferSamples);
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
-    double getRawRate();
+    double getRawRate() const;
+    double getCurrentRate() const;
+    bool getUserTweakingSync() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -66,11 +69,24 @@ public:
     void slotControlFastForward(double);
     void slotControlFastBack(double);
     void slotControlVinyl(double);
+    virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
+
+    
+  private slots:
+    void slotFileBpmChanged(double);
+    void slotMasterBpmChanged(double);
+    void slotSyncMasterChanged(double);
+    void slotSyncSlaveChanged(double);
+    void slotSyncInternalChanged(double);
+    void slotSyncStateChanged(double);
     void slotControlVinylScratching(double);
 
   private:
-    double getJogFactor();
-    double getWheelFactor();
+    QString m_sGroup;
+  
+    double getJogFactor() const;
+    double getWheelFactor() const;
 
     /** Set rate change of the temporary pitch rate */
     void setRateTemp(double v);
@@ -104,9 +120,26 @@ public:
 
     ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
+    ControlObject* m_pVCEnabled;
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;
+    
+    TrackPointer m_pTrack;
+    
+    //For Master Sync
+    ControlObject *m_pMasterBpm;
+    ControlObject *m_pSyncInternalEnabled;
+    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
+    ControlObject *m_pSyncState;
+    EngineMaster *m_pEngineMaster;
+    double m_dSyncedRate;
+    int m_iSyncState;
+    bool m_bUserTweakingSync;
+    
+    /** The current loaded file's detected BPM */
+    ControlObject* m_pFileBpm;
+    double m_dFileBpm;
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.
@@ -166,6 +199,9 @@ public:
       * pressed, because there is a fixed limit on the range of the pitch
       * slider */
     double m_dOldRate;
+    
+    /** Handle for configuration */
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* RATECONTROL_H */

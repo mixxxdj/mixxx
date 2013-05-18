@@ -1,0 +1,2515 @@
+<!DOCTYPE skin>
+<skin>
+
+
+ <Background>
+  <Path>scene2.png</Path>
+ </Background>
+
+ <SliderComposed>
+  <Tooltip>Crossfader</Tooltip>
+  <Handle>crosshandle-on-.png</Handle>
+  <Slider>crossslider-off-.png</Slider>
+  <Pos>385,344</Pos>
+  <Horizontal>true</Horizontal>
+  <Connection>
+   <ConfigKey>[Master],crossfader</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <!--<SliderComposed>
+  <Tooltip>Playback rate</Tooltip>
+  <Handle>ratehandle-on-Ch1.png</Handle>
+  <Slider>rateslider-off-Ch1.png</Slider>
+  <Pos>363,364</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel1],rate</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Tooltip>Playback rate</Tooltip>
+  <Handle>ratehandle-on-Ch2.png</Handle>
+  <Slider>rateslider-off-Ch2.png</Slider>
+  <Pos>640,364</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel2],rate</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>-->
+ 
+ 
+ <StatusLight>
+  <Tooltip>Vinyl Status</Tooltip>
+  <NumberPos>4</NumberPos>
+  <PathStatusLight>vinyl_green_t.png</PathStatusLight>
+  <PathStatusLight2>vinyl_yellow_t.png</PathStatusLight2>
+  <PathStatusLight3>vinyl_blue_t.png</PathStatusLight3>
+  <PathStatusLight4>vinyl_red_t.png</PathStatusLight4>
+  <Pos>166,172</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+  </Connection>
+ </StatusLight>
+ 
+ <StatusLight>
+  <Tooltip>Vinyl Status</Tooltip>
+  <NumberPos>4</NumberPos>
+  <PathStatusLight>vinyl_green_l.png</PathStatusLight>
+  <PathStatusLight2>vinyl_yellow_l.png</PathStatusLight2>
+  <PathStatusLight3>vinyl_blue_l.png</PathStatusLight3>
+  <PathStatusLight4>vinyl_red_l.png</PathStatusLight4>
+  <Pos>166,172</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+  </Connection>
+ </StatusLight>
+ 
+ <StatusLight>
+  <Tooltip>Vinyl Status</Tooltip>
+  <NumberPos>4</NumberPos>
+  <PathStatusLight>vinyl_green_r.png</PathStatusLight>
+  <PathStatusLight2>vinyl_yellow_r.png</PathStatusLight2>
+  <PathStatusLight3>vinyl_blue_r.png</PathStatusLight3>
+  <PathStatusLight4>vinyl_red_r.png</PathStatusLight4>
+  <Pos>425,187</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+  </Connection>
+ </StatusLight>
+ 
+ <StatusLight>
+  <Tooltip>Vinyl Status</Tooltip>
+  <NumberPos>4</NumberPos>
+  <PathStatusLight>vinyl_green_b.png</PathStatusLight>
+  <PathStatusLight2>vinyl_yellow_b.png</PathStatusLight2>
+  <PathStatusLight3>vinyl_blue_b.png</PathStatusLight3>
+  <PathStatusLight4>vinyl_red_b.png</PathStatusLight4>
+  <Pos>166,267</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
+  </Connection>
+ </StatusLight>
+ 
+ 
+ 
+ <StatusLight>
+  <Tooltip>Vinyl Status</Tooltip>
+  <NumberPos>4</NumberPos>
+  <PathStatusLight>vinyl_green_t.png</PathStatusLight>
+  <PathStatusLight2>vinyl_yellow_t.png</PathStatusLight2>
+  <PathStatusLight3>vinyl_blue_t.png</PathStatusLight3>
+  <PathStatusLight4>vinyl_red_t.png</PathStatusLight4>
+  <Pos>445,172</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+  </Connection>
+ </StatusLight>
+  <StatusLight>
+  <Tooltip>Vinyl Status</Tooltip>
+  <NumberPos>4</NumberPos>
+  <PathStatusLight>vinyl_green_l.png</PathStatusLight>
+  <PathStatusLight2>vinyl_yellow_l.png</PathStatusLight2>
+  <PathStatusLight3>vinyl_blue_l.png</PathStatusLight3>
+  <PathStatusLight4>vinyl_red_l.png</PathStatusLight4>
+  <Pos>445,172</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+  </Connection>
+ </StatusLight>
+  <StatusLight>
+  <Tooltip>Vinyl Status</Tooltip>
+  <NumberPos>4</NumberPos>
+  <PathStatusLight>vinyl_green_r.png</PathStatusLight>
+  <PathStatusLight2>vinyl_yellow_r.png</PathStatusLight2>
+  <PathStatusLight3>vinyl_blue_r.png</PathStatusLight3>
+  <PathStatusLight4>vinyl_red_r.png</PathStatusLight4>
+  <Pos>704,187</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+  </Connection>
+ </StatusLight>
+  <StatusLight>
+  <Tooltip>Vinyl Status</Tooltip>
+  <NumberPos>4</NumberPos>
+  <PathStatusLight>vinyl_green_b.png</PathStatusLight>
+  <PathStatusLight2>vinyl_yellow_b.png</PathStatusLight2>
+  <PathStatusLight3>vinyl_blue_b.png</PathStatusLight3>
+  <PathStatusLight4>vinyl_red_b.png</PathStatusLight4>
+  <Pos>445,267</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
+  </Connection>
+ </StatusLight>
+ 
+ 
+ 
+ 
+  <PushButton>
+  <Tooltip>Vinyl Control Mode</Tooltip>
+  <NumberStates>3</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>vinyl_abs.png</Pressed>
+   <Unpressed>vinyl_abs.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>vinyl_rel.png</Pressed>
+   <Unpressed>vinyl_rel.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>vinyl_const.png</Pressed>
+   <Unpressed>vinyl_const.png</Unpressed>
+  </State>
+  <Pos>378,171</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
+  </Connection>
+ </PushButton>
+ 
+ <PushButton>
+  <Tooltip>Vinyl Control Mode</Tooltip>
+  <NumberStates>3</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>vinyl_abs.png</Pressed>
+   <Unpressed>vinyl_abs.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>vinyl_rel.png</Pressed>
+   <Unpressed>vinyl_rel.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>vinyl_const.png</Pressed>
+   <Unpressed>vinyl_const.png</Unpressed>
+  </State>
+  <Pos>657,171</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],vinylcontrol_mode</ConfigKey>
+  </Connection>
+ </PushButton>
+ 
+ 
+ <Knob>
+  <Tooltip>Playback Rate</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>46,190</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate</ConfigKey>
+  </Connection>
+ </Knob>
+ 
+ <Knob>
+  <Tooltip>Playback Rate</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>799,190</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <PushButton>
+  <Tooltip>Tempo syncronization</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>sync-on-Ch1.png</Pressed>
+   <Unpressed>sync-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>169,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],beatsync</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Tempo syncronization</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>sync-on-Ch2.png</Pressed>
+   <Unpressed>sync-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>448,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],beatsync</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+ 
+  <PushButton>
+  <Tooltip>Vinyl Cueing Mode</Tooltip>
+  <NumberStates>3</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>vcue_off.png</Pressed>
+   <Unpressed>vcue_off.png</Unpressed>
+  </State>
+    <State>
+   <Number>1</Number>
+   <Pressed>vcue_onecue.png</Pressed>
+   <Unpressed>vcue_onecue.png</Unpressed>
+  </State>
+    <State>
+   <Number>2</Number>
+   <Pressed>vcue_hotcue.png</Pressed>
+   <Unpressed>vcue_hotcue.png</Unpressed>
+  </State>
+  <Pos>221,316</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],vinylcontrol_cueing</ConfigKey>
+  </Connection>
+ </PushButton>
+ 
+ <PushButton>
+  <Tooltip>Vinyl Cueing Mode</Tooltip>
+  <NumberStates>3</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>vcue_off.png</Pressed>
+   <Unpressed>vcue_off.png</Unpressed>
+  </State>
+    <State>
+   <Number>1</Number>
+   <Pressed>vcue_onecue.png</Pressed>
+   <Unpressed>vcue_onecue.png</Unpressed>
+  </State>
+    <State>
+   <Number>2</Number>
+   <Pressed>vcue_hotcue.png</Pressed>
+   <Unpressed>vcue_hotcue.png</Unpressed>
+  </State>
+  <Pos>501,316</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],vinylcontrol_cueing</ConfigKey>
+  </Connection>
+ </PushButton>
+<!--
+ <PushButton>
+  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rateup-on-Ch1.png</Pressed>
+   <Unpressed>rateup-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>385,435</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate_perm_up</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_perm_up_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rateup-on-Ch2.png</Pressed>
+   <Unpressed>rateup-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>662,435</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate_perm_up</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_perm_up_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>ratedown-on-Ch1.png</Pressed>
+   <Unpressed>ratedown-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>353,435</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],rate_perm_down</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],rate_perm_down_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Change playback rate (left/right click: large/small effect)</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>ratedown-on-Ch2.png</Pressed>
+   <Unpressed>ratedown-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>630,435</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],rate_perm_down</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],rate_perm_down_small</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+-->
+ 
+ <SliderComposed>
+  <Tooltip>Channel volume</Tooltip>
+  <Handle>ratehandle-on-Ch1.png</Handle>
+  <Slider>rateslider-off-Ch1.png</Slider>
+  <Pos>60,232</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel1],volume</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Tooltip>Channel volume</Tooltip>
+  <Handle>ratehandle-on-Ch2.png</Handle>
+  <Slider>rateslider-off-Ch2.png</Slider>
+  <Pos>813,232</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Channel2],volume</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <VuMeter>
+  <Tooltip>Master VuMeter</Tooltip>
+  <PathVu>vumeter-on-.png</PathVu>
+  <PathBack>vumeter-off-.png</PathBack>
+  <Pos>62,38</Pos>
+  <Horizontal>false</Horizontal>
+  <Connection>
+   <ConfigKey>[Master],VuMeter</ConfigKey>
+  </Connection>
+ </VuMeter>
+
+ <VuMeter>
+  <Tooltip>Channel VuMeter</Tooltip>
+  <PathVu>vumeter-on-Ch1.png</PathVu>
+  <PathBack>vumeter-off-Ch1.png</PathBack>
+  <Pos>33,232</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],VuMeter</ConfigKey>
+  </Connection>
+ </VuMeter>
+ 
+ <VuMeter>
+  <Tooltip>Channel VuMeter</Tooltip>
+  <PathVu>vumeter-on-Ch2.png</PathVu>
+  <PathBack>vumeter-off-Ch2.png</PathBack>
+  <Pos>786,232</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],VuMeter</ConfigKey>
+  </Connection>
+ </VuMeter>
+
+ <PushButton>
+  <Tooltip>End of track mode</Tooltip>
+  <NumberStates>3</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>endoftrack-stop-ch1.png</Pressed>
+   <Unpressed>endoftrack-stop-ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>endoftrack-next-ch1.png</Pressed>
+   <Unpressed>endoftrack-next-ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>endoftrack-loop-ch1.png</Pressed>
+   <Unpressed>endoftrack-loop-ch1.png</Unpressed>
+  </State>
+  <Pos>377,272</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],TrackEndMode</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>End of track mode</Tooltip>
+  <NumberStates>3</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>endoftrack-stop-ch1.png</Pressed>
+   <Unpressed>endoftrack-stop-ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>endoftrack-next-ch1.png</Pressed>
+   <Unpressed>endoftrack-next-ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>2</Number>
+   <Pressed>endoftrack-loop-ch2.png</Pressed>
+   <Unpressed>endoftrack-loop-ch2.png</Unpressed>
+  </State>
+  <Pos>656,272</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],TrackEndMode</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>play-off-Ch1.png</Pressed>
+   <Unpressed>play-off-Ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>play-on-Ch1.png</Pressed>
+   <Unpressed>play-on-Ch1.png</Unpressed>
+  </State>
+  <Pos>172,276</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],play</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],cue_set</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Left click: Pause/play, Right click: Set cue point</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>play-off-Ch1.png</Pressed>
+   <Unpressed>play-off-Ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>play-on-Ch2.png</Pressed>
+   <Unpressed>play-on-Ch2.png</Unpressed>
+  </State>
+  <Pos>451,276</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],play</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],cue_set</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+<!-- <PushButton>
+  <Tooltip>Left click: Cue preview, Right click: Cue goto</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>cue-on-Ch1.png</Pressed>
+   <Unpressed>cue-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>238,276</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],cue_preview</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],cue_preview</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],cue_goto</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Left click: Cue preview, Right click: Cue goto</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>cue-on-Ch2.png</Pressed>
+   <Unpressed>cue-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>517,276</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],cue_preview</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],cue_preview</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],cue_goto</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>-->
+ 
+  <!--
+	**********************************************
+	Button- Hotcue
+	**********************************************
+	-->
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_1_on.png</Pressed>
+			<Unpressed>cue_1_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_1_off.png</Pressed>
+			<Unpressed>cue_1_on.png</Unpressed>
+		</State>
+		<Pos>240,278</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_1_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_2_on.png</Pressed>
+			<Unpressed>cue_2_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_2_off.png</Pressed>
+			<Unpressed>cue_2_on.png</Unpressed>
+		</State>
+		<Pos>256,278</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_2_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_3_on.png</Pressed>
+			<Unpressed>cue_3_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_3_off.png</Pressed>
+			<Unpressed>cue_3_on.png</Unpressed>
+		</State>
+		<Pos>272,278</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_3_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_4_on.png</Pressed>
+			<Unpressed>cue_4_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_4_off.png</Pressed>
+			<Unpressed>cue_4_on.png</Unpressed>
+		</State>
+		<Pos>287,278</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_4_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_5_on.png</Pressed>
+			<Unpressed>cue_5_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_5_off.png</Pressed>
+			<Unpressed>cue_5_on.png</Unpressed>
+		</State>
+		<Pos>240,293</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_5_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_5_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_5_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_5_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_5_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_6_on.png</Pressed>
+			<Unpressed>cue_6_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_6_off.png</Pressed>
+			<Unpressed>cue_6_on.png</Unpressed>
+		</State>
+		<Pos>256,293</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_6_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_6_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_6_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_6_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_6_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_7_on.png</Pressed>
+			<Unpressed>cue_7_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_7_off.png</Pressed>
+			<Unpressed>cue_7_on.png</Unpressed>
+		</State>
+		<Pos>272,293</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_7_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_7_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_7_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_7_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_7_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_8_on.png</Pressed>
+			<Unpressed>cue_8_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_8_off.png</Pressed>
+			<Unpressed>cue_8_on.png</Unpressed>
+		</State>
+		<Pos>287,293</Pos>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_8_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_8_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_8_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_8_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],hotcue_8_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	
+	
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_1_on.png</Pressed>
+			<Unpressed>cue_1_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_1_off.png</Pressed>
+			<Unpressed>cue_1_on.png</Unpressed>
+		</State>
+		<Pos>519,278</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_1_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_2_on.png</Pressed>
+			<Unpressed>cue_2_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_2_off.png</Pressed>
+			<Unpressed>cue_2_on.png</Unpressed>
+		</State>
+		<Pos>535,278</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_2_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_3_on.png</Pressed>
+			<Unpressed>cue_3_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_3_off.png</Pressed>
+			<Unpressed>cue_3_on.png</Unpressed>
+		</State>
+		<Pos>551,278</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_3_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_4_on.png</Pressed>
+			<Unpressed>cue_4_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_4_off.png</Pressed>
+			<Unpressed>cue_4_on.png</Unpressed>
+		</State>
+		<Pos>566,278</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_4_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_5_on.png</Pressed>
+			<Unpressed>cue_5_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_5_off.png</Pressed>
+			<Unpressed>cue_5_on.png</Unpressed>
+		</State>
+		<Pos>519,293</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_5_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_5_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_5_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_5_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_5_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_6_on.png</Pressed>
+			<Unpressed>cue_6_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_6_off.png</Pressed>
+			<Unpressed>cue_6_on.png</Unpressed>
+		</State>
+		<Pos>535,293</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_6_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_6_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_6_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_6_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_6_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_7_on.png</Pressed>
+			<Unpressed>cue_7_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_7_off.png</Pressed>
+			<Unpressed>cue_7_on.png</Unpressed>
+		</State>
+		<Pos>551,293</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_7_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_7_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_7_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_7_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_7_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+	<PushButton>
+		<Tooltip>Hotcue&#10;Left-click: If Hotcue is set, seeks the player to Hotcue position.&#10;If Hotcue is not set, sets Hotcue to the current play position.&#10;Right-click: If Hotcue is set, clears its hotcue status (delete).&#10;</Tooltip>
+		<Style>QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
+		<State>
+			<Number>0</Number>
+			<Pressed>cue_8_on.png</Pressed>
+			<Unpressed>cue_8_off.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>cue_8_off.png</Pressed>
+			<Unpressed>cue_8_on.png</Unpressed>
+		</State>
+		<Pos>566,293</Pos>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_8_activate</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_8_activate</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>LeftButton</ButtonState>
+		<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_8_clear</ConfigKey>
+			<EmitOnDownPress>true</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueToWidget>false</ConnectValueToWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_8_clear</ConfigKey>
+			<EmitOnDownPress>false</EmitOnDownPress>
+			<ButtonState>RightButton</ButtonState>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],hotcue_8_enabled</ConfigKey>
+			<ConnectValueFromWidget>false</ConnectValueFromWidget>
+		</Connection>
+	</PushButton>
+
+
+ <PushButton>
+  <Tooltip>Reverse playback</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rev-on-Ch1.png</Pressed>
+   <Unpressed>rev-off-Ch1.png</Unpressed>
+  </State>
+  <Pos>305,276</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],reverse</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],reverse</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Reverse playback</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>rev-on-Ch2.png</Pressed>
+   <Unpressed>rev-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>584,276</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],reverse</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],reverse</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>fwd-on-Ch1.png</Pressed>
+   <Unpressed>fwd-off-Ch1.png</Unpressed>
+  </State>
+   <Pos>322,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],fwd</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],fwd</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],end</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>back-on-Ch1.png</Pressed>
+   <Unpressed>back-off-Ch1.png</Unpressed>
+  </State>
+	<Pos>271,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],back</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],back</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],start</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Left click: Fast forward, Right click: End of track</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>fwd-on-Ch2.png</Pressed>
+   <Unpressed>fwd-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>601,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],fwd</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],fwd</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],end</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Left click: Fast backward, Right click: Start of track</Tooltip>
+  <NumberStates>1</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>back-on-Ch2.png</Pressed>
+   <Unpressed>back-off-Ch2.png</Unpressed>
+  </State>
+  <Pos>550,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],back</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],back</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+   <ButtonState>LeftButton</ButtonState>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],start</ConfigKey>
+   <EmitOnDownPress>true</EmitOnDownPress>
+   <ButtonState>RightButton</ButtonState>
+  </Connection>
+ </PushButton>
+
+<!-- <PushButton>
+  <Tooltip>Flanger on/off</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>flanger-off-Ch1.png</Pressed>
+   <Unpressed>flanger-off-Ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>flanger-on-Ch1.png</Pressed>
+   <Unpressed>flanger-on-Ch1.png</Unpressed>
+  </State>
+  <Pos>220,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],flanger</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Flanger on/off</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>flanger-off-Ch1.png</Pressed>
+   <Unpressed>flanger-off-Ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>flanger-on-Ch2.png</Pressed>
+   <Unpressed>flanger-on-Ch2.png</Unpressed>
+  </State>
+  <Pos>499,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],flanger</ConfigKey>
+  </Connection>
+ </PushButton>-->
+
+ <PushButton>
+  <Tooltip>Headphone cue</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>head-off-Ch1.png</Pressed>
+   <Unpressed>head-off-Ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>head-on-Ch1.png</Pressed>
+   <Unpressed>head-on-Ch1.png</Unpressed>
+  </State>
+  <Pos>373,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],pfl</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <PushButton>
+  <Tooltip>Headphone cue</Tooltip>
+  <NumberStates>2</NumberStates>
+  <State>
+   <Number>0</Number>
+   <Pressed>head-off-Ch1.png</Pressed>
+   <Unpressed>head-off-Ch1.png</Unpressed>
+  </State>
+  <State>
+   <Number>1</Number>
+   <Pressed>head-on-Ch2.png</Pressed>
+   <Unpressed>head-on-Ch2.png</Unpressed>
+  </State>
+  <Pos>652,314</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],pfl</ConfigKey>
+  </Connection>
+ </PushButton>
+
+ <Knob>
+  <Tooltip>Master volume</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>190,350</Pos>
+  <Connection>
+   <ConfigKey>[Master],volume</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Master balance</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>237,350</Pos>
+  <Connection>
+   <ConfigKey>[Master],balance</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Headphone volume</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>331,350</Pos>
+  <Connection>
+   <ConfigKey>[Master],headVolume</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Mix between headphone and main</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>284,350</Pos>
+  <Connection>
+   <ConfigKey>[Master],headMix</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Flanger depth</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>544,350</Pos>
+  <Connection>
+   <ConfigKey>[Flanger],lfoDepth</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Flanger delay</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>591,350</Pos>
+  <Connection>
+   <ConfigKey>[Flanger],lfoDelay</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Flanger LFO period</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobg%1.png</Path>
+  <Pos>638,350</Pos>
+  <Connection>
+   <ConfigKey>[Flanger],lfoPeriod</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Channel pre gain</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobl%1.png</Path>
+  <Pos>98,190</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],pregain</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Channel highpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobe%1.png</Path>
+  <DisabledPath>knobd%1.png</DisabledPath>
+  <Pos>89,224</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterHigh</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterHighKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Channel bandpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobe%1.png</Path>
+  <DisabledPath>knobd%1.png</DisabledPath>
+  <Pos>89,263</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterMid</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterMidKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Channel lowpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobe%1.png</Path>
+  <DisabledPath>knobd%1.png</DisabledPath>
+  <Pos>89,301</Pos>
+  <Connection>
+   <ConfigKey>[Channel1],filterLow</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel1],filterLowKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+<Knob>
+  <Tooltip>Channel pre gain</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>jknobl%1.png</Path>
+  <Pos>729,190</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],pregain</ConfigKey>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Channel highpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobe%1.png</Path>
+  <DisabledPath>knobd%1.png</DisabledPath>
+  <Pos>720,224</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterHigh</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterHighKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Channel bandpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobe%1.png</Path>
+  <DisabledPath>knobd%1.png</DisabledPath>
+  <Pos>720,262</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterMid</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterMidKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Knob>
+  <Tooltip>Channel lowpass filter</Tooltip>
+  <NumberStates>41</NumberStates>
+  <Path>knobe%1.png</Path>
+  <DisabledPath>knobd%1.png</DisabledPath>
+  <Pos>720,300</Pos>
+  <Connection>
+   <ConfigKey>[Channel2],filterLow</ConfigKey>
+  </Connection>
+  <Connection>
+   <ConfigKey>[Channel2],filterLowKill</ConfigKey>
+   <OnOff>true</OnOff>
+  </Connection>
+ </Knob>
+
+ <Visual>
+  <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+  <Channel>1</Channel>
+  <!--<Pos>130,81</Pos>-->
+  <Pos>110,17</Pos>
+  <Size>710,54</Size>
+  <BgColor>#3a3f40</BgColor>
+  <SignalColor>#c09a18</SignalColor>
+  <BeatColor>#ffc600</BeatColor>
+  <MarkerColor>#007eff</MarkerColor>
+  <FisheyeColor>#ffc600</FisheyeColor>
+  <Zoom>true</Zoom>
+	<MarkRange>
+		<StartControl>loop_start_position</StartControl>
+		<EndControl>loop_end_position</EndControl>
+		<EnabledControl>loop_enabled</EnabledControl>
+		<Color>#bfa859</Color>
+		<DisabledColor>#000000</DisabledColor>
+	</MarkRange>
+	<Mark>
+		<Control>loop_start_position</Control>
+		<Text> LOOP IN </Text>
+		<Align>bottom</Align>
+		<Color>#eece33</Color>
+		<TextColor>#ffffff</TextColor>
+	</Mark>
+	<Mark>
+		<Control>loop_end_position</Control>
+		<Text> LOOP OUT </Text>
+		<Align>bottom</Align>
+		<Color>#eece33</Color>
+		<TextColor>#ffffff</TextColor>
+	</Mark>
+	
+	<!--
+		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
+		represented by a button in the current skin. Mixxx 1.8+ supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
+		-->
+		<Mark>
+			<Control>hotcue_1_position</Control>
+			<Text> HOTCUE 1 </Text>
+			<Align>center</Align>
+			<Color>#00AAFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_2_position</Control>
+			<Text> HOTCUE 2 </Text>
+			<Align>center</Align>
+			<Color>#FF2929</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_3_position</Control>
+			<Text> HOTCUE 3 </Text>
+			<Align>center</Align>
+			<Color>#FF00FF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_4_position</Control>
+			<Text> HOTCUE 4 </Text>
+			<Align>center</Align>
+			<Color>#80FF00</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_5_position</Control>
+			<Text> HOTCUE 5 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_6_position</Control>
+			<Text> HOTCUE 6 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_7_position</Control>
+			<Text> HOTCUE 7 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_8_position</Control>
+			<Text> HOTCUE 8 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_9_position</Control>
+			<Text> HOTCUE 9 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_10_position</Control>
+			<Text> HOTCUE 10 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_11_position</Control>
+			<Text> HOTCUE 11 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_12_position</Control>
+			<Text> HOTCUE 12 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_13_position</Control>
+			<Text> HOTCUE 13 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_14_position</Control>
+			<Text> HOTCUE 14 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_15_position</Control>
+			<Text> HOTCUE 15 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_16_position</Control>
+			<Text> HOTCUE 16 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_17_position</Control>
+			<Text> HOTCUE 17 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_18_position</Control>
+			<Text> HOTCUE 18 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_19_position</Control>
+			<Text> HOTCUE 19 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_20_position</Control>
+			<Text> HOTCUE 20 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_21_position</Control>
+			<Text> HOTCUE 21 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_22_position</Control>
+			<Text> HOTCUE 22 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_23_position</Control>
+			<Text> HOTCUE 23 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_24_position</Control>
+			<Text> HOTCUE 24 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_25_position</Control>
+			<Text> HOTCUE 25 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_26_position</Control>
+			<Text> HOTCUE 26 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_27_position</Control>
+			<Text> HOTCUE 27 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_28_position</Control>
+			<Text> HOTCUE 28 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_29_position</Control>
+			<Text> HOTCUE 29 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_30_position</Control>
+			<Text> HOTCUE 30 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_31_position</Control>
+			<Text> HOTCUE 31 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_32_position</Control>
+			<Text> HOTCUE 32 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+
+		<Mark>
+			<Control>cue_point</Control>
+			<Text> CUE </Text>
+			<Align>top</Align>
+			<Color>#FFFF00</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+
+ </Visual>
+
+ <Visual>
+  <Tooltip>Drag with mouse to control sound playback. Drop tracks from external file manager here</Tooltip>
+  <Channel>2</Channel>
+  <Pos>110,71</Pos>
+  <Size>710,54</Size>
+  <BgColor>#3a3f40</BgColor>
+  <SignalColor>#c09a18</SignalColor>
+  <BeatColor>#ffc600</BeatColor>
+  <MarkerColor>#008303</MarkerColor>
+  <FisheyeColor>#ffc600</FisheyeColor>
+  <Zoom>true</Zoom>
+	<MarkRange>
+		<StartControl>loop_start_position</StartControl>
+		<EndControl>loop_end_position</EndControl>
+		<EnabledControl>loop_enabled</EnabledControl>
+		<Color>#bfa859</Color>
+		<DisabledColor>#000000</DisabledColor>
+	</MarkRange>
+	<Mark>
+		<Control>loop_start_position</Control>
+		<Text> LOOP IN </Text>
+		<Align>bottom</Align>
+		<Color>#eece33</Color>
+		<TextColor>#ffffff</TextColor>
+	</Mark>
+	<Mark>
+		<Control>loop_end_position</Control>
+		<Text> LOOP OUT </Text>
+		<Align>bottom</Align>
+		<Color>#eece33</Color>
+		<TextColor>#ffffff</TextColor>
+	</Mark>
+	
+	<!--
+		The hotcues not represented by a button in the current skin show only in the waveform under two circumstances:
+			- if a MIDI device which supports more hotcues than buttons are in the current skin has them activated
+			- if you change from a skin which supports more hotcues than buttons are in the current skin (and has them activated)
+		These "special" hotcues share the color #AE5CFF to make them distinguishable (and maintainable) from the hotcues
+		represented by a button in the current skin. Mixxx 1.8+ supports up to 32 hotcue. Current skins uses up to 6 buttons per channel.
+		-->
+		<Mark>
+			<Control>hotcue_1_position</Control>
+			<Text> HOTCUE 1 </Text>
+			<Align>center</Align>
+			<Color>#00AAFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_2_position</Control>
+			<Text> HOTCUE 2 </Text>
+			<Align>center</Align>
+			<Color>#FF2929</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_3_position</Control>
+			<Text> HOTCUE 3 </Text>
+			<Align>center</Align>
+			<Color>#FF00FF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_4_position</Control>
+			<Text> HOTCUE 4 </Text>
+			<Align>center</Align>
+			<Color>#80FF00</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_5_position</Control>
+			<Text> HOTCUE 5 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_6_position</Control>
+			<Text> HOTCUE 6 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_7_position</Control>
+			<Text> HOTCUE 7 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_8_position</Control>
+			<Text> HOTCUE 8 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_9_position</Control>
+			<Text> HOTCUE 9 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_10_position</Control>
+			<Text> HOTCUE 10 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_11_position</Control>
+			<Text> HOTCUE 11 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_12_position</Control>
+			<Text> HOTCUE 12 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_13_position</Control>
+			<Text> HOTCUE 13 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_14_position</Control>
+			<Text> HOTCUE 14 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_15_position</Control>
+			<Text> HOTCUE 15 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_16_position</Control>
+			<Text> HOTCUE 16 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_17_position</Control>
+			<Text> HOTCUE 17 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_18_position</Control>
+			<Text> HOTCUE 18 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_19_position</Control>
+			<Text> HOTCUE 19 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_20_position</Control>
+			<Text> HOTCUE 20 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_21_position</Control>
+			<Text> HOTCUE 21 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_22_position</Control>
+			<Text> HOTCUE 22 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_23_position</Control>
+			<Text> HOTCUE 23 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_24_position</Control>
+			<Text> HOTCUE 24 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_25_position</Control>
+			<Text> HOTCUE 25 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_26_position</Control>
+			<Text> HOTCUE 26 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_27_position</Control>
+			<Text> HOTCUE 27 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_28_position</Control>
+			<Text> HOTCUE 28 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_29_position</Control>
+			<Text> HOTCUE 29 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_30_position</Control>
+			<Text> HOTCUE 30 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_31_position</Control>
+			<Text> HOTCUE 31 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+		<Mark>
+			<Control>hotcue_32_position</Control>
+			<Text> HOTCUE 32 </Text>
+			<Align>center</Align>
+			<Color>#AE5CFF</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+        <Mark>
+			<Control>cue_point</Control>
+			<Text> CUE </Text>
+			<Align>top</Align>
+			<Color>#FFFF00</Color>
+			<TextColor>#FFFFFF</TextColor>
+		</Mark>
+
+ </Visual>
+
+ <Text>
+ <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #9d9d9d; text-align: left;  vertical-align: text-top;  padding-left: 1%; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+  <Channel>1</Channel>
+  <Pos>171,186</Pos>
+  <Size>200,40</Size>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9d9d9d</FgColor>
+ </Text>
+
+ <Text>
+ <Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: transparent; color: #9d9d9d; text-align: left;  vertical-align: text-top;  padding-left: 1%; }
+		QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+		background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
+		</Style>
+  <Channel>2</Channel>
+  <Pos>450,186</Pos>
+  <Size>200,40</Size>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9d9d9d</FgColor>
+ </Text>
+
+ <NumberBpm>
+  <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
+  <Channel>1</Channel>
+  <Pos>171,233</Pos>
+  <Size>75,16</Size>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9d9d9d</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],bpm</ConfigKey>
+  </Connection>
+ </NumberBpm>
+
+ <NumberBpm>
+  <Tooltip>Tempo display (Beat Per Minute)</Tooltip>
+  <Channel>2</Channel>
+  <Pos>450,233</Pos>
+  <Size>75,16</Size>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9d9d9d</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],bpm</ConfigKey>
+  </Connection>
+ </NumberBpm>
+
+ <NumberPos>
+  <Tooltip>Play position/remaining time</Tooltip>
+  <Channel>1</Channel>
+  <Pos>171,249</Pos>
+  <Size>110,16</Size>
+  <Alignment>right</Alignment>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9d9d9d</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],playposition</ConfigKey>
+  </Connection>
+ </NumberPos>
+
+ <NumberPos>
+  <Tooltip>Play position/remaining time</Tooltip>
+  <Channel>2</Channel>
+  <Pos>450,249</Pos>
+  <Size>110,16</Size>
+  <Alignment>right</Alignment>
+  <NumberOfDigits>6</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9d9d9d</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],playposition</ConfigKey>
+  </Connection>
+ </NumberPos>
+
+ <NumberRate>
+  <Tooltip>Playback rate factor</Tooltip>
+  <Channel>1</Channel>
+  <Pos>247,234</Pos>
+  <Size>47,16</Size>
+  <Alignment>left</Alignment>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9d9d9d</FgColor>
+  <Connection>
+   <ConfigKey>[Channel1],rate</ConfigKey>
+  </Connection>
+ </NumberRate>
+
+ <NumberRate>
+  <Tooltip>Playback rate factor</Tooltip>
+  <Channel>2</Channel>
+  <Pos>537,234</Pos>
+  <Size>47,16</Size>
+  <Alignment>left</Alignment>
+  <NumberOfDigits>3</NumberOfDigits>
+  <BgColor>#000000</BgColor>
+  <FgColor>#9d9d9d</FgColor>
+  <Connection>
+   <ConfigKey>[Channel2],rate</ConfigKey>
+  </Connection>
+ </NumberRate>
+ 
+   <Overview>
+	 <Tooltip>Overview display of waveform</Tooltip>
+	 <Channel>1</Channel>
+	 <Pos>161,145</Pos>
+	 <Size>274,18</Size>
+	 <BgColor>#3d4243</BgColor>
+	 <SignalColor>#eece33</SignalColor>
+	 <MarkerColor>#888888</MarkerColor>
+	 <Connection>
+		 <ConfigKey>[Channel1],playposition</ConfigKey>
+		 <EmitOnDownPress>false</EmitOnDownPress>
+	 </Connection>
+ </Overview>
+
+ <Overview>
+	 <Tooltip>Overview display of waveform</Tooltip>
+	 <Channel>2</Channel>
+	 <Pos>438,145</Pos>
+	 <Size>274,18</Size>
+	<BgColor>#3d4243</BgColor>
+	 <SignalColor>#eece33</SignalColor>
+	 <MarkerColor>#888888</MarkerColor>
+	 <Connection>
+		 <ConfigKey>[Channel2],playposition</ConfigKey>
+		 <EmitOnDownPress>false</EmitOnDownPress>
+	 </Connection>
+ </Overview>
+<!--
+ <SliderComposed>
+  <Tooltip>Play position - Use mouse to seek</Tooltip>
+  <Handle>playpos-marker1.png</Handle>
+  <Slider>playpos-slider.png</Slider>
+  <Pos>145,150</Pos>
+  <Horizontal>true</Horizontal>
+  <EventWhileDrag>no</EventWhileDrag>
+  <Connection>
+   <ConfigKey>[Channel1],playposition</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed>
+
+ <SliderComposed>
+  <Tooltip>Play position - Use mouse to seek</Tooltip>
+  <Handle>playpos-marker1.png</Handle>
+  <Slider>playpos-slider.png</Slider>
+  <Pos>408,150</Pos>
+  <Horizontal>true</Horizontal>
+  <EventWhileDrag>no</EventWhileDrag>
+  <Connection>
+   <ConfigKey>[Channel2],playposition</ConfigKey>
+   <EmitOnDownPress>false</EmitOnDownPress>
+  </Connection>
+ </SliderComposed> -->
+ 
+
+  <ComboBox>
+  <Pos>3,382</Pos>
+  <Size>164,24</Size>
+ </ComboBox>
+
+ <Search>
+  <Pos>355,382</Pos>
+  <Size>300,24</Size>
+  <BgColor>#ffffff</BgColor>
+ </Search>
+ 
+ 
+ 
+  
+   <TableView>
+ <!--  <Pos>17,396</Pos>
+  <Size>766,298</Size> -->
+  <Pos>3,382</Pos>
+  <Size>869,326</Size>
+  
+  <FgColor>#eaca2e</FgColor>
+  <BgColor>#1c1c1c</BgColor>
+  <BgColorRowEven>#1c1c1c</BgColorRowEven>
+  <BgColorRowUneven>#1c1c1c</BgColorRowUneven>
+  <BgColorBpmNoConfirm>#502d2d</BgColorBpmNoConfirm>
+  <BgColorBpmConfirm>#2c5d2d</BgColorBpmConfirm>
+ </TableView>
+ 
+</skin>

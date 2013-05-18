@@ -1,0 +1,7 @@
+*.o
+*.os
+*.orig
+*.rej
+*.pyc
+*.log
+*~

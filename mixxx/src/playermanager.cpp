@@ -36,6 +36,9 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
         m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true, true)),
         m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)) {
 
+    connect(m_pCOSkinNumDecks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSkinNumDecksControlChanged(double)),
+            Qt::DirectConnection);
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
@@ -70,6 +73,7 @@ PlayerManager::~PlayerManager() {
     m_decks.clear();
     m_samplers.clear();
 
+    delete m_pCOSkinNumDecks;
     delete m_pCONumSamplers;
     delete m_pCONumDecks;
     delete m_pCONumPreviewDecks;
@@ -163,6 +167,13 @@ unsigned int PlayerManager::numPreviewDecks() {
             ConfigKey("[Master]", "num_preview_decks"));
     }
     return pNumCO ? pNumCO->get() : 0;
+
+}
+
+void PlayerManager::slotSkinNumDecksControlChanged(double v) {
+    m_skin_decks = static_cast<unsigned int>(v);
+    m_pCONumDecks->set(m_skin_decks);
+    remapDecks();
 }
 
 void PlayerManager::slotNumDecksControlChanged(double v) {
@@ -176,8 +187,27 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
     }
 
     while (m_decks.size() < num) {
-        addDeckInner();
+        addDeckInner(num);
     }
+    
+    remapDecks();
+    
+    m_pCONumDecks->set(m_decks.size());
+}
+
+void PlayerManager::remapDecks() {
+	// Redistribute decks left and right based on new count.  If the number of decks has decreased,
+	// Leave the extras where they are.
+    for (int i = 1; i <= m_decks.size(); ++i) {
+        if (i > m_skin_decks / 2) {
+            ControlObject::getControl(ConfigKey(QString("[Channel%1]").arg(i), 
+                                                "orientation"))->set(EngineChannel::RIGHT);
+        } else {
+            ControlObject::getControl(ConfigKey(QString("[Channel%1]").arg(i), 
+                                                "orientation"))->set(EngineChannel::LEFT);
+        }
+    }
+    // Make sure the count is up to date now.
 }
 
 void PlayerManager::slotNumSamplersControlChanged(double v) {
@@ -210,19 +240,19 @@ void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
     }
 }
 
-void PlayerManager::addDeck() {
+void PlayerManager::addDeck(int total_decks) {
     QMutexLocker locker(&m_mutex);
-    addDeckInner();
+    addDeckInner(total_decks);
     m_pCONumDecks->set((double)m_decks.count());
 }
 
-void PlayerManager::addDeckInner() {
+void PlayerManager::addDeckInner(int total_decks) {
     // Do not lock m_mutex here.
     QString group = groupForDeck(m_decks.count());
     int number = m_decks.count() + 1;
 
     EngineChannel::ChannelOrientation orientation = EngineChannel::LEFT;
-    if (number % 2 == 0) {
+    if (number > total_decks / 2) {
         orientation = EngineChannel::RIGHT;
     }
 
@@ -371,19 +401,54 @@ void PlayerManager::slotLoadToSampler(QString location, int sampler) {
     slotLoadToPlayer(location, groupForSampler(sampler-1));
 }
 
-void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
-    QMutexLocker locker(&m_mutex);
-    QList<Deck*>::iterator it = m_decks.begin();
-    while (it != m_decks.end()) {
-        Deck* pDeck = *it;
-        ControlObject* playControl =
-                ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
-        if (playControl && playControl->get() != 1.) {
-            locker.unlock();
-            pDeck->slotLoadTrack(pTrack, false);
-            return;
+void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack)
+{
+    int num_decks = m_pCOSkinNumDecks->get();
+    if (num_decks == 0) {
+        num_decks = m_decks.size();
+    }
+    // Start with the inner two decks and work our way out.
+    int deck_l = (num_decks + 1) / 2 - 1;
+    int deck_r = deck_l + 1;
+    bool try_l = true;
+    // 
+    while (deck_l >= 0 || deck_r < num_decks) {
+        Deck* pDeck;
+        if (try_l && deck_l >= 0) {
+            pDeck = m_decks[deck_l];
+            --deck_l;
+        } else {
+            pDeck = m_decks[deck_r];
+            ++deck_r;
         }
-        it++;
+        try_l = !try_l;
+        
+        ControlObject* vinylControlEnabled =
+                ControlObject::getControl(ConfigKey(pDeck->getGroup(), 
+                                          "vinylcontrol_enabled"));
+                                          
+        if (vinylControlEnabled && vinylControlEnabled->get())
+        {
+            // With vinyl, we can't rely solely on play-button status.  Load if
+            // either no track is loaded, or if the scratch2 rate is very low.
+            TrackPointer tp = pDeck->getLoadedTrack();
+            ControlObject* vinylRate =
+                    ControlObject::getControl(ConfigKey(pDeck->getGroup(), 
+                                              "scratch2"));
+            if (vinylRate && (tp == NULL || fabs(vinylRate->get()) < 0.1 )) {
+                pDeck->slotLoadTrack(pTrack, false);
+                break;
+            }
+        }
+        else
+        {
+            ControlObject* playControl =
+                    ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
+            if (playControl && playControl->get() != 1. ) {
+                pDeck->slotLoadTrack(pTrack, false);
+                break;
+            }
+        }
     }
 }
 
