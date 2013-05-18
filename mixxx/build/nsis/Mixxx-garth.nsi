@@ -115,7 +115,7 @@ Section "Mixxx (required)" SecMixxx
   File "COPYING"
 
   SetOutPath $INSTDIR\midi
-  File /r /x ".svn" /x ".bzr" dist\midi\*.*
+  File /r /x ".svn" /x ".bzr" /x "*.git" dist\midi\*.*
 
   ;Disabled for initial 1.6.0 release
   ;SetOutPath $INSTDIR\promo
@@ -126,7 +126,7 @@ Section "Mixxx (required)" SecMixxx
   File "dist\keyboard\Old.kbd.cfg"
 
   SetOutPath "$INSTDIR\skins"
-  File /r /x ".svn" /x ".bzr" dist\skins\*.*
+  File /r /x ".svn" /x ".bzr" /x "*.git" dist\skins\*.*
 
   ; Write the installation path into the registry
   ;WriteRegStr HKLM SOFTWARE\NSIS_Mixxx "Install_Dir" "$INSTDIR"

@@ -2,6 +2,41 @@ from SCons import Script
 import os, sys, platform
 import re
 
+def on_bzr():
+    try:
+        os.stat(".bzr")
+        return True
+    except:
+        return False
+
+def on_git():
+    try:
+        os.popen("git status")
+        return True
+    except:
+        return False
+
+def get_git_revision():
+    return len(os.popen("git log --pretty=oneline --first-parent").read().splitlines())
+
+def get_git_modified():
+    modified_matcher = re.compile("^#.*modified:   (?P<filename>.*?)$")
+    modified_files = []
+    for line in os.popen("git status").read().splitlines():
+        match = modified_matcher.match(line)
+        if match:
+            match = match.groupdict()
+            modified_files.append(match['filename'].strip())
+    return "\n".join(modified_files)
+
+def get_git_branch_name():
+    branch_matcher = re.compile("\* (?P<branch>.*?)$")
+    for line in os.popen("git branch").read().splitlines():
+        match = branch_matcher.match(line)
+        if match:
+            match = match.groupdict()
+            return match['branch'].strip()
+
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
 
@@ -116,13 +151,26 @@ def CheckForPKG( context, name, version="" ):
 
 def write_build_header(path):
     f = open(path, 'w')
-    try:
-        branch_name = get_bzr_branch_name()
-        modified = get_bzr_modified() > 0
-        # Do not emit BUILD_BRANCH on release branches.
-        if not branch_name.startswith('release'):
-            f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
-        f.write('#define BUILD_REV "%s%s"\n' % (get_bzr_revision(),
-                                                '+' if modified else ''))
-    finally:
-        f.close()
+    if on_bzr():
+        try:
+            branch_name = get_bzr_branch_name()
+            modified = get_bzr_modified() > 0
+            # Do not emit BUILD_BRANCH on release branches.
+            if not branch_name.startswith('release'):
+                f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
+            f.write('#define BUILD_REV "%s%s"\n' % (get_bzr_revision(),
+                                                    '+' if modified else ''))
+        finally:
+            f.close()
+    elif on_git():
+        try:
+            branch_name = get_git_branch_name()
+            modified = get_git_modified() > 0
+            # Do not emit BUILD_BRANCH on release branches.
+            if not branch_name.startswith('release'):
+                f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
+            f.write('#define BUILD_REV "%s%s"\n' % (get_git_revision(),
+                                                    '+' if modified else ''))
+        finally:
+            f.close()
+
