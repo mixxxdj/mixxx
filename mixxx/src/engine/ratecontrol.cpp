@@ -436,7 +436,7 @@ void RateControl::slotMasterBpmChanged(double syncbpm) {
 
 void RateControl::slotSyncMasterChanged(double state) {
     
-    if (state) {
+    if (state > 0) {
         if (m_iSyncState == SYNC_MASTER){
             return;
         }

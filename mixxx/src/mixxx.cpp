@@ -356,7 +356,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     if (num_decks == 0) num_decks = 2;
     for (int deck = 0; deck < num_decks; ++deck) {
         // Add deck to the player manager
-        m_pPlayerManager->addDeck(num_decks);
+        m_pPlayerManager->addDeck();
     }
 
     int num_samplers = m_pConfig->getValueString(ConfigKey("[Master]","num_samplers")).toInt();

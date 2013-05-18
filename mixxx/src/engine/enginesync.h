@@ -19,11 +19,13 @@
 #ifndef ENGINESYNC_H
 #define ENGINESYNC_H
 
-#include "controlpotmeter.h"
 #include "engine/enginecontrol.h"
-#include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
-#include "engine/enginemaster.h"
+
+class EngineBuffer;
+class EngineMaster;
+class ControlObject;
+class ControlPushButton;
+class ControlPotmeter;
 
 enum SYNC_STATE {
     SYNC_NONE = 0,
@@ -34,51 +36,53 @@ enum SYNC_STATE {
 class EngineSync : public EngineControl {
     Q_OBJECT
 
-    public:
-        EngineSync(EngineMaster *master, ConfigObject<ConfigValue>* pConfig);
-        ~EngineSync();
-        void addDeck(QString group);
-        void setMaster(QString group);
-        bool setDeckMaster(QString deck);
-        void setInternalMaster(void);
-        bool setMidiMaster(void);
-        EngineBuffer* getMaster() const;
+  public:
+    EngineSync(EngineMaster *master, ConfigObject<ConfigValue>* pConfig);
+    virtual ~EngineSync();
+    void addDeck(QString group);
+    void setMaster(QString group);
+    bool setDeckMaster(QString deck);
+    void setInternalMaster(void);
+    bool setMidiMaster(void);
+    EngineBuffer* getMaster() const;
 
-        void incrementPseudoPosition(int bufferSize);
-        double getInternalBeatDistance(void) const;
+    void incrementPseudoPosition(int bufferSize);
+    double getInternalBeatDistance(void) const;
 
-    private slots:
-        void slotMasterBpmChanged(double);
-        void slotSourceRateChanged(double);
-        void slotSyncRateSliderChanged(double);
-        void slotSourceBeatDistanceChanged(double);
-        void slotSampleRateChanged(double);
-        void slotInternalMasterChanged(double);
-        void slotDeckStateChanged(double);
+  private slots:
+    void slotMasterBpmChanged(double);
+    void slotSourceRateChanged(double);
+    void slotSyncRateSliderChanged(double);
+    void slotSourceBeatDistanceChanged(double);
+    void slotSampleRateChanged(double);
+    void slotInternalMasterChanged(double);
+    void slotDeckStateChanged(double);
 
-    protected:
-        QString chooseNewMaster(QString dontpick);
-        void disconnectMaster(void);
-        void disableDeckMaster(QString deck);
-        void updateSamplesPerBeat(void);
-        void setPseudoPosition(double percent);
-        void resetInternalBeatDistance(void);
+  protected:
+    QString chooseNewMaster(QString dontpick);
+    void disconnectMaster(void);
+    void disableDeckMaster(QString deck);
+    void updateSamplesPerBeat(void);
+    void setPseudoPosition(double percent);
+    void resetInternalBeatDistance(void);
 
-        EngineMaster* m_pEngineMaster;
-        EngineBuffer* m_pMasterBuffer;
-        ControlObject *m_pSourceRate, *m_pMasterBpm;
-        ControlObject *m_pSourceBeatDistance, *m_pMasterBeatDistance;
-        ControlObject *m_pSampleRate;
-        ControlPushButton *m_pSyncInternalEnabled;
-        ControlPotmeter* m_pSyncRateSlider;
+    EngineMaster* m_pEngineMaster;
+    EngineBuffer* m_pMasterBuffer;
+    ControlObject* m_pSourceRate;
+    ControlObject* m_pMasterBpm;
+    ControlObject* m_pSourceBeatDistance;
+    ControlObject* m_pMasterBeatDistance;
+    ControlObject* m_pSampleRate;
+    ControlPushButton* m_pSyncInternalEnabled;
+    ControlPotmeter* m_pSyncRateSlider;
 
-        QList<QString> m_sDeckList;
+    QList<QString> m_sDeckList;
 
-        QString m_sSyncSource;
-        int m_iSampleRate;
-        double m_dSourceRate, m_dMasterBpm;
-        double m_dSamplesPerBeat;
-        double m_dPseudoBufferPos;
+    QString m_sSyncSource;
+    int m_iSampleRate;
+    double m_dSourceRate, m_dMasterBpm;
+    double m_dSamplesPerBeat;
+    double m_dPseudoBufferPos;
 };
 
 #endif

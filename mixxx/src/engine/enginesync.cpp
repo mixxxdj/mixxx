@@ -18,7 +18,13 @@
 
 #include <QStringList>
 
+#include "controlobject.h"
+#include "controlpotmeter.h"
 #include "controlpushbutton.h"
+#include "engine/enginebuffer.h"
+#include "engine/enginechannel.h"
+#include "engine/enginecontrol.h"
+#include "engine/enginemaster.h"
 #include "engine/enginesync.h"
 
 EngineSync::EngineSync(EngineMaster *master,
@@ -86,9 +92,11 @@ void EngineSync::addDeck(QString deck) {
     // Connect objects so we can react when the user changes the settings
     ControlObject *deck_sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
     connect(deck_sync_state, SIGNAL(valueChanged(double)),
-                this, SLOT(slotDeckStateChanged(double)));
+            this, SLOT(slotDeckStateChanged(double)),
+            Qt::DirectConnection);
     connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotDeckStateChanged(double)));
+            this, SLOT(slotDeckStateChanged(double)),
+            Qt::DirectConnection);
 }
 
 void EngineSync::disconnectMaster() {
@@ -119,7 +127,10 @@ void EngineSync::disableDeckMaster(QString deck) {
         }
     } else {
         ControlObject *sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
-        Q_ASSERT(sync_state); //would be a programming error
+        if (sync_state == NULL) {
+            qDebug() << "Error: couldn't get sync_state for deck, couldn't disable master" << deck;
+            return;
+        }
         if (sync_state->get() == SYNC_MASTER) {
             sync_state->set(SYNC_SLAVE);
         }
@@ -132,15 +143,12 @@ void EngineSync::setMaster(QString group) {
     // TODO(owen): midi master? or is that just internal?
     if (group == "[Master]") {
         setInternalMaster();
-        return;
     } else {
         if (!setDeckMaster(group)) {
             qDebug() << "WARNING: failed to set selected master" << group << ", going with Internal instead";
             setInternalMaster();
-            return;
         }
     }
-    return;
 }
 
 void EngineSync::setInternalMaster(void) {
@@ -157,11 +165,10 @@ void EngineSync::setInternalMaster(void) {
 
     // This is all we have to do, we'll start using the pseudoposition right away.
     m_pSyncInternalEnabled->set(TRUE);
-    return;
 }
 
 bool EngineSync::setDeckMaster(QString deck) {
-    if (deck == NULL || deck == "") {
+    if (deck.isEmpty()) {
         disconnectMaster();
         setInternalMaster();
         return true;
@@ -299,7 +306,11 @@ void EngineSync::slotMasterBpmChanged(double new_bpm) {
 
         //this change could hypothetically push us over distance 1.0, so check
         //XXX: is this code correct?  I think it'll work but it seems off
-        Q_ASSERT(m_dSamplesPerBeat > 0);
+        if (m_dSamplesPerBeat <= 0) {
+            qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
+                     << "setting to about 124bpm at 44.1Khz.";
+            m_dSamplesPerBeat = 21338;
+        }
         while (m_dPseudoBufferPos >= m_dSamplesPerBeat) {
             m_dPseudoBufferPos -= m_dSamplesPerBeat;
         }
@@ -329,7 +340,11 @@ void EngineSync::slotInternalMasterChanged(double state) {
 void EngineSync::slotDeckStateChanged(double state) {
     //figure out who called us
     ControlObject *caller = qobject_cast<ControlObject* >(QObject::sender());
-    Q_ASSERT(caller); //this will only fail because of a programming error
+    if (caller == NULL) {
+        qDebug() << "FATAL ERROR: Couldn't get control object from sender in slotDeckStateChanged. "
+                 << "Undefined behavior may ensue.";
+        return;
+    }
     QString group = caller->getKey().group;
 
     // In the following logic, m_sSyncSource acts like "previous sync source".
@@ -359,7 +374,10 @@ void EngineSync::slotDeckStateChanged(double state) {
 
 double EngineSync::getInternalBeatDistance(void) const {
     //returns number of samples distance from the last beat.
-    Q_ASSERT(m_dPseudoBufferPos >= 0);
+    if (m_dPseudoBufferPos < 0) {
+        qDebug() << "ERROR: Internal beat distance should never be less than zero";
+        return 0.0;
+    }
     return m_dPseudoBufferPos / m_dSamplesPerBeat;
 }
 
@@ -383,7 +401,7 @@ void EngineSync::updateSamplesPerBeat(void) {
         m_dSamplesPerBeat = m_iSampleRate;
         return;
     }
-    m_dSamplesPerBeat = static_cast<double>(m_iSampleRate * 60.0) / m_dMasterBpm;
+    m_dSamplesPerBeat = (m_iSampleRate * 60.0) / m_dMasterBpm;
     if (m_dSamplesPerBeat <= 0) {
         m_dSamplesPerBeat = m_iSampleRate;
     }
@@ -403,7 +421,11 @@ void EngineSync::incrementPseudoPosition(int bufferSize) {
     m_dPseudoBufferPos += bufferSize / 2; //stereo samples, so divide by 2
 
     //can't use mod because we're in double land
-    Q_ASSERT(m_dSamplesPerBeat > 0);
+    if (m_dSamplesPerBeat <= 0) {
+        qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
+                 << "setting to about 124 bpm at 44.1Khz.";
+        m_dSamplesPerBeat = 21338;
+    }
     while (m_dPseudoBufferPos >= m_dSamplesPerBeat) {
         m_dPseudoBufferPos -= m_dSamplesPerBeat;
     }
