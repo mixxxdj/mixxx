@@ -37,7 +37,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     void decorateChild(TreeItem *pChild, int playlist_id);
 
   private:
-    virtual QString getRootViewHtml() const;
+    QString getRootViewHtml() const;
 };
 
 #endif /* PLAYLISTFEATURE_H */
