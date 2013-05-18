@@ -17,15 +17,19 @@
 
 #include "controlevent.h"
 
-ControlEvent::ControlEvent(double dValue) : QEvent(MIXXXEVENT_CONTROL), m_dValue(dValue)
-{
+ControlEvent::ControlEvent(double dValue, QObject* pSender)
+        : QEvent(MIXXXEVENT_CONTROL),
+          m_dValue(dValue),
+          m_pSender(pSender) {
 }
 
-ControlEvent::~ControlEvent()
-{
+ControlEvent::~ControlEvent() {
 }
 
-double ControlEvent::value() const
-{
+double ControlEvent::value() const {
     return m_dValue;
+}
+
+QObject* ControlEvent::sender() const {
+    return m_pSender;
 }

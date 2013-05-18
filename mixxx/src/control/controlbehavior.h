@@ -14,68 +14,26 @@ class ControlNumericBehavior {
   public:
     // Returns true if the set should occur. Mutates dValue if the value should
     // be changed.
-    virtual bool setFilter(double* dValue) {
-        Q_UNUSED(dValue);
-        return true;
-    }
+    virtual bool setFilter(double* dValue);
 
-    virtual double defaultValue(double dDefault) const {
-        return dDefault;
-    }
-
-    virtual double valueToWidgetParameter(double dValue) {
-        return dValue;
-    }
-
-    virtual double widgetParameterToValue(double dParam) {
-        return dParam;
-    }
-
-    virtual double valueToMidiParameter(double dValue) {
-        return dValue;
-    }
-
+    virtual double defaultValue(double dDefault) const;
+    virtual double valueToWidgetParameter(double dValue);
+    virtual double widgetParameterToValue(double dParam);
+    virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
 };
 
 class ControlPotmeterBehavior : public ControlNumericBehavior {
   public:
-    ControlPotmeterBehavior(double dMinValue, double dMaxValue)
-            : m_dMinValue(dMinValue),
-              m_dMaxValue(dMaxValue),
-              m_dValueRange(m_dMaxValue - m_dMinValue),
-              m_dDefaultValue(m_dMinValue + 0.5 * m_dValueRange) {
-    }
+    ControlPotmeterBehavior(double dMinValue, double dMaxValue);
+    virtual ~ControlPotmeterBehavior();
 
-    virtual bool setFilter(double* dValue) {
-        if (*dValue > m_dMaxValue) {
-            *dValue = m_dMaxValue;
-        } else if (*dValue < m_dMinValue) {
-            *dValue = m_dMinValue;
-        }
-        return true;
-    }
-
-    virtual double defaultValue(double dDefault) const {
-        Q_UNUSED(dDefault);
-        return m_dDefaultValue;
-    }
-
-    virtual double valueToWidgetParameter(double dValue) {
-        double dNorm = (dValue - m_dMinValue) / m_dValueRange;
-        return dNorm < 0.5 ? dNorm * 128.0 : dNorm * 126.0 + 1.0;
-    }
-
-    virtual double widgetParameterToValue(double dParam) {
-        double dNorm = dParam < 64 ? dParam / 128.0 : (dParam - 1.0) / 126.0;
-        return m_dMinValue + dNorm * m_dValueRange;
-    }
-
-    virtual double valueToMidiParameter(double dValue) {
-        return valueToWidgetParameter(dValue);
-    }
-
+    virtual bool setFilter(double* dValue);
+    virtual double defaultValue(double dDefault) const;
+    virtual double valueToWidgetParameter(double dValue);
+    virtual double widgetParameterToValue(double dParam);
+    virtual double valueToMidiParameter(double dValue);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
 
@@ -86,38 +44,14 @@ class ControlPotmeterBehavior : public ControlNumericBehavior {
     double m_dDefaultValue;
 };
 
-#define maxPosition 127
-#define minPosition 0
-#define middlePosition ((maxPosition-minPosition)/2)
-#define positionrange (maxPosition-minPosition)
-
 class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLogpotmeterBehavior(double dMaxValue) : ControlPotmeterBehavior(0, dMaxValue) {
-        m_dB1 = log10(2.0) / middlePosition;
-        m_dB2 = log10(dMaxValue) / (maxPosition - middlePosition);
-    }
+    ControlLogpotmeterBehavior(double dMaxValue);
+    virtual ~ControlLogpotmeterBehavior();
 
-    virtual double defaultValue(double dDefault) {
-        Q_UNUSED(dDefault);
-        return 1.0;
-    }
-
-    virtual double valueToWidgetParameter(double dValue) {
-        if (dValue > 1.0) {
-            return log10(dValue) / m_dB2 + middlePosition;
-        } else {
-            return log10(dValue + 1.0) / m_dB1;
-        }
-    }
-
-    virtual double widgetParameterToValue(double dParam) {
-        if (dParam <= middlePosition) {
-            return pow(10.0, m_dB1 * dParam) - 1;
-        } else {
-            return pow(10.0, m_dB2 * (dParam - middlePosition));
-        }
-    }
+    virtual double defaultValue(double dDefault);
+    virtual double valueToWidgetParameter(double dValue);
+    virtual double widgetParameterToValue(double dParam);
 
   protected:
     double m_dB1, m_dB2;
@@ -125,35 +59,17 @@ class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
 
 class ControlLinPotmeterBehavior : public ControlPotmeterBehavior {
   public:
-    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue)
-            : ControlPotmeterBehavior(dMinValue, dMaxValue) {
-    }
+    ControlLinPotmeterBehavior(double dMinValue, double dMaxValue);
+    virtual ~ControlLinPotmeterBehavior();
 
-    virtual double valueToWidgetParameter(double dValue) {
-        double dNorm = (dValue - m_dMinValue) / m_dValueRange;
-        return math_min(dNorm * 128, 127);
-    }
-
-    virtual double widgetParameterToValue(double dParam) {
-        double dNorm = dParam / 128.0;
-        return m_dMinValue + dNorm * m_dValueRange;
-    }
+    virtual double valueToWidgetParameter(double dValue);
+    virtual double widgetParameterToValue(double dParam);
 };
 
 class ControlTTRotaryBehavior : public ControlNumericBehavior {
   public:
-    virtual double valueToWidgetParameter(double dValue) {
-        return dValue * 200.0 + 64;
-    }
-
-    virtual double widgetParameterToValue(double dParam) {
-        // Non-linear scaling
-        double temp = ((dParam - 64.0) * (dParam - 64.0)) / 64.0;
-        if (dParam - 64 < 0) {
-            temp = -temp;
-        }
-        return temp;
-    }
+    virtual double valueToWidgetParameter(double dValue);
+    virtual double widgetParameterToValue(double dParam);
 };
 
 class ControlPushButtonBehavior : public ControlNumericBehavior {
@@ -168,12 +84,7 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
          POWERWINDOW
     };
 
-    ControlPushButtonBehavior(ButtonMode buttonMode,
-                              int iNumStates)
-            : m_buttonMode(buttonMode),
-              m_iNumStates(iNumStates) {
-    }
-
+    ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);
     virtual void setValueFromMidiParameter(MidiOpCode o, double dParam,
                                            ControlDoublePrivate* pControl);
 

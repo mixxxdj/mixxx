@@ -85,6 +85,7 @@ class ControlObject : public QObject {
     void privateValueChanged(double value, QObject* pSetter);
 
   private:
+    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack);
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
