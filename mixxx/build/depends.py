@@ -11,6 +11,8 @@ class PortAudio(Dependence):
         libs = ['portaudio']
         if build.msvcdebug:
             libs = ['portaudiod','portaudio-debug']
+        if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+            libs = ['portaudio', 'portaudio.dll', 'portaudio-2']
         if not conf.CheckLib(libs):
             raise Exception('Did not find libportaudio.a, portaudio.lib, or the PortAudio-v19 development header files.')
 
@@ -933,5 +935,6 @@ class MixxxCore(Feature):
                 build.env.Append(LINKFLAGS = '/manifest') #Force MSVS to generate a manifest (MSVC2010)
             elif build.toolchain_is_gnu:
                 # Makes the program not launch a shell first
-                build.env.Append(LINKFLAGS = '--subsystem,windows')
-                build.env.Append(LINKFLAGS = '-mwindows')
+                build.env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
+                build.env.Append(CCFLAGS = '-mwindows')
+                build.env.Append(CCFLAGS = '-mthreads')

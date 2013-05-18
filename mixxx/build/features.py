@@ -446,6 +446,8 @@ class Vamp(Feature):
         if not self.enabled(build):
             return
 
+        build.env.Append(CPPDEFINES = '__VAMP__')
+
         # If there is no system vamp-hostdk installed, then we'll directly link
         # the vamp-hostsdk.
         if not conf.CheckLib(['vamp-hostsdk']):
