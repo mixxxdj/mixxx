@@ -24,6 +24,9 @@
 #include <qwaitcondition.h>
 #include <QQueue>
 
+#include "configobject.h"
+
+class ControlDoublePrivate;
 class ControlObject;
 
 class ControlObjectThread : public QObject {
@@ -32,46 +35,41 @@ class ControlObjectThread : public QObject {
     ControlObjectThread(ControlObject *pControlObject, QObject* pParent=NULL);
     virtual ~ControlObjectThread();
 
-    /** Returns the value of the object. Thread safe, blocking */
-    virtual double get();
-    /** Setting the value from an external controller. This happen when a ControlObject has
-      * changed and its value is syncronized with this object. Thread safe, non blocking. Returns
-      * true if successful, otherwise false. Thread safe, non blocking. */
-    virtual bool setExtern(double v);
-    /** Adds a value to the value property of the ControlEngine. Notification in a similar way
-     * to set. Thread safe, blocking. */
-    virtual void add(double v);
-    /** Subtracts a value to the value property. Notification in a similar way
-     * to set. Thread safe, blocking. */
-    virtual void sub(double v);
     /** Called from update(); */
     void emitValueChanged();
 
+    inline ConfigKey getKey() const {
+        return m_key;
+    }
 
-    // FIXME: Dangerous GED hack
-    ControlObject* getControlObject();
+    // Returns the value of the object. Thread safe, non-blocking.
+    virtual double get();
 
-public slots:
-    /** The value is changed by the engine, and the corresponding ControlObject is updated.
-      * Thread safe, blocking. */
+    bool valid() const;
+
+  public slots:
+    // Set the control to a new value. Non-blocking.
     virtual void slotSet(double v);
+    // Sets the control value to v. Thread safe, non-blocking.
+    virtual void set(double v);
+    // Resets the control to its default value. Thread safe, non-blocking.
+    virtual void reset();
 
-    // The danger signal! This is for safety in wierd shutdown scenarios where the
-    // ControlObject dies to avoid segfaults.
-    void slotParentDead();
-
-signals:
+  signals:
     void valueChanged(double);
+    // This means that the control value has changed as a result of a mutation
+    // (set/add/sub/reset) originating from this object.
+    void valueChangedByThis(double);
 
-protected:
-    /** The actual value of the object */
-    double m_dValue;
-    /** Mutex controlling access to non-static members*/
-    QMutex m_dataMutex;
-    /** Pointer to corresponding ControlObject */
-    ControlObject *m_pControlObject;
-    /** Update corresponding ControlObject to the value */
-    virtual void updateControlObject(double v);
+  protected slots:
+    // Receives the value from the master control and re-emits either
+    // valueChanged(double) or valueChangedByThis(double) based on pSetter.
+    virtual void slotValueChanged(double v, QObject* pSetter);
+
+  protected:
+    ConfigKey m_key;
+    // Pointer to connected control.
+    ControlDoublePrivate* m_pControl;
 };
 
 #endif

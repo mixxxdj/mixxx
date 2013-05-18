@@ -79,7 +79,7 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
             threshold = scaleFactor*(threshold/128.0f);
         }
 
-        double currentValue = midiVal ? control->GetMidiValue() : control->get();
+        double currentValue = midiVal ? control->getValueToMidi() : control->get();
         double difference = currentValue - newValue;
         double prevDiff = 0;
         bool sameSide = false;
