@@ -16,6 +16,27 @@ def on_git():
     except:
         return False
 
+def get_revision():
+    if on_bzr():
+        return get_bzr_revision()
+    if on_git():
+        return get_git_revision()
+    return None
+
+def get_modified():
+    if on_bzr():
+        return get_bzr_modified()
+    if on_git():
+        return get_git_modified()
+    return None
+
+def get_branch_name():
+    if on_bzr():
+        return get_bzr_branch_name()
+    if on_git():
+        return get_git_branch_name()
+    return None
+
 def get_git_revision():
     return len(os.popen("git log --pretty=oneline --first-parent").read().splitlines())
 
@@ -36,6 +57,7 @@ def get_git_branch_name():
         if match:
             match = match.groupdict()
             return match['branch'].strip()
+    return None
 
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
@@ -151,26 +173,13 @@ def CheckForPKG( context, name, version="" ):
 
 def write_build_header(path):
     f = open(path, 'w')
-    if on_bzr():
-        try:
-            branch_name = get_bzr_branch_name()
-            modified = get_bzr_modified() > 0
-            # Do not emit BUILD_BRANCH on release branches.
-            if not branch_name.startswith('release'):
-                f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
-            f.write('#define BUILD_REV "%s%s"\n' % (get_bzr_revision(),
-                                                    '+' if modified else ''))
-        finally:
-            f.close()
-    elif on_git():
-        try:
-            branch_name = get_git_branch_name()
-            modified = get_git_modified() > 0
-            # Do not emit BUILD_BRANCH on release branches.
-            if not branch_name.startswith('release'):
-                f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
-            f.write('#define BUILD_REV "%s%s"\n' % (get_git_revision(),
-                                                    '+' if modified else ''))
-        finally:
-            f.close()
-
+    try:
+        branch_name = get_branch_name()
+        modified = get_modified() > 0
+        # Do not emit BUILD_BRANCH on release branches.
+        if not branch_name.startswith('release'):
+            f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
+        f.write('#define BUILD_REV "%s%s"\n' % (get_revision(),
+                                                '+' if modified else ''))
+    finally:
+        f.close()

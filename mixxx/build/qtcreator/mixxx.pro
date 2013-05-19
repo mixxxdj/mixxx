@@ -927,7 +927,6 @@ system (git status) {
     message(REVISION is $$GIT_REVNO)
     VCS_BRANCH_NAME = $${GIT_BRANCH_NAME}
     VCS_REVNO = $${GIT_REVNO}
-	error("this is ok")
 }
 
 win32 {

@@ -12,12 +12,8 @@ import SCons.Script as SCons
 from build import util, depends
 
 mixxx_version = util.get_mixxx_version()
-if util.on_bzr():
-    branch_name = util.get_bzr_branch_name()
-    vcs_revision = util.get_bzr_revision()
-elif util.on_git():    
-    branch_name = util.get_git_branch_name()
-    vcs_revision = util.get_git_revision()
+branch_name = util.get_branch_name()
+vcs_revision = util.get_revision()
 print "WE ARE IN:", os.getcwd()
 print "Building ", branch_name, " - rev.", vcs_revision
 
