@@ -6,7 +6,6 @@
 #include <QVector>
 #include <QMutex>
 #include <QWaitCondition>
-#include <QReadWriteLock>
 
 #include "configobject.h"
 #include "util/fifo.h"
@@ -62,7 +61,7 @@ class VinylControlProcessor : public QThread, public AudioDestination {
     short* m_pWorkBuffer;
     QWaitCondition m_samplesAvailableSignal;
     QMutex m_waitForSampleMutex;
-    QReadWriteLock m_processorsLock;
+    QMutex m_processorsLock;
     QVector<VinylControl*> m_processors;
     FIFO<VinylSignalQualityReport> m_signalQualityFifo;
     volatile bool m_bReportSignalQuality;

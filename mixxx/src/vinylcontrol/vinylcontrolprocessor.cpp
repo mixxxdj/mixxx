@@ -1,5 +1,4 @@
-#include <QReadLocker>
-#include <QWriteLocker>
+#include <QMutexLocker>
 
 #include "vinylcontrol/vinylcontrolprocessor.h"
 
@@ -18,6 +17,7 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
           m_pConfig(pConfig),
           m_pToggle(new ControlPushButton(ConfigKey(VINYL_PREF_KEY, "Toggle"))),
           m_pWorkBuffer(new short[MAX_BUFFER_LEN]),
+          m_processorsLock(QMutex::Recursive),
           m_processors(kMaximumVinylControlInputs, NULL),
           m_signalQualityFifo(SIGNAL_QUALITY_FIFO_SIZE),
           m_bReportSignalQuality(false),
@@ -43,11 +43,11 @@ VinylControlProcessor::~VinylControlProcessor() {
     delete [] m_pWorkBuffer;
 
     {
-        QWriteLocker locker(&m_processorsLock);
+        QMutexLocker locker(&m_processorsLock);
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
             VinylControl* pProcessor = m_processors.at(i);
-            delete pProcessor;
             m_processors[i] = NULL;
+            delete pProcessor;
 
             delete m_samplePipes[i];
             m_samplePipes[i] = NULL;
@@ -84,7 +84,7 @@ void VinylControlProcessor::run() {
         }
 
         for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-            QReadLocker locker(&m_processorsLock);
+            QMutexLocker locker(&m_processorsLock);
             VinylControl* pProcessor = m_processors[i];
             locker.unlock();
             FIFO<short>* pSamplePipe = m_samplePipes[i];
@@ -126,19 +126,20 @@ void VinylControlProcessor::run() {
 }
 
 void VinylControlProcessor::reloadConfig() {
-    QWriteLocker locker(&m_processorsLock);
-
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
+        QMutexLocker locker(&m_processorsLock);
         VinylControl* pCurrent = m_processors[i];
 
         if (pCurrent == NULL) {
             continue;
         }
 
-        delete pCurrent;
         VinylControl *pNew = new VinylControlXwax(
             m_pConfig, kVCGroup.arg(i + 1));
         m_processors.replace(i, pNew);
+        locker.unlock();
+        // Delete outside of the critical section to avoid deadlocks.
+        delete pCurrent;
     }
 }
 
@@ -158,9 +159,11 @@ void VinylControlProcessor::onInputConnected(AudioInput input) {
     VinylControl *pNew = new VinylControlXwax(
         m_pConfig, kVCGroup.arg(index + 1));
 
-    QWriteLocker locker(&m_processorsLock);
+    QMutexLocker locker(&m_processorsLock);
     VinylControl* pCurrent = m_processors.at(index);
     m_processors.replace(index, pNew);
+    locker.unlock();
+    // Delete outside of the critical section to avoid deadlocks.
     delete pCurrent;
 }
 
@@ -178,9 +181,11 @@ void VinylControlProcessor::onInputDisconnected(AudioInput input) {
         return;
     }
 
-    QWriteLocker locker(&m_processorsLock);
+    QMutexLocker locker(&m_processorsLock);
     VinylControl* pVC = m_processors.at(index);
     m_processors.replace(index, NULL);
+    locker.unlock();
+    // Delete outside of the critical section to avoid deadlocks.
     delete pVC;
 }
 
@@ -239,7 +244,7 @@ void VinylControlProcessor::toggleDeck(double value) {
     // -1 means we haven't found a proxy that's enabled
     int enabled = -1;
 
-    QReadLocker locker(&m_processorsLock);
+    QMutexLocker locker(&m_processorsLock);
 
     for (int i = 0; i < m_processors.size(); ++i) {
         VinylControl* pProcessor = m_processors.at(i);
@@ -263,12 +268,16 @@ void VinylControlProcessor::toggleDeck(double value) {
             return;
         }
 
-        m_processors[enabled]->toggleVinylControl(false);
-        m_processors[nextProxy]->toggleVinylControl(true);
+        VinylControl* pEnabled = m_processors[enabled];
+        VinylControl* pNextProxy = m_processors[nextProxy];
+        locker.unlock();
+        pEnabled->toggleVinylControl(false);
+        pNextProxy->toggleVinylControl(true);
     } else if (enabled == -1) {
         // handle case 1, or we just don't have any processors
         foreach (VinylControl* pProcessor, m_processors) {
             if (pProcessor) {
+                locker.unlock();
                 pProcessor->toggleVinylControl(true);
                 break;
             }
