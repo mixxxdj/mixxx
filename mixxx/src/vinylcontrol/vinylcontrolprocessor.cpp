@@ -92,8 +92,14 @@ void VinylControlProcessor::run() {
             if (pSamplePipe->readAvailable() > 0) {
                 int samplesRead = pSamplePipe->read(m_pWorkBuffer, MAX_BUFFER_LEN);
 
+                if (samplesRead % 2 != 0) {
+                    qWarning() << "VinylControlProcessor received non-even number of samples via sample FIFO.";
+                    samplesRead--;
+                }
+                int framesRead = samplesRead / 2;
+
                 if (pProcessor) {
-                    pProcessor->analyseSamples(m_pWorkBuffer, samplesRead);
+                    pProcessor->analyseSamples(m_pWorkBuffer, framesRead);
                 } else {
                     // Samples are being written to a non-existent processor. Warning?
                     qWarning() << "Samples written to non-existent VinylControl processor:" << i;
@@ -279,7 +285,7 @@ void VinylControlProcessor::toggleDeck(double value) {
             if (pProcessor) {
                 locker.unlock();
                 pProcessor->toggleVinylControl(true);
-                break;
+                return;
             }
         }
     }

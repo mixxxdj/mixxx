@@ -171,12 +171,13 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 }
 
 
-void VinylControlXwax::analyseSamples(const short *samples, size_t size)
+void VinylControlXwax::analyseSamples(const short *samples, size_t nFrames)
 {
     ScopedTimer t("VinylControlXwax::analyseSamples");
 
-    //Submit the samples to the xwax timecode processor
-    timecoder_submit(&timecoder, samples, size);
+    // Submit the samples to the xwax timecode processor. The size argument is
+    // in stereo frames.
+    timecoder_submit(&timecoder, samples, nFrames);
 
     bool bHaveSignal = fabs((float)samples[0]) + fabs((float)samples[1]) > MIN_SIGNAL;
     //qDebug() << "signal?" << bHaveSignal;

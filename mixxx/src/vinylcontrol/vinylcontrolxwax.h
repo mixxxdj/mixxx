@@ -26,7 +26,7 @@ class VinylControlXwax : public VinylControl {
     virtual ~VinylControlXwax();
 
     static void freeLUTs();
-    void analyseSamples(const short* samples, size_t size);
+    void analyseSamples(const short* samples, size_t nFrames);
 
     virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo);
 
