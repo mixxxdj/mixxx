@@ -79,8 +79,14 @@ void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dPa
 
 ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
         : ControlPotmeterBehavior(0, dMaxValue) {
-    m_dB1 = log10(2.0) / middlePosition;
-    m_dB2 = log10(dMaxValue) / (maxPosition - middlePosition);
+    if (dMaxValue == 1.0) {
+        m_bTwoState = false;
+        m_dB1 = log10(2.0)/maxPosition;
+    } else {
+        m_bTwoState = true;
+        m_dB1 = log10(2.0) / middlePosition;
+        m_dB2 = log10(dMaxValue) / (maxPosition - middlePosition);
+    }
 }
 
 ControlLogpotmeterBehavior::~ControlLogpotmeterBehavior() {
@@ -92,18 +98,26 @@ double ControlLogpotmeterBehavior::defaultValue(double dDefault) {
 }
 
 double ControlLogpotmeterBehavior::valueToWidgetParameter(double dValue) {
-    if (dValue > 1.0) {
-        return log10(dValue) / m_dB2 + middlePosition;
+    if (!m_bTwoState) {
+        return log10(dValue + 1) / m_dB1;
     } else {
-        return log10(dValue + 1.0) / m_dB1;
+        if (dValue > 1.0) {
+            return log10(dValue) / m_dB2 + middlePosition;
+        } else {
+            return log10(dValue + 1.0) / m_dB1;
+        }
     }
 }
 
 double ControlLogpotmeterBehavior::widgetParameterToValue(double dParam) {
-    if (dParam <= middlePosition) {
-        return pow(10.0, m_dB1 * dParam) - 1;
+    if (!m_bTwoState) {
+        return pow(10.0, m_dB1 * dParam) - 1.0;
     } else {
-        return pow(10.0, m_dB2 * (dParam - middlePosition));
+        if (dParam <= middlePosition) {
+            return pow(10.0, m_dB1 * dParam) - 1;
+        } else {
+            return pow(10.0, m_dB2 * (dParam - middlePosition));
+        }
     }
 }
 
