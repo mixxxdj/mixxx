@@ -89,7 +89,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             this, SLOT(transitionValueChanged(int)));
 
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleAutoDJButton(bool))); _blah;
+            this, SLOT(toggleAutoDJButton(bool))); _blah;
 
     m_pCOEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
