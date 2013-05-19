@@ -22,15 +22,14 @@ WLibrarySidebar::~WLibrarySidebar() {
 }
 
 
-void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event)
-{
+void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedItem = indexAt(event->pos());
     emit(rightClicked(event->globalPos(), clickedItem));
     //}
 }
 
-/** Drag enter event, happens when a dragged item enters the track sources view*/
+// Drag enter event, happens when a dragged item enters the track sources view
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
 {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
@@ -40,8 +39,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
     //QTreeView::dragEnterEvent(event);
 }
 
-/** Drag move event, happens when a dragged item hovers over the track sources view...
- */
+// Drag move event, happens when a dragged item hovers over the track sources view...
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
 {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();

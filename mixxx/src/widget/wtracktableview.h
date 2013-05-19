@@ -80,11 +80,11 @@ class WTrackTableView : public WLibraryTableView {
     TrackCollection* m_pTrackCollection;
 
     QSignalMapper m_loadTrackMapper;
+    SearchThread m_searchThread;
 
     DlgTrackInfo* m_pTrackInfo;
     QModelIndex currentTrackInfoIndex;
 
-    SearchThread m_searchThread;
 
     ControlObjectThreadMain* m_pNumSamplers;
     ControlObjectThreadMain* m_pNumDecks;
