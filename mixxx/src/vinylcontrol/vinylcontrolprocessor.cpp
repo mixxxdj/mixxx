@@ -28,7 +28,6 @@ VinylControlProcessor::VinylControlProcessor(QObject* pParent, ConfigObject<Conf
             Qt::DirectConnection);
 
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
-        //
         m_samplePipes[i] = new FIFO<short>(SAMPLE_PIPE_FIFO_SIZE);
     }
 
@@ -78,11 +77,7 @@ void VinylControlProcessor::run() {
     unsigned static id = 0; //the id of this thread, for debugging purposes //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("VinylControlProcessor %1").arg(++id));
 
-    while (true) {
-        if (m_bQuit) {
-            break;
-        }
-
+    while (!m_bQuit) {
         if (m_bReloadConfig) {
             reloadConfig();
             m_bReloadConfig = false;
