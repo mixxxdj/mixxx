@@ -181,7 +181,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
             dieflag = true;
         }
 
-        for (int i = 0; i < read; i++) {
+        for (int i = 0; i < read; ++i) {
             samples[i] = ((float)data16[i])/32767.0f;
         }
 
