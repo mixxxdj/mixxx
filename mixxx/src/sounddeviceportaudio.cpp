@@ -26,6 +26,7 @@
 #include "soundmanagerutil.h"
 #include "controlobject.h"
 #include "util/timer.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -314,7 +315,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
 
     static ControlObject* pControlObjectVinylControlGain =
-        ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
+        ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"));
     static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
     int iFrameSize = m_outputParams.channelCount;
     int iVCGain = 1;

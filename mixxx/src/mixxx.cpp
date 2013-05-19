@@ -59,7 +59,7 @@
 #include "util/timer.h"
 
 #ifdef __VINYLCONTROL__
-#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
 
@@ -343,7 +343,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
 #ifdef __VINYLCONTROL__
-    m_pVCManager = new VinylControlManager(this, m_pConfig);
+    m_pVCManager = new VinylControlManager(this, m_pConfig, m_pSoundManager);
 #else
     m_pVCManager = NULL;
 #endif
@@ -679,7 +679,7 @@ void MixxxApp::slotViewShowSamplers(bool enable) {
 }
 
 void MixxxApp::slotViewShowVinylControl(bool enable) {
-    toggleVisibility(ConfigKey("[Vinylcontrol]", "show_vinylcontrol"), enable);
+    toggleVisibility(ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), enable);
 }
 
 void MixxxApp::slotViewShowMicrophone(bool enable) {
@@ -698,7 +698,7 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
 
 void MixxxApp::onNewSkinLoaded() {
     setVisibilityOptionState(m_pViewVinylControl,
-                             ConfigKey("[Vinylcontrol]", "show_vinylcontrol"));
+                             ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
     setVisibilityOptionState(m_pViewShowSamplers,
                              ConfigKey("[Samplers]", "show_samplers"));
     setVisibilityOptionState(m_pViewShowMicrophone,
@@ -1299,7 +1299,7 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (m_pVCManager->vinylInputEnabled(1)) {
+    if (m_pVCManager->vinylInputEnabled(0)) {
         m_pOptionsVinylControl->setChecked((bool)toggle);
     } else {
         m_pOptionsVinylControl->setChecked(false);
@@ -1328,7 +1328,7 @@ void MixxxApp::slotCheckboxVinylControl(bool toggle)
 void MixxxApp::slotControlVinylControl2(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (m_pVCManager->vinylInputEnabled(2)) {
+    if (m_pVCManager->vinylInputEnabled(1)) {
         m_pOptionsVinylControl2->setChecked((bool)toggle);
     } else {
         m_pOptionsVinylControl2->setChecked(false);
