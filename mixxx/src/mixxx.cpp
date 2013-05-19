@@ -349,8 +349,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #endif
 
     // Create the player manager.
-    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
-                                         m_pVCManager);
+    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
