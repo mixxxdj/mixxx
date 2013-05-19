@@ -76,7 +76,7 @@ void VinylControlManager::requestReloadConfig() {
 
 bool VinylControlManager::vinylInputEnabled(int deck) {
     ControlObjectThread input_enabled(ControlObject::getControl(
-        ConfigKey(kVCGroup.arg(deck), "vinylcontrol_enabled")));
+        ConfigKey(kVCGroup.arg(deck+1), "vinylcontrol_enabled")));
     return input_enabled.get() > 0;;
 }
 
@@ -111,7 +111,6 @@ void VinylControlManager::removeSignalQualityListener(VinylSignalQualityListener
 }
 
 void VinylControlManager::updateSignalQualityListeners() {
-    qDebug() << "VinylControlManager::updateSignalQualityListeners";
     FIFO<VinylSignalQualityReport>* signalQualityFifo = m_pProcessor->getSignalQualityFifo();
     if (signalQualityFifo == NULL) {
         return;
