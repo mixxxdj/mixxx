@@ -131,8 +131,6 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     ringPos = 0;
     ringFilled = 0;
     old_duration = -1.0f;
-    reportedMode = 0;
-    reportedPlayButton = 0;
     tSinceSteadyPitch.start();
     iVCMode = mode->get();
 }
@@ -263,8 +261,8 @@ void VinylControlXwax::analyseSamples(const short *samples, size_t size)
 
     filePosition = playPos->get() * fTrackDuration;             //Get the playback position in the file in seconds.
 
-    reportedMode = mode->get();
-    reportedPlayButton = playButton->get();
+    int reportedMode = mode->get();
+    bool reportedPlayButton = playButton->get();
 
     if (iVCMode != reportedMode)
     {

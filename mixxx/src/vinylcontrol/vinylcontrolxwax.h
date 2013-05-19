@@ -63,8 +63,6 @@ class VinylControlXwax : public VinylControl {
     int ringPos;
     int ringFilled;
     double old_duration;
-    int reportedMode;
-    bool reportedPlayButton;
 
     bool bForceResync;
     int iOldMode;
