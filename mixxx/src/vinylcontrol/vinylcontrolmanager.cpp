@@ -145,8 +145,11 @@ void VinylControlManager::reloadConfig() {
         if (!m_proxies.at(i)) continue;
         VinylControlProxy *pProxy = m_proxies.at(i);
         QString group = kVCProxyGroup.arg(i + 1);
+        m_proxiesLock.unlock();
+        // Unlock to avoid deadlock.
         delete pProxy;
         pProxy = new VinylControlProxy(m_pConfig, group);
+        m_proxiesLock.lockForWrite();
         m_proxies.replace(i, pProxy);
     }
     m_proxiesLock.unlock();
