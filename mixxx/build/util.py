@@ -99,6 +99,7 @@ def get_git_branch_name():
     return None
 
 def export_git(source, dest):
+    os.mkdir(dest)
     return os.system('git archive --format tar HEAD %s | tar x -C %s' % (source, dest))
 
 def get_bzr_revision():
