@@ -9,7 +9,7 @@ class LibraryTableModel : public BaseSqlTableModel {
     LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
                       QString settingsNamespace="mixxx.db.model.library");
     virtual ~LibraryTableModel();
-    void setTableModel(int id =-1);
+    void setTableModel(int id=-1);
     bool isColumnInternal(int column);
     bool isColumnHiddenByDefault(int column);
     // Takes a list of locations and add the tracks to the library. Returns the

@@ -258,7 +258,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
     ScopedTransaction transaction(m_pTrackCollection->getDatabase());
 
     // This is a simple Fisher-Yates shuffling algorithm
-    for (int i=numOfTracks-1; i >= shuffleStartRow; i--) {
+    for (int i = numOfTracks-1; i >= shuffleStartRow; --i) {
         int oldPosition = index(i, positionColumnIndex).data().toInt();
         int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks - shuffleStartRow) + shuffleStartRow + 1);
         qDebug() << "Swapping tracks " << oldPosition << " and " << random;

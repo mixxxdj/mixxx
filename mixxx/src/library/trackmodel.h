@@ -125,7 +125,7 @@ class TrackModel {
         m_iDefaultSortColumn = sortColumn;
         m_eDefaultSortOrder = sortOrder;
     }
-    
+
     virtual int fieldIndex(const QString& fieldName) const {
         Q_UNUSED(fieldName);
         return -1;

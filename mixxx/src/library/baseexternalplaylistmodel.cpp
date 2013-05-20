@@ -17,7 +17,7 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
 }
 
-void BaseExternalPlaylistModel::setTableModel(int id){
+void BaseExternalPlaylistModel::setTableModel(int id) {
     Q_UNUSED(id);
 }
 

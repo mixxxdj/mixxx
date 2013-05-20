@@ -26,7 +26,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     ///////////////////////////////////////////////////////////////////////////
     //  Functions that have to/can be reimplemented
     ///////////////////////////////////////////////////////////////////////////
-    //  This class also has protected variables that should be used in childs
+    //  This class also has protected variables that should be used in child's
     //  m_database, m_pTrackCollection, m_trackDAO
 
     virtual void setTableModel(int id=-1) = 0;
@@ -34,8 +34,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     virtual bool isColumnHiddenByDefault(int column) = 0;
     virtual TrackModel::CapabilitiesFlags getCapabilities() const = 0;
 
-    // functions that can be implemented
-    // function to reimplement for external libraries
+    // reimplement for external libraries
     virtual TrackPointer getTrack(const QModelIndex& index) const;
     // calls readWriteFlags() by default, reimplement this if the child calls
     // should be readOnly
@@ -67,9 +66,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
     int columnCount(const QModelIndex& parent=QModelIndex()) const;
     bool setHeaderData(int section, Qt::Orientation orientation,
-                               const QVariant &value, int role=Qt::EditRole);
+                       const QVariant &value, int role=Qt::EditRole);
     QVariant headerData(int section, Qt::Orientation orientation,
-                                int role=Qt::DisplayRole) const;
+                        int role=Qt::DisplayRole) const;
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
 
   protected:
