@@ -691,7 +691,7 @@ def BuildUbuntuPackage(target, source, env):
         # Export the source folder
         print "* Exporting source folder from current workspace (bzr rev: %s)" % vcs_revision
         print
-        os.system('bzr export %s .' % build_dir)
+        util.export_source('.', build_dir)
 
         # Copy a patch to be included in the exported build sources (this can also be something like src/SConscript, /build/debian/rules)
         if os.path.exists('post-export-patch'):

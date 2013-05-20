@@ -66,6 +66,16 @@ def get_branch_name():
         return get_git_branch_name()
     return None
 
+def export_source(source, dest):
+    global CURRENT_VCS
+    if CURRENT_VCS is None:
+        CURRENT_VCS = get_current_vcs()
+    if CURRENT_VCS == "bzr":
+        return export_bzr(source, dest)
+    if CURRENT_VCS == "git":
+        return export_git(source, dest)
+    return None
+
 def get_git_revision():
     return len(os.popen("git log --pretty=oneline --first-parent").read().splitlines())
 
@@ -87,6 +97,9 @@ def get_git_branch_name():
             match = match.groupdict()
             return match['branch'].strip()
     return None
+
+def export_git(source, dest):
+    return os.system('git archive --format tar HEAD %s | tar x -C %s' % (source, dest))
 
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
@@ -133,6 +146,9 @@ def get_bzr_branch_name():
     # Fall back on branch nick.
     print "ERROR: Could not determine branch name from output of 'bzr info'. Please file a bug with the output of 'bzr info' attached."
     return os.popen('bzr nick').readline().strip()
+
+def export_bzr(source, dest):
+    return os.system('bzr export %s %s' % (dest, source))
 
 def get_build_dir(platformString, bitwidth):
     build_dir = '%s%s_build' % (platformString[0:3],bitwidth)
