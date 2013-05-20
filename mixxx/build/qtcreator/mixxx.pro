@@ -908,7 +908,7 @@ exists( .bzr ) {
     BZR_REVNO = $$system( bzr revno )
     BZR_INFO = $$system( bzr info )
     for(BZR_INFO_BITS, BZR_INFO) {
-    	BZR_BRANCH_URL = $${BZR_INFO_BITS}
+        BZR_BRANCH_URL = $${BZR_INFO_BITS}
     }
     BZR_BRANCH_NAME = $$dirname(BZR_BRANCH_URL)
     BZR_BRANCH_NAME = $$basename(BZR_BRANCH_NAME)
@@ -919,7 +919,7 @@ exists( .bzr ) {
     VCS_REVNO = $${BZR_REVNO}
 }
 
-system (git status) {
+exists ( .git ) {
     # Get info from git about the current branch
     GIT_REVNO = $$system( git log --pretty=oneline --first-parent | wc -l )
     GIT_BRANCH_NAME = $$system( git branch | grep \* | sed -e "s/\* //;" )

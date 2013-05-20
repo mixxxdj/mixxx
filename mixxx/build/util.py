@@ -1,39 +1,68 @@
 from SCons import Script
-import os, sys, platform
+import os, os.path, sys, platform
 import re
 
+CURRENT_VCS = None
+
+def get_current_vcs():
+    if on_git():
+        return "git"
+    if on_bzr():
+        return "bzr"
+    print os.getcwd()
+    raise Exception("Couldn't identify version control system")
+
 def on_bzr():
-    try:
-        os.stat(".bzr")
-        return True
-    except:
-        return False
+    cwd = os.getcwd()
+    basename = " "
+    while len(basename) > 0:
+        try:
+            os.stat(os.path.join(cwd,".bzr"))
+            return True
+        except:
+            pass
+        cwd,basename = os.path.split(cwd)
+    return False
 
 def on_git():
-    try:
-        os.popen("git status")
-        return True
-    except:
-        return False
+    cwd = os.getcwd()
+    basename = " "
+    while len(basename) > 0:
+        try:
+            os.stat(os.path.join(cwd,".git"))
+            return True
+        except:
+            pass
+        cwd,basename = os.path.split(cwd)
+    return False
 
 def get_revision():
-    if on_bzr():
+    global CURRENT_VCS
+    if CURRENT_VCS is None:
+        CURRENT_VCS = get_current_vcs()
+    if CURRENT_VCS == "bzr":
         return get_bzr_revision()
-    if on_git():
+    if CURRENT_VCS == "git":
         return get_git_revision()
     return None
 
 def get_modified():
-    if on_bzr():
+    global CURRENT_VCS
+    if CURRENT_VCS is None:
+        CURRENT_VCS = get_current_vcs()
+    if CURRENT_VCS == "bzr":
         return get_bzr_modified()
-    if on_git():
+    if CURRENT_VCS == "git":
         return get_git_modified()
     return None
 
 def get_branch_name():
-    if on_bzr():
+    global CURRENT_VCS
+    if CURRENT_VCS is None:
+        CURRENT_VCS = get_current_vcs()
+    if CURRENT_VCS == "bzr":
         return get_bzr_branch_name()
-    if on_git():
+    if CURRENT_VCS == "git":
         return get_git_branch_name()
     return None
 
