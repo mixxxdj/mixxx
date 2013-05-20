@@ -9,8 +9,7 @@ def get_current_vcs():
         return "git"
     if on_bzr():
         return "bzr"
-    print os.getcwd()
-    raise Exception("Couldn't identify version control system")
+    return "tar"
 
 def on_bzr():
     cwd = os.getcwd()
@@ -44,6 +43,8 @@ def get_revision():
         return get_bzr_revision()
     if CURRENT_VCS == "git":
         return get_git_revision()
+    if CURRENT_VCS == "tar":
+        return "unknown"
     return None
 
 def get_modified():
@@ -54,6 +55,8 @@ def get_modified():
         return get_bzr_modified()
     if CURRENT_VCS == "git":
         return get_git_modified()
+    if CURRENT_VCS == "tar":
+        return ""
     return None
 
 def get_branch_name():
@@ -64,6 +67,8 @@ def get_branch_name():
         return get_bzr_branch_name()
     if CURRENT_VCS == "git":
         return get_git_branch_name()
+    if CURRENT_VCS == "tar":
+        return "unknown"
     return None
 
 def export_source(source, dest):
