@@ -44,7 +44,7 @@ def get_revision():
     if CURRENT_VCS == "git":
         return get_git_revision()
     if CURRENT_VCS == "tar":
-        return "unknown"
+        return ""
     return None
 
 def get_modified():
@@ -68,7 +68,7 @@ def get_branch_name():
     if CURRENT_VCS == "git":
         return get_git_branch_name()
     if CURRENT_VCS == "tar":
-        return "unknown"
+        return ""
     return None
 
 def export_source(source, dest):
