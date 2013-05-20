@@ -1,6 +1,92 @@
 from SCons import Script
-import os, sys, platform
+import os, os.path, sys, platform
 import re
+
+CURRENT_VCS = None
+
+def get_current_vcs():
+    if on_git():
+        return "git"
+    if on_bzr():
+        return "bzr"
+    print os.getcwd()
+    raise Exception("Couldn't identify version control system")
+
+def on_bzr():
+    cwd = os.getcwd()
+    basename = " "
+    while len(basename) > 0:
+        try:
+            os.stat(os.path.join(cwd,".bzr"))
+            return True
+        except:
+            pass
+        cwd,basename = os.path.split(cwd)
+    return False
+
+def on_git():
+    cwd = os.getcwd()
+    basename = " "
+    while len(basename) > 0:
+        try:
+            os.stat(os.path.join(cwd,".git"))
+            return True
+        except:
+            pass
+        cwd,basename = os.path.split(cwd)
+    return False
+
+def get_revision():
+    global CURRENT_VCS
+    if CURRENT_VCS is None:
+        CURRENT_VCS = get_current_vcs()
+    if CURRENT_VCS == "bzr":
+        return get_bzr_revision()
+    if CURRENT_VCS == "git":
+        return get_git_revision()
+    return None
+
+def get_modified():
+    global CURRENT_VCS
+    if CURRENT_VCS is None:
+        CURRENT_VCS = get_current_vcs()
+    if CURRENT_VCS == "bzr":
+        return get_bzr_modified()
+    if CURRENT_VCS == "git":
+        return get_git_modified()
+    return None
+
+def get_branch_name():
+    global CURRENT_VCS
+    if CURRENT_VCS is None:
+        CURRENT_VCS = get_current_vcs()
+    if CURRENT_VCS == "bzr":
+        return get_bzr_branch_name()
+    if CURRENT_VCS == "git":
+        return get_git_branch_name()
+    return None
+
+def get_git_revision():
+    return len(os.popen("git log --pretty=oneline --first-parent").read().splitlines())
+
+def get_git_modified():
+    modified_matcher = re.compile("^#.*modified:   (?P<filename>.*?)$")
+    modified_files = []
+    for line in os.popen("git status").read().splitlines():
+        match = modified_matcher.match(line)
+        if match:
+            match = match.groupdict()
+            modified_files.append(match['filename'].strip())
+    return "\n".join(modified_files)
+
+def get_git_branch_name():
+    branch_matcher = re.compile("\* (?P<branch>.*?)$")
+    for line in os.popen("git branch").read().splitlines():
+        match = branch_matcher.match(line)
+        if match:
+            match = match.groupdict()
+            return match['branch'].strip()
+    return None
 
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
@@ -117,12 +203,12 @@ def CheckForPKG( context, name, version="" ):
 def write_build_header(path):
     f = open(path, 'w')
     try:
-        branch_name = get_bzr_branch_name()
-        modified = get_bzr_modified() > 0
+        branch_name = get_branch_name()
+        modified = get_modified() > 0
         # Do not emit BUILD_BRANCH on release branches.
         if not branch_name.startswith('release'):
             f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
-        f.write('#define BUILD_REV "%s%s"\n' % (get_bzr_revision(),
+        f.write('#define BUILD_REV "%s%s"\n' % (get_revision(),
                                                 '+' if modified else ''))
     finally:
         f.close()
