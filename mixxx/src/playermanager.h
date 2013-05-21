@@ -139,6 +139,8 @@ class PlayerManager : public QObject {
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;
     ControlObject* m_pCOSkinNumDecks;
+    ControlObject* m_pCOSkinNumSamplers;
+    ControlObject* m_pCOSkinNumPreviewDecks;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
