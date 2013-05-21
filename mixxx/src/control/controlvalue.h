@@ -133,7 +133,11 @@ class ControlValueAtomicBase<T, true> {
 #if defined(__GNUC__)
     T m_value __attribute__ ((aligned(sizeof(void*))));
 #elif defined(_MSC_VER)
-    T __declspec(align(sizeof(void*))) m_value;
+#ifdef _WIN64
+    T __declspec(align(8)) m_value;
+#else
+    T __declspec(align(4)) m_value;
+#endif
 #else
     T m_value;
 #endif
