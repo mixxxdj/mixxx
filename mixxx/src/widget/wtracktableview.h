@@ -7,7 +7,6 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
-#include "library/searchthread.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
 
@@ -80,7 +79,6 @@ class WTrackTableView : public WLibraryTableView {
     TrackCollection* m_pTrackCollection;
 
     QSignalMapper m_loadTrackMapper;
-    SearchThread m_searchThread;
 
     DlgTrackInfo* m_pTrackInfo;
     QModelIndex currentTrackInfoIndex;
