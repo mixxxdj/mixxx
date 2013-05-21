@@ -214,6 +214,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     // Ordering of decks in 4-deck mode
     QList<QList<int> > deck_orderings = m_pPlayerManager->getAvailableDeckOrderings();
+    QString order = m_pConfig->getValueString(ConfigKey("[Controls]", "4DeckOrder"));
+    int deckorder_index = 0;
     for (int i = 0; i < deck_orderings.count(); ++i) {
         QString ui_order = "    ";
         // Orderings are given in load order, not mixer order, so we have to we have to
@@ -221,9 +223,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
         for (int j = 0; j < deck_orderings[i].count(); ++j) {
             ui_order[deck_orderings[i][j]] = j + 'A';
         }
-        ComboBoxDeckOrder->addItem(tr(ui_order.toStdString().c_str()));
+        if (ui_order == order) {
+            deckorder_index = i;
+        }
+        // TODO: Do we need to translate "ABCD," etc? If so then we need to untranslate it
+        // when we save to config file.
+        ComboBoxDeckOrder->addItem(ui_order);
     }
-    ComboBoxDeckOrder->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]", "4DeckOrder")).toInt());
+    ComboBoxDeckOrder->setCurrentIndex(deckorder_index);
     connect(ComboBoxDeckOrder, SIGNAL(activated(int)), this, SLOT(slotSetDeckOrder(int)));
 
     //
@@ -445,7 +452,7 @@ void DlgPrefControls::slotSetAutoDjRequeue(int)
 
 void DlgPrefControls::slotSetDeckOrder(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]", "4DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentIndex()));
+    m_pConfig->set(ConfigKey("[Controls]", "4DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentText()));
 }
 
 void DlgPrefControls::slotSetTooltips(int)

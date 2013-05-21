@@ -87,23 +87,7 @@ class PlayerManager : public QObject {
     // Returns a list of lists of possible orders to load tracks into decks.
     // Controllers label their channels differently and these are the three combinations
     // we've encountered.
-    const QList<QList<int> > getAvailableDeckOrderings() {
-        if (ms_deck_orderings.count() == 0) {
-            QList<int> order;
-            // Corresponds to ABCD
-            order << 0 << 1 << 2 << 3;
-            ms_deck_orderings.push_back(order);
-            order.clear();
-            // Corresponds to CABD
-            order << 1 << 2 << 0 << 3;
-            ms_deck_orderings.push_back(order);
-            order.clear();
-            // Corresponds to ACDB
-            order << 0 << 3 << 1 << 2;
-            ms_deck_orderings.push_back(order);
-        }
-        return ms_deck_orderings;
-    }
+    static const QList<QList<int> > getAvailableDeckOrderings();
 
     const QList<int> getDeckOrdering();
 
@@ -127,7 +111,6 @@ class PlayerManager : public QObject {
     void slotNumDecksControlChanged(double v);
     void slotNumSamplersControlChanged(double v);
     void slotNumPreviewDecksControlChanged(double v);
-    void slotSkinNumDecksControlChanged(double v);
 
   signals:
     void loadLocationToPlayer(QString location, QString group);
@@ -147,8 +130,6 @@ class PlayerManager : public QObject {
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
 
-    QList<QList<int> > ms_deck_orderings;
-
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;
@@ -162,8 +143,9 @@ class PlayerManager : public QObject {
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
     QList<PreviewDeck*> m_preview_decks;
-    unsigned int m_skin_decks;
     QMap<QString, BaseTrackPlayer*> m_players;
+
+    static QList<QList<int> > deckOrderings;
 };
 
 #endif // PLAYERMANAGER_H
