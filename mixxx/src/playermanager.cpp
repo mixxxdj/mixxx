@@ -20,6 +20,9 @@
 #include "util/stat.h"
 #include "engine/enginedeck.h"
 
+// static
+QList<QList<int> > PlayerManager::deckOrderings;
+
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
                              EngineMaster* pEngine,
@@ -184,26 +187,6 @@ unsigned int PlayerManager::numPreviewDecks() {
             ConfigKey("[Master]", "num_preview_decks"));
     }
     return pNumCO ? pNumCO->get() : 0;
-}
-
-// static
-QList<QList<int> > PlayerManager::deckOrderings;
-const QList<QList<int> > PlayerManager::getAvailableDeckOrderings() {
-    if (PlayerManager::deckOrderings.count() == 0) {
-        QList<int> order;
-        // Corresponds to ABCD
-        order << 0 << 1 << 2 << 3;
-        PlayerManager::deckOrderings.push_back(order);
-        order.clear();
-        // Corresponds to CABD
-        order << 1 << 2 << 0 << 3;
-        PlayerManager::deckOrderings.push_back(order);
-        order.clear();
-        // Corresponds to ACDB
-        order << 0 << 3 << 1 << 2;
-        PlayerManager::deckOrderings.push_back(order);
-    }
-    return PlayerManager::deckOrderings;
 }
 
 const QList<int> PlayerManager::getDeckOrdering() {

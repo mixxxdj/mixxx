@@ -87,7 +87,23 @@ class PlayerManager : public QObject {
     // Returns a list of lists of possible orders to load tracks into decks.
     // Controllers label their channels differently and these are the three combinations
     // we've encountered.
-    static const QList<QList<int> > getAvailableDeckOrderings();
+    static const QList<QList<int> > getAvailableDeckOrderings() {
+        if (PlayerManager::deckOrderings.count() == 0) {
+            QList<int> order;
+            // Corresponds to ABCD
+            order << 0 << 1 << 2 << 3;
+            PlayerManager::deckOrderings.push_back(order);
+            order.clear();
+            // Corresponds to CABD
+            order << 1 << 2 << 0 << 3;
+            PlayerManager::deckOrderings.push_back(order);
+            order.clear();
+            // Corresponds to ACDB
+            order << 0 << 3 << 1 << 2;
+            PlayerManager::deckOrderings.push_back(order);
+        }
+        return PlayerManager::deckOrderings;
+    }
 
     const QList<int> getDeckOrdering();
 
