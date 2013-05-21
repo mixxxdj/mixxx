@@ -18,6 +18,13 @@ class VinylControl;
 class SoundManager;
 class ControlPushButton;
 
+// VinylControlManager is the main-thread interface that other parts of Mixxx
+// use to interact with the vinyl control subsystem (other than controls exposed
+// by vinyl control to the rest of Mixxx). VinylControlManager starts a
+// VinylControlProcessor thread which is in charge of receiving samples from the
+// engine and processing them. The separation of VinylControlManager and
+// VinylControlProcessor allows us to keep a more clear separation between the
+// main thread, the VC thread, and the engine callback.
 class VinylControlManager : public QObject {
     Q_OBJECT;
   public:

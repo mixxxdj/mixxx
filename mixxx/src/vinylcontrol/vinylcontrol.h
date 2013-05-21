@@ -15,7 +15,7 @@ class VinylControl : public QObject {
 
     virtual void toggleVinylControl(bool enable);
     virtual bool isEnabled();
-    virtual void analyseSamples(const short* samples, size_t nFrames) = 0;
+    virtual void analyzeSamples(const short* samples, size_t nFrames) = 0;
     virtual float getSpeed();
     virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo) = 0;
 

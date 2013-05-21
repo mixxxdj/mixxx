@@ -15,6 +15,10 @@
 class VinylControl;
 class ControlPushButton;
 
+// VinylControlProcessor is a thread that is in charge of receiving samples from
+// the engine callback and feeding those samples to the VinylControl
+// classes. The most important thing is that the connection between the engine
+// callback and VinylControlProcessor (the receiveBuffer method) is lock-free.
 class VinylControlProcessor : public QThread, public AudioDestination {
     Q_OBJECT
   public:

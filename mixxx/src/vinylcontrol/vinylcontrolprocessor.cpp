@@ -99,7 +99,7 @@ void VinylControlProcessor::run() {
                 int framesRead = samplesRead / 2;
 
                 if (pProcessor) {
-                    pProcessor->analyseSamples(m_pWorkBuffer, framesRead);
+                    pProcessor->analyzeSamples(m_pWorkBuffer, framesRead);
                 } else {
                     // Samples are being written to a non-existent processor. Warning?
                     qWarning() << "Samples written to non-existent VinylControl processor:" << i;

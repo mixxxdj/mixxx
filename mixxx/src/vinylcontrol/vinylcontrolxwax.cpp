@@ -171,9 +171,9 @@ bool VinylControlXwax::writeQualityReport(VinylSignalQualityReport* pReport) {
 }
 
 
-void VinylControlXwax::analyseSamples(const short *samples, size_t nFrames)
+void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
 {
-    ScopedTimer t("VinylControlXwax::analyseSamples");
+    ScopedTimer t("VinylControlXwax::analyzeSamples");
 
     // Submit the samples to the xwax timecode processor. The size argument is
     // in stereo frames.
@@ -195,9 +195,8 @@ void VinylControlXwax::analyseSamples(const short *samples, size_t nFrames)
 
     if(bHaveSignal)
     {
-        //Always analyse the input samples
-        double when;
-        iPosition = timecoder_get_position(&timecoder, &when);
+        // Always analyze the input samples
+        iPosition = timecoder_get_position(&timecoder, NULL);
         //Notify the UI if the timecode quality is good
         establishQuality(iPosition != -1);
     }
