@@ -54,6 +54,7 @@ class ControlLogpotmeterBehavior : public ControlPotmeterBehavior {
     virtual double widgetParameterToValue(double dParam);
 
   protected:
+    bool m_bTwoState;
     double m_dB1, m_dB2;
 };
 

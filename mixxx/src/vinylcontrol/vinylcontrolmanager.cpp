@@ -23,6 +23,7 @@ VinylControlManager::VinylControlManager(QObject *pParent,
   : QObject(pParent)
   , m_pConfig(pConfig)
   , m_proxies(kNumberOfDecks, NULL)
+  , m_proxiesLock(QReadWriteLock::Recursive)
   , m_pToggle(new ControlPushButton(ConfigKey("[VinylControl]", "Toggle")))
 {
     connect(m_pToggle, SIGNAL(valueChanged(double)), SLOT(toggleDeck(double)));
@@ -132,8 +133,10 @@ void VinylControlManager::onInputDisconnected(AudioInput input) {
     }
     VinylControlProxy* pVC = m_proxies.at(input.getIndex());
     m_proxies.replace(input.getIndex(), NULL);
-    delete pVC;
+    // It's important to unlock the mutex before deleting the VinylControlProxy
+    // to prevent deadlocks.
     m_proxiesLock.unlock();
+    delete pVC;
 }
 
 void VinylControlManager::reloadConfig() {
@@ -142,8 +145,11 @@ void VinylControlManager::reloadConfig() {
         if (!m_proxies.at(i)) continue;
         VinylControlProxy *pProxy = m_proxies.at(i);
         QString group = kVCProxyGroup.arg(i + 1);
+        m_proxiesLock.unlock();
+        // Unlock to avoid deadlock.
         delete pProxy;
         pProxy = new VinylControlProxy(m_pConfig, group);
+        m_proxiesLock.lockForWrite();
         m_proxies.replace(i, pProxy);
     }
     m_proxiesLock.unlock();

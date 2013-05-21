@@ -25,7 +25,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_searchThread(this),
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
@@ -354,8 +353,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
 void WTrackTableView::slotRemove()
 {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->removeTracks(indices);
@@ -365,8 +363,7 @@ void WTrackTableView::slotRemove()
 
 void WTrackTableView::slotPurge(){
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->purgeTracks(indices);
@@ -649,7 +646,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
-        m_searchThread.enqueueSearch(trackModel, text);
+        trackModel->search(text);
     }
 }
 
@@ -661,7 +658,7 @@ void WTrackTableView::onSearchCleared() {
     restoreVScrollBarPos();
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
-        m_searchThread.enqueueSearch(trackModel, "");
+        trackModel->search("");
     }
 }
 
