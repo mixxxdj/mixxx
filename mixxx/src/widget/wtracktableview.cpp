@@ -43,11 +43,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(loadSelectionToGroup(QString)));
 
     m_pNumSamplers = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_samplers")));
+        ControlObject::getControl(ConfigKey("[Skin]", "num_samplers")));
     m_pNumDecks = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_decks")));
+        ControlObject::getControl(ConfigKey("[Skin]", "num_decks")));
     m_pNumPreviewDecks = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_preview_decks")));
+        ControlObject::getControl(ConfigKey("[Skin]", "num_preview_decks")));
 
     m_pMenu = new QMenu(this);
 

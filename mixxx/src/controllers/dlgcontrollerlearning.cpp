@@ -210,7 +210,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Vinylcontrol]", "show_vinylcontrol", tr("Show/hide the vinyl control section"), guiMenu);
     addControl("[PreviewDeck]", "show_previewdeck", tr("Show/hide the preview deck"), guiMenu);
 
-    ControlObject *co = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
+    ControlObject *co = ControlObject::getControl(ConfigKey("[Skin]", "num_decks"));
     const int iNumDecks = co->get();
     QString spinnyText = tr("Show/hide spinning vinyl widget");
     for (int i = 1; i <= iNumDecks; ++i) {
@@ -252,11 +252,11 @@ void DlgControllerLearning::addControl(QString group, QString control, QString d
 void DlgControllerLearning::addPlayerControl(
     QString control, QString controlDescription, QMenu* pMenu,
     bool deckControls, bool samplerControls, bool previewdeckControls, bool addReset) {
-    ControlObject* numSamplers = ControlObject::getControl(ConfigKey("[Master]", "num_samplers"));
+    ControlObject* numSamplers = ControlObject::getControl(ConfigKey("[Skin]", "num_samplers"));
     const int iNumSamplers = numSamplers->get();
-    ControlObject* numDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
+    ControlObject* numDecks = ControlObject::getControl(ConfigKey("[Skin]", "num_decks"));
     const int iNumDecks = numDecks->get();
-    ControlObject* numPreviewDecks = ControlObject::getControl(ConfigKey("[Master]", "num_preview_decks"));
+    ControlObject* numPreviewDecks = ControlObject::getControl(ConfigKey("[Skin]", "num_preview_decks"));
     const int iNumPreviewDecks = numPreviewDecks->get();
 
     QMenu* controlMenu = new QMenu(controlDescription, pMenu);

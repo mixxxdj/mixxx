@@ -212,6 +212,20 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
 
+    // Ordering of decks in 4-deck mode
+    QList<QList<int> > deck_orderings = m_pPlayerManager->getAvailableDeckOrderings();
+    for (int i = 0; i < deck_orderings.count(); ++i) {
+        QString ui_order = "    ";
+        // Orderings are given in load order, not mixer order, so we have to we have to
+        // do a little inefficient shuffling to display the correct letters.
+        for (int j = 0; j < deck_orderings[i].count(); ++j) {
+            ui_order[deck_orderings[i][j]] = j + 'A';
+        }
+        ComboBoxDeckOrder->addItem(tr(ui_order.toStdString().c_str()));
+    }
+    ComboBoxDeckOrder->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Controls]", "4DeckOrder")).toInt());
+    connect(ComboBoxDeckOrder, SIGNAL(activated(int)), this, SLOT(slotSetDeckOrder(int)));
+
     //
     // Skin configurations
     //
@@ -427,6 +441,11 @@ void DlgPrefControls::slotSetCueRecall(int)
 void DlgPrefControls::slotSetAutoDjRequeue(int)
 {
     m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"), ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
+}
+
+void DlgPrefControls::slotSetDeckOrder(int)
+{
+    m_pConfig->set(ConfigKey("[Controls]", "4DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentIndex()));
 }
 
 void DlgPrefControls::slotSetTooltips(int)

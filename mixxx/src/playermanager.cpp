@@ -34,9 +34,13 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
         m_pAnalyserQueue(NULL),
         m_pCONumDecks(new ControlObject(ConfigKey("[Master]", "num_decks"), true, true)),
         m_pCONumSamplers(new ControlObject(ConfigKey("[Master]", "num_samplers"), true, true)),
-        m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)) {
+        m_pCONumPreviewDecks(new ControlObject(ConfigKey("[Master]", "num_preview_decks"), true, true)),
+        m_pCOSkinNumDecks(new ControlObject(ConfigKey("[Skin]", "num_decks"), true, true)) {
 
     connect(m_pCONumDecks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotNumDecksControlChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pCONumDecks, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotNumDecksControlChanged(double)),
             Qt::DirectConnection);
     connect(m_pCONumSamplers, SIGNAL(valueChanged(double)),
@@ -44,6 +48,9 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
             Qt::DirectConnection);
     connect(m_pCONumPreviewDecks, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumPreviewDecksControlChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pCOSkinNumDecks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSkinNumDecksControlChanged(double)),
             Qt::DirectConnection);
 
     // This is parented to the PlayerManager so does not need to be deleted
@@ -73,6 +80,7 @@ PlayerManager::~PlayerManager() {
     delete m_pCONumSamplers;
     delete m_pCONumDecks;
     delete m_pCONumPreviewDecks;
+    delete m_pCOSkinNumDecks;
     if (m_pAnalyserQueue) {
         delete m_pAnalyserQueue;
     }
@@ -165,6 +173,22 @@ unsigned int PlayerManager::numPreviewDecks() {
     return pNumCO ? pNumCO->get() : 0;
 }
 
+const QList<int> PlayerManager::getDeckOrdering() {
+    QList<int> order;
+    int skin_deck_count = m_pCOSkinNumDecks->get();
+    if (skin_deck_count == 4) {
+        return ms_deck_orderings[m_pConfig->getValueString(ConfigKey("[Controls]", "4DeckOrder")).toInt()];
+    }
+    // A skin might not have this value defined -- assume it's an old 2-deck skin.
+    if (skin_deck_count == 0) {
+        skin_deck_count = 2;
+    }
+    for (int i = 0; i < skin_deck_count; ++i) {
+        order << i;
+    }
+    return order;
+}
+
 void PlayerManager::slotNumDecksControlChanged(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
@@ -208,6 +232,11 @@ void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
     while (m_preview_decks.size() < num) {
         addPreviewDeckInner();
     }
+}
+
+void PlayerManager::slotSkinNumDecksControlChanged(double v) {
+    m_skin_decks = static_cast<unsigned int>(v);
+    m_pCONumDecks->set(m_skin_decks);
 }
 
 void PlayerManager::addDeck() {
@@ -373,9 +402,11 @@ void PlayerManager::slotLoadToSampler(QString location, int sampler) {
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     QMutexLocker locker(&m_mutex);
-    QList<Deck*>::iterator it = m_decks.begin();
-    while (it != m_decks.end()) {
-        Deck* pDeck = *it;
+    const QList<int>& order = getDeckOrdering();
+    QList<int>::const_iterator it = order.begin();
+    while (it != order.end()) {
+        qDebug() << "try loading " << *it;
+        Deck* pDeck = m_decks[*it];
         ControlObject* playControl =
                 ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {
@@ -383,7 +414,7 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
             pDeck->slotLoadTrack(pTrack, false);
             return;
         }
-        it++;
+        ++it;
     }
 }
 
@@ -402,5 +433,3 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
         it++;
     }
 }
-
-
