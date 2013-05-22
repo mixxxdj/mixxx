@@ -268,6 +268,10 @@ int SoundManager::setupDevices() {
     int err = 0;
     m_pClkRefDevice = NULL;
     m_pErrorDevice = NULL;
+    int devicesAttempted = 0;
+    int devicesOpened = 0;
+    int outputDevicesOpened = 0;
+    int inputDevicesOpened = 0;
 
     // filter out any devices in the config we don't actually have
     m_config.filterOutputs(this);
@@ -327,10 +331,6 @@ int SoundManager::setupDevices() {
         }
     }
 
-    int devicesAttempted = 0;
-    int devicesOpened = 0;
-    int outputDevicesOpened = 0;
-    int inputDevicesOpened = 0;
     foreach (SoundDevice *device, toOpen.keys()) {
         QPair<bool, bool> mode(toOpen[device]);
         bool isInput = mode.first;
