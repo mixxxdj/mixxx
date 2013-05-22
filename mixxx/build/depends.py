@@ -240,7 +240,6 @@ class Qt(Dependence):
                        'QtOpenGL4',
                        'QtXml4',
                        'QtNetwork4',
-                       'QtXmlPatterns4',
                        'QtSql4',
                        'QtScript4',]
             if use_qtwebkit:
@@ -936,5 +935,7 @@ class MixxxCore(Feature):
             elif build.toolchain_is_gnu:
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
-                build.env.Append(CCFLAGS = '-mwindows')
                 build.env.Append(CCFLAGS = '-mthreads')
+                build.env.Append(CCFLAGS = '-fno-keep-inline-dllexport')
+                build.env.Append(LIBS = 'z');
+

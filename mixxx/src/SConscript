@@ -60,9 +60,37 @@ if build.platform_is_windows:
         fo.write(''.join(str_list))
         fo.close()
 
-        mixxx_bin = env.Program('mixxx',
-                            [sources, env.RES('#src/mixxx.rc')],
-                            LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+        if build.crosscompile:
+            # Taken from http://scons.org/wiki/EmbedManifestIntoTarget
+            manifest_template = '''\
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<assembly xmlns='urn:schemas-microsoft-com:asm.v1' manifestVersion='1.0'>
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level='asInvoker' uiAccess='false' />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+</assembly>
+'''
+            manifest_path = "mixxx.manifest"
+            fout = open (manifest_path, "w");
+            fout.write (manifest_template)
+            fout.close()
+            fout = open ("manifest.rc", "w");
+            fout.write ("""
+#include "winuser.h"
+1 RT_MANIFEST  %s
+""" % manifest_path)
+            fout.close()
+            mixxx_bin = env.Program('mixxx',
+                [sources, env.RES('#src/mixxx.rc'),
+                env.RES("manifest.rc")]);
+        else:
+            mixxx_bin = env.Program('mixxx',
+                               [sources, env.RES('#src/mixxx.rc')],
+                               LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
@@ -202,9 +230,10 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
         dll_files = [ os.path.join (crosscompile_bin_path, \
             s) for s in [ 'libFLAC-8.dll', 'libogg-0.dll',
                 'libportaudio-2.dll', 'libportmidi_s.dll',
-                'libsndfile-1.dll', 'libsqlite3-0.dll',
-                'libstdc++-6.dll', 'libtag.dll', 'libvorbis-0.dll',
-                'libvorbisenc-2.dll', 'libvorbisfile-3.dll' ] ];
+                'libprotobuf-lite-7.dll', 'libsndfile-1.dll',
+                'libsqlite3-0.dll', 'libstdc++-6.dll', 'libtag.dll',
+                'libvorbis-0.dll', 'libvorbisenc-2.dll',
+                'libvorbisfile-3.dll' ] ];
 elif build.crosscompile and build.platform_is_osx:
         # Glob appropriate dylib files. We have 4 different library types,
         # x86_64, x86, powerpc, powerpc64
@@ -237,10 +266,16 @@ else:
                           $QTDIR/bin/QtScript4.dll""")
 
 if int(flags.get('sqlitedll', 0)):
-    if build.msvcdebug:
-        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
+    if build.crosscompile:
+        if build.msvcdebug:
+            sqldll_files = Split("""$QTDIR/lib/qt4/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
+        else:
+            sqldll_files = Split("""$QTDIR/lib/qt4/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
     else:
-        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
+        if build.msvcdebug:
+            sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
+        else:
+            sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')

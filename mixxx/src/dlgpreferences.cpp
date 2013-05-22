@@ -87,8 +87,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     m_wcrossfader = new DlgPrefCrossfader(this, config);
     addPageWidget(m_wcrossfader);
 
+	#ifdef __VAMP__
     m_wbeats = new DlgPrefBeats(this, config);
     addPageWidget (m_wbeats);
+	#endif // __VAMP__
     m_wreplaygain = new DlgPrefReplayGain(this, config);
     addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, config);
