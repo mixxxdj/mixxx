@@ -18,6 +18,8 @@
 #define SOUNDMANAGER_H
 
 #include <QObject>
+#include <QMutex>
+
 #include "defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
@@ -46,12 +48,6 @@ class SoundManager : public QObject {
   public:
     SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
     virtual ~SoundManager();
-
-    // Returns a pointer to the EngineMaster instance used by this SoundManager.
-    //
-    // NOTE(XXX): This is only here so that preferences can find out how many
-    // channels there are.
-    const EngineMaster* getEngine() const;
 
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
@@ -129,7 +125,7 @@ class SoundManager : public QObject {
     SoundDevice* m_pClkRefDevice;
     int m_outputDevicesOpened;
     int m_inputDevicesOpened;
-    QMutex requestBufferMutex;
+    QMutex m_requestBufferMutex;
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, const AudioSource*> m_registeredSources;

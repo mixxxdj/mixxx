@@ -87,10 +87,6 @@ SoundManager::~SoundManager() {
     delete m_pControlObjectVinylControlGain;
 }
 
-const EngineMaster* SoundManager::getEngine() const {
-    return m_pMaster;
-}
-
 QList<SoundDevice*> SoundManager::getDeviceList(
     QString filterAPI, bool bOutputDevices, bool bInputDevices) {
     //qDebug() << "SoundManager::getDeviceList";
@@ -135,7 +131,7 @@ void SoundManager::closeDevices() {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
 
-    //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
+    //m_requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
                                  //      to lock. PortAudio stops the threads nicely.
     while (dev_it.hasNext())
@@ -143,11 +139,11 @@ void SoundManager::closeDevices() {
         //qDebug() << "closing a device...";
         dev_it.next()->close();
     }
-    //requestBufferMutex.unlock();
+    //m_requestBufferMutex.unlock();
 
-    //requestBufferMutex.lock();
+    //m_requestBufferMutex.lock();
     m_pClkRefDevice = NULL;
-    //requestBufferMutex.unlock();
+    //m_requestBufferMutex.unlock();
 
     m_outputBuffers.clear(); // anti-cruft (safe because outputs only have
                              // pointers to memory owned by EngineMaster)
@@ -428,37 +424,8 @@ QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
 
-    /*
-    // Display when sound cards drop or duplicate buffers (use for testing only)
-    if (iNumDevicesOpenedForOutput>1) {
-        // Running total of requested frames
-        long currentFrameCount = 0;
-        if (m_deviceFrameCount.contains(device)) currentFrameCount=m_deviceFrameCount.value(device);
-        m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
-        // Get current time in milliseconds
-//         uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUint();
-
-        if (device != m_pClkRefDevice) {  // If not the reference device,
-            // Detect dropped frames/buffers
-            long sdifference = m_deviceFrameCount.value(m_pClkRefDevice)-m_deviceFrameCount.value(device);
-            QString message = "dropped";
-            if (sdifference < 0) message = "duplicated";
-            if (sdifference != 0) {
-                m_deviceFrameCount.clear();
-                message = QString("%1 %2 %3 frames (%4 buffers)")
-                            .arg(device->getDisplayName())
-                            .arg(message)
-                            .arg(fabs(sdifference))
-                            .arg(fabs(sdifference)/iFramesPerBuffer);
-                qWarning() << message;
-            }
-        }
-    }
-    //  End dropped/duped buffer display
-    */
-
     //When the clock reference device requests a buffer...
-    if (device == m_pClkRefDevice && requestBufferMutex.tryLock())
+    if (device == m_pClkRefDevice && m_requestBufferMutex.tryLock())
     {
         // Only generate a new buffer for the clock reference card
 //         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
@@ -469,7 +436,7 @@ QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
         //as input (buffer size) so...
         m_pMaster->process(0, 0, iFramesPerBuffer*2);
 
-        requestBufferMutex.unlock();
+        m_requestBufferMutex.unlock();
     }
     return m_outputBuffers;
 }

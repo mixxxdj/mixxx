@@ -15,14 +15,16 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <portaudio.h>
+
 #include <QtDebug>
 #include <QtCore>
-#include <portaudio.h>
-#include <assert.h>
+
+#include "sounddeviceportaudio.h"
+
 #include "controlobjectthreadmain.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
-#include "sounddeviceportaudio.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
 #include "util/timer.h"
@@ -30,20 +32,18 @@
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
         : SoundDevice(config, sm),
+          m_pStream(NULL),
+          m_devId(devIndex),
+          m_deviceInfo(deviceInfo),
           m_bSetThreadPriority(false),
-          m_pMasterUnderflowCount(ControlObject::getControl(ConfigKey("[Master]", "underflow_count"))),
+          m_pMasterUnderflowCount(ControlObject::getControl(
+              ConfigKey("[Master]", "underflow_count"))),
           m_undeflowUpdateCount(0) {
-    //qDebug() << "SoundDevicePortAudio::SoundDevicePortAudio()";
-    m_deviceInfo = deviceInfo;
-    m_devId = devIndex;
+    // Setting parent class members:
     m_hostAPI = Pa_GetHostApiInfo(deviceInfo->hostApi)->name;
     m_dSampleRate = deviceInfo->defaultSampleRate;
     m_strInternalName = QString("%1, %2").arg(QString::number(m_devId), deviceInfo->name);
     m_strDisplayName = QString(deviceInfo->name);
-
-    m_pStream = 0;
-    //m_devId = -1;
-    m_iNumberOfBuffers = 2;
     m_iNumInputChannels = m_deviceInfo->maxInputChannels;
     m_iNumOutputChannels = m_deviceInfo->maxOutputChannels;
 }
@@ -51,9 +51,8 @@ SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, So
 SoundDevicePortAudio::~SoundDevicePortAudio() {
 }
 
-int SoundDevicePortAudio::open()
-{
-    qDebug() << "SoundDevicePortAudio::open()" << this->getInternalName();
+int SoundDevicePortAudio::open() {
+    qDebug() << "SoundDevicePortAudio::open()" << getInternalName();
     PaError err;
 
     if (m_audioOutputs.empty() && m_audioInputs.empty()) {
@@ -99,12 +98,12 @@ int SoundDevicePortAudio::open()
         }
     }
 
-    //Sample rate
+    // Sample rate
     if (m_dSampleRate <= 0) {
         m_dSampleRate = 44100.0f;
     }
 
-    //Get latency in milleseconds
+    // Get latency in milleseconds
     qDebug() << "framesPerBuffer:" << m_framesPerBuffer;
     double bufferMSec = m_framesPerBuffer / m_dSampleRate * 1000;
     qDebug() << "Requested sample rate: " << m_dSampleRate << "Hz, latency:" << bufferMSec << "ms";
@@ -112,34 +111,10 @@ int SoundDevicePortAudio::open()
     qDebug() << "Output channels:" << m_outputParams.channelCount << "| Input channels:"
         << m_inputParams.channelCount;
 
-    /*
-    //Calculate the latency in samples
-    //Max channels opened for input or output
-    int iMaxChannels = math_max(m_outputParams.channelCount, m_inputParams.channelCount);
-
-    int iLatencySamples = (int)((float)(m_dSampleRate*iMaxChannels)/1000.f*(float)iLatencyMSec);
-
-    //Round to the nearest multiple of 4.
-    if (iLatencySamples % 4 != 0) {
-        iLatencySamples -= (iLatencySamples % 4);
-        iLatencySamples += 4;
-    }
-
-    qDebug() << "iLatencySamples:" << iLatencySamples;
-
-    int iNumberOfBuffers = 2;
-    //Apply simple rule to determine number of buffers
-    if (iLatencySamples / MIXXXPA_MAX_FRAME_SIZE < 2)
-        iNumberOfBuffers = 2;
-    else
-        iNumberOfBuffers = iLatencySamples / MIXXXPA_MAX_FRAME_SIZE;
-
-    //Frame size...
-    unsigned int iFramesPerBuffer = iLatencySamples/m_iNumberOfBuffers;
-    */
-
-    //PortAudio's JACK backend also only properly supports paFramesPerBufferUnspecified in non-blocking mode
-    //because the latency comes from the JACK daemon. (PA should give an error or something though, but it doesn't.)
+    // PortAudio's JACK backend also only properly supports
+    // paFramesPerBufferUnspecified in non-blocking mode because the latency
+    // comes from the JACK daemon. (PA should give an error or something though,
+    // but it doesn't.)
     if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
         m_framesPerBuffer = paFramesPerBufferUnspecified;
     }
@@ -170,15 +145,12 @@ int SoundDevicePortAudio::open()
                         callback,
                         (void*) this); // pointer passed to the callback function
 
-    if (err != paNoError)
-    {
+    if (err != paNoError) {
         qWarning() << "Error opening stream:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
-        m_pStream = 0;
+        m_pStream = NULL;
         return ERR;
-    }
-    else
-    {
+    } else {
         qDebug() << "Opened PortAudio stream successfully... starting";
     }
 
@@ -192,8 +164,7 @@ int SoundDevicePortAudio::open()
        qDebug() << "Dynamically loaded PortAudio library";
 
     EnableAlsaRT enableRealtime = (EnableAlsaRT) portaudio.resolve("PaAlsa_EnableRealtimeScheduling");
-    if (enableRealtime)
-    {
+    if (enableRealtime) {
         enableRealtime(m_pStream, 1);
     }
     portaudio.unload();
@@ -201,15 +172,14 @@ int SoundDevicePortAudio::open()
 
     // Start stream
     err = Pa_StartStream(m_pStream);
-    if (err != paNoError)
-    {
+    if (err != paNoError) {
         qWarning() << "PortAudio: Start stream error:" << Pa_GetErrorText(err);
         m_lastError = QString::fromUtf8(Pa_GetErrorText(err));
-        m_pStream = 0;
+        m_pStream = NULL;
         return ERR;
-    }
-    else
+    } else {
         qDebug() << "PortAudio: Started stream successfully";
+    }
 
     // Get the actual details of the stream & update Mixxx's data
     const PaStreamInfo* streamDetails = Pa_GetStreamInfo(m_pStream);
@@ -248,20 +218,16 @@ int SoundDevicePortAudio::open()
     return OK;
 }
 
-int SoundDevicePortAudio::close()
-{
-    //qDebug() << "SoundDevicePortAudio::close()" << this->getInternalName();
-    if (m_pStream)
-    {
+int SoundDevicePortAudio::close() {
+    //qDebug() << "SoundDevicePortAudio::close()" << getInternalName();
+    if (m_pStream) {
         //Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(m_pStream);
-        if (err == 1) //1 means the stream is stopped. 0 means active.
-        {
+        if (err == 1) { //1 means the stream is stopped. 0 means active.
             qDebug() << "PortAudio: Stream already stopped, but no error.";
             return 1;
         }
-        if (err < 0) //Real PaErrors are always negative.
-        {
+        if (err < 0) { //Real PaErrors are always negative.
             qWarning() << "PortAudio: Stream already stopped:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
@@ -276,22 +242,20 @@ int SoundDevicePortAudio::close()
                                                    //waiting on a mutex, which will leave the mutex in an screwy
                                                    //state. Don't use it!
 
-        if( err != paNoError )
-        {
+        if (err != paNoError) {
             qWarning() << "PortAudio: Stop stream error:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
 
         // Close stream
         err = Pa_CloseStream(m_pStream);
-        if( err != paNoError )
-        {
+        if (err != paNoError) {
             qWarning() << "PortAudio: Close stream error:" << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
     }
 
-    m_pStream = 0;
+    m_pStream = NULL;
 
     return 0;
 }
@@ -312,13 +276,6 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     ScopedTimer t("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
-
-    static ControlObject* pControlObjectVinylControlGain =
-        ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
-    static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
-    int iFrameSize = m_outputParams.channelCount;
-    int iVCGain = 1;
-
     // Turn on TimeCritical priority for the callback thread. If we are running
     // in Linux userland, for example, this will have no effect.
     if (!m_bSetThreadPriority) {
@@ -340,8 +297,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
 
 
     //Send audio from the soundcard's input off to the SoundManager...
-    if (in && framesPerBuffer > 0)
-    {
+    if (in && framesPerBuffer > 0) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
         //Note: Input is processed first so that any ControlObject changes made in response to input
         //      is processed as soon as possible (that is, when m_pSoundManager->requestBuffer() is
@@ -352,11 +308,14 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         //only for output buffers...
         // TODO(bkgood) move this to vcproxy or something, once we have other
         // inputs we don't want every input getting the vc gain
-        iVCGain = pControlObjectVinylControlGain->get();
+
+
+
+        static ControlObject* pControlObjectVinylControlGain =
+                ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
+        int iVCGain = pControlObjectVinylControlGain->get();
         for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
             in[i] *= iVCGain;
-
-        //qDebug() << in[0];
 
         // TODO(bkgood) deinterlace here and send a hashmap of buffers to
         // soundmanager so we have all our deinterlacing in one place and
@@ -366,13 +325,19 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
                                     m_inputParams.channelCount);
     }
 
-    if (output && framesPerBuffer > 0)
-    {
+    if (output && framesPerBuffer > 0) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess output " + getInternalName());
-        assert(iFrameSize > 0);
         QHash<AudioOutput, const CSAMPLE*> outputAudio
             = m_pSoundManager->requestBuffer(m_audioOutputs,
                     framesPerBuffer, this);
+
+        if (m_outputParams.channelCount <= 0) {
+            qWarning() << "SoundDevicePortAudio::callbackProcess m_outputParams channel count is zero or less:" << m_outputParams.channelCount;
+            // Bail out.
+            return paContinue;
+        }
+        const unsigned int iFrameSize = static_cast<unsigned int>(
+            m_outputParams.channelCount);
 
         // Reset sample for each open channel
         memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
@@ -381,28 +346,31 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         // source list to find out what goes in the buffer data is interlaced in
         // the order of the list
 
+        static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
+
         for (QList<AudioOutput>::const_iterator i = m_audioOutputs.begin(),
                      e = m_audioOutputs.end(); i != e; ++i) {
-            const AudioOutput &out = *i;
+            const AudioOutput& out = *i;
             const CSAMPLE* input = outputAudio[out];
             const ChannelGroup outChans = out.getChannelGroup();
             const int iChannelCount = outChans.getChannelCount();
             const int iChannelBase = outChans.getChannelBase();
 
             for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
+                // iFrameBase is the "base sample" in a frame (ie. the first
+                // sample in a frame)
+                const unsigned int iFrameBase = iFrameNo * iFrameSize;
+                const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+
                 // this will make sure a sample from each channel is copied
                 for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                    // iFrameBase is the "base sample" in a frame (ie. the first
-                    // sample in a frame)
-                    unsigned int iFrameBase = iFrameNo * iFrameSize;
-                    unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
-
                     // note that if QHash gets request for a value with a key it
                     // doesn't know, it will return a default value (NULL is the
                     // likely choice here), but the old system would've done
                     // something similar (it would have gone over the bounds of
                     // the array)
 
+                    // TODO(rryan): WTF, why is this +=?
                     output[iFrameBase + iChannelBase + iChannel] +=
                             input[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
 
