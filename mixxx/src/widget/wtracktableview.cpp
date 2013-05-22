@@ -25,7 +25,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_searchThread(this) ,
           m_DlgTagFetcher(NULL) ,
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
@@ -696,7 +695,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 void WTrackTableView::onSearch(const QString& text) {
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
-        m_searchThread.enqueueSearch(trackModel, text);
+        trackModel->search(text);
     }
 }
 
@@ -708,7 +707,7 @@ void WTrackTableView::onSearchCleared() {
     restoreVScrollBarPos();
     TrackModel* trackModel = getTrackModel();
     if (trackModel) {
-        m_searchThread.enqueueSearch(trackModel, "");
+        trackModel->search("");
     }
 }
 

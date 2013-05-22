@@ -99,11 +99,11 @@ class MixxxApp : public QMainWindow {
     void slotHelpManual();
     // Visits translation interface on launchpad.net
     void slotHelpTranslation();
-    /** Scan or rescan the music library directory */
+    // Scan or rescan the music library directory
     void slotScanLibrary();
-    /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
+    // Enables the "Rescan Library" menu item. This gets disabled when a scan is running.
     void slotEnableRescanLibraryAction();
-    /**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
+    //Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available
     void slotOptionsMenuShow();
     /** toogle on-screen widget visibility */
     void slotViewShowSamplers(bool);
@@ -162,7 +162,7 @@ class MixxxApp : public QMainWindow {
     VinylControlManager *m_pVCManager;
 
     MixxxKeyboard* m_pKeyboard;
-    /** Library scanner object */
+    // Library scanner object
     LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;

@@ -618,7 +618,6 @@ class MixxxCore(Feature):
                    "library/libraryscannerdlg.cpp",
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
-                   "library/searchthread.cpp",
 
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",

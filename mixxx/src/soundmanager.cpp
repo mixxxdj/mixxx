@@ -87,10 +87,6 @@ SoundManager::~SoundManager() {
     delete m_pControlObjectVinylControlGain;
 }
 
-const EngineMaster* SoundManager::getEngine() const {
-    return m_pMaster;
-}
-
 QList<SoundDevice*> SoundManager::getDeviceList(
     QString filterAPI, bool bOutputDevices, bool bInputDevices) {
     //qDebug() << "SoundManager::getDeviceList";
@@ -135,7 +131,7 @@ void SoundManager::closeDevices() {
     //qDebug() << "SoundManager::closeDevices()";
     QListIterator<SoundDevice*> dev_it(m_devices);
 
-    //requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
+    //m_requestBufferMutex.lock(); //Ensures we don't kill a stream in the middle of a callback call.
                                  //Note: if we're using Pa_StopStream() (like now), we don't need
                                  //      to lock. PortAudio stops the threads nicely.
     while (dev_it.hasNext())
@@ -143,11 +139,11 @@ void SoundManager::closeDevices() {
         //qDebug() << "closing a device...";
         dev_it.next()->close();
     }
-    //requestBufferMutex.unlock();
+    //m_requestBufferMutex.unlock();
 
-    //requestBufferMutex.lock();
+    //m_requestBufferMutex.lock();
     m_pClkRefDevice = NULL;
-    //requestBufferMutex.unlock();
+    //m_requestBufferMutex.unlock();
 
     m_outputBuffers.clear(); // anti-cruft (safe because outputs only have
                              // pointers to memory owned by EngineMaster)
@@ -335,8 +331,8 @@ int SoundManager::setupDevices() {
     }
     foreach (SoundDevice *device, toOpen.keys()) {
         QPair<bool, bool> mode(toOpen[device]);
-        bool isInput(mode.first);
-        bool isOutput(mode.second);
+        bool isInput = mode.first;
+        bool isOutput = mode.second;
         ++devicesAttempted;
         m_pErrorDevice = device;
         err = device->open();
@@ -348,18 +344,18 @@ int SoundManager::setupDevices() {
                 ++outputDevicesOpened;
             if (isInput)
                 ++inputDevicesOpened;
+
+            // If we have no yet set a clock source then we use the first
+            // successfully opened SoundDevice.
+            if (!m_pClkRefDevice) {
+                m_pClkRefDevice = device;
+                qWarning() << "Output sound device clock reference not set! Using"
+                           << device->getDisplayName();
+            }
         }
     }
 
-    if (!m_pClkRefDevice && outputDevicesOpened > 0) {
-        QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
-        if (outputDevices.length() > 0) {
-            SoundDevice* device = outputDevices.first();
-            qWarning() << "Output sound device clock reference not set! Using"
-                       << device->getDisplayName();
-            m_pClkRefDevice = device;
-        }
-    } else if (outputDevicesOpened > 0) {
+    if (m_pClkRefDevice) {
         qDebug() << "Using" << m_pClkRefDevice->getDisplayName()
                  << "as output sound device clock reference";
     } else {
@@ -421,45 +417,16 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
-    const QList<AudioOutput>& outputs, unsigned long iFramesPerBuffer,
+void SoundManager::requestBuffer(
+    const QList<AudioOutput>& outputs, float* outputBuffer,
+    const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
     SoundDevice* device, double streamTime /* = 0 */) {
     Q_UNUSED(streamTime);
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
     //qDebug() << "SoundManager::requestBuffer()";
 
-    /*
-    // Display when sound cards drop or duplicate buffers (use for testing only)
-    if (iNumDevicesOpenedForOutput>1) {
-        // Running total of requested frames
-        long currentFrameCount = 0;
-        if (m_deviceFrameCount.contains(device)) currentFrameCount=m_deviceFrameCount.value(device);
-        m_deviceFrameCount.insert(device, currentFrameCount+iFramesPerBuffer);  // Overwrites existing value if already present
-        // Get current time in milliseconds
-//         uint t = QDateTime::currentDateTime().toTime_t()*1000+QDateTime::currentDateTime().toString("zzz").toUint();
-
-        if (device != m_pClkRefDevice) {  // If not the reference device,
-            // Detect dropped frames/buffers
-            long sdifference = m_deviceFrameCount.value(m_pClkRefDevice)-m_deviceFrameCount.value(device);
-            QString message = "dropped";
-            if (sdifference < 0) message = "duplicated";
-            if (sdifference != 0) {
-                m_deviceFrameCount.clear();
-                message = QString("%1 %2 %3 frames (%4 buffers)")
-                            .arg(device->getDisplayName())
-                            .arg(message)
-                            .arg(fabs(sdifference))
-                            .arg(fabs(sdifference)/iFramesPerBuffer);
-                qWarning() << message;
-            }
-        }
-    }
-    //  End dropped/duped buffer display
-    */
-
     //When the clock reference device requests a buffer...
-    if (device == m_pClkRefDevice && requestBufferMutex.tryLock())
-    {
+    if (device == m_pClkRefDevice && m_requestBufferMutex.tryLock()) {
         // Only generate a new buffer for the clock reference card
 //         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
 
@@ -469,13 +436,59 @@ QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
         //as input (buffer size) so...
         m_pMaster->process(0, 0, iFramesPerBuffer*2);
 
-        requestBufferMutex.unlock();
+        m_requestBufferMutex.unlock();
     }
-    return m_outputBuffers;
+
+    // Reset sample for each open channel
+    memset(outputBuffer, 0, iFramesPerBuffer * iFrameSize * sizeof(*outputBuffer));
+
+    // Interlace Audio data onto portaudio buffer.  We iterate through the
+    // source list to find out what goes in the buffer data is interlaced in
+    // the order of the list
+
+    static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
+
+    for (QList<AudioOutput>::const_iterator i = outputs.begin(),
+                 e = outputs.end(); i != e; ++i) {
+        const AudioOutput& out = *i;
+
+        QHash<AudioOutput, const CSAMPLE*>::const_iterator it =
+                m_outputBuffers.find(out);
+        if (it == m_outputBuffers.end()) {
+            continue;
+        }
+
+        const CSAMPLE* input = it.value();
+        if (input == NULL) {
+            continue;
+        }
+
+        const ChannelGroup outChans = out.getChannelGroup();
+        const int iChannelCount = outChans.getChannelCount();
+        const int iChannelBase = outChans.getChannelBase();
+
+        for (unsigned int iFrameNo=0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+            // iFrameBase is the "base sample" in a frame (ie. the first
+            // sample in a frame)
+            const unsigned int iFrameBase = iFrameNo * iFrameSize;
+            const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+
+            // this will make sure a sample from each channel is copied
+            for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
+                outputBuffer[iFrameBase + iChannelBase + iChannel] =
+                        input[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+
+                //Input audio pass-through (useful for debugging)
+                //if (in)
+                //    output[iFrameBase + src.channelBase + iChannel] =
+                //    in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+            }
+        }
+    }
 }
 
 void SoundManager::pushBuffer(const QList<AudioInput>& inputs, short * inputBuffer,
-                              unsigned long iFramesPerBuffer, unsigned int iFrameSize) {
+                              const unsigned long iFramesPerBuffer, const unsigned int iFrameSize) {
     //This function is called a *lot* and is a big source of CPU usage.
     //It needs to be very fast.
 
