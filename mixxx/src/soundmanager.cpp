@@ -331,8 +331,8 @@ int SoundManager::setupDevices() {
     }
     foreach (SoundDevice *device, toOpen.keys()) {
         QPair<bool, bool> mode(toOpen[device]);
-        bool isInput(mode.first);
-        bool isOutput(mode.second);
+        bool isInput = mode.first;
+        bool isOutput = mode.second;
         ++devicesAttempted;
         m_pErrorDevice = device;
         err = device->open();
@@ -344,18 +344,18 @@ int SoundManager::setupDevices() {
                 ++outputDevicesOpened;
             if (isInput)
                 ++inputDevicesOpened;
+
+            // If we have no yet set a clock source then we use the first
+            // successfully opened SoundDevice.
+            if (!m_pClkRefDevice) {
+                m_pClkRefDevice = device;
+                qWarning() << "Output sound device clock reference not set! Using"
+                           << device->getDisplayName();
+            }
         }
     }
 
-    if (!m_pClkRefDevice && outputDevicesOpened > 0) {
-        QList<SoundDevice*> outputDevices = getDeviceList(m_config.getAPI(), true, false);
-        if (outputDevices.length() > 0) {
-            SoundDevice* device = outputDevices.first();
-            qWarning() << "Output sound device clock reference not set! Using"
-                       << device->getDisplayName();
-            m_pClkRefDevice = device;
-        }
-    } else if (outputDevicesOpened > 0) {
+    if (m_pClkRefDevice) {
         qDebug() << "Using" << m_pClkRefDevice->getDisplayName()
                  << "as output sound device clock reference";
     } else {
