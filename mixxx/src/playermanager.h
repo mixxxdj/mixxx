@@ -127,18 +127,6 @@ class PlayerManager : public QObject {
             return m_hOrdersHash[deck_count];
         }
 
-        const QList<int> getLoadOrder(QString deckstring) const {
-            orders_hash_t::const_iterator it = m_hOrdersHash.find(deckstring.length());
-            if (it == m_hOrdersHash.end()) {
-                return QList<int>();
-            }
-            foreach(const deck_order_t& order, *it) {
-                if (order.label == deckstring) {
-                    return order.load_order;
-                }
-            }
-        }
-
       private:
         deck_order_t makeDefaultOrder(int deck_count) const {
             QString str_order;
