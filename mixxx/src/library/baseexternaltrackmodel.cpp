@@ -7,20 +7,19 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
                                                QString settingsNamespace,
                                                QString trackTable,
                                                QString trackSource)
-        : BaseSqlTableModel(parent, pTrackCollection,
-                            pTrackCollection->getDatabase(),
-                            settingsNamespace),
-          m_pTrackCollection(pTrackCollection),
-          m_database(m_pTrackCollection->getDatabase()) {
-    connect(this, SIGNAL(doSearch(const QString&)),
-            this, SLOT(slotSearch(const QString&)));
+        : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
+          m_trackTable(trackTable),
+          m_trackSource(trackSource) {
+    setTableModel();
+}
 
+void BaseExternalTrackModel::setTableModel(int id) {
+    Q_UNUSED(id);
     QStringList columns;
     columns << "id";
     // TODO(XXX) preview column, needs a temporary view
-
-    setTable(trackTable, columns[0], columns,
-             m_pTrackCollection->getTrackSource(trackSource));
+    setTable(m_trackTable, columns[0], columns,
+             m_pTrackCollection->getTrackSource(m_trackSource));
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     initHeaderData();
 }
@@ -74,15 +73,6 @@ TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     return pTrack;
 }
 
-void BaseExternalTrackModel::search(const QString& searchText) {
-    // qDebug() << "BaseExternalTrackModel::search()" << searchText
-    //          << QThread::currentThread();
-    emit(doSearch(searchText));
-}
-
-void BaseExternalTrackModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText);
-}
 
 bool BaseExternalTrackModel::isColumnInternal(int column) {
     // Used for preview deck widgets.
