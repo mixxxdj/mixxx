@@ -1,60 +1,26 @@
 #ifndef VINYLCONTROL_H
 #define VINYLCONTROL_H
 
-#include <qthread.h>
+#include <QString>
+
 #include "configobject.h"
-#include "controlobject.h"
-#include "soundmanagerconfig.h"
-//XXX: this is only so we have access to vinylcontrol status consts
-#include "engine/enginebuffer.h"
+#include "vinylcontrol/vinylsignalquality.h"
 
 class ControlObjectThread;
 
-#define MIXXX_VINYL_FINALSCRATCH "Final Scratch (crappy)"
-#define MIXXX_VINYL_MIXVIBESDVS "MixVibes DVS V2 Vinyl"
-#define MIXXX_VINYL_SERATOCV02VINYLSIDEA "Serato CV02 Vinyl, Side A"
-#define MIXXX_VINYL_SERATOCV02VINYLSIDEB "Serato CV02 Vinyl, Side B"
-#define MIXXX_VINYL_SERATOCD "Serato CD"
-#define MIXXX_VINYL_TRAKTORSCRATCHSIDEA "Traktor Scratch MK1 Vinyl, Side A"
-#define MIXXX_VINYL_TRAKTORSCRATCHSIDEB "Traktor Scratch MK1 Vinyl, Side B"
-
-#define MIXXX_VINYL_SPEED_33 "33.3 RPM"
-#define MIXXX_VINYL_SPEED_45 "45 RPM"
-
-#define MIXXX_VINYL_SPEED_33_NUM 33.3f 
-#define MIXXX_VINYL_SPEED_45_NUM 45.0f 
-
-#define MIXXX_VCMODE_ABSOLUTE 0
-#define MIXXX_VCMODE_RELATIVE 1
-#define MIXXX_VCMODE_CONSTANT  2
-#define MIXXX_VCMODE_SCRATCH  3
-
-#define MIXXX_RELATIVE_CUE_OFF 0
-#define MIXXX_RELATIVE_CUE_ONECUE 1
-#define MIXXX_RELATIVE_CUE_HOTCUE 2
-
-#define MIXXX_VC_DEFAULT_LEADINTIME 0
-
-#define MIXXX_VINYL_SCOPE_SIZE 100
-
-//TODO: Make this an EngineObject instead one day? (need to route all the input audio through the engine that way too...)
-
-class VinylControl : public QThread
-{
+class VinylControl : public QObject {
   public:
     VinylControl(ConfigObject<ConfigValue> *pConfig, QString group);
     virtual ~VinylControl();
-    virtual void ToggleVinylControl(bool enable) = 0;
-    virtual bool isEnabled() = 0;
-    /*virtual void syncPitch(double pitch) = 0;
-    virtual void syncPosition() = 0; */
-    virtual void AnalyseSamples(const short* samples, size_t size) = 0;
+
+    virtual void toggleVinylControl(bool enable);
+    virtual bool isEnabled();
+    virtual void analyzeSamples(const short* samples, size_t nFrames) = 0;
     virtual float getSpeed();
-    virtual float getTimecodeQuality();
-    virtual unsigned char* getScopeBytemap();
-    virtual float getAngle();
+    virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo) = 0;
+
   protected:
-    virtual void run() = 0; // main thread loop
+    virtual float getAngle() = 0;
 
     QString strVinylType;
     QString strVinylSpeed;
@@ -63,7 +29,7 @@ class VinylControl : public QThread
     ControlObjectThread *playButton; //The ControlObject used to start/stop playback of the song.
     ControlObjectThread *playPos; //The ControlObject used to read the playback position in the song.
     ControlObjectThread *trackSamples;
-    ControlObjectThread *trackSampleRate; 
+    ControlObjectThread *trackSampleRate;
     ControlObjectThread *vinylSeek; //The ControlObject used to change the playback position in the song.
     ControlObjectThread *controlScratch; //The ControlObject used to seek when the record is spinning fast.
     ControlObjectThread *rateSlider; //The ControlObject used to change the speed/pitch of the song.
@@ -94,13 +60,8 @@ class VinylControl : public QThread
     float fTrackDuration;
     unsigned long iSampleRate;
     bool bIsEnabled;
-    int iRIAACorrection;
     int iVCMode;
     bool atRecordEnd;
-
-    QWaitCondition waitForNextInput;
-    QMutex lockInput;
-    QMutex lockSamples;
 };
 
 #endif

@@ -61,58 +61,19 @@
          <item row="1" column="1" colspan="3">
           <widget class="QLineEdit" name="txtArtist"/>
          </item>
+         <item row="8" column="0">
+          <widget class="QLabel" name="label_7">
+           <property name="text">
+            <string>Duration:</string>
+           </property>
+          </widget>
+         </item>
          <item row="2" column="0">
           <widget class="QLabel" name="label_6">
            <property name="text">
             <string>Album:</string>
            </property>
           </widget>
-         </item>
-         <item row="2" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtAlbum"/>
-         </item>
-         <item row="3" column="0">
-          <widget class="QLabel" name="label_9">
-           <property name="text">
-            <string>Genre:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="0">
-          <widget class="QLabel" name="label_11">
-           <property name="text">
-            <string>Composer:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="4" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtComposer"/>
-         </item>
-         <item row="3" column="1" colspan="3">
-          <widget class="QLineEdit" name="txtGenre"/>
-         </item>
-         <item row="5" column="2">
-          <widget class="QLabel" name="label_10">
-           <property name="text">
-            <string>Track #:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="5" column="3">
-          <widget class="QLineEdit" name="txtTrackNumber"/>
-         </item>
-         <item row="5" column="1">
-          <widget class="QLineEdit" name="txtYear"/>
-         </item>
-         <item row="5" column="0">
-          <widget class="QLabel" name="label_8">
-           <property name="text">
-            <string>Year</string>
-           </property>
-          </widget>
-         </item>
-         <item row="6" column="1">
-          <widget class="QLineEdit" name="txtKey"/>
          </item>
          <item row="6" column="0">
           <widget class="QLabel" name="label_12">
@@ -121,54 +82,13 @@
            </property>
           </widget>
          </item>
-         <item row="8" column="0">
-          <widget class="QLabel" name="label_7">
-           <property name="text">
-            <string>Duration:</string>
-           </property>
-          </widget>
+         <item row="3" column="1" colspan="3">
+          <widget class="QLineEdit" name="txtGenre"/>
          </item>
-         <item row="8" column="1">
-          <widget class="QLabel" name="txtDuration">
+         <item row="5" column="2">
+          <widget class="QLabel" name="label_10">
            <property name="text">
-            <string/>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="2">
-          <widget class="QLabel" name="Type">
-           <property name="text">
-            <string>Filetype:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="8" column="3">
-          <widget class="QLabel" name="txtType">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="0">
-          <widget class="QLabel" name="label_13">
-           <property name="text">
-            <string>BPM:</string>
-           </property>
-          </widget>
-         </item>
-         <item row="9" column="1">
-          <widget class="QLabel" name="txtBpm">
-           <property name="text">
-            <string/>
-           </property>
-           <property name="textInteractionFlags">
-            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+            <string>Track #:</string>
            </property>
           </widget>
          </item>
@@ -199,6 +119,86 @@
            </property>
           </widget>
          </item>
+         <item row="8" column="1">
+          <widget class="QLabel" name="txtDuration">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="2">
+          <widget class="QLabel" name="Type">
+           <property name="text">
+            <string>Filetype:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="8" column="3">
+          <widget class="QLabel" name="txtType">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="5" column="0">
+          <widget class="QLabel" name="label_8">
+           <property name="text">
+            <string>Year</string>
+           </property>
+          </widget>
+         </item>
+         <item row="6" column="1">
+          <widget class="QLineEdit" name="txtKey"/>
+         </item>
+         <item row="9" column="0">
+          <widget class="QLabel" name="label_13">
+           <property name="text">
+            <string>BPM:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="9" column="1">
+          <widget class="QLabel" name="txtBpm">
+           <property name="text">
+            <string/>
+           </property>
+           <property name="textInteractionFlags">
+            <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByKeyboard|Qt::TextSelectableByMouse</set>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="0">
+          <widget class="QLabel" name="label_11">
+           <property name="text">
+            <string>Composer:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="4" column="1" colspan="3">
+          <widget class="QLineEdit" name="txtComposer"/>
+         </item>
+         <item row="5" column="3">
+          <widget class="QLineEdit" name="txtTrackNumber"/>
+         </item>
+         <item row="5" column="1">
+          <widget class="QLineEdit" name="txtYear"/>
+         </item>
+         <item row="2" column="1" colspan="3">
+          <widget class="QLineEdit" name="txtAlbum"/>
+         </item>
+         <item row="3" column="0">
+          <widget class="QLabel" name="label_9">
+           <property name="text">
+            <string>Genre:</string>
+           </property>
+          </widget>
+         </item>
          <item row="7" column="1" colspan="3">
           <widget class="QTextEdit" name="txtComment">
            <property name="maximumSize">
@@ -212,7 +212,7 @@
            </property>
           </widget>
          </item>
-         <item row="13" column="1" colspan="3">
+         <item row="14" column="1" colspan="3">
           <widget class="QPushButton" name="btnReloadFromFile">
            <property name="text">
             <string>Reload track metadata from file.</string>
@@ -272,6 +272,13 @@
           <widget class="QLabel" name="Type_2">
            <property name="text">
             <string>Bitrate:</string>
+           </property>
+          </widget>
+         </item>
+         <item row="13" column="1" colspan="3">
+          <widget class="QPushButton" name="btnFetchTag">
+           <property name="text">
+            <string>Reload track metadata from musicBrainz</string>
            </property>
           </widget>
          </item>

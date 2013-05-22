@@ -5,12 +5,13 @@ import re
 CURRENT_VCS = None
 
 def get_current_vcs():
+    if CURRENT_VCS is not None:
+        return CURRENT_VCS
     if on_git():
         return "git"
     if on_bzr():
         return "bzr"
-    print os.getcwd()
-    raise Exception("Couldn't identify version control system")
+    return "tar"
 
 def on_bzr():
     cwd = os.getcwd()
@@ -44,6 +45,8 @@ def get_revision():
         return get_bzr_revision()
     if CURRENT_VCS == "git":
         return get_git_revision()
+    if CURRENT_VCS == "tar":
+        return ""
     return None
 
 def get_modified():
@@ -54,6 +57,8 @@ def get_modified():
         return get_bzr_modified()
     if CURRENT_VCS == "git":
         return get_git_modified()
+    if CURRENT_VCS == "tar":
+        return ""
     return None
 
 def get_branch_name():
@@ -64,6 +69,18 @@ def get_branch_name():
         return get_bzr_branch_name()
     if CURRENT_VCS == "git":
         return get_git_branch_name()
+    if CURRENT_VCS == "tar":
+        return ""
+    return None
+
+def export_source(source, dest):
+    global CURRENT_VCS
+    if CURRENT_VCS is None:
+        CURRENT_VCS = get_current_vcs()
+    if CURRENT_VCS == "bzr":
+        return export_bzr(source, dest)
+    if CURRENT_VCS == "git":
+        return export_git(source, dest)
     return None
 
 def get_git_revision():
@@ -87,6 +104,10 @@ def get_git_branch_name():
             match = match.groupdict()
             return match['branch'].strip()
     return None
+
+def export_git(source, dest):
+    os.mkdir(dest)
+    return os.system('git archive --format tar HEAD %s | tar x -C %s' % (source, dest))
 
 def get_bzr_revision():
     return os.popen("bzr revno").readline().strip()
@@ -133,6 +154,9 @@ def get_bzr_branch_name():
     # Fall back on branch nick.
     print "ERROR: Could not determine branch name from output of 'bzr info'. Please file a bug with the output of 'bzr info' attached."
     return os.popen('bzr nick').readline().strip()
+
+def export_bzr(source, dest):
+    return os.system('bzr export %s %s' % (dest, source))
 
 def get_build_dir(platformString, bitwidth):
     build_dir = '%s%s_build' % (platformString[0:3],bitwidth)

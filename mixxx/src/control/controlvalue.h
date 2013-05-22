@@ -11,7 +11,9 @@
 const int cRingSize = 8;
 // there are basicly unlimited readers allowed at each ring element
 // but we have to count them so max() is just fine.
-const int cReaderSlotCnt = std::numeric_limits<int>::max();
+// NOTE(rryan): Wrapping max with parentheses avoids conflict with the max macro
+// defined in windows.h.
+const int cReaderSlotCnt = (std::numeric_limits<int>::max)();
 
 // A single instance of a value of type T along with an atomic integer which
 // tracks the current number of readers or writers of the slot. The value
@@ -99,7 +101,9 @@ class ControlValueAtomicBase {
     ControlValueAtomicBase()
         : m_readIndex(0),
           m_writeIndex(1) {
-        Q_ASSERT((std::numeric_limits<unsigned int>::max() % cRingSize) == (cRingSize - 1));
+        // NOTE(rryan): Wrapping max with parentheses avoids conflict with the
+        // max macro defined in windows.h.
+        Q_ASSERT(((std::numeric_limits<unsigned int>::max)() % cRingSize) == (cRingSize - 1));
     }
 
   private:
@@ -133,7 +137,11 @@ class ControlValueAtomicBase<T, true> {
 #if defined(__GNUC__)
     T m_value __attribute__ ((aligned(sizeof(void*))));
 #elif defined(_MSC_VER)
-    T __declspec(align(sizeof(void*))) m_value;
+#ifdef _WIN64
+    T __declspec(align(8)) m_value;
+#else
+    T __declspec(align(4)) m_value;
+#endif
 #else
     T m_value;
 #endif

@@ -105,6 +105,7 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
     $$UI_DIR/ui_dlgprefplaylistdlg.h \
+    $$UI_DIR/ui_dlgtagfetcher.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
     $$UI_DIR/ui_dlgprefsounddlg.h \
     $$UI_DIR/ui_dlgprefvinyldlg.h \
