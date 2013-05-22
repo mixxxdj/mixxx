@@ -29,11 +29,11 @@
  */
 TreeItemModel::TreeItemModel(QObject *parent)
         : QAbstractItemModel(parent),
-          m_prootItem(new TreeItem()) {
+          m_pRootItem(new TreeItem()) {
 }
 
 TreeItemModel::~TreeItemModel() {
-    delete m_prootItem;
+    delete m_pRootItem;
 }
 
 //Our Treeview Model supports exactly a single column
@@ -79,7 +79,7 @@ QModelIndex TreeItemModel::index(int row, int column, const QModelIndex &parent)
     TreeItem *parentItem = NULL;
 
     if (!parent.isValid())
-        parentItem = m_prootItem;
+        parentItem = m_pRootItem;
     else
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
 
@@ -97,7 +97,7 @@ QModelIndex TreeItemModel::parent(const QModelIndex &index) const {
     TreeItem *childItem = static_cast<TreeItem*>(index.internalPointer());
     TreeItem *parentItem = childItem->parent();
 
-    if (parentItem == m_prootItem)
+    if (parentItem == m_pRootItem)
         return QModelIndex();
 
     return createIndex(parentItem->row(), 0, parentItem);
@@ -110,7 +110,7 @@ int TreeItemModel::rowCount(const QModelIndex &parent) const {
     TreeItem *parentItem = NULL;
     //qDebug() << "parent data: " << parent.data();
     if (!parent.isValid()){
-        parentItem = m_prootItem;
+        parentItem = m_pRootItem;
     }
     else{
         parentItem = static_cast<TreeItem*>(parent.internalPointer());
@@ -127,9 +127,9 @@ int TreeItemModel::rowCount(const QModelIndex &parent) const {
  * Call this method first, before you do call any other methods.
  */
 void TreeItemModel::setRootItem(TreeItem *item) {
-    if(m_prootItem) delete m_prootItem;
+    if(m_pRootItem) delete m_pRootItem;
 
-    m_prootItem = item;
+    m_pRootItem = item;
     reset();
 }
 
@@ -164,5 +164,5 @@ TreeItem* TreeItemModel::getItem(const QModelIndex &index) const {
         TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
         if (item) return item;
     }
-    return m_prootItem;
+    return m_pRootItem;
 }
