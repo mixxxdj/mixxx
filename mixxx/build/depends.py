@@ -400,6 +400,17 @@ class TagLib(Dependence):
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES = 'TAGLIB_STATIC')
 
+class Chromaprint(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['chromaprint', 'libchromaprint', 'chromaprint_p', 'libchromaprint_p']):
+            raise Exception("Could not find libchromaprint or its development headers.")
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'CHROMAPRINT_NODLL')
+
+            # On Windows, we link chromaprint with FFTW3.
+            if not conf.CheckLib(['fftw', 'libfftw', 'fftw3', 'libfftw3']):
+                raise Exception("Could not find fftw3 or its development headers.")
+
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
         libs = ['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']
@@ -447,6 +458,7 @@ class MixxxCore(Feature):
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
                    "dlgprefcrossfader.cpp",
+                   "dlgtagfetcher.cpp",
                    "dlgtrackinfo.cpp",
                    "dlgprepare.cpp",
                    "dlgautodj.cpp",
@@ -544,6 +556,14 @@ class MixxxCore(Feature):
                    "widget/wtime.cpp",
 
                    "mathstuff.cpp",
+
+                   "network.cpp",
+                   "musicbrainz/tagfetcher.cpp",
+                   "musicbrainz/gzip.cpp",
+                   "musicbrainz/crc.c",
+                   "musicbrainz/acoustidclient.cpp",
+                   "musicbrainz/chromaprinter.cpp",
+                   "musicbrainz/musicbrainzclient.cpp",
 
                    "rotary.cpp",
                    "widget/wtracktableview.cpp",
@@ -756,6 +776,7 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefnovinyldlg.ui')
         build.env.Uic4('dlgprefrecorddlg.ui')
         build.env.Uic4('dlgaboutdlg.ui')
+        build.env.Uic4('dlgtagfetcher.ui')
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
@@ -910,7 +931,8 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
+                Chromaprint]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
