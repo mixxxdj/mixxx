@@ -84,6 +84,7 @@ class WTrackTableView : public WLibraryTableView {
     TrackCollection* m_pTrackCollection;
 
     QSignalMapper m_loadTrackMapper;
+    SearchThread m_searchThread;
 
     DlgTrackInfo* m_pTrackInfo;
     DlgTagFetcher m_DlgTagFetcher;
