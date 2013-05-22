@@ -20,7 +20,6 @@ class Library;
 class EngineMaster;
 class AnalyserQueue;
 class SoundManager;
-class VinylControlManager;
 class TrackCollection;
 
 class PlayerManager : public QObject {
@@ -28,8 +27,7 @@ class PlayerManager : public QObject {
   public:
     PlayerManager(ConfigObject<ConfigValue>* pConfig,
                   SoundManager* pSoundManager,
-                  EngineMaster* pEngine,
-                  VinylControlManager* pVCManager);
+                  EngineMaster* pEngine);
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
@@ -126,7 +124,6 @@ class PlayerManager : public QObject {
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;
-    VinylControlManager* m_pVCManager;
     AnalyserQueue* m_pAnalyserQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;

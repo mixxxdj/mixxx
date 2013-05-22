@@ -30,6 +30,7 @@
 #include "controlobjectthreadmain.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 #ifdef __PORTAUDIO__
 typedef PaError (*SetJackClientName)(const char *name);
@@ -53,7 +54,7 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     m_pControlObjectSoundStatus = new ControlObject(ConfigKey("[SoundManager]", "status"));
     m_pControlObjectSoundStatus->set(SOUNDMANAGER_DISCONNECTED);
     m_pControlObjectVinylControlGain = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[VinylControl]", "gain")));
+        new ControlObject(ConfigKey(VINYL_PREF_KEY, "gain")));
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);

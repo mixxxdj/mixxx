@@ -28,6 +28,7 @@
 #include "soundmanagerutil.h"
 #include "controlobject.h"
 #include "util/timer.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -312,7 +313,7 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         // TODO(bkgood) move this to vcproxy or something, once we have other
         // inputs we don't want every input getting the vc gain
         static ControlObject* pControlObjectVinylControlGain =
-                ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
+                ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"));
         int iVCGain = pControlObjectVinylControlGain->get();
         if (iVCGain > 1) {
             for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
