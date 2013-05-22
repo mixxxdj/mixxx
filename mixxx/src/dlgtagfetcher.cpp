@@ -60,10 +60,12 @@ void DlgTagFetcher::apply() {
         if (!m_data.m_results[resultIndex]->getTitle().isEmpty()) { 
             m_track->setTitle(m_data.m_results[resultIndex]->getTitle());
         }
-        if (!m_data.m_results[resultIndex]->getYear().isEmpty()) { 
+        if (!m_data.m_results[resultIndex]->getYear().isEmpty() &&
+             m_data.m_results[resultIndex]->getYear() != "0") { 
             m_track->setYear(m_data.m_results[resultIndex]->getYear());
         }
-        if (!m_data.m_results[resultIndex]->getTrackNumber().isEmpty()) { 
+        if (!m_data.m_results[resultIndex]->getTrackNumber().isEmpty() &&
+             m_data.m_results[resultIndex]->getTrackNumber() != "0") { 
             m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
         }
     }
