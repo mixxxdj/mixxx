@@ -21,7 +21,9 @@
 #include "engine/enginedeck.h"
 
 // static
-QList<QList<int> > PlayerManager::deckOrderings;
+PlayerManager::DeckOrderingManager PlayerManager::s_deckOrderingManager =
+    PlayerManager::DeckOrderingManager();
+PlayerManager::DeckOrderingManager::t_deck_order PlayerManager::s_currentDeckOrder;
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
@@ -55,7 +57,7 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
 
     // Make sure the number of internal decks is in sync with the number of decks in the skin.
     connect(m_pCOSkinNumDecks, SIGNAL(valueChanged(double)),
-            this, SLOT(slotNumDecksControlChanged(double)),
+            this, SLOT(slotSkinNumDecksControlChanged(double)),
             Qt::DirectConnection);
     connect(m_pCOSkinNumSamplers, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumSamplersControlChanged(double)),
@@ -189,23 +191,6 @@ unsigned int PlayerManager::numPreviewDecks() {
     return pNumCO ? pNumCO->get() : 0;
 }
 
-const QList<int> PlayerManager::getDeckOrdering() {
-    QList<int> order;
-    int skin_deck_count = m_pCOSkinNumDecks->get();
-    if (skin_deck_count == 4) {
-        return PlayerManager::deckOrderings[
-          m_pConfig->getValueString(ConfigKey("[Controls]","4DeckOrder")).toInt()];
-    }
-    // A skin might not have this value defined -- assume it's an old 2-deck skin.
-    if (skin_deck_count == 0) {
-        skin_deck_count = 2;
-    }
-    for (int i = 0; i < skin_deck_count; ++i) {
-        order << i;
-    }
-    return order;
-}
-
 void PlayerManager::slotNumDecksControlChanged(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
@@ -219,6 +204,11 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
     while (m_decks.size() < num) {
         addDeckInner();
     }
+}
+
+void PlayerManager::slotSkinNumDecksControlChanged(double v) {
+    PlayerManager::s_currentDeckOrder = s_deckOrderingManager.getDefaultOrder(v);
+    slotNumDecksControlChanged(v);
 }
 
 void PlayerManager::slotNumSamplersControlChanged(double v) {
@@ -414,11 +404,10 @@ void PlayerManager::slotLoadToSampler(QString location, int sampler) {
 
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     QMutexLocker locker(&m_mutex);
-    const QList<int>& order = getDeckOrdering();
-    QList<int>::const_iterator it = order.begin();
-    while (it != order.end()) {
-        qDebug() << "try loading " << *it;
-        Deck* pDeck = m_decks[*it];
+
+    foreach(const int& i, PlayerManager::s_currentDeckOrder.second) {
+        Deck* pDeck = m_decks.at(i);
+        qDebug() << "try loading " << i;
         ControlObject* playControl =
                 ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {
@@ -426,7 +415,6 @@ void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
             pDeck->slotLoadTrack(pTrack, false);
             return;
         }
-        ++it;
     }
 }
 

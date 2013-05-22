@@ -85,6 +85,8 @@ private:
     void initWaveformControl();
     void notifyRebootNecessary();
     bool checkSkinResolution(QString skin);
+    void updateDeckOrderCombo(int deck_count);
+    void updateDeckOrderCombo(int deck_count, QString preselect);
 
 private:
     /** Pointer to ConfigObject */

@@ -263,7 +263,7 @@
      <item row="11" column="0">
       <widget class="QLabel" name="textDeckOrder">
        <property name="text">
-        <string>4-deck mode track order</string>
+        <string>Deck track load order</string>
        </property>
        <property name="buddy">
         <cstring>ComboBoxDeckOrder</cstring>

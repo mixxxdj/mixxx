@@ -213,24 +213,10 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
 
     // Ordering of decks in 4-deck mode
-    QList<QList<int> > deck_orderings = m_pPlayerManager->getAvailableDeckOrderings();
-    QString order = m_pConfig->getValueString(ConfigKey("[Controls]", "4DeckOrder"));
-    int deckorder_index = 0;
-    for (int i = 0; i < deck_orderings.count(); ++i) {
-        QString ui_order = "    ";
-        // Orderings are given in load order, not mixer order, so we have to we have to
-        // do a little inefficient shuffling to display the correct letters.
-        for (int j = 0; j < deck_orderings[i].count(); ++j) {
-            ui_order[deck_orderings[i][j]] = j + 'A';
-        }
-        if (ui_order == order) {
-            deckorder_index = i;
-        }
-        // TODO: Do we need to translate "ABCD," etc? If so then we need to untranslate it
-        // when we save to config file.
-        ComboBoxDeckOrder->addItem(ui_order);
-    }
-    ComboBoxDeckOrder->setCurrentIndex(deckorder_index);
+    QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
+    int deck_count = static_cast<int>(ControlObject::getControl(
+                                          ConfigKey("[Skin]", "num_decks"))->get());
+    updateDeckOrderCombo(deck_count, config_order);
     connect(ComboBoxDeckOrder, SIGNAL(activated(int)), this, SLOT(slotSetDeckOrder(int)));
 
     //
@@ -452,7 +438,10 @@ void DlgPrefControls::slotSetAutoDjRequeue(int)
 
 void DlgPrefControls::slotSetDeckOrder(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]", "4DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentText()));
+    m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentText()));
+    int deck_count = static_cast<int>(ControlObject::getControl(
+                                          ConfigKey("[Skin]", "num_decks"))->get());
+    m_pConfig->set(ConfigKey("[Skin]", "num_decks"), ConfigValue(deck_count));
 }
 
 void DlgPrefControls::slotSetTooltips(int)
@@ -483,6 +472,9 @@ void DlgPrefControls::slotSetSkin(int)
     checkSkinResolution(ComboBoxSkinconf->currentText())
             ? warningLabel->hide() : warningLabel->show();
     slotUpdateSchemes();
+    int deck_count = static_cast<int>(ControlObject::getControl(
+                                          ConfigKey("[Skin]", "num_decks"))->get());
+    updateDeckOrderCombo(deck_count);
 }
 
 void DlgPrefControls::slotSetPositionDisplay(int)
@@ -712,4 +704,31 @@ bool DlgPrefControls::checkSkinResolution(QString skin)
     QString skinHeight = res.right(res.count()-skinWidth.count()-1);
 
     return !(skinWidth.toInt() > screenWidth || skinHeight.toInt() > screenHeight);
+}
+
+void DlgPrefControls::updateDeckOrderCombo(int deck_count) {
+    updateDeckOrderCombo(deck_count, "");
+}
+
+void DlgPrefControls::updateDeckOrderCombo(int deck_count, QString preselect) {
+    QString current_combo_val = ComboBoxDeckOrder->currentText();
+    int deckorder_index = 0;
+
+    int i = 0;
+    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PREFS " << deck_count;
+
+    textDeckOrder->setVisible(deck_count != 0);
+    ComboBoxDeckOrder->setVisible(deck_count != 0);
+    ComboBoxDeckOrder->clear();
+
+    foreach(const PlayerManager::DeckOrderingManager::t_deck_order& order,
+            PlayerManager::getDeckOrderings(deck_count)) {
+        qDebug() << "INITIALIZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZING " << order.first;
+        ComboBoxDeckOrder->addItem(order.first);
+        if (order.first == preselect || order.first == current_combo_val) {
+            deckorder_index = i;
+        }
+        ++i;
+    }
+    ComboBoxDeckOrder->setCurrentIndex(deckorder_index);
 }
