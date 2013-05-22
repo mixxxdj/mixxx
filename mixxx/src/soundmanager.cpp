@@ -417,8 +417,9 @@ void SoundManager::checkConfig() {
     // latency checks itself for validity on SMConfig::setLatency()
 }
 
-QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
-    const QList<AudioOutput>& outputs, unsigned long iFramesPerBuffer,
+void SoundManager::requestBuffer(
+    const QList<AudioOutput>& outputs, float* outputBuffer,
+    const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
     SoundDevice* device, double streamTime /* = 0 */) {
     Q_UNUSED(streamTime);
     Q_UNUSED(outputs); // unused, we just give the caller the full hash -bkgood
@@ -437,11 +438,57 @@ QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
 
         m_requestBufferMutex.unlock();
     }
-    return m_outputBuffers;
+
+    // Reset sample for each open channel
+    memset(outputBuffer, 0, iFramesPerBuffer * iFrameSize * sizeof(*outputBuffer));
+
+    // Interlace Audio data onto portaudio buffer.  We iterate through the
+    // source list to find out what goes in the buffer data is interlaced in
+    // the order of the list
+
+    static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
+
+    for (QList<AudioOutput>::const_iterator i = outputs.begin(),
+                 e = outputs.end(); i != e; ++i) {
+        const AudioOutput& out = *i;
+
+        QHash<AudioOutput, const CSAMPLE*>::const_iterator it =
+                m_outputBuffers.find(out);
+        if (it == m_outputBuffers.end()) {
+            continue;
+        }
+
+        const CSAMPLE* input = it.value();
+        if (input == NULL) {
+            continue;
+        }
+
+        const ChannelGroup outChans = out.getChannelGroup();
+        const int iChannelCount = outChans.getChannelCount();
+        const int iChannelBase = outChans.getChannelBase();
+
+        for (unsigned int iFrameNo=0; iFrameNo < iFramesPerBuffer; ++iFrameNo) {
+            // iFrameBase is the "base sample" in a frame (ie. the first
+            // sample in a frame)
+            const unsigned int iFrameBase = iFrameNo * iFrameSize;
+            const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
+
+            // this will make sure a sample from each channel is copied
+            for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
+                outputBuffer[iFrameBase + iChannelBase + iChannel] =
+                        input[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+
+                //Input audio pass-through (useful for debugging)
+                //if (in)
+                //    output[iFrameBase + src.channelBase + iChannel] =
+                //    in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
+            }
+        }
+    }
 }
 
 void SoundManager::pushBuffer(const QList<AudioInput>& inputs, short * inputBuffer,
-                              unsigned long iFramesPerBuffer, unsigned int iFrameSize) {
+                              const unsigned long iFramesPerBuffer, const unsigned int iFrameSize) {
     //This function is called a *lot* and is a big source of CPU usage.
     //It needs to be very fast.
 

@@ -298,31 +298,24 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         m_undeflowUpdateCount--;
     }
 
+    //Note: Input is processed first so that any ControlObject changes made in
+    //      response to input are processed as soon as possible (that is, when
+    //      m_pSoundManager->requestBuffer() is called below.)
 
-    //Send audio from the soundcard's input off to the SoundManager...
+    // Send audio from the soundcard's input off to the SoundManager...
     if (in && framesPerBuffer > 0) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess input " + getInternalName());
-        //Note: Input is processed first so that any ControlObject changes made in response to input
-        //      is processed as soon as possible (that is, when m_pSoundManager->requestBuffer() is
-        //      called below.)
 
         //Apply software preamp
         //Super big warning: Need to use channel_count here instead of iFrameSize because iFrameSize is
         //only for output buffers...
         // TODO(bkgood) move this to vcproxy or something, once we have other
         // inputs we don't want every input getting the vc gain
-
-
-
         static ControlObject* pControlObjectVinylControlGain =
                 ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
         int iVCGain = pControlObjectVinylControlGain->get();
         for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
             in[i] *= iVCGain;
-
-        // TODO(bkgood) deinterlace here and send a hashmap of buffers to
-        // soundmanager so we have all our deinterlacing in one place and
-        // soundmanager gets simplified to boot
 
         m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
                                     m_inputParams.channelCount);
@@ -330,62 +323,17 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
 
     if (output && framesPerBuffer > 0) {
         ScopedTimer t("SoundDevicePortAudio::callbackProcess output " + getInternalName());
-        QHash<AudioOutput, const CSAMPLE*> outputAudio
-            = m_pSoundManager->requestBuffer(m_audioOutputs,
-                    framesPerBuffer, this);
 
         if (m_outputParams.channelCount <= 0) {
             qWarning() << "SoundDevicePortAudio::callbackProcess m_outputParams channel count is zero or less:" << m_outputParams.channelCount;
             // Bail out.
             return paContinue;
         }
-        const unsigned int iFrameSize = static_cast<unsigned int>(
-            m_outputParams.channelCount);
 
-        // Reset sample for each open channel
-        memset(output, 0, framesPerBuffer * iFrameSize * sizeof(*output));
-
-        // Interlace Audio data onto portaudio buffer.  We iterate through the
-        // source list to find out what goes in the buffer data is interlaced in
-        // the order of the list
-
-        static const float SHRT_CONVERSION_FACTOR = 1.0f/SHRT_MAX;
-
-        for (QList<AudioOutput>::const_iterator i = m_audioOutputs.begin(),
-                     e = m_audioOutputs.end(); i != e; ++i) {
-            const AudioOutput& out = *i;
-
-            // note that if QHash gets request for a value with a key it doesn't
-            // know, it will return a default value (NULL is the likely choice
-            // here), but the old system would've done something similar (it
-            // would have gone over the bounds of the array)
-            const CSAMPLE* input = outputAudio[out];
-            if (input == NULL) {
-                continue;
-            }
-
-            const ChannelGroup outChans = out.getChannelGroup();
-            const int iChannelCount = outChans.getChannelCount();
-            const int iChannelBase = outChans.getChannelBase();
-
-            for (unsigned int iFrameNo=0; iFrameNo < framesPerBuffer; ++iFrameNo) {
-                // iFrameBase is the "base sample" in a frame (ie. the first
-                // sample in a frame)
-                const unsigned int iFrameBase = iFrameNo * iFrameSize;
-                const unsigned int iLocalFrameBase = iFrameNo * iChannelCount;
-
-                // this will make sure a sample from each channel is copied
-                for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                    output[iFrameBase + iChannelBase + iChannel] =
-                            input[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
-
-                    //Input audio pass-through (useful for debugging)
-                    //if (in)
-                    //    output[iFrameBase + src.channelBase + iChannel] =
-                    //    in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
-                }
-            }
-        }
+        m_pSoundManager->requestBuffer(
+            m_audioOutputs, output,
+            framesPerBuffer, static_cast<unsigned int>(
+                m_outputParams.channelCount), this);
     }
 
     return paContinue;
