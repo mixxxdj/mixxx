@@ -5,6 +5,8 @@ import re
 CURRENT_VCS = None
 
 def get_current_vcs():
+    if CURRENT_VCS is not None:
+        return CURRENT_VCS
     if on_git():
         return "git"
     if on_bzr():
