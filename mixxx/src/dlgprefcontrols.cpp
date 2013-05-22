@@ -212,12 +212,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
 
-    // Ordering of decks in 4-deck mode
-    QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
-    int deck_count = static_cast<int>(ControlObject::getControl(
-                                          ConfigKey("[Skin]", "num_decks"))->get());
-    updateDeckOrderCombo(deck_count, config_order);
+    // Ordering of decks, if configurable
+    ControlObject* skin_num_decks = ControlObject::getControl(ConfigKey("[Skin]", "num_decks"));
+    int deck_count = static_cast<int>(skin_num_decks->get());
+    updateDeckOrderCombo(deck_count);
     connect(ComboBoxDeckOrder, SIGNAL(activated(int)), this, SLOT(slotSetDeckOrder(int)));
+    connect(skin_num_decks, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSkinNumDecksControlChanged(double)),
+            Qt::DirectConnection);
 
     //
     // Skin configurations
@@ -441,7 +443,6 @@ void DlgPrefControls::slotSetDeckOrder(int)
     m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentText()));
     int deck_count = static_cast<int>(ControlObject::getControl(
                                           ConfigKey("[Skin]", "num_decks"))->get());
-    m_pConfig->set(ConfigKey("[Skin]", "num_decks"), ConfigValue(deck_count));
 }
 
 void DlgPrefControls::slotSetTooltips(int)
@@ -707,28 +708,31 @@ bool DlgPrefControls::checkSkinResolution(QString skin)
 }
 
 void DlgPrefControls::updateDeckOrderCombo(int deck_count) {
-    updateDeckOrderCombo(deck_count, "");
-}
+    // We always try to find the configured order because the skin deckcount value isn't set
+    // at construction time.  We'll receive a signal when that value changes, this function
+    // will get called, and then we'll set the proper ordering.  Since we update the config
+    // every time they change the value, this shouldn't cause weird overwrites.
 
-void DlgPrefControls::updateDeckOrderCombo(int deck_count, QString preselect) {
-    QString current_combo_val = ComboBoxDeckOrder->currentText();
-    int deckorder_index = 0;
-
-    int i = 0;
-    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PREFS " << deck_count;
-
+    QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
     textDeckOrder->setVisible(deck_count != 0);
     ComboBoxDeckOrder->setVisible(deck_count != 0);
     ComboBoxDeckOrder->clear();
+    if (deck_count == 0) {
+        return;
+    }
 
-    foreach(const PlayerManager::DeckOrderingManager::t_deck_order& order,
+    int deckorder_index = 0;
+    int i = 0;
+    foreach(const PlayerManager::DeckOrderingManager::deck_order_t& order,
             PlayerManager::getDeckOrderings(deck_count)) {
-        qDebug() << "INITIALIZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZZING " << order.first;
-        ComboBoxDeckOrder->addItem(order.first);
-        if (order.first == preselect || order.first == current_combo_val) {
+        ComboBoxDeckOrder->addItem(order.label);
+        if (order.label == config_order) {
             deckorder_index = i;
         }
         ++i;
     }
     ComboBoxDeckOrder->setCurrentIndex(deckorder_index);
+    if (ComboBoxDeckOrder->currentText() != config_order) {
+        m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentText()));
+    }
 }

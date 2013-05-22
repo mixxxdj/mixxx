@@ -23,7 +23,7 @@
 // static
 PlayerManager::DeckOrderingManager PlayerManager::s_deckOrderingManager =
     PlayerManager::DeckOrderingManager();
-PlayerManager::DeckOrderingManager::t_deck_order PlayerManager::s_currentDeckOrder;
+PlayerManager::DeckOrderingManager::deck_order_t PlayerManager::s_currentDeckOrder;
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
@@ -207,7 +207,7 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
 }
 
 void PlayerManager::slotSkinNumDecksControlChanged(double v) {
-    PlayerManager::s_currentDeckOrder = s_deckOrderingManager.getDefaultOrder(v);
+    s_currentDeckOrder = s_deckOrderingManager.getDefaultOrder(v);
     slotNumDecksControlChanged(v);
 }
 
@@ -405,9 +405,8 @@ void PlayerManager::slotLoadToSampler(QString location, int sampler) {
 void PlayerManager::slotLoadTrackIntoNextAvailableDeck(TrackPointer pTrack) {
     QMutexLocker locker(&m_mutex);
 
-    foreach(const int& i, PlayerManager::s_currentDeckOrder.second) {
+    foreach(const int& i, s_currentDeckOrder.load_order) {
         Deck* pDeck = m_decks.at(i);
-        qDebug() << "try loading " << i;
         ControlObject* playControl =
                 ControlObject::getControl(ConfigKey(pDeck->getGroup(), "play"));
         if (playControl && playControl->get() != 1.) {

@@ -86,62 +86,68 @@ class PlayerManager : public QObject {
 
     class DeckOrderingManager {
       public:
-        typedef QPair<QString, QList<int> > t_deck_order;
-        typedef QHash<int, QList<t_deck_order> > t_orders_hash;
+        struct deck_order_t {
+            deck_order_t() { }
+            deck_order_t(QString l, QList<int> o) : label(l), load_order(o) { }
+
+            QString label;
+            QList<int> load_order;
+        };
+
+        typedef QHash<int, QList<deck_order_t> > orders_hash_t;
 
         DeckOrderingManager() {
+            // Known orderings for 4-deck controllers.
             addOrdering(4, "ABCD");
             addOrdering(4, "CABD");
             addOrdering(4, "ACDB");
         }
 
         bool addOrdering(int deck_count, QString order) {
-            qDebug() << "AAAAAAAAAAAASSSSSSSSSSSSSSSSSSSSSSSSSSKKKKKKKKKKKKKKKKKED TO ADD " << order;
-            t_deck_order new_order;
-            new_order.first = order;
-            new_order.second = makeLoadOrder(order);
+            deck_order_t new_order(order, makeLoadOrder(order));
             // ordering will be empty on error
-            if (new_order.second.empty()) {
+            if (new_order.load_order.empty()) {
                 return false;
             }
             m_hOrdersHash[deck_count].push_back(new_order);
             return true;
         }
 
-        // The first order in the list is default
-        t_deck_order getDefaultOrder(int deck_count) {
-            t_orders_hash::const_iterator it = m_hOrdersHash.find(deck_count);
+        // Just take the first order in the list is default.  Make sure it's the natural ordering
+        // "ABCD..."
+        deck_order_t getDefaultOrder(int deck_count) {
+            orders_hash_t::const_iterator it = m_hOrdersHash.find(deck_count);
             if (it == m_hOrdersHash.end()) {
                 m_hOrdersHash[deck_count].push_back(makeDefaultOrder(deck_count));
             }
             return m_hOrdersHash[deck_count].at(0);
         }
 
-        const QList<t_deck_order> getDeckOrderings(int deck_count) const {
+        const QList<deck_order_t> getDeckOrderings(int deck_count) const {
             return m_hOrdersHash[deck_count];
         }
 
         const QList<int> getLoadOrder(QString deckstring) const {
-            t_orders_hash::const_iterator it = m_hOrdersHash.find(deckstring.length());
+            orders_hash_t::const_iterator it = m_hOrdersHash.find(deckstring.length());
             if (it == m_hOrdersHash.end()) {
                 return QList<int>();
             }
-            foreach(const t_deck_order& order, *it) {
-                if (order.first == deckstring) {
-                    return order.second;
+            foreach(const deck_order_t& order, *it) {
+                if (order.label == deckstring) {
+                    return order.load_order;
                 }
             }
         }
 
       private:
-        t_deck_order makeDefaultOrder(int deck_count) const {
+        deck_order_t makeDefaultOrder(int deck_count) const {
             QString str_order;
             QList<int> int_order;
             for (int i = 0; i < deck_count; ++i) {
                 str_order += 'A' + i;
                 int_order.push_back(i);
             }
-            return qMakePair(str_order, int_order);
+            return deck_order_t(str_order, int_order);
         }
 
         // Constructs a list of integers for load-order based on the string.
@@ -158,35 +164,12 @@ class PlayerManager : public QObject {
             return int_order;
         }
 
-        t_orders_hash m_hOrdersHash;
+        orders_hash_t m_hOrdersHash;
     };
 
-    static const QList<DeckOrderingManager::t_deck_order> getDeckOrderings(int deck_count) {
+    static const QList<DeckOrderingManager::deck_order_t> getDeckOrderings(int deck_count) {
         return s_deckOrderingManager.getDeckOrderings(deck_count);
     }
-
-    // Returns a list of lists of possible orders to load tracks into decks.
-    // Controllers label their channels differently and these are the three combinations
-    // we've encountered.
-    /*static const QList<QList<int> > getAvailableDeckOrderings() {
-        if (PlayerManager::deckOrderings.count() == 0) {
-            QList<int> order;
-            // Corresponds to ABCD
-            order << 0 << 1 << 2 << 3;
-            PlayerManager::deckOrderings.push_back(order);
-            order.clear();
-            // Corresponds to CABD
-            order << 1 << 2 << 0 << 3;
-            PlayerManager::deckOrderings.push_back(order);
-            order.clear();
-            // Corresponds to ACDB
-            order << 0 << 3 << 1 << 2;
-            PlayerManager::deckOrderings.push_back(order);
-        }
-        return PlayerManager::deckOrderings;
-    }*/
-
-    //const QList<int> getDeckOrdering();
 
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
@@ -246,7 +229,7 @@ class PlayerManager : public QObject {
     QMap<QString, BaseTrackPlayer*> m_players;
 
     static DeckOrderingManager s_deckOrderingManager;
-    static DeckOrderingManager::t_deck_order s_currentDeckOrder;
+    static DeckOrderingManager::deck_order_t s_currentDeckOrder;
 };
 
 #endif // PLAYERMANAGER_H

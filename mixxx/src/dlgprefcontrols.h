@@ -78,6 +78,9 @@ public slots:
     virtual void onShow();
     virtual void onHide();
 
+private slots:
+    void slotSkinNumDecksControlChanged(double v) { updateDeckOrderCombo(v); }
+
 protected:
     void timerEvent(QTimerEvent *);
 
@@ -86,7 +89,6 @@ private:
     void notifyRebootNecessary();
     bool checkSkinResolution(QString skin);
     void updateDeckOrderCombo(int deck_count);
-    void updateDeckOrderCombo(int deck_count, QString preselect);
 
 private:
     /** Pointer to ConfigObject */
