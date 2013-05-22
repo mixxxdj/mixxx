@@ -314,8 +314,10 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         static ControlObject* pControlObjectVinylControlGain =
                 ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
         int iVCGain = pControlObjectVinylControlGain->get();
-        for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
-            in[i] *= iVCGain;
+        if (iVCGain > 1) {
+            for (unsigned int i = 0; i < framesPerBuffer * m_inputParams.channelCount; ++i)
+                in[i] *= iVCGain;
+        }
 
         m_pSoundManager->pushBuffer(m_audioInputs, in, framesPerBuffer,
                                     m_inputParams.channelCount);
