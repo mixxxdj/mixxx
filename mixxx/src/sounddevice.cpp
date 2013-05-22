@@ -17,54 +17,49 @@
 
 #include <QtDebug>
 #include <QtCore>
+
+#include "sounddevice.h"
+
 #include "soundmanagerutil.h"
 #include "soundmanager.h"
-#include "sounddevice.h"
 #include "util/debug.h"
 
 SoundDevice::SoundDevice(ConfigObject<ConfigValue> * config, SoundManager * sm)
-{
-    m_pConfig = config;
-    m_pSoundManager = sm;
-    m_strInternalName = "Unknown Soundcard";
-    m_strDisplayName = "Unknown Soundcard";
-    m_iNumOutputChannels = 2;
-    m_iNumInputChannels = 2;
-    m_dSampleRate = 44100.0f;
+        : m_pConfig(config),
+          m_pSoundManager(sm),
+          m_strInternalName("Unknown Soundcard"),
+          m_strDisplayName("Unknown Soundcard"),
+          m_iNumOutputChannels(2),
+          m_iNumInputChannels(2),
+          m_dSampleRate(44100.0f),
+          m_hostAPI("Unknown API"),
+          m_framesPerBuffer(0) {
 }
 
-SoundDevice::~SoundDevice()
-{
-
+SoundDevice::~SoundDevice() {
 }
 
-QString SoundDevice::getInternalName() const
-{
+QString SoundDevice::getInternalName() const {
     return m_strInternalName;
 }
 
-QString SoundDevice::getDisplayName() const
-{
+QString SoundDevice::getDisplayName() const {
     return m_strDisplayName;
 }
 
-QString SoundDevice::getHostAPI() const
-{
+QString SoundDevice::getHostAPI() const {
     return m_hostAPI;
 }
 
-int SoundDevice::getNumInputChannels() const
-{
+int SoundDevice::getNumInputChannels() const {
     return m_iNumInputChannels;
 }
 
-int SoundDevice::getNumOutputChannels() const
-{
+int SoundDevice::getNumOutputChannels() const {
     return m_iNumOutputChannels;
 }
 
-void SoundDevice::setHostAPI(QString api)
-{
+void SoundDevice::setHostAPI(QString api) {
     m_hostAPI = api;
 }
 
@@ -87,8 +82,7 @@ void SoundDevice::setFramesPerBuffer(unsigned int framesPerBuffer) {
     m_framesPerBuffer = framesPerBuffer;
 }
 
-SoundDeviceError SoundDevice::addOutput(const AudioOutput &out)
-{
+SoundDeviceError SoundDevice::addOutput(const AudioOutput &out) {
     //Check if the output channels are already used
     foreach (AudioOutput myOut, m_audioOutputs) {
         if (out.channelsClash(myOut)) {
@@ -103,13 +97,11 @@ SoundDeviceError SoundDevice::addOutput(const AudioOutput &out)
     return SOUNDDEVICE_ERROR_OK;
 }
 
-void SoundDevice::clearOutputs()
-{
+void SoundDevice::clearOutputs() {
     m_audioOutputs.clear();
 }
 
-SoundDeviceError SoundDevice::addInput(const AudioInput &in)
-{
+SoundDeviceError SoundDevice::addInput(const AudioInput &in) {
     // DON'T check if the input channels are already used, there's no reason
     // we can't send the same inputted samples to different places in mixxx.
     // -- bkgood 20101108
@@ -121,17 +113,14 @@ SoundDeviceError SoundDevice::addInput(const AudioInput &in)
     return SOUNDDEVICE_ERROR_OK;
 }
 
-void SoundDevice::clearInputs()
-{
+void SoundDevice::clearInputs() {
     m_audioInputs.clear();
 }
 
-bool SoundDevice::operator==(const SoundDevice &other) const
-{
+bool SoundDevice::operator==(const SoundDevice &other) const {
     return this->getInternalName() == other.getInternalName();
 }
 
-bool SoundDevice::operator==(const QString &other) const
-{
+bool SoundDevice::operator==(const QString &other) const {
     return getInternalName() == other;
 }
