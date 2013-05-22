@@ -187,8 +187,8 @@ int SoundDevicePortAudio::open() {
     double currentLatencyMSec = streamDetails->outputLatency * 1000;
     qDebug() << "   Actual sample rate: " << m_dSampleRate << "Hz, latency:" << currentLatencyMSec << "ms";
 
-    //Update the samplerate and latency ControlObjects, which allow the waveform view to properly correct
-    //for the latency.
+    // Update the samplerate and latency ControlObjects, which allow the
+    // waveform view to properly correct for the latency.
 
     ControlObjectThreadMain* pControlObjectSampleRate =
         new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","samplerate")));
@@ -221,14 +221,17 @@ int SoundDevicePortAudio::open() {
 int SoundDevicePortAudio::close() {
     //qDebug() << "SoundDevicePortAudio::close()" << getInternalName();
     if (m_pStream) {
-        //Make sure the stream is not stopped before we try stopping it.
+        // Make sure the stream is not stopped before we try stopping it.
         PaError err = Pa_IsStreamStopped(m_pStream);
-        if (err == 1) { //1 means the stream is stopped. 0 means active.
+        // 1 means the stream is stopped. 0 means active.
+        if (err == 1) {
             qDebug() << "PortAudio: Stream already stopped, but no error.";
             return 1;
         }
-        if (err < 0) { //Real PaErrors are always negative.
-            qWarning() << "PortAudio: Stream already stopped:" << Pa_GetErrorText(err) << getInternalName();
+        // Real PaErrors are always negative.
+        if (err < 0) {
+            qWarning() << "PortAudio: Stream already stopped:"
+                       << Pa_GetErrorText(err) << getInternalName();
             return 1;
         }
 
@@ -351,7 +354,16 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         for (QList<AudioOutput>::const_iterator i = m_audioOutputs.begin(),
                      e = m_audioOutputs.end(); i != e; ++i) {
             const AudioOutput& out = *i;
+
+            // note that if QHash gets request for a value with a key it doesn't
+            // know, it will return a default value (NULL is the likely choice
+            // here), but the old system would've done something similar (it
+            // would have gone over the bounds of the array)
             const CSAMPLE* input = outputAudio[out];
+            if (input == NULL) {
+                continue;
+            }
+
             const ChannelGroup outChans = out.getChannelGroup();
             const int iChannelCount = outChans.getChannelCount();
             const int iChannelBase = outChans.getChannelBase();
@@ -364,19 +376,12 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
 
                 // this will make sure a sample from each channel is copied
                 for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
-                    // note that if QHash gets request for a value with a key it
-                    // doesn't know, it will return a default value (NULL is the
-                    // likely choice here), but the old system would've done
-                    // something similar (it would have gone over the bounds of
-                    // the array)
-
-                    // TODO(rryan): WTF, why is this +=?
-                    output[iFrameBase + iChannelBase + iChannel] +=
+                    output[iFrameBase + iChannelBase + iChannel] =
                             input[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
 
                     //Input audio pass-through (useful for debugging)
                     //if (in)
-                    //    output[iFrameBase + src.channelBase + iChannel] +=
+                    //    output[iFrameBase + src.channelBase + iChannel] =
                     //    in[iFrameBase + src.channelBase + iChannel] * SHRT_CONVERSION_FACTOR;
                 }
             }

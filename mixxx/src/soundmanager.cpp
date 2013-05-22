@@ -425,8 +425,7 @@ QHash<AudioOutput, const CSAMPLE*> SoundManager::requestBuffer(
     //qDebug() << "SoundManager::requestBuffer()";
 
     //When the clock reference device requests a buffer...
-    if (device == m_pClkRefDevice && m_requestBufferMutex.tryLock())
-    {
+    if (device == m_pClkRefDevice && m_requestBufferMutex.tryLock()) {
         // Only generate a new buffer for the clock reference card
 //         qDebug() << "New buffer for" << device->getDisplayName() << "of size" << iFramesPerBuffer;
 
