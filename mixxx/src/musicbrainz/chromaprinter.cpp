@@ -1,12 +1,3 @@
-/*****************************************************************************
- *  Copyright © 2012 John Maguire <john.maguire@gmail.com>                   *
- *                   David Sansome <me@davidsansome.com>                     *
- *  This work is free. You can redistribute it and/or modify it under the    *
- *  terms of the Do What The Fuck You Want To Public License, Version 2,     *
- *  as published by Sam Hocevar.                                             *
- *  See http://www.wtfpl.net/ for more details.                              *
- *****************************************************************************/
-    
 #include <QtCore>
 #include <chromaprint.h>
 
@@ -42,7 +33,7 @@ QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
     // on their server so we need only a fingerprint of the first two minutes
     // --kain88 July 2012
     m_NumSamples = 120*2*m_SampleRate;
-    // check that the song is actually longer then the sec of audio we use
+    // check that the song is actually longer then the amount of audio we use
     if (m_NumSamples > length) {
         m_NumSamples = length;
     }

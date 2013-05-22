@@ -117,21 +117,16 @@ class SoundManager : public QObject {
 #endif
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
-    QString m_hostAPI;
     QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
     QHash<AudioInput, short*> m_inputBuffers;
-    QHash<SoundDevice*, long> m_deviceFrameCount; // used in dead code
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
     SoundDevice* m_pClkRefDevice;
-    int m_outputDevicesOpened;
-    int m_inputDevicesOpened;
     QMutex m_requestBufferMutex;
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
-
     ControlObject* m_pControlObjectSoundStatus;
     ControlObjectThreadMain* m_pControlObjectVinylControlGain;
 };

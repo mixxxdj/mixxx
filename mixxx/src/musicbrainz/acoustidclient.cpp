@@ -52,7 +52,6 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     m_timeouts.addReply(reply);
 }
 
-
 void AcoustidClient::cancel(int id) {
     QNetworkReply* reply = m_requests.key(id);
     m_requests.remove(reply);
