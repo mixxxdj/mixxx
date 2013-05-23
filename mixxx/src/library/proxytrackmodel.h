@@ -16,7 +16,7 @@
 // calling the composed TrackModel. If the bHandleSearches flag is set, the
 // TrackModel search calls will not be delivered to the composed TrackModel
 // because filtering is handled by the QSortFilterProxyModel.
-class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel {
+class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
   public:
     // Construct a new ProxyTrackModel with pTrackModel as the TrackModel it
     // composes. If bHandleSearches is true, then search signals will not be
@@ -29,15 +29,14 @@ class ProxyTrackModel : public QSortFilterProxyModel, public virtual TrackModel 
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual int getTrackId(const QModelIndex& index) const;
     virtual const QLinkedList<int> getTrackRows(int trackId) const;
-    virtual void search(const QString& searchText);
+    virtual void search(const QString& searchText,const QString& extraFilter=QString());
     virtual const QString currentSearch() const;
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
-    virtual void removeTrack(const QModelIndex& index);
     virtual void removeTracks(const QModelIndexList& indices);
-    virtual bool addTrack(const QModelIndex& index, QString location);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
+    void deleteTracks(const QModelIndexList& indices);
     virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;
 

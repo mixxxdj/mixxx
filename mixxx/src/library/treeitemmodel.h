@@ -29,7 +29,7 @@ class TreeItemModel : public QAbstractItemModel {
     TreeItem* getItem(const QModelIndex &index) const;
 
   private:
-    TreeItem *m_prootItem;
+    TreeItem *m_pRootItem;
 };
 
 #endif

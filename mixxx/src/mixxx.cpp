@@ -59,7 +59,7 @@
 #include "util/timer.h"
 
 #ifdef __VINYLCONTROL__
-#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/defs_vinylcontrol.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #endif
 
@@ -343,33 +343,20 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     qRegisterMetaType<TrackPointer>("TrackPointer");
 
 #ifdef __VINYLCONTROL__
-    m_pVCManager = new VinylControlManager(this, m_pConfig);
+    m_pVCManager = new VinylControlManager(this, m_pConfig, m_pSoundManager);
 #else
     m_pVCManager = NULL;
 #endif
 
     // Create the player manager.
-    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine,
-                                         m_pVCManager);
-
-    int num_decks = m_pConfig->getValueString(ConfigKey("[Master]","num_decks")).toInt();
-    if (num_decks == 0) num_decks = 2;
-    for (int deck = 0; deck < num_decks; ++deck) {
-        // Add deck to the player manager
-        m_pPlayerManager->addDeck();
-    }
-
-    int num_samplers = m_pConfig->getValueString(ConfigKey("[Master]","num_samplers")).toInt();
-    if (num_samplers == 0) num_samplers = 4;
-    for (int sampler = 0; sampler < num_samplers; ++sampler) {
-        m_pPlayerManager->addSampler();
-    }
-
-    int num_preview_decks = m_pConfig->getValueString(ConfigKey("[Master]","num_preview_decks")).toInt();
-    if (num_preview_decks == 0) num_preview_decks = 1;
-    for (int preview = 0; preview < num_preview_decks; ++preview) {
-        m_pPlayerManager->addPreviewDeck();
-    }
+    m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine);
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addSampler();
+    m_pPlayerManager->addPreviewDeck();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
@@ -579,13 +566,6 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "Destroying MixxxApp";
 
-    qDebug() << "save number of decks " << m_pPlayerManager->numDecks();
-    m_pConfig->set(ConfigKey("[Master]","num_decks"), ConfigValue(m_pPlayerManager->numDecks()));
-    m_pConfig->set(ConfigKey("[Master]","num_samplers"),
-                   ConfigValue(m_pPlayerManager->numSamplers()));
-    m_pConfig->set(ConfigKey("[Master]","num_preview_decks"),
-                   ConfigValue(m_pPlayerManager->numPreviewDecks()));
-
     qDebug() << "save config " << qTime.elapsed();
     m_pConfig->Save();
 
@@ -699,7 +679,7 @@ void MixxxApp::slotViewShowSamplers(bool enable) {
 }
 
 void MixxxApp::slotViewShowVinylControl(bool enable) {
-    toggleVisibility(ConfigKey("[Vinylcontrol]", "show_vinylcontrol"), enable);
+    toggleVisibility(ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), enable);
 }
 
 void MixxxApp::slotViewShowMicrophone(bool enable) {
@@ -718,7 +698,7 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
 
 void MixxxApp::onNewSkinLoaded() {
     setVisibilityOptionState(m_pViewVinylControl,
-                             ConfigKey("[Vinylcontrol]", "show_vinylcontrol"));
+                             ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
     setVisibilityOptionState(m_pViewShowSamplers,
                              ConfigKey("[Samplers]", "show_samplers"));
     setVisibilityOptionState(m_pViewShowMicrophone,

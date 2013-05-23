@@ -15,14 +15,15 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QUrl>
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QUrl>
+
 #include "dlgprefplaylist.h"
+#include "soundsourceproxy.h"
 #ifdef __PROMO__
 #include "library/promotracksfeature.h"
 #endif
-#include "soundsourceproxy.h"
 //#include "plugindownloader.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"

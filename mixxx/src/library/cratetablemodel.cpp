@@ -4,53 +4,53 @@
 #include <QtDebug>
 
 #include "library/cratetablemodel.h"
-
-#include "library/dao/cratedao.h"
-#include "library/librarytablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 
-CrateTableModel::CrateTableModel(QObject* pParent, TrackCollection* pTrackCollection)
+CrateTableModel::CrateTableModel(QObject* pParent, 
+                                 TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
-                            pTrackCollection->getDatabase(),
                             "mixxx.db.model.crate"),
-          m_pTrackCollection(pTrackCollection),
-          m_iCrateId(-1) {
-    connect(this, SIGNAL(doSearch(const QString&)),
-            this, SLOT(slotSearch(const QString&)));
+          m_iCrateId(-1),
+          m_crateDAO(pTrackCollection->getCrateDAO()) {
 }
 
 CrateTableModel::~CrateTableModel() {
 }
 
-void CrateTableModel::setCrate(int crateId) {
+void CrateTableModel::setTableModel(int crateId) {
     //qDebug() << "CrateTableModel::setCrate()" << crateId;
+    if (crateId == m_iCrateId) {
+        qDebug() << "Already focused on crate " << crateId;
+        return;
+    }
     m_iCrateId = crateId;
 
     QString tableName = QString("crate_%1").arg(m_iCrateId);
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    FieldEscaper escaper(m_pTrackCollection->getDatabase());
+    QSqlQuery query(m_database);
+    FieldEscaper escaper(m_database);
+    QString filter = "library.mixxx_deleted = 0";
     QStringList columns;
-    columns << CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
+    columns << "crate_tracks."+CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
             << "'' as preview";
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
-    // removed files were not removed from playlists, so some users will have
+    // removed files were not removed from crates, so some users will have
     // libraries where this is the case.
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM %3 "
-        "INNER JOIN library ON library.id = %3.%4 "
-        "WHERE %3.%5 = %6 AND library.mixxx_deleted = 0")
-            .arg(escaper.escapeString(tableName),
-                 columns.join(","),
-                 CRATE_TRACKS_TABLE,
-                 CRATETRACKSTABLE_TRACKID,
-                 CRATETRACKSTABLE_CRATEID,
-                 QString::number(crateId));
+    QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                                  "SELECT %2 FROM %3 "
+                                  "INNER JOIN library ON library.id = %3.%4 "
+                                  "WHERE %3.%5 = %6 AND %7")
+                          .arg(escaper.escapeString(tableName),
+                               columns.join(","),
+                               CRATE_TRACKS_TABLE,
+                               CRATETRACKSTABLE_TRACKID,
+                               CRATETRACKSTABLE_CRATEID,
+                               QString::number(crateId),
+                               filter);
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -103,10 +103,9 @@ int CrateTableModel::addTracks(const QModelIndex& index,
         fileInfoList.append(QFileInfo(fileLocation));
     }
 
-    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-    QList<int> trackIDs = trackDao.addTracks(fileInfoList, true);
+    QList<int> trackIDs = m_trackDAO.addTracks(fileInfoList, true);
 
-    int tracksAdded = m_pTrackCollection->getCrateDAO().addTracksToCrate(
+    int tracksAdded = m_crateDAO.addTracksToCrate(
         trackIDs, m_iCrateId);
     if (tracksAdded > 0) {
         select();
@@ -120,56 +119,17 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     return tracksAdded;
 }
 
-TrackPointer CrateTableModel::getTrack(const QModelIndex& index) const {
-    int trackId = getTrackId(index);
-    return m_pTrackCollection->getTrackDAO().getTrack(trackId);
-}
-
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
-    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-    bool locked = crateDao.isCrateLocked(m_iCrateId);
+    bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
 
     if (!locked) {
         QList<int> trackIds;
         foreach (QModelIndex index, indices) {
             trackIds.append(getTrackId(index));
         }
-        crateDao.removeTracksFromCrate(trackIds, m_iCrateId);
+        m_crateDAO.removeTracksFromCrate(trackIds, m_iCrateId);
         select();
     }
-}
-
-void CrateTableModel::removeTrack(const QModelIndex& index) {
-    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-    bool locked = crateDao.isCrateLocked(m_iCrateId);
-
-    if (!locked) {
-        int trackId = getTrackId(index);
-        if (m_pTrackCollection->getCrateDAO().
-            removeTrackFromCrate(trackId, m_iCrateId)) {
-            select();
-        } else {
-            // TODO(XXX) feedback
-        }
-    }
-}
-
-void CrateTableModel::moveTrack(const QModelIndex& sourceIndex,
-                                const QModelIndex& destIndex) {
-    Q_UNUSED(sourceIndex);
-    Q_UNUSED(destIndex);
-    return;
-}
-
-void CrateTableModel::search(const QString& searchText) {
-    // qDebug() << "CrateTableModel::search()" << searchText
-    //          << QThread::currentThread();
-    emit(doSearch(searchText));
-}
-
-void CrateTableModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(
-        searchText, LibraryTableModel::DEFAULT_LIBRARYFILTER);
 }
 
 bool CrateTableModel::isColumnInternal(int column) {
@@ -206,9 +166,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
 
-    CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-    bool locked = crateDao.isCrateLocked(m_iCrateId);
-
+    bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
     if (locked) {
         caps |= TRACKMODELCAPS_LOCKED;
     }
