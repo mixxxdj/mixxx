@@ -14,6 +14,7 @@ from build import util, depends
 mixxx_version = util.get_mixxx_version()
 branch_name = util.get_branch_name()
 vcs_revision = util.get_revision()
+vcs_name = util.get_current_vcs()
 print "WE ARE IN:", os.getcwd()
 print "Building ", branch_name, " - rev.", vcs_revision
 
@@ -103,9 +104,9 @@ def osx_construct_version(build, mixxx_version, branch_name, vcs_revision):
         if build.build_is_release:
                 return mixxx_version
         elif branch_name.startswith('release-'):
-                return '%s-bzr%s' % (mixxx_version, vcs_revision)
+                return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
         # In a debug build, include the branch name and revision number
-        return "%s-%s-bzr%s" % (mixxx_version, branch_name, vcs_revision)
+        return "%s-%s-%s%s" % (mixxx_version, branch_name, vcs_name, vcs_revision)
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                              ubuntu_version):
@@ -113,19 +114,19 @@ def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
         if build.build_is_release:
                 return "%s-%s" % (mixxx_version, ubuntu_version)
         elif branch_name.startswith('release-'):
-                return "%s-bzr%s" % (mixxx_version, vcs_revision)
+                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
         # In a debug build, include the branch name and revision number
-        return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
-                                   branch_name, vcs_revision)
+        return "%s-%s~%s~%s%s" % (mixxx_version, ubuntu_version,
+                                   branch_name, vcs_name, vcs_revision)
 
 def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
         # In release mode, we only use the version
         if build.build_is_release:
                 return mixxx_version
         elif branch_name.startswith('release-'):
-                return '%s-bzr%s' % (mixxx_version, vcs_revision)
+                return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
         # In a debug build, include the branch name and revision number
-        return "%s-%s-bzr%s" % (mixxx_version, branch_name, vcs_revision)
+        return "%s-%s-%s%s" % (mixxx_version, branch_name, vcs_name, vcs_revision)
 
 #Set up the install target
 #=========================
@@ -661,7 +662,7 @@ def BuildUbuntuPackage(target, source, env):
         # package version is always changing otherwise it will reject our orig
         # source tarball.
         if ubuntu_ppa is not None:
-                mixxx_version = '%s-bzr%s' % (mixxx_version, vcs_revision)
+                mixxx_version = '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
 
         # Destroy ubuntu/ and create it
         ubuntu_cleanup()
@@ -689,7 +690,8 @@ def BuildUbuntuPackage(target, source, env):
         # TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 
         # Export the source folder
-        print "* Exporting source folder from current workspace (bzr rev: %s)" % vcs_revision
+        print "* Exporting source folder from current workspace (%s rev: %s)" % (vcs_name,
+                                                                                 vcs_revision)
         print
         util.export_source('.', build_dir)
 

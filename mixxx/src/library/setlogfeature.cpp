@@ -17,8 +17,7 @@
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
                              TrackCollection* pTrackCollection)
-        : BasePlaylistFeature(parent, pConfig, pTrackCollection,
-                              "SETLOGHOME") {
+        : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
                                                    true);//show all tracks
@@ -181,7 +180,7 @@ void SetlogFeature::slotJoinWithPrevious() {
             int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
             if (previousPlaylistId >= 0) {
 
-                m_pPlaylistTableModel->setPlaylist(previousPlaylistId);
+                m_pPlaylistTableModel->setTableModel(previousPlaylistId);
 
                 if (currentPlaylistId == m_playlistId) {
                     // mark all the Tracks in the previous Playlist as played
@@ -277,7 +276,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
 
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             // Switch the view to the playlist.
-            m_pPlaylistTableModel->setPlaylist(playlistId);
+            m_pPlaylistTableModel->setTableModel(playlistId);
             // Update selection
             emit(featureSelect(this, m_lastRightClickedIndex));
         }

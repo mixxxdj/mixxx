@@ -90,12 +90,7 @@ void EngineSideChain::run() {
     unsigned static id = 0;
     QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
 
-    while (true) {
-        // Check to see if we're supposed to exit/stop this thread.
-        if (m_bStopThread) {
-            return;
-        }
-
+    while (!m_bStopThread) {
         int samples_read;
         while ((samples_read = m_sampleFifo.read(
             m_pWorkBuffer, SIDECHAIN_BUFFER_SIZE))) {
