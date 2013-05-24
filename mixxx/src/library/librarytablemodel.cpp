@@ -73,6 +73,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
         (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
         (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
         (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) ||
+        (column == fieldIndex(TRACKLOCATIONSTABLE_MAINDIRID)) ||
         (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
@@ -99,5 +100,6 @@ TrackModel::CapabilitiesFlags LibraryTableModel::getCapabilities() const {
             | TRACKMODELCAPS_HIDE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS
-            | TRACKMODELCAPS_RESETPLAYED;
+            | TRACKMODELCAPS_RESETPLAYED
+            | TRACKMODELCAPS_RELOCATE;
 }

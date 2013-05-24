@@ -29,13 +29,22 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_pConfig(pConfig),
           m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pTrackCollection(pTrackCollection) {
+          m_pAddtoLibraryAction(NULL),
+          m_pLastRightClickedItem(NULL),
+          m_pTrackCollection(pTrackCollection){
+
+    connect(this, SIGNAL(dirsChanged(QString,QString)),
+            parent, SLOT(slotDirsChanged(QString,QString)));
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
     connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
 
     m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
     connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotRemoveQuickLink()));
+
+    m_pAddtoLibraryAction = new QAction(tr("Add to Library"),this);
+    connect(m_pAddtoLibraryAction, SIGNAL(triggered()),
+            this, SLOT(slotAddToLibrary()));
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -100,11 +109,14 @@ BrowseFeature::BrowseFeature(QObject* parent,
         m_pQuickLinkItem->appendChild(item);
     }
 
+
     // initialize the model
     m_childModel.setRootItem(rootItem);
 }
 
 BrowseFeature::~BrowseFeature() {
+    //delete m_pLastRightClickedItem;
+    // delete m_pQuickLinkItem;
 }
 
 QVariant BrowseFeature::title() {
@@ -122,6 +134,14 @@ void BrowseFeature::slotAddQuickLink() {
     m_pQuickLinkItem->appendChild(item);
     m_quickLinkList.append(spath);
     saveQuickLinks();
+}
+
+void BrowseFeature::slotAddToLibrary() {
+    if (!m_pLastRightClickedItem) {
+        return;
+    }
+    QString spath = m_pLastRightClickedItem->dataPath().toString();
+    emit dirsChanged("added" ,spath);
 }
 
 void BrowseFeature::slotRemoveQuickLink() {
@@ -200,6 +220,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      }
 
      menu.addAction(m_pAddQuickLinkAction);
+     menu.addAction(m_pAddtoLibraryAction);
      menu.exec(globalPos);
      onLazyChildExpandation(index);
 }

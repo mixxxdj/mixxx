@@ -9,6 +9,7 @@
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
+#include <QStringList>
 #include <QVariant>
 #include <QAbstractItemModel>
 #include <QUrl>
@@ -87,11 +88,11 @@ class LibraryFeature : public QObject {
     void restoreSearch(const QString&);
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     void featureIsLoading(LibraryFeature*);
-    // emit this signal if the foreign music collection has been imported/parsed. 
+    // emit this signal if the foreign music collection has been imported/parsed.
     void featureLoadingFinished(LibraryFeature*s);
-    // emit this signal to select pFeature 
+    // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
-
+    void availableDirsChanged(QList<int>);
 };
 
 #endif /* LIBRARYFEATURE_H */

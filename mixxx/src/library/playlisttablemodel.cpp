@@ -21,32 +21,44 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     if (m_iPlaylistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
         return;
+    } else if (playlistId == -1) {
+        // calls from parent class use -1 as id then just set the current playlist
+        playlistId = m_iPlaylistId;
     }
 
     m_iPlaylistId = playlistId;
-    QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
-    QSqlQuery query(m_database);
-    FieldEscaper escaper(m_database);
+    QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId)+"_";
+
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    FieldEscaper escaper(m_pTrackCollection->getDatabase());
 
     QStringList columns;
-    columns << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
-            << PLAYLISTTRACKSTABLE_POSITION
-            << PLAYLISTTRACKSTABLE_DATETIMEADDED
-            << "'' as preview";
+    QStringList tableColumns;
+    QString filter;
+        columns << "PlaylistTracks."+PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
+                << "PlaylistTracks."+PLAYLISTTRACKSTABLE_POSITION
+                << "PlaylistTracks."+PLAYLISTTRACKSTABLE_DATETIMEADDED
+                << "'' as preview";
+        tableColumns << PLAYLISTTRACKSTABLE_TRACKID
+                    << PLAYLISTTRACKSTABLE_POSITION
+                    << PLAYLISTTRACKSTABLE_DATETIMEADDED;
+    filter = "library.mixxx_deleted=0 AND track_locations.fs_deleted=0";
 
     // We drop files that have been explicitly deleted from mixxx
     // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
     // removed files were not removed from playlists, so some users will have
     // libraries where this is the case.
-    QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-                                  "SELECT %2 FROM PlaylistTracks "
-                                  "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-                                  "WHERE PlaylistTracks.playlist_id = %3")
-                          .arg(escaper.escapeString(playlistTableName),
-                               columns.join(","),
-                               QString::number(playlistId));
+    QString queryString = QString(
+        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+        "SELECT %2 FROM PlaylistTracks "
+        "INNER JOIN library ON library.id = PlaylistTracks.track_id "
+        "INNER JOIN track_locations ON track_locations.id=PlaylistTracks.track_id "
+        "WHERE PlaylistTracks.playlist_id = %3")
+            .arg(escaper.escapeString(playlistTableName),
+                 columns.join(","),
+                 QString::number(playlistId));
     if (!m_showAll) {
-        queryString.append(" AND library.mixxx_deleted = 0");
+        queryString.append(" AND " + filter);
     }
     query.prepare(queryString);
     if (!query.exec()) {
@@ -55,7 +67,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = "preview";
-    setTable(playlistTableName, columns[0], columns,
+    setTable(playlistTableName, tableColumns[0], tableColumns,
              m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
     setSearch("");
@@ -289,6 +301,7 @@ bool PlaylistTableModel::isColumnInternal(int column) {
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
+        column == fieldIndex(TRACKLOCATIONSTABLE_MAINDIRID) ||
         (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
@@ -315,6 +328,7 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_REMOVE
+            | TRACKMODELCAPS_RELOCATE
             | TRACKMODELCAPS_BPMLOCK
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;

@@ -338,4 +338,18 @@ METADATA
       ALTER TABLE Library ADD COLUMN keys_sub_version TEXT;
     </sql>
   </revision>
+  <revision version="19" min_compatible="3">
+    <description>
+      Add directories table
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS directories (
+        dir_id INTEGER primary key AUTOINCREMENT,
+        directory varchar(1024)
+      );
+      CREATE UNIQUE INDEX directory_idx ON directories(directory);
+      ALTER TABLE track_locations ADD COLUMN maindir_id INTEGER DEFAULT 0;
+      ALTER TABLE track_locations ADD COLUMN checksum varchar(1024);
+    </sql>
+  </revision>
 </schema>

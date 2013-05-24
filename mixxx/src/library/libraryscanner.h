@@ -16,7 +16,6 @@
 *                                                                         *
 ***************************************************************************/
 
-
 #ifndef LIBRARYSCANNER_H
 #define LIBRARYSCANNER_H
 
@@ -27,6 +26,7 @@
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
+#include "library/dao/directorydao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/analysisdao.h"
@@ -46,18 +46,20 @@ class LibraryScanner : public QThread {
     void run();
     void scan(QString libraryPath, QWidget *parent);
     void scan();
-    bool recursiveScan(QString dirPath, QStringList& verifiedDirectories);
+    
   public slots:
     void cancel();
     void resetCancel();
   signals:
     void scanFinished();
     void progressHashing(QString);
+    void tracksRestored(QSet<int>);
   private:
+    bool recursiveScan(QString dirPath, QStringList& verifiedDirectories,
+                       QSet<int>& restoredTracks,const int dirId);
     TrackCollection* m_pCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
                              // since we run in a different thread */
-    QString m_qLibraryPath; // The path to the library on disk
     LibraryScannerDlg* m_pProgress; // The library scanning window
 
     LibraryHashDAO m_libraryHashDao;
@@ -65,6 +67,7 @@ class LibraryScanner : public QThread {
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
     AnalysisDao m_analysisDao;
+    DirectoryDAO m_directoryDao;
     TrackDAO m_trackDao;
 
     QStringList m_nameFilters;

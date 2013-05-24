@@ -14,7 +14,9 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
+#include "mixxxlibraryfeature.h"
 #include "preparefeature.h"
+#include "library/dao/directorydao.h"
 
 class TrackModel;
 class TrackCollection;
@@ -44,6 +46,8 @@ public:
 
     void addFeature(LibraryFeature* feature);
     QList<TrackPointer> getTracksToAutoLoad();
+    MixxxLibraryFeature* getpMixxxLibraryFeature();
+    QStringList getDirs();
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
@@ -65,6 +69,7 @@ public:
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
+    void slotDirsChanged(QString,QString);
     void onSkinLoadFinished();
 
   signals:
@@ -73,11 +78,17 @@ public:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
+    void configChanged(QString, QString);
+    void dirsChanged(QString,QString);
+    void loadTrackFailed(TrackPointer);
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
 
   private:
+    void purgeTracks(const int dirId);
+    static QString mpChanged(const QString);
+
     ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
@@ -94,6 +105,8 @@ public:
     PrepareFeature* m_pPrepareFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
+    TrackModel* m_ptrackModel;
+    DirectoryDAO m_directoryDAO;
 };
 
 #endif /* LIBRARY_H */

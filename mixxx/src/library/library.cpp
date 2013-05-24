@@ -41,7 +41,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl),
-        m_pRecordingManager(pRecordingManager) {
+        m_pRecordingManager(pRecordingManager),
+        m_directoryDAO(m_pTrackCollection->getDirectoryDAO()) {
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -241,4 +242,52 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
         return m_pPromoTracksFeature->getTracksToAutoLoad();
 #endif
     return QList<TrackPointer>();
+}
+
+MixxxLibraryFeature* Library::getpMixxxLibraryFeature(){
+    return m_pMixxxLibraryFeature;
+}
+
+void Library::slotDirsChanged(QString op, QString dir){
+    qDebug() << "kain88 slotDirsChanged";
+    qDebug() << op << '\t' << dir;
+    if (op=="added") {
+        m_directoryDAO.addDirectory(dir);
+    } else if (op=="removed") {
+        purgeTracks(m_directoryDAO.getDirId(dir));
+        m_directoryDAO.purgeDirectory(dir);
+    } else if (op=="relocate") {
+        // see dlgprefplaylist for this
+        QStringList dirs = dir.split("!(~)!");
+        QString newFolder = dirs[0];
+        QString oldFolder = dirs[1];
+        m_directoryDAO.relocateDirectory(oldFolder,newFolder);
+    } else if (op=="update") {
+        // this will be signaled from the library scanner if the db needs to be 
+        // updated
+        m_directoryDAO.addDirectory(dir);
+        m_directoryDAO.updateTrackLocations(dir);
+    }
+}
+
+void Library::purgeTracks(const int dirId) {
+    QSqlQuery query;
+    QList<int> trackIds;
+    query.prepare("SELECT library.id FROM library INNER JOIN track_locations "
+                "ON library.location=track_locations.id "
+                "WHERE maindir_id="+QString::number(dirId));
+
+    if (!query.exec()) {
+        qDebug() << "could not purge tracks from libraryPath "<<dirId;
+    }
+
+    while (query.next()) {
+        trackIds.append(query.value(query.record().indexOf("id")).toInt());
+    }
+    qDebug() << "starting to purge Tracks " << trackIds;
+    m_pTrackCollection->getTrackDAO().purgeTracks(trackIds); 
+}
+
+QStringList Library::getDirs(){
+    return m_directoryDAO.getDirs();
 }

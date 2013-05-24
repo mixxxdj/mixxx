@@ -15,6 +15,9 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QSqlDatabase>
+#include <QSqlQuery>
+#include <QSqlRecord>
 #include <QDesktopServices>
 #include <QFileDialog>
 #include <QUrl>
@@ -31,6 +34,8 @@
 
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config)
             : QWidget(parent), 
+              m_model(),
+              m_dirsModified(false),
               m_pconfig(config) {
     setupUi(this);
     slotUpdate();
@@ -52,6 +57,10 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
 
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),
             this, SLOT(slotBrowseDir()));
+    connect(PushButtonRemovePlaylist, SIGNAL(clicked()),
+            this, SLOT(slotRemoveDir()));
+    connect(pushButton_2, SIGNAL(clicked()),
+            this, SLOT(slotRelocateDir()));
     //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
     connect(pushButtonExtraPlugins, SIGNAL(clicked()),
             this, SLOT(slotExtraPlugins()));
@@ -73,6 +82,40 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
 }
 
 DlgPrefPlaylist::~DlgPrefPlaylist() {
+}
+
+bool DlgPrefPlaylist::initializeModel(){
+    // this will hook into the default connection, so we don't need to
+    // provide anymore information. This works because the Library is
+    // created before the Preferences and a connection already exists.
+    // --kain88 July 2012
+    QSqlDatabase database = QSqlDatabase::database();
+    QSqlQuery query;
+    query.prepare("SELECT directory from directories");
+    if (!query.exec()) {
+        qDebug() << "damn there are no directories to display";
+        return false;
+    }
+    // save which index was selected
+    const int selected = list->currentIndex().row();
+    m_model.clear();
+    while(query.next()){
+        QStandardItem* pitem = new QStandardItem(
+                               query.value(query.record().indexOf("directory"))
+                               .toString());
+        m_model.appendRow(pitem);
+    }
+    list->setModel(&m_model);
+    // first select the first index then change it to selected if it still exists
+    list->setCurrentIndex(list->model()->index(0, 0));
+    for (int i=0 ; i<list->model()->rowCount() ; ++i) {
+        const QModelIndex index = list->model()->index(i, 0);
+        if (index.row() == selected) {
+            list->setCurrentIndex(index);
+            break;
+        }
+    }
+    return true;
 }
 
 void DlgPrefPlaylist::slotExtraPlugins() {
@@ -142,9 +185,8 @@ void DlgPrefPlaylist::slotM4ACheck()
 }*/
 
 void DlgPrefPlaylist::slotUpdate() {
-    // Library Path
-    LineEditSongfiles->setText(m_pconfig->getValueString(
-                               ConfigKey("[Playlist]","Directory")));
+    // Song path
+    initializeModel();
     //Bundled songs stat tracking
     checkBoxPromoStats->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Promo]","StatTracking")).toInt());
@@ -160,14 +202,41 @@ void DlgPrefPlaylist::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
+    checkBox_show_missing->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","ShowMissingSongs"),"1").toInt());
 }
 
 void DlgPrefPlaylist::slotBrowseDir() {
     QString fd = QFileDialog::getExistingDirectory(this,
-                 tr("Choose music library directory"),
-                 m_pconfig->getValueString(ConfigKey("[Playlist]","Directory")));
+                            tr("Choose music library directory"),
+                            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
     if (fd != "") {
-        LineEditSongfiles->setText(fd);
+        emit(dirsChanged("added",fd));
+        slotUpdate();
+        m_dirsModified = true;
+    }
+}
+
+void DlgPrefPlaylist::slotRemoveDir() {
+    QModelIndex index = list->currentIndex();
+    QString fd = index.data().toString();
+    emit(dirsChanged("removed",fd));
+    slotUpdate();
+    m_dirsModified = true;
+}
+
+void DlgPrefPlaylist::slotRelocateDir() {
+    QModelIndex index = list->currentIndex();
+    QString currentFd = index.data().toString();
+    QString fd = QFileDialog::getExistingDirectory(this,
+                            tr("Choose music library directory"),
+                            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+
+    //use !(~)! as a sign where the string has to be seperated later
+    if(!fd.isEmpty()){
+        emit(dirsChanged("relocate",fd+"!(~)!"+currentFd));
+        slotUpdate();
+        m_dirsModified = true;
     }
 }
 
@@ -187,10 +256,19 @@ void DlgPrefPlaylist::slotApply() {
     m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
 
-    if (LineEditSongfiles->text() !=
-            m_pconfig->getValueString(ConfigKey("[Playlist]","Directory"))) {
-        m_pconfig->set(ConfigKey("[Playlist]","Directory"), LineEditSongfiles->text());
+    // Update playlist if path has changed
+    if (m_dirsModified) {
         emit(apply());
+    }
+
+    //update TM if ShowMissingSongs has changed
+    if ((int)checkBox_show_missing->isChecked() != m_pconfig->getValueString(
+                                                ConfigKey("[Library]",
+                                                "ShowMissingSongs"),"1").toInt()) {
+        m_pconfig->set(ConfigKey("[Library]","ShowMissingSongs"),
+                ConfigValue((int)checkBox_show_missing->isChecked()));
+
+        emit(configChanged("[Library]","ShowMissingSongs"));
     }
     m_pconfig->Save();
 }

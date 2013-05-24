@@ -43,6 +43,7 @@ class WTrackTableView : public WLibraryTableView {
   private slots:
     void slotRemove();
     void slotHide();
+    void slotRelocate();
     void slotOpenInFileBrowser();
     void slotShowTrackInfo();
     void slotShowDlgTagFetcher();
@@ -112,6 +113,7 @@ class WTrackTableView : public WLibraryTableView {
     // Remove from table
     QAction *m_pRemoveAct;
     QAction *m_pHideAct;
+    QAction *m_pRelocateAct;
     QAction *m_pUnhideAct;
     QAction *m_pPurgeAct;
 

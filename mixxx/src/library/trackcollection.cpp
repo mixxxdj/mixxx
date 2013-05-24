@@ -18,9 +18,10 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_playlistDao(m_db),
           m_crateDao(m_db),
           m_cueDao(m_db),
+          m_directoryDao(m_db),
           m_analysisDao(m_db, pConfig),
           m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
-                     m_analysisDao, pConfig),
+                     m_analysisDao, m_directoryDao, pConfig),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
@@ -72,7 +73,7 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 18;
+    int requiredSchemaVersion = 19;
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
@@ -116,12 +117,19 @@ QSqlDatabase& TrackCollection::getDatabase() {
     return m_db;
 }
 
-/** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
-    @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
-    @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
-*/
+// Do a non-recursive import of all the songs in a directory. Does NOT 
+// decend into subdirectories.
+// @param trackDao The track data access object which provides a 
+//   connection to the database. We use this parameter in order to make 
+//   this function callable from separate threads. You need to use a 
+//   different DB connection for each thread.
+// @return true if the scan completed without being cancelled.
+//   False if the scan was cancelled part-way through.
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
-                                    const QStringList & nameFilters, volatile bool* cancel) {
+                                      const QStringList & nameFilters,
+                                      QSet<int>& restoredTracks,
+                                      const int dirId,
+                                      volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -149,15 +157,17 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
         // it. If it does exist in the database, then it is either in the
         // user's library OR the user has "removed" the track via
         // "Right-Click -> Remove". These tracks stay in the library, but
-        // their mixxx_deleted column is 1.
-        if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
+        // their mixxx_deleted column is 1. It is also possible that the
+        // track was deleted and now restored, set these in restoredTracks
+        if (trackDao.trackExistsInDatabase(absoluteFilePath)) {
+            restoredTracks.insert(trackDao.getTrackId(absoluteFilePath));
+        } else {
             //qDebug() << "Loading" << it.fileName();
             emit(progressLoading(it.fileName()));
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
-
-            if (trackDao.addTracksAdd(pTrack.data(), false)) {
+            if (trackDao.addTracksAdd(pTrack.data(), false,dirId)) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
                 // new Track in the database
@@ -183,13 +193,17 @@ PlaylistDAO& TrackCollection::getPlaylistDAO() {
     return m_playlistDao;
 }
 
+DirectoryDAO& TrackCollection::getDirectoryDAO() {
+    return m_directoryDao;
+}
+
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
-    const QString name) {
+                               const QString name) {
     return m_trackSources.value(name, QSharedPointer<BaseTrackCache>());
 }
 
-void TrackCollection::addTrackSource(
-    const QString name, QSharedPointer<BaseTrackCache> trackSource) {
+void TrackCollection::addTrackSource(const QString name,
+                                     QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
 }

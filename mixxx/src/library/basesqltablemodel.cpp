@@ -824,3 +824,30 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // there.
     select(); //Repopulate the data model.
 }
+
+void BaseSqlTableModel::setTableModel(int id) {
+    Q_UNUSED(id);
+}
+
+void BaseSqlTableModel::relocateTracks(const QModelIndexList& indices) {
+    foreach (QModelIndex index, indices) {
+        int trackId = getTrackId(index);
+        TrackPointer ptrack = m_trackDAO.getTrack(trackId);
+        if (!ptrack) {
+            qDebug() << "strange I can't get that thing";
+        }
+        QString newLocation = QFileDialog::getOpenFileName(QApplication::desktop(),
+                                        QString(ptrack->getTitle()),
+                                        ptrack->getLocation());
+
+        if (!newLocation.isEmpty()) {
+            if (!m_trackDAO.relocateTrack(ptrack, newLocation)) {
+                QMessageBox::warning(NULL, tr("Mixxx"),
+                                     tr("The track could not be relocated"));
+            }
+        }
+    }
+    setTableModel();
+    select();
+}
+

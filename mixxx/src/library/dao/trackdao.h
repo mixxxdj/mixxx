@@ -52,12 +52,15 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
 const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
 const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
+const QString TRACKLOCATIONSTABLE_FINGERPRINT = "fingerprint";
+const QString TRACKLOCATIONSTABLE_MAINDIRID = "maindir_id";
 
 class ScopedTransaction;
 class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class CrateDAO;
+class DirectoryDAO;
 
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
@@ -66,8 +69,8 @@ class TrackDAO : public QObject, public virtual DAO {
     // synchronized on track metadata change
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
-             AnalysisDao& analysisDao,
-             ConfigObject<ConfigValue>* pConfig);
+             AnalysisDao& analysisDao, DirectoryDAO& directoryDao,
+             ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~TrackDAO();
 
     void finish();
@@ -81,25 +84,28 @@ class TrackDAO : public QObject, public virtual DAO {
     int addTrack(const QString& file, bool unremove);
     int addTrack(const QFileInfo& fileInfo, bool unremove);
     void addTracksPrepare();
-    bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
+    bool addTracksAdd(TrackInfoObject* pTrack, bool unremove,const int dirId);
     void addTracksFinish();
     QList<int> addTracks(const QList<QFileInfo> &fileInfoList, bool unremove);
     void hideTracks(QList<int> ids);
     void purgeTracks(QList<int> ids);
+    QStringList deleteTracksFromFS(QList<int> ids);
     void unhideTracks(QList<int> ids);
     TrackPointer getTrack(int id, bool cacheOnly=false) const;
     bool isDirty(int trackId);
+    bool relocateTrack(TrackPointer pTrack, QString newLocation);
+    void markTrackAsDeleted(TrackPointer pTrack);
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
     void markTracksInDirectoriesAsVerified(QStringList directories);
-    void invalidateTrackLocationsInLibrary(QString libraryPath);
+    void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(QString directory);
-    void detectMovedFiles(QSet<int>* pTracksMovedSetNew, QSet<int>* pTracksMovedSetOld);
+    void detectMovedFiles(QSet<int>& tracksMovedSetNew, QSet<int>& tracksMovedSetOld);
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
-    void verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel);
+    void verifyTracksOutside(volatile bool* pCancel);
 
   signals:
     void trackDirty(int trackId);
@@ -134,10 +140,13 @@ class TrackDAO : public QObject, public virtual DAO {
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject* pTrack, bool unremove);
+    QString calcChecksum(TrackInfoObject& pTrack);
+    QString calcChecksum(QString location);
     TrackPointer getTrackFromDB(int id) const;
     QString absoluteFilePath(QString location);
+    void uncacheTracks(QSet<int> ids);
 
-    void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
+    void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack, int dirId);
     void bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId);
 
     void writeAudioMetaData(TrackInfoObject* pTrack);
@@ -149,6 +158,7 @@ class TrackDAO : public QObject, public virtual DAO {
     PlaylistDAO &m_playlistDao;
     CrateDAO &m_crateDao;
     AnalysisDao& m_analysisDao;
+    DirectoryDAO& m_directoryDAO;
     ConfigObject<ConfigValue> * m_pConfig;
     static QHash<int, TrackWeakPointer> m_sTracks;
     static QMutex m_sTracksMutex;

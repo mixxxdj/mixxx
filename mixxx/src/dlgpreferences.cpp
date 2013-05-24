@@ -80,6 +80,11 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wsound);
     m_wplaylist = new DlgPrefPlaylist(this, config);
     addPageWidget(m_wplaylist);
+    connect(m_wplaylist, SIGNAL(configChanged(QString,QString)),
+            this, SIGNAL(configChanged(QString,QString)));
+    connect(m_wplaylist, SIGNAL(dirsChanged(QString,QString)),
+            this, SIGNAL(dirsChanged(QString,QString)));
+
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
     addPageWidget(m_wcontrols);
     m_weq = new DlgPrefEQ(this, config);

@@ -116,11 +116,11 @@ class MixxxApp : public QMainWindow {
     void slotDeveloperReloadSkin(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
-
     void onNewSkinLoaded();
 
   signals:
     void newSkinLoaded();
+    void dirsChanged(QString,QString);
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */

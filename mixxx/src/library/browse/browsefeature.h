@@ -38,6 +38,7 @@ class BrowseFeature : public LibraryFeature {
   public slots:
     void slotAddQuickLink();
     void slotRemoveQuickLink();
+    void slotAddToLibrary();
     void activate();
     void activateChild(const QModelIndex& index);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
@@ -45,6 +46,7 @@ class BrowseFeature : public LibraryFeature {
 
   signals:
     void setRootIndex(const QModelIndex&);
+    void dirsChanged(QString,QString);
 
   private:
     QString getRootViewHtml() const;
@@ -60,6 +62,7 @@ class BrowseFeature : public LibraryFeature {
     FolderTreeModel m_childModel;
     QAction* m_pAddQuickLinkAction;
     QAction* m_pRemoveQuickLinkAction;
+    QAction* m_pAddtoLibraryAction;
     TreeItem* m_pLastRightClickedItem;
     TreeItem* m_pQuickLinkItem;
     QStringList m_quickLinkList;

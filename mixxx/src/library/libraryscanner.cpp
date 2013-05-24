@@ -33,9 +33,10 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     m_cueDao(m_database),
     m_playlistDao(m_database),
     m_crateDao(m_database),
+    m_directoryDao(m_database),
     m_analysisDao(m_database, collection->getConfig()),
     m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao,
-               m_analysisDao, collection->getConfig()),
+               m_analysisDao,m_directoryDao, collection->getConfig()),
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
     m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
@@ -50,6 +51,17 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     // files would then have the wrong track location.
     connect(this, SIGNAL(scanFinished()),
             &(collection->getTrackDAO()), SLOT(clearCache()));
+
+    //connect the new trackDAO with the default BaseTrackCacheR
+    connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
+            &*(collection->getTrackSource(QString("default"))),
+            SLOT(slotTracksRemoved(QSet<int>)));
+    connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
+            &*(collection->getTrackSource(QString("default"))),
+            SLOT(slotTracksAdded(QSet<int>)));
+    connect(this, SIGNAL(tracksRestored(QSet<int>)),
+            &*(collection->getTrackSource(QString("default"))),
+            SLOT(slotTracksAdded(QSet<int>)));
 
     // The "Album Artwork" folder within iTunes stores Album Arts.
     // It has numerous hundreds of sub folders but no audio files
@@ -128,7 +140,7 @@ LibraryScanner::~LibraryScanner()
         // Rollback any uncommitted transaction
         if (m_database.rollback()) {
             qDebug() << "ERROR: There was a transaction in progress while closing the library scanner connection."
-                     << "There is a logic error somewhere.";
+                    << "There is a logic error somewhere.";
         }
         // Close our database connection
         m_database.close();
@@ -214,7 +226,7 @@ void LibraryScanner::run()
     // verification of their existance...
     // (ie. we want to check they're still on your hard drive where
     // we think they are)
-    m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
+    m_trackDao.invalidateTrackLocationsInLibrary();
 
     qDebug() << "Recursively scanning library.";
     // Start scanning the library.
@@ -224,19 +236,26 @@ void LibraryScanner::run()
     m_trackDao.addTracksPrepare();
     QStringList verifiedDirectories;
 
-    bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath, verifiedDirectories);
-
-    if (!bScanFinishedCleanly) {
-        qDebug() << "Recursive scan interrupted.";
-    } else {
-        qDebug() << "Recursive scan finished cleanly.";
+    QStringList dirs = m_directoryDao.getDirs();
+    QSet<int> restoredTracks;
+    bool bScanFinishedCleanly=false;
+    //recursivly scan each dir that is saved in the directories table
+    foreach (QString dir , dirs) {
+        int dirId = m_directoryDao.getDirId(dir);
+        bScanFinishedCleanly = recursiveScan(dir,verifiedDirectories,restoredTracks,dirId);
+        //Verify all Tracks inside Library but outside the library path
+        if (!bScanFinishedCleanly) {
+            qDebug() << "Recursive scan interrupted.";
+        } else {
+            qDebug() << "Recursive scan finished cleanly.";
+        }
     }
+    m_trackDao.verifyTracksOutside(&m_bCancelLibraryScan);
 
     // Runs inside a transaction
     m_trackDao.addTracksFinish();
-
-    //Verify all Tracks inside Library but outside the library path
-    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan);
+    // this will cause BaseTrackCache to update the index of all restored tracks
+    emit(tracksRestored(restoredTracks));
 
     // Start a transaction for all the library hashing (moved file detection)
     // stuff.
@@ -263,7 +282,7 @@ void LibraryScanner::run()
         // Check to see if the "deleted" tracks showed up in another location,
         // and if so, do some magic to update all our tables.
         qDebug() << "Detecting moved files.";
-        m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
+        m_trackDao.detectMovedFiles(tracksMovedSetOld, tracksMovedSetNew);
 
         // Remove the hashes for any directories that have been
         // marked as deleted to clean up. We need to do this otherwise
@@ -289,10 +308,8 @@ void LibraryScanner::run()
     emit(scanFinished());
 }
 
-void LibraryScanner::scan(QString libraryPath, QWidget *parent)
-{
-    m_qLibraryPath = libraryPath;
-    m_pProgress = new LibraryScannerDlg(parent);
+void LibraryScanner::scan() {
+    m_pProgress = new LibraryScannerDlg();
     m_pProgress->setAttribute(Qt::WA_DeleteOnClose);
 
     // The important part here is that we need to use
@@ -314,7 +331,7 @@ void LibraryScanner::scan(QString libraryPath, QWidget *parent)
             this, SLOT(cancel()));
     connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
             m_pProgress, SLOT(slotUpdate(QString)));
-    scan();
+    start();
 }
 
 //slot
@@ -328,15 +345,11 @@ void LibraryScanner::resetCancel()
     m_bCancelLibraryScan = 0;
 }
 
-void LibraryScanner::scan()
-{
-    start(); // Starts the thread by calling run()
-}
-
 // Recursively scan a music library. Doesn't import tracks for any directories that
 // have already been scanned and have not changed. Changes are tracked by performing
 // a hash of the directory's file list, and those hashes are stored in the database.
-bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirectories) {
+bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirectories,
+                                   QSet<int>& restoredTracks, const int dirId) {
     QDirIterator fileIt(dirPath, m_nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     bool bScanFinishedCleanly = true;
@@ -376,7 +389,8 @@ bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirecto
         }
 
         // Rescan that mofo!
-        bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao, m_nameFilters, &m_bCancelLibraryScan);
+        bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao, m_nameFilters,
+                                                              restoredTracks,dirId,&m_bCancelLibraryScan);
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
         // (and the tracks inside them) will be marked as verified
@@ -401,7 +415,7 @@ bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirecto
         if (m_directoriesBlacklist.contains(nextPath))
             continue;
 
-        if (!recursiveScan(nextPath, verifiedDirectories)) {
+        if (!recursiveScan(nextPath, verifiedDirectories,restoredTracks,dirId)) {
             bScanFinishedCleanly = false;
         }
     }
