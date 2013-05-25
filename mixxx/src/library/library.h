@@ -84,9 +84,6 @@ public:
     void searchStarting();
 
   private:
-    void purgeTracks(const int dirId);
-    static QString mpChanged(const QString);
-
     ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;

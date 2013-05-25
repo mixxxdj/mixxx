@@ -80,7 +80,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     m_wplaylist = new DlgPrefPlaylist(this, config, pLibrary);
     addPageWidget(m_wplaylist);
     connect(m_wplaylist, SIGNAL(dirsChanged(QString,QString)),
-            pLibrary, SIGNAL(dirsChanged(QString,QString)));
+            pLibrary, SLOT(slotDirsChanged(QString,QString)));
 
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
     addPageWidget(m_wcontrols);

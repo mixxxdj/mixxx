@@ -656,6 +656,23 @@ void TrackDAO::unhideTracks(QList<int> ids) {
     emit(tracksAdded(tracksAddedSet));
 }
 
+void TrackDAO::purgeTracks(int dirId) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT library.id FROM library INNER JOIN track_locations "
+                  "ON library.location=track_locations.id WHERE "
+                  "maindir_id = :maindir_id");
+    query.bindValue(":maindir_id", QString::number(dirId));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    QList<int> ids;
+    while (query.next()) {
+        ids.append(query.value(query.record().indexOf("id")).toInt());
+    }
+    //purgeTracks(ids);
+}
+
 // Warning, purge cannot be undone check before if there is no reference to this
 // track id's on other library tables
 void TrackDAO::purgeTracks(QList<int> ids) {

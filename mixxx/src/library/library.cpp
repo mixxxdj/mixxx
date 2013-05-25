@@ -254,7 +254,7 @@ void Library::slotDirsChanged(QString op, QString dir){
     if (op=="added") {
         m_directoryDAO.addDirectory(dir);
     } else if (op=="removed") {
-        purgeTracks(m_directoryDAO.getDirId(dir));
+        m_pTrackCollection->getTrackDAO().purgeTracks(m_directoryDAO.getDirId(dir));
         m_directoryDAO.purgeDirectory(dir);
     } else if (op=="relocate") {
         // see dlgprefplaylist for this
@@ -265,23 +265,6 @@ void Library::slotDirsChanged(QString op, QString dir){
     }
 }
 
-void Library::purgeTracks(const int dirId) {
-    QSqlQuery query;
-    QList<int> trackIds;
-    query.prepare("SELECT library.id FROM library INNER JOIN track_locations "
-                "ON library.location=track_locations.id "
-                "WHERE maindir_id="+QString::number(dirId));
-
-    if (!query.exec()) {
-        qDebug() << "could not purge tracks from libraryPath "<<dirId;
-    }
-
-    while (query.next()) {
-        trackIds.append(query.value(query.record().indexOf("id")).toInt());
-    }
-    qDebug() << "starting to purge Tracks " << trackIds;
-    m_pTrackCollection->getTrackDAO().purgeTracks(trackIds); 
-}
 
 QStringList Library::getDirs(){
     return m_directoryDAO.getDirs();

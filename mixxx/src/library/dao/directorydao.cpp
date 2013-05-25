@@ -113,9 +113,10 @@ QList<int> DirectoryDAO::getDirIds(QStringList& dirs){
 //TODO(kain88) check if this is not obsolete because of getDirIds
 int DirectoryDAO::getDirId(const QString dir){
     QSqlQuery query(m_database);
+    FieldEscaper escaper(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_ID % " FROM " % DIRECTORYDAO_TABLE %
                   " WHERE " % DIRECTORYDAO_DIR %" in (\":dir\")");
-    query.bindValue(":dir",dir);
+    query.bindValue(":dir",escaper.escapeString(dir));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't find directory:"<<dir;
     }
