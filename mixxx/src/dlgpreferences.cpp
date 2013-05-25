@@ -55,7 +55,7 @@
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
-                               ConfigObject<ConfigValue> * _config) {
+                               ConfigObject<ConfigValue> * _config, Library *pLibrary) {
     m_pControllerManager = controllers;
 
     setupUi(this);
@@ -69,8 +69,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     createIcons();
     //contentsTreeWidget->setCurrentRow(0);
 
-    while (pagesWidget->count() > 0)
-    {
+    while (pagesWidget->count() > 0) {
         pagesWidget->removeWidget(pagesWidget->currentWidget());
     }
     m_pageSizeHint = QSize(0,0);
@@ -78,10 +77,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     // Construct widgets for use in tabs
     m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, config);
     addPageWidget(m_wsound);
-    m_wplaylist = new DlgPrefPlaylist(this, config);
+    m_wplaylist = new DlgPrefPlaylist(this, config, pLibrary);
     addPageWidget(m_wplaylist);
     connect(m_wplaylist, SIGNAL(dirsChanged(QString,QString)),
-            this, SIGNAL(dirsChanged(QString,QString)));
+            pLibrary, SIGNAL(dirsChanged(QString,QString)));
 
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
     addPageWidget(m_wcontrols);

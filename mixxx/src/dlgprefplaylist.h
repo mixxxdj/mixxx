@@ -22,6 +22,7 @@
 
 #include "ui_dlgprefplaylistdlg.h"
 #include "configobject.h"
+#include "library/library.h"
 
 class QWidget;
 
@@ -32,7 +33,8 @@ class QWidget;
 class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
     Q_OBJECT
   public:
-    DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *config);
+    DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *config,
+                    Library *pLibrary);
     ~DlgPrefPlaylist();
   public slots:
     // Update widget 
@@ -57,7 +59,6 @@ class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
 
   signals:
     void apply();
-    void configChanged(QString, QString);
     void dirsChanged(QString, QString);
 
   private:
@@ -65,6 +66,7 @@ class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
     QStandardItemModel m_model;
     bool m_dirsModified;
     ConfigObject<ConfigValue> *m_pconfig;
+    Library *m_pLibrary;
     // SoundSource Plugin Downloader
     //PluginDownloader* m_pPluginDownloader;
 };

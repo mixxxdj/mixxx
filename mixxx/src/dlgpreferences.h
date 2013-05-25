@@ -19,7 +19,7 @@
 #define DLGPREFERENCES_H
 
 #include <QDialog>
-#include <qevent.h>
+#include <QEvent>
 #include <QtGui>
 
 #include "ui_dlgpreferencesdlg.h"
@@ -43,6 +43,7 @@ class DlgPrefReplayGain;
 class ControllerManager;
 class SkinLoader;
 class PlayerManager;
+class Library;
 class VinylControlManager;
 #ifdef __MODPLUG__
 class DlgPrefModplug;
@@ -59,7 +60,8 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
     DlgPreferences(MixxxApp* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
 //                    PlayerManager* pPlayerManager, ControllerManager* controllers, MidiDeviceManager* midi,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
-                   VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config);
+                   VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config,
+                   Library *pLibrary);
 
     ~DlgPreferences();
     void createIcons();
@@ -74,7 +76,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
   signals:
     void closeDlg();
     void showDlg();
-    void dirsChanged(QString, QString);
   protected:
     bool eventFilter(QObject*, QEvent*);
   private:

@@ -416,11 +416,9 @@ void WTrackTableView::slotOpenInFileBrowser() {
     }
 }
 
-void WTrackTableView::slotHide()
-{
+void WTrackTableView::slotHide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->hideTracks(indices);
@@ -428,11 +426,9 @@ void WTrackTableView::slotHide()
     }
 }
 
-void WTrackTableView::slotUnhide()
-{
+void WTrackTableView::slotUnhide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->unhideTracks(indices);
@@ -440,11 +436,9 @@ void WTrackTableView::slotUnhide()
     }
 }
 
-void WTrackTableView::slotRelocate()
-{
+void WTrackTableView::slotRelocate() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->relocateTracks(indices);

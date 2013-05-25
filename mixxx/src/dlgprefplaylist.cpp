@@ -15,11 +15,9 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QSqlDatabase>
-#include <QSqlQuery>
-#include <QSqlRecord>
 #include <QDesktopServices>
 #include <QFileDialog>
+#include <QStringList>
 #include <QUrl>
 
 #include "dlgprefplaylist.h"
@@ -32,11 +30,13 @@
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config)
+DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config,
+                                 Library *pLibrary)
                : QWidget(parent), 
                  m_model(),
                  m_dirsModified(false),
-                 m_pconfig(config) {
+                 m_pconfig(config),
+                 m_pLibrary(pLibrary) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -85,28 +85,16 @@ DlgPrefPlaylist::~DlgPrefPlaylist() {
 }
 
 bool DlgPrefPlaylist::initializeModel(){
-    // this will hook into the default connection, so we don't need to
-    // provide anymore information. This works because the Library is
-    // created before the Preferences and a connection already exists.
-    // --kain88 July 2012
-    QSqlDatabase database = QSqlDatabase::database();
-    QSqlQuery query;
-    query.prepare("SELECT directory from directories");
-    if (!query.exec()) {
-        qDebug() << "damn there are no directories to display";
-        return false;
-    }
     // save which index was selected
     const int selected = list->currentIndex().row();
+    // clear and fill model
     m_model.clear();
-    while(query.next()){
-        QStandardItem* pitem = new QStandardItem(
-                               query.value(query.record().indexOf("directory"))
-                               .toString());
-        m_model.appendRow(pitem);
+    QStringList dirs = m_pLibrary->getDirs();
+    foreach (QString dir, dirs) {
+        m_model.appendRow(new QStandardItem(dir));
     }
     list->setModel(&m_model);
-    // first select the first index then change it to selected if it still exists
+    // reselect index if it still exists
     list->setCurrentIndex(list->model()->index(0, 0));
     for (int i=0 ; i<list->model()->rowCount() ; ++i) {
         const QModelIndex index = list->model()->index(i, 0);
@@ -202,8 +190,6 @@ void DlgPrefPlaylist::slotUpdate() {
             ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
-    checkBox_show_missing->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Library]","ShowMissingSongs"),"1").toInt());
 }
 
 void DlgPrefPlaylist::slotBrowseDir() {

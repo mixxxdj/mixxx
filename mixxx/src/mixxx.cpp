@@ -298,21 +298,12 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
 
-    // library dies in seemingly unrelated qtsql error about not having a
-    // sqlite driver if this path doesn't exist. Normally config->Save()
-    // above would make it but if it doesn't get run for whatever reason
-    // we get hosed -- bkgood
-    if (!QDir(QDir::homePath().append("/").append(SETTINGS_PATH)).exists()) {
-        QDir().mkpath(QDir::homePath().append("/").append(SETTINGS_PATH));
-    }
-
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
     // writing meta data may ruine your MP3 file if done simultaneously.
     // see Bug #728197
     // For safety reasons, we deactivate this feature.
     m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
-
 
     // library dies in seemingly unrelated qtsql error about not having a
     // sqlite driver if this path doesn't exist. Normally config->Save()
@@ -358,8 +349,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
                              bFirstRun || bUpgraded,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
-    connect(this, SIGNAL(dirsChanged(QString,QString)),
-            m_pLibrary, SLOT(slotDirsChanged(QString,QString)));
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -378,29 +367,25 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
         if (fd != "") {
             //adds Folder to database
-            emit(dirsChanged("added",fd));
+            m_pLibrary->dirsChanged("added",fd));
             hasChanged_MusicDir = true;
         }
     }
 
     // Call inits to invoke all other construction parts
-
     // Intialize default BPM system values
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "BPMRangeStart"))
-            .length() < 1)
-    {
+            .length() < 1) {
         m_pConfig->set(ConfigKey("[BPM]", "BPMRangeStart"),ConfigValue(65));
     }
 
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "BPMRangeEnd"))
-            .length() < 1)
-    {
+            .length() < 1) {
         m_pConfig->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
     }
 
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "AnalyzeEntireSong"))
-            .length() < 1)
-    {
+            .length() < 1){
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
@@ -420,9 +405,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, m_pConfig);
-    connect(m_pPrefDlg, SIGNAL(dirsChanged(QString,QString)),
-            m_pLibrary, SLOT(slotDirsChanged(QString,QString)));
+                                    m_pControllerManager, m_pVCManager, m_pConfig, m_pLibrary);
 
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
