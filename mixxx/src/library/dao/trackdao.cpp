@@ -357,8 +357,8 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryLibrarySelect = new QSqlQuery(m_database);
 
     m_pQueryTrackLocationInsert->prepare("INSERT INTO track_locations "
-            "(location, directory, filename, filesize, fs_deleted, needs_verification, maindir_id, checksum) "
-            "VALUES (:location, :directory, :filename, :filesize, :fs_deleted, :needs_verification, :maindir_id, :checksum)");
+            "(location, directory, filename, filesize, fs_deleted, needs_verification, maindir_id) "
+            "VALUES (:location, :directory, :filename, :filesize, :fs_deleted, :needs_verification, :maindir_id)");
 
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
@@ -421,6 +421,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove,const int dir
 
     if (!m_pQueryTrackLocationInsert->exec()) {
         qDebug() << "Location " << pTrack->getLocation() << " is already in the DB";
+        LOG_FAILED_QUERY(*m_pQueryTrackLocationInsert);
         // Inserting into track_locations failed, so the file already
         // exists. Query for its trackLocationId.
 

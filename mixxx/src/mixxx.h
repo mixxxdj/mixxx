@@ -120,7 +120,6 @@ class MixxxApp : public QMainWindow {
 
   signals:
     void newSkinLoaded();
-    void dirsChanged(QString,QString);
 
   protected:
     /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
