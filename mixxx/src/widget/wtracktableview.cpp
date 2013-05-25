@@ -63,6 +63,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pPlaylistMenu->setTitle(tr("Add to Playlist"));
     m_pCrateMenu = new QMenu(this);
     m_pCrateMenu->setTitle(tr("Add to Crate"));
+    m_pBPMMenu = new QMenu(this);
+    m_pBPMMenu->setTitle(tr("BPM Settings"));
 
     // Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -108,6 +110,10 @@ WTrackTableView::~WTrackTableView() {
     delete m_pNumPreviewDecks;
     delete m_pBpmLockAction;
     delete m_pBpmUnlockAction;
+    delete m_pBpmDoubleAction;
+    delete m_pBpmHalveAction;
+    delete m_pBpmTwoThirdsAction;
+    delete m_pBPMMenu;
     delete m_pPurgeAct;
     delete m_pFileBrowserAct;
     delete m_pResetPlayedAct;
@@ -318,6 +324,18 @@ void WTrackTableView::createActions() {
             this, SLOT(slotLockBpm()));
     connect(m_pBpmUnlockAction, SIGNAL(triggered()),
             this, SLOT(slotUnlockBpm()));
+
+    //new BPM actions
+    m_pBpmDoubleAction = new QAction(tr("Double BPM"), this);
+    m_pBpmHalveAction = new QAction(tr("Halve BPM"), this);
+    m_pBpmTwoThirdsAction = new QAction(tr("2/3 BPM"), this);
+    
+    connect(m_pBpmDoubleAction, SIGNAL(triggered()),
+            this, SLOT(slotDoubleBpm()));
+    connect(m_pBpmHalveAction, SIGNAL(triggered()),
+            this, SLOT(slotHalveBpm()));
+    connect(m_pBpmTwoThirdsAction, SIGNAL(triggered()),
+            this, SLOT(slotTwoThirdsBpm()));
 
     m_pClearBeatsAction = new QAction(tr("Clear BPM and Beatgrid"), this);
     connect(m_pClearBeatsAction, SIGNAL(triggered()),
@@ -544,7 +562,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             for (int i = 1; i <= iNumSamplers; ++i) {
                 QString samplerGroup = QString("[Sampler%1]").arg(i);
                 ControlObject* pPlayCO = ControlObject::getControl(
-                    ConfigKey(samplerGroup, "play"));
+                                              ConfigKey(samplerGroup, "play"));
                 bool samplerPlaying = pPlayCO && pPlayCO->get() > 0.0;
                 bool samplerEnabled = !samplerPlaying && oneSongSelected;
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
@@ -587,7 +605,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
             }
         }
-
         m_pMenu->addMenu(m_pPlaylistMenu);
     }
 
@@ -612,15 +629,17 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             m_crateMapper.setMapping(pAction, it.value());
             connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
         }
-
         m_pMenu->addMenu(m_pCrateMenu);
     }
-
     m_pMenu->addSeparator();
 
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_BPMLOCK)) {
-        m_pMenu->addAction(m_pBpmLockAction);
-        m_pMenu->addAction(m_pBpmUnlockAction);
+    //start of BPM section of menu
+    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_MANIPULATEBEATS)) {
+        m_pBPMMenu->addAction(m_pBpmLockAction);
+        m_pBPMMenu->addAction(m_pBpmUnlockAction);
+        m_pBPMMenu->addAction(m_pBpmDoubleAction);
+        m_pBPMMenu->addAction(m_pBpmHalveAction);
+        m_pBPMMenu->addAction(m_pBpmTwoThirdsAction); 
         if (oneSongSelected) {
             TrackModel* trackModel = getTrackModel();
             if (trackModel == NULL) {
@@ -628,15 +647,48 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
             int column = trackModel->fieldIndex("bpm_lock");
             QModelIndex index = indices.at(0).sibling(indices.at(0).row(),column);
-            if (index.data().toBool()){
-                m_pBpmLockAction->setEnabled(false);
+            if (index.data().toBool()){ //BPM is locked
                 m_pBpmUnlockAction->setEnabled(true);
-            } else {
+                m_pBpmLockAction->setEnabled(false);
+                m_pBpmDoubleAction->setEnabled(false);
+                m_pBpmHalveAction->setEnabled(false);
+                m_pBpmTwoThirdsAction->setEnabled(false);
+            } else { //BPM is not locked
                 m_pBpmUnlockAction->setEnabled(false);
                 m_pBpmLockAction->setEnabled(true);
+                m_pBpmDoubleAction->setEnabled(true);
+                m_pBpmHalveAction->setEnabled(true);
+                m_pBpmTwoThirdsAction->setEnabled(true);
+            }
+        } else {
+            bool anyLocked = false; //true if any of the selected items are locked
+            TrackModel* trackModel = getTrackModel();
+            int column = trackModel->fieldIndex("bpm_lock");
+            for (int i = 0; i < indices.size() && !anyLocked; ++i) {
+                int row = indices.at(i).row();
+                QModelIndex index = indices.at(i).sibling(row,column);
+                if (index.data().toBool()) {
+                    anyLocked = true;
+                }
+            }
+            if (anyLocked) {
+                m_pBpmLockAction->setEnabled(false);
+                m_pBpmUnlockAction->setEnabled(true);
+                m_pBpmDoubleAction->setEnabled(false);
+                m_pBpmHalveAction->setEnabled(false);
+                m_pBpmTwoThirdsAction->setEnabled(false);
+            } else {
+                m_pBpmLockAction->setEnabled(true);
+                m_pBpmUnlockAction->setEnabled(false);
+                m_pBpmDoubleAction->setEnabled(true);
+                m_pBpmHalveAction->setEnabled(true);
+                m_pBpmTwoThirdsAction->setEnabled(true);
             }
         }
     }
+    //add BPM menu to pMenu
+    m_pMenu->addMenu(m_pBPMMenu);
+    //end of BPM section of menu
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_CLEAR_BEATS)) {
         TrackModel* trackModel = getTrackModel();
@@ -653,7 +705,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             }
         }
         m_pClearBeatsAction->setEnabled(allowClear);
-        m_pMenu->addAction(m_pClearBeatsAction);
+        m_pBPMMenu->addAction(m_pClearBeatsAction);
     }
 
     bool locked = modelHasCapabilities(TrackModel::TRACKMODELCAPS_LOCKED);
@@ -1251,6 +1303,70 @@ void WTrackTableView::slotLockBpm() {
 
 void WTrackTableView::slotUnlockBpm() {
     lockBpm(false);
+}
+
+void WTrackTableView::slotDoubleBpm(){
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        if (!track->hasBpmLock()) { //bpm is not locked
+            BeatsPointer beats = track->getBeats();
+            if (beats != NULL) {
+                beats->scale(2);
+            } else {
+                continue;
+            }
+        }
+    }
+}
+
+void WTrackTableView::slotHalveBpm(){
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        if (!track->hasBpmLock()) { //bpm is not locked
+            BeatsPointer beats = track->getBeats();
+            if(beats != NULL){
+                beats->scale(0.5);
+            } else {
+                continue;
+            }
+        }
+    }
+}
+
+void WTrackTableView::slotTwoThirdsBpm(){
+    TrackModel* trackModel = getTrackModel();
+    if (trackModel == NULL) {
+        return;
+    }
+
+    QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
+    for (int i = 0; i < selectedTrackIndices.size(); ++i) {
+        QModelIndex index = selectedTrackIndices.at(i);
+        TrackPointer track = trackModel->getTrack(index);
+        if (!track->hasBpmLock()) { //bpm is not locked
+            BeatsPointer beats = track->getBeats();
+            if (beats != NULL) {
+                double twoThirds = 2./3.;
+                beats->scale(twoThirds);
+            } else {
+                continue;
+            }
+        }
+    }
 }
 
 void WTrackTableView::lockBpm(bool lock) {
