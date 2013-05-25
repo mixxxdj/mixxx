@@ -18,10 +18,10 @@
 #ifndef DLGPREFERENCES_H
 #define DLGPREFERENCES_H
 
- #include <QDialog>
-
+#include <QDialog>
 #include <qevent.h>
 #include <QtGui>
+
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
 
@@ -55,7 +55,7 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
 {
     Q_OBJECT
-public:
+  public:
     DlgPreferences(MixxxApp* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
 //                    PlayerManager* pPlayerManager, ControllerManager* controllers, MidiDeviceManager* midi,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
@@ -63,7 +63,7 @@ public:
 
     ~DlgPreferences();
     void createIcons();
-public slots:
+  public slots:
     void slotShow();
     void slotHide();
     void rescanControllers();
@@ -71,14 +71,13 @@ public slots:
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
-signals:
+  signals:
     void closeDlg();
     void showDlg();
-    void configChanged(QString, QString);
     void dirsChanged(QString, QString);
-protected:
+  protected:
     bool eventFilter(QObject*, QEvent*);
-private:
+  private:
     void destroyControllerWidgets();
     void setupControllerWidgets();
     int addPageWidget(QWidget* w);
@@ -99,21 +98,6 @@ private:
 #ifdef __MODPLUG__
     DlgPrefModplug* m_wmodplug;
 #endif
-
-    /*
-    QScrollArea* m_sasound;
-    QScrollArea* m_saplaylist;
-//     QScrollArea* m_saNoMidi;
-    QScrollArea* m_sacontrols;
-    QScrollArea* m_saeq;
-    QScrollArea* m_sacrossfader;
-    QScrollArea* m_sarecord;
-    QScrollArea* m_sabpm;
-    QScrollArea* m_savinylcontrol;
-    QScrollArea* m_sanovinylcontrol;
-    QScrollArea* m_sashoutcast;
-    QScrollArea* m_sareplaygain;
-	*/
 
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pPlaylistButton;

@@ -361,22 +361,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     connect(this, SIGNAL(dirsChanged(QString,QString)),
             m_pLibrary, SLOT(slotDirsChanged(QString,QString)));
 
-    // Check if we update from an old db without relative library paths
-    // getValueString will return "" if no value was set
-    bool oldLibrary = m_pConfig->getValueString(ConfigKey("[Library]","newVersion"))=="";
-    qDebug() << "kain88 status of library version" << oldLibrary;
-    //TODO(kain88) mode this into update code
-    if (oldLibrary) {
-        QString dir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
-        // adds the current library path to the directories table and updates
-        // track_locations for all tracks
-        if (dir!="") {
-            emit(dirsChanged("update",dir));
-            m_pConfig->set(ConfigKey("[Library]","newVersion"),ConfigValue((int)true));
-            m_pConfig->Save();
-        }
-    }
-
     // Get Music dir
     bool hasChanged_MusicDir = false;
 
@@ -437,8 +421,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
                                     m_pControllerManager, m_pVCManager, m_pConfig);
-    connect(m_pPrefDlg, SIGNAL(configChanged(QString,QString)),
-            m_pLibrary, SIGNAL(configChanged(QString,QString)));
     connect(m_pPrefDlg, SIGNAL(dirsChanged(QString,QString)),
             m_pLibrary, SLOT(slotDirsChanged(QString,QString)));
 

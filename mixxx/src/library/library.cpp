@@ -262,11 +262,6 @@ void Library::slotDirsChanged(QString op, QString dir){
         QString newFolder = dirs[0];
         QString oldFolder = dirs[1];
         m_directoryDAO.relocateDirectory(oldFolder,newFolder);
-    } else if (op=="update") {
-        // this will be signaled from the library scanner if the db needs to be 
-        // updated
-        m_directoryDAO.addDirectory(dir);
-        m_directoryDAO.updateTrackLocations(dir);
     }
 }
 

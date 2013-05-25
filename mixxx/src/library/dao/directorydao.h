@@ -19,7 +19,7 @@ class DirectoryDAO : public DAO {
     bool addDirectory(QString dir);
     bool purgeDirectory(QString dir);
     bool relocateDirectory(QString oldFolder,QString newFolder);
-    bool updateTrackLocations(QString dir);
+    bool upgradeDatabase(QString dir);
     QList<int> getDirIds(QStringList& dirs);
     int getDirId(const QString dir);
     QStringList getDirs();

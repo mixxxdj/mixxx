@@ -33,10 +33,10 @@
 
 
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config)
-            : QWidget(parent), 
-              m_model(),
-              m_dirsModified(false),
-              m_pconfig(config) {
+               : QWidget(parent), 
+                 m_model(),
+                 m_dirsModified(false),
+                 m_pconfig(config) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -259,16 +259,6 @@ void DlgPrefPlaylist::slotApply() {
     // Update playlist if path has changed
     if (m_dirsModified) {
         emit(apply());
-    }
-
-    //update TM if ShowMissingSongs has changed
-    if ((int)checkBox_show_missing->isChecked() != m_pconfig->getValueString(
-                                                ConfigKey("[Library]",
-                                                "ShowMissingSongs"),"1").toInt()) {
-        m_pconfig->set(ConfigKey("[Library]","ShowMissingSongs"),
-                ConfigValue((int)checkBox_show_missing->isChecked()));
-
-        emit(configChanged("[Library]","ShowMissingSongs"));
     }
     m_pconfig->Save();
 }

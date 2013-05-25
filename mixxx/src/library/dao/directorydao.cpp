@@ -126,18 +126,29 @@ int DirectoryDAO::getDirId(const QString dir){
     return id;
 }
 
-// Only call this when an update happens from an old library version!!!
-// TODO move this into update code
-bool DirectoryDAO::updateTrackLocations(QString dir){
-    QString dirId = QString::number(getDirId(dir));
+bool DirectoryDAO::upgradeDatabase(QString dir){
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
-    query.prepare("UPDATE track_locations SET maindir_id = :dirId");
+    // Default all Values to 0
+    query.prepare("UPDATE track_locations SET maindir_id = 0");
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << " could not update TrackLocations";
+        return false;
+    }
+
+    // add dir to directory table and get the resulting ID
+    addDirectory(dir);
+    QString dirId = QString::number(getDirId(dir));
+
+    // if the complete filename contains dir set maindir_id to dirId
+    query.prepare("UPDATE track_locations SET maindir_id = :dirId"
+                  "WHERE instr(track_locations.location, dir) > 0");
     query.bindValue(":dirId", dirId);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << " could not update TrackLocations";
         return false;
     }
+
     transaction.commit();
     return true;
 }

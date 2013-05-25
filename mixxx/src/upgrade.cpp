@@ -22,6 +22,7 @@
 #include "defs_version.h"
 #include "controllers/defs_controllers.h"
 #include "track/beat_preferences.h"
+#include "library/trackcollection.h"
 #include "configobject.h"
 #include "upgrade.h"
 
@@ -325,12 +326,13 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Upgrade Failed";
         }
     }
-    // Next applicable release goes here
-    /*
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
-        // Upgrade tasks go here
+        TrackCollection tc(config);
+        QString currentFolder = config->getValueString(ConfigKey("[Playlist]","Directory"));
+        DirectoryDAO directoryDAO = tc.getDirectoryDAO();
+        bool successful = directoryDAO.upgradeDatabase(currentFolder);
 
         if (successful) {
             configVersion = VERSION;
@@ -341,7 +343,6 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Upgrade failed!\n";
         }
     }
-    */
 
     if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
     else {

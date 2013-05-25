@@ -825,10 +825,6 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     select(); //Repopulate the data model.
 }
 
-void BaseSqlTableModel::setTableModel(int id) {
-    Q_UNUSED(id);
-}
-
 void BaseSqlTableModel::relocateTracks(const QModelIndexList& indices) {
     foreach (QModelIndex index, indices) {
         int trackId = getTrackId(index);
