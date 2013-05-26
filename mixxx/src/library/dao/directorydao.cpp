@@ -16,21 +16,23 @@ DirectoryDAO::DirectoryDAO(const DirectoryDAO& directoryDao)
 DirectoryDAO::~DirectoryDAO(){
 }
 
-void DirectoryDAO::initialize()
-{
+void DirectoryDAO::initialize() {
     qDebug() << "DirectoryDAO::initialize" << QThread::currentThread() 
              << m_database.connectionName();
 }
 
 bool DirectoryDAO::addDirectory(QString dir){
     ScopedTransaction transaction(m_database);
+    FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
     query.prepare("INSERT OR REPLACE INTO directories (directory) "
-                  "VALUES (\""% dir %"\")");
+                  "VALUES (:dir)");
+    query.bindValue(":dir",escaper.escapeString(dir));
 
     if (!query.exec()) {
         qDebug() << "Adding new dir ("% dir %") failed:"
                  <<query.lastError();
+        LOG_FAILED_QUERY(query);
         return false;
     }
     transaction.commit();
@@ -38,9 +40,10 @@ bool DirectoryDAO::addDirectory(QString dir){
 }
 
 bool DirectoryDAO::purgeDirectory(QString dir){
+    FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM directories WHERE directory=\"" % dir % "\"");
-
+    query.prepare("DELETE FROM directories WHERE directory=:dir");
+    query.bindValue(":dir",escaper.escapeString(dir));
     if (!query.exec()) {
         qDebug() << "purging dir ("%dir%") failed:"<<query.lastError();
         return false;
@@ -50,13 +53,13 @@ bool DirectoryDAO::purgeDirectory(QString dir){
 
 bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
     ScopedTransaction transaction(m_database);
+    FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
-
     // update directory in directories table
     query.prepare("UPDATE "%DIRECTORYDAO_TABLE%" SET "%DIRECTORYDAO_DIR%"="
-                  "\":newFolder\" WHERE "%DIRECTORYDAO_DIR%"=\":oldFolder\"");
-    query.bindValue(":newFolder", newFolder);
-    query.bindValue(":oldFolder", oldFolder);
+                  ":newFolder WHERE "%DIRECTORYDAO_DIR%"=:oldFolder");
+    query.bindValue(":newFolder", escaper.escapeString(newFolder));
+    query.bindValue(":oldFolder", escaper.escapeString(oldFolder));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate directory";
         return false;
@@ -64,12 +67,12 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
 
     // update location and directory in track_locations table
     query.prepare("UPDATE track_locations SET location="
-                  "REPLACE(location,\":oldFolder\",\":newFolder\")"
+                  "REPLACE(location,:oldFolder,:newFolder)"
                   ", directory="
-                  "REPLACE(directory,\":oldFolder\",\":newFolder\") "
-                  "WHERE "%DIRECTORYDAO_DIR%"=\":oldFolder\"");
-    query.bindValue(":newFolder", newFolder);
-    query.bindValue(":oldFolder", oldFolder);
+                  "REPLACE(directory,:oldFolder,:newFolder) "
+                  "WHERE "%DIRECTORYDAO_DIR%"=:oldFolder");
+    query.bindValue(":newFolder", escaper.escapeString(newFolder));
+    query.bindValue(":oldFolder", escaper.escapeString(oldFolder));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
         return false;
@@ -89,16 +92,18 @@ QStringList DirectoryDAO::getDirs(){
     }
     QStringList dirs;
     while (query.next()) {
-        dirs << query.value(query.record().indexOf(DIRECTORYDAO_DIR)).toString();
+        QString dir = query.value(query.record().indexOf(DIRECTORYDAO_DIR)).toString();
+        dirs << dir.replace("'","");
     }
     return dirs;
 }
 
 QList<int> DirectoryDAO::getDirIds(QStringList& dirs){
+    FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_ID % " FROM " % DIRECTORYDAO_TABLE %
-                  " WHERE " % DIRECTORYDAO_DIR %" in (\":dirs\")");
-    query.bindValue(":dirs", dirs.join("\",\"") );
+                  " WHERE " % DIRECTORYDAO_DIR %" in (:dirs)");
+    query.bindValue(":dirs", escaper.escapeString(dirs.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't find directory:"<<dirs;
     }
@@ -115,15 +120,17 @@ int DirectoryDAO::getDirId(const QString dir){
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_ID % " FROM " % DIRECTORYDAO_TABLE %
-                  " WHERE " % DIRECTORYDAO_DIR %" in (\":dir\")");
+                  " WHERE " % DIRECTORYDAO_DIR %" = :dir");
     query.bindValue(":dir",escaper.escapeString(dir));
+    qDebug() << escaper.escapeString(dir);
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "couldn't find directory:"<<dir;
+        LOG_FAILED_QUERY(query);
     }
     int id=0;
     while (query.next()) {
         id = query.value(query.record().indexOf(DIRECTORYDAO_ID)).toInt();
     }
+    qDebug() << "kain88 requested ID = " << id;
     return id;
 }
 
