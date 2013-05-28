@@ -36,13 +36,13 @@ EngineDeck::EngineDeck(const char* group,
           m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough_enabled"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
-          m_sampleBuffer(MAX_BUFFER_LEN+1) {
+          m_sampleBuffer(MAX_BUFFER_LEN+1),
+          m_bPassthroughIsActive(false),
+          m_bPassthroughWasActive(false) {
 
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
     m_pConversionBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_bPassthroughIsActive = false;
-    m_bPassthroughWasActive = false;
 
     // Set up passthrough toggle button
     connect(m_pPassing, SIGNAL(valueChanged(double)),
@@ -73,6 +73,7 @@ EngineDeck::~EngineDeck() {
 }
 
 void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBufferSize) {
+    if (isDying()) return;
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
 
     // Feed the incoming audio through if passthrough is active
@@ -119,6 +120,7 @@ EngineBuffer* EngineDeck::getEngineBuffer() {
 }
 
 bool EngineDeck::isActive() {
+    if (isDying()) return false;
     if (m_bPassthroughWasActive && !m_bPassthroughIsActive) {
         return true;
     }
@@ -128,7 +130,7 @@ bool EngineDeck::isActive() {
 
 void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
     // Skip receiving audio input if passthrough is not active
-    if (!m_bPassthroughIsActive) {
+    if (!m_bPassthroughIsActive || isDying()) {
         return;
     }
 

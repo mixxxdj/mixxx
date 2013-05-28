@@ -43,6 +43,10 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
             this, SLOT(slotNumPreviewDecksControlChanged(double)),
             Qt::DirectConnection);
 
+    connect(m_pEngine, SIGNAL(DeckRemoved(QString)),
+            this, SLOT(slotDeckRemoved(QString)),
+            Qt::DirectConnection);
+
     // This is parented to the PlayerManager so does not need to be deleted
     SamplerBank* pSamplerBank = new SamplerBank(this);
     Q_UNUSED(pSamplerBank);
@@ -166,9 +170,7 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
     if (num < m_decks.size()) {
-        // The request was invalid -- reset the value.
-        m_pCONumDecks->set(m_decks.size());
-        qDebug() << "Ignoring request to reduce the number of decks to" << num;
+        initiateRemoveDecks(m_decks.size() - num);
         return;
     }
 
@@ -207,6 +209,32 @@ void PlayerManager::slotNumPreviewDecksControlChanged(double v) {
     }
 }
 
+void PlayerManager::slotDeckRemoved(QString group) {
+    QMutexLocker locker(&m_mutex);
+    Deck* deck = reinterpret_cast<Deck*>(m_players[group]);
+    if (deck == NULL) {
+        qDebug() << "Could not cast group " << group << " to a type Deck.";
+        return;
+    }
+
+    m_players.remove(group);
+    QList<Deck*>::iterator it = m_decks.begin();
+    for ( ; it != m_decks.end(); ++it) {
+        if (*it == deck) {
+            m_decks.erase(it);
+            break;
+        }
+    }
+    if (it == m_decks.end()) {
+        qDebug() << "Couldn't find deck for group " << group << ", aborting delete";
+        return;
+    }
+
+    // We don't need to disconnect soundmanager connections -- that was already done when
+    // we initiated this delete.
+    delete deck;
+}
+
 void PlayerManager::addDeck() {
     QMutexLocker locker(&m_mutex);
     addDeckInner();
@@ -241,6 +269,24 @@ void PlayerManager::addDeckInner() {
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
         AudioInput(AudioInput::VINYLCONTROL, 0, number-1), pEngineDeck);
+}
+
+void PlayerManager::initiateRemoveDecks(int count) {
+    // Do not lock m_mutex here.
+    if (m_decks.count() < count) {
+        qDebug() << "ERROR: Not enough decks to remove " << count << " decks.";
+        return;
+    }
+
+    for (int i = 0; i < count; ++i) {
+        int number = m_decks.count() - i;
+        // EngineMaster will hear this signal and tell us to actually delete the deck.
+        Deck* deck = m_decks.last();
+        m_pSoundManager->unregisterOutput(AudioOutput(AudioOutput::DECK, 0, number));
+        m_pSoundManager->unregisterInput(AudioInput(AudioInput::VINYLCONTROL, 0, number),
+                                         deck->getEngineDeck());
+        deck->finalize();
+    }
 }
 
 void PlayerManager::addSampler() {
@@ -392,5 +438,3 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
         it++;
     }
 }
-
-

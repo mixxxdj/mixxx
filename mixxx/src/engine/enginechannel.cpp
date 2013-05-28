@@ -22,7 +22,8 @@
 
 EngineChannel::EngineChannel(const char* pGroup,
                              EngineChannel::ChannelOrientation defaultOrientation)
-        : m_group(pGroup) {
+        : m_group(pGroup),
+          m_bDying(false) {
     m_pPFL = new ControlPushButton(ConfigKey(m_group, "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
     m_pMaster = new ControlPushButton(ConfigKey(m_group, "master"));

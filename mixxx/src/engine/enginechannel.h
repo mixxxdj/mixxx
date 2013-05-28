@@ -52,6 +52,9 @@ class EngineChannel : public EngineObject {
     virtual bool isPFL();
     virtual bool isMaster();
 
+    void finalize() { m_bDying = true; }
+    bool isDying() const { return m_bDying; }
+
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize) = 0;
 
     // TODO(XXX) This hack needs to be removed.
@@ -64,6 +67,7 @@ class EngineChannel : public EngineObject {
     ControlPushButton* m_pMaster;
     ControlPushButton* m_pPFL;
     ControlObject* m_pOrientation;
+    bool m_bDying;
 };
 
 #endif

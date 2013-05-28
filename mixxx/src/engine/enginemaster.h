@@ -84,6 +84,9 @@ class EngineMaster : public EngineObject, public AudioSource {
         return m_pSideChain;
     }
 
+  signals:
+    void DeckRemoved(QString group);
+
   private:
     struct ChannelInfo {
         EngineChannel* m_pChannel;
@@ -129,6 +132,9 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
+
+
+    void removeChannelInfo(QList<ChannelInfo*>::iterator& dyingIt);
 
     QList<ChannelInfo*> m_channels;
 

@@ -29,6 +29,7 @@ EngineMicrophone::~EngineMicrophone() {
 }
 
 bool EngineMicrophone::isActive() {
+    if (isDying()) { return false; }
     bool enabled = m_pEnabled->get() > 0.0;
     return enabled && !m_sampleBuffer.isEmpty();
 }
@@ -65,7 +66,7 @@ void EngineMicrophone::onInputDisconnected(AudioInput input) {
 }
 
 void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples) {
-
+    if (isDying()) return;
     if (input.getType() != AudioPath::MICROPHONE ||
         AudioInput::channelsNeededForType(input.getType()) != 1) {
         // This is an error!
@@ -106,6 +107,7 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
 
 void EngineMicrophone::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
     Q_UNUSED(pInput);
+    if (isDying()) return;
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
 
     // If talkover is enabled, then read into the output buffer. Otherwise, skip
