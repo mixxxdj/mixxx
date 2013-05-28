@@ -26,22 +26,21 @@
 #include "library/queryutil.h"
 #include "trackinfoobject.h"
 
-LibraryScanner::LibraryScanner(TrackCollection* collection) :
-    m_pCollection(collection),
-    m_pProgress(NULL),
-    m_libraryHashDao(m_database),
-    m_cueDao(m_database),
-    m_playlistDao(m_database),
-    m_crateDao(m_database),
-    m_directoryDao(m_database),
-    m_analysisDao(m_database, collection->getConfig()),
-    m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao,
-               m_analysisDao,m_directoryDao, collection->getConfig()),
-    // Don't initialize m_database here, we need to do it in run() so the DB
-    // conn is in the right thread.
-    m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
-    m_bCancelLibraryScan(0)
-{
+LibraryScanner::LibraryScanner(TrackCollection* collection) 
+              : m_pCollection(collection),
+                m_pProgress(NULL),
+                m_libraryHashDao(m_database),
+                m_cueDao(m_database),
+                m_playlistDao(m_database),
+                m_crateDao(m_database),
+                m_directoryDao(m_database),
+                m_analysisDao(m_database, collection->getConfig()),
+                m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao,
+                           m_analysisDao,m_directoryDao, collection->getConfig()),
+                // Don't initialize m_database here, we need to do it in run() so the DB
+                // conn is in the right thread.
+                m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
+                m_bCancelLibraryScan(0) {
 
     qDebug() << "Constructed LibraryScanner";
 
@@ -85,8 +84,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
 #endif
 }
 
-LibraryScanner::~LibraryScanner()
-{
+LibraryScanner::~LibraryScanner() {
     // IMPORTANT NOTE: This code runs in the GUI thread, so it should _NOT_ use
     //                the m_trackDao that lives inside this class. It should use
     //                the DAOs that live in m_pTrackCollection.
@@ -149,8 +147,7 @@ LibraryScanner::~LibraryScanner()
     qDebug() << "LibraryScanner destroyed";
 }
 
-void LibraryScanner::run()
-{
+void LibraryScanner::run() {
     unsigned static id = 0; // the id of this thread, for debugging purposes
             //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
@@ -173,17 +170,21 @@ void LibraryScanner::run()
         }
     }
 
+    // TODO kain88 I think this is not necessary because they are constructed
+    // with that db
     m_libraryHashDao.setDatabase(m_database);
     m_cueDao.setDatabase(m_database);
     m_trackDao.setDatabase(m_database);
     m_playlistDao.setDatabase(m_database);
     m_analysisDao.setDatabase(m_database);
+    m_directoryDao.setDatabase(m_database);
 
     m_libraryHashDao.initialize();
     m_cueDao.initialize();
     m_trackDao.initialize();
     m_playlistDao.initialize();
     m_analysisDao.initialize();
+    m_directoryDao.initialize();
 
     resetCancel();
 
@@ -237,11 +238,14 @@ void LibraryScanner::run()
     QStringList verifiedDirectories;
 
     QStringList dirs = m_directoryDao.getDirs();
+    qDebug() << "kain88 dirs = " << dirs;
     QSet<int> restoredTracks;
     bool bScanFinishedCleanly=false;
     //recursivly scan each dir that is saved in the directories table
     foreach (QString dir , dirs) {
         int dirId = m_directoryDao.getDirId(dir);
+        qDebug() << "kain88 dirId = " << dirId;
+
         bScanFinishedCleanly = recursiveScan(dir,verifiedDirectories,restoredTracks,dirId);
         //Verify all Tracks inside Library but outside the library path
         if (!bScanFinishedCleanly) {

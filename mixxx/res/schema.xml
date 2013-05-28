@@ -349,7 +349,6 @@ METADATA
       );
       CREATE UNIQUE INDEX directory_idx ON directories(directory);
       ALTER TABLE track_locations ADD COLUMN maindir_id INTEGER DEFAULT 0;
-      ALTER TABLE track_locations ADD COLUMN checksum varchar(1024);
     </sql>
   </revision>
 </schema>
