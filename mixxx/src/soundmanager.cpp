@@ -576,9 +576,9 @@ void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
 void SoundManager::unregisterOutput(AudioOutput output) {
     if (!m_registeredSources.contains(output)) {
         qDebug() << "WARNING: AudioOutput not registered, can't remove!";
-        return;
+    } else {
+        m_registeredSources.remove(output);
     }
-    m_registeredSources.remove(output);
 }
 
 void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
@@ -590,9 +590,9 @@ void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
 void SoundManager::unregisterInput(AudioInput input, AudioDestination *dest) {
     if (!m_registeredDestinations.contains(input, dest)) {
         qDebug() << "WARNING: AudioInput not registered, can't remove!";
-        return;
+    } else {
+        m_registeredDestinations.remove(input, dest);
     }
-    m_registeredDestinations.remove(input, dest);
 }
 
 QList<AudioOutput> SoundManager::registeredOutputs() const {

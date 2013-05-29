@@ -235,6 +235,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
 EngineBuffer::~EngineBuffer()
 {
+    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~~~~~enginebuffer";
 #ifdef __SCALER_DEBUG__
     //close the writer
     df.close();

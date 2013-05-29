@@ -117,6 +117,7 @@ void BaseTrackPlayer::finalize() {
 
 BaseTrackPlayer::~BaseTrackPlayer()
 {
+    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BASETRACKPLAYER";
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
         m_pLoadedTrack.clear();

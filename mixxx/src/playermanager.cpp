@@ -170,10 +170,12 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
     QMutexLocker locker(&m_mutex);
     int num = (int)v;
     if (num < m_decks.size()) {
+        qDebug() << "HOOOOOOOOOOOOOLY SHIT REMOVING " << m_decks.size() - num << " DECKS";
         initiateRemoveDecks(m_decks.size() - num);
         return;
     }
 
+    qDebug() << "ADDING DECKS SO " << m_decks.size() << " IS MORE LIKE " << num;
     while (m_decks.size() < num) {
         addDeckInner();
     }
@@ -220,23 +222,24 @@ void PlayerManager::slotDeckRemoved(QString group) {
     m_players.remove(group);
     QList<Deck*>::iterator it = m_decks.begin();
     for ( ; it != m_decks.end(); ++it) {
+        qDebug() << "compare" << std::hex << *it << " and " << deck;
         if (*it == deck) {
+            qDebug() << "I FOUND IT TOTALLY AND STUFF";
             m_decks.erase(it);
-            break;
+
+            // We don't need to disconnect soundmanager connections -- that was already done when
+            // we initiated this delete.
+            delete deck;
+            return;
         }
     }
-    if (it == m_decks.end()) {
-        qDebug() << "Couldn't find deck for group " << group << ", aborting delete";
-        return;
-    }
 
-    // We don't need to disconnect soundmanager connections -- that was already done when
-    // we initiated this delete.
-    delete deck;
+    qDebug() << "Couldn't find deck for group " << group << ", aborting delete";
 }
 
 void PlayerManager::addDeck() {
     QMutexLocker locker(&m_mutex);
+    qDebug() << "DECK WAS ADDED MANUALLY AND STUFF";
     addDeckInner();
     m_pCONumDecks->set((double)m_decks.count());
 }
@@ -281,7 +284,8 @@ void PlayerManager::initiateRemoveDecks(int count) {
     for (int i = 0; i < count; ++i) {
         int number = m_decks.count() - i;
         // EngineMaster will hear this signal and tell us to actually delete the deck.
-        Deck* deck = m_decks.last();
+        Deck* deck = m_decks[number - 1];
+        qDebug() << "removing deck " << number;
         m_pSoundManager->unregisterOutput(AudioOutput(AudioOutput::DECK, 0, number));
         m_pSoundManager->unregisterInput(AudioInput(AudioInput::VINYLCONTROL, 0, number),
                                          deck->getEngineDeck());

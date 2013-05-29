@@ -134,7 +134,7 @@ class EngineMaster : public EngineObject, public AudioSource {
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
 
 
-    void removeChannelInfo(QList<ChannelInfo*>::iterator& dyingIt);
+    void removeChannelInfo(ChannelInfo* pChannel);
 
     QList<ChannelInfo*> m_channels;
 

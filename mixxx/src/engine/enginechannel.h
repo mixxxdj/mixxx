@@ -52,7 +52,7 @@ class EngineChannel : public EngineObject {
     virtual bool isPFL();
     virtual bool isMaster();
 
-    void finalize() { m_bDying = true; }
+    void finalize() { m_bDying = true; qDebug() << "DYING NOW " << m_group;}
     bool isDying() const { return m_bDying; }
 
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize) = 0;

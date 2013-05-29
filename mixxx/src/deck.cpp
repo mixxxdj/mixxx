@@ -10,5 +10,5 @@ Deck::Deck(QObject* pParent,
 }
 
 Deck::~Deck() {
+    qDebug() << "deck deleteeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeed";
 }
-
