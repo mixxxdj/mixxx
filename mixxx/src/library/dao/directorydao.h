@@ -12,7 +12,6 @@ class DirectoryDAO : public DAO {
   public:
     // normal method
     DirectoryDAO(QSqlDatabase& database);
-    DirectoryDAO(const DirectoryDAO& directoryDao);
     virtual ~DirectoryDAO();
 
     void initialize();
@@ -21,7 +20,6 @@ class DirectoryDAO : public DAO {
     bool purgeDirectory(QString dir);
     bool relocateDirectory(QString oldFolder,QString newFolder);
     bool upgradeDatabase(QString dir);
-    QList<int> getDirIds(QStringList& dirs);
     int getDirId(const QString dir);
     QStringList getDirs();
 

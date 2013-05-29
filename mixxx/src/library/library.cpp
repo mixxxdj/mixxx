@@ -244,10 +244,6 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
     return QList<TrackPointer>();
 }
 
-MixxxLibraryFeature* Library::getpMixxxLibraryFeature(){
-    return m_pMixxxLibraryFeature;
-}
-
 void Library::slotDirsChanged(QString op, QString dir){
     qDebug() << "kain88 slotDirsChanged";
     qDebug() << op << '\t' << dir;

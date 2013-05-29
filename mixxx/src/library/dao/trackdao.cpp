@@ -527,6 +527,9 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     }
 
     addTracksPrepare();
+    // If tracks are manually pulled into mixxx they are also added to the db
+    // but aren't in any folders that we can activly scan for changes to mark
+    // this in the db they get the dirId 0
     addTracksAdd(pTrack, unremove, 0);
     addTracksFinish();
 }
@@ -670,7 +673,7 @@ void TrackDAO::purgeTracks(int dirId) {
     while (query.next()) {
         ids.append(query.value(query.record().indexOf("id")).toInt());
     }
-    //purgeTracks(ids);
+    purgeTracks(ids);
 }
 
 // Warning, purge cannot be undone check before if there is no reference to this
@@ -689,7 +692,7 @@ void TrackDAO::purgeTracks(QList<int> ids) {
     ScopedTransaction transaction(m_database);
 
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT track_locations.location, track_locations.directory FROM "
+    query.prepare(QString("SELECT track_locations.location FROM "
                           "track_locations INNER JOIN library ON library.location = "
                           "track_locations.id WHERE library.id in (%1)").arg(idListJoined));
     if (!query.exec()) {
@@ -698,17 +701,9 @@ void TrackDAO::purgeTracks(QList<int> ids) {
 
     FieldEscaper escaper(m_database);
     QStringList locationList;
-    QStringList dirs;
     while (query.next()) {
         QString filePath = query.value(query.record().indexOf("location")).toString();
         locationList << escaper.escapeString(filePath);
-        QString directory = query.value(query.record().indexOf("directory")).toString();
-        dirs << directory;
-    }
-
-    QStringList dirList;
-    foreach(QString dir, dirs) {
-        dirList << escaper.escapeString(dir);
     }
 
     if (locationList.empty()) {

@@ -116,6 +116,7 @@ class MixxxApp : public QMainWindow {
     void slotDeveloperReloadSkin(bool toggle);
 
     void slotToCenterOfPrimaryScreen();
+
     void onNewSkinLoaded();
 
   signals:

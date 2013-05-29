@@ -52,7 +52,6 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
 const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
 const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
-const QString TRACKLOCATIONSTABLE_FINGERPRINT = "fingerprint";
 const QString TRACKLOCATIONSTABLE_MAINDIRID = "maindir_id";
 
 class ScopedTransaction;
@@ -141,8 +140,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject* pTrack, bool unremove);
-    QString calcChecksum(TrackInfoObject& pTrack);
-    QString calcChecksum(QString location);
     TrackPointer getTrackFromDB(int id) const;
     QString absoluteFilePath(QString location);
     void uncacheTracks(QSet<int> ids);

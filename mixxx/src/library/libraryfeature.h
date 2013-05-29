@@ -6,10 +6,10 @@
 
 #include <QtDebug>
 #include <QIcon>
+#include <QList>
 #include <QModelIndex>
 #include <QObject>
 #include <QString>
-#include <QStringList>
 #include <QVariant>
 #include <QAbstractItemModel>
 #include <QUrl>

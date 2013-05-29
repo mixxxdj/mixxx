@@ -36,6 +36,7 @@ class ProxyTrackModel : public QSortFilterProxyModel, public TrackModel {
     virtual void removeTracks(const QModelIndexList& indices);
     virtual void moveTrack(const QModelIndex& sourceIndex,
                            const QModelIndex& destIndex);
+    void deleteTracks(const QModelIndexList& indices);
     virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     virtual TrackModel::CapabilitiesFlags getCapabilities() const;
 

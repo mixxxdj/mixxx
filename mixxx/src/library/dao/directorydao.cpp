@@ -6,11 +6,7 @@
 #include "library/queryutil.h"
 
 DirectoryDAO::DirectoryDAO(QSqlDatabase& database)
-        : m_database(database) {
-}
-
-DirectoryDAO::DirectoryDAO(const DirectoryDAO& directoryDao)
-            : m_database(directoryDao.m_database){
+            : m_database(database) {
 }
 
 DirectoryDAO::~DirectoryDAO(){
@@ -22,11 +18,10 @@ void DirectoryDAO::initialize() {
 }
 
 bool DirectoryDAO::addDirectory(QString dir){
-    ScopedTransaction transaction(m_database);
     FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
-    query.prepare("INSERT OR REPLACE INTO directories (directory) "
-                  "VALUES (:dir)");
+    query.prepare("INSERT OR REPLACE INTO "% DIRECTORYDAO_TABLE %
+                  " ("% DIRECTORYDAO_DIR %") VALUES :dir");
     query.bindValue(":dir",escaper.escapeString(dir));
 
     if (!query.exec()) {
@@ -35,14 +30,14 @@ bool DirectoryDAO::addDirectory(QString dir){
         LOG_FAILED_QUERY(query);
         return false;
     }
-    transaction.commit();
     return true;
 }
 
 bool DirectoryDAO::purgeDirectory(QString dir){
     FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM directories WHERE directory=:dir");
+    query.prepare("DELETE FROM "% DIRECTORYDAO_TABLE  %" WHERE "
+                   %DIRECTORYDAO_DIR%"=:dir");
     query.bindValue(":dir",escaper.escapeString(dir));
     if (!query.exec()) {
         qDebug() << "purging dir ("%dir%") failed:"<<query.lastError();
@@ -79,7 +74,6 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
     }
 
     // updating the dir_id column is not necessary because it does not change
-
     transaction.commit();
     return true;
 }
@@ -93,44 +87,25 @@ QStringList DirectoryDAO::getDirs(){
     QStringList dirs;
     while (query.next()) {
         QString dir = query.value(query.record().indexOf(DIRECTORYDAO_DIR)).toString();
+        // remove all the ' that got added by FieldEscaper
         dirs << dir.replace("'","");
     }
     return dirs;
 }
 
-QList<int> DirectoryDAO::getDirIds(QStringList& dirs){
-    FieldEscaper escaper(m_database);
-    QSqlQuery query(m_database);
-    query.prepare("SELECT " % DIRECTORYDAO_ID % " FROM " % DIRECTORYDAO_TABLE %
-                  " WHERE " % DIRECTORYDAO_DIR %" in (:dirs)");
-    query.bindValue(":dirs", escaper.escapeString(dirs.join(",")));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "couldn't find directory:"<<dirs;
-    }
-    QList<int> ids;
-    while (query.next()) {
-        ids.append(query.value(query.record().indexOf(DIRECTORYDAO_ID)).toInt());
-    }
-
-    return ids;
-}
-
-//TODO(kain88) check if this is not obsolete because of getDirIds
 int DirectoryDAO::getDirId(const QString dir){
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_ID % " FROM " % DIRECTORYDAO_TABLE %
                   " WHERE " % DIRECTORYDAO_DIR %" = :dir");
     query.bindValue(":dir",escaper.escapeString(dir));
-    qDebug() << escaper.escapeString(dir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
-    int id=0;
+    int id=-1;
     while (query.next()) {
         id = query.value(query.record().indexOf(DIRECTORYDAO_ID)).toInt();
     }
-    qDebug() << "kain88 requested ID = " << id;
     return id;
 }
 

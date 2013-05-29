@@ -34,7 +34,6 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
                                  Library *pLibrary)
                : QWidget(parent), 
                  m_model(),
-                 m_dirsModified(false),
                  m_pconfig(config),
                  m_pLibrary(pLibrary) {
     setupUi(this);
@@ -56,7 +55,7 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
     */
 
     connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),
-            this, SLOT(slotBrowseDir()));
+            this, SLOT(slotAddDir()));
     connect(PushButtonRemovePlaylist, SIGNAL(clicked()),
             this, SLOT(slotRemoveDir()));
     connect(pushButton_2, SIGNAL(clicked()),
@@ -192,14 +191,13 @@ void DlgPrefPlaylist::slotUpdate() {
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
 }
 
-void DlgPrefPlaylist::slotBrowseDir() {
+void DlgPrefPlaylist::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(this,
                             tr("Choose music library directory"),
                             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
     if (fd != "") {
         emit(dirsChanged("added",fd));
         slotUpdate();
-        m_dirsModified = true;
     }
 }
 
@@ -208,7 +206,6 @@ void DlgPrefPlaylist::slotRemoveDir() {
     QString fd = index.data().toString();
     emit(dirsChanged("removed",fd));
     slotUpdate();
-    m_dirsModified = true;
 }
 
 void DlgPrefPlaylist::slotRelocateDir() {
@@ -222,7 +219,6 @@ void DlgPrefPlaylist::slotRelocateDir() {
     if(!fd.isEmpty()){
         emit(dirsChanged("relocate",fd+"!(~)!"+currentFd));
         slotUpdate();
-        m_dirsModified = true;
     }
 }
 
@@ -242,9 +238,5 @@ void DlgPrefPlaylist::slotApply() {
     m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
 
-    // Update playlist if path has changed
-    if (m_dirsModified) {
-        emit(apply());
-    }
     m_pconfig->Save();
 }

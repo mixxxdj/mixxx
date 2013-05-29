@@ -14,7 +14,6 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
-#include "mixxxlibraryfeature.h"
 #include "preparefeature.h"
 #include "library/dao/directorydao.h"
 
@@ -46,7 +45,6 @@ public:
 
     void addFeature(LibraryFeature* feature);
     QList<TrackPointer> getTracksToAutoLoad();
-    MixxxLibraryFeature* getpMixxxLibraryFeature();
     QStringList getDirs();
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
@@ -100,7 +98,6 @@ public:
     PrepareFeature* m_pPrepareFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
-    TrackModel* m_ptrackModel;
     DirectoryDAO m_directoryDAO;
 };
 

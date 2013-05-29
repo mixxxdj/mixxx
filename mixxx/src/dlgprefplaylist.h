@@ -40,7 +40,7 @@ class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
     // Update widget 
     void slotUpdate();
     // Dialog to browse for music file directory 
-    void slotBrowseDir();
+    void slotAddDir();
     void slotRemoveDir();
     void slotRelocateDir();
     // Apply changes to widget 
@@ -64,7 +64,6 @@ class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
   private:
     bool initializeModel();
     QStandardItemModel m_model;
-    bool m_dirsModified;
     ConfigObject<ConfigValue> *m_pconfig;
     Library *m_pLibrary;
     // SoundSource Plugin Downloader
