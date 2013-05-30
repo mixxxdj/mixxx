@@ -76,7 +76,6 @@ public:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void restoreSearch(const QString&);
-    void dirsChanged(QString,QString);
     void search(const QString& text);
     void searchCleared();
     void searchStarting();
