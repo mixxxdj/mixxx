@@ -60,6 +60,9 @@ class WTrackTableView : public WLibraryTableView {
     void doSortByColumn(int headerSection);
     void slotLockBpm();
     void slotUnlockBpm();
+    void slotDoubleBpm();
+    void slotHalveBpm();
+    void slotTwoThirdsBpm();
     void slotClearBeats();
 
   private:
@@ -95,7 +98,7 @@ class WTrackTableView : public WLibraryTableView {
     ControlObjectThreadMain* m_pNumPreviewDecks;
 
     // Context menu machinery
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;
+    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
@@ -125,6 +128,11 @@ class WTrackTableView : public WLibraryTableView {
     // BPM Lock feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
+
+    //BPM changes
+    QAction *m_pBpmDoubleAction;
+    QAction *m_pBpmHalveAction;
+    QAction *m_pBpmTwoThirdsAction;
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
