@@ -95,7 +95,6 @@ WTrackTableView::~WTrackTableView() {
     delete m_pAutoDJAct;
     delete m_pAutoDJTopAct;
     delete m_pRemoveAct;
-    delete m_pRelocateAct;
     delete m_pHideAct;
     delete m_pUnhideAct;
     delete m_pPropertiesAct;
@@ -267,10 +266,6 @@ void WTrackTableView::createActions() {
     Q_ASSERT(m_pMenu);
     Q_ASSERT(m_pSamplerMenu);
 
-    m_pRelocateAct = new QAction(tr("Relocate"),this);
-    connect(m_pRelocateAct, SIGNAL(triggered()),
-            this, SLOT(slotRelocate()));
-
     m_pRemoveAct = new QAction(tr("Remove"), this);
     connect(m_pRemoveAct, SIGNAL(triggered()), this, SLOT(slotRemove()));
 
@@ -282,9 +277,6 @@ void WTrackTableView::createActions() {
 
     m_pPurgeAct = new QAction(tr("Purge from Library"), this);
     connect(m_pPurgeAct, SIGNAL(triggered()), this, SLOT(slotPurge()));
-
-    m_pRelocateAct = new QAction(tr("Relocate Track") , this);
-    connect(m_pRelocateAct, SIGNAL(triggered()), this, SLOT(slotRelocate()));
 
     m_pPropertiesAct = new QAction(tr("Properties"), this);
     connect(m_pPropertiesAct, SIGNAL(triggered()),
@@ -416,9 +408,11 @@ void WTrackTableView::slotOpenInFileBrowser() {
     }
 }
 
-void WTrackTableView::slotHide() {
+void WTrackTableView::slotHide()
+{
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
+    if (indices.size() > 0)
+    {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->hideTracks(indices);
@@ -426,22 +420,14 @@ void WTrackTableView::slotHide() {
     }
 }
 
-void WTrackTableView::slotUnhide() {
+void WTrackTableView::slotUnhide()
+{
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
+    if (indices.size() > 0)
+    {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->unhideTracks(indices);
-        }
-    }
-}
-
-void WTrackTableView::slotRelocate() {
-    QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
-        TrackModel* trackModel = getTrackModel();
-        if (trackModel) {
-            trackModel->relocateTracks(indices);
         }
     }
 }
@@ -696,9 +682,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
     }
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RESETPLAYED)) {
         m_pMenu->addAction(m_pResetPlayedAct);
-    }
-    if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_RELOCATE)) {
-        m_pMenu->addAction(m_pRelocateAct);
     }
     m_pMenu->addAction(m_pFileBrowserAct);
     m_pMenu->addSeparator();
@@ -1000,6 +983,7 @@ void WTrackTableView::dropEvent(QDropEvent * event){
             }
             // calling the addTracks returns number of failed additions
             int tracksAdded = trackModel->addTracks(destIndex, fileLocationList);
+
             // Decrement # of rows to select if some were skipped
             numNewRows -= (fileLocationList.size() - tracksAdded);
 

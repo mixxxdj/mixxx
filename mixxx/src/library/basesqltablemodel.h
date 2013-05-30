@@ -59,7 +59,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void select();
     QString getTrackLocation(const QModelIndex& index) const;
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
-    void relocateTracks(const QModelIndexList& indices);
 
     // Methods reimplemented from QAbstractItemModel
     void sort(int column, Qt::SortOrder order);

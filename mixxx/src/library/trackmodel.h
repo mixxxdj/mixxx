@@ -37,13 +37,13 @@ class TrackModel {
         TRACKMODELCAPS_LOADTOSAMPLER     = 0x00100,
         TRACKMODELCAPS_LOADTOPREVIEWDECK = 0x00200,
         TRACKMODELCAPS_REMOVE            = 0x00400,
-        TRACKMODELCAPS_RELOCATE          = 0x00800,
-        TRACKMODELCAPS_BPMLOCK           = 0x01000,
-        TRACKMODELCAPS_CLEAR_BEATS       = 0x02000,
-        TRACKMODELCAPS_RESETPLAYED       = 0x04000,
-        TRACKMODELCAPS_HIDE              = 0x08000,
-        TRACKMODELCAPS_UNHIDE            = 0x10000,
-        TRACKMODELCAPS_PURGE             = 0x20000
+        TRACKMODELCAPS_BPMLOCK           = 0x00800,
+        TRACKMODELCAPS_CLEAR_BEATS       = 0x01000,
+        TRACKMODELCAPS_RESETPLAYED       = 0x02000,
+        TRACKMODELCAPS_HIDE              = 0x04000,
+        TRACKMODELCAPS_UNHIDE            = 0x08000,
+        TRACKMODELCAPS_PURGE             = 0x10000,
+        TRACKMODELCAPS_DELETEFS          = 0x20000
     };
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
@@ -78,9 +78,6 @@ class TrackModel {
         Q_UNUSED(indices);
     }
     virtual void unhideTracks(const QModelIndexList& indices) {
-        Q_UNUSED(indices);
-    }
-    virtual void relocateTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
     virtual void purgeTracks(const QModelIndexList& indices) {

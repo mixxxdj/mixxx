@@ -61,6 +61,7 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
     }
 
     // update location and directory in track_locations table
+    // TODO(kain88) do this in trackdao
     query.prepare("UPDATE track_locations SET location="
                   "REPLACE(location,:oldFolder,:newFolder)"
                   ", directory="
