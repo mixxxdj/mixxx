@@ -34,6 +34,13 @@ class WTrackTableView : public WLibraryTableView {
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
 
+    enum BPMScale {
+        DOUBLE,
+        HALVE,
+        TWOTHIRDS,
+        THREEFOURTHS,
+    };
+
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
@@ -60,9 +67,7 @@ class WTrackTableView : public WLibraryTableView {
     void doSortByColumn(int headerSection);
     void slotLockBpm();
     void slotUnlockBpm();
-    void slotDoubleBpm();
-    void slotHalveBpm();
-    void slotTwoThirdsBpm();
+    void slotScaleBpm(int); 
     void slotClearBeats();
 
   private:
@@ -125,14 +130,14 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pPropertiesAct;
     QAction *m_pFileBrowserAct;
 
-    // BPM Lock feature
+    // BPM feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
-
-    //BPM changes
+    QSignalMapper m_BpmMapper;
     QAction *m_pBpmDoubleAction;
     QAction *m_pBpmHalveAction;
     QAction *m_pBpmTwoThirdsAction;
+    QAction *m_pBpmThreeFourthsAction;
 
     // Clear track beats
     QAction* m_pClearBeatsAction;
