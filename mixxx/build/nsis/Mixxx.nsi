@@ -109,6 +109,8 @@ Function .onInit    ; Prevent multiple installer instances
 
 FunctionEnd
 
+!ifdef WINLIB_PATH
+
 ;-------------------------------
 ; Install the VC 2010 redistributable DLLs if they're not already.
 Function InstallVCRedist
@@ -123,12 +125,15 @@ Function InstallVCRedist
   ; Put the VC redist installer files there
   File ${WINLIB_PATH}\VC_redist\vc_red.cab
   File ${WINLIB_PATH}\VC_redist\vc_red.msi
+  File ${WINLIB_PATH}\VC_redist\msp_kb2565063.msp
 
   ClearErrors
   ; Call it & wait for it to install
   ExecWait 'msiexec /i $TEMP\vc_red.msi'
+  ExecWait 'msiexec /update $TEMP\msp_kb2565063.msp'
   Delete "$TEMP\vc_red.cab"
   Delete "$TEMP\vc_red.msi"
+  Delete "$TEMP\msp_kb2565063.msp"
   IfErrors 0 VCRedistDone
   MessageBox MB_ICONSTOP|MB_OK "There was a problem installing the Microsoft Visual C++ libraries.$\r$\nYou may need to run this installer as an administrator."
   Abort
@@ -184,6 +189,8 @@ VSRedistInstalled:
 
 FunctionEnd
 
+!endif ; WINLIB_PATH
+
 ;--------------------------------
 ; The stuff to install
 
@@ -191,7 +198,9 @@ Section "Mixxx (required)" SecMixxx
 
   SectionIn RO
 
+!ifdef WINLIB_PATH
   Call InstallVCRedist
+!endif ; WINLIB_PATH
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR

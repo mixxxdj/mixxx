@@ -14,13 +14,11 @@ prefixes = SCons.Util.Split("""
   i486-mingw32msvc-
   i586-mingw32msvc-
   i686-mingw32msvc-
-  i386-w64-mingw32-
-  i486-w64-mingw32-
-  i586-w64-mingw32-
-  i686-w64-mingw32-
 """)
 
 def find(env):
+  if 'CROSSMINGW_PREFIX' in env:
+      prefixes.insert(0, env['CROSSMINGW_PREFIX'])
   for prefix in prefixes:
     # First search in the SCons path and then the OS path:
     if env.WhereIs(prefix + 'gcc') or SCons.Util.WhereIs(prefix + 'gcc'):

@@ -178,7 +178,7 @@ void FIFOSampleBuffer::ensureCapacity(uint capacityRequirement)
             throw std::runtime_error("Couldn't allocate memory!\n");
         }
         // Align the buffer to begin at 16byte cache line boundary for optimal performance
-        temp = (SAMPLETYPE *)(((ulong)tempUnaligned + 15) & (ulong)-16);
+        temp = (SAMPLETYPE *)(((uintptr_t)tempUnaligned + 15) & (uintptr_t)-16);
         if (samplesInBuffer)
         {
             memcpy(temp, ptrBegin(), samplesInBuffer * channels * sizeof(SAMPLETYPE));

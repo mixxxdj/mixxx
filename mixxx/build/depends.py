@@ -379,10 +379,13 @@ class SoundTouch(Dependence):
         env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
         # Check if the compiler has SSE extention enabled
-        # Allways the case on x64 (core instructions)
+        # Always the case on x64 (core instructions)
         optimize = int(util.get_flags(env, 'optimize', 1))
         if self.sse_enabled(build):
             env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
+            build.env.Append(CCFLAGS = '-mmmx -msse')
+            env.Append(CPPDEFINES='__MMX__')
+            env.Append(CPPDEFINES='__SSE__')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
@@ -813,7 +816,6 @@ class MixxxCore(Feature):
             build.env.Append(LIBPATH=mixxx_lib_path)
 
             # Find executables (e.g. protoc) in the winlib path
-            #build.env['ENV']['PATH'] += ";" + mixxx_lib_path
             build.env.AppendENVPath('PATH', mixxx_lib_path)
 
             #Ugh, MSVC-only hack :( see
@@ -935,7 +937,10 @@ class MixxxCore(Feature):
             elif build.toolchain_is_gnu:
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
+                # Enable the use of threads
                 build.env.Append(CCFLAGS = '-mthreads')
+                # Linking won't succeed without this
                 build.env.Append(CCFLAGS = '-fno-keep-inline-dllexport')
+                # Link in libz at the end, so dependent libraries find it
                 build.env.Append(LIBS = 'z');
 
