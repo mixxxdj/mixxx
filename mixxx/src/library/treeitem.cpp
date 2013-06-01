@@ -29,7 +29,8 @@
  * - cratefeature.cpp
  * - *feature.cpp
  */
-TreeItem::TreeItem(const QString &data, const QString &data_path, LibraryFeature* feature, TreeItem* parent) {
+TreeItem::TreeItem(const QString &data, const QString &data_path,
+                   LibraryFeature* feature, TreeItem* parent) {
     m_data = data;
     m_dataPath = data_path;
     m_parentItem = parent;

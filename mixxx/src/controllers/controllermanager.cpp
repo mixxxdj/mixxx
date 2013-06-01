@@ -290,8 +290,6 @@ void ControllerManager::openController(Controller* pController) {
     if (pController->isOpen()) {
         pController->close();
     }
-    connect(pController, SIGNAL(syncControlSystem()),
-            this, SIGNAL(syncControlSystem()));
     int result = pController->open();
     maybeStartOrStopPolling();
 
@@ -310,8 +308,6 @@ void ControllerManager::closeController(Controller* pController) {
     if (!pController) {
         return;
     }
-    disconnect(pController, SIGNAL(syncControlSystem()),
-               this, SIGNAL(syncControlSystem()));
     pController->close();
     maybeStartOrStopPolling();
     // Update configuration to reflect controller is disabled.

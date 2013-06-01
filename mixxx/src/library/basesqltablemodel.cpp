@@ -1,4 +1,3 @@
-// basesqltablemodel.h
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
 #include <QtAlgorithms>
@@ -20,16 +19,15 @@ const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
-                                     QSqlDatabase db,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
-           TrackModel(db, settingsNamespace),
-           m_currentSearch(""),
-           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-           m_iPreviewDeckTrackId(-1),
+           TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_database(db) {
+           m_database(pTrackCollection->getDatabase()),
+           m_currentSearch(""),
+           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
+           m_iPreviewDeckTrackId(-1) {
     m_bInitialized = false;
     m_bDirty = true;
     m_iSortColumn = 0;
@@ -359,7 +357,7 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString extra
     m_bDirty = true;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString extraFilter) {
+void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
@@ -624,6 +622,10 @@ int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
         return -1;
     }
     return index.sibling(index.row(), fieldIndex(m_idColumn)).data().toInt();
+}
+
+TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
+    return m_trackDAO.getTrack(getTrackId(index));
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {

@@ -7,7 +7,7 @@
 */
 
 #include "controllers/dlgcontrollerlearning.h"
-
+#include "vinylcontrol/defs_vinylcontrol.h"
 #include "engine/cuecontrol.h"
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
@@ -102,7 +102,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("vinylcontrol_enabled", tr("Toggle vinyl-control (ON/OFF)"), vinylControlMenu);
     addDeckControl("vinylcontrol_cueing", tr("Toggle vinyl-control cueing mode (OFF/ONE/HOT)"), vinylControlMenu);
     addDeckControl("vinylcontrol_mode", tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
-    addControl("[VinylControl]", "Toggle", tr("Single deck mode - Toggle vinyl control to next deck"), vinylControlMenu);
+    addControl(VINYL_PREF_KEY, "Toggle", tr("Single deck mode - Toggle vinyl control to next deck"), vinylControlMenu);
 
     // Cues
     QMenu* cueMenu = addSubmenu(tr("Cues"));

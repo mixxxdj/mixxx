@@ -20,6 +20,7 @@ EngineWorkerScheduler::~EngineWorkerScheduler() {
     m_bQuit = true;
     m_waitCondition.wakeAll();
     m_workerThreadPool.waitForDone();
+    wait();
 }
 
 void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {

@@ -386,11 +386,11 @@ class VinylControl(Feature):
 
     def sources(self, build):
         sources = ['vinylcontrol/vinylcontrol.cpp',
-                   'vinylcontrol/vinylcontrolproxy.cpp',
                    'vinylcontrol/vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
                    'vinylcontrol/vinylcontrolsignalwidget.cpp',
                    'vinylcontrol/vinylcontrolmanager.cpp',
+                   'vinylcontrol/vinylcontrolprocessor.cpp',
                    'vinylcontrol/steadypitch.cpp',
                    'engine/vinylcontrolcontrol.cpp',]
         if build.platform_is_windows:
