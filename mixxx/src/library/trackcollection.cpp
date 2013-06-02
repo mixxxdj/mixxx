@@ -127,7 +127,6 @@ QSqlDatabase& TrackCollection::getDatabase() {
 //   False if the scan was cancelled part-way through.
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
                                       const QStringList & nameFilters,
-                                      QSet<int>& restoredTracks,
                                       const int dirId,
                                       volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
@@ -157,11 +156,8 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
         // it. If it does exist in the database, then it is either in the
         // user's library OR the user has "removed" the track via
         // "Right-Click -> Remove". These tracks stay in the library, but
-        // their mixxx_deleted column is 1. It is also possible that the
-        // track was deleted and now restored, set these in restoredTracks
-        if (trackDao.trackExistsInDatabase(absoluteFilePath)) {
-            restoredTracks.insert(trackDao.getTrackId(absoluteFilePath));
-        } else {
+        // their mixxx_deleted column is 1.
+        if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
             //qDebug() << "Loading" << it.fileName();
             emit(progressLoading(it.fileName()));
 

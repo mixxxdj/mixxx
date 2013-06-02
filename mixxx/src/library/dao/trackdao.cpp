@@ -443,7 +443,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove,const int dir
                      << "Failed to query existing track: "
                      << pTrack->getFilename();
         } else {
-            bool mixxx_deleted = 0;
+            bool mixxx_deleted = false;
 
             while (m_pQueryLibrarySelect->next()) {
                 trackId = m_pQueryLibrarySelect->value(m_pQueryLibrarySelect->record().indexOf("id")).toInt();
@@ -597,7 +597,6 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo> &fileInfoList,
     while (query.next()) {
         QString filePath = query.value(query.record().indexOf("location")).toString();
         TrackInfoObject* pTrack = new TrackInfoObject(QFileInfo(filePath));
-        //TODO kain88 fix dirID
         addTracksAdd(pTrack, unremove,0);
         int trackID = pTrack->getId();
         if (trackID >= 0) {
@@ -1050,10 +1049,10 @@ void TrackDAO::invalidateTrackLocationsInLibrary() {
 
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
-                  "SET needs_verification=1");
+                  "SET needs_verification=1 WHERE track_locations.maindir_id < 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
-                << "Couldn't mark tracks in directory "
+                << "Couldn't mark tracks in watched library directories "
                 <<  "as needing verification.";
     }
 }
@@ -1147,10 +1146,12 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
     QSqlQuery query3(m_database);
     int oldTrackLocationId = -1;
     int newTrackLocationId = -1;
+    QString filename;
+    // rather use duration then filesize as an indicator of changes. The filesize
+    // can change by adding more ID3v2 tags
     int duration = -1;
-    int fileSize = -1;
 
-    query.prepare("SELECT track_locations.id, filesize, duration FROM track_locations "
+    query.prepare("SELECT track_locations.id,filename, duration FROM track_locations "
                   "INNER JOIN library ON track_locations.id=library.location "
                   "WHERE fs_deleted=1");
 
@@ -1161,24 +1162,23 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
     query2.prepare("SELECT track_locations.id FROM track_locations "
                    "INNER JOIN library ON track_locations.id=library.location "
                    "WHERE fs_deleted=0 AND "
-                   "filesize=:filesize AND "
+                   "filename=:filename AND "
                    "duration=:duration");
 
     //For each track that's been "deleted" on disk...
     while (query.next()) {
         newTrackLocationId = -1; //Reset this var
         oldTrackLocationId = query.value(query.record().indexOf("id")).toInt();
-        fileSize = query.value(query.record().indexOf("filesize")).toInt();
+        filename = query.value(query.record().indexOf("filename")).toInt();
         duration = query.value(query.record().indexOf("duration")).toInt();
 
-        query2.bindValue(":filesize", fileSize);
+        query2.bindValue(":filename", filename);
         query2.bindValue(":duration", duration);
         Q_ASSERT(query2.exec());
 
         Q_ASSERT(query2.size() <= 1); //WTF duplicate tracks?
         while (query2.next()) {
             newTrackLocationId = query2.value(query2.record().indexOf("id")).toInt();
-
             //Remove old row from track_locations table
             query3.prepare("DELETE FROM track_locations WHERE id=:id");
             query3.bindValue(":id", oldTrackLocationId);

@@ -404,7 +404,7 @@ bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirecto
         if (m_directoriesBlacklist.contains(nextPath))
             continue;
 
-        if (!recursiveScan(nextPath, verifiedDirectories,restoredTracks,dirId)) {
+        if (!recursiveScan(nextPath, verifiedDirectories, dirId)) {
             bScanFinishedCleanly = false;
         }
     }
