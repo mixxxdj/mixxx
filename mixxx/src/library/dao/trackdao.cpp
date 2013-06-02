@@ -724,15 +724,6 @@ void TrackDAO::purgeTracks(QList<int> ids) {
         LOG_FAILED_QUERY(query);
     }
 
-    // mark LibraryHash with needs_verification and invalidate the hash
-    // in case the file was not deleted to detect it on a rescan
-    // TODO(XXX) delegate to libraryHashDAO
-    query.prepare(QString("UPDATE LibraryHashes SET needs_verification=1, "
-                          "hash=-1 WHERE directory_path in (%1)").arg(dirList.join(",")));
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
     // TODO(XXX) Not sure if we should check any of these for errors or just not
     // care if there were errors and commit anyway.
     if (query.lastError().isValid()) {
@@ -1266,121 +1257,6 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
         return SoundSourceProxy::isFilenameSupported(pTrack->getFilename());
     }
     return false;
-}
-
-bool TrackDAO::relocateTrack(TrackPointer pTrack, QString newLocation) {
-    int newFileSize=-1;
-    int newDuration=-1;
-    int newTrackLocationId = -1;
-    int oldTrackLocationId = -1;
-    QString oldCheckSum;
-    QString newCheckSum;
-    int newMainDirId=0;
-    QString oldLocation = pTrack->getLocation();
-    int oldFileSize = pTrack->getLength();
-    int oldDuration = pTrack->getDuration();
-    int id = getTrackId(pTrack->getLocation());
-
-    ScopedTransaction transaction(m_database);
-    // see if this track is not already in the database and retrieve information
-    QSqlQuery query(m_database);
-    query.prepare("SELECT track_locations.id, checksum, filesize, duration FROM track_locations "
-                  "INNER JOIN library ON track_locations.id=library.location "
-                  "WHERE location= \"" + newLocation +  "\"");
-    if (!query.exec())
-        LOG_FAILED_QUERY(query);
-
-    while (query.next()) {
-        newTrackLocationId = query.value(query.record().indexOf("id")).toInt();
-        newFileSize = query.value(query.record().indexOf("filesize")).toInt();
-        newCheckSum = query.value(query.record().indexOf("checksum")).toString();
-        newDuration = query.value(query.record().indexOf("duration")).toInt();
-    }
-
-    // retrieve information about the old track
-    query.prepare("SELECT id, checksum FROM track_locations "
-                  "WHERE location = \""+oldLocation+"\"");
-    if (!query.exec())
-        LOG_FAILED_QUERY(query);
-    while (query.next()) {
-        oldCheckSum = query.value(query.record().indexOf("checksum")).toString();
-        oldTrackLocationId = query.value(query.record().indexOf("id")).toInt();
-        //qDebug() << oldTrackLocationId << " old id";
-    }
-
-    // check if the new track is in a Folder that mixxx watches
-    query.prepare("SELECT dir_id, directory FROM directories");
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "There are no directories saved in the db";
-    }
-    while (query.next()) {
-        QString dir = query.value(query.record().indexOf("directory")).toString();
-        if (newLocation.contains(dir)) {
-            newMainDirId = query.value(query.record().indexOf("dir_id")).toInt();
-        }
-    }
-
-    // check we already know a track in that location and make sanity check
-    // that this new track actually is the same as the old one
-    if (newTrackLocationId >= 0 &&
-        ((newFileSize == oldFileSize) &&
-         (oldCheckSum==newCheckSum) &&
-         (newDuration==oldDuration))) {
-
-        //The library scanner will have added a new row to the Library
-        //table which corresponds to the track in the new location. We need
-        //to remove that so we don't end up with two rows in the library table
-        //for the same track.
-        query.prepare("DELETE FROM library INNER JOIN track_locations ON "
-        "library.locations = track_locations.id WHERE library.location=:newid");
-        query.bindValue(":newid", newTrackLocationId);
-        Q_ASSERT(query.exec());
-
-        // Update the location foreign key for the existing row in the library table
-        // to point to the correct row in the track_locations table.
-        query.prepare("UPDATE track_locations "
-                      "SET location=:newloc, maindir_id=:dirid WHERE location=:oldloc");
-        query.bindValue(":newloc", "\"" +newLocation + "\"");
-        query.bindValue(":dirid",newMainDirId);
-        query.bindValue(":oldloc","\"" +oldLocation + "\"");
-        Q_ASSERT(query.exec());
-    } else {
-        // New locazion was unknown,
-        // we can simply change the location
-        TrackInfoObject newTrack(newLocation);
-        QString filename = newTrack.getFilename();
-        QString location = newTrack.getLocation();
-        QString directory = newTrack.getDirectory();
-        newFileSize = newTrack.getLength();
-        newDuration = newTrack.getDuration();
-
-        if ((newCheckSum != oldCheckSum) && (oldFileSize != newFileSize) 
-             && (newDuration!=oldDuration)) {
-            qDebug() << "that is another song";
-            qDebug() << "filesize " << oldFileSize << " vs " << newFileSize;
-            qDebug() << "duration " << oldDuration << " vs " << newDuration;
-            return false;
-        }
-
-        query.prepare("UPDATE track_locations "
-                      "SET location=\""+location+"\", filename=\""+filename+"\","
-                      " directory=\""+directory+"\", "
-                      "fs_deleted=0, maindir_id= "+QString::number(newMainDirId)+
-                      " WHERE id="+QString::number(oldTrackLocationId));
-
-        // qDebug() << "will update it";
-        // qDebug() << query.lastQuery();
-        if (!query.exec()) {
-            LOG_FAILED_QUERY(query) << " update failed";
-            return false;
-        }
-    }
-    transaction.commit();
-    // remove tracks from cache and BTC
-    QSet<int> ids;
-    ids.insert(id);
-    databaseTracksMoved(ids,ids);
-    return true;
 }
 
 void TrackDAO::verifyTracksOutside(volatile bool* pCancel) {

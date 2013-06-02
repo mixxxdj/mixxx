@@ -10,7 +10,6 @@ const QString DIRECTORYDAO_TABLE = "directories";
 
 class DirectoryDAO : public DAO {
   public:
-    // normal method
     DirectoryDAO(QSqlDatabase& database);
     virtual ~DirectoryDAO();
 

@@ -89,11 +89,9 @@ class TrackDAO : public QObject, public virtual DAO {
     void hideTracks(QList<int> ids);
     void purgeTracks(QList<int> ids);
     void purgeTracks(int dirId);
-    QStringList deleteTracksFromFS(QList<int> ids);
     void unhideTracks(QList<int> ids);
     TrackPointer getTrack(int id, bool cacheOnly=false) const;
     bool isDirty(int trackId);
-    bool relocateTrack(TrackPointer pTrack, QString newLocation);
     void markTrackAsDeleted(TrackPointer pTrack);
 
     // Scanning related calls. Should be elsewhere or private somehow.
