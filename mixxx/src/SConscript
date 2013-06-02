@@ -230,12 +230,12 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
         crosscompile_bin_path = os.path.join (build.crosscompile_root, \
             'bin')
         dll_files = [ os.path.join (crosscompile_bin_path, \
-            s) for s in [ 'libFLAC-8.dll', 'libogg-0.dll',
-                'libportaudio-2.dll', 'libportmidi_s.dll',
-                'libprotobuf-lite-7.dll', 'libsndfile-1.dll',
-                'libsqlite3-0.dll', 'libstdc++-6.dll', 'libtag.dll',
-                'libvorbis-0.dll', 'libvorbisenc-2.dll',
-                'libvorbisfile-3.dll' ] ];
+            s) for s in [ 'libchromaprint.dll', 'libfftw3-3.dll',
+			    'libFLAC-8.dll', 'libogg-0.dll', 'libportaudio-2.dll',
+                'libportmidi_s.dll', 'libprotobuf-lite-7.dll',
+                'libsndfile-1.dll', 'libsqlite3-0.dll',
+                'libstdc++-6.dll', 'libtag.dll', 'libvorbis-0.dll',
+                'libvorbisenc-2.dll', 'libvorbisfile-3.dll' ] ];
 elif build.crosscompile and build.platform_is_osx:
         # Glob appropriate dylib files. We have 4 different library types,
         # x86_64, x86, powerpc, powerpc64

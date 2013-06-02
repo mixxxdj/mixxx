@@ -957,6 +957,7 @@ class MixxxCore(Feature):
             elif build.toolchain_is_gnu:
                 # Makes the program not launch a shell first
                 build.env.Append(LINKFLAGS = '-Wl,-subsystem,windows')
+                build.env.Append(CCFLAGS = '-mwindows')
                 # Enable the use of threads
                 build.env.Append(CCFLAGS = '-mthreads')
                 # Linking won't succeed without this
