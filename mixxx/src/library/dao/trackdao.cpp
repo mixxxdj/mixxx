@@ -1147,11 +1147,10 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
     QSqlQuery query3(m_database);
     int oldTrackLocationId = -1;
     int newTrackLocationId = -1;
-    QString checksum;
     int duration = -1;
     int fileSize = -1;
 
-    query.prepare("SELECT track_locations.id, checksum, filesize, duration FROM track_locations "
+    query.prepare("SELECT track_locations.id, filesize, duration FROM track_locations "
                   "INNER JOIN library ON track_locations.id=library.location "
                   "WHERE fs_deleted=1");
 
@@ -1162,7 +1161,6 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
     query2.prepare("SELECT track_locations.id FROM track_locations "
                    "INNER JOIN library ON track_locations.id=library.location "
                    "WHERE fs_deleted=0 AND "
-                   "checksum=:checksum AND "
                    "filesize=:filesize AND "
                    "duration=:duration");
 
@@ -1170,11 +1168,9 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
     while (query.next()) {
         newTrackLocationId = -1; //Reset this var
         oldTrackLocationId = query.value(query.record().indexOf("id")).toInt();
-        checksum = query.value(query.record().indexOf("checksum")).toString();
         fileSize = query.value(query.record().indexOf("filesize")).toInt();
         duration = query.value(query.record().indexOf("duration")).toInt();
 
-        query2.bindValue(":checksum", checksum);
         query2.bindValue(":filesize", fileSize);
         query2.bindValue(":duration", duration);
         Q_ASSERT(query2.exec());
@@ -1182,7 +1178,6 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
         Q_ASSERT(query2.size() <= 1); //WTF duplicate tracks?
         while (query2.next()) {
             newTrackLocationId = query2.value(query2.record().indexOf("id")).toInt();
-            qDebug() << "Found moved track!" << checksum;
 
             //Remove old row from track_locations table
             query3.prepare("DELETE FROM track_locations WHERE id=:id");
