@@ -55,11 +55,11 @@ CrateFeature::CrateFeature(QObject* parent,
 
 #ifdef __AUTODJCRATES__
 
-    m_pAddCrateToAutoDj = new QAction(tr("Add Crate to AutoDJ"),this);
+    m_pAddCrateToAutoDj = new QAction(tr("Connect to AutoDJ"),this);
     connect(m_pAddCrateToAutoDj, SIGNAL(triggered()),
             this, SLOT(slotAddCrateToAutoDj()));
 
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate from AutoDJ"),this);
+    m_pRemoveCrateFromAutoDj = new QAction(tr("Disconnect from AutoDJ"),this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
 

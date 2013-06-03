@@ -56,7 +56,7 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     // from, the auto-DJ queue.
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(slotAddCrateToAutoDj(int)));
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Remove Crate from AutoDJ"),this);
+    m_pRemoveCrateFromAutoDj = new QAction(tr("Disconnect from AutoDJ"),this);
     connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
             this, SLOT(slotRemoveCrateFromAutoDj()));
 
