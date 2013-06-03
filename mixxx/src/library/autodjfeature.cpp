@@ -341,7 +341,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
         // Bring up the context menu.
         QMenu menu(NULL);
         QMenu crateMenu(NULL);
-        crateMenu.setTitle(tr("Add crate"));
+        crateMenu.setTitle(tr("Connect Crate to AutoDJ"));
         QMap<QString,int> crateMap;
 		m_crateDao.getAutoDjCrates(crateMap, false);
         QMapIterator<QString,int> it(crateMap);
