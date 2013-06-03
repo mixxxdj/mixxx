@@ -164,12 +164,15 @@ class MixxxBuild(object):
         if self.crosscompile:
             if self.platform_is_windows:
                 tools.append('crossmingw')
-                if self.machine_is_64bit:
-                    extra_arguments['CROSSMINGW_PREFIX'] \
-                        = 'x86_64-w64-mingw32-'
-                else:
-                    extra_arguments['CROSSMINGW_PREFIX'] \
-                        = 'i686-w64-mingw32-'
+
+                # Find the toolchain when building under Fedora.
+                if self.toolchain_is_gnu:
+                    if self.machine_is_64bit:
+                        extra_arguments['CROSSMINGW_PREFIX'] \
+                            = 'x86_64-w64-mingw32-'
+                    else:
+                        extra_arguments['CROSSMINGW_PREFIX'] \
+                            = 'i686-w64-mingw32-'
             if self.platform == 'osx':
                 tools.append('crossosx')
 

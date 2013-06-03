@@ -43,6 +43,7 @@
 
 #include <string.h>
 #include <limits.h>
+#include <stdint.h>
 #include <assert.h>
 #include <math.h>
 #include <float.h>

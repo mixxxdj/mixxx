@@ -226,16 +226,26 @@ if build.toolchain_is_msvs:
 elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
         # We're cross-compiling; grab these from the crosscompile bin
         # folder.
-        # TODO(XXX): Rebuild the dependent libraries as static.
+        # TODO(XXX): Rebuild the dependent libraries as static, and
+        # figure out how to tell scons to prefer static libraries.
         crosscompile_bin_path = os.path.join (build.crosscompile_root, \
             'bin')
         dll_files = [ os.path.join (crosscompile_bin_path, \
             s) for s in [ 'libchromaprint.dll', 'libfftw3-3.dll',
-			    'libFLAC-8.dll', 'libogg-0.dll', 'libportaudio-2.dll',
+                'libFLAC-8.dll', 'libogg-0.dll', 'libportaudio-2.dll',
                 'libportmidi_s.dll', 'libprotobuf-lite-7.dll',
                 'libsndfile-1.dll', 'libsqlite3-0.dll',
                 'libstdc++-6.dll', 'libtag.dll', 'libvorbis-0.dll',
                 'libvorbisenc-2.dll', 'libvorbisfile-3.dll' ] ];
+
+        # The ffmpeg build requires a few more DLLs.
+        if int(build.flags['ffmpeg']):
+            dll_files = [ os.path.join (crosscompile_bin_path, \
+                s) for s in [ 'avcodec-54.dll', 'avformat-54.dll',
+                'avutil-51.dll', 'swresample-0.dll', 'libbz2-1.dll',
+                'libgcrypt-11.dll', 'libgpg-error-0.dll',
+                'libgnutls-26.dll', 'libp11-kit-0.dll',
+                'libtasn1-3.dll' ] ];
 elif build.crosscompile and build.platform_is_osx:
         # Glob appropriate dylib files. We have 4 different library types,
         # x86_64, x86, powerpc, powerpc64
@@ -244,31 +254,55 @@ else:
         dll_files = list() # dll_files += on the next line required dll_files to exist
 
 if int(build.flags['vinylcontrol']) or int(build.flags['hid']):
-    if build.msvcdebug:
-        dll_files += Split("""$QTDIR/bin/phonond4.dll""")
+    if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        if build.msvcdebug:
+            dll_files += Split("""$QTDIR/bin/phonond4.dll""")
+        else:
+            dll_files += Split("""$QTDIR/bin/phonon4.dll""")
     else:
-        dll_files += Split("""$QTDIR/bin/phonon4.dll""")
+        if build.msvcdebug:
+            dll_files += Split("""$QTDIR/lib/phonond4.dll""")
+        else:
+            dll_files += Split("""$QTDIR/lib/phonon4.dll""")
 
 if build.msvcdebug:
-    dll_files += Split("""$QTDIR/bin/QtCored4.dll
-                          $QTDIR/bin/QtGuid4.dll
-                          $QTDIR/bin/QtNetworkd4.dll
-                          $QTDIR/bin/QtOpenGLd4.dll
-                          $QTDIR/bin/QtSqld4.dll
-                          $QTDIR/bin/QtXmld4.dll
-                          $QTDIR/bin/QtScriptd4.dll""")
+    if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        dll_files += Split("""$QTDIR/bin/QtCored4.dll
+                              $QTDIR/bin/QtGuid4.dll
+                              $QTDIR/bin/QtNetworkd4.dll
+                              $QTDIR/bin/QtOpenGLd4.dll
+                              $QTDIR/bin/QtSqld4.dll
+                              $QTDIR/bin/QtXmld4.dll
+                              $QTDIR/bin/QtScriptd4.dll""")
+    else:
+        dll_files += Split("""$QTDIR/lib/QtCored4.dll
+                              $QTDIR/lib/QtGuid4.dll
+                              $QTDIR/lib/QtNetworkd4.dll
+                              $QTDIR/lib/QtOpenGLd4.dll
+                              $QTDIR/lib/QtSqld4.dll
+                              $QTDIR/lib/QtXmld4.dll
+                              $QTDIR/lib/QtScriptd4.dll""")
 else:
     # if not int(build.flags['staticlibs']):
-    dll_files += Split("""$QTDIR/bin/QtCore4.dll
-                          $QTDIR/bin/QtGui4.dll
-                          $QTDIR/bin/QtNetwork4.dll
-                          $QTDIR/bin/QtOpenGL4.dll
-                          $QTDIR/bin/QtSql4.dll
-                          $QTDIR/bin/QtXml4.dll
-                          $QTDIR/bin/QtScript4.dll""")
+    if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        dll_files += Split("""$QTDIR/bin/QtCore4.dll
+                              $QTDIR/bin/QtGui4.dll
+                              $QTDIR/bin/QtNetwork4.dll
+                              $QTDIR/bin/QtOpenGL4.dll
+                              $QTDIR/bin/QtSql4.dll
+                              $QTDIR/bin/QtXml4.dll
+                              $QTDIR/bin/QtScript4.dll""")
+    else:
+        dll_files += Split("""$QTDIR/lib/QtCore4.dll
+                              $QTDIR/lib/QtGui4.dll
+                              $QTDIR/lib/QtNetwork4.dll
+                              $QTDIR/lib/QtOpenGL4.dll
+                              $QTDIR/lib/QtSql4.dll
+                              $QTDIR/lib/QtXml4.dll
+                              $QTDIR/lib/QtScript4.dll""")
 
 if int(flags.get('sqlitedll', 0)):
-    if build.crosscompile:
+    if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
         if build.msvcdebug:
             sqldll_files = Split("""$QTDIR/lib/qt4/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
         else:
