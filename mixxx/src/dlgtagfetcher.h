@@ -41,7 +41,7 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
 
   private:
     struct Data {
-        Data() : m_pending(true), m_selectedResult(0) {}
+        Data() : m_pending(true), m_selectedResult(-1) {}
 
         bool m_pending;
         int m_selectedResult;

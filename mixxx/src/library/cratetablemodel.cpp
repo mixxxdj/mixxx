@@ -1,3 +1,4 @@
+
 // cratetablemodel.cpp
 // Created 10/25/2009 by RJ Ryan (rryan@mit.edu)
 
@@ -162,7 +163,7 @@ TrackModel::CapabilitiesFlags CrateTableModel::getCapabilities() const {
             | TRACKMODELCAPS_LOADTOSAMPLER
             | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_REMOVE
-            | TRACKMODELCAPS_BPMLOCK
+            | TRACKMODELCAPS_MANIPULATEBEATS
             | TRACKMODELCAPS_CLEAR_BEATS
             | TRACKMODELCAPS_RESETPLAYED;
 
