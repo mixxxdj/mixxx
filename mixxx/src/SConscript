@@ -255,10 +255,8 @@ else:
 
 if int(build.flags['vinylcontrol']) or int(build.flags['hid']):
     if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
-        if build.msvcdebug:
-            dll_files += Split("""$QTDIR/bin/phonond4.dll""")
-        else:
-            dll_files += Split("""$QTDIR/bin/phonon4.dll""")
+        # mingw{32,64}-phonon only has one DLL.
+        dll_files += Split("""$QTDIR/bin/libphonon.dll""")
     else:
         if build.msvcdebug:
             dll_files += Split("""$QTDIR/lib/phonond4.dll""")

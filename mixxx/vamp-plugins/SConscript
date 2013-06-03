@@ -67,7 +67,7 @@ if int(build.flags['vamp']):
     env = conf.Finish()
     if build.platform_is_linux:
         env["LINKFLAGS"].append("-Wl,--version-script=vamp-plugins/vamp-plugin.map")
-    if build.platform_is_windows:
+    if build.platform_is_windows and not build.crosscompile:
         env["LINKFLAGS"].remove("/entry:mainCRTStartup")
         env["LINKFLAGS"].append("/EXPORT:vampGetPluginDescriptor")
         #this will reduce DLL dependencies; no need to depend on MSVCRT.dll, etc

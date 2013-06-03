@@ -39,7 +39,7 @@
     #ifdef WIN64
         #define	lrint(dbl)		((int)(dbl))
         #define	lrintf(flt)		((int)(flt))
-    #else
+    #elif !defined (__GNUC__)
 
         /*	Win32 doesn't seem to have these functions. 
         **	Therefore implement inline versions of them here.
