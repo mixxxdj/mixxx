@@ -82,6 +82,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
     int tracksInPlaylist(int playlistId);
+    // TODO(weixin) Update the shown number of tracks in every playlists
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
