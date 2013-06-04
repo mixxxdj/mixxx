@@ -916,12 +916,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     m_engineLock.lock();
     m_engineControls.push_back(pControl);
     m_engineLock.unlock();
-    connect(pControl, SIGNAL(seek(double)),
-            this, SLOT(slotControlSeek(double)),
-            Qt::DirectConnection);
-    connect(pControl, SIGNAL(seekAbs(double)),
-            this, SLOT(slotControlSeekAbs(double)),
-            Qt::DirectConnection);
+    pControl->setEngineBuffer(this);
     connect(this, SIGNAL(trackLoaded(TrackPointer)),
             pControl, SLOT(trackLoaded(TrackPointer)),
             Qt::DirectConnection);
