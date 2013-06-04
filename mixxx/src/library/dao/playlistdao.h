@@ -94,7 +94,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void lockChanged(int playlistId);
     // When the number of tracks in some playlist, this signal will be emited to notice
     // that the playlists name need to be refreshed.
-    void playlistsTitleUpdate();
+    void playlistsTitleUpdate(int playlistId);
   private:
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);

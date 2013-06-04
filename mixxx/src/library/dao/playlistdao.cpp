@@ -738,7 +738,11 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
                 newNameWithNum = oldName+"(" + tracksNum + ")";
             } else {
                 //qDebug() << "yes:"<<oldName;
-                newNameWithNum = oldName.replace(rxnum.cap(2), tracksNum);
+                if (rxnum.cap(2) == tracksNum){
+                    continue;
+                } else {
+                    newNameWithNum = oldName.replace(rxnum.cap(2), tracksNum);
+                }
             }
 
             QSqlQuery updateQuery(m_database);
@@ -750,11 +754,11 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
                 LOG_FAILED_QUERY(updateQuery);
                 m_database.rollback();
             }
-
+            emit(playlistsTitleUpdate(playlistsID));
             //qDebug() << "PlaylistName:" <<selectQuery.value(0).toString()
             //		 << "Number of tracks:" << selectQuery.value(1).toInt();
         }
     }
     m_database.commit();
-    emit(playlistsTitleUpdate());
+
 }
