@@ -16,3 +16,7 @@ Debug
 *.cproject
 *.project
 *.DS_Store
+
+*~
+*.swp
+*.pyc
