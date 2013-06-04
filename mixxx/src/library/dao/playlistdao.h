@@ -82,7 +82,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
     int tracksInPlaylist(int playlistId);
-    // TODO(weixin) Update the shown number of tracks in every playlists
+    // Update the shown number of tracks in every playlists
+    void updatePlaylistsTitleNum();
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
@@ -91,6 +92,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void trackRemoved(int playlistId, int trackId, int position);
     void renamed(int playlistId);
     void lockChanged(int playlistId);
+    // When the number of tracks in some playlist, this signal will be emited to notice
+    // that the playlists name need to be refreshed.
+    void playlistsTitleUpdate();
   private:
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);

@@ -38,6 +38,9 @@ class BasePlaylistFeature : public LibraryFeature {
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
     void slotCreatePlaylist();
+    // When the number of tracks in some palylist changed, this slot
+    // will receive a playlistsTitleUpdate() singnal.
+    void slotPlaylistsTitleUpdate();
 
   protected slots:
     void slotDeletePlaylist();

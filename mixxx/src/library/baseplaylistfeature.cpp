@@ -69,6 +69,9 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
+
+    connect(&m_playlistDao,SIGNAL(playlistsTitleUpdate()),
+            this,SLOT(slotPlaylistsTitleUpdate()));
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -478,3 +481,7 @@ void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0, m_playlistList.size());
 }
 
+void BasePlaylistFeature::slotPlaylistsTitleUpdate() {
+    clearChildModel();
+    constructChildModel(-1);
+}

@@ -31,6 +31,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
+
 }
 
 PlaylistFeature::~PlaylistFeature() {
@@ -209,3 +210,4 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append("</td></tr></table>");
     return html;
 }
+
