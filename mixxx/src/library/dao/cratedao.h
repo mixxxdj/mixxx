@@ -46,6 +46,8 @@ class CrateDAO : public QObject, public virtual DAO {
     bool removeTracksFromCrate(QList<int> ids, int crateId);
     // remove tracks from all crates
     void removeTracksFromCrates(QList<int> ids);
+    // Update the shown number of tracks in every crates
+    void updateCratesTitleNum();
 
   signals:
     void added(int crateId);
@@ -55,7 +57,7 @@ class CrateDAO : public QObject, public virtual DAO {
     void trackRemoved(int crateId, int trackId);
     void renamed(int crateId);
     void lockChanged(int crateId);
-
+    void cratesTitleUpdate(int crateId);
   private:
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(CrateDAO);

@@ -66,6 +66,9 @@ CrateFeature::CrateFeature(QObject* parent,
     connect(&m_crateDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotCrateTableChanged(int)));
 
+    connect(&m_crateDao, SIGNAL(cratesTitleUpdate(int)),
+            this, SLOT(slotCrateTableChanged(int)));
+
     // construct child model
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);

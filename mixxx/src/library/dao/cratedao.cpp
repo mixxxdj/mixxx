@@ -42,6 +42,7 @@ int CrateDAO::createCrate(const QString& name) {
     }
 
     int crateId = query.lastInsertId().toInt();
+    updateCratesTitleNum();
     emit(added(crateId));
     return crateId;
 }
@@ -56,6 +57,7 @@ bool CrateDAO::renameCrate(int crateId, const QString& newName) {
         LOG_FAILED_QUERY(query);
         return false;
     }
+    updateCratesTitleNum();
     emit(renamed(crateId));
     return true;
 }
@@ -117,21 +119,48 @@ bool CrateDAO::deleteCrate(int crateId) {
     return true;
 }
 
+//int CrateDAO::getCrateIdByName(const QString& name) {
+//    QSqlQuery query(m_database);
+//    query.prepare("SELECT id FROM " CRATE_TABLE " WHERE name = (:name)");
+//    query.bindValue(":name", name);
+//    if (query.exec()) {
+//        if (query.next()) {
+//            int id = query.value(0).toInt();
+//            return id;
+//        }
+//    } else {
+//        LOG_FAILED_QUERY(query);
+//    }
+//    return -1;
+//}
+
 int CrateDAO::getCrateIdByName(const QString& name) {
+    QString pattern("(.*)(\\(([1-9]\\d*|0)\\))");
+    QRegExp rxnum(pattern);
+
     QSqlQuery query(m_database);
-    query.prepare("SELECT id FROM " CRATE_TABLE " WHERE name = (:name)");
-    query.bindValue(":name", name);
+    query.prepare("SELECT id,name FROM " CRATE_TABLE);
+
     if (query.exec()) {
-        if (query.next()) {
-            int id = query.value(0).toInt();
-            return id;
+        while (query.next()) {
+            int queryID = query.value(0).toInt();
+        	QString queryName = query.value(1).toString();
+
+            if (queryName == name) {
+                return queryID;
+            } else if (rxnum.exactMatch(queryName)) {
+                QString originalName = rxnum.cap(1);
+                if (originalName == name) {
+                    return queryID;
+                }
+            }
         }
+        return -1;
     } else {
         LOG_FAILED_QUERY(query);
     }
     return -1;
 }
-
 int CrateDAO::getCrateId(int position) {
     QSqlQuery query(m_database);
     query.prepare("SELECT id FROM " CRATE_TABLE);
@@ -209,7 +238,7 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
         LOG_FAILED_QUERY(query);
         return false;
     }
-
+    updateCratesTitleNum();
     emit(trackAdded(crateId, trackId));
     emit(changed(crateId));
     return true;
@@ -233,7 +262,7 @@ int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
         }
     }
     transaction.commit();
-
+    updateCratesTitleNum();
     // Emitting the trackAdded signals for each trackID outside the transaction
     foreach(int trackId, trackIdList) {
         emit(trackAdded(crateId, trackId));
@@ -256,7 +285,7 @@ bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
         LOG_FAILED_QUERY(query);
         return false;
     }
-
+    updateCratesTitleNum();
     emit(trackRemoved(crateId, trackId));
     emit(changed(crateId));
     return true;
@@ -280,6 +309,7 @@ bool CrateDAO::removeTracksFromCrate(QList<int> ids, int crateId) {
     foreach (int trackId, ids) {
         emit(trackRemoved(crateId, trackId));
     }
+    updateCratesTitleNum();
     emit(changed(crateId));
     return true;
 }
@@ -295,8 +325,60 @@ void CrateDAO::removeTracksFromCrates(QList<int> ids) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+    updateCratesTitleNum();
 
     // TODO(XXX) should we emit this for all crates?
     // emit(trackRemoved(crateId, trackId));
     // emit(changed(crateId));
+}
+void CrateDAO::updateCratesTitleNum() {
+    QString pattern(".*(\\(([1-9]\\d*|0)\\))");
+    QRegExp rxnum(pattern);
+
+    m_database.transaction();
+    QSqlQuery selectQuery(m_database);
+    //select crates.name, crates.id,count(*) from crates, crate_tracks
+    //where crates.id = crate_tracks.crate_id group by crates.id
+    selectQuery.prepare(" SELECT Crates.name,count(*),Crates.id FROM Crates, Crate_tracks "
+                        " WHERE Crates.id = Crate_tracks.crate_id "
+                        " GROUP BY Crates.id ");
+
+    if (!selectQuery.exec()) {
+        LOG_FAILED_QUERY(selectQuery);
+        m_database.rollback();
+    } else {
+        while (selectQuery.next()) {
+            QString newNameWithNum;
+            QString oldName = selectQuery.value(0).toString();
+            QString tracksNum = selectQuery.value(1).toString();
+            int cratesID = selectQuery.value(2).toInt();
+
+            if (!rxnum.exactMatch(oldName)) {
+                //qDebug() << "no:"<<oldName;
+                newNameWithNum = oldName+"(" + tracksNum + ")";
+            } else {
+                //qDebug() << "yes:"<<oldName;
+                if (rxnum.cap(2) == tracksNum){
+                    continue;
+                } else {
+                    newNameWithNum = oldName.replace(rxnum.cap(2), tracksNum);
+                }
+            }
+
+            QSqlQuery updateQuery(m_database);
+            updateQuery.prepare("UPDATE Crates SET name = :name WHERE id = :id");
+            updateQuery.bindValue(":name", newNameWithNum);
+            updateQuery.bindValue(":id", cratesID);
+
+            if (!updateQuery.exec()) {
+                LOG_FAILED_QUERY(updateQuery);
+                m_database.rollback();
+            }
+            emit(cratesTitleUpdate(cratesID));
+            //qDebug() << "PlaylistName:" <<selectQuery.value(0).toString()
+            //		 << "Number of tracks:" << selectQuery.value(1).toInt();
+        }
+    }
+    m_database.commit();
+
 }
