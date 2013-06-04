@@ -238,14 +238,21 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
                 'libstdc++-6.dll', 'libtag.dll', 'libvorbis-0.dll',
                 'libvorbisenc-2.dll', 'libvorbisfile-3.dll' ] ];
 
+        # The shoutcast build requires a few more DLLs.
+        if int(build.flags['shoutcast']):
+            dll_files += [ os.path.join (crosscompile_bin_path, \
+                s) for s in [ 'libshout-3.dll', 'libspeex-1.dll',
+                'libtheora-0.dll' ] ];
+
         # The ffmpeg build requires a few more DLLs.
         if int(build.flags['ffmpeg']):
-            dll_files = [ os.path.join (crosscompile_bin_path, \
+            dll_files += [ os.path.join (crosscompile_bin_path, \
                 s) for s in [ 'avcodec-54.dll', 'avformat-54.dll',
                 'avutil-51.dll', 'swresample-0.dll', 'libbz2-1.dll',
                 'libgcrypt-11.dll', 'libgpg-error-0.dll',
                 'libgnutls-26.dll', 'libp11-kit-0.dll',
                 'libtasn1-3.dll' ] ];
+
 elif build.crosscompile and build.platform_is_osx:
         # Glob appropriate dylib files. We have 4 different library types,
         # x86_64, x86, powerpc, powerpc64
