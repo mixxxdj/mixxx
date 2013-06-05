@@ -24,6 +24,10 @@ AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
     // No list of tracks loaded into each deck yet.
     m_pDeckTracks = NULL;
 
+    // By default, active tracks are not tracks that haven't been played in
+    // a while.
+    m_bUseReplayAge = false;
+
     // The database has been created yet.
     m_bAutoDjCratesDbCreated = false;
 }
@@ -40,6 +44,37 @@ void AutoDJCratesDAO::initialize() {
 // Done the first time it's used, since the user might not even make
 // use of this feature.
 void AutoDJCratesDAO::createAutoDjCratesDatabase() {
+    // If the use of tracks that haven't been played in a while has changed,
+    // then the active-tracks view must be recreated.
+    bool bUseReplayAge = (bool) m_pConfig->getValueString
+        (ConfigKey("[Auto DJ]", "UseReplayAge"), "0").toInt();
+    if (m_bAutoDjCratesDbCreated) {
+        if (m_bUseReplayAge != bUseReplayAge) {
+            // Do all this in a single transaction.
+            ScopedTransaction oTransaction(m_rDatabase);
+
+            // Get rid of the old active-tracks view.
+            QSqlQuery oQuery(m_rDatabase);
+            oQuery.exec ("DROP VIEW IF EXISTS " AUTODJACTIVETRACKS_TABLE);
+            if (!oQuery.exec()) {
+                LOG_FAILED_QUERY(oQuery);
+                return;
+            }
+
+            // Create the new active-tracks view.
+            if (!createActiveTracksView (bUseReplayAge))
+                return;
+
+            // Remember the new setting.
+            m_bUseReplayAge = bUseReplayAge;
+
+            // Commit these changes.
+            oTransaction.commit();
+        }
+    }
+    else
+        m_bUseReplayAge = bUseReplayAge;
+
     // If this database has already been created, skip this.
     if (m_bAutoDjCratesDbCreated)
         return;
@@ -112,36 +147,10 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
     if (!updateLastPlayedDateTime())
         return;
 
-    // Create the active-tracks view.  This is a list of all tracks loaded into
-    // the auto-DJ-crates database, excluding all tracks already in the auto-DJ
-    // playlist, sorted by the number of times the track has been played, and
-    // limited by either the active percentage or by the number of tracks that
-    // have never been played, whichever is larger.
-    //
-    // At one point, I hoped that I could create this table in a single SQL
-    // statement, with a "limit" clause that dynamically updated the size of the
-    // view as the state of the system changed.  Unfortunately, that limit
-    // clause is only evaluated once.  For posterity, though, here's the monster
-    // SQL query that attempted to create that version:
-    //
-    // CREATE TEMP VIEW temp_autodj_activetracks
-    //  AS SELECT * FROM temp_autodj_crates WHERE autodjrefs = 0
-    //  ORDER BY timesplayed, lastplayed LIMIT (SELECT MAX(count) FROM
-    //  (SELECT COUNT(*) AS count FROM temp_autodj_crates WHERE timesplayed = 0
-    //  UNION ALL SELECT (count * (SELECT value FROM settings WHERE
-    //  name="mixxx.db.model.autodjcrates.active_percentage") / 100) AS count
-    //  FROM (SELECT COUNT(*) AS count FROM temp_autodj_crates)));
-
-    // CREATE TEMP VIEW temp_autodj_activetracks AS SELECT * FROM temp_autodj_crates WHERE autodjrefs = 0 ORDER BY timesplayed, lastplayed;
+    // Create the active-tracks view.
     //oQuery.exec ("DROP VIEW IF EXISTS " AUTODJACTIVETRACKS_TABLE);
-    oQuery.prepare ("CREATE TEMP VIEW " AUTODJACTIVETRACKS_TABLE
-        " AS SELECT * FROM " AUTODJCRATES_TABLE " WHERE "
-        AUTODJCRATESTABLE_AUTODJREFS " = 0 ORDER BY "
-        AUTODJCRATESTABLE_TIMESPLAYED ", " AUTODJCRATESTABLE_LASTPLAYED);
-    if (!oQuery.exec()) {
-        LOG_FAILED_QUERY(oQuery);
+    if (!createActiveTracksView (m_bUseReplayAge))
         return;
-    }
 
     // Make a list of the IDs of every set-log playlist.
     // SELECT id FROM Playlists WHERE hidden = 2;
@@ -208,6 +217,45 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 
     // Remember that the auto-DJ-crates database has been created.
     m_bAutoDjCratesDbCreated = true;
+}
+
+// Create the active-tracks view.
+bool AutoDJCratesDAO::createActiveTracksView (bool a_bUseReplayAge) {
+    // Create the active-tracks view.  This is a list of all tracks loaded into
+    // the auto-DJ-crates database, excluding all tracks already in the auto-DJ
+    // playlist, sorted by the number of times the track has been played, and
+    // limited by either the active percentage or by the number of tracks that
+    // have never been played, whichever is larger.
+    //
+    // At one point, I hoped that I could create this table in a single SQL
+    // statement, with a "limit" clause that dynamically updated the size of the
+    // view as the state of the system changed.  Unfortunately, that limit
+    // clause is only evaluated once.  For posterity, though, here's the monster
+    // SQL query that attempted to create that version:
+    //
+    // CREATE TEMP VIEW temp_autodj_activetracks
+    //  AS SELECT * FROM temp_autodj_crates WHERE autodjrefs = 0
+    //  ORDER BY timesplayed, lastplayed LIMIT (SELECT MAX(count) FROM
+    //  (SELECT COUNT(*) AS count FROM temp_autodj_crates WHERE timesplayed = 0
+    //  UNION ALL SELECT (count * (SELECT value FROM settings WHERE
+    //  name="mixxx.db.model.autodjcrates.active_percentage") / 100) AS count
+    //  FROM (SELECT COUNT(*) AS count FROM temp_autodj_crates)));
+
+    // CREATE TEMP VIEW temp_autodj_activetracks AS SELECT * FROM temp_autodj_crates WHERE autodjrefs = 0 ORDER BY timesplayed, lastplayed;
+    QSqlQuery oQuery(m_rDatabase);
+    QString strTimesPlayed;
+    if (!a_bUseReplayAge)
+        strTimesPlayed = AUTODJCRATESTABLE_TIMESPLAYED ", ";
+    oQuery.prepare (QString("CREATE TEMP VIEW " AUTODJACTIVETRACKS_TABLE
+        " AS SELECT * FROM " AUTODJCRATES_TABLE " WHERE "
+        AUTODJCRATESTABLE_AUTODJREFS " = 0 ORDER BY %1"
+        AUTODJCRATESTABLE_LASTPLAYED)
+        .arg(strTimesPlayed));  // %1
+    if (!oQuery.exec()) {
+        LOG_FAILED_QUERY(oQuery);
+        return false;
+    }
+    return true;
 }
 
 // Update the number of auto-DJ-playlist references to each track in the
@@ -412,6 +460,41 @@ int AutoDJCratesDAO::getRandomTrackId (void) {
     // percentage of the total number of tracks, whichever is larger.
     int iActiveTracks = qMax(iUnplayedTracks,
         iTotalTracks * iActivePercentage / 100);
+
+    // The number of active-tracks might also be tracks that haven't been played
+    // in a while.
+    if (m_bUseReplayAge) {
+        // Get the current time, in UTC (since that's what sqlite uses).
+        QDateTime timCurrent = QDateTime::currentDateTimeUtc();
+        
+        // Subtract the replay age.
+        QTime timReplayAge = (QTime::fromString (m_pConfig->getValueString
+            (ConfigKey("[Auto DJ]", "ReplayAge"), "23:59"), "hh:mm"));
+        timCurrent = timCurrent.addSecs(-(timReplayAge.hour() * 3600
+            + timReplayAge.minute() * 60));
+
+        // Convert the time to sqlite's format, which is similar to ISO date,
+		// but not quite.
+        QString strDateTime = timCurrent.toString("yyyy-MM-dd hh:mm:ss");
+
+        // Count the number of tracks that haven't been played since this time.
+        // SELECT COUNT(*) FROM temp_autodj_activetracks WHERE lastplayed < :lastplayed;
+        int iReplayAgeTracks = 0;
+        oQuery.prepare("SELECT COUNT(*) FROM " AUTODJACTIVETRACKS_TABLE
+            " WHERE " AUTODJCRATESTABLE_LASTPLAYED " < :lastplayed");
+        oQuery.bindValue (":lastplayed", strDateTime);
+        if (oQuery.exec()) {
+            if (oQuery.next()) {
+                iReplayAgeTracks = oQuery.value(0).toInt();
+            }
+        } else {
+            LOG_FAILED_QUERY(oQuery);
+            return -1;
+        }
+
+        // Allow that to be a new maximum.
+        iActiveTracks = qMax(iActiveTracks, iReplayAgeTracks);
+    }
 
     // If there are no tracks, let our caller know.
     if (iActiveTracks == 0)

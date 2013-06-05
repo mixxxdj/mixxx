@@ -60,6 +60,8 @@ public slots:
     void slotSetCueRecall(int);
     void slotSetAutoDjRequeue(int);
     void slotSetAutoDjActivePercentage(int);
+    void slotSetAutoDjUseReplayAge(int);
+    void slotSetAutoDjReplayAge(const QTime &a_rTime);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);

@@ -63,6 +63,9 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
         // The ID of every set-log playlist.
     int m_iAutoDjPlaylistId;
         // The auto-DJ playlist's ID.
+    bool m_bUseReplayAge;
+        // True if active tracks can be tracks that haven't been played in
+        // a while.
     bool m_bAutoDjCratesDbCreated;
         // True if the auto-DJ-crates database has been created.
 
@@ -70,6 +73,8 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
         // Create the temporary auto-DJ-crates database.
         // Done the first time it's used, since the user might not even make
         // use of this feature.
+    bool createActiveTracksView (bool a_bUseReplayAge);
+        // Create the active-tracks view.
     bool updateAutoDjPlaylistReferences();
         // Update the number of auto-DJ-playlist references to each track in the
         // auto-DJ-crates database.  Returns true if successful.

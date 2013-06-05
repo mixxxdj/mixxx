@@ -220,13 +220,31 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     connect(autoDjActivePercentageSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetAutoDjActivePercentage(int)));
 
+    // The auto-DJ replay-age for randomly-selected tracks
+    autoDjReplayAgeCheckBox->setChecked ((bool) m_pConfig->getValueString
+        (ConfigKey("[Auto DJ]", "UseReplayAge"), "0").toInt());
+    connect(autoDjReplayAgeCheckBox, SIGNAL(stateChanged(int)),
+            this, SLOT(slotSetAutoDjUseReplayAge(int)));
+    autoDjReplayAgeTimeEdit->setTime (QTime::fromString
+        (m_pConfig->getValueString
+            (ConfigKey("[Auto DJ]", "ReplayAge"), "23:59"),
+            autoDjReplayAgeTimeEdit->displayFormat()));
+    autoDjReplayAgeTimeEdit->setEnabled(autoDjReplayAgeCheckBox->checkState()
+        == Qt::Checked);
+    connect(autoDjReplayAgeTimeEdit, SIGNAL(timeChanged(const QTime &)),
+            this, SLOT(slotSetAutoDjReplayAge(const QTime &)));
+
 #else // __AUTODJCRATES__
 
-    // Remove the preference.
+    // Remove the preferences.
     autoDjActivePercentageLabel->setVisible(false);
     GridLayout1->removeWidget(autoDjActivePercentageLabel);
     autoDjActivePercentageSpinBox->setVisible(false);
     GridLayout1->removeWidget(autoDjActivePercentageSpinBox);
+    autoDjReplayAgeCheckBox->setVisible(false);
+    GridLayout1->removeWidget(autoDjReplayAgeCheckBox);
+    autoDjReplayAgeTimeEdit->setVisible(false);
+    GridLayout1->removeWidget(autoDjReplayAgeTimeEdit);
 
 #endif // __AUTODJCRATES__
 
@@ -453,6 +471,24 @@ void DlgPrefControls::slotSetAutoDjActivePercentage(int a_iValue)
     QString str;
     str.setNum (a_iValue);
     m_pConfig->set(ConfigKey("[Auto DJ]","ActivePercentage"),str);
+#endif // __AUTODJCRATES__
+}
+
+void DlgPrefControls::slotSetAutoDjUseReplayAge(int a_iState)
+{
+#ifdef __AUTODJCRATES__
+    bool bChecked = (a_iState == Qt::Checked);
+    QString strChecked = (bChecked) ? "1" : "0";
+    m_pConfig->set (ConfigKey("[Auto DJ]", "UseReplayAge"), strChecked);
+    autoDjReplayAgeTimeEdit->setEnabled(bChecked);
+#endif // __AUTODJCRATES__
+}
+
+void DlgPrefControls::slotSetAutoDjReplayAge(const QTime &a_rTime)
+{
+#ifdef __AUTODJCRATES__
+    QString str = a_rTime.toString (autoDjReplayAgeTimeEdit->displayFormat());
+    m_pConfig->set(ConfigKey("[Auto DJ]","ReplayAge"),str);
 #endif // __AUTODJCRATES__
 }
 
