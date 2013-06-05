@@ -593,7 +593,7 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
 
 void CachingReader::run() {
     // Notify the EngineWorkerScheduler that the work we scheduled is starting.
-    emit(workStarting(this));
+    setActive(true);
 
     TrackPointer pLoadTrack;
 
@@ -617,12 +617,12 @@ void CachingReader::run() {
     }
 
     // Notify the EngineWorkerScheduler that the work we did is done.
-    emit(workDone(this));
+    setActive(false);
 }
 
 void CachingReader::wake() {
     //qDebug() << m_pGroup << "CachingReader::wake()";
-    emit(workReady(this));
+    workReady();
 }
 
 void CachingReader::loadTrack(TrackPointer pTrack) {

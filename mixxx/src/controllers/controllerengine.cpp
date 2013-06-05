@@ -640,11 +640,11 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
-    if (cot != NULL && !m_st.ignore(cot->getControlObject(), newValue)) {
-        cot->slotSet(newValue);
-        // We call emitValueChanged so that script functions connected to this
-        // control will get updates.
-        cot->emitValueChanged();
+    if (cot != NULL) {
+        ControlObject* pControl = ControlObject::getControl(cot->getKey());
+        if (pControl && !m_st.ignore(pControl, newValue)) {
+            cot->slotSet(newValue);
+        }
     }
 }
 
@@ -815,12 +815,7 @@ void ControllerEngine::slotValueChanged(double value) {
         return;
     }
 
-    ControlObject* pSenderCO = senderCOT->getControlObject();
-    if (pSenderCO == NULL) {
-        qWarning() << "ControllerEngine::slotValueChanged() The sender's CO is NULL.";
-        return;
-    }
-    ConfigKey key = pSenderCO->getKey();
+    ConfigKey key = senderCOT->getKey();
 
     //qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
 
