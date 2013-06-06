@@ -107,7 +107,7 @@ int PlaylistDAO::getPlaylistIdFromName(QString name) {
     //qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
     // since now showing the number of the tracks in every playlist is through change the "name" column
     // in "playlists" table, so here we need a regular expression to match.
-    QString pattern("(.*)(\\(([1-9]\\d*|0)\\))");
+    QString pattern("(.*)\x20(\\(([1-9]\\d*|0)\\))");
     QRegExp rxnum(pattern);
 
     QSqlQuery query(m_database);
@@ -713,7 +713,7 @@ int PlaylistDAO::tracksInPlaylist(int playlistId) {
 }
 
 void PlaylistDAO::updatePlaylistsTitleNum() {
-    QString pattern(".*(\\(([1-9]\\d*|0)\\))");
+    QString pattern(".*\x20(\\(([1-9]\\d*|0)\\))");
     QRegExp rxnum(pattern);
 
     m_database.transaction();
@@ -735,7 +735,7 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
 
             if (!rxnum.exactMatch(oldName)) {
                 //qDebug() << "no:"<<oldName;
-                newNameWithNum = oldName+"(" + tracksNum + ")";
+                newNameWithNum = oldName+" (" + tracksNum + ")";
             } else {
                 //qDebug() << "yes:"<<oldName;
                 if (rxnum.cap(2) == tracksNum){

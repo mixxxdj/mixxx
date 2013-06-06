@@ -135,7 +135,7 @@ bool CrateDAO::deleteCrate(int crateId) {
 //}
 
 int CrateDAO::getCrateIdByName(const QString& name) {
-    QString pattern("(.*)(\\(([1-9]\\d*|0)\\))");
+    QString pattern("(.*)\x20(\\(([1-9]\\d*|0)\\))");
     QRegExp rxnum(pattern);
 
     QSqlQuery query(m_database);
@@ -332,7 +332,7 @@ void CrateDAO::removeTracksFromCrates(QList<int> ids) {
     // emit(changed(crateId));
 }
 void CrateDAO::updateCratesTitleNum() {
-    QString pattern(".*(\\(([1-9]\\d*|0)\\))");
+    QString pattern(".*\x20(\\(([1-9]\\d*|0)\\))");
     QRegExp rxnum(pattern);
 
     m_database.transaction();
@@ -355,7 +355,7 @@ void CrateDAO::updateCratesTitleNum() {
 
             if (!rxnum.exactMatch(oldName)) {
                 //qDebug() << "no:"<<oldName;
-                newNameWithNum = oldName+"(" + tracksNum + ")";
+                newNameWithNum = oldName+" (" + tracksNum + ")";
             } else {
                 //qDebug() << "yes:"<<oldName;
                 if (rxnum.cap(2) == tracksNum){
