@@ -474,7 +474,7 @@ int AutoDJCratesDAO::getRandomTrackId (void) {
             + timReplayAge.minute() * 60));
 
         // Convert the time to sqlite's format, which is similar to ISO date,
-		// but not quite.
+        // but not quite.
         QString strDateTime = timCurrent.toString("yyyy-MM-dd hh:mm:ss");
 
         // Count the number of tracks that haven't been played since this time.
@@ -495,6 +495,10 @@ int AutoDJCratesDAO::getRandomTrackId (void) {
         // Allow that to be a new maximum.
         iActiveTracks = qMax(iActiveTracks, iReplayAgeTracks);
     }
+
+    // If there are still no tracks to choose from, use all of them.
+    if (iActiveTracks == 0)
+        iActiveTracks = iTotalTracks;
 
     // If there are no tracks, let our caller know.
     if (iActiveTracks == 0)
