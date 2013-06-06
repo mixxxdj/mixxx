@@ -29,7 +29,10 @@ AutoDJFeature::~AutoDJFeature() {
 }
 
 QVariant AutoDJFeature::title() {
-    return tr("Auto DJ");
+	int autoDJId = m_playlistDao.getPlaylistIdFromName("Auto DJ");
+	QString title = m_playlistDao.getPlaylistName(autoDJId);
+	return title;
+    //return tr("Auto DJ");
 }
 
 QIcon AutoDJFeature::getIcon() {
