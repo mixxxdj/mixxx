@@ -70,6 +70,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
     m_bScalerChanged(false),
+    m_bSeekQueued(false),
+    m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
     m_iTrackLoading(0),
     m_bPlayAfterLoading(false),
@@ -327,6 +329,13 @@ void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
     m_pBpmControl->setEngineMaster(pEngineMaster);
 }
 
+void EngineBuffer::queueNewPlaypos(double newpos)
+{
+    // Temp Workaround: All seeks need to be done in the Engine thread so queue it up.
+    m_bSeekQueued = true;
+    m_dQueuedPosition = newpos;
+}
+
 void EngineBuffer::setNewPlaypos(double newpos)
 {
     //qDebug() << "engine new pos " << newpos;
@@ -458,7 +467,7 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    setNewPlaypos(new_playpos);
+    queueNewPlaypos(new_playpos);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
@@ -590,6 +599,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
                 setPitchIndpTimeStretch(false);
             }
+        }
+
+        if (m_bSeekQueued) {
+            m_bSeekQueued = false;
+            setNewPlaypos(m_dQueuedPosition);
         }
 
         // If the rate has changed, set it in the scale object
