@@ -35,8 +35,12 @@ class AutoDJFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
+  signals:
+    void nameUpdated(LibraryFeature*);
+
   public slots:
     void activate();
+    void slotUpdateTitle(int);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

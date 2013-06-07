@@ -23,13 +23,15 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_pAutoDJView(NULL) {
+
+    connect(&m_playlistDao,SIGNAL(playlistsTitleUpdate(int)),this,SLOT(slotUpdateTitle(int)));
 }
 
 AutoDJFeature::~AutoDJFeature() {
 }
 
 QVariant AutoDJFeature::title() {
-	int autoDJId = m_playlistDao.getPlaylistIdFromName("Auto DJ");
+	int autoDJId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
 	QString title = m_playlistDao.getPlaylistName(autoDJId);
 	return title;
     //return tr("Auto DJ");
@@ -99,4 +101,9 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
     QFileInfo file(url.toLocalFile());
     return SoundSourceProxy::isFilenameSupported(file.fileName());
+}
+
+void AutoDJFeature::slotUpdateTitle(int autoDJId) {
+    Q_UNUSED(autoDJId);
+    emit(nameUpdated(this));
 }
