@@ -361,7 +361,7 @@ void CrateDAO::updateCratesTitleNum() {
                 if (rxnum.cap(2) == tracksNum){
                     continue;
                 } else {
-                    newNameWithNum = oldName.replace(rxnum.cap(2), tracksNum);
+                    newNameWithNum = oldName.replace(rxnum.cap(1), "(" + tracksNum + ")");
                 }
             }
 

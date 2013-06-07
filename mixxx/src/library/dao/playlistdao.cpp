@@ -720,7 +720,7 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
     QSqlQuery selectQuery(m_database);
 
     selectQuery.prepare(" SELECT Playlists.name,count(*),Playlists.id FROM PlaylistTracks, Playlists "
-                        " WHERE PlaylistTracks.playlist_id = Playlists.id "
+                        " WHERE PlaylistTracks.playlist_id = Playlists.id AND Playlists.hidden <> 2"
                         " GROUP BY playlist_id ");
 
     if (!selectQuery.exec()) {
@@ -741,7 +741,7 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
                 if (rxnum.cap(2) == tracksNum){
                     continue;
                 } else {
-                    newNameWithNum = oldName.replace(rxnum.cap(2), tracksNum);
+                    newNameWithNum = oldName.replace(rxnum.cap(1), "(" + tracksNum + ")");
                 }
             }
 
