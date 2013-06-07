@@ -496,9 +496,9 @@ int AutoDJCratesDAO::getRandomTrackId (void) {
         iActiveTracks = qMax(iActiveTracks, iReplayAgeTracks);
     }
 
-    // If there are still no tracks to choose from, use all of them.
+    // If there are still no tracks to choose from, use one.
     if (iActiveTracks == 0)
-        iActiveTracks = iTotalTracks;
+        iActiveTracks = qMin(iTotalTracks, 1);
 
     // If there are no tracks, let our caller know.
     if (iActiveTracks == 0)
