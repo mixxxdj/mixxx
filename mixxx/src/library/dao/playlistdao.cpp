@@ -713,7 +713,7 @@ int PlaylistDAO::tracksInPlaylist(int playlistId) {
 }
 
 void PlaylistDAO::updatePlaylistsTitleNum() {
-    QString pattern(".*\x20(\\(([1-9]\\d*|0)\\))");
+    QString pattern("(.*)\x20(\\(([1-9]\\d*|0)\\))");
     QRegExp rxnum(pattern);
 
     m_database.transaction();
@@ -725,7 +725,6 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
 
     if (!selectQuery.exec()) {
         LOG_FAILED_QUERY(selectQuery);
-        m_database.rollback();
     } else {
         while (selectQuery.next()) {
             QString newNameWithNum;
@@ -741,7 +740,7 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
                 if (rxnum.cap(2) == tracksNum){
                     continue;
                 } else {
-                    newNameWithNum = oldName.replace(rxnum.cap(1), "(" + tracksNum + ")");
+                    newNameWithNum = oldName.replace(rxnum.cap(2), "(" + tracksNum + ")");
                 }
             }
 
@@ -757,6 +756,32 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
             emit(playlistsTitleUpdate(playlistsID));
             //qDebug() << "PlaylistName:" <<selectQuery.value(0).toString()
             //		 << "Number of tracks:" << selectQuery.value(1).toInt();
+        }
+    }
+
+    selectQuery.prepare(" SELECT name,id FROM Playlists "
+                        " WHERE id NOT IN "
+    		            " (SELECT DISTINCT playlist_id from PlaylistTracks) AND "
+    		            " hidden <> 2 ");
+    if (!selectQuery.exec()) {
+            LOG_FAILED_QUERY(selectQuery);
+    } else {
+        while (selectQuery.next()) {
+            QString oldName = selectQuery.value(0).toString();
+            int playlistsID = selectQuery.value(1).toInt();
+            if (rxnum.exactMatch(oldName)) {
+                QString newNameWithNum = rxnum.cap(1);
+                QSqlQuery updateQuery(m_database);
+                updateQuery.prepare("UPDATE Playlists SET name = :name WHERE id = :id");
+                updateQuery.bindValue(":name", newNameWithNum);
+                updateQuery.bindValue(":id", playlistsID);
+
+                if (!updateQuery.exec()) {
+                    LOG_FAILED_QUERY(updateQuery);
+                    m_database.rollback();
+                }
+                emit(playlistsTitleUpdate(playlistsID));
+            }
         }
     }
     m_database.commit();
