@@ -17,24 +17,60 @@
 
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
+#include "controlobjectthread.h"
 
-/* -------- ------------------------------------------------------
-   Purpose: Creates a new potmeter
-   Input:   n - name
-            midino - number of the midi controller.
-            master - pointer to the control to which the potmeter is
-                     attached. This control is acknowledged when the
-                     potmeter is changed.
-            midicontroller - pointer to the midi controller.
-   -------- ------------------------------------------------------ */
 ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxValue)
-    : ControlObject(key) {
+        : ControlObject(key),
+          m_controls(key) {
     setRange(dMinValue, dMaxValue);
     setStep(m_dValueRange / 10.f);
     setSmallStep(m_dValueRange / 100.f);
+}
 
-    // These controls are deleted when this ControlPotmeter is since we set
-    // their parent as this.
+ControlPotmeter::~ControlPotmeter() {
+}
+
+double ControlPotmeter::getMin() const {
+    return m_dMinValue;
+}
+
+double ControlPotmeter::getMax() const {
+    return m_dMaxValue;
+}
+
+void ControlPotmeter::setStep(double dValue) {
+    m_controls.setStep(dValue);
+}
+
+void ControlPotmeter::setSmallStep(double dValue) {
+    m_controls.setSmallStep(dValue);
+}
+
+void ControlPotmeter::setRange(double dMinValue, double dMaxValue) {
+    m_dMinValue = dMinValue;
+    m_dMaxValue = dMaxValue;
+    m_dValueRange = m_dMaxValue - m_dMinValue;
+    double default_value = m_dMinValue + 0.5 * m_dValueRange;
+
+    if (m_pControl) {
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlPotmeterBehavior(dMinValue, dMaxValue));
+        delete pOldBehavior;
+    }
+
+    setDefaultValue(default_value);
+    set(default_value);
+    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
+}
+
+PotmeterControls::PotmeterControls(ConfigKey key)
+        : m_pControl(new ControlObjectThread(key)),
+          m_dStep(0),
+          m_dSmallStep(0) {
+    // These controls are deleted when the ControlPotmeter is since
+    // PotmeterControls is a member variable of the associated ControlPotmeter
+    // and the push-button controls are parented to the PotmeterControls.
+
     ControlPushButton* controlUp = new ControlPushButton(
         ConfigKey(key.group, QString(key.item) + "_up"));
     controlUp->setParent(this);
@@ -96,148 +132,77 @@ ControlPotmeter::ControlPotmeter(ConfigKey key, double dMinValue, double dMaxVal
             this, SLOT(toggleMinusValue(double)));
 }
 
-ControlPotmeter::~ControlPotmeter()
-{
+PotmeterControls::~PotmeterControls() {
+    delete m_pControl;
 }
 
-double ControlPotmeter::getMin() const {
-    return m_dMinValue;
-}
-
-double ControlPotmeter::getMax() const {
-    return m_dMaxValue;
-}
-
-void ControlPotmeter::setStep(double dValue)
-{
-    m_dStep = dValue;
-}
-
-void ControlPotmeter::setSmallStep(double dValue)
-{
-    m_dSmallStep = dValue;
-}
-
-void ControlPotmeter::setRange(double dMinValue, double dMaxValue)
-{
-    m_dMinValue = dMinValue;
-    m_dMaxValue = dMaxValue;
-    m_dValueRange = m_dMaxValue - m_dMinValue;
-    double default_value = m_dMinValue + 0.5 * m_dValueRange;
-
-    if (m_pControl) {
-        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
-            new ControlPotmeterBehavior(dMinValue, dMaxValue));
-        delete pOldBehavior;
-    }
-
-    setDefaultValue(default_value);
-    set(default_value);
-    //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
-}
-
-void ControlPotmeter::incValue(double keypos)
-{
-    if (keypos>0)
-    {
-        double value = get();
-        value += m_dStep;
-        if (value > m_dMaxValue) {
-            value = m_dMaxValue;
-        }
-        set(value);
-    }
-}
-
-void ControlPotmeter::decValue(double keypos)
-{
-    if (keypos>0)
-    {
-        double value = get();
-
-        value -= m_dStep;
-        if (value < m_dMinValue) {
-            value = m_dMinValue;
-        }
-        set(value);
-    }
-}
-
-void ControlPotmeter::incSmallValue(double keypos)
-{
-    if (keypos>0)
-    {
-        double value = get();
-        value += m_dSmallStep;
-        if (value > m_dMaxValue) {
-            value = m_dMaxValue;
-        }
-        set(value);
-    }
-}
-
-void ControlPotmeter::decSmallValue(double keypos)
-{
-    if (keypos>0)
-    {
-        double value = get();
-        value -= m_dSmallStep;
-        if (value < m_dMinValue) {
-            value = m_dMinValue;
-        }
-        set(value);
-    }
-}
-
-void ControlPotmeter::setToZero(double keypos)
-{
-    if (keypos>0)
-    {
-        set(0.0);
-    }
-}
-
-void ControlPotmeter::setToOne(double keypos)
-{
-    if (keypos>0)
-    {
-        set(1.0);
-    }
-}
-
-void ControlPotmeter::setToMinusOne(double keypos)
-{
-    if (keypos>0)
-    {
-        set(-1.0);
-    }
-}
-
-void ControlPotmeter::setToDefault(double v) {
+void PotmeterControls::incValue(double v) {
     if (v > 0) {
-        reset();
+        double value = m_pControl->get();
+        value += m_dStep;
+        m_pControl->set(value);
     }
 }
 
-void ControlPotmeter::toggleValue(double keypos) {
-    if (keypos>0) {
-        double value = get();
-        if (value > 0.0) {
-            set(0.0);
-        } else {
-            set(1.0);
-        }
+void PotmeterControls::decValue(double v) {
+    if (v > 0) {
+        double value = m_pControl->get();
+        value -= m_dStep;
+        m_pControl->set(value);
     }
 }
 
-void ControlPotmeter::toggleMinusValue(double keypos) {
-    if (keypos>0) {
-        double value = get();
-        if (value > 0.0) {
-            set(-1.0);
-        } else {
-            set(1.0);
-        }
+void PotmeterControls::incSmallValue(double v) {
+    if (v > 0) {
+        double value = m_pControl->get();
+        value += m_dSmallStep;
+        m_pControl->set(value);
+    }
+}
+
+void PotmeterControls::decSmallValue(double v) {
+    if (v > 0) {
+        double value = m_pControl->get();
+        value -= m_dSmallStep;
+        m_pControl->set(value);
+    }
+}
+
+void PotmeterControls::setToZero(double v) {
+    if (v > 0) {
+        m_pControl->set(0.0);
+    }
+}
+
+void PotmeterControls::setToOne(double v) {
+    if (v > 0) {
+        m_pControl->set(1.0);
+    }
+}
+
+void PotmeterControls::setToMinusOne(double v) {
+    if (v > 0) {
+        m_pControl->set(-1.0);
+    }
+}
+
+void PotmeterControls::setToDefault(double v) {
+    if (v > 0) {
+        m_pControl->reset();
+    }
+}
+
+void PotmeterControls::toggleValue(double v) {
+    if (v > 0) {
+        double value = m_pControl->get();
+        m_pControl->set(value > 0.0 ? 0.0 : 1.0);
+    }
+}
+
+void PotmeterControls::toggleMinusValue(double v) {
+    if (v > 0) {
+        double value = m_pControl->get();
+        m_pControl->set(value > 0.0 ? -1.0 : 1.0);
     }
 }
 

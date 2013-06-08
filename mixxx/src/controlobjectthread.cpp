@@ -23,12 +23,18 @@
 #include "control/control.h"
 
 ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
-        : QObject(pParent),
-          m_key(pControlObject ? pControlObject->getKey() : ConfigKey()),
-          m_pControl(NULL) {
-    if (pControlObject) {
-        m_pControl = ControlDoublePrivate::getControl(pControlObject->getKey(), false);
-    }
+        : QObject(pParent) {
+    initialize(pControlObject ? pControlObject->getKey() : ConfigKey());
+}
+
+ControlObjectThread::ControlObjectThread(ConfigKey key, QObject* pParent)
+        : QObject(pParent) {
+    initialize(key);
+}
+
+void ControlObjectThread::initialize(ConfigKey key) {
+    m_key = key;
+    m_pControl = ControlDoublePrivate::getControl(m_key, false);
     if (m_pControl) {
         connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
                 this, SLOT(slotValueChanged(double, QObject*)),
