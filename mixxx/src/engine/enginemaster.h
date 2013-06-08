@@ -40,6 +40,7 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class SyncWorker;
+class EngineSync;
 
 class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
@@ -54,6 +55,9 @@ class EngineMaster : public EngineObject, public AudioSource {
     const CSAMPLE* buffer(AudioOutput output) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
+    
+    EngineSync* getMasterSync(void);
+    void setMasterSync(QString deck);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
@@ -135,6 +139,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     CSAMPLE *m_pMaster, *m_pHead;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
+    EngineSync* m_pMasterSync;
 
     ControlObject* m_pMasterVolume;
     ControlObject* m_pHeadVolume;
