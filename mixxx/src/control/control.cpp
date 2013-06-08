@@ -2,6 +2,7 @@
 #include <QMutexLocker>
 
 #include "control/control.h"
+#include "controlobject.h"
 
 #include "util/stat.h"
 #include "util/timer.h"
@@ -11,7 +12,8 @@ QHash<ConfigKey, ControlDoublePrivate*> ControlDoublePrivate::m_sqCOHash;
 QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
 ControlDoublePrivate::ControlDoublePrivate()
-        : m_bIgnoreNops(true),
+        : m_pValidator(NULL),
+          m_bIgnoreNops(true),
           m_bTrack(false) {
     m_defaultValue.setValue(0);
     m_value.setValue(0);
@@ -20,6 +22,7 @@ ControlDoublePrivate::ControlDoublePrivate()
 ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
                                            bool bIgnoreNops, bool bTrack)
         : m_key(key),
+          m_pValidator(NULL),
           m_bIgnoreNops(bIgnoreNops),
           m_bTrack(bTrack),
           m_trackKey("control " + m_key.group + "," + m_key.item),
@@ -93,6 +96,7 @@ void ControlDoublePrivate::set(const double& value, QObject* pSender) {
     if (pBehavior && !pBehavior->setFilter(&dValue)) {
         return;
     }
+    if (m_pValidator && !m_pValidator->validateChange(dValue)) return;
     m_value.setValue(dValue);
     emit(valueChanged(dValue, pSender));
 

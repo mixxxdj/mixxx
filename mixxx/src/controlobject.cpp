@@ -32,17 +32,20 @@ QMutex ControlObject::m_sqCOHashMutex;
 
 
 ControlObject::ControlObject()
-        : m_pControl(NULL) {
+        : m_pControl(NULL),
+          m_pValidator(NULL) {
 }
 
 ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
-        : m_pControl(NULL) {
+        : m_pControl(NULL),
+          m_pValidator(NULL) {
     initialize(key, bIgnoreNops, bTrack);
 }
 
 ControlObject::ControlObject(const QString& group, const QString& item,
                              bool bIgnoreNops, bool bTrack)
-        : m_pControl(NULL) {
+        : m_pControl(NULL),
+          m_pValidator(NULL) {
     initialize(ConfigKey(group, item), bIgnoreNops, bTrack);
 }
 
@@ -55,6 +58,7 @@ ControlObject::~ControlObject() {
 void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
     m_key = key;
     m_pControl = ControlDoublePrivate::getControl(m_key, true, bIgnoreNops, bTrack);
+    m_pControl->setValidator(m_pValidator);
     connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);
@@ -66,7 +70,7 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
 
 void ControlObject::privateValueChanged(double dValue, QObject* pSetter) {
     // Only emit valueChanged() if we did not originate this change.
-    if (!validateChange(dValue)) return;
+    if (m_pValidator && !m_pValidator->validateChange(dValue)) return;
     if (pSetter != this) {
         emit(valueChanged(dValue));
     } else {
@@ -129,7 +133,6 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     if (m_pControl) {
-        if (!validateChange(v)) return;
         m_pControl->setMidiParameter(o, v);
     }
 }
@@ -140,7 +143,6 @@ double ControlObject::getValueToMidi() const {
 
 void ControlObject::setValueFromThread(double dValue, QObject* pSender) {
     if (m_pControl) {
-        if (!validateChange(dValue)) return;
         m_pControl->set(dValue, pSender);
     }
 }
@@ -157,7 +159,6 @@ void ControlObject::reset() {
 
 void ControlObject::set(const double& value) {
     if (m_pControl) {
-        if (!validateChange(value)) return;
         m_pControl->set(value, this);
     }
 }

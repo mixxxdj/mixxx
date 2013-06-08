@@ -26,6 +26,13 @@
 #include "controllers/midi/midimessage.h"
 #include "control/control.h"
 
+class ControlObjectValidator {
+  public:
+    // Subclasses can choose to override this function to provide a way to reject invalid
+    // settings.  Returns true if the change is valid.
+    virtual bool validateChange(double value) const { Q_UNUSED(value); return true; }
+};
+
 class ControlObject : public QObject {
     Q_OBJECT
   public:
@@ -35,6 +42,8 @@ class ControlObject : public QObject {
     ControlObject(const QString& group, const QString& item,
                   bool bIgnoreNops=true, bool bTrack=false);
     virtual ~ControlObject();
+
+    void setValidator(ControlObjectValidator* validator) { m_pValidator = validator; }
 
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject* getControl(const ConfigKey& key);
@@ -80,10 +89,7 @@ class ControlObject : public QObject {
     // Key of the object
     ConfigKey m_key;
     ControlDoublePrivate* m_pControl;
-
-    // Subclasses can choose to override this function to provide a way to reject invalid
-    // settings.  Returns true if the change is valid.
-    virtual bool validateChange(double value) const { Q_UNUSED(value); return true; }
+    ControlObjectValidator* m_pValidator;
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);

@@ -11,6 +11,8 @@
 #include "control/controlvalue.h"
 #include "configobject.h"
 
+class ControlObjectValidator;
+
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
@@ -30,6 +32,8 @@ class ControlDoublePrivate : public QObject {
         ConfigKey key(group, item);
         return getControl(key, bCreate, bIgnoreNops, bTrack);
     }
+
+    void setValidator(ControlObjectValidator* validator) { m_pValidator = validator; }
 
     // Sets the control value.
     void set(const double& value, QObject* pSetter);
@@ -69,6 +73,7 @@ class ControlDoublePrivate : public QObject {
 
   private:
     ConfigKey m_key;
+    ControlObjectValidator* m_pValidator;
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
 

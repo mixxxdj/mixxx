@@ -23,7 +23,7 @@
 #include <QAtomicInt>
 
 #include "defs.h"
-#include "controlpushbutton.h"
+#include "controlobject.h"
 #include "engine/engineobject.h"
 #include "trackinfoobject.h"
 #include "configobject.h"
@@ -44,6 +44,7 @@ class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
+class ControlPushButton;
 class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleDummy;
@@ -83,11 +84,11 @@ const int ENGINE_RAMP_UP = 1;
 
 class EngineBuffer;
 
-class ControlPushButtonValidatePlay : public ControlPushButton
+class ValidatePlay : public ControlObjectValidator
 {
   public:
-    ControlPushButtonValidatePlay(ConfigKey key, EngineBuffer* engine)
-      : ControlPushButton(key),
+    ValidatePlay(EngineBuffer* engine)
+      : ControlObjectValidator(),
         m_pEngineBuffer(engine) { }
 
   protected:
@@ -128,16 +129,13 @@ public:
 
     const char* getGroup();
     bool isTrackLoaded() const { return m_pCurrentTrack != NULL; }
-    bool validatePlayAndRecover() const {
-        if (isTrackLoaded() || m_iTrackLoading != 0) return true;
-        m_playButton->set(0.0f);
-        return false;
-    }
 
     TrackPointer getLoadedTrack() const;
 
     // For dependency injection of readers.
     void setReader(CachingReader* pReader);
+
+    bool validatePlayAndRecover() const;
 
   public slots:
     void slotControlPlayFromStart(double);
@@ -233,7 +231,7 @@ private:
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
-    ControlPushButtonValidatePlay* m_playButton;
+    ControlPushButton* m_playButton;
     ControlPushButton* m_playStartButton;
     ControlPushButton* m_stopStartButton;
     ControlPushButton* m_stopButton;
@@ -295,6 +293,10 @@ private:
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
+
+    // Validators for control objects;
+    ValidatePlay* m_pValidatePlay;
+
 #ifdef __SCALER_DEBUG__
     QFile df;
     QTextStream writer;
