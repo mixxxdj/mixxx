@@ -149,7 +149,9 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
-    m_pSyncMasterEnabled = new ControlPushButton(ConfigKey(_group, "sync_master"));
+    m_pSyncMasterEnabled = new ControlPushButtonMasterStateValidate(ConfigKey(_group,
+                                                                              "sync_master"),
+                                                                    this);
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncMasterChanged(double)),
@@ -434,30 +436,47 @@ void RateControl::slotMasterBpmChanged(double syncbpm) {
     }
 }
 
-void RateControl::slotSyncMasterChanged(double state) {
+bool RateControl::validateMasterStateAndRecover(double state) const {
     qDebug() << m_sGroup << "slot master changed";
 
     if (state) {
         if (m_iSyncState == SYNC_MASTER){
             qDebug() << "already master";
-            return;
+            return true;
         }
 
         if (m_pTrack.isNull()) {
             qDebug() << m_sGroup << " no track loaded, can't be master";
-            m_pSyncMasterEnabled->set(false);
-            return;
+            return false;
         }
+    }
+    return true;
+}
 
-        qDebug() << m_sGroup << " setting ourselves as master";
+void RateControl::slotSyncMasterChanged(double state) {
+    qDebug() << m_sGroup << "slot master changed";
+
+    if (state) {
+//        if (m_iSyncState == SYNC_MASTER){
+//            qDebug() << "already master";
+//            return;
+//        }
+//
+//        if (m_pTrack.isNull()) {
+//            qDebug() << m_sGroup << " no track loaded, can't be master";
+//            m_pSyncMasterEnabled->set(false);
+//            return;
+//        }
+//
+//        qDebug() << m_sGroup << " setting ourselves as master";
         m_pSyncState->set(SYNC_MASTER);
     } else {
-        // now, turning off master turns off sync mode
-        if (m_iSyncState != SYNC_MASTER) {
-            return;
-        }
-        //unset ourselves
-        qDebug() << m_sGroup << "unsetting ourselves as master (now off)";
+        //// now, turning off master turns off sync mode
+        //if (m_iSyncState != SYNC_MASTER) {
+        //    return;
+        //}
+        ////unset ourselves
+        //qDebug() << m_sGroup << "unsetting ourselves as master (now off)";
         m_pSyncState->set(SYNC_NONE);
     }
 }
@@ -830,4 +849,10 @@ void RateControl::slotControlVinylScratching(double toggle) {
 
 void RateControl::notifySeek(double playPos) {
     m_pScratchController->notifySeek(playPos);
+}
+
+inline bool ControlPushButtonMasterStateValidate::validateChange(double value) const {
+    qDebug() << "validating!";
+    if (value == 0.0) return true;
+    return m_pRateControl->validateMasterStateAndRecover(value);
 }

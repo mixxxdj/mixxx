@@ -75,10 +75,12 @@ void ControlObjectThread::reset() {
 }
 
 void ControlObjectThread::emitValueChanged() {
+    qDebug() << "CO THread emit";
     emit(valueChanged(get()));
 }
 
 void ControlObjectThread::slotValueChanged(double v, QObject* pSetter) {
+    qDebug() << "CO THread emit2";
     if (pSetter != this) {
         // This is base implementation of this function without scaling
         emit(valueChanged(v));

@@ -21,6 +21,7 @@ bool ControlObjectThreadMain::eventFilter(QObject* o, QEvent* e) {
     if (e && e->type() == MIXXXEVENT_CONTROL) {
         ControlEvent * ce = (ControlEvent *)e;
         QObject* pSender = ce->sender();
+        qDebug() << "CO THreadmain emit";
         if (pSender != this) {
             emit(valueChanged(ce->value()));
         } else {
@@ -40,6 +41,7 @@ void ControlObjectThreadMain::slotValueChanged(double, QObject* pSetter) {
 
     // If we are already running in the main thread, then go ahead and update.
     if (QThread::currentThread() == QApplication::instance()->thread()) {
+        qDebug() << "CO THreadmain emit2";
         if (pSetter != this) {
             emit(valueChanged(get()));
         } else {

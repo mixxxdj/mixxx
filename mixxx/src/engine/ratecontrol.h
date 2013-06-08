@@ -7,6 +7,7 @@
 #include <QObject>
 
 #include "configobject.h"
+#include "controlpushbutton.h"
 #include "engine/enginecontrol.h"
 #include "engine/enginesync.h"
 
@@ -19,8 +20,20 @@ class Rotary;
 class ControlTTRotary;
 class ControlObject;
 class ControlPotmeter;
-class ControlPushButton;
 class PositionScratchController;
+class RateControl;
+
+class ControlPushButtonMasterStateValidate : public ControlPushButton {
+  public:
+    ControlPushButtonMasterStateValidate(ConfigKey key, RateControl* rc)
+      : ControlPushButton(key),
+        m_pRateControl(rc) { }
+
+  protected:
+    virtual bool validateChange(double value) const;
+
+    const RateControl* m_pRateControl;
+};
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from
@@ -56,6 +69,8 @@ public:
     /** Set Rate Ramp Sensitivity */
     static void setRateRampSensitivity(int);
     virtual void notifySeek(double dNewPlaypos);
+
+    bool validateMasterStateAndRecover(double state) const;
 
   public slots:
     void slotControlRatePermDown(double);
@@ -114,7 +129,7 @@ public:
     ControlObject* m_pBackButton;
     ControlObject* m_pForwardButton;
     ControlObject* m_pWheelSensitivity;
-    
+
     ControlTTRotary* m_pWheel;
     ControlTTRotary* m_pScratch;
     ControlTTRotary* m_pOldScratch;
@@ -132,7 +147,8 @@ public:
     //For Master Sync
     ControlObject *m_pMasterBpm;
     ControlObject *m_pSyncInternalEnabled;
-    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
+    ControlPushButton *m_pSyncSlaveEnabled;
+    ControlPushButtonMasterStateValidate *m_pSyncMasterEnabled;
     ControlObject *m_pSyncState;
     EngineMaster *m_pEngineMaster;
     double m_dSyncedRate;
