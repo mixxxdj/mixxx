@@ -17,6 +17,7 @@ PlaylistDAO::~PlaylistDAO()
 
 void PlaylistDAO::initialize()
 {
+	updatePlaylistsTitleNum();
 }
 
 int PlaylistDAO::createPlaylist(QString name, HiddenType hidden)
