@@ -58,7 +58,7 @@ XoneK2.clearlights = function () {
         print("Clear LED: #" + LED +" --> "+XoneK2.leds[LED]);
         midi.sendShortMsg(0x9F, XoneK2.leds[LED], 0x0);
     }
-}	
+}
 
 XoneK2.encoderJog1 = function (channel, control, value, status) {
     XoneK2.encoderJog(value,1);
@@ -81,13 +81,14 @@ XoneK2.encoderJog = function (value,deck) {
         jogValue = -1;
     else
         jogValue = 1;
-        
+
     //faster seek with shift held
     if (XoneK2.shift_status)
         jogValue *= 5;
-        
-    if (engine.getValue("[Channel"+deck+"]","play")==1 && engine.getValue("[Channel"+deck+"]","reverse")==1) jogValue= -(jogValue);
-    engine.setValue("[Channel"+deck+"]","jog",jogValue);
+
+    group = "[Channel"+deck+"]";
+    if (engine.getValue(group,"play")==1 && engine.getValue(group,"reverse")==1) jogValue= -(jogValue);
+    engine.setValue(group,"jog",jogValue);
 }
 
 XoneK2.shift_on = function (channel, control, value, status) {
@@ -95,7 +96,7 @@ XoneK2.shift_on = function (channel, control, value, status) {
         if (value == 127) {
             XoneK2.shift_status = !XoneK2.shift_status;
         }
-    } 
+    }
     else
     {
         if (value == 127) {
@@ -104,7 +105,7 @@ XoneK2.shift_on = function (channel, control, value, status) {
             XoneK2.shift_status = false;
         }
     }
-    
+
     if (XoneK2.shift_status) {
         midi.sendShortMsg(0x9F, 0xF, 0x7F);
     } else {
@@ -112,9 +113,68 @@ XoneK2.shift_on = function (channel, control, value, status) {
     }
 }
 
+XoneK2.Vinyl1 = function (channel, control, value, status) {
+    if (value == 0) return;
+    XoneK2.Vinyl(1);
+}
+
+XoneK2.Vinyl2 = function (channel, control, value, status) {
+    if (value == 0) return;
+    XoneK2.Vinyl(2);
+}
+
+XoneK2.Vinyl3 = function (channel, control, value, status) {
+    if (value == 0) return;
+    XoneK2.Vinyl(3);
+}
+
+XoneK2.Vinyl4 = function (channel, control, value, status) {
+    if (value == 0) return;
+    XoneK2.Vinyl(4);
+}
+
+XoneK2.Vinyl = function (deck) {
+    group = "[Channel"+deck+"]"
+    if (XoneK2.shift_status) {
+        val = engine.getValue(group, "vinylcontrol_mode");
+        val = (val + 1) % 3;
+        engine.setValue(group, "vinylcontrol_mode", val);
+    } else {
+        val = engine.getValue(group, "vinylcontrol_enabled");
+        engine.setValue(group, "vinylcontrol_enabled", 1 - val);
+    }
+}
+
+XoneK2.Playbutton1 = function (channel, control, value, status) {
+    XoneK2.Playbutton(1, value);
+}
+
+XoneK2.Playbutton2 = function (channel, control, value, status) {
+    XoneK2.Playbutton(2, value);
+}
+
+XoneK2.Playbutton3 = function (channel, control, value, status) {
+    XoneK2.Playbutton(3, value);
+}
+
+XoneK2.Playbutton4 = function (channel, control, value, status) {
+    XoneK2.Playbutton(4, value);
+}
+
+XoneK2.Playbutton = function (deck, value) {
+    group = "[Channel"+deck+"]"
+    if (XoneK2.shift_status) {
+        engine.setValue(group, "cue_default", value);
+    } else {
+        if (value == 0) return;
+        val = engine.getValue(group, "play");
+        engine.setValue(group, "play", 1 - val);
+    }
+}
+
 XoneK2.leftBottomKnob = function (channel, control, value, status) {
     if (XoneK2.shift_status)
-    {   
+    {
         cur_vol = engine.getValue("[Master]", "headVolume");
         if (value == 1)
             cur_vol += 0.02;
@@ -135,7 +195,7 @@ XoneK2.leftBottomKnob = function (channel, control, value, status) {
 
 XoneK2.rightBottomKnob = function (channel, control, value, status) {
     if (XoneK2.shift_status)
-    {   
+    {
         cur_vol = engine.getValue("[Master]", "volume");
         if (value == 1)
             cur_vol += 0.02;

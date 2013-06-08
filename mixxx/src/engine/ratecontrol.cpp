@@ -401,11 +401,6 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
-void RateControl::slotWheelSensitivity(double val)
-{
-	m_dWheelSensitivity = val;
-}
-
 void RateControl::slotFileBpmChanged(double bpm) {
     m_dFileBpm = bpm;
     slotMasterBpmChanged(m_pMasterBpm->get());
@@ -445,13 +440,13 @@ void RateControl::slotSyncMasterChanged(double state) {
     if (state) {
         if (m_iSyncState == SYNC_MASTER){
             qDebug() << "already master";
-            goto finally;
+            return;
         }
 
         if (m_pTrack.isNull()) {
             qDebug() << m_sGroup << " no track loaded, can't be master";
             m_pSyncMasterEnabled->set(false);
-            goto finally;
+            return;
         }
 
         qDebug() << m_sGroup << " setting ourselves as master";
@@ -459,14 +454,12 @@ void RateControl::slotSyncMasterChanged(double state) {
     } else {
         // now, turning off master turns off sync mode
         if (m_iSyncState != SYNC_MASTER) {
-            goto finally;
+            return;
         }
         //unset ourselves
         qDebug() << m_sGroup << "unsetting ourselves as master (now off)";
         m_pSyncState->set(SYNC_NONE);
     }
-finally:
-    QTimer::singleShot(0, this, SLOT(slotSetStatuses()));
 }
 
 void RateControl::slotSyncSlaveChanged(double state) {
@@ -474,20 +467,18 @@ void RateControl::slotSyncSlaveChanged(double state) {
     if (state) {
         if (m_iSyncState == SYNC_SLAVE) {
             //qDebug() << "already slave";
-            goto finally;
+            return;
         }
         if (m_pTrack.isNull()) {
             qDebug() << m_sGroup << " no track loaded, can't be slave";
             m_pSyncSlaveEnabled->set(false);
-            goto finally;
+            return;
         }
         m_pSyncState->set(SYNC_SLAVE);
     } else {
         // For now, turning off slave turns off syncing
         m_pSyncState->set(SYNC_NONE);
     }
-finally:
-    QTimer::singleShot(0, this, SLOT(slotSetStatuses()));
 }
 
 void RateControl::slotSyncInternalChanged(double state) {
@@ -496,7 +487,6 @@ void RateControl::slotSyncInternalChanged(double state) {
             m_pSyncState->set(SYNC_SLAVE);
         }
     }
-    QTimer::singleShot(0, this, SLOT(slotSetStatuses()));
 }
 
 void RateControl::slotSyncStateChanged(double state) {
@@ -571,7 +561,7 @@ double RateControl::getJogFactor() const {
         jogFactor = 0.0f;
     }
 
-    return jogFactor * m_dWheelSensitivity;
+    return jogFactor;
 }
 
 bool RateControl::getUserTweakingSync() const {
