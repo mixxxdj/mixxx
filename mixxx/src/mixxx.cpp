@@ -1330,7 +1330,7 @@ void MixxxApp::slotOptionsPreferences()
 void MixxxApp::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (m_pVCManager->vinylInputEnabled(0)) {
+    if (m_pPlayerManager->hasVinylInput(0)) {
         m_pOptionsVinylControl->setChecked((bool)toggle);
     } else {
         m_pOptionsVinylControl->setChecked(false);
@@ -1359,7 +1359,7 @@ void MixxxApp::slotCheckboxVinylControl(bool toggle)
 void MixxxApp::slotControlVinylControl2(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (m_pVCManager->vinylInputEnabled(1)) {
+    if (m_pPlayerManager->hasVinylInput(1)) {
         m_pOptionsVinylControl2->setChecked((bool)toggle);
     } else {
         m_pOptionsVinylControl2->setChecked(false);
@@ -1388,7 +1388,7 @@ void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 void MixxxApp::slotControlVinylControl3(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (m_pVCManager->vinylInputEnabled(2)) {
+    if (m_pPlayerManager->hasVinylInput(2)) {
         m_pOptionsVinylControl3->setChecked((bool)toggle);
     } else {
         m_pOptionsVinylControl3->setChecked(false);
@@ -1417,7 +1417,7 @@ void MixxxApp::slotCheckboxVinylControl3(bool toggle)
 void MixxxApp::slotControlVinylControl4(double toggle)
 {
 #ifdef __VINYLCONTROL__
-    if (m_pVCManager->vinylInputEnabled(3)) {
+    if (m_pPlayerManager->hasVinylInput(3)) {
         m_pOptionsVinylControl4->setChecked((bool)toggle);
     } else {
         m_pOptionsVinylControl4->setChecked(false);

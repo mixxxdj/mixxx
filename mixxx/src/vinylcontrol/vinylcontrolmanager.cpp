@@ -101,7 +101,7 @@ void VinylControlManager::requestReloadConfig() {
 bool VinylControlManager::vinylInputEnabled(int deck) {
     ControlObjectThread input_enabled(ControlObject::getControl(
         ConfigKey(kVCGroup.arg(deck+1), "vinylcontrol_enabled")));
-    return input_enabled.get() > 0;;
+    return input_enabled.get() > 0;
 }
 
 int VinylControlManager::vinylInputFromGroup(const QString& group) {
