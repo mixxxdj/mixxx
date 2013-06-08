@@ -18,6 +18,7 @@ CrateDAO::~CrateDAO() {
 
 void CrateDAO::initialize() {
     qDebug() << "CrateDAO::initialize()";
+    updateCratesTitleNum();
 }
 
 unsigned int CrateDAO::crateCount() {
