@@ -641,11 +641,6 @@ MixxxApp::~MixxxApp()
 
     if (leakedControls.size() > 0) {
         qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
-        foreach (ControlObject* pControl, leakedControls) {
-            ConfigKey key = pControl->getKey();
-            qDebug() << key.group << key.item;
-            leakedConfigKeys.append(key);
-        }
 
        foreach (ConfigKey key, leakedConfigKeys) {
            // delete just to satisfy valgrind:

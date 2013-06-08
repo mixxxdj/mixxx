@@ -85,18 +85,48 @@ EngineSync::~EngineSync() {
 
 void EngineSync::addDeck(QString deck) {
     if (m_sDeckList.contains(deck)) {
+        qDebug() << "EngineSync: already has deck for deck" << deck;
         return;
     }
     m_sDeckList.append(deck);
 
     // Connect objects so we can react when the user changes the settings
-    ControlObject *deck_sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
-    connect(deck_sync_state, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDeckStateChanged(double)),
+    ConfigKey key(deck, "sync_state");
+    ControlObject *deck_sync_state = ControlObject::getControl(key);
+    if (key.group == "[Channel1]") {
+        connect(deck_sync_state, SIGNAL(valueChanged(double)),
+            this, SLOT(slotDeck1StateChanged(double)),
             Qt::DirectConnection);
-    connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotDeckStateChanged(double)),
+        connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotDeck1StateChanged(double)),
             Qt::DirectConnection);
+    } else if (key.group == "[Channel2]") {
+        connect(deck_sync_state, SIGNAL(valueChanged(double)),
+            this, SLOT(slotDeck2StateChanged(double)),
+            Qt::DirectConnection);
+        connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotDeck2StateChanged(double)),
+            Qt::DirectConnection);
+    } else if (key.group == "[Channel3]") {
+        connect(deck_sync_state, SIGNAL(valueChanged(double)),
+            this, SLOT(slotDeck3StateChanged(double)),
+            Qt::DirectConnection);
+        connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotDeck3StateChanged(double)),
+            Qt::DirectConnection);
+    } else if (key.group == "[Channel4]") {
+        connect(deck_sync_state, SIGNAL(valueChanged(double)),
+            this, SLOT(slotDeck4StateChanged(double)),
+            Qt::DirectConnection);
+        connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotDeck4StateChanged(double)),
+            Qt::DirectConnection);
+    } else {
+        qDebug() << "ERROR not a known deck, can't hook up for master sync";
+        return;
+    }
+
+
 }
 
 void EngineSync::disconnectMaster() {
@@ -126,12 +156,14 @@ void EngineSync::disableDeckMaster(QString deck) {
             }
         }
     } else {
+        qDebug() << "disabling" << deck << "as master";
         ControlObject *sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
         if (sync_state == NULL) {
             qDebug() << "Error: couldn't get sync_state for deck, couldn't disable master" << deck;
             return;
         }
         if (sync_state->get() == SYNC_MASTER) {
+            qDebug() << deck << "notifying deck it is not master";
             sync_state->set(SYNC_SLAVE);
         }
     }
@@ -153,6 +185,7 @@ void EngineSync::setMaster(QString group) {
 
 void EngineSync::setInternalMaster(void) {
     if (m_sSyncSource == "[Master]") {
+        qDebug() << "already internal master";
         return;
     }
     m_dMasterBpm = m_pMasterBpm->get();
@@ -169,6 +202,7 @@ void EngineSync::setInternalMaster(void) {
 
 bool EngineSync::setDeckMaster(QString deck) {
     if (deck.isEmpty()) {
+        qDebug() << "----------------------------------------------------unsetting master (got empty deck spec)";
         disconnectMaster();
         setInternalMaster();
         return true;
@@ -177,6 +211,8 @@ bool EngineSync::setDeckMaster(QString deck) {
     EngineChannel* pChannel = m_pEngineMaster->getChannel(deck);
     // Only consider channels that have a track loaded and are in the master
     // mix.
+
+    qDebug() << "***********************************************asked to set a new master:" << deck;
 
     if (pChannel) {
         disconnectMaster();
@@ -187,6 +223,7 @@ bool EngineSync::setDeckMaster(QString deck) {
 
         m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "rateEngine"));
         if (m_pSourceRate == NULL) {
+            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
             return false;
         }
         connect(m_pSourceRate, SIGNAL(valueChangedFromEngine(double)),
@@ -195,6 +232,7 @@ bool EngineSync::setDeckMaster(QString deck) {
 
         m_pSourceBeatDistance = ControlObject::getControl(ConfigKey(deck, "beat_distance"));
         if (m_pSourceBeatDistance == NULL) {
+            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 source beat dist was null";
             return false;
         }
         connect(m_pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
@@ -202,6 +240,7 @@ bool EngineSync::setDeckMaster(QString deck) {
                 Qt::DirectConnection);
 
         resetInternalBeatDistance(); //reset internal beat distance to equal the new master
+        qDebug() << "----------------------------setting new master" << deck;
         m_sSyncSource = deck;
         m_pSyncInternalEnabled->set(FALSE);
         slotSourceRateChanged(m_pSourceRate->get());
@@ -209,6 +248,12 @@ bool EngineSync::setDeckMaster(QString deck) {
         ControlObject::getControl(ConfigKey(deck, "sync_master"))->set(TRUE);
         ControlObject::getControl(ConfigKey(deck, "sync_slave"))->set(FALSE);
         return true;
+    } else {
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!did not set master";
+        if (pChannel == NULL)
+            qDebug() << "well, it was null!";
+        else
+            qDebug() << pChannel << pChannel->isActive() << pChannel->isMaster();
     }
 
     return false;
@@ -220,6 +265,7 @@ bool EngineSync::setMidiMaster() {
 }
 
 QString EngineSync::chooseNewMaster(QString dontpick="") {
+    //qDebug() << "----------=-=-=-=-=-=-=-finding a new master";
     QString fallback = "[Master]";
     foreach (QString deck, m_sDeckList) {
         if (deck == dontpick) {
@@ -230,6 +276,7 @@ QString EngineSync::chooseNewMaster(QString dontpick="") {
         if (sync_state != NULL) {
             double state = sync_state->get();
             if (state == SYNC_MASTER) {
+                qDebug() << "already have a new master" << deck;
                 return deck;
             } else if (state == SYNC_NONE) {
                 continue;
@@ -258,6 +305,8 @@ void EngineSync::slotSourceRateChanged(double rate_engine) {
 
         double filebpm = m_pMasterBuffer->getFileBpm();
         m_dMasterBpm = rate_engine * filebpm;
+        //qDebug() << "file bpm " << filebpm;
+        //qDebug()<< "announcing a master bpm of" <<  m_dMasterBpm;
 
         if (m_dMasterBpm != 0) {
             m_pSyncRateSlider->set(m_dMasterBpm);
@@ -278,12 +327,15 @@ void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
         m_pSyncRateSlider->set(m_dMasterBpm);
         return;
     }
+    qDebug() << "trying to set internal master to " << new_bpm;
     m_pMasterBpm->set(new_bpm);
 }
 
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
+//    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~new master bpm" << new_bpm;
     m_pSyncRateSlider->set(new_bpm);
     if (new_bpm != m_dMasterBpm) {
+  //      qDebug() << "set slider";
         if (m_sSyncSource != "[Master]") {
             //qDebug() << "can't set master sync when sync isn't internal";
             //XXX(Owen):
@@ -301,6 +353,7 @@ void EngineSync::slotMasterBpmChanged(double new_bpm) {
             m_pMasterBpm->set(m_dMasterBpm);
             return;
         }
+    //    qDebug() << "using it";
         m_dMasterBpm = new_bpm;
         updateSamplesPerBeat();
 
@@ -337,22 +390,32 @@ void EngineSync::slotInternalMasterChanged(double state) {
     }
 }
 
-void EngineSync::slotDeckStateChanged(double state) {
-    //figure out who called us
-    ControlObject *caller = qobject_cast<ControlObject* >(QObject::sender());
-    if (caller == NULL) {
-        qDebug() << "FATAL ERROR: Couldn't get control object from sender in slotDeckStateChanged. "
-                 << "Undefined behavior may ensue.";
-        return;
-    }
-    QString group = caller->getKey().group;
+void EngineSync::slotDeck1StateChanged(double state) {
+    deckXStateChanged("[Channel1]", state);
+}
 
-    // In the following logic, m_sSyncSource acts like "previous sync source".
+void EngineSync::slotDeck2StateChanged(double state) {
+    deckXStateChanged("[Channel2]", state);
+}
+
+void EngineSync::slotDeck3StateChanged(double state) {
+    deckXStateChanged("[Channel3]", state);
+}
+
+void EngineSync::slotDeck4StateChanged(double state) {
+    deckXStateChanged("[Channel4]", state);
+}
+
+void EngineSync::deckXStateChanged(QString group, double state) {
+    qDebug() << "got a master state change from" << group;
+
+    // In the following logic, m_sSyncSourcea acts like "previous sync source".
     if (state == SYNC_MASTER) {
         // TODO: don't allow setting of master if not playing
         // Figure out who the old master was and turn them off
         QString old_master = m_sSyncSource;
         setDeckMaster(group);
+        qDebug() << "disabling previous master " << old_master;
         if (old_master != "[Master]") {
             disableDeckMaster(old_master);
         }
@@ -360,6 +423,7 @@ void EngineSync::slotDeckStateChanged(double state) {
         // Was this deck master before?  If so do a handoff
         ControlObject *sync_state = ControlObject::getControl(ConfigKey(group, "sync_state"));
         if (m_sSyncSource == group) {
+            qDebug() << group << " current master, setting us to slave (choose new)";
             sync_state->set(SYNC_SLAVE);
             //choose a new master, but don't pick the current one!
             setMaster(chooseNewMaster(group));
@@ -367,6 +431,7 @@ void EngineSync::slotDeckStateChanged(double state) {
     } else {
         // if we were the master, choose a new one.
         if (m_sSyncSource == group) {
+            qDebug() << group << " current master being set to none, choose new";
             setMaster(chooseNewMaster());
         }
     }
@@ -384,6 +449,8 @@ double EngineSync::getInternalBeatDistance(void) const {
 void EngineSync::resetInternalBeatDistance() {
     if (m_pSourceBeatDistance != NULL) {
         m_dPseudoBufferPos = m_pSourceBeatDistance->get() * m_dSamplesPerBeat;
+        qDebug() << "Resetting internal beat distance to new master" << m_dPseudoBufferPos << " "
+                 << m_pSourceBeatDistance->get();
     } else {
         m_dPseudoBufferPos = 0;
     }
@@ -403,6 +470,7 @@ void EngineSync::updateSamplesPerBeat(void) {
     }
     m_dSamplesPerBeat = (m_iSampleRate * 60.0) / m_dMasterBpm;
     if (m_dSamplesPerBeat <= 0) {
+        qDebug() << "something went horribly wrong setting samples per beat";
         m_dSamplesPerBeat = m_iSampleRate;
     }
 }

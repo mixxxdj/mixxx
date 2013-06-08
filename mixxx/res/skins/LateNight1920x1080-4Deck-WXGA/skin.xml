@@ -64,9 +64,9 @@
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
 	<attributes>
-		<attribute config_key="[Master],num_decks">4</attribute>
-		<attribute config_key="[Master],num_samplers">0</attribute>
-		<attribute config_key="[Master],num_preview_decks">1</attribute>
+		<attribute config_key="[Skin],num_decks">4</attribute>
+		<attribute config_key="[Skin],num_samplers">0</attribute>
+		<attribute config_key="[Skin],num_preview_decks">1</attribute>
 		<!--Optionally, make elements visible on skin load-->
 		<attribute config_key="[Spinny1],show_spinny">1</attribute>
 		<attribute config_key="[Spinny2],show_spinny">1</attribute>
@@ -1026,7 +1026,7 @@
 					<ConfigKey>[Vinylcontrol],show_vinylcontrol</ConfigKey>
 				</Connection>
 			</PushButton>-->
-			
+
 			<!-- Master -->
 	        <PushButton>
 			    <TooltipId>sync_master</TooltipId>
@@ -1066,6 +1066,30 @@
 					<ConfigKey>[Master],sync_bpm</ConfigKey>
 				</Connection>
 			</NumberBpm>
+<!--			<NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>60,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Master],beat_distance</ConfigKey>
+				</Connection>
+			</NumberBpm>-->
+			<SliderComposed>
+		        <TooltipId>rate</TooltipId>
+		        <Style></Style>
+		        <Handle>knob_pitch1.png</Handle>
+		        <Slider>slider_pitch1.png</Slider>
+		        <Pos>4,80</Pos>
+		        <Horizontal>false</Horizontal>
+		        <Connection>
+			        <ConfigKey>[Master],rate</ConfigKey>
+			        <EmitOnDownPress>false</EmitOnDownPress>
+		        </Connection>
+	        </SliderComposed>
 			<!--
 			**********************************************
 			Mixer Controls
@@ -1569,7 +1593,7 @@
 					    </Connection>
 				    </VuMeter>
 		        </Children>
-		    </WidgetGroup> <!-- /Channel3 mixer -->		    
+		    </WidgetGroup> <!-- /Channel3 mixer -->
 		    <WidgetGroup> <!-- Channel4 controls -->
 				<Pos>321,0</Pos>
 			    <Size>82,250</Size>
@@ -1950,6 +1974,18 @@
 				    <ButtonState>LeftButton</ButtonState>
 			    </Connection>
 		    </PushButton>
+		    <!--<NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>160,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Channel1],rateEngine</ConfigKey>
+				</Connection>
+			</NumberBpm>-->
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -2153,7 +2189,7 @@
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 			</TrackProperty>
-            
+
             <WidgetGroup> <!-- Channel1 Toggle Buttons -->
                 <Pos>279,130</Pos>
                 <Size>78,44</Size>
@@ -2274,7 +2310,7 @@
 		        </Children>
             </WidgetGroup> <!-- /Channel1 Toggle Buttons -->
             <!-- Playback control sub-widget -->
-			<WidgetGroup> 
+			<WidgetGroup>
 				<Pos>0,174</Pos>
 				<Size>356,138</Size>
 				<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
@@ -3170,6 +3206,18 @@
 				    <ButtonState>LeftButton</ButtonState>
 			    </Connection>
 		    </PushButton>
+		    <!--<NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>160,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Channel2],rateEngine</ConfigKey>
+				</Connection>
+			</NumberBpm>-->
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -3373,7 +3421,7 @@
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 			</TrackProperty>
-            
+
             <WidgetGroup> <!-- Channel2 Toggle Buttons -->
                 <Pos>279,130</Pos>
                 <Size>78,44</Size>
@@ -4391,6 +4439,18 @@
 				    <ButtonState>LeftButton</ButtonState>
 			    </Connection>
 		    </PushButton>
+		    <!--<NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>160,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Channel3],rateEngine</ConfigKey>
+				</Connection>
+			</NumberBpm>-->
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -4594,7 +4654,7 @@
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 			</TrackProperty>
-            
+
             <WidgetGroup> <!-- Channel3 Toggle Buttons -->
                 <Pos>279,130</Pos>
                 <Size>78,44</Size>
@@ -5611,6 +5671,18 @@
 				    <ButtonState>LeftButton</ButtonState>
 			    </Connection>
 		    </PushButton>
+		    <!--<NumberBpm>
+				<TooltipId>visual_bpm</TooltipId>
+				<Style>QLabel { font: bold 18px/21px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				</Style>
+				<Channel>1</Channel>
+				<Pos>160,25</Pos>
+				<Size>30,33</Size>
+				<Connection>
+					<ConfigKey>[Channel4],rateEngine</ConfigKey>
+				</Connection>
+			</NumberBpm>-->
 			<!--
 			**********************************************
 			Visual- Vinyl control status indicator // we need 4 of them for top-bottom-left-right
@@ -5814,7 +5886,7 @@
 				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
 				<Alignment>right</Alignment>
 			</TrackProperty>
-            
+
             <WidgetGroup> <!-- Channel4 Toggle Buttons -->
                 <Pos>279,130</Pos>
                 <Size>78,44</Size>

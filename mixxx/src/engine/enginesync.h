@@ -56,7 +56,10 @@ class EngineSync : public EngineControl {
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
     void slotInternalMasterChanged(double);
-    void slotDeckStateChanged(double);
+    void slotDeck1StateChanged(double);
+    void slotDeck2StateChanged(double);
+    void slotDeck3StateChanged(double);
+    void slotDeck4StateChanged(double);
 
   protected:
     QString chooseNewMaster(QString dontpick);
@@ -65,6 +68,7 @@ class EngineSync : public EngineControl {
     void updateSamplesPerBeat(void);
     void setPseudoPosition(double percent);
     void resetInternalBeatDistance(void);
+    void deckXStateChanged(QString group, double);
 
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pMasterBuffer;
