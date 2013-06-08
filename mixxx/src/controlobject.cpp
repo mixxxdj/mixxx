@@ -66,6 +66,7 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
 
 void ControlObject::privateValueChanged(double dValue, QObject* pSetter) {
     // Only emit valueChanged() if we did not originate this change.
+    if (!validateChange(dValue)) return;
     if (pSetter != this) {
         emit(valueChanged(dValue));
     } else {
@@ -128,6 +129,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     if (m_pControl) {
+        if (!validateChange(v)) return;
         m_pControl->setMidiParameter(o, v);
     }
 }
@@ -138,6 +140,7 @@ double ControlObject::getValueToMidi() const {
 
 void ControlObject::setValueFromThread(double dValue, QObject* pSender) {
     if (m_pControl) {
+        if (!validateChange(dValue)) return;
         m_pControl->set(dValue, pSender);
     }
 }
@@ -154,6 +157,7 @@ void ControlObject::reset() {
 
 void ControlObject::set(const double& value) {
     if (m_pControl) {
+        if (!validateChange(value)) return;
         m_pControl->set(value, this);
     }
 }

@@ -129,4 +129,3 @@ double ControlDoublePrivate::getMidiParameter() const {
     ControlNumericBehavior* pBehavior = m_pBehavior;
     return pBehavior ? pBehavior->valueToMidiParameter(get()) : get();
 }
-

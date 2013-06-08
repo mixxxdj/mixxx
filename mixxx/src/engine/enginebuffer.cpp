@@ -106,11 +106,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             Qt::DirectConnection);
 
     // Play button
-    m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
+    m_playButton = new ControlPushButtonValidatePlay(ConfigKey(m_group, "play"), this);
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_playButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlPlay(double)),
-            Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
@@ -473,16 +470,6 @@ void EngineBuffer::slotControlSeek(double change)
 void EngineBuffer::slotControlSeekAbs(double abs)
 {
     slotControlSeek(abs / m_file_length_old);
-}
-
-void EngineBuffer::slotControlPlay(double v)
-{
-    // If no track is currently loaded, turn play off. If a track is loading
-    // allow the set since it might apply to a track we are loading due to the
-    // asynchrony.
-    if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
-        m_playButton->set(0.0f);
-    }
 }
 
 void EngineBuffer::slotControlStart(double v)
@@ -895,13 +882,6 @@ void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
     pWorkerScheduler->bindWorker(m_pReader);
 }
 
-bool EngineBuffer::isTrackLoaded() {
-    if (m_pCurrentTrack) {
-        return true;
-    }
-    return false;
-}
-
 void EngineBuffer::slotEjectTrack(double v) {
     if (v > 0) {
         ejectTrack();
@@ -922,4 +902,9 @@ void EngineBuffer::setReader(CachingReader* pReader) {
     connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
+}
+
+inline bool ControlPushButtonValidatePlay::validateChange(double value) const {
+    if (value == 0.0) return true;
+    return (m_pEngineBuffer->validatePlayAndRecover());
 }
