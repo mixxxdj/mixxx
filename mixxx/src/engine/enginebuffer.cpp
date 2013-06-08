@@ -70,6 +70,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
     m_bScalerChanged(false),
+    m_bSeekQueued(false),
+    m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
     m_iTrackLoading(0),
     m_bPlayAfterLoading(false),
@@ -335,6 +337,13 @@ void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
     m_pBpmControl->setEngineMaster(pEngineMaster);
 }
 
+void EngineBuffer::queueNewPlaypos(double newpos)
+{
+    // Temp Workaround: All seeks need to be done in the Engine thread so queue it up.
+    m_bSeekQueued = true;
+    m_dQueuedPosition = newpos;
+}
+
 void EngineBuffer::setNewPlaypos(double newpos)
 {
     //qDebug() << "engine new pos " << newpos;
@@ -474,7 +483,7 @@ void EngineBuffer::slotControlSeek(double change)
         new_playpos += offset;
     }
 
-    setNewPlaypos(new_playpos);
+    queueNewPlaypos(new_playpos);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
@@ -614,6 +623,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             } else if (!m_pKeylock->get() && m_pScale == m_pScaleST) {
                 setPitchIndpTimeStretch(false);
             }
+        }
+
+        if (m_bSeekQueued) {
+            m_bSeekQueued = false;
+            setNewPlaypos(m_dQueuedPosition);
         }
 
         // If the rate has changed, set it in the scale object
@@ -768,6 +782,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
         m_engineLock.unlock();
+
 
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
@@ -943,12 +958,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     m_engineLock.lock();
     m_engineControls.push_back(pControl);
     m_engineLock.unlock();
-    connect(pControl, SIGNAL(seek(double)),
-            this, SLOT(slotControlSeek(double)),
-            Qt::DirectConnection);
-    connect(pControl, SIGNAL(seekAbs(double)),
-            this, SLOT(slotControlSeekAbs(double)),
-            Qt::DirectConnection);
+    pControl->setEngineBuffer(this);
     connect(this, SIGNAL(trackLoaded(TrackPointer)),
             pControl, SLOT(trackLoaded(TrackPointer)),
             Qt::DirectConnection);

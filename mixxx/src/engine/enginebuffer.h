@@ -102,6 +102,8 @@ public:
     /** Sets pointer to other engine buffer/channel */
     void setEngineMaster(EngineMaster*);
 
+    void queueNewPlaypos(double newpos);
+
     /** Reset buffer playpos and set file playpos. This must only be called
       * while holding the pause mutex */
     void setNewPlaypos(double);
@@ -250,6 +252,9 @@ private:
     EngineBufferScaleST* m_pScaleST;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
+
+    bool m_bSeekQueued;
+    double m_dQueuedPosition;
 
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
