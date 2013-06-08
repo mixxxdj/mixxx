@@ -2,7 +2,6 @@
 // Created 6/2/2010 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
-#include <QMutexLocker>
 
 #include "engine/engineworker.h"
 #include "engine/engineworkerscheduler.h"
@@ -24,15 +23,7 @@ EngineWorkerScheduler::~EngineWorkerScheduler() {
 }
 
 void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
-    connect(pWorker, SIGNAL(workReady(EngineWorker*)),
-            this, SLOT(workerReady(EngineWorker*)),
-            Qt::DirectConnection);
-    connect(pWorker, SIGNAL(workStarting(EngineWorker*)),
-            this, SLOT(workerStarted(EngineWorker*)),
-            Qt::DirectConnection);
-    connect(pWorker, SIGNAL(workDone(EngineWorker*)),
-            this, SLOT(workerFinished(EngineWorker*)),
-            Qt::DirectConnection);
+    pWorker->setScheduler(this);
 }
 
 void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
@@ -44,29 +35,19 @@ void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
     }
 }
 
-void EngineWorkerScheduler::workerStarted(EngineWorker* pWorker) {
-    Q_UNUSED(pWorker);
-}
-
-void EngineWorkerScheduler::workerFinished(EngineWorker* pWorker) {
-    QMutexLocker locker(&m_mutex);
-    m_activeWorkers.remove(pWorker);
-}
-
 void EngineWorkerScheduler::runWorkers() {
     m_waitCondition.wakeAll();
 }
 
 void EngineWorkerScheduler::run() {
     while (!m_bQuit) {
-        m_mutex.lock();
         EngineWorker* pWorker = NULL;
         while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
-            if (pWorker && !m_activeWorkers.contains(pWorker)) {
-                m_activeWorkers.insert(pWorker);
+            if (pWorker && !pWorker->isActive()) {
                 m_workerThreadPool.start(pWorker);
             }
         }
+        m_mutex.lock();
         m_waitCondition.wait(&m_mutex); // unlock mutex and wait
         m_mutex.unlock();
     }

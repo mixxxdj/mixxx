@@ -3,6 +3,7 @@
 
 #include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
+#include "engine/enginebuffer.h"
 
 EngineControl::EngineControl(const char * _group,
                              ConfigObject<ConfigValue> * _config) :
@@ -10,7 +11,8 @@ EngineControl::EngineControl(const char * _group,
     m_pConfig(_config),
     m_dCurrentSample(0),
     m_dTotalSamples(0),
-    m_pEngineMaster(NULL) {
+    m_pEngineMaster(NULL),
+    m_pEngineBuffer(NULL) {
 }
 
 EngineControl::~EngineControl() {
@@ -52,6 +54,10 @@ void EngineControl::setEngineMaster(EngineMaster* pEngineMaster) {
     m_pEngineMaster = pEngineMaster;
 }
 
+void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
+    m_pEngineBuffer = pEngineBuffer;
+}
+
 void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
     m_dCurrentSample = dCurrentSample;
     m_dTotalSamples = dTotalSamples;
@@ -75,6 +81,22 @@ ConfigObject<ConfigValue>* EngineControl::getConfig() {
 
 EngineMaster* EngineControl::getEngineMaster() {
     return m_pEngineMaster;
+}
+
+EngineBuffer* EngineControl::getEngineBuffer() {
+    return m_pEngineBuffer;
+}
+
+void EngineControl::seekAbs(double fractionalPosition) {
+    if (m_pEngineBuffer) {
+        m_pEngineBuffer->slotControlSeekAbs(fractionalPosition);
+    }
+}
+
+void EngineControl::seek(double sample) {
+    if (m_pEngineBuffer) {
+        m_pEngineBuffer->slotControlSeek(sample);
+    }
 }
 
 void EngineControl::notifySeek(double dNewPlaypos) {
