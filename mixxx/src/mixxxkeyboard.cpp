@@ -63,10 +63,17 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
 
             if (pConfigKey)
             {
-                ControlObject::getControl(*pConfigKey)->setValueFromMidi(MIDI_NOTE_ON, 1);
-                // Add key to active key list
-                m_qActiveKeyList.append(QPair<int, ConfigKey *>(keyId,pConfigKey));
-                return true;
+                ControlObject* control = ControlObject::getControl(*pConfigKey);
+                if (control) {
+                    control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                    // Add key to active key list
+                    m_qActiveKeyList.append(QPair<int, ConfigKey *>(keyId,pConfigKey));
+                    return true;
+                } else {
+                    qDebug() << "Warning: Keyboard key is configured for nonexistent control: "
+                             << pConfigKey->group << " " << pConfigKey->item;
+                    return false;
+                }
             }
         }
     } else if (e->type()==QEvent::KeyRelease) {

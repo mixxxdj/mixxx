@@ -37,13 +37,12 @@ class TrackModel {
         TRACKMODELCAPS_LOADTOSAMPLER     = 0x00100,
         TRACKMODELCAPS_LOADTOPREVIEWDECK = 0x00200,
         TRACKMODELCAPS_REMOVE            = 0x00400,
-        TRACKMODELCAPS_BPMLOCK           = 0x00800,
+        TRACKMODELCAPS_MANIPULATEBEATS   = 0x00800,
         TRACKMODELCAPS_CLEAR_BEATS       = 0x01000,
         TRACKMODELCAPS_RESETPLAYED       = 0x02000,
         TRACKMODELCAPS_HIDE              = 0x04000,
         TRACKMODELCAPS_UNHIDE            = 0x08000,
-        TRACKMODELCAPS_PURGE             = 0x10000,
-        TRACKMODELCAPS_DELETEFS          = 0x20000
+        TRACKMODELCAPS_PURGE             = 0x10000
     };
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 

@@ -18,7 +18,7 @@ ControlDoublePrivate::ControlDoublePrivate()
 }
 
 ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
-                                             bool bIgnoreNops, bool bTrack)
+                                           bool bIgnoreNops, bool bTrack)
         : m_key(key),
           m_bIgnoreNops(bIgnoreNops),
           m_bTrack(bTrack),
@@ -88,7 +88,7 @@ void ControlDoublePrivate::set(const double& value, QObject* pSender) {
     }
 
     double dValue = value;
-    // The behavior says to ignore the set, ignore it.
+    // If the behavior says to ignore the set, ignore it.
     ControlNumericBehavior* pBehavior = m_pBehavior;
     if (pBehavior && !pBehavior->setFilter(&dValue)) {
         return;

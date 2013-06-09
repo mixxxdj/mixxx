@@ -33,7 +33,10 @@ class ControlObjectThread : public QObject {
     Q_OBJECT
   public:
     ControlObjectThread(ControlObject *pControlObject, QObject* pParent=NULL);
+    ControlObjectThread(ConfigKey key, QObject* pParent=NULL);
     virtual ~ControlObjectThread();
+
+    void initialize(ConfigKey key);
 
     /** Called from update(); */
     void emitValueChanged();
