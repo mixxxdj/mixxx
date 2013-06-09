@@ -106,7 +106,7 @@ public:
 
     /** Reset buffer playpos and set file playpos. This must only be called
       * while holding the pause mutex */
-    void setNewPlaypos(double);
+    void setNewPlaypos(double playpos);
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
@@ -251,8 +251,15 @@ private:
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
 
-    bool m_bSeekQueued;
+    QAtomicInt m_bSeekQueued;
+    // TODO(XXX) make a macro or something.
+#if defined(__GNUC__)
+    double m_dQueuedPosition __attribute__ ((aligned(sizeof(double))));
+#elif defined(_MSC_VER)
+    double __declspec(align(8)) m_dQueuedPosition;
+#else
     double m_dQueuedPosition;
+#endif
 
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
