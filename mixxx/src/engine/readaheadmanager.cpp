@@ -36,27 +36,25 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // A loop will only limit the amount we can read in one shot.
 
-    QPair<int, double> next_loop;
-    next_loop.first = 0;
-    next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
-                                                         m_iCurrentPosition,
-                                                         0, 0);
+    const double loop_trigger = m_sEngineControls[0]->nextTrigger(
+        dRate, m_iCurrentPosition, 0, 0);
+    bool loop_active = loop_trigger != kNoTrigger;
     int preloop_samples = 0;
 
-    if (next_loop.second != kNoTrigger) {
+    if (loop_active) {
         int samples_available;
         if (in_reverse) {
-            samples_available = m_iCurrentPosition - next_loop.second;
+            samples_available = m_iCurrentPosition - loop_trigger;
         } else {
-            samples_available = next_loop.second - m_iCurrentPosition;
+            samples_available = loop_trigger - m_iCurrentPosition;
         }
         samples_needed = math_max(0, math_min(samples_needed,
                                               samples_available));
 
         if (in_reverse) {
-            preloop_samples = m_iCurrentPosition - next_loop.second;
+            preloop_samples = m_iCurrentPosition - loop_trigger;
         } else {
-            preloop_samples = next_loop.second - m_iCurrentPosition;
+            preloop_samples = loop_trigger - m_iCurrentPosition;
         }
     }
 
@@ -87,17 +85,13 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     }
 
     // Activate on this trigger if necessary
-    if (next_loop.second != kNoTrigger) {
-        double loop_trigger = next_loop.second;
-        double loop_target = m_sEngineControls[next_loop.first]->
-            getTrigger(dRate,
-                       m_iCurrentPosition,
-                       0, 0);
+    if (loop_active) {
+        // LoopingControl makes the decision about whether we should loop or
+        // not.
+        const double loop_target = m_sEngineControls[0]->
+                process(dRate, m_iCurrentPosition, 0, 0);
 
-        if (loop_target != kNoTrigger &&
-            ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
-            (!in_reverse && m_iCurrentPosition >= loop_trigger))) {
-
+        if (loop_target != kNoTrigger) {
             m_iCurrentPosition = loop_target;
 
             int loop_read_position = m_iCurrentPosition;
