@@ -70,7 +70,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
     m_bScalerChanged(false),
-    m_bSeekQueued(false),
+    m_bSeekQueued(0),
     m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
     m_iTrackLoading(0),
@@ -216,8 +216,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
     setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
 
-    setNewPlaypos(0.);
-
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
     m_pKeylock->set(false);
@@ -329,11 +327,11 @@ void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
     m_pBpmControl->setEngineMaster(pEngineMaster);
 }
 
-void EngineBuffer::queueNewPlaypos(double newpos)
-{
-    // Temp Workaround: All seeks need to be done in the Engine thread so queue it up.
-    m_bSeekQueued = true;
+void EngineBuffer::queueNewPlaypos(double newpos) {
+    // Temp Workaround: All seeks need to be done in the Engine thread so queue
+    // it up.
     m_dQueuedPosition = newpos;
+    m_bSeekQueued.fetchAndStoreRelease(1);
 }
 
 void EngineBuffer::setNewPlaypos(double newpos)
@@ -601,8 +599,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
-        if (m_bSeekQueued) {
-            m_bSeekQueued = false;
+        if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
             setNewPlaypos(m_dQueuedPosition);
         }
 
