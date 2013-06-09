@@ -43,7 +43,12 @@ class ControlObject : public QObject {
                   bool bIgnoreNops=true, bool bTrack=false);
     virtual ~ControlObject();
 
-    void setValidator(ControlObjectValidator* validator) { m_pValidator = validator; }
+    void setValidator(ControlObjectValidator* validator) {
+        m_pValidator = validator;
+        if (m_pControl) {
+            m_pControl->setValidator(validator);
+        }
+    }
 
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject* getControl(const ConfigKey& key);

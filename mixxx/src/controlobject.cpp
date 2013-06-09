@@ -70,7 +70,6 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
 
 void ControlObject::privateValueChanged(double dValue, QObject* pSetter) {
     // Only emit valueChanged() if we did not originate this change.
-    if (m_pValidator && !m_pValidator->validateChange(dValue)) return;
     if (pSetter != this) {
         emit(valueChanged(dValue));
     } else {
