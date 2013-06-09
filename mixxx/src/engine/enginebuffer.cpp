@@ -698,53 +698,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
             pControl->setCurrentSample(m_filepos_play, m_file_length_old);
-            double control_seek = pControl->process(rate, m_filepos_play,
-                                                    m_file_length_old, iBufferSize);
-
-            if (control_seek != kNoTrigger) {
-                // If we have not processed loops by this point then we have a
-                // bug. RAMAN should be in charge of taking loops now. This
-                // final step is more to notify all the EngineControls of the
-                // happenings of the engine. TODO(rryan) log condition to a
-                // stats-pipe once we have them.
-
-                m_filepos_play = control_seek;
-                double filepos_play_rounded = round(m_filepos_play);
-                if (filepos_play_rounded != m_filepos_play) {
-                    qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not round:" << m_filepos_play;
-                    m_filepos_play = filepos_play_rounded;
-                }
-
-                // Fix filepos_play so that it is not out of bounds.
-                if (m_file_length_old > 0) {
-                    if (m_filepos_play > m_file_length_old) {
-                        // TODO(XXX) limit to kMaxPlayposRange instead of file_length_old
-                        m_filepos_play = m_file_length_old;
-                    } else if(m_filepos_play < m_file_length_old * kMinPlayposRange) {
-                        m_filepos_play = kMinPlayposRange * m_file_length_old;
-                    }
-                }
-
-                // Safety check that the EngineControl didn't pass us a bogus
-                // value
-                if (!even(m_filepos_play))
-                    m_filepos_play--;
-
-                // TODO(XXX) need to re-evaluate this later. If we
-                // setNewPlaypos, that clear()'s soundtouch, which might screw
-                // up the audio. This sort of jump is a normal event. Also, the
-                // EngineControl which caused this jump will get a notifySeek
-                // for the same jump which might be confusing. For 1.8.0
-                // purposes this works fine. If we do not notifySeek the RAMAN,
-                // the engine and RAMAN can get out of sync.
-
-                //setNewPlaypos(filepos_play);
-                m_pReadAheadManager->notifySeek(m_filepos_play);
-                // Notify seek the rate control since it needs to track things
-                // like looping. Hacky, I know, but this helps prevent things
-                // like the scratch controller from flipping out.
-                m_pRateControl->notifySeek(m_filepos_play);
-            }
+            pControl->process(rate, m_filepos_play, m_file_length_old, iBufferSize);
         }
         m_engineLock.unlock();
 
