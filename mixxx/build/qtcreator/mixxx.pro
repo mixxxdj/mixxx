@@ -105,6 +105,7 @@ HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
     $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
     $$UI_DIR/ui_dlgprefplaylistdlg.h \
+    $$UI_DIR/ui_dlgtagfetcher.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
     $$UI_DIR/ui_dlgprefsounddlg.h \
     $$UI_DIR/ui_dlgprefvinyldlg.h \
@@ -903,17 +904,31 @@ win32 {
     system( echo $$TARGET --resourcePath \"$$replace(PWD, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}res\">\"$${PWD}$${DIR_SEPARATOR}$$replace(DESTDIR, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}testrun-$${TARGET}.cmd\" )
 }
 
-# Get info from BZR about the current branch
-BZR_REVNO = $$system( bzr revno )
-BZR_INFO = $$system( bzr info )
-for(BZR_INFO_BITS, BZR_INFO) {
-	BZR_BRANCH_URL = $${BZR_INFO_BITS}
+exists( .bzr ) {
+    # Get info from BZR about the current branch
+    BZR_REVNO = $$system( bzr revno )
+    BZR_INFO = $$system( bzr info )
+    for(BZR_INFO_BITS, BZR_INFO) {
+        BZR_BRANCH_URL = $${BZR_INFO_BITS}
+    }
+    BZR_BRANCH_NAME = $$dirname(BZR_BRANCH_URL)
+    BZR_BRANCH_NAME = $$basename(BZR_BRANCH_NAME)
+    message(BRANCH_NAME is $$BZR_BRANCH_NAME)
+    message(REVISION is $$BZR_REVNO)
+    message(BRANCH_URL is $$BZR_BRANCH_URL)
+    VCS_BRANCH_NAME = $${BZR_BRANCH_NAME}
+    VCS_REVNO = $${BZR_REVNO}
 }
-BZR_BRANCH_NAME = $$dirname(BZR_BRANCH_URL)
-BZR_BRANCH_NAME = $$basename(BZR_BRANCH_NAME)
-message(BRANCH_NAME is $$BZR_BRANCH_NAME)
-message(REVISION is $$BZR_REVNO)
-message(BRANCH_URL is $$BZR_BRANCH_URL)
+
+exists ( .git ) {
+    # Get info from git about the current branch
+    GIT_REVNO = $$system( git log --pretty=oneline --first-parent | wc -l )
+    GIT_BRANCH_NAME = $$system( git branch | grep \* | sed -e "s/\* //;" )
+    message(BRANCH_NAME is $$GIT_BRANCH_NAME)
+    message(REVISION is $$GIT_REVNO)
+    VCS_BRANCH_NAME = $${GIT_BRANCH_NAME}
+    VCS_REVNO = $${GIT_REVNO}
+}
 
 win32 {
     # Makefile target to build an NSIS Installer...
@@ -922,13 +937,13 @@ win32 {
     # SH Usage: make -f Makefile.Debug nsis
     nsis.target = nsis
     exists($$BUILDDIR/gdb.exe):INCLUDE_GDB = -DINCLUDE_GDB
-    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DGCC -DBINDIR=\"$$BUILDDIR\" -DBUILD_REV=\"$$BZR_BRANCH_NAME-$$BZR_REVNO\" $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
+    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DGCC -DBINDIR=\"$$BUILDDIR\" -DBUILD_REV=\"$$VCS_BRANCH_NAME-$$VCS_REVNO\" $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
     # nsis.depends =
     QMAKE_EXTRA_UNIX_TARGETS += nsis
 }
 
 # build.h
-BUILD_REV = $${BZR_BRANCH_NAME} : $${BZR_REVNO}
+BUILD_REV = $${VCS_BRANCH_NAME} : $${VCS_REVNO}
 isEmpty( BUILD_REV ):BUILD_REV = Killroy was here
 BUILD_REV += - built via qmake/Qt Creator
 message( Generating src$${DIR_SEPARATOR}build.h with contents: $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"' )

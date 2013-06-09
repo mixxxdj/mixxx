@@ -15,20 +15,23 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QDesktopServices>
+#include <QFileDialog>
+#include <QUrl>
+
 #include "dlgprefplaylist.h"
+#include "soundsourceproxy.h"
 #ifdef __PROMO__
 #include "library/promotracksfeature.h"
 #endif
-#include "soundsourceproxy.h"
 //#include "plugindownloader.h"
-#include <QtCore>
-#include <QtGui>
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        :  QWidget(parent) {
-    config = _config;
+
+DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config)
+            : QWidget(parent), 
+              m_pconfig(config) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -47,11 +50,11 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
             this, SLOT(slotM4ADownloadProgress(qint64, qint64)));
     */
 
-    // Connection
-    connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),       this,      SLOT(slotBrowseDir()));
-    connect(LineEditSongfiles,        SIGNAL(returnPressed()), this,      SLOT(slotApply()));
+    connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),
+            this, SLOT(slotBrowseDir()));
     //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
-    connect(pushButtonExtraPlugins, SIGNAL(clicked()), this, SLOT(slotExtraPlugins()));
+    connect(pushButtonExtraPlugins, SIGNAL(clicked()),
+            this, SLOT(slotExtraPlugins()));
 
     bool enablePromoGroupbox = false;
 #ifdef __PROMO__
@@ -69,12 +72,10 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * _
     }
 }
 
-DlgPrefPlaylist::~DlgPrefPlaylist()
-{
+DlgPrefPlaylist::~DlgPrefPlaylist() {
 }
 
-void DlgPrefPlaylist::slotExtraPlugins()
-{
+void DlgPrefPlaylist::slotExtraPlugins() {
     QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
 }
 
@@ -140,67 +141,56 @@ void DlgPrefPlaylist::slotM4ACheck()
     }
 }*/
 
-void DlgPrefPlaylist::slotUpdate()
-{
-    // Song path
-    LineEditSongfiles->setText(config->getValueString(ConfigKey("[Playlist]","Directory")));
+void DlgPrefPlaylist::slotUpdate() {
+    // Library Path
+    LineEditSongfiles->setText(m_pconfig->getValueString(
+                               ConfigKey("[Playlist]","Directory")));
     //Bundled songs stat tracking
-    checkBoxPromoStats->setChecked((bool)config->getValueString(ConfigKey("[Promo]","StatTracking")).toInt());
-    checkBox_library_scan->setChecked((bool)config->getValueString(ConfigKey("[Library]","RescanOnStartup")).toInt());
-    checkbox_ID3_sync->setChecked((bool)config->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt());
-    checkBox_use_relative_path->setChecked((bool)config->getValueString(ConfigKey("[Library]","UseRelativePathOnExport")).toInt());
-    checkBox_show_rhythmbox->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt());
-    checkBox_show_itunes->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
-    checkBox_show_traktor->setChecked((bool)config->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
+    checkBoxPromoStats->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Promo]","StatTracking")).toInt());
+    checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","RescanOnStartup")).toInt());
+    checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","WriteAudioTags")).toInt());
+    checkBox_use_relative_path->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","UseRelativePathOnExport")).toInt());
+    checkBox_show_rhythmbox->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt());
+    checkBox_show_itunes->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
+    checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
 }
 
-void DlgPrefPlaylist::slotBrowseDir()
-{
-    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose music library directory"),
-                                                   config->getValueString(ConfigKey("[Playlist]","Directory")));
-    if (fd != "")
-    {
+void DlgPrefPlaylist::slotBrowseDir() {
+    QString fd = QFileDialog::getExistingDirectory(this,
+                 tr("Choose music library directory"),
+                 m_pconfig->getValueString(ConfigKey("[Playlist]","Directory")));
+    if (fd != "") {
         LineEditSongfiles->setText(fd);
     }
 }
 
-void DlgPrefPlaylist::slotApply()
-{
-
-    config->set(ConfigKey("[Promo]","StatTracking"),
+void DlgPrefPlaylist::slotApply() {
+    m_pconfig->set(ConfigKey("[Promo]","StatTracking"),
                 ConfigValue((int)checkBoxPromoStats->isChecked()));
-
-    config->set(ConfigKey("[Library]","RescanOnStartup"),
+    m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
-
-    config->set(ConfigKey("[Library]","WriteAudioTags"),
+    m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),
                 ConfigValue((int)checkbox_ID3_sync->isChecked()));
-
-    config->set(ConfigKey("[Library]","UseRelativePathOnExport"),
+    m_pconfig->set(ConfigKey("[Library]","UseRelativePathOnExport"),
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
-
-    config->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
+    m_pconfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
-
-    config->set(ConfigKey("[Library]","ShowITunesLibrary"),
+    m_pconfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
-
-    config->set(ConfigKey("[Library]","ShowTraktorLibrary"),
+    m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
 
-    config->Save();
-
-    // Update playlist if path has changed
-    if (LineEditSongfiles->text() != config->getValueString(ConfigKey("[Playlist]","Directory")))
-    {
-        // Check for valid directory and put up a dialog if invalid!!!
-
-        config->set(ConfigKey("[Playlist]","Directory"), LineEditSongfiles->text());
-
-        // Save preferences
-        config->Save();
-
-        // Emit apply signal
+    if (LineEditSongfiles->text() !=
+            m_pconfig->getValueString(ConfigKey("[Playlist]","Directory"))) {
+        m_pconfig->set(ConfigKey("[Playlist]","Directory"), LineEditSongfiles->text());
         emit(apply());
     }
+    m_pconfig->Save();
 }

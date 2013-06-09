@@ -16,19 +16,16 @@
 #include "library/trackcollection.h"
 #include "engine/enginemaster.h"
 #include "soundmanager.h"
-#include "vinylcontrol/vinylcontrolmanager.h"
 #include "util/stat.h"
 #include "engine/enginedeck.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
-                             EngineMaster* pEngine,
-                             VinylControlManager* pVCManager) :
+                             EngineMaster* pEngine) :
         m_mutex(QMutex::Recursive),
         m_pConfig(pConfig),
         m_pSoundManager(pSoundManager),
         m_pEngine(pEngine),
-        m_pVCManager(pVCManager),
         // NOTE(XXX) LegacySkinParser relies on these controls being COs and
         // not COTMs listening to a CO.
         m_pAnalyserQueue(NULL),
@@ -240,14 +237,7 @@ void PlayerManager::addDeckInner() {
     m_pSoundManager->registerOutput(
         AudioOutput(AudioOutput::DECK, 0, number-1), m_pEngine);
 
-    // If vinyl control manager exists, then register a VC input with
-    // SoundManager.
-    if (m_pVCManager) {
-        m_pSoundManager->registerInput(
-            AudioInput(AudioInput::VINYLCONTROL, 0, number-1), m_pVCManager);
-    }
-
-    // Also register vinyl input signal with deck for passthrough support.
+    // Register vinyl input signal with deck for passthrough support.
     EngineDeck* pEngineDeck = pDeck->getEngineDeck();
     m_pSoundManager->registerInput(
         AudioInput(AudioInput::VINYLCONTROL, 0, number-1), pEngineDeck);
@@ -340,6 +330,11 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     return m_samplers[sampler - 1];
 }
 
+bool PlayerManager::hasVinylInput(int inputnum) const {
+    AudioInput vinyl_input(AudioInput::VINYLCONTROL, 0, inputnum);
+    return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
+}
+
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
@@ -402,5 +397,3 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
         it++;
     }
 }
-
-

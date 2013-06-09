@@ -18,6 +18,8 @@
 #define SOUNDMANAGER_H
 
 #include <QObject>
+#include <QMutex>
+
 #include "defs.h"
 #include "configobject.h"
 #include "soundmanagerconfig.h"
@@ -46,12 +48,6 @@ class SoundManager : public QObject {
   public:
     SoundManager(ConfigObject<ConfigValue> *pConfig, EngineMaster *_master);
     virtual ~SoundManager();
-
-    // Returns a pointer to the EngineMaster instance used by this SoundManager.
-    //
-    // NOTE(XXX): This is only here so that preferences can find out how many
-    // channels there are.
-    const EngineMaster* getEngine() const;
 
     // Returns a list of all devices we've enumerated that match the provided
     // filterApi, and have at least one output or input channel if the
@@ -89,14 +85,15 @@ class SoundManager : public QObject {
     void checkConfig();
 
     // Requests a buffer in the proper format, if we're prepared to give one.
-    QHash<AudioOutput, const CSAMPLE*> requestBuffer(
-        const QList<AudioOutput>& outputs, unsigned long iFramesPerBuffer,
+    void requestBuffer(
+        const QList<AudioOutput>& outputs, float* outputBuffer,
+        const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
         SoundDevice *device, double streamTime = 0);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
     void pushBuffer(const QList<AudioInput>& inputs, short *inputBuffer,
-                    unsigned long iFramesPerBuffer, unsigned int iFrameSize);
+                    const unsigned long iFramesPerBuffer, const unsigned int iFrameSize);
 
     void registerOutput(AudioOutput output, const AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
@@ -120,21 +117,16 @@ class SoundManager : public QObject {
 #endif
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
-    QString m_hostAPI;
     QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
     QHash<AudioInput, short*> m_inputBuffers;
-    QHash<SoundDevice*, long> m_deviceFrameCount; // used in dead code
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
     SoundDevice* m_pClkRefDevice;
-    int m_outputDevicesOpened;
-    int m_inputDevicesOpened;
-    QMutex requestBufferMutex;
+    QMutex m_requestBufferMutex;
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
-
     ControlObject* m_pControlObjectSoundStatus;
     ControlObjectThreadMain* m_pControlObjectVinylControlGain;
 };

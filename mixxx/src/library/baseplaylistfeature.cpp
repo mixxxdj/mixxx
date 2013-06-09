@@ -11,17 +11,17 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
-BasePlaylistFeature::BasePlaylistFeature(
-    QObject* parent, ConfigObject<ConfigValue>* pConfig,
-    TrackCollection* pTrackCollection,
-    QString rootViewName)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pPlaylistTableModel(NULL),
-          m_rootViewName(rootViewName) {
+BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
+                                         ConfigObject<ConfigValue>* pConfig,
+                                         TrackCollection* pTrackCollection,
+                                         QString rootViewName)
+                    : LibraryFeature(parent),
+                      m_pConfig(pConfig),
+                      m_pTrackCollection(pTrackCollection),
+                      m_playlistDao(pTrackCollection->getPlaylistDAO()),
+                      m_trackDao(pTrackCollection->getTrackDAO()),
+                      m_pPlaylistTableModel(NULL),
+                      m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
@@ -96,7 +96,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     if (m_pPlaylistTableModel) {
-        m_pPlaylistTableModel->setPlaylist(playlistId);
+        m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
     }
 }
@@ -337,11 +337,12 @@ void BasePlaylistFeature::slotExportPlaylist() {
     }
 
     // Create a new table model since the main one might have an active search.
+    // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
         new PlaylistTableModel(this, m_pTrackCollection,
                                "mixxx.db.model.playlist_export"));
 
-    pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistTableModel->select();
 
