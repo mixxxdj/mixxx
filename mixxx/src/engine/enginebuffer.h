@@ -46,6 +46,7 @@ class ControlTTRotary;
 class ControlPotmeter;
 class CachingReader;
 class EngineBufferScale;
+class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineWorkerScheduler;
@@ -248,6 +249,7 @@ private:
     EngineBufferScaleLinear* m_pScaleLinear;
     /** Object used for pitch-indep time stretch (key lock) scaling of the audio */
     EngineBufferScaleST* m_pScaleST;
+    EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
 

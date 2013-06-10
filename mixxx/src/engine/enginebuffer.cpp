@@ -213,7 +213,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
 
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
-    //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
+    m_pScaleDummy = new EngineBufferScaleDummy(m_pReadAheadManager);
     setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
@@ -262,6 +262,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pTrackSampleRate;
 
     delete m_pScaleLinear;
+    delete m_pScaleDummy;
     delete m_pScaleST;
 
     delete m_pKeylock;
