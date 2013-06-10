@@ -42,20 +42,12 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     int preloop_samples = 0;
 
     if (loop_active) {
-        int samples_available;
-        if (in_reverse) {
-            samples_available = m_iCurrentPosition - loop_trigger;
-        } else {
-            samples_available = loop_trigger - m_iCurrentPosition;
-        }
+        int samples_available = in_reverse ?
+                m_iCurrentPosition - loop_trigger :
+                loop_trigger - m_iCurrentPosition;
+        preloop_samples = samples_available;
         samples_needed = math_max(0, math_min(samples_needed,
                                               samples_available));
-
-        if (in_reverse) {
-            preloop_samples = m_iCurrentPosition - loop_trigger;
-        } else {
-            preloop_samples = loop_trigger - m_iCurrentPosition;
-        }
     }
 
     if (in_reverse) {
@@ -94,12 +86,8 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
         if (loop_target != kNoTrigger) {
             m_iCurrentPosition = loop_target;
 
-            int loop_read_position = m_iCurrentPosition;
-            if (in_reverse) {
-                loop_read_position += preloop_samples;
-            } else {
-                loop_read_position -= preloop_samples;
-            }
+            int loop_read_position = m_iCurrentPosition +
+                    (in_reverse ? preloop_samples : -preloop_samples);
 
             int looping_samples_read = m_pReader->read(
                 loop_read_position, samples_read, m_pCrossFadeBuffer);

@@ -168,12 +168,10 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
 /** Stretch a specified buffer worth of audio using linear interpolation */
 CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         unsigned long buf_size, int* samples_read) {
-    long unscaled_samples_needed;
     float rate_add_new = m_dBaseRate;
     float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
     float rate_add = rate_add_new;
     float rate_add_diff = rate_add_new - rate_add_old;
-    double rate_add_abs;
 
     //Update the old base rate because we only need to
     //interpolate/ramp up the pitch changes once.
@@ -262,11 +260,11 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     }
 
     rate_add = rate_add_new;
-    rate_add_abs = fabs(rate_add);
+    double rate_add_abs = fabs(rate_add);
 
     //we're calculating mono samples, so divide remaining buffer by 2;
     samples += (rate_add_abs * ((float)(buf_size - iRateLerpLength)/2));
-    unscaled_samples_needed = floor(samples);
+    long unscaled_samples_needed = floor(samples);
 
     //if the current position fraction plus the future position fraction
     //loops over 1.0, we need to round up
@@ -285,14 +283,14 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     CSAMPLE prev_sample[2];
     CSAMPLE cur_sample[2];
 
-    prev_sample[0]=0;
-    prev_sample[1]=0;
-    cur_sample[0]=0;
-    cur_sample[1]=0;
+    prev_sample[0] = 0;
+    prev_sample[1] = 0;
+    cur_sample[0] = 0;
+    cur_sample[1] = 0;
 
     int i = 0;
     int screwups = 0;
-    while(i < buf_size) {
+    while (i < buf_size) {
         //shift indicies
         m_dCurSampleIndex = m_dNextSampleIndex;
 
@@ -332,18 +330,10 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             int samples_to_read = math_min(kiLinearScaleReadAheadLength,
                                            unscaled_samples_needed);
 
-            if(rate_add_new == 0) {
-                //qDebug() << "new rate was zero";
-                buffer_int_size = m_pReadAheadManager
-                                ->getNextSamples(rate_add_old,buffer_int,
-                                                 samples_to_read);
-                *samples_read += buffer_int_size;
-            } else {
-                buffer_int_size = m_pReadAheadManager
-                                ->getNextSamples(rate_add_new,buffer_int,
-                                                 samples_to_read);
-                *samples_read += buffer_int_size;
-            }
+            buffer_int_size = m_pReadAheadManager->getNextSamples(
+                rate_add_new == 0 ? rate_add_old : rate_add_new,
+                buffer_int, samples_to_read);
+            *samples_read += buffer_int_size;
 
             if (buffer_int_size == 0 && last_read_failed) {
                 break;
@@ -389,14 +379,11 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         buffer_count++;*/
 
         //increment the index for the next loop
-        if (i < iRateLerpLength)
-            m_dNextSampleIndex = m_dCurSampleIndex + fabs(rate_add);
-        else
-            m_dNextSampleIndex = m_dCurSampleIndex + rate_add_abs;
-
+        m_dNextSampleIndex = m_dCurSampleIndex +
+                (i < iRateLerpLength ? fabs(rate_add) : rate_add_abs);
         i+=2;
-
     }
+
     // If we broke out of the loop, zero the remaining samples
     // TODO(XXX) memset
     //for (; i < buf_size; i += 2) {
