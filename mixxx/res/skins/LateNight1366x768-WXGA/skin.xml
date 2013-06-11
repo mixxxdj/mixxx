@@ -16,7 +16,7 @@
 	Under the following conditions:
 	Attribution - You must attribute the work in the manner specified by the author or licensor
 	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor,
+	A attribution should include the following: The name of the author and/or licensor, 
 	the title of the work, the URL that is associated with the work.
 
 	Share Alike - If you alter, transform, or build upon this work, you may distribute
@@ -2241,7 +2241,7 @@
 
 				<!--Spacing between treeview and searchbar-->
 				QTreeView { margin: 6px 0px 0px 0px; }
-
+				
 				<!--triangle for closed/opened branches in treeview-->
 				QTreeView { show-decoration-selected: 0; } <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
 				QTreeView::branch:has-children:!has-siblings:closed,
@@ -2297,7 +2297,7 @@
 													-->
 													<Text>
 														<TooltipId>text</TooltipId>
-														<Style>QLabel {
+														<Style>QLabel { 
 														font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 														background-color: transparent;
 														color: #ACACAC;
@@ -2423,7 +2423,7 @@
 												border-bottom: 1px solid #656565;
 												background: transparent;
 												}
-												</Style>
+												</Style>												
 												<Children>
 												<!--
 												**********************************************
@@ -2440,7 +2440,7 @@
 														<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
 													</Connection>
 												</StatusLight>
-
+					
 												<!--
 												**********************************************
 												Visual - Volume level display
@@ -2535,7 +2535,7 @@
 					<NumberRate>
 						<TooltipId>rate_display</TooltipId>
 						<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: transparent; color: #EECE33; text-align: center; padding-right: 1px; }
+						background-color: transparent; color: #0099FF; text-align: center; padding-right: 1px; }
 						</Style>
 						<Channel>1</Channel>
 						<Pos>53,65</Pos>
@@ -2710,18 +2710,18 @@
 						<NumberStates>3</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_mode_abs2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_abs2.png</Unpressed>
+							<Pressed>btn_vinylcontrol_mode_abs1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_abs1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_mode_rel2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_rel2.png</Unpressed>
+							<Pressed>btn_vinylcontrol_mode_rel1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_rel1.png</Unpressed>
 						</State>
 						<State>
 							<Number>2</Number>
-							<Pressed>btn_vinylcontrol_mode_const2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_mode_const2.png</Unpressed>
+							<Pressed>btn_vinylcontrol_mode_const1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_mode_const1.png</Unpressed>
 						</State>
 						<Pos>5,8</Pos>
 						<Connection>
@@ -2740,18 +2740,18 @@
 						<NumberStates>3</NumberStates>
 						<State>
 							<Number>0</Number>
-							<Pressed>btn_vinylcontrol_cueing_off2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_off2.png</Unpressed>
+							<Pressed>btn_vinylcontrol_cueing_off1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_off1.png</Unpressed>
 						</State>
 						<State>
 							<Number>1</Number>
-							<Pressed>btn_vinylcontrol_cueing_one2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_one2.png</Unpressed>
+							<Pressed>btn_vinylcontrol_cueing_one1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_one1.png</Unpressed>
 						</State>
 						<State>
 							<Number>2</Number>
-							<Pressed>btn_vinylcontrol_cueing_hot2.png</Pressed>
-							<Unpressed>btn_vinylcontrol_cueing_hot2.png</Unpressed>
+							<Pressed>btn_vinylcontrol_cueing_hot1.png</Pressed>
+							<Unpressed>btn_vinylcontrol_cueing_hot1.png</Unpressed>
 						</State>
 						<Pos>5,97</Pos>
 						<Connection>
@@ -2818,11 +2818,7 @@
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
-						<HfcColor>#1b1b1b</HfcColor>
-						<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#EECE33</SignalLowColor>
-								<SignalMidColor>#C2A82A</SignalMidColor>
-								<SignalHighColor>#FFEFA3</SignalHighColor>
+						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -2875,11 +2871,7 @@
 						<!--<Size>i,73</Size>-->
 						<BgColor>#1C1C1C</BgColor>
 						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
-						<HfcColor>#1b1b1b</HfcColor>
-						<SignalColor>#EECE33</SignalColor>
-								<SignalLowColor>#EECE33</SignalLowColor>
-								<SignalMidColor>#C2A82A</SignalMidColor>
-								<SignalHighColor>#FFEFA3</SignalHighColor>
+						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
 						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
@@ -3044,7 +3036,7 @@
 					<NumberRate>
 						<TooltipId>rate_display</TooltipId>
 						<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-						background-color: transparent; color: #EECE33; text-align: center; padding-right: 1px; }
+						background-color: transparent; color: #E17800; text-align: center; padding-right: 1px; }
 						</Style>
 						<Channel>2</Channel>
 						<Pos>5,65</Pos>
@@ -3410,16 +3402,6 @@
 			RotaryFader- Master volume & balance
 			**********************************************
 			-->
-			<Time>
-		        <Style>QLabel { font: bold 13px/15px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-			            background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
-			            QToolTip { font: 11px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				        background-color: #191919; color: #CCCCCC; border: 1px solid #CCCCCC; padding: 4px; }
-		        </Style>
-		        <ClockFormat>12</ClockFormat>
-		        <Pos>440,25</Pos>
-		        <Size>205,21</Size>
-	        </Time>
 			<Knob>
 				<TooltipId>master_volume</TooltipId>
 				<Style></Style>
@@ -3619,7 +3601,7 @@
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 						<Connection>
-							<ConfigKey>[Channel1],play_sync</ConfigKey>
+							<ConfigKey>[Channel1],cue_set</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
 							<ButtonState>RightButton</ButtonState>
 							<ConnectValueToWidget>false</ConnectValueToWidget>
@@ -3647,7 +3629,7 @@
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 						<Connection>
-							<ConfigKey>[Channel2],play_sync</ConfigKey>
+							<ConfigKey>[Channel2],cue_set</ConfigKey>
 							<EmitOnDownPress>true</EmitOnDownPress>
 							<ButtonState>RightButton</ButtonState>
 							<ConnectValueToWidget>false</ConnectValueToWidget>
@@ -4110,23 +4092,6 @@
 							<ConfigKey>[Master],PeakIndicator</ConfigKey>
 						</Connection>
 					</StatusLight>
-<!--					<StatusLight>
-						<PathStatusLight>eq_bypass_left.png</PathStatusLight>
-						<PathBack>eq_bypass_none.png</PathBack>
-						<Pos>15,41</Pos>
-						<Connection>
-							<ConfigKey>[Master],bypass_eq</ConfigKey>
-						</Connection>
-					</StatusLight>
-
-					<StatusLight>
-						<PathStatusLight>eq_bypass_right.png</PathStatusLight>
-						<PathBack>eq_bypass_none.png</PathBack>
-						<Pos>248,41</Pos>
-						<Connection>
-							<ConfigKey>[Master],bypass_eq</ConfigKey>
-						</Connection>
-					</StatusLight>-->
 				</Children>
 			</WidgetGroup>
 
@@ -4151,51 +4116,48 @@
 			**********************************************
 			-->
 			<StatusLight>
-				<NumberPos>4</NumberPos>
 				<TooltipId>vinylcontrol_status</TooltipId>
 				<Style></Style>
+				<NumberPos>3</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
-				<PathStatusLight4>btn_vinylcontrol_indicator_horizontal4.png</PathStatusLight4>
 				<Pos>0,-0</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
 				</Connection>
 			</StatusLight>
 			<StatusLight>
-				<NumberPos>4</NumberPos>
 				<TooltipId>vinylcontrol_status</TooltipId>
 				<Style></Style>
+				<NumberPos>3</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
-				<PathStatusLight4>btn_vinylcontrol_indicator_horizontal4.png</PathStatusLight4>
 				<Pos>0,108</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
 				</Connection>
 			</StatusLight>
 			<StatusLight>
-				<NumberPos>4</NumberPos>
 				<TooltipId>vinylcontrol_status</TooltipId>
 				<Style></Style>
+				<NumberPos>3</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
-				<PathStatusLight4>btn_vinylcontrol_indicator_vertical4.png</PathStatusLight4>
 				<Pos>0,-2</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
 				</Connection>
 			</StatusLight>
 			<StatusLight>
-				<NumberPos>4</NumberPos>
 				<TooltipId>vinylcontrol_status</TooltipId>
+				<Style></Style>
+				<NumberPos>3</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
-                <PathStatusLight4>btn_vinylcontrol_indicator_vertical4.png</PathStatusLight4>
 				<Pos>520,0</Pos>
 				<Connection>
 					<ConfigKey>[Channel1],vinylcontrol_status</ConfigKey>
@@ -4216,7 +4178,7 @@
 				<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
 				<BgColor></BgColor>
 				<BgPixmap></BgPixmap>
-				<SignalColor>#EECE33</SignalColor>
+				<SignalColor>#0099FF</SignalColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
@@ -4251,9 +4213,10 @@
 			**********************************************
 			-->
 			<TrackProperty>
-				<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }</Style>
 				<TooltipId>track_title</TooltipId>
+				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
+				</Style>
 				<Property>title</Property>
 				<Channel>1</Channel>
 				<Pos>0,1</Pos>
@@ -4266,10 +4229,10 @@
 			**********************************************
 			-->
 			<TrackProperty>
-				<Tooltip>Track Artist&#10;Displays the artist of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-				<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }</Style>
 				<TooltipId>track_artist</TooltipId>
+				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
+				</Style>
 				<Property>artist</Property>
 				<Channel>1</Channel>
 				<Pos>0,25</Pos>
@@ -4284,7 +4247,7 @@
 			<TrackProperty>
 				<TooltipId>track_album</TooltipId>
 				<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
 				</Style>
 				<Property>album</Property>
 				<Channel>1</Channel>
@@ -4300,7 +4263,7 @@
 			<NumberBpm>
 				<TooltipId>visual_bpm</TooltipId>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				background-color: transparent; color: #0099FF; text-align: left;padding-left: 1px; }
 				</Style>
 				<Channel>1</Channel>
 				<Pos>421,1</Pos>
@@ -4318,10 +4281,10 @@
 			**********************************************
 			-->
 			<NumberPos>
-				<Tooltip>Time&#10;Displays the elapsed or remaining time of the track loaded.&#10;Click to toggle between time elapsed/remaining time.&#10;</Tooltip>
-				<Style>QLabel { font: bold 14px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }</Style>
 				<TooltipId>track_time</TooltipId>
+				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #0099FF; text-align: left;padding-left: 1px; }
+				</Style>
 				<Channel>1</Channel>
 				<Pos>401,25</Pos>
 				<Size>120,23</Size>
@@ -4340,7 +4303,7 @@
 			<TrackProperty>
 				<TooltipId>track_duration</TooltipId>
 				<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #0099FF; text-align: left; padding-left: 1px; }
 				</Style>
 				<Property>durationFormatted</Property>
 				<Channel>1</Channel>
@@ -5136,51 +5099,47 @@
 			-->
 			<StatusLight>
 				<TooltipId>vinylcontrol_status</TooltipId>
-				<NumberPos>4</NumberPos>
 				<Style></Style>
+				<NumberPos>3</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
-				<PathStatusLight4>btn_vinylcontrol_indicator_horizontal4.png</PathStatusLight4>
 				<Pos>0,-0</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
 				</Connection>
 			</StatusLight>
 			<StatusLight>
-				<NumberPos>4</NumberPos>
 				<TooltipId>vinylcontrol_status</TooltipId>
 				<Style></Style>
+				<NumberPos>3</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_horizontal1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_horizontal2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_horizontal3.png</PathStatusLight3>
-				<PathStatusLight4>btn_vinylcontrol_indicator_horizontal4.png</PathStatusLight4>
 				<Pos>0,108</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
 				</Connection>
 			</StatusLight>
 			<StatusLight>
-				<NumberPos>4</NumberPos>
 				<TooltipId>vinylcontrol_status</TooltipId>
 				<Style></Style>
+				<NumberPos>3</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
-				<PathStatusLight4>btn_vinylcontrol_indicator_vertical4.png</PathStatusLight4>
 				<Pos>0,-2</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
 				</Connection>
 			</StatusLight>
 			<StatusLight>
-				<NumberPos>4</NumberPos>
 				<TooltipId>vinylcontrol_status</TooltipId>
 				<Style></Style>
+				<NumberPos>3</NumberPos>
 				<PathStatusLight>btn_vinylcontrol_indicator_vertical1.png</PathStatusLight>
 				<PathStatusLight2>btn_vinylcontrol_indicator_vertical2.png</PathStatusLight2>
 				<PathStatusLight3>btn_vinylcontrol_indicator_vertical3.png</PathStatusLight3>
-				<PathStatusLight4>btn_vinylcontrol_indicator_vertical4.png</PathStatusLight4>
 				<Pos>520,0</Pos>
 				<Connection>
 					<ConfigKey>[Channel2],vinylcontrol_status</ConfigKey>
@@ -5201,7 +5160,7 @@
 				<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
 				<BgColor></BgColor>
 				<BgPixmap></BgPixmap>
-				<SignalColor>#EECE33</SignalColor>
+				<SignalColor>#E17800</SignalColor>
 				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
@@ -5236,10 +5195,10 @@
 			**********************************************
 			-->
 			<TrackProperty>
-				<Tooltip>Track title&#10;Displays the title of the loaded track.&#10;Informations are extracted from the tracks tags.&#10;</Tooltip>
-				<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }</Style>
 				<TooltipId>track_title</TooltipId>
+				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
+				</Style>
 				<Property>title</Property>
 				<Channel>2</Channel>
 				<Pos>0,1</Pos>
@@ -5252,9 +5211,10 @@
 			**********************************************
 			-->
 			<TrackProperty>
-				<Style>QLabel { font: bold 14px/16px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }</Style>
 				<TooltipId>track_artist</TooltipId>
+				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
+				</Style>
 				<Property>artist</Property>
 				<Channel>2</Channel>
 				<Pos>0,25</Pos>
@@ -5269,7 +5229,7 @@
 			<TrackProperty>
 				<TooltipId>track_album</TooltipId>
 				<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
 				</Style>
 				<Property>album</Property>
 				<Channel>2</Channel>
@@ -5285,7 +5245,7 @@
 			<NumberBpm>
 				<TooltipId>visual_bpm</TooltipId>
 				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }
+				background-color: transparent; color: #E17800; text-align: left;padding-left: 1px; }
 				</Style>
 				<Channel>2</Channel>
 				<Pos>421,1</Pos>
@@ -5303,9 +5263,10 @@
 			**********************************************
 			-->
 			<NumberPos>
-				<Style>QLabel { font: bold 14px/18px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left;padding-left: 1px; }</Style>
 				<TooltipId>track_time</TooltipId>
+				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
+				background-color: transparent; color: #E17800; text-align: left;padding-left: 1px; }
+				</Style>
 				<Channel>2</Channel>
 				<Pos>401,25</Pos>
 				<Size>120,23</Size>
@@ -5324,7 +5285,7 @@
 			<TrackProperty>
 				<TooltipId>track_duration</TooltipId>
 				<Style>QLabel { font: 12px/14px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #EECE33; text-align: left; padding-left: 1px; }
+				background-color: transparent; color: #E17800; text-align: left; padding-left: 1px; }
 				</Style>
 				<Property>durationFormatted</Property>
 				<Channel>2</Channel>
