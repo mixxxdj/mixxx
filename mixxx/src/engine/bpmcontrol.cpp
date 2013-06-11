@@ -475,11 +475,27 @@ bool BpmControl::syncPhase() {
     return true;
 }
 
-// When enginebuffer is seeking it wants the offset from the new position,
-// not the current position.
 double BpmControl::getPhaseOffset(double reference_position) {
-    double dOtherBeatFraction;
+    // Without a beatgrid, we don't know the phase offset.
+    if (!m_pBeats) {
+        return 0;
+    }
 
+    // Get the current position of this deck.
+    double dThisPosition = reference_position;
+    double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
+    double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
+
+    if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
+        return 0;
+    }
+
+    // Protect against the case where we are sitting exactly on the beat.
+    if (dThisPrevBeat == dThisNextBeat) {
+        dThisNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
+    }
+
+    double dOtherBeatFraction;
     if (m_iSyncState == SYNC_SLAVE) {
         //if we're a slave, easy to get the other beat fraction
         dOtherBeatFraction = m_pMasterBeatDistance->get();
@@ -519,27 +535,7 @@ double BpmControl::getPhaseOffset(double reference_position) {
         dOtherBeatFraction = (dOtherPosition - dOtherPrevBeat) / dOtherBeatLength;
     }
 
-    if (!m_pBeats) {
-        return 0;
-    }
-
-    // Get the current position of both decks
-    double dThisPosition = reference_position;
-    double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
-    double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
-
-    if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
-        return 0;
-    }
-
-    // Protect against the case where we are sitting exactly on the beat.
-    if (dThisPrevBeat == dThisNextBeat) {
-        dThisNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
-    }
-
     double dThisBeatLength = fabs(dThisNextBeat - dThisPrevBeat);
-
-    double dNewPlaypos;
     bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
     bool other_near_next = dOtherBeatFraction >= 0.5;
 
@@ -560,13 +556,14 @@ double BpmControl::getPhaseOffset(double reference_position) {
     // infinite beatgrids because the assumption that findNthBeat(-2) always
     // works will be wrong then.
 
+    double dNewPlaypos = (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
     if (this_near_next == other_near_next) {
-        dNewPlaypos = dThisPrevBeat + (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
+        dNewPlaypos += dThisPrevBeat;
     } else if (this_near_next && !other_near_next) {
-        dNewPlaypos = dThisNextBeat + (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
+        dNewPlaypos += dThisNextBeat;
     } else {  //!this_near_next && other_near_next
         dThisPrevBeat = m_pBeats->findNthBeat(dThisPosition, -2);
-        dNewPlaypos = dThisPrevBeat + (dOtherBeatFraction + m_dUserOffset) * dThisBeatLength;
+        dNewPlaypos += dThisPrevBeat;
     }
 
     // We might be seeking outside the loop.
