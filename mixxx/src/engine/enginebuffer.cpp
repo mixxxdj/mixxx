@@ -107,8 +107,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
-    m_pValidatePlay = new ValidatePlay(this);
-    m_playButton->setValidator(m_pValidatePlay);
+    m_playButton->setValidator(new ValidatePlay(this));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
 
     //Play from Start Button (for sampler)
@@ -274,8 +273,6 @@ EngineBuffer::~EngineBuffer()
         EngineControl* pControl = m_engineControls.takeLast();
         delete pControl;
     }
-
-    delete m_pValidatePlay;
 }
 
 double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
@@ -910,11 +907,13 @@ void EngineBuffer::setReader(CachingReader* pReader) {
 
 bool EngineBuffer::validatePlayAndRecover() const {
     if (isTrackLoaded() || m_iTrackLoading != 0) return true;
-    m_playButton->set(0.0f);
     return false;
 }
 
 inline bool ValidatePlay::validateChange(double value) const {
     if (value == 0.0) return true;
+    if (m_pEngineBuffer == NULL) {
+        return false;
+    }
     return (m_pEngineBuffer->validatePlayAndRecover());
 }

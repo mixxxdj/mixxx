@@ -10,6 +10,7 @@
 #include "control/controlbehavior.h"
 #include "control/controlvalidator.h"
 #include "control/controlvalue.h"
+#include "configobject.h"
 
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
@@ -31,10 +32,15 @@ class ControlDoublePrivate : public QObject {
         return getControl(key, bCreate, bIgnoreNops, bTrack);
     }
 
-    void setValidator(ControlObjectValidator* validator) { m_pValidator = validator; }
+    void setValidator(ControlValidator* validator) {
+        if (m_pValidator) {
+            delete m_pValidator;
+        }
+        m_pValidator = validator;
+    }
 
-    // Sets the control value.
-    void set(const double& value, QObject* pSetter);
+    // Sets the control value.  Returns true if the set was successful.1
+    bool set(const double& value, QObject* pSetter);
     // Gets the control value.
     double get() const;
     // Resets the control value to its default.
@@ -71,6 +77,7 @@ class ControlDoublePrivate : public QObject {
 
   private:
     ConfigKey m_key;
+    // Optional custom validation object to decide if the set command should be allowed.
     ControlValidator* m_pValidator;
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;

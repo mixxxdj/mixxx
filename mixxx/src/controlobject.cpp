@@ -36,16 +36,15 @@ ControlObject::ControlObject()
         : m_pControl(NULL) {
 }
 
-ControlObject::ControlObject(ConfigKey key, ControlValidator *validator,
-                             bool bIgnoreNops, bool bTrack)
+ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
         : m_pControl(NULL) {
-    initialize(key, validator, bIgnoreNops, bTrack);
+    initialize(key, bIgnoreNops, bTrack);
 }
 
-ControlObject::ControlObject(const QString& group, const QString& item, ControlValidator *validator,
+ControlObject::ControlObject(const QString& group, const QString& item,
                              bool bIgnoreNops, bool bTrack)
         : m_pControl(NULL) {
-    initialize(ConfigKey(group, item), validator, bIgnoreNops, bTrack);
+    initialize(ConfigKey(group, item), bIgnoreNops, bTrack);
 }
 
 ControlObject::~ControlObject() {
@@ -54,11 +53,9 @@ ControlObject::~ControlObject() {
     m_sqCOHashMutex.unlock();
 }
 
-void ControlObject::initialize(ConfigKey key, ControlValidator *validator,
-                               bool bIgnoreNops, bool bTrack) {
+void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
     m_key = key;
     m_pControl = ControlDoublePrivate::getControl(m_key, true, bIgnoreNops, bTrack);
-    m_pControl->setValidator(validator);
     connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);

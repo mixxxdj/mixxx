@@ -23,6 +23,7 @@
 #include <QAtomicInt>
 
 #include "defs.h"
+#include "control/controlvalidator.h"
 #include "controlobject.h"
 #include "engine/engineobject.h"
 #include "trackinfoobject.h"
@@ -84,11 +85,11 @@ const int ENGINE_RAMP_UP = 1;
 
 class EngineBuffer;
 
-class ValidatePlay : public ControlObjectValidator
+class ValidatePlay : public ControlValidator
 {
   public:
     ValidatePlay(EngineBuffer* engine)
-      : ControlObjectValidator(),
+      : ControlValidator(),
         m_pEngineBuffer(engine) { }
 
   protected:
@@ -293,9 +294,6 @@ private:
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
-
-    // Validators for control objects;
-    ValidatePlay* m_pValidatePlay;
 
 #ifdef __SCALER_DEBUG__
     QFile df;

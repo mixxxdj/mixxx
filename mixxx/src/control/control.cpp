@@ -48,6 +48,9 @@ ControlDoublePrivate::~ControlDoublePrivate() {
     m_sqCOHashMutex.lock();
     m_sqCOHash.remove(m_key);
     m_sqCOHashMutex.unlock();
+    if (m_pValidator) {
+        delete m_pValidator;
+    }
 }
 
 // static
@@ -85,22 +88,22 @@ void ControlDoublePrivate::reset(QObject* pSender) {
     set(defaultValue, pSender);
 }
 
-void ControlDoublePrivate::set(const double& value, QObject* pSender) {
+bool ControlDoublePrivate::set(const double& value, QObject* pSender) {
     if (m_bIgnoreNops && get() == value) {
-        return;
+        return true;
     }
 
     double dValue = value;
     // If the behavior says to ignore the set, ignore it.
     ControlNumericBehavior* pBehavior = m_pBehavior;
     if (pBehavior && !pBehavior->setFilter(&dValue)) {
-        return;
+        return false;
     }
 
     // Copy to a local to prevent race conditions
     ControlValidator* validator = m_pValidator;
     if (validator && validator->validateChange(dValue)) {
-        return;
+        return false;
     }
     m_value.setValue(dValue);
     emit(valueChanged(dValue, pSender));
@@ -109,6 +112,7 @@ void ControlDoublePrivate::set(const double& value, QObject* pSender) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
                     static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
     }
+    return true;
 }
 
 ControlNumericBehavior* ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
