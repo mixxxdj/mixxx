@@ -591,8 +591,10 @@ double BpmControl::getPhaseOffset(double reference_position) {
     return dNewPlaypos - dThisPosition;
 }
 
-void BpmControl::setEngineBpmByRate(double rate) {
-    m_pEngineBpm->set(rate * m_pFileBpm->get());
+void BpmControl::onEngineRateChange(double rate) {
+    if (m_pSyncState->get() == SYNC_SLAVE) {
+        m_pEngineBpm->set(rate * m_pFileBpm->get());
+    }
 }
 
 void BpmControl::slotAdjustBpm() {

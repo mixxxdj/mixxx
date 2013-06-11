@@ -21,7 +21,7 @@ class BpmControl : public EngineControl {
     virtual ~BpmControl();
     double getBpm() const;
     double getFileBpm() const { return m_dFileBpm; }
-    void setEngineBpmByRate(double rate);
+    void onEngineRateChange(double rate);
     double getBeatDistance() const;
     int getSyncState() const { return m_pSyncState->get(); }
     double getSyncAdjustment() const;

@@ -638,9 +638,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                     setNewPlaypos(m_filepos_play);
                 }
             }
-            if (m_pBpmControl->getSyncState() == SYNC_SLAVE) {
-                m_pBpmControl->setEngineBpmByRate(rate);
-            }
+            m_pBpmControl->onEngineRateChange(rate);
 
             rate = m_pScale->setTempo(rate);
             resample_rate = rate * baserate;
