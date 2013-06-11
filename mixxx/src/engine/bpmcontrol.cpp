@@ -108,7 +108,7 @@ BpmControl::BpmControl(const char* _group,
             Qt::DirectConnection);
 
     // how far past the last beat are we?
-    m_pThisBeatDistance = new ControlObject(ConfigKey(m_group, "beat_distance"));
+    m_pThisBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
 
     m_pMasterBeatDistance = ControlObject::getControl(ConfigKey("[Master]", "beat_distance"));
     connect(m_pMasterBeatDistance, SIGNAL(valueChangedFromEngine(double)),
@@ -669,9 +669,14 @@ double BpmControl::process(const double dRate,
                            const double dCurrentSample,
                            const double dTotalSamples,
                            const int iBufferSize) {
+    Q_UNUSED(dRate);
+    Q_UNUSED(dCurrentSample);
+    Q_UNUSED(dTotalSamples);
+    Q_UNUSED(iBufferSize);
     // It doesn't make sense to me to use the position before update, but this
     // results in better sync.
     if (m_pSyncState->get() == SYNC_MASTER) {
         m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
     }
+    return kNoTrigger;
 }
