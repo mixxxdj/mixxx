@@ -62,9 +62,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 #endif
 
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, pConfig);
+    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pPlaylistFeature);
-    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, pConfig);
+    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
@@ -222,21 +222,16 @@ void Library::slotRestoreSearch(const QString& text) {
     emit(restoreSearch(text));
 }
 
-void Library::slotRefreshLibraryModels()
-{
-	QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
-	m_pMixxxLibraryFeature->setLibraryPrefix(prefix);
-	m_pMixxxLibraryFeature->refreshLibraryModels();
-    m_pPrepareFeature->refreshLibraryModels();
+void Library::slotRefreshLibraryModels() {
+   m_pMixxxLibraryFeature->refreshLibraryModels();
+   m_pPrepareFeature->refreshLibraryModels();
 }
 
-void Library::slotCreatePlaylist()
-{
+void Library::slotCreatePlaylist() {
     m_pPlaylistFeature->slotCreatePlaylist();
 }
 
-void Library::slotCreateCrate()
-{
+void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
 

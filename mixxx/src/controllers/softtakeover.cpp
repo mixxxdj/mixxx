@@ -6,11 +6,11 @@
     email                : spappalardo@mixxx.org
  ***************************************************************************/
 
-#include <math.h>  // for fabs()
-#include <qdatetime.h>
+#include <QDateTime>
 
 #include "controllers/softtakeover.h"
 #include "controlpotmeter.h"
+#include "mathstuff.h"
 
 // static
 uint SoftTakeover::currentTimeMsecs() {
@@ -57,7 +57,7 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
         //  - it's been awhile since the controller last affected this MixxxControl
 
         // 3/128 units away from the current is enough to catch fast non-sequential moves
-        //  but not cause an audially noticeable jump.
+        //  but not cause an audibly noticeable jump.
         float threshold = 3.0f;
 
         if (!midiVal) {
@@ -79,7 +79,7 @@ bool SoftTakeover::ignore(ControlObject* control, float newValue, bool midiVal) 
             threshold = scaleFactor*(threshold/128.0f);
         }
 
-        double currentValue = midiVal ? control->GetMidiValue() : control->get();
+        double currentValue = midiVal ? control->getValueToMidi() : control->get();
         double difference = currentValue - newValue;
         double prevDiff = 0;
         bool sameSide = false;

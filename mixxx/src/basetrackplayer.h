@@ -28,6 +28,10 @@ class BaseTrackPlayer : public BasePlayer {
     TrackPointer getLoadedTrack() const;
     EngineDeck* getEngineDeck() const;
 
+    // TODO(XXX): Only exposed to let the passthrough AudioInput get
+    // connected. Delete me when EngineMaster supports AudioInput assigning.
+    EngineDeck* getEngineDeck() const;
+
   public slots:
     void slotLoadTrack(TrackPointer track, bool bPlay=false);
     void slotFinishLoading(TrackPointer pTrackInfoObject);
@@ -59,6 +63,7 @@ class BaseTrackPlayer : public BasePlayer {
 
     EngineDeck* m_pChannel;
     ControlObjectThreadMain* m_pPlay;
+    EngineDeck* m_pChannel;
 };
 
 

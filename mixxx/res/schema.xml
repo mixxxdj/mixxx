@@ -328,4 +328,14 @@ METADATA
       ALTER TABLE Library ADD COLUMN beats_sub_version TEXT DEFAULT '';
     </sql>
   </revision>
+  <revision version="18" min_compatible="3">
+    <description>
+      Add keys column to library table.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN keys BLOB;
+      ALTER TABLE Library ADD COLUMN keys_version TEXT;
+      ALTER TABLE Library ADD COLUMN keys_sub_version TEXT;
+    </sql>
+  </revision>
 </schema>

@@ -381,7 +381,7 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
     // (prefs, etc), minimal ifdefs :) -- bkgood
     types.append(VINYLCONTROL);
 #else
-	types.append(EXTPASSTHROUGH);
+    types.append(EXTPASSTHROUGH);
 #endif
     types.append(MICROPHONE);
     return types;

@@ -29,7 +29,8 @@
  * - cratefeature.cpp
  * - *feature.cpp
  */
-TreeItem::TreeItem(const QString &data, const QString &data_path, LibraryFeature* feature, TreeItem* parent) {
+TreeItem::TreeItem(const QString &data, const QString &data_path,
+                   LibraryFeature* feature, TreeItem* parent) {
     m_data = data;
     m_dataPath = data_path;
     m_parentItem = parent;
@@ -101,7 +102,7 @@ bool TreeItem::insertChildren(QList<TreeItem*> &data, int position, int count) {
 
     for (int row = 0; row < count; ++row) {
         TreeItem* item = data.at(row);
-        m_childItems.insert(row, item);
+        m_childItems.insert(position + row, item);
     }
 
     return true;

@@ -12,19 +12,13 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
+#include "mathstuff.h"
 
 // #include <QScriptSyntaxCheckResult>
 
 // Used for id's inside controlConnection objects
 // (closure compatible version of connectControl)
 #include <QUuid>
-
-#ifdef _MSC_VER
-    #include <float.h>  // for _isnan() on VC++
-    #define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
-#else
-    #include <math.h>  // for isnan() everywhere else
-#endif
 
 const int kDecks = 16;
 
@@ -646,11 +640,11 @@ void ControllerEngine::setValue(QString group, QString name, double newValue) {
 
     ControlObjectThread *cot = getControlObjectThread(group, name);
 
-    if (cot != NULL && !m_st.ignore(cot->getControlObject(), newValue)) {
-        cot->slotSet(newValue);
-        // We call emitValueChanged so that script functions connected to this
-        // control will get updates.
-        cot->emitValueChanged();
+    if (cot != NULL) {
+        ControlObject* pControl = ControlObject::getControl(cot->getKey());
+        if (pControl && !m_st.ignore(pControl, newValue)) {
+            cot->slotSet(newValue);
+        }
     }
 }
 
@@ -670,7 +664,7 @@ void ControllerEngine::log(QString message) {
    -------- ------------------------------------------------------ */
 void ControllerEngine::trigger(QString group, QString name) {
     ControlObjectThread *cot = getControlObjectThread(group, name);
-    if(cot != NULL) {
+    if (cot != NULL) {
         cot->emitValueChanged();
     }
 }
@@ -709,6 +703,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
 
         function = m_pEngine->evaluate(callback.toString());
         if (checkException() || !function.isFunction()) {
+            qWarning() << "Could not evaluate callback function:" << callback.toString();
             return QScriptValue(FALSE);
         } else if (m_connectedControls.contains(key, cb)) {
             // Do not allow multiple connections to named functions
@@ -773,9 +768,8 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
 
         m_connectedControls.insert(key, conn);
         return m_pEngine->newQObject(
-                    new ControllerEngineConnectionScriptValue(conn),
-                    QScriptEngine::ScriptOwnership
-                );
+            new ControllerEngineConnectionScriptValue(conn),
+            QScriptEngine::ScriptOwnership);
     }
 
     return QScriptValue(FALSE);
@@ -821,14 +815,9 @@ void ControllerEngine::slotValueChanged(double value) {
         return;
     }
 
-    ControlObject* pSenderCO = senderCOT->getControlObject();
-    if (pSenderCO == NULL) {
-        qWarning() << "ControllerEngine::slotValueChanged() The sender's CO is NULL.";
-        return;
-    }
-    ConfigKey key = pSenderCO->getKey();
+    ConfigKey key = senderCOT->getKey();
 
-//     qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
+    //qDebug() << "[Controller]: SlotValueChanged" << key.group << key.item;
 
     if (m_connectedControls.contains(key)) {
         QHash<ConfigKey, ControllerEngineConnection>::iterator iter =

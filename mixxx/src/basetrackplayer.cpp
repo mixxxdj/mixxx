@@ -279,3 +279,7 @@ void BaseTrackPlayer::slotSetReplayGain(double replayGain) {
         m_pReplayGain->slotSet(replayGain);
     }
 }
+
+EngineDeck* BaseTrackPlayer::getEngineDeck() const {
+    return m_pChannel;
+}

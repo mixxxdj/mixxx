@@ -1,4 +1,3 @@
-// basesqltablemodel.h
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
 #include <QtAlgorithms>
@@ -9,7 +8,9 @@
 
 #include "library/stardelegate.h"
 #include "library/starrating.h"
+#include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
+#include "library/queryutil.h"
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 #include "playerinfo.h"
@@ -18,16 +19,15 @@ const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
-                                     QSqlDatabase db,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
-           TrackModel(db, settingsNamespace),
-           m_currentSearch(""),
-           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-           m_iPreviewDeckTrackId(-1),
+           TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_database(db) {
+           m_database(pTrackCollection->getDatabase()),
+           m_currentSearch(""),
+           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
+           m_iPreviewDeckTrackId(-1) {
     m_bInitialized = false;
     m_bDirty = true;
     m_iSortColumn = 0;
@@ -193,8 +193,7 @@ void BaseSqlTableModel::select() {
     query.prepare(queryString);
 
     if (!query.exec()) {
-        qDebug() << this << "select() error:" << __FILE__ << __LINE__
-                 << query.executedQuery() << query.lastError();
+        LOG_FAILED_QUERY(query);
         return;
     }
 
@@ -358,7 +357,7 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString extra
     m_bDirty = true;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString extraFilter) {
+void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
@@ -468,9 +467,13 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
 				if (value.toString().startsWith(m_sPrefix))
 					return value.toString().remove(0, m_sPrefix.size() + 1);
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
-                value = value.toDateTime().toString("yyyy-MM-dd"); //I prefer year first
+                QDateTime gmtDate = value.toDateTime();
+                gmtDate.setTimeSpec(Qt::UTC);
+                value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-                value = value.toDateTime().time();
+                QDateTime gmtDate = value.toDateTime();
+                gmtDate.setTimeSpec(Qt::UTC);
+                value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             }
@@ -622,6 +625,10 @@ int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
         return -1;
     }
     return index.sibling(index.row(), fieldIndex(m_idColumn)).data().toInt();
+}
+
+TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
+    return m_trackDAO.getTrack(getTrackId(index));
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -806,6 +813,8 @@ void BaseSqlTableModel::setLibraryPrefix(QString sPrefix)
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
+    } else if (i == fieldIndex(LIBRARYTABLE_BPM)) {
+        return new BPMDelegate(pParent, i, fieldIndex(LIBRARYTABLE_BPM_LOCK));
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
         return new PreviewButtonDelegate(pParent, i);
     }

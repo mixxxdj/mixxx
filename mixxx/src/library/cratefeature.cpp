@@ -20,7 +20,8 @@
 #include "soundsourceproxy.h"
 
 CrateFeature::CrateFeature(QObject* parent,
-                           TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
+                           TrackCollection* pTrackCollection,
+                           ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection),
@@ -156,9 +157,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
         return;
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
-    m_crateTableModel.setCrate(crateId);
-    QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
-    m_crateTableModel.setLibraryPrefix(prefix);
+    m_crateTableModel.setTableModel(crateId);
     emit(showTrackModel(&m_crateTableModel));
 }
 
@@ -478,13 +477,10 @@ void CrateFeature::slotImportPlaylist()
     //qDebug() << "Size of Imported Playlist: " << entries.size();
 
     //Iterate over the List that holds URLs of playlist entires
-    for (int i = 0; i < entries.size(); ++i) {
-        m_crateTableModel.addTrack(QModelIndex(), entries[i]);
-        //qDebug() << "Playlist entry: " << entries[i];
-    }
+    m_crateTableModel.addTracks(QModelIndex(), entries);
 
     //delete the parser object
-    if(playlist_parser)
+    if (playlist_parser)
         delete playlist_parser;
 }
 
@@ -509,7 +505,7 @@ void CrateFeature::slotExportPlaylist(){
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setCrate(m_crateTableModel.getCrate());
+    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
     pCrateTableModel->select();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
@@ -547,7 +543,7 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     clearChildModel();
     m_lastRightClickedIndex = constructChildModel(crateId);
     // Switch the view to the crate.
-    m_crateTableModel.setCrate(crateId);
+    m_crateTableModel.setTableModel(crateId);
     // Update selection
     emit(featureSelect(this, m_lastRightClickedIndex));
 }

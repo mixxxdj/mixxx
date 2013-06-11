@@ -34,7 +34,8 @@ DlgPrepare::DlgPrepare(QWidget* parent,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pPrepareLibraryTableView);
 
-    m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this, pTrackCollection);
+    m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this,
+                                    pTrackCollection);
     m_pPrepareLibraryTableView->loadTrackModel(m_pPrepareLibraryTableModel);
 
 /*
@@ -117,7 +118,7 @@ void DlgPrepare::tableSelectionChanged(const QItemSelection& selected,
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
     bool tracksSelected = m_pPrepareLibraryTableView->selectionModel()->hasSelection();
-    pushButtonAnalyze->setEnabled(tracksSelected);
+    pushButtonAnalyze->setEnabled(tracksSelected || m_bAnalysisActive);
 }
 
 void DlgPrepare::selectAll() {
