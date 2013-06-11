@@ -8,10 +8,8 @@
 #include <QAtomicPointer>
 
 #include "control/controlbehavior.h"
+#include "control/controlvalidator.h"
 #include "control/controlvalue.h"
-#include "configobject.h"
-
-class ControlObjectValidator;
 
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
@@ -73,7 +71,7 @@ class ControlDoublePrivate : public QObject {
 
   private:
     ConfigKey m_key;
-    ControlObjectValidator* m_pValidator;
+    ControlValidator* m_pValidator;
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
 

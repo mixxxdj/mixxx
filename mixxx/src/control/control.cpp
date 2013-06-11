@@ -96,7 +96,12 @@ void ControlDoublePrivate::set(const double& value, QObject* pSender) {
     if (pBehavior && !pBehavior->setFilter(&dValue)) {
         return;
     }
-    if (m_pValidator && !m_pValidator->validateChange(dValue)) return;
+
+    // Copy to a local to prevent race conditions
+    ControlValidator* validator = m_pValidator;
+    if (validator && validator->validateChange(dValue)) {
+        return;
+    }
     m_value.setValue(dValue);
     emit(valueChanged(dValue, pSender));
 

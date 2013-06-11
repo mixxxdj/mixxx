@@ -23,6 +23,7 @@
 #include "controlobject.h"
 #include "controlevent.h"
 #include "control/control.h"
+#include "control/controlvalidator.h"
 #include "util/stat.h"
 #include "util/timer.h"
 
@@ -32,21 +33,19 @@ QMutex ControlObject::m_sqCOHashMutex;
 
 
 ControlObject::ControlObject()
-        : m_pControl(NULL),
-          m_pValidator(NULL) {
+        : m_pControl(NULL) {
 }
 
-ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
-        : m_pControl(NULL),
-          m_pValidator(NULL) {
-    initialize(key, bIgnoreNops, bTrack);
-}
-
-ControlObject::ControlObject(const QString& group, const QString& item,
+ControlObject::ControlObject(ConfigKey key, ControlValidator *validator,
                              bool bIgnoreNops, bool bTrack)
-        : m_pControl(NULL),
-          m_pValidator(NULL) {
-    initialize(ConfigKey(group, item), bIgnoreNops, bTrack);
+        : m_pControl(NULL) {
+    initialize(key, validator, bIgnoreNops, bTrack);
+}
+
+ControlObject::ControlObject(const QString& group, const QString& item, ControlValidator *validator,
+                             bool bIgnoreNops, bool bTrack)
+        : m_pControl(NULL) {
+    initialize(ConfigKey(group, item), validator, bIgnoreNops, bTrack);
 }
 
 ControlObject::~ControlObject() {
@@ -55,10 +54,11 @@ ControlObject::~ControlObject() {
     m_sqCOHashMutex.unlock();
 }
 
-void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
+void ControlObject::initialize(ConfigKey key, ControlValidator *validator,
+                               bool bIgnoreNops, bool bTrack) {
     m_key = key;
     m_pControl = ControlDoublePrivate::getControl(m_key, true, bIgnoreNops, bTrack);
-    m_pControl->setValidator(m_pValidator);
+    m_pControl->setValidator(validator);
     connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);
