@@ -3,7 +3,6 @@
 
 class ControlValidator {
   public:
-    ControlValidator() { }
     virtual ~ControlValidator() {};
 
     // Subclasses override this function to provide a way to reject invalid settings.

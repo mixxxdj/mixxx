@@ -107,7 +107,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
-    m_playButton->setValidator(new ValidatePlay(this));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
 
     //Play from Start Button (for sampler)
@@ -381,6 +380,7 @@ void EngineBuffer::slotTrackLoading() {
     m_iTrackLoading = 1;
     m_pause.unlock();
 
+    m_playButton->setEnabled(true);
     m_playButton->set(0.0); //Stop playback
     m_pTrackSamples->set(0); // Stop renderer
 }
@@ -396,6 +396,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
+    m_playButton->setEnabled(true);
     m_pause.unlock();
 
     // All EngingeControls are connected directly
@@ -439,6 +440,7 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     slotControlSeek(0.);
+    m_playButton->setEnabled(false);
     m_pause.unlock();
 
     emit(trackUnloaded(pTrack));
@@ -903,17 +905,4 @@ void EngineBuffer::setReader(CachingReader* pReader) {
     connect(m_pReader, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
-}
-
-bool EngineBuffer::validatePlayAndRecover() const {
-    if (isTrackLoaded() || m_iTrackLoading != 0) return true;
-    return false;
-}
-
-inline bool ValidatePlay::validateChange(double value) const {
-    if (value == 0.0) return true;
-    if (m_pEngineBuffer == NULL) {
-        return false;
-    }
-    return (m_pEngineBuffer->validatePlayAndRecover());
 }

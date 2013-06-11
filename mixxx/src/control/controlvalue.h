@@ -160,6 +160,11 @@ class ControlValueAtomic
     ControlValueAtomic()
         : ControlValueAtomicBase<T, sizeof(T) <= sizeof(void*)>() {
     }
+
+    ControlValueAtomic(T val)
+        : ControlValueAtomicBase<T, sizeof(T) <= sizeof(void*)>() {
+        this->setValue(val);
+    }
 };
 
 #endif /* CONTROLVALUE_H */

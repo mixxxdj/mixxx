@@ -12,7 +12,8 @@ QHash<ConfigKey, ControlDoublePrivate*> ControlDoublePrivate::m_sqCOHash;
 QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
 ControlDoublePrivate::ControlDoublePrivate()
-        : m_pValidator(NULL),
+        : m_Enabled(true),
+          m_pValidator(NULL),
           m_bIgnoreNops(true),
           m_bTrack(false) {
     m_defaultValue.setValue(0);
@@ -22,6 +23,7 @@ ControlDoublePrivate::ControlDoublePrivate()
 ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
                                            bool bIgnoreNops, bool bTrack)
         : m_key(key),
+          m_Enabled(true),
           m_pValidator(NULL),
           m_bIgnoreNops(bIgnoreNops),
           m_bTrack(bTrack),
@@ -89,6 +91,10 @@ void ControlDoublePrivate::reset(QObject* pSender) {
 }
 
 bool ControlDoublePrivate::set(const double& value, QObject* pSender) {
+    if (!m_Enabled.getValue()) {
+        return false;
+    }
+
     if (m_bIgnoreNops && get() == value) {
         return true;
     }

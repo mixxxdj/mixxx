@@ -32,6 +32,10 @@ class ControlDoublePrivate : public QObject {
         return getControl(key, bCreate, bIgnoreNops, bTrack);
     }
 
+    inline bool getEnabled() const { return m_Enabled.getValue(); }
+
+    inline void setEnabled(bool e) { m_Enabled.setValue(e); }
+
     void setValidator(ControlValidator* validator) {
         if (m_pValidator) {
             delete m_pValidator;
@@ -77,6 +81,9 @@ class ControlDoublePrivate : public QObject {
 
   private:
     ConfigKey m_key;
+
+    // Enabled/Disabled state overrides any validation that may exist.
+    ControlValueAtomic<bool> m_Enabled;
     // Optional custom validation object to decide if the set command should be allowed.
     ControlValidator* m_pValidator;
     // Whether to ignore sets which would have no effect.
