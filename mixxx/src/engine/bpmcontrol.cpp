@@ -367,9 +367,6 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         return;
     }
 
-    const double MAGIC_FUZZ = 0.01;
-    const double MAGIC_FACTOR = 0.3; //the higher this is, the more we influence sync
-
     double dThisPosition = getCurrentSample();
 
     double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
@@ -393,7 +390,9 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     // Don't do anything if we're at the edges of the beat (wraparound issues)
     if (my_distance < 0.1 || my_distance > 0.9 ||
         master_distance < 0.1 || master_distance > 0.9) {
-            return;
+        // TODO(rryan) m_dSyncAdjustment = 1.0 here? Otherwise it will take on
+        // the value from the last time this changed.
+        return;
     }
 
     double percent_offset = my_distance - master_distance;
@@ -410,9 +409,17 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         //don't do anything else, leave it
     } else {
         double error = percent_offset - m_dUserOffset;
-        if (fabs(error) > MAGIC_FUZZ) {
-            m_dSyncAdjustment = (0 - error) * MAGIC_FACTOR;
-            m_dSyncAdjustment = 1.0 + math_max(-0.1f, math_min(0.1f, m_dSyncAdjustment));
+        // Threshold above which we do sync adjustment.
+        const double kErrorThreshold = 0.01;
+        // Proportional control constant. The higher this is, the more we
+        // influence sync.
+        const double kSyncAdjustmentProportional = 0.3;
+        const double kSyncAdjustmentCap = 0.1;
+        if (fabs(error) > kErrorThreshold) {
+            const double adjust = -error * kSyncAdjustmentProportional;
+            // Cap the adjustment between -kSyncAdjustmentCap and +kSyncAdjustmentCap
+            m_dSyncAdjustment = 1.0 + math_max(
+                -kSyncAdjustmentCap, math_min(kSyncAdjustmentCap, adjust));
         }
     }
 }

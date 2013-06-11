@@ -475,6 +475,9 @@ void RateControl::slotSyncInternalChanged(double state) {
 
 void RateControl::slotSyncStateChanged(double state) {
     double changed = m_iSyncState != state;
+    // TODO(rryan): Is the multiple assignment significant? It looks like
+    // EngineSync could reject a change we make in slotSetStatuses and change
+    // the sync state.
     m_iSyncState = state;
     if (changed) {
         slotSetStatuses();
