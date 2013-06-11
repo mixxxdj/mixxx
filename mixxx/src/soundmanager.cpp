@@ -573,16 +573,26 @@ void SoundManager::registerOutput(AudioOutput output, const AudioSource *src) {
     emit(outputRegistered(output, src));
 }
 
-void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
-    if (m_registeredDestinations.contains(input)) {
-        // note that this can be totally ok if we just want a certain
-        // AudioInput to be going to a different AudioDest -bkgood
-        qDebug() << "WARNING: AudioInput already registered!";
+void SoundManager::unregisterOutput(AudioOutput output) {
+    if (!m_registeredSources.contains(output)) {
+        qDebug() << "WARNING: AudioOutput not registered, can't remove!";
+    } else {
+        m_registeredSources.remove(output);
     }
+}
 
+void SoundManager::registerInput(AudioInput input, AudioDestination *dest) {
     m_registeredDestinations.insertMulti(input, dest);
 
     emit(inputRegistered(input, dest));
+}
+
+void SoundManager::unregisterInput(AudioInput input, AudioDestination *dest) {
+    if (!m_registeredDestinations.contains(input, dest)) {
+        qDebug() << "WARNING: AudioInput not registered, can't remove!";
+    } else {
+        m_registeredDestinations.remove(input, dest);
+    }
 }
 
 QList<AudioOutput> SoundManager::registeredOutputs() const {

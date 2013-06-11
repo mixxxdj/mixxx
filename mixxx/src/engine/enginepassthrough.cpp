@@ -30,6 +30,7 @@ EnginePassthrough::~EnginePassthrough() {
 }
 
 bool EnginePassthrough::isActive() {
+    if (isDying()) { return false; }
     bool enabled = m_pEnabled->get() > 0.0;
     return enabled && !m_sampleBuffer.isEmpty();
 }
@@ -63,7 +64,7 @@ void EnginePassthrough::onInputDisconnected(AudioInput input) {
 }
 
 void EnginePassthrough::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
-
+    if (isDying()) return;
     if (input.getType() != AudioPath::EXTPASSTHROUGH) {
         // This is an error!
         qDebug() << "WARNING: EnginePassthrough receieved an AudioInput for a non-passthrough type!";
@@ -96,6 +97,7 @@ void EnginePassthrough::receiveBuffer(AudioInput input, const short* pBuffer, un
 }
 
 void EnginePassthrough::process(const CSAMPLE* pInput, const CSAMPLE* pOutput, const int iBufferSize) {
+    if (isDying()) return;
     CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
     Q_UNUSED(pInput);
 

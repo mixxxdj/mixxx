@@ -97,6 +97,8 @@ class SoundManager : public QObject {
 
     void registerOutput(AudioOutput output, const AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
+    void unregisterOutput(AudioOutput output);
+    void unregisterInput(AudioInput input, AudioDestination *dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
 
@@ -126,7 +128,7 @@ class SoundManager : public QObject {
     SoundManagerConfig m_config;
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
-    QHash<AudioInput, AudioDestination*> m_registeredDestinations;
+    QMultiHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatus;
     ControlObjectThreadMain* m_pControlObjectVinylControlGain;
 };

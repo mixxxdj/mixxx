@@ -48,6 +48,7 @@ EnginePregain::EnginePregain(const char * group)
 
 EnginePregain::~EnginePregain()
 {
+    qDebug() << "DELETED PREGAIN";
     delete potmeterPregain;
     delete m_pControlReplayGain;
     delete m_pTotalGain;

@@ -109,8 +109,15 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
         ControlObject::getControl(ConfigKey(group, "play")));
 }
 
+void BaseTrackPlayer::finalize() {
+    m_pChannel->finalize();
+    EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
+    pEngineBuffer->slotControlStop(1.0);
+}
+
 BaseTrackPlayer::~BaseTrackPlayer()
 {
+    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~BASETRACKPLAYER";
     if (m_pLoadedTrack) {
         emit(unloadingTrack(m_pLoadedTrack));
         m_pLoadedTrack.clear();

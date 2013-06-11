@@ -349,12 +349,19 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     Timer timer("EngineMaster::process channels");
     QList<ChannelInfo*>::iterator it = m_channels.begin();
+    QList<ChannelInfo*> dying_channels;
+
     for (unsigned int channel_number = 0;
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
+        QString group = pChannelInfo->m_pChannel->getGroup();
 
         if (!pChannel->isActive()) {
+            if (pChannel->isDying()) {
+                qDebug() << "this channel is DYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYING " << group << " " << channel_number;
+                dying_channels.push_back(pChannelInfo);
+            }
             continue;
         }
 
@@ -440,6 +447,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // We're close to the end of the callback. Wake up the engine worker
     // scheduler so that it runs the workers.
     m_pWorkerScheduler->runWorkers();
+
+    foreach (ChannelInfo* p, dying_channels) {
+        qDebug() << "we are killing a channel!";
+        removeChannelInfo(p);
+    }
 }
 
 void EngineMaster::addChannel(EngineChannel* pChannel) {
@@ -500,4 +512,15 @@ const CSAMPLE* EngineMaster::buffer(AudioOutput output) const {
     default:
         return NULL;
     }
+}
+
+void EngineMaster::removeChannelInfo(ChannelInfo* pChannelInfo) {
+    QString group = pChannelInfo->m_pChannel->getGroup();
+    qDebug() << "OFFICIALLY DELETING SHIT NOWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWWW " << group;
+    m_channels.removeAll(pChannelInfo);
+    SampleUtil::free(pChannelInfo->m_pBuffer);
+    delete pChannelInfo->m_pChannel;
+    delete pChannelInfo->m_pVolumeControl;
+    delete pChannelInfo;
+    emit(DeckRemoved(group));
 }

@@ -109,11 +109,17 @@ class PlayerManager : public QObject {
   signals:
     void loadLocationToPlayer(QString location, QString group);
 
+  private slots:
+    void slotDeckRemoved(QString group);
+
   private:
     TrackPointer lookupTrack(QString location);
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new deck.
     void addDeckInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // removes decks give by count starting from the end.
+    void initiateRemoveDecks(int count);
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new sampler.
     void addSamplerInner();
