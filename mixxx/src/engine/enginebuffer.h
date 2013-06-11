@@ -225,7 +225,6 @@ private:
 
     ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
-    ControlObject* m_beatDistance;
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;

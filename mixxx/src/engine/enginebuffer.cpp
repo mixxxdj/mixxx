@@ -158,9 +158,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // BPM to display in the UI (updated more slowly than the actual bpm)
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
 
-    // how far past the last beat are we?
-    m_beatDistance = new ControlObject(ConfigKey(m_group, "beat_distance"));
-
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
     m_playposSlider = new ControlLinPotmeter(
@@ -712,12 +709,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 cross_mix += cross_inc;
             }
             m_iCrossFadeSamples = 0;
-        }
-
-        // It doesn't make sense to me to use the position before update, but this
-        // results in better sync.
-        if (m_pBpmControl->getSyncState() == SYNC_MASTER) {
-            m_beatDistance->set(m_pBpmControl->getBeatDistance());
         }
 
         m_engineLock.lock();

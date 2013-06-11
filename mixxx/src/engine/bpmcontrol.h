@@ -19,16 +19,21 @@ class BpmControl : public EngineControl {
   public:
     BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
+
     double getBpm() const;
     double getFileBpm() const { return m_dFileBpm; }
     void onEngineRateChange(double rate);
-    double getBeatDistance() const;
-    int getSyncState() const { return m_pSyncState->get(); }
     double getSyncAdjustment() const;
     void setUserTweakingSync(bool tweakActive);
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
     void setLoopSize(double size) { m_dLoopSize = size; }
+
+    void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    double process(const double dRate,
+                   const double dCurrentSample,
+                   const double dTotalSamples,
+                   const int iBufferSize);
 
   public slots:
     virtual void trackLoaded(TrackPointer pTrack);
@@ -49,6 +54,7 @@ class BpmControl : public EngineControl {
     void slotMasterBeatDistanceChanged(double);
 
   private:
+    double getBeatDistance(double dThisPosition) const;
     EngineBuffer* pickSyncTarget();
     bool syncTempo();
     bool syncPhase();
@@ -63,8 +69,9 @@ class BpmControl : public EngineControl {
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
 
-    ControlObject *m_pMasterBeatDistance;
-    ControlObject *m_pSyncState;
+    ControlObject* m_pThisBeatDistance;
+    ControlObject* m_pMasterBeatDistance;
+    ControlObject* m_pSyncState;
     double m_dSyncAdjustment;
     bool m_bUserTweakingSync;
     double m_dUserOffset;
@@ -97,6 +104,7 @@ class BpmControl : public EngineControl {
 
     double m_dFileBpm;
     double m_dLoopSize; // Only used to see if we shouldn't quantize position.
+    double m_dPreviousSample;
 
     TapFilter m_tapFilter;
 

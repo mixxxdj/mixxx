@@ -23,6 +23,7 @@ BpmControl::BpmControl(const char* _group,
         m_dUserOffset(0.0),
         m_dFileBpm(0.0),
         m_dLoopSize(0.0),
+        m_dPreviousSample(0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
     m_pNumDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
@@ -106,7 +107,10 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotTapFilter(double,int)),
             Qt::DirectConnection);
 
-    m_pMasterBeatDistance = ControlObject::getControl(ConfigKey("[Master]","beat_distance"));
+    // how far past the last beat are we?
+    m_pThisBeatDistance = new ControlObject(ConfigKey(m_group, "beat_distance"));
+
+    m_pMasterBeatDistance = ControlObject::getControl(ConfigKey("[Master]", "beat_distance"));
     connect(m_pMasterBeatDistance, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotMasterBeatDistanceChanged(double)),
                 Qt::DirectConnection);
@@ -420,13 +424,12 @@ double BpmControl::getSyncAdjustment() const {
     return m_dSyncAdjustment;
 }
 
-double BpmControl::getBeatDistance() const {
+double BpmControl::getBeatDistance(double dThisPosition) const {
     // returns absolute number of samples distance from current pos back to
     // previous beat
     if (m_pBeats == NULL) {
         return 0;
     }
-    double dThisPosition = getCurrentSample();
     double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
     if (fabs(dNextBeat - dPrevBeat) < 0.01) {
@@ -654,5 +657,21 @@ void BpmControl::slotBeatsTranslate(double v) {
             delta--;
         }
         m_pBeats->translate(delta);
+    }
+}
+
+void BpmControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
+    m_dPreviousSample = getCurrentSample();
+    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
+}
+
+double BpmControl::process(const double dRate,
+                           const double dCurrentSample,
+                           const double dTotalSamples,
+                           const int iBufferSize) {
+    // It doesn't make sense to me to use the position before update, but this
+    // results in better sync.
+    if (m_pSyncState->get() == SYNC_MASTER) {
+        m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
     }
 }
