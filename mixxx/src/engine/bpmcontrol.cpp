@@ -465,7 +465,7 @@ bool BpmControl::syncPhase() {
         return true;
     }
     double dThisPosition = getCurrentSample();
-    double offset = getPhaseOffset();
+    double offset = getPhaseOffset(dThisPosition);
     if (offset == 0.0) {
         return false;
     }
