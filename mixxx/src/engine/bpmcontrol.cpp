@@ -19,7 +19,7 @@ const int filterLength = 5;
 BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
-        m_iSyncState(0),
+        m_iSyncState(SYNC_NONE),
         m_dSyncAdjustment(1.0),
         m_bUserTweakingSync(false),
         m_dUserOffset(0.0),
@@ -132,8 +132,6 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotControlVinyl(double)),
             Qt::DirectConnection);
 #endif
-
-    m_iSyncState = SYNC_NONE;
 }
 
 BpmControl::~BpmControl() {
