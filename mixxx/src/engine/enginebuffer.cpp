@@ -619,8 +619,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
-        if (m_bSeekQueued) {
-            m_bSeekQueued = false;
+        if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
             setNewPlaypos(m_dQueuedPosition);
         }
 
