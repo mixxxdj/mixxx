@@ -535,10 +535,6 @@ double RateControl::getRawRate() const {
         m_pRateDir->get();
 }
 
-double RateControl::getCurrentRate() const {
-    return m_dOldRate;
-}
-
 double RateControl::getWheelFactor() const {
     return m_pWheel->get();
 }
@@ -582,7 +578,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // if master sync is on, respond to it -- but vinyl always overrides
         if (m_iSyncState == SYNC_SLAVE && !paused && !m_bVinylControlEnabled)
         {
-            m_dOldRate = m_dSyncedRate;
             rate = m_dSyncedRate;
             double userTweak = getTempRate() + wheelFactor + jogFactor;
             rate += userTweak;
@@ -661,8 +656,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             *isScratching = true;
         }
     }
-
-    m_dOldRate = rate;
 
     return rate;
 }
