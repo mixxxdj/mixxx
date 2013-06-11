@@ -120,6 +120,7 @@ public:
     ControlPushButton* m_pScratchToggle;
     ControlObject* m_pJog;
     ControlObject* m_pVCEnabled;
+    ControlObject* m_pVCScratching;
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;
@@ -166,10 +167,6 @@ public:
         RATERAMP_RAMPBACK_SPEED,
         RATERAMP_RAMPBACK_PERIOD
     };
-
-    /** Is vinyl control enabled? **/
-    bool m_bVinylControlEnabled;
-    bool m_bVinylControlScratching;
 
     // The current rate ramping direction. Only holds the last button pressed.
     int m_ePbCurrent;
