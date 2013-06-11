@@ -23,9 +23,9 @@ class BpmControl : public EngineControl {
     double getFileBpm() const { return m_dFileBpm; }
     void setEngineBpmByRate(double rate);
     double getBeatDistance() const;
-    int getSyncState() const { return m_iSyncState; }
+    int getSyncState() const { return m_pSyncState->get(); }
     double getSyncAdjustment() const;
-    void userTweakingSync(bool tweakActive);
+    void setUserTweakingSync(bool tweakActive);
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
     void setLoopSize(double size) { m_dLoopSize = size; }
@@ -47,8 +47,6 @@ class BpmControl : public EngineControl {
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotMasterBeatDistanceChanged(double);
-    void slotSyncStateChanged(double);
-    void slotControlVinyl(double);
 
   private:
     EngineBuffer* pickSyncTarget();
@@ -67,14 +65,12 @@ class BpmControl : public EngineControl {
 
     ControlObject *m_pMasterBeatDistance;
     ControlObject *m_pSyncState;
-    int m_iSyncState;
     double m_dSyncAdjustment;
     bool m_bUserTweakingSync;
     double m_dUserOffset;
 
     // Is vinyl control enabled?
     ControlObject* m_pVCEnabled;
-    bool m_bVinylControlEnabled;
 
     // ControlObjects that come from LoopingControl
     ControlObject* m_pLoopEnabled;

@@ -1,7 +1,6 @@
 // bpmcontrol.cpp
 // Created 7/5/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QList>
 #include <QStringList>
 
 #include "controlobject.h"
@@ -19,10 +18,10 @@ const int filterLength = 5;
 BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
-        m_iSyncState(SYNC_NONE),
         m_dSyncAdjustment(1.0),
         m_bUserTweakingSync(false),
         m_dUserOffset(0.0),
+        m_dFileBpm(0.0),
         m_dLoopSize(0.0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
@@ -113,24 +112,12 @@ BpmControl::BpmControl(const char* _group,
                 Qt::DirectConnection);
 
     m_pSyncState = ControlObject::getControl(ConfigKey(_group, "sync_state"));
-    connect(m_pSyncState, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSyncStateChanged(double)),
-                Qt::DirectConnection);
-    connect(m_pSyncState, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotSyncStateChanged(double)),
-                Qt::DirectConnection);
 
 #ifdef __VINYLCONTROL__
     m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
     Q_ASSERT(m_pVCEnabled);
-    connect(m_pVCEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlVinyl(double)),
-            Qt::DirectConnection);
-    connect(m_pVCEnabled, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotControlVinyl(double)),
-            Qt::DirectConnection);
 #endif
 }
 
@@ -219,18 +206,10 @@ void BpmControl::slotControlBeatSync(double v) {
     }
 }
 
-void BpmControl::slotSyncStateChanged(double state) {
-    m_iSyncState = state;
-}
-
-void BpmControl::slotControlVinyl(double toggle) {
-    m_bVinylControlEnabled = (bool)toggle;
-}
-
 bool BpmControl::syncTempo() {
     EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
 
-    if(!pOtherEngineBuffer) {
+    if (!pOtherEngineBuffer) {
         return false;
     }
 
@@ -351,7 +330,7 @@ EngineBuffer* BpmControl::pickSyncTarget() {
     return pFirstNonplayingDeck;
 }
 
-void BpmControl::userTweakingSync(bool tweakActive) {
+void BpmControl::setUserTweakingSync(bool tweakActive) {
     //TODO XXX: this might be one loop off.  ie, user tweaks but we've already
     //calculated a new rate.  Then next time we pay attention to the tweak.
     //I think it might not matter though
@@ -361,11 +340,11 @@ void BpmControl::userTweakingSync(bool tweakActive) {
 void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
 {
     // Vinyl overrides
-    if (m_bVinylControlEnabled) {
+    if (m_pVCEnabled && m_pVCEnabled->get() > 0.0) {
         return;
     }
 
-    if (m_iSyncState != SYNC_SLAVE) {
+    if (m_pSyncState->get() != SYNC_SLAVE) {
         return;
     }
 
@@ -435,7 +414,7 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
 }
 
 double BpmControl::getSyncAdjustment() const {
-    if (m_iSyncState != SYNC_SLAVE) {
+    if (m_pSyncState->get() != SYNC_SLAVE) {
         return 1.0;
     }
     return m_dSyncAdjustment;
@@ -459,7 +438,7 @@ double BpmControl::getBeatDistance() const {
 }
 
 bool BpmControl::syncPhase() {
-    if (m_iSyncState == SYNC_MASTER) {
+    if (m_pSyncState->get() == SYNC_MASTER) {
         return true;
     }
     double dThisPosition = getCurrentSample();
@@ -494,7 +473,7 @@ double BpmControl::getPhaseOffset(double reference_position) {
     }
 
     double dOtherBeatFraction;
-    if (m_iSyncState == SYNC_SLAVE) {
+    if (m_pSyncState->get() == SYNC_SLAVE) {
         //if we're a slave, easy to get the other beat fraction
         dOtherBeatFraction = m_pMasterBeatDistance->get();
     } else {
@@ -617,7 +596,7 @@ void BpmControl::setEngineBpmByRate(double rate) {
 }
 
 void BpmControl::slotAdjustBpm() {
-    if (m_iSyncState == SYNC_SLAVE) {
+    if (m_pSyncState->get() == SYNC_SLAVE) {
         return;
     }
     double dFileBpm = m_pFileBpm->get();

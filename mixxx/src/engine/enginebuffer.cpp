@@ -593,7 +593,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
 
-        m_pBpmControl->userTweakingSync(m_pRateControl->getUserTweakingSync());
+        m_pBpmControl->setUserTweakingSync(
+            m_pRateControl->getUserTweakingSync());
 
         if (!paused) {
             rate *= m_pBpmControl->getSyncAdjustment();
