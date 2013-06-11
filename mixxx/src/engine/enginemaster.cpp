@@ -31,9 +31,8 @@
 #include "engineclipping.h"
 #include "enginevumeter.h"
 #include "enginexfader.h"
-#include "enginesidechain.h"
 #include "enginesync.h"
-#include "engine/syncworker.h"
+#include "engine/sidechain/enginesidechain.h"
 #include "sampleutil.h"
 #include "util/timer.h"
 
@@ -46,7 +45,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            bool bEnableSidechain) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
-    m_pSyncWorker = new SyncWorker(m_pWorkerScheduler);
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
@@ -59,7 +57,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
-    
+
     // Master sync controller
     m_pMasterSync = new EngineSync(this, _config);
     //(XXX) DEBUG TEMP
@@ -103,18 +101,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
-    memset(m_pHead, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pMaster, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    SampleUtil::applyGain(m_pHead, 0, MAX_BUFFER_LEN);
+    SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
 
-    //Starts a thread for recording and shoutcast
-    sidechain = NULL;
-    if (bEnableSidechain) {
-        sidechain = new EngineSideChain(_config);
-        connect(sidechain, SIGNAL(isRecording(bool)),
-                this, SIGNAL(isRecording(bool)));
-        connect(sidechain, SIGNAL(bytesRecorded(int)),
-                this, SIGNAL(bytesRecorded(int)));
-    }
+    // Starts a thread for recording and shoutcast
+    m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
     // X-Fader Setup
     xFaderMode = new ControlPotmeter(
@@ -138,7 +129,7 @@ EngineMaster::~EngineMaster()
     delete clipping;
     delete vumeter;
     delete head_clipping;
-    delete sidechain;
+    delete m_pSideChain;
 
     delete xFaderReverse;
     delete xFaderCalibration;
@@ -165,7 +156,6 @@ EngineMaster::~EngineMaster()
     }
 
     delete m_pWorkerScheduler;
-    delete m_pSyncWorker;
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const
@@ -376,12 +366,12 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     float cmaster_gain = 0.5*(cf_val+1.);
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
-    
+
     //increment Internal buffer first in case it is the master
     m_pMasterSync->incrementPseudoPosition(iBufferSize);
-    
+
     //Owen TODO: MIDI goes here?????
-    
+
     //find the Sync Master and process it first
     //then process all the slaves (and skip the master)
 
@@ -398,7 +388,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             if (pBuffer == m_pMasterSync->getMaster())
             {
                 master_it = it;
-                
+
                 //proceed with the processing as below
                 bool needsProcessing = false;
                 if (pChannel->isMaster()) {
@@ -427,7 +417,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-        
+
         if (it == master_it) {
             //we already processed this
             continue;
@@ -502,8 +492,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     //Submit master samples to the side chain to do shoutcasting, recording,
     //etc.  (cpu intensive non-realtime tasks)
-    if (sidechain != NULL) {
-        sidechain->submitSamples(m_pMaster, iBufferSize);
+    if (m_pSideChain != NULL) {
+        m_pSideChain->writeSamples(m_pMaster, iBufferSize);
     }
 
     // Add master to headphone with appropriate gain
@@ -515,9 +505,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
-
-    // Schedule a ControlObject sync
-    m_pSyncWorker->schedule();
 
     // We're close to the end of the callback. Wake up the engine worker
     // scheduler so that it runs the workers.
@@ -534,7 +521,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
-    
+
     m_pMasterSync->addDeck(pChannel->getGroup());
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();

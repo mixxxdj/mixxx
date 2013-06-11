@@ -272,16 +272,6 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
             mainControl.slotSet(value);
         }
     }
-    // Force a sync to deliver the control change messages so they take effect
-    // before we start processing the skin. This is mostly just so that
-    // additional decks/samplers are created before we start creating widgets
-    // for them.
-
-    // HACK(XXX) This relies on the fact that the PlayerManager listens to
-    // changes to this control via a CO instead of a COTM. Otherwise the message
-    // would not get delivered until the Qt event loop delivered the
-    // message. rryan 10/2012
-    ControlObject::sync();
 
     ColorSchemeParser::setupLegacyColorSchemes(skinDocument, m_pConfig);
 

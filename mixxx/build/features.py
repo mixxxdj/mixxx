@@ -386,11 +386,11 @@ class VinylControl(Feature):
 
     def sources(self, build):
         sources = ['vinylcontrol/vinylcontrol.cpp',
-                   'vinylcontrol/vinylcontrolproxy.cpp',
                    'vinylcontrol/vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
                    'vinylcontrol/vinylcontrolsignalwidget.cpp',
                    'vinylcontrol/vinylcontrolmanager.cpp',
+                   'vinylcontrol/vinylcontrolprocessor.cpp',
                    'vinylcontrol/steadypitch.cpp',
                    'engine/vinylcontrolcontrol.cpp',]
         if build.platform_is_windows:
@@ -452,8 +452,6 @@ class Vamp(Feature):
             # For header includes
             build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
             self.INTERNAL_LINK = True
-
-        build.env.Append(CPPDEFINES = '__VAMP__')
 
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
@@ -802,14 +800,6 @@ class Shoutcast(Feature):
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
 
-        # libvorbisenc only exists on Linux, OSX and mingw32 on Windows. On
-        # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
-        # libogg are included from build.py so don't add here.
-        if not build.platform_is_windows or build.toolchain_is_gnu:
-            vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
-            if not vorbisenc_found:
-                raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
             conf.CheckLib('ws2_32')
@@ -817,9 +807,8 @@ class Shoutcast(Feature):
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
-                'engine/engineshoutcast.cpp',
-                'recording/encodervorbis.cpp',
-                'recording/encodermp3.cpp']
+                'shoutcast/shoutcastmanager.cpp',
+                'engine/sidechain/engineshoutcast.cpp']
 
 
 class FFMPEG(Feature):

@@ -12,9 +12,11 @@ import SCons.Script as SCons
 from build import util, depends
 
 mixxx_version = util.get_mixxx_version()
-branch_name = util.get_bzr_branch_name()
-bazaar_revision = util.get_bzr_revision()
+branch_name = util.get_branch_name()
+vcs_revision = util.get_revision()
+vcs_name = util.get_current_vcs()
 print "WE ARE IN:", os.getcwd()
+print "Building ", branch_name, " - rev.", vcs_revision
 
 plugins = []
 
@@ -38,11 +40,11 @@ if build.platform_is_windows:
         str_list.append('#define VER_FILEVERSION             ')
         # Remove anything after ~ or - in the version number and replace the dots with commas
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
-        str_list.append(','+str(bazaar_revision)+'\n')
+        str_list.append(','+str(vcs_revision)+'\n')
 
         str_list.append('#define VER_PRODUCTVERSION          ')
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
-        str_list.append(','+str(bazaar_revision)+'\n')
+        str_list.append(','+str(vcs_revision)+'\n')
 
         import datetime
         now = datetime.datetime.now()
@@ -97,34 +99,34 @@ if 'test' in BUILD_TARGETS:
         print "Running tests."
         run_tests()
 
-def osx_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+def osx_construct_version(build, mixxx_version, branch_name, vcs_revision):
         # In release mode, we only use the version.
         if build.build_is_release:
                 return mixxx_version
         elif branch_name.startswith('release-'):
-                return '%s-bzr%s' % (mixxx_version, bazaar_revision)
+                return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
         # In a debug build, include the branch name and revision number
-        return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
+        return "%s-%s-%s%s" % (mixxx_version, branch_name, vcs_name, vcs_revision)
 
-def ubuntu_construct_version(build, mixxx_version, branch_name, bazaar_revision,
+def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                              ubuntu_version):
         # In release mode, we only use the version and ubuntu_version
         if build.build_is_release:
                 return "%s-%s" % (mixxx_version, ubuntu_version)
         elif branch_name.startswith('release-'):
-                return "%s-bzr%s" % (mixxx_version, bazaar_revision)
+                return "%s-%s%s" % (mixxx_version, vcs_name, vcs_revision)
         # In a debug build, include the branch name and revision number
-        return "%s-%s~%s~bzr%s" % (mixxx_version, ubuntu_version,
-                                   branch_name, bazaar_revision)
+        return "%s-%s~%s~%s%s" % (mixxx_version, ubuntu_version,
+                                   branch_name, vcs_name, vcs_revision)
 
-def windows_construct_version(build, mixxx_version, branch_name, bazaar_revision):
+def windows_construct_version(build, mixxx_version, branch_name, vcs_revision):
         # In release mode, we only use the version
         if build.build_is_release:
                 return mixxx_version
         elif branch_name.startswith('release-'):
-                return '%s-bzr%s' % (mixxx_version, bazaar_revision)
+                return '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
         # In a debug build, include the branch name and revision number
-        return "%s-%s-bzr%s" % (mixxx_version, branch_name, bazaar_revision)
+        return "%s-%s-%s%s" % (mixxx_version, branch_name, vcs_name, vcs_revision)
 
 #Set up the install target
 #=========================
@@ -412,7 +414,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         env.Alias('sign', codesign)
 
         package_name = 'mixxx'
-        package_version = osx_construct_version(build, mixxx_version, branch_name, bazaar_revision)
+        package_version = osx_construct_version(build, mixxx_version, branch_name, vcs_revision)
         dmg_name = '%s-%s-%s' % (package_name, package_version, ARCH)
         dmg = env.Dmg(dmg_name, [bundle, ] + docs_files, VOLNAME=VOLNAME, ICON = DMG_ICON)
         env.Alias('package', dmg)
@@ -503,7 +505,7 @@ def BuildRelease(target, source, env):
     package_name = 'mixxx'
 
     package_version = windows_construct_version(
-        build, mixxx_version, branch_name, bazaar_revision)
+        build, mixxx_version, branch_name, vcs_revision)
     arch = "x64" if build.machine_is_64bit else "x86"
     exe_name = '%s-%s-%s.exe' % (package_name, package_version, arch)
     print exe_name
@@ -660,7 +662,7 @@ def BuildUbuntuPackage(target, source, env):
         # package version is always changing otherwise it will reject our orig
         # source tarball.
         if ubuntu_ppa is not None:
-                mixxx_version = '%s-bzr%s' % (mixxx_version, bazaar_revision)
+                mixxx_version = '%s-%s%s' % (mixxx_version, vcs_name, vcs_revision)
 
         # Destroy ubuntu/ and create it
         ubuntu_cleanup()
@@ -688,9 +690,10 @@ def BuildUbuntuPackage(target, source, env):
         # TODO: make a get flags arg to accept a revision which can override this and checkout of a specific SVN rev for the package
 
         # Export the source folder
-        print "* Exporting source folder from current workspace (bzr rev: %s)" % bazaar_revision
+        print "* Exporting source folder from current workspace (%s rev: %s)" % (vcs_name,
+                                                                                 vcs_revision)
         print
-        os.system('bzr export %s .' % build_dir)
+        util.export_source('.', build_dir)
 
         # Copy a patch to be included in the exported build sources (this can also be something like src/SConscript, /build/debian/rules)
         if os.path.exists('post-export-patch'):
@@ -724,12 +727,12 @@ def BuildUbuntuPackage(target, source, env):
                 # TODO(rryan) currently can only have version 1 within a distro
                 ubuntu_distro_version = '%s~%s1' % (ubuntu_version, ubuntu_distro)
                 package_version = ubuntu_construct_version(build, mixxx_version,
-                                                           branch_name, bazaar_revision,
+                                                           branch_name, vcs_revision,
                                                            ubuntu_distro_version)
 
                 # Add a changelog record for this package
                 if build.build_is_debug:
-                        description = "  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, bazaar_revision)
+                        description = "  * Experimental build of branch '%s' at Bazaar revision %s" % (branch_name, vcs_revision)
                         ubuntu_append_changelog('debian', package_name, package_version,
                                                 description, distro=ubuntu_distro)
                 else:

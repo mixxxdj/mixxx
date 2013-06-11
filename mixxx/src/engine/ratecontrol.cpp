@@ -38,8 +38,7 @@ RateControl::RateControl(const char* _group,
       m_dOldRate(0.0f),
       m_sGroup(_group),
       m_iSyncState(0),
-      m_bUserTweakingSync(false),
-      m_pConfig(_config) {
+      m_bUserTweakingSync(false) {
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -148,10 +147,10 @@ RateControl::RateControl(const char* _group,
     // Set the Sensitivity
     m_iRateRampSensitivity =
             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
-     
+
     // the actual rate of playback as a multiple.  (ie 1.0 for native speed of file)
     m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
-            
+
     m_pSyncMasterEnabled = new ControlPushButton(ConfigKey(_group, "sync_master"));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
@@ -160,7 +159,7 @@ RateControl::RateControl(const char* _group,
     connect(m_pSyncMasterEnabled, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotSyncMasterChanged(double)),
                 Qt::DirectConnection);
-                
+
     m_pSyncSlaveEnabled = new ControlPushButton(ConfigKey(_group, "sync_slave"));
     m_pSyncSlaveEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pSyncSlaveEnabled, SIGNAL(valueChanged(double)),
@@ -169,12 +168,12 @@ RateControl::RateControl(const char* _group,
     connect(m_pSyncSlaveEnabled, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotSyncSlaveChanged(double)),
                 Qt::DirectConnection);
-                
+
     m_pSyncInternalEnabled = ControlObject::getControl(ConfigKey("[Master]", "sync_master"));
     connect(m_pSyncInternalEnabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncInternalChanged(double)),
                 Qt::DirectConnection);
-                
+
     m_pSyncMasterEnabled->set(FALSE);
     m_pSyncSlaveEnabled->set(FALSE);
     m_iSyncState = SYNC_NONE;
@@ -236,7 +235,7 @@ RateControl::~RateControl() {
 void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
     EngineControl::setEngineMaster(pEngineMaster);
     m_pEngineMaster = pEngineMaster;
-    
+
     //TODO: should we only hook these up if we are a slave?  beat distance
     //is updated on every iteration so it's heavy
     m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]","sync_bpm"));
@@ -246,8 +245,8 @@ void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
     connect(m_pMasterBpm, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotMasterBpmChanged(double)),
                 Qt::DirectConnection);
-                
-    // We need this so we can sync to master sync    
+
+    // We need this so we can sync to master sync
     m_pFileBpm = ControlObject::getControl(ConfigKey(m_sGroup, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
@@ -314,28 +313,33 @@ void RateControl::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get())
-        m_pRateSlider->sub(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() -
+                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get())
-        m_pRateSlider->sub(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() -
+                           m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
-    if (buttonRatePermUp->get())
-        m_pRateSlider->add(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+    if (buttonRatePermUp->get()) {
+        m_pRateSlider->set(m_pRateSlider->get() +
+                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+    }
 }
 
 void RateControl::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get())
-        m_pRateSlider->add(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() +
+                           m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRateTempDown(double)
@@ -434,17 +438,17 @@ void RateControl::slotMasterBpmChanged(double syncbpm)
 void RateControl::slotSyncMasterChanged(double state)
 {
     //qDebug() << m_sGroup << "slot master changed";
-    
+
     if (state)
     {
         if (m_iSyncState == SYNC_MASTER){
             //qDebug() << "already master";
             return;
         }
-        
+
         m_iSyncState = SYNC_MASTER;
         //qDebug() << m_sGroup << "setting ourselves as master";
-    } 
+    }
     else
     {
         // For now, turning off master turns on slave mode
@@ -453,7 +457,7 @@ void RateControl::slotSyncMasterChanged(double state)
         }
         //unset ourselves
         //qDebug() << m_sGroup << "unsetting ourselves as master (now slave)";
-        
+
         slotMasterBpmChanged(m_pMasterBpm->get()); //make sure we have a synced rate
         //m_pSyncSlaveEnabled->set(TRUE); //this doesn't work, no FromEngine connection
     }
@@ -472,7 +476,7 @@ void RateControl::slotSyncSlaveChanged(double state)
         m_iSyncState = SYNC_SLAVE;
         slotMasterBpmChanged(m_pMasterBpm->get()); //make sure we have a synced rate
         //m_pSyncMasterEnabled->set(FALSE); //this doesn't work, no FromEngine connection
-    } 
+    }
     else
     {
         // For now, turning off slave turns off syncing
@@ -545,7 +549,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
-        
+
         // if master sync is on, respond to it
         if (m_iSyncState == SYNC_SLAVE && !paused)
         {
@@ -565,7 +569,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             //{
             //    qDebug() << "ratecontrol: user is tweaking sync" << oldrate << userTweak << rate;
             //}
-            
+
             //Don't set the rate slider for all changes
             //m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
             m_pTrueRate->set(rate);
@@ -645,7 +649,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
     }
 
     m_dOldRate = rate;
-    
+
     // update our true rate in case we are the master deck
     m_pTrueRate->set(rate);
 

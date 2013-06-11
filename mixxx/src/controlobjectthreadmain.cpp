@@ -16,34 +16,39 @@ ControlObjectThreadMain::ControlObjectThreadMain(ControlObject * pControlObject,
     installEventFilter(this);
 }
 
-ControlObjectThreadMain::~ControlObjectThreadMain() {
-}
-
-bool ControlObjectThreadMain::eventFilter(QObject * o, QEvent * e)
-{
+bool ControlObjectThreadMain::eventFilter(QObject* o, QEvent* e) {
     // Handle events
     if (e && e->type() == MIXXXEVENT_CONTROL) {
         ControlEvent * ce = (ControlEvent *)e;
-        //qDebug() << "ControlEvent " << ce->value();
-        m_dValue = ce->value();
-        emit(valueChanged(ce->value()));
+        QObject* pSender = ce->sender();
+        if (pSender != this) {
+            emit(valueChanged(ce->value()));
+        } else {
+            emit(valueChangedByThis(ce->value()));
+        }
     } else {
-        // standard event processing
         return QObject::eventFilter(o,e);
     }
     return true;
 }
 
-bool ControlObjectThreadMain::setExtern(double v)
-{
+void ControlObjectThreadMain::slotValueChanged(double, QObject* pSetter) {
+    // The value argument to this function is in value space, but for some of
+    // our subclasses (e.g. ControlObjectThreadWidget) emit valueChanged(double)
+    // should emit in parameter space. So we emit the value of get() instead
+    // which will get the correct value.
+
     // If we are already running in the main thread, then go ahead and update.
     if (QThread::currentThread() == QApplication::instance()->thread()) {
-        m_dValue = v;
-        emit(valueChanged(v));
+        if (pSetter != this) {
+            emit(valueChanged(get()));
+        } else {
+            emit(valueChangedByThis(get()));
+        }
     } else {
         // Otherwise, we have to post the event to the main thread event queue
         // and then catch the event via eventFilter.
-        QApplication::postEvent(this, new ControlEvent(v));
+        QApplication::postEvent(this, new ControlEvent(get(), pSetter));
     }
-    return true;
+
 }

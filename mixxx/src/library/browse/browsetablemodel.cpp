@@ -124,7 +124,8 @@ const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
     return QLinkedList<int>();
 }
 
-void BrowseTableModel::search(const QString& searchText) {
+void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
+    Q_UNUSED(extraFilter);
     Q_UNUSED(searchText);
 }
 

@@ -15,7 +15,6 @@ m4a_sources = [
     "soundsourcem4a.cpp",  # MP4/M4A Support through FAAD/libmp4v2
 ]
 
-
 #Tell SCons to build the SoundSourceM4A plugin
 #=========================
 if int(build.flags['faad']):
@@ -24,7 +23,7 @@ if int(build.flags['faad']):
     conf = Configure(env)
 
     have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
-    have_mp4 = (have_mp4v2_h and conf.CheckLib(['mp4v2', 'libmp4v2'])) or \
+    have_mp4 = conf.CheckLib(['mp4v2', 'libmp4v2']) or \
         conf.CheckLib('mp4')
 
     have_faad = conf.CheckLib(['faad', 'libfaad'])

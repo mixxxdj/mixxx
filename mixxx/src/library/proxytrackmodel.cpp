@@ -40,7 +40,8 @@ QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     return m_pTrackModel->getTrackLocation(indexSource);
 }
 
-void ProxyTrackModel::search(const QString& searchText) {
+void ProxyTrackModel::search(const QString& searchText, const QString& extraFilter) {
+    Q_UNUSED(extraFilter);
     if (m_bHandleSearches) {
         m_currentSearch = searchText;
         setFilterFixedString(searchText);
@@ -64,10 +65,6 @@ bool ProxyTrackModel::isColumnHiddenByDefault(int column) {
     return m_pTrackModel->isColumnHiddenByDefault(column);
 }
 
-void ProxyTrackModel::removeTrack(const QModelIndex& index) {
-    QModelIndex indexSource = mapToSource(index);
-    m_pTrackModel->removeTrack(indexSource);
-}
 
 void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
     QModelIndexList translatedList;
@@ -76,11 +73,6 @@ void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
         translatedList.append(indexSource);
     }
     m_pTrackModel->removeTracks(translatedList);
-}
-
-bool ProxyTrackModel::addTrack(const QModelIndex& index, QString location) {
-    QModelIndex indexSource = mapToSource(index);
-    return m_pTrackModel->addTrack(indexSource, location);
 }
 
 void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,

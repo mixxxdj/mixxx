@@ -55,7 +55,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     const CSAMPLE* buffer(AudioOutput output) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
-    
+
     EngineSync* getMasterSync(void);
     void setMasterSync(QString deck);
 
@@ -84,9 +84,9 @@ class EngineMaster : public EngineObject, public AudioSource {
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
     const CSAMPLE* getChannelBuffer(QString name) const;
 
-  signals:
-    void bytesRecorded(int);
-    void isRecording(bool);
+    EngineSideChain* getSideChain() const {
+        return m_pSideChain;
+    }
 
   private:
     struct ChannelInfo {
@@ -139,7 +139,6 @@ class EngineMaster : public EngineObject, public AudioSource {
     CSAMPLE *m_pMaster, *m_pHead;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
-    SyncWorker* m_pSyncWorker;
     EngineSync* m_pMasterSync;
 
     ControlObject* m_pMasterVolume;
@@ -155,7 +154,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineLADSPA *ladspa;
 #endif
     EngineVuMeter *vumeter;
-    EngineSideChain *sidechain;
+    EngineSideChain* m_pSideChain;
 
     ControlPotmeter *crossfader, *head_mix, *m_pBalance,
         *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;

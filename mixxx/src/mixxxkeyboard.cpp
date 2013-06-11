@@ -63,10 +63,17 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
 
             if (pConfigKey)
             {
-                ControlObject::getControl(*pConfigKey)->queueFromMidi(MIDI_NOTE_ON, 1);
-                // Add key to active key list
-                m_qActiveKeyList.append(QPair<int, ConfigKey *>(keyId,pConfigKey));
-                return true;
+                ControlObject* control = ControlObject::getControl(*pConfigKey);
+                if (control) {
+                    control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                    // Add key to active key list
+                    m_qActiveKeyList.append(QPair<int, ConfigKey *>(keyId,pConfigKey));
+                    return true;
+                } else {
+                    qDebug() << "Warning: Keyboard key is configured for nonexistent control: "
+                             << pConfigKey->group << " " << pConfigKey->item;
+                    return false;
+                }
             }
         }
     } else if (e->type()==QEvent::KeyRelease) {
@@ -86,7 +93,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
         for (int i = m_qActiveKeyList.size() - 1; i >= 0; i--) {
             if (m_qActiveKeyList[i].first == keyId) {
                 if(!autoRepeat) {
-                    ControlObject::getControl(*(m_qActiveKeyList[i].second))->queueFromMidi(MIDI_NOTE_OFF, 0);
+                    ControlObject::getControl(*(m_qActiveKeyList[i].second))->setValueFromMidi(MIDI_NOTE_OFF, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
                 return true;

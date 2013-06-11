@@ -32,10 +32,10 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pPlayButton, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlPlay(double)),
             Qt::DirectConnection);
-            
+
     m_pQuantize = ControlObject::getControl(ConfigKey(_group, "quantize"));
 
-    
+
     m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
@@ -107,22 +107,22 @@ BpmControl::BpmControl(const char* _group,
     connect(&m_tapFilter, SIGNAL(tapped(double,int)),
             this, SLOT(slotTapFilter(double,int)),
             Qt::DirectConnection);
-            
+
     m_pMasterBeatDistance = ControlObject::getControl(ConfigKey("[Master]","beat_distance"));
     connect(m_pMasterBeatDistance, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotMasterBeatDistanceChanged(double)),
                 Qt::DirectConnection);
-                
+
     m_pSyncMasterEnabled = ControlObject::getControl(ConfigKey(_group, "sync_master"));
     connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncMasterChanged(double)),
                 Qt::DirectConnection);
-                
+
     m_pSyncSlaveEnabled = ControlObject::getControl(ConfigKey(_group, "sync_slave"));
     connect(m_pSyncSlaveEnabled, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncSlaveChanged(double)),
                 Qt::DirectConnection);
-                
+
     m_pSyncMasterEnabled->set(FALSE);
     m_pSyncSlaveEnabled->set(FALSE);
     m_iSyncState = SYNC_NONE;
@@ -187,14 +187,14 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     double averageBpm = 60.0 * 1000.0 / averageLength;
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pFileBpm->set(averageBpm / dRate);
-    slotAdjustBpm(); 
+    slotAdjustBpm();
 }
 
 void BpmControl::slotControlPlay(double v)
 {
     if (v > 0.0)
     {
-        if (m_pQuantize->get() > 0.0) 
+        if (m_pQuantize->get() > 0.0)
         {
             qDebug() << m_sGroup << "we are quantizing so sync phase on play";
             syncPhase();
@@ -228,7 +228,7 @@ void BpmControl::slotControlBeatSync(double v) {
 void BpmControl::slotSyncMasterChanged(double state)
 {
     if (state) {
-        m_iSyncState = SYNC_MASTER;    
+        m_iSyncState = SYNC_MASTER;
     } else {
         // For now, turning off master turns on slave mode
         m_iSyncState = SYNC_SLAVE;
@@ -238,7 +238,7 @@ void BpmControl::slotSyncMasterChanged(double state)
 void BpmControl::slotSyncSlaveChanged(double state)
 {
     if (state) {
-        m_iSyncState = SYNC_SLAVE;    
+        m_iSyncState = SYNC_SLAVE;
     } else {
         // For now, turning off slave turns off syncing
         m_iSyncState = SYNC_NONE;
@@ -382,30 +382,30 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
 {
     if (m_iSyncState != SYNC_SLAVE)
         return;
-    
+
     if (m_pBeats == NULL)
     {
         //qDebug() << "null here too";
         return;
     }
-    
+
     const double MAGIC_FUZZ = 0.01;
     const double MAGIC_FACTOR = 0.3; //the higher this is, the more we influence sync
-    
+
     if (!m_pPlayButton->get()) {
         return;
     }
-    
+
     //If we aren't quantized, don't worry about offset
     if (!m_pQuantize->get()) {
         m_dSyncAdjustment = 0;
         return;
     }
-    
-    
+
+
     double dThisPosition = getCurrentSample();
-    
-    double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition); 
+
+    double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
     double beat_length = dNextBeat - dPrevBeat;
     if (fabs(beat_length) < 0.01)
@@ -414,24 +414,24 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         dNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
         beat_length = dNextBeat - dPrevBeat;
     }
-    
+
     // my_distance is our percentage distance through the beat
     double my_distance = (dThisPosition - dPrevBeat) / beat_length;
     //double user_offset_percent = m_dUserOffset / beat_length;
-    
+
     if (my_distance - m_dUserOffset < 0)
     {
         my_distance += 1.0;
     }
-    
+
     // beat wraparound -- any other way to account for this?
     // if we're at .99% and the master is 0.1%, we are *not* 98% off!
-    
+
     ////don't do anything if we're at the edges of the beat (wraparound issues)
     if (my_distance < 0.1 || my_distance > 0.9 ||
         master_distance < 0.1 || master_distance > 0.9)
             return;
-    
+
     //XXX doublecheck math for applying the user offset here (almost certainly wrong)
     /*if (my_distance - m_dUserOffset > 0.9 && master_distance < 0.1)
     {
@@ -442,31 +442,31 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
     {
         my_distance += 1.0;
     }*/
-    
+
     //e.g. if my position is .8, and theirs is .6
     //then sample_offset = beatlength * .8 - beatlength * .6
     //or, beatlength * (myposition - theirpercent)
-    
+
     double percent_offset = my_distance - master_distance;
     double sample_offset = beat_length * percent_offset;
-    
+
     /*qDebug() << "master beat distance:" << master_distance;
     qDebug() << "my     beat distance:" << my_distance;
     qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
-    
+
     m_dSyncAdjustment = 0.0;
-    
+
 /*    if (m_dUserOffset != 0)
         qDebug() << m_sGroup << "tweak necessary?" << fabs(percent_offset - m_dUserOffset) << "offset val:" << m_dUserOffset << "cur offset" << percent_offset;
     else
         qDebug() << m_sGroup << "nouser tweak necessary?" << fabs(percent_offset - m_dUserOffset);*/
-    
+
     if (m_bUserTweakingSync)
     {
         qDebug() << "user is tweaking sync, let's use their value" << sample_offset;
         m_dUserOffset = percent_offset;
         //don't do anything else, leave it
-    } 
+    }
     else
     {
         if (fabs(percent_offset - m_dUserOffset) > MAGIC_FUZZ)
@@ -501,7 +501,7 @@ double BpmControl::getBeatDistance()
         return 0;
     }
     double dThisPosition = getCurrentSample();
-    double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition); 
+    double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
     if (fabs(dNextBeat - dPrevBeat) < 0.01)
     {
@@ -520,9 +520,9 @@ bool BpmControl::syncPhase()
         qDebug() << m_sGroup << "got offset of zero so no sync";
         return false;
     }
-        
+
     double dNewPlaypos = dThisPosition + offset;
-    emit(seekAbs(dNewPlaypos));
+    seekAbs(dNewPlaypos);
     return true;
 }
 
@@ -537,7 +537,7 @@ double BpmControl::getPhaseOffset()
 double BpmControl::getPhaseOffset(double reference_position)
 {
     double dOtherBeatFraction;
-    
+
     if (m_iSyncState == SYNC_SLAVE)
     {
         //if we're a slave, easy to get the other beat fraction
@@ -550,7 +550,7 @@ double BpmControl::getPhaseOffset(double reference_position)
         if (pOtherEngineBuffer == NULL) {
             return 0;
         }
-            
+
         TrackPointer otherTrack = pOtherEngineBuffer->getLoadedTrack();
         BeatsPointer otherBeats = otherTrack ? otherTrack->getBeats() : BeatsPointer();
 
@@ -558,7 +558,7 @@ double BpmControl::getPhaseOffset(double reference_position)
         if (!otherBeats) {
             return 0;
         }
-        
+
         double dOtherLength = ControlObject::getControl(
             ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
         double dOtherPosition = dOtherLength * ControlObject::getControl(
@@ -575,15 +575,15 @@ double BpmControl::getPhaseOffset(double reference_position)
         if (dOtherPrevBeat == dOtherNextBeat) {
             dOtherNextBeat = otherBeats->findNthBeat(dOtherPosition, 2);
         }
-        
+
         double dOtherBeatLength = fabs(dOtherNextBeat - dOtherPrevBeat);
         dOtherBeatFraction = (dOtherPosition - dOtherPrevBeat) / dOtherBeatLength;
     }
-    
+
      if (!m_pBeats) {
         return 0;
     }
-    
+
     // Get the current position of both decks
     //qDebug() << m_sGroup << "starting with reference" << reference_position << "and adjusting" << m_dUserOffset;
     double dThisPosition = reference_position;
@@ -598,9 +598,9 @@ double BpmControl::getPhaseOffset(double reference_position)
     if (dThisPrevBeat == dThisNextBeat) {
         dThisNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
     }
-    
+
     //qDebug() << "pseudo pos" << dThisPosition << "from ref" << reference_position << "and offset" << m_dUserOffset;
-    
+
     double dThisBeatLength = fabs(dThisNextBeat - dThisPrevBeat);
 
     double dNewPlaypos;
@@ -701,7 +701,7 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
     if (m_pTrack) {
         trackUnloaded(m_pTrack);
     }
-    
+
     qDebug() << m_sGroup << "resetting user offset";
     m_dUserOffset = 0.0; //reset for new track
 
