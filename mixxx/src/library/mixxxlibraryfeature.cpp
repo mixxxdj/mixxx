@@ -180,8 +180,3 @@ bool MixxxLibraryFeature::dragMoveAccept(QUrl url) {
     QFileInfo file(url.toLocalFile());
     return SoundSourceProxy::isFilenameSupported(file.fileName());
 }
-
-void MixxxLibraryFeature::setLibraryPrefix(QString sPrefix)
-{
-	m_pLibraryTableModel->setLibraryPrefix(sPrefix);
-}

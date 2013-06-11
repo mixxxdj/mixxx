@@ -489,6 +489,7 @@ class MixxxCore(Feature):
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
+                   "engine/enginepassthrough.cpp",
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
@@ -647,7 +648,6 @@ class MixxxCore(Feature):
                    "library/parser.cpp",
                    "library/parserpls.cpp",
                    "library/parserm3u.cpp",
-                   "logparser.cpp",
                    "library/parsercsv.cpp",
 
                    "bpm/bpmscheme.cpp",

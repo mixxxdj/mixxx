@@ -65,7 +65,6 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     float fGain = potmeterPregain->get();
     float fReplayGain = m_pControlReplayGain->get();
-    float fPassing = m_pPassthroughEnabled->get();
     float fReplayGainCorrection=1;
     float fPassing = m_pPassthroughEnabled->get();
     // TODO(XXX) Why do we do this? Removing it results in clipping at unity

@@ -30,7 +30,6 @@ class MixxxLibraryFeature : public LibraryFeature {
     QIcon getIcon();
     bool dropAccept(QList<QUrl> urls, QWidget *pSource);
     bool dragMoveAccept(QUrl url);
-    void setLibraryPrefix(QString sPrefix);
     TreeItemModel* getChildModel();
     void bindWidget(WLibrary* pLibrary,
                     MixxxKeyboard* pKeyboard);

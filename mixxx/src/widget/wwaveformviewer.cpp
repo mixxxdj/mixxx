@@ -20,7 +20,6 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
           m_pGroup(group),
           m_pConfig(pConfig) {
     setAcceptDrops(true);
-    m_sPrefix = "";
 
     m_bScratching = false;
     m_bBending = false;
@@ -85,14 +84,6 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
         }
         emit(valueChangedRightDown(64));
         m_bBending = true;
-        
-        //also reset zoom:
-        if (m_waveformWidget) {
-            if(WaveformWidgetFactory::instance()){
-                m_waveformWidget->setZoom(WaveformWidgetFactory::instance()->getDefaultZoom());
-                WaveformWidgetFactory::instance()->notifyZoomChange(this);
-            }
-        }
     }
 
     // Set the cursor to a hand while the mouse is down.
@@ -173,14 +164,6 @@ void WWaveformViewer::dropEvent(QDropEvent * event) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();
-		//total OWEN hack: because we strip out the library prefix
-		//in the view, we have to add it back here again to properly receive
-		//drops
-        if (!QFile(name).exists())
-        {
-        	if(QFile(m_sPrefix+"/"+name).exists())
-        		name = m_sPrefix+"/"+name;
-        }
         //If the file is on a network share, try just converting the URL to a string...
         if (name == "")
             name = url.toString();
@@ -200,14 +183,6 @@ void WWaveformViewer::onTrackLoaded( TrackPointer track) {
 void WWaveformViewer::onTrackUnloaded( TrackPointer /*track*/) {
     if (m_waveformWidget)
         m_waveformWidget->setTrack(TrackPointer(0));
-}
-
-void WWaveformViewer::setLibraryPrefix(QString sPrefix)
-{
-	m_sPrefix = "";
-	m_sPrefix = sPrefix;
-	if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
-		m_sPrefix.chop(1);
 }
 
 void WWaveformViewer::onZoomChange(double zoom) {

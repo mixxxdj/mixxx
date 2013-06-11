@@ -512,7 +512,7 @@ void LoopingControl::setLoopingEnabled(bool enabled) {
         if (enabled) {
             m_pActiveBeatLoop->activate();
         } else {
-            clearActiveBeatLoop();
+            m_pActiveBeatLoop->deactivate();
         }
     }
 }
@@ -616,7 +616,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
         if (pBeatLoopControl->getSize() == beats) {
             if (m_pActiveBeatLoop != pBeatLoopControl) {
                 if (m_pActiveBeatLoop) {
-                    clearActiveBeatLoop();
+                    m_pActiveBeatLoop->deactivate();
                 }
                 m_pActiveBeatLoop = pBeatLoopControl;
             }

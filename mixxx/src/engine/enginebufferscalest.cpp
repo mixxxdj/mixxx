@@ -46,7 +46,6 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager) :
     m_pSoundTouch->setRate(m_dBaseRate);
     m_pSoundTouch->setTempo(m_dTempo);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
-    m_pSoundTouch->setSetting(SETTING_USE_AA_FILTER, 1);
     m_qMutex.unlock();
 
     slotSetSamplerate(44100.);

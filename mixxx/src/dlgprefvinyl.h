@@ -53,8 +53,6 @@ signals:
 private:
     VinylControlSignalWidget m_signalWidget1;
     VinylControlSignalWidget m_signalWidget2;
-    VinylControlSignalWidget m_signalWidget3;
-    VinylControlSignalWidget m_signalWidget4;
 
 
     /** Pointer to player device */
@@ -64,8 +62,6 @@ private:
     ConfigObject<ConfigValue> *config;
     ControlObjectThreadMain m_COSpeed1;
     ControlObjectThreadMain m_COSpeed2;
-    ControlObjectThreadMain m_COSpeed3;
-    ControlObjectThreadMain m_COSpeed4;
 };
 
 #endif

@@ -7,7 +7,6 @@
 const int expand_time = 250;
 
 WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
-    m_sLibraryPrefix = "";
     //Set some properties
     setHeaderHidden(true);
     setSelectionMode(QAbstractItemView::SingleSelection);
@@ -25,10 +24,6 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
 WLibrarySidebar::~WLibrarySidebar() {
 }
 
-void WLibrarySidebar::setLibraryPrefix(QString prefix)
-{
-    m_sLibraryPrefix = prefix;
-}
 
 void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
@@ -73,12 +68,7 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = true;
             if (sidebarModel) {
-                foreach (QUrl url, urls)
-                {
-                    if (!url.toLocalFile().startsWith("/"))
-                    {
-                        url = QUrl::fromLocalFile(m_sLibraryPrefix + "/" + url.toLocalFile());
-                    }
+                foreach (QUrl url, urls) {
                     QModelIndex destIndex = this->indexAt(event->pos());
                     if (!sidebarModel->dragMoveAccept(destIndex, url)) {
                         //We only need one URL to be invalid for us
@@ -131,17 +121,6 @@ void WLibrarySidebar::dropEvent(QDropEvent * event) {
             //eg. dragging a track from Windows Explorer onto the sidebar
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             if (sidebarModel) {
-                QList<QUrl> absolute_urls;
-                foreach (QUrl url, urls)
-                {
-                    // OWEN EDIT: remap relative-path urls to absolute
-                    if (!url.toLocalFile().startsWith("/"))
-                    {
-                        url = QUrl::fromLocalFile(m_sLibraryPrefix + "/" + url.toLocalFile());
-                    }
-                    absolute_urls.append(url);
-                }
-                
                 QModelIndex destIndex = indexAt(event->pos());
                 // event->source() will return NULL if something is droped from
                 // a different application

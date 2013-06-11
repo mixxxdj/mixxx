@@ -34,7 +34,6 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         WWidget(parent),
         m_pGroup(pGroup),
         m_pConfig(pConfig),
-        m_sPrefix(""),
         m_pWaveform(NULL),
         m_pWaveformSourceImage(NULL),
         m_pixmapDone(false),
@@ -276,7 +275,7 @@ bool WOverview::drawNextPixmapPart() {
     // test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
-    int visiblePixelIncrement = completionIncrement * width() / dataSize;
+    int visiblePixelIncrement = completionIncrement * width() / dataSize; 
     if (completionIncrement < 2 || visiblePixelIncrement == 0) {
         return false;
     }
@@ -316,7 +315,7 @@ bool WOverview::drawNextPixmapPart() {
         }
     }
 
-    for (currentCompletion = m_actualCompletion;
+    for (currentCompletion = m_actualCompletion; 
             currentCompletion < nextCompletion; currentCompletion += 2) {
         painter.setPen(midColorPen);
         painter.drawLine(QPoint(currentCompletion / 2, - m_pWaveform->getMid(currentCompletion)),
@@ -366,7 +365,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << fValue;
 
-    if (e->button() == Qt::RightButton) {
+    if (e->button() == Qt::RightButton) { 
         emit(valueChangedRightUp(fValue));
     } else {
         emit(valueChangedLeftUp(fValue));
@@ -606,14 +605,6 @@ void WOverview::dropEvent(QDropEvent* event) {
         QList<QUrl> urls(event->mimeData()->urls());
         QUrl url = urls.first();
         QString name = url.toLocalFile();
-        //total OWEN hack: because we strip out the library prefix
-        //in the view, we have to add it back here again to properly receive
-        //drops
-        if (!QFile(name).exists())
-        {
-        	if(QFile(m_sPrefix+"/"+name).exists())
-        		name = m_sPrefix+"/"+name;
-        }
         //If the file is on a network share, try just converting the URL to a string...
         if (name == "") {
             name = url.toString();
@@ -623,12 +614,4 @@ void WOverview::dropEvent(QDropEvent* event) {
     } else {
         event->ignore();
     }
-}
-
-void WOverview::setLibraryPrefix(QString sPrefix)
-{
-	m_sPrefix = "";
-	m_sPrefix = sPrefix;
-	if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
-		m_sPrefix.chop(1);
 }

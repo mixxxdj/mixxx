@@ -40,7 +40,6 @@ class WOverview : public WWidget
     WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget *parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
-    void setLibraryPrefix(QString sPrefix);
 
   protected:
     void mouseMoveEvent(QMouseEvent *e);
@@ -87,7 +86,6 @@ class WOverview : public WWidget
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectThreadMain* m_endOfTrackControl;
     double m_endOfTrack;
-    QString m_sPrefix;
     ControlObjectThreadMain* m_trackSamplesControl;
     ControlObjectThreadMain* m_playControl;
 

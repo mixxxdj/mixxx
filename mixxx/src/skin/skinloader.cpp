@@ -58,18 +58,6 @@ QString SkinLoader::getConfiguredSkinPath() {
     return qSkinPath;
 }
 
-QWidget* SkinLoader::loadCustomSkin(QString custom_skinpath, 
-									   QWidget* pParent,
-                                       MixxxKeyboard* pKeyboard,
-                                       PlayerManager* pPlayerManager,
-                                       ControllerManager* pControllerManager,
-                                       Library* pLibrary,
-                                       VinylControlManager* pVCMan) {
-	LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pControllerManager, pLibrary, pVCMan);
-    qDebug() << "Legacy can parse custom skin:" << legacy.canParse(custom_skinpath) << custom_skinpath;
-    return legacy.parseSkin(custom_skinpath, pParent);
-}                                       
-
 QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                      MixxxKeyboard* pKeyboard,
                                      PlayerManager* pPlayerManager,

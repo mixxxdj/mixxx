@@ -40,7 +40,6 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
-class EnginePflDelay;
 class SyncWorker;
 class EngineSync;
 
@@ -151,9 +150,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pMasterUnderflowCount;
     ControlPotmeter* m_pMasterRate;
-    ControlPushButton *m_pBypassEq;
     EngineClipping *clipping, *head_clipping;
-    EnginePflDelay *m_pHeadDelay;
 
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
@@ -161,8 +158,6 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineVuMeter *vumeter;
     EngineSideChain* m_pSideChain;
 
-    //QFile df;
-    //QTextStream writer;
     ControlPotmeter *crossfader, *head_mix, *m_pBalance,
         *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 

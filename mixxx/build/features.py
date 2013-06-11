@@ -959,12 +959,7 @@ class Optimize(Feature):
             # and getting rid of -fomit-frame-pointer, -ffast-math, and
             # -funroll-loops. We need to justify our use of these aggressive
             # optimizations with data.
-            #build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
-            #build.env.Append(CCFLAGS='-O0 -g')# -fomit-frame-pointer -ffast-math -funroll-loops')
-            #owen's previous options:
-            #build.env.Append(CCFLAGS='-O2')# -fomit-frame-pointer -ffast-math -funroll-loops')
-            #based on https://bugs.launchpad.net/mixxx/+bug/876080
-            build.env.Append(CCFLAGS='-Os -fomit-frame-pointer -ffast-math')
+            build.env.Append(CCFLAGS='-O3 -fomit-frame-pointer -ffast-math -funroll-loops')
 
             if optimize_level == 1:
                 # only includes what we already applied
@@ -979,7 +974,7 @@ class Optimize(Feature):
                 build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 4:
                 self.status = "Enabled (Intel Core 2)"
-                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3')
+                build.env.Append(CCFLAGS = '-march=nocona -mmmx -msse -msse2 -msse3 -mfpmath=sse -ffast-math -funroll-loops')
                 build.env.Append(CPPDEFINES = ['__SSE__','__SSE2__','__SSE3__'])
             elif optimize_level == 5:
                 self.status = "Enabled (Athlon Athlon-4/XP/MP)"

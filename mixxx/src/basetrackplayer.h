@@ -26,7 +26,6 @@ class BaseTrackPlayer : public BasePlayer {
     virtual ~BaseTrackPlayer();
 
     TrackPointer getLoadedTrack() const;
-    EngineDeck* getEngineDeck() const;
 
     // TODO(XXX): Only exposed to let the passthrough AudioInput get
     // connected. Delete me when EngineMaster supports AudioInput assigning.
@@ -60,8 +59,6 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObject* m_pDuration;
     ControlObjectThreadMain* m_pBPM;
     ControlObjectThreadMain* m_pReplayGain;
-
-    EngineDeck* m_pChannel;
     ControlObjectThreadMain* m_pPlay;
     EngineDeck* m_pChannel;
 };

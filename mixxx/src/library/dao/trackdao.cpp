@@ -84,7 +84,7 @@ void TrackDAO::finish() {
 }
 
 void TrackDAO::initialize() {
-    //qDebug() << "TrackDAO::initialize" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "TrackDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 /** Retrieve the track id for the track that's located at "location" on disk.
@@ -137,8 +137,8 @@ QList<int> TrackDAO::getTrackIds(QList<QFileInfo> files) {
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
 // not worth retrieving a whole TrackInfoObject.
 QString TrackDAO::getTrackLocation(int trackId) {
-    //qDebug() << "TrackDAO::getTrackLocation"
-    //         << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "TrackDAO::getTrackLocation"
+             << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     QString trackLocation = "";
     query.prepare("SELECT track_locations.location FROM track_locations "
@@ -164,13 +164,13 @@ bool TrackDAO::trackExistsInDatabase(QString absoluteFilePath) {
     return (getTrackId(absoluteFilePath) != -1);
 }
 
-void TrackDAO::saveTrack(TrackPointer track, bool override_dirty) {
+void TrackDAO::saveTrack(TrackPointer track) {
     if (track) {
-        saveTrack(track.data(), override_dirty);
+        saveTrack(track.data());
     }
 }
 
-void TrackDAO::saveTrack(TrackInfoObject* pTrack, bool override_dirty) {
+void TrackDAO::saveTrack(TrackInfoObject* pTrack) {
     if (!pTrack) {
         qWarning() << "TrackDAO::saveTrack() was given NULL track.";
         return;
@@ -179,27 +179,18 @@ void TrackDAO::saveTrack(TrackInfoObject* pTrack, bool override_dirty) {
     // If track's id is not -1, then update, otherwise add.
     int trackId = pTrack->getId();
     if (trackId != -1) {
-        if (pTrack->isDirty() || override_dirty) {
+        if (pTrack->isDirty()) {
             //qDebug() << this << "Dirty tracks before clean save:" << m_dirtyTracks.size();
             //qDebug() << "TrackDAO::saveTrack. Dirty. Calling update";
             updateTrack(pTrack);
 
-            //Write audio meta data, if enabled in the preferences
-            if (m_pConfig && m_pConfig->getValueString(ConfigKey("[Library]","WriteAudioTags")).toInt() == 1) 
-            {
-    			if (pTrack->isLoaded())
-    			{
-    				qDebug() << "Track reports it is currently loaded, not saving metadata:" << pTrack->getTitle();
-    				//don't remove from dirtytracks or call it clean
-    				return;
-    			}
-    			else
-		            writeAudioMetaData(pTrack);
-		    }
+            // Write audio meta data, if enabled in the preferences
+            // TODO(DSC) Only wite tag if file Metatdate is dirty
+            writeAudioMetaData(pTrack);
 
             //qDebug() << this << "Dirty tracks remaining after clean save:" << m_dirtyTracks.size();
         } else {
-            qDebug() << "TrackDAO::saveTrack. Not Dirty";
+            //qDebug() << "TrackDAO::saveTrack. Not Dirty";
             //qDebug() << this << "Dirty tracks remaining:" << m_dirtyTracks.size();
             //qDebug() << "Skipping track update for track" << pTrack->getId();
         }
@@ -773,7 +764,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
         "filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
-        "header_parsed, timesplayed, datetime_added, played, beats_version, beats_sub_version, beats, bpm_lock "
+        "header_parsed, timesplayed, played, beats_version, beats_sub_version, beats, datetime_added, bpm_lock "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -1174,7 +1165,7 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
         //If we found a moved track...
         if (newTrackLocationId >= 0)
         {
-            //qDebug() << "Found moved track!" << filename;
+            qDebug() << "Found moved track!" << filename;
 
             //Remove old row from track_locations table
             query3.prepare("DELETE FROM track_locations WHERE "

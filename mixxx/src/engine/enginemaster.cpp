@@ -94,14 +94,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Headphone Clipping
     head_clipping = new EngineClipping("");
-    
-    // Headphone Delay
-    m_pHeadDelay = new EnginePflDelay();
-    
-    // Eq Bypass
-    m_pBypassEq = new ControlPushButton(ConfigKey(group, "bypass_eq"));
-    m_pBypassEq->setButtonMode(ControlPushButton::TOGGLE);
-    
+
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -110,10 +103,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Starts a thread for recording and shoutcast
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
-
-	//df.setFileName("mixxx-debug.csv");
-	//df.open(QIODevice::WriteOnly | QIODevice::Text);
-	//writer.setDevice(&df);
 
     // X-Fader Setup
     xFaderMode = new ControlPotmeter(
@@ -130,65 +119,39 @@ EngineMaster::~EngineMaster()
 {
     qDebug() << "in ~EngineMaster()";
     delete crossfader;
-    qDebug() << "m_pBalance";
     delete m_pBalance;
-    qDebug() << "headmix";
     delete head_mix;
-    qDebug() << "master vol";
     delete m_pMasterVolume;
-    qDebug() << "head vol";
     delete m_pHeadVolume;
-    qDebug() << "head delay";
-    delete m_pHeadDelay;
-    qDebug() << "bypass eq";
-    delete m_pBypassEq;
-    qDebug() << "clipping";
     delete clipping;
-    qDebug() << "vumeter";
     delete vumeter;
-    qDebug() << "head clip";
     delete head_clipping;
     delete m_pSideChain;
 
-    qDebug() << "xfade reverse";
     delete xFaderReverse;
-    qDebug() << "xfade calib";
     delete xFaderCalibration;
-    qDebug() << "xfade curve";
     delete xFaderCurve;
-    qDebug() << "xfade mode";
     delete xFaderMode;
 
-    qDebug() << "master sample rate";
     delete m_pMasterSampleRate;
-    qDebug() << "latency";
     delete m_pMasterLatency;
-    qDebug() << "master rate";
     delete m_pMasterAudioBufferSize;
     delete m_pMasterRate;
-    
-    qDebug() << "underflow";
     delete m_pMasterUnderflowCount;
 
-    qDebug() << "free head";
     SampleUtil::free(m_pHead);
-    qDebug() << "free master";
     SampleUtil::free(m_pMaster);
 
     QMutableListIterator<ChannelInfo*> channel_it(m_channels);
     while (channel_it.hasNext()) {
         ChannelInfo* pChannelInfo = channel_it.next();
-        qDebug() << "remove channel";
         channel_it.remove();
-        qDebug() << "free buf";
         SampleUtil::free(pChannelInfo->m_pBuffer);
-        qDebug() << "mpvol";
+        delete pChannelInfo->m_pChannel;
         delete pChannelInfo->m_pVolumeControl;
-        qDebug() << "channelinfo";
         delete pChannelInfo;
     }
 
-    qDebug() << "worker sched";
     delete m_pWorkerScheduler;
 }
 
@@ -537,9 +500,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Head volume and clipping
     SampleUtil::applyGain(m_pHead, m_pHeadVolume->get(), iBufferSize);
     head_clipping->process(m_pHead, m_pHead, iBufferSize);
-    
-    //delay the headphone sound by the appropriate amount
-    m_pHeadDelay->process(m_pHead, m_pHead, iBufferSize);
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07

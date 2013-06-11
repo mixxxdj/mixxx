@@ -28,10 +28,6 @@
 #include "configobject.h"
 #include "rotary.h"
 
-#ifdef __VINYLCONTROL__
-#include "engine/vinylcontrolcontrol.h"
-#endif
-
 //for the writer
 #ifdef __SCALER_DEBUG__
 #include <QtCore>
@@ -124,7 +120,6 @@ public:
 
   public slots:
     void slotControlPlay(double);
-    void slotControlPlaySync(double);
     void slotControlPlayFromStart(double);
     void slotControlJumpToStartAndStop(double);
     void slotControlStop(double);
@@ -218,7 +213,6 @@ private:
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;
 
-    ControlPushButton* m_playSyncButton;
     ControlPushButton* m_playButton;
     ControlPushButton* m_playStartButton;
     ControlPushButton* m_stopStartButton;
@@ -245,7 +239,6 @@ private:
     ControlPushButton* m_pRepeat;
 
     ControlObject* m_pVinylStatus;  //Status of vinyl control
-    ControlObject* m_pVinylPitchTweakKnob; // vinyl rate tweaker
     ControlObject* m_pVinylSeek;
 
     /** Fwd and back controls, start and end of track control */

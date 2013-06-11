@@ -45,9 +45,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
-    m_pMixxxLibraryFeature->setLibraryPrefix(prefix);
     addFeature(m_pMixxxLibraryFeature);
 
 #ifdef __PROMO__
@@ -118,9 +116,6 @@ Library::~Library() {
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
-    QString prefix = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
-    pSidebarWidget->setLibraryPrefix(prefix);
-    
     m_pLibraryControl->bindSidebarWidget(pSidebarWidget);
 
     // Setup the sources view

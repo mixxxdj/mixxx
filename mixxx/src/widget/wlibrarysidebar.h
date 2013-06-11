@@ -17,7 +17,6 @@ class WLibrarySidebar : public QTreeView {
     void dropEvent(QDropEvent * event);
     void keyPressEvent(QKeyEvent* event);
     void timerEvent(QTimerEvent* event);
-    void setLibraryPrefix(QString prefix);
 
   public slots:
     void selectIndex(const QModelIndex&);
@@ -28,7 +27,6 @@ class WLibrarySidebar : public QTreeView {
   private:
     QBasicTimer m_expandTimer;
     QModelIndex m_hoverIndex;
-    QString m_sLibraryPrefix;
 };
 
 #endif /* WLIBRARYSIDEBAR_H */
