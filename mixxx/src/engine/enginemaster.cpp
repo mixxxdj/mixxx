@@ -519,7 +519,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
-
+    
     m_pMasterSync->addDeck(pChannel->getGroup());
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
@@ -540,6 +540,9 @@ EngineChannel* EngineMaster::getChannel(QString group) {
     return NULL;
 }
 
+int EngineMaster::numChannels() const {
+    return m_channels.size();
+}
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
     return getChannelBuffer(QString("[Channel%1]").arg(i+1));
 }

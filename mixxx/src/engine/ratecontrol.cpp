@@ -234,7 +234,6 @@ void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
-
 }
 
 void RateControl::setRateRamp(bool linearMode)
@@ -419,11 +418,11 @@ void RateControl::slotMasterBpmChanged(double syncbpm) {
 }
 
 void RateControl::slotSyncMasterChanged(double state) {
-    //qDebug() << m_sGroup << "slot master changed";
+    qDebug() << m_sGroup << "slot master changed";
 
     if (state) {
         if (m_iSyncState == SYNC_MASTER){
-            //qDebug() << "already master";
+            qDebug() << "already master";
             return;
         }
 
@@ -454,7 +453,7 @@ void RateControl::slotSyncSlaveChanged(double state) {
             return;
         }
         if (m_pTrack.isNull()) {
-            //qDebug() << m_sGroup << " no track loaded, can't be slave";
+            qDebug() << m_sGroup << " no track loaded, can't be slave";
             m_pSyncSlaveEnabled->set(false);
             return;
         }
@@ -560,6 +559,8 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // If searching is in progress, it overrides everything else
         rate = searching;
     } else {
+
+
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
