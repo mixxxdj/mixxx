@@ -652,10 +652,6 @@ void CachingReader::loadTrack(TrackPointer pTrack) {
             pTrack, QString("The file '%1' could not be found.").arg(filename)));
         return;
     }
-    
-    //doing this the moment the track is mapped because we don't want any
-    //races
-    pTrack->setLoaded(true);
 
     m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
     bool openSucceeded = (m_pCurrentSoundSource->open() == OK); //Open the song for reading

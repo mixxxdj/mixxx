@@ -122,18 +122,7 @@ RateControl::RateControl(const char* _group,
 
     // Wheel to control playback position/speed
     m_pWheel = new ControlTTRotary(ConfigKey(_group, "wheel"));
-    
-    // Adjust jog wheel sensitivity factor
-    QString wheel_sense_str = m_pConfig->getValueString(ConfigKey("[Master]","wheelsensitivity"));
-    if (wheel_sense_str.isNull() || wheel_sense_str.isEmpty())
-    {
-        m_dWheelSensitivity = 1.0f;
-    } else {
-        m_dWheelSensitivity = wheel_sense_str.toDouble();
-    }
-    m_pWheelSensitivity = new ControlPotmeter(ConfigKey("[Master]", "wheelsensitivity"), 0., 2.);
-    connect(m_pWheelSensitivity, SIGNAL(valueChanged(double)), this, SLOT(slotWheelSensitivity(double)));
-    
+
     // Scratch controller, this is an accumulator which is useful for
     // controllers that return individiual +1 or -1s, these get added up and
     // cleared when we read
@@ -213,9 +202,6 @@ RateControl::RateControl(const char* _group,
 }
 
 RateControl::~RateControl() {
-    QString str;
-    str = str.setNum(m_dWheelSensitivity, 'f');
-    m_pConfig->set(ConfigKey("[Master]","wheelsensitivity"), str);
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
@@ -242,7 +228,6 @@ RateControl::~RateControl() {
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
-    delete m_pWheelSensitivity;
 }
 
 void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
@@ -570,7 +555,7 @@ double RateControl::getJogFactor() const {
         jogFactor = 0.0f;
     }
 
-    return jogFactor * m_dWheelSensitivity;
+    return jogFactor;
 }
 
 bool RateControl::getUserTweakingSync() const {
@@ -586,6 +571,8 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // If searching is in progress, it overrides everything else
         rate = searching;
     } else {
+
+
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;

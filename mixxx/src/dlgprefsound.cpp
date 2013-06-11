@@ -59,13 +59,8 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
             sampleRateComboBox->addItem(QString(tr("%1 Hz")).arg(srate), srate);
         }
     }
-
-    m_pflDelay = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "pfl_delay")));
-
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(sampleRateChanged(int)));
-    connect(pflDelaySlider, SIGNAL(valueChanged(int)),
-            this, SLOT(pflDelayChanged(int)));
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(updateAudioBufferSizes(int)));
     connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
@@ -109,7 +104,6 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
 
 DlgPrefSound::~DlgPrefSound() {
     delete m_pMasterUnderflowCount;
-    delete m_pflDelay;
     delete m_pMasterLatency;
 }
 
@@ -374,15 +368,6 @@ void DlgPrefSound::audioBufferChanged(int index) {
             audioBufferComboBox->itemData(index).toUInt());
 }
 
-/**
- * Slot called when the headphone delay slider is changed to update the
- * delay in the config.
- */
-void DlgPrefSound::pflDelayChanged(int delay_fraction)
-{
-    float fraction = (float)delay_fraction / 1000.0;
-    m_pflDelay->slotSet(fraction);
-}
 
 // Slot called whenever the selected sample rate is changed. Populates the
 // audio buffer input box with SMConfig::kMaxLatency values, starting at 1ms,

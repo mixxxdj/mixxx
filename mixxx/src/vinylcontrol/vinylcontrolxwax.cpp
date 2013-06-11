@@ -666,8 +666,8 @@ void VinylControlXwax::enableConstantMode()
     mode->slotSet((double)iVCMode);
     togglePlayButton(true);
     double rate = controlScratch->get();
-    rateSlider->slotSet(rateDir->get() * (fabs(rate + m_dKnobTweak) - 1.0f) / fRateRange);
-    controlScratch->slotSet(rate + m_dKnobTweak);
+    rateSlider->slotSet(rateDir->get() * (fabs(rate) - 1.0f) / fRateRange);
+    controlScratch->slotSet(rate);
 }
 
 void VinylControlXwax::enableConstantMode(double rate)
@@ -794,7 +794,7 @@ bool VinylControlXwax::checkEnabled(bool was, bool is)
         //This allows for single-deck control, dj handoffs, etc.
 
         togglePlayButton(playButton->get() || fabs(controlScratch->get()) > 0.05f);
-        controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f + m_dKnobTweak);
+        controlScratch->slotSet(rateDir->get() * (rateSlider->get() * fRateRange) + 1.0f);
         resetSteadyPitch(0.0f, 0.0f);
         bForceResync = true;
         if (!was)

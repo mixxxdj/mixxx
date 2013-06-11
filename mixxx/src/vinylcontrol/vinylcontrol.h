@@ -1,4 +1,3 @@
-
 #ifndef VINYLCONTROL_H
 #define VINYLCONTROL_H
 
@@ -44,7 +43,6 @@ class VinylControl : public QObject {
     ControlObjectThread *rateRange; //The ControlObject used to the get the pitch range from the prefs.
     ControlObjectThread *vinylStatus;
     ControlObjectThread *rateDir; //direction of rate
-    ControlObjectThread *m_pVinylPitchTweakKnob;
     ControlObjectThread *loopEnabled; //looping enabled?
     ControlObjectThread *signalenabled; //show the signal in the skin?
     //ControlObject *vinylStatus;  //Status of vinyl control

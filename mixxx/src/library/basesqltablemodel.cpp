@@ -463,9 +463,6 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                     value =  QString("(%1)").arg(value.toInt());
             } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
                 value = value.toBool();
-            } else if (column == fieldIndex(LIBRARYTABLE_LOCATION)) {
-				if (value.toString().startsWith(m_sPrefix))
-					return value.toString().remove(0, m_sPrefix.size() + 1);
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
                 QDateTime gmtDate = value.toDateTime();
                 gmtDate.setTimeSpec(Qt::UTC);
@@ -801,13 +798,6 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
     }
     mimeData->setUrls(urls);
     return mimeData;
-}
-
-void BaseSqlTableModel::setLibraryPrefix(QString sPrefix)
-{
-    m_sPrefix = sPrefix;
-    if (sPrefix[sPrefix.length()-1] == '/' || sPrefix[sPrefix.length()-1] == '\\')
-        m_sPrefix.chop(1);
 }
 
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {

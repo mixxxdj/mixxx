@@ -58,7 +58,6 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("volume");
         m_channelControlValues.append("wheel");
         m_channelControlValues.append("jog");
-        m_channelControlValues.append("vinylpitchtweak");
         m_channelControlValues.append("vinylcontrol_enabled");
         m_channelControlValues.append("vinylcontrol_mode");
         m_channelControlValues.append("vinylcontrol_cueing");

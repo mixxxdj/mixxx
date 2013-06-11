@@ -17,43 +17,7 @@
 class ControlPushButton;
 class ControlObject;
 
-// Class for handling beat loops of a set size. This allows easy access from
-// skins.
-class BeatLoopingControl : public QObject {
-    Q_OBJECT
-  public:
-    BeatLoopingControl(const char* pGroup, double size);
-    virtual ~BeatLoopingControl();
-
-    void activate();
-    void deactivate();
-    inline double getSize() {
-        return m_dBeatLoopSize;
-    }
-  public slots:
-    void slotLegacy(double value);
-    void slotActivate(double value);
-    void slotActivateRoll(double value);
-    void slotToggle(double value);
-
-  signals:
-    void activateBeatLoop(BeatLoopingControl*);
-    void deactivateBeatLoop(BeatLoopingControl*);
-    void activateBeatLoopRoll(BeatLoopingControl*);
-    void deactivateBeatLoopRoll(BeatLoopingControl*);
-
-  private:
-    // Used simply to generate the beatloop_%SIZE and beatseek_%SIZE CO
-    // ConfigKeys.
-    ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
-    double m_dBeatLoopSize;
-    bool m_bActive;
-    ControlPushButton* m_pLegacy;
-    ControlPushButton* m_pActivate;
-    ControlPushButton* m_pActivateRoll;
-    ControlPushButton* m_pToggle;
-    ControlObject* m_pEnabled;
-};
+class BeatLoopingControl;
 
 class LoopingControl : public EngineControl {
     Q_OBJECT
@@ -88,11 +52,6 @@ class LoopingControl : public EngineControl {
     void hintReader(QList<Hint>& hintList);
 
     void notifySeek(double dNewPlaypos);
-    
-    bool isLooping() const { return m_bLoopingEnabled; }
-    double getLoopSize() const {
-        return m_pActiveBeatLoop != NULL ? m_pActiveBeatLoop->getSize() : 0.0;
-    }
 
   public slots:
     void slotLoopIn(double);
@@ -152,6 +111,44 @@ class LoopingControl : public EngineControl {
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
+};
+
+// Class for handling beat loops of a set size. This allows easy access from
+// skins.
+class BeatLoopingControl : public QObject {
+    Q_OBJECT
+  public:
+    BeatLoopingControl(const char* pGroup, double size);
+    virtual ~BeatLoopingControl();
+
+    void activate();
+    void deactivate();
+    inline double getSize() {
+        return m_dBeatLoopSize;
+    }
+  public slots:
+    void slotLegacy(double value);
+    void slotActivate(double value);
+    void slotActivateRoll(double value);
+    void slotToggle(double value);
+
+  signals:
+    void activateBeatLoop(BeatLoopingControl*);
+    void deactivateBeatLoop(BeatLoopingControl*);
+    void activateBeatLoopRoll(BeatLoopingControl*);
+    void deactivateBeatLoopRoll(BeatLoopingControl*);
+
+  private:
+    // Used simply to generate the beatloop_%SIZE and beatseek_%SIZE CO
+    // ConfigKeys.
+    ConfigKey keyForControl(const char * _group, QString ctrlName, double num);
+    double m_dBeatLoopSize;
+    bool m_bActive;
+    ControlPushButton* m_pLegacy;
+    ControlPushButton* m_pActivate;
+    ControlPushButton* m_pActivateRoll;
+    ControlPushButton* m_pToggle;
+    ControlObject* m_pEnabled;
 };
 
 #endif /* LOOPINGCONTROL_H */

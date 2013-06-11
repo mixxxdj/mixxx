@@ -14,7 +14,6 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QDebug>
 #include <QMutexLocker>
 
 #include "playerinfo.h"
@@ -25,15 +24,8 @@
 
 PlayerInfo::PlayerInfo()
         : m_currentlyPlayingDeck(0) {
-        
-    // OWEN EDIT: this debug line helps avoid a race condition
-    //qDebug() << "Setting up Playerinfo";
     m_iNumDecks = ControlObject::getControl(
         ConfigKey("[Master]","num_decks"))->get();
-    if(m_iNumDecks == 0)
-    {
-        qDebug() << "POSSIBLE RACE ----------------------------- NO DECKS";
-    }
     for (int i = 0; i < m_iNumDecks; ++i) {
         QString chan = PlayerManager::groupForDeck(i);
 

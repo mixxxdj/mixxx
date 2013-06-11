@@ -18,11 +18,11 @@ CueDAO::~CueDAO() {
 }
 
 void CueDAO::initialize() {
-    //qDebug() << "CueDAO::initialize" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "CueDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 int CueDAO::cueCount() {
-    //qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "CueDAO::cueCount" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) FROM " CUE_TABLE);
     if (query.exec()) {
@@ -30,14 +30,14 @@ int CueDAO::cueCount() {
             return query.value(0).toInt();
         }
     } else {
-        //qDebug() << query.lastError();
+        qDebug() << query.lastError();
     }
     //query.finish();
     return 0;
 }
 
 int CueDAO::numCuesForTrack(int trackId) {
-    //qDebug() << "CueDAO::numCuesForTrack" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "CueDAO::numCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) FROM " CUE_TABLE " WHERE track_id = :id");
     query.bindValue(":id", trackId);
@@ -67,7 +67,7 @@ Cue* CueDAO::cueFromRow(QSqlQuery& query) const {
 }
 
 Cue* CueDAO::getCue(int cueId) {
-    //qDebug() << "CueDAO::getCue" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "CueDAO::getCue" << QThread::currentThread() << m_database.connectionName();
     if (m_cues.contains(cueId)) {
         return m_cues[cueId];
     }
@@ -112,7 +112,7 @@ QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
 }
 
 bool CueDAO::deleteCuesForTrack(int trackId) {
-    //qDebug() << "CueDAO::deleteCuesForTrack" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "CueDAO::deleteCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CUE_TABLE " WHERE track_id = :track_id");
     query.bindValue(":track_id", trackId);

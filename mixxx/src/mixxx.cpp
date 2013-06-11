@@ -31,7 +31,6 @@
 #include "defs_version.h"
 #include "dlgabout.h"
 #include "dlgpreferences.h"
-#include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
 #include "library/library.h"
@@ -50,7 +49,6 @@
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "upgrade.h"
-#include "logparser.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "widget/wwaveformviewer.h"
 #include "widget/wwidget.h"
@@ -329,8 +327,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // writing meta data may ruine your MP3 file if done simultaneously.
     // see Bug #728197
     // For safety reasons, we deactivate this feature.
-    //OWEN EDIT: No!
-    //m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
+    m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
 
 
     // library dies in seemingly unrelated qtsql error about not having a
@@ -355,15 +352,11 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
-    m_pPlayerManager->addDeck();
-    m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
-    qDebug() << "All samplers and decks added";
-    ControlObject::sync();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
@@ -395,12 +388,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             .length() < 1)
     {
         m_pConfig->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
-    }
-
-    if (m_pConfig->getValueString(ConfigKey("[BPM]", "BPMMaxLength"))
-            .length() < 1)
-    {
-        m_pConfig->set(ConfigKey("[BPM]", "BPMMaxLength"),ConfigValue(30));
     }
 
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "AnalyzeEntireSong"))
@@ -652,6 +639,11 @@ MixxxApp::~MixxxApp()
 
     if (leakedControls.size() > 0) {
         qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
+        foreach (ControlObject* pControl, leakedControls) {
+            ConfigKey key = pControl->getKey();
+            qDebug() << key.group << key.item;
+            leakedConfigKeys.append(key);
+        }
 
        foreach (ConfigKey key, leakedConfigKeys) {
            // delete just to satisfy valgrind:
@@ -842,10 +834,6 @@ QString buildWhatsThis(QString title, QString text) {
 /** initializes all QActions of the application */
 void MixxxApp::initActions()
 {
-    m_pFileLoadTracklist = new QAction(tr("Mark &Tracks as Played..."), this);
-    m_pFileLoadTracklist->setShortcut(tr("Ctrl+L"));
-    m_pFileLoadTracklist->setShortcutContext(Qt::ApplicationShortcut);
-
     QString loadTrackText = tr("Load Track to Deck %1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
     QString openText = tr("Open");
@@ -990,18 +978,10 @@ void MixxxApp::initActions()
     QString vinylControlText = tr("Use timecoded vinyls on external turntables to control Mixxx");
     QString vinylControlTitle1 = tr("Enable Vinyl Control &1");
     QString vinylControlTitle2 = tr("Enable Vinyl Control &2");
-    QString vinylControlTitle3 = tr("Enable Vinyl Control &3");
-    QString vinylControlTitle4 = tr("Enable Vinyl Control &4");
 
     m_pOptionsVinylControl = new QAction(vinylControlTitle1, this);
-    m_pOptionsVinylControl->setShortcut(QKeySequence(tr("Ctrl+T")));
+    m_pOptionsVinylControl->setShortcut(QKeySequence(tr("Ctrl+Y")));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
-
-    m_pFileLoadTracklist->setStatusTip(tr("Loads a Mixxx logfile and marks tracks as played"));
-    m_pFileLoadTracklist->setWhatsThis(tr("Load\nLoads a Mixxx logfile and marks tracks as played"));
-    connect(m_pFileLoadTracklist, SIGNAL(triggered()),
-            this, SLOT(slotFileLoadTracklist()));
-
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
     m_pOptionsVinylControl->setCheckable(true);
@@ -1016,7 +996,7 @@ void MixxxApp::initActions()
         SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2 = new QAction(vinylControlTitle2, this);
-    m_pOptionsVinylControl2->setShortcut(tr("Ctrl+Y"));
+    m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
     m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsVinylControl2->setCheckable(true);
     m_pOptionsVinylControl2->setChecked(false);
@@ -1029,36 +1009,6 @@ void MixxxApp::initActions()
         ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled")),this);
     connect(enabled2, SIGNAL(valueChanged(double)), this,
         SLOT(slotControlVinylControl2(double)));
-
-    m_pOptionsVinylControl3 = new QAction(vinylControlTitle3, this);
-    m_pOptionsVinylControl3->setShortcut(tr("Ctrl+U"));
-    m_pOptionsVinylControl3->setShortcutContext(Qt::ApplicationShortcut);
-    m_pOptionsVinylControl3->setCheckable(true);
-    m_pOptionsVinylControl3->setChecked(false);
-    m_pOptionsVinylControl3->setStatusTip(vinylControlText);
-    m_pOptionsVinylControl3->setWhatsThis(buildWhatsThis(vinylControlTitle3, vinylControlText));
-    connect(m_pOptionsVinylControl3, SIGNAL(toggled(bool)), this,
-        SLOT(slotCheckboxVinylControl3(bool)));
-
-    ControlObjectThreadMain* enabled3 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel3]", "vinylcontrol_enabled")),this);
-    connect(enabled3, SIGNAL(valueChanged(double)), this,
-        SLOT(slotControlVinylControl3(double)));
-
-    m_pOptionsVinylControl4 = new QAction(vinylControlTitle4, this);
-    m_pOptionsVinylControl4->setShortcut(tr("Ctrl+I"));
-    m_pOptionsVinylControl4->setShortcutContext(Qt::ApplicationShortcut);
-    m_pOptionsVinylControl4->setCheckable(true);
-    m_pOptionsVinylControl4->setChecked(false);
-    m_pOptionsVinylControl4->setStatusTip(vinylControlText);
-    m_pOptionsVinylControl4->setWhatsThis(buildWhatsThis(vinylControlTitle4, vinylControlText));
-    connect(m_pOptionsVinylControl4, SIGNAL(toggled(bool)), this,
-        SLOT(slotCheckboxVinylControl4(bool)));
-
-    ControlObjectThreadMain* enabled4 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel4]", "vinylcontrol_enabled")),this);
-    connect(enabled4, SIGNAL(valueChanged(double)), this,
-        SLOT(slotControlVinylControl4(double)));
 #endif
 
 #ifdef __SHOUTCAST__
@@ -1158,7 +1108,6 @@ void MixxxApp::initMenuBar()
     connect(m_pOptionsMenu, SIGNAL(aboutToShow()),
             this, SLOT(slotOptionsMenuShow()));
     // menuBar entry fileMenu
-    m_pFileMenu->addAction(m_pFileLoadTracklist);
     m_pFileMenu->addAction(m_pFileLoadSongPlayer1);
     m_pFileMenu->addAction(m_pFileLoadSongPlayer2);
     m_pFileMenu->addSeparator();
@@ -1170,8 +1119,6 @@ void MixxxApp::initMenuBar()
     m_pVinylControlMenu = new QMenu(tr("&Vinyl Control"), menuBar());
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl);
     m_pVinylControlMenu->addAction(m_pOptionsVinylControl2);
-    m_pVinylControlMenu->addAction(m_pOptionsVinylControl3);
-    m_pVinylControlMenu->addAction(m_pOptionsVinylControl4);
 
     m_pOptionsMenu->addMenu(m_pVinylControlMenu);
     m_pOptionsMenu->addSeparator();
@@ -1222,34 +1169,6 @@ void MixxxApp::initMenuBar()
 
     menuBar()->addSeparator();
     menuBar()->addMenu(m_pHelpMenu);
-}
-
-void MixxxApp::slotFileLoadTracklist()
-{
-    QString s =
-        QFileDialog::getOpenFileName(
-            this,
-            tr("Load Mixxx logfile"),
-            QDir::homePath().append("/").append(SETTINGS_PATH),
-            QString("Logfile (*.log*);;All Files(*)"));
-
-    if (s != QString::null) {
-        MixxxLogParser logparser(s);
-        QStringList loaded_tracks = logparser.getPlayedTracks();
-        QStringListIterator iter(loaded_tracks);
-        while (iter.hasNext())
-        {
-            QString location = iter.next();
-            //ripped from playermanager
-            TrackDAO& trackDao = m_pLibrary->getTrackCollection()->getTrackDAO();
-            TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
-            if (pTrack != NULL)
-            {
-                qDebug() << "Marking " << pTrack->getTitle() << "as played";
-                pTrack->setPlayed(true);
-            }
-        }
-    }
 }
 
 void MixxxApp::slotFileLoadSongPlayer(int deck) {
@@ -1432,64 +1351,6 @@ void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
     ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set((double)toggle);
-#endif
-}
-
-void MixxxApp::slotControlVinylControl3(double toggle)
-{
-#ifdef __VINYLCONTROL__
-    if (m_pPlayerManager->hasVinylInput(2)) {
-        m_pOptionsVinylControl3->setChecked((bool)toggle);
-    } else {
-        m_pOptionsVinylControl3->setChecked(false);
-        if (toggle) {
-            QMessageBox::warning(this, tr("Mixxx"),
-                tr("No input device(s) select.\nPlease select your soundcard(s) "
-                    "in the sound hardware preferences."),
-                QMessageBox::Ok,
-                QMessageBox::Ok);
-            m_pPrefDlg->show();
-            m_pPrefDlg->showSoundHardwarePage();
-            ControlObject::getControl(ConfigKey("[Channel3]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
-            ControlObject::getControl(ConfigKey("[Channel3]", "vinylcontrol_enabled"))->set(0);
-        }
-    }
-#endif
-}
-
-void MixxxApp::slotCheckboxVinylControl3(bool toggle)
-{
-#ifdef __VINYLCONTROL__
-    ControlObject::getControl(ConfigKey("[Channel3]", "vinylcontrol_enabled"))->set((double)toggle);
-#endif
-}
-
-void MixxxApp::slotControlVinylControl4(double toggle)
-{
-#ifdef __VINYLCONTROL__
-    if (m_pPlayerManager->hasVinylInput(3)) {
-        m_pOptionsVinylControl4->setChecked((bool)toggle);
-    } else {
-        m_pOptionsVinylControl4->setChecked(false);
-        if (toggle) {
-            QMessageBox::warning(this, tr("Mixxx"),
-                tr("No input device(s) select.\nPlease select your soundcard(s) "
-                    "in the sound hardware preferences."),
-                QMessageBox::Ok,
-                QMessageBox::Ok);
-            m_pPrefDlg->show();
-            m_pPrefDlg->showSoundHardwarePage();
-            ControlObject::getControl(ConfigKey("[Channel4]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
-            ControlObject::getControl(ConfigKey("[Channel4]", "vinylcontrol_enabled"))->set(0);
-        }
-    }
-#endif
-}
-
-void MixxxApp::slotCheckboxVinylControl4(bool toggle)
-{
-#ifdef __VINYLCONTROL__
-    ControlObject::getControl(ConfigKey("[Channel4]", "vinylcontrol_enabled"))->set((double)toggle);
 #endif
 }
 

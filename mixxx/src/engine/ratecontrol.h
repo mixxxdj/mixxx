@@ -113,8 +113,7 @@ public:
     ControlPushButton* m_pReverseButton;
     ControlObject* m_pBackButton;
     ControlObject* m_pForwardButton;
-    ControlObject* m_pWheelSensitivity;
-    
+
     ControlTTRotary* m_pWheel;
     ControlTTRotary* m_pScratch;
     ControlTTRotary* m_pOldScratch;

@@ -173,7 +173,6 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
     }
 }
 
->>>>>>> c953e3605f2f499cf077a78b4f00425dcc317bcd
 void EngineDeck::onInputConnected(AudioInput input) {
     if (input.getType() != AudioPath::VINYLCONTROL) {
         // This is an error!

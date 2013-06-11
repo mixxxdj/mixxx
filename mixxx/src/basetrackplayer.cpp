@@ -112,7 +112,6 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 BaseTrackPlayer::~BaseTrackPlayer()
 {
     if (m_pLoadedTrack) {
-    	m_pLoadedTrack->setLoaded(false);
         emit(unloadingTrack(m_pLoadedTrack));
         m_pLoadedTrack.clear();
     }
@@ -126,7 +125,6 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pBPM;
     delete m_pReplayGain;
     delete m_pDuration;
-    delete m_pChannel;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -166,7 +164,6 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
         m_pReplayGain->slotSet(0);
 
         // Causes the track's data to be saved back to the library database.
-        m_pLoadedTrack->setLoaded(false);
         emit(unloadingTrack(m_pLoadedTrack));
     }
 
@@ -185,10 +182,7 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
 }
 
 void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
-    if (m_pLoadedTrack != NULL) {
-	    m_pLoadedTrack->setLoaded(false);
-	}
-	if (track != NULL) {
+    if (track != NULL) {
         qDebug() << "Failed to load track" << track->getLocation() << reason;
         emit(loadTrackFailed(track));
     } else {
@@ -209,7 +203,6 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
 
         // Causes the track's data to be saved back to the library database and
         // for all the widgets to unload the track and blank themselves.
-        m_pLoadedTrack->setLoaded(false);
         emit(unloadingTrack(m_pLoadedTrack));
     }
     m_pDuration->set(0);
@@ -265,10 +258,6 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
 TrackPointer BaseTrackPlayer::getLoadedTrack() const {
     return m_pLoadedTrack;
-}
-
-EngineDeck* BaseTrackPlayer::getEngineDeck() const {
-    return m_pChannel;
 }
 
 void BaseTrackPlayer::slotSetReplayGain(double replayGain) {

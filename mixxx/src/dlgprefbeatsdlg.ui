@@ -192,55 +192,6 @@ by analyzing the beats to discard outliers.</string>
      </layout>
     </widget>
    </item>
-   <item row="5" column="0">
-    <widget class="QGroupBox" name="groupBox_4">
-     <property name="title">
-      <string>Max Analyze Length</string>
-     </property>
-     <layout class="QHBoxLayout" name="horizontalLayout_4">
-      <item>
-       <widget class="QLabel" name="label_5">
-        <property name="text">
-         <string>Do not analyze tracks longer than:</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QSpinBox" name="txtMaxLen">
-        <property name="toolTip">
-         <string/>
-        </property>
-        <property name="minimum">
-         <number>1</number>
-        </property>
-        <property name="maximum">
-         <number>1000</number>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>minutes</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <spacer name="horizontalSpacer_3">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="sizeHint" stdset="0">
-         <size>
-          <width>40</width>
-          <height>20</height>
-         </size>
-        </property>
-       </spacer>
-      </item>
-     </layout>
-    </widget>
-   </item>
    <item row="6" column="0">
     <spacer name="verticalSpacer">
      <property name="orientation">
@@ -254,7 +205,7 @@ by analyzing the beats to discard outliers.</string>
      </property>
     </spacer>
    </item>
-   <item row="7" column="0">
+   <item row="5" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_3">
      <item>
       <spacer name="horizontalSpacer_2">
