@@ -30,6 +30,7 @@ class RateControl : public EngineControl {
 public:
     RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~RateControl();
+
     void setEngineMaster(EngineMaster* pEngineMaster);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
@@ -83,8 +84,6 @@ public:
     virtual void trackUnloaded(TrackPointer pTrack);
 
   private:
-    QString m_sGroup;
-
     double getJogFactor() const;
     double getWheelFactor() const;
 
@@ -102,6 +101,7 @@ public:
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
+    QString m_sGroup;
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
         *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
@@ -132,7 +132,6 @@ public:
     ControlObject *m_pSyncInternalEnabled;
     ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
     ControlObject *m_pSyncState;
-    EngineMaster *m_pEngineMaster;
     double m_dSyncedRate;
     int m_iSyncState;
     bool m_bUserTweakingSync;

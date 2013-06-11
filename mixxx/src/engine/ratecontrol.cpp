@@ -233,7 +233,6 @@ RateControl::~RateControl() {
 
 void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
     EngineControl::setEngineMaster(pEngineMaster);
-    m_pEngineMaster = pEngineMaster;
 
     //TODO: should we only hook these up if we are a slave?  beat distance
     //is updated on every iteration so it's heavy
