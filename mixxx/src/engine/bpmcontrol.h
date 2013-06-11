@@ -19,16 +19,18 @@ class BpmControl : public EngineControl {
   public:
     BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
-    double getBpm();
-    double getFileBpm();
-    double getBeatDistance();
-    double getSyncAdjustment();
+    double getBpm() const;
+    double getFileBpm() const { return m_dFileBpm; }
+    void setEngineBpmByRate(double rate);
+    double getBeatDistance() const;
+    int getSyncState() const { return m_iSyncState; }
+    double getSyncAdjustment() const;
     void userTweakingSync(bool tweakActive);
-    double getPhaseOffset();
+    double getPhaseOffset() { return getPhaseOffset(getCurrentSample()); }
     double getPhaseOffset(double reference_position);
-    
+    void setLoopSize(double size) { m_dLoopSize = size; }
+
   public slots:
-    //void slotRateChanged(double);
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
@@ -45,8 +47,8 @@ class BpmControl : public EngineControl {
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotMasterBeatDistanceChanged(double);
-    void slotSyncMasterChanged(double);
-    void slotSyncSlaveChanged(double);
+    void slotSyncStateChanged(double);
+    void slotControlVinyl(double);
 
   private:
     EngineBuffer* pickSyncTarget();
@@ -62,13 +64,17 @@ class BpmControl : public EngineControl {
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
-    
+
     ControlObject *m_pMasterBeatDistance;
-    ControlObject *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
+    ControlObject *m_pSyncState;
     int m_iSyncState;
     double m_dSyncAdjustment;
     bool m_bUserTweakingSync;
     double m_dUserOffset;
+
+    // Is vinyl control enabled?
+    ControlObject* m_pVCEnabled;
+    bool m_bVinylControlEnabled;
 
     // ControlObjects that come from LoopingControl
     ControlObject* m_pLoopEnabled;
@@ -92,14 +98,15 @@ class BpmControl : public EngineControl {
     // Button that translates the beats so the nearest beat is on the current
     // playposition.
     ControlPushButton* m_pTranslateBeats;
-    
-    double m_dFileBpm; // cache it
+
+    double m_dFileBpm;
+    double m_dLoopSize; // Only used to see if we shouldn't quantize position.
 
     TapFilter m_tapFilter;
 
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
-    
+
     QString m_sGroup;
 };
 

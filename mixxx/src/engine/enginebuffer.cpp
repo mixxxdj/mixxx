@@ -157,7 +157,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // BPM to display in the UI (updated more slowly than the actual bpm)
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
-    
+
     // how far past the last beat are we?
     m_beatDistance = new ControlObject(ConfigKey(m_group, "beat_distance"));
 
@@ -187,7 +187,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // beats.
     addControl(new QuantizeControl(_group, _config));
     m_pQuantize = ControlObject::getControl(ConfigKey(_group, "quantize"));
-    
+
     // Create the Loop Controller
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
@@ -470,10 +470,9 @@ void EngineBuffer::slotControlSeek(double change)
     // Ensure that the file position is even (remember, stereo channel files...)
     if (!even((int)new_playpos))
         new_playpos--;
-        
+
     if (m_pQuantize->get() > 0.0) {
         int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
-        qDebug() << "syncing phase on seek" << offset;
         if (!even(offset))
             offset--;
         new_playpos += offset;
@@ -576,6 +575,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     CSAMPLE * pOutput = (CSAMPLE *)pOut; // strip const attribute TODO(XXX): avoid this hack
     bool bCurBufferPaused = false;
     double rate = 0;
+    double resample_rate = 0.0f;
 
     bool bTrackLoading = m_iTrackLoading != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
@@ -592,13 +592,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bool is_scratching;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
-        
+
         m_pBpmControl->userTweakingSync(m_pRateControl->getUserTweakingSync());
-        m_beatDistance->set(m_pBpmControl->getBeatDistance());
-        
+
         if (!paused) {
-            rate += m_pBpmControl->getSyncAdjustment();
+            rate *= m_pBpmControl->getSyncAdjustment();
         }
+        resample_rate = rate * baserate;
         //qDebug() << "rate" << rate << " paused" << paused;
 
         // Update the slipped position
@@ -619,12 +619,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
-        if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
+        if (m_bSeekQueued) {
+            m_bSeekQueued = false;
             setNewPlaypos(m_dQueuedPosition);
         }
 
         // If the rate has changed, set it in the scale object
-        if (rate != m_rate_old || m_bScalerChanged) {
+        if (resample_rate != m_rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
             // Make sure new scaler has proper position
             if (m_bScalerChanged) {
@@ -637,12 +638,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                     setNewPlaypos(m_filepos_play);
                 }
             }
-
-            if (baserate > 0) { // Prevent division by 0
-                rate = baserate * m_pScale->setTempo(rate/baserate);
+            if (m_pBpmControl->getSyncState() == SYNC_SLAVE) {
+                m_pBpmControl->setEngineBpmByRate(rate);
             }
+
+            rate = m_pScale->setTempo(rate);
+            resample_rate = rate * baserate;
             m_pScale->setBaseRate(baserate);
-            m_rate_old = rate;
+            m_rate_old = resample_rate;
             // Scaler is up to date now.
             m_bScalerChanged = false;
         }
@@ -713,12 +716,18 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             m_iCrossFadeSamples = 0;
         }
 
+        // It doesn't make sense to me to use the position before update, but this
+        // results in better sync.
+        if (m_pBpmControl->getSyncState() == SYNC_MASTER) {
+            m_beatDistance->set(m_pBpmControl->getBeatDistance());
+        }
+
         m_engineLock.lock();
         QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
             pControl->setCurrentSample(m_filepos_play, m_file_length_old);
-            pControl->process(rate, m_filepos_play, m_file_length_old, iBufferSize);
+            pControl->process(resample_rate, m_filepos_play, m_file_length_old, iBufferSize);
         }
         m_engineLock.unlock();
 
@@ -756,7 +765,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
     // Give the Reader hints as to which chunks of the current song we
     // really care about. It will try very hard to keep these in memory
-    hintReader(rate);
+    hintReader(resample_rate);
 
     const double kSmallRate = 0.005;
     if (m_bLastBufferPaused && !bCurBufferPaused) {
@@ -844,9 +853,6 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
 
-        if(rate != m_rateEngine->get())
-            m_rateEngine->set(rate);
-
         //Update the BPM even more slowly
         m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
         if (m_iUiSlowTick == 0) {
@@ -857,9 +863,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
         m_iSamplesCalculated = 0;
     }
 
-    // Update visual control object, this needs to be done more often than the
-    // rateEngine and playpos slider
+    // Update visual control object, this needs to be done more often
     m_visualPlaypos->set(fFractionalPlaypos);
+    m_rateEngine->set(rate);
 }
 
 void EngineBuffer::hintReader(const double dRate) {

@@ -31,8 +31,8 @@
 #include "engineclipping.h"
 #include "enginevumeter.h"
 #include "enginexfader.h"
-#include "enginesync.h"
 #include "engine/sidechain/enginesidechain.h"
+#include "enginesync.h"
 #include "sampleutil.h"
 #include "util/timer.h"
 
@@ -57,13 +57,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
-
+    
     // Master sync controller
     m_pMasterSync = new EngineSync(this, _config);
-    //(XXX) DEBUG TEMP
-    //m_pMasterSync->setDeckMaster("[Channel1]");
-    //m_pMasterSync->setInternalMaster();
-    //qDebug() << "-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-==-here we are setting bpm";
+	// TODO(owen): save / restore default bpm
     ControlObject::getControl(ConfigKey("[Master]","sync_bpm"))->set(124.0);
     ControlObject::getControl(ConfigKey("[Master]","rate"))->set(124.0);
 
@@ -366,12 +363,12 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     float cmaster_gain = 0.5*(cf_val+1.);
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
-
-    //increment Internal buffer first in case it is the master
+    
+    // Increment internal buffer first in case it is the master
     m_pMasterSync->incrementPseudoPosition(iBufferSize);
-
-    //Owen TODO: MIDI goes here?????
-
+    
+    // TODO(owen): MIDI goes here, probably.
+    
     //find the Sync Master and process it first
     //then process all the slaves (and skip the master)
 
@@ -388,7 +385,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             if (pBuffer == m_pMasterSync->getMaster())
             {
                 master_it = it;
-
+                
                 //proceed with the processing as below
                 bool needsProcessing = false;
                 if (pChannel->isMaster()) {
@@ -408,6 +405,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                 if (needsProcessing) {
                     pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
                 }
+                break;
             }
         }
     }
@@ -417,9 +415,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-
+        
         if (it == master_it) {
-            //we already processed this
+            // We already processed this.
             continue;
         }
 
