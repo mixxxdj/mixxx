@@ -70,6 +70,9 @@ public:
     void slotControlFastForward(double);
     void slotControlFastBack(double);
     void slotControlVinyl(double);
+    virtual void trackLoaded(TrackPointer pTrack);
+    virtual void trackUnloaded(TrackPointer pTrack);
+
 
   private slots:
     void slotFileBpmChanged(double);
@@ -80,8 +83,6 @@ public:
     void slotSyncStateChanged(double);
     void slotControlVinylScratching(double);
     void slotSetStatuses();
-    virtual void trackLoaded(TrackPointer pTrack);
-    virtual void trackUnloaded(TrackPointer pTrack);
 
   private:
     double getJogFactor() const;
@@ -138,7 +139,7 @@ public:
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;
-    double m_dFileBpm; // cache it
+    double m_dFileBpm;
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.
@@ -191,7 +192,6 @@ public:
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     /** Return speed for temporary rate change */
     double m_dRateTempRampbackChange;
-    double m_dOldRate;
 };
 
 #endif /* RATECONTROL_H */

@@ -37,8 +37,7 @@ RateControl::RateControl(const char* _group,
       m_dTempRateChange(0.0),
       m_dRateTemp(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
-      m_dRateTempRampbackChange(0.0),
-      m_dOldRate(0.0f) {
+      m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -249,7 +248,6 @@ void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
-
 }
 
 void RateControl::setRateRamp(bool linearMode)
@@ -434,11 +432,11 @@ void RateControl::slotMasterBpmChanged(double syncbpm) {
 }
 
 void RateControl::slotSyncMasterChanged(double state) {
-    //qDebug() << m_sGroup << "slot master changed";
+    qDebug() << m_sGroup << "slot master changed";
 
     if (state) {
         if (m_iSyncState == SYNC_MASTER){
-            //qDebug() << "already master";
+            qDebug() << "already master";
             return;
         }
 
@@ -469,7 +467,7 @@ void RateControl::slotSyncSlaveChanged(double state) {
             return;
         }
         if (m_pTrack.isNull()) {
-            //qDebug() << m_sGroup << " no track loaded, can't be slave";
+            qDebug() << m_sGroup << " no track loaded, can't be slave";
             m_pSyncSlaveEnabled->set(false);
             return;
         }
@@ -536,10 +534,6 @@ double RateControl::getRawRate() const {
         m_pRateDir->get();
 }
 
-double RateControl::getCurrentRate() const {
-    return m_dOldRate;
-}
-
 double RateControl::getWheelFactor() const {
     return m_pWheel->get();
 }
@@ -576,6 +570,8 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // If searching is in progress, it overrides everything else
         rate = searching;
     } else {
+
+
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
@@ -583,7 +579,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // if master sync is on, respond to it -- but vinyl always overrides
         if (m_iSyncState == SYNC_SLAVE && !paused && !m_bVinylControlEnabled)
         {
-            m_dOldRate = m_dSyncedRate;
             rate = m_dSyncedRate;
             double userTweak = getTempRate() + wheelFactor + jogFactor;
             rate += userTweak;
@@ -662,8 +657,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             *isScratching = true;
         }
     }
-
-    m_dOldRate = rate;
 
     return rate;
 }

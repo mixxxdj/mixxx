@@ -470,8 +470,9 @@ void EngineBuffer::slotControlSeek(double change)
 
     if (m_pQuantize->get() > 0.0) {
         int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
-        if (!even(offset))
+        if (!even(offset)) {
             offset--;
+        }
         new_playpos += offset;
     }
 
@@ -837,8 +838,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
 
     // Update indicators that are only updated after every
-    // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
-    // rateEngine)
+    // sampleRate/kiUpdateRate samples processed.
     if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
 

@@ -25,6 +25,7 @@
 #include "engine/enginechannel.h"
 #include "soundmanagerutil.h"
 #include "recording/recordingmanager.h"
+#include <QtCore>
 
 class EngineWorkerScheduler;
 class EngineBuffer;
@@ -52,10 +53,11 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
+    int numChannels() const;
     const CSAMPLE* buffer(AudioOutput output) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
-
+    
     EngineSync* getMasterSync(void);
     void setMasterSync(QString deck);
 
