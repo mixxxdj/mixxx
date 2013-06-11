@@ -69,6 +69,8 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_channelControlValues.append("beatloop_4_toggle");
         m_channelControlValues.append("loop_halve");
         m_channelControlValues.append("loop_double");
+        m_channelControlValues.append("sync_master");
+        m_channelControlValues.append("sync_slave");
         m_channelControlValues.append("hotcue_1_activate");
         m_channelControlValues.append("hotcue_2_activate");
         m_channelControlValues.append("hotcue_3_activate");
@@ -147,9 +149,8 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_masterControlValues.append("balance");
         m_masterControlValues.append("crossfader");
         m_masterControlValues.append("volume");
-        m_masterControlValues.append("wheelsensitivity");
-        m_masterControlValues.append("pfl_delay");
-        m_masterControlValues.append("bypass_eq");
+        m_masterControlValues.append("sync_master");
+        m_masterControlValues.append("sync_bpm");
     }
     if (m_playlistControlValues.isEmpty())
     {
