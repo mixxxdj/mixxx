@@ -341,8 +341,10 @@ void BpmControl::setUserTweakingSync(bool tweakActive) {
     m_bUserTweakingSync = tweakActive;
 }
 
-void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
-{
+void BpmControl::slotMasterBeatDistanceChanged(double master_distance) {
+    // This runs at the start of the callback either after the master deck has
+    // been processed or after EngineSync has been advanced.
+
     // Vinyl overrides
     if (m_pVCEnabled && m_pVCEnabled->get() > 0.0) {
         return;
@@ -367,6 +369,7 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         return;
     }
 
+    // This is the deck position at the start of the callback.
     double dThisPosition = getCurrentSample();
 
     double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
