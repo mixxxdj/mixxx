@@ -37,8 +37,7 @@ RateControl::RateControl(const char* _group,
       m_dTempRateChange(0.0),
       m_dRateTemp(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
-      m_dRateTempRampbackChange(0.0),
-      m_dOldRate(0.0f) {
+      m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -536,10 +535,6 @@ double RateControl::getRawRate() const {
         m_pRateDir->get();
 }
 
-double RateControl::getCurrentRate() const {
-    return m_dOldRate;
-}
-
 double RateControl::getWheelFactor() const {
     return m_pWheel->get();
 }
@@ -583,7 +578,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // if master sync is on, respond to it -- but vinyl always overrides
         if (m_iSyncState == SYNC_SLAVE && !paused && !m_bVinylControlEnabled)
         {
-            m_dOldRate = m_dSyncedRate;
             rate = m_dSyncedRate;
             double userTweak = getTempRate() + wheelFactor + jogFactor;
             rate += userTweak;
@@ -662,9 +656,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             *isScratching = true;
         }
     }
-
-    m_dOldRate = rate;
-
     return rate;
 }
 

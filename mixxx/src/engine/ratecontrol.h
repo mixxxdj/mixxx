@@ -41,7 +41,6 @@ public:
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate() const;
-    double getCurrentRate() const;
     bool getUserTweakingSync() const;
 
     // Set rate change when temp rate button is pressed
@@ -191,7 +190,6 @@ public:
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     /** Return speed for temporary rate change */
     double m_dRateTempRampbackChange;
-    double m_dOldRate;
 };
 
 #endif /* RATECONTROL_H */
