@@ -194,16 +194,6 @@ public:
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     /** Return speed for temporary rate change */
     double m_dRateTempRampbackChange;
-
-    /** Old playback rate. Stored in this variable while a temp pitch change
-      * buttons is in effect. It does not work to just decrease the pitch slider
-      * by the value it has been increased with when the temp button was
-      * pressed, because there is a fixed limit on the range of the pitch
-      * slider */
-    double m_dOldRate;
-
-    /** Handle for configuration */
-    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* RATECONTROL_H */

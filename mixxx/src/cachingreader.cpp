@@ -592,9 +592,6 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
 }
 
 void CachingReader::run() {
-    // Notify the EngineWorkerScheduler that the work we scheduled is starting.
-    setActive(true);
-
     TrackPointer pLoadTrack;
 
     m_newTrackMutex.lock();
