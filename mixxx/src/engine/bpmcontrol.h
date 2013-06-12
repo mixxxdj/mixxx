@@ -27,7 +27,6 @@ class BpmControl : public EngineControl {
     void setUserTweakingSync(bool tweakActive);
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
-    void setLoopSize(double size) { m_dLoopSize = size; }
 
     void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double process(const double dRate,

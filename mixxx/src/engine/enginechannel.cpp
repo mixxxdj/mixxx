@@ -31,13 +31,13 @@ EngineChannel::EngineChannel(const char* pGroup,
     m_pOrientation->set(defaultOrientation);
     m_pOrientationLeft = new ControlPushButton(ConfigKey(m_group, "orientation_left"));
     connect(m_pOrientationLeft, SIGNAL(valueChanged(double)),
-            this, SLOT(slotOrientationLeft(double)));
+            this, SLOT(slotOrientationLeft(double)), Qt::DirectConnection);
     m_pOrientationRight = new ControlPushButton(ConfigKey(m_group, "orientation_right"));
     connect(m_pOrientationRight, SIGNAL(valueChanged(double)),
-            this, SLOT(slotOrientationRight(double)));
+            this, SLOT(slotOrientationRight(double)), Qt::DirectConnection);
     m_pOrientationCenter = new ControlPushButton(ConfigKey(m_group, "orientation_center"));
     connect(m_pOrientationCenter, SIGNAL(valueChanged(double)),
-            this, SLOT(slotOrientationCenter(double)));
+            this, SLOT(slotOrientationCenter(double)), Qt::DirectConnection);
 }
 
 EngineChannel::~EngineChannel() {

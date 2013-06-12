@@ -21,7 +21,7 @@
 
 #include "engine/enginecontrol.h"
 
-class EngineBuffer;
+class EngineChannel;
 class EngineMaster;
 class ControlObject;
 class ControlPushButton;
@@ -44,7 +44,7 @@ class EngineSync : public EngineControl {
     bool setDeckMaster(QString deck);
     void setInternalMaster(void);
     bool setMidiMaster(void);
-    EngineBuffer* getMaster() const;
+    EngineChannel* getMaster() const;
 
     void incrementPseudoPosition(int bufferSize);
     double getInternalBeatDistance(void) const;
@@ -71,7 +71,7 @@ class EngineSync : public EngineControl {
     void deckXStateChanged(QString group, double);
 
     EngineMaster* m_pEngineMaster;
-    EngineBuffer* m_pMasterBuffer;
+    EngineChannel* m_pMasterChannel;
     ControlObject* m_pSourceRate;
     ControlObject* m_pMasterBpm;
     ControlObject* m_pSourceBeatDistance;
