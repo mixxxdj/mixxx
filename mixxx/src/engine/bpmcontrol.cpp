@@ -465,6 +465,7 @@ bool BpmControl::syncPhase() {
     }
 
     double dNewPlaypos = dThisPosition + offset;
+    seekAbs(dNewPlaypos);
     return true;
 }
 
