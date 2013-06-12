@@ -28,7 +28,6 @@ class BpmControl : public EngineControl {
     void userTweakingSync(bool tweakActive);
     double getPhaseOffset() { return getPhaseOffset(getCurrentSample()); }
     double getPhaseOffset(double reference_position);
-    void setLoopSize(double size) { m_dLoopSize = size; }
 
   public slots:
     virtual void trackLoaded(TrackPointer pTrack);

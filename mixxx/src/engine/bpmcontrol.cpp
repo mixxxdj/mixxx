@@ -23,7 +23,6 @@ BpmControl::BpmControl(const char* _group,
         m_dSyncAdjustment(1.0),
         m_bUserTweakingSync(false),
         m_dUserOffset(0.0),
-        m_dLoopSize(0.0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
     m_pNumDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
@@ -380,12 +379,6 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         return;
     }
 
-    //If we aren't quantized or looping, don't worry about offset
-    if (!m_pQuantize->get() || (m_dLoopSize < 1.0 && m_dLoopSize > 0)) {
-        m_dSyncAdjustment = 1.0;
-        return;
-    }
-
     const double MAGIC_FUZZ = 0.01;
     const double MAGIC_FACTOR = 0.3; //the higher this is, the more we influence sync
 
@@ -398,6 +391,17 @@ void BpmControl::slotMasterBeatDistanceChanged(double master_distance)
         // close enough, we are on a beat
         dNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
         beat_length = dNextBeat - dPrevBeat;
+    }
+
+    //If we aren't quantized or looping, don't worry about offset
+    // We might be seeking outside the loop.
+    const bool loop_enabled = m_pLoopEnabled->get() > 0.0;
+    const double loop_size = (m_pLoopEndPosition->get() -
+                                  m_pLoopStartPosition->get()) /
+                              beat_length;
+    if (!m_pQuantize->get() || (loop_size < 1.0 && loop_size > 0)) {
+        m_dSyncAdjustment = 1.0;
+        return;
     }
 
     // my_distance is our percentage distance through the beat
@@ -471,7 +475,6 @@ bool BpmControl::syncPhase() {
     }
 
     double dNewPlaypos = dThisPosition + offset;
-    emit(seekAbs(dNewPlaypos));
     return true;
 }
 

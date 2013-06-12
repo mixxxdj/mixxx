@@ -139,7 +139,7 @@ void EngineSync::disconnectMaster() {
         m_pSourceBeatDistance = NULL;
     }
     qDebug() << "UNSETTING master buffer (disconnected master)";
-    m_pMasterBuffer = NULL;
+    m_pMasterChannel = NULL;
 }
 
 
@@ -216,10 +216,10 @@ bool EngineSync::setDeckMaster(QString deck) {
 
     if (pChannel) {
         disconnectMaster();
-        m_pMasterBuffer = pChannel->getEngineBuffer();
-        if (m_pMasterBuffer == NULL) {
+        if (pChannel->getEngineBuffer() == NULL) {
             return false;
         }
+        m_pMasterChannel = pChannel;
 
         m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "rateEngine"));
         if (m_pSourceRate == NULL) {
@@ -300,10 +300,10 @@ QString EngineSync::chooseNewMaster(QString dontpick="") {
 
 void EngineSync::slotSourceRateChanged(double rate_engine) {
     //master buffer can be null due to timing issues
-    if (m_pMasterBuffer != NULL && rate_engine != m_dSourceRate) {
+    if (m_pMasterChannel != NULL && rate_engine != m_dSourceRate) {
         m_dSourceRate = rate_engine;
 
-        double filebpm = m_pMasterBuffer->getFileBpm();
+        double filebpm = m_pMasterChannel->getEngineBuffer()->getFileBpm();
         m_dMasterBpm = rate_engine * filebpm;
         //qDebug() << "file bpm " << filebpm;
         //qDebug()<< "announcing a master bpm of" <<  m_dMasterBpm;
@@ -505,6 +505,6 @@ void EngineSync::setPseudoPosition(double percent) {
     m_dPseudoBufferPos = percent * m_dSamplesPerBeat;
 }
 
-EngineBuffer* EngineSync::getMaster() const {
-    return m_pMasterBuffer;
+EngineChannel* EngineSync::getMaster() const {
+    return m_pMasterChannel;
 }
