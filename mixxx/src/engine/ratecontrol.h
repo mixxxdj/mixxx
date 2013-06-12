@@ -68,7 +68,6 @@ public:
     void slotControlRateTempUpSmall(double);
     void slotControlFastForward(double);
     void slotControlFastBack(double);
-    void slotControlVinyl(double);
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
@@ -80,7 +79,6 @@ public:
     void slotSyncSlaveChanged(double);
     void slotSyncInternalChanged(double);
     void slotSyncStateChanged(double);
-    void slotControlVinylScratching(double);
     void slotSetStatuses();
 
   private:
