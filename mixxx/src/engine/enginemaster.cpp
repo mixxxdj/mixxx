@@ -368,7 +368,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     m_pMasterSync->incrementPseudoPosition(iBufferSize);
 
     // TODO(owen): MIDI goes here, probably.
-    
+
     //find the Sync Master and process it first
     //then process all the slaves (and skip the master)
 
@@ -378,36 +378,35 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     if (m_pMasterSync->getMaster() != NULL) {
         for (unsigned int channel_number = 0;
              it != m_channels.end(); ++it, ++channel_number) {
-             ChannelInfo* pChannelInfo = *it;
-             EngineChannel* pChannel = pChannelInfo->m_pChannel;
-             if (pChannel && pChannel->isActive())
-             {
-                EngineBuffer* pBuffer = pChannel->getEngineBuffer();
-                if (pBuffer == m_pMasterSync->getMaster()->getEngineBuffer())
-                {
-                    master_it = it;
+            ChannelInfo* pChannelInfo = *it;
+            EngineChannel* pChannel = pChannelInfo->m_pChannel;
+            if (!pChannel || !pChannel->isActive()) {
+               continue;
+            }
+            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
+            if (pBuffer == m_pMasterSync->getMaster()->getEngineBuffer()) {
+                master_it = it;
 
-                    //proceed with the processing as below
-                    bool needsProcessing = false;
-                    if (pChannel->isMaster()) {
-                        masterOutput |= (1 << channel_number);
-                        needsProcessing = true;
-                    }
-
-                    // If the channel is enabled for previewing in headphones, copy it
-                    // over to the headphone buffer
-                    if (pChannel->isPFL()) {
-                        headphoneOutput |= (1 << channel_number);
-                        needsProcessing = true;
-                    }
-
-                    // Process the buffer if necessary, which it damn well better be
-                    Q_ASSERT(needsProcessing);
-                    if (needsProcessing) {
-                        pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
-                    }
-                    break;
+                //proceed with the processing as below
+                bool needsProcessing = false;
+                if (pChannel->isMaster()) {
+                    masterOutput |= (1 << channel_number);
+                    needsProcessing = true;
                 }
+
+                // If the channel is enabled for previewing in headphones, copy it
+                // over to the headphone buffer
+                if (pChannel->isPFL()) {
+                    headphoneOutput |= (1 << channel_number);
+                    needsProcessing = true;
+                }
+
+                // Process the buffer if necessary, which it damn well better be
+                Q_ASSERT(needsProcessing);
+                if (needsProcessing) {
+                    pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+                }
+                break;
             }
         }
     }
