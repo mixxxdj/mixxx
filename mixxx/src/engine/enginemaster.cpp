@@ -32,7 +32,7 @@
 #include "enginevumeter.h"
 #include "enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
-#include "enginesync.h"
+#include "engine/enginesync.h"
 #include "sampleutil.h"
 #include "util/timer.h"
 
@@ -57,7 +57,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Master rate
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
-    
+
     // Master sync controller
     m_pMasterSync = new EngineSync(this, _config);
 	// TODO(owen): save / restore default bpm
@@ -363,10 +363,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     float cmaster_gain = 0.5*(cf_val+1.);
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
-    
+
     // Increment internal buffer first in case it is the master
     m_pMasterSync->incrementPseudoPosition(iBufferSize);
-    
+
     // TODO(owen): MIDI goes here, probably.
     
     //find the Sync Master and process it first
@@ -375,37 +375,39 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     Timer timer("EngineMaster::process channels");
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     QList<ChannelInfo*>::iterator master_it = NULL;
-    for (unsigned int channel_number = 0;
-         it != m_channels.end(); ++it, ++channel_number) {
-         ChannelInfo* pChannelInfo = *it;
-         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-         if (pChannel && pChannel->isActive())
-         {
-            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
-            if (pBuffer == m_pMasterSync->getMaster())
-            {
-                master_it = it;
-                
-                //proceed with the processing as below
-                bool needsProcessing = false;
-                if (pChannel->isMaster()) {
-                    masterOutput |= (1 << channel_number);
-                    needsProcessing = true;
-                }
+    if (m_pMasterSync->getMaster() != NULL) {
+        for (unsigned int channel_number = 0;
+             it != m_channels.end(); ++it, ++channel_number) {
+             ChannelInfo* pChannelInfo = *it;
+             EngineChannel* pChannel = pChannelInfo->m_pChannel;
+             if (pChannel && pChannel->isActive())
+             {
+                EngineBuffer* pBuffer = pChannel->getEngineBuffer();
+                if (pBuffer == m_pMasterSync->getMaster()->getEngineBuffer())
+                {
+                    master_it = it;
 
-                // If the channel is enabled for previewing in headphones, copy it
-                // over to the headphone buffer
-                if (pChannel->isPFL()) {
-                    headphoneOutput |= (1 << channel_number);
-                    needsProcessing = true;
-                }
+                    //proceed with the processing as below
+                    bool needsProcessing = false;
+                    if (pChannel->isMaster()) {
+                        masterOutput |= (1 << channel_number);
+                        needsProcessing = true;
+                    }
 
-                // Process the buffer if necessary, which it damn well better be
-                Q_ASSERT(needsProcessing);
-                if (needsProcessing) {
-                    pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+                    // If the channel is enabled for previewing in headphones, copy it
+                    // over to the headphone buffer
+                    if (pChannel->isPFL()) {
+                        headphoneOutput |= (1 << channel_number);
+                        needsProcessing = true;
+                    }
+
+                    // Process the buffer if necessary, which it damn well better be
+                    Q_ASSERT(needsProcessing);
+                    if (needsProcessing) {
+                        pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
+                    }
+                    break;
                 }
-                break;
             }
         }
     }
@@ -415,7 +417,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
          it != m_channels.end(); ++it, ++channel_number) {
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
-        
+
         if (it == master_it) {
             // We already processed this.
             continue;
@@ -519,7 +521,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
-    
+
     m_pMasterSync->addDeck(pChannel->getGroup());
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();

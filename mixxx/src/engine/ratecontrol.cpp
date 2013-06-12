@@ -481,7 +481,6 @@ void RateControl::slotSyncStateChanged(double state) {
     if (changed) {
         slotSetStatuses();
     }
-    m_iSyncState = state;
     if (state == SYNC_SLAVE) {
         slotMasterBpmChanged(m_pMasterBpm->get());
     }

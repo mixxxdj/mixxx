@@ -326,8 +326,9 @@ double EngineBuffer::getFileBpm() {
 
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
 {
-    m_pRateControl->setEngineMaster(pEngineMaster);
-    m_pBpmControl->setEngineMaster(pEngineMaster);
+    foreach(EngineControl* e, m_engineControls) {
+        e->setEngineMaster(pEngineMaster);
+    }
 }
 
 void EngineBuffer::queueNewPlaypos(double newpos) {
