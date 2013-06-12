@@ -161,9 +161,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // how far past the last beat are we?
     m_beatDistance = new ControlObject(ConfigKey(m_group, "beat_distance"));
 
-    //// the actual rate of playback as a multiple.  (ie 1.0 for native speed of file)
-    //m_pTrueRate = new ControlObject(ConfigKey(_group, "true_rate"));
-
     // Slider to show and change song position
     //these bizarre choices map conveniently to the 0-127 range of midi
     m_playposSlider = new ControlLinPotmeter(
@@ -332,8 +329,9 @@ double EngineBuffer::getFileBpm() {
 
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
 {
-    m_pRateControl->setEngineMaster(pEngineMaster);
-    m_pBpmControl->setEngineMaster(pEngineMaster);
+    foreach(EngineControl* e, m_engineControls) {
+        e->setEngineMaster(pEngineMaster);
+    }
 }
 
 void EngineBuffer::queueNewPlaypos(double newpos) {
