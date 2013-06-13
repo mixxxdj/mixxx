@@ -232,11 +232,12 @@ elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu
             'bin')
         dll_files = [ os.path.join (crosscompile_bin_path, \
             s) for s in [ 'libchromaprint.dll', 'libfftw3-3.dll',
-                'libFLAC-8.dll', 'libogg-0.dll', 'libportaudio-2.dll',
-                'libportmidi_s.dll', 'libprotobuf-lite-7.dll',
-                'libsndfile-1.dll', 'libsqlite3-0.dll',
-                'libstdc++-6.dll', 'libtag.dll', 'libvorbis-0.dll',
-                'libvorbisenc-2.dll', 'libvorbisfile-3.dll' ] ];
+                'libFLAC-8.dll', 'libid3tag-0.dll', 'libogg-0.dll',
+                'libportaudio-2.dll', 'libportmidi_s.dll',
+                'libprotobuf-lite-7.dll', 'libsndfile-1.dll',
+                'libsqlite3-0.dll', 'libstdc++-6.dll', 'libtag.dll',
+                'libvorbis-0.dll', 'libvorbisenc-2.dll',
+                'libvorbisfile-3.dll', 'pthreadGC2.dll' ] ];
 
         # The shoutcast build requires a few more DLLs.
         if int(build.flags['shoutcast']):
