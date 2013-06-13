@@ -232,16 +232,16 @@ Section "Mixxx (required)" SecMixxx
 
   ; HID/MIDI mapping tools (mappings are below) & common script file
   SetOutPath $INSTDIR\controllers
-  File /r /x ".svn" /x ".bzr" /x "*.xml" /x "*.js" ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.*
+  File /r /x ".svn" /x ".bzr" /x "*.git" /x "*.xml" /x "*.js" ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\*.*
   File ${BASE_BUILD_DIR}\dist${BITWIDTH}\controllers\common-controller-scripts.js
 
   ; Common skin files
   SetOutPath "$INSTDIR\skins"
-  File /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*.*
+  File /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*.*
 
   ; Just the default skin
   SetOutPath "$INSTDIR\skins\${DEFAULT_SKIN}"
-  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\${DEFAULT_SKIN}\*.*
+  File /r /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\${DEFAULT_SKIN}\*.*
 
   ; Write the installation path into the registry
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_DIR_REGKEY}" "" "$INSTDIR\Mixxx.exe"
@@ -350,52 +350,52 @@ SectionGroup "Additional Skins" SecAddlSkins
 
 	Section "Minimalist skins" SecBasicSkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline*
+	  File /r /x ".svn" /x ".bzr" /x "*.git" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\Outline*
 	SectionEnd
 
 	Section "Netbook-size (1024x600)" SecNetbookSkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-Netbook
 	SectionEnd
 
 	Section "XGA-size (1024x768)" SecXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-XGA
 	SectionEnd
 
     Section "SXGA-size (1280x1024)" SecSXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-SXGA
 	SectionEnd
 
 	Section "WXGA-size (1280x800)" SecWXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA
 	SectionEnd
 
     Section "WXGA+-size (1440x900)" SecWXGAPlusSkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA+
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WXGA+
 	SectionEnd
 
     Section "WSXGA-size (1680x1050)" SecWSXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WSXGA
 	SectionEnd
 
 	Section "UXGA-size (1600x1200)" SecUXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-UXGA
 	SectionEnd
 
     Section "Full HD-size (1920x1080)" SecFullHDSkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-FullHD
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-FullHD
 	SectionEnd
 
     Section "WUXGA-size (1920x1200)" SecWUXGASkins
 	  SetOutPath "$INSTDIR\skins"
-	  File /r /x ".svn" /x ".bzr" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WUXGA
+	  File /r /x ".svn" /x ".bzr" /x "*.git" /x "Outline*" /x "${DEFAULT_SKIN}" ${BASE_BUILD_DIR}\dist${BITWIDTH}\skins\*-WUXGA
 	SectionEnd
 
 SectionGroupEnd
