@@ -81,13 +81,13 @@ void VinylControlControl::slotControlVinylSeek(double change) {
 
         //if in preroll, always seek
         if (new_playpos < 0) {
-            emit(seek(change));
+            seek(change);
             return;
         } else if (cuemode == MIXXX_RELATIVE_CUE_OFF) {
             return;  //if off, do nothing
         } else if (cuemode == MIXXX_RELATIVE_CUE_ONECUE) {
             //if onecue, just seek to the regular cue
-            emit(seekAbs(m_pCurrentTrack->getCuePoint()));
+            seekAbs(m_pCurrentTrack->getCuePoint());
             return;
         }
 
@@ -118,13 +118,13 @@ void VinylControlControl::slotControlVinylSeek(double change) {
             }
             //if negative, allow a seek by falling down to the bottom
         } else {
-            emit(seekAbs(nearest_playpos));
+            seekAbs(nearest_playpos);
             return;
         }
     }
 
     // just seek where it wanted to originally
-    emit(seek(change));
+    seek(change);
 }
 
 bool VinylControlControl::isEnabled()

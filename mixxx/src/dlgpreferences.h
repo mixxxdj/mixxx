@@ -35,7 +35,6 @@ class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
-class DlgPrefBpm;
 class DlgPrefKey;
 class DlgPrefBeats;
 class DlgPrefVinyl;
@@ -83,7 +82,7 @@ private:
     void setupControllerWidgets();
     int addPageWidget(QWidget* w);
     QList<DlgPrefController*> m_controllerWindows;
-    
+
     DlgPrefSound* m_wsound;
     DlgPrefPlaylist* m_wplaylist;
     DlgPrefNoControllers *m_wNoControllers;
@@ -92,7 +91,6 @@ private:
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
     DlgPrefKey* m_wkey;
-    DlgPrefBpm* m_wbpm;
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;

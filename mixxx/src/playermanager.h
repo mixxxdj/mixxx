@@ -5,6 +5,7 @@
 #define PLAYERMANAGER_H
 
 #include <QList>
+#include <QMutex>
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -19,7 +20,6 @@ class Library;
 class EngineMaster;
 class AnalyserQueue;
 class SoundManager;
-class VinylControlManager;
 class TrackCollection;
 
 class PlayerManager : public QObject {
@@ -27,18 +27,17 @@ class PlayerManager : public QObject {
   public:
     PlayerManager(ConfigObject<ConfigValue>* pConfig,
                   SoundManager* pSoundManager,
-                  EngineMaster* pEngine,
-                  VinylControlManager* pVCManager);
+                  EngineMaster* pEngine);
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
-    Deck* addDeck();
+    void addDeck();
 
     // Add a sampler to the PlayerManager
-    Sampler* addSampler();
+    void addSampler();
 
     // Add a PreviewDeck to the PlayerManager
-    PreviewDeck* addPreviewDeck();
+    void addPreviewDeck();
 
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
@@ -83,6 +82,9 @@ class PlayerManager : public QObject {
         return QString("[PreviewDeck%1]").arg(i+1);
     }
 
+    // Used to determine if the user has configured an input for the given vinyl deck.
+    bool hasVinylInput(int inputnum) const;
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
     void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
@@ -109,10 +111,22 @@ class PlayerManager : public QObject {
 
   private:
     TrackPointer lookupTrack(QString location);
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new deck.
+    void addDeckInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new sampler.
+    void addSamplerInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new preview deck.
+    void addPreviewDeckInner();
+
+    // Used to protect access to PlayerManager state across threads.
+    mutable QMutex m_mutex;
+
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;
-    VinylControlManager* m_pVCManager;
     AnalyserQueue* m_pAnalyserQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;

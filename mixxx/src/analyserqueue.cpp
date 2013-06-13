@@ -14,13 +14,10 @@
 #endif
 
 #include "analyserwaveform.h"
-#include "analyserbpm.h"
 #include "analyserrg.h"
-#ifdef __VAMP__
 #include "analyserbeats.h"
 #include "analyserkey.h"
 #include "vamp/vampanalyser.h"
-#endif
 
 #include <typeinfo>
 
@@ -185,7 +182,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
             dieflag = true;
         }
 
-        for (int i = 0; i < read; i++) {
+        for (int i = 0; i < read; ++i) {
             samples[i] = ((float)data16[i])/32767.0f;
         }
 
@@ -408,13 +405,9 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 
     ret->addAnalyser(new AnalyserWaveform(_config));
     ret->addAnalyser(new AnalyserGain(_config));
-#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(_config));
     ret->addAnalyser(new AnalyserKey(_config));
-#else
-    ret->addAnalyser(new AnalyserBPM(_config));
-#endif
 
     ret->start(QThread::IdlePriority);
     return ret;
@@ -427,13 +420,9 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(
 
     ret->addAnalyser(new AnalyserWaveform(_config));
     ret->addAnalyser(new AnalyserGain(_config));
-#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(_config));
     ret->addAnalyser(new AnalyserKey(_config));
-#else
-    ret->addAnalyser(new AnalyserBPM(_config));
-#endif
 
     ret->start(QThread::IdlePriority);
     return ret;

@@ -20,63 +20,80 @@
 
 #include "configobject.h"
 #include "controlobject.h"
-#include <algorithm>
 
 /**
   *@author Tue and Ken Haste Andersen
   */
 
 class ControlPushButton;
+class ControlObjectThread;
 
-class ControlPotmeter : public ControlObject
-{
-  Q_OBJECT
-public:
-    ControlPotmeter(ConfigKey key, double dMinValue=0.0, double dMaxValue=1.0);
-    ~ControlPotmeter();
-    /** Returns the minimum allowed value */
-    double getMin();
-    /** Returns the maximum allowed value */
-    double getMax();
-    /** Sets the step size of the associated PushButtons */
-    void setStep(double);
-    /** Sets the small step size of the associated PushButtons */
-    void setSmallStep(double);
-    /** Sets the minimum and maximum allowed value. The control value is reset when calling
-      * this method */
-    void setRange(double dMinValue, double dMaxValue);
-    double getValueFromWidget(double dValue);
-    double getValueToWidget(double dValue);
-    double GetMidiValue();
+class PotmeterControls : public QObject {
+    Q_OBJECT
+  public:
+    PotmeterControls(ConfigKey key);
+    virtual ~PotmeterControls();
 
-public slots:
-    void setValueFromThread(double dValue);
-    void setValueFromEngine(double dValue);
-    /** Increases the value. This method is called from an associated PushButton control */
+    void setStep(double dStep) {
+        m_dStep = dStep;
+    }
+
+    void setSmallStep(double dSmallStep) {
+        m_dSmallStep = dSmallStep;
+    }
+
+  public slots:
+    // Increases the value.
     void incValue(double);
-    /** Decreases the value. This method is called from an associated PushButton control */
+    // Decreases the value.
     void decValue(double);
-    /** Increases the value by smaller step. */
+    // Increases the value by smaller step.
     void incSmallValue(double);
-    /** Decreases the value by smaller step. */
+    // Decreases the value by smaller step.
     void decSmallValue(double);
-    /** Sets the value to 1.0. */
+    // Sets the value to 1.0.
     void setToOne(double);
-    /** Sets the value to -1.0. */
+    // Sets the value to -1.0.
     void setToMinusOne(double);
-    /** Sets the value to 0.0. */
+    // Sets the value to 0.0.
     void setToZero(double);
     // Sets the control to its default
     void setToDefault(double);
-    /** Toggles the value between 0.0 and 1.0. */
+    // Toggles the value between 0.0 and 1.0.
     void toggleValue(double);
-    /** Toggles the value between -1.0 and 0.0. */
+    // Toggles the value between -1.0 and 0.0.
     void toggleMinusValue(double);
 
-protected:
-    void setValueFromMidi(MidiOpCode o, double v);
+  private:
+    ControlObjectThread* m_pControl;
+    double m_dStep;
+    double m_dSmallStep;
+};
 
-    double m_dMaxValue, m_dMinValue, m_dValueRange, m_dStep, m_dSmallStep;
+class ControlPotmeter : public ControlObject {
+    Q_OBJECT
+  public:
+    ControlPotmeter(ConfigKey key, double dMinValue=0.0, double dMaxValue=1.0);
+    virtual ~ControlPotmeter();
+
+    // Returns the minimum allowed value.
+    double getMin() const;
+    // Returns the maximum allowed value.
+    double getMax() const;
+    // Sets the step size of the associated PushButtons.
+    void setStep(double);
+    // Sets the small step size of the associated PushButtons.
+    void setSmallStep(double);
+
+  protected:
+    // Sets the minimum and maximum allowed value. The control value is reset
+    // when calling this method
+    void setRange(double dMinValue, double dMaxValue);
+
+    double m_dMaxValue;
+    double m_dMinValue;
+    double m_dValueRange;
+    PotmeterControls m_controls;
 };
 
 #endif

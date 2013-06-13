@@ -1,28 +1,22 @@
-#include <QtCore>
-#include <QtGui>
-#include <QtSql>
-#include "library/trackcollection.h"
 #include "library/hiddentablemodel.h"
-#include "library/librarytablemodel.h"
-#include "mixxxutils.cpp"
-
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(parent, pTrackCollection,
-                            pTrackCollection->getDatabase(),
-                            "mixxx.db.model.missing"),
-          m_pTrackCollection(pTrackCollection),
-          m_trackDao(m_pTrackCollection->getTrackDAO()) {
+        : BaseSqlTableModel(parent,pTrackCollection,"mixxx.db.model.missing") {
+    setTableModel();
+}
 
+HiddenTableModel::~HiddenTableModel() {
+}
+
+void HiddenTableModel::setTableModel(int id){
+    Q_UNUSED(id);
     QSqlQuery query;
     QString tableName("hidden_songs");
 
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
-
-    QString filter("mixxx_deleted");
-
+    QString filter("mixxx_deleted=1");
     query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
                   "SELECT "
                   + columns.join(",") +
@@ -36,7 +30,7 @@ HiddenTableModel::HiddenTableModel(QObject* parent,
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
     QStringList tableColumns;
@@ -48,26 +42,6 @@ HiddenTableModel::HiddenTableModel(QObject* parent,
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 
-    connect(this, SIGNAL(doSearch(const QString&)),
-            this, SLOT(slotSearch(const QString&)));
-}
-
-HiddenTableModel::~HiddenTableModel() {
-}
-
-bool HiddenTableModel::addTrack(const QModelIndex& index, QString location) {
-    Q_UNUSED(index);
-    Q_UNUSED(location);
-    return false;
-}
-
-TrackPointer HiddenTableModel::getTrack(const QModelIndex& index) const {
-    //FIXME: use position instead of location for playlist tracks?
-
-    //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
-    //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-    int trackId = getTrackId(index);
-    return m_trackDao.getTrack(trackId);
 }
 
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
@@ -78,7 +52,7 @@ void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDao.purgeTracks(trackIds);
+    m_trackDAO.purgeTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
@@ -93,22 +67,11 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDao.unhideTracks(trackIds);
+    m_trackDAO.unhideTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
-}
-
-
-void HiddenTableModel::search(const QString& searchText) {
-    // qDebug() << "HiddenTableModel::search()" << searchText
-    //          << QThread::currentThread();
-    emit(doSearch(searchText));
-}
-
-void HiddenTableModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText);
 }
 
 bool HiddenTableModel::isColumnInternal(int column) {

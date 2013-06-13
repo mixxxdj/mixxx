@@ -171,7 +171,8 @@ void LegacyLibraryImporter::import()
                 int dbTrackId = m_trackDao.getTrackId(trackLocation);
 
                 if (dbTrackId >= 0) {
-                    //Add it to the database's playlist.
+                    // Add it to the database's playlist.
+                    // TODO(XXX): Care if the append succeeded.
                     m_playlistDao.appendTrackToPlaylist(dbTrackId, playlistId);
                 }
             }
