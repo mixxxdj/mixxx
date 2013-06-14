@@ -383,6 +383,18 @@ class SoundTouch(Dependence):
         if self.sse_enabled(build):
             env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
+class RubberBand(Dependence):
+    def sources(self, build):
+        sources = ['engine/enginebufferscalerubberband.cpp',]
+        return sources
+
+    def configure(self, build, conf, env=None):
+        if env is None:
+            env = build.env
+        if not conf.CheckLib(['rubberband', 'librubberband']):
+            raise Exception("Could not find librubberband or its development headers.")
+
+
 class TagLib(Dependence):
     def configure(self, build, conf):
         libs = ['tag']
@@ -940,7 +952,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint]
+                Chromaprint, RubberBand]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen
