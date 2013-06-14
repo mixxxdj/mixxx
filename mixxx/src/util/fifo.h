@@ -88,7 +88,7 @@ class TwoWayMessagePipe {
 
     // Writes up to 'count' messages from the 'message' array to the sender and
     // returns the number of successfully written messages.
-    inline bool targetWriteMessage(const TargetMessageType* messages, int count) {
+    inline int targetWriteMessage(const TargetMessageType* messages, int count) {
         return m_sender_messages.write(messages, count);
     }
 

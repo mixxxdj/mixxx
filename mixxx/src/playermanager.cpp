@@ -330,6 +330,11 @@ Sampler* PlayerManager::getSampler(unsigned int sampler) const {
     return m_samplers[sampler - 1];
 }
 
+bool PlayerManager::hasVinylInput(int inputnum) const {
+    AudioInput vinyl_input(AudioInput::VINYLCONTROL, 0, inputnum);
+    return m_pSoundManager->getConfig().getInputs().values().contains(vinyl_input);
+}
+
 void PlayerManager::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
     // Do not lock mutex in this method unless it is changed to access
     // PlayerManager state.
@@ -392,5 +397,3 @@ void PlayerManager::slotLoadTrackIntoNextAvailableSampler(TrackPointer pTrack) {
         it++;
     }
 }
-
-
