@@ -27,6 +27,7 @@
 #include "controlpotmeter.h"
 #include "controllinpotmeter.h"
 #include "engine/enginebufferscalest.h"
+#include "engine/enginebufferscalerubberband.h"
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
@@ -75,6 +76,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScale(NULL),
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
+    m_pScaleRB(NULL),
     m_bScalerChanged(false),
     m_bSeekQueued(0),
     m_dQueuedPosition(0),
@@ -224,6 +226,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     m_pScaleDummy = new EngineBufferScaleDummy(m_pReadAheadManager);
+    m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
     enableSoundTouch(false); // default to VE, let the user specify PITS in their mix
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
@@ -274,6 +277,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pScaleLinear;
     delete m_pScaleDummy;
     delete m_pScaleST;
+    delete m_pScaleRB;
 
     delete m_pKeylock;
     delete m_pEject;
@@ -315,7 +319,7 @@ void EngineBuffer::enableSoundTouch(bool b) {
     //visualchannel.cpp or something. Need to valgrind this or something.
 
     if (b) {
-        m_pScale = m_pScaleST;
+        m_pScale = m_pScaleRB;
     } else {
         m_pScale = m_pScaleLinear;
     }
@@ -594,7 +598,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // keylock is enabled, this is applied to either the rate or the tempo.
         double speed = m_pRateControl->calculateRate(
             baserate, paused, iBufferSize, &is_scratching);
-        double pitch = m_pKeyControl->getPitchAdjust();
+        double pitch = m_pKeyControl->getPitchAdjustOctaves();
 
         // Update the slipped position
         if (m_bSlipEnabled) {
@@ -613,9 +617,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // If we should be using SoundTouch and it's not enabled, enable
             // it. If we should not be using SoundTouch and it is enabled,
             // disable it.
-            if (should_use_soundtouch && m_pScale != m_pScaleST) {
+            if (should_use_soundtouch && m_pScale != m_pScaleRB) {
                 enableSoundTouch(true);
-            } else if (!should_use_soundtouch && m_pScale == m_pScaleST) {
+            } else if (!should_use_soundtouch && m_pScale == m_pScaleRB) {
                 enableSoundTouch(false);
             }
         }
@@ -679,7 +683,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // description of "sample consumption rate" or percentage of samples
             // consumed relative to playing back the track at its native sample
             // rate and normal speed.
-            m_rate_old = rate = rate_adjust * tempo_adjust * pitch_adjust;
+            //
+            // NOTE(rryan): pitch_adjust is measured in octave change. This
+            // exp() function (magic constants taken from SoundTouch) converts
+            // it from octaves of change to rate change.
+            m_rate_old = rate = rate_adjust * tempo_adjust *
+                    exp(0.69314718056f * pitch_adjust);
 
             // Scaler is up to date now.
             m_bScalerChanged = false;

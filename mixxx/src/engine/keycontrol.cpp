@@ -36,10 +36,8 @@ KeyControl::~KeyControl() {
     delete m_pFileKey;
 }
 
-double KeyControl::getPitchAdjust() {
-    // The pitch control is key change measured in percentage of an octave (-1.0
-    // to 1.0). This conversion exponent is taken from SoundTouch.
-    return exp(0.69314718056f * m_pPitch->get());
+double KeyControl::getPitchAdjustOctaves() {
+    return m_pPitch->get();
 }
 
 double KeyControl::getKey() {

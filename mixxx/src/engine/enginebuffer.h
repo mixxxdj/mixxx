@@ -50,6 +50,7 @@ class EngineBufferScale;
 class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
+class EngineBufferScaleRubberBand;
 class EngineWorkerScheduler;
 class EngineMaster;
 
@@ -265,6 +266,7 @@ public:
     EngineBufferScaleLinear* m_pScaleLinear;
     /** Object used for pitch-indep time stretch (key lock) scaling of the audio */
     EngineBufferScaleST* m_pScaleST;
+    EngineBufferScaleRubberBand* m_pScaleRB;
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;

@@ -16,7 +16,8 @@ class KeyControl : public EngineControl {
     virtual ~KeyControl();
     // Returns a value describing the pitch adjustment measured in octaves. A
     // pitch adjustment of 0 means no change should take place.
-    double getPitchAdjust();
+    double getPitchAdjustOctaves();
+
     double getKey();
 
   private slots:

@@ -59,7 +59,10 @@ void EngineBufferScaleLinear::setScaleParameters(double* rate_adjust,
     // TODO(rryan) MAX_SEEK_SPEED?
 
     m_dOldRate = m_dRate;
-    m_dRate = *rate_adjust * *pitch_adjust;
+    // pitch_adjust is measured in octave change. This exp() function (magic
+    // constants taken from SoundTouch) converts it from octaves of change to
+    // rate change.
+    m_dRate = *rate_adjust * exp(0.69314718056f * *pitch_adjust);
 
     // Determine playback direction
     m_bBackwards = m_dRate < 0.0;
