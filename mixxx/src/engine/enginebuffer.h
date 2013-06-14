@@ -23,6 +23,7 @@
 #include <QAtomicInt>
 
 #include "defs.h"
+#include "controlobject.h"
 #include "engine/engineobject.h"
 #include "trackinfoobject.h"
 #include "configobject.h"
@@ -39,11 +40,11 @@ class RateControl;
 class LoopingControl;
 class ReadAheadManager;
 class ControlObject;
-class ControlPushButton;
 class ControlObjectThreadMain;
 class ControlBeat;
 class ControlTTRotary;
 class ControlPotmeter;
+class ControlPushButton;
 class CachingReader;
 class EngineBufferScale;
 class EngineBufferScaleDummy;
@@ -81,6 +82,8 @@ const int ENGINE_RAMP_UP = 1;
 
 //const int kiRampLength = 3;
 
+class EngineBuffer;
+
 class EngineBuffer : public EngineObject
 {
      Q_OBJECT
@@ -112,14 +115,14 @@ public:
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
     const char* getGroup();
-    bool isTrackLoaded();
+    bool isTrackLoaded() const { return m_pCurrentTrack != NULL; }
+
     TrackPointer getLoadedTrack() const;
 
     // For dependency injection of readers.
     void setReader(CachingReader* pReader);
 
   public slots:
-    void slotControlPlay(double);
     void slotControlPlayFromStart(double);
     void slotControlJumpToStartAndStop(double);
     void slotControlStop(double);
@@ -275,6 +278,7 @@ private:
     //int m_iRampIter;
 
     TrackPointer m_pCurrentTrack;
+
 #ifdef __SCALER_DEBUG__
     QFile df;
     QTextStream writer;

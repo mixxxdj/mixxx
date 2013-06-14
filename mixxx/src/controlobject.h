@@ -25,6 +25,7 @@
 #include "configobject.h"
 #include "controllers/midi/midimessage.h"
 #include "control/control.h"
+#include "control/controlvalidator.h"
 
 class ControlObject : public QObject {
     Q_OBJECT
@@ -35,6 +36,12 @@ class ControlObject : public QObject {
     ControlObject(const QString& group, const QString& item,
                   bool bIgnoreNops=true, bool bTrack=false);
     virtual ~ControlObject();
+
+    void setValidator(ControlValidator* validator) {
+        if (m_pControl) {
+            m_pControl->setValidator(validator);
+        }
+    }
 
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject* getControl(const ConfigKey& key);
@@ -62,6 +69,20 @@ class ControlObject : public QObject {
     }
     inline double defaultValue() const {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
+    }
+
+    inline bool getEnabled() const {
+        if (m_pControl) {
+            return m_pControl->getEnabled();
+        } else {
+            return false;
+        }
+    }
+
+    inline void setEnabled(bool e) {
+        if (m_pControl) {
+            m_pControl->setEnabled(e);
+        }
     }
 
   signals:

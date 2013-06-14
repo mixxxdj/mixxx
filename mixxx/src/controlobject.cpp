@@ -23,6 +23,7 @@
 #include "controlobject.h"
 #include "controlevent.h"
 #include "control/control.h"
+#include "control/controlvalidator.h"
 #include "util/stat.h"
 #include "util/timer.h"
 

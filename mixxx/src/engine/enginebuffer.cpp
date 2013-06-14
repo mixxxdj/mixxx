@@ -108,9 +108,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_playButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlPlay(double)),
-            Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
@@ -383,6 +380,7 @@ void EngineBuffer::slotTrackLoading() {
     m_iTrackLoading = 1;
     m_pause.unlock();
 
+    m_playButton->setEnabled(true);
     m_playButton->set(0.0); //Stop playback
     m_pTrackSamples->set(0); // Stop renderer
 }
@@ -398,6 +396,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     m_file_length_old = iTrackNumSamples;
     m_pTrackSamples->set(iTrackNumSamples);
     m_pTrackSampleRate->set(iTrackSampleRate);
+    m_playButton->setEnabled(true);
     m_pause.unlock();
 
     // All EngingeControls are connected directly
@@ -441,6 +440,7 @@ void EngineBuffer::ejectTrack() {
     m_playButton->set(0.0);
     m_visualBpm->set(0.0);
     slotControlSeek(0.);
+    m_playButton->setEnabled(false);
     m_pause.unlock();
 
     emit(trackUnloaded(pTrack));
@@ -473,16 +473,6 @@ void EngineBuffer::slotControlSeek(double change)
 void EngineBuffer::slotControlSeekAbs(double abs)
 {
     slotControlSeek(abs / m_file_length_old);
-}
-
-void EngineBuffer::slotControlPlay(double v)
-{
-    // If no track is currently loaded, turn play off. If a track is loading
-    // allow the set since it might apply to a track we are loading due to the
-    // asynchrony.
-    if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
-        m_playButton->set(0.0f);
-    }
 }
 
 void EngineBuffer::slotControlStart(double v)
@@ -893,13 +883,6 @@ void EngineBuffer::addControl(EngineControl* pControl) {
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
     pWorkerScheduler->bindWorker(m_pReader);
-}
-
-bool EngineBuffer::isTrackLoaded() {
-    if (m_pCurrentTrack) {
-        return true;
-    }
-    return false;
 }
 
 void EngineBuffer::slotEjectTrack(double v) {

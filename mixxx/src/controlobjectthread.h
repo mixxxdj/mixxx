@@ -25,8 +25,8 @@
 #include <QQueue>
 
 #include "configobject.h"
+#include "control/control.h"
 
-class ControlDoublePrivate;
 class ControlObject;
 
 class ControlObjectThread : public QObject {
@@ -43,6 +43,20 @@ class ControlObjectThread : public QObject {
 
     inline ConfigKey getKey() const {
         return m_key;
+    }
+
+    inline bool getEnabled() const {
+        if (m_pControl) {
+            return m_pControl->getEnabled();
+        } else {
+            return false;
+        }
+    }
+
+    inline void setEnabled(bool e) {
+        if (m_pControl) {
+            m_pControl->setEnabled(e);
+        }
     }
 
     // Returns the value of the object. Thread safe, non-blocking.
