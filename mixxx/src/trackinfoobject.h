@@ -48,8 +48,6 @@ class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
-#include "segmentation.h"
-
 class TrackInfoObject : public QObject
 {
     Q_OBJECT
@@ -256,13 +254,10 @@ public:
     void setKeyText(QString key,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
-    const Segmentation<QString>* getChordData();
-    void setChordData(Segmentation<QString> cd);
-
   public slots:
     void slotCueUpdated();
 
-signals:
+  signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
     void analyserProgress(int progress);
@@ -278,11 +273,10 @@ signals:
     void clean(TrackInfoObject* pTrack);
     void save(TrackInfoObject* pTrack);
 
-private slots:
+  private slots:
     void slotBeatsUpdated();
 
-private:
-
+  private:
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader);
 
@@ -381,8 +375,6 @@ private:
 
     /** True if object contains valid information */
     bool m_bIsValid;
-
-    Segmentation<QString> m_chordData;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;
