@@ -45,8 +45,8 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
     m_qMutex.unlock();
 
-    slotSetSamplerate(44100.);
-    ControlObject * p = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    ControlObject* p = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    slotSetSamplerate(p->get());
     connect(p, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetSamplerate(double)));
 
