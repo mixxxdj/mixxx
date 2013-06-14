@@ -258,8 +258,7 @@ public:
 
     const Segmentation<QString>* getChordData();
     void setChordData(Segmentation<QString> cd);
-    double convertKey(QString) const;
-    QString convertK(double dValue);
+
   public slots:
     void slotCueUpdated();
 
