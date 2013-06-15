@@ -58,7 +58,7 @@ class SidebarModel : public QAbstractItemModel {
     void slotModelReset();
     void slotFeatureIsLoading(LibraryFeature*);
     void slotFeatureLoadingFinished(LibraryFeature*);
-
+    void slotRefreshFeatureTitle(LibraryFeature*);
   signals:
     void selectIndex(const QModelIndex& index);
 

@@ -69,6 +69,8 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao, SIGNAL(playlistsTitleUpdate(int)),
+    		this,SLOT(slotPlaylistTableChanged(int)));
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -94,7 +96,9 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
     // Switch the playlist table model's playlist.
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+
+    //int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(playlistName);
     if (m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
@@ -103,7 +107,10 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
 
 void BasePlaylistFeature::slotRenamePlaylist() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
+
+    //int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(oldName);
+
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     if (locked) {
@@ -150,8 +157,8 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);
-
+    //int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);
+    int oldPlaylistId = m_playlistDao.getPlaylistIdFromNameDisplayed(oldName);
 
     QString name;
     bool validNameGiven = false;
@@ -197,7 +204,9 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
     QString playlistName = m_lastRightClickedIndex.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    //int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(playlistName);
+
     bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
 
     if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
@@ -257,7 +266,9 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+
+    //int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(m_lastRightClickedIndex.data().toString());
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     if (locked) {
@@ -398,7 +409,8 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(
+        //int playlistId = m_playlistDao.getPlaylistIdFromName(
+        int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(
             m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
             // Insert this playlist
@@ -477,4 +489,3 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id)
 void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0, m_playlistList.size());
 }
-

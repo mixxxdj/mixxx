@@ -24,6 +24,9 @@ void SidebarModel::addLibraryFeature(LibraryFeature* feature) {
     connect(feature, SIGNAL(featureSelect(LibraryFeature*, const QModelIndex&)),
             this, SLOT(slotFeatureSelect(LibraryFeature*, const QModelIndex&)));
 
+    connect(feature, SIGNAL(nameUpdated(LibraryFeature*)),
+            this, SLOT(slotRefreshFeatureTitle(LibraryFeature*)));
+
     QAbstractItemModel* model = feature->getChildModel();
 
     connect(model, SIGNAL(modelReset()),
@@ -402,4 +405,9 @@ void SidebarModel::slotFeatureSelect(LibraryFeature* pFeature, const QModelIndex
         }
     }
     emit(selectIndex(ind));
+}
+
+void SidebarModel::slotRefreshFeatureTitle(LibraryFeature* feature) {
+    featureRenamed(feature);
+    slotFeatureSelect(feature);
 }

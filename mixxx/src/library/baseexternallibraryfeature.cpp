@@ -121,7 +121,8 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     pPlaylistModelToAdd->select();
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
-    int playlistId = playlistDao.getPlaylistIdFromName(playlist);
+    //int playlistId = playlistDao.getPlaylistIdFromName(playlist);
+    int playlistId = playlistDao.getPlaylistIdFromNameDisplayed(playlist);
     int i = 1;
 
     if (playlistId != -1) {
@@ -129,7 +130,8 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         playlist += "(%1)";
         while (playlistId != -1) {
             i++;
-            playlistId = playlistDao.getPlaylistIdFromName(playlist.arg(i));
+            //playlistId = playlistDao.getPlaylistIdFromName(playlist.arg(i));
+            playlistId = playlistDao.getPlaylistIdFromNameDisplayed(playlist.arg(i));
         }
         playlist = playlist.arg(i);
     }

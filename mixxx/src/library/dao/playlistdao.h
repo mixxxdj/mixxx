@@ -51,12 +51,17 @@ class PlaylistDAO : public QObject, public virtual DAO {
     unsigned int playlistCount();
     // Find out the name of the playlist at the given Id
     QString getPlaylistName(int playlistId);
+    // Find out the displayed name of the playlist at the given Id
+    QString getPlaylistNameDisplayed(int playlistId);
     // Get the playlist id by its name
     int getPlaylistIdFromName(QString name);
+    // Get the playlist id by its name displayed
+    int getPlaylistIdFromNameDisplayed(QString name);
     // Get the id of the playlist at index. Note that the index is the natural
     // position in the database table, not the display order position column
     // stored in the database.
     int getPlaylistId(int index);
+
     // Returns true if the playlist with playlistId is hidden
     bool isHidden(int playlistId);
     // Returns the HiddenType of playlistId
@@ -82,6 +87,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     bool copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
     int tracksInPlaylist(int playlistId);
+    // Update the shown number of tracks in every playlists
+    void updatePlaylistsTitleNum();
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
@@ -90,6 +97,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void trackRemoved(int playlistId, int trackId, int position);
     void renamed(int playlistId);
     void lockChanged(int playlistId);
+    // When the number of tracks in some playlist, this signal will be emited to notice
+    // that the playlists name need to be refreshed.
+    void playlistsTitleUpdate(int playlistId);
+
   private:
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);

@@ -17,6 +17,7 @@ PlaylistDAO::~PlaylistDAO()
 
 void PlaylistDAO::initialize()
 {
+	updatePlaylistsTitleNum();
 }
 
 int PlaylistDAO::createPlaylist(QString name, HiddenType hidden)
@@ -46,11 +47,12 @@ int PlaylistDAO::createPlaylist(QString name, HiddenType hidden)
 
     //qDebug() << "Inserting playlist" << name << "at position" << position;
 
-    query.prepare("INSERT INTO Playlists (name, position, hidden, date_created, date_modified) "
-                  "VALUES (:name, :position, :hidden,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP)");
+    query.prepare("INSERT INTO Playlists (name, position, hidden, date_created, date_modified, name_displayed) "
+                  "VALUES (:name, :position, :hidden,  CURRENT_TIMESTAMP, CURRENT_TIMESTAMP, :name_displayed)");
     query.bindValue(":name", name);
     query.bindValue(":position", position);
     query.bindValue(":hidden", static_cast<int>(hidden));
+    query.bindValue(":name_displayed", name);// same with name column in default.
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -60,6 +62,7 @@ int PlaylistDAO::createPlaylist(QString name, HiddenType hidden)
     int playlistId = query.lastInsertId().toInt();
     //Commit the transaction
     transaction.commit();
+    updatePlaylistsTitleNum();
     emit(added(playlistId));
     return playlistId;
 }
@@ -85,12 +88,47 @@ QString PlaylistDAO::getPlaylistName(int playlistId)
     }
     return name;
 }
+QString PlaylistDAO::getPlaylistNameDisplayed(int playlistId)
+{
+    // qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
 
+    QSqlQuery query(m_database);
+    query.prepare("SELECT name_displayed FROM Playlists "
+                  "WHERE id= :id");
+    query.bindValue(":id", playlistId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return "";
+    }
+
+    // Get the name_displayed field
+    QString name = "";
+    while (query.next()) {
+        name = query.value(query.record().indexOf("name_displayed")).toString();
+    }
+    return name;
+}
 int PlaylistDAO::getPlaylistIdFromName(QString name) {
     // qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT id FROM Playlists WHERE name = :name");
+    query.bindValue(":name", name);
+    if (query.exec()) {
+        if (query.next()) {
+            return query.value(query.record().indexOf("id")).toInt();
+        }
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+    return -1;
+}
+int PlaylistDAO::getPlaylistIdFromNameDisplayed(QString name) {
+    // qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
+
+    QSqlQuery query(m_database);
+    query.prepare("SELECT id FROM Playlists WHERE name_displayed = :name");
     query.bindValue(":name", name);
     if (query.exec()) {
         if (query.next()) {
@@ -144,6 +182,7 @@ void PlaylistDAO::renamePlaylist(int playlistId, const QString& newName) {
         return;
     }
     emit(renamed(playlistId));
+    updatePlaylistsTitleNum();
 }
 
 bool PlaylistDAO::setPlaylistLocked(int playlistId, bool locked) {
@@ -209,6 +248,8 @@ bool PlaylistDAO::appendTracksToPlaylist(QList<int> trackIds, int playlistId) {
 
     // Commit the transaction
     transaction.commit();
+
+    updatePlaylistsTitleNum();
 
     insertPosition = position;
     foreach (int trackId, trackIds) {
@@ -340,7 +381,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
         LOG_FAILED_QUERY(query);
     }
     transaction.commit();
-
+    updatePlaylistsTitleNum();
     emit(trackRemoved(playlistId, trackId, position));
     emit(changed(playlistId));
 }
@@ -394,6 +435,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions)
         emit(trackRemoved(playlistId, trackId, position));
     }
     transaction.commit();
+    updatePlaylistsTitleNum();
     emit(changed(playlistId));
 }
 
@@ -435,6 +477,8 @@ bool PlaylistDAO::insertTrackIntoPlaylist(int trackId, int playlistId, int posit
         return false;
     }
     transaction.commit();
+
+    updatePlaylistsTitleNum();
 
     emit(trackAdded(playlistId, trackId, position));
     emit(changed(playlistId));
@@ -489,6 +533,8 @@ int PlaylistDAO::insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, i
     }
 
     transaction.commit();
+
+    updatePlaylistsTitleNum();
 
     insertPositon = position;
     foreach (int trackId, trackIds) {
@@ -634,6 +680,8 @@ void PlaylistDAO::removeTrackFromPlaylists(int trackId) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+
+    updatePlaylistsTitleNum();
 }
 
 void PlaylistDAO::removeTracksFromPlaylists(QList<int> ids) {
@@ -647,6 +695,8 @@ void PlaylistDAO::removeTracksFromPlaylists(QList<int> ids) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+
+    updatePlaylistsTitleNum();
 }
 
 int PlaylistDAO::tracksInPlaylist(int playlistId) {
@@ -664,4 +714,64 @@ int PlaylistDAO::tracksInPlaylist(int playlistId) {
         count = query.value(query.record().indexOf("count")).toInt();
     }
     return count;
+}
+
+void PlaylistDAO::updatePlaylistsTitleNum() {
+
+    m_database.transaction();
+    QSqlQuery selectQuery(m_database);
+
+    selectQuery.prepare(" SELECT Playlists.name,count(*),Playlists.id FROM PlaylistTracks, Playlists "
+                        " WHERE PlaylistTracks.playlist_id = Playlists.id AND Playlists.hidden <> 2"
+                        " GROUP BY playlist_id ");
+
+    if (!selectQuery.exec()) {
+        LOG_FAILED_QUERY(selectQuery);
+    } else {
+        while (selectQuery.next()) {
+
+            QString Name = selectQuery.value(0).toString();
+            QString tracksNum = selectQuery.value(1).toString();
+            int playlistsID = selectQuery.value(2).toInt();
+            QString newNameWithNum = Name + " (" + tracksNum + ")";
+
+            QSqlQuery updateQuery(m_database);
+            updateQuery.prepare("UPDATE Playlists SET name_displayed = :name WHERE id = :id");
+            updateQuery.bindValue(":name", newNameWithNum);
+            updateQuery.bindValue(":id", playlistsID);
+
+            if (!updateQuery.exec()) {
+                LOG_FAILED_QUERY(updateQuery);
+                m_database.rollback();
+            }
+            emit(playlistsTitleUpdate(playlistsID));
+            //qDebug() << "PlaylistName:" <<selectQuery.value(0).toString()
+            //		 << "Number of tracks:" << selectQuery.value(1).toInt();
+        }
+    }
+
+    selectQuery.prepare(" SELECT name,id FROM Playlists "
+                        " WHERE id NOT IN "
+    		            " (SELECT DISTINCT playlist_id from PlaylistTracks) AND "
+    		            " hidden <> 2 ");
+    if (!selectQuery.exec()) {
+            LOG_FAILED_QUERY(selectQuery);
+    } else {
+        while (selectQuery.next()) {
+            QString Name = selectQuery.value(0).toString();
+            int playlistsID = selectQuery.value(1).toInt();
+            QSqlQuery updateQuery(m_database);
+            updateQuery.prepare("UPDATE Playlists SET name_displayed = :name WHERE id = :id");
+            updateQuery.bindValue(":name", Name);
+            updateQuery.bindValue(":id", playlistsID);
+
+            if (!updateQuery.exec()) {
+                LOG_FAILED_QUERY(updateQuery);
+                m_database.rollback();
+            }
+            emit(playlistsTitleUpdate(playlistsID));
+        }
+    }
+    m_database.commit();
+
 }

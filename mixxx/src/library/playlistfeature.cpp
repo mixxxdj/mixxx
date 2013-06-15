@@ -31,6 +31,7 @@ PlaylistFeature::PlaylistFeature(QObject* parent,
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     constructChildModel(-1);
+
 }
 
 PlaylistFeature::~PlaylistFeature() {
@@ -57,7 +58,8 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    //int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(playlistName);
 
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
@@ -87,7 +89,8 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
                                       QWidget *pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    //int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(playlistName);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
@@ -125,7 +128,8 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
 
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    //int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(playlistName);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     QFileInfo file(url.toLocalFile());
@@ -145,7 +149,7 @@ void PlaylistFeature::buildPlaylistList() {
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
     }
-    int nameColumn = playlistTableModel.record().indexOf("name");
+    int nameColumn = playlistTableModel.record().indexOf("name_displayed");
     int idColumn = playlistTableModel.record().indexOf("id");
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
@@ -209,3 +213,4 @@ QString PlaylistFeature::getRootViewHtml() const {
     html.append("</td></tr></table>");
     return html;
 }
+
