@@ -258,7 +258,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     ComboBoxTooltips->addItem(tr("Off")); // 0
 
     // Update combo box
-    int configTooltips = m_mixxx->getToolTips();
+    int configTooltips = m_mixxx->getToolTipsCgf();
     // Add two mod-3 makes the on-disk order match up with the combo-box
     // order.
     ComboBoxTooltips->setCurrentIndex((configTooltips + 2) % 3);
@@ -427,7 +427,7 @@ void DlgPrefControls::slotSetAutoDjRequeue(int)
 void DlgPrefControls::slotSetTooltips(int)
 {
     int configValue = (ComboBoxTooltips->currentIndex() + 1) % 3;
-    m_mixxx->setToolTips(configValue);
+    m_mixxx->setToolTipsCfg(configValue);
 }
 
 void DlgPrefControls::notifyRebootNecessary() {
