@@ -273,7 +273,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     initializeTranslations(pApp);
 
     // Set the visibility of tooltips
-    m_tooltips = m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips")).toInt();
+    m_tooltips = m_pConfig->getValueString(ConfigKey("[Controls]", "Tooltips"), "1").toInt();
 
     // Store the path in the config database
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
@@ -1404,6 +1404,8 @@ void MixxxApp::slotHelpManual() {
 }
 
 void MixxxApp::setToolTips(int tt) {
+    m_pConfig->set(ConfigKey("[Controls]","Tooltips"),
+                   ConfigValue(tt));
     m_tooltips = tt;
 }
 
