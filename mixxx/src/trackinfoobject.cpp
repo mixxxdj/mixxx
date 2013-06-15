@@ -831,17 +831,6 @@ void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
     emit(cuesUpdated());
 }
 
-const Segmentation<QString>* TrackInfoObject::getChordData() {
-    QMutexLocker lock(&m_qMutex);
-    return &m_chordData;
-}
-
-void TrackInfoObject::setChordData(Segmentation<QString> cd) {
-    QMutexLocker lock(&m_qMutex);
-    m_chordData = cd;
-    setDirty(true);
-}
-
 void TrackInfoObject::setDirty(bool bDirty) {
 
     QMutexLocker lock(&m_qMutex);
