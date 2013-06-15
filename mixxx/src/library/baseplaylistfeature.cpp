@@ -268,7 +268,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
 
     //int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
-	int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(m_lastRightClickedIndex.data().toString());
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(m_lastRightClickedIndex.data().toString());
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     if (locked) {
@@ -409,8 +409,8 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
-    	//int playlistId = m_playlistDao.getPlaylistIdFromName(
-    	int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(
+        //int playlistId = m_playlistDao.getPlaylistIdFromName(
+        int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(
             m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
             // Insert this playlist

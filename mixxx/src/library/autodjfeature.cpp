@@ -31,9 +31,9 @@ AutoDJFeature::~AutoDJFeature() {
 }
 
 QVariant AutoDJFeature::title() {
-	int autoDJId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    int autoDJId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     QString title = m_playlistDao.getPlaylistNameDisplayed(autoDJId);
-	return title;
+    return title;
 }
 
 QIcon AutoDJFeature::getIcon() {
