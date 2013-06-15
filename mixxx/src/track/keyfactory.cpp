@@ -89,6 +89,7 @@ Keys KeyFactory::makePreferredKeys(
     const QHash<QString, QString> extraVersionInfo,
     const int iSampleRate, const int iTotalSamples) {
     Q_UNUSED(pTrack);
+    Q_UNUSED(iSampleRate);
 
     const QString version = getPreferredVersion();
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);

@@ -102,8 +102,6 @@ public:
     double getBpm();
     // Returns the BPM of the loaded track (not thread-safe)
     double getFileBpm();
-    // Returns current key (not thread-safe)
-    double getKey();
 
     /** Sets pointer to other engine buffer/channel */
     void setEngineMaster(EngineMaster*);

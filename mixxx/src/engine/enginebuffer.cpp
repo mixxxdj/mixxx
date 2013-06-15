@@ -49,7 +49,6 @@
 
 const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
-bool first = false;
 
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
     m_engineLock(QMutex::Recursive),
@@ -329,10 +328,6 @@ void EngineBuffer::enableSoundTouch(bool b) {
 double EngineBuffer::getBpm()
 {
     return m_pBpmControl->getBpm();
-}
-
-double EngineBuffer::getKey() {
-    return m_pKeyControl->getKey();
 }
 
 double EngineBuffer::getFileBpm() {
@@ -903,11 +898,8 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
         if (m_iUiSlowTick == 0) {
             m_visualBpm->set(m_pBpmControl->getBpm());
         }
-        //m_visualKey->set(m_pKeyControl->getKey());
-       // qDebug()<<"here";
-        //qDebug()<<m_pKeyControl->getKey();
         m_visualKey->set(m_pKeyControl->getKey());
-        //m_visualKey->set(0);
+
         // Reset sample counter
         m_iSamplesCalculated = 0;
     }
