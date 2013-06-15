@@ -32,9 +32,8 @@ AutoDJFeature::~AutoDJFeature() {
 
 QVariant AutoDJFeature::title() {
 	int autoDJId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-	QString title = m_playlistDao.getPlaylistName(autoDJId);
+    QString title = m_playlistDao.getPlaylistNameDisplayed(autoDJId);
 	return title;
-    //return tr("Auto DJ");
 }
 
 QIcon AutoDJFeature::getIcon() {

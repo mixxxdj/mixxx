@@ -34,8 +34,9 @@ unsigned int CrateDAO::crateCount() {
 
 int CrateDAO::createCrate(const QString& name) {
     QSqlQuery query(m_database);
-    query.prepare("INSERT INTO " CRATE_TABLE " (name) VALUES (:name)");
+    query.prepare("INSERT INTO " CRATE_TABLE " (name, name_displayed) VALUES (:name, :name_displayed)");
     query.bindValue(":name", name);
+    query.bindValue(":name_displayed", name);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -120,48 +121,36 @@ bool CrateDAO::deleteCrate(int crateId) {
     return true;
 }
 
-//int CrateDAO::getCrateIdByName(const QString& name) {
-//    QSqlQuery query(m_database);
-//    query.prepare("SELECT id FROM " CRATE_TABLE " WHERE name = (:name)");
-//    query.bindValue(":name", name);
-//    if (query.exec()) {
-//        if (query.next()) {
-//            int id = query.value(0).toInt();
-//            return id;
-//        }
-//    } else {
-//        LOG_FAILED_QUERY(query);
-//    }
-//    return -1;
-//}
-
 int CrateDAO::getCrateIdByName(const QString& name) {
-    QString pattern("(.*)\x20(\\(([1-9]\\d*|0)\\))");
-    QRegExp rxnum(pattern);
-
     QSqlQuery query(m_database);
-    query.prepare("SELECT id,name FROM " CRATE_TABLE);
-
+    query.prepare("SELECT id FROM " CRATE_TABLE " WHERE name = (:name)");
+    query.bindValue(":name", name);
     if (query.exec()) {
-        while (query.next()) {
-            int queryID = query.value(0).toInt();
-        	QString queryName = query.value(1).toString();
-
-            if (queryName == name) {
-                return queryID;
-            } else if (rxnum.exactMatch(queryName)) {
-                QString originalName = rxnum.cap(1);
-                if (originalName == name) {
-                    return queryID;
-                }
-            }
+        if (query.next()) {
+            int id = query.value(0).toInt();
+            return id;
         }
-        return -1;
     } else {
         LOG_FAILED_QUERY(query);
     }
     return -1;
 }
+
+int CrateDAO::getCrateIdByNameDisplayed(const QString& name) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT id FROM " CRATE_TABLE " WHERE name_displayed = (:name)");
+    query.bindValue(":name", name);
+    if (query.exec()) {
+        if (query.next()) {
+            int id = query.value(0).toInt();
+            return id;
+        }
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+    return -1;
+}
+
 int CrateDAO::getCrateId(int position) {
     QSqlQuery query(m_database);
     query.prepare("SELECT id FROM " CRATE_TABLE);
@@ -193,6 +182,19 @@ QString CrateDAO::crateName(int crateId) {
     return QString();
 }
 
+QString CrateDAO::crateNameDisplayed(int crateId) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT name_displayed FROM " CRATE_TABLE " WHERE id = (:id)");
+    query.bindValue(":id", crateId);
+    if (query.exec()) {
+        if (query.next()) {
+            return query.value(0).toString();
+        }
+    } else {
+        LOG_FAILED_QUERY(query);
+    }
+    return QString();
+}
 unsigned int CrateDAO::crateSize(int crateId) {
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) FROM " CRATE_TRACKS_TABLE " WHERE crate_id = (:id)");
@@ -333,13 +335,10 @@ void CrateDAO::removeTracksFromCrates(QList<int> ids) {
     // emit(changed(crateId));
 }
 void CrateDAO::updateCratesTitleNum() {
-    QString pattern("(.*)\x20(\\(([1-9]\\d*|0)\\))");
-    QRegExp rxnum(pattern);
 
     m_database.transaction();
     QSqlQuery selectQuery(m_database);
-    //select crates.name, crates.id,count(*) from crates, crate_tracks
-    //where crates.id = crate_tracks.crate_id group by crates.id
+
     selectQuery.prepare(" SELECT Crates.name,count(*),Crates.id FROM Crates, Crate_tracks "
                         " WHERE Crates.id = Crate_tracks.crate_id "
                         " GROUP BY Crates.id ");
@@ -348,25 +347,15 @@ void CrateDAO::updateCratesTitleNum() {
         LOG_FAILED_QUERY(selectQuery);
     } else {
         while (selectQuery.next()) {
-            QString newNameWithNum;
-            QString oldName = selectQuery.value(0).toString();
+
+            QString Name = selectQuery.value(0).toString();
             QString tracksNum = selectQuery.value(1).toString();
             int cratesID = selectQuery.value(2).toInt();
 
-            if (!rxnum.exactMatch(oldName)) {
-                //qDebug() << "no:"<<oldName;
-                newNameWithNum = oldName+" (" + tracksNum + ")";
-            } else {
-                //qDebug() << "yes:"<<oldName;
-                if (rxnum.cap(2) == tracksNum){
-                    continue;
-                } else {
-                    newNameWithNum = oldName.replace(rxnum.cap(2), "(" + tracksNum + ")");
-                }
-            }
+            QString newNameWithNum = Name + " (" + tracksNum + ")";
 
             QSqlQuery updateQuery(m_database);
-            updateQuery.prepare("UPDATE Crates SET name = :name WHERE id = :id");
+            updateQuery.prepare("UPDATE Crates SET name_displayed = :name WHERE id = :id");
             updateQuery.bindValue(":name", newNameWithNum);
             updateQuery.bindValue(":id", cratesID);
 
@@ -387,21 +376,19 @@ void CrateDAO::updateCratesTitleNum() {
         LOG_FAILED_QUERY(selectQuery);
     } else {
         while (selectQuery.next()) {
-            QString oldName = selectQuery.value(0).toString();
+            QString Name = selectQuery.value(0).toString();
             int cratesID = selectQuery.value(1).toInt();
-            if (rxnum.exactMatch(oldName)) {
-                QString newNameWithNum = rxnum.cap(1);
-                QSqlQuery updateQuery(m_database);
-                updateQuery.prepare("UPDATE Crates SET name = :name WHERE id = :id");
-                updateQuery.bindValue(":name", newNameWithNum);
-                updateQuery.bindValue(":id", cratesID);
+            QSqlQuery updateQuery(m_database);
+            updateQuery.prepare("UPDATE Crates SET name_displayed = :name WHERE id = :id");
+            updateQuery.bindValue(":name", Name);
+            updateQuery.bindValue(":id", cratesID);
 
-                if (!updateQuery.exec()) {
-                    LOG_FAILED_QUERY(updateQuery);
-                    m_database.rollback();
-                }
-                emit(cratesTitleUpdate(cratesID));
+            if (!updateQuery.exec()) {
+                LOG_FAILED_QUERY(updateQuery);
+                m_database.rollback();
             }
+            emit(cratesTitleUpdate(cratesID));
+
     	}
     }
     m_database.commit();

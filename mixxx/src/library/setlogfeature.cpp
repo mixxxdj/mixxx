@@ -94,7 +94,8 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    //int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromNameDisplayed(playlistName);
 
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
@@ -164,7 +165,8 @@ void SetlogFeature::slotJoinWithPrevious() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
-        int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
+        //int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
+    	int currentPlaylistId = m_playlistDao.getPlaylistIdFromNameDisplayed(
             m_lastRightClickedIndex.data().toString());
 
         if (currentPlaylistId >= 0) {

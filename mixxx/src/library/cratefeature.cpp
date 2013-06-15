@@ -96,7 +96,8 @@ QIcon CrateFeature::getIcon() {
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QWidget *pSource) {
     QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    //int crateId = m_crateDao.getCrateIdByName(crateName);
+    int crateId = m_crateDao.getCrateIdByNameDisplayed(crateName);
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
         //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
@@ -126,7 +127,8 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    //int crateId = m_crateDao.getCrateIdByName(crateName);
+    int crateId = m_crateDao.getCrateIdByNameDisplayed(crateName);
     bool locked = m_crateDao.isCrateLocked(crateId);
 
     QFileInfo file(url.toLocalFile());
@@ -159,7 +161,8 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     if (!index.isValid())
         return;
     QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    //int crateId = m_crateDao.getCrateIdByName(crateName);
+    int crateId = m_crateDao.getCrateIdByNameDisplayed(crateName);
     m_crateTableModel.setTableModel(crateId);
     emit(showTrackModel(&m_crateTableModel));
 }
@@ -176,7 +179,8 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     m_lastRightClickedIndex = index;
 
     QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    //int crateId = m_crateDao.getCrateIdByName(crateName);
+    int crateId = m_crateDao.getCrateIdByNameDisplayed(crateName);
 
     bool locked = m_crateDao.isCrateLocked(crateId);
 
@@ -248,7 +252,8 @@ void CrateFeature::slotCreateCrate() {
 
 void CrateFeature::slotDeleteCrate() {
     QString crateName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    //int crateId = m_crateDao.getCrateIdByName(crateName);
+    int crateId = m_crateDao.getCrateIdByNameDisplayed(crateName);
     bool locked = m_crateDao.isCrateLocked(crateId);
 
     if (locked) {
@@ -267,7 +272,8 @@ void CrateFeature::slotDeleteCrate() {
 
 void CrateFeature::slotRenameCrate() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(oldName);
+    //int crateId = m_crateDao.getCrateIdByName(oldName);
+    int crateId = m_crateDao.getCrateIdByNameDisplayed(oldName);
     bool locked = m_crateDao.isCrateLocked(crateId);
 
     if (locked) {
@@ -316,7 +322,8 @@ void CrateFeature::slotRenameCrate() {
 
 void CrateFeature::slotDuplicateCrate() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    int oldCrateId = m_crateDao.getCrateIdByName(oldName);
+    //int oldCrateId = m_crateDao.getCrateIdByName(oldName);
+    int oldCrateId = m_crateDao.getCrateIdByNameDisplayed(oldName);
 
     QString name;
     bool validNameGiven = false;
@@ -370,7 +377,8 @@ void CrateFeature::slotDuplicateCrate() {
 void CrateFeature::slotToggleCrateLock()
 {
     QString crateName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    //int crateId = m_crateDao.getCrateIdByName(crateName);
+    int crateId = m_crateDao.getCrateIdByNameDisplayed(crateName);
     bool locked = !m_crateDao.isCrateLocked(crateId);
 
     if (!m_crateDao.setCrateLocked(crateId, locked)) {
@@ -389,7 +397,7 @@ void CrateFeature::buildCrateList() {
     while (crateListTableModel.canFetchMore()) {
         crateListTableModel.fetchMore();
     }
-    int nameColumn = crateListTableModel.record().indexOf("name");
+    int nameColumn = crateListTableModel.record().indexOf("name_displayed");
     int idColumn = crateListTableModel.record().indexOf("id");
 
     for (int row = 0; row < crateListTableModel.rowCount(); ++row) {

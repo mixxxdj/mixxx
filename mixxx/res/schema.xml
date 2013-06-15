@@ -338,4 +338,13 @@ METADATA
       ALTER TABLE Library ADD COLUMN keys_sub_version TEXT;
     </sql>
   </revision>
+  <revision version="19" min_compatible="3">
+    <description>
+      Add name_displayed column to playlists table.
+    </description>
+    <sql>
+      ALTER TABLE Playlists ADD COLUMN name_displayed varchar(48);
+      ALTER TABLE Crates ADD COLUMN name_displayed varchar(48);
+    </sql>
+  </revision>
 </schema>
