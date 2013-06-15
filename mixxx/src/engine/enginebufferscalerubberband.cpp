@@ -37,7 +37,6 @@ EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
     }
 }
 
-
 void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
     QMutexLocker locker(&m_qMutex);
     if (m_pRubberBand) {
@@ -57,9 +56,6 @@ void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
     // ratio is an exp(x) function.
     m_bBackwards = (*tempo_adjust * *rate_adjust) < 0;
 
-
-    // It's an error to pass a rate or tempo smaller than MIN_SEEK_SPEED to
-    // SoundTouch (see definition of MIN_SEEK_SPEED for more details).
     double tempo_abs = fabs(*tempo_adjust);
     double rate_abs = fabs(*rate_adjust);
 
@@ -152,7 +148,6 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
     unsigned long total_read_frames = 0;
 
     unsigned long remaining_frames = buf_size/iNumChannels;
-    //long remaining_source_frames = iBaseLength/2;
     CSAMPLE* read = m_buffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
@@ -163,7 +158,6 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
         read += received_frames * iNumChannels;
 
         if (remaining_frames > 0) {
-            // math_min(kiSoundTouchReadAheadLength,remaining_source_frames);
             unsigned long iLenFramesRequired = m_pRubberBand->getSamplesRequired();
             unsigned long iAvailSamples = m_pReadAheadManager
                     ->getNextSamples(
@@ -179,44 +173,31 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
                 total_read_frames += iAvailFrames;
                 deinterleaveAndProcess(m_buffer_back, iAvailFrames, false);
             } else {
-                if (last_read_failed)
+                if (last_read_failed) {
+                    // Flush
+                    deinterleaveAndProcess(m_buffer_back, 0, true);
                     break;
+                }
                 last_read_failed = true;
-                // Flush
-                deinterleaveAndProcess(m_buffer_back, 0, true);
             }
         }
     }
 
-    // Feed more samples into SoundTouch until it has processed enough to
-    // fill the audio buffer that we need to fill.
-    // SoundTouch::numSamples() returns the number of _FRAMES_ that
-    // are in its FIFO audio buffer...
-
-    // Calculate new playpos
-
-    //Get the stretched _frames_ (not Samples, as the function call
-    //erroroneously implies)
-    //long receivedFrames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)buffer, buf_size/2);
-
-    // qDebug() << "Fed ST" << total_read_frames*2
-    //          << "samples to get" << total_received_frames*2 << "samples";
-    if (total_received_frames != buf_size/2)
-    {
-        qDebug() << __FILE__ << "- only wrote" << total_received_frames << "frames instead of requested" << buf_size;
+    if (total_received_frames != buf_size/iNumChannels) {
+        qDebug() << __FILE__ << "- only wrote" << total_received_frames
+                 << "frames instead of requested" << buf_size;
     }
 
-    //for (unsigned long i = 0; i < buf_size; i++)
-    //    qDebug() << buffer[i];
-
-    // new_playpos is now interpreted as the total number of virtual samples
+    // m_samplesRead is interpreted as the total number of virtual samples
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
-    // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
-    // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
-    // (*m_dPitchAdjust) so these two cancel out.
+    // NOTE(rryan): Why no m_dPitchAdjust here? Pitch does not change the time
+    // ratio. (m_dTempoAdjust * m_dRateAdjust) is the ratio of unstretched time
+    // to stretched time. So, if we used total_received_frames*iNumChannels in
+    // stretched time, then multiplying that by the ratio of unstretched time to
+    // stretched time will get us the unstretched samples read.
     m_samplesRead = m_dTempoAdjust * m_dRateAdjust *
-            total_received_frames * 2;
+            total_received_frames * iNumChannels;
 
     return m_buffer;
 }

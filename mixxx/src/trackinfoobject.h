@@ -262,7 +262,6 @@ public:
     void waveformSummaryUpdated();
     void analyserProgress(int progress);
     void bpmUpdated(double bpm);
-    //void bpmUpdated(double bpm);
     void beatsUpdated();
     void keyUpdated(double key);
     void keysUpdated();

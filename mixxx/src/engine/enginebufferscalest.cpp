@@ -33,7 +33,6 @@ using namespace soundtouch;
 EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
       m_bBackwards(false),
-      m_bClear(true),
       m_pReadAheadManager(pReadAheadManager) {
     m_qMutex.lock();
     m_pSoundTouch = new soundtouch::SoundTouch();
@@ -53,8 +52,7 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
 }
 
-EngineBufferScaleST::~EngineBufferScaleST()
-{
+EngineBufferScaleST::~EngineBufferScaleST() {
     delete m_pSoundTouch;
     delete [] buffer_back;
 }
@@ -109,16 +107,13 @@ void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
     // changed direction. I removed it because this is handled by EngineBuffer.
 }
 
-void EngineBufferScaleST::clear()
-{
+void EngineBufferScaleST::clear() {
     m_qMutex.lock();
     m_pSoundTouch->clear();
-    m_bClear = true;
     m_qMutex.unlock();
 }
 
-void EngineBufferScaleST::slotSetSamplerate(double dSampleRate)
-{
+void EngineBufferScaleST::slotSetSamplerate(double dSampleRate) {
     int iSrate = (int)dSampleRate;
 
     m_qMutex.lock();
@@ -134,30 +129,17 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
 
     if (m_dPitchAdjust == 0 || m_dRateAdjust == 0 || m_dTempoAdjust == 0) {
         memset(m_buffer, 0, sizeof(m_buffer[0]) * buf_size);
+        m_samplesRead = buf_size;
         return m_buffer;
     }
 
     m_qMutex.lock();
-
-    //If we've just cleared SoundTouch's FIFO of unprocessed samples,
-    //then reset our "read ahead position" because we probably need
-    //to read backwards instead of forwards or something like that.
-    // if (true || m_bClear)
-    // {
-    //     m_iReadAheadPos = (unsigned long)playpos;
-    //     if (!even(m_iReadAheadPos))
-    //         m_iReadAheadPos--;
-    //         //m_iReadAheadPos = (m_iReadAheadPos+1)%iBaseLength;
-    //     m_bClear = false;
-    // }
-    //Q_ASSERT(m_iReadAheadPos >= 0);
 
     const int iNumChannels = 2;
     unsigned long total_received_frames = 0;
     unsigned long total_read_frames = 0;
 
     unsigned long remaining_frames = buf_size/2;
-    //long remaining_source_frames = iBaseLength/2;
     CSAMPLE* read = m_buffer;
     bool last_read_failed = false;
     while (remaining_frames > 0) {
@@ -168,7 +150,6 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
         read += received_frames * iNumChannels;
 
         if (remaining_frames > 0) {
-            // math_min(kiSoundTouchReadAheadLength,remaining_source_frames);
             unsigned long iLenFrames = kiSoundTouchReadAheadLength;
             unsigned long iAvailSamples = m_pReadAheadManager
                     ->getNextSamples(
@@ -184,43 +165,30 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
                 total_read_frames += iAvailFrames;
                 m_pSoundTouch->putSamples(buffer_back, iAvailFrames);
             } else {
-                if (last_read_failed)
+                if (last_read_failed) {
+                    m_pSoundTouch->flush();
                     break;
+                }
                 last_read_failed = true;
-                m_pSoundTouch->flush();
             }
         }
     }
 
-    // Feed more samples into SoundTouch until it has processed enough to
-    // fill the audio buffer that we need to fill.
-    // SoundTouch::numSamples() returns the number of _FRAMES_ that
-    // are in its FIFO audio buffer...
-
-    // Calculate new playpos
-
-    //Get the stretched _frames_ (not Samples, as the function call
-    //erroroneously implies)
-    //long receivedFrames = m_pSoundTouch->receiveSamples((SAMPLETYPE*)buffer, buf_size/2);
-
     // qDebug() << "Fed ST" << total_read_frames*2
     //          << "samples to get" << total_received_frames*2 << "samples";
-    if (total_received_frames != buf_size/2)
-    {
-        qDebug() << __FILE__ << "- only wrote" << total_received_frames << "frames instead of requested" << buf_size;
+    if (total_received_frames != buf_size/2) {
+        qDebug() << __FILE__ << "- only wrote" << total_received_frames
+                 << "frames instead of requested" << buf_size;
     }
 
-    //for (unsigned long i = 0; i < buf_size; i++)
-    //    qDebug() << buffer[i];
-
-    // new_playpos is now interpreted as the total number of virtual samples
+    // m_samplesRead is interpreted as the total number of virtual samples
     // consumed to produce the scaled buffer. Due to this, we do not take into
     // account directionality or starting point.
     // NOTE(rryan): Why no m_dPitchAdjust here? SoundTouch implements pitch
     // shifting as a tempo shift of (1/m_dPitchAdjust) and a rate shift of
     // (*m_dPitchAdjust) so these two cancel out.
     m_samplesRead = m_dTempoAdjust * m_dRateAdjust *
-            total_received_frames * 2;
+            total_received_frames * iNumChannels;
 
     m_qMutex.unlock();
 

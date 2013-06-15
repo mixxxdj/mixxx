@@ -11,6 +11,7 @@ class RubberBandStretcher;
 
 class ReadAheadManager;
 
+// Uses librubberband to scale audio.
 class EngineBufferScaleRubberBand : public EngineBufferScale {
     Q_OBJECT
   public:
@@ -21,10 +22,10 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
                             double* tempo_adjust,
                             double* pitch_adjust);
 
-    /** Scale buffer */
+    // Read and scale buf_size samples from the provided RAMAN.
     CSAMPLE* getScaled(unsigned long buf_size);
 
-    /** Flush buffer */
+    // Flush buffer.
     void clear();
 
   public slots:

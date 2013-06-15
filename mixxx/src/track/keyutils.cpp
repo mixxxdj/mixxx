@@ -114,7 +114,6 @@ inline int lancelotNumberToOpenKeyNumber(const int lancelotNumber)  {
     return okNumber;
 }
 
-
 // static
 const char* KeyUtils::keyDebugName(ChromaticKey key) {
     static const char *keyNames[] = {"INVALID", "C","C#","D","D#","E","F","F#","G","G#","A","A#","B","c","c#","d","d#","e","f","f#","g","g#","a","a#","b"};

@@ -6,14 +6,13 @@
 
 class ControlObject;
 class ControlPotmeter;
-//class ControlPushButton;
 
 class KeyControl : public EngineControl {
     Q_OBJECT
-
   public:
     KeyControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~KeyControl();
+
     // Returns a value describing the pitch adjustment measured in octaves. A
     // pitch adjustment of 0 means no change should take place.
     double getPitchAdjustOctaves();
