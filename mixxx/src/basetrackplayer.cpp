@@ -238,10 +238,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     // Update the BPM and duration values that are stored in ControlObjects
     m_pDuration->set(m_pLoadedTrack->getDuration());
     m_pBPM->slotSet(m_pLoadedTrack->getBpm());
-
-    //m_pKey->slotSet(m_pLoadedTrack->convertK(m_pLoadedTrack->getKey()));
     m_pKey->slotSet(m_pLoadedTrack->getKey());
-    //m_pKey->slotSet(20);
     m_pReplayGain->slotSet(m_pLoadedTrack->getReplayGain());
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
