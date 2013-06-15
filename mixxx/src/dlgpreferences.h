@@ -121,9 +121,8 @@ private:
     QTreeWidgetItem* m_pEqButton;
     QTreeWidgetItem* m_pCrossfaderButton;
     QTreeWidgetItem* m_pRecordingButton;
-    QTreeWidgetItem* m_pKeyNotationFormatButton;
-    QTreeWidgetItem* m_pBPMdetectButton;
-    QTreeWidgetItem* m_pAnalysersButton;
+    QTreeWidgetItem* m_pBeatDetectionButton;
+    QTreeWidgetItem* m_pKeyDetectionButton;
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;

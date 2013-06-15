@@ -239,17 +239,17 @@ void DlgPreferences::createIcons()
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 
-    m_pAnalysersButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pAnalysersButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
-    m_pAnalysersButton->setText(0, tr("Beat Detection"));
-    m_pAnalysersButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pAnalysersButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pBeatDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
+    m_pBeatDetectionButton->setText(0, tr("Beat Detection"));
+    m_pBeatDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pBeatDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pKeyNotationFormatButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pKeyNotationFormatButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keynotation.png"));
-    m_pKeyNotationFormatButton->setText(0, tr("Key Detection"));
-    m_pKeyNotationFormatButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pKeyNotationFormatButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pKeyDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pKeyDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pKeyDetectionButton->setText(0, tr("Key Detection"));
+    m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
@@ -314,9 +314,9 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
     	pagesWidget->setCurrentWidget(m_wcrossfader->parentWidget()->parentWidget());
     } else if (current == m_pRecordingButton) {
     	pagesWidget->setCurrentWidget(m_wrecord->parentWidget()->parentWidget());
-    } else if (current == m_pAnalysersButton ) {
+    } else if (current == m_pBeatDetectionButton ) {
         pagesWidget->setCurrentWidget(m_wbeats->parentWidget()->parentWidget());
-    } else if (current == m_pKeyNotationFormatButton) {
+    } else if (current == m_pKeyDetectionButton) {
     	pagesWidget->setCurrentWidget(m_wkey->parentWidget()->parentWidget());
     } else if (current == m_pReplayGainButton) {
     	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
