@@ -4,16 +4,17 @@
 #include <QtDebug>
 
 #include "engine/enginebufferscalerubberband.h"
+
+#include "controlobject.h"
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
-#include "controlobject.h"
+#include "track/keyutils.h"
 
 using RubberBand::RubberBandStretcher;
 
 EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(ReadAheadManager* pReadAheadManager)
         : m_bBackwards(false),
           m_buffer_back(SampleUtil::alloc(MAX_BUFFER_LEN)),
-          m_bClear(true),
           m_pRubberBand(NULL),
           m_pReadAheadManager(pReadAheadManager) {
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -51,10 +52,13 @@ void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
 void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
                                                      double* tempo_adjust,
                                                      double* pitch_adjust) {
-    // Assumes rate_adjust is just baserate (which cannot be negative) and
-    // pitch_adjust cannot be negative because octave change conversion to pitch
-    // ratio is an exp(x) function.
-    m_bBackwards = (*tempo_adjust * *rate_adjust) < 0;
+    // Assumes tempo_adjust and rate_adjust will never both be negative since
+    // the way EngineBuffer calls setScaleParameters, either rate_adjust is
+    // (speed * baserate) and tempo_adjust is 1.0 or rate_adjust is baserate and
+    // tempo_adjust is speed. Speed is the only value that can be negative so
+    // that means only one of these can be negative at a time. pitch_adjust does
+    // not affect the playback direction.
+    m_bBackwards = *tempo_adjust < 0 || *rate_adjust < 0;
 
     double tempo_abs = fabs(*tempo_adjust);
     double rate_abs = fabs(*rate_adjust);
@@ -78,7 +82,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
     }
 
     if (pitch_changed || rate_changed) {
-        double pitchScale = pow(2, *pitch_adjust) * rate_abs;
+        double pitchScale = KeyUtils::octaveChangeToPowerOf2(*pitch_adjust) * rate_abs;
         if (pitchScale > 0) {
             //qDebug() << "EngineBufferScaleRubberBand setPitchScale" << *pitch_adjust << pitchScale;
             m_pRubberBand->setPitchScale(pitchScale);
@@ -100,7 +104,6 @@ void EngineBufferScaleRubberBand::slotSetSamplerate(double dSampleRate) {
 void EngineBufferScaleRubberBand::clear() {
     QMutexLocker locker(&m_qMutex);
     m_pRubberBand->reset();
-    m_bClear = true;
 }
 
 size_t EngineBufferScaleRubberBand::retrieveAndDeinterleave(CSAMPLE* pBuffer, size_t frames) {

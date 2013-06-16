@@ -42,9 +42,6 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     CSAMPLE* m_retrieve_buffer[2];
     CSAMPLE* m_buffer_back;
 
-    // Used when clear is called
-    bool m_bClear;
-
     // Used to protect RubberBand calls
     QMutex m_qMutex;
 
