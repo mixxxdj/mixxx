@@ -114,10 +114,10 @@ void MixxxApp::logBuildDetails() {
     QStringList buildInfo;
     if (!buildBranch.isEmpty() && !buildRevision.isEmpty()) {
         buildInfo.append(
-            QString("bzr %1 r%2").arg(buildBranch, buildRevision));
+            QString("git %1 r%2").arg(buildBranch, buildRevision));
     } else if (!buildRevision.isEmpty()) {
         buildInfo.append(
-            QString("bzr r%2").arg(buildRevision));
+            QString("git r%2").arg(buildRevision));
     }
     buildInfo.append("built on: " __DATE__ " @ " __TIME__);
     if (!buildFlags.isEmpty()) {
