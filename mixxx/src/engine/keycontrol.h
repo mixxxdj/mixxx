@@ -23,10 +23,18 @@ class KeyControl : public EngineControl {
     void slotSetEngineKey(double);
     void slotFileKeyChanged(double);
     void slotPitchChanged(double);
+    void slotRateChanged();
 
   private:
+    // The previous rate slider rate.
+    double m_dOldRate;
+
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;
+    ControlObject* m_pRateSlider;
+    ControlObject* m_pRateRange;
+    ControlObject* m_pRateDir;
+    ControlObject* m_pKeylock;
     ControlPotmeter* m_pPitch;
 
     /** The current loaded file's detected key */
