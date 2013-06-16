@@ -61,7 +61,7 @@
        dotted="false" />
   </sodipodi:namedview>
   <title
-     id="title5647">Mixxx 1.11+ iconset</title>
+     id="title5647">Mixxx 1.12+ iconset</title>
   <defs
      id="defs28">
     <linearGradient
@@ -1265,6 +1265,159 @@
        y1="12.624996"
        x2="-22.218445"
        y2="26.624996" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient7615"
+       x1="28"
+       y1="-29"
+       x2="28"
+       y2="-8"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.74587456,0,0,0.74587456,-7.8025473,24.424476)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient7640"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.74587456,0,0,0.74587456,-7.8025473,-15.127269)"
+       x1="28"
+       y1="-29"
+       x2="28"
+       y2="-8" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient7647"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.74587456,0,0,0.74587456,-7.8025473,-15.127269)"
+       x1="28"
+       y1="-29"
+       x2="28"
+       y2="-8" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22546"
+       x1="3"
+       y1="38"
+       x2="8"
+       y2="8"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22565"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.74587456,0,0,0.74587456,-7.8025473,24.424476)"
+       x1="28"
+       y1="-29"
+       x2="28"
+       y2="-8" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22567"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.74587456,0,0,0.74587456,-7.8025473,-15.127269)"
+       x1="28"
+       y1="-29"
+       x2="28"
+       y2="-8" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22619"
+       x1="14"
+       y1="0"
+       x2="13.999999"
+       y2="30"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22621"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.74587456,0,0,0.74587456,-7.8025473,-15.127269)"
+       x1="12.524089"
+       y1="20.930668"
+       x2="12.524088"
+       y2="-32.096676" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22623"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.74587456,0,0,0.74587456,-7.8025473,24.424476)"
+       x1="24.697916"
+       y1="-32.74609"
+       x2="24.697916"
+       y2="20.281252" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22625"
+       gradientUnits="userSpaceOnUse"
+       x1="14"
+       y1="0"
+       x2="13.999999"
+       y2="30" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22627"
+       gradientUnits="userSpaceOnUse"
+       x1="14"
+       y1="0"
+       x2="13.999999"
+       y2="30" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22629"
+       gradientUnits="userSpaceOnUse"
+       x1="14"
+       y1="0"
+       x2="13.999999"
+       y2="30" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22632"
+       gradientUnits="userSpaceOnUse"
+       x1="13.500001"
+       y1="15.9"
+       x2="13.999999"
+       y2="30"
+       gradientTransform="matrix(1.3333332,0,0,1.6666667,-1,-22.5)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22635"
+       gradientUnits="userSpaceOnUse"
+       x1="14"
+       y1="0"
+       x2="13.999999"
+       y2="30" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22638"
+       gradientUnits="userSpaceOnUse"
+       x1="14"
+       y1="0"
+       x2="13.999999"
+       y2="30" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient5695-6"
+       id="linearGradient22644"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.74587456,0,0,0.74587456,-7.8025473,-15.127269)"
+       x1="13.541016"
+       y1="20.930668"
+       x2="14.557942"
+       y2="-32.096676" />
   </defs>
   <metadata
      id="metadata4">
@@ -1283,7 +1436,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title>Mixxx 1.11+ iconset</dc:title>
+        <dc:title>Mixxx 1.12+ iconset</dc:title>
         <dc:subject>
           <rdf:Bag>
             <rdf:li>Mixxx</rdf:li>
@@ -1301,7 +1454,7 @@
            rdf:resource="http://creativecommons.org/licenses/publicdomain/" />
         <dc:date>2011-04-04</dc:date>
         <dc:source>www.mixxx.org</dc:source>
-        <dc:description>Iconset for use in Mixxx 1.11+. Optimized for 48px (16px)icon size. Contains icons for preference menue and  library widget
+        <dc:description>Iconset for use in Mixxx 1.12+. Optimized for 48px (16px)icon size. Contains icons for preference menue and  library widget
 
 Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc:description>
         <dc:coverage />
@@ -1671,7 +1824,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      inkscape:groupmode="layer"
      id="layer36"
      inkscape:label="ic_library_"
-     style="display:inline"
+     style="display:none"
      sodipodi:insensitive="true">
     <g
        inkscape:groupmode="layer"
@@ -2322,7 +2475,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
      inkscape:groupmode="layer"
      id="layer14"
      inkscape:label="ic_preferences_"
-     style="display:inline"
+     style="display:none"
      sodipodi:insensitive="true">
     <g
        inkscape:groupmode="layer"
@@ -2343,7 +2496,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="7"
            sodipodi:rx="5"
            sodipodi:ry="5"
-           d="M 12,7 C 12,9.7614237 9.7614237,12 7,12 4.2385763,12 2,9.7614237 2,7 2,4.2385763 4.2385763,2 7,2 c 2.7614237,0 5,2.2385763 5,5 z"
+           d="M 12,7 A 5,5 0 1 1 2,7 5,5 0 1 1 12,7 z"
            transform="matrix(1.9222927,0,0,1.9222927,0.5439511,-13.456048)" />
         <path
            sodipodi:type="arc"
@@ -2353,7 +2506,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
            sodipodi:cy="6"
            sodipodi:rx="1.4933327"
            sodipodi:ry="1.4933327"
-           d="M 7.4933327,6 C 7.4933327,6.8247449 6.8247449,7.4933327 6,7.4933327 5.1752551,7.4933327 4.5066673,6.8247449 4.5066673,6 4.5066673,5.1752551 5.1752551,4.5066673 6,4.5066673 6.8247449,4.5066673 7.4933327,5.1752551 7.4933327,6 z"
+           d="M 7.4933327,6 A 1.4933327,1.4933327 0 1 1 4.5066673,6 1.4933327,1.4933327 0 1 1 7.4933327,6 z"
            transform="matrix(1.3392862,0,0,1.3392862,5.9642827,-8.0357171)" />
       </g>
     </g>
@@ -2495,6 +2648,80 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          id="ic_preferences_recording"
          inkscape:connector-curvature="0"
          inkscape:label="#rect7900-2" />
+    </g>
+    <g
+       style="display:none"
+       inkscape:label="modplug.png"
+       id="g7539"
+       inkscape:groupmode="layer"
+       sodipodi:insensitive="true">
+      <text
+         xml:space="preserve"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         x="-31.85"
+         y="9.8500004"
+         id="text7559"
+         sodipodi:linespacing="125%"><tspan
+           sodipodi:role="line"
+           id="tspan7561"
+           x="-31.85"
+           y="9.8500004"
+           style="font-weight:bold;-inkscape-font-specification:Sans Bold" /></text>
+      <text
+         xml:space="preserve"
+         x="26.638651"
+         y="-62.465622"
+         id="text7563"
+         transform="scale(1.201262,0.83245787)"
+         style="font-size:35.64843369px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial"><tspan
+           sodipodi:role="line"
+           x="26.638651"
+           y="-62.465622"
+           style="font-size:71.29686737px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;font-family:Arial;-inkscape-font-specification:Arial"
+           dx="0"
+           id="tspan7567" /></text>
+      <flowRoot
+         xml:space="preserve"
+         id="flowRoot7569"
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"><flowRegion
+           id="flowRegion7571"><rect
+             id="rect7573"
+             width="44.83057"
+             height="79.620224"
+             x="49.921738"
+             y="-74.773125" /></flowRegion><flowPara
+           id="flowPara7575"></flowPara></flowRoot>      <g
+         id="g22646"
+         style="filter:url(#filter6108)">
+        <g
+           id="text7601"
+           style="font-size:29.83498192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:url(#linearGradient22623);fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+           transform="scale(1.3183915,0.75850003)">
+          <path
+             sodipodi:nodetypes="ccccccscccccccccsccccccccccsccc"
+             inkscape:connector-curvature="0"
+             id="path7650"
+             style="font-weight:bold;fill:url(#linearGradient22623);fill-opacity:1;-inkscape-font-specification:Arial Bold"
+             d="m -2.0489097e-8,2.9864117 3.773076320489097,0 0,2.11234 C 5.1230246,3.4574542 6.7303438,2.6367988 8.5950387,2.636783 c 0.9906032,1.58e-5 1.8501063,0.2039657 2.5785113,0.6118502 0.72838,0.4079149 1.325661,1.0246205 1.791847,1.8501185 0.679818,-0.825498 1.413067,-1.4422036 2.199748,-1.8501185 0.786646,-0.4078845 1.626726,-0.6118344 2.52024,-0.6118502 1.136272,1.58e-5 2.09775,0.2331013 2.884436,0.6992574 0.786642,0.4564743 1.374212,1.1314512 1.762712,2.0249328 0.281621,0.6604222 0.422443,1.728731 0.422468,3.2049297 l 0,11.8691651 -4.093569,0 0,-10.820279 C 18.661411,8.0803179 18.520589,7.0897042 18.238964,6.6429451 17.860179,6.060243 17.277466,5.768886 16.49082,5.7688734 c -0.57302,1.26e-5 -1.112031,0.1748268 -1.617033,0.524443 -0.505035,0.3496405 -0.869231,0.8643711 -1.092589,1.5441934 -0.22339,0.6701316 -0.335076,1.7335845 -0.335061,3.1903622 l -0.02206,9.407196 -4.0715094,0 0,-10.4560825 C 9.3525564,8.4736498 9.2797171,7.5024599 9.1340496,7.0654131 8.9883602,6.6283891 8.7601306,6.3030405 8.4493601,6.0893663 8.148281,5.8757169 7.7355253,5.768886 7.2110918,5.7688734 6.5798094,5.768886 6.0116633,5.9388443 5.5066519,6.2787485 5.0016259,6.6186772 4.6374297,7.109128 4.4140622,7.7501026 4.2003942,8.3910986 4.0935633,9.4545515 4.0935693,10.940464 l 0,9.494604 L 0,20.435068 0,2.9864117" />
+        </g>
+        <g
+           id="text7636"
+           style="font-size:29.83498192px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:url(#linearGradient22621);fill-opacity:1;stroke:none;font-family:Arial;-inkscape-font-specification:Arial"
+           transform="matrix(1.3183915,0,0,-0.75850003,11.971191,0.36740457)">
+          <path
+             sodipodi:nodetypes="ccccczcccccccccsccc"
+             inkscape:connector-curvature="0"
+             id="path7643"
+             style="font-weight:bold;fill:url(#linearGradient22644);fill-opacity:1;-inkscape-font-specification:Arial Bold"
+             d="m 0.15216511,-39.067362 4.19161969,0 0,9.84496 c 1.3499483,-1.641297 2.614857,-2.461953 4.4795519,-2.461968 0.9906032,1.5e-5 1.8501073,0.203965 2.5785123,0.61185 0.72838,0.407915 1.368497,0.70654 1.791847,1.850118 0.42335,1.143578 0.487164,3.74906 0.48074,5.92912 l 0,0.705814 -4.0935704,0 0,-1.7547 c -1.12e-5,-1.505336 -0.072851,-2.476526 -0.218518,-2.913572 -0.1456894,-0.437024 -0.373919,-0.762373 -0.6846895,-0.976047 -0.3010791,-0.21365 -0.7138348,-0.32048 -1.2382683,-0.320493 -0.6312824,1.3e-5 -1.1994285,0.169971 -1.7044399,0.509875 -0.505026,0.339929 -0.8692222,0.83038 -1.0925897,1.471354 -0.213668,0.640996 -0.3204989,1.704449 -0.3204929,3.190362 l 0.02206,0.793221 -4.11562963,0 -0.0761333,-16.479894" />
+        </g>
+        <path
+           sodipodi:nodetypes="cccacc"
+           inkscape:connector-curvature="0"
+           id="rect22552"
+           d="m 2,17.5 2,0 0,8.333333 C 4,25.833333 3.5555556,27.5 3,27.5 2.4444444,27.5 2,25.833333 2,25.833333 z"
+           style="color:#000000;fill:url(#linearGradient22632);fill-opacity:1;fill-rule:evenodd;stroke:none;stroke-width:0.30000001;marker:none;visibility:visible;display:inline;overflow:visible;enable-background:accumulate" />
+      </g>
     </g>
     <g
        inkscape:groupmode="layer"
@@ -2930,7 +3157,7 @@ Grid based on suggestions from http://techbase.kde.org/Projects/Oxygen/Style</dc
          x="3.2128906"
          y="3.9195313"
          id="tspan4269"
-         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.11+</tspan><tspan
+         style="font-size:2px;font-weight:bold;line-height:120.00000477%;-inkscape-font-specification:Bitstream Vera Sans Bold">for Mixxx 1.12+</tspan><tspan
          sodipodi:role="line"
          x="3.2128906"
          y="6.3195314"
