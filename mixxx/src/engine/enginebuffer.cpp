@@ -609,8 +609,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         // scaler.
         if (baserate != m_baserate_old || speed != m_speed_old ||
             pitch != m_pitch_old || m_bScalerChanged) {
-            // The rate returned by the scale object can be different from the wanted rate!
-            // Make sure new scaler has proper position
+            // The rate returned by the scale object can be different from the
+            // wanted rate!  Make sure new scaler has proper position. This also
+            // crossfades between the old scaler and new scaler to prevent
+            // clicks.
             if (m_bScalerChanged) {
                 setNewPlaypos(m_filepos_play);
             } else if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
