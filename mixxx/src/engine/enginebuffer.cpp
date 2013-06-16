@@ -40,6 +40,7 @@
 #include "engine/keycontrol.h"
 #include "engine/quantizecontrol.h"
 #include "util/timer.h"
+#include "track/keyutils.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
@@ -222,11 +223,10 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Construct scaling objects
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
-
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
     m_pScaleDummy = new EngineBufferScaleDummy(m_pReadAheadManager);
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
-    enableSoundTouch(false); // default to VE, let the user specify PITS in their mix
+    enablePitchAndTimeScaling(false);
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
@@ -301,28 +301,20 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     return fFractionalPlaypos;
 }
 
-void EngineBuffer::enableSoundTouch(bool b) {
+void EngineBuffer::enablePitchAndTimeScaling(bool b) {
     // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
-    // Change sound scale mode
+    // When no time-stretching or pitch-shifting is needed we use our own linear
+    // interpolation code (EngineBufferScaleLinear). It is faster and sounds
+    // much better for scratching.
 
-    //SoundTouch's linear interpolation code doesn't sound very good.
-    //Our own EngineBufferScaleLinear sounds slightly better, but it's
-    //not working perfectly. Eventually we should have our own working
-    //better, so scratching sounds good.
-
-    //Update Dec 30/2007
-    //If we delete the m_pScale object and recreate it, it eventually
-    //causes some weird bad pointer somewhere, which will either cause
-    //the waveform the roll in a weird way or fire an ASSERT from
-    //visualchannel.cpp or something. Need to valgrind this or something.
-
-    if (b) {
+    if (b && m_pScale != m_pScaleRB) {
         m_pScale = m_pScaleRB;
-    } else {
+        m_bScalerChanged = true;
+    } else if (!b && m_pScale != m_pScaleLinear) {
         m_pScale = m_pScaleLinear;
+        m_bScalerChanged = true;
     }
-    m_bScalerChanged = true;
 }
 
 double EngineBuffer::getBpm()
@@ -601,23 +593,12 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             m_pSlipPosition->set(fractionalPlayposFromAbsolute(m_dSlipPosition));
         }
 
-        // Scratching always disables keylock because keylock sounds terrible
-        // when not going at a constant rate.
-        if (is_scratching && m_pScale != m_pScaleLinear) {
-            enableSoundTouch(false);
-        } else if (!is_scratching) {
-            // If either keylock is enabled or the pitch slider is non-zero then
-            // we need to use SoundTouch to scale the audio.
-            bool should_use_soundtouch = keylock_enabled || pitch != 0;
-            // If we should be using SoundTouch and it's not enabled, enable
-            // it. If we should not be using SoundTouch and it is enabled,
-            // disable it.
-            if (should_use_soundtouch && m_pScale != m_pScaleRB) {
-                enableSoundTouch(true);
-            } else if (!should_use_soundtouch && m_pScale == m_pScaleRB) {
-                enableSoundTouch(false);
-            }
-        }
+        // If either keylock is enabled or the pitch slider is non-zero then we
+        // need to use pitch and time scaling. Scratching always disables
+        // keylock because keylock sounds terrible when not going at a constant
+        // rate.
+        bool use_pitch_and_time_scaling = !is_scratching && (keylock_enabled || pitch != 0);
+        enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
         if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
             setNewPlaypos(m_dQueuedPosition);
@@ -651,7 +632,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // rate).
             double rate_adjust = speed * baserate;
             // The tempo adjustment in percentage of tempo (1.0 being normal
-            // temppo).
+            // tempo).
             double tempo_adjust = 1.0;
             // The pitch adjustment in percentage of pitch (1.0 being normal
             // pitch -- note, this is not measured in octaves or semitones).
@@ -677,13 +658,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // The way we treat rate inside of EngineBuffer is actually a
             // description of "sample consumption rate" or percentage of samples
             // consumed relative to playing back the track at its native sample
-            // rate and normal speed.
-            //
-            // NOTE(rryan): pitch_adjust is measured in octave change. This
-            // exp() function (magic constants taken from SoundTouch) converts
-            // it from octaves of change to rate change.
-            m_rate_old = rate = rate_adjust * tempo_adjust *
-                    exp(0.69314718056f * pitch_adjust);
+            // rate and normal speed. pitch_adjust does not change the playback
+            // rate.
+            m_rate_old = rate = rate_adjust * tempo_adjust;
 
             // Scaler is up to date now.
             m_bScalerChanged = false;

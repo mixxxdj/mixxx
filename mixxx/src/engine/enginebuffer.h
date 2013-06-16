@@ -152,7 +152,7 @@ public:
                              QString reason);
 
   private:
-    void enableSoundTouch(bool b);
+    void enablePitchAndTimeScaling(bool b);
 
     void updateIndicators(double rate, int iBufferSize);
 
