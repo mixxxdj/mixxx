@@ -1,0 +1,12 @@
+*.diff
+*.log
+*.o
+*.orig
+*.os
+*.patch
+*.pyc
+*.rej
+*~
+mixxx/*_build
+mixxx/.sconf_temp
+mixxx/cache
