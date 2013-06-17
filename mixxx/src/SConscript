@@ -110,6 +110,9 @@ def osx_construct_version(build, mixxx_version, branch_name, vcs_revision):
 
 def ubuntu_construct_version(build, mixxx_version, branch_name, vcs_revision,
                              ubuntu_version):
+        # Underscores are not ok in version names, dashes are fine though.
+        if branch_name:
+                branch_name = branch_name.replace('_', '-')
         # In release mode, we only use the version and ubuntu_version
         if build.build_is_release:
                 return "%s-%s" % (mixxx_version, ubuntu_version)
