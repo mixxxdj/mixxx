@@ -277,6 +277,10 @@ class MixxxBuild(object):
         if self.host_platform == 'windows':
             return
 
+        should_virtualize = int(Script.ARGUMENTS.get('virtualize', 1))
+        if not should_virtualize:
+            return
+
         branch_name = util.get_branch_name()
         if not branch_name:
             return

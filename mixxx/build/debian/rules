@@ -14,7 +14,7 @@ DEB_BUILD_OPTIONS= noopt
 
 # By default, optimize=9 will turn on basic GCC optimizations combined with
 # -mtune=generic, which should be safe.
-MIXXX_SCONS_FLAGS = optimize=9
+MIXXX_SCONS_FLAGS = optimize=9 virtualize=0
 
 ifneq (,$(findstring i386,$(ARCH)))
 	MIXXX_SCONS_FLAGS += machine=x86
