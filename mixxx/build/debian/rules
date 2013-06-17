@@ -61,7 +61,7 @@ clean:
 	rm -f mixxx.1
 
 	# Add here commands to clean up after the build process.
-	($(SCONS) -c)
+	($(SCONS) $(MIXXX_SCONS_FLAGS) -c)
 	# hand cleaning!
 	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
 	rm -f build/*.pyc
