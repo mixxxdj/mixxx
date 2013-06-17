@@ -80,6 +80,7 @@ double KeyControl::getKey() {
 void KeyControl::slotRateChanged() {
     // If rate is non-1.0 then we have to try and calculate the octave change
     // caused by it.
+
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     if (m_dOldRate != dRate) {
         m_dOldRate = dRate;
@@ -94,8 +95,10 @@ void KeyControl::slotFileKeyChanged(double value) {
 
     // The pitch adjust in octaves.
     double pitch_adjust = m_pPitch->get();
+    bool keylock_enabled = m_pKeylock->get() > 0;
 
-    if (m_dOldRate != 1.0) {
+    // If keylock is enabled then rate only affects the tempo and not the pitch.
+    if (m_dOldRate != 1.0 && !keylock_enabled) {
         pitch_adjust += KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
     }
 
