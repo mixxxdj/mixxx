@@ -32,8 +32,6 @@ class ControlObject : public QObject {
     ControlObject();
     ControlObject(ConfigKey key,
                   bool bIgnoreNops=true, bool bTrack=false);
-    ControlObject(const QString& group, const QString& item,
-                  bool bIgnoreNops=true, bool bTrack=false);
     virtual ~ControlObject();
 
     /** Returns a pointer to the ControlObject matching the given ConfigKey */

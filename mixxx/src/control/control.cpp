@@ -49,7 +49,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
 // static
 ControlDoublePrivate* ControlDoublePrivate::getControl(
-    const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
+        const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
     QMutexLocker locker(&m_sqCOHashMutex);
     QHash<ConfigKey, ControlDoublePrivate*>::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {

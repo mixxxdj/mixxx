@@ -40,12 +40,6 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
     initialize(key, bIgnoreNops, bTrack);
 }
 
-ControlObject::ControlObject(const QString& group, const QString& item,
-                             bool bIgnoreNops, bool bTrack)
-        : m_pControl(NULL) {
-    initialize(ConfigKey(group, item), bIgnoreNops, bTrack);
-}
-
 ControlObject::~ControlObject() {
     m_sqCOHashMutex.lock();
     m_sqCOHash.remove(m_key);
