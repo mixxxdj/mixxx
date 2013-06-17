@@ -11,7 +11,8 @@
 KeyControl::KeyControl(const char* _group,
                        ConfigObject<ConfigValue>* _config)
         : EngineControl(_group, _config),
-          m_dOldRate(0.0) {
+          m_dOldRate(0.0),
+          m_bOldKeylock(false) {
     m_pPitch = new ControlPotmeter(ConfigKey(_group, "pitch"), -1.f, 1.f);
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
@@ -82,8 +83,10 @@ void KeyControl::slotRateChanged() {
     // caused by it.
 
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-    if (m_dOldRate != dRate) {
+    bool bKeylock = m_pKeylock->get() > 0;
+    if (m_dOldRate != dRate || bKeylock != m_bOldKeylock) {
         m_dOldRate = dRate;
+        m_bOldKeylock = bKeylock;
         double dFileKey = m_pFileKey->get();
         slotFileKeyChanged(dFileKey);
     }

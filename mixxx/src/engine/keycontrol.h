@@ -28,6 +28,7 @@ class KeyControl : public EngineControl {
   private:
     // The previous rate slider rate.
     double m_dOldRate;
+    bool m_bOldKeylock;
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;
