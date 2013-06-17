@@ -226,40 +226,6 @@ class MediaFoundation(Feature):
         build.env.Append(CPPDEFINES='__MEDIAFOUNDATION__')
         return
 
-class Effects(Feature):
-
-    def description(self):
-        return "Experimental Effects Support"
-
-    def enabled(self, build):
-        enabled = util.get_flags(build.env, 'effects', 0)
-        build.flags['effects'] = enabled
-        return True if int(enabled) else False
-
-    def add_options(self, build, vars):
-        vars.Add('effects', '(EXPERIMENTAL) Set to 1 to enable effects support.', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES='__FXUNITS__')
-
-    def sources(self, build):
-        sources = SCons.Split("""engine/engineeffectsunits.cpp
-			         effectsunits/debugbackend.cpp
-			         effectsunits/effectsunitsbackend.cpp
-			         effectsunits/effectsunitscontroller.cpp
-			         effectsunits/effectsunitsinstance.cpp
-			         effectsunits/effectsunitsplugin.cpp
-			         effectsunits/effectsunitspreset.cpp
-			         effectsunits/effectsunitspresetmanager.cpp
-			         effectsunits/ladspabackend.cpp
-			         effectsunitsslot.cpp
-			         effectsunitsview.cpp
-			         effectsunitswidget.cpp
-                                 """)
-        return sources
-
 class LADSPA(Feature):
 
     def description(self):

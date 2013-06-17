@@ -40,9 +40,6 @@
 #ifdef __LADSPA__
 #include "engineladspa.h"
 #endif
-#ifdef __FXUNITS__
-#include "engineeffectsunits.h"
-#endif
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
@@ -70,10 +67,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 #ifdef __LADSPA__
     // LADSPA
     ladspa = new EngineLADSPA();
-#endif
-
-#ifdef __FXUNITS__
-    fxunits = new EngineEffectsUnits();
 #endif
 
     // Crossfader
@@ -377,17 +370,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             masterOutput |= (1 << channel_number);
             needsProcessing = true;
         }
-
-#ifdef __FXUNITS__
-        // TODO(XXX) change this stuff to work more hydra-ly
-        if (pChannel->getGroup() == "[Channel1]") {
-            fxunits->process(pChannelInfo->m_pBuffer,
-                             pChannelInfo->m_pBuffer, iBufferSize, "[Channel1]");
-        } else if (pChannel->getGroup() == "[Channel2]") {
-            fxunits->process(pChannelInfo->m_pBuffer,
-                             pChannelInfo->m_pBuffer, iBufferSize, "[Channel2]");
-        }
-#endif
 
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer

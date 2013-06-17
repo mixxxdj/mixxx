@@ -35,9 +35,6 @@ class EngineFlanger;
 #ifdef __LADSPA__
 class EngineLADSPA;
 #endif
-#ifdef __FXUNITS__
-class EngineEffectsUnits;
-#endif
 class EngineVuMeter;
 class ControlPotmeter;
 class ControlPushButton;
@@ -166,9 +163,6 @@ class EngineMaster : public EngineObject, public AudioSource {
 
 #ifdef __LADSPA__
     EngineLADSPA *ladspa;
-#endif
-#ifdef __FXUNITS__
-    EngineEffectsUnits *fxunits;
 #endif
 
     EngineVuMeter *vumeter;

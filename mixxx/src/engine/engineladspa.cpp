@@ -89,7 +89,6 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
                     (*instance)->process(m_pBufferLeft[0], m_pBufferRight[0],
                                          m_pBufferLeft[1], m_pBufferRight[1],
                                          m_monoBufferSize);
-                    qDebug() << "FXUNITS: EngineLADSPA::process: IN: " << *m_pBufferLeft[0] << "OUT: " << *m_pBufferLeft[1] << "BUF: " << iBufferSize;
                     // TODO: Use run_adding() if possible
                     SampleUtil::copy2WithGain(m_pBufferLeft[0], m_pBufferLeft[0], dry,
                                               m_pBufferLeft[1], wet, m_monoBufferSize);
@@ -98,11 +97,9 @@ void EngineLADSPA::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int 
                 }
                 else
                 {
-                    qDebug() << "FXUNITS: EngineLADSPA::process: IN: " << *m_pBufferLeft[0] << "BUF: " << iBufferSize;
                     (*instance)->process(m_pBufferLeft[0], m_pBufferRight[0],
                                          m_pBufferLeft[0], m_pBufferRight[0],
                                          m_monoBufferSize);
-                    qDebug() << "FXUNITS: EngineLADSPA::process: OUT: " << *m_pBufferLeft[0] << "BUF: " << iBufferSize;
                 }
             }
             ++instance;

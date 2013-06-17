@@ -13,7 +13,7 @@
 LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor, int slot) : LADSPAInstance(descriptor, slot)
 {
     int sampleRate = getSampleRate();
-    //qDebug() << "LADSPA: Sample rate: " << sampleRate;
+    qDebug() << "LADSPA: Sample rate: " << sampleRate;
 
     m_HandleLeft = descriptor->instantiate(descriptor, sampleRate);
     m_HandleRight = descriptor->instantiate(descriptor, sampleRate);
@@ -28,7 +28,7 @@ LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor, int
     m_OutputPort = descriptor->PortCount;
     for (unsigned long port = 0; port < descriptor->PortCount; port++)
     {
-        //qDebug() << "LADSPA: Port " << port << "u: " << descriptor->PortNames[port];
+        qDebug() << "LADSPA: Port " << port << "u: " << descriptor->PortNames[port];
         if (LADSPA_IS_PORT_AUDIO(descriptor->PortDescriptors [port]))
         {
             if (LADSPA_IS_PORT_INPUT(descriptor->PortDescriptors [port]))
@@ -39,12 +39,10 @@ LADSPAInstanceMono::LADSPAInstanceMono(const LADSPA_Descriptor * descriptor, int
             {
                 m_OutputPort = port;
             }
-        } else {
-        	//qDebug() << "LADSPA: Port" << "Range:" <<  descriptor->PortRangeHints[port].LowerBound << "~" <<  descriptor->PortRangeHints[port].UpperBound << "isInteger:" << LADSPA_IS_HINT_INTEGER(descriptor->PortRangeHints[port].HintDescriptor);
         }
     }
-    //qDebug() << "LADSPA: Input: " << m_InputPort << "u";
-    //qDebug() << "LADSPA: Output: " << m_OutputPort << "u";
+    qDebug() << "LADSPA: Input: " << m_InputPort << "u";
+    qDebug() << "LADSPA: Output: " << m_OutputPort << "u";
 }
 
 LADSPAInstanceMono::~LADSPAInstanceMono()
