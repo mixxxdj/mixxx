@@ -188,6 +188,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
 
+    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
+    m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
+    m_pKeylock->set(false);
+
+    m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
+    connect(m_pEject, SIGNAL(valueChanged(double)),
+            this, SLOT(slotEjectTrack(double)),
+            Qt::DirectConnection);
+
     // Quantization Controller for enabling and disabling the
     // quantization (alignment) of loop in/out positions and (hot)cues with
     // beats.
@@ -227,15 +236,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleDummy = new EngineBufferScaleDummy(m_pReadAheadManager);
     m_pScaleRB = new EngineBufferScaleRubberBand(m_pReadAheadManager);
     enablePitchAndTimeScaling(false);
-
-    m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
-    m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
-    m_pKeylock->set(false);
-
-    m_pEject = new ControlPushButton(ConfigKey(m_group, "eject"));
-    connect(m_pEject, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEjectTrack(double)),
-            Qt::DirectConnection);
 
     //m_iRampIter = 0;
 #ifdef __SCALER_DEBUG__
