@@ -338,11 +338,13 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     QString keysVersion = "";
     QString keysSubVersion = "";
     QString keyText = "";
+    mixxx::track::io::key::ChromaticKey key = mixxx::track::io::key::INVALID;
 
     if (keys.isValid()) {
         pKeysBlob = keys.toByteArray();
         keysVersion = keys.getVersion();
         keysSubVersion = keys.getSubVersion();
+        key = keys.getGlobalKey();
         // TODO(rryan): Get this logic out of TIO.
         keyText = pTrack->getKeyText();
     }
@@ -352,6 +354,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":keys_version", keysVersion);
     m_pQueryLibraryInsert->bindValue(":keys_sub_version", keysSubVersion);
     m_pQueryLibraryInsert->bindValue(":key", keyText);
+    m_pQueryLibraryInsert->bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
 }
 
@@ -382,7 +385,7 @@ void TrackDAO::addTracksPrepare() {
 
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
             "(artist, title, album, year, genre, tracknumber, "
-            "filetype, location, comment, url, duration, rating, key, "
+            "filetype, location, comment, url, duration, rating, key, key_id, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, "
             "channels, mixxx_deleted, header_parsed, "
@@ -390,7 +393,7 @@ void TrackDAO::addTracksPrepare() {
             "keys_version, keys_sub_version, keys) "
             "VALUES ("
             ":artist, :title, :album, :year, :genre, :tracknumber, "
-            ":filetype, :location, :comment, :url, :duration, :rating, :key, "
+            ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
             ":timesplayed, "
             ":channels, :mixxx_deleted, :header_parsed, "
@@ -800,6 +803,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
 
     if (query.exec()) {
         while (query.next()) {
+            bool shouldDirty = false;
             // Good god! Assign query.record() to a freaking variable!
             // int trackId = query.value(query.record().indexOf("id")).toInt();
             QString artist = query.value(query.record().indexOf("artist")).toString();
@@ -811,7 +815,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             QString tracknumber = query.value(query.record().indexOf("tracknumber")).toString();
             QString comment = query.value(query.record().indexOf("comment")).toString();
             QString url = query.value(query.record().indexOf("url")).toString();
-            QString key = query.value(query.record().indexOf("key")).toString();
+            QString keyText = query.value(query.record().indexOf("key")).toString();
             int duration = query.value(query.record().indexOf("duration")).toInt();
             int bitrate = query.value(query.record().indexOf("bitrate")).toInt();
             int rating = query.value(query.record().indexOf("rating")).toInt();
@@ -877,7 +881,10 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
                 // (<1.12.0) version of Mixxx that didn't support Keys. We treat
                 // all legacy data as user-generated because that way it will be
                 // treated sensitively.
-                pTrack->setKeyText(key, mixxx::track::io::key::USER);
+                pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
+                // The in-database data would change because of this. Mark the
+                // track dirty so we save it when it is deleted.
+                shouldDirty = true;
             }
 
             pTrack->setTimesPlayed(timesplayed);
@@ -889,7 +896,10 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             pTrack->setHeaderParsed(header_parsed);
             pTrack->setCuePoints(m_cueDao.getCuesForTrack(id));
 
-            pTrack->setDirty(false);
+            // Normally we will set the track as clean but sometimes when
+            // loading from the database we need to perform upkeep that ought to
+            // be written back to the database when the track is deleted.
+            pTrack->setDirty(shouldDirty);
 
             // Listen to dirty and changed signals
             connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
@@ -999,7 +1009,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "SET artist=:artist, "
                   "title=:title, album=:album, year=:year, genre=:genre, "
                   "composer=:composer, filetype=:filetype, tracknumber=:tracknumber, "
-                  "comment=:comment, url=:url, duration=:duration, rating=:rating, key=:key, "
+                  "comment=:comment, url=:url, duration=:duration, rating=:rating, "
+                  "key=:key, key_id=:key_id, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, replaygain=:replaygain, "
                   "timesplayed=:timesplayed, played=:played, "
@@ -1057,11 +1068,13 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     QString keysVersion = "";
     QString keysSubVersion = "";
     QString keyText = "";
+    mixxx::track::io::key::ChromaticKey key = mixxx::track::io::key::INVALID;
 
     if (keys.isValid()) {
         pKeysBlob = keys.toByteArray();
         keysVersion = keys.getVersion();
         keysSubVersion = keys.getSubVersion();
+        key = keys.getGlobalKey();
         // TODO(rryan): Get this logic out of TIO.
         keyText = pTrack->getKeyText();
     }
@@ -1070,6 +1083,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":keys_version", keysVersion);
     query.bindValue(":keys_sub_version", keysSubVersion);
     query.bindValue(":key", keyText);
+    query.bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
 
     if (!query.exec()) {

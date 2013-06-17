@@ -42,6 +42,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_TRACKNUMBER
             << "library." + LIBRARYTABLE_KEY
+            << "library." + LIBRARYTABLE_KEY_ID
             << "library." + LIBRARYTABLE_DATETIMEADDED
             << "library." + LIBRARYTABLE_BPM
             << "library." + LIBRARYTABLE_BPM_LOCK
@@ -169,7 +170,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
             // case. toString() absolutely does not work when you pass the result to a
             files.append(url.toLocalFile());
         }
-    
+
         // Adds track, does not insert duplicates, handles unremoving logic.
         QList<int> trackIds = m_trackDao.addTracks(files, true);
         return trackIds.size() > 0;
