@@ -27,8 +27,10 @@ class DlgPrefKey : public QWidget, Ui::DlgPrefKeyDlg {
     void setDefaults();
     void reanalyzeEnabled(int i);
 
+    void setNotation(KeyUtils::KeyNotation notation);
     void setNotationOpenKey(bool);
     void setNotationLancelot(bool);
+    void setNotationTraditional(bool);
     void setNotationCustom(bool);
 
   signals:
@@ -38,7 +40,7 @@ class DlgPrefKey : public QWidget, Ui::DlgPrefKeyDlg {
     void populate();
     void loadSettings();
 
-    ConfigObject<ConfigValue>* m_pconfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     QMap<mixxx::track::io::key::ChromaticKey, QLineEdit*> m_keyLineEdits;
     QList<QString> m_listName;
     QList<QString> m_listLibrary, m_listIdentifier;

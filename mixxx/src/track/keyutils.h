@@ -13,7 +13,8 @@ class KeyUtils {
         // The default notation (set with setNotation).
         DEFAULT = 0,
         OPEN_KEY = 1,
-        LANCELOT = 2
+        LANCELOT = 2,
+        TRADITIONAL = 3,
     };
 
     static const char* keyDebugName(mixxx::track::io::key::ChromaticKey key);

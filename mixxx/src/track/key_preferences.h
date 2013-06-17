@@ -18,6 +18,7 @@
 #define KEY_NOTATION "KeyNotation"
 #define KEY_NOTATION_OPEN_KEY "OpenKey"
 #define KEY_NOTATION_LANCELOT "Lancelot"
+#define KEY_NOTATION_TRADITIONAL "Traditional"
 #define KEY_NOTATION_CUSTOM "Custom"
 #define KEY_NOTATION_CUSTOM_PREFIX "CustomKeyNotation"
 

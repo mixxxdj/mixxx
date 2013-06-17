@@ -10,13 +10,19 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 // OpenKey notation, the numbers 1-12 followed by d (dur, major) or m (moll, minor).
-const char* s_openKeyPattern = "(1[0-2]|[1-9])([dm])";
+static const char* s_openKeyPattern = "(1[0-2]|[1-9])([dm])";
 
 // Lancelot notation, the numbers 1-12 followed by a (minor) or b (major).
-const char* s_lancelotKeyPattern = "(1[0-2]|[1-9])([ab])";
+static const char* s_lancelotKeyPattern = "(1[0-2]|[1-9])([ab])";
 
 // a-g followed by any number of sharps or flats.
-const char* s_keyPattern = "([a-g])([#b]*m?)";
+static const char* s_keyPattern = "([a-g])([#b]*m?)";
+
+static const char *s_traditionalKeyNames[] = {
+    "INVALID",
+    "C", "Db", "D", "Eb", "E", "F", "F#/Gb", "G", "Ab", "A", "Bb", "B",
+    "Cm", "C#m", "Dm", "D#m/Ebm", "Em", "Fm", "F#m", "Gm", "G#m", "Am", "Bbm", "Bm"
+};
 
 // Maps an OpenKey number to its major and minor key.
 const ChromaticKey s_openKeyToKeys[][2] = {
@@ -116,11 +122,10 @@ inline int lancelotNumberToOpenKeyNumber(const int lancelotNumber)  {
 
 // static
 const char* KeyUtils::keyDebugName(ChromaticKey key) {
-    static const char *keyNames[] = {"INVALID", "C","C#","D","D#","E","F","F#","G","G#","A","A#","B","c","c#","d","d#","e","f","f#","g","g#","a","a#","b"};
     if (!ChromaticKey_IsValid(key)) {
-        return keyNames[0];
+        return s_traditionalKeyNames[0];
     }
-    return keyNames[static_cast<int>(key)];
+    return s_traditionalKeyNames[static_cast<int>(key)];
 }
 
 void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
@@ -159,6 +164,8 @@ QString KeyUtils::keyToString(ChromaticKey key,
         bool major = keyIsMajor(key);
         int number = openKeyNumberToLancelotNumber(keyToOpenKeyNumber(key));
         return QString::number(number) + (major ? "B" : "A");
+    } else if (notation == TRADITIONAL) {
+        return s_traditionalKeyNames[static_cast<int>(key)];
     }
     return keyDebugName(key);
 }
