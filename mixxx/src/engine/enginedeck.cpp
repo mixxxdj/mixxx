@@ -108,7 +108,7 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
     // Filter the channel with EQs
     m_pFilter->process(pOut, pOut, iBufferSize);
     // Process effects enabled for this channel
-    m_pEffectsManager->process(getGroup(), pOut, pOutput, iBufferSize);
+    m_pEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter

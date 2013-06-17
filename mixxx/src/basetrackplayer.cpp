@@ -38,7 +38,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
         pSafeGroupName, pConfig, pMixingEngine->getEffectsManager(),
         defaultOrientation);
 
-    EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
+    EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
 
     // Set the routing option defaults for the master and headphone mixes.
