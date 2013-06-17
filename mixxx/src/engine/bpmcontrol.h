@@ -10,6 +10,7 @@
 
 class ControlObject;
 class ControlPushButton;
+class EngineBuffer;
 
 class BpmControl : public EngineControl {
     Q_OBJECT
@@ -18,28 +19,42 @@ class BpmControl : public EngineControl {
     BpmControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~BpmControl();
     double getBpm();
+    double getFileBpm();
 
   public slots:
-    void slotSetEngineBpm(double);
-    void slotFileBpmChanged(double);
-    void slotControlBeatSync(double);
+
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
   private slots:
+    void slotSetEngineBpm(double);
+    void slotControlBeatSync(double);
+    void slotControlBeatSyncPhase(double);
+    void slotControlBeatSyncTempo(double);
     void slotTapFilter(double,int);
     void slotBpmTap(double);
-    void slotRateChanged(double);
+    void slotAdjustBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
 
   private:
-    void adjustPhase();
+    EngineBuffer* pickSyncTarget();
+    bool syncTempo(EngineBuffer* pOtherEngineBuffer);
+    bool syncPhase(EngineBuffer* pOtherEngineBuffer);
+
+    // ControlObjects that come from PlayerManager
+    ControlObject* m_pNumDecks;
 
     // ControlObjects that come from EngineBuffer
+    ControlObject* m_pPlayButton;
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
+
+    // ControlObjects that come from LoopingControl
+    ControlObject* m_pLoopEnabled;
+    ControlObject* m_pLoopStartPosition;
+    ControlObject* m_pLoopEndPosition;
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;
@@ -52,6 +67,8 @@ class BpmControl : public EngineControl {
 
     /** Button for sync'ing with the other EngineBuffer */
     ControlPushButton* m_pButtonSync;
+    ControlPushButton* m_pButtonSyncPhase;
+    ControlPushButton* m_pButtonSyncTempo;
 
     // Button that translates the beats so the nearest beat is on the current
     // playposition.

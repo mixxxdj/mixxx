@@ -46,18 +46,6 @@ WWidget::~WWidget()
 {
 }
 
-
-bool WWidget::event(QEvent *event)
-{
-  if(event->type() == QEvent::ToolTip)
-    {
-      QHelpEvent *tooltip = static_cast<QHelpEvent *>(event);
-      QToolTip::showText(tooltip->globalPos(), toolTip(), this);
-      //http://doc.trolltech.com/4.3/widgets-tooltips-sortingbox-cpp.html suggests you should use QToolTip::hideText in certain cases; it works well enough on OS X with just this code though...
-    }
-  return QWidget::event(event);
-}
-
 void WWidget::setValue(double fValue)
 {
     m_fValue = fValue;
@@ -135,26 +123,6 @@ void WWidget::setPixmapPath(QString qPath)
     m_qPath = qPath;
 }
 
-QDomElement WWidget::openXMLFile(QString path, QString name)
-{
-    QDomDocument doc(name);
-    QFile file(path);
-    if (!file.open(QIODevice::ReadOnly))
-    {
-        qDebug() << "Could not open xml file:" << file.fileName();
-        return QDomElement();
-    }
-    if (!doc.setContent(&file))
-    {
-        qWarning() << "Error parsing xml file:" << file.fileName();
-        file.close();
-        return QDomElement();
-    }
-
-    file.close();
-    return doc.documentElement();
-}
-
 double WWidget::getValue() {
    return m_fValue;
 }
@@ -162,7 +130,6 @@ double WWidget::getValue() {
 void WWidget::updateValue(double fValue)
 {
     setValue(fValue);
-    m_fValue = fValue;
     emit(valueChangedUp(fValue));
     emit(valueChangedDown(fValue));
 }

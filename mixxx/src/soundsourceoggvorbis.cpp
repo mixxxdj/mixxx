@@ -128,7 +128,10 @@ long SoundSourceOggVorbis::seek(long filepos)
 {
     // In our speak, filepos is a sample in the file abstraction (i.e. it's
     // stereo no matter what). filepos/2 is the frame we want to seek to.
-    Q_ASSERT(filepos%2==0);
+    if (filepos % 2 != 0) {
+        qDebug() << "SoundSourceOggVorbis got non-even seek target.";
+        filepos--;
+    }
 
     if (ov_seekable(&vf)){
         if(ov_pcm_seek(&vf, filepos/2) != 0) {
@@ -154,10 +157,11 @@ long SoundSourceOggVorbis::seek(long filepos)
    samples actually read.
  */
 
-unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination)
-{
-
-    Q_ASSERT(size%2==0);
+unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * destination) {
+    if (size % 2 != 0) {
+        qDebug() << "SoundSourceOggVorbis got non-even size in read.";
+        size--;
+    }
 
     char *pRead  = (char*) destination;
     SAMPLE *dest   = (SAMPLE*) destination;
@@ -225,10 +229,23 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
 /*
    Parse the the file to get metadata
  */
-int SoundSourceOggVorbis::parseHeader()
-{
+int SoundSourceOggVorbis::parseHeader() {
     setType("ogg");
-    TagLib::Ogg::Vorbis::File f(getFilename().toUtf8().constData());
+
+#ifdef __WINDOWS__
+    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+     * If you try this conversion, f.isValid() will return false in many cases
+     * and processTaglibFile() will fail
+     *
+     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+     * The returned byte array is undefined if the string contains characters not supported
+     * by the local 8-bit encoding.
+     */
+    QByteArray qBAFilename = m_qFilename.toLocal8Bit();
+#else
+    QByteArray qBAFilename = m_qFilename.toUtf8();
+#endif
+    TagLib::Ogg::Vorbis::File f(qBAFilename.constData());
 
     // Takes care of all the default metadata
     bool result = processTaglibFile(f);

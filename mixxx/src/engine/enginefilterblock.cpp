@@ -71,15 +71,15 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
 
     filterpotLow = new ControlLogpotmeter(ConfigKey(group, "filterLow"), 4.);
     filterKillLow = new ControlPushButton(ConfigKey(group, "filterLowKill"));
-    filterKillLow->setToggleButton(true);
+    filterKillLow->setButtonMode(ControlPushButton::POWERWINDOW);
 
     filterpotMid = new ControlLogpotmeter(ConfigKey(group, "filterMid"), 4.);
     filterKillMid = new ControlPushButton(ConfigKey(group, "filterMidKill"));
-    filterKillMid->setToggleButton(true);
+    filterKillMid->setButtonMode(ControlPushButton::POWERWINDOW);
 
     filterpotHigh = new ControlLogpotmeter(ConfigKey(group, "filterHigh"), 4.);
     filterKillHigh = new ControlPushButton(ConfigKey(group, "filterHighKill"));
-    filterKillHigh->setToggleButton(true);
+    filterKillHigh->setButtonMode(ControlPushButton::POWERWINDOW);
 
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
@@ -117,16 +117,16 @@ EngineFilterBlock::~EngineFilterBlock()
 
 void EngineFilterBlock::setFilters(bool forceSetting)
 {
-    if((ilowFreq != s_loEqFreq->get()) ||
-       (ihighFreq != s_hiEqFreq->get()) ||
-       (blofi != s_lofiEq->get()) || forceSetting)
+    if((ilowFreq != (int)s_loEqFreq->get()) ||
+       (ihighFreq != (int)s_hiEqFreq->get()) ||
+       (blofi != (int)s_lofiEq->get()) || forceSetting)
     {
         delete low;
         delete band;
         delete high;
-        ilowFreq = s_loEqFreq->get();
-        ihighFreq = s_hiEqFreq->get();
-        blofi = s_lofiEq->get();
+        ilowFreq = (int)s_loEqFreq->get();
+        ihighFreq = (int)s_hiEqFreq->get();
+        blofi = (int)s_lofiEq->get();
         if(blofi)
         {
             // why is this DJM800 at line ~34 (LOFI ifdef) and just
@@ -137,9 +137,9 @@ void EngineFilterBlock::setFilters(bool forceSetting)
         }
         else
         {
-            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, s_loEqFreq->get());
-            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, s_loEqFreq->get(), s_hiEqFreq->get());
-            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, s_hiEqFreq->get());
+            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, (int)s_loEqFreq->get());
+            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, (int)s_loEqFreq->get(), (int)s_hiEqFreq->get());
+            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, (int)s_hiEqFreq->get());
         }
 
     }

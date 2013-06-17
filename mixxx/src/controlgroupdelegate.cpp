@@ -8,7 +8,8 @@
 #include <QtCore>
 #include <QtGui>
 #include "configobject.h"
-#include "midi/midiinputmappingtablemodel.h" //Need this to know MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE
+//Need this to know MIDIINPUTTABLEINDEX_CONTROLOBJECTVALUE
+#include "controllers/midi/midiinputmappingtablemodel.h"
 #include "controlvaluedelegate.h"
 #include "controlgroupdelegate.h"
 
@@ -24,6 +25,10 @@ ControlGroupDelegate::ControlGroupDelegate(QObject *parent)
     {
         m_controlGroups.append(CONTROLGROUP_CHANNEL1_STRING);
         m_controlGroups.append(CONTROLGROUP_CHANNEL2_STRING);
+        m_controlGroups.append(CONTROLGROUP_SAMPLER1_STRING);
+        m_controlGroups.append(CONTROLGROUP_SAMPLER2_STRING);
+        m_controlGroups.append(CONTROLGROUP_SAMPLER3_STRING);
+        m_controlGroups.append(CONTROLGROUP_SAMPLER4_STRING);
         m_controlGroups.append(CONTROLGROUP_MASTER_STRING);
         m_controlGroups.append(CONTROLGROUP_PLAYLIST_STRING);
         m_controlGroups.append(CONTROLGROUP_FX_STRING);
@@ -61,6 +66,10 @@ QWidget *ControlGroupDelegate::createEditor(QWidget *parent,
     QComboBox *editor = new QComboBox(parent);
     editor->addItem(CONTROLGROUP_CHANNEL1_STRING);
     editor->addItem(CONTROLGROUP_CHANNEL2_STRING);
+    editor->addItem(CONTROLGROUP_SAMPLER1_STRING);
+    editor->addItem(CONTROLGROUP_SAMPLER2_STRING);
+    editor->addItem(CONTROLGROUP_SAMPLER3_STRING);
+    editor->addItem(CONTROLGROUP_SAMPLER4_STRING);
     editor->addItem(CONTROLGROUP_MASTER_STRING);
     editor->addItem(CONTROLGROUP_PLAYLIST_STRING);
     editor->addItem(CONTROLGROUP_FX_STRING);

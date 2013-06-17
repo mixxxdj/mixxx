@@ -9,7 +9,6 @@
 
 #include "dlgladspa.h"
 #include "ladspaview.h"
-#include "mixxx.h"
 
 DlgLADSPA::DlgLADSPA(QWidget* parent) : QDialog(parent)
 {

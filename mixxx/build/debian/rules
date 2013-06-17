@@ -14,7 +14,7 @@ DEB_BUILD_OPTIONS= noopt
 
 # By default, optimize=9 will turn on basic GCC optimizations combined with
 # -mtune=generic, which should be safe.
-MIXXX_SCONS_FLAGS = optimize=9
+MIXXX_SCONS_FLAGS = optimize=9 virtualize=0
 
 ifneq (,$(findstring i386,$(ARCH)))
 	MIXXX_SCONS_FLAGS += machine=x86
@@ -61,13 +61,12 @@ clean:
 	rm -f mixxx.1
 
 	# Add here commands to clean up after the build process.
-	($(SCONS) -c)
+	($(SCONS) $(MIXXX_SCONS_FLAGS) -c)
 	# hand cleaning!
 	rm -rf src/.{configure.def,moc,obj,summary.log,ui} src/{mixxx,a.out,Makefile}
 	rm -f build/*.pyc
-	test -e .sconsign.dblite && rm -f .sconsign.dblite
-	test -e .sconf_temp && rm -rf .sconf_temp
-
+	rm -f .sconsign.dblite
+	rm -rf .sconf_temp
 	rm -f $(CURDIR)/debian/tmp
 
 	dh_clean

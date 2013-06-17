@@ -17,15 +17,15 @@
 
 #include <QtCore>
 #include <QtGui>
+
 #include "dlgprefrecord.h"
 #include "recording/defs_recording.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
-#include "recording/encoder.h"
+#include "encoder/encoder.h"
 
-
-DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config) : QWidget(parent), Ui::DlgPrefRecordDlg()
-{
+DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config)
+        : QWidget(parent) {
     config = _config;
     confirmOverwrite = false;
     radioFlac = 0;
@@ -33,25 +33,38 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     radioOgg = 0;
     radioAiff= 0;
     radioWav = 0;
-
-
     setupUi(this);
 
-    recordControl = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "Record"))); //See RECORD_* #defines in defs_recording.h
+    //See RECORD_* #defines in defs_recording.h
+    recordControl = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey(RECORDING_PREF_KEY, "status")));
 
-
-
-#ifdef __SHOUTCAST__
     radioOgg = new QRadioButton("Ogg Vorbis");
     radioMp3 = new QRadioButton(ENCODING_MP3);
+
+    // Setting recordings path
+    QString recordingsPath = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory"));
+    if (recordingsPath == "") {
+        // Initialize recordings path in config to old default path.
+        // Do it here so we show current value in UI correctly.
+        QString musicDir = config->getValueString(ConfigKey("[Playlist]","Directory"));
+        if (musicDir.isEmpty()) {
+            musicDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
+        }
+        QDir recordDir(musicDir + "/Mixxx/Recordings");
+        recordingsPath = recordDir.absolutePath();
+    }
+    LineEditRecordings->setText(recordingsPath);
+
+    connect(PushButtonBrowseRecordings, SIGNAL(clicked()), this, SLOT(slotBrowseRecordingsDir()));
+    connect(LineEditRecordings, SIGNAL(returnPressed()), this, SLOT(slotApply()));
+
     connect(radioOgg,SIGNAL(clicked()),
             this, SLOT(slotApply()));
     connect(radioMp3, SIGNAL(clicked()),
             this, SLOT(slotApply()));
     horizontalLayout->addWidget(radioOgg);
     horizontalLayout->addWidget(radioMp3);
-
-#endif
 
     //AIFF and WAVE are supported by default
     radioWav = new QRadioButton(ENCODING_WAVE);
@@ -64,7 +77,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
             this, SLOT(slotApply()));
     horizontalLayout->addWidget(radioAiff);
 
-
 #ifdef SF_FORMAT_FLAC
     radioFlac = new QRadioButton(ENCODING_FLAC);
     connect(radioFlac,SIGNAL(clicked()),
@@ -73,18 +85,18 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
 #endif
 
     //Read config and check radio button
-    QString format = config->getValueString(ConfigKey("[Recording]","Encoding"));
+    QString format = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding"));
     if(format == ENCODING_WAVE)
         radioWav->setChecked(true);
-#ifdef __SHOUTCAST__
     else if(format == ENCODING_OGG)
         radioOgg->setChecked(true);
     else if (format == ENCODING_MP3)
         radioMp3->setChecked(true);
-#endif
-#ifdef SF_FORMAT_FLAC
     else if (format == ENCODING_AIFF)
         radioAiff->setChecked(true);
+#ifdef SF_FORMAT_FLAC
+    else if (format == ENCODING_FLAC)
+        radioFlac->setChecked(true);
 #endif
     else //Invalid, so set default and save
     {
@@ -92,6 +104,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
         radioWav->setChecked(true);
         config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
     }
+
+    loadMetaData();
 
     //Connections
     connect(SliderQuality,    SIGNAL(valueChanged(int)), this,  SLOT(slotSliderQuality()));
@@ -109,7 +123,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     comboBoxSplitting->addItem(SPLIT_2048MB);
     comboBoxSplitting->addItem(SPLIT_4096MB);
 
-    QString fileSizeStr = config->getValueString(ConfigKey("[Recording]","FileSize"));
+    QString fileSizeStr = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
     if(index > 0){
         //set file split size
@@ -118,7 +132,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     //Otherwise 650 MB will be default file split size
 
     //Read CUEfile info
-    CheckBoxRecordCueFile->setChecked((bool) config->getValueString(ConfigKey("[Recording]","CueEnabled")).toInt());
+    CheckBoxRecordCueFile->setChecked((bool) config->getValueString(ConfigKey(RECORDING_PREF_KEY,"CueEnabled")).toInt());
 
 }
 
@@ -226,6 +240,10 @@ void DlgPrefRecord::slotRecordPathChange()
 //This function updates/refreshes the contents of this dialog
 void DlgPrefRecord::slotUpdate()
 {
+    // Recordings path
+    QString recordingsPath = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory"));
+    LineEditRecordings->setText(recordingsPath);
+
     if (radioWav && radioWav->isChecked())
     {
         config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
@@ -249,19 +267,45 @@ void DlgPrefRecord::slotUpdate()
     loadMetaData();
 }
 
+void DlgPrefRecord::slotBrowseRecordingsDir()
+{
+    QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings directory"),
+                                                   config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory")));
+    if (fd != "")
+    {
+        LineEditRecordings->setText(fd);
+    }
+}
+
 void DlgPrefRecord::slotApply()
 {
+    setRecordingFolder();
+
     setMetaData();
 
     slotEncoding();
 }
+
+void DlgPrefRecord::setRecordingFolder() {
+    if (LineEditRecordings->text() == "") {
+        qDebug() << "Recordings path was empty in dialog";
+        return;
+    }
+    if (LineEditRecordings->text() != config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory")))
+    {
+        qDebug() << "Saved recordings path" << LineEditRecordings->text();
+        config->set(ConfigKey(RECORDING_PREF_KEY,"Directory"), LineEditRecordings->text());
+    }
+}
+
 void DlgPrefRecord::slotEnableCueFile(int enabled)
 {
-    config->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(CheckBoxRecordCueFile->isChecked()));
-
+    config->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(enabled != Qt::Unchecked));
 }
+
 void DlgPrefRecord::slotChangeSplitSize()
 {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"), ConfigValue(comboBoxSplitting->currentText()));
+        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
+                    ConfigValue(comboBoxSplitting->currentText()));
 
 }

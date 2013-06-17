@@ -13,7 +13,6 @@
 #define WNUMBERRATE_H
 
 #include "wnumber.h"
-#include <QTimer>
 class ControlObjectThreadMain;
 
 /**
@@ -29,8 +28,10 @@ public:
     void setValue(double dValue);
 
 private:
-    /** Pointer to control object for rate */
-    ControlObjectThreadMain *m_pRateControl, *m_pRateRangeControl, *m_pRateDirControl;
+    // Pointer to control object for rate
+    ControlObjectThreadMain* m_pRateControl;
+    ControlObjectThreadMain* m_pRateRangeControl;
+    ControlObjectThreadMain* m_pRateDirControl;
 };
 
 #endif

@@ -9,6 +9,7 @@
 #include "library/libraryfeature.h"
 #include "configobject.h"
 #include "treeitemmodel.h"
+#include "dlgprepare.h"
 
 class AnalyserQueue;
 class LibraryTableModel;
@@ -25,37 +26,24 @@ class PrepareFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
-    bool dragMoveAccept(QUrl url);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
-
-    void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget,
+    void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
+    void refreshLibraryModels();
 
   signals:
-    void trackAnalysisProgress(TrackPointer pTrack, int progress);
-    void trackAnalysisFinished(TrackPointer pTrack);
     void analysisActive(bool bActive);
 
   public slots:
     void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-    void onLazyChildExpandation(const QModelIndex& index);
 
   private slots:
     void analyzeTracks(QList<int> trackIds);
     void stopAnalysis();
-    void slotTrackAnalysisProgress(TrackPointer pTrack, int progress);
-    void slotTrackAnalysisFinished(TrackPointer pTrack);
+    void cleanupAnalyser();
 
   private:
-    void cleanupAnalyser();
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     AnalyserQueue* m_pAnalyserQueue;
@@ -63,6 +51,7 @@ class PrepareFeature : public LibraryFeature {
     int m_iOldBpmEnabled;
     TreeItemModel m_childModel;
     const static QString m_sPrepareViewName;
+    DlgPrepare* m_pPrepareView;
 };
 
 

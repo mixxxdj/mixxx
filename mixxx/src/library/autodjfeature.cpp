@@ -10,7 +10,6 @@
 #include "library/trackcollection.h"
 #include "dlgautodj.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 #include "soundsourceproxy.h"
 
@@ -22,7 +21,8 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()) {
+          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+          m_pAutoDJView(NULL) {
 }
 
 AutoDJFeature::~AutoDJFeature() {
@@ -36,86 +36,64 @@ QIcon AutoDJFeature::getIcon() {
     return QIcon(":/images/library/ic_library_autodj.png");
 }
 
-void AutoDJFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                               WLibrary* libraryWidget,
+void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
-
-    DlgAutoDJ* pAutoDJView = new DlgAutoDJ(libraryWidget,
-                                           m_pConfig,
-                                           m_pTrackCollection,
-                                           keyboard);
-    pAutoDJView->installEventFilter(keyboard);
-    libraryWidget->registerView(m_sAutoDJViewName, pAutoDJView);
-    connect(pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
+    m_pAutoDJView = new DlgAutoDJ(libraryWidget,
+                                  m_pConfig,
+                                  m_pTrackCollection,
+                                  keyboard);
+    libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
+    connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
-	return &m_childModel;
+    return &m_childModel;
 }
 
 void AutoDJFeature::activate() {
     //qDebug() << "AutoDJFeature::activate()";
-    //emit(showTrackModel(m_pAutoDJTableModelProxy));
-    emit(switchToView("Auto DJ"));
+    emit(switchToView(m_sAutoDJViewName));
+    emit(restoreSearch(QString())); //Null String disables search box
 }
 
-void AutoDJFeature::activateChild(const QModelIndex& index) {
-
-}
-
-void AutoDJFeature::onRightClick(const QPoint& globalPos) {
-}
-
-void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
-                                            QModelIndex index) {
-}
-
-bool AutoDJFeature::dropAccept(QUrl url) {
-
+bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
-
-    //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
-    //     instead of toString()
-    QFileInfo file(url.toLocalFile());
-
-    if (!SoundSourceProxy::isFilenameSupported(file.fileName())) {
-        return false;
+    QList<QFileInfo> files;
+    foreach (QUrl url, urls) {
+        //XXX: See the note in PlaylistFeature::dropAccept() about using QUrl::toLocalFile()
+        //     instead of toString()
+        QFileInfo file = url.toLocalFile();
+        if (SoundSourceProxy::isFilenameSupported(file.fileName())) {
+            files.append(file);
+        }
+    }
+    QList<int> trackIds;
+    if (pSource) {
+        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+    } else {
+        trackIds = trackDao.addTracks(files, true);
     }
 
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    int trackId = trackDao.addTrack(file, true);
-
-    if (trackId < 0) {
-        return false;
-    }
-
-    // TODO(XXX) No feedback on whether this worked.
     int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    m_playlistDao.appendTrackToPlaylist(trackId, playlistId);
-    return true;
-}
+    // remove tracks that could not be added
+    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
+        if (trackIds.at(trackId) < 0) {
+            trackIds.removeAt(trackId--);
+        }
+    }
 
-bool AutoDJFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
-    return false;
+    // Return whether the tracks were appended.
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
     QFileInfo file(url.toLocalFile());
     return SoundSourceProxy::isFilenameSupported(file.fileName());
-}
-
-bool AutoDJFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                              QUrl url) {
-    return false;
-}
-void AutoDJFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do because the childmodel is not of lazy nature.
 }

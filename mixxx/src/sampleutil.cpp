@@ -7,6 +7,8 @@
 
 #ifdef __WINDOWS__
 #pragma intrinsic(fabs)sc
+typedef __int64 int64_t;
+typedef __int32 int32_t;
 #endif
 
 #include <QtDebug>
@@ -641,7 +643,9 @@ void SampleUtil::copy7WithGain(CSAMPLE* pDest,
 void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
                          int iNumSamples) {
     if (m_sOptimizationsOn) {
+#ifndef WIN64  // MSVC x64 doesn't support the __m64 type, which _mm_cvtpi16_ps uses
         return sseConvert(pDest, pSrc, iNumSamples);
+#endif
     }
 
     for (int i = 0; i < iNumSamples; ++i) {
@@ -653,6 +657,7 @@ void SampleUtil::convert(CSAMPLE* pDest, const SAMPLE* pSrc,
 void SampleUtil::sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc,
                             int iNumSamples) {
 #ifdef __SSE__
+#ifndef WIN64  // MSVC x64 doesn't support the __m64 type, which _mm_cvtpi16_ps uses
     assert_aligned(pDest);
     assert_aligned(pSrc);
     __m64 vSrcSamples;
@@ -680,6 +685,7 @@ void SampleUtil::sseConvert(CSAMPLE* pDest, const SAMPLE* pSrc,
         pSrc++;
         iNumSamples--;
     }
+#endif
 #endif
 }
 

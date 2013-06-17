@@ -26,8 +26,11 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
 {
     m_bCancelled = false;
 
+	setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 
+    setWindowTitle(tr("Library Scanner"));
     QLabel* pLabel = new QLabel(tr("It's taking Mixxx a minute to scan your music library, please wait..."),this);
     pLayout->addWidget(pLabel);
 
@@ -49,16 +52,17 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
 
 LibraryScannerDlg::~LibraryScannerDlg()
 {
+    emit(scanCancelled());
 }
 
 void LibraryScannerDlg::slotUpdate(QString path) {
-    //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed();
+    //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
     if (!m_bCancelled && m_timer.elapsed() > 2000) {
        setVisible(true);
     }
 
     if (isVisible()) {
-        QString status = "Scanning: " + path;
+        QString status = tr("Scanning: ") + path;
         emit(progress(status));
     }
 }

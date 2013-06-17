@@ -16,28 +16,15 @@ class MissingTableModel : public BaseSqlTableModel {
   public:
     MissingTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~MissingTableModel();
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual void search(const QString& searchText);
-    virtual bool isColumnInternal(int column);
-    virtual bool isColumnHiddenByDefault(int column);
-    virtual void removeTrack(const QModelIndex& index);
-    virtual void removeTracks(const QModelIndexList& indices);
-    virtual bool addTrack(const QModelIndex& index, QString location);
-    virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
 
+    void setTableModel(int id=-1);
+    bool isColumnInternal(int column);
+    bool isColumnHiddenByDefault(int column);
+    void purgeTracks(const QModelIndexList& indices);
     Qt::ItemFlags flags(const QModelIndex &index) const;
-    QItemDelegate* delegateForColumn(const int i);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
-  private slots:
-    void slotSearch(const QString& searchText);
-
-  signals:
-    void doSearch(const QString& searchText);
-
   private:
-    TrackCollection* m_pTrackCollection;
-    TrackDAO& m_trackDao;
     static const QString MISSINGFILTER;
 };
 

@@ -17,7 +17,7 @@
 
 
 #include <QtGui>
-#include <math.h>
+#include <cmath>
 
 #include "starrating.h"
 
@@ -44,7 +44,8 @@ QSize StarRating::sizeHint() const
 /*
  * function paints the stars in this StarRating object on a paint device
  */
-void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &palette, EditMode mode) const
+void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &palette,
+                        EditMode mode, bool isSelected) const
 {
     painter->save();
 
@@ -54,15 +55,23 @@ void StarRating::paint(QPainter *painter, const QRect &rect, const QPalette &pal
     // Workaround for painting issue. If we are editable, assume we are
     // selected, so use the highlight and hightlightedText colors.
     if (mode == Editable) {
-        painter->fillRect(rect, palette.highlight());
-        painter->setBrush(palette.highlightedText());
+        if (isSelected) {
+            painter->fillRect(rect, palette.highlight());
+            painter->setBrush(palette.highlightedText());
+        } else {
+            painter->fillRect(rect, palette.base());
+            painter->setBrush(palette.text());
+        }
     }
 
     int yOffset = (rect.height() - PaintingScaleFactor) / 2;
     painter->translate(rect.x(), rect.y() + yOffset);
     painter->scale(PaintingScaleFactor, PaintingScaleFactor);
 
-    for (int i = 0; i < m_myMaxStarCount; ++i) {
+    //determine number of stars that are possible to paint
+    int n = rect.width()/PaintingScaleFactor;
+
+    for (int i = 0; i < m_myMaxStarCount && i<n; ++i) {
         if (i < m_myStarCount) {
             painter->drawPolygon(m_starPolygon, Qt::WindingFill);
         } else {

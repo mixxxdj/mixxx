@@ -7,10 +7,20 @@
 #include "library/dao/cue.h"
 #include "trackinfoobject.h"
 
-DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
-        QDialog(parent),
-        m_pLoadedTrack() {
+DlgTrackInfo::DlgTrackInfo(QWidget* parent,
+                           DlgTagFetcher& DlgTagFetcher)
+            : QDialog(parent),
+              m_pLoadedTrack(NULL),
+              m_DlgTagFetcher(DlgTagFetcher) {
+    init();
+}
 
+DlgTrackInfo::~DlgTrackInfo() {
+    unloadTrack(false);
+    qDebug() << "~DlgTrackInfo()";
+}
+
+void DlgTrackInfo::init(){
     setupUi(this);
 
     cueTable->hideColumn(0);
@@ -24,30 +34,26 @@ DlgTrackInfo::DlgTrackInfo(QWidget* parent) :
     connect(btnCancel, SIGNAL(clicked()),
             this, SLOT(cancel()));
 
+    connect(btnFetchTag, SIGNAL(clicked()),
+            this, SLOT(fetchTag()));
+
     connect(bpmDouble, SIGNAL(clicked()),
             this, SLOT(slotBpmDouble()));
     connect(bpmHalve, SIGNAL(clicked()),
             this, SLOT(slotBpmHalve()));
-    connect(bpmTap, SIGNAL(pressed()),
-            this, SLOT(slotBpmTap()));
 
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
     connect(btnCueDelete, SIGNAL(clicked()),
             this, SLOT(cueDelete()));
-
+    connect(bpmTap, SIGNAL(pressed()),
+            this, SLOT(slotBpmTap()));
     connect(btnReloadFromFile, SIGNAL(clicked()),
             this, SLOT(reloadTrackMetadata()));
-
     m_bpmTapTimer.start();
     for (int i = 0; i < filterLength; ++i) {
         m_bpmTapFilter[i] = 0.0f;
     }
-}
-
-DlgTrackInfo::~DlgTrackInfo() {
-    unloadTrack(false);
-    qDebug() << "~DlgTrackInfo()";
 }
 
 void DlgTrackInfo::apply() {
@@ -97,12 +103,14 @@ void DlgTrackInfo::cueDelete() {
 }
 
 void DlgTrackInfo::populateFields(TrackPointer pTrack) {
+    setWindowTitle(pTrack->getTitle());
+
     // Editable fields
-    lblSong->setText(pTrack->getTitle());
     txtTrackName->setText(pTrack->getTitle());
     txtArtist->setText(pTrack->getArtist());
     txtAlbum->setText(pTrack->getAlbum());
     txtGenre->setText(pTrack->getGenre());
+    txtComposer->setText(pTrack->getComposer());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
     txtComment->setText(pTrack->getComment());
@@ -111,8 +119,18 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
     txtFilepath->setText(pTrack->getFilename());
-    txtFilepath->setCursorPosition(0);
+    txtLocation->setText(pTrack->getLocation());
     txtType->setText(pTrack->getType());
+    txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
+    txtBpm->setText(pTrack->getBpmStr());
+
+    BeatsPointer pBeats = pTrack->getBeats();
+    bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
+    bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
+    spinBpm->setEnabled(enableBpmEditing);
+    bpmTap->setEnabled(enableBpmEditing);
+    bpmDouble->setEnabled(enableBpmEditing);
+    bpmHalve->setEnabled(enableBpmEditing);
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
@@ -169,7 +187,10 @@ void DlgTrackInfo::populateCues(TrackPointer pTrack) {
         //int hours = mins / 60; //Not going to worry about this for now. :)
 
         //Construct a nicely formatted duration string now.
-        QString duration = QString("%1:%2.%3").arg(mins).arg(seconds, 2, 10, QChar('0')).arg(fraction, 2,10, QChar('0'));
+        QString duration = QString("%1:%2.%3").arg(
+            QString::number(mins),
+            QString("%1").arg(seconds, 2, 10, QChar('0')),
+            QString("%1").arg(fraction, 2, 10, QChar('0')));
 
         QTableWidgetItem* durationItem = new QTableWidgetItem(duration);
         // Make the duration read only
@@ -195,10 +216,14 @@ void DlgTrackInfo::unloadTrack(bool save) {
         m_pLoadedTrack->setArtist(txtArtist->text());
         m_pLoadedTrack->setAlbum(txtAlbum->text());
         m_pLoadedTrack->setGenre(txtGenre->text());
+        m_pLoadedTrack->setComposer(txtComposer->text());
         m_pLoadedTrack->setYear(txtYear->text());
         m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
-        m_pLoadedTrack->setBpm(spinBpm->value());
         m_pLoadedTrack->setComment(txtComment->toPlainText());
+
+        if (!m_pLoadedTrack->hasBpmLock()) {
+            m_pLoadedTrack->setBpm(spinBpm->value());
+        }
 
         QHash<int, Cue*> cueMap;
         for (int row = 0; row < cueTable->rowCount(); ++row) {
@@ -243,13 +268,12 @@ void DlgTrackInfo::unloadTrack(bool save) {
 }
 
 void DlgTrackInfo::clear() {
-    txtTrackName->setText("");
-    lblSong->setText("Track:");
 
     txtTrackName->setText("");
     txtArtist->setText("");
     txtAlbum->setText("");
     txtGenre->setText("");
+    txtComposer->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
     txtComment->setText("");
@@ -258,6 +282,9 @@ void DlgTrackInfo::clear() {
     txtDuration->setText("");
     txtFilepath->setText("");
     txtType->setText("");
+    txtLocation->setText("");
+    txtBitrate->setText("");
+    txtBpm->setText("");
 
     m_cueMap.clear();
     cueTable->clearContents();
@@ -300,4 +327,9 @@ void DlgTrackInfo::reloadTrackMetadata() {
         TrackPointer pTrack(new TrackInfoObject(m_pLoadedTrack->getLocation()));
         populateFields(pTrack);
     }
+}
+
+void DlgTrackInfo::fetchTag() {
+    m_DlgTagFetcher.init(m_pLoadedTrack);
+    m_DlgTagFetcher.show();
 }

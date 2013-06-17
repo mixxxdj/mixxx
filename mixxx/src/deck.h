@@ -5,13 +5,13 @@
 
 class Deck : public BaseTrackPlayer {
     Q_OBJECT
-	public:
+  public:
     Deck(QObject* pParent,
-         ConfigObject<ConfigValue> *pConfig,
+         ConfigObject<ConfigValue>* pConfig,
          EngineMaster* pMixingEngine,
          EngineChannel::ChannelOrientation defaultOrientation,
          QString group);
     virtual ~Deck();
 };
 
-#endif
+#endif // DECK_H

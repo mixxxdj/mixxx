@@ -12,9 +12,7 @@ class WPrepareLibraryTableView : public WTrackTableView
 {
     public:
         WPrepareLibraryTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
-                                 TrackCollection* pTrackCollection,
-                                 ConfigKey headerStateKey,
-                                 ConfigKey vScrollBarPosKey);
+                                 TrackCollection* pTrackCollection);
         ~WPrepareLibraryTableView();
 
         virtual void onSearchStarting();

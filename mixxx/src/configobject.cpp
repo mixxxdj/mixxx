@@ -32,6 +32,8 @@
 #include <QTextStream>
 #include <math.h>
 
+#include "mixxx.h"
+
 ConfigKey::ConfigKey()
 {
 }
@@ -113,8 +115,8 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QString file)
 
 template <class ValueType> ConfigObject<ValueType>::~ConfigObject()
 {
-    while (list.size() > 0) {
-        ConfigOption<ValueType>* pConfigOption = list.takeLast();
+    while (m_list.size() > 0) {
+        ConfigOption<ValueType>* pConfigOption = m_list.takeLast();
         delete pConfigOption;
     }
 }
@@ -123,7 +125,7 @@ template <class ValueType>
 ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
 {
     // Search for key in list, and set value if found
-    QListIterator<ConfigOption<ValueType>* > iterator(list);
+    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
     ConfigOption<ValueType>* it;
     while (iterator.hasNext())
     {
@@ -145,14 +147,14 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::set(ConfigKey k, ValueType v)
     ConfigKey * key = new ConfigKey(k.group, k.item);
     it = new ConfigOption<ValueType>(key, new ValueType(v));
     //qDebug() << "new configobject " << it->val;
-    list.append(it);
+    m_list.append(it);
     return it;
 }
 
 template <class ValueType>
 ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
 {
-    QListIterator<ConfigOption<ValueType>* > iterator(list);
+    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
     ConfigOption<ValueType>* it;
     while (iterator.hasNext())
     {
@@ -167,14 +169,30 @@ ConfigOption<ValueType> *ConfigObject<ValueType>::get(ConfigKey k)
     // If key is not found, insert into list with null values
     ConfigKey * key = new ConfigKey(k.group, k.item);
     it = new ConfigOption<ValueType>(key, new ValueType(""));
-    list.append(it);
+    m_list.append(it);
     return it;
+}
+
+template <class ValueType>
+bool ConfigObject<ValueType>::exists(ConfigKey k)
+{
+    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
+    ConfigOption<ValueType>* it;
+    while (iterator.hasNext())
+    {
+        it = iterator.next();
+        if (it->key->group == k.group && it->key->item == k.item)
+        {
+            return true;
+        }
+    }
+    return false;
 }
 
 template <class ValueType>
 ConfigKey *ConfigObject<ValueType>::get(ValueType v)
 {
-    QListIterator<ConfigOption<ValueType>* > iterator(list);
+    QListIterator<ConfigOption<ValueType>* > iterator(m_list);
     ConfigOption<ValueType>* it;
     while (iterator.hasNext())
     {
@@ -189,7 +207,7 @@ ConfigKey *ConfigObject<ValueType>::get(ValueType v)
             return it->key;
         }
 
-        if (it == list.last()) {
+        if (it == m_list.last()) {
             //qDebug() << "ConfigObject: last match attempted" << it->val->value.toUpper() << "with" << v.value.toUpper();
         }
     }
@@ -203,28 +221,40 @@ QString ConfigObject<ValueType>::getValueString(ConfigKey k)
     return get(k)->val->value;
 }
 
+template <class ValueType>
+QString ConfigObject<ValueType>::getValueString(ConfigKey k, const QString& default_string)
+{
+    QString ret = get(k)->val->value;
+    if (ret.isEmpty()) {
+        return default_string;
+    }
+    return ret;
+}
+
 template <class ValueType> bool ConfigObject<ValueType>::Parse()
 {
     // Open file for reading
-    QFile configfile(filename);
-    if (filename.length()<1 || !configfile.open(QIODevice::ReadOnly))
+    QFile configfile(m_filename);
+    if (m_filename.length()<1 || !configfile.open(QIODevice::ReadOnly))
     {
-        qDebug() << "Could not read" << filename;
+        qDebug() << "ConfigObject: Could not read" << m_filename;
         return false;
     }
     else
     {
+        //qDebug() << "ConfigObject: Parse" << m_filename;
         // Parse the file
         int group = 0;
         QString groupStr, line;
         QTextStream text(&configfile);
+        text.setCodec("UTF-8");
 
         while (!text.atEnd())
         {
             line = text.readLine().trimmed();
 
             if (line.length() != 0)
-			{
+            {
                 if (line.startsWith("[") && line.endsWith("]"))
                 {
                     group++;
@@ -242,7 +272,7 @@ template <class ValueType> bool ConfigObject<ValueType>::Parse()
                     ValueType m(val);
                     set(k, m);
                 }
-			}
+            }
         }
         configfile.close();
     }
@@ -254,42 +284,41 @@ template <class ValueType> void ConfigObject<ValueType>::clear()
 {
     //Delete the pointers, because that's what we did before we
     //purged Mixxx of Qt3 code. -- Albert, June 18th 2010 (at 30,000 ft)
-    for (int i = 0; i < list.count(); i++)
-        delete list[i];
+    for (int i = 0; i < m_list.count(); i++)
+        delete m_list[i];
 
     // This shouldn't be done, since objects might have references to
     // members of list. Instead all member values should be set to some
     // null value.
-    list.clear();
+    m_list.clear();
 
 }
 
 template <class ValueType> void ConfigObject<ValueType>::reopen(QString file)
 {
-    // First try to open the config file placed in the users .mixxx directory.
-    // If that fails, try the system wide CONFIG_PATH.
-
-    filename = file;
+    m_filename = file;
     Parse();
 }
 
 template <class ValueType> void ConfigObject<ValueType>::Save()
 {
-    QFile file(filename);
+    QFile file(m_filename);
     if (!QDir(QFileInfo(file).absolutePath()).exists()) {
         QDir().mkpath(QFileInfo(file).absolutePath());
     }
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text))
     {
-        qDebug() << "Could not write file" << filename << ", don't worry.";
+        qDebug() << "Could not write file" << m_filename << ", don't worry.";
         return;
     }
     else
     {
         QTextStream stream(&file);
+        stream.setCodec("UTF-8");
+
         QString grp = "";
 
-        QListIterator<ConfigOption<ValueType>* > iterator(list);
+        QListIterator<ConfigOption<ValueType>* > iterator(m_list);
         ConfigOption<ValueType>* it;
         while (iterator.hasNext())
         {
@@ -309,69 +338,71 @@ template <class ValueType> void ConfigObject<ValueType>::Save()
 }
 
 template <class ValueType>
-QString ConfigObject<ValueType>::getConfigPath()
-{
+QString ConfigObject<ValueType>::getResourcePath() {
     //
     // Find the config path, path where midi configuration files, skins etc. are stored.
     // On Unix the search order is whats listed in mixxx.cfg, then UNIX_SHARE_PATH
     // On Windows it is always (and only) app dir.
     // On OS X it is the current directory and then the Resources/ dir in the app bundle
     //
-    QString qConfigPath; // TODO: this only changes once (on first load) during a run should make this a singleton.
+    QString qResourcePath; // TODO: this only changes once (on first load) during a run should make this a singleton.
 
     // Try to read in the resource directory from the command line
-    QStringList commandLineArgs = QApplication::arguments();
-    int resourcePath = commandLineArgs.indexOf("--resourcePath");
-    if (resourcePath!=-1 && resourcePath + 1 < commandLineArgs.size()) {
-        qDebug() << "Setting qConfigPath from location in resourcePath commandline arg:" << commandLineArgs.at(resourcePath+1);
-        qConfigPath = commandLineArgs.at(resourcePath+1);
-    }
-    if (qConfigPath.isNull() || qConfigPath.isEmpty()) {
+    qResourcePath = CmdlineArgs::Instance().getResourcePath();
+
+    if (qResourcePath.isNull() || qResourcePath.isEmpty()) {
 #ifdef __UNIX__
-    // On Linux, check if the path is stored in the configuration database.
-    if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
-        qConfigPath = getValueString(ConfigKey("[Config]","Path"));
-    else
-    {
-        // Set the path according to the compile time define, UNIX_SHARE_PATH
-        qConfigPath = UNIX_SHARE_PATH;
-    }
+        // On Linux, check if the path is stored in the configuration database.
+        if (getValueString(ConfigKey("[Config]","Path")).length()>0 && QDir(getValueString(ConfigKey("[Config]","Path"))).exists())
+            qResourcePath = getValueString(ConfigKey("[Config]","Path"));
+        else
+        {
+            // Set the path according to the compile time define, UNIX_SHARE_PATH
+            qResourcePath = UNIX_SHARE_PATH;
+        }
 #endif
 #ifdef __WINDOWS__
-    // On Windows, set the config dir relative to the application dir
-    qConfigPath = QCoreApplication::applicationDirPath();
+        // On Windows, set the config dir relative to the application dir
+        qResourcePath = QCoreApplication::applicationDirPath();
 #endif
 #ifdef __APPLE__
-    /*
-    // Set the path relative to the bundle directory
-    CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
-    CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
-    char utf8path[256];
-    //Attempt to decode obtain the macPath string as UTF-8
-    if (CFStringGetCString(macPath, utf8path, sizeof(utf8path), kCFStringEncodingUTF8))
-    {
+        /*
+        // Set the path relative to the bundle directory
+        CFURLRef pluginRef = CFBundleCopyBundleURL(CFBundleGetMainBundle());
+        CFStringRef macPath = CFURLCopyFileSystemPath(pluginRef, kCFURLPOSIXPathStyle);
+        char utf8path[256];
+        //Attempt to decode obtain the macPath string as UTF-8
+        if (CFStringGetCString(macPath, utf8path, sizeof(utf8path), kCFStringEncodingUTF8))
+        {
         qConfigPath.fromUtf8(utf8path);
-    }
-    else {
+        }
+        else {
         //Fallback on the "system encoding"... (this is just our old code, which probably doesn't make any sense
-         //since it plays roullette with the type of text encoding)
+        //since it plays roullette with the type of text encoding)
         qConfigPath = CFStringGetCStringPtr(macPath, CFStringGetSystemEncoding());
-    }
-    qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
-    */
-    QString mixxxPath = QCoreApplication::applicationDirPath();
-    if (mixxxPath.endsWith("osx_build"))   //Development configuration
-        qConfigPath = mixxxPath + "/../res";
-    else //Release configuraton
-	    qConfigPath = mixxxPath + "/../Resources";
+        }
+        qConfigPath.append("/Contents/Resources/"); //XXX this should really use QDir, this entire function should
+        */
+        QString mixxxPath = QCoreApplication::applicationDirPath();
+        if (mixxxPath.endsWith("osx_build"))   //Development configuration
+            qResourcePath = mixxxPath + "/../res";
+        else //Release configuraton
+            qResourcePath = mixxxPath + "/../Resources";
 #endif
+    } else {
+        qDebug() << "Setting qResourcePath from location in resourcePath commandline arg:" << qResourcePath;
     }
-	if (qConfigPath.length() == 0) qCritical() << "qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??";
-    // If the directory does not end with a "/", add one
-    if (!qConfigPath.endsWith("/"))
-        qConfigPath.append("/");
 
-    return qConfigPath;
+    if (qResourcePath.length() == 0) {
+        reportCriticalErrorAndQuit("qConfigPath is empty, this can not be so -- did our developer forget to define one of __UNIX__, __WINDOWS__, __APPLE__??");
+    }
+
+    // If the directory does not end with a "/", add one
+    if (!qResourcePath.endsWith("/")) {
+        qResourcePath.append("/");
+    }
+
+    return qResourcePath;
 }
 
 
@@ -391,6 +422,12 @@ template <class ValueType> ConfigObject<ValueType>::ConfigObject(QDomNode node) 
             ctrl = ctrl.nextSibling();
         }
     }
+}
+
+template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() const
+{
+    QFileInfo configFileInfo(m_filename);
+    return configFileInfo.absoluteDir().absolutePath();
 }
 
 

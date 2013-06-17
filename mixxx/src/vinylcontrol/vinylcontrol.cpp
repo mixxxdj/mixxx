@@ -1,11 +1,11 @@
-#include "vinylcontrol.h"
+#include "vinylcontrol/vinylcontrol.h"
 #include "controlobjectthread.h"
+#include "controlobject.h"
 
 VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
 {
     m_pConfig = pConfig;
     m_group = group;
-    iRIAACorrection = 0;
 
     iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
 
@@ -23,6 +23,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled")));
     wantenabled         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_wantenabled")));
     cueing              = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_cueing")));
+    scratching          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_scratching")));
     rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
     vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_status")));
     rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
@@ -43,23 +44,21 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     strVinylSpeed = m_pConfig->getValueString(ConfigKey(group,"vinylcontrol_speed_type"));
 
     //Get the lead-in time
-    iLeadInTime = m_pConfig->getValueString(ConfigKey("[VinylControl]","lead_in_time")).toInt();
+    iLeadInTime = m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,"lead_in_time")).toInt();
 
-    //RIAA correction
-    iRIAACorrection =  m_pConfig->getValueString(ConfigKey("[VinylControl]","InputRIAACorrection")).toInt();
-
-    //Vinyl control mode
-    iVCMode = m_pConfig->getValueString(ConfigKey("[VinylControl]","mode")).toInt();
-
-    //Enabled or not -- load from saved value in case vinyl control is restarting 
+    //Enabled or not -- load from saved value in case vinyl control is restarting
     bIsEnabled = wantenabled->get();
 
     //Gain
-    ControlObject::getControl(ConfigKey("[VinylControl]", "gain"))->set(
-        m_pConfig->getValueString(ConfigKey("[VinylControl]","gain")).toInt());
+    ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"))->set(
+        m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 }
 
-void VinylControl::ToggleVinylControl(bool enable)
+bool VinylControl::isEnabled() {
+    return bIsEnabled;
+}
+
+void VinylControl::toggleVinylControl(bool enable)
 {
     bIsEnabled = enable;
     if (m_pConfig)
@@ -86,6 +85,26 @@ VinylControl::~VinylControl()
         //be enabled
         wantenabled->slotSet(true);
     }
+
+    delete playPos;
+    delete trackSamples;
+    delete trackSampleRate;
+    delete vinylSeek;
+    delete controlScratch;
+    delete rateSlider;
+    delete playButton;
+    delete reverseButton;
+    delete duration;
+    delete mode;
+    delete enabled;
+    delete wantenabled;
+    delete cueing;
+    delete scratching;
+    delete rateRange;
+    delete vinylStatus;
+    delete rateDir;
+    delete loopEnabled;
+    delete signalenabled;
 }
 
 float VinylControl::getSpeed()
@@ -93,19 +112,3 @@ float VinylControl::getSpeed()
     return dVinylScratch;
 }
 
-/** Returns some sort of indication of the vinyl's signal quality.
-    Range of m_fTimecodeQuality should be 0.0 to 1.0 */
-float VinylControl::getTimecodeQuality()
-{
-    return m_fTimecodeQuality;
-}
-
-unsigned char* VinylControl::getScopeBytemap()
-{
-    return NULL;
-}
-
-float VinylControl::getAngle()
-{
-    return -1.0;
-}

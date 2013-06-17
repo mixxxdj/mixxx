@@ -21,7 +21,7 @@
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
 #include "engine/enginefilterblock.h"
-#include "controlobject.h"
+#include "controlobjectthread.h"
 
 class QWidget;
 /**
@@ -49,11 +49,11 @@ private slots:
 private:
     void loadSettings();
     void setDefaultShelves();
-    int getEqFreq(int);
-    int getSliderPosition(int eqFreq);
+    double getEqFreq(int value, int minimum, int maximum);
+    int getSliderPosition(double eqFreq, int minimum, int maximum);
     void validate_levels();
 
-    int m_lowEqFreq, m_highEqFreq;
+    double m_lowEqFreq, m_highEqFreq;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *m_pConfig;
 #ifndef __LOFI__

@@ -29,17 +29,18 @@
 DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
         QList<SoundDevice*> &devices, bool isInput,
         unsigned int index /* = 0 */)
-    : QWidget(parent)
-    , m_type(type)
-    , m_index(index)
-    , m_devices(devices)
-    , m_isInput(isInput)
-    , m_savedDevice("")
-    , m_savedChannel(0) {
+        : QWidget(parent)
+        , m_type(type)
+        , m_index(index)
+        , m_devices(devices)
+        , m_isInput(isInput)
+        , m_savedDevice("")
+        , m_savedChannel(0) {
     setupUi(this);
     if (AudioPath::isIndexed(type)) {
         typeLabel->setText(
-            QString("%1 %2").arg(AudioPath::getTrStringFromType(type)).arg(index + 1));
+            QString("%1 %2").arg(AudioPath::getTrStringFromType(type),
+                                 QString::number(index + 1)));
     } else {
         typeLabel->setText(AudioPath::getTrStringFromType(type));
     }
@@ -69,6 +70,7 @@ void DlgPrefSoundItem::refreshDevices(const QList<SoundDevice*> &devices) {
         deviceComboBox->removeItem(deviceComboBox->count() - 1);
     }
     foreach (SoundDevice *device, m_devices) {
+        if (!hasSufficientChannels(device)) continue;
         deviceComboBox->addItem(device->getDisplayName(), device->getInternalName());
     }
     int newIndex = deviceComboBox->findData(oldDev);
@@ -109,7 +111,9 @@ void DlgPrefSoundItem::deviceChanged(int index) {
                     QString(tr("Channel %1")).arg(i), i - 1);
             } else {
                 channelComboBox->addItem(
-                    QString(tr("Channels %1 - %2")).arg(i).arg(i + 1), i - 1);
+                    QString(tr("Channels %1 - %2")).arg(QString::number(i),
+                                                        QString::number(i + 1)),
+                    i - 1);
             }
             // i-1 because want the data part to be what goes into audiopath's
             // channelbase which is zero-based -- bkgood
@@ -252,5 +256,19 @@ void DlgPrefSoundItem::setChannel(unsigned int channel) {
         channelComboBox->setCurrentIndex(index);
     } else {
         channelComboBox->setCurrentIndex(0); // 1
+    }
+}
+
+/**
+ * Checks that a given device can act as a source/input for our type.
+ */
+int DlgPrefSoundItem::hasSufficientChannels(const SoundDevice *device) const
+{
+    unsigned char needed(AudioPath::channelsNeededForType(m_type));
+
+    if (m_isInput) {
+        return device->getNumInputChannels() >= needed;
+    } else {
+        return device->getNumOutputChannels() >= needed;
     }
 }

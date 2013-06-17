@@ -18,9 +18,13 @@
 #ifndef ENGINEDECK_H
 #define ENGINEDECK_H
 
+#include "circularbuffer.h"
+#include "controlpushbutton.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "configobject.h"
+
+#include "soundmanagerutil.h"
 
 class EngineBuffer;
 class EnginePregain;
@@ -32,7 +36,7 @@ class EngineVuMeter;
 class EngineVinylSoundEmu;
 class ControlPushButton;
 
-class EngineDeck : public EngineChannel {
+class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
     EngineDeck(const char *group, ConfigObject<ConfigValue>* pConfig,
@@ -40,12 +44,31 @@ class EngineDeck : public EngineChannel {
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 
-    virtual void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
+    virtual void process(const CSAMPLE *pInput, const CSAMPLE *pOutput, const int iBufferSize);
 
     // TODO(XXX) This hack needs to be removed.
     virtual EngineBuffer* getEngineBuffer();
 
     virtual bool isActive();
+
+    // This is called by SoundManager whenever there are new samples from the
+    // deck to be processed.
+    virtual void receiveBuffer(AudioInput input, const short *pBuffer, unsigned int nFrames);
+
+    // Called by SoundManager whenever the passthrough input is connected to a
+    // soundcard input.
+    virtual void onInputConnected(AudioInput input);
+
+    // Called by SoundManager whenever the passthrough input is disconnected
+    // from a soundcard input.
+    virtual void onInputDisconnected(AudioInput input);
+
+    // Return whether or not passthrough is active
+    bool isPassthroughActive();
+
+  public slots:
+    void slotPassingToggle(double v);
+
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     EngineBuffer* m_pBuffer;
@@ -55,6 +78,13 @@ class EngineDeck : public EngineChannel {
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVuMeter* m_pVUMeter;
     EffectsManager* m_pEffectsManager;
+
+    // Begin vinyl passthrough fields
+    ControlPushButton* m_pPassing;
+    CSAMPLE* m_pConversionBuffer;
+    CircularBuffer<CSAMPLE> m_sampleBuffer;
+    bool m_bPassthroughIsActive;
+    bool m_bPassthroughWasActive;
 };
 
 #endif

@@ -6,12 +6,11 @@
 #include "configobject.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
+#include "library/preparelibrarytablemodel.h"
 
 class PrepareLibraryTableModel;
 class WPrepareCratesTableView;
 class WPrepareLibraryTableView;
-class QSqlTableModel;
-class CrateView;
 
 class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual LibraryView {
     Q_OBJECT
@@ -21,22 +20,20 @@ class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual Library
                TrackCollection* pTrackCollection);
     virtual ~DlgPrepare();
 
-    virtual void setup(QDomNode node);
-    virtual void onSearchStarting();
-    virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
     virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);
+    inline const QString currentSearch() { return m_pPrepareLibraryTableModel->currentSearch(); };
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,
                                const QItemSelection& deselected);
     void selectAll();
     void analyze();
-    void trackAnalysisFinished(TrackPointer tio);
-    void trackAnalysisProgress(TrackPointer tio, int progress);
+    void trackAnalysisFinished(int size);
+    void trackAnalysisProgress(int progress);
     void showRecentSongs();
     void showAllSongs();
     void installEventFilter(QObject* pFilter);
@@ -57,8 +54,8 @@ class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual Library
     WPrepareLibraryTableView* m_pPrepareLibraryTableView;
     PrepareLibraryTableModel* m_pPrepareLibraryTableModel;
     WPrepareCratesTableView* m_pPrepareCratesTableView;
-    CrateView* m_pCrateView;
-    QSqlTableModel* m_pCratesTableModel;
+    int m_tracksInQueue;
+    int m_currentTrack;
 };
 
 #endif //DLGTRIAGE_H

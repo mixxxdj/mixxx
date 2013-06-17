@@ -22,58 +22,44 @@
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
 ControlPushButton::ControlPushButton(ConfigKey key) :
-    ControlObject(key, false) {
-    m_bIsToggleButton = false;
-    m_iNoStates = 2;
-}
-
-ControlPushButton::~ControlPushButton()
-{
-}
-
-//Tell this PushButton whether or not it's a "toggle" push button...
-void ControlPushButton::setToggleButton(bool bIsToggleButton)
-{
-    //qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
-    m_bIsToggleButton = bIsToggleButton;
-}
-
-void ControlPushButton::setStates(int num_states)
-{
-    m_iNoStates = num_states;
-}
-
-void ControlPushButton::setValueFromMidi(MidiCategory c, double v)
-{
-    //if (m_bMidiSimulateLatching)
-
-    //qDebug() << "bMidiSimulateLatching is true!";
-    // Only react on NOTE_ON midi events if simulating latching...
-
-    //qDebug() << c << v;
-
-    if (m_bIsToggleButton) { //This block makes push-buttons act as toggle buttons.
-        if (m_iNoStates > 2) { //multistate button
-            if (v > 0.) { //looking for NOTE_ON doesn't seem to work...
-                m_dValue++;
-                if (m_dValue >= m_iNoStates)
-                    m_dValue = 0;
-            }
-        } else {
-            if (c == NOTE_ON) {
-                if (v > 0.) {
-                    m_dValue = !m_dValue;
-                }
-            }
-        }
-    } else { //Not a toggle button (trigger only when button pushed)
-        if (c == NOTE_ON) {
-            m_dValue = v;
-        } else if (c == NOTE_OFF) {
-            m_dValue = 0.0;
-        }
+        ControlObject(key, false),
+        m_buttonMode(PUSH),
+        m_iNoStates(2) {
+    if (m_pControl) {
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
+        delete pOldBehavior;
     }
+}
 
-    emit(valueChanged(m_dValue));
+ControlPushButton::~ControlPushButton() {
+}
+
+// Tell this PushButton how to act on rising and falling edges
+void ControlPushButton::setButtonMode(enum ButtonMode mode) {
+    //qDebug() << "Setting " << m_Key.group << m_Key.item << "as toggle";
+    m_buttonMode = mode;
+
+    if (m_pControl) {
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
+        delete pOldBehavior;
+    }
+}
+
+void ControlPushButton::setStates(int num_states) {
+    m_iNoStates = num_states;
+
+    if (m_pControl) {
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlPushButtonBehavior(
+                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                m_iNoStates));
+        delete pOldBehavior;
+    }
 }
 

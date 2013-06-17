@@ -51,7 +51,8 @@ class EngineMaster : public EngineObject, public AudioSource {
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
-                 EffectsManager* pEffectsManager);
+                 EffectsManager* pEffectsManager,
+                 bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -75,6 +76,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
     void addChannel(EngineChannel* pChannel);
+    EngineChannel* getChannel(QString group);
     static inline double gainForOrientation(EngineChannel::ChannelOrientation orientation,
                                             double leftGain,
                                             double centerGain,
@@ -96,9 +98,9 @@ class EngineMaster : public EngineObject, public AudioSource {
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
     const CSAMPLE* getChannelBuffer(QString name) const;
 
-  signals:
-    void bytesRecorded(int);
-    void isRecording(bool);
+    EngineSideChain* getSideChain() const {
+        return m_pSideChain;
+    }
 
   private:
     struct ChannelInfo {
@@ -152,12 +154,13 @@ class EngineMaster : public EngineObject, public AudioSource {
     CSAMPLE *m_pMaster, *m_pHead;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
-    SyncWorker* m_pSyncWorker;
 
     ControlObject* m_pMasterVolume;
     ControlObject* m_pHeadVolume;
     ControlObject* m_pMasterSampleRate;
     ControlObject* m_pMasterLatency;
+    ControlObject* m_pMasterAudioBufferSize;
+    ControlObject* m_pMasterUnderflowCount;
     ControlPotmeter* m_pMasterRate;
     EngineClipping *clipping, *head_clipping;
 
@@ -169,10 +172,10 @@ class EngineMaster : public EngineObject, public AudioSource {
 #endif
 
     EngineVuMeter *vumeter;
-    EngineSideChain *sidechain;
+    EngineSideChain* m_pSideChain;
 
-    ControlPotmeter *crossfader, *head_mix,
-        *m_pBalance, *xFaderCurve, *xFaderCalibration;
+    ControlPotmeter *crossfader, *head_mix, *m_pBalance,
+        *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;

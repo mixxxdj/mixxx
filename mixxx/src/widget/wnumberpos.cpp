@@ -12,30 +12,16 @@
 WNumberPos::WNumberPos(const char * group, QWidget * parent)
         : WNumber(parent),
           m_dOldValue(0.0f),
-          m_dDuration(0.0f),
           m_dTrackSamples(0.0),
           m_dTrackSampleRate(0.0f),
           m_bRemain(false) {
     m_qsText = "";
 
-    m_pShowDurationRemaining = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
-    connect(m_pShowDurationRemaining, SIGNAL(valueChanged(double)),
+    m_pShowTrackTimeRemaining = new ControlObjectThreadMain(
+        ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
+    connect(m_pShowTrackTimeRemaining, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetRemain(double)));
-    slotSetRemain(m_pShowDurationRemaining->get());
-
-    // TODO(xxx) possible unused m_pRateControl and m_pRateDirControl?
-    m_pRateControl = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(group, "rate")));
-    m_pRateDirControl = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(group, "rate_dir")));
-
-    m_pDuration = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(group, "duration")));
-    connect(m_pDuration, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetTrackDuration(double)));
-    // Tell the CO to re-emit its value since we could be created after it was
-    // set to a valid value.
-    m_pDuration->emitValueChanged();
+    slotSetRemain(m_pShowTrackTimeRemaining->get());
 
     m_pTrackSamples = new ControlObjectThreadWidget(
         ControlObject::getControl(ConfigKey(group, "track_samples")));
@@ -57,10 +43,7 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
 WNumberPos::~WNumberPos() {
     delete m_pTrackSampleRate;
     delete m_pTrackSamples;
-    delete m_pShowDurationRemaining;
-    delete m_pRateControl;
-    delete m_pRateDirControl;
-    delete m_pDuration;
+    delete m_pShowTrackTimeRemaining;
 }
 
 void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
@@ -68,13 +51,8 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
 
     if (leftClick) {
         setRemain(!m_bRemain);
-        m_pShowDurationRemaining->slotSet(m_bRemain ? 1.0f : 0.0f);
+        m_pShowTrackTimeRemaining->slotSet(m_bRemain ? 1.0f : 0.0f);
     }
-}
-
-void WNumberPos::slotSetTrackDuration(double dDuration) {
-    m_dDuration = dDuration;
-    setValue(m_dOldValue);
 }
 
 void WNumberPos::slotSetTrackSamples(double dSamples) {
@@ -92,10 +70,11 @@ void WNumberPos::setValue(double dValue) {
 
     double valueMillis = 0.0f;
     double durationMillis = 0.0f;
-    if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0 && m_dDuration > 0) {
+    if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
         //map midi value taking in to account 14 = 0 and 114 = 1
+        double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
         valueMillis = (dValue - 14) * 1000.0f * m_dTrackSamples / 2.0f / 100.0f / m_dTrackSampleRate;
-        durationMillis = m_dDuration * 1000.0f;
+        durationMillis = dDuration * 1000.0f;
         if (m_bRemain)
             valueMillis = math_max(durationMillis - valueMillis, 0.0f);
     }
@@ -113,7 +92,7 @@ void WNumberPos::setValue(double dValue) {
     // we care about. Slice it off.
     valueString = valueString.left(valueString.length() - 1);
 
-    m_pLabel->setText(QString("%1%2").arg(m_qsText).arg(valueString));
+    m_pLabel->setText(QString("%1%2").arg(m_qsText, valueString));
 }
 
 void WNumberPos::slotSetRemain(double remain) {

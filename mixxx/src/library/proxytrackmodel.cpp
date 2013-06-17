@@ -11,6 +11,7 @@ ProxyTrackModel::ProxyTrackModel(QAbstractItemModel* pTrackModel,
         // ProxyTrackModel proxies settings requests to the composed TrackModel,
         // don't initialize its TrackModel with valid parameters.
         : TrackModel(QSqlDatabase(), ""),
+          m_currentSearch(""),
           m_bHandleSearches(bHandleSearches) {
     m_pTrackModel = dynamic_cast<TrackModel*>(pTrackModel);
     Q_ASSERT(m_pTrackModel && pTrackModel);
@@ -39,7 +40,8 @@ QString ProxyTrackModel::getTrackLocation(const QModelIndex& index) const {
     return m_pTrackModel->getTrackLocation(indexSource);
 }
 
-void ProxyTrackModel::search(const QString& searchText) {
+void ProxyTrackModel::search(const QString& searchText, const QString& extraFilter) {
+    Q_UNUSED(extraFilter);
     if (m_bHandleSearches) {
         m_currentSearch = searchText;
         setFilterFixedString(searchText);
@@ -63,10 +65,6 @@ bool ProxyTrackModel::isColumnHiddenByDefault(int column) {
     return m_pTrackModel->isColumnHiddenByDefault(column);
 }
 
-void ProxyTrackModel::removeTrack(const QModelIndex& index) {
-    QModelIndex indexSource = mapToSource(index);
-    m_pTrackModel->removeTrack(indexSource);
-}
 
 void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
     QModelIndexList translatedList;
@@ -77,11 +75,6 @@ void ProxyTrackModel::removeTracks(const QModelIndexList& indices) {
     m_pTrackModel->removeTracks(translatedList);
 }
 
-bool ProxyTrackModel::addTrack(const QModelIndex& index, QString location) {
-    QModelIndex indexSource = mapToSource(index);
-    return m_pTrackModel->addTrack(indexSource, location);
-}
-
 void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
                                 const QModelIndex& destIndex) {
     QModelIndex sourceIndexSource = mapToSource(sourceIndex);
@@ -89,8 +82,8 @@ void ProxyTrackModel::moveTrack(const QModelIndex& sourceIndex,
     m_pTrackModel->moveTrack(sourceIndexSource, destIndexSource);
 }
 
-QItemDelegate* ProxyTrackModel::delegateForColumn(const int i) {
-    return m_pTrackModel->delegateForColumn(i);
+QAbstractItemDelegate* ProxyTrackModel::delegateForColumn(const int i, QObject* pParent) {
+    return m_pTrackModel->delegateForColumn(i, pParent);
 }
 
 TrackModel::CapabilitiesFlags ProxyTrackModel::getCapabilities() const {

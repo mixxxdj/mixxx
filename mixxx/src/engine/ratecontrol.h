@@ -66,6 +66,7 @@ public:
     void slotControlFastForward(double);
     void slotControlFastBack(double);
     void slotControlVinyl(double);
+    void slotControlVinylScratching(double);
 
   private:
     double getJogFactor();
@@ -81,8 +82,6 @@ public:
     void resetRateTemp(void);
     /** Get the 'Raw' Temp Rate */
     double getTempRate(void);
-    /** Is vinyl control enabled? **/
-    bool m_bVinylControlEnabled;
 
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
@@ -137,13 +136,17 @@ public:
         RATERAMP_RAMPBACK_PERIOD
     };
 
+    /** Is vinyl control enabled? **/
+    bool m_bVinylControlEnabled;
+    bool m_bVinylControlScratching;
+
     // The current rate ramping direction. Only holds the last button pressed.
     int m_ePbCurrent;
     //  The rate ramping buttons which are currently being pressed.
     int m_ePbPressed;
 
     /** This is true if we've already started to ramp the rate */
-    int m_bTempStarted;
+    bool m_bTempStarted;
     /** Set to the rate change used for rate temp */
     double m_dTempRateChange;
     /** Set the Temporary Rate Change Mode */
@@ -156,17 +159,6 @@ public:
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     /** Return speed for temporary rate change */
     double m_dRateTempRampbackChange;
-
-    /** Old playback rate. Stored in this variable while a temp pitch change
-      * buttons is in effect. It does not work to just decrease the pitch slider
-      * by the value it has been increased with when the temp button was
-      * pressed, because there is a fixed limit on the range of the pitch
-      * slider */
-    double m_dOldRate;
-
-
-    /** Handle for configuration */
-    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 #endif /* RATECONTROL_H */

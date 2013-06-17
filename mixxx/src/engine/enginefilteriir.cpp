@@ -15,6 +15,8 @@
 ***************************************************************************/
 
 #include "engine/enginefilteriir.h"
+#include "util/counter.h"
+#include "mathstuff.h"
 
 EngineFilterIIR::EngineFilterIIR(const double * pCoefs, int iOrder)
 {
@@ -56,7 +58,12 @@ void EngineFilterIIR::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const i
                      (coefs[7] * yv1[2]) + ( coefs[8] * yv1[3]) +
                      (coefs[9] * yv1[4]) + ( coefs[10] * yv1[5]) +
                      (coefs[11] * yv1[6]) + ( coefs[12] * yv1[7]);
-            Q_ASSERT(yv1[8]<100000 || yv1[8]>-100000);
+            // Guard against nan.
+            if (isnan(yv1[8])) {
+                Counter count("EngineFilterIIR::process yv1[8] isnan");
+                count.increment();
+                yv1[8] = 0;
+            }
             pOutput[i] = yv1[8];
 
             // Channel 2
@@ -72,7 +79,12 @@ void EngineFilterIIR::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const i
                      (coefs[7] * yv2[2]) + ( coefs[8] * yv2[3]) +
                      (coefs[9] * yv2[4]) + ( coefs[10] * yv2[5]) +
                      (coefs[11] * yv2[6]) + ( coefs[12] * yv2[7]);
-            Q_ASSERT(yv2[8]<100000 || yv2[8]>-100000);
+            // Guard against nan.
+            if (isnan(yv2[8])) {
+                Counter count("EngineFilterIIR::process yv2[8] isnan");
+                count.increment();
+                yv2[8] = 0;
+            }
             pOutput[i+1] = yv2[8];
         }
         else if (order==2)

@@ -5,7 +5,7 @@
     copyright            : (C) 2008 by Wesley Stessens
                            (C) 2007 by John Sully
                            (C) 2008 by Albert Santoni
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -24,9 +24,7 @@
 #include "controlobject.h"
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
-
-#define SHOUTCAST_PREF_KEY "[Shoutcast]"
-#define SHOUTCAST_DEFAULT_PORT "8000"
+#include "shoutcast/defs_shoutcast.h"
 
 class QWidget;
 /**
@@ -35,7 +33,7 @@ class QWidget;
 
 class DlgPrefShoutcast : public QWidget, public Ui::DlgPrefShoutcastDlg  {
     Q_OBJECT
-public: 
+public:
     DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefShoutcast();
 public slots:

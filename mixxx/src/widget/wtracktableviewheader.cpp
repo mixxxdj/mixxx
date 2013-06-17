@@ -6,14 +6,13 @@
 #include "widget/wtracktableviewheader.h"
 #include "library/trackmodel.h"
 
+#define WTTVH_MINIMUM_SECTION_SIZE 20
+
 WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
                                              QWidget* parent)
         : QHeaderView(orientation, parent),
           m_menu(tr("Show or hide columns."), this),
           m_signalMapper(this) {
-    //Allow the columns to be reordered.
-    setMovable(true);
-
     connect(&m_signalMapper, SIGNAL(mapped(int)),
             this, SLOT(showOrHideColumn(int)));
 }
@@ -56,6 +55,14 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     // Restore saved header state to get sizes, column positioning, etc. back.
     restoreHeaderState();
 
+    // Here we can override values to prevent restoring corrupt values from database
+    setMovable(true);
+
+    // Setting true in the next line causes Bug #925619 at least with Qt 4.6.1
+    setCascadingSectionResizes(false);
+
+    setMinimumSectionSize(WTTVH_MINIMUM_SECTION_SIZE);
+
     int columns = model->columnCount();
     for (int i = 0; i < columns; ++i) {
         if (trackModel->isColumnInternal(i)) {
@@ -85,6 +92,13 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
         connect(action, SIGNAL(triggered()),
                 &m_signalMapper, SLOT(map()));
         m_menu.addAction(action);
+
+        // force the section size to be a least WTTVH_MINIMUM_SECTION_SIZE
+        if (sectionSize(i) <  WTTVH_MINIMUM_SECTION_SIZE) {
+            // This might happen if  WTTVH_MINIMUM_SECTION_SIZ has changed or
+            // the header state from database was corrupt
+            resizeSection(i,WTTVH_MINIMUM_SECTION_SIZE);
+        }
     }
 
     // Safety check against someone getting stuck with all columns hidden
@@ -103,7 +117,8 @@ void WTrackTableViewHeader::saveHeaderState() {
     }
     // Convert the QByteArray to a Base64 string and save it.
     QString headerState = QString(saveState().toBase64());
-    bool result = track_model->setModelSetting("header_state", headerState);
+    //bool result =
+    track_model->setModelSetting("header_state", headerState);
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 

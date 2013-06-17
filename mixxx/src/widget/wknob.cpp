@@ -15,17 +15,19 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wknob.h"
-#include "wpixmapstore.h"
-
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
 #include <QPainter>
 #include <QPaintEvent>
 
-WKnob::WKnob(QWidget * parent, float defaultValue)
-        : WAbstractControl(parent, defaultValue),
+#include "widget/wknob.h"
+
+#include "defs.h"
+#include "widget/wpixmapstore.h"
+
+WKnob::WKnob(QWidget * parent)
+        : WAbstractControl(parent),
           m_iPos(0),
           m_iNoPos(0),
           m_pPixmaps(NULL),
@@ -151,26 +153,36 @@ void WKnob::mouseMoveEvent(QMouseEvent * e)
 
 void WKnob::mousePressEvent(QMouseEvent * e)
 {
-    m_startPos = e->globalPos();
-
-    if (e->button() == Qt::RightButton)
-    {
-        reset();
+    switch (e->button()) {
+    case Qt::RightButton:
+        emit(valueReset());
         m_bRightButtonPressed = true;
-    } else {
+        break;
+    case Qt::LeftButton:
+    case Qt::MidButton:
+        m_startPos = e->globalPos();
         QApplication::setOverrideCursor(Qt::BlankCursor);
+        break;
+    default:
+        break;
     }
 }
 
 void WKnob::mouseReleaseEvent(QMouseEvent * e)
 {
-    if (e->button() == Qt::LeftButton) {
+    switch (e->button()) {
+    case Qt::LeftButton:
+    case Qt::MidButton:
         QCursor::setPos(m_startPos);
         QApplication::restoreOverrideCursor();
         emit(valueChangedLeftUp(m_fValue));
-    } else if (e->button()==Qt::RightButton) {
+        break;
+    case Qt::RightButton:
         m_bRightButtonPressed = false;
         //emit(valueChangedRightUp(m_fValue));
+        break;
+    default:
+        break;
     }
 
     update();
@@ -179,8 +191,12 @@ void WKnob::mouseReleaseEvent(QMouseEvent * e)
 void WKnob::wheelEvent(QWheelEvent *e)
 {
     double wheelDirection = ((QWheelEvent *)e)->delta() / 120.;
-    double newValue = getValue() + (wheelDirection);
-    this->updateValue(newValue);
+    double newValue = getValue() + wheelDirection;
+
+    // Clamp to [0.0, 127.0]
+    newValue = math_max(0.0, math_min(127.0, newValue));
+
+    updateValue(newValue);
 
     e->accept();
 

@@ -20,30 +20,13 @@
    Purpose: Creates a new rotary encoder
    Input:   key
    -------- ------------------------------------------------------ */
-ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key)
-{
+ControlTTRotary::ControlTTRotary(ConfigKey key) : ControlObject(key) {
+    if (m_pControl) {
+        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
+            new ControlTTRotaryBehavior());
+        delete pOldBehavior;
+    }
 }
 
-double ControlTTRotary::getValueFromWidget(double dValue)
-{
-    // Non-linear scaling
-    double temp = (((dValue-64.)*(dValue-64.))/64.);
-    if ((dValue-64.)<0)
-        temp = -temp;
 
-    //qDebug() << "tt rotary in " << dValue << ", out " << temp;
-
-    return temp; //dValue-64.;
-}
-
-double ControlTTRotary::getValueToWidget(double dValue)
-{
-    return dValue*200.+64.;
-}
-
-void ControlTTRotary::setValueFromMidi(MidiCategory, double v)
-{
-    m_dValue = v;
-    emit(valueChanged(m_dValue));
-}
 
