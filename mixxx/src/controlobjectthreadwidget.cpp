@@ -1,14 +1,18 @@
 #include <QtDebug>
 #include <qapplication.h>
 #include "controlobjectthreadwidget.h"
-#include "controlobject.h"
 #include "controlevent.h"
+#include "control/control.h"
 
-ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObject, QObject* pParent)
-        : ControlObjectThreadMain(pControlObject->getKey(), pParent) {
+ControlObjectThreadWidget::ControlObjectThreadWidget(ConfigKey key, QObject* pParent)
+        : ControlObjectThreadMain(key, pParent) {
 }
 
 ControlObjectThreadWidget::ControlObjectThreadWidget(const char* g, const char* i, QObject* pParent)
+        : ControlObjectThreadMain(g, i, pParent) {
+}
+
+ControlObjectThreadWidget::ControlObjectThreadWidget(const QString& g, const QString& i, QObject* pParent)
         : ControlObjectThreadMain(g, i, pParent) {
 }
 
