@@ -184,7 +184,7 @@ void EffectParameter::setValue(QVariant value) {
     QMutexLocker locker(&m_mutex);
 
     if (!checkType(value)) {
-        qDebug() << debugString() << "WARNING: Value for minimum cannot be converted to suitable value, ignoring.";
+        qDebug() << debugString() << "WARNING: Value cannot be converted to suitable value, ignoring.";
         return;
     }
 
@@ -218,7 +218,7 @@ QVariant EffectParameter::getDefault() const {
 void EffectParameter::setDefault(QVariant dflt) {
     QMutexLocker locker(&m_mutex);
     if (!checkType(dflt)) {
-        qDebug() << debugString() << "WARNING: Value for maximum cannot be converted to suitable value, ignoring.";
+        qDebug() << debugString() << "WARNING: Value for default cannot be converted to suitable value, ignoring.";
         return;
     }
 
