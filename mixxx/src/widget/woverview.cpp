@@ -295,38 +295,49 @@ bool WOverview::drawNextPixmapPart() {
     QPainter painter(m_pWaveformSourceImage);
     painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
 
-    QColor lowColor = m_signalColors.getLowColor();
-    QPen lowColorPen(QBrush(lowColor), 1);
+    // Get HSV of low color
+    double h,s,v;
+    m_signalColors.getLowColor().getHsvF(&h,&s,&v);
 
-    QColor midColor = m_signalColors.getMidColor();
-    QPen midColorPen(QBrush(midColor), 1);
+    QColor color;
+    float lo, hi, total;
 
-    QColor highColor = m_signalColors.getHighColor();
-    QPen highColorPen(QBrush(highColor), 1);
+    unsigned char maxLow[2] = {0, 0};
+    unsigned char maxHigh[2] = {0, 0};
+    unsigned char maxMid[2] = {0, 0};
+    unsigned char maxAll[2] = {0, 0};
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        unsigned char lowNeg = m_pWaveform->getLow(currentCompletion);
-        unsigned char lowPos = m_pWaveform->getLow(currentCompletion+1);
-        if (lowPos || lowNeg) {
-            painter.setPen(lowColorPen);
-            painter.drawLine(QPoint(currentCompletion / 2, -lowNeg),
-                             QPoint(currentCompletion / 2, lowPos));
+        maxAll[0] = m_pWaveform->getAll(currentCompletion);
+        maxAll[1] = m_pWaveform->getAll(currentCompletion+1);
+        if (maxAll[0] || maxAll[1]) {
+            maxLow[0] = m_pWaveform->getLow(currentCompletion);
+            maxLow[1] = m_pWaveform->getLow(currentCompletion+1);
+            maxMid[0] = m_pWaveform->getMid(currentCompletion);
+            maxMid[1] = m_pWaveform->getMid(currentCompletion+1);
+            maxHigh[0] = m_pWaveform->getHigh(currentCompletion);
+            maxHigh[1] = m_pWaveform->getHigh(currentCompletion+1);
+
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
+
+            // prevent division by zero
+            if( total > 0 )
+            {
+                // Normalize low and high (mid not need, because it not change the color)
+                lo = (maxLow[0] + maxLow[1]) / total;
+                hi = (maxHigh[0] + maxHigh[1]) / total;
+            }
+            else
+                lo = hi = 0.0;
+
+            // Set color
+            color.setHsvF(h, 1.0-hi, 1.0-lo);
+
+            painter.setPen(color);
+            painter.drawLine(QPoint(currentCompletion / 2, -maxAll[0]),
+                    QPoint(currentCompletion / 2, maxAll[1]));
         }
-    }
-
-    for (currentCompletion = m_actualCompletion; 
-            currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen(midColorPen);
-        painter.drawLine(QPoint(currentCompletion / 2, - m_pWaveform->getMid(currentCompletion)),
-                         QPoint(currentCompletion / 2, m_pWaveform->getMid(currentCompletion+1)));
-    }
-
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen(highColorPen);
-        painter.drawLine(QPoint(currentCompletion / 2, - m_pWaveform->getHigh(currentCompletion)),
-                         QPoint(currentCompletion / 2, m_pWaveform->getHigh(currentCompletion+1)));
     }
 
     //evaluate waveform ratio peak
