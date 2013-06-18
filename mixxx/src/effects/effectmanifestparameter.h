@@ -43,24 +43,24 @@ class EffectManifestParameter {
     // Parameter Information
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual const QString id() const {
+    virtual const QString& id() const {
         return m_id;
     }
-    virtual void setId(QString id) {
+    virtual void setId(const QString& id) {
         m_id = id;
     }
 
-    virtual const QString name() const {
+    virtual const QString& name() const {
         return m_name;
     }
-    virtual void setName(QString name) {
+    virtual void setName(const QString& name) {
         m_name = name;
     }
 
-    virtual const QString description() const {
+    virtual const QString& description() const {
         return m_description;
     }
-    virtual void setDescription(QString description) {
+    virtual void setDescription(const QString& description) {
         m_description = description;
     }
 
@@ -103,30 +103,30 @@ class EffectManifestParameter {
     virtual bool hasDefault() const {
         return m_default.isValid();
     }
-    virtual QVariant getDefault() const {
+    virtual const QVariant& getDefault() const {
         return m_default;
     }
-    virtual void setDefault(QVariant defaultValue) {
+    virtual void setDefault(const QVariant& defaultValue) {
         m_default = defaultValue;
     }
 
     virtual bool hasMinimum() const {
         return m_minimum.isValid();
     }
-    virtual QVariant getMinimum() const {
+    virtual const QVariant& getMinimum() const {
         return m_minimum;
     }
-    virtual void setMinimum(QVariant minimum) {
+    virtual void setMinimum(const QVariant& minimum) {
         m_minimum = minimum;
     }
 
     virtual bool hasMaximum() const {
         return m_maximum.isValid();
     }
-    virtual QVariant getMaximum() const {
+    virtual const QVariant& getMaximum() const {
         return m_maximum;
     }
-    virtual void setMaximum(QVariant maximum) {
+    virtual void setMaximum(const QVariant& maximum) {
         m_maximum = maximum;
     }
 

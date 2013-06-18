@@ -26,38 +26,38 @@ class EffectManifest {
         qDebug() << debugString() << "deleted";
     }
 
-    virtual const QString id() const {
+    virtual const QString& id() const {
         return m_id;
     }
-    virtual void setId(QString id) {
+    virtual void setId(const QString& id) {
         m_id = id;
     }
 
-    virtual const QString name() const {
+    virtual const QString& name() const {
         return m_name;
     }
-    virtual void setName(QString name) {
+    virtual void setName(const QString& name) {
         m_name = name;
     }
 
-    virtual const QString author() const {
+    virtual const QString& author() const {
         return m_author;
     }
-    virtual void setAuthor(QString author) {
+    virtual void setAuthor(const QString& author) {
         m_author = author;
     }
 
     virtual const QString& version() const {
         return m_version;
     }
-    virtual void setVersion(QString version) {
+    virtual void setVersion(const QString& version) {
         m_version = version;
     }
 
     virtual const QString& description() const {
         return m_description;
     }
-    virtual void setDescription(QString description) {
+    virtual void setDescription(const QString& description) {
         m_description = description;
     }
 
