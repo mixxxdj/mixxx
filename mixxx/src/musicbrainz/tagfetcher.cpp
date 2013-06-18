@@ -24,6 +24,10 @@ TagFetcher::TagFetcher(QObject* parent)
             this, SLOT(mbidFound(int,QString)));
     connect(&m_MusicbrainzClient, SIGNAL(finished(int,MusicBrainzClient::ResultList)),
             this, SLOT(tagsFetched(int,MusicBrainzClient::ResultList)));
+    connect(&m_AcoustidClient, SIGNAL(networkError(int)),
+            this, SIGNAL(networkError(int)));
+    connect(&m_MusicbrainzClient, SIGNAL(networkError(int)),
+            this, SIGNAL(networkError(int)));
 }
 
 QString TagFetcher::getFingerprint(const TrackPointer tio) {

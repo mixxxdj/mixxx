@@ -75,7 +75,8 @@ void AcoustidClient::requestFinished() {
     int id = m_requests.take(reply);
     
     if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-        emit finished(id, QString());
+        emit networkError(
+             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
         return;
     }
 
