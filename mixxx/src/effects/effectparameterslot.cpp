@@ -166,15 +166,7 @@ void EffectParameterSlot::slotValueNormalized(double v) {
     qDebug() << debugString() << "slotValueNormalized" << v;
     QMutexLocker locker(&m_mutex);
 
-    // Clamp to [0.0, 1.0]
-    if (v < 0.0f || v > 1.0f) {
-        qDebug() << debugString() << "value out of limits";
-        v = math_clamp(v, 0.0f, 1.0f);
-        // Convert back to stupid control system format
-        m_pControlValueNormalized->set(v);
-    }
-
-    // Now set the raw value to match the interpolated equivalent.
+    // Set the raw value to match the interpolated equivalent.
     double dMin = m_pControlValueMinimum->get();
     double dMax = m_pControlValueMaximum->get();
     // TODO(rryan) implement curve types, just linear for now.
