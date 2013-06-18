@@ -9,21 +9,7 @@ def get_current_vcs():
         return CURRENT_VCS
     if on_git():
         return "git"
-    if on_bzr():
-        return "bzr"
     return "tar"
-
-def on_bzr():
-    cwd = os.getcwd()
-    basename = " "
-    while len(basename) > 0:
-        try:
-            os.stat(os.path.join(cwd,".bzr"))
-            return True
-        except:
-            pass
-        cwd,basename = os.path.split(cwd)
-    return False
 
 def on_git():
     cwd = os.getcwd()
@@ -41,8 +27,6 @@ def get_revision():
     global CURRENT_VCS
     if CURRENT_VCS is None:
         CURRENT_VCS = get_current_vcs()
-    if CURRENT_VCS == "bzr":
-        return get_bzr_revision()
     if CURRENT_VCS == "git":
         return get_git_revision()
     if CURRENT_VCS == "tar":
@@ -53,8 +37,6 @@ def get_modified():
     global CURRENT_VCS
     if CURRENT_VCS is None:
         CURRENT_VCS = get_current_vcs()
-    if CURRENT_VCS == "bzr":
-        return get_bzr_modified()
     if CURRENT_VCS == "git":
         return get_git_modified()
     if CURRENT_VCS == "tar":
@@ -65,8 +47,6 @@ def get_branch_name():
     global CURRENT_VCS
     if CURRENT_VCS is None:
         CURRENT_VCS = get_current_vcs()
-    if CURRENT_VCS == "bzr":
-        return get_bzr_branch_name()
     if CURRENT_VCS == "git":
         return get_git_branch_name()
     if CURRENT_VCS == "tar":
@@ -77,8 +57,6 @@ def export_source(source, dest):
     global CURRENT_VCS
     if CURRENT_VCS is None:
         CURRENT_VCS = get_current_vcs()
-    if CURRENT_VCS == "bzr":
-        return export_bzr(source, dest)
     if CURRENT_VCS == "git":
         return export_git(source, dest)
     return None
@@ -108,55 +86,6 @@ def get_git_branch_name():
 def export_git(source, dest):
     os.mkdir(dest)
     return os.system('git archive --format tar HEAD %s | tar x -C %s' % (source, dest))
-
-def get_bzr_revision():
-    return os.popen("bzr revno").readline().strip()
-
-def get_bzr_modified():
-    return len(os.popen("bzr modified").readline().strip())
-
-def get_bzr_branch_name():
-    output_lines = os.popen("bzr info").read().splitlines()
-
-    parent_matcher = re.compile(
-        r'\s*parent branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/(?P<project>.*?)/((?P<branch_name>.*?)/)?$')
-    checkout_matcher = re.compile(
-        r'\s*checkout of branch: (bzr\+ssh|http)://bazaar.launchpad.net/(?P<owner>.*?)/(?P<project>.*?)/((?P<branch_name>.*?)/)?$')
-
-    for line in output_lines:
-        match = checkout_matcher.match(line)
-        if not match:
-            match = parent_matcher.match(line)
-        if match:
-            match = match.groupdict()
-            project = match['project']
-            branch_name = match['branch_name']
-            owner = match['owner']
-
-            # Strip ~ from owner name
-            owner = owner.replace('~', '')
-
-            # Underscores are not ok in version names, dashes are fine though.
-            if branch_name:
-                branch_name = branch_name.replace('_', '-')
-
-            # Detect release Branch
-            if owner == '%2Bbranch' and project == 'mixxx':
-                if branch_name:
-                    return 'release-%s.x' % branch_name
-                return 'trunk'
-
-            # Don't include the default owner
-            if owner == 'mixxxdevelopers':
-                return branch_name
-
-            return "%s~%s" % (owner, branch_name)
-    # Fall back on branch nick.
-    print "ERROR: Could not determine branch name from output of 'bzr info'. Please file a bug with the output of 'bzr info' attached."
-    return os.popen('bzr nick').readline().strip()
-
-def export_bzr(source, dest):
-    return os.system('bzr export %s %s' % (dest, source))
 
 def get_build_dir(platformString, bitwidth):
     build_dir = '%s%s_build' % (platformString[0:3],bitwidth)
