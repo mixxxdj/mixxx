@@ -51,10 +51,10 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     //uses them is called from the GUI thread (stuff like opening soundcards).
     // TODO(xxx) some of these ControlObject are not needed by soundmanager, or are unused here.
     // It is possible to take them out?
-    m_pControlObjectSoundStatus = new ControlObject(ConfigKey("[SoundManager]", "status"));
-    m_pControlObjectSoundStatus->set(SOUNDMANAGER_DISCONNECTED);
-    m_pControlObjectVinylControlGain = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey(VINYL_PREF_KEY, "gain")));
+    m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));
+    m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
+    m_pControlObjectVinylControlGainCO = new ControlObject(ConfigKey(VINYL_PREF_KEY, "gain"));
+    m_pControlObjectVinylControlGain = new ControlObjectThreadMain(m_pControlObjectVinylControlGainCO->getKey());
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -84,8 +84,9 @@ SoundManager::~SoundManager() {
     // vinyl control proxies and input buffers are freed in closeDevices, called
     // by clearDeviceList -- bkgood
 
-    delete m_pControlObjectSoundStatus;
+    delete m_pControlObjectSoundStatusCO;
     delete m_pControlObjectVinylControlGain;
+    delete m_pControlObjectVinylControlGainCO;
 }
 
 QList<SoundDevice*> SoundManager::getDeviceList(
@@ -167,7 +168,7 @@ void SoundManager::closeDevices() {
     m_inputBuffers.clear();
 
     // Indicate to the rest of Mixxx that sound is disconnected.
-    m_pControlObjectSoundStatus->set(SOUNDMANAGER_DISCONNECTED);
+    m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
 }
 
 void SoundManager::clearDeviceList() {
@@ -264,7 +265,7 @@ void SoundManager::queryDevices() {
 
 int SoundManager::setupDevices() {
     qDebug() << "SoundManager::setupDevices()";
-    m_pControlObjectSoundStatus->set(SOUNDMANAGER_CONNECTING);
+    m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_CONNECTING);
     int err = 0;
     m_pClkRefDevice = NULL;
     m_pErrorDevice = NULL;
@@ -367,7 +368,7 @@ int SoundManager::setupDevices() {
     qDebug() << outputDevicesOpened << "output sound devices opened";
     qDebug() << inputDevicesOpened << "input  sound devices opened";
 
-    m_pControlObjectSoundStatus->set(
+    m_pControlObjectSoundStatusCO->set(
         outputDevicesOpened > 0 ? SOUNDMANAGER_CONNECTED : SOUNDMANAGER_DISCONNECTED);
 
     // returns OK if we were able to open all the devices the user wanted

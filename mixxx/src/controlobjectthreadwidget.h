@@ -33,7 +33,8 @@ class ControlObjectThreadWidget : public ControlObjectThreadMain {
         EMIT_ON_PRESS_AND_RELEASE = 0x03
     };
 
-    ControlObjectThreadWidget(ControlObject *pControlObject, QObject* pParent=NULL);
+    ControlObjectThreadWidget(ControlObject *pControlObject, QObject* pParent = NULL);
+    ControlObjectThreadWidget(const char* g, const char* i, QObject* pParent = NULL);
     virtual ~ControlObjectThreadWidget();
     /** Associates a QWidget with the ControlObject. */
     void setWidget(QWidget *widget,

@@ -32,6 +32,7 @@ class ControlObjectThread : public QObject {
     Q_OBJECT
   public:
     ControlObjectThread(const QString& g, const QString& i, QObject* pParent=NULL);
+    ControlObjectThread(const char* g, const char* i, QObject* pParent=NULL);
     ControlObjectThread(ConfigKey key, QObject* pParent=NULL);
     virtual ~ControlObjectThread();
 

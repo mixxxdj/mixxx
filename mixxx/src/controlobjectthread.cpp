@@ -26,6 +26,11 @@ ControlObjectThread::ControlObjectThread(const QString& g, const QString& i, QOb
     initialize(ConfigKey(g, i));
 }
 
+ControlObjectThread::ControlObjectThread(const char* g, const char* i, QObject* pParent)
+        : QObject(pParent) {
+    initialize(ConfigKey(g, i));
+}
+
 ControlObjectThread::ControlObjectThread(ConfigKey key, QObject* pParent)
         : QObject(pParent) {
     initialize(key);

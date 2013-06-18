@@ -5,7 +5,11 @@
 #include "controlevent.h"
 
 ControlObjectThreadWidget::ControlObjectThreadWidget(ControlObject * pControlObject, QObject* pParent)
-        : ControlObjectThreadMain(pControlObject, pParent) {
+        : ControlObjectThreadMain(pControlObject->getKey(), pParent) {
+}
+
+ControlObjectThreadWidget::ControlObjectThreadWidget(const char* g, const char* i, QObject* pParent)
+        : ControlObjectThreadMain(g, i, pParent) {
 }
 
 ControlObjectThreadWidget::~ControlObjectThreadWidget() {

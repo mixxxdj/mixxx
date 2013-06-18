@@ -11,7 +11,7 @@
 
 ControlObjectThreadMain* maybeMakeControl(ControlObject* pControl) {
     if (pControl) {
-        return new ControlObjectThreadMain(pControl);
+        return new ControlObjectThreadMain(pControl->getKey());
     }
     return NULL;
 }
