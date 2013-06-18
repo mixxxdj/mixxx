@@ -63,7 +63,7 @@ void ControlPotmeter::setRange(double dMinValue, double dMaxValue) {
     //qDebug() << "" << this << ", min " << m_dMinValue << ", max " << m_dMaxValue << ", range " << m_dValueRange << ", val " << m_dValue;
 }
 
-PotmeterControls::PotmeterControls(ConfigKey key)
+PotmeterControls::PotmeterControls(const ConfigKey& key)
         : m_pControl(new ControlObjectThread(key)),
           m_dStep(0),
           m_dSmallStep(0) {

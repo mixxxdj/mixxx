@@ -4,7 +4,7 @@
 #include "controlevent.h"
 #include "control/control.h"
 
-ControlObjectThreadWidget::ControlObjectThreadWidget(ConfigKey key, QObject* pParent)
+ControlObjectThreadWidget::ControlObjectThreadWidget(const ConfigKey& key, QObject* pParent)
         : ControlObjectThreadMain(key, pParent) {
 }
 

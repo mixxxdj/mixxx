@@ -17,7 +17,7 @@
 class ControlObjectThreadMain : public ControlObjectThread {
     Q_OBJECT
   public:
-    ControlObjectThreadMain(ConfigKey key, QObject* pParent = NULL);
+    ControlObjectThreadMain(const ConfigKey& key, QObject* pParent = NULL);
     ControlObjectThreadMain(const QString& g, const QString& i, QObject* pParent = NULL);
     ControlObjectThreadMain(const char* g, const char* i, QObject* pParent = NULL);
 

@@ -9,7 +9,7 @@
 #include "controlobjectthreadmain.h"
 #include "controlevent.h"
 
-ControlObjectThreadMain::ControlObjectThreadMain(ConfigKey key, QObject* pParent)
+ControlObjectThreadMain::ControlObjectThreadMain(const ConfigKey& key, QObject* pParent)
         : ControlObjectThread(key, pParent) {
     initialize();
 }

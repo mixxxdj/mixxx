@@ -32,7 +32,7 @@ class ControlObjectThreadWidget : public ControlObjectThreadMain {
         EMIT_ON_PRESS_AND_RELEASE = 0x03
     };
 
-    ControlObjectThreadWidget(ConfigKey key, QObject* pParent = NULL);
+    ControlObjectThreadWidget(const ConfigKey& key, QObject* pParent = NULL);
     ControlObjectThreadWidget(const char* g, const char* i, QObject* pParent = NULL);
     ControlObjectThreadWidget(const QString& g, const QString& i, QObject* pParent = NULL);
     virtual ~ControlObjectThreadWidget();

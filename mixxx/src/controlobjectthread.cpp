@@ -31,12 +31,12 @@ ControlObjectThread::ControlObjectThread(const char* g, const char* i, QObject* 
     initialize(ConfigKey(g, i));
 }
 
-ControlObjectThread::ControlObjectThread(ConfigKey key, QObject* pParent)
+ControlObjectThread::ControlObjectThread(const ConfigKey& key, QObject* pParent)
         : QObject(pParent) {
     initialize(key);
 }
 
-void ControlObjectThread::initialize(ConfigKey key) {
+void ControlObjectThread::initialize(const ConfigKey& key) {
     m_key = key;
     m_pControl = ControlDoublePrivate::getControl(m_key, false);
     if (m_pControl) {

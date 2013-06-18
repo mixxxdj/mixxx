@@ -20,7 +20,7 @@ class MixxxTest : public testing::Test {
     }
 
   protected:
-    ControlObjectThread* getControlObjectThread(ConfigKey key) {
+    ControlObjectThread* getControlObjectThread(const ConfigKey& key) {
         return new ControlObjectThread(key);
     }
 

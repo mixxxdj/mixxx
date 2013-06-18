@@ -40,6 +40,10 @@ class ControlObject : public QObject {
         ConfigKey key(group, item);
         return getControl(key);
     }
+    static inline ControlObject* getControl(const char* group, const char* item) {
+        ConfigKey key(group, item);
+        return getControl(key);
+    }
 
     // Adds all ControlObjects that currently exist to pControlList
     static void getControls(QList<ControlObject*>* pControlsList);
