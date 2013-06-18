@@ -27,12 +27,11 @@
 #include "configobject.h"
 
 class ControlDoublePrivate;
-class ControlObject;
 
 class ControlObjectThread : public QObject {
     Q_OBJECT
   public:
-    ControlObjectThread(ControlObject *pControlObject, QObject* pParent=NULL);
+    ControlObjectThread(const QString& g, const QString& i, QObject* pParent=NULL);
     ControlObjectThread(ConfigKey key, QObject* pParent=NULL);
     virtual ~ControlObjectThread();
 
@@ -41,14 +40,11 @@ class ControlObjectThread : public QObject {
     /** Called from update(); */
     void emitValueChanged();
 
-    inline ConfigKey getKey() const {
-        return m_key;
-    }
+    inline ConfigKey getKey() const { return m_key; }
+    inline bool valid() const { return m_pControl != NULL; }
 
     // Returns the value of the object. Thread safe, non-blocking.
     virtual double get();
-
-    bool valid() const;
 
   public slots:
     // Set the control to a new value. Non-blocking.

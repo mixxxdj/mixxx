@@ -19,12 +19,11 @@
 #include <QtDebug>
 
 #include "controlobjectthread.h"
-#include "controlobject.h"
 #include "control/control.h"
 
-ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
+ControlObjectThread::ControlObjectThread(const QString& g, const QString& i, QObject* pParent)
         : QObject(pParent) {
-    initialize(pControlObject ? pControlObject->getKey() : ConfigKey());
+    initialize(ConfigKey(g, i));
 }
 
 ControlObjectThread::ControlObjectThread(ConfigKey key, QObject* pParent)
@@ -43,10 +42,6 @@ void ControlObjectThread::initialize(ConfigKey key) {
 }
 
 ControlObjectThread::~ControlObjectThread() {
-}
-
-bool ControlObjectThread::valid() const {
-    return m_pControl != NULL;
 }
 
 double ControlObjectThread::get() {

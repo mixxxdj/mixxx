@@ -21,7 +21,7 @@ class MixxxTest : public testing::Test {
 
   protected:
     ControlObjectThread* getControlObjectThread(ConfigKey key) {
-        return new ControlObjectThread(ControlObject::getControl(key));
+        return new ControlObjectThread(key);
     }
 
     QTemporaryFile* makeTemporaryFile(const QString contents) {

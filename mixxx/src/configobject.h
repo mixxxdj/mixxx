@@ -46,7 +46,7 @@ class ConfigKey
 {
 public:
     ConfigKey();
-    ConfigKey(QString g, QString i);
+    ConfigKey(const QString& g, const QString& i);
     static ConfigKey parseCommaSeparated(QString key);
     QString group, item;
 };

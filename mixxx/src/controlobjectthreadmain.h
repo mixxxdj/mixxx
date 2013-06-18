@@ -20,6 +20,8 @@ class ControlObjectThreadMain : public ControlObjectThread {
     Q_OBJECT
   public:
     ControlObjectThreadMain(ControlObject *pControlObject, QObject* pParent=NULL);
+    ControlObjectThreadMain(const QString& g, const QString& i, QObject* pParent=NULL);
+
 
     bool eventFilter(QObject* o, QEvent* e);
 

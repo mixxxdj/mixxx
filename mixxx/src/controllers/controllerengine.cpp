@@ -597,18 +597,19 @@ void ControllerEngine::errorDialogButton(QString key, QMessageBox::StandardButto
 
 ControlObjectThread* ControllerEngine::getControlObjectThread(QString group, QString name) {
     ConfigKey key = ConfigKey(group, name);
+    ControlObjectThread *cot;
 
-    ControlObjectThread *cot = NULL;
-    if(!m_controlCache.contains(key)) {
-        ControlObject *co = ControlObject::getControl(key);
-        if(co != NULL) {
-            cot = new ControlObjectThread(co);
-            m_controlCache.insert(key, cot);
-        }
-    } else {
+    if(m_controlCache.contains(key)) {
         cot = m_controlCache.value(key);
+    } else {
+        cot = new ControlObjectThread(key);
+        if (cot->valid()) {
+            m_controlCache.insert(key, cot);
+        } else {
+            delete cot;
+            cot = NULL;
+        }
     }
-
     return cot;
 }
 

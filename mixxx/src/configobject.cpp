@@ -38,7 +38,7 @@ ConfigKey::ConfigKey()
 {
 }
 
-ConfigKey::ConfigKey(QString g, QString i)
+ConfigKey::ConfigKey(const QString& g, const QString& i)
 {
     group = g;
     item = i;

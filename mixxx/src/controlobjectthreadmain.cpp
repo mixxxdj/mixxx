@@ -11,7 +11,13 @@
 #include "controlevent.h"
 
 ControlObjectThreadMain::ControlObjectThreadMain(ControlObject * pControlObject, QObject* pParent)
-        : ControlObjectThread(pControlObject, pParent) {
+        : ControlObjectThread(pControlObject->getKey(), pParent) {
+    setObjectName("ControlObjectThreadMain");
+    installEventFilter(this);
+}
+
+ControlObjectThreadMain::ControlObjectThreadMain(const QString& g, const QString& i, QObject* pParent)
+        : ControlObjectThread(g, i, pParent) {
     setObjectName("ControlObjectThreadMain");
     installEventFilter(this);
 }

@@ -50,10 +50,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_encoder(NULL),
           m_pShoutcastNeedUpdateFromPrefs(NULL),
           m_pUpdateShoutcastFromPrefs(NULL),
-          m_pMasterSamplerate(new ControlObjectThread(
-              ControlObject::getControl(ConfigKey("[Master]", "samplerate")))),
-          m_pShoutcastStatus(new ControlObjectThread(
-              new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status")))),
+          m_pMasterSamplerate(new ControlObjectThread("[Master]", "samplerate")),
+          m_pShoutcastStatus(new ControlObjectThread(SHOUTCAST_PREF_KEY, "status")),
           m_bQuit(false),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -74,7 +72,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
         ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
     m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
-        m_pShoutcastNeedUpdateFromPrefs);
+        m_pShoutcastNeedUpdateFromPrefs->getKey());
 
     // Initialize libshout
     shout_init();
