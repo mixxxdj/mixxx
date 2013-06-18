@@ -11,7 +11,7 @@
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
-    EffectManifestPointer flanger = FlangerEffect::getEffectManifest();
+    EffectManifest flanger = FlangerEffect::getEffectManifest();
     m_effectManifests.append(flanger);
     registerEffect(FlangerEffect::getId(), flanger, &FlangerEffect::create);
 }

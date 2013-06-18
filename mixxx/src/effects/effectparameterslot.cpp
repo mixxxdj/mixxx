@@ -75,7 +75,7 @@ EffectParameterSlot::~EffectParameterSlot() {
 }
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
-    qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest()->name() : "(null)");
+    qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     QMutexLocker locker(&m_mutex);
     if (pEffect) {
         // Returns null if it doesn't have a parameter for that number

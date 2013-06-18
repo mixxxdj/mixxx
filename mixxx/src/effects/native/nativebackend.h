@@ -16,7 +16,7 @@ class NativeBackend : public EffectsBackend {
         return "NativeBackend";
     }
 
-    QList<EffectManifestPointer> m_effectManifests;
+    QList<EffectManifest> m_effectManifests;
 };
 
 #endif /* NATIVEBACKEND_H */

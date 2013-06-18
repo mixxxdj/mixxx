@@ -1,15 +1,11 @@
 #ifndef EFFECTMANIFEST_H
 #define EFFECTMANIFEST_H
 
-#include <QObject>
 #include <QList>
 #include <QString>
-#include <QSharedPointer>
+#include <QtDebug>
 
 #include "effects/effectmanifestparameter.h"
-
-class EffectManifest;
-typedef QSharedPointer<const EffectManifest> EffectManifestPointer;
 
 // An EffectManifest is a full description of the metadata associated with an
 // effect (e.g. name, author, version, description, etc.) and the parameters of
@@ -23,29 +19,56 @@ typedef QSharedPointer<const EffectManifest> EffectManifestPointer;
 // the no-argument constructor be non-explicit. All methods are left virtual to
 // allow a backend to replace the entire functionality with its own (for
 // example, a database-backed manifest)
-class EffectManifest : public QObject {
-    Q_OBJECT
+class EffectManifest {
   public:
-    EffectManifest(QObject* pParent = NULL);
-    virtual ~EffectManifest();
+    EffectManifest() { }
+    virtual ~EffectManifest() {
+        qDebug() << debugString() << "deleted";
+    }
 
-    virtual const QString id() const;
-    virtual void setId(QString id);
+    virtual const QString id() const {
+        return m_id;
+    }
+    virtual void setId(QString id) {
+        m_id = id;
+    }
 
-    virtual const QString name() const;
-    virtual void setName(QString name);
+    virtual const QString name() const {
+        return m_name;
+    }
+    virtual void setName(QString name) {
+        m_name = name;
+    }
 
-    virtual const QString author() const;
-    virtual void setAuthor(QString author);
+    virtual const QString author() const {
+        return m_author;
+    }
+    virtual void setAuthor(QString author) {
+        m_author = author;
+    }
 
-    virtual const QString& version() const;
-    virtual void setVersion(QString version);
+    virtual const QString& version() const {
+        return m_version;
+    }
+    virtual void setVersion(QString version) {
+        m_version = version;
+    }
 
-    virtual const QString& description() const;
-    virtual void setDescription(QString description);
+    virtual const QString& description() const {
+        return m_description;
+    }
+    virtual void setDescription(QString description) {
+        m_description = description;
+    }
 
-    virtual const QList<EffectManifestParameterPointer> parameters() const;
-    virtual EffectManifestParameter* addParameter();
+    virtual const QList<EffectManifestParameter>& parameters() const {
+        return m_parameters;
+    }
+
+    virtual EffectManifestParameter* addParameter() {
+        m_parameters.append(EffectManifestParameter());
+        return &m_parameters.last();
+    }
 
   private:
     QString debugString() const {
@@ -57,7 +80,7 @@ class EffectManifest : public QObject {
     QString m_author;
     QString m_version;
     QString m_description;
-    QList<EffectManifestParameterPointer> m_parameters;
+    QList<EffectManifestParameter> m_parameters;
 };
 
 #endif /* EFFECTMANIFEST_H */

@@ -9,7 +9,7 @@
 
 #include "effects/effect.h"
 
-typedef EffectPointer (*EffectInstantiator)(EffectsBackend*, EffectManifestPointer);
+typedef EffectPointer (*EffectInstantiator)(EffectsBackend*, const EffectManifest&);
 
 // An EffectsBackend is an implementation of a provider of Effect's for use
 // within the rest of Mixxx. The job of the EffectsBackend is to both enumerate
@@ -23,19 +23,19 @@ class EffectsBackend : public QObject {
     virtual const QString getName() const;
 
     virtual const QSet<QString> getEffectIds() const;
-    virtual EffectManifestPointer getManifest(const QString effectId) const;
+    virtual EffectManifest getManifest(const QString effectId) const;
     virtual bool canInstantiateEffect(const QString effectId) const;
     virtual EffectPointer instantiateEffect(const QString effectId);
 
   protected:
     void registerEffect(const QString id,
-                        EffectManifestPointer pManifest,
+                        const EffectManifest& manifest,
                         EffectInstantiator pInstantiator);
 
   private:
     mutable QMutex m_mutex;
     QString m_name;
-    QMap<QString, QPair<EffectManifestPointer, EffectInstantiator> > m_registeredEffects;
+    QMap<QString, QPair<EffectManifest, EffectInstantiator> > m_registeredEffects;
 };
 
 #endif /* EFFECTSBACKEND_H */

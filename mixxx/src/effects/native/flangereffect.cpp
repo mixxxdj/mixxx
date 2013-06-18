@@ -11,15 +11,15 @@ QString FlangerEffect::getId() {
 }
 
 // static
-EffectManifestPointer FlangerEffect::getEffectManifest() {
-    EffectManifest* manifest = new EffectManifest();
-    manifest->setId(getId());
-    manifest->setName(QObject::tr("Flanger"));
-    manifest->setAuthor("The Mixxx Team");
-    manifest->setVersion("1.0");
-    manifest->setDescription("TODO");
+EffectManifest FlangerEffect::getEffectManifest() {
+    EffectManifest manifest;
+    manifest.setId(getId());
+    manifest.setName(QObject::tr("Flanger"));
+    manifest.setAuthor("The Mixxx Team");
+    manifest.setVersion("1.0");
+    manifest.setDescription("TODO");
 
-    EffectManifestParameter* depth = manifest->addParameter();
+    EffectManifestParameter* depth = manifest.addParameter();
     depth->setId("depth");
     depth->setName(QObject::tr("Depth"));
     depth->setDescription("TODO");
@@ -31,7 +31,7 @@ EffectManifestPointer FlangerEffect::getEffectManifest() {
     depth->setMinimum(0.0f);
     depth->setMaximum(1.0f);
 
-    EffectManifestParameter* delay = manifest->addParameter();
+    EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay");
     delay->setName(QObject::tr("Delay"));
     delay->setDescription("TODO");
@@ -43,7 +43,7 @@ EffectManifestPointer FlangerEffect::getEffectManifest() {
     delay->setMinimum(50.0f);
     delay->setMaximum(10000.0f);
 
-    EffectManifestParameter* period = manifest->addParameter();
+    EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
     period->setName(QObject::tr("Period"));
     period->setDescription("TODO");
@@ -55,19 +55,16 @@ EffectManifestPointer FlangerEffect::getEffectManifest() {
     period->setMinimum(50000.0f);
     period->setMaximum(2000000.0f);
 
-    // We don't use EffectManifestPointer here because that specifies const
-    // EffectManifestParameter as the type, which does not work with
-    // QObject::deleteLater.
-    return QSharedPointer<EffectManifest>(manifest);
+    return manifest;
 }
 
 // static
-EffectPointer FlangerEffect::create(EffectsBackend* pBackend, EffectManifestPointer pManifest) {
-    return EffectPointer(new FlangerEffect(pBackend, pManifest));
+EffectPointer FlangerEffect::create(EffectsBackend* pBackend, const EffectManifest& manifest) {
+    return EffectPointer(new FlangerEffect(pBackend, manifest));
 }
 
-FlangerEffect::FlangerEffect(EffectsBackend* pBackend, EffectManifestPointer pManifest)
-        : Effect(pBackend, pManifest) {
+FlangerEffect::FlangerEffect(EffectsBackend* pBackend, const EffectManifest& manifest)
+        : Effect(pBackend, manifest) {
     m_periodParameter = getParameterFromId("period");
     m_depthParameter = getParameterFromId("depth");
     m_delayParameter = getParameterFromId("delay");

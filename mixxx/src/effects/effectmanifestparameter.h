@@ -1,16 +1,11 @@
 #ifndef EFFECTMANIFESTPARAMETER_H
 #define EFFECTMANIFESTPARAMETER_H
 
-#include <QObject>
 #include <QVariant>
 #include <QString>
-#include <QSharedPointer>
 #include <QtDebug>
 
-class EffectManifestParameter;
-typedef QSharedPointer<const EffectManifestParameter> EffectManifestParameterPointer;
-
-class EffectManifestParameter : public QObject {
+class EffectManifestParameter {
   public:
     enum ValueHint {
         VALUE_UNKNOWN = 0,
@@ -39,58 +34,107 @@ class EffectManifestParameter : public QObject {
         UNITS_SAMPLERATE, // fraction of the samplerate
     };
 
-    EffectManifestParameter(QObject* pParent = NULL);
-    virtual ~EffectManifestParameter();
+    EffectManifestParameter() { }
+    virtual ~EffectManifestParameter() {
+        qDebug() << debugString() << "destroyed";
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Parameter Information
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual const QString id() const;
-    virtual void setId(QString id);
+    virtual const QString id() const {
+        return m_id;
+    }
+    virtual void setId(QString id) {
+        m_id = id;
+    }
 
-    virtual const QString name() const;
-    virtual void setName(QString name);
+    virtual const QString name() const {
+        return m_name;
+    }
+    virtual void setName(QString name) {
+        m_name = name;
+    }
 
-    virtual const QString description() const;
-    virtual void setDescription(QString description);
+    virtual const QString description() const {
+        return m_description;
+    }
+    virtual void setDescription(QString description) {
+        m_description = description;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Usage hints
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual ControlHint controlHint() const;
-    virtual void setControlHint(ControlHint controlHint);
+    virtual ControlHint controlHint() const {
+        return m_controlHint;
+    }
+    virtual void setControlHint(ControlHint controlHint) {
+        m_controlHint = controlHint;
+    }
 
-    virtual ValueHint valueHint() const;
-    virtual void setValueHint(ValueHint valueHint);
+    virtual ValueHint valueHint() const {
+        return m_valueHint;
+    }
+    virtual void setValueHint(ValueHint valueHint) {
+        m_valueHint = valueHint;
+    }
 
-    virtual SemanticHint semanticHint() const;
-    virtual void setSemanticHint(SemanticHint semanticHint);
+    virtual SemanticHint semanticHint() const {
+        return m_semanticHint;
+    }
+    virtual void setSemanticHint(SemanticHint semanticHint) {
+        m_semanticHint = semanticHint;
+    }
 
-    virtual UnitsHint unitsHint() const;
-    virtual void setUnitsHint(UnitsHint unitsHint);
+    virtual UnitsHint unitsHint() const {
+        return m_unitsHint;
+    }
+    virtual void setUnitsHint(UnitsHint unitsHint) {
+        m_unitsHint = unitsHint;
+    }
 
     ////////////////////////////////////////////////////////////////////////////////
     // Value Settings
     ////////////////////////////////////////////////////////////////////////////////
 
-    virtual bool hasDefault() const;
-    virtual QVariant getDefault() const;
-    virtual void setDefault(QVariant defaultValue);
+    virtual bool hasDefault() const {
+        return m_default.isValid();
+    }
+    virtual QVariant getDefault() const {
+        return m_default;
+    }
+    virtual void setDefault(QVariant defaultValue) {
+        m_default = defaultValue;
+    }
 
-    virtual bool hasMinimum() const;
-    virtual QVariant getMinimum() const;
-    virtual void setMinimum(QVariant minimum);
+    virtual bool hasMinimum() const {
+        return m_minimum.isValid();
+    }
+    virtual QVariant getMinimum() const {
+        return m_minimum;
+    }
+    virtual void setMinimum(QVariant minimum) {
+        m_minimum = minimum;
+    }
 
-    virtual bool hasMaximum() const;
-    virtual QVariant getMaximum() const;
-    virtual void setMaximum(QVariant maximum);
+    virtual bool hasMaximum() const {
+        return m_maximum.isValid();
+    }
+    virtual QVariant getMaximum() const {
+        return m_maximum;
+    }
+    virtual void setMaximum(QVariant maximum) {
+        m_maximum = maximum;
+    }
 
   private:
     QString debugString() const {
         return QString("EffectManifestParameter(%1)").arg(m_id);
     }
+
     QString m_id;
     QString m_name;
     QString m_description;
@@ -105,6 +149,6 @@ class EffectManifestParameter : public QObject {
     QVariant m_maximum;
 };
 
-QDebug operator<<(QDebug dbg, const EffectManifestParameter &parameter);
+QDebug operator<<(QDebug dbg, const EffectManifestParameter& parameter);
 
 #endif /* EFFECTMANIFESTPARAMETER_H */

@@ -17,7 +17,7 @@ const QString EffectsBackend::getName() const {
 }
 
 void EffectsBackend::registerEffect(const QString id,
-                                    EffectManifestPointer pManifest,
+                                    const EffectManifest& manifest,
                                     EffectInstantiator pInstantiator) {
     QMutexLocker locker(&m_mutex);
     if (m_registeredEffects.contains(id)) {
@@ -25,7 +25,8 @@ void EffectsBackend::registerEffect(const QString id,
         return;
     }
 
-    m_registeredEffects[id] = QPair<EffectManifestPointer, EffectInstantiator>(pManifest, pInstantiator);
+    m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiator>(
+        manifest, pInstantiator);
 }
 
 const QSet<QString> EffectsBackend::getEffectIds() const {
@@ -33,11 +34,11 @@ const QSet<QString> EffectsBackend::getEffectIds() const {
     return QSet<QString>::fromList(m_registeredEffects.keys());
 }
 
-EffectManifestPointer EffectsBackend::getManifest(const QString effectId) const {
+EffectManifest EffectsBackend::getManifest(const QString effectId) const {
     QMutexLocker locker(&m_mutex);
     if (!m_registeredEffects.contains(effectId)) {
         qDebug() << "WARNING: Effect" << effectId << "is not registered.";
-        return EffectManifestPointer();
+        return EffectManifest();
     }
     return m_registeredEffects[effectId].first;
 }
@@ -53,8 +54,7 @@ EffectPointer EffectsBackend::instantiateEffect(const QString effectId) {
         qDebug() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();
     }
-    QPair<EffectManifestPointer, EffectInstantiator> effectInfo = m_registeredEffects[effectId];
-
+    QPair<EffectManifest, EffectInstantiator> effectInfo = m_registeredEffects[effectId];
     return (*effectInfo.second)(this, effectInfo.first);
 }
 

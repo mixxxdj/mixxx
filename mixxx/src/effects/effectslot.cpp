@@ -43,12 +43,12 @@ EffectPointer EffectSlot::getEffect() const {
 }
 
 void EffectSlot::loadEffect(EffectPointer pEffect) {
-    qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest()->name() : "(null)");
+    qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     QMutexLocker locker(&m_mutex);
     if (pEffect) {
         m_pEffect = pEffect;
         m_pControlEnabled->set(1.0f);
-        m_pControlNumParameters->set(m_pEffect->getManifest()->parameters().size());
+        m_pControlNumParameters->set(m_pEffect->getManifest().parameters().size());
 
         foreach (EffectParameterSlot* pParameter, m_parameters) {
             pParameter->loadEffect(m_pEffect);

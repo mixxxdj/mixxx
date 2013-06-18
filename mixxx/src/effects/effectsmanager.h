@@ -43,7 +43,7 @@ class EffectsManager : public QObject {
     void registerChannel(const QString channelID);
 
     const QSet<QString> getAvailableEffects() const;
-    EffectManifestPointer getEffectManifest(const QString effectId) const;
+    EffectManifest getEffectManifest(const QString effectId) const;
     EffectPointer instantiateEffect(const QString effectId);
 
     // Temporary, but for setting up all the default EffectChains
