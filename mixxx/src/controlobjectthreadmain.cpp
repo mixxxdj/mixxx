@@ -50,5 +50,4 @@ void ControlObjectThreadMain::slotValueChanged(double, QObject* pSetter) {
         // and then catch the event via eventFilter.
         QApplication::postEvent(this, new ControlEvent(get(), pSetter));
     }
-
 }
