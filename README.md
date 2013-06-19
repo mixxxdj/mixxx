@@ -52,7 +52,7 @@ For help using Mixxx, there are a variety of options:
 Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
 development and community news:
 
-- Follow [@mixxxdj on Twitter][twitter].
+- Follow us on [Twitter], [Facebook], and [G+].
 - Subscribe to the [Mixxx Development Blog][blog].
 - Join the developer [mailing list].
 - Post on the [Mixxx forums][forums].
@@ -69,6 +69,8 @@ license.
 [launchpad]: http://bugs.launchpad.net/mixxx
 [fileabug]: http://bugs.launchpad.net/mixxx/+filebug
 [twitter]: http://twitter.com/mixxxdj
+[facebook]: https://www.facebook.com/pages/MIXXX-Digital-DJ/21723485212
+[g+]: https://plus.google.com/102441931224839455484/posts
 [blog]: http://mixxxblog.blogspot.com
 [manual]: http://www.mixxx.org/manual/latest/
 [wiki]: http://www.mixxx.org/wiki/
