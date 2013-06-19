@@ -1,123 +1,85 @@
-# MIXXX #
-[Mixxx] is open source software for DJ'ing. You can perform
-live beatmixes with MP3s, OGGs, and other formats. Mixxx
-also supports a number of DJ MIDI controllers.
-Mixxx works on Linux, Windows and MacOS X.
+# Mixxx
 
-Mixxx is released under GPL v2. See LICENSE file in this
-directory for a copy of the licence.
+[Mixxx] is Free DJ software that gives you everything you need to perform live
+mixes. Mixxx works on GNU/Linux, Windows, and Mac OS X.
 
-## NEWS ##
-Check the Mixxx [blog] to find out what's new in this version:
+## Quick Start
 
-## USAGE ##
-Please see the manual, included in this directory [Mixxx-Manual]
+To get started with Mixxx:
+1. For live use, [download the latest stable version][download].
+2. For experimentation and testing, [download a development release][builds].
+3. To live on the bleeding edge, clone the repo: `git clone https://github.com/mixxxdj/mixxx.git`
 
-## INSTALL ##
-Mixxx has the following dependencies:
-- libid3tag
-- libmad
-- libchromaprint
-- libogg
-- libvorbis
-- libvorbisfile
-- libsndfile
-- libflac
-- libshout
-- libhss1394
-- taglib (New in 1.9!)
-- PortAudio-v19
-- portmidi
-- QT 4.6+
-- scons
-- protocol-buffers
-- libusb-1.0
-- libmp4v2 (optional, m4a support)
-- libfaad (optional, m4a support)
-- vamp-plugin-sdk (optional, internal version included)
+## Roadmap
 
-NOTE: If you want JACK support in Mixxx, make sure you
-compile PortAudio-v19 with JACK support first.
+The Mixxx team is hard at work on Mixxx 1.12.0. The best place to keep track of
+1.12.0 development is the [1.12.0 milestone page on Launchpad][launchpad 1.12.0].
 
-To compile Mixxx using SCONS, go into the "mixxx"
-directory and run:
+## Bug tracker
+
+The Mixxx team uses [Launchpad] to manage Mixxx development.
+
+Have a bug or feature request? [File a bug on Launchpad][fileabug].
+
+Want to get involved in Mixxx development? Assign yourself a bug from the [easy
+bug list][easybugs] and get started!
+
+## Compiling
+
+First, you must install all of Mixxx's dependencies. To compile Mixxx using
+[SCons], run:
 
     $ scons
 
-SCONS does both dependency checking and building, so it will
-tell you if you're missing any of the dependencies listed above.
-It's also possible to specify a prefix path and additional
-build flags, for example:
+Please see our helpful guides on the [Mixxx wiki] for more information:
+- [Compiling on Linux][compiling on linux].
+- [Compiling on OS X][compiling on osx].
+- [Compiling on Windows][compiling on windows].
 
-    $ scons prefix=/usr
+## Documentation
 
-To install Mixxx after compilation, run:
+For help using Mixxx, there are a variety of options:
 
-    $ sudo scons prefix=/usr install
+- [Mixxx manual][manual]
+- [Mixxx wiki][wiki]
+- [Frequently Asked Questions][FAQ]
+- [Hardware Compatibility] (supported soundcards, MIDI/HID controllers)
+- [Creating Skins]
 
-A full list of scons flags is available by running:
+## Community
 
-    $ scons --help
+Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
+development and community news:
 
-WARNING: We do not recommend building Mixxx with any
-flags other than the defaults if you are going to use Mixxx
-for live performance. Features that are disabled by default
-may not compile or may be unstable. Be forewarned.
+- Follow [@mixxxdj on Twitter][twitter],
+- Subscribe to the [Mixxx Development Blog][blog].
+- Join the developer [mailing list].
+- Post on the [Mixxx forums][forums]
+- Join our [#mixxx on Freenode IRC][irc channel] to chat with us.
 
-More detailed compiling instructions are available for your
-platform on our [wiki]
+## License
 
+Mixxx is released under the GPLv2. See the LICENSE file for a full copy of the
+license.
 
-### UPGRADING ###
-
-We recommend deleting your old skins directory before
-installing a new version of Mixxx. SCONS may not properly
-overwrite your skins directory when you do a "scons install",
-and it might cause Mixxx to crash on launch.
-You can delete it by running:
-
-    $ sudo rm -rf /usr/share/mixxx/skins
-    $ sudo rm -rf /usr/local/share/mixxx/skins
-
-### REINSTALLING MIXXX ###
-
-Linux users may need to manually remove their Mixxx
-installation directory if they need to reinstall. (This does
-not apply when reinstalling from a DEB package.) Mixxx's
-share directory can be removed by running:
-
-    $ sudo rm -rf /usr/local/share/mixxx/
-
-or
-
-    $ sudo rm -rf /usr/share/mixxx/
-
-## CONTACT ##
-To contact the lead developer, send an email to
-rryan@mixxx.org or subscribe to
-mixxx-devel@lists.sourceforge.net and send a message to the
-list.
-
-### HERCULES DJ CONSOLE USERS ON LINUX ###
-
-Please see: http://www.mixxx.org/wiki/doku.php/hercules
-You may need to install the official Hercules Linux drivers
-from: http://www.hercules.com/
-
-### QT ###
-On some platforms, Mixxx may come with a pre-built copy of
-Qt. This code is licensed under the LGPL and source for this
-library may be obtained from:
-
-http://qt-project.org/downloads
-
-### Microsoft Runtimes ###
-On Microsoft platforms, Mixxx may come with runtime dlls
-copyright of Microsoft. These are distributed for the
-purpose of allowing Mixxx to run only as per the license
-agreement for Visual Studio 2005.
-
-[Mixxx]: http://www.mixxx.org
+[mixxx]: http://www.mixxx.org
+[download]: http://www.mixxx.org/download
+[builds]: http://builds.mixxx.org/builds/
+[launchpad]: http://bugs.launchpad.net/mixxx
+[fileabug]: http://bugs.launchpad.net/mixxx/+filebug
+[twitter]: http://twitter.com/mixxxdj
 [blog]: http://mixxxblog.blogspot.com
-[Mixxx-Manual]: http://www.mixxx.org/manual
+[manual]: http://www.mixxx.org/manual/latest/
 [wiki]: http://www.mixxx.org/wiki/
+[faq]: http://mixxx.org/wiki/doku.php/faq
+[forums]: http://www.mixxx.org/forums/
+[compiling linux]: http://mixxx.org/wiki/doku.php/compiling_on_linux
+[compiling osx]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
+[compiling windows]: http://mixxx.org/wiki/doku.php/compiling_on_windows
+[mailing list]: https://lists.sourceforge.net/lists/listinfo/mixxx-devel
+[irc channel]: http://mixxx.org/irc.php
+[SCons]: http://www.scons.org/
+[launchpad 1.12.0]: https://launchpad.net/mixxx/+milestone/1.12.0
+[easybugs]: https://bugs.launchpad.net/mixxx/+bugs?field.searchtext=&orderby=-importance&search=Search&field.status%3Alist=NEW&field.status%3Alist=CONFIRMED&field.status%3Alist=TRIAGED&field.status%3Alist=INPROGRESS&field.status%3Alist=INCOMPLETE_WITH_RESPONSE&field.status%3Alist=INCOMPLETE_WITHOUT_RESPONSE&assignee_option=any&field.assignee=&field.bug_reporter=&field.bug_commenter=&field.subscriber=&field.structural_subscriber=&field.tag=easy&field.tags_combinator=ANY&field.has_cve.used=&field.omit_dupes.used=&field.omit_dupes=on&field.affects_me.used=&field.has_patch.used=&field.has_branches.used=&field.has_branches=on&field.has_no_branches.used=&field.has_no_branches=on&field.has_blueprints.used=&field.has_blueprints=on&field.has_no_blueprints.used=&field.has_no_blueprints=on
+[creating skins]: http://mixxx.org/wiki/doku.php/creating_skins
+[hardware compatibility]: http://mixxx.org/wiki/doku.php/hardware_compatibility
