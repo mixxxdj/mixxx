@@ -47,7 +47,7 @@ class ControlDoublePrivate : public QObject {
     void setWidgetParameter(double dParam, QObject* pSender);
     double getWidgetParameter() const;
 
-    void setMidiParameter(MidiOpCode opcode, double dParam, QObject* pSender);
+    void setMidiParameter(MidiOpCode opcode, double dParam);
     double getMidiParameter() const;
 
     inline bool ignoreNops() const {
