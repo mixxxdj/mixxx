@@ -2,7 +2,6 @@
 #define EFFECTPARAMETER_H
 
 #include <QObject>
-#include <QMutex>
 #include <QVariant>
 
 #include "util.h"
@@ -55,7 +54,6 @@ class EffectParameter : public QObject {
     bool clampRanges();
     bool checkType(const QVariant& value) const;
 
-    mutable QMutex m_mutex;
     Effect* m_pEffect;
     EffectManifestParameter m_parameter;
     QVariant m_minimum;
