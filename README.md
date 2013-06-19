@@ -1,11 +1,5 @@
-Mixxx 1.12.0
-
-# HOMEPAGE #
-[Mixxx]
-
-
 # ABOUT #
-Mixxx is open source software for DJ'ing. You can perform
+[Mixxx] is open source software for DJ'ing. You can perform
 live beatmixes with MP3s, OGGs, and other formats. Mixxx
 also supports a number of DJ MIDI controllers.
 Mixxx works on Linux, Windows and MacOS X.
@@ -15,20 +9,7 @@ directory for a copy of the licence.
 
 # NEWS #
 
-Check the Mixxx blog to find out what's new in this version:
-http://mixxxblog.blogspot.com
-
-# UPGRADING #
-
-We recommend deleting your old skins directory before
-installing a new version of Mixxx. SCONS may not properly
-overwrite your skins directory when you do a "scons install",
-and it might cause Mixxx to crash on launch.
-You can delete it by running:
-
-   $ sudo rm -rf /usr/share/mixxx/skins
-   $ sudo rm -rf /usr/local/share/mixxx/skins
-
+Check the Mixxx [blog] to find out what's new in this version:
 
 # INSTALL #
 Mixxx has the following dependencies:
@@ -86,13 +67,18 @@ More detailed compiling instructions are available for your
 platform on our wiki:
     http://www.mixxx.org/wiki/
 
-# HERCULES DJ CONSOLE USERS ON LINUX #
+## UPGRADING ##
 
-Please see: http://www.mixxx.org/wiki/doku.php/hercules
-You may need to install the official Hercules Linux drivers
-from: http://www.hercules.com/
+We recommend deleting your old skins directory before
+installing a new version of Mixxx. SCONS may not properly
+overwrite your skins directory when you do a "scons install",
+and it might cause Mixxx to crash on launch.
+You can delete it by running:
 
-# REINSTALLING MIXXX #
+   $ sudo rm -rf /usr/share/mixxx/skins
+   $ sudo rm -rf /usr/local/share/mixxx/skins
+
+## REINSTALLING MIXXX ##
 
 Linux users may need to manually remove their Mixxx
 installation directory if they need to reinstall. (This does
@@ -105,11 +91,16 @@ or
 
    $ sudo rm -rf /usr/share/mixxx/
 
-# USAGE #
-Please see the manual, included in this directory,
-Mixxx-Manual.pdf or at:
+# HERCULES DJ CONSOLE USERS ON LINUX #
 
-    http://www.mixxx.org/manual
+Please see: http://www.mixxx.org/wiki/doku.php/hercules
+You may need to install the official Hercules Linux drivers
+from: http://www.hercules.com/
+
+
+# USAGE #
+Please see the manual, included in this directory [Mixxx-Manual]
+
 
 # CONTACT #
 To contact the lead developer, send an email to
@@ -122,7 +113,7 @@ On some platforms, Mixxx may come with a pre-built copy of
 Qt. This code is licensed under the LGPL and source for this
 library may be obtained from:
 
-    http://qt-project.org/downloads
+http://qt-project.org/downloads
 
 # Microsoft Runtimes #
 On Microsoft platforms, Mixxx may come with runtime dlls
@@ -131,3 +122,5 @@ purpose of allowing Mixxx to run only as per the license
 agreement for Visual Studio 2005.
 
 [Mixxx]: http://www.mixxx.org
+[blog]: http://mixxxblog.blogspot.com
+[Mixxx-Manual]: http://www.mixxx.org/manual
