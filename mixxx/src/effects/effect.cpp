@@ -1,16 +1,12 @@
 #include <QtDebug>
-#include <QMutexLocker>
 
 #include "effects/effect.h"
-#include "effects/effectsbackend.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffect.h"
 
-Effect::Effect(EffectsBackend* pBackend, const EffectManifest& manifest,
+Effect::Effect(QObject* pParent, const EffectManifest& manifest,
                EffectProcessor* pProcessor)
-        : QObject(),
-          m_mutex(QMutex::Recursive),
-          m_pEffectsBackend(pBackend),
+        : QObject(pParent),
           m_manifest(manifest),
           m_pEngineEffect(new EngineEffect(manifest, pProcessor)) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
@@ -44,17 +40,14 @@ void Effect::setEngineParameterById(const QString& id, const QVariant& value) {
 }
 
 const EffectManifest& Effect::getManifest() const {
-    QMutexLocker locker(&m_mutex);
     return m_manifest;
 }
 
 unsigned int Effect::numParameters() const {
-    QMutexLocker locker(&m_mutex);
     return m_parameters.size();
 }
 
 EffectParameter* Effect::getParameterById(const QString& id) const {
-    QMutexLocker locker(&m_mutex);
     EffectParameter* pParameter = m_parametersById.value(id, NULL);
     if (pParameter == NULL) {
         qDebug() << debugString() << "parameterFromId" << "WARNING: parameter for id does not exist:" << id;
@@ -63,7 +56,6 @@ EffectParameter* Effect::getParameterById(const QString& id) const {
 }
 
 EffectParameter* Effect::getParameter(unsigned int parameterNumber) {
-    QMutexLocker locker(&m_mutex);
     EffectParameter* pParameter = m_parameters.value(parameterNumber, NULL);
     if (pParameter == NULL) {
         qDebug() << debugString() << "WARNING: Invalid parameter index.";

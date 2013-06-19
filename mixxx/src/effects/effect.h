@@ -2,14 +2,12 @@
 #define EFFECT_H
 
 #include <QSharedPointer>
-#include <QMutex>
 
 #include "defs.h"
 #include "util.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
 
-class EffectsBackend;
 class EffectProcessor;
 class EngineEffect;
 
@@ -19,7 +17,7 @@ typedef QSharedPointer<Effect> EffectPointer;
 class Effect : public QObject {
     Q_OBJECT
   public:
-    Effect(EffectsBackend* pBackend, const EffectManifest& manifest, EffectProcessor* pProcessor);
+    Effect(QObject* pParent, const EffectManifest& manifest, EffectProcessor* pProcessor);
     virtual ~Effect();
 
     const EffectManifest& getManifest() const;
@@ -35,8 +33,6 @@ class Effect : public QObject {
         return QString("Effect(%1)").arg(m_manifest.name());
     }
 
-    mutable QMutex m_mutex;
-    EffectsBackend* m_pEffectsBackend;
     EffectManifest m_manifest;
     EngineEffect* m_pEngineEffect;
     QList<EffectParameter*> m_parameters;
