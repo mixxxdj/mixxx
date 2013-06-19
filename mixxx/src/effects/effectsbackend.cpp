@@ -34,7 +34,7 @@ const QSet<QString> EffectsBackend::getEffectIds() const {
     return QSet<QString>::fromList(m_registeredEffects.keys());
 }
 
-EffectManifest EffectsBackend::getManifest(const QString effectId) const {
+EffectManifest EffectsBackend::getManifest(const QString& effectId) const {
     QMutexLocker locker(&m_mutex);
     if (!m_registeredEffects.contains(effectId)) {
         qDebug() << "WARNING: Effect" << effectId << "is not registered.";
@@ -43,12 +43,12 @@ EffectManifest EffectsBackend::getManifest(const QString effectId) const {
     return m_registeredEffects[effectId].first;
 }
 
-bool EffectsBackend::canInstantiateEffect(const QString effectId) const {
+bool EffectsBackend::canInstantiateEffect(const QString& effectId) const {
     QMutexLocker locker(&m_mutex);
     return m_registeredEffects.contains(effectId);
 }
 
-EffectPointer EffectsBackend::instantiateEffect(const QString effectId) {
+EffectPointer EffectsBackend::instantiateEffect(const QString& effectId) {
     QMutexLocker locker(&m_mutex);
     if (!m_registeredEffects.contains(effectId)) {
         qDebug() << "WARNING: Effect" << effectId << "is not registered.";

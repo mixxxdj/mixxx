@@ -23,9 +23,9 @@ class EffectsBackend : public QObject {
     virtual const QString getName() const;
 
     virtual const QSet<QString> getEffectIds() const;
-    virtual EffectManifest getManifest(const QString effectId) const;
-    virtual bool canInstantiateEffect(const QString effectId) const;
-    virtual EffectPointer instantiateEffect(const QString effectId);
+    virtual EffectManifest getManifest(const QString& effectId) const;
+    virtual bool canInstantiateEffect(const QString& effectId) const;
+    virtual EffectPointer instantiateEffect(const QString& effectId);
 
   protected:
     void registerEffect(const QString id,
