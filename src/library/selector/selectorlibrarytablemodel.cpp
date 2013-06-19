@@ -132,34 +132,37 @@ void SelectorLibraryTableModel::filterByKeyRelative(bool value) {
 // PRIVATE SLOTS
 
 void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
-    m_pChannel = QString("[Channel%1]").arg(deck);
+    if (deck > 0) {
+        m_pChannel = QString("[Channel%1]").arg(deck);
 
-    // disconnect the old pitch slider
-//    if (m_channelBpm) {
-//        disconnect(m_channelBpm, 0, this, 0);
-//    }
-    // get the new pitch slider object
-//    m_channelBpm = new ControlObjectThreadMain(
-//                ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
+        // disconnect the old pitch slider
+    //    if (m_channelBpm) {
+    //        disconnect(m_channelBpm, 0, this, 0);
+    //    }
+        // get the new pitch slider object
+    //    m_channelBpm = new ControlObjectThreadMain(
+    //                ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
 
-    // listen for slider change events
-//    connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
-//        SLOT(slotChannel1BpmChanged(double)));
+        // listen for slider change events
+    //    connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
+    //        SLOT(slotChannel1BpmChanged(double)));
 
-    m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
-    if (m_pLoadedTrack) {
-        m_sCurrentTrackGenre = m_pLoadedTrack->getGenre();
-        m_fCurrentTrackBpm = m_pLoadedTrack->getBpm();
-        m_sCurrentTrackYear = m_pLoadedTrack->getYear();
-        m_iCurrentTrackRating = m_pLoadedTrack->getRating();
-        m_currentTrackKey = m_pLoadedTrack->getKey();
-    } else {
-        qDebug() << "Called with deck " << deck << " and no track playing.";
+        m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
+        if (m_pLoadedTrack) {
+            m_sCurrentTrackGenre = m_pLoadedTrack->getGenre();
+            m_fCurrentTrackBpm = m_pLoadedTrack->getBpm();
+            m_sCurrentTrackYear = m_pLoadedTrack->getYear();
+            m_iCurrentTrackRating = m_pLoadedTrack->getRating();
+            m_currentTrackKey = m_pLoadedTrack->getKey();
+        } else {
+            qDebug() << "Called with deck " << deck << " and no track playing.";
+        }
+        emit(currentTrackInfoChanged());
+
+        setRate();
+        updateFilterText();
     }
-    emit(currentTrackInfoChanged());
 
-    setRate();
-    updateFilterText();
 }
 
 
