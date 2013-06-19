@@ -5,13 +5,11 @@
 #include "mathstuff.h"
 #include "sampleutil.h"
 
-// static
-QString FlangerEffect::getId() {
+QString FlangerEffect::getId() const {
     return "org.mixxx.effects.flanger";
 }
 
-// static
-EffectManifest FlangerEffect::getEffectManifest() {
+EffectManifest FlangerEffect::getManifest() const {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Flanger"));
@@ -59,18 +57,16 @@ EffectManifest FlangerEffect::getEffectManifest() {
 }
 
 // static
-EffectPointer FlangerEffect::create(EffectsBackend* pBackend, const EffectManifest& manifest) {
-    return EffectPointer(new FlangerEffect(pBackend, manifest));
+EffectPointer FlangerEffect::create(EffectsBackend* pBackend,
+                                    const EffectManifest& manifest) {
+    return EffectPointer(new Effect(
+        pBackend, manifest, new FlangerEffectProcessor(manifest)));
 }
 
-FlangerEffect::FlangerEffect(EffectsBackend* pBackend, const EffectManifest& manifest)
-        : Effect(pBackend, manifest) {
-    m_periodParameter = getParameterFromId("period");
-    m_depthParameter = getParameterFromId("depth");
-    m_delayParameter = getParameterFromId("delay");
+FlangerEffectProcessor::FlangerEffectProcessor(const EffectManifest& manifest) {
 }
 
-FlangerEffect::~FlangerEffect() {
+FlangerEffectProcessor::~FlangerEffectProcessor() {
     qDebug() << debugString() << "destroyed";
 
     QMutableMapIterator<QString, FlangerState*> it(m_flangerStates);
@@ -83,9 +79,15 @@ FlangerEffect::~FlangerEffect() {
     }
 }
 
-void FlangerEffect::process(const QString channelId,
-                            const CSAMPLE* pInput, CSAMPLE* pOutput,
-                            const unsigned int numSamples) {
+void FlangerEffectProcessor::initialize(EngineEffect* pEffect) {
+    m_periodParameter = pEffect->getParameterById("period");
+    m_depthParameter = pEffect->getParameterById("depth");
+    m_delayParameter = pEffect->getParameterById("delay");
+}
+
+void FlangerEffectProcessor::process(const QString& channelId,
+                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
+                                     const unsigned int numSamples) {
     FlangerState* pState = getStateForChannel(channelId);
 
     if (!pState) {
@@ -127,7 +129,7 @@ void FlangerEffect::process(const QString channelId,
     }
 }
 
-FlangerState* FlangerEffect::getStateForChannel(const QString channelId) {
+FlangerState* FlangerEffectProcessor::getStateForChannel(const QString channelId) {
     FlangerState* pState = NULL;
     if (!m_flangerStates.contains(channelId)) {
         pState = new FlangerState();

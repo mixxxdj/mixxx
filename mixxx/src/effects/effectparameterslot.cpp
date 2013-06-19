@@ -13,7 +13,8 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent, const unsigned int iC
           m_iChainNumber(iChainNumber),
           m_iSlotNumber(iSlotNumber),
           m_iParameterNumber(iParameterNumber),
-          m_group(formatGroupString(iChainNumber, iSlotNumber, iParameterNumber)) {
+          m_group(formatGroupString(iChainNumber, iSlotNumber, iParameterNumber)),
+          m_pEffectParameter(NULL) {
     m_pControlEnabled = new ControlObject(ConfigKey(m_group, QString("enabled")));
     m_pControlLinked = new ControlObject(ConfigKey(m_group, QString("linked")));
     m_pControlValue = new ControlObject(ConfigKey(m_group, QString("value")));
@@ -61,7 +62,8 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent, const unsigned int iC
 
 EffectParameterSlot::~EffectParameterSlot() {
     qDebug() << debugString() << "destroyed";
-    m_pEffectParameter.clear();
+    m_pEffectParameter = NULL;
+    m_pEffect.clear();
     delete m_pControlEnabled;
     delete m_pControlLinked;
     delete m_pControlValue;
@@ -78,6 +80,7 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
     QMutexLocker locker(&m_mutex);
     if (pEffect) {
+        m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
         m_pEffectParameter = pEffect->getParameter(m_iParameterNumber);
 
@@ -119,7 +122,8 @@ void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
 
 void EffectParameterSlot::clear() {
     qDebug() << debugString() << "clear";
-    m_pEffectParameter.clear();
+    m_pEffectParameter = NULL;
+    m_pEffect.clear();
     m_pControlEnabled->set(0.0f);
     m_pControlValue->set(0.0f);
     m_pControlValueNormalized->set(0.0f);

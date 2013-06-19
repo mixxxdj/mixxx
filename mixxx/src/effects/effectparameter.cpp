@@ -2,10 +2,12 @@
 #include <QMutexLocker>
 
 #include "effects/effectparameter.h"
+#include "effects/effect.h"
 
-EffectParameter::EffectParameter(QObject* pParent, const EffectManifestParameter& parameter)
+EffectParameter::EffectParameter(Effect* pEffect, const EffectManifestParameter& parameter)
         : QObject(),
           m_mutex(QMutex::Recursive),
+          m_pEffect(pEffect),
           m_parameter(parameter) {
     qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
              << m_parameter.id();
@@ -207,6 +209,9 @@ void EffectParameter::setValue(QVariant value) {
 
     if (clampValue()) {
         qDebug() << debugString() << "WARNING: Value was outside of limits, clamped.";
+    }
+    if (m_pEffect) {
+        m_pEffect->setEngineParameterById(m_parameter.id(), m_value);
     }
 }
 

@@ -61,11 +61,11 @@ void EffectChain::process(const QString channelId,
     ////////////////////////////////////////////////////////////////////////////
     locker.unlock();
 
-    foreach (EffectPointer pEffect, effects) {
-        if (pEffect) {
-            pEffect->process(channelId, pInput, pOutput, numSamples);
-        }
-    }
+    // foreach (EffectPointer pEffect, effects) {
+    //     if (pEffect) {
+    //         pEffect->process(channelId, pInput, pOutput, numSamples);
+    //     }
+    // }
 }
 
 void EffectChain::addEffect(EffectPointer pEffect) {

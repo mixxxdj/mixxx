@@ -5,7 +5,8 @@
 // The maximum number of effect parameters we're going to support.
 const unsigned int kMaxParameters = 20;
 
-EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber, const unsigned int iSlotNumber)
+EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber,
+                       const unsigned int iSlotNumber)
         : QObject(),
           m_mutex(QMutex::Recursive),
           m_iChainNumber(iChainNumber),
@@ -16,8 +17,8 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber, const 
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
 
     for (unsigned int i = 0; i < kMaxParameters; ++i) {
-        EffectParameterSlot* pParameter = new EffectParameterSlot(this, m_iChainNumber,
-                                                                  m_iSlotNumber, m_parameters.size());
+        EffectParameterSlot* pParameter = new EffectParameterSlot(
+            this, m_iChainNumber, m_iSlotNumber, m_parameters.size());
         m_parameters.append(pParameter);
     }
 

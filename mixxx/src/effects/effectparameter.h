@@ -4,13 +4,11 @@
 #include <QObject>
 #include <QMutex>
 #include <QVariant>
-#include <QSharedPointer>
 
 #include "util.h"
 #include "effects/effectmanifestparameter.h"
 
-class EffectParameter;
-typedef QSharedPointer<EffectParameter> EffectParameterPointer;
+class Effect;
 
 // An EffectParameter is an instance of an EffectManifestParameter, which is in
 // charge of keeping track of the instance values for the default, minimum,
@@ -19,7 +17,7 @@ typedef QSharedPointer<EffectParameter> EffectParameterPointer;
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
-    EffectParameter(QObject* pParent, const EffectManifestParameter& parameter);
+    EffectParameter(Effect* pEffect, const EffectManifestParameter& parameter);
     virtual ~EffectParameter();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -58,6 +56,7 @@ class EffectParameter : public QObject {
     bool checkType(const QVariant& value) const;
 
     mutable QMutex m_mutex;
+    Effect* m_pEffect;
     EffectManifestParameter m_parameter;
     QVariant m_minimum;
     QVariant m_maximum;

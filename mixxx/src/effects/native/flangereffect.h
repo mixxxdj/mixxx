@@ -5,11 +5,28 @@
 
 #include "util.h"
 #include "effects/effect.h"
+#include "engine/effects/engineeffect.h"
+#include "engine/effects/engineeffectparameter.h"
 #include "effects/native/nativebackend.h"
+#include "effects/effectprocessor.h"
 
 const unsigned int kMaxDelay = 5000;
 const unsigned int kLfoAmplitude = 240;
 const unsigned int kAverageDelayLength = 250;
+
+class FlangerEffect : public NativeEffect {
+  public:
+    FlangerEffect() { }
+    virtual ~FlangerEffect() { }
+
+    QString getId() const;
+    EffectManifest getManifest() const;
+    EffectInstantiator getInstantiator() const {
+        return FlangerEffect::create;
+    }
+    static EffectPointer create(EffectsBackend* pBackend,
+                                const EffectManifest& manifest);
+};
 
 struct FlangerState {
     CSAMPLE delayBuffer[kMaxDelay];
@@ -17,34 +34,32 @@ struct FlangerState {
     unsigned int time;
 };
 
-class FlangerEffect : public Effect {
-    Q_OBJECT
+class FlangerEffectProcessor : public EffectProcessor {
   public:
-    FlangerEffect(EffectsBackend* pBackend, const EffectManifest& manifest);
-    virtual ~FlangerEffect();
+    FlangerEffectProcessor(const EffectManifest& manifest);
+    virtual ~FlangerEffectProcessor();
 
-    static QString getId();
-    static EffectManifest getEffectManifest();
-    static EffectPointer create(EffectsBackend* pBackend, const EffectManifest& manifest);
+    // See effectprocessor.h
+    void initialize(EngineEffect* pEffect);
 
-    // See effect.h
-    void process(const QString channelId,
+    // See effectprocessor.h
+    void process(const QString& channelId,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples);
 
   private:
     QString debugString() const {
-        return "FlangerEffect";
+        return "FlangerEffectProcessor";
     }
     FlangerState* getStateForChannel(const QString channelId);
 
-    EffectParameterPointer m_periodParameter;
-    EffectParameterPointer m_depthParameter;
-    EffectParameterPointer m_delayParameter;
+    EngineEffectParameter* m_periodParameter;
+    EngineEffectParameter* m_depthParameter;
+    EngineEffectParameter* m_delayParameter;
 
     QMap<QString, FlangerState*> m_flangerStates;
 
-    DISALLOW_COPY_AND_ASSIGN(FlangerEffect);
+    DISALLOW_COPY_AND_ASSIGN(FlangerEffectProcessor);
 };
 
 

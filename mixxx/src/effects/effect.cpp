@@ -3,14 +3,18 @@
 
 #include "effects/effect.h"
 #include "effects/effectsbackend.h"
+#include "effects/effectprocessor.h"
+#include "engine/effects/engineeffect.h"
 
-Effect::Effect(EffectsBackend* pBackend, const EffectManifest& manifest)
+Effect::Effect(EffectsBackend* pBackend, const EffectManifest& manifest,
+               EffectProcessor* pProcessor)
         : QObject(),
           m_mutex(QMutex::Recursive),
           m_pEffectsBackend(pBackend),
-          m_manifest(manifest) {
-    foreach (EffectManifestParameter parameter, m_manifest.parameters()) {
-        EffectParameterPointer pParameter(new EffectParameter(this, parameter));
+          m_manifest(manifest),
+          m_pEngineEffect(new EngineEffect(manifest, pProcessor)) {
+    foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
+        EffectParameter* pParameter = new EffectParameter(this, parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
             qDebug() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
@@ -21,8 +25,22 @@ Effect::Effect(EffectsBackend* pBackend, const EffectManifest& manifest)
 
 Effect::~Effect() {
     qDebug() << debugString() << "destroyed";
-    m_parameters.clear();
     m_parametersById.clear();
+    for (int i = 0; i < m_parameters.size(); ++i) {
+        EffectParameter* pParameter = m_parameters.at(i);
+        m_parameters[i] = NULL;
+        delete pParameter;
+    }
+}
+
+EngineEffect* Effect::getEngineEffect() {
+    return m_pEngineEffect;
+}
+
+void Effect::setEngineParameterById(const QString& id, const QVariant& value) {
+    if (m_pEngineEffect) {
+        m_pEngineEffect->setParameterById(id, value);
+    }
 }
 
 const EffectManifest& Effect::getManifest() const {
@@ -35,20 +53,20 @@ unsigned int Effect::numParameters() const {
     return m_parameters.size();
 }
 
-EffectParameterPointer Effect::getParameterFromId(const QString id) const {
+EffectParameter* Effect::getParameterById(const QString& id) const {
     QMutexLocker locker(&m_mutex);
-    if (m_parametersById.contains(id)) {
-        return m_parametersById[id];
+    EffectParameter* pParameter = m_parametersById.value(id, NULL);
+    if (pParameter == NULL) {
+        qDebug() << debugString() << "parameterFromId" << "WARNING: parameter for id does not exist:" << id;
     }
-    qDebug() << debugString() << "parameterFromId" << "WARNING: parameter for id does not exist:" << id;
-    return EffectParameterPointer();
+    return pParameter;
 }
 
-EffectParameterPointer Effect::getParameter(unsigned int parameterNumber) {
+EffectParameter* Effect::getParameter(unsigned int parameterNumber) {
     QMutexLocker locker(&m_mutex);
-    if (parameterNumber >= m_parameters.size()) {
+    EffectParameter* pParameter = m_parameters.value(parameterNumber, NULL);
+    if (pParameter == NULL) {
         qDebug() << debugString() << "WARNING: Invalid parameter index.";
-        return EffectParameterPointer();
     }
-    return m_parameters[parameterNumber];
+    return pParameter;
 }

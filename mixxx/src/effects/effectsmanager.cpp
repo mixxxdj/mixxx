@@ -175,7 +175,8 @@ void EffectsManager::setupDefaultChains() {
     QMutexLocker locker(&m_mutex);
     QSet<QString> effects = getAvailableEffects();
 
-    QString flangerId = FlangerEffect::getId();
+    FlangerEffect flanger;
+    QString flangerId = flanger.getId();
 
     if (effects.contains(flangerId)) {
         EffectChainPointer pChain = EffectChainPointer(new EffectChain());

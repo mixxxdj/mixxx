@@ -3,19 +3,24 @@
 
 #include "effects/effectsbackend.h"
 
+class NativeEffect {
+  public:
+    virtual ~NativeEffect() { }
+    virtual QString getId() const = 0;
+    virtual EffectManifest getManifest() const = 0;
+    virtual EffectInstantiator getInstantiator() const = 0;
+};
+
 class NativeBackend : public EffectsBackend {
     Q_OBJECT
   public:
     NativeBackend(QObject* pParent=NULL);
     virtual ~NativeBackend();
 
-    //const QList<EffectManifestPointer> getAvailableEffects() const;
-    //EffectPointer instantiateEffect(EffectManifestPointer manifest);
   private:
     QString debugString() const {
         return "NativeBackend";
     }
-
     QList<EffectManifest> m_effectManifests;
 };
 
