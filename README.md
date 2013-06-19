@@ -42,22 +42,22 @@ compile PortAudio-v19 with JACK support first.
 To compile Mixxx using SCONS, go into the "mixxx"
 directory and run:
 
-   $ scons
+    $ scons
 
 SCONS does both dependency checking and building, so it will
 tell you if you're missing any of the dependencies listed above.
 It's also possible to specify a prefix path and additional
 build flags, for example:
 
-   $ scons prefix=/usr
+    $ scons prefix=/usr
 
 To install Mixxx after compilation, run:
 
-   $ sudo scons prefix=/usr install
+    $ sudo scons prefix=/usr install
 
 A full list of scons flags is available by running:
 
-   $ scons --help
+    $ scons --help
 
 WARNING: We do not recommend building Mixxx with any
 flags other than the defaults if you are going to use Mixxx
@@ -76,8 +76,8 @@ overwrite your skins directory when you do a "scons install",
 and it might cause Mixxx to crash on launch.
 You can delete it by running:
 
-   $ sudo rm -rf /usr/share/mixxx/skins
-   $ sudo rm -rf /usr/local/share/mixxx/skins
+    $ sudo rm -rf /usr/share/mixxx/skins
+    $ sudo rm -rf /usr/local/share/mixxx/skins
 
 ### REINSTALLING MIXXX ###
 
@@ -86,11 +86,11 @@ installation directory if they need to reinstall. (This does
 not apply when reinstalling from a DEB package.) Mixxx's
 share directory can be removed by running:
 
-   $ sudo rm -rf /usr/local/share/mixxx/
+    $ sudo rm -rf /usr/local/share/mixxx/
 
 or
 
-   $ sudo rm -rf /usr/share/mixxx/
+    $ sudo rm -rf /usr/share/mixxx/
 
 ## CONTACT ##
 To contact the lead developer, send an email to
