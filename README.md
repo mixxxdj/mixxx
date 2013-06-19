@@ -6,6 +6,7 @@ mixes. Mixxx works on GNU/Linux, Windows, and Mac OS X.
 ## Quick Start
 
 To get started with Mixxx:
+
 1. For live use, [download the latest stable version][download].
 2. For experimentation and testing, [download a development release][builds].
 3. To live on the bleeding edge, clone the repo: `git clone https://github.com/mixxxdj/mixxx.git`
@@ -32,9 +33,9 @@ First, you must install all of Mixxx's dependencies. To compile Mixxx using
     $ scons
 
 Please see our helpful guides on the [Mixxx wiki] for more information:
-- [Compiling on Linux][compiling on linux].
-- [Compiling on OS X][compiling on osx].
-- [Compiling on Windows][compiling on windows].
+- [Compiling on Linux]
+- [Compiling on OS X]
+- [Compiling on Windows]
 
 ## Documentation
 
@@ -43,7 +44,7 @@ For help using Mixxx, there are a variety of options:
 - [Mixxx manual][manual]
 - [Mixxx wiki][wiki]
 - [Frequently Asked Questions][FAQ]
-- [Hardware Compatibility] (supported soundcards, MIDI/HID controllers)
+- [Hardware Compatibility]
 - [Creating Skins]
 
 ## Community
@@ -73,9 +74,9 @@ license.
 [wiki]: http://www.mixxx.org/wiki/
 [faq]: http://mixxx.org/wiki/doku.php/faq
 [forums]: http://www.mixxx.org/forums/
-[compiling linux]: http://mixxx.org/wiki/doku.php/compiling_on_linux
-[compiling osx]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
-[compiling windows]: http://mixxx.org/wiki/doku.php/compiling_on_windows
+[compiling on linux]: http://mixxx.org/wiki/doku.php/compiling_on_linux
+[compiling on os x]: http://mixxx.org/wiki/doku.php/compiling_on_os_x
+[compiling on windows]: http://mixxx.org/wiki/doku.php/compiling_on_windows
 [mailing list]: https://lists.sourceforge.net/lists/listinfo/mixxx-devel
 [irc channel]: http://mixxx.org/irc.php
 [SCons]: http://www.scons.org/
