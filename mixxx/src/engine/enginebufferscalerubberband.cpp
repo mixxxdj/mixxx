@@ -153,12 +153,24 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
     unsigned long remaining_frames = buf_size/iNumChannels;
     CSAMPLE* read = m_buffer;
     bool last_read_failed = false;
+    bool break_out_after_retrieve_and_reset_rubberband = false;
     while (remaining_frames > 0) {
+        // ReadAheadManager will eventually read the requested frames with
+        // enough calls to retrieveAndDeinterleave because CachingReader returns
+        // zeros for reads that are not in cache. So it's safe to loop here
+        // without any checks for failure in retrieveAndDeinterleave.
         unsigned long received_frames = retrieveAndDeinterleave(
             read, remaining_frames);
         remaining_frames -= received_frames;
         total_received_frames += received_frames;
         read += received_frames * iNumChannels;
+
+        if (break_out_after_retrieve_and_reset_rubberband) {
+            // If we break out early then we have flushed RubberBand and need to
+            // reset it.
+            m_pRubberBand->reset();
+            break;
+        }
 
         if (remaining_frames > 0) {
             unsigned long iLenFramesRequired = m_pRubberBand->getSamplesRequired();
@@ -177,9 +189,11 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
                 deinterleaveAndProcess(m_buffer_back, iAvailFrames, false);
             } else {
                 if (last_read_failed) {
-                    // Flush
+                    // Flush and break out after the next retrieval. If we are
+                    // at EOF this serves to get the last samples out of
+                    // RubberBand.
                     deinterleaveAndProcess(m_buffer_back, 0, true);
-                    break;
+                    break_out_after_retrieve_and_reset_rubberband = true;
                 }
                 last_read_failed = true;
             }
