@@ -720,10 +720,13 @@ void PlaylistDAO::updatePlaylistsTitleNum() {
     m_database.transaction();
     QSqlQuery selectQuery(m_database);
 
-    selectQuery.prepare(" SELECT Playlists.name,count(*),Playlists.id FROM PlaylistTracks, Playlists "
-                        " WHERE PlaylistTracks.playlist_id = Playlists.id AND Playlists.hidden <> 2"
-                        " GROUP BY playlist_id ");
-
+    //selectQuery.prepare(" SELECT Playlists.name,count(*),Playlists.id FROM PlaylistTracks, Playlists "
+    //                    " WHERE PlaylistTracks.playlist_id = Playlists.id AND Playlists.hidden <> 2"
+    //                    " GROUP BY playlist_id ");
+    selectQuery.prepare(" SELECT Playlists.name,Count_table.count,Playlists.id FROM Playlists INNER JOIN "
+                        " (SELECT playlist_id, count(*) AS count FROM PlaylistTracks GROUP BY playlist_id) "
+                        " AS Count_table ON Count_table.playlist_id = Playlists.id "
+                        " WHERE Playlists.hidden <> 2");
     if (!selectQuery.exec()) {
         LOG_FAILED_QUERY(selectQuery);
     } else {
