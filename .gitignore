@@ -6,8 +6,9 @@
 *.patch
 *.pyc
 *.rej
+*_build
 *~
 .#*
-mixxx/*_build
-mixxx/.sconf_temp
-mixxx/cache
+.sconf_temp
+cache
+res/qrc_mixxx.cc
