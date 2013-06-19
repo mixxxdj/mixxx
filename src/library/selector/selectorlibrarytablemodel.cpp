@@ -135,24 +135,27 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     m_pChannel = QString("[Channel%1]").arg(deck);
 
     // disconnect the old pitch slider
-    if (m_channelBpm) {
-        m_channelBpm->disconnect(this);
-    }
+//    if (m_channelBpm) {
+//        disconnect(m_channelBpm, 0, this, 0);
+//    }
     // get the new pitch slider object
-    m_channelBpm = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
+//    m_channelBpm = new ControlObjectThreadMain(
+//                ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
+
     // listen for slider change events
-    connect(m_channelBpm, SIGNAL(valueChanged(double)), this, 
-        SLOT(slotChannel1BpmChanged(double)));
+//    connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
+//        SLOT(slotChannel1BpmChanged(double)));
 
     m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
-
-    m_sCurrentTrackGenre = m_pLoadedTrack->getGenre();
-    m_fCurrentTrackBpm = m_pLoadedTrack->getBpm();
-    m_sCurrentTrackYear = m_pLoadedTrack->getYear();
-    m_iCurrentTrackRating = m_pLoadedTrack->getRating();
-    m_currentTrackKey = m_pLoadedTrack->getKey();
-
+    if (m_pLoadedTrack) {
+        m_sCurrentTrackGenre = m_pLoadedTrack->getGenre();
+        m_fCurrentTrackBpm = m_pLoadedTrack->getBpm();
+        m_sCurrentTrackYear = m_pLoadedTrack->getYear();
+        m_iCurrentTrackRating = m_pLoadedTrack->getRating();
+        m_currentTrackKey = m_pLoadedTrack->getKey();
+    } else {
+        qDebug() << "Called with deck " << deck << " and no track playing.";
+    }
     emit(currentTrackInfoChanged());
 
     setRate();
@@ -161,8 +164,7 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
 
 
 void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
-    #define DISCARD_PARAMETER(p) (void)p
-    (void)value;
+    qDebug() << "BPM changed to " << value;
     setRate();
     updateFilterText();
 }
@@ -234,6 +236,8 @@ void SelectorLibraryTableModel::updateFilterText() {
 }
 
 void SelectorLibraryTableModel::setRate() {
+    m_rate = 1.0;
+    return;
         // get pitch slider value (deck rate)
     ControlObjectThreadMain* rateSlider = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_pChannel, "rate")));
