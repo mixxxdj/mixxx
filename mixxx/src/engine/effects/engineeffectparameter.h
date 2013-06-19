@@ -4,6 +4,7 @@
 #include <QString>
 #include <QVariant>
 
+#include "control/controlvalue.h"
 #include "util.h"
 #include "effects/effectmanifestparameter.h"
 
@@ -31,19 +32,16 @@ class EngineEffectParameter {
     // Value Settings
     ///////////////////////////////////////////////////////////////////////////
 
-    const QVariant& getValue() const {
-        return m_value;
+    QVariant getValue() const {
+        return m_value.getValue();
     }
     void setValue(const QVariant& value) {
-        m_value = value;
-    }
-    void setValue(const double& value) {
-        m_value = value;
+        m_value.setValue(value);
     }
 
   private:
     EffectManifestParameter m_parameter;
-    QVariant m_value;
+    ControlValueAtomic<QVariant> m_value;
     DISALLOW_COPY_AND_ASSIGN(EngineEffectParameter);
 };
 
