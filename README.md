@@ -1,4 +1,4 @@
-# ABOUT #
+# MIXXX #
 [Mixxx] is open source software for DJ'ing. You can perform
 live beatmixes with MP3s, OGGs, and other formats. Mixxx
 also supports a number of DJ MIDI controllers.
@@ -8,8 +8,10 @@ Mixxx is released under GPL v2. See LICENSE file in this
 directory for a copy of the licence.
 
 # NEWS #
-
 Check the Mixxx [blog] to find out what's new in this version:
+
+# USAGE #
+Please see the manual, included in this directory [Mixxx-Manual]
 
 # INSTALL #
 Mixxx has the following dependencies:
@@ -37,7 +39,6 @@ Mixxx has the following dependencies:
 NOTE: If you want JACK support in Mixxx, make sure you
 compile PortAudio-v19 with JACK support first.
 
-Mixxx's build system is now SCONS as of Mixxx 1.6.0.
 To compile Mixxx using SCONS, go into the "mixxx"
 directory and run:
 
@@ -64,8 +65,8 @@ for live performance. Features that are disabled by default
 may not compile or may be unstable. Be forewarned.
 
 More detailed compiling instructions are available for your
-platform on our wiki:
-    http://www.mixxx.org/wiki/
+platform on our [wiki]
+
 
 ## UPGRADING ##
 
@@ -97,11 +98,6 @@ Please see: http://www.mixxx.org/wiki/doku.php/hercules
 You may need to install the official Hercules Linux drivers
 from: http://www.hercules.com/
 
-
-# USAGE #
-Please see the manual, included in this directory [Mixxx-Manual]
-
-
 # CONTACT #
 To contact the lead developer, send an email to
 rryan@mixxx.org or subscribe to
@@ -124,3 +120,4 @@ agreement for Visual Studio 2005.
 [Mixxx]: http://www.mixxx.org
 [blog]: http://mixxxblog.blogspot.com
 [Mixxx-Manual]: http://www.mixxx.org/manual
+[wiki]: http://www.mixxx.org/wiki/
