@@ -147,7 +147,7 @@ const QSet<QString> EffectsManager::getAvailableEffects() const {
     return availableEffects;
 }
 
-EffectManifest EffectsManager::getEffectManifest(const QString effectId) const {
+EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const {
     QMutexLocker locker(&m_mutex);
 
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
@@ -159,15 +159,13 @@ EffectManifest EffectsManager::getEffectManifest(const QString effectId) const {
     return EffectManifest();
 }
 
-EffectPointer EffectsManager::instantiateEffect(const QString effectId) {
+EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     QMutexLocker locker(&m_mutex);
-
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
             return pBackend->instantiateEffect(effectId);
         }
     }
-
     return EffectPointer();
 }
 

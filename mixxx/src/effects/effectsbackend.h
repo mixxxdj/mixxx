@@ -9,6 +9,7 @@
 
 #include "effects/effect.h"
 
+class EffectsBackend;
 typedef EffectPointer (*EffectInstantiator)(EffectsBackend*, const EffectManifest&);
 
 // An EffectsBackend is an implementation of a provider of Effect's for use

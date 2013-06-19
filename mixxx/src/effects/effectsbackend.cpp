@@ -54,7 +54,7 @@ EffectPointer EffectsBackend::instantiateEffect(const QString& effectId) {
         qDebug() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();
     }
-    QPair<EffectManifest, EffectInstantiator> effectInfo = m_registeredEffects[effectId];
+    QPair<EffectManifest, EffectInstantiator>& effectInfo = m_registeredEffects[effectId];
     return (*effectInfo.second)(this, effectInfo.first);
 }
 
