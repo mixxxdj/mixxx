@@ -1,0 +1,14 @@
+*.diff
+*.log
+*.o
+*.orig
+*.os
+*.patch
+*.pyc
+*.rej
+*_build
+*~
+.#*
+.sconf_temp
+cache
+res/qrc_mixxx.cc
