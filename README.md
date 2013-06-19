@@ -7,13 +7,13 @@ Mixxx works on Linux, Windows and MacOS X.
 Mixxx is released under GPL v2. See LICENSE file in this
 directory for a copy of the licence.
 
-# NEWS #
+## NEWS ##
 Check the Mixxx [blog] to find out what's new in this version:
 
-# USAGE #
+## USAGE ##
 Please see the manual, included in this directory [Mixxx-Manual]
 
-# INSTALL #
+## INSTALL ##
 Mixxx has the following dependencies:
 - libid3tag
 - libmad
@@ -68,7 +68,7 @@ More detailed compiling instructions are available for your
 platform on our [wiki]
 
 
-## UPGRADING ##
+### UPGRADING ###
 
 We recommend deleting your old skins directory before
 installing a new version of Mixxx. SCONS may not properly
@@ -79,7 +79,7 @@ You can delete it by running:
    $ sudo rm -rf /usr/share/mixxx/skins
    $ sudo rm -rf /usr/local/share/mixxx/skins
 
-## REINSTALLING MIXXX ##
+### REINSTALLING MIXXX ###
 
 Linux users may need to manually remove their Mixxx
 installation directory if they need to reinstall. (This does
@@ -92,26 +92,26 @@ or
 
    $ sudo rm -rf /usr/share/mixxx/
 
-# HERCULES DJ CONSOLE USERS ON LINUX #
-
-Please see: http://www.mixxx.org/wiki/doku.php/hercules
-You may need to install the official Hercules Linux drivers
-from: http://www.hercules.com/
-
-# CONTACT #
+## CONTACT ##
 To contact the lead developer, send an email to
 rryan@mixxx.org or subscribe to
 mixxx-devel@lists.sourceforge.net and send a message to the
 list.
 
-# QT #
+### HERCULES DJ CONSOLE USERS ON LINUX ###
+
+Please see: http://www.mixxx.org/wiki/doku.php/hercules
+You may need to install the official Hercules Linux drivers
+from: http://www.hercules.com/
+
+### QT ###
 On some platforms, Mixxx may come with a pre-built copy of
 Qt. This code is licensed under the LGPL and source for this
 library may be obtained from:
 
 http://qt-project.org/downloads
 
-# Microsoft Runtimes #
+### Microsoft Runtimes ###
 On Microsoft platforms, Mixxx may come with runtime dlls
 copyright of Microsoft. These are distributed for the
 purpose of allowing Mixxx to run only as per the license
