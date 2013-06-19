@@ -1,7 +1,7 @@
 # Mixxx
 
 [Mixxx] is Free DJ software that gives you everything you need to perform live
-mixes. Mixxx works on GNU/Linux, Windows, and Mac OS X.
+DJ mixes. Mixxx works on GNU/Linux, Windows, and Mac OS X.
 
 ## Quick Start
 
@@ -32,7 +32,7 @@ First, you must install all of Mixxx's dependencies. To compile Mixxx using
 
     $ scons
 
-Please see our helpful guides on the [Mixxx wiki] for more information:
+Please see our helpful guides on the [wiki] for more information:
 - [Compiling on Linux]
 - [Compiling on OS X]
 - [Compiling on Windows]
@@ -52,10 +52,10 @@ For help using Mixxx, there are a variety of options:
 Mixxx is a vibrant community of hackers, DJs and artists. To keep track of
 development and community news:
 
-- Follow [@mixxxdj on Twitter][twitter],
+- Follow [@mixxxdj on Twitter][twitter].
 - Subscribe to the [Mixxx Development Blog][blog].
 - Join the developer [mailing list].
-- Post on the [Mixxx forums][forums]
+- Post on the [Mixxx forums][forums].
 - Join our [#mixxx on Freenode IRC][irc channel] to chat with us.
 
 ## License
