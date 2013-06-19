@@ -163,28 +163,6 @@ bool EffectChainSlot::privateIsEnabled() const {
     return m_pControlChainEnabled->get() > 0.0f;
 }
 
-void EffectChainSlot::process(const QString channelId,
-                              const CSAMPLE* pInput,
-                              CSAMPLE* pOutput,
-                              const unsigned int numSamples) {
-    qDebug() << debugString() << "process" << channelId << numSamples;
-    QMutexLocker locker(&m_mutex);
-    EffectChainPointer pEffectChain = m_pEffectChain;
-    bool isEnabled = pEffectChain && isEnabledForChannel(channelId);
-
-    ////////////////////////////////////////////////////////////////////////////
-    // AFTER THIS LINE, THE MUTEX IS UNLOCKED. DONT TOUCH ANY MEMBER STATE
-    ////////////////////////////////////////////////////////////////////////////
-    locker.unlock();
-
-    if (isEnabled) {
-        pEffectChain->process(channelId, pInput, pOutput, numSamples);
-    } else {
-        // SampleUtil handles shortcuts when aliased, and gains of 1.0, etc.
-        return SampleUtil::copyWithGain(pOutput, pInput, 1.0f, numSamples);
-    }
-}
-
 unsigned int EffectChainSlot::numSlots() const {
     qDebug() << debugString() << "numSlots";
     QMutexLocker locker(&m_mutex);

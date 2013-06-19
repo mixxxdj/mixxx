@@ -40,19 +40,6 @@ class EffectChainSlot : public QObject {
     bool isEnabled() const;
     bool isEnabledForChannel(QString channelId) const;
 
-    // Take a buffer of numSamples samples of audio from channel channelId,
-    // provided as pInput, and apply each Effect in this EffectChainSlot to it,
-    // putting the resulting output in pOutput. If pInput is equal to pOutput,
-    // then the operation must occur in-place. Both pInput and pOutput are
-    // represented as stereo interleaved samples. There are numSamples total
-    // samples, so numSamples/2 left channel samples and numSamples/2 right
-    // channel samples. The channelId provided allows the effects to maintain
-    // state on a per-channel basis. This is important because one Effect
-    // instance may be used to process the audio of multiple channels.
-    virtual void process(const QString channelId,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples);
-
     void registerChannel(const QString channelId);
 
   signals:

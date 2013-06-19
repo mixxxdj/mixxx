@@ -19,7 +19,7 @@ QString EffectChain::id() const {
     return m_id;
 }
 
-void EffectChain::setId(const QString id) {
+void EffectChain::setId(const QString& id) {
     QMutexLocker locker(&m_mutex);
     m_id = id;
 }
@@ -29,7 +29,7 @@ QString EffectChain::name() const {
     return m_name;
 }
 
-void EffectChain::setName(const QString name) {
+void EffectChain::setName(const QString& name) {
     QMutexLocker locker(&m_mutex);
     m_name = name;
 }
@@ -39,14 +39,14 @@ double EffectChain::parameter() const {
     return m_dParameter;
 }
 
-void EffectChain::setParameter(double dParameter) {
+void EffectChain::setParameter(const double& dParameter) {
     qDebug() << debugString() << "setParameter" << dParameter;
     QMutexLocker locker(&m_mutex);
     m_dParameter = dParameter;
 
 }
 
-void EffectChain::process(const QString channelId,
+void EffectChain::process(const QString& channelId,
                           const CSAMPLE* pInput,
                           CSAMPLE* pOutput,
                           const unsigned int numSamples) {

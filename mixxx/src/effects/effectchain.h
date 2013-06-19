@@ -22,14 +22,14 @@ class EffectChain : public QObject {
     // The ID of an EffectChain is a unique ID given to it to help associate it
     // with the preset from which it was loaded.
     QString id() const;
-    void setId(const QString id);
+    void setId(const QString& id);
 
     // Get the human-readable name of the EffectChain
     QString name() const;
-    void setName(const QString name);
+    void setName(const QString& name);
 
     double parameter() const;
-    void setParameter(double dParameter);
+    void setParameter(const double& dParameter);
 
     void addEffect(EffectPointer pEffect);
     EffectPointer getEffect(unsigned int i) const;
@@ -45,7 +45,7 @@ class EffectChain : public QObject {
     // channel samples. The channelId provided allows the effects to maintain
     // state on a per-channel basis. This is important because one Effect
     // instance may be used to process the audio of multiple channels.
-    virtual void process(const QString channelId,
+    virtual void process(const QString& channelId,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples);
 
