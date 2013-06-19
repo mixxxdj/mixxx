@@ -242,9 +242,9 @@ void MixxxApp::initializeKeyboard() {
 MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         : m_runtime_timer("MixxxApp::runtime"),
           m_cmdLineArgs(args) {
+    logBuildDetails();
     ScopedTimer t("MixxxApp::MixxxApp");
     m_runtime_timer.start();
-
     initializeWindow();
 
     // Only record stats in developer mode.
