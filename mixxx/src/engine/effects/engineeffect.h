@@ -5,6 +5,7 @@
 #include <QString>
 #include <QList>
 #include <QVector>
+#include <QtDebug>
 
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
@@ -27,6 +28,7 @@ class EngineEffect {
     }
 
     virtual ~EngineEffect() {
+        qDebug() << debugString() << "destroyed";
         delete m_pProcessor;
         m_parametersById.clear();
         for (int i = 0; i < m_parameters.size(); ++i) {
@@ -36,9 +38,25 @@ class EngineEffect {
         }
     }
 
+    EngineEffectParameter* getParameterById(const QString& id) {
+        return m_parametersById.value(id, NULL);
+    }
+
+    void setParameterById(const QString& id, const QVariant& value) {
+        EngineEffectParameter* pParameter = getParameterById(id);
+        if (pParameter) {
+            pParameter->setValue(value);
+        }
+    }
+
   private:
+    QString debugString() const {
+        return QString("EngineEffect(%1)").arg(m_manifest.name());
+    }
+
     EffectManifest m_manifest;
     EffectProcessor* m_pProcessor;
+    // Must not be modified after construction.
     QVector<EngineEffectParameter*> m_parameters;
     QMap<QString, EngineEffectParameter*> m_parametersById;
 };
