@@ -12,5 +12,7 @@
 *.pro
 *.pro.user
 *_build
+mixxx
+res/qrc_mixxx.cc
 .sconf_temp
 cache
