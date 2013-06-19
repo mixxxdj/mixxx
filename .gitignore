@@ -8,6 +8,9 @@
 *.rej
 *~
 .#*
-mixxx/*_build
-mixxx/.sconf_temp
-mixxx/cache
+.DS_Store
+*.pro
+*.pro.user
+*_build
+.sconf_temp
+cache
