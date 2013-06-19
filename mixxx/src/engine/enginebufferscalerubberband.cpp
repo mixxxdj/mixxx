@@ -9,6 +9,7 @@
 #include "engine/readaheadmanager.h"
 #include "sampleutil.h"
 #include "track/keyutils.h"
+#include "util/counter.h"
 
 using RubberBand::RubberBandStretcher;
 
@@ -202,6 +203,8 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
 
     if (remaining_frames > 0) {
         SampleUtil::applyGain(read, 0.0f, remaining_frames * iNumChannels);
+        Counter counter("EngineBufferScaleRubberBand::getScaled underflow");
+        counter.increment();
     }
 
     // m_samplesRead is interpreted as the total number of virtual samples
