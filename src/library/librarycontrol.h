@@ -56,6 +56,13 @@ class LibraryControl : public QObject {
     ControlObjectThreadMain* m_pToggleSidebarItem;
     ControlObjectThreadMain* m_pLoadSelectedIntoFirstStopped;
     ControlObjectThreadMain* m_pSelectTrackKnob;
+    ControlObject* m_pSelectNextTrackCO;
+    ControlObject* m_pSelectPrevTrackCO;
+    ControlObject* m_pSelectNextPlaylistCO;
+    ControlObject* m_pSelectPrevPlaylistCO;
+    ControlObject* m_pToggleSidebarItemCO;
+    ControlObject* m_pLoadSelectedIntoFirstStoppedCO;
+    ControlObject* m_pSelectTrackKnobCO;
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
 };

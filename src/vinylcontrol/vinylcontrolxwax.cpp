@@ -396,7 +396,7 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
             {
                 //qDebug() << "discontinuing select mode, selecting track";
                 if (trackLoader == NULL)
-                    trackLoader = new ControlObjectThread(ControlObject::getControl(ConfigKey(m_group,"LoadSelectedTrack")));
+                    trackLoader = new ControlObjectThread(m_group,"LoadSelectedTrack");
 
                 if (!trackLoader)
                     qDebug() << "ERROR: couldn't get track loading object?";
@@ -712,7 +712,7 @@ void VinylControlXwax::doTrackSelection(bool valid_pos, double pitch, double pos
     {
         //this isn't done in the constructor because this object
         //doesn't seem to be created yet
-        trackSelector = new ControlObjectThread(ControlObject::getControl(ConfigKey("[Playlist]","SelectTrackKnob")));
+        trackSelector = new ControlObjectThread("[Playlist]","SelectTrackKnob");
         if (trackSelector == NULL)
         {
             qDebug() << "Warning: Track Selector control object NULL";

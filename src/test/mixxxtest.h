@@ -20,8 +20,8 @@ class MixxxTest : public testing::Test {
     }
 
   protected:
-    ControlObjectThread* getControlObjectThread(ConfigKey key) {
-        return new ControlObjectThread(ControlObject::getControl(key));
+    ControlObjectThread* getControlObjectThread(const ConfigKey& key) {
+        return new ControlObjectThread(key);
     }
 
     QTemporaryFile* makeTemporaryFile(const QString contents) {

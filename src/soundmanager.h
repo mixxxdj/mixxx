@@ -31,6 +31,7 @@ class AudioOutput;
 class AudioInput;
 class AudioSource;
 class AudioDestination;
+class ControlObject;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -127,8 +128,9 @@ class SoundManager : public QObject {
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
-    ControlObject* m_pControlObjectSoundStatus;
+    ControlObject* m_pControlObjectSoundStatusCO;
     ControlObjectThreadMain* m_pControlObjectVinylControlGain;
+    ControlObject* m_pControlObjectVinylControlGainCO;
 };
 
 #endif

@@ -267,8 +267,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            ControlObject* pControl = controlFromConfigKey(configKey, NULL);
-            ControlObjectThreadMain mainControl(pControl);
+            ControlObjectThreadMain mainControl(configKey);
             mainControl.slotSet(value);
         }
     }
@@ -644,7 +643,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-                ControlObject::getControl(ConfigKey(channelStr, "wheel")), viewer);
+            channelStr, "wheel", viewer);
 
     p->setWidget((QWidget *)viewer, true, false,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
@@ -1331,7 +1330,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             // leaked. OnOff controls do not use the value of the widget at all
             // so we do not give this control's info to the
             // ControllerLearningEventFilter.
-            (new ControlObjectThreadWidget(control, pWidget))->setWidgetOnOff(pWidget);
+            (new ControlObjectThreadWidget(control->getKey(), pWidget))->setWidgetOnOff(pWidget);
         } else {
             // Default to emit on press
             ControlObjectThreadWidget::EmitOption emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS;
@@ -1362,7 +1361,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
-            (new ControlObjectThreadWidget(control, pWidget))->setWidget(
+            (new ControlObjectThreadWidget(control->getKey(), pWidget))->setWidget(
                         pWidget, connectValueFromWidget, connectValueToWidget,
                         emitOption, state);
 

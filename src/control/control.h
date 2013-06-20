@@ -32,11 +32,11 @@ class ControlDoublePrivate : public QObject {
     }
 
     // Sets the control value.
-    void set(const double& value, QObject* pSetter);
+    void set(const double& value, QObject* pSender);
     // Gets the control value.
     double get() const;
     // Resets the control value to its default.
-    void reset(QObject* pSetter);
+    void reset();
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
@@ -44,7 +44,7 @@ class ControlDoublePrivate : public QObject {
     // memory will leak.
     ControlNumericBehavior* setBehavior(ControlNumericBehavior* pBehavior);
 
-    void setWidgetParameter(double dParam, QObject* pSetter);
+    void setWidgetParameter(double dParam, QObject* pSender);
     double getWidgetParameter() const;
 
     void setMidiParameter(MidiOpCode opcode, double dParam);
@@ -63,9 +63,9 @@ class ControlDoublePrivate : public QObject {
     }
 
   signals:
-    // Emitted when the ControlDoublePrivate value changes. pSetter is a
+    // Emitted when the ControlDoublePrivate value changes. pSender is a
     // pointer to the setter of the value (potentially NULL).
-    void valueChanged(double value, QObject* pSetter);
+    void valueChanged(double value, QObject* pSender);
 
   private:
     ConfigKey m_key;
