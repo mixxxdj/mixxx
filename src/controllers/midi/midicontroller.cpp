@@ -356,7 +356,9 @@ void MidiController::receive(unsigned char status, unsigned char control,
                 return;
             }
         }
-        pCO->set(newValue);
+        // Use temporary cot for bypass own signal filter
+        ControlObjectThread cot(pCO->getKey());
+        cot.set(newValue);
     } else {
         if (options.soft_takeover) {
             if (m_st.ignore(pCO, newValue, true)) {
