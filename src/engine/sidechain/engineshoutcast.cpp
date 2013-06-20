@@ -70,9 +70,9 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
 
     m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
-        ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
+            ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
     m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
-        m_pShoutcastNeedUpdateFromPrefs->getKey());
+            m_pShoutcastNeedUpdateFromPrefs->getKey());
 
     // Initialize libshout
     shout_init();

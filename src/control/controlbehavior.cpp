@@ -180,9 +180,9 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
         // This block makes push-buttons act as toggle buttons.
         if (m_iNumStates > 2) { // multistate button
             if (dParam > 0.) { // looking for NOTE_ON doesn't seem to work...
-                // This is a possible race condition if an other writer wants
-                // to change the value at the same time. We allow the race her,
-                // because this is possible what the user expect if he controls
+                // This is a possibly race condition if another writer wants
+                // to change the value at the same time. We allow the race here,
+                // because this is possible what the user expects if he changes
                 // the same control from different devices.
                 double value = pControl->get();
                 value++;
