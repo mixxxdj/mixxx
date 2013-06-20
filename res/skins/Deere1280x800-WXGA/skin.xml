@@ -3062,7 +3062,7 @@
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 						<Connection>
-							<ConfigKey>[Channel1],beatsync_tempo</ConfigKey>
+							<ConfigKey>[Channel1],sync_key</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>RightButton</ButtonState>
 						</Connection>
@@ -3083,7 +3083,7 @@
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 						<Connection>
-							<ConfigKey>[Channel2],beatsync_tempo</ConfigKey>
+							<ConfigKey>[Channel2],sync_key</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>RightButton</ButtonState>
 						</Connection>
