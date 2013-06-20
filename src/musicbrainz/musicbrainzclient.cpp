@@ -67,7 +67,8 @@ void MusicBrainzClient::requestFinished() {
 
     if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
         emit networkError(
-             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt());
+             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
+             "Musicbrainz");
         return;
     }
 

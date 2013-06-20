@@ -27,7 +27,7 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
     void fetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);
     void resultSelected();
     void fetchTagProgress(QString);
-    void slotNetworkError(int);
+    void slotNetworkError(int, QString);
     void apply();
     void quit();
 
@@ -51,7 +51,7 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
     Data m_data;
     QString m_progress;
     TagFetcher m_TagFetcher;
-    bool m_networkError;
+    int m_networkError; // 0 = no error, 1 = html error code, 2 = something else
 };
 
 #endif // DLGTAGFETCHER_H
