@@ -46,17 +46,17 @@ bool WaveformRendererSignalBase::init() {
 
     //create controls
     m_lowFilterControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterLow")));
+            m_waveformRenderer->getGroup(),"filterLow");
     m_midFilterControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterMid")));
+            m_waveformRenderer->getGroup(),"filterMid");
     m_highFilterControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterHigh")));
+            m_waveformRenderer->getGroup(),"filterHigh");
     m_lowKillControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterLowKill")));
+            m_waveformRenderer->getGroup(),"filterLowKill");
     m_midKillControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterMidKill")));
+            m_waveformRenderer->getGroup(),"filterMidKill");
     m_highKillControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"filterHighKill")));
+            m_waveformRenderer->getGroup(),"filterHighKill");
 
     return onInit();
 }
