@@ -61,6 +61,21 @@ class WOverview : public WWidget
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dropEvent(QDropEvent* event);
 
+    Waveform* m_pWaveform;
+
+    QImage* m_pWaveformSourceImage;
+    QImage m_waveformImageScaled;
+
+    WaveformSignalColors m_signalColors;
+
+    /** Hold the last visual sample processed to generate the pixmap*/
+    int m_actualCompletion;
+
+    bool m_pixmapDone;
+    float m_waveformPeak;
+
+    int m_diffGain;
+
   private slots:
     void onEndOfTrackChange(double v);
 
@@ -89,15 +104,6 @@ class WOverview : public WWidget
     ControlObjectThreadMain* m_trackSamplesControl;
     ControlObjectThreadMain* m_playControl;
 
-    Waveform* m_pWaveform;
-    QImage* m_pWaveformSourceImage;
-    QImage m_waveformImageScaled;
-
-    bool m_pixmapDone;
-    float m_waveformPeak;
-
-    /** Hold the last visual sample processed to generate the pixmap*/
-    int m_actualCompletion;
 
     // Current active track
     TrackPointer m_pCurrentTrack;
@@ -112,7 +118,6 @@ class WOverview : public WWidget
     QColor m_qColorBackground;
     QColor m_endOfTrackColor;
 
-    WaveformSignalColors m_signalColors;
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 
@@ -122,7 +127,6 @@ class WOverview : public WWidget
 
     int m_analyserProgress; // in 0.1%
     bool m_trackLoaded;
-    int m_diffGain;
 };
 
 #endif
