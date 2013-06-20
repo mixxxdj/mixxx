@@ -182,7 +182,7 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
             if (dParam > 0.) { // looking for NOTE_ON doesn't seem to work...
                 // This is a possibly race condition if another writer wants
                 // to change the value at the same time. We allow the race here,
-                // because this is possible what the user expects if he changes
+                // because this is possibly what the user expects if he changes
                 // the same control from different devices.
                 double value = pControl->get();
                 value++;
