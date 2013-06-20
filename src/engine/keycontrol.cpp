@@ -21,6 +21,11 @@ KeyControl::KeyControl(const char* _group,
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
 
+    m_pButtonSyncKey = new ControlPushButton(ConfigKey(_group, "sync_key"));
+    connect(m_pButtonSyncKey, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSyncKey(double)),
+            Qt::DirectConnection);
+
     m_pFileKey = new ControlObject(ConfigKey(_group, "file_key"));
     connect(m_pFileKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileKeyChanged(double)),
@@ -119,4 +124,40 @@ void KeyControl::slotSetEngineKey(double key) {
 void KeyControl::slotPitchChanged(double) {
     double dFileKey = m_pFileKey->get();
     slotFileKeyChanged(dFileKey);
+}
+
+void KeyControl::slotSyncKey(double v) {
+    if (v > 0) {
+        EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
+        syncKey(pOtherEngineBuffer);
+    }
+}
+
+bool KeyControl::syncKey(EngineBuffer* pOtherEngineBuffer) {
+    if (!pOtherEngineBuffer) {
+        return false;
+    }
+
+    mixxx::track::io::key::ChromaticKey thisFileKey =
+            KeyUtils::keyFromNumericValue(m_pFileKey->get());
+
+    // Get the sync target's effective key, since that is what we aim to match.
+    ControlObject otherKeyControl(ConfigKey(pOtherEngineBuffer->getGroup(), "key"));
+    mixxx::track::io::key::ChromaticKey otherKey =
+            KeyUtils::keyFromNumericValue(otherKeyControl.get());
+
+    if (thisFileKey == mixxx::track::io::key::INVALID ||
+        otherKey == mixxx::track::io::key::INVALID) {
+        return false;
+    }
+
+    int stepsToTake = KeyUtils::shortestStepsToCompatibleKey(thisFileKey, otherKey);
+    double newPitch = KeyUtils::stepsToOctaveChange(stepsToTake);
+    // Compensate for the existing rate adjustment.
+    bool keylock_enabled = m_pKeylock->get() > 0;
+    if (m_dOldRate != 1.0 && !keylock_enabled) {
+        newPitch -= KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+    }
+    m_pPitch->set(newPitch);
+    return true;
 }

@@ -6,6 +6,7 @@
 
 class ControlObject;
 class ControlPotmeter;
+class ControlPushButton;
 
 class KeyControl : public EngineControl {
     Q_OBJECT
@@ -24,8 +25,11 @@ class KeyControl : public EngineControl {
     void slotFileKeyChanged(double);
     void slotPitchChanged(double);
     void slotRateChanged();
+    void slotSyncKey(double);
 
   private:
+    bool syncKey(EngineBuffer* pOtherEngineBuffer);
+
     // The previous rate slider rate.
     double m_dOldRate;
     bool m_bOldKeylock;
@@ -37,6 +41,7 @@ class KeyControl : public EngineControl {
     ControlObject* m_pRateDir;
     ControlObject* m_pKeylock;
     ControlPotmeter* m_pPitch;
+    ControlPushButton* m_pButtonSyncKey;
 
     /** The current loaded file's detected key */
     ControlObject* m_pFileKey;
