@@ -546,6 +546,7 @@ class MixxxCore(Feature):
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
                    "widget/woverviewlmh.cpp",
+                   "widget/woverviewhsv.cpp",
                    "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wabstractcontrol.cpp",
