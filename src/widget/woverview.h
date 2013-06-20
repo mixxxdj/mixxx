@@ -25,28 +25,18 @@
 #include "waveform/renderers/waveformmarkset.h"
 #include "waveform/renderers/waveformmarkrange.h"
 
-/**
-Waveform overview display
-@author Tue Haste Andersen
-*/
 
+// Waveform overview display
+// @author Tue Haste Andersen
 class ControlObjectThreadMain;
 class Waveform;
 
-class WOverview : public WWidget
-{
+class WOverview : public WWidget {
     Q_OBJECT
   public:
     WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget *parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
-
-  protected:
-    void mouseMoveEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent *);
-    void resizeEvent(QResizeEvent *);
 
   public slots:
     void setValue(double);
@@ -58,6 +48,11 @@ class WOverview : public WWidget
     void trackDropped(QString filename, QString group);
 
   protected:
+    void mouseMoveEvent(QMouseEvent *e);
+    void mouseReleaseEvent(QMouseEvent *e);
+    void mousePressEvent(QMouseEvent *e);
+    void paintEvent(QPaintEvent *);
+    void resizeEvent(QResizeEvent *);
     virtual void dragEnterEvent(QDragEnterEvent* event);
     virtual void dropEvent(QDropEvent* event);
 
@@ -68,7 +63,7 @@ class WOverview : public WWidget
 
     WaveformSignalColors m_signalColors;
 
-    /** Hold the last visual sample processed to generate the pixmap*/
+    // Hold the last visual sample processed to generate the pixmap
     int m_actualCompletion;
 
     bool m_pixmapDone;
@@ -86,7 +81,7 @@ class WOverview : public WWidget
     void slotAnalyserProgress(int progress);
 
   private:
-    /** append the waveform overview pixmap according to available data in waveform */
+    // append the waveform overview pixmap according to available data in waveform
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
     inline int valueToPosition(float value) const {
@@ -108,9 +103,9 @@ class WOverview : public WWidget
     // Current active track
     TrackPointer m_pCurrentTrack;
 
-    /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
+    // True if slider is dragged. Only used when m_bEventWhileDrag is false
     bool m_bDrag;
-    /** Internal storage of slider position in pixels */
+    // Internal storage of slider position in pixels
     int m_iPos;
 
     QPixmap m_backgroundPixmap;
@@ -121,7 +116,7 @@ class WOverview : public WWidget
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 
-    /** coefficient value-position linear transposition */
+    // coefficient value-position linear transposition
     float m_a;
     float m_b;
 
