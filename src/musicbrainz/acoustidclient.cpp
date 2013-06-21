@@ -19,8 +19,7 @@
 // I registered the KEY for version 1.12 -- kain88 (may 2013)
 const QString CLIENT_APIKEY = "czKxnkyO";
 const QString CLIENT_NAME = "Mixxx1.12";
-const QString ACOUSTID_URL = "http://api.auid.org/v2/lookup";
-// const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
+const QString ACOUSTID_URL = "http://api.acoustid.org/v2/lookup";
 const int AcoustidClient::m_DefaultTimeout = 5000; // msec
 
 AcoustidClient::AcoustidClient(QObject* parent)

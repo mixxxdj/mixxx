@@ -101,6 +101,7 @@ void DlgTagFetcher::slotNetworkError(int errorCode, QString app) {
     m_data.m_pending = false;
     ErrorCode->setText(QString::number(errorCode));
     applicationName->setText(app);
+    applicationName_httpError->setText(app);
     updateStack();
 }
 
@@ -113,6 +114,7 @@ void DlgTagFetcher::updateStack() {
         return;
     } else if (m_networkError == 2) {
         stack->setCurrentWidget(generalnetworkError_page);
+        return;
     } else if (m_data.m_results.isEmpty()) {
         stack->setCurrentWidget(error_page);
         return;
