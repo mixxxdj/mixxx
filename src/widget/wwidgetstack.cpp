@@ -6,7 +6,7 @@ WidgetStackControlListener::WidgetStackControlListener(QObject* pParent,
                                                        ControlObject* pControl,
                                                        int index)
         : QObject(pParent),
-          m_control(pControl),
+          m_control(pControl->getKey()),
           m_index(index) {
     connect(&m_control, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
@@ -33,8 +33,8 @@ WWidgetStack::WWidgetStack(QWidget* pParent,
                            ControlObject* pNextControl,
                            ControlObject* pPrevControl)
         : QStackedWidget(pParent),
-          m_nextControl(pNextControl),
-          m_prevControl(pPrevControl) {
+          m_nextControl(pNextControl->getKey()),
+          m_prevControl(pPrevControl->getKey()) {
     connect(&m_nextControl, SIGNAL(valueChanged(double)),
             this, SLOT(onNextControlChanged(double)));
     connect(&m_prevControl, SIGNAL(valueChanged(double)),

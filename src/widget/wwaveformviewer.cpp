@@ -24,16 +24,15 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
     m_bScratching = false;
     m_bBending = false;
 
-    m_pZoom = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "waveform_zoom")));
+    m_pZoom = new ControlObjectThreadMain(group, "waveform_zoom");
 
     connect(m_pZoom, SIGNAL(valueChanged(double)),
             this, SLOT(onZoomChange(double)));
 
     m_pScratchPositionEnable = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
+            group, "scratch_position_enable");
     m_pScratchPosition = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "scratch_position")));
+            group, "scratch_position");
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 

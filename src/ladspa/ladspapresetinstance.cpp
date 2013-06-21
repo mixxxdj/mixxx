@@ -52,7 +52,7 @@ void LADSPAPresetInstance::addControl(int i, LADSPAPresetKnob * knob, EngineLADS
 {
     ConfigKey * key = new ConfigKey("[LADSPA]", knob->getLabel());
     ControlObject * potmeter = new ControlPotmeter(*key, knob->getMin(), knob->getMax());
-    ControlObjectThreadMain * potmeterThreadMain = new ControlObjectThreadMain(potmeter);
+    ControlObjectThreadMain * potmeterThreadMain = new ControlObjectThreadMain(potmeter->getKey());
     LADSPAControl * control = new LADSPAControl;
     control->setValue(knob->getDefault());
     potmeterThreadMain->slotSet(knob->getDefault());
