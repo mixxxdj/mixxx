@@ -41,6 +41,10 @@ void DlgTrackInfo::init(){
             this, SLOT(slotBpmDouble()));
     connect(bpmHalve, SIGNAL(clicked()),
             this, SLOT(slotBpmHalve()));
+    connect(bpmTwoThirds, SIGNAL(clicked()),
+            this, SLOT(slotBpmTwoThirds()));
+    connect(bpmThreeFourth, SIGNAL(clicked()),
+            this, SLOT(slotBpmThreeFourth()));
 
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
@@ -131,6 +135,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmTap->setEnabled(enableBpmEditing);
     bpmDouble->setEnabled(enableBpmEditing);
     bpmHalve->setEnabled(enableBpmEditing);
+    bpmTwoThirds->setEnabled(enableBpmEditing);
+    bpmThreeFourth->setEnabled(enableBpmEditing);
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
@@ -297,6 +303,14 @@ void DlgTrackInfo::slotBpmDouble() {
 
 void DlgTrackInfo::slotBpmHalve() {
     spinBpm->setValue(spinBpm->value() / 2.0);
+}
+
+void DlgTrackInfo::slotBpmTwoThirds() {
+    spinBpm->setValue(spinBpm->value() * (2./3.));
+}
+
+void DlgTrackInfo::slotBpmThreeFourth() {
+    spinBpm->setValue(spinBpm->value() * (3./4.));
 }
 
 void DlgTrackInfo::slotBpmTap() {
