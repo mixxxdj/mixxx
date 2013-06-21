@@ -23,7 +23,7 @@
 #include <QString>
 #include <AudioToolbox/AudioToolbox.h>
 //In our tree at lib/apple/
-#include "CAStreamBasicDescription.h" 
+#include "CAStreamBasicDescription.h"
 
 #if !defined(__COREAUDIO_USE_FLAT_INCLUDES__)
 #include <CoreServices/CoreServices.h>
@@ -57,8 +57,8 @@ private:
     unsigned int m_samples; // total number of samples
     SInt64 m_headerFrames;
     ExtAudioFileRef m_audioFile;
-    CAStreamBasicDescription m_clientFormat;
     CAStreamBasicDescription m_inputFormat;
+    CAStreamBasicDescription m_outputFormat;
 };
 
 
