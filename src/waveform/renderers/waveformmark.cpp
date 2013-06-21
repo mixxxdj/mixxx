@@ -14,10 +14,7 @@ WaveformMark::WaveformMark()
 
 void WaveformMark::setup(const QString& group, const QDomNode& node, const WaveformSignalColors& signalColors) {
     QString item = XmlParse::selectNodeQString(node, "Control");
-    ControlObject* pPointControl = ControlObject::getControl(ConfigKey(group, item));
-    if (pPointControl) {
-        m_pointControl = new ControlObjectThreadMain(pPointControl);
-    }
+    m_pointControl = new ControlObjectThreadMain(group, item);
 
     m_color = XmlParse::selectNodeQString(node, "Color");
     if (m_color == "") {

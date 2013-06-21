@@ -61,7 +61,7 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
                 //qDebug() << "WaveformRenderMark::setup - Automatic mark" << hotCueControlItem;
                 m_marks.push_back(m_defaultMark);
                 WaveformMark& mark = m_marks.back();
-                mark.m_pointControl = new ControlObjectThreadMain(pHotcue);
+                mark.m_pointControl = new ControlObjectThreadMain(pHotcue->getKey());
                 mark.m_text = mark.m_text.arg(i);
             }
         }

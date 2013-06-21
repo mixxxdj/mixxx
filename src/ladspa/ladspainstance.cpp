@@ -19,7 +19,7 @@ LADSPAInstance::LADSPAInstance(const LADSPA_Descriptor * descriptor, int slot)
 
     if (m_pControlObjectSampleRate == NULL)
     {
-        m_pControlObjectSampleRate = new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "samplerate")));
+        m_pControlObjectSampleRate = new ControlObjectThreadMain("[Master]", "samplerate");
     }
 
     if (LADSPA_IS_INPLACE_BROKEN(m_pDescriptor->Properties))

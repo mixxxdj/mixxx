@@ -32,13 +32,15 @@ class ControlObject : public QObject {
     ControlObject();
     ControlObject(ConfigKey key,
                   bool bIgnoreNops=true, bool bTrack=false);
-    ControlObject(const QString& group, const QString& item,
-                  bool bIgnoreNops=true, bool bTrack=false);
     virtual ~ControlObject();
 
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject* getControl(const ConfigKey& key);
     static inline ControlObject* getControl(const QString& group, const QString& item) {
+        ConfigKey key(group, item);
+        return getControl(key);
+    }
+    static inline ControlObject* getControl(const char* group, const char* item) {
         ConfigKey key(group, item);
         return getControl(key);
     }
@@ -73,8 +75,6 @@ class ControlObject : public QObject {
     // subsystem.
     virtual void setValueFromMidi(MidiOpCode o, double v);
     virtual double getValueToMidi() const;
-    // DEPRECATED: Called to set the control value from another thread.
-    virtual void setValueFromThread(double dValue, QObject* pSetter);
 
   protected:
     // Key of the object

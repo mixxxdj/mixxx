@@ -242,9 +242,9 @@ void MixxxApp::initializeKeyboard() {
 MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         : m_runtime_timer("MixxxApp::runtime"),
           m_cmdLineArgs(args) {
+    logBuildDetails();
     ScopedTimer t("MixxxApp::MixxxApp");
     m_runtime_timer.start();
-
     initializeWindow();
 
     // Only record stats in developer mode.
@@ -983,11 +983,11 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl->setStatusTip(vinylControlText);
     m_pOptionsVinylControl->setWhatsThis(buildWhatsThis(vinylControlTitle1, vinylControlText));
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
-        SLOT(slotCheckboxVinylControl(bool)));
+            SLOT(slotCheckboxVinylControl(bool)));
     ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled")),this);
+            "[Channel1]", "vinylcontrol_enabled", this);
     connect(enabled1, SIGNAL(valueChanged(double)), this,
-        SLOT(slotControlVinylControl(double)));
+            SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2 = new QAction(vinylControlTitle2, this);
     m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
@@ -997,12 +997,12 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl2->setStatusTip(vinylControlText);
     m_pOptionsVinylControl2->setWhatsThis(buildWhatsThis(vinylControlTitle2, vinylControlText));
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
-        SLOT(slotCheckboxVinylControl2(bool)));
+            SLOT(slotCheckboxVinylControl2(bool)));
 
     ControlObjectThreadMain* enabled2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled")),this);
+            "[Channel2]", "vinylcontrol_enabled", this);
     connect(enabled2, SIGNAL(valueChanged(double)), this,
-        SLOT(slotControlVinylControl2(double)));
+            SLOT(slotControlVinylControl2(double)));
 #endif
 
 #ifdef __SHOUTCAST__
