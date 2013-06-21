@@ -54,25 +54,25 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
         QString group = QString("[Channel%1]").arg(i+1);
         m_rateControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rate"))));
+                group, "rate"));
         m_rateRangeControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rateRange"))));
+                group, "rateRange"));
         m_rateDirControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rate_dir"))));
+                group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "cue_mode"))));
+                group, "cue_mode"));
     }
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         QString group = QString("[Sampler%1]").arg(i+1);
         m_rateControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rate"))));
+                group, "rate"));
         m_rateRangeControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rateRange"))));
+                group, "rateRange"));
         m_rateDirControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rate_dir"))));
+                group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "cue_mode"))));
+                group, "cue_mode"));
     }
 
     // Position display configuration

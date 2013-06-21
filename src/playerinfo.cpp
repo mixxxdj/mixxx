@@ -29,14 +29,10 @@ PlayerInfo::PlayerInfo()
     for (int i = 0; i < m_iNumDecks; ++i) {
         QString chan = PlayerManager::groupForDeck(i);
 
-        m_listCOPlay[chan] = new ControlObjectThread(
-            ControlObject::getControl(ConfigKey(chan, "play")));
-        m_listCOVolume[chan] = new ControlObjectThread(
-            ControlObject::getControl(ConfigKey(chan, "volume")));
-        m_listCOOrientation[chan] = new ControlObjectThread(
-            ControlObject::getControl(ConfigKey(chan, "orientation")));
-        m_listCOpregain[chan] = new ControlObjectThread(
-            ControlObject::getControl(ConfigKey(chan, "pregain")));
+        m_listCOPlay[chan] = new ControlObjectThread(chan, "play");
+        m_listCOVolume[chan] = new ControlObjectThread(chan, "volume");
+        m_listCOOrientation[chan] = new ControlObjectThread(chan, "orientation");
+        m_listCOpregain[chan] = new ControlObjectThread(chan, "pregain");
     }
 
     m_iNumSamplers = ControlObject::getControl(
@@ -44,18 +40,13 @@ PlayerInfo::PlayerInfo()
     for (int i = 0; i < m_iNumSamplers; ++i) {
         QString chan = PlayerManager::groupForSampler(i);
 
-        m_listCOPlay[chan] = new ControlObjectThread(
-            ControlObject::getControl(ConfigKey(chan, "play")));
-        m_listCOVolume[chan] = new ControlObjectThread(
-            ControlObject::getControl(ConfigKey(chan, "volume")));
-        m_listCOOrientation[chan] = new ControlObjectThread(
-            ControlObject::getControl(ConfigKey(chan, "orientation")));
-        m_listCOpregain[chan] = new ControlObjectThread(
-            ControlObject::getControl(ConfigKey(chan, "pregain")));
+        m_listCOPlay[chan] = new ControlObjectThread(chan, "play");
+        m_listCOVolume[chan] = new ControlObjectThread(chan, "volume");
+        m_listCOOrientation[chan] = new ControlObjectThread(chan, "orientation");
+        m_listCOpregain[chan] = new ControlObjectThread(chan, "pregain");
     }
 
-    m_COxfader = new ControlObjectThread(
-        ControlObject::getControl(ConfigKey("[Master]","crossfader")));
+    m_COxfader = new ControlObjectThread("[Master]","crossfader");
     startTimer(2000);
 }
 

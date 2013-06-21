@@ -16,12 +16,12 @@ LoadToGroupController::LoadToGroupController(QObject* pParent,
         QObject(pParent),
         m_group(group) {
     m_pLoadControl = new ControlObject(ConfigKey(group, "LoadSelectedTrack"));
-    m_pLoadCOTM = new ControlObjectThreadMain(m_pLoadControl);
+    m_pLoadCOTM = new ControlObjectThreadMain(m_pLoadControl->getKey());
     connect(m_pLoadCOTM, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroup(double)));
 
     m_pLoadAndPlayControl = new ControlObject(ConfigKey(group, "LoadSelectedTrackAndPlay"));
-    m_pLoadAndPlayCOTM = new ControlObjectThreadMain(m_pLoadAndPlayControl);
+    m_pLoadAndPlayCOTM = new ControlObjectThreadMain(m_pLoadAndPlayControl->getKey());
     connect(m_pLoadAndPlayCOTM, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroupAndPlay(double)));
 
@@ -66,38 +66,38 @@ LibraryControl::LibraryControl(QObject* pParent) : QObject(pParent) {
                 this, PlayerManager::groupForPreviewDeck(i));
     }
 
-    m_pSelectNextTrack = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[Playlist]", "SelectNextTrack")));
+    m_pSelectNextTrackCO = new ControlObject(ConfigKey("[Playlist]", "SelectNextTrack"));
+    m_pSelectNextTrack = new ControlObjectThreadMain(m_pSelectNextTrackCO->getKey());
     connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextTrack(double)));
 
-    m_pSelectPrevTrack = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[Playlist]", "SelectPrevTrack")));
+    m_pSelectPrevTrackCO = new ControlObject(ConfigKey("[Playlist]", "SelectPrevTrack"));
+    m_pSelectPrevTrack = new ControlObjectThreadMain(m_pSelectPrevTrackCO->getKey());
     connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevTrack(double)));
 
-    m_pSelectNextPlaylist = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[Playlist]", "SelectNextPlaylist")));
+    m_pSelectNextPlaylistCO = new ControlObject(ConfigKey("[Playlist]", "SelectNextPlaylist"));
+    m_pSelectNextPlaylist = new ControlObjectThreadMain(m_pSelectNextPlaylistCO->getKey());
     connect(m_pSelectNextPlaylist, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextSidebarItem(double)));
 
-    m_pSelectPrevPlaylist = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[Playlist]", "SelectPrevPlaylist")));
+    m_pSelectPrevPlaylistCO = new ControlObject(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
+    m_pSelectPrevPlaylist = new ControlObjectThreadMain(m_pSelectPrevPlaylistCO->getKey());
     connect(m_pSelectPrevPlaylist, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevSidebarItem(double)));
 
-    m_pToggleSidebarItem = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem")));
+    m_pToggleSidebarItemCO = new ControlObject(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
+    m_pToggleSidebarItem = new ControlObjectThreadMain(m_pToggleSidebarItemCO->getKey());
     connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleSelectedSidebarItem(double)));
 
-    m_pLoadSelectedIntoFirstStopped = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped")));
+    m_pLoadSelectedIntoFirstStoppedCO = new ControlObject(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
+    m_pLoadSelectedIntoFirstStopped = new ControlObjectThreadMain(m_pLoadSelectedIntoFirstStoppedCO->getKey());
     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
-    m_pSelectTrackKnob = new ControlObjectThreadMain(
-        new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob")));
+    m_pSelectTrackKnobCO = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"));
+    m_pSelectTrackKnob = new ControlObjectThreadMain(m_pSelectTrackKnobCO->getKey());
     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrackKnob(double)));
 }
@@ -110,6 +110,13 @@ LibraryControl::~LibraryControl() {
    delete m_pToggleSidebarItem;
    delete m_pLoadSelectedIntoFirstStopped;
    delete m_pSelectTrackKnob;
+   delete m_pSelectNextTrackCO;
+   delete m_pSelectPrevTrackCO;
+   delete m_pSelectNextPlaylistCO;
+   delete m_pSelectPrevPlaylistCO;
+   delete m_pToggleSidebarItemCO;
+   delete m_pLoadSelectedIntoFirstStoppedCO;
+   delete m_pSelectTrackKnobCO;
 }
 
 void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

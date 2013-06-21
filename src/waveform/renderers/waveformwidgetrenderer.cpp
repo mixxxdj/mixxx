@@ -91,17 +91,17 @@ bool WaveformWidgetRenderer::init() {
     //qDebug() << "WaveformWidgetRenderer::init";
 
     m_playPosControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group, "visual_playposition")));
+            m_group, "visual_playposition");
     m_rateControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group, "rate")));
+            m_group, "rate");
     m_rateRangeControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group, "rateRange")));
+            m_group, "rateRange");
     m_rateDirControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group, "rate_dir")));
+            m_group, "rate_dir");
     m_gainControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group, "total_gain")));
+            m_group, "total_gain");
     m_trackSamplesControlObject = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_group, "track_samples")));
+            m_group, "track_samples");
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
         if (!m_rendererStack[i]->init()) {

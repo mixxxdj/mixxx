@@ -19,10 +19,8 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_tapFilter(this, filterLength, maxInterval) {
-
-
-    m_pPlayButton = ControlObject::getControl(ConfigKey(_group, "play"));
-    m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
+    m_pPlayButton = ControlObject::getControl(_group, "play");
+    m_pRateSlider = ControlObject::getControl(_group, "rate");
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
@@ -30,7 +28,7 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
-    m_pRateRange = ControlObject::getControl(ConfigKey(_group, "rateRange"));
+    m_pRateRange = ControlObject::getControl(_group, "rateRange");
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
@@ -38,7 +36,7 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
-    m_pRateDir = ControlObject::getControl(ConfigKey(_group, "rate_dir"));
+    m_pRateDir = ControlObject::getControl(_group, "rate_dir");
     connect(m_pRateDir, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
@@ -46,12 +44,9 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
-    m_pLoopEnabled = ControlObject::getControl(
-        ConfigKey(_group, "loop_enabled"));
-    m_pLoopStartPosition = ControlObject::getControl(
-        ConfigKey(_group, "loop_start_position"));
-    m_pLoopEndPosition = ControlObject::getControl(
-        ConfigKey(_group, "loop_end_position"));
+    m_pLoopEnabled = ControlObject::getControl(_group, "loop_enabled");
+    m_pLoopStartPosition = ControlObject::getControl(_group, "loop_start_position");
+    m_pLoopEndPosition = ControlObject::getControl(_group, "loop_end_position");
 
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
@@ -84,8 +79,7 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotControlBeatSyncTempo(double)),
             Qt::DirectConnection);
 
-    m_pTranslateBeats = new ControlPushButton(
-        ConfigKey(_group, "beats_translate_curpos"));
+    m_pTranslateBeats = new ControlPushButton(ConfigKey(_group, "beats_translate_curpos"));
     connect(m_pTranslateBeats, SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatsTranslate(double)),
             Qt::DirectConnection);

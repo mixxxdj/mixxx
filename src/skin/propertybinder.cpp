@@ -9,7 +9,7 @@ PropertyBinder::PropertyBinder(QWidget* pWidget, QString propertyName,
         : QObject(pWidget),
           m_propertyName(propertyName),
           m_pWidget(pWidget),
-          m_pControlThreadMain(new ControlObjectThreadMain(pControl)),
+          m_pControlThreadMain(new ControlObjectThreadMain(pControl->getKey())),
           m_pConfig(pConfig) {
     connect(m_pControlThreadMain, SIGNAL(valueChanged(double)),
             this, SLOT(slotValueChanged(double)));
