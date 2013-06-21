@@ -307,8 +307,8 @@ void MidiController::receive(unsigned char status, unsigned char control,
     }
 
     // Only pass values on to valid ControlObjects.
-    ControlObject* p = mc.getControlObject();
-    if (p == NULL) {
+    ControlObject* pCO = mc.getControlObject();
+    if (pCO == NULL) {
         return;
     }
 
@@ -334,7 +334,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
         // computeValue not (yet) done on pitch messages because it all assumes 7-bit numbers
     } else {
-        double currMixxxControlValue = p->getValueToMidi();
+        double currMixxxControlValue = pCO->getValueToMidi();
         newValue = computeValue(options, currMixxxControlValue, value);
     }
 
@@ -346,24 +346,26 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
     if (options.soft_takeover) {
         // This is the only place to enable it if it isn't already.
-        m_st.enable(p);
+        m_st.enable(pCO);
     }
 
     if (opCode == MIDI_PITCH_BEND) {
         // Absolute value is calculated above on Pitch messages (-1..1)
         if (options.soft_takeover) {
-            if (m_st.ignore(p, newValue, false)) {
+            if (m_st.ignore(pCO, newValue, false)) {
                 return;
             }
         }
-        p->setValueFromThread(newValue, NULL);
+        // Use temporary cot for bypass own signal filter
+        ControlObjectThread cot(pCO->getKey());
+        cot.set(newValue);
     } else {
         if (options.soft_takeover) {
-            if (m_st.ignore(p, newValue, true)) {
+            if (m_st.ignore(pCO, newValue, true)) {
                 return;
             }
         }
-        p->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+        pCO->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
     }
 }
 

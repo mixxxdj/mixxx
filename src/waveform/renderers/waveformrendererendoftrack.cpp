@@ -37,16 +37,16 @@ bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
     m_endOfTrackControl = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "end_of_track")));
+            m_waveformRenderer->getGroup(), "end_of_track");
     m_endOfTrackControl->slotSet(0.);
     m_endOfTrackEnabled = false;
 
     m_trackSampleRate = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "track_samplerate")));
+            m_waveformRenderer->getGroup(), "track_samplerate");
     m_playControl = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "play")));
+            m_waveformRenderer->getGroup(), "play");
     m_loopControl = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "loop_enabled")));
+            m_waveformRenderer->getGroup(), "loop_enabled");
     return true;
 }
 

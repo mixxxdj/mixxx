@@ -40,12 +40,6 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
     initialize(key, bIgnoreNops, bTrack);
 }
 
-ControlObject::ControlObject(const QString& group, const QString& item,
-                             bool bIgnoreNops, bool bTrack)
-        : m_pControl(NULL) {
-    initialize(ConfigKey(group, item), bIgnoreNops, bTrack);
-}
-
 ControlObject::~ControlObject() {
     m_sqCOHashMutex.lock();
     m_sqCOHash.remove(m_key);
@@ -64,9 +58,10 @@ void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
     m_sqCOHashMutex.unlock();
 }
 
-void ControlObject::privateValueChanged(double dValue, QObject* pSetter) {
+// slot
+void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
     // Only emit valueChanged() if we did not originate this change.
-    if (pSetter != this) {
+    if (pSender != this) {
         emit(valueChanged(dValue));
     } else {
         emit(valueChangedFromEngine(dValue));
@@ -136,19 +131,13 @@ double ControlObject::getValueToMidi() const {
     return m_pControl ? m_pControl->getMidiParameter() : 0.0;
 }
 
-void ControlObject::setValueFromThread(double dValue, QObject* pSender) {
-    if (m_pControl) {
-        m_pControl->set(dValue, pSender);
-    }
-}
-
 double ControlObject::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
 }
 
 void ControlObject::reset() {
     if (m_pControl) {
-        m_pControl->reset(this);
+        m_pControl->reset();
     }
 }
 

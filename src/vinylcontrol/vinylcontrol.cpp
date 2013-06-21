@@ -10,25 +10,25 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
 
     // Get Control objects
-    playPos             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "playposition")));    //Range: -.14 to 1.14
-    trackSamples        = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "track_samples")));
-    trackSampleRate     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "track_samplerate")));
-    vinylSeek           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_seek")));
-    controlScratch      = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "scratch2")));
-    rateSlider          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate")));    //Range -1.0 to 1.0
-    playButton          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "play")));
-    reverseButton       = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "reverse")));
-    duration            = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "duration")));
-    mode                = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_mode")));
-    enabled             = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_enabled")));
-    wantenabled         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_wantenabled")));
-    cueing              = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_cueing")));
-    scratching          = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_scratching")));
-    rateRange           = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rateRange")));
-    vinylStatus     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_status")));
-    rateDir         = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "rate_dir")));
-    loopEnabled     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "loop_enabled")));
-    signalenabled     = new ControlObjectThread(ControlObject::getControl(ConfigKey(group, "vinylcontrol_signal_enabled")));
+    playPos             = new ControlObjectThread(group, "playposition");    //Range: -.14 to 1.14
+    trackSamples        = new ControlObjectThread(group, "track_samples");
+    trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
+    vinylSeek           = new ControlObjectThread(group, "vinylcontrol_seek");
+    controlScratch      = new ControlObjectThread(group, "scratch2");
+    rateSlider          = new ControlObjectThread(group, "rate");    //Range -1.0 to 1.0
+    playButton          = new ControlObjectThread(group, "play");
+    reverseButton       = new ControlObjectThread(group, "reverse");
+    duration            = new ControlObjectThread(group, "duration");
+    mode                = new ControlObjectThread(group, "vinylcontrol_mode");
+    enabled             = new ControlObjectThread(group, "vinylcontrol_enabled");
+    wantenabled         = new ControlObjectThread(group, "vinylcontrol_wantenabled");
+    cueing              = new ControlObjectThread(group, "vinylcontrol_cueing");
+    scratching          = new ControlObjectThread(group, "vinylcontrol_scratching");
+    rateRange           = new ControlObjectThread(group, "rateRange");
+    vinylStatus         = new ControlObjectThread(group, "vinylcontrol_status");
+    rateDir             = new ControlObjectThread(group, "rate_dir");
+    loopEnabled         = new ControlObjectThread(group, "loop_enabled");
+    signalenabled       = new ControlObjectThread(group, "vinylcontrol_signal_enabled");
 
     dVinylPitch = 0.0f;
     dVinylPosition = 0.0f;
