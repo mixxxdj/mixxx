@@ -62,6 +62,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bActive;
     void updateFilterText();
     void setRate();
+    QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(mixxx::track::io::key::ChromaticKey key);
     float m_rate;
     bool m_bFilterGenre;
     bool m_bFilterBpm;

@@ -11,6 +11,8 @@
 #include "controlobject.h"
 #include "trackinfoobject.h"
 
+#include "track/keyutils.h"
+
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
@@ -85,7 +87,8 @@ bool SelectorLibraryTableModel::currentTrackRatingExists() {
 }
 
 bool SelectorLibraryTableModel::currentTrackKeyExists() {
-    return ChromaticKey_IsValid(m_currentTrackKey);
+    return ChromaticKey_IsValid(m_currentTrackKey) &&
+               m_currentTrackKey != mixxx::track::io::key::INVALID;
 }
 
 void SelectorLibraryTableModel::filterByGenre(bool value) {
@@ -165,7 +168,6 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
 
 }
 
-
 void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
     qDebug() << "BPM changed to " << value;
     setRate();
@@ -224,9 +226,22 @@ void SelectorLibraryTableModel::updateFilterText() {
 
         // Keys
 
-//		QString hKeys = getHarmonicKeys(trackKey);
-//		if (hKeys!="")
-//            filters << QString("Key in (%1)").arg(hKeys);
+        QList<ChromaticKey> hKeys = getHarmonicKeys(m_currentTrackKey);
+
+        if (!hKeys.isEmpty()) {
+            // string business is a hack until filters use ChromaticKey directly
+            QStringList keyNames;
+
+            while (!hKeys.isEmpty()) {
+                ChromaticKey key = hKeys.takeFirst();
+                keyNames.append(QString("'%1'").arg(KeyUtils::keyToString(key)));
+            }
+            if (!keyNames.isEmpty()) {
+                QString keyString = keyNames.join(",");
+                qDebug() << "Match keys " << keyString;
+                filters << QString("Key in (%1)").arg(keyString);
+            }
+        }
                     
         QString filterString = filters.join(" AND ");
         if (m_filterString != filterString) {
@@ -238,9 +253,28 @@ void SelectorLibraryTableModel::updateFilterText() {
 
 }
 
+QList<ChromaticKey> SelectorLibraryTableModel::getHarmonicKeys(ChromaticKey key) {
+    QList<ChromaticKey> keys;
+
+    if (currentTrackKeyExists()) {
+        if (m_bFilterKey) {
+            keys.append(key);
+        }
+        if (m_bFilterKey4th) {
+            keys.append(KeyUtils::scaleKeySteps(key, 5));
+        }
+        if (m_bFilterKey5th) {
+            keys.append(KeyUtils::scaleKeySteps(key, 7));
+        }
+        if (m_bFilterKeyRelative) {
+            keys.append(KeyUtils::keyToRelativeMajorOrMinor(key));
+        }
+    }
+
+    return keys;
+}
+
 void SelectorLibraryTableModel::setRate() {
-    m_rate = 1.0;
-    return;
         // get pitch slider value (deck rate)
     ControlObjectThreadMain* rateSlider = new ControlObjectThreadMain(
         ControlObject::getControl(ConfigKey(m_pChannel, "rate")));

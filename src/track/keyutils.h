@@ -37,6 +37,9 @@ class KeyUtils {
     static mixxx::track::io::key::ChromaticKey scaleKeySteps(
         mixxx::track::io::key::ChromaticKey key, int steps);
 
+    static mixxx::track::io::key::ChromaticKey keyToRelativeMajorOrMinor(
+        mixxx::track::io::key::ChromaticKey key);
+
     static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
 
     static mixxx::track::io::key::ChromaticKey calculateGlobalKey(

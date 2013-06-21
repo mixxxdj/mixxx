@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>619</width>
+    <width>683</width>
     <height>399</height>
    </rect>
   </property>
@@ -43,6 +43,43 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxGenre">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>69</red>
+             <green>69</green>
+             <blue>69</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="text">
         <string>Genre</string>
        </property>
@@ -50,6 +87,43 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxBpm">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>69</red>
+             <green>69</green>
+             <blue>69</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="text">
         <string>BPM</string>
        </property>
@@ -79,6 +153,43 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxYear">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>69</red>
+             <green>69</green>
+             <blue>69</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="text">
         <string>Year</string>
        </property>
@@ -86,6 +197,43 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxRating">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>69</red>
+             <green>69</green>
+             <blue>69</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="text">
         <string>Rating</string>
        </property>
@@ -93,6 +241,43 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxKey">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>69</red>
+             <green>69</green>
+             <blue>69</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="text">
         <string>Key</string>
        </property>
@@ -100,6 +285,43 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxKey4th">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>69</red>
+             <green>69</green>
+             <blue>69</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="text">
         <string>Perfect 4th</string>
        </property>
@@ -107,6 +329,43 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxKey5th">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>69</red>
+             <green>69</green>
+             <blue>69</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="text">
         <string>Perfect 5th</string>
        </property>
@@ -114,6 +373,43 @@
      </item>
      <item>
       <widget class="QCheckBox" name="checkBoxKeyRelative">
+       <property name="palette">
+        <palette>
+         <active>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </active>
+         <inactive>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>223</red>
+             <green>223</green>
+             <blue>223</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </inactive>
+         <disabled>
+          <colorrole role="WindowText">
+           <brush brushstyle="SolidPattern">
+            <color alpha="255">
+             <red>69</red>
+             <green>69</green>
+             <blue>69</blue>
+            </color>
+           </brush>
+          </colorrole>
+         </disabled>
+        </palette>
+       </property>
        <property name="text">
         <string>Relative Key</string>
        </property>

@@ -311,6 +311,16 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
     return static_cast<ChromaticKey>(tonic + (minor ? 13 : 1));
 }
 
+//static
+ChromaticKey KeyUtils::keyToRelativeMajorOrMinor(ChromaticKey key) {
+    bool major = keyIsMajor(key);
+    int tonic = keyToOpenKeyNumber(key);
+
+    // if the key was major, return relative minor and vice versa
+    return s_openKeyToKeys[tonic][major ? 1 : 0];
+}
+
+
 // static
 mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
     const KeyChangeList& key_changes, const int iTotalSamples) {
