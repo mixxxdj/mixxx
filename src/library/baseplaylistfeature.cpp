@@ -149,8 +149,8 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 }
 
 void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
-    QString /* a_strName */) {
-    slotPlaylistTableChanged (playlistId);
+                                                   QString /* a_strName */) {
+    slotPlaylistTableChanged(playlistId);
 }
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {

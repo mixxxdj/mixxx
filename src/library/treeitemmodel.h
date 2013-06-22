@@ -21,8 +21,8 @@ class TreeItemModel : public QAbstractItemModel {
     virtual QModelIndex parent(const QModelIndex &index) const;
     virtual bool insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent = QModelIndex());
     virtual bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
-    virtual bool setData (const QModelIndex &a_rIndex, const QVariant &a_rValue,
-        int a_iRole = Qt::EditRole);
+    virtual bool setData(const QModelIndex &a_rIndex, const QVariant &a_rValue,
+                         int a_iRole = Qt::EditRole);
     virtual int rowCount(const QModelIndex &parent = QModelIndex()) const;
     virtual int columnCount(const QModelIndex &parent = QModelIndex()) const;
     void setRootItem(TreeItem *item);
