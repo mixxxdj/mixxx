@@ -70,22 +70,30 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
     while (query.next()) {
         dirId = query.value(query.record().indexOf(DIRECTORYDAO_ID)).toInt();
     }
-
+    qDebug() << "kain88 dirId" << dirId ;
 
     // update location and directory in track_locations table
     query.prepare("UPDATE track_locations SET location="
-                  "REPLACE(location,:oldFolder,:newFolder)"
+                  "REPLACE(location," %escaper.escapeString(oldFolder)%","% escaper.escapeString(newFolder)%")"
                   ", directory="
-                  "REPLACE(directory,:oldFolder,:newFolder) "
-                  "WHERE track_locations.maindir_id = :dirId");
-    query.bindValue(":newFolder", escaper.escapeString(newFolder));
-    query.bindValue(":oldFolder", escaper.escapeString(oldFolder));
-    query.bindValue(":dirId", dirId);
+                  "REPLACE(directory,"% escaper.escapeString(oldFolder)%","% escaper.escapeString(newFolder)%") "
+                  "WHERE track_locations.maindir_id = "%QString::number(dirId) );
+    // query.bindValue(":newFolder1", escaper.escapeString(newFolder));
+    // query.bindValue(":oldFolder1", escaper.escapeString(oldFolder));
+    // query.bindValue(":newFolder2", escaper.escapeString(newFolder));
+    // query.bindValue(":oldFolder2", escaper.escapeString(oldFolder));
+    // qDebug() << escaper.escapeString(newFolder);
+    // qDebug() << escaper.escapeString(oldFolder);
+    // qDebug() << query.boundValue(":newFolder1");
+    // qDebug() << query.boundValue(":oldFolder1");
+    // qDebug() << query.boundValue(":newFolder2");
+    // qDebug() << query.boundValue(":oldFolder2");
+    // query.bindValue(":dirId", dirId);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
         return false;
     }
-
+    qDebug() << query.executedQuery() ;
     // updating the dir_id column is not necessary because it does not change
     transaction.commit();
     return true;
