@@ -355,4 +355,17 @@ METADATA
       ALTER TABLE crates ADD COLUMN autodj_source integer DEFAULT 0;
     </sql>
   </revision>
+  <revision version="21" min_compatible="3">
+    <description>
+      Add directories table
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS directories (
+        dir_id INTEGER primary key AUTOINCREMENT,
+        directory varchar(1024)
+      );
+      CREATE UNIQUE INDEX directory_idx ON directories(directory);
+      ALTER TABLE track_locations ADD COLUMN maindir_id INTEGER DEFAULT 0;
+    </sql>
+  </revision>
 </schema>
