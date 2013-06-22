@@ -92,6 +92,9 @@ class TrackModel {
         Q_UNUSED(sourceIndex);
         Q_UNUSED(destIndex);
     }
+    virtual bool isLocked() {
+        return false;
+    }
     virtual QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent) {
         Q_UNUSED(i);
         Q_UNUSED(pParent);
