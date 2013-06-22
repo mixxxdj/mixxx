@@ -51,23 +51,24 @@ VinylControlManager::~VinylControlManager() {
 
 void VinylControlManager::init() {
     // Load saved preferences now that the objects exist
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
-            ->setValueFromThread(0, NULL);
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
-            ->setValueFromThread(0, NULL);
+    ControlObjectThread cotVcEnable1("[Channel1]","vinylcontrol_enabled");
+    cotVcEnable1.set(0);
+    ControlObjectThread cotVcEnable2("[Channel2]","vinylcontrol_enabled");
+    cotVcEnable2.set(0);
 
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey(VINYL_PREF_KEY,"mode")).toDouble(), NULL);
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey(VINYL_PREF_KEY,"mode")).toDouble(), NULL);
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey(VINYL_PREF_KEY,"cueing_ch1")).toDouble(), NULL);
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey(VINYL_PREF_KEY,"cueing_ch2")).toDouble(), NULL);
+    ControlObjectThread cotVcMode1("[Channel1]","vinylcontrol_mode");
+    cotVcMode1.set(m_pConfig->getValueString(
+            ConfigKey(VINYL_PREF_KEY,"mode")).toDouble());
+    ControlObjectThread cotVcMode2("[Channel2]","vinylcontrol_mode");
+    cotVcMode2.set(m_pConfig->getValueString(
+            ConfigKey(VINYL_PREF_KEY,"mode")).toDouble());
+
+    ControlObjectThread cotVcCueing1("[Channel1]","vinylcontrol_cueing");
+    cotVcCueing1.set(m_pConfig->getValueString(
+            ConfigKey(VINYL_PREF_KEY,"cueing_ch1")).toDouble());
+    ControlObjectThread cotVcCueing2("[Channel2]","vinylcontrol_cueing");
+    cotVcCueing2.set(m_pConfig->getValueString(
+            ConfigKey(VINYL_PREF_KEY,"cueing_ch2")).toDouble());
 }
 
 void VinylControlManager::requestReloadConfig() {
@@ -75,8 +76,7 @@ void VinylControlManager::requestReloadConfig() {
 }
 
 bool VinylControlManager::vinylInputEnabled(int deck) {
-    ControlObjectThread input_enabled(ControlObject::getControl(
-        ConfigKey(kVCGroup.arg(deck+1), "vinylcontrol_enabled")));
+    ControlObjectThread input_enabled(kVCGroup.arg(deck+1), "vinylcontrol_enabled");
     return input_enabled.get() > 0;
 }
 

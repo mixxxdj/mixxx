@@ -18,7 +18,7 @@ class MidiController;   // forward declaration
 class MidiOutputHandler : QObject {
     Q_OBJECT
   public:
-    MidiOutputHandler(QString group, QString key, MidiController* controller,
+    MidiOutputHandler(const QString& group, const QString& key, MidiController* controller,
                       float min, float max,
                       unsigned char status, unsigned char midino,
                       unsigned char on, unsigned char off);
@@ -32,7 +32,7 @@ class MidiOutputHandler : QObject {
 
   private:
     MidiController* m_pController;
-    ControlObjectThread m_cobj;
+    ControlObjectThread m_cot;
     float m_min;
     float m_max;
     unsigned char m_status;

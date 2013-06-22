@@ -9,7 +9,7 @@
 #include "controlobjectthreadwidget.h"
 #include "controlobjectthreadmain.h"
 
-WNumberPos::WNumberPos(const char * group, QWidget * parent)
+WNumberPos::WNumberPos(const char* group, QWidget* parent)
         : WNumber(parent),
           m_dOldValue(0.0f),
           m_dTrackSamples(0.0),
@@ -18,13 +18,13 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
     m_qsText = "";
 
     m_pShowTrackTimeRemaining = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Controls]", "ShowDurationRemaining")));
+            "[Controls]", "ShowDurationRemaining");
     connect(m_pShowTrackTimeRemaining, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowTrackTimeRemaining->get());
 
     m_pTrackSamples = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(group, "track_samples")));
+            group, "track_samples");
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetTrackSamples(double)));
     // Tell the CO to re-emit its value since we could be created after it was
@@ -32,7 +32,7 @@ WNumberPos::WNumberPos(const char * group, QWidget * parent)
     m_pTrackSamples->emitValueChanged();
 
     m_pTrackSampleRate = new ControlObjectThreadWidget(
-        ControlObject::getControl(ConfigKey(group, "track_samplerate")));
+            group, "track_samplerate");
     connect(m_pTrackSampleRate, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetTrackSampleRate(double)));
     // Tell the CO to re-emit its value since we could be created after it was

@@ -347,12 +347,12 @@ METADATA
       ALTER TABLE Library ADD COLUMN key_id INTEGER DEFAULT 0;
     </sql>
   </revision>
-  <revision version="19" min_compatible="3">
+  <revision version="20" min_compatible="3">
     <description>
-      Crates in auto-DJ queue (for automated random-track selection)
+      Crates in AutoDJ queue (for automated random-track selection).
     </description>
     <sql>
-      ALTER TABLE crates ADD COLUMN autodj integer DEFAULT 0;
+      ALTER TABLE crates ADD COLUMN autodj_source integer DEFAULT 0;
     </sql>
   </revision>
 </schema>

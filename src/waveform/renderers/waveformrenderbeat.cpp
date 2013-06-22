@@ -24,8 +24,8 @@ WaveformRenderBeat::~WaveformRenderBeat() {
 
 bool WaveformRenderBeat::init() {
     m_beatActive = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(),"beat_active")));
-    return true;
+            m_waveformRenderer->getGroup(),"beat_active");
+    return m_beatActive->valid();
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node) {

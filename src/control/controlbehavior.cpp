@@ -161,7 +161,7 @@ ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
 }
 
 void ControlPushButtonBehavior::setValueFromMidiParameter(
-    MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
+        MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     // This block makes push-buttons act as power window buttons.
     if (m_buttonMode == POWERWINDOW && m_iNumStates == 2) {
         if (o == MIDI_NOTE_ON) {
@@ -178,8 +178,12 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
         }
     } else if (m_buttonMode == TOGGLE) {
         // This block makes push-buttons act as toggle buttons.
-        if (m_iNumStates > 2) { //multistate button
-            if (dParam > 0.) { //looking for NOTE_ON doesn't seem to work...
+        if (m_iNumStates > 2) { // multistate button
+            if (dParam > 0.) { // looking for NOTE_ON doesn't seem to work...
+                // This is a possibly race condition if another writer wants
+                // to change the value at the same time. We allow the race here,
+                // because this is possibly what the user expects if he changes
+                // the same control from different devices.
                 double value = pControl->get();
                 value++;
                 if (value >= m_iNumStates) {
