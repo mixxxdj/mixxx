@@ -27,6 +27,7 @@
 #include "controlobject.h"
 #include "engine/readaheadmanager.h"
 #include "engine/engineobject.h"
+#include "track/keyutils.h"
 
 using namespace soundtouch;
 
@@ -77,11 +78,6 @@ void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
     // Let the caller know we clamped their value.
     *tempo_adjust = m_bBackwards ? -tempo_abs : tempo_abs;
 
-    if (*pitch_adjust <= 0.0) {
-        qWarning() << "EngineBufferScaleST: Ignoring non-positive pitch adjust.";
-        *pitch_adjust = 1.0;
-    }
-
     double rate_abs = fabs(*rate_adjust);
 
     m_qMutex.lock();
@@ -98,7 +94,8 @@ void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
         m_dRateAdjust = rate_abs;
     }
     if (*pitch_adjust != m_dPitchAdjust) {
-        m_pSoundTouch->setPitch(*pitch_adjust);
+        m_pSoundTouch->setPitch(
+            KeyUtils::octaveChangeToPowerOf2(*pitch_adjust));
         m_dPitchAdjust = *pitch_adjust;
     }
     m_qMutex.unlock();
