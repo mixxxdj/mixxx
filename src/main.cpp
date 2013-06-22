@@ -34,7 +34,7 @@
 #include "qpixmap.h"
 #include "qsplashscreen.h"
 #include "errordialoghandler.h"
-#include "defs_version.h"
+#include "util/version.h"
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
@@ -147,13 +147,15 @@ int main(int argc, char * argv[])
     QCoreApplication::setOrganizationDomain("mixxx.org");
     QCoreApplication::setOrganizationName("Mixxx");
     QCoreApplication::setApplicationName("Mixxx");
-    QCoreApplication::setApplicationVersion(VERSION);
+    QString mixxxVersion = Version::version();
+    QByteArray mixxxVersionBA = mixxxVersion.toLocal8Bit();
+    QCoreApplication::setApplicationVersion(mixxxVersion);
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
     if (!args.Parse(argc, argv)) {
-        fputs("Mixxx digital DJ software v", stdout);
-        fputs(VERSION, stdout);
+        fputs("Mixxx DJ Software v", stdout);
+        fputs(mixxxVersionBA.constData(), stdout);
         fputs(" - Command line options", stdout);
         fputs(
                    "\n(These are case-sensitive.)\n\n\
