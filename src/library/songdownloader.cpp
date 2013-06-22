@@ -1,7 +1,9 @@
 #include <QtCore>
 #include <QtGui>
-#include "defs_version.h"
-#include "songdownloader.h"
+
+#include "library/songdownloader.h"
+
+#include "util/version.h"
 
 #define TEMP_EXTENSION ".tmp"
 
@@ -52,7 +54,8 @@ bool SongDownloader::downloadFromQueue() {
     m_pRequest = new QNetworkRequest(downloadUrl);
 
     //Set up user agent for great justice
-    QString mixxxUA = QString("%1 %2").arg(QApplication::applicationName(), VERSION);
+    QString mixxxUA = QString("%1 %2").arg(QApplication::applicationName(),
+                                           Version::version());
     QByteArray mixxxUABA = mixxxUA.toAscii();
     m_pRequest->setRawHeader("User-Agent", mixxxUABA);
     m_pReply = m_pNetwork->get(*m_pRequest);
