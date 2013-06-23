@@ -26,7 +26,7 @@
     <item>
      <widget class="QStackedWidget" name="stack">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="results_page">
        <widget class="QWidget" name="verticalLayoutWidget_2">
@@ -132,10 +132,10 @@
              </property>
             </spacer>
            </item>
-           <item>
+           <item alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="message1">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fetching track data from MusicBrainz&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Fetching track data from MusicBrainz</string>
              </property>
             </widget>
            </item>
@@ -169,10 +169,10 @@
              </property>
             </spacer>
            </item>
-           <item>
+           <item alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="status">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Status:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Status:</string>
              </property>
             </widget>
            </item>
@@ -240,6 +240,9 @@
          </item>
          <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_7">
+           <property name="styleSheet">
+            <string notr="true">font: 75 12pt &quot;Courier 10 Pitch&quot;;</string>
+           </property>
            <property name="text">
             <string>Error</string>
            </property>
@@ -263,7 +266,7 @@
            <item>
             <widget class="QLabel" name="label_6">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Mixxx can't connect to &lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Mixxx can't connect to </string>
              </property>
             </widget>
            </item>
@@ -307,7 +310,7 @@
            <item>
             <widget class="QLabel" name="label_4">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;HTTP&lt;/span&gt; Status:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>HTTP Status:</string>
              </property>
             </widget>
            </item>
@@ -373,8 +376,11 @@
            </property>
           </spacer>
          </item>
-         <item>
+         <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_5">
+           <property name="styleSheet">
+            <string notr="true">font: 75 12pt &quot;DejaVu Serif&quot;;</string>
+           </property>
            <property name="text">
             <string>Error</string>
            </property>
@@ -471,17 +477,20 @@
            </property>
           </spacer>
          </item>
-         <item>
+         <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label">
+           <property name="styleSheet">
+            <string notr="true">font: 75 16pt &quot;DejaVu Serif&quot;;</string>
+           </property>
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Sorry&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>Sorry</string>
            </property>
           </widget>
          </item>
-         <item>
+         <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Mixxx could not find this song&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+            <string>Mixxx could not find this song</string>
            </property>
           </widget>
          </item>
