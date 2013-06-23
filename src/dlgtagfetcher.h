@@ -19,6 +19,13 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
 
     void init(const TrackPointer track);
 
+    enum networkError {
+        NOERROR,
+        HTTPERROR,
+        FTWERROR
+    };
+    
+
   signals:
     void next();
     void previous();
@@ -32,13 +39,10 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
     void quit();
 
   private:
-
     void updateStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
     void addTrack(const TrackPointer track, int resultIndex,
                   QTreeWidget* parent) const;
-
-  private:
     struct Data {
         Data() : m_pending(true), m_selectedResult(-1) {}
 
@@ -51,7 +55,7 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
     Data m_data;
     QString m_progress;
     TagFetcher m_TagFetcher;
-    int m_networkError; // 0 = no error, 1 = html error code, 2 = something else
+    networkError m_networkError; 
 };
 
 #endif // DLGTAGFETCHER_H

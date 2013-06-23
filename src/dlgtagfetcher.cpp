@@ -9,7 +9,7 @@ DlgTagFetcher::DlgTagFetcher(QWidget *parent)
              : QWidget(parent),
                m_track(NULL),
                m_TagFetcher(parent),
-               m_networkError(0) {
+               m_networkError(NOERROR) {
     setupUi(this);
 
     connect(btnApply, SIGNAL(clicked()),
@@ -97,7 +97,7 @@ void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
 }
 
 void DlgTagFetcher::slotNetworkError(int errorCode, QString app) {
-    m_networkError = errorCode==0 ?  2:1;
+    m_networkError = errorCode==0 ?  FTWERROR : HTTPERROR;
     m_data.m_pending = false;
     ErrorCode->setText(QString::number(errorCode));
     applicationName->setText(app);
@@ -109,10 +109,10 @@ void DlgTagFetcher::updateStack() {
     if (m_data.m_pending) {
         stack->setCurrentWidget(loading_page);
         return;
-    } else if (m_networkError == 1) {
+    } else if (m_networkError == HTTPERROR) {
         stack->setCurrentWidget(networkError_page);
         return;
-    } else if (m_networkError == 2) {
+    } else if (m_networkError == FTWERROR) {
         stack->setCurrentWidget(generalnetworkError_page);
         return;
     } else if (m_data.m_results.isEmpty()) {
