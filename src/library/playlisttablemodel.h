@@ -26,7 +26,8 @@ class PlaylistTableModel : public BaseSqlTableModel {
     int addTracks(const QModelIndex& index, QList<QString> locations);
     bool appendTrack(int trackId);
     void moveTrack(const QModelIndex& sourceIndex,
-                           const QModelIndex& destIndex);
+                   const QModelIndex& destIndex);
+    bool isLocked();
     void shuffleTracks(const QModelIndex& shuffleStartIndex);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
