@@ -626,7 +626,8 @@ void AutoDJCratesDAO::slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn) {
             return;
         }
         if (oQuery.numRowsAffected() == 0) {
-            goto commit;
+            oTransaction.commit();
+            return;
         }
 
         // Update the number of auto-DJ-playlist references to each track.
@@ -646,7 +647,6 @@ void AutoDJCratesDAO::slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn) {
         }
 
         // The transaction was successful.
-commit:
         oTransaction.commit();
     } else {
         // Remove a crate-reference from every track in this crate.
@@ -701,7 +701,8 @@ void AutoDJCratesDAO::slotCrateTrackAdded(int a_iCrateId, int a_iTrackId) {
         return;
     }
     if (oQuery.numRowsAffected() == 1) {
-        goto commit;
+        oTransaction.commit();
+        return;
     }
 
     // Create an entry for the track.
@@ -728,7 +729,8 @@ void AutoDJCratesDAO::slotCrateTrackAdded(int a_iCrateId, int a_iTrackId) {
         return;
     }
     if (oQuery.numRowsAffected() == 0) {
-        goto commit;
+        oTransaction.commit();
+        return;
     }
 
     // Update the number of auto-DJ-playlist references to this track.
@@ -742,7 +744,6 @@ void AutoDJCratesDAO::slotCrateTrackAdded(int a_iCrateId, int a_iTrackId) {
     }
 
     // The transaction was successful.
-commit:
     oTransaction.commit();
 }
 
