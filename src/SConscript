@@ -13,7 +13,7 @@ from build import util, depends
 
 mixxx_version = util.get_mixxx_version()
 branch_name = util.get_branch_name()
-vcs_revision = util.get_revision()
+vcs_revision = util.get_revision() or "0"
 vcs_name = util.get_current_vcs()
 print "WE ARE IN:", os.getcwd()
 print "Building ", branch_name, " - rev.", vcs_revision
@@ -40,15 +40,11 @@ if build.platform_is_windows:
         str_list.append('#define VER_FILEVERSION             ')
         # Remove anything after ~ or - in the version number and replace the dots with commas
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
-        if vcs_revision:
-            str_list.append(','+str(vcs_revision))
-        str_list.append('\n')
+        str_list.append(','+str(vcs_revision)+'\n')
 
         str_list.append('#define VER_PRODUCTVERSION          ')
         str_list.append(mixxx_version.partition('~')[0].partition('-')[0].replace('.',','))
-        if vcs_revision:
-            str_list.append(','+str(vcs_revision))
-        str_list.append('\n')
+        str_list.append(','+str(vcs_revision)+'\n')
 
         import datetime
         now = datetime.datetime.now()
