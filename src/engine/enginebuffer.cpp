@@ -905,6 +905,7 @@ void EngineBuffer::slotEjectTrack(double v) {
     }
 }
 
+/*
 void EngineBuffer::setReader(CachingReader* pReader) {
     disconnect(m_pReader, 0, this, 0);
     delete m_pReader;
@@ -920,3 +921,4 @@ void EngineBuffer::setReader(CachingReader* pReader) {
             this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
 }
+*/

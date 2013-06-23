@@ -43,8 +43,7 @@ void EngineWorkerScheduler::run() {
     while (!m_bQuit) {
         EngineWorker* pWorker = NULL;
         while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
-            if (pWorker && !pWorker->isActive()) {
-                pWorker->setActive(true);
+            if (pWorker) {
                 m_workerThreadPool.start(pWorker);
             }
         }

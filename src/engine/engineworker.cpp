@@ -4,7 +4,8 @@
 #include "engine/engineworker.h"
 #include "engine/engineworkerscheduler.h"
 
-EngineWorker::EngineWorker() {
+EngineWorker::EngineWorker()
+    : m_pScheduler(NULL) {
     setAutoDelete(false);
 }
 
@@ -18,8 +19,10 @@ void EngineWorker::setScheduler(EngineWorkerScheduler* pScheduler) {
     m_pScheduler = pScheduler;
 }
 
-void EngineWorker::workReady() {
+bool EngineWorker::workReady() {
     if (m_pScheduler) {
         m_pScheduler->workerReady(this);
+        return true;
     }
+    return false;
 }

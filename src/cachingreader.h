@@ -221,6 +221,7 @@ class CachingReader : public EngineWorker {
 
     // Temporary buffer for reading from SoundSources
     SAMPLE* m_pSample;
+    QMutex m_mutexRun;
 };
 
 

@@ -46,6 +46,8 @@ CachingReader::CachingReader(const char* _group,
 }
 
 CachingReader::~CachingReader() {
+    m_mutexRun.lock(); // do not delete if a run is still scheduled;
+                       // no need for unlock, because object is gone after
     m_freeChunks.clear();
     m_allocatedChunks.clear();
     m_lruChunk = m_mruChunk = NULL;
@@ -612,14 +614,18 @@ void CachingReader::run() {
             m_readerStatusFIFO.writeBlocking(&status, 1);
         }
     }
-
-    // Notify the EngineWorkerScheduler that the work we did is done.
-    setActive(false);
+    m_mutexRun.unlock(); // Notify that the work we did is done.
 }
 
 void CachingReader::wake() {
     //qDebug() << m_pGroup << "CachingReader::wake()";
-    workReady();
+    if(m_mutexRun.tryLock()) {
+        // tryLock succeeds if not already scheduled and not under destruction
+        if(!workReady()){
+            // not scheduled
+            m_mutexRun.unlock();
+        }
+    }
 }
 
 void CachingReader::loadTrack(TrackPointer pTrack) {
