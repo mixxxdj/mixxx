@@ -466,8 +466,12 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
     // Calculate the number of active-tracks.  This is either the number of
     // auto-DJ-crate tracks that have never been played, or the active
     // percentage of the total number of tracks, whichever is larger.
-    int iActiveTracks = qMax(iUnplayedTracks,
-        iTotalTracks * iActivePercentage / 100);
+    int iMinAvailable = 0;
+    if (iActivePercentage) {
+        // if minimum is not disabled (= 0), have a min of one at least
+        iMinAvailable = qMax((iTotalTracks * iActivePercentage / 100), 1);
+    }
+    int iActiveTracks = qMax(iUnplayedTracks, iMinAvailable);
 
     // The number of active-tracks might also be tracks that haven't been played
     // in a while.
@@ -503,10 +507,6 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
         // Allow that to be a new maximum.
         iActiveTracks = qMax(iActiveTracks, iReplayAgeTracks);
     }
-
-    // If there are still no tracks to choose from, use one.
-    if (iActiveTracks == 0)
-        iActiveTracks = qMin(iTotalTracks, 1);
 
     // If there are no tracks, let our caller know.
     if (iActiveTracks == 0)
