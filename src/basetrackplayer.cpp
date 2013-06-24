@@ -44,12 +44,12 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // Set the routing option defaults for the master and headphone mixes.
     {
         ControlObjectThreadMain* pMaster = new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(getGroup(), "master")));
+                getGroup(), "master");
         pMaster->slotSet(defaultMaster);
         delete pMaster;
 
         ControlObjectThreadMain* pHeadphones = new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(getGroup(), "pfl")));
+                getGroup(), "pfl");
         pHeadphones->slotSet(defaultHeadphones);
         delete pHeadphones;
     }
@@ -74,15 +74,15 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 
     //Get cue point control object
     m_pCuePoint = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(getGroup(),"cue_point")));
+            getGroup(),"cue_point");
     // Get loop point control objects
     m_pLoopInPoint = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(getGroup(),"loop_start_position")));
+            getGroup(),"loop_start_position");
     m_pLoopOutPoint = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(getGroup(),"loop_end_position")));
+            getGroup(),"loop_end_position");
     //Playback position within the currently loaded track (in this player).
     m_pPlayPosition = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(getGroup(), "playposition")));
+            getGroup(), "playposition");
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
@@ -99,14 +99,9 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pEndOfTrack->set(0.);
 
     //BPM of the current song
-    m_pBPM = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "file_bpm")));
-
-    m_pReplayGain = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "replaygain")));
-
-    m_pPlay = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(group, "play")));
+    m_pBPM = new ControlObjectThreadMain(group, "file_bpm");
+    m_pReplayGain = new ControlObjectThreadMain(group, "replaygain");
+    m_pPlay = new ControlObjectThreadMain(group, "play");
 }
 
 BaseTrackPlayer::~BaseTrackPlayer()

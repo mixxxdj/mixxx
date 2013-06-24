@@ -51,11 +51,11 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(slotScaleBpm(int)));
 
     m_pNumSamplers = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_samplers")));
+            "[Master]", "num_samplers");
     m_pNumDecks = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_decks")));
+            "[Master]", "num_decks");
     m_pNumPreviewDecks = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_preview_decks")));
+            "[Master]", "num_preview_decks");
 
     m_pMenu = new QMenu(this);
 
@@ -881,7 +881,8 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
 void WTrackTableView::dropEvent(QDropEvent * event){
-    if (!event->mimeData()->hasUrls()) {
+    TrackModel* trackModel = getTrackModel();
+    if (!event->mimeData()->hasUrls() || trackModel->isLocked() ) {
         event->ignore();
         return;
     }
@@ -950,7 +951,6 @@ void WTrackTableView::dropEvent(QDropEvent * event){
         // which lets us do nice things like "restore" the selection model.
 
         if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
-            TrackModel* trackModel = getTrackModel();
 
             // The model indices are sorted so that we remove the tracks from the table
             // in ascending order. This is necessary because if track A is above track B in
@@ -1018,7 +1018,6 @@ void WTrackTableView::dropEvent(QDropEvent * event){
 
         //Drag-and-drop from an external application
         //eg. dragging a track from Windows Explorer onto the track table.
-        TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             int numNewRows = urls.count();
 

@@ -15,6 +15,7 @@
 ***************************************************************************/
 
 #include <taglib/vorbisfile.h>
+#include <vorbis/codec.h>
 
 #include "trackinfoobject.h"
 #include "soundsourceoggvorbis.h"
@@ -22,26 +23,24 @@
 #ifdef __WINDOWS__
 #include <io.h>
 #include <fcntl.h>
-#endif
-
-#ifdef __APPLE__
-#ifdef __i386
-#define OV_ENDIAN_ARG 0
-#else
-#define OV_ENDIAN_ARG 1
-#endif
-#endif
-
-#ifdef __LINUX__
+#elif __APPLE__
+#include <CoreFoundation/CFByteOrder.h>
+#elif __LINUX__
 #include <endian.h>
-#if __BYTE_ORDER == __LITTLE_ENDIAN
-#define OV_ENDIAN_ARG 0
-#else
-#define OV_ENDIAN_ARG 1
 #endif
+
+inline int getByteOrder() {
+#ifdef __LINUX__
+    return __BYTE_ORDER == __LITTLE_ENDIAN ? 0 : 1;
+#elif __APPLE__
+    return CFByteOrderGetCurrent() == CFByteOrderLittleEndian ? 0 : 1;
 #else
-#define OV_ENDIAN_ARG 0
+    // Assume little endian.
+    // TODO(XXX) BSD.
+    return 0;
 #endif
+
+}
 
 /*
    Class for reading Ogg Vorbis
@@ -189,7 +188,7 @@ unsigned SoundSourceOggVorbis::read(volatile unsigned long size, const SAMPLE * 
     // loop until requested number of samples has been retrieved
     while (needed > 0) {
         // read samples into buffer
-        ret = ov_read(&vf, pRead+index, needed, OV_ENDIAN_ARG, 2, 1, &current_section);
+        ret = ov_read(&vf, pRead+index, needed, getByteOrder(), 2, 1, &current_section);
 
         if (ret <= 0) {
             // An error or EOF occured, break out and return what we have sofar.
