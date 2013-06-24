@@ -74,7 +74,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // True if active tracks can be tracks that haven't been played in
     // a while.
-    bool m_bUseReplayAge;
+    bool m_bUseIgnoreTime;
 
     // True if the auto-DJ-crates database has been created.
     bool m_bAutoDjCratesDbCreated;
@@ -85,7 +85,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     void createAutoDjCratesDatabase();
 
     // Create the active-tracks view.
-    bool createActiveTracksView(bool a_bUseReplayAge);
+    bool createActiveTracksView(bool a_bUseIgnoreTime);
 
     // Update the number of auto-DJ-playlist references to each track in the
     // auto-DJ-crates database.  Returns true if successful.

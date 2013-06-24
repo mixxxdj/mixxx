@@ -215,36 +215,39 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 #ifdef __AUTODJCRATES__
 
     // The auto-DJ active-percentage for randomly-selected tracks
-    autoDjActivePercentageSpinBox->setValue(m_pConfig->getValueString
-        (ConfigKey("[Auto DJ]", "ActivePercentage"), "20").toInt());
-    connect(autoDjActivePercentageSpinBox, SIGNAL(valueChanged(int)),
-            this, SLOT(slotSetAutoDjActivePercentage(int)));
+    autoDjMinimumAvailableSpinBox->setValue(
+            m_pConfig->getValueString(
+                    ConfigKey("[Auto DJ]", "MinimumAvailable"), "20").toInt());
+    connect(autoDjMinimumAvailableSpinBox, SIGNAL(valueChanged(int)), this,
+            SLOT(slotSetAutoDjMinimumAvailable(int)));
 
     // The auto-DJ replay-age for randomly-selected tracks
-    autoDjReplayAgeCheckBox->setChecked((bool) m_pConfig->getValueString
-        (ConfigKey("[Auto DJ]", "UseReplayAge"), "0").toInt());
-    connect(autoDjReplayAgeCheckBox, SIGNAL(stateChanged(int)),
-            this, SLOT(slotSetAutoDjUseReplayAge(int)));
-    autoDjReplayAgeTimeEdit->setTime(QTime::fromString
-        (m_pConfig->getValueString
-            (ConfigKey("[Auto DJ]", "ReplayAge"), "23:59"),
-            autoDjReplayAgeTimeEdit->displayFormat()));
-    autoDjReplayAgeTimeEdit->setEnabled(autoDjReplayAgeCheckBox->checkState()
-        == Qt::Checked);
-    connect(autoDjReplayAgeTimeEdit, SIGNAL(timeChanged(const QTime &)),
-            this, SLOT(slotSetAutoDjReplayAge(const QTime &)));
+    autoDjIgnoreTimeCheckBox->setChecked(
+            (bool) m_pConfig->getValueString(
+                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0").toInt());
+    connect(autoDjIgnoreTimeCheckBox, SIGNAL(stateChanged(int)), this,
+            SLOT(slotSetAutoDjUseIgnoreTime(int)));
+    autoDjIgnoreTimeEdit->setTime(
+            QTime::fromString(
+                    m_pConfig->getValueString(
+                            ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
+                    autoDjIgnoreTimeEdit->displayFormat()));
+    autoDjIgnoreTimeEdit->setEnabled(
+            autoDjIgnoreTimeCheckBox->checkState() == Qt::Checked);
+    connect(autoDjIgnoreTimeEdit, SIGNAL(timeChanged(const QTime &)), this,
+            SLOT(slotSetAutoDjIgnoreTime(const QTime &)));
 
 #else // __AUTODJCRATES__
 
     // Remove the preferences.
-    autoDjActivePercentageLabel->setVisible(false);
-    GridLayout1->removeWidget(autoDjActivePercentageLabel);
-    autoDjActivePercentageSpinBox->setVisible(false);
-    GridLayout1->removeWidget(autoDjActivePercentageSpinBox);
-    autoDjReplayAgeCheckBox->setVisible(false);
-    GridLayout1->removeWidget(autoDjReplayAgeCheckBox);
-    autoDjReplayAgeTimeEdit->setVisible(false);
-    GridLayout1->removeWidget(autoDjReplayAgeTimeEdit);
+    autoDjMinimumAvailableLabel->setVisible(false);
+    GridLayout1->removeWidget(autoDjMinimumAvailableLabel);
+    autoDjMinimumAvailableSpinBox->setVisible(false);
+    GridLayout1->removeWidget(autoDjMinimumAvailableSpinBox);
+    autoDjIgnoreTimeCheckBox->setVisible(false);
+    GridLayout1->removeWidget(autoDjIgnoreTimeCheckBox);
+    autoDjIgnoreTimeEdit->setVisible(false);
+    GridLayout1->removeWidget(autoDjIgnoreTimeEdit);
 
 #endif // __AUTODJCRATES__
 
@@ -460,27 +463,27 @@ void DlgPrefControls::slotSetAutoDjRequeue(int)
     m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"), ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
 }
 
-void DlgPrefControls::slotSetAutoDjActivePercentage(int a_iValue) {
+void DlgPrefControls::slotSetAutoDjMinimumAvailable(int a_iValue) {
 #ifdef __AUTODJCRATES__
     QString str;
     str.setNum(a_iValue);
-    m_pConfig->set(ConfigKey("[Auto DJ]","ActivePercentage"),str);
+    m_pConfig->set(ConfigKey("[Auto DJ]","MinimumAvailable"),str);
 #endif // __AUTODJCRATES__
 }
 
-void DlgPrefControls::slotSetAutoDjUseReplayAge(int a_iState) {
+void DlgPrefControls::slotSetAutoDjUseIgnoreTime(int a_iState) {
 #ifdef __AUTODJCRATES__
     bool bChecked = (a_iState == Qt::Checked);
     QString strChecked = (bChecked) ? "1" : "0";
-    m_pConfig->set(ConfigKey("[Auto DJ]", "UseReplayAge"), strChecked);
-    autoDjReplayAgeTimeEdit->setEnabled(bChecked);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTime"), strChecked);
+    autoDjIgnoreTimeEdit->setEnabled(bChecked);
 #endif // __AUTODJCRATES__
 }
 
-void DlgPrefControls::slotSetAutoDjReplayAge(const QTime &a_rTime) {
+void DlgPrefControls::slotSetAutoDjIgnoreTime(const QTime &a_rTime) {
 #ifdef __AUTODJCRATES__
-    QString str = a_rTime.toString(autoDjReplayAgeTimeEdit->displayFormat());
-    m_pConfig->set(ConfigKey("[Auto DJ]", "ReplayAge"),str);
+    QString str = a_rTime.toString(autoDjIgnoreTimeEdit->displayFormat());
+    m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTime"),str);
 #endif // __AUTODJCRATES__
 }
 

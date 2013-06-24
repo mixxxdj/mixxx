@@ -27,7 +27,7 @@ AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
 
     // By default, active tracks are not tracks that haven't been played in
     // a while.
-    m_bUseReplayAge = false;
+    m_bUseIgnoreTime = false;
 
     // The database has been created yet.
     m_bAutoDjCratesDbCreated = false;
@@ -47,10 +47,10 @@ void AutoDJCratesDAO::initialize() {
 void AutoDJCratesDAO::createAutoDjCratesDatabase() {
     // If the use of tracks that haven't been played in a while has changed,
     // then the active-tracks view must be recreated.
-    bool bUseReplayAge = (bool) m_pConfig->getValueString
-        (ConfigKey("[Auto DJ]", "UseReplayAge"), "0").toInt();
+    bool bUseIgnoreTime = (bool) m_pConfig->getValueString
+        (ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0").toInt();
     if (m_bAutoDjCratesDbCreated) {
-        if (m_bUseReplayAge != bUseReplayAge) {
+        if (m_bUseIgnoreTime != bUseIgnoreTime) {
             // Do all this in a single transaction.
             ScopedTransaction oTransaction(m_rDatabase);
 
@@ -63,19 +63,19 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
             }
 
             // Create the new active-tracks view.
-            if (!createActiveTracksView (bUseReplayAge)) {
+            if (!createActiveTracksView (bUseIgnoreTime)) {
                 return;
             }
 
             // Remember the new setting.
-            m_bUseReplayAge = bUseReplayAge;
+            m_bUseIgnoreTime = bUseIgnoreTime;
 
             // Commit these changes.
             oTransaction.commit();
         }
     }
     else {
-        m_bUseReplayAge = bUseReplayAge;
+        m_bUseIgnoreTime = bUseIgnoreTime;
     }
 
     // If this database has already been created, skip this.
@@ -155,7 +155,7 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 
     // Create the active-tracks view.
     //oQuery.exec ("DROP VIEW IF EXISTS " AUTODJACTIVETRACKS_TABLE);
-    if (!createActiveTracksView (m_bUseReplayAge)) {
+    if (!createActiveTracksView (m_bUseIgnoreTime)) {
         return;
     }
 
@@ -227,7 +227,7 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
 }
 
 // Create the active-tracks view.
-bool AutoDJCratesDAO::createActiveTracksView (bool a_bUseReplayAge) {
+bool AutoDJCratesDAO::createActiveTracksView (bool a_bUseIgnoreTime) {
     // Create the active-tracks view.  This is a list of all tracks loaded into
     // the auto-DJ-crates database, excluding all tracks already in the auto-DJ
     // playlist, sorted by the number of times the track has been played, and
@@ -251,7 +251,7 @@ bool AutoDJCratesDAO::createActiveTracksView (bool a_bUseReplayAge) {
     // CREATE TEMP VIEW temp_autodj_activetracks AS SELECT * FROM temp_autodj_crates WHERE autodjrefs = 0 ORDER BY timesplayed, lastplayed;
     QSqlQuery oQuery(m_rDatabase);
     QString strTimesPlayed;
-    if (!a_bUseReplayAge) {
+    if (!a_bUseIgnoreTime) {
         strTimesPlayed = AUTODJCRATESTABLE_TIMESPLAYED ", ";
     }
     oQuery.prepare(QString("CREATE TEMP VIEW " AUTODJACTIVETRACKS_TABLE
@@ -460,30 +460,30 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
     }
 
     // Get the active percentage (default 20%).
-    int iActivePercentage = m_pConfig->getValueString (ConfigKey("[Auto DJ]",
-        "ActivePercentage"), "20").toInt();
+    int iMinimumAvailable = m_pConfig->getValueString (ConfigKey("[Auto DJ]",
+        "MinimumAvailable"), "20").toInt();
 
     // Calculate the number of active-tracks.  This is either the number of
     // auto-DJ-crate tracks that have never been played, or the active
     // percentage of the total number of tracks, whichever is larger.
     int iMinAvailable = 0;
-    if (iActivePercentage) {
+    if (iMinimumAvailable) {
         // if minimum is not disabled (= 0), have a min of one at least
-        iMinAvailable = qMax((iTotalTracks * iActivePercentage / 100), 1);
+        iMinAvailable = qMax((iTotalTracks * iMinimumAvailable / 100), 1);
     }
     int iActiveTracks = qMax(iUnplayedTracks, iMinAvailable);
 
     // The number of active-tracks might also be tracks that haven't been played
     // in a while.
-    if (m_bUseReplayAge) {
+    if (m_bUseIgnoreTime) {
         // Get the current time, in UTC (since that's what sqlite uses).
         QDateTime timCurrent = QDateTime::currentDateTimeUtc();
         
         // Subtract the replay age.
-        QTime timReplayAge = (QTime::fromString(m_pConfig->getValueString
-            (ConfigKey("[Auto DJ]", "ReplayAge"), "23:59"), "hh:mm"));
-        timCurrent = timCurrent.addSecs(-(timReplayAge.hour() * 3600
-            + timReplayAge.minute() * 60));
+        QTime timIgnoreTime = (QTime::fromString(m_pConfig->getValueString
+            (ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"), "hh:mm"));
+        timCurrent = timCurrent.addSecs(-(timIgnoreTime.hour() * 3600
+            + timIgnoreTime.minute() * 60));
 
         // Convert the time to sqlite's format, which is similar to ISO date,
         // but not quite.
@@ -491,13 +491,13 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
 
         // Count the number of tracks that haven't been played since this time.
         // SELECT COUNT(*) FROM temp_autodj_activetracks WHERE lastplayed < :lastplayed;
-        int iReplayAgeTracks = 0;
+        int iIgnoreTimeTracks = 0;
         oQuery.prepare("SELECT COUNT(*) FROM " AUTODJACTIVETRACKS_TABLE
             " WHERE " AUTODJCRATESTABLE_LASTPLAYED " < :lastplayed");
         oQuery.bindValue (":lastplayed", strDateTime);
         if (oQuery.exec()) {
             if (oQuery.next()) {
-                iReplayAgeTracks = oQuery.value(0).toInt();
+                iIgnoreTimeTracks = oQuery.value(0).toInt();
             }
         } else {
             LOG_FAILED_QUERY(oQuery);
@@ -505,7 +505,7 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
         }
 
         // Allow that to be a new maximum.
-        iActiveTracks = qMax(iActiveTracks, iReplayAgeTracks);
+        iActiveTracks = qMax(iActiveTracks, iIgnoreTimeTracks);
     }
 
     // If there are no tracks, let our caller know.

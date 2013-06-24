@@ -284,14 +284,14 @@
       </widget>
      </item>
      <item row="11" column="0">
-      <widget class="QLabel" name="autoDjActivePercentageLabel">
+      <widget class="QLabel" name="autoDjMinimumAvailableLabel">
        <property name="text">
         <string>Auto DJ: Minimum available tracks (percent)</string>
        </property>
       </widget>
      </item>
      <item row="11" column="1" colspan="2">
-      <widget class="QSpinBox" name="autoDjActivePercentageSpinBox">
+      <widget class="QSpinBox" name="autoDjMinimumAvailableSpinBox">
        <property name="toolTip">
         <string>This percentage of tracks are always available for selecting, regardless of when they were last played.</string>
        </property>
@@ -304,14 +304,17 @@
       </widget>
      </item>
      <item row="12" column="0">
-      <widget class="QCheckBox" name="autoDjReplayAgeCheckBox">
+      <widget class="QCheckBox" name="autoDjIgnoreTimeCheckBox">
+       <property name="toolTip">
+        <string>Uncheck, to ignore all played tracks.</string>
+       </property>
        <property name="text">
         <string>Auto DJ: Track ignore time</string>
        </property>
       </widget>
      </item>
      <item row="12" column="1" colspan="2">
-      <widget class="QTimeEdit" name="autoDjReplayAgeTimeEdit">
+      <widget class="QTimeEdit" name="autoDjIgnoreTimeEdit">
        <property name="toolTip">
         <string>Time after a track is available for selecting again</string>
        </property>
