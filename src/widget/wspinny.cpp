@@ -128,48 +128,47 @@ void WSpinny::setup(QDomNode node, QString group) {
     m_qImage.fill(qRgba(0,0,0,0));
 #endif
 
-    m_pPlay = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "play")));
-    m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "playposition")));
-    m_pVisualPlayPos = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "visual_playposition")));
-    m_pDuration = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "duration")));
-    m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "track_samples")));
+    m_pPlay = new ControlObjectThreadMain(
+            group, "play");
+    m_pPlayPos = new ControlObjectThreadMain(
+            group, "playposition");
+    m_pVisualPlayPos = new ControlObjectThreadMain(
+            group, "visual_playposition");
+    m_pDuration = new ControlObjectThreadMain(
+            group, "duration");
+    m_pTrackSamples = new ControlObjectThreadMain(
+            group, "track_samples");
     m_pTrackSampleRate = new ControlObjectThreadMain(
-                                    ControlObject::getControl(
-                                    ConfigKey(group, "track_samplerate")));
+            group, "track_samplerate");
 
-    m_pScratch = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "scratch2")));
-    m_pScratchToggle = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "scratch_position_enable")));
-    m_pScratchPos = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "scratch_position")));
+    m_pScratch = new ControlObjectThreadMain(
+            group, "scratch2");
+    m_pScratchToggle = new ControlObjectThreadMain(
+            group, "scratch_position_enable");
+    m_pScratchPos = new ControlObjectThreadMain(
+            group, "scratch_position");
 
-    m_pSlipEnabled = new ControlObjectThreadMain(ControlObject::getControl(
-        ConfigKey(group, "slip_enabled")));
-    m_pSlipPosition = new ControlObjectThreadMain(ControlObject::getControl(
-        ConfigKey(group, "slip_playposition")));
+    m_pSlipEnabled = new ControlObjectThreadMain(
+            group, "slip_enabled");
+    m_pSlipPosition = new ControlObjectThreadMain(
+            group, "slip_playposition");
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "vinylcontrol_speed_type")));
+    m_pVinylControlSpeedType = new ControlObjectThreadMain(
+            group, "vinylcontrol_speed_type");
     if (m_pVinylControlSpeedType)
     {
         //Initialize the rotational speed.
         this->updateVinylControlSpeed(m_pVinylControlSpeedType->get());
     }
 
-    m_pVinylControlEnabled = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "vinylcontrol_enabled")));
+    m_pVinylControlEnabled = new ControlObjectThreadMain(
+            group, "vinylcontrol_enabled");
     connect(m_pVinylControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlEnabled(double)));
 
-    m_pSignalEnabled = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "vinylcontrol_signal_enabled")));
+    m_pSignalEnabled = new ControlObjectThreadMain(
+            group, "vinylcontrol_signal_enabled");
     connect(m_pSignalEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlSignalEnabled(double)));
 

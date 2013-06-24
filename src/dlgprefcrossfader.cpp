@@ -34,11 +34,11 @@
 #define CONFIG_KEY "[Mixer Profile]"
 
 DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        : QWidget(parent)
-        , m_COTMode(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderMode")))
-        , m_COTCurve(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve")))
-        , m_COTCalibration(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration")))
-        , m_COTReverse(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderReverse"))) {
+        : QWidget(parent),
+          m_COTMode(CONFIG_KEY, "xFaderMode"),
+          m_COTCurve(CONFIG_KEY, "xFaderCurve"),
+          m_COTCalibration(CONFIG_KEY, "xFaderCalibration"),
+          m_COTReverse(CONFIG_KEY, "xFaderReverse") {
     config = _config;
     m_pxfScene = NULL;
 

@@ -54,25 +54,25 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
         QString group = QString("[Channel%1]").arg(i+1);
         m_rateControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rate"))));
+                group, "rate"));
         m_rateRangeControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rateRange"))));
+                group, "rateRange"));
         m_rateDirControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rate_dir"))));
+                group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "cue_mode"))));
+                group, "cue_mode"));
     }
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         QString group = QString("[Sampler%1]").arg(i+1);
         m_rateControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rate"))));
+                group, "rate"));
         m_rateRangeControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rateRange"))));
+                group, "rateRange"));
         m_rateDirControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "rate_dir"))));
+                group, "rate_dir"));
         m_cueControls.push_back(new ControlObjectThreadMain(
-            ControlObject::getControl(ConfigKey(group, "cue_mode"))));
+                group, "cue_mode"));
     }
 
     // Position display configuration
@@ -215,17 +215,17 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 #ifdef __AUTODJCRATES__
 
     // The auto-DJ active-percentage for randomly-selected tracks
-    autoDjActivePercentageSpinBox->setValue (m_pConfig->getValueString
+    autoDjActivePercentageSpinBox->setValue(m_pConfig->getValueString
         (ConfigKey("[Auto DJ]", "ActivePercentage"), "20").toInt());
     connect(autoDjActivePercentageSpinBox, SIGNAL(valueChanged(int)),
             this, SLOT(slotSetAutoDjActivePercentage(int)));
 
     // The auto-DJ replay-age for randomly-selected tracks
-    autoDjReplayAgeCheckBox->setChecked ((bool) m_pConfig->getValueString
+    autoDjReplayAgeCheckBox->setChecked((bool) m_pConfig->getValueString
         (ConfigKey("[Auto DJ]", "UseReplayAge"), "0").toInt());
     connect(autoDjReplayAgeCheckBox, SIGNAL(stateChanged(int)),
             this, SLOT(slotSetAutoDjUseReplayAge(int)));
-    autoDjReplayAgeTimeEdit->setTime (QTime::fromString
+    autoDjReplayAgeTimeEdit->setTime(QTime::fromString
         (m_pConfig->getValueString
             (ConfigKey("[Auto DJ]", "ReplayAge"), "23:59"),
             autoDjReplayAgeTimeEdit->displayFormat()));
@@ -289,10 +289,6 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //
     // Tooltip configuration
     //
-    // Set default value in config file, if not present
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(1));
-
     ComboBoxTooltips->addItem(tr("On")); // 1
     ComboBoxTooltips->addItem(tr("On (only in Library)")); // 2
     ComboBoxTooltips->addItem(tr("Off")); // 0
@@ -464,35 +460,31 @@ void DlgPrefControls::slotSetAutoDjRequeue(int)
     m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"), ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
 }
 
-void DlgPrefControls::slotSetAutoDjActivePercentage(int a_iValue)
-{
+void DlgPrefControls::slotSetAutoDjActivePercentage(int a_iValue) {
 #ifdef __AUTODJCRATES__
     QString str;
-    str.setNum (a_iValue);
+    str.setNum(a_iValue);
     m_pConfig->set(ConfigKey("[Auto DJ]","ActivePercentage"),str);
 #endif // __AUTODJCRATES__
 }
 
-void DlgPrefControls::slotSetAutoDjUseReplayAge(int a_iState)
-{
+void DlgPrefControls::slotSetAutoDjUseReplayAge(int a_iState) {
 #ifdef __AUTODJCRATES__
     bool bChecked = (a_iState == Qt::Checked);
     QString strChecked = (bChecked) ? "1" : "0";
-    m_pConfig->set (ConfigKey("[Auto DJ]", "UseReplayAge"), strChecked);
+    m_pConfig->set(ConfigKey("[Auto DJ]", "UseReplayAge"), strChecked);
     autoDjReplayAgeTimeEdit->setEnabled(bChecked);
 #endif // __AUTODJCRATES__
 }
 
-void DlgPrefControls::slotSetAutoDjReplayAge(const QTime &a_rTime)
-{
+void DlgPrefControls::slotSetAutoDjReplayAge(const QTime &a_rTime) {
 #ifdef __AUTODJCRATES__
-    QString str = a_rTime.toString (autoDjReplayAgeTimeEdit->displayFormat());
-    m_pConfig->set(ConfigKey("[Auto DJ]","ReplayAge"),str);
+    QString str = a_rTime.toString(autoDjReplayAgeTimeEdit->displayFormat());
+    m_pConfig->set(ConfigKey("[Auto DJ]", "ReplayAge"),str);
 #endif // __AUTODJCRATES__
 }
 
-void DlgPrefControls::slotSetTooltips(int)
-{
+void DlgPrefControls::slotSetTooltips(int) {
     int configValue = (ComboBoxTooltips->currentIndex() + 1) % 3;
     m_mixxx->setToolTipsCfg(configValue);
 }

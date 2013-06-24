@@ -48,17 +48,17 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_diffGain(0) {
 
     m_endOfTrackControl = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_pGroup,"end_of_track")));
+            m_pGroup,"end_of_track");
     connect(m_endOfTrackControl, SIGNAL(valueChanged(double)),
              this, SLOT( onEndOfTrackChange(double)));
     m_endOfTrack = false;
 
     m_trackSamplesControl = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pGroup, "track_samples")));
+            m_pGroup, "track_samples");
     setAcceptDrops(true);
 
     m_playControl = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pGroup, "play")));
+            m_pGroup, "play");
 }
 
 WOverview::~WOverview() {
