@@ -66,6 +66,7 @@ public slots:
 
     void slotSetFrameRate(int frameRate);
     void slotSetWaveformType(int index);
+    void slotSetWaveformOverviewType(int index);
     void slotSetDefaultZoom(int index);
     void slotSetZoomSynchronization(bool checked);
     void slotSetVisualGainAll(double gain);
