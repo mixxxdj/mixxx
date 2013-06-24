@@ -1,36 +1,38 @@
 #include <QSqlTableModel>
-#include "widget/wwidget.h"
-#include "widget/wskincolor.h"
-#include "library/selector/selectorlibrarytablemodel.h"
-#include "transposeproxymodel.h"
-#include "widget/wselectorlibrarytableview.h"
-#include "library/trackcollection.h"
+
 #include "dlgselector.h"
 
+#include "library/selector/selectorlibrarytablemodel.h"
+#include "library/trackcollection.h"
+#include "widget/wskincolor.h"
+#include "widget/wtracktableview.h"
+#include "widget/wwidget.h"
 
 DlgSelector::DlgSelector(QWidget* parent,
-                       ConfigObject<ConfigValue>* pConfig,
-                       TrackCollection* pTrackCollection)
+                         ConfigObject<ConfigValue>* pConfig,
+                         TrackCollection* pTrackCollection,
+                         MixxxKeyboard* pKeyboard)
         : QWidget(parent), Ui::DlgSelector(),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_pTrackTableView(
+              new WTrackTableView(this, pConfig, m_pTrackCollection, true)) {
     setupUi(this);
 
-    m_pSelectorLibraryTableView = new WSelectorLibraryTableView(this, pConfig, pTrackCollection,
-                                                              ConfigKey(), ConfigKey());
-    connect(m_pSelectorLibraryTableView, SIGNAL(loadTrack(TrackPointer)),
+    m_pTrackTableView->installEventFilter(pKeyboard);
+    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pSelectorLibraryTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
-    box->insertWidget(1, m_pSelectorLibraryTableView);
+    box->insertWidget(1, m_pTrackTableView);
 
     m_pSelectorLibraryTableModel =  new SelectorLibraryTableModel(this, pTrackCollection);
-    m_pSelectorLibraryTableView->loadTrackModel(m_pSelectorLibraryTableModel);
+    m_pTrackTableView->loadTrackModel(m_pSelectorLibraryTableModel);
 
     connect(checkBoxGenre, SIGNAL(clicked()),
             this, SLOT(filterByGenre()));
@@ -50,15 +52,6 @@ DlgSelector::DlgSelector(QWidget* parent,
             this, SLOT(filterByKeyRelative()));
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
             this, SLOT(spinBoxBpmRangeChanged(int)));
-    connect(m_pSelectorLibraryTableView->selectionModel(),
-            SIGNAL(selectionChanged(const QItemSelection &, const QItemSelection&)),
-            this, SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
-
-    connect(m_pSelectorLibraryTableModel,
-            SIGNAL(doSearch(const QItemSelection &, const QItemSelection&)),
-            this,
-            SLOT(tableSelectionChanged(const QItemSelection &, const QItemSelection&)));
-
     connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
     // Getting info on current decks playing etc
@@ -78,24 +71,15 @@ void DlgSelector::onShow()
     slotCurrentTrackInfoChanged();
 }
 
-void DlgSelector::onHide()
-{
+void DlgSelector::onHide() {
     qDebug() << "DlgSelector::onHide()";
     m_pSelectorLibraryTableModel->active(false);
 }
 
-void DlgSelector::setup(QDomNode node)
-{
-    qDebug() << "DlgSelector::setup()";
+void DlgSelector::onSearch(const QString& text) {
+    m_pSelectorLibraryTableModel->search(text);
 }
 
-void DlgSelector::onSearchStarting()
-{
-}
-
-void DlgSelector::onSearchCleared()
-{
-}
 
 void DlgSelector::slotFiltersChanged() {
     int count = m_pSelectorLibraryTableModel->rowCount();
@@ -117,80 +101,68 @@ void DlgSelector::slotCurrentTrackInfoChanged() {
     checkBoxKeyRelative->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
 }
 
-void DlgSelector::onSearch(const QString& text)
-{
-    m_pSelectorLibraryTableModel->search(text);
-}
-
 void DlgSelector::loadSelectedTrack() {
-    m_pSelectorLibraryTableView->loadSelectedTrack();
+    m_pTrackTableView->loadSelectedTrack();
 }
 
 void DlgSelector::loadSelectedTrackToGroup(QString group) {
-    m_pSelectorLibraryTableView->loadSelectedTrackToGroup(group, false);
+    m_pTrackTableView->loadSelectedTrackToGroup(group, false);
 }
 
 void DlgSelector::moveSelection(int delta) {
-    m_pSelectorLibraryTableView->moveSelection(delta);
+    m_pTrackTableView->moveSelection(delta);
 }
 
 void DlgSelector::tableSelectionChanged(const QItemSelection& selected, 
-	const QItemSelection& deselected)
-{
+    const QItemSelection& deselected) {
+    Q_UNUSED(selected);
+    Q_UNUSED(deselected);
 }
 
 void DlgSelector::selectAll() {
-    m_pSelectorLibraryTableView->selectAll();
+    m_pTrackTableView->selectAll();
 }
 
-void DlgSelector::filterByGenre()
-{
+void DlgSelector::filterByGenre() {
     m_pSelectorLibraryTableModel->filterByGenre(checkBoxGenre->isChecked());
 }
 
-void DlgSelector::filterByBpm()
-{
+void DlgSelector::filterByBpm() {
     bool bpm = checkBoxBpm->isChecked();
     int range = horizontalSliderBpmRange->value();
     m_pSelectorLibraryTableModel->filterByBpm(bpm, range);
 }
 
-void DlgSelector::spinBoxBpmRangeChanged(int value)
-{
+void DlgSelector::spinBoxBpmRangeChanged(int value) {
+    Q_UNUSED(value);
     filterByBpm();
 }
 
-void DlgSelector::filterByYear()
-{
+void DlgSelector::filterByYear() {
     m_pSelectorLibraryTableModel->filterByYear(checkBoxYear->isChecked());
 }
 
-void DlgSelector::filterByRating()
-{
+void DlgSelector::filterByRating() {
     m_pSelectorLibraryTableModel->filterByRating(checkBoxRating->isChecked());
 }
 
-void DlgSelector::filterByKey()
-{
+void DlgSelector::filterByKey() {
     m_pSelectorLibraryTableModel->filterByKey(checkBoxKey->isChecked());
 }
 
-void DlgSelector::filterByKey4th()
-{
+void DlgSelector::filterByKey4th() {
     m_pSelectorLibraryTableModel->filterByKey4th(checkBoxKey4th->isChecked());
 }
 
-void DlgSelector::filterByKey5th()
-{
+void DlgSelector::filterByKey5th() {
     m_pSelectorLibraryTableModel->filterByKey5th(checkBoxKey5th->isChecked());
 }
 
-void DlgSelector::filterByKeyRelative()
-{
+void DlgSelector::filterByKeyRelative() {
     m_pSelectorLibraryTableModel->filterByKeyRelative(checkBoxKeyRelative->isChecked());
 }
 
 void DlgSelector::installEventFilter(QObject* pFilter) {
     QWidget::installEventFilter(pFilter);
-    m_pSelectorLibraryTableView->installEventFilter(pFilter);
+    m_pTrackTableView->installEventFilter(pFilter);
 }

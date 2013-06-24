@@ -18,12 +18,11 @@ SelectorFeature::SelectorFeature(QObject* parent,
                                TrackCollection* pTrackCollection)
         : LibraryFeature(parent),
           m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_pSelectorView(NULL) {
 }
 
 SelectorFeature::~SelectorFeature() {
-    // TODO(XXX) delete these
-    //delete m_pLibraryTableModel;
 }
 
 QVariant SelectorFeature::title() {
@@ -36,17 +35,16 @@ QIcon SelectorFeature::getIcon() {
 
 void SelectorFeature::bindWidget(WLibrary* libraryWidget,
                                 MixxxKeyboard* keyboard) {
-    DlgSelector* pSelectorView = new DlgSelector(libraryWidget,
-                                              m_pConfig,
-                                              m_pTrackCollection);
-    connect(pSelectorView, SIGNAL(loadTrack(TrackPointer)),
+    m_pSelectorView = new DlgSelector(libraryWidget,
+                                      m_pConfig,
+                                      m_pTrackCollection,
+                                      keyboard);
+    libraryWidget->registerView(m_sSelectorViewName, m_pSelectorView);
+
+    connect(m_pSelectorView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(pSelectorView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+    connect(m_pSelectorView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-
-    pSelectorView->installEventFilter(keyboard);
-
-    libraryWidget->registerView(m_sSelectorViewName, pSelectorView);
 }
 
 TreeItemModel* SelectorFeature::getChildModel() {
@@ -58,34 +56,15 @@ void SelectorFeature::activate() {
     emit(switchToView(m_sSelectorViewName));
 }
 
-void SelectorFeature::activateChild(const QModelIndex& index) {
-}
-
-void SelectorFeature::onRightClick(const QPoint& globalPos) {
-}
-
-void SelectorFeature::onRightClickChild(const QPoint& globalPos,
-                                            QModelIndex index) {
-}
-
-bool SelectorFeature::dropAccept(QUrl url) {
-    return false;
-}
-
-bool SelectorFeature::dropAcceptChild(const QModelIndex& index, QUrl url) {
+bool SelectorFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+    // TODO(chrisjr): use dropped
+    Q_UNUSED(urls);
+    Q_UNUSED(pSource);
     return false;
 }
 
 bool SelectorFeature::dragMoveAccept(QUrl url) {
+    // TODO(chrisjr): supp
+    Q_UNUSED(url);
     return false;
 }
-
-bool SelectorFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                              QUrl url) {
-    return false;
-}
-
-void SelectorFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do because the childmodel is not of lazy nature.
-}
-

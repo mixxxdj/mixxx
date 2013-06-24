@@ -15,11 +15,11 @@ class SelectorLibraryTableModel : public LibraryTableModel
     Q_OBJECT
   public:
     SelectorLibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);
-    virtual ~SelectorLibraryTableModel();
+    ~SelectorLibraryTableModel();
 
-    virtual void search(const QString& searchText);
-    virtual bool isColumnInternal(int column);
-    virtual int rowCount();
+    void search(const QString& searchText);
+    bool isColumnInternal(int column);
+    int rowCount();
 	void active(bool value);
 
     bool currentTrackGenreExists();
@@ -49,16 +49,13 @@ class SelectorLibraryTableModel : public LibraryTableModel
         );
         */
   private slots:
-    void slotSearch(const QString& searchText);
     void slotPlayingDeckChanged(int deck);
     void slotChannel1BpmChanged(double value);
     void slotFiltersChanged();
   signals:
     void filtersChanged();
     void currentTrackInfoChanged();
-    void doSearch(const QString& searchText);
   private:
-
     bool m_bActive;
     void updateFilterText();
     void setRate();

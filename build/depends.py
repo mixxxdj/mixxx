@@ -589,7 +589,6 @@ class MixxxCore(Feature):
                    "widget/wlibrary.cpp",
                    "widget/wlibrarytableview.cpp",
                    "widget/wpreparelibrarytableview.cpp",
-                   "widget/wselectorlibrarytableview.cpp",
                    "widget/wpreparecratestableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",
                    "library/preparecratedelegate.cpp",

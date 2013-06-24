@@ -8,6 +8,7 @@
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "configobject.h"
+#include "dlgselector.h"
 
 class LibraryTableModel;
 class TrackCollection;
@@ -23,34 +24,23 @@ class SelectorFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QUrl url);
-    bool dropAcceptChild(const QModelIndex& index, QUrl url);
+    bool dropAccept(QList<QUrl> urls,QWidget *pSource);
     bool dragMoveAccept(QUrl url);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
 
-  signals:
-
   public slots:
     void activate();
-    void activateChild(const QModelIndex& index);
-    void onRightClick(const QPoint& globalPos);
-    void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-    void onLazyChildExpandation(const QModelIndex& index);
-
-  private slots:
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
-    // Used to temporarily enable BPM detection in the prefs before we analyse
-    int m_iOldBpmEnabled;
-    TreeItemModel m_childModel;
     const static QString m_sSelectorViewName;
+    TreeItemModel m_childModel;
+    DlgSelector* m_pSelectorView;
 };
 
 

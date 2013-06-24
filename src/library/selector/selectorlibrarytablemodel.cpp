@@ -23,9 +23,6 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.selector") {
 
-    connect(this, SIGNAL(doSearch(const QString&)),
-            this, SLOT(slotSearch(const QString&)));
-
     // Getting info on current decks playing etc
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
            this, SLOT(slotPlayingDeckChanged(int)));
@@ -176,11 +173,12 @@ void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
 
 void SelectorLibraryTableModel::slotFiltersChanged() {
 	if (!m_bActive) return;
-    slotSearch(QString());
+    search("");
 }
 
-void SelectorLibraryTableModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText, m_filterString);
+void SelectorLibraryTableModel::search(const QString& text) {
+    setSearch(text, m_filterString);
+    select();
 }
 
 // PRIVATE METHODS
@@ -286,8 +284,4 @@ void SelectorLibraryTableModel::setRate() {
     if (rateSlider != NULL && rateRange != NULL && rateDirection != NULL) {
         m_rate = (1 + rateSlider->get() * rateRange->get() * rateDirection->get());        
     }
-}
-
-void SelectorLibraryTableModel::search(const QString& searchText) {
-    emit(doSearch(searchText));
 }

@@ -6,30 +6,27 @@
 #include "configobject.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
+#include "mixxxkeyboard.h"
 
 class SelectorLibraryTableModel;
-class WSelectorCratesTableView;
-class WSelectorLibraryTableView;
+class WTrackTableView;
 class QSqlTableModel;
-class CrateView;
 
-class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual LibraryView {
+class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     Q_OBJECT
   public:
     DlgSelector(QWidget *parent,
                ConfigObject<ConfigValue>* pConfig,
-               TrackCollection* pTrackCollection);
-    virtual ~DlgSelector();
+               TrackCollection* pTrackCollection,
+               MixxxKeyboard* pKeyboard);
+    ~DlgSelector();
 
-    virtual void setup(QDomNode node);
-    virtual void onSearchStarting();
-    virtual void onSearchCleared();
-    virtual void onSearch(const QString& text);
-    virtual void onShow();
-    virtual void onHide();
-    virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
-    virtual void moveSelection(int delta);
+    void onShow();
+    void onHide();
+    void onSearch(const QString &text);
+    void loadSelectedTrack();
+    void loadSelectedTrackToGroup(QString group);
+    void moveSelection(int delta);
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,
@@ -57,10 +54,8 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public virtual Libra
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     //QButtonGroup m_songsButtonGroup;
-    WSelectorLibraryTableView* m_pSelectorLibraryTableView;
+    WTrackTableView* m_pTrackTableView;
     SelectorLibraryTableModel* m_pSelectorLibraryTableModel;
-    WSelectorCratesTableView* m_pSelectorCratesTableView;
-    CrateView* m_pCrateView;
     QSqlTableModel* m_pCratesTableModel;
 };
 
