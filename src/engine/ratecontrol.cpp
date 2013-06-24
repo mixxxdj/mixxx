@@ -8,6 +8,7 @@
 #include "rotary.h"
 #include "mathstuff.h"
 
+#include "engine/bpmcontrol.h"
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
@@ -27,8 +28,8 @@ RateControl::RateControl(const char* _group,
                          ConfigObject<ConfigValue>* _config)
     : EngineControl(_group, _config),
       m_sGroup(_group),
+      m_pBpmControl(NULL),
       m_iSyncState(SYNC_NONE),
-      m_bUserTweakingSync(false),
       m_ePbCurrent(0),
       m_ePbPressed(0),
       m_bTempStarted(false),
@@ -145,23 +146,6 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
-    m_pSyncMasterEnabled = new ControlPushButton(ConfigKey(_group, "sync_master"));
-    m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSyncMasterChanged(double)),
-                Qt::DirectConnection);
-
-    m_pSyncSlaveEnabled = new ControlPushButton(ConfigKey(_group, "sync_slave"));
-    m_pSyncSlaveEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pSyncSlaveEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSyncSlaveChanged(double)),
-                Qt::DirectConnection);
-
-    m_pSyncInternalEnabled = ControlObject::getControl(ConfigKey("[Master]", "sync_master"));
-    connect(m_pSyncInternalEnabled, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSyncInternalChanged(double)),
-                Qt::DirectConnection);
-
     m_pSyncState = new ControlObject(ConfigKey(_group, "sync_state"));
     connect(m_pSyncState, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncStateChanged(double)),
@@ -170,8 +154,6 @@ RateControl::RateControl(const char* _group,
                 this, SLOT(slotSyncStateChanged(double)),
                 Qt::DirectConnection);
 
-    m_pSyncMasterEnabled->set(false);
-    m_pSyncSlaveEnabled->set(false);
     m_iSyncState = SYNC_NONE;
 
 #ifdef __VINYLCONTROL__
@@ -216,24 +198,8 @@ RateControl::~RateControl() {
     delete m_pScratchController;
 }
 
-void RateControl::setEngineMaster(EngineMaster* pEngineMaster) {
-    EngineControl::setEngineMaster(pEngineMaster);
-
-    //TODO: should we only hook these up if we are a slave?  beat distance
-    //is updated on every iteration so it's heavy
-    m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]","sync_bpm"));
-    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
-                this, SLOT(slotMasterBpmChanged(double)),
-                Qt::DirectConnection);
-    connect(m_pMasterBpm, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotMasterBpmChanged(double)),
-                Qt::DirectConnection);
-
-    // We need this so we can sync to master sync
-    m_pFileBpm = ControlObject::getControl(ConfigKey(m_sGroup, "file_bpm"));
-    connect(m_pFileBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotFileBpmChanged(double)),
-            Qt::DirectConnection);
+void RateControl::setBpmControl(BpmControl* bpmcontrol) {
+    m_pBpmControl = bpmcontrol;
 }
 
 void RateControl::setRateRamp(bool linearMode)
@@ -384,122 +350,8 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
-void RateControl::slotFileBpmChanged(double bpm) {
-    m_dFileBpm = bpm;
-    slotMasterBpmChanged(m_pMasterBpm->get());
-}
-
-void RateControl::slotMasterBpmChanged(double syncbpm) {
-    // Vinyl overrides
-    if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
-        return;
-    }
-    if (m_iSyncState == SYNC_SLAVE) {
-        // if we're a slave, update the rate value -- we don't set anything here,
-        // this comes into effect in the return from calculaterate
-        //TODO: let's ignore x2, /2 issues for now
-        //this is reproduced from bpmcontrol::syncTempo -- should break this out
-        double dDesiredRate;
-        if (m_dFileBpm == 0.0)
-        {
-            //XXX TODO: what to do about this case
-            qDebug() << "Zero BPM, I guess we call the desired rate 1.0!";
-            dDesiredRate = 1.0;
-        } else {
-            dDesiredRate = syncbpm / m_dFileBpm;
-        }
-        m_dSyncedRate = dDesiredRate;
-        if (m_dSyncedRate != 0) {
-            m_pRateSlider->set(((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
-        } else {
-            m_pRateSlider->set(0);
-        }
-    }
-}
-
-void RateControl::slotSyncMasterChanged(double state) {
-    qDebug() << m_sGroup << "slot master changed";
-
-    if (state) {
-        if (m_iSyncState == SYNC_MASTER){
-            qDebug() << "already master";
-            return;
-        }
-
-        if (m_pTrack.isNull()) {
-            qDebug() << m_sGroup << " no track loaded, can't be master";
-            m_pSyncMasterEnabled->set(false);
-            return;
-        }
-
-        qDebug() << m_sGroup << " setting ourselves as master";
-        m_pSyncState->set(SYNC_MASTER);
-    } else {
-        // now, turning off master turns off sync mode
-        if (m_iSyncState != SYNC_MASTER) {
-            return;
-        }
-        //unset ourselves
-        qDebug() << m_sGroup << "unsetting ourselves as master (now off)";
-        m_pSyncState->set(SYNC_NONE);
-    }
-}
-
-void RateControl::slotSyncSlaveChanged(double state) {
-    //qDebug() << m_sGroup << "slot slave changed";
-    if (state) {
-        if (m_iSyncState == SYNC_SLAVE) {
-            //qDebug() << "already slave";
-            return;
-        }
-        if (m_pTrack.isNull()) {
-            qDebug() << m_sGroup << " no track loaded, can't be slave";
-            m_pSyncSlaveEnabled->set(false);
-            return;
-        }
-        m_pSyncState->set(SYNC_SLAVE);
-    } else {
-        // For now, turning off slave turns off syncing
-        m_pSyncState->set(SYNC_NONE);
-    }
-}
-
-void RateControl::slotSyncInternalChanged(double state) {
-    if (state) {
-        if (m_iSyncState == SYNC_MASTER) {
-            m_pSyncState->set(SYNC_SLAVE);
-        }
-    }
-}
-
 void RateControl::slotSyncStateChanged(double state) {
-    double changed = m_iSyncState != state;
-    // TODO(rryan): Is the multiple assignment significant? It looks like
-    // EngineSync could reject a change we make in slotSetStatuses and change
-    // the sync state.
     m_iSyncState = state;
-    if (changed) {
-        slotSetStatuses();
-    }
-    if (state == SYNC_SLAVE) {
-        slotMasterBpmChanged(m_pMasterBpm->get());
-    }
-}
-
-void RateControl::slotSetStatuses() {
-    switch (m_iSyncState) {
-    case SYNC_NONE:
-        m_pSyncMasterEnabled->set(false);
-        m_pSyncSlaveEnabled->set(false);
-        break;
-    case SYNC_SLAVE:
-        m_pSyncMasterEnabled->set(false);
-        m_pSyncSlaveEnabled->set(true);
-        break;
-    case SYNC_MASTER:
-        m_pSyncMasterEnabled->set(true);
-        m_pSyncSlaveEnabled->set(false);
-    }
 }
 
 void RateControl::trackLoaded(TrackPointer pTrack) {
@@ -545,10 +397,6 @@ double RateControl::getJogFactor() const {
     return jogFactor;
 }
 
-bool RateControl::getUserTweakingSync() const {
-    return m_bUserTweakingSync;
-}
-
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
                                   bool* isScratching) {
     double rate = (paused ? 0 : 1.0);
@@ -558,8 +406,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // If searching is in progress, it overrides everything else
         rate = searching;
     } else {
-
-
         double wheelFactor = getWheelFactor();
         double jogFactor = getJogFactor();
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
@@ -568,10 +414,18 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         // if master sync is on, respond to it -- but vinyl always overrides
         if (m_iSyncState == SYNC_SLAVE && !paused && !bVinylControlEnabled)
         {
-            rate = m_dSyncedRate;
+            if (m_pBpmControl == NULL) {
+                qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                return 1.0;
+            }
+
+            rate = m_pBpmControl->getSyncedRate();
             double userTweak = getTempRate() + wheelFactor + jogFactor;
-            rate += userTweak;
-            m_bUserTweakingSync = (userTweak != 0.0);
+            bool userTweakingSync = (userTweak != 0.0);
+            if (userTweakingSync) {
+                rate += userTweak;
+            }
+            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
 
             m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
             return rate;

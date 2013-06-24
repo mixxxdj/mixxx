@@ -204,6 +204,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
+    m_pRateControl->setBpmControl(m_pBpmControl);
     addControl(m_pBpmControl);
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
@@ -594,12 +595,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
 
-        m_pBpmControl->setUserTweakingSync(
-            m_pRateControl->getUserTweakingSync());
-
-        if (!paused) {
-            rate *= m_pBpmControl->getSyncAdjustment();
-        }
         resample_rate = rate * baserate;
         //qDebug() << "rate" << rate << " paused" << paused;
 

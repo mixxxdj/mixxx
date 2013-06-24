@@ -23,8 +23,8 @@ class BpmControl : public EngineControl {
     double getBpm() const;
     double getFileBpm() const { return m_dFileBpm; }
     void onEngineRateChange(double rate);
-    double getSyncAdjustment() const;
-    void setUserTweakingSync(bool tweakActive);
+    double getSyncAdjustment(bool userTweakingSync);
+    double getSyncedRate() const { return m_dSyncedRate; }
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
 
@@ -50,7 +50,12 @@ class BpmControl : public EngineControl {
     void slotAdjustBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
-    void slotMasterBeatDistanceChanged(double);
+    void slotMasterBpmChanged(double);
+    void slotSyncMasterChanged(double);
+    void slotSyncSlaveChanged(double);
+    void slotSyncInternalChanged(double);
+    void slotSyncStateChanged(double);
+    void slotSetStatuses();
 
   private:
     double getBeatDistance(double dThisPosition) const;
@@ -69,11 +74,6 @@ class BpmControl : public EngineControl {
     ControlObject* m_pRateDir;
 
     ControlObject* m_pThisBeatDistance;
-    ControlObject* m_pMasterBeatDistance;
-    ControlObject* m_pSyncState;
-    double m_dSyncAdjustment;
-    bool m_bUserTweakingSync;
-    double m_dUserOffset;
 
     // Is vinyl control enabled?
     ControlObject* m_pVCEnabled;
@@ -104,6 +104,17 @@ class BpmControl : public EngineControl {
     double m_dFileBpm;
     double m_dLoopSize; // Only used to see if we shouldn't quantize position.
     double m_dPreviousSample;
+
+    // Master Sync objects and values.
+    ControlObject *m_pMasterBpm;
+    ControlObject *m_pSyncInternalEnabled;
+    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
+    ControlObject *m_pSyncState;
+    ControlObject* m_pMasterBeatDistance;
+    double m_dSyncAdjustment;
+    double m_dUserOffset;
+    double m_dSyncedRate;
+    int m_iSyncState;
 
     TapFilter m_tapFilter;
 

@@ -53,7 +53,7 @@ void MidiOutputHandler::controlChanged(double value) {
     }
 
     // Don't send out of date messages.
-    if (value != m_cobj.get()) {
+    if (value != m_cot.get()) {
         return;
     }
 

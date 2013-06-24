@@ -15,6 +15,7 @@ const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
 const int RATE_SENSITIVITY_MIN = 100;
 const int RATE_SENSITIVITY_MAX = 2500;
 
+class BpmControl;
 class Rotary;
 class ControlTTRotary;
 class ControlObject;
@@ -31,7 +32,7 @@ public:
     RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~RateControl();
 
-    void setEngineMaster(EngineMaster* pEngineMaster);
+    void setBpmControl(BpmControl* bpmcontrol);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     double process(const double dRate,
@@ -41,7 +42,6 @@ public:
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate() const;
-    bool getUserTweakingSync() const;
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -71,15 +71,8 @@ public:
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
-
   private slots:
-    void slotFileBpmChanged(double);
-    void slotMasterBpmChanged(double);
-    void slotSyncMasterChanged(double);
-    void slotSyncSlaveChanged(double);
-    void slotSyncInternalChanged(double);
     void slotSyncStateChanged(double);
-    void slotSetStatuses();
 
   private:
     double getJogFactor() const;
@@ -126,14 +119,10 @@ public:
 
     TrackPointer m_pTrack;
 
-    //For Master Sync
-    ControlObject *m_pMasterBpm;
-    ControlObject *m_pSyncInternalEnabled;
-    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
-    ControlObject *m_pSyncState;
-    double m_dSyncedRate;
+    // For Master Sync
+    BpmControl* m_pBpmControl;
+    ControlObject* m_pSyncState;
     int m_iSyncState;
-    bool m_bUserTweakingSync;
 
     /** The current loaded file's detected BPM */
     ControlObject* m_pFileBpm;
