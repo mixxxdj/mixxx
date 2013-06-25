@@ -29,7 +29,7 @@ DlgSelector::DlgSelector(QWidget* parent,
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
-    box->insertWidget(1, m_pTrackTableView);
+    box->insertWidget(2, m_pTrackTableView);
 
     m_pSelectorLibraryTableModel =  new SelectorLibraryTableModel(this, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pSelectorLibraryTableModel);
