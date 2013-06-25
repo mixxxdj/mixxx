@@ -562,6 +562,11 @@ void DlgPrefControls::slotSetWaveformType(int index) {
     }
 }
 
+void DlgPrefControls::slotSetWaveformOverviewType(int index) {
+    m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"), ConfigValue(index));
+    m_mixxx->rebootMixxxView();
+}
+
 void DlgPrefControls::slotSetDefaultZoom(int index) {
     WaveformWidgetFactory::instance()->setDefaultZoom( index + 1);
 }
@@ -664,6 +669,15 @@ void DlgPrefControls::initWaveformControl()
     connect(normalizeOverviewCheckBox,SIGNAL(toggled(bool)),
             this,SLOT(slotSetNormalizeOverview(bool)));
 
+    // Waveform overview init
+    waveformOverviewComboBox->addItem( tr("Filtered") ); // "0"
+    waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
+
+    // By default we set filtered woverview = "0"
+    waveformOverviewComboBox->setCurrentIndex(
+            m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt());
+    connect(waveformOverviewComboBox,SIGNAL(currentIndexChanged(int)),
+            this,SLOT(slotSetWaveformOverviewType(int)));
 }
 
 //Returns TRUE if skin fits to screen resolution, FALSE otherwise
