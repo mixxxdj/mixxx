@@ -22,6 +22,8 @@ class SelectorLibraryTableModel : public LibraryTableModel
     int rowCount();
 	void active(bool value);
 
+    void setSeedTrack(TrackPointer pSeedTrack);
+    QString getSeedTrackInfo();
     bool seedTrackGenreExists();
     bool seedTrackBpmExists();
     bool seedTrackYearExists();
@@ -48,7 +50,6 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void seedTrackInfoChanged();
   private:
     bool m_bActive;
-    void setSeedTrack(TrackPointer pSeedTrack);
     void updateFilterText();
     QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(mixxx::track::io::key::ChromaticKey key);
     bool m_bFilterGenre;
@@ -62,6 +63,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterKeyRelative;
 
     // Current Track Properties
+    QString m_sSeedTrackInfo;
     QString m_sSeedTrackGenre;
     float m_fSeedTrackBpm;
     QString m_sSeedTrackYear;

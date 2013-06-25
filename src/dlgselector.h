@@ -24,6 +24,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void onShow();
     void onHide();
     void onSearch(const QString &text);
+    void setSeedTrack(TrackPointer pSeedTrack);
     void loadSelectedTrack();
     void loadSelectedTrackToGroup(QString group);
     void moveSelection(int delta);

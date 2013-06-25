@@ -43,6 +43,7 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_channelBpm = NULL;
     m_bActive = false;
     
+    m_sSeedTrackInfo = QString();
     m_sSeedTrackGenre = QString();
     m_fSeedTrackBpm = 0;
     m_sSeedTrackYear = QString();
@@ -64,6 +65,21 @@ int SelectorLibraryTableModel::rowCount() {
 
 void SelectorLibraryTableModel::active(bool value) {
     m_bActive = value;
+}
+
+void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
+    m_pSeedTrack = pSeedTrack;
+    m_sSeedTrackInfo = m_pSeedTrack->getInfo();
+    m_sSeedTrackGenre = m_pSeedTrack->getGenre();
+    m_fSeedTrackBpm = m_pSeedTrack->getBpm();
+    m_sSeedTrackYear = m_pSeedTrack->getYear();
+    m_iSeedTrackRating = m_pSeedTrack->getRating();
+    m_seedTrackKey = m_pSeedTrack->getKey();
+    emit(seedTrackInfoChanged());
+}
+
+QString SelectorLibraryTableModel::getSeedTrackInfo() {
+    return m_sSeedTrackInfo;
 }
 
 bool SelectorLibraryTableModel::seedTrackGenreExists() {
@@ -191,16 +207,6 @@ void SelectorLibraryTableModel::search(const QString& text) {
 }
 
 // PRIVATE METHODS
-
-void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
-    m_pSeedTrack = pSeedTrack;
-    m_sSeedTrackGenre = m_pSeedTrack->getGenre();
-    m_fSeedTrackBpm = m_pSeedTrack->getBpm();
-    m_sSeedTrackYear = m_pSeedTrack->getYear();
-    m_iSeedTrackRating = m_pSeedTrack->getRating();
-    m_seedTrackKey = m_pSeedTrack->getKey();
-    emit(seedTrackInfoChanged());
-}
 
 void SelectorLibraryTableModel::updateFilterText() {
 	if (!m_bActive) return;

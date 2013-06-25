@@ -10,6 +10,7 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
+#include "soundsourceproxy.h"
 
 const QString SelectorFeature::m_sSelectorViewName = QString("Selector");
 
@@ -57,14 +58,39 @@ void SelectorFeature::activate() {
 }
 
 bool SelectorFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
-    // TODO(chrisjr): use dropped
-    Q_UNUSED(urls);
-    Q_UNUSED(pSource);
-    return false;
+    TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
+
+    //If a track is dropped onto the selector name, but the track isn't in the library,
+    //then add the track to the library before using it as a seed.
+    QList<QFileInfo> files;
+    foreach (QUrl url, urls) {
+        QFileInfo file = url.toLocalFile();
+        if (SoundSourceProxy::isFilenameSupported(file.fileName())) {
+            files.append(file);
+        }
+    }
+    QList<int> trackIds;
+    if (pSource) {
+        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+    } else {
+        trackIds = trackDao.addTracks(files, true);
+    }
+
+    // get rid of any tracks not added
+    for (int trackId = 0; trackId < trackIds.size(); trackId++) {
+        if (trackIds.at(trackId) < 0) {
+            trackIds.removeAt(trackId--);
+        }
+    }
+
+//    qDebug() << "Track ID: " << trackIds.first();
+
+    m_pSelectorView->setSeedTrack(trackDao.getTrack(trackIds.first()));
+
+    return true;
 }
 
 bool SelectorFeature::dragMoveAccept(QUrl url) {
-    // TODO(chrisjr): supp
-    Q_UNUSED(url);
-    return false;
+    QFileInfo file(url.toLocalFile());
+    return SoundSourceProxy::isFilenameSupported(file.fileName());
 }

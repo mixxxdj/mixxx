@@ -83,12 +83,16 @@ void DlgSelector::onSearch(const QString& text) {
 
 void DlgSelector::slotFiltersChanged() {
     int count = m_pSelectorLibraryTableModel->rowCount();
-    QString pluralize = ((count > 1) ? QString("s") : QString(""));
+    QString pluralize = ((count > 1 || count == 0) ? QString("s") : QString(""));
     QString labelMatchText = QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
     labelMatchCount->setText(labelMatchText);
 }
 
 void DlgSelector::slotSeedTrackInfoChanged() {
+    QString seedTrackInfo = m_pSelectorLibraryTableModel->getSeedTrackInfo();
+    QString labelSeedTrackText = QString(tr("Matches for: %1")).arg(seedTrackInfo);
+    labelSeedTrackInfo->setText(labelSeedTrackText);
+
     // check which filters to activate
     checkBoxGenre->setEnabled(m_pSelectorLibraryTableModel->seedTrackGenreExists());
     checkBoxBpm->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
@@ -99,6 +103,10 @@ void DlgSelector::slotSeedTrackInfoChanged() {
     checkBoxKey4th->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
     checkBoxKey5th->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
     checkBoxKeyRelative->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
+}
+
+void DlgSelector::setSeedTrack(TrackPointer pSeedTrack) {
+    m_pSelectorLibraryTableModel->setSeedTrack(pSeedTrack);
 }
 
 void DlgSelector::loadSelectedTrack() {

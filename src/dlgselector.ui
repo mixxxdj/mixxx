@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>683</width>
-    <height>399</height>
+    <height>213</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -25,6 +25,17 @@
    </property>
    <item>
     <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QLabel" name="labelSeedTrackInfo">
+       <property name="text">
+        <string>Matches for:</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <layout class="QHBoxLayout" name="horizontalLayout_2">
      <item>
       <spacer name="horizontalSpacer_3">
        <property name="orientation">
