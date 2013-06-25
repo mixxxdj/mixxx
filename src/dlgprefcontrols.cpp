@@ -670,10 +670,10 @@ void DlgPrefControls::initWaveformControl()
             this,SLOT(slotSetNormalizeOverview(bool)));
 
     // Waveform overview init
-    waveformOverviewComboBox->addItem( tr("Filtered") );
-    waveformOverviewComboBox->addItem( tr("HSV") );
+    waveformOverviewComboBox->addItem( tr("Filtered") ); // "0"
+    waveformOverviewComboBox->addItem( tr("HSV") ); // "1"
 
-    // By default we set filtered woverview
+    // By default we set filtered woverview = "0"
     waveformOverviewComboBox->setCurrentIndex(
             m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt());
     connect(waveformOverviewComboBox,SIGNAL(currentIndexChanged(int)),
