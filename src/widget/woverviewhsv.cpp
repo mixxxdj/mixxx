@@ -10,7 +10,7 @@ WOverviewHSV::WOverviewHSV(const char* pGroup,
 }
 
 bool WOverviewHSV::drawNextPixmapPart() {
-    ScopedTimer t("WOverview::drawNextPixmapPart");
+    ScopedTimer t("WOverviewHSV::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 

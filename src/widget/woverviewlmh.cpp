@@ -13,7 +13,7 @@ WOverviewLMH::WOverviewLMH(const char *pGroup,
 
 bool WOverviewLMH::drawNextPixmapPart()
 {
-    ScopedTimer t("WOverview::drawNextPixmapPart");
+    ScopedTimer t("WOverviewLMH::drawNextPixmapPart");
 
     //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
 
