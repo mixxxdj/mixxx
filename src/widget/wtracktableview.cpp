@@ -66,7 +66,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCrateMenu = new QMenu(this);
     m_pCrateMenu->setTitle(tr("Add to Crate"));
     m_pBPMMenu = new QMenu(this);
-    m_pBPMMenu->setTitle(tr("BPM Settings"));
+    m_pBPMMenu->setTitle(tr("BPM Options"));
 
     // Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -646,12 +646,14 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     //start of BPM section of menu
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_MANIPULATEBEATS)) {
-        m_pBPMMenu->addAction(m_pBpmLockAction);
-        m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction); 
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmLockAction);
+        m_pBPMMenu->addAction(m_pBpmUnlockAction);
+        m_pBPMMenu->addSeparator();
         if (oneSongSelected) {
             TrackModel* trackModel = getTrackModel();
             if (trackModel == NULL) {
