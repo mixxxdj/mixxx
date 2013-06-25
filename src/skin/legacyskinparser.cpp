@@ -598,11 +598,13 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
 
     WOverview* overviewWidget = NULL;
 
-    // HSV or LMH waveform overview type
-    if( m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt() == 0 )
+    // HSV = "1" or "Filtered" = "0" (LMH) waveform overview type
+    if (m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"),
+            "0").toInt() == 0) {
         overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
-    else
+    } else {
         overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
+    }
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));

@@ -4,7 +4,8 @@
 
 #include "waveform/waveform.h"
 
-WOverviewHSV::WOverviewHSV(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
+WOverviewHSV::WOverviewHSV(const char* pGroup,
+        ConfigObject<ConfigValue>* pConfig, QWidget * parent)
     : WOverview(pGroup, pConfig, parent)  {
 }
 
@@ -25,13 +26,16 @@ bool WOverviewHSV::drawNextPixmapPart() {
     }
 
     if (!m_pWaveformSourceImage) {
-        //waveform pixmap twice the height of the viewport to be scalable by total_gain
+        //waveform pixmap twice the height of the viewport to be scalable
+        //by total_gain
         //we keep full range waveform data to scale it on paint
-        m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255, QImage::Format_ARGB32_Premultiplied);
+        m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
+                QImage::Format_ARGB32_Premultiplied);
         m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
     }
 
-    const int waveformCompletion = m_pWaveform->getCompletion(); // always multiple of 2
+    // always multiple of 2
+    const int waveformCompletion = m_pWaveform->getCompletion();
     // test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
@@ -46,7 +50,8 @@ bool WOverviewHSV::drawNextPixmapPart() {
 
     const int nextCompletion = m_actualCompletion + completionIncrement;
 
-    //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:" << nextCompletion
+    //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:"
+    // << nextCompletion
     // << "m_actualCompletion:" << m_actualCompletion
     // << "waveformCompletion:" << waveformCompletion
     // << "completionIncrement:" << completionIncrement;
@@ -79,12 +84,14 @@ bool WOverviewHSV::drawNextPixmapPart() {
             maxHigh[0] = m_pWaveform->getHigh(currentCompletion);
             maxHigh[1] = m_pWaveform->getHigh(currentCompletion+1);
 
-            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] + maxHigh[0] + maxHigh[1]) * 1.2;
+            total = (maxLow[0] + maxLow[1] + maxMid[0] + maxMid[1] +
+                     maxHigh[0] + maxHigh[1]) * 1.2;
 
             // prevent division by zero
             if( total > 0 )
             {
-                // Normalize low and high (mid not need, because it not change the color)
+                // Normalize low and high
+                // (mid not need, because it not change the color)
                 lo = (maxLow[0] + maxLow[1]) / total;
                 hi = (maxHigh[0] + maxHigh[1]) / total;
             }
@@ -104,8 +111,10 @@ bool WOverviewHSV::drawNextPixmapPart() {
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
-        m_waveformPeak = math_max(m_waveformPeak, (float)m_pWaveform->getAll(currentCompletion));
-        m_waveformPeak = math_max(m_waveformPeak, (float)m_pWaveform->getAll(currentCompletion+1));
+        m_waveformPeak = math_max(m_waveformPeak,
+                (float)m_pWaveform->getAll(currentCompletion));
+        m_waveformPeak = math_max(m_waveformPeak,
+                (float)m_pWaveform->getAll(currentCompletion+1));
     }
 
     m_actualCompletion = nextCompletion;
