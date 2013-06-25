@@ -55,8 +55,8 @@ DlgSelector::DlgSelector(QWidget* parent,
     connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
     // Getting info on current decks playing etc
-    connect(m_pSelectorLibraryTableModel, SIGNAL(currentTrackInfoChanged()),
-           this, SLOT(slotCurrentTrackInfoChanged()));
+    connect(m_pSelectorLibraryTableModel, SIGNAL(seedTrackInfoChanged()),
+           this, SLOT(slotSeedTrackInfoChanged()));
             
 
 }
@@ -68,7 +68,7 @@ void DlgSelector::onShow()
 {
     qDebug() << "DlgSelector::onShow()";
     m_pSelectorLibraryTableModel->active(true);
-    slotCurrentTrackInfoChanged();
+    slotSeedTrackInfoChanged();
 }
 
 void DlgSelector::onHide() {
@@ -88,17 +88,17 @@ void DlgSelector::slotFiltersChanged() {
     labelMatchCount->setText(labelMatchText);
 }
 
-void DlgSelector::slotCurrentTrackInfoChanged() {
+void DlgSelector::slotSeedTrackInfoChanged() {
     // check which filters to activate
-    checkBoxGenre->setEnabled(m_pSelectorLibraryTableModel->currentTrackGenreExists());
-    checkBoxBpm->setEnabled(m_pSelectorLibraryTableModel->currentTrackBpmExists());
-    horizontalSliderBpmRange->setEnabled(m_pSelectorLibraryTableModel->currentTrackBpmExists());
-    checkBoxYear->setEnabled(m_pSelectorLibraryTableModel->currentTrackYearExists());
-    checkBoxRating->setEnabled(m_pSelectorLibraryTableModel->currentTrackRatingExists());
-    checkBoxKey->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
-    checkBoxKey4th->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
-    checkBoxKey5th->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
-    checkBoxKeyRelative->setEnabled(m_pSelectorLibraryTableModel->currentTrackKeyExists());
+    checkBoxGenre->setEnabled(m_pSelectorLibraryTableModel->seedTrackGenreExists());
+    checkBoxBpm->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
+    horizontalSliderBpmRange->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
+    checkBoxYear->setEnabled(m_pSelectorLibraryTableModel->seedTrackYearExists());
+    checkBoxRating->setEnabled(m_pSelectorLibraryTableModel->seedTrackRatingExists());
+    checkBoxKey->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
+    checkBoxKey4th->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
+    checkBoxKey5th->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
+    checkBoxKeyRelative->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
 }
 
 void DlgSelector::loadSelectedTrack() {

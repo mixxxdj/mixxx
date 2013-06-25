@@ -23,7 +23,7 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.selector") {
 
-    // Getting info on current decks playing etc
+    // Detect when deck has changed
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
            this, SLOT(slotPlayingDeckChanged(int)));
 
@@ -39,16 +39,15 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_bFilterKey4th = false;
     m_bFilterKey5th = false;
     m_bFilterKeyRelative = false;
-    m_filterString = "";
+    m_filterString = QString();
     m_channelBpm = NULL;
     m_bActive = false;
-    m_rate = 0;
     
-    m_sCurrentTrackGenre = "";
-    m_fCurrentTrackBpm = 0;
-    m_sCurrentTrackYear = "";
-    m_iCurrentTrackRating = 0;
-    m_currentTrackKey = mixxx::track::io::key::INVALID;
+    m_sSeedTrackGenre = QString();
+    m_fSeedTrackBpm = 0;
+    m_sSeedTrackYear = QString();
+    m_iSeedTrackRating = 0;
+    m_seedTrackKey = mixxx::track::io::key::INVALID;
 
 }
 
@@ -67,25 +66,25 @@ void SelectorLibraryTableModel::active(bool value) {
     m_bActive = value;
 }
 
-bool SelectorLibraryTableModel::currentTrackGenreExists() {
-    return m_sCurrentTrackGenre != QString();
+bool SelectorLibraryTableModel::seedTrackGenreExists() {
+    return m_sSeedTrackGenre != QString();
 }
 
-bool SelectorLibraryTableModel::currentTrackBpmExists() {
-    return m_fCurrentTrackBpm > 0;
+bool SelectorLibraryTableModel::seedTrackBpmExists() {
+    return m_fSeedTrackBpm > 0;
 }
 
-bool SelectorLibraryTableModel::currentTrackYearExists() {
-    return m_sCurrentTrackYear != QString();
+bool SelectorLibraryTableModel::seedTrackYearExists() {
+    return m_sSeedTrackYear != QString();
 }
 
-bool SelectorLibraryTableModel::currentTrackRatingExists() {
-    return m_iCurrentTrackRating > 0;
+bool SelectorLibraryTableModel::seedTrackRatingExists() {
+    return m_iSeedTrackRating > 0;
 }
 
-bool SelectorLibraryTableModel::currentTrackKeyExists() {
-    return ChromaticKey_IsValid(m_currentTrackKey) &&
-               m_currentTrackKey != mixxx::track::io::key::INVALID;
+bool SelectorLibraryTableModel::seedTrackKeyExists() {
+    return ChromaticKey_IsValid(m_seedTrackKey) &&
+               m_seedTrackKey != mixxx::track::io::key::INVALID;
 }
 
 void SelectorLibraryTableModel::filterByGenre(bool value) {
@@ -136,38 +135,48 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
         m_pChannel = QString("[Channel%1]").arg(deck);
 
         // disconnect the old pitch slider
-    //    if (m_channelBpm) {
-    //        disconnect(m_channelBpm, 0, this, 0);
-    //    }
+        if (m_channelBpm) {
+            disconnect(m_channelBpm, 0, this, 0);
+        }
+
+        if (m_channelKey) {
+            disconnect(m_channelKey, 0, this, 0);
+        }
+
         // get the new pitch slider object
-    //    m_channelBpm = new ControlObjectThreadMain(
-    //                ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
+        m_channelBpm = new ControlObjectThreadMain(
+                    ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
+
+        m_channelKey = new ControlObjectThreadMain(
+                    ControlObject::getControl(ConfigKey(m_pChannel, "key")));
 
         // listen for slider change events
-    //    connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
-    //        SLOT(slotChannel1BpmChanged(double)));
+        connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
+            SLOT(slotChannelBpmChanged(double)));
+        connect(m_channelKey, SIGNAL(valueChanged(double)), this,
+            SLOT(slotChannelKeyChanged(double)));
 
         m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
-        if (m_pLoadedTrack) {
-            m_sCurrentTrackGenre = m_pLoadedTrack->getGenre();
-            m_fCurrentTrackBpm = m_pLoadedTrack->getBpm();
-            m_sCurrentTrackYear = m_pLoadedTrack->getYear();
-            m_iCurrentTrackRating = m_pLoadedTrack->getRating();
-            m_currentTrackKey = m_pLoadedTrack->getKey();
-        } else {
-            qDebug() << "Called with deck " << deck << " and no track playing.";
-        }
-        emit(currentTrackInfoChanged());
+        setSeedTrack(m_pLoadedTrack);
 
-        setRate();
+        emit(seedTrackInfoChanged());
         updateFilterText();
     }
-
 }
 
-void SelectorLibraryTableModel::slotChannel1BpmChanged(double value) {
-    qDebug() << "BPM changed to " << value;
-    setRate();
+void SelectorLibraryTableModel::slotChannelBpmChanged(double value) {
+//    qDebug() << "BPM changed to " << value;
+    if (m_pLoadedTrack == m_pSeedTrack) {
+        m_fSeedTrackBpm = value;
+    }
+    updateFilterText();
+}
+
+void SelectorLibraryTableModel::slotChannelKeyChanged(double value) {
+//    qDebug() << "Key changed to " << value;
+    if (m_pLoadedTrack == m_pSeedTrack) {
+        m_seedTrackKey = KeyUtils::keyFromNumericValue(value);
+    }
     updateFilterText();
 }
 
@@ -183,48 +192,53 @@ void SelectorLibraryTableModel::search(const QString& text) {
 
 // PRIVATE METHODS
 
+void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
+    m_pSeedTrack = pSeedTrack;
+    m_sSeedTrackGenre = m_pSeedTrack->getGenre();
+    m_fSeedTrackBpm = m_pSeedTrack->getBpm();
+    m_sSeedTrackYear = m_pSeedTrack->getYear();
+    m_iSeedTrackRating = m_pSeedTrack->getRating();
+    m_seedTrackKey = m_pSeedTrack->getKey();
+    emit(seedTrackInfoChanged());
+}
+
 void SelectorLibraryTableModel::updateFilterText() {
 	if (!m_bActive) return;
-    if (m_pLoadedTrack) {
+    if (m_pSeedTrack) {
 		QStringList filters;
 
         // Genre
         if (m_bFilterGenre) {
-            QString TrackGenre = m_sCurrentTrackGenre;
+            QString TrackGenre = m_sSeedTrackGenre;
             if (TrackGenre != "")
                 filters << QString("Genre == '%1'").arg(TrackGenre);
         }
 
         // Year
         if (m_bFilterYear) {
-            QString TrackYear = m_sCurrentTrackYear;
+            QString TrackYear = m_sSeedTrackYear;
             if (TrackYear!="")
                 filters << QString("Year == '%1'").arg(TrackYear);
         }
 
         // Rating
         if (m_bFilterRating) {
-            int TrackRating = m_iCurrentTrackRating;
+            int TrackRating = m_iSeedTrackRating;
             if (TrackRating > 0)
                 filters << QString("Rating >= %1").arg(TrackRating);
         }
 
-        // calculate the current BPM
-        float trackBpm = m_fCurrentTrackBpm;
-        float currentBpm = trackBpm * m_rate;
-
-        // Bpm
+        // BPM
         if (m_bFilterBpm) {
-            //float trackBpm = pChannel1Bpm->get();
-            if (currentBpm > 0) 
+            if (m_fSeedTrackBpm > 0)
                 filters << QString("(Bpm > %1 AND Bpm < %2)").arg(
-                    floor(currentBpm - m_iFilterBpmRange)).arg(
-                    ceil(currentBpm + m_iFilterBpmRange));
+                    floor(m_fSeedTrackBpm - m_iFilterBpmRange)).arg(
+                    ceil(m_fSeedTrackBpm + m_iFilterBpmRange));
         } 
 
         // Keys
 
-        QList<ChromaticKey> hKeys = getHarmonicKeys(m_currentTrackKey);
+        QList<ChromaticKey> hKeys = getHarmonicKeys(m_seedTrackKey);
 
         if (!hKeys.isEmpty()) {
             // string business is a hack until filters use ChromaticKey directly
@@ -254,7 +268,7 @@ void SelectorLibraryTableModel::updateFilterText() {
 QList<ChromaticKey> SelectorLibraryTableModel::getHarmonicKeys(ChromaticKey key) {
     QList<ChromaticKey> keys;
 
-    if (currentTrackKeyExists()) {
+    if (seedTrackKeyExists()) {
         if (m_bFilterKey) {
             keys.append(key);
         }
@@ -270,18 +284,4 @@ QList<ChromaticKey> SelectorLibraryTableModel::getHarmonicKeys(ChromaticKey key)
     }
 
     return keys;
-}
-
-void SelectorLibraryTableModel::setRate() {
-        // get pitch slider value (deck rate)
-    ControlObjectThreadMain* rateSlider = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pChannel, "rate")));
-    ControlObjectThreadMain* rateRange = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pChannel, "rateRange")));
-    ControlObjectThreadMain* rateDirection = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pChannel, "rate_dir")));
-
-    if (rateSlider != NULL && rateRange != NULL && rateDirection != NULL) {
-        m_rate = (1 + rateSlider->get() * rateRange->get() * rateDirection->get());        
-    }
 }

@@ -43,7 +43,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void filterByKeyRelative();
     void installEventFilter(QObject* pFilter);
     void slotFiltersChanged();
-    void slotCurrentTrackInfoChanged();
+    void slotSeedTrackInfoChanged();
 
   signals:
     void loadTrack(TrackPointer pTrack);

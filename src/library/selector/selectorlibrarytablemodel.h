@@ -22,11 +22,11 @@ class SelectorLibraryTableModel : public LibraryTableModel
     int rowCount();
 	void active(bool value);
 
-    bool currentTrackGenreExists();
-    bool currentTrackBpmExists();
-    bool currentTrackYearExists();
-    bool currentTrackRatingExists();
-    bool currentTrackKeyExists();
+    bool seedTrackGenreExists();
+    bool seedTrackBpmExists();
+    bool seedTrackYearExists();
+    bool seedTrackRatingExists();
+    bool seedTrackKeyExists();
 
   public slots:
     void filterByGenre(bool value);
@@ -38,29 +38,19 @@ class SelectorLibraryTableModel : public LibraryTableModel
 	void filterByKey5th(bool value);
 	void filterByKeyRelative(bool value);
 
-    /*
-    void updateFilter(
-        bool filterByGenre, 
-        bool filterByBpm,
-        bool filterByYear,
-        bool filterByRating,
-        bool filterByKey,
-        bool filterByHarmonicKey
-        );
-        */
   private slots:
     void slotPlayingDeckChanged(int deck);
-    void slotChannel1BpmChanged(double value);
+    void slotChannelBpmChanged(double value);
+    void slotChannelKeyChanged(double value);
     void slotFiltersChanged();
   signals:
     void filtersChanged();
-    void currentTrackInfoChanged();
+    void seedTrackInfoChanged();
   private:
     bool m_bActive;
+    void setSeedTrack(TrackPointer pSeedTrack);
     void updateFilterText();
-    void setRate();
     QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(mixxx::track::io::key::ChromaticKey key);
-    float m_rate;
     bool m_bFilterGenre;
     bool m_bFilterBpm;
     int m_iFilterBpmRange;
@@ -72,16 +62,18 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterKeyRelative;
 
     // Current Track Properties
-    QString m_sCurrentTrackGenre;
-    float m_fCurrentTrackBpm;
-    QString m_sCurrentTrackYear;
-    int m_iCurrentTrackRating;
-    mixxx::track::io::key::ChromaticKey m_currentTrackKey;
+    QString m_sSeedTrackGenre;
+    float m_fSeedTrackBpm;
+    QString m_sSeedTrackYear;
+    int m_iSeedTrackRating;
+    mixxx::track::io::key::ChromaticKey m_seedTrackKey;
 
     QString m_pChannel;
     QString m_filterString;
+    TrackPointer m_pSeedTrack;
     TrackPointer m_pLoadedTrack;
     ControlObjectThreadMain* m_channelBpm;
+    ControlObjectThreadMain* m_channelKey;
 };
 
 
