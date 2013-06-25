@@ -45,11 +45,14 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void slotChannelBpmChanged(double value);
     void slotChannelKeyChanged(double value);
     void slotFiltersChanged();
+    void slotResetFilters();
   signals:
     void filtersChanged();
+    void resetFilters();
     void seedTrackInfoChanged();
   private:
     bool m_bActive;
+    void clearSeedTrackInfo();
     void updateFilterText();
     QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(mixxx::track::io::key::ChromaticKey key);
     bool m_bFilterGenre;

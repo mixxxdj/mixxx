@@ -33,6 +33,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void tableSelectionChanged(const QItemSelection& selected,
                                const QItemSelection& deselected);
     void selectAll();
+    void resetFilters();
     void filterByGenre();
     void filterByBpm();
     void spinBoxBpmRangeChanged(int value);

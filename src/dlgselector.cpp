@@ -54,7 +54,8 @@ DlgSelector::DlgSelector(QWidget* parent,
             this, SLOT(spinBoxBpmRangeChanged(int)));
     connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
-    // Getting info on current decks playing etc
+    connect(m_pSelectorLibraryTableModel, SIGNAL(resetFilters()),
+            this, SLOT(resetFilters()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(seedTrackInfoChanged()),
            this, SLOT(slotSeedTrackInfoChanged()));
             
@@ -129,6 +130,17 @@ void DlgSelector::tableSelectionChanged(const QItemSelection& selected,
 
 void DlgSelector::selectAll() {
     m_pTrackTableView->selectAll();
+}
+
+void DlgSelector::resetFilters() {
+    checkBoxGenre->setChecked(false);
+    checkBoxBpm->setChecked(false);
+    checkBoxYear->setChecked(false);
+    checkBoxRating->setChecked(false);
+    checkBoxKey->setChecked(false);
+    checkBoxKey4th->setChecked(false);
+    checkBoxKey5th->setChecked(false);
+    checkBoxKeyRelative->setChecked(false);
 }
 
 void DlgSelector::filterByGenre() {
