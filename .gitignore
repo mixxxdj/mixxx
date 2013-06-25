@@ -11,4 +11,8 @@
 .#*
 .sconf_temp
 cache
+mixxx
+mixxx-test
 res/qrc_mixxx.cc
+lib/*/*.a
+lib/*/lib/*.a
