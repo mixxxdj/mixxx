@@ -29,17 +29,17 @@ bool WOverviewLMH::drawNextPixmapPart()
     }
 
     if (!m_pWaveformSourceImage) {
-        //waveform pixmap twice the height of the viewport to be scalable
+        // Waveform pixmap twice the height of the viewport to be scalable
         // by total_gain
-        //we keep full range waveform data to scale it on paint
+        // We keep full range waveform data to scale it on paint
         m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255,
                 QImage::Format_ARGB32_Premultiplied);
         m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
     }
 
-    // always multiple of 2
+    // Always multiple of 2
     const int waveformCompletion = m_pWaveform->getCompletion();
-    // test if there is some new to draw (at least of pixel width)
+    // Test if there is some new to draw (at least of pixel width)
     const int completionIncrement = waveformCompletion - m_actualCompletion;
 
     int visiblePixelIncrement = completionIncrement * width() / dataSize;
@@ -101,7 +101,7 @@ bool WOverviewLMH::drawNextPixmapPart()
                 m_pWaveform->getHigh(currentCompletion+1)));
     }
 
-    //evaluate waveform ratio peak
+    // Evaluate waveform ratio peak
 
     for (currentCompletion = m_actualCompletion;
             currentCompletion < nextCompletion; currentCompletion += 2) {
@@ -115,7 +115,7 @@ bool WOverviewLMH::drawNextPixmapPart()
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
 
-    //test if the complete waveform is done
+    // Test if the complete waveform is done
     if (m_actualCompletion >= dataSize - 2) {
         m_pixmapDone = true;
         //qDebug() << "m_waveformPeakRatio" << m_waveformPeak;

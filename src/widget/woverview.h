@@ -81,7 +81,7 @@ class WOverview : public WWidget {
     void slotAnalyserProgress(int progress);
 
   private:
-    // append the waveform overview pixmap according to available data in waveform
+    // Append the waveform overview pixmap according to available data in waveform
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
     inline int valueToPosition(float value) const {
@@ -116,11 +116,11 @@ class WOverview : public WWidget {
     WaveformMarkSet m_marks;
     std::vector<WaveformMarkRange> m_markRanges;
 
-    // coefficient value-position linear transposition
+    // Coefficient value-position linear transposition
     float m_a;
     float m_b;
 
-    int m_analyserProgress; // in 0.1%
+    int m_analyserProgress; // In 0.1%
     bool m_trackLoaded;
 };
 
