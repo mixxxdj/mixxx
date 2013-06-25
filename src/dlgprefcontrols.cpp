@@ -673,11 +673,8 @@ void DlgPrefControls::initWaveformControl()
     waveformOverviewComboBox->addItem( tr("HSV") );
 
     // By default we set filtered woverview
-    if (m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType")).length() == 0)
-        m_pConfig->set(ConfigKey("[Waveform]","WaveformOverviewType"),ConfigValue(0));
-
     waveformOverviewComboBox->setCurrentIndex(
-            m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType")).toInt());
+            m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt());
     connect(waveformOverviewComboBox,SIGNAL(currentIndexChanged(int)),
             this,SLOT(slotSetWaveformOverviewType(int)));
 }

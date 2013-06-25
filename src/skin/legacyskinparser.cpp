@@ -599,7 +599,7 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     WOverview* overviewWidget = NULL;
 
     // HSV or LMH waveform overview type
-    if( m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType")).toInt() == 0 )
+    if( m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"), "0").toInt() == 0 )
         overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
     else
         overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
