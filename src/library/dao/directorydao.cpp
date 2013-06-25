@@ -17,40 +17,40 @@ void DirectoryDAO::initialize() {
              << m_database.connectionName();
 }
 
-bool DirectoryDAO::addDirectory(QString dir){
+bool DirectoryDAO::addDirectory(QString dir) {
     FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
-    query.prepare("INSERT OR REPLACE INTO "% DIRECTORYDAO_TABLE %
-                  " ("% DIRECTORYDAO_DIR %") VALUES (:dir)");
-    query.bindValue(":dir",escaper.escapeString(dir));
+    query.prepare("INSERT OR REPLACE INTO " % DIRECTORYDAO_TABLE %
+                  " (" % DIRECTORYDAO_DIR % ") VALUES (:dir)");
+    query.bindValue(":dir", escaper.escapeString(dir));
     if (!query.exec()) {
-        qDebug() << "Adding new dir ("% dir %") failed:" <<query.lastError();
+        qDebug() << "Adding new dir (" % dir % ") failed:" << query.lastError();
         LOG_FAILED_QUERY(query);
         return false;
     }
     return true;
 }
 
-bool DirectoryDAO::purgeDirectory(QString dir){
+bool DirectoryDAO::purgeDirectory(QString dir) {
     FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM "% DIRECTORYDAO_TABLE  %" WHERE "
+    query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
                    %DIRECTORYDAO_DIR%"=:dir");
-    query.bindValue(":dir",escaper.escapeString(dir));
+    query.bindValue(":dir", escaper.escapeString(dir));
     if (!query.exec()) {
-        qDebug() << "purging dir ("%dir%") failed:"<<query.lastError();
+        qDebug() << "purging dir (" % dir % ") failed:"< <query.lastError();
         return false;
     }
     return true;
 }
 
-bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
+bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
     ScopedTransaction transaction(m_database);
     FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
     // update directory in directories table
-    query.prepare("UPDATE "%DIRECTORYDAO_TABLE%" SET "%DIRECTORYDAO_DIR%"="
-                  ":newFolder WHERE "%DIRECTORYDAO_DIR%"=:oldFolder");
+    query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR % "="
+                  ":newFolder WHERE " % DIRECTORYDAO_DIR % "=:oldFolder");
     query.bindValue(":newFolder", escaper.escapeString(newFolder));
     query.bindValue(":oldFolder", escaper.escapeString(oldFolder));
     if (!query.exec()) {
@@ -58,9 +58,9 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
         return false;
     }
 
-    int dirId =-1;
-    query.prepare("SELECT "%DIRECTORYDAO_ID%" FROM "%DIRECTORYDAO_TABLE%
-                  " WHERE "%DIRECTORYDAO_DIR%"=:newFolder");
+    int dirId = -1;
+    query.prepare("SELECT " % DIRECTORYDAO_ID % " FROM " % DIRECTORYDAO_TABLE %
+                  " WHERE " % DIRECTORYDAO_DIR % "=:newFolder");
     query.bindValue(":newFolder", escaper.escapeString(newFolder));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate directory";
@@ -74,9 +74,9 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
 
     // update location and directory in track_locations table
     query.prepare("UPDATE track_locations SET location="
-                  "REPLACE(location," %escaper.escapeString(oldFolder)%","% escaper.escapeString(newFolder)%")"
+                  "REPLACE(location," % escaper.escapeString(oldFolder) % "," % escaper.escapeString(newFolder) % ")"
                   ", directory="
-                  "REPLACE(directory,"% escaper.escapeString(oldFolder)%","% escaper.escapeString(newFolder)%") "
+                  "REPLACE(directory,"% escaper.escapeString(oldFolder) % "," % escaper.escapeString(newFolder) % ") "
                   "WHERE track_locations.maindir_id = "%QString::number(dirId) );
     // query.bindValue(":newFolder1", escaper.escapeString(newFolder));
     // query.bindValue(":oldFolder1", escaper.escapeString(oldFolder));
@@ -99,7 +99,7 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder){
     return true;
 }
 
-QStringList DirectoryDAO::getDirs(){
+QStringList DirectoryDAO::getDirs() {
     QSqlQuery query(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     if (!query.exec()) {
@@ -114,23 +114,23 @@ QStringList DirectoryDAO::getDirs(){
     return dirs;
 }
 
-int DirectoryDAO::getDirId(const QString dir){
+int DirectoryDAO::getDirId(const QString dir) {
     QSqlQuery query(m_database);
     FieldEscaper escaper(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_ID % " FROM " % DIRECTORYDAO_TABLE %
-                  " WHERE " % DIRECTORYDAO_DIR %" = :dir");
-    query.bindValue(":dir",escaper.escapeString(dir));
+                  " WHERE " % DIRECTORYDAO_DIR % " = :dir");
+    query.bindValue(":dir", escaper.escapeString(dir));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
-    int id=-1;
+    int id = -1;
     while (query.next()) {
         id = query.value(query.record().indexOf(DIRECTORYDAO_ID)).toInt();
     }
     return id;
 }
 
-bool DirectoryDAO::upgradeDatabase(QString dir){
+bool DirectoryDAO::upgradeDatabase(QString dir) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     // Default all Values to 0

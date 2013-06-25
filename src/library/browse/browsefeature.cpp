@@ -115,7 +115,6 @@ BrowseFeature::BrowseFeature(QObject* parent,
 }
 
 BrowseFeature::~BrowseFeature() {
-    //delete m_pLastRightClickedItem;
     // delete m_pQuickLinkItem;
 }
 
@@ -141,7 +140,7 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->dataPath().toString();
-    emit dirsChanged("added" ,spath);
+    emit(dirsChanged("added" ,spath));
 }
 
 void BrowseFeature::slotRemoveQuickLink() {

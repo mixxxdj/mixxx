@@ -192,10 +192,10 @@ void DlgPrefPlaylist::slotUpdate() {
 }
 
 void DlgPrefPlaylist::slotAddDir() {
-    QString fd = QFileDialog::getExistingDirectory(this,
-                            tr("Choose music library directory"),
-                            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-    if (fd != "") {
+    QString fd = QFileDialog::getExistingDirectory(
+                             this, tr("Choose music library directory"),
+                             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    if ( !fd.isEmpty() ) {
         emit(dirsChanged("added",fd));
         slotUpdate();
     }
@@ -211,12 +211,12 @@ void DlgPrefPlaylist::slotRemoveDir() {
 void DlgPrefPlaylist::slotRelocateDir() {
     QModelIndex index = list->currentIndex();
     QString currentFd = index.data().toString();
-    QString fd = QFileDialog::getExistingDirectory(this,
-                            tr("Choose music library directory"),
-                            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    QString fd = QFileDialog::getExistingDirectory(
+                             this, tr("Choose music library directory"),
+                             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
     //use !(~)! as a sign where the string has to be seperated later
-    if(!fd.isEmpty()){
+    if (!fd.isEmpty()) {
         emit(dirsChanged("relocate",fd+"!(~)!"+currentFd));
         slotUpdate();
     }

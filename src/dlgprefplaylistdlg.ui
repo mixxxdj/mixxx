@@ -237,10 +237,10 @@ playback and outbound link statistics</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
+      <item row="0" column="0" alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;    You will need to restart Mixxx for this to take effect&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>You will need to restart Mixxx for this to take effect</string>
         </property>
        </widget>
       </item>
