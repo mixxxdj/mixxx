@@ -41,7 +41,8 @@
 #include "widget/wnumber.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
-#include "widget/woverview.h"
+#include "widget/woverviewlmh.h"
+#include "widget/woverviewhsv.h"
 #include "widget/wspinny.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -594,7 +595,15 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WOverview* overviewWidget = new WOverview(pSafeChannelStr, m_pConfig, m_pParent);
+    WOverview* overviewWidget = NULL;
+
+    // HSV = "1" or "Filtered" = "0" (LMH) waveform overview type
+    if (m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"),
+            "0").toInt() == 0) {
+        overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
+    } else {
+        overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
+    }
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));

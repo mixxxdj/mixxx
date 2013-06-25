@@ -66,7 +66,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCrateMenu = new QMenu(this);
     m_pCrateMenu->setTitle(tr("Add to Crate"));
     m_pBPMMenu = new QMenu(this);
-    m_pBPMMenu->setTitle(tr("BPM Settings"));
+    m_pBPMMenu->setTitle(tr("BPM Options"));
 
     // Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -646,12 +646,14 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     //start of BPM section of menu
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_MANIPULATEBEATS)) {
-        m_pBPMMenu->addAction(m_pBpmLockAction);
-        m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction); 
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmLockAction);
+        m_pBPMMenu->addAction(m_pBpmUnlockAction);
+        m_pBPMMenu->addSeparator();
         if (oneSongSelected) {
             TrackModel* trackModel = getTrackModel();
             if (trackModel == NULL) {
@@ -881,7 +883,8 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
 void WTrackTableView::dropEvent(QDropEvent * event){
-    if (!event->mimeData()->hasUrls()) {
+    TrackModel* trackModel = getTrackModel();
+    if (!event->mimeData()->hasUrls() || trackModel->isLocked() ) {
         event->ignore();
         return;
     }
@@ -950,7 +953,6 @@ void WTrackTableView::dropEvent(QDropEvent * event){
         // which lets us do nice things like "restore" the selection model.
 
         if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
-            TrackModel* trackModel = getTrackModel();
 
             // The model indices are sorted so that we remove the tracks from the table
             // in ascending order. This is necessary because if track A is above track B in
@@ -1018,7 +1020,6 @@ void WTrackTableView::dropEvent(QDropEvent * event){
 
         //Drag-and-drop from an external application
         //eg. dragging a track from Windows Explorer onto the track table.
-        TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             int numNewRows = urls.count();
 

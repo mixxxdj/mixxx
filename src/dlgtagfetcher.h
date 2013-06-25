@@ -19,27 +19,30 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
 
     void init(const TrackPointer track);
 
+    enum networkError {
+        NOERROR,
+        HTTPERROR,
+        FTWERROR
+    };
+    
+
   signals:
     void next();
     void previous();
 
-  public slots:
+  private slots:
     void fetchTagFinished(const TrackPointer,const QList<TrackPointer>& tracks);
     void resultSelected();
     void fetchTagProgress(QString);
-
-  private slots:
+    void slotNetworkError(int, QString);
     void apply();
     void quit();
 
   private:
-
     void updateStack();
     void addDivider(const QString& text, QTreeWidget* parent) const;
     void addTrack(const TrackPointer track, int resultIndex,
                   QTreeWidget* parent) const;
-
-  private:
     struct Data {
         Data() : m_pending(true), m_selectedResult(-1) {}
 
@@ -52,6 +55,7 @@ class DlgTagFetcher : public QWidget,  public Ui::DlgTagFetcher {
     Data m_data;
     QString m_progress;
     TagFetcher m_TagFetcher;
+    networkError m_networkError; 
 };
 
 #endif // DLGTAGFETCHER_H

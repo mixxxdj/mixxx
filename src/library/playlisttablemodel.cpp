@@ -247,6 +247,10 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     select();
 }
 
+bool PlaylistTableModel::isLocked(){
+    return m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+}
+
 void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
     int numOfTracks = rowCount();
     int seed = QDateTime::currentDateTime().toTime_t();
