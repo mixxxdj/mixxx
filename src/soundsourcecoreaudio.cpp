@@ -63,7 +63,7 @@ int SoundSourceCoreAudio::open() {
 
 	if (err != noErr)
 	{
-		qDebug() << "SSCA: Error opening file.";
+        qDebug() << "SSCA: Error opening file " << m_qFilename;
 		return ERR;
 	}
 
@@ -74,7 +74,7 @@ int SoundSourceCoreAudio::open() {
     err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &size, &inputFormat);
 	if (err != noErr)
 	{
-		qDebug() << "SSCA: Error getting file format";
+        qDebug() << "SSCA: Error getting file format (" << m_qFilename << ")";
 		return ERR;
 	}
 
@@ -121,7 +121,7 @@ int SoundSourceCoreAudio::open() {
     err = ExtAudioFileSetProperty(m_audioFile, kExtAudioFileProperty_ClientDataFormat, size, &clientFormat);
 	if (err != noErr)
 	{
-		qDebug() << "SSCA: Error setting file property";
+        qDebug() << "SSCA: Error setting file property (" << m_qFilename << ")";
 		return ERR;
 	}
 
@@ -135,7 +135,7 @@ int SoundSourceCoreAudio::open() {
 	err			= ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileLengthFrames, &dataSize, &totalFrameCount);
 	if (err != noErr)
 	{
-		qDebug() << "SSCA: Error getting number of frames";
+        qDebug() << "SSCA: Error getting number of frames (" << m_qFilename << ")";
 		return ERR;
 	}
 
@@ -187,7 +187,7 @@ long SoundSourceCoreAudio::seek(long filepos) {
 	//err = ExtAudioFileSeek(m_audioFile, filepos / 2);
 	if (err != noErr)
 	{
-		qDebug() << "SSCA: Error seeking to" << filepos;// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << m_qFilename << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
 	}
     return filepos;
 }
@@ -273,6 +273,8 @@ int SoundSourceCoreAudio::parseHeader() {
 
     if (result)
         return OK;
+
+    qDebug() << "Error parsing header (file " << m_qFilename << ")";
     return ERR;
 }
 
