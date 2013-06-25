@@ -61,8 +61,7 @@ int SoundSourceCoreAudio::open() {
     err = ExtAudioFileOpen(&fsRef, &m_audioFile);
     */
 
-	if (err != noErr)
-	{
+    if (err != noErr) {
         qDebug() << "SSCA: Error opening file " << m_qFilename;
 		return ERR;
 	}
@@ -72,8 +71,7 @@ int SoundSourceCoreAudio::open() {
     UInt32 size = sizeof(inputFormat);
     m_inputFormat = inputFormat;
     err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &size, &inputFormat);
-	if (err != noErr)
-	{
+    if (err != noErr) {
         qDebug() << "SSCA: Error getting file format (" << m_qFilename << ")";
 		return ERR;
 	}
@@ -119,8 +117,7 @@ int SoundSourceCoreAudio::open() {
     size = sizeof(clientFormat);
 
     err = ExtAudioFileSetProperty(m_audioFile, kExtAudioFileProperty_ClientDataFormat, size, &clientFormat);
-	if (err != noErr)
-	{
+    if (err != noErr) {
         qDebug() << "SSCA: Error setting file property (" << m_qFilename << ")";
 		return ERR;
 	}
@@ -133,8 +130,7 @@ int SoundSourceCoreAudio::open() {
 	SInt64		totalFrameCount;
 	dataSize	= sizeof(totalFrameCount); //XXX: This looks sketchy to me - Albert
 	err			= ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileLengthFrames, &dataSize, &totalFrameCount);
-	if (err != noErr)
-	{
+    if (err != noErr) {
         qDebug() << "SSCA: Error getting number of frames (" << m_qFilename << ")";
 		return ERR;
 	}
@@ -185,8 +181,7 @@ long SoundSourceCoreAudio::seek(long filepos) {
 	//qDebug() << "SSCA: Seeking to" << segmentStart;
 
 	//err = ExtAudioFileSeek(m_audioFile, filepos / 2);
-	if (err != noErr)
-	{
+    if (err != noErr) {
         qDebug() << "SSCA: Error seeking to" << filepos << " (file " << m_qFilename << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
 	}
     return filepos;
