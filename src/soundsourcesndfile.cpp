@@ -153,6 +153,7 @@ unsigned SoundSourceSndFile::read(unsigned long size, const SAMPLE * destination
     }
 
     // The file has errors or is not open. Tell the truth and return 0.
+    qDebug() << "The file has errors or is not open: " << m_qFilename;
     return 0;
 }
 
@@ -228,9 +229,10 @@ int SoundSourceSndFile::parseHeader()
         }
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    if (result==ERR) {
+        qWarning() << "Error parsing header of file" << m_qFilename;
+    }
+    return result ? OK : ERR;
 }
 
 /*

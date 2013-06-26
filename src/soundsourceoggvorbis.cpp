@@ -113,11 +113,11 @@ int SoundSourceOggVorbis::open()
     {
       if (ret == OV_EINVAL) {
           //The file is not seekable. Not sure if any action is needed.
+          qDebug() << "oggvorbis: file is not seekable " << m_qFilename;
       }
     }
 
     return OK;
-
 }
 
 /*
@@ -146,7 +146,7 @@ long SoundSourceOggVorbis::seek(long filepos)
         // frames and we pretend to the world that everything is stereo)
         return ov_pcm_tell(&vf) * 2;
     } else{
-        qDebug() << "ogg vorbis: Seek ERR.";
+        qDebug() << "ogg vorbis: Seek ERR at file " << m_qFilename;
         return 0;
     }
 }
@@ -257,9 +257,10 @@ int SoundSourceOggVorbis::parseHeader() {
         processXiphComment(tag);
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    if (result==ERR) {
+        qWarning() << "Error parsing header of file" << m_qFilename;
+    }
+    return result ? OK : ERR;
 }
 
 /*

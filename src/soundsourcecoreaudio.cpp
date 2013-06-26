@@ -265,12 +265,10 @@ int SoundSourceCoreAudio::parseHeader() {
         //      Feels like 1995 again...
     }
 
-
-    if (result)
-        return OK;
-
-    qDebug() << "Error parsing header (file " << m_qFilename << ")";
-    return ERR;
+    if (result==ERR) {
+        qWarning() << "Error parsing header of file" << m_qFilename;
+    }
+    return result ? OK : ERR;
 }
 
 

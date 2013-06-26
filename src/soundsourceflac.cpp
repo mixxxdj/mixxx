@@ -53,7 +53,7 @@ SoundSourceFLAC::~SoundSourceFLAC() {
 
 // soundsource overrides
 int SoundSourceFLAC::open() {
-    m_file.open(QIODevice::ReadOnly); // why?
+    m_file.open(QIODevice::ReadOnly);
 
     m_decoder = FLAC__stream_decoder_new();
     if (m_decoder == NULL) {
@@ -92,7 +92,7 @@ decoderError:
     FLAC__stream_decoder_delete(m_decoder);
     m_decoder = NULL;
 
-    qWarning() << "SSFLAC: Decoder error at file" << m_file.fileName();
+    qWarning() << "SSFLAC: Decoder error at file" << m_qFilename;
     return ERR;
 }
 
@@ -104,7 +104,7 @@ long SoundSourceFLAC::seek(long filepos) {
     // -- bkgood
     bool result = FLAC__stream_decoder_seek_absolute(m_decoder, filepos / 2);
     if (!result)
-        qWarning() << "SSFLAC: Seeking error at file" << m_file.fileName();
+        qWarning() << "SSFLAC: Seeking error at file" << m_qFilename;
     m_leftoverBufferLength = 0; // clear internal buffer since we moved
     return filepos;
 }
@@ -120,8 +120,7 @@ unsigned int SoundSourceFLAC::read(unsigned long size, const SAMPLE *destination
         if (m_flacBufferLength == 0) {
             i = 0;
             if (!FLAC__stream_decoder_process_single(m_decoder)) {
-                qWarning() << "SSFLAC: decoder_process_single returned false ("
-                           << m_file.fileName() << ")";
+                qWarning() << "SSFLAC: decoder_process_single returned false (" << m_qFilename << ")";
                 break;
             } else if (m_flacBufferLength == 0) {
                 // EOF
@@ -174,8 +173,9 @@ int SoundSourceFLAC::parseHeader() {
     if (xiph) {
         processXiphComment(xiph);
     }
-    if (result==ERR)
+    if (result==ERR) {
         qWarning() << "Error parsing header of file" << m_qFilename;
+    }
     return result ? OK : ERR;
 }
 
@@ -202,7 +202,7 @@ inline FLAC__int16 SoundSourceFLAC::shift(FLAC__int32 sample) const {
     } else {
         return sample << shift;
     }
-};
+}
 
 // static
 QList<QString> SoundSourceFLAC::supportedFileExtensions() {
@@ -228,7 +228,7 @@ FLAC__StreamDecoderSeekStatus SoundSourceFLAC::flacSeek(FLAC__uint64 offset) {
     if (m_file.seek(offset)) {
         return FLAC__STREAM_DECODER_SEEK_STATUS_OK;
     } else {
-        qWarning() << "FLAC: An unrecoverable error occurred (" << m_qFilename << ")";
+        qWarning() << "SSFLAC: An unrecoverable error occurred (" << m_qFilename << ")";
         return FLAC__STREAM_DECODER_SEEK_STATUS_ERROR;
     }
 }
@@ -317,7 +317,7 @@ void SoundSourceFLAC::flacError(FLAC__StreamDecoderErrorStatus status) {
         break;
     }
     qWarning() << "SSFLAC got error" << error << "from libFLAC for file"
-        << m_file.fileName();
+        << m_qFilename;
     // not much else to do here... whatever function that initiated whatever
     // decoder method resulted in this error will return an error, and the caller
     // will bail. libFLAC docs say to not close the decoder here -- bkgood

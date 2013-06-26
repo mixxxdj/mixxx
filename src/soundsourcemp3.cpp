@@ -148,6 +148,8 @@ int SoundSourceMp3::open()
 
     // This is not a working MP3 file.
     if (currentframe == 0) {
+        qDebug() << "SSMP3: This is not a working MP3 file:"
+                 << m_qFilename;
         return ERR;
     }
 
@@ -204,6 +206,7 @@ long SoundSourceMp3::seek(long filepos) {
     }
 
     if (!isValid()) {
+        qDebug() << "SSMP3: Error wile seeking file " << m_qFilename;
         return 0;
     }
 
@@ -298,7 +301,7 @@ long SoundSourceMp3::seek(long filepos) {
             }
         }
 
-        // Synthesize the the samples from the frame which should be discard to reach the requested position
+        // Synthesize the samples from the frame which should be discard to reach the requested position
         if (cur != NULL) //the "if" prevents crashes on bad files.
             discard(filepos-cur->pos);
     }
@@ -347,7 +350,6 @@ long SoundSourceMp3::seek(long filepos) {
     // Unfortunately we don't know the exact fileposition. The returned position is thus an
     // approximation only:
     return filepos;
-
 }
 
 inline long unsigned SoundSourceMp3::length() {
@@ -432,8 +434,10 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted) {
  */
 unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _destination)
 {
-    if (!isValid())
+    if (!isValid()) {
+        qDebug() << "SSMP3: Error while reading " << m_qFilename;
         return 0;
+    }
 
     // Ensure that we are reading an even number of samples. Otherwise this function may
     // go into an infinite loop
@@ -476,7 +480,6 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
                 rest = -1;
             return Total_samples_decoded;
         }
-
     }
 
 //     qDebug() << "Decoding";
@@ -587,9 +590,10 @@ int SoundSourceMp3::parseHeader()
         processAPETag(ape);
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    if (result==ERR) {
+        qWarning() << "Error parsing header of file" << m_qFilename;
+    }
+    return result ? OK : ERR;
 }
 
 int SoundSourceMp3::findFrame(int pos)
