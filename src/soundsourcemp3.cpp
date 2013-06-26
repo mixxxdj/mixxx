@@ -590,7 +590,7 @@ int SoundSourceMp3::parseHeader()
         processAPETag(ape);
     }
 
-    if (result==ERR) {
+    if (result == ERR) {
         qWarning() << "Error parsing header of file" << m_qFilename;
     }
     return result ? OK : ERR;
