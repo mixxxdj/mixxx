@@ -889,7 +889,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
-    pWorkerScheduler->bindWorker(m_pReader);
+    m_pReader->setScheduler(pWorkerScheduler);
 }
 
 bool EngineBuffer::isTrackLoaded() {

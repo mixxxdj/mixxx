@@ -13,72 +13,27 @@
 #include "sampleutil.h"
 
 
-// There's a little math to this, but not much: 48khz stereo audio is 384kb/sec
-// if using float samples. We want the chunk size to be a power of 2 so it's
-// easier to memory align, and roughly 1/2 - 1/4th of a second of audio. 2**17
-// and 2**16 are nice candidates. 2**16 is 170ms of audio, which is well above
-// (hopefully) the latencies people are seeing. at 10ms latency, one chunk is
-// enough for 17 callbacks. We may need to tweak this later.
-
-// Must be divisible by 8, 4, and 2. Just pick a power of 2.
-#define CHUNK_LENGTH 65536
-//#define CHUNK_LENGTH 524288
-
-const int CachingReader::kChunkLength = CHUNK_LENGTH;
-const int CachingReader::kSamplesPerChunk = CHUNK_LENGTH / sizeof(CSAMPLE);
-
-CachingReader::CachingReader(const char* _group,
-                             ConfigObject<ConfigValue>* _config) :
-        m_pGroup(_group),
-        m_pConfig(_config),
-        m_chunkReadRequestFIFO(1024),
-        m_readerStatusFIFO(1024),
-        m_readerStatus(INVALID),
-        m_mruChunk(NULL),
-        m_lruChunk(NULL),
-        m_pRawMemoryBuffer(NULL),
-        m_pCurrentSoundSource(NULL),
-        m_iTrackSampleRate(0),
-        m_iTrackNumSamples(0),
-        m_iTrackNumSamplesCallbackSafe(0),
-        m_pSample(NULL) {
-    initialize();
-}
-
-CachingReader::~CachingReader() {
-    m_mutexRun.lock(); // do not delete if a run is still scheduled;
-                       // no need for unlock, because object is gone after
-    m_freeChunks.clear();
-    m_allocatedChunks.clear();
-    m_lruChunk = m_mruChunk = NULL;
-
-    for (int i=0; i < m_chunks.size(); i++) {
-        Chunk* c = m_chunks[i];
-        delete c;
-    }
-
-    delete [] m_pSample;
-
-    delete [] m_pRawMemoryBuffer;
-    m_pRawMemoryBuffer = NULL;
-
-    delete m_pCurrentSoundSource;
-}
-
-void CachingReader::initialize() {
+CachingReader::CachingReader(const char* group,
+                             ConfigObject<ConfigValue>* config)
+        : m_pConfig(config),
+          m_chunkReadRequestFIFO(1024),
+          m_readerStatusFIFO(1024),
+          m_readerStatus(INVALID),
+          m_mruChunk(NULL),
+          m_lruChunk(NULL),
+          m_pRawMemoryBuffer(NULL),
+          m_iTrackNumSamplesCallbackSafe(0) {
     int memory_to_use = 5000000; // 5mb, TODO
-    Q_ASSERT(memory_to_use >= kChunkLength);
+    Q_ASSERT(memory_to_use >= CachingReaderWorker::kChunkLength);
 
     // Only allocate as many bytes as we will actually use.
-    memory_to_use -= (memory_to_use % kChunkLength);
+    memory_to_use -= (memory_to_use % CachingReaderWorker::kChunkLength);
 
-    m_pSample = new SAMPLE[kSamplesPerChunk];
-
-    int total_chunks = memory_to_use / kChunkLength;
+    int total_chunks = memory_to_use / CachingReaderWorker::kChunkLength;
 
     //qDebug() << "CachingReader using" << memory_to_use << "bytes.";
 
-    int rawMemoryBufferLength = kSamplesPerChunk * total_chunks;
+    int rawMemoryBufferLength = CachingReaderWorker::kSamplesPerChunk * total_chunks;
     m_pRawMemoryBuffer = new CSAMPLE[rawMemoryBufferLength];
 
     m_allocatedChunks.reserve(total_chunks);
@@ -99,8 +54,39 @@ void CachingReader::initialize() {
         m_chunks.push_back(c);
         m_freeChunks.push_back(c);
 
-        bufferStart += kSamplesPerChunk;
+        bufferStart += CachingReaderWorker::kSamplesPerChunk;
     }
+
+    m_pWorker = new CachingReaderWorker(group,
+            &m_chunkReadRequestFIFO,
+            &m_readerStatusFIFO);
+
+    // Forward signals from worker
+    connect(m_pWorker, SIGNAL(trackLoading()),
+            this, SIGNAL(trackLoading()),
+            Qt::DirectConnection);
+    connect(m_pWorker, SIGNAL(trackLoaded(TrackPointer, int, int)),
+            this, SIGNAL(trackLoaded(TrackPointer, int, int)),
+            Qt::DirectConnection);
+    connect(m_pWorker, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            this, SIGNAL(trackLoadFailed(TrackPointer, QString)),
+            Qt::DirectConnection);
+}
+
+
+CachingReader::~CachingReader() {
+    delete m_pWorker;
+    m_freeChunks.clear();
+    m_allocatedChunks.clear();
+    m_lruChunk = m_mruChunk = NULL;
+
+    for (int i=0; i < m_chunks.size(); i++) {
+        Chunk* c = m_chunks[i];
+        delete c;
+    }
+
+    delete [] m_pRawMemoryBuffer;
+    m_pRawMemoryBuffer = NULL;
 }
 
 // static
@@ -241,54 +227,8 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
     return chunk;
 }
 
-void CachingReader::processChunkReadRequest(ChunkReadRequest* request,
-                                            ReaderStatusUpdate* update) {
-    int chunk_number = request->chunk->chunk_number;
-    //qDebug() << "Processing ChunkReadRequest for" << chunk_number;
-    update->chunk = request->chunk;
-    update->chunk->length = 0;
-
-    if (m_pCurrentSoundSource == NULL || chunk_number < 0) {
-        update->status = CHUNK_READ_INVALID;
-        return;
-    }
-
-    // Stereo samples
-    int sample_position = sampleForChunk(chunk_number);
-    int samples_remaining = m_iTrackNumSamples - sample_position;
-    int samples_to_read = math_min(kSamplesPerChunk, samples_remaining);
-
-    // Bogus chunk number
-    if (samples_to_read <= 0) {
-        update->status = CHUNK_READ_EOF;
-        return;
-    }
-
-    m_pCurrentSoundSource->seek(sample_position);
-    int samples_read = m_pCurrentSoundSource->read(samples_to_read,
-                                                   m_pSample);
-
-    // If we've run out of music, the SoundSource can return 0 samples.
-    // Remember that SoundSourc->getLength() (which is m_iTrackNumSamples) can
-    // lie to us about the length of the song!
-    if (samples_read <= 0) {
-        update->status = CHUNK_READ_EOF;
-        return;
-    }
-
-    // TODO(XXX) This loop can't be done with a memcpy, but could be done with
-    // SSE.
-    CSAMPLE* buffer = request->chunk->data;
-    //qDebug() << "Reading into " << buffer;
-    SampleUtil::convert(buffer, m_pSample, samples_read);
-    update->status = CHUNK_READ_SUCCESS;
-    update->chunk->length = samples_read;
-}
-
 void CachingReader::newTrack(TrackPointer pTrack) {
-    m_newTrackMutex.lock();
-    m_newTrack = pTrack;
-    m_newTrackMutex.unlock();
+    m_pWorker->newTrack(pTrack);
 }
 
 void CachingReader::process() {
@@ -432,7 +372,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
             break;
         }
 
-        int chunk_start_sample = sampleForChunk(chunk_num);
+        int chunk_start_sample = CachingReaderWorker::sampleForChunk(chunk_num);
         int chunk_offset = current_sample - chunk_start_sample;
         int chunk_remaining_samples = current->length - chunk_offset;
 
@@ -593,100 +533,8 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
     }
 }
 
-void CachingReader::run() {
-    TrackPointer pLoadTrack;
-
-    m_newTrackMutex.lock();
-    if (m_newTrack) {
-        pLoadTrack = m_newTrack;
-        m_newTrack = TrackPointer();
-    }
-    m_newTrackMutex.unlock();
-
-    if (pLoadTrack) {
-        loadTrack(pLoadTrack);
-    } else {
-        // Read the requested chunks.
-        ChunkReadRequest request;
-        ReaderStatusUpdate status;
-        while (m_chunkReadRequestFIFO.read(&request, 1) == 1) {
-            processChunkReadRequest(&request, &status);
-            m_readerStatusFIFO.writeBlocking(&status, 1);
-        }
-    }
-    m_mutexRun.unlock(); // Notify that the work we did is done.
-}
-
 void CachingReader::wake() {
     //qDebug() << m_pGroup << "CachingReader::wake()";
-    if(m_mutexRun.tryLock()) {
-        // tryLock succeeds if not already scheduled and not under destruction
-        if(!workReady()){
-            // not scheduled
-            m_mutexRun.unlock();
-        }
-    }
+    m_pWorker->wake();
 }
 
-void CachingReader::loadTrack(TrackPointer pTrack) {
-    //qDebug() << m_pGroup << "CachingReader::loadTrack() lock acquired for load.";
-
-    // Emit that a new track is loading, stops the current track
-    emit(trackLoading());
-
-    ReaderStatusUpdate status;
-    status.status = TRACK_LOADED;
-    status.chunk = NULL;
-    status.trackNumSamples = 0;
-
-    if (m_pCurrentSoundSource != NULL) {
-        delete m_pCurrentSoundSource;
-        m_pCurrentSoundSource = NULL;
-    }
-    m_iTrackSampleRate = 0;
-    m_iTrackNumSamples = 0;
-
-    QString filename = pTrack->getLocation();
-
-    if (filename.isEmpty() || !pTrack->exists()) {
-        // Must unlock before emitting to avoid deadlock
-        qDebug() << m_pGroup << "CachingReader::loadTrack() load failed for\""
-                 << filename << "\", unlocked reader lock";
-        status.status = TRACK_NOT_LOADED;
-        m_readerStatusFIFO.writeBlocking(&status, 1);
-        emit(trackLoadFailed(
-            pTrack, QString("The file '%1' could not be found.").arg(filename)));
-        return;
-    }
-
-    m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
-    bool openSucceeded = (m_pCurrentSoundSource->open() == OK); //Open the song for reading
-    m_iTrackSampleRate = m_pCurrentSoundSource->getSampleRate();
-    m_iTrackNumSamples = status.trackNumSamples =
-            m_pCurrentSoundSource->length();
-
-    if (!openSucceeded || m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
-        // Must unlock before emitting to avoid deadlock
-        qDebug() << m_pGroup << "CachingReader::loadTrack() load failed for\""
-                 << filename << "\", file invalid, unlocked reader lock";
-        status.status = TRACK_NOT_LOADED;
-        m_readerStatusFIFO.writeBlocking(&status, 1);
-        emit(trackLoadFailed(
-            pTrack, QString("The file '%1' could not be loaded.").arg(filename)));
-        return;
-    }
-
-    m_readerStatusFIFO.writeBlocking(&status, 1);
-
-    // Clear the chunks to read list.
-    ChunkReadRequest request;
-    while (m_chunkReadRequestFIFO.read(&request, 1) == 1) {
-        qDebug() << "Skipping read request for " << request.chunk->chunk_number;
-        status.status = CHUNK_READ_INVALID;
-        status.chunk = request.chunk;
-        m_readerStatusFIFO.writeBlocking(&status, 1);
-    }
-
-    // Emit that the track is loaded.
-    emit(trackLoaded(pTrack, m_iTrackSampleRate, m_iTrackNumSamples));
-}
