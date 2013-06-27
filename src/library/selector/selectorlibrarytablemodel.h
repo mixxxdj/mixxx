@@ -19,8 +19,11 @@ class SelectorLibraryTableModel : public LibraryTableModel
 
     void search(const QString& searchText);
     bool isColumnInternal(int column);
-    int rowCount();
-	void active(bool value);
+    int columnCount(const QModelIndex &parent) const;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
+    QVariant headerData(int section, Qt::Orientation orientation, int role) const;
+    void active(bool value);
 
     void setSeedTrack(TrackPointer pSeedTrack);
     QString getSeedTrackInfo();
