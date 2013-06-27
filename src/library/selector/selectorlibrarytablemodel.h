@@ -26,15 +26,11 @@ class SelectorLibraryTableModel : public LibraryTableModel
     QString getSeedTrackInfo();
     bool seedTrackGenreExists();
     bool seedTrackBpmExists();
-    bool seedTrackYearExists();
-    bool seedTrackRatingExists();
     bool seedTrackKeyExists();
 
   public slots:
     void filterByGenre(bool value);
     void filterByBpm(bool value, int range);
-    void filterByYear(bool value);
-    void filterByRating(bool value);
 	void filterByKey(bool value);
 	void filterByKey4th(bool value);
 	void filterByKey5th(bool value);
@@ -58,8 +54,6 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterGenre;
     bool m_bFilterBpm;
     int m_iFilterBpmRange;
-    bool m_bFilterYear;
-    bool m_bFilterRating;
     bool m_bFilterKey;
     bool m_bFilterKey4th;
     bool m_bFilterKey5th;
@@ -69,8 +63,6 @@ class SelectorLibraryTableModel : public LibraryTableModel
     QString m_sSeedTrackInfo;
     QString m_sSeedTrackGenre;
     float m_fSeedTrackBpm;
-    QString m_sSeedTrackYear;
-    int m_iSeedTrackRating;
     mixxx::track::io::key::ChromaticKey m_seedTrackKey;
 
     QString m_pChannel;

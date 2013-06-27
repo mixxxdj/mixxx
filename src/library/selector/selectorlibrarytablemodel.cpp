@@ -62,8 +62,6 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
         m_sSeedTrackInfo = m_pSeedTrack->getInfo();
         m_sSeedTrackGenre = m_pSeedTrack->getGenre();
         m_fSeedTrackBpm = m_pSeedTrack->getBpm();
-        m_sSeedTrackYear = m_pSeedTrack->getYear();
-        m_iSeedTrackRating = m_pSeedTrack->getRating();
         m_seedTrackKey = m_pSeedTrack->getKey();
     } else {
         clearSeedTrackInfo();
@@ -84,14 +82,6 @@ bool SelectorLibraryTableModel::seedTrackBpmExists() {
     return m_fSeedTrackBpm > 0;
 }
 
-bool SelectorLibraryTableModel::seedTrackYearExists() {
-    return m_sSeedTrackYear != QString();
-}
-
-bool SelectorLibraryTableModel::seedTrackRatingExists() {
-    return m_iSeedTrackRating > 0;
-}
-
 bool SelectorLibraryTableModel::seedTrackKeyExists() {
     return ChromaticKey_IsValid(m_seedTrackKey) &&
                m_seedTrackKey != mixxx::track::io::key::INVALID;
@@ -108,15 +98,6 @@ void SelectorLibraryTableModel::filterByBpm(bool value, int range) {
     updateFilterText();
 }
 
-void SelectorLibraryTableModel::filterByYear(bool value) {
-    m_bFilterYear = value;
-    updateFilterText();
-}
-
-void SelectorLibraryTableModel::filterByRating(bool value) {
-    m_bFilterRating = value;
-    updateFilterText();
-}
 
 void SelectorLibraryTableModel::filterByKey(bool value) {
     m_bFilterKey = value;
@@ -177,7 +158,7 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
 }
 
 void SelectorLibraryTableModel::slotChannelBpmChanged(double value) {
-//    qDebug() << "BPM changed to " << value;
+    qDebug() << "BPM changed to " << value;
     if (m_pLoadedTrack == m_pSeedTrack) {
         m_fSeedTrackBpm = value;
     }
@@ -185,7 +166,7 @@ void SelectorLibraryTableModel::slotChannelBpmChanged(double value) {
 }
 
 void SelectorLibraryTableModel::slotChannelKeyChanged(double value) {
-//    qDebug() << "Key changed to " << value;
+    qDebug() << "Key changed to " << value;
     if (m_pLoadedTrack == m_pSeedTrack) {
         m_seedTrackKey = KeyUtils::keyFromNumericValue(value);
     }
@@ -200,8 +181,6 @@ void SelectorLibraryTableModel::slotResetFilters() {
     m_bFilterGenre = false;
     m_bFilterBpm = false;
     m_iFilterBpmRange = 0;
-    m_bFilterYear = false;
-    m_bFilterRating = false;
     m_bFilterKey = false;
     m_bFilterKey4th = false;
     m_bFilterKey5th = false;
@@ -220,8 +199,6 @@ void SelectorLibraryTableModel::clearSeedTrackInfo() {
     m_sSeedTrackInfo = QString();
     m_sSeedTrackGenre = QString();
     m_fSeedTrackBpm = 0;
-    m_sSeedTrackYear = QString();
-    m_iSeedTrackRating = 0;
     m_seedTrackKey = mixxx::track::io::key::INVALID;
 }
 
@@ -236,20 +213,6 @@ void SelectorLibraryTableModel::updateFilterText() {
             QString TrackGenre = m_sSeedTrackGenre;
             if (TrackGenre != "")
                 filters << QString("Genre == '%1'").arg(TrackGenre);
-        }
-
-        // Year
-        if (m_bFilterYear) {
-            QString TrackYear = m_sSeedTrackYear;
-            if (TrackYear!="")
-                filters << QString("Year == '%1'").arg(TrackYear);
-        }
-
-        // Rating
-        if (m_bFilterRating) {
-            int TrackRating = m_iSeedTrackRating;
-            if (TrackRating > 0)
-                filters << QString("Rating >= %1").arg(TrackRating);
         }
 
         // BPM

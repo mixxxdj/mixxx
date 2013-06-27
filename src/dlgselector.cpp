@@ -38,10 +38,6 @@ DlgSelector::DlgSelector(QWidget* parent,
             this, SLOT(filterByGenre()));
     connect(checkBoxBpm, SIGNAL(clicked()),
             this, SLOT(filterByBpm()));
-    connect(checkBoxYear, SIGNAL(clicked()),
-            this, SLOT(filterByYear()));
-    connect(checkBoxRating, SIGNAL(clicked()),
-            this, SLOT(filterByRating()));
     connect(checkBoxKey, SIGNAL(clicked()),
             this, SLOT(filterByKey()));
     connect(checkBoxKey4th, SIGNAL(clicked()),
@@ -98,8 +94,6 @@ void DlgSelector::slotSeedTrackInfoChanged() {
     checkBoxGenre->setEnabled(m_pSelectorLibraryTableModel->seedTrackGenreExists());
     checkBoxBpm->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
     horizontalSliderBpmRange->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
-    checkBoxYear->setEnabled(m_pSelectorLibraryTableModel->seedTrackYearExists());
-    checkBoxRating->setEnabled(m_pSelectorLibraryTableModel->seedTrackRatingExists());
     checkBoxKey->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
     checkBoxKey4th->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
     checkBoxKey5th->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
@@ -135,8 +129,6 @@ void DlgSelector::selectAll() {
 void DlgSelector::resetFilters() {
     checkBoxGenre->setChecked(false);
     checkBoxBpm->setChecked(false);
-    checkBoxYear->setChecked(false);
-    checkBoxRating->setChecked(false);
     checkBoxKey->setChecked(false);
     checkBoxKey4th->setChecked(false);
     checkBoxKey5th->setChecked(false);
@@ -156,14 +148,6 @@ void DlgSelector::filterByBpm() {
 void DlgSelector::spinBoxBpmRangeChanged(int value) {
     Q_UNUSED(value);
     filterByBpm();
-}
-
-void DlgSelector::filterByYear() {
-    m_pSelectorLibraryTableModel->filterByYear(checkBoxYear->isChecked());
-}
-
-void DlgSelector::filterByRating() {
-    m_pSelectorLibraryTableModel->filterByRating(checkBoxRating->isChecked());
 }
 
 void DlgSelector::filterByKey() {
