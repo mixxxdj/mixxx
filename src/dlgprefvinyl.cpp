@@ -200,13 +200,11 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     }
 }
 
-void DlgPrefVinyl::VinylGainSlotApply()
-{
+void DlgPrefVinyl::VinylGainSlotApply() {
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << VinylGain->value();
-    //Update the config key...
-    config->set(ConfigKey(VINYL_PREF_KEY,"gain"), ConfigValue(VinylGain->value()));
+    // Update the config key...
+    config->set(ConfigKey(VINYL_PREF_KEY, "gain"), ConfigValue(VinylGain->value()));
 
-    //Update the ControlObject...
-    ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"));
-    pControlObjectVinylControlGain->set(VinylGain->value());
+    // Update the ControlObject...
+    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"), VinylGain->value());
 }
