@@ -50,7 +50,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     bIsEnabled = wantenabled->get();
 
     //Gain
-    ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"))->set(
+    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"),
         m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 }
 

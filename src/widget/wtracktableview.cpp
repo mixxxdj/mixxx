@@ -373,9 +373,9 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
         // playing before trying to load it
         if (!(m_pConfig->getValueString(
             ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
-            ControlObject* pPlayCO = ControlObject::getControl(ConfigKey(group, "play"));
             // TODO(XXX): Check for other than just the first preview deck.
-            if (group != "[PreviewDeck1]" && pPlayCO && pPlayCO->get() > 0.0f) {
+            if (group != "[PreviewDeck1]" &&
+                    ControlObject::get(ConfigKey(group, "play")) > 0.0f) {
                 return;
             }
         }
@@ -551,9 +551,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
                 QString deckGroup = QString("[Channel%1]").arg(i);
-                ControlObject* pPlayCO = ControlObject::getControl(
-                    ConfigKey(deckGroup, "play"));
-                bool deckPlaying = pPlayCO && pPlayCO->get() > 0.0;
+                bool deckPlaying = ControlObject::get(
+                        ConfigKey(deckGroup, "play")) > 0.0;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
                     ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
@@ -572,9 +571,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
                 QString samplerGroup = QString("[Sampler%1]").arg(i);
-                ControlObject* pPlayCO = ControlObject::getControl(
-                                              ConfigKey(samplerGroup, "play"));
-                bool samplerPlaying = pPlayCO && pPlayCO->get() > 0.0;
+                bool samplerPlaying = ControlObject::get(
+                        ConfigKey(samplerGroup, "play")) > 0.0;
                 bool samplerEnabled = !samplerPlaying && oneSongSelected;
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
