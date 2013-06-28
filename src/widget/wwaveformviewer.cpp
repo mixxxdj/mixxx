@@ -145,11 +145,9 @@ void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event) {
     // Accept the enter event if the thing is a filepath.
     if (event->mimeData()->hasUrls() &&
             event->mimeData()->urls().size() > 0) {
-        ControlObject *pPlayCO = ControlObject::getControl(
-                    ConfigKey(m_pGroup, "play"));
-        // Accept if the Deck isn't playing or the settings allow to interupt a playing deck
-        if (pPlayCO && (!pPlayCO->get() ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
+        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
+        if ((!ControlObject::get(ConfigKey(m_pGroup, "play")) ||
+                m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
             event->acceptProposedAction();
         } else {
             event->ignore();

@@ -24,8 +24,7 @@
 
 PlayerInfo::PlayerInfo()
         : m_currentlyPlayingDeck(0) {
-    m_iNumDecks = ControlObject::getControl(
-        ConfigKey("[Master]","num_decks"))->get();
+    m_iNumDecks = ControlObject::get(ConfigKey("[Master]","num_decks"));
     for (int i = 0; i < m_iNumDecks; ++i) {
         QString chan = PlayerManager::groupForDeck(i);
 
@@ -35,8 +34,8 @@ PlayerInfo::PlayerInfo()
         m_listCOpregain[chan] = new ControlObjectThread(chan, "pregain");
     }
 
-    m_iNumSamplers = ControlObject::getControl(
-        ConfigKey("[Master]", "num_samplers"))->get();
+    m_iNumSamplers = ControlObject::get(
+        ConfigKey("[Master]", "num_samplers"));
     for (int i = 0; i < m_iNumSamplers; ++i) {
         QString chan = PlayerManager::groupForSampler(i);
 
