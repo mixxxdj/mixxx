@@ -67,9 +67,6 @@ class CachingReader : public QObject {
     // for this to take effect.
     virtual void newTrack(TrackPointer pTrack);
 
-    // Wake up the worker so that it will process newTrack requests and hints.
-    virtual void wake();
-
     void setScheduler(EngineWorkerScheduler* pScheduler) {
         m_pWorker->setScheduler(pScheduler);
     }

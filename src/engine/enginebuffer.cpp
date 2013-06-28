@@ -871,7 +871,6 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
     // trackLoading and then either with trackLoaded or trackLoadFailed signals.
     m_bPlayAfterLoading = play;
     m_pReader->newTrack(pTrack);
-    m_pReader->wake();
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {

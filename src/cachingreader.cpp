@@ -230,6 +230,7 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
 
 void CachingReader::newTrack(TrackPointer pTrack) {
     m_pWorker->newTrack(pTrack);
+    m_pWorker->wake();
 }
 
 void CachingReader::process() {
@@ -531,12 +532,6 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
 
     // If there are chunks to be read, wake up.
     if (shouldWake) {
-        wake();
+        m_pWorker->wake();
     }
 }
-
-void CachingReader::wake() {
-    //qDebug() << m_pGroup << "CachingReader::wake()";
-    m_pWorker->wake();
-}
-
