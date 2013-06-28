@@ -216,9 +216,9 @@
           </widget>
          </item>
          <item row="14" column="1" colspan="3">
-          <widget class="QPushButton" name="btnReloadFromFile">
+          <widget class="QPushButton" name="btnFetchTag">
            <property name="text">
-            <string>Reload track metadata from file.</string>
+            <string>Get track metadata from MusicBrainz</string>
            </property>
           </widget>
          </item>
@@ -279,9 +279,9 @@
           </widget>
          </item>
          <item row="13" column="1" colspan="3">
-          <widget class="QPushButton" name="btnFetchTag">
+          <widget class="QPushButton" name="btnReloadFromFile">
            <property name="text">
-            <string>Reload track metadata from musicBrainz</string>
+            <string>Reload track metadata from file</string>
            </property>
           </widget>
          </item>
@@ -637,8 +637,8 @@
   <tabstop>txtTrackNumber</tabstop>
   <tabstop>txtKey</tabstop>
   <tabstop>txtComment</tabstop>
-  <tabstop>btnFetchTag</tabstop>
   <tabstop>btnReloadFromFile</tabstop>
+  <tabstop>btnFetchTag</tabstop>
   <tabstop>btnPrev</tabstop>
   <tabstop>btnNext</tabstop>
   <tabstop>btnCancel</tabstop>
