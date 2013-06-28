@@ -11,6 +11,7 @@
 #include "trackinfoobject.h"
 #include "soundsourceproxy.h"
 #include "sampleutil.h"
+#include "util/counter.h"
 
 
 CachingReader::CachingReader(const char* group,
@@ -364,11 +365,12 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
         // If the chunk is not in cache, then we must return an error.
         if (current == NULL) {
             // qDebug() << "Couldn't get chunk " << chunk_num
-            //          << " in read() of [" << sample << "," << sample+num_samples
+            //          << " in read() of [" << sample << "," << sample + num_samples
             //          << "] chunks " << start_chunk << "-" << end_chunk;
 
             // Something is wrong. Break out of the loop, that should fill the
             // samples requested with zeroes.
+            Counter("CachingReader::read cache miss")++;
             break;
         }
 
