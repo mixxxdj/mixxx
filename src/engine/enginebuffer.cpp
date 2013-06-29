@@ -231,6 +231,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
 #endif
+
+
+    m_hintList.reserve(16); // Avoid reallocation
 }
 
 EngineBuffer::~EngineBuffer()

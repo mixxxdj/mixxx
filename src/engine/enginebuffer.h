@@ -186,7 +186,7 @@ private:
     CachingReader* m_pReader;
 
     // List of hints to provide to the CachingReader
-    QList<Hint> m_hintList;
+    QVector<Hint> m_hintList;
 
     /** The current sample to play in the file. */
     double m_filepos_play;
