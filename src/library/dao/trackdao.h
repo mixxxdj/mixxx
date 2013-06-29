@@ -52,7 +52,6 @@ const QString TRACKLOCATIONSTABLE_DIRECTORY = "directory";
 const QString TRACKLOCATIONSTABLE_FILESIZE = "filesize";
 const QString TRACKLOCATIONSTABLE_FSDELETED = "fs_deleted";
 const QString TRACKLOCATIONSTABLE_NEEDSVERIFICATION = "needs_verification";
-const QString TRACKLOCATIONSTABLE_MAINDIRID = "maindir_id";
 
 class ScopedTransaction;
 class PlaylistDAO;

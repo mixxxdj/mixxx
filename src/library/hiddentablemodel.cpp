@@ -79,8 +79,7 @@ bool HiddenTableModel::isColumnInternal(int column) {
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_MAINDIRID)) {
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
     return false;

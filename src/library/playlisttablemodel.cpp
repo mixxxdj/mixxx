@@ -293,7 +293,6 @@ bool PlaylistTableModel::isColumnInternal(int column) {
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
-        (column == fieldIndex(TRACKLOCATIONSTABLE_MAINDIRID)) ||
         (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }

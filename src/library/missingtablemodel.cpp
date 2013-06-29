@@ -16,7 +16,6 @@ MissingTableModel::MissingTableModel(QObject* parent,
 }
 
 void MissingTableModel::setTableModel(int id) {
-    Q_UNUSED(id);
     QSqlQuery query(m_database);
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
@@ -77,8 +76,7 @@ bool MissingTableModel::isColumnInternal(int column) {
         column == fieldIndex(LIBRARYTABLE_PLAYED) ||
         column == fieldIndex(LIBRARYTABLE_BPM_LOCK) ||
         column == fieldIndex(LIBRARYTABLE_MIXXXDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED) ||
-        column == fieldIndex(TRACKLOCATIONSTABLE_MAINDIRID)) {
+        column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) {
         return true;
     }
     return false;
