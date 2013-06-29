@@ -295,8 +295,8 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
 }
 
 bool BrowseTableModel::isTrackInUse(const QString &track_location) const {
-    int decks = ControlObject::getControl(
-        ConfigKey("[Master]", "num_decks"))->get();
+    int decks = ControlObject::get(
+        ConfigKey("[Master]", "num_decks"));
     // check if file is loaded to a deck
     for (int i = 1; i <= decks; ++i) {
         TrackPointer loaded_track = PlayerInfo::Instance().getTrackInfo(

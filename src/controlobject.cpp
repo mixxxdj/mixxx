@@ -63,6 +63,8 @@ void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
     // Only emit valueChanged() if we did not originate this change.
     if (pSender != this) {
         emit(valueChanged(dValue));
+    } else {
+        emit(valueChangedFromEngine(dValue));
     }
 }
 
@@ -121,7 +123,7 @@ ControlObject* ControlObject::getControl(const ConfigKey& key) {
 
 void ControlObject::setValueFromMidi(MidiOpCode o, double v) {
     if (m_pControl) {
-        m_pControl->setMidiParameter(o, v, this);
+        m_pControl->setMidiParameter(o, v);
     }
 }
 
@@ -133,6 +135,12 @@ double ControlObject::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
 }
 
+// static
+double ControlObject::get(const ConfigKey& key) {
+    ControlDoublePrivate* pCop = ControlDoublePrivate::getControl(key, false);
+    return pCop ? pCop->get() : 0.0;
+}
+
 void ControlObject::reset() {
     if (m_pControl) {
         m_pControl->reset();
@@ -142,5 +150,13 @@ void ControlObject::reset() {
 void ControlObject::set(const double& value) {
     if (m_pControl) {
         m_pControl->set(value, this);
+    }
+}
+
+// static
+void ControlObject::set(const ConfigKey& key, const double& value) {
+    ControlDoublePrivate* pCop = ControlDoublePrivate::getControl(key, false);
+    if (pCop) {
+        pCop->set(value, NULL);
     }
 }

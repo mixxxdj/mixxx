@@ -23,10 +23,9 @@ double ControlNumericBehavior::valueToMidiParameter(double dValue) {
 }
 
 void ControlNumericBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                       ControlDoublePrivate* pControl,
-                                                       QObject* pSender) {
+                                                       ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    pControl->set(dParam, pSender);
+    pControl->set(dParam, NULL);
 }
 
 ControlPotmeterBehavior::ControlPotmeterBehavior(double dMinValue, double dMaxValue)
@@ -68,10 +67,9 @@ double ControlPotmeterBehavior::valueToMidiParameter(double dValue) {
 }
 
 void ControlPotmeterBehavior::setValueFromMidiParameter(MidiOpCode o, double dParam,
-                                                        ControlDoublePrivate* pControl,
-                                                        QObject* pSender) {
+                                                        ControlDoublePrivate* pControl) {
     Q_UNUSED(o);
-    pControl->set(widgetParameterToValue(dParam), pSender);
+    pControl->set(widgetParameterToValue(dParam), NULL);
 }
 
 #define maxPosition 127
@@ -163,51 +161,51 @@ ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
 }
 
 void ControlPushButtonBehavior::setValueFromMidiParameter(
-        MidiOpCode o, double dParam, ControlDoublePrivate* pControl, QObject* pSender) {
+        MidiOpCode o, double dParam, ControlDoublePrivate* pControl) {
     // This block makes push-buttons act as power window buttons.
     if (m_buttonMode == POWERWINDOW && m_iNumStates == 2) {
         if (o == MIDI_NOTE_ON) {
             if (dParam > 0.) {
                 double value = pControl->get();
-                pControl->set(!value, pSender);
+                pControl->set(!value, NULL);
                 m_pushTimer.setSingleShot(true);
                 m_pushTimer.start(kPowerWindowTimeMillis);
             }
         } else if (o == MIDI_NOTE_OFF) {
             if (!m_pushTimer.isActive()) {
-                pControl->set(0.0, pSender);
+                pControl->set(0.0, NULL);
             }
         }
     } else if (m_buttonMode == TOGGLE) {
         // This block makes push-buttons act as toggle buttons.
         if (m_iNumStates > 2) { // multistate button
             if (dParam > 0.) { // looking for NOTE_ON doesn't seem to work...
-                // This is a possible race condition if an other writer wants
-                // to change the value at the same time. We allow the race her,
-                // because this is possible what the user expect if he controls
+                // This is a possibly race condition if another writer wants
+                // to change the value at the same time. We allow the race here,
+                // because this is possibly what the user expects if he changes
                 // the same control from different devices.
                 double value = pControl->get();
                 value++;
                 if (value >= m_iNumStates) {
-                    pControl->set(0, pSender);
+                    pControl->set(0, NULL);
                 } else {
-                    pControl->set(value, pSender);
+                    pControl->set(value, NULL);
                 }
             }
         } else {
             if (o == MIDI_NOTE_ON) {
                 if (dParam > 0.) {
                     double value = pControl->get();
-                    pControl->set(!value, pSender);
+                    pControl->set(!value, NULL);
                 }
             }
         }
     } else { //Not a toggle button (trigger only when button pushed)
         if (o == MIDI_NOTE_ON) {
             double value = pControl->get();
-            pControl->set(!value, pSender);
+            pControl->set(!value, NULL);
         } else if (o == MIDI_NOTE_OFF) {
-            pControl->set(0.0, pSender);
+            pControl->set(0.0, NULL);
         }
     }
 }

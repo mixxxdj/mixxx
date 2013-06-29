@@ -26,14 +26,23 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
+    connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotAdjustBpm()),
+            Qt::DirectConnection);
 
     m_pRateRange = ControlObject::getControl(_group, "rateRange");
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
+    connect(m_pRateRange, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotAdjustBpm()),
+            Qt::DirectConnection);
 
     m_pRateDir = ControlObject::getControl(_group, "rate_dir");
     connect(m_pRateDir, SIGNAL(valueChanged(double)),
+            this, SLOT(slotAdjustBpm()),
+            Qt::DirectConnection);
+    connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
@@ -303,10 +312,10 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
 
     // Get the current position of both decks
     double dThisPosition = getCurrentSample();
-    double dOtherLength = ControlObject::getControl(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-    double dOtherEnginePlayPos = ControlObject::getControl(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"))->get();
+    double dOtherLength = ControlObject::get(
+        ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"));
+    double dOtherEnginePlayPos = ControlObject::get(
+        ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"));
     double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);

@@ -66,7 +66,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCrateMenu = new QMenu(this);
     m_pCrateMenu->setTitle(tr("Add to Crate"));
     m_pBPMMenu = new QMenu(this);
-    m_pBPMMenu->setTitle(tr("BPM Settings"));
+    m_pBPMMenu->setTitle(tr("BPM Options"));
 
     // Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -302,11 +302,11 @@ void WTrackTableView::createActions() {
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
 
-    m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
+    m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
 
-    m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Reload from Musicbrainz"),this);
+    m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
 
@@ -373,9 +373,9 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
         // playing before trying to load it
         if (!(m_pConfig->getValueString(
             ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
-            ControlObject* pPlayCO = ControlObject::getControl(ConfigKey(group, "play"));
             // TODO(XXX): Check for other than just the first preview deck.
-            if (group != "[PreviewDeck1]" && pPlayCO && pPlayCO->get() > 0.0f) {
+            if (group != "[PreviewDeck1]" &&
+                    ControlObject::get(ConfigKey(group, "play")) > 0.0f) {
                 return;
             }
         }
@@ -551,9 +551,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
                 QString deckGroup = QString("[Channel%1]").arg(i);
-                ControlObject* pPlayCO = ControlObject::getControl(
-                    ConfigKey(deckGroup, "play"));
-                bool deckPlaying = pPlayCO && pPlayCO->get() > 0.0;
+                bool deckPlaying = ControlObject::get(
+                        ConfigKey(deckGroup, "play")) > 0.0;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
                     ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
@@ -572,9 +571,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
                 QString samplerGroup = QString("[Sampler%1]").arg(i);
-                ControlObject* pPlayCO = ControlObject::getControl(
-                                              ConfigKey(samplerGroup, "play"));
-                bool samplerPlaying = pPlayCO && pPlayCO->get() > 0.0;
+                bool samplerPlaying = ControlObject::get(
+                        ConfigKey(samplerGroup, "play")) > 0.0;
                 bool samplerEnabled = !samplerPlaying && oneSongSelected;
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
@@ -646,12 +644,14 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     //start of BPM section of menu
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_MANIPULATEBEATS)) {
-        m_pBPMMenu->addAction(m_pBpmLockAction);
-        m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addAction(m_pBpmHalveAction);
         m_pBPMMenu->addAction(m_pBpmTwoThirdsAction); 
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmLockAction);
+        m_pBPMMenu->addAction(m_pBpmUnlockAction);
+        m_pBPMMenu->addSeparator();
         if (oneSongSelected) {
             TrackModel* trackModel = getTrackModel();
             if (trackModel == NULL) {
@@ -730,6 +730,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
     }
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
+    m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
         m_pRemoveAct->setEnabled(!locked);
         m_pMenu->addAction(m_pRemoveAct);
@@ -881,7 +882,8 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
 void WTrackTableView::dropEvent(QDropEvent * event){
-    if (!event->mimeData()->hasUrls()) {
+    TrackModel* trackModel = getTrackModel();
+    if (!event->mimeData()->hasUrls() || trackModel->isLocked() ) {
         event->ignore();
         return;
     }
@@ -950,7 +952,6 @@ void WTrackTableView::dropEvent(QDropEvent * event){
         // which lets us do nice things like "restore" the selection model.
 
         if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
-            TrackModel* trackModel = getTrackModel();
 
             // The model indices are sorted so that we remove the tracks from the table
             // in ascending order. This is necessary because if track A is above track B in
@@ -1018,7 +1019,6 @@ void WTrackTableView::dropEvent(QDropEvent * event){
 
         //Drag-and-drop from an external application
         //eg. dragging a track from Windows Explorer onto the track table.
-        TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             int numNewRows = urls.count();
 
