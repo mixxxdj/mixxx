@@ -99,9 +99,9 @@ void PlayerInfo::updateCurrentPlayingDeck() {
             continue;
         }
 
-        float xfl, xfr;
-        EngineXfader::getXfadeGains(xfl, xfr, m_COxfader.get(), 1.0, 0.0,
-                                    false, false);
+        double xfl, xfr;
+        EngineXfader::getXfadeGains(m_COxfader.get(), 1.0, 0.0, false, false,
+                                    &xfl, &xfr);
 
         int orient = ControlObject::get(ConfigKey(group, "orientation"));
         double xfvol;
