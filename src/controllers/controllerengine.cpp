@@ -742,6 +742,10 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
         connect(cot, SIGNAL(valueChanged(double)),
                 this, SLOT(slotValueChanged(double)),
                 Qt::QueuedConnection);
+        connect(cot, SIGNAL(valueChangedByThis(double)),
+                this, SLOT(slotValueChanged(double)),
+                Qt::QueuedConnection);
+
 
         ControllerEngineConnection conn;
         conn.key = key;
@@ -792,6 +796,8 @@ void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) 
         // Only disconnect the signal if there are no other instances of this control using it
         if (!m_connectedControls.contains(conn.key)) {
             disconnect(cot, SIGNAL(valueChanged(double)),
+                       this, SLOT(slotValueChanged(double)));
+            disconnect(cot, SIGNAL(valueChangedByThis(double)),
                        this, SLOT(slotValueChanged(double)));
         }
     } else {
