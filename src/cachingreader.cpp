@@ -451,7 +451,7 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
     return zerosWritten + num_samples - samples_remaining;
 }
 
-void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
+void CachingReader::hintAndMaybeWake(const QList<Hint>& hintList) {
     // If no file is loaded, skip.
     if (m_readerStatus != TRACK_LOADED) {
         return;

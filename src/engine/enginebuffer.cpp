@@ -861,7 +861,7 @@ void EngineBuffer::hintReader(const double dRate) {
     QListIterator<EngineControl*> it(m_engineControls);
     while (it.hasNext()) {
         EngineControl* pControl = it.next();
-        pControl->hintReader(m_hintList);
+        pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);
 
