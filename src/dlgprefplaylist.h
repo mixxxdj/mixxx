@@ -64,8 +64,8 @@ class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
     void requestRelocateDir(QString,QString);
 
   private:
-    bool initializeModel();
-    QStandardItemModel m_model;
+    void initialiseDirList();
+    QStandardItemModel m_dirListModel;
     ConfigObject<ConfigValue> *m_pconfig;
     Library *m_pLibrary;
     // SoundSource Plugin Downloader

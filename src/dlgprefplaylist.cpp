@@ -33,7 +33,7 @@
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config,
                                  Library *pLibrary)
                : QWidget(parent), 
-                 m_model(),
+                 m_dirListModel(),
                  m_pconfig(config),
                  m_pLibrary(pLibrary) {
     setupUi(this);
@@ -89,26 +89,25 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
 DlgPrefPlaylist::~DlgPrefPlaylist() {
 }
 
-bool DlgPrefPlaylist::initializeModel(){
+void DlgPrefPlaylist::initialiseDirList(){
     // save which index was selected
-    const int selected = list->currentIndex().row();
+    const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
-    m_model.clear();
+    m_dirListModel.clear();
     QStringList dirs = m_pLibrary->getDirs();
     foreach (QString dir, dirs) {
-        m_model.appendRow(new QStandardItem(dir));
+        m_dirListModel.appendRow(new QStandardItem(dir));
     }
-    list->setModel(&m_model);
+    dirList->setModel(&m_dirListModel);
     // reselect index if it still exists
-    list->setCurrentIndex(list->model()->index(0, 0));
-    for (int i=0 ; i<list->model()->rowCount() ; ++i) {
-        const QModelIndex index = list->model()->index(i, 0);
-        if (index.row() == selected) {
-            list->setCurrentIndex(index);
+    dirList->setCurrentIndex(m_dirListModel.index(0, 0));
+    for (int i=0 ; i<m_dirListModel.rowCount() ; ++i) {
+        const QModelIndex index = m_dirListModel.index(i, 0);
+        if (index.data().toString() == selected) {
+            dirList->setCurrentIndex(index);
             break;
         }
     }
-    return true;
 }
 
 void DlgPrefPlaylist::slotExtraPlugins() {
@@ -178,8 +177,7 @@ void DlgPrefPlaylist::slotM4ACheck()
 }*/
 
 void DlgPrefPlaylist::slotUpdate() {
-    // Song path
-    initializeModel();
+    initialiseDirList();
     //Bundled songs stat tracking
     checkBoxPromoStats->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Promo]","StatTracking")).toInt());
@@ -199,8 +197,8 @@ void DlgPrefPlaylist::slotUpdate() {
 
 void DlgPrefPlaylist::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(
-                             this, tr("Choose music library directory"),
-                             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+                        this, tr("Choose a music library directory"),
+                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
     if ( !fd.isEmpty() ) {
         emit(requestAddDir(fd));
         slotUpdate();
@@ -208,20 +206,19 @@ void DlgPrefPlaylist::slotAddDir() {
 }
 
 void DlgPrefPlaylist::slotRemoveDir() {
-    QModelIndex index = list->currentIndex();
+    QModelIndex index = dirList->currentIndex();
     QString fd = index.data().toString();
     emit(requestRemoveDir(fd));
     slotUpdate();
 }
 
 void DlgPrefPlaylist::slotRelocateDir() {
-    QModelIndex index = list->currentIndex();
+    QModelIndex index = dirList->currentIndex();
     QString currentFd = index.data().toString();
     QString fd = QFileDialog::getExistingDirectory(
-                             this, tr("Choose music library directory"),
-                             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+                        this, tr("Choose a  music library directory"),
+                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
 
-    //use !(~)! as a sign where the string has to be seperated later
     if (!fd.isEmpty()) {
         emit(requestRelocateDir(currentFd,fd));
         slotUpdate();

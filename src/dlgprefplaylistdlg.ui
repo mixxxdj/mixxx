@@ -41,7 +41,7 @@
          <bool>false</bool>
         </property>
         <property name="buddy">
-         <cstring>list</cstring>
+         <cstring>dirList</cstring>
         </property>
        </widget>
       </item>
@@ -56,7 +56,7 @@
        </widget>
       </item>
       <item row="1" column="0" rowspan="3">
-       <widget class="QListView" name="list">
+       <widget class="QListView" name="dirList">
         <property name="iconSize">
          <size>
           <width>16</width>
