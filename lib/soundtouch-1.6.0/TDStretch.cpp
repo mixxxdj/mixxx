@@ -43,6 +43,7 @@
 
 #include <string.h>
 #include <limits.h>
+#include <stdint.h>
 #include <assert.h>
 #include <math.h>
 #include <float.h>
@@ -721,7 +722,7 @@ void TDStretch::acceptNewOverlapLength(int newOverlapLength)
 
         pRefMidBufferUnaligned = new SAMPLETYPE[2 * overlapLength + 16 / sizeof(SAMPLETYPE)];
         // ensure that 'pRefMidBuffer' is aligned to 16 byte boundary for efficiency
-        pRefMidBuffer = (SAMPLETYPE *)((((ulong)pRefMidBufferUnaligned) + 15) & (ulong)-16);
+        pRefMidBuffer = (SAMPLETYPE *)((((uintptr_t)pRefMidBufferUnaligned) + 15) & (uintptr_t)-16);
     }
 }
 

@@ -29,6 +29,10 @@
 
 #define TIMECODER_CHANNELS 2
 
+#ifdef __cplusplus
+extern "C" {
+#endif // __cplusplus
+
 typedef unsigned int bits_t;
 
 struct timecode_def {
@@ -141,5 +145,9 @@ static inline double timecoder_revs_per_sec(struct timecoder *tc)
 {
     return (33.0 + 1.0 / 3) * tc->speed / 60;
 }
+
+#ifdef __cplusplus
+};
+#endif // __cplusplus
 
 #endif

@@ -13,7 +13,7 @@ from build import util, depends
 
 mixxx_version = util.get_mixxx_version()
 branch_name = util.get_branch_name()
-vcs_revision = util.get_revision()
+vcs_revision = util.get_revision() or "0"
 vcs_name = util.get_current_vcs()
 print "WE ARE IN:", os.getcwd()
 print "Building ", branch_name, " - rev.", vcs_revision
@@ -58,9 +58,37 @@ if build.platform_is_windows:
         fo.write(''.join(str_list))
         fo.close()
 
-        mixxx_bin = env.Program('mixxx',
-                            [sources, env.RES('#src/mixxx.rc')],
-                            LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
+        if build.crosscompile:
+            # Taken from http://scons.org/wiki/EmbedManifestIntoTarget
+            manifest_template = '''\
+<?xml version='1.0' encoding='UTF-8' standalone='yes'?>
+<assembly xmlns='urn:schemas-microsoft-com:asm.v1' manifestVersion='1.0'>
+  <trustInfo xmlns="urn:schemas-microsoft-com:asm.v3">
+    <security>
+      <requestedPrivileges>
+        <requestedExecutionLevel level='asInvoker' uiAccess='false' />
+      </requestedPrivileges>
+    </security>
+  </trustInfo>
+</assembly>
+'''
+            manifest_path = "mixxx.manifest"
+            fout = open (manifest_path, "w");
+            fout.write (manifest_template)
+            fout.close()
+            fout = open ("manifest.rc", "w");
+            fout.write ("""
+#include "winuser.h"
+1 RT_MANIFEST  %s
+""" % manifest_path)
+            fout.close()
+            mixxx_bin = env.Program('mixxx',
+                [sources, env.RES('#src/mixxx.rc'),
+                env.RES("manifest.rc")]);
+        else:
+            mixxx_bin = env.Program('mixxx',
+                               [sources, env.RES('#src/mixxx.rc')],
+                               LINKCOM = [env['LINKCOM'], 'mt.exe -nologo -manifest ${TARGET}.manifest -outputresource:$TARGET;1'])
 else:
         mixxx_bin = env.Program('mixxx', sources)
 
@@ -195,9 +223,36 @@ if build.toolchain_is_msvs:
         # skip the MSVC DLLs incase they're in there too
         dll_files = Glob('%s/[!"msvc"]*.dll' % mixxx_winlib_path)
 elif build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
-        # We're cross-compiling, grab these from the crosscompile bin
-        # folder. How should we be doing this?
-        dll_files = Glob('#/../../mixxx-win%slib-crossmingw' % build.bitwidth)
+        # We're cross-compiling; grab these from the crosscompile bin
+        # folder.
+        # TODO(XXX): Rebuild the dependent libraries as static, and
+        # figure out how to tell scons to prefer static libraries.
+        crosscompile_bin_path = os.path.join (build.crosscompile_root, \
+            'bin')
+        dll_files = [ os.path.join (crosscompile_bin_path, \
+            s) for s in [ 'libchromaprint.dll', 'libfftw3-3.dll',
+                'libFLAC-8.dll', 'libid3tag-0.dll', 'libogg-0.dll',
+                'libportaudio-2.dll', 'libportmidi_s.dll',
+                'libprotobuf-lite-7.dll', 'libsndfile-1.dll',
+                'libsqlite3-0.dll', 'libstdc++-6.dll', 'libtag.dll',
+                'libvorbis-0.dll', 'libvorbisenc-2.dll',
+                'libvorbisfile-3.dll', 'pthreadGC2.dll' ] ];
+
+        # The shoutcast build requires a few more DLLs.
+        if int(build.flags['shoutcast']):
+            dll_files += [ os.path.join (crosscompile_bin_path, \
+                s) for s in [ 'libshout-3.dll', 'libspeex-1.dll',
+                'libtheora-0.dll' ] ];
+
+        # The ffmpeg build requires a few more DLLs.
+        if int(build.flags['ffmpeg']):
+            dll_files += [ os.path.join (crosscompile_bin_path, \
+                s) for s in [ 'avcodec-54.dll', 'avformat-54.dll',
+                'avutil-51.dll', 'swresample-0.dll', 'libbz2-1.dll',
+                'libgcrypt-11.dll', 'libgpg-error-0.dll',
+                'libgnutls-26.dll', 'libp11-kit-0.dll',
+                'libtasn1-3.dll' ] ];
+
 elif build.crosscompile and build.platform_is_osx:
         # Glob appropriate dylib files. We have 4 different library types,
         # x86_64, x86, powerpc, powerpc64
@@ -205,40 +260,63 @@ elif build.crosscompile and build.platform_is_osx:
 else:
         dll_files = list() # dll_files += on the next line required dll_files to exist
 
-if build.msvcdebug:
-    dll_files += Split("""$QTDIR/lib/QtWebKitd4.dll""")
-else:
-    dll_files += Split("""$QTDIR/lib/QtWebKit4.dll""")
+if int(build.flags['vinylcontrol']) or int(build.flags['hid']):
+    if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        # mingw{32,64}-phonon only has one DLL.
+        dll_files += Split("""$QTDIR/bin/libphonon.dll""")
+    else:
+        if build.msvcdebug:
+            dll_files += Split("""$QTDIR/lib/phonond4.dll""")
+        else:
+            dll_files += Split("""$QTDIR/lib/phonon4.dll""")
 
 if build.msvcdebug:
-    dll_files += Split("""$QTDIR/lib/QtCored4.dll
-                          $QTDIR/lib/QtGuid4.dll
-                          $QTDIR/lib/QtNetworkd4.dll
-                          $QTDIR/lib/QtOpenGLd4.dll
-                          $QTDIR/lib/QtSqld4.dll
-                          $QTDIR/lib/QtXmld4.dll
-                          $QTDIR/lib/QtXmlPatternsd4.dll
-                          $QTDIR/lib/QtSvgd4.dll
-                          $QTDIR/lib/phonond4.dll
-                          $QTDIR/lib/QtScriptd4.dll""")
+    if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        dll_files += Split("""$QTDIR/bin/QtCored4.dll
+                              $QTDIR/bin/QtGuid4.dll
+                              $QTDIR/bin/QtNetworkd4.dll
+                              $QTDIR/bin/QtOpenGLd4.dll
+                              $QTDIR/bin/QtSqld4.dll
+                              $QTDIR/bin/QtXmld4.dll
+                              $QTDIR/bin/QtScriptd4.dll""")
+    else:
+        dll_files += Split("""$QTDIR/lib/QtCored4.dll
+                              $QTDIR/lib/QtGuid4.dll
+                              $QTDIR/lib/QtNetworkd4.dll
+                              $QTDIR/lib/QtOpenGLd4.dll
+                              $QTDIR/lib/QtSqld4.dll
+                              $QTDIR/lib/QtXmld4.dll
+                              $QTDIR/lib/QtScriptd4.dll""")
 else:
     # if not int(build.flags['staticlibs']):
-    dll_files += Split("""$QTDIR/lib/QtCore4.dll
-                          $QTDIR/lib/QtGui4.dll
-                          $QTDIR/lib/QtNetwork4.dll
-                          $QTDIR/lib/QtOpenGL4.dll
-                          $QTDIR/lib/QtSql4.dll
-                          $QTDIR/lib/QtXml4.dll
-                          $QTDIR/lib/QtXmlPatterns4.dll
-                          $QTDIR/lib/QtSvg4.dll
-                          $QTDIR/lib/phonon4.dll
-                          $QTDIR/lib/QtScript4.dll""")
+    if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        dll_files += Split("""$QTDIR/bin/QtCore4.dll
+                              $QTDIR/bin/QtGui4.dll
+                              $QTDIR/bin/QtNetwork4.dll
+                              $QTDIR/bin/QtOpenGL4.dll
+                              $QTDIR/bin/QtSql4.dll
+                              $QTDIR/bin/QtXml4.dll
+                              $QTDIR/bin/QtScript4.dll""")
+    else:
+        dll_files += Split("""$QTDIR/lib/QtCore4.dll
+                              $QTDIR/lib/QtGui4.dll
+                              $QTDIR/lib/QtNetwork4.dll
+                              $QTDIR/lib/QtOpenGL4.dll
+                              $QTDIR/lib/QtSql4.dll
+                              $QTDIR/lib/QtXml4.dll
+                              $QTDIR/lib/QtScript4.dll""")
 
 if int(flags.get('sqlitedll', 0)):
-    if build.msvcdebug:
-        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
+    if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+        if build.msvcdebug:
+            sqldll_files = Split("""$QTDIR/lib/qt4/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
+        else:
+            sqldll_files = Split("""$QTDIR/lib/qt4/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
     else:
-        sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
+        if build.msvcdebug:
+            sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlited4.dll""") #Qt SQLite plugin
+        else:
+            sqldll_files = Split("""$QTDIR/plugins/sqldrivers/qsqlite4.dll""") #Qt SQLite plugin
 
 if build.platform_is_linux or build.platform_is_bsd:
         flags['prefix'] = ARGUMENTS.get('prefix', '/usr/local')
@@ -259,7 +337,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 binary = env.Install(unix_bin_path, binary_files)
                 resource = env.Install(os.path.join(unix_share_path, 'mixxx'), resource_files)
                 skins = env.Install(os.path.join(unix_share_path, 'mixxx', 'skins'), skin_files)
-		vamp_plugin =  env.Install(
+                vamp_plugin =  env.Install(
                         os.path.join(unix_lib_path, 'mixxx', 'plugins', 'vamp'),
                         libmixxxminimal_vamp_plugin)
 
@@ -291,7 +369,7 @@ if build.platform_is_linux or build.platform_is_bsd:
                 env.Alias('install', dotdesktop)
                 env.Alias('install', icon)
                 env.Alias('install', promotracks)
-		env.Alias('install', vamp_plugin)
+                env.Alias('install', vamp_plugin)
 
                 #Delete the old Mixxx installation (because SCONS won't overwrite it)
                 #if 'install' in COMMAND_LINE_TARGETS:
@@ -328,7 +406,7 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
         for x in soundsource_plugins:
                 plugins.append(x.get_abspath())
 
-	for x in mixxxminimal_plugins:
+        for x in mixxxminimal_plugins:
                 plugins.append(x.get_abspath())
 
         resource_map = {}
@@ -453,7 +531,7 @@ if build.platform_is_windows:
         env.Alias('mixxx', docs)
         env.Alias('mixxx', dlls)
         env.Alias('mixxx', soundsource_plugins)
-	env.Alias('mixxx', vamp_plugins)
+        env.Alias('mixxx', vamp_plugins)
         #env.Alias('mixxx', icon)
         env.Alias('mixxx', binary)
 
@@ -499,7 +577,7 @@ def BuildRelease(target, source, env):
         print "YOU ARE ABOUT TO PACKAGE A DEBUG BUILD!!"
         print
     print "Binary has size ",
-    if build.platform_is_windows:
+    if build.platform_is_windows and not build.crosscompile:
         os.system('for %I in ('+dist_dir+'\mixxx.exe) do @echo %~zI')
     else:
         os.system('ls -lh '+dist_dir+'/mixxx.exe | cut -d \' \' -f 5')
@@ -514,13 +592,13 @@ def BuildRelease(target, source, env):
     print exe_name
     print
     print "Top line of README, check version:"
-    if build.platform_is_windows:
+    if build.platform_is_windows and not build.crosscompile:
         os.system('for /l %l in (1,1,1) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" README ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 1 README')
     print
     print "Top 2 lines of LICENSE, check version and copyright dates:"
-    if build.platform_is_windows:
+    if build.platform_is_windows and not build.crosscompile:
         os.system('for /l %l in (1,1,2) do @for /f "tokens=1,2* delims=:" %a in (\'findstr /n /r "^" LICENSE ^| findstr /r "^%l:"\') do @echo %b')
     else:
         os.system('head -n 2 LICENSE')
@@ -579,14 +657,23 @@ def BuildRelease(target, source, env):
             print "Cannot find NSIS. Do you have it installed?"
         else:
             # Call the NSIS build
-            buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
-            command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
-                {'path': nsis_path,
-                 'package_name': exe_name,
-                 'version': mixxx_version,
-                 'qtpath': os.environ['QTDIR'],
-                 'winlibpath': mixxx_winlib_path,
-                 '64bit': buildwin64}
+            if build.crosscompile:
+                buildwin64 = "-Dx64=1" if build.machine_is_64bit else ''
+                command = '%(path)s -DPACKAGE_NAME=%(package_name)s -DPRODUCT_VERSION=%(version)s -DQTDIR=%(qtpath)s %(64bit)s build/nsis/Mixxx.nsi' % \
+                    {'path': nsis_path,
+                     'package_name': exe_name,
+                     'version': mixxx_version,
+                     'qtpath': os.environ['QTDIR'],
+                     '64bit': buildwin64}
+            else:
+                buildwin64 = "/Dx64=1" if build.machine_is_64bit else ''
+                command = '%(path)s /DPACKAGE_NAME=%(package_name)s /DPRODUCT_VERSION=%(version)s /DQTDIR=%(qtpath)s /DWINLIB_PATH=%(winlibpath)s %(64bit)s build\\nsis\\Mixxx.nsi' % \
+                    {'path': nsis_path,
+                     'package_name': exe_name,
+                     'version': mixxx_version,
+                     'qtpath': os.environ['QTDIR'],
+                     'winlibpath': mixxx_winlib_path,
+                     '64bit': buildwin64}
             print "Using command: " + command
             subprocess.check_call(command)
     else:

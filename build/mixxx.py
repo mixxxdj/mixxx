@@ -128,6 +128,15 @@ class MixxxBuild(object):
         default_qtdir = depends.Qt.DEFAULT_QTDIRS.get(self.platform, '')
         qtdir = Script.ARGUMENTS.get('qtdir',
                                     os.environ.get('QTDIR', default_qtdir))
+        if self.crosscompile:
+            crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
+
+            if crosscompile_root == '':
+                print "Your build setup indicates this is a cross-compile, but you did not specify 'crosscompile_root', which is required."
+                Script.Exit(1)
+
+            self.crosscompile_root = os.path.abspath(crosscompile_root)
+            qtdir = self.crosscompile_root
 
         # Validate the specified qtdir exists
         if not os.path.exists(qtdir):
@@ -156,6 +165,15 @@ class MixxxBuild(object):
         if self.crosscompile:
             if self.platform_is_windows:
                 tools.append('crossmingw')
+
+                # Find the toolchain when building under Fedora.
+                if self.toolchain_is_gnu:
+                    if self.machine_is_64bit:
+                        extra_arguments['CROSSMINGW_PREFIX'] \
+                            = 'x86_64-w64-mingw32-'
+                    else:
+                        extra_arguments['CROSSMINGW_PREFIX'] \
+                            = 'i686-w64-mingw32-'
             if self.platform == 'osx':
                 tools.append('crossosx')
 
@@ -183,16 +201,9 @@ class MixxxBuild(object):
                     self.env.Append(LINKFLAGS = '-arch x86_64')
 
         if self.crosscompile:
-            crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
-
-            if crosscompile_root == '':
-                print "Your build setup indicates this is a cross-compile, but you did not specify 'crosscompile_root', which is required."
-                Script.Exit(1)
-
-            crosscompile_root = os.path.abspath(crosscompile_root)
-            self.env.Append(CPPPATH=os.path.join(crosscompile_root, 'include'))
-            self.env.Append(LIBPATH=os.path.join(crosscompile_root, 'lib'))
-            self.env.Append(LIBPATH=os.path.join(crosscompile_root, 'bin'))
+            self.env.Append(CPPPATH=os.path.join(self.crosscompile_root, 'include'))
+            self.env.Append(LIBPATH=os.path.join(self.crosscompile_root, 'lib'))
+            self.env.Append(LIBPATH=os.path.join(self.crosscompile_root, 'bin'))
 
         self.install_options()
         self.virtualize_build_dir()

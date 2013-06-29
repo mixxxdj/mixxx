@@ -24,7 +24,6 @@ cp $QT4_PATH/lib/libQtGui.4.dylib .
 cp $QT4_PATH/lib/libQtCore.4.dylib .
 cp $QT4_PATH/lib/libQtOpenGL.4.dylib .
 cp $QT4_PATH/lib/libQtXml.4.dylib .
-cp $QT4_PATH/lib/libQt3Support.4.dylib .
 cp $QT4_PATH/lib/libQtNetwork.4.dylib .
 cp $QT4_PATH/lib/libQtSql.4.dylib .
 cp /usr/local/lib/libportaudio.2.dylib .
@@ -40,7 +39,6 @@ echo "Changing library ids..."
 install_name_tool -id @executable_path/../Frameworks/libQtGui.4.dylib libQtGui.4.dylib
 install_name_tool -id @executable_path/../Frameworks/libQtCore.4.dylib libQtCore.4.dylib
 install_name_tool -id @executable_path/../Frameworks/libQtOpenGL.4.dylib libQtOpenGL.4.dylib
-install_name_tool -id @executable_path/../Frameworks/libQt3Support.4.dylib libQt3Support.4.dylib
 install_name_tool -id @executable_path/../Frameworks/libQtXml.4.dylib libQtXml.4.dylib
 install_name_tool -id @executable_path/../Frameworks/libQtNetwork.4.dylib libQtNetwork.4.dylib
 install_name_tool -id @executable_path/../Frameworks/libQtSql.4.dylib libQtSql.4.dylib
@@ -60,7 +58,6 @@ echo "Changing library ids in the Mixxx binary..."
 install_name_tool -change $QT4_PATH/lib/libQtGui.4.dylib @executable_path/../Frameworks/libQtGui.4.dylib $MIXXX_PATH
 install_name_tool -change $QT4_PATH/lib/libQtCore.4.dylib @executable_path/../Frameworks/libQtCore.4.dylib $MIXXX_PATH
 install_name_tool -change $QT4_PATH/lib/libQtOpenGL.4.dylib @executable_path/../Frameworks/libQtOpenGL.4.dylib $MIXXX_PATH
-install_name_tool -change $QT4_PATH/lib/libQt3Support.4.dylib @executable_path/../Frameworks/libQt3Support.4.dylib $MIXXX_PATH
 install_name_tool -change $QT4_PATH/lib/libQtXml.4.dylib @executable_path/../Frameworks/libQtXml.4.dylib $MIXXX_PATH
 install_name_tool -change $QT4_PATH/lib/libQtNetwork.4.dylib @executable_path/../Frameworks/libQtNetwork.4.dylib $MIXXX_PATH
 install_name_tool -change $QT4_PATH/lib/libQtSql.4.dylib @executable_path/../Frameworks/libQtSql.4.dylib $MIXXX_PATH
@@ -81,11 +78,6 @@ install_name_tool -change $QT4_PATH/lib/libQtGui.4.dylib @executable_path/../Fra
 install_name_tool -change $QT4_PATH/lib/libQtCore.4.dylib @executable_path/../Frameworks/libQtCore.4.dylib libQtSql.4.dylib
 install_name_tool -change $QT4_PATH/lib/libQtCore.4.dylib @executable_path/../Frameworks/libQtCore.4.dylib libQtNetwork.4.dylib
 install_name_tool -change $QT4_PATH/lib/libQtCore.4.dylib @executable_path/../Frameworks/libQtCore.4.dylib libQtXml.4.dylib
-install_name_tool -change $QT4_PATH/lib/libQtGui.4.dylib @executable_path/../Frameworks/libQtGui.4.dylib libQt3Support.4.dylib
-install_name_tool -change $QT4_PATH/lib/libQtCore.4.dylib @executable_path/../Frameworks/libQtCore.4.dylib libQt3Support.4.dylib
-install_name_tool -change $QT4_PATH/lib/libQtSql.4.dylib @executable_path/../Frameworks/libQtSql.4.dylib libQt3Support.4.dylib
-install_name_tool -change $QT4_PATH/lib/libQtXml.4.dylib @executable_path/../Frameworks/libQtXml.4.dylib libQt3Support.4.dylib
-install_name_tool -change $QT4_PATH/lib/libQtNetwork.4.dylib @executable_path/../Frameworks/libQtNetwork.4.dylib libQt3Support.4.dylib
 
 
 echo "Changing library ids within Vorbis lib"
@@ -123,7 +115,6 @@ do
     install_name_tool -change $QT4_PATH/lib/libQtGui.4.dylib @executable_path/../Frameworks/libQtGui.4.dylib $lib
     install_name_tool -change $QT4_PATH/lib/libQtSql.4.dylib @executable_path/../Frameworks/libQtSql.4.dylib $lib
     install_name_tool -change $QT4_PATH/lib/libQtXml.4.dylib @executable_path/../Frameworks/libQtXml.4.dylib $lib
-    install_name_tool -change $QT4_PATH/lib/libQtSvg.4.dylib @executable_path/../Frameworks/libQtSvg.4.dylib $lib
     install_name_tool -change $QT4_PATH/lib/libQtNetwork.4.dylib @executable_path/../Frameworks/libQtNetwork.4.dylib $lib
 done
 echo "Stripping debugging symbols from QT4 imageformat plugins"
@@ -143,7 +134,6 @@ do
     install_name_tool -change $QT4_PATH/lib/libQtGui.4.dylib @executable_path/../Frameworks/libQtGui.4.dylib $lib
     install_name_tool -change $QT4_PATH/lib/libQtSql.4.dylib @executable_path/../Frameworks/libQtSql.4.dylib $lib
     install_name_tool -change $QT4_PATH/lib/libQtXml.4.dylib @executable_path/../Frameworks/libQtXml.4.dylib $lib
-    install_name_tool -change $QT4_PATH/lib/libQtSvg.4.dylib @executable_path/../Frameworks/libQtSvg.4.dylib $lib
     install_name_tool -change $QT4_PATH/lib/libQtNetwork.4.dylib @executable_path/../Frameworks/libQtNetwork.4.dylib $lib
 done
 echo "Stripping debugging symbols from QT4 iconengine plugins"

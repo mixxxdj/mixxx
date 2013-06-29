@@ -404,8 +404,10 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 
     ret->addAnalyser(new AnalyserWaveform(_config));
     ret->addAnalyser(new AnalyserGain(_config));
+	#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(_config));
+	#endif // __VAMP__
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
 
     ret->start(QThread::IdlePriority);
@@ -419,8 +421,10 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(
 
     ret->addAnalyser(new AnalyserWaveform(_config));
     ret->addAnalyser(new AnalyserGain(_config));
+	#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(_config));
+	#endif // __VAMP__
     //ret->addAnalyser(new AnalyserVampKeyTest(_config));
 
     ret->start(QThread::IdlePriority);

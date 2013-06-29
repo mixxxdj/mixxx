@@ -17,6 +17,8 @@ prefixes = SCons.Util.Split("""
 """)
 
 def find(env):
+  if 'CROSSMINGW_PREFIX' in env:
+      prefixes.insert(0, env['CROSSMINGW_PREFIX'])
   for prefix in prefixes:
     # First search in the SCons path and then the OS path:
     if env.WhereIs(prefix + 'gcc') or SCons.Util.WhereIs(prefix + 'gcc'):

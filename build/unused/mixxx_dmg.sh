@@ -29,7 +29,7 @@ QT4_PLUGINS="/Developer/Applications/Qt/plugins/"
 #XXX we should really do this by like, declaring the frameworks and dylibs we're using at the top and then being smart about all this
 #FRAMEWORKS are shared libraries with an Apple-esque naming convention. DYLIBS are classical .so object files.
 #(ASSUMPTION: every dylibg is under /usr/local/lib. Anything under /usr/lib should be already on any systems we package for. The one exception to this might be things in /opt or /sw which darwinports and fink use :/... bah when we rewrite this for SCons we can make it smarter
-FRAMEWORKS="QtCore QtGui QtOpenGL QtXml Qt3Support QtNetwork QtSvg QtSql QtScript" #XXX should only do this if mixxx was built with scripting... oh well, a TODO
+FRAMEWORKS="QtCore QtGui QtOpenGL QtXml QtNetwork QtSql QtScript" #XXX should only do this if mixxx was built with scripting... oh well, a TODO
 DYLIBS="portaudio mad id3tag vorbis vorbisfile ogg sndfile FLAC"
 
 
@@ -67,11 +67,11 @@ reref() { #takes the path to the binary to change, and the shortname of the lib 
     TAB=`printf "\t"` #because I can't write \t to get a tab in shell :(
     path=`otool -L $1 | tail +2 | cut -f 2 -d "$TAB" | cut -f 1 -d "(" | grep "$2\..*"` #SHELL_FUUUUUUU!!!!! (the last bit is important, it makes sure we only get the libs ending in the given name)
     if [ x"$path" = x ]; then
-	#echo "$1 does not reference $2, skipping";
-	echo -n;
+    #echo "$1 does not reference $2, skipping";
+    echo -n;
     else
-	#echo "DEBUG: " install_name_tool -change $path @executable_path/../Frameworks/$3 $1
-	install_name_tool -change $path @executable_path/../Frameworks/$3 $1
+    #echo "DEBUG: " install_name_tool -change $path @executable_path/../Frameworks/$3 $1
+    install_name_tool -change $path @executable_path/../Frameworks/$3 $1
     fi
 }
 
@@ -199,13 +199,6 @@ reref_framework QtOpenGL QtGui
 reref_framework QtSql QtCore
 reref_framework QtNetwork QtCore
 reref_framework QtXml QtCore
-reref_framework QtSvg QtCore
-reref_framework QtSvg QtGui
-reref_framework Qt3Support QtGui
-reref_framework Qt3Support QtCore
-reref_framework Qt3Support QtSql
-reref_framework Qt3Support QtXml
-reref_framework Qt3Support QtNetwork
 reref_framework QtScript QtCore
 
 
@@ -238,17 +231,16 @@ bundle_QT4_plugin() {
     mkdir $plugin
     cd $plugin
     for lib in $libs; do
-	lib=lib$lib.dylib #yay
-	cp $QT4_PLUGINS/imageformats/$lib $lib
+    lib=lib$lib.dylib #yay
+    cp $QT4_PLUGINS/imageformats/$lib $lib
 
-	echo "Changing library ids within QT4 $plugin plugin: $lib"
-	relink_lib $lib
-	#XXX this list really needs to be generated on the fly from otool ....
-	reref $lib QtCore QtCore #not using reref_framework because I don't think it means the same thing. in reref $2 is a search string, $3 is a filename. reref_frameworks assumes both are identical.
-	reref $lib QtGui QtGui
-	reref $lib QtXml QtXml
-	reref $lib QtSvg QtSvg
-	reref $lib QtNetwork QtNetwork
+    echo "Changing library ids within QT4 $plugin plugin: $lib"
+    relink_lib $lib
+    #XXX this list really needs to be generated on the fly from otool ....
+    reref $lib QtCore QtCore #not using reref_framework because I don't think it means the same thing. in reref $2 is a search string, $3 is a filename. reref_frameworks assumes both are identical.
+    reref $lib QtGui QtGui
+    reref $lib QtXml QtXml
+    reref $lib QtNetwork QtNetwork
     done
     echo "Stripping debugging symbols from QT4 $plugin plugins"
     strip *.dylib

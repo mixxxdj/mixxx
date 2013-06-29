@@ -17,6 +17,8 @@
  *
  */
 
+extern "C" {
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -43,7 +45,7 @@ int lut_init(struct lut *lut, int nslots)
     bytes = sizeof(struct slot) * nslots + sizeof(slot_no_t) * hashes;
 
     fprintf(stderr, "Lookup table has %d hashes to %d slots"
-            " (%d slots per hash, %zuKb)\n",
+            " (%d slots per hash, %u Kb)\n",
             hashes, nslots, nslots / hashes, bytes / 1024);
 
     lut->slot = (struct slot*)malloc(sizeof(struct slot) * nslots);
@@ -109,3 +111,5 @@ unsigned int lut_lookup(struct lut *lut, unsigned int timecode)
 
     return (unsigned)-1;
 }
+
+}; // extern "C"

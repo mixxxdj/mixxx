@@ -109,6 +109,8 @@ Function .onInit    ; Prevent multiple installer instances
 
 FunctionEnd
 
+!ifdef WINLIB_PATH
+
 ;-------------------------------
 ; Install the VC 2010 redistributable DLLs if they're not already.
 Function InstallVCRedist
@@ -187,6 +189,8 @@ VSRedistInstalled:
 
 FunctionEnd
 
+!endif ; WINLIB_PATH
+
 ;--------------------------------
 ; The stuff to install
 
@@ -194,7 +198,9 @@ Section "Mixxx (required)" SecMixxx
 
   SectionIn RO
 
+!ifdef WINLIB_PATH
   Call InstallVCRedist
+!endif ; WINLIB_PATH
 
   ; Set output path to the installation directory.
   SetOutPath $INSTDIR

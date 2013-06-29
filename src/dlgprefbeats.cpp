@@ -14,18 +14,24 @@
 #include <QVector>
 #include <QList>
 #include <QtCore>
+#ifdef __VAMP__
 #include <vamp-hostsdk/vamp-hostsdk.h>
+#endif // __VAMP__
 
 #include "track/beat_preferences.h"
 #include "controlobject.h"
 #include "dlgprefbeats.h"
+#ifdef __VAMP__
 #include "vamp/vampanalyser.h"
+#endif // __VAMP__
 
+#ifdef __VAMP__
 using Vamp::Plugin;
 using Vamp::PluginHostAdapter;
 using Vamp::HostExt::PluginLoader;
 using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
+#endif // __VAMP__
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
         : QWidget(parent),
@@ -225,6 +231,7 @@ void DlgPrefBeats::slotApply() {
 }
 
 void DlgPrefBeats::populate() {
+#ifdef __VAMP__
     VampAnalyser::initializePluginPaths();
     m_listIdentifier.clear();
     m_listName.clear();
@@ -269,5 +276,6 @@ void DlgPrefBeats::populate() {
         }
     }
     // m_selectedAnalyser = selectedAnalyser;
+#endif // __VAMP__
 }
 
