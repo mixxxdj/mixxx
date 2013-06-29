@@ -244,23 +244,18 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
     return QList<TrackPointer>();
 }
 
-void Library::slotDirsChanged(QString op, QString dir){
-    qDebug() << "kain88 slotDirsChanged";
-    qDebug() << op << '\t' << dir;
-    if (op=="added") {
-        m_directoryDAO.addDirectory(dir);
-    } else if (op=="removed") {
-        m_pTrackCollection->getTrackDAO().purgeTracks(dir);
-        m_directoryDAO.purgeDirectory(dir);
-    } else if (op=="relocate") {
-        // see dlgprefplaylist for this
-        QStringList dirs = dir.split("!(~)!");
-        QString newFolder = dirs[0];
-        QString oldFolder = dirs[1];
-        m_directoryDAO.relocateDirectory(oldFolder,newFolder);
-    }
+void Library::slotAddDir(QString dir) {
+    m_directoryDAO.addDirectory(dir);
 }
 
+void Library::slotRemoveDir(QString dir) {
+    m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+    m_directoryDAO.purgeDirectory(dir);
+}
+
+void Library::slotRelocateDir(QString oldDir, QString newDir) {
+    m_directoryDAO.relocateDirectory(oldDir,newDir);
+}
 
 QStringList Library::getDirs(){
     return m_directoryDAO.getDirs();
