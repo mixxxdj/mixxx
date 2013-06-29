@@ -123,7 +123,6 @@ QSqlDatabase& TrackCollection::getDatabase() {
 */
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
                                       const QStringList & nameFilters,
-                                      const int dirId,
                                       volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
@@ -159,7 +158,7 @@ bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
-            if (trackDao.addTracksAdd(pTrack.data(), false, dirId)) {
+            if (trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
                 // new Track in the database

@@ -362,7 +362,7 @@ METADATA
     <sql>
       CREATE TABLE IF NOT EXISTS directories (
         dir_id INTEGER primary key AUTOINCREMENT,
-        directory UNIQUE TEXT
+        directory TEXT UNIQUE
       );
       CREATE UNIQUE INDEX directory_idx ON directories(directory);
       ALTER TABLE track_locations ADD COLUMN maindir_id INTEGER DEFAULT 0;

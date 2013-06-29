@@ -250,7 +250,7 @@ void Library::slotDirsChanged(QString op, QString dir){
     if (op=="added") {
         m_directoryDAO.addDirectory(dir);
     } else if (op=="removed") {
-        m_pTrackCollection->getTrackDAO().purgeTracks(m_directoryDAO.getDirId(dir));
+        m_pTrackCollection->getTrackDAO().purgeTracks(dir);
         m_directoryDAO.purgeDirectory(dir);
     } else if (op=="relocate") {
         // see dlgprefplaylist for this

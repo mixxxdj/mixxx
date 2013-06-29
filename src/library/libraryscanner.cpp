@@ -228,10 +228,7 @@ void LibraryScanner::run() {
     bool bScanFinishedCleanly=false;
     //recursivly scan each dir that is saved in the directories table
     foreach (QString dir , dirs) {
-        int dirId = m_directoryDao.getDirId(dir);
-        qDebug() << "kain88 dirId = " << dirId;
-
-        bScanFinishedCleanly = recursiveScan(dir,verifiedDirectories,dirId);
+        bScanFinishedCleanly = recursiveScan(dir,verifiedDirectories);
         //Verify all Tracks inside Library but outside the library path
         if (!bScanFinishedCleanly) {
             qDebug() << "Recursive scan interrupted.";
@@ -335,8 +332,7 @@ void LibraryScanner::resetCancel()
 // Recursively scan a music library. Doesn't import tracks for any directories that
 // have already been scanned and have not changed. Changes are tracked by performing
 // a hash of the directory's file list, and those hashes are stored in the database.
-bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirectories,
-                                   const int dirId) {
+bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirectories) {
     QDirIterator fileIt(dirPath, m_nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     bool bScanFinishedCleanly = true;
@@ -378,7 +374,6 @@ bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirecto
         // Rescan that mofo!
         bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao,
                                                               m_nameFilters,
-                                                              dirId,
                                                               &m_bCancelLibraryScan);
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
@@ -404,7 +399,7 @@ bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirecto
         if (m_directoriesBlacklist.contains(nextPath))
             continue;
 
-        if (!recursiveScan(nextPath, verifiedDirectories, dirId)) {
+        if (!recursiveScan(nextPath, verifiedDirectories)) {
             bScanFinishedCleanly = false;
         }
     }

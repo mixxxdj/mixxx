@@ -271,7 +271,7 @@ void TrackDAO::slotTrackSave(TrackInfoObject* pTrack) {
 
 // No need to check here if the querys exist, this is already done in
 // addTracksAdd, which is the only function that calls this
-void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack, int dirId) {
+void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack) {
     // gets called only in addTracksAdd
     m_pQueryTrackLocationInsert->bindValue(":location", pTrack->getLocation());
     m_pQueryTrackLocationInsert->bindValue(":directory", pTrack->getDirectory());
@@ -280,7 +280,6 @@ void TrackDAO::bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack, int dirI
     // Should this check pTrack->exists()?
     m_pQueryTrackLocationInsert->bindValue(":fs_deleted", 0);
     m_pQueryTrackLocationInsert->bindValue(":needs_verification", 0);
-    m_pQueryTrackLocationInsert->bindValue(":maindir_id", dirId);
 }
 
 // No need to check here if the querys exist, this is already done in
@@ -357,8 +356,8 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryLibrarySelect = new QSqlQuery(m_database);
 
     m_pQueryTrackLocationInsert->prepare("INSERT INTO track_locations "
-            "(location, directory, filename, filesize, fs_deleted, needs_verification, maindir_id) "
-            "VALUES (:location, :directory, :filename, :filesize, :fs_deleted, :needs_verification, :maindir_id)");
+            "(location, directory, filename, filesize, fs_deleted, needs_verification) "
+            "VALUES (:location, :directory, :filename, :filesize, :fs_deleted, :needs_verification)");
 
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
@@ -401,7 +400,7 @@ void TrackDAO::addTracksFinish() {
     m_tracksAddedSet.clear();
 }
 
-bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove,const int dirId) {
+bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
 
 
     if (!m_pQueryLibraryInsert || !m_pQueryTrackLocationInsert ||
@@ -417,7 +416,7 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove,const int dir
     // Insert the track location into the corresponding table. This will fail
     // silently if the location is already in the table because it has a UNIQUE
     // constraint.
-    bindTrackToTrackLocationsInsert(pTrack, dirId);
+    bindTrackToTrackLocationsInsert(pTrack);
 
     if (!m_pQueryTrackLocationInsert->exec()) {
         qDebug() << "Location " << pTrack->getLocation() << " is already in the DB";
@@ -530,7 +529,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     // If tracks are manually pulled into mixxx they are also added to the db
     // but aren't in any folders that we can activly scan for changes to mark
     // this in the db they get the dirId 0
-    addTracksAdd(pTrack, unremove, 0);
+    addTracksAdd(pTrack, unremove);
     addTracksFinish();
 }
 
@@ -597,7 +596,7 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo> &fileInfoList,
     while (query.next()) {
         QString filePath = query.value(query.record().indexOf("location")).toString();
         TrackInfoObject* pTrack = new TrackInfoObject(QFileInfo(filePath));
-        addTracksAdd(pTrack, unremove,0);
+        addTracksAdd(pTrack, unremove);
         int trackID = pTrack->getId();
         if (trackID >= 0) {
             trackIDs.append(trackID);
@@ -658,12 +657,12 @@ void TrackDAO::unhideTracks(QList<int> ids) {
     emit(tracksAdded(tracksAddedSet));
 }
 
-void TrackDAO::purgeTracks(int dirId) {
+void TrackDAO::purgeTracks(QString &directory) {
     QSqlQuery query(m_database);
     query.prepare("SELECT library.id FROM library INNER JOIN track_locations "
                   "ON library.location=track_locations.id WHERE "
-                  "maindir_id = :maindir_id");
-    query.bindValue(":maindir_id", QString::number(dirId));
+                  "instr(directory, :directory) > 0");
+    query.bindValue(":directory", directory);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
@@ -1047,9 +1046,10 @@ void TrackDAO::invalidateTrackLocationsInLibrary() {
     //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
 
+    //TODO kain88 this now just marks ALL tracks
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
-                  "SET needs_verification=1 WHERE track_locations.maindir_id < 1");
+                  "SET needs_verification=1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in watched library directories "
@@ -1264,7 +1264,7 @@ void TrackDAO::verifyTracksOutside(volatile bool* pCancel) {
     query.setForwardOnly(true);
     query.prepare("SELECT location "
                   "FROM track_locations "
-                  "WHERE maindir_id=0");
+                  "WHERE needs_verification = 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;
