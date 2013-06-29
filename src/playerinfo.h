@@ -22,21 +22,17 @@
 #include <QMap>
 #include <QTimerEvent>
 
-class ControlObjectThread;
-
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 
-class PlayerInfo : public QObject
-{
+class PlayerInfo : public QObject {
     Q_OBJECT
   public:
     static PlayerInfo &Instance();
-    TrackPointer getTrackInfo(QString group);
-    void setTrackInfo(QString group, TrackPointer trackInfoObj);
-    int getCurrentPlayingDeck();
+    TrackPointer getTrackInfo(const QString& group);
+    void setTrackInfo(const QString& group, const TrackPointer& trackInfoObj);
     TrackPointer getCurrentPlayingTrack();
-    bool isTrackLoaded(TrackPointer pTrack) const;
-    bool isTrackPlaying(TrackPointer pTrack) const;
+    bool isTrackLoaded(const TrackPointer& pTrack) const;
 
   signals:
     void currentPlayingDeckChanged(int deck);
@@ -46,22 +42,15 @@ class PlayerInfo : public QObject
   private:
     void timerEvent(QTimerEvent* pTimerEvent);
     void updateCurrentPlayingDeck();
+    int getCurrentPlayingDeck();
 
     PlayerInfo();
-    ~PlayerInfo();
-    PlayerInfo(PlayerInfo const&);
-    PlayerInfo &operator= (PlayerInfo const&);
-    mutable QMutex m_mutex;
-    int m_iNumDecks;
-    int m_iNumSamplers;
-    ControlObjectThread* m_COxfader;
-    QMap<QString, TrackPointer> m_loadedTrackMap;
-    QMap<QString, ControlObjectThread*> m_listCOPlay;
-    QMap<QString, ControlObjectThread*> m_listCOVolume;
-    QMap<QString, ControlObjectThread*> m_listCOOrientation;
-    QMap<QString, ControlObjectThread*> m_listCOpregain;
+    virtual ~PlayerInfo();
 
+    mutable QMutex m_mutex;
+    ControlObjectThread m_COxfader;
+    QMap<QString, TrackPointer> m_loadedTrackMap;
     int m_currentlyPlayingDeck;
 };
 
-#endif
+#endif /* _PLAYERINFO_H_ */
