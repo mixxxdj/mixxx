@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include <QStringBuilder>
 
-#include "directorydao.h"
+#include "library/dao/directorydao.h"
 #include "library/queryutil.h"
 
 DirectoryDAO::DirectoryDAO(QSqlDatabase& database)

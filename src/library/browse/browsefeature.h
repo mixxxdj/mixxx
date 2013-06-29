@@ -46,7 +46,7 @@ class BrowseFeature : public LibraryFeature {
 
   signals:
     void setRootIndex(const QModelIndex&);
-    void addDir(QString);
+    void requestAddDir(QString);
 
   private:
     QString getRootViewHtml() const;

@@ -359,7 +359,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
         if (fd != "") {
             //adds Folder to database
-            m_pLibrary->slotAddDir(fd);
+            m_pLibrary->slotRequestAddDir(fd);
             hasChanged_MusicDir = true;
         }
     }

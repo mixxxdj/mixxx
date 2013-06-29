@@ -33,8 +33,8 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_pLastRightClickedItem(NULL),
           m_pTrackCollection(pTrackCollection){
 
-    connect(this, SIGNAL(addDir(QString)),
-            parent, SLOT(slotAddDir(QString)));
+    connect(this, SIGNAL(requestAddDir(QString)),
+            parent, SLOT(slotRequestAddDir(QString)));
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
     connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
@@ -140,7 +140,7 @@ void BrowseFeature::slotAddToLibrary() {
         return;
     }
     QString spath = m_pLastRightClickedItem->dataPath().toString();
-    emit(addDir(spath));
+    emit(requestAddDir(spath));
 }
 
 void BrowseFeature::slotRemoveQuickLink() {

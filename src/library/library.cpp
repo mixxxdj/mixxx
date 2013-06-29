@@ -244,16 +244,16 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
     return QList<TrackPointer>();
 }
 
-void Library::slotAddDir(QString dir) {
+void Library::slotRequestAddDir(QString dir) {
     m_directoryDAO.addDirectory(dir);
 }
 
-void Library::slotRemoveDir(QString dir) {
+void Library::slotRequestRemoveDir(QString dir) {
     m_pTrackCollection->getTrackDAO().purgeTracks(dir);
     m_directoryDAO.purgeDirectory(dir);
 }
 
-void Library::slotRelocateDir(QString oldDir, QString newDir) {
+void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     m_directoryDAO.relocateDirectory(oldDir,newDir);
 }
 

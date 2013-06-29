@@ -67,9 +67,9 @@ public:
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
-    void slotAddDir(QString);
-    void slotRemoveDir(QString);
-    void slotRelocateDir(QString,QString);
+    void slotRequestAddDir(QString);
+    void slotRequestRemoveDir(QString);
+    void slotRequestRelocateDir(QString,QString);
     void onSkinLoadFinished();
 
   signals:

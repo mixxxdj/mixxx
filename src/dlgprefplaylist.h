@@ -59,9 +59,9 @@ class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
 
   signals:
     void apply();
-    void addDir(QString);
-    void removeDir(QString);
-    void relocateDir(QString,QString);
+    void requestAddDir(QString);
+    void requestRemoveDir(QString);
+    void requestRelocateDir(QString,QString);
 
   private:
     bool initializeModel();

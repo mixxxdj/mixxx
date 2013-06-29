@@ -40,12 +40,12 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
 
-    connect(this, SIGNAL(addDir(QString)),
-            m_pLibrary, SLOT(slotAddDir(QString)));
-    connect(this, SIGNAL(removeDir(QString)),
-            m_pLibrary, SLOT(slotRemoveDir(QString)));
-    connect(this, SIGNAL(relocateDir(QString,QString)),
-            m_pLibrary, SLOT(slotRelocateDir(QString,QString)));
+    connect(this, SIGNAL(requestAddDir(QString)),
+            m_pLibrary, SLOT(slotRequestAddDir(QString)));
+    connect(this, SIGNAL(requestRemoveDir(QString)),
+            m_pLibrary, SLOT(slotRequestRemoveDir(QString)));
+    connect(this, SIGNAL(requestRelocateDir(QString,QString)),
+            m_pLibrary, SLOT(slotRequestRelocateDir(QString,QString)));
     /*
     m_pPluginDownloader = new PluginDownloader(this);
 
@@ -202,7 +202,7 @@ void DlgPrefPlaylist::slotAddDir() {
                              this, tr("Choose music library directory"),
                              QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
     if ( !fd.isEmpty() ) {
-        emit(addDir(fd));
+        emit(requestAddDir(fd));
         slotUpdate();
     }
 }
@@ -210,7 +210,7 @@ void DlgPrefPlaylist::slotAddDir() {
 void DlgPrefPlaylist::slotRemoveDir() {
     QModelIndex index = list->currentIndex();
     QString fd = index.data().toString();
-    emit(removeDir(fd));
+    emit(requestRemoveDir(fd));
     slotUpdate();
 }
 
@@ -223,7 +223,7 @@ void DlgPrefPlaylist::slotRelocateDir() {
 
     //use !(~)! as a sign where the string has to be seperated later
     if (!fd.isEmpty()) {
-        emit(relocateDir(currentFd,fd));
+        emit(requestRelocateDir(currentFd,fd));
         slotUpdate();
     }
 }
