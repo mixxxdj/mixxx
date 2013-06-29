@@ -109,13 +109,11 @@ BrowseFeature::BrowseFeature(QObject* parent,
         m_pQuickLinkItem->appendChild(item);
     }
 
-
     // initialize the model
     m_childModel.setRootItem(rootItem);
 }
 
 BrowseFeature::~BrowseFeature() {
-    // delete m_pQuickLinkItem;
 }
 
 QVariant BrowseFeature::title() {

@@ -538,12 +538,10 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     if (rescan || hasChanged_MusicDir) {
         m_pLibraryScanner->scan();
-        qDebug() << "Rescan finished";
     }
 }
 
-MixxxApp::~MixxxApp()
-{
+MixxxApp::~MixxxApp() {
     // TODO(rryan): Get rid of QTime here.
     QTime qTime;
     qTime.start();

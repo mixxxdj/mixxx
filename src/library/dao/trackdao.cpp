@@ -365,14 +365,14 @@ void TrackDAO::addTracksPrepare() {
             "(artist, title, album, year, genre, tracknumber, "
             "filetype, location, comment, url, duration, rating, key, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
-            "timesplayed, "
-            "channels, mixxx_deleted, header_parsed, beats_version, beats_sub_version, beats, bpm_lock) "
+            "timesplayed, channels, mixxx_deleted, header_parsed, "
+            "beats_version, beats_sub_version, beats, bpm_lock) "
             "VALUES ("
             ":artist, :title, :album, :year, :genre, :tracknumber, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
-            ":timesplayed, "
-            ":channels, :mixxx_deleted, :header_parsed, :beats_version, :beats_sub_version, :beats, :bpm_lock)");
+            ":timesplayed, :channels, :mixxx_deleted, :header_parsed, :beats_version, "
+            ":beats_sub_version, :beats, :bpm_lock)");
 
     m_pQueryLibraryUpdate->prepare("UPDATE library SET mixxx_deleted = 0 "
             "WHERE id = :id");
@@ -401,7 +401,6 @@ void TrackDAO::addTracksFinish() {
 }
 
 bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
-
 
     if (!m_pQueryLibraryInsert || !m_pQueryTrackLocationInsert ||
         !m_pQueryLibrarySelect || !m_pQueryTrackLocationSelect) {
@@ -670,7 +669,7 @@ void TrackDAO::purgeTracks(QList<int> ids) {
     ScopedTransaction transaction(m_database);
 
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT track_locations.location , track_locations.directory FROM "
+    query.prepare(QString("SELECT track_locations.location, track_locations.directory FROM "
                           "track_locations INNER JOIN library ON library.location = "
                           "track_locations.id WHERE library.id in (%1)").arg(idListJoined));
     if (!query.exec()) {
@@ -714,7 +713,6 @@ void TrackDAO::purgeTracks(QList<int> ids) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
-
 
     // TODO(XXX) Not sure if we should check any of these for errors or just not
     // care if there were errors and commit anyway.
@@ -1033,22 +1031,20 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //qDebug() << "Dirtying track took: " << time.elapsed() << "ms";
 }
 
-// Mark all the tracks whose paths begin with libraryPath as invalid.
+// Mark all the tracks in the library as invalid.
 // That means we'll need to later check that those tracks actually
 // (still) exist as part of the library scanning procedure.
-void TrackDAO::invalidateTrackLocationsInLibrary(QString dir) {
+void TrackDAO::invalidateTrackLocationsInLibrary() {
     //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
 
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
-                  "SET needs_verification=1 "
-                  "WHERE directory like :dir");
+                  "SET needs_verification=1 ");
     query.bindValue(":dir",dir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
-                << "Couldn't mark tracks in watched library directory (" << dir
-                << ") as needing verification.";
+                << "Couldn't mark tracks in library as needing verification.";
     }
 }
 
@@ -1268,6 +1264,9 @@ void TrackDAO::verifyTracksOutside(volatile bool* pCancel) {
     QSqlQuery query2(m_database);
     QString trackLocation;
 
+    // Because all tracks were marked with needs_verification anything that is not
+    // inside one of the tracked library directories will still need that
+    // TODO(kain88) check if all others are marked with 0 again
     query.setForwardOnly(true);
     query.prepare("SELECT location "
                   "FROM track_locations "
