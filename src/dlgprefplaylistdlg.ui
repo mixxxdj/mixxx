@@ -46,7 +46,7 @@
        </widget>
       </item>
       <item row="3" column="1">
-       <widget class="QPushButton" name="PushButtonRemovePlaylist">
+       <widget class="QPushButton" name="PushButtonRemoveDir">
         <property name="font">
          <font/>
         </property>
@@ -69,7 +69,7 @@
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QPushButton" name="PushButtonBrowsePlaylist">
+       <widget class="QPushButton" name="PushButtonAddDir">
         <property name="font">
          <font/>
         </property>
@@ -79,7 +79,7 @@
        </widget>
       </item>
       <item row="2" column="1">
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="PushButtonRelocateDir">
         <property name="text">
          <string>Relocate</string>
         </property>

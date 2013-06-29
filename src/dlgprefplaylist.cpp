@@ -60,11 +60,11 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
             this, SLOT(slotM4ADownloadProgress(qint64, qint64)));
     */
 
-    connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),
+    connect(PushButtonAddDir, SIGNAL(clicked()),
             this, SLOT(slotAddDir()));
-    connect(PushButtonRemovePlaylist, SIGNAL(clicked()),
+    connect(PushButtonRemoveDir, SIGNAL(clicked()),
             this, SLOT(slotRemoveDir()));
-    connect(pushButton_2, SIGNAL(clicked()),
+    connect(PushButtonRelocateDir, SIGNAL(clicked()),
             this, SLOT(slotRelocateDir()));
     //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
     connect(pushButtonExtraPlugins, SIGNAL(clicked()),
