@@ -657,23 +657,6 @@ void TrackDAO::unhideTracks(QList<int> ids) {
     emit(tracksAdded(tracksAddedSet));
 }
 
-void TrackDAO::purgeTracks(QString &directory) {
-    QSqlQuery query(m_database);
-    query.prepare("SELECT library.id FROM library INNER JOIN track_locations "
-                  "ON library.location=track_locations.id WHERE "
-                  "instr(directory, :directory) > 0");
-    query.bindValue(":directory", directory);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-
-    QList<int> ids;
-    while (query.next()) {
-        ids.append(query.value(query.record().indexOf("id")).toInt());
-    }
-    purgeTracks(ids);
-}
-
 // Warning, purge cannot be undone check before if there is no reference to this
 // track id's on other library tables
 void TrackDAO::purgeTracks(QList<int> ids) {
@@ -1228,6 +1211,19 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
 void TrackDAO::clearCache() {
     m_trackCache.clear();
     //m_dirtyTracks.clear();
+}
+
+void TrackDAO::markTracksAsDeleted(QString dir){
+    QSqlQuery query;
+    query.prepare("UPDATE mixxx_deleted FROM library INNER JOIN track_locations "
+                  "ON library.location = track_locations.id "
+                  "WHERE instr(track_locations.directory, :dir) > 0");
+    query.bindValue(":dir",dir);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
 }
 
 void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){

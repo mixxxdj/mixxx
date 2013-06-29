@@ -249,7 +249,7 @@ void Library::slotRequestAddDir(QString dir) {
 }
 
 void Library::slotRequestRemoveDir(QString dir) {
-    m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+    m_pTrackCollection->getTrackDAO().markTracksAsDeleted(dir);
     m_directoryDAO.purgeDirectory(dir);
 }
 
