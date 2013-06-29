@@ -42,7 +42,7 @@ bool DirectoryDAO::addDirectory(QString newDir) {
 bool DirectoryDAO::purgeDirectory(QString dir) {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
-                   %DIRECTORYDAO_DIR%"=:dir");
+                   % DIRECTORYDAO_DIR % "=:dir");
     query.bindValue(":dir", dir);
     if (!query.exec()) {
         qDebug() << "purging dir (" % dir % ") failed:"<<query.lastError();
@@ -66,7 +66,7 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
 
     // update location and directory in track_locations table
     query.prepare("UPDATE track_locations SET location="
-                  "REPLACE(location, :oldFolder1,:newFolder1 )"
+                  "REPLACE(location, :oldFolder1,:newFolder1)"
                   ", directory="
                   "REPLACE(directory,:oldFolder2,:newFolder2) ");
     query.bindValue(":newFolder1", newFolder);
@@ -79,13 +79,11 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
     qDebug() << query.boundValue(":oldFolder1");
     qDebug() << query.boundValue(":newFolder2");
     qDebug() << query.boundValue(":oldFolder2");
-    // query.bindValue(":dirId", dirId);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
         return false;
     }
     qDebug() << query.executedQuery() ;
-    // updating the dir_id column is not necessary because it does not change
     transaction.commit();
     return true;
 }
@@ -99,12 +97,7 @@ QStringList DirectoryDAO::getDirs() {
     QStringList dirs;
     while (query.next()) {
         QString dir = query.value(query.record().indexOf(DIRECTORYDAO_DIR)).toString();
-        // remove all the ' that got added by FieldEscaper
         dirs << dir;
     }
     return dirs;
-}
-
-bool DirectoryDAO::upgradeDatabase(QString dir) {
-    return addDirectory(dir);
 }

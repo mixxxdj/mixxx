@@ -526,9 +526,6 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     }
 
     addTracksPrepare();
-    // If tracks are manually pulled into mixxx they are also added to the db
-    // but aren't in any folders that we can activly scan for changes to mark
-    // this in the db they get the dirId 0
     addTracksAdd(pTrack, unremove);
     addTracksFinish();
 }
@@ -673,7 +670,7 @@ void TrackDAO::purgeTracks(QList<int> ids) {
     ScopedTransaction transaction(m_database);
 
     QSqlQuery query(m_database);
-    query.prepare(QString("SELECT track_locations.location FROM "
+    query.prepare(QString("SELECT track_locations.location , track_locations.directory FROM "
                           "track_locations INNER JOIN library ON library.location = "
                           "track_locations.id WHERE library.id in (%1)").arg(idListJoined));
     if (!query.exec()) {
@@ -682,9 +679,12 @@ void TrackDAO::purgeTracks(QList<int> ids) {
 
     FieldEscaper escaper(m_database);
     QStringList locationList;
+    QStringList dirList;
     while (query.next()) {
         QString filePath = query.value(query.record().indexOf("location")).toString();
         locationList << escaper.escapeString(filePath);
+        QString dir = query.value(query.record().indexOf("directory")).toString();
+        dirList << escaper.escapeString(dir);
     }
 
     if (locationList.empty()) {
@@ -704,6 +704,17 @@ void TrackDAO::purgeTracks(QList<int> ids) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+
+    // mark LibraryHash with needs_verification and invalidate the hash
+    // in case the file was not deleted to detect it on a rescan
+    // TODO(XXX) delegate to libraryHashDAO
+    query.prepare("UPDATE LibraryHashes SET needs_verification=1,hash=-1 "
+                  "WHERE directory_path in (:dirs)");
+    query.bindValue("dirs",dirList.join(","));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
 
     // TODO(XXX) Not sure if we should check any of these for errors or just not
     // care if there were errors and commit anyway.
@@ -1025,18 +1036,19 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
 // Mark all the tracks whose paths begin with libraryPath as invalid.
 // That means we'll need to later check that those tracks actually
 // (still) exist as part of the library scanning procedure.
-void TrackDAO::invalidateTrackLocationsInLibrary() {
+void TrackDAO::invalidateTrackLocationsInLibrary(QString dir) {
     //qDebug() << "TrackDAO::invalidateTrackLocations" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
 
-    //TODO kain88 this now just marks ALL tracks
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
-                  "SET needs_verification=1");
+                  "SET needs_verification=1 "
+                  "WHERE directory like :dir");
+    query.bindValue(":dir",dir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
-                << "Couldn't mark tracks in watched library directories "
-                <<  "as needing verification.";
+                << "Couldn't mark tracks in watched library directory (" << dir
+                << ") as needing verification.";
     }
 }
 
@@ -1075,7 +1087,6 @@ void TrackDAO::markTracksInDirectoriesAsVerified(QStringList directories) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in" << directories.size() << "directories as verified.";
     }
-    // qDebug() << directories;
 }
 
 void TrackDAO::markUnverifiedTracksAsDeleted() {
@@ -1213,7 +1224,7 @@ void TrackDAO::clearCache() {
     //m_dirtyTracks.clear();
 }
 
-void TrackDAO::markTracksAsDeleted(QString dir){
+void TrackDAO::markTracksAsMixxxDeleted(QString dir){
     QSqlQuery query;
     query.prepare("UPDATE mixxx_deleted FROM library INNER JOIN track_locations "
                   "ON library.location = track_locations.id "

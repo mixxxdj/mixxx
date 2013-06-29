@@ -332,7 +332,8 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
         TrackCollection tc(config);
         QString currentFolder = config->getValueString(ConfigKey("[Playlist]","Directory"));
         DirectoryDAO directoryDAO = tc.getDirectoryDAO();
-        bool successful = directoryDAO.upgradeDatabase(currentFolder);
+        // to migrate the DB just add the current directory to it 
+        bool successful = directoryDAO.addDirectory(currentFolder);
 
         if (successful) {
             configVersion = VERSION;

@@ -90,8 +90,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void unhideTracks(QList<int> ids);
     TrackPointer getTrack(int id, bool cacheOnly=false) const;
     bool isDirty(int trackId);
-    void markTrackAsDeleted(TrackPointer pTrack);
-    void markTracksAsDeleted(QString dir);
+    void markTracksAsMixxxDeleted(QString dir);
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(QString location);
@@ -139,7 +138,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void addTrack(TrackInfoObject* pTrack, bool unremove);
     TrackPointer getTrackFromDB(int id) const;
     QString absoluteFilePath(QString location);
-    void uncacheTracks(QSet<int> ids);
 
     void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);
     void bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocationId);

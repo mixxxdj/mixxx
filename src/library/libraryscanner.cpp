@@ -210,11 +210,6 @@ void LibraryScanner::run() {
     // when we rescan, we'll mark any directory that does still exist as verified.
     m_libraryHashDao.invalidateAllDirectories();
 
-    // Mark all the tracks in the library as needing
-    // verification of their existance...
-    // (ie. we want to check they're still on your hard drive where
-    // we think they are)
-    m_trackDao.invalidateTrackLocationsInLibrary();
 
     qDebug() << "Recursively scanning library.";
     // Start scanning the library.
@@ -228,12 +223,15 @@ void LibraryScanner::run() {
     bool bScanFinishedCleanly=false;
     //recursivly scan each dir that is saved in the directories table
     foreach (QString dir , dirs) {
+        // Mark all the tracks in the directory as needing verification of 
+        // their existance... (ie. we want to check they're still on your hard 
+        // drive where we think they are)
+        m_trackDao.invalidateTrackLocationsInLibrary(dir);
         bScanFinishedCleanly = recursiveScan(dir,verifiedDirectories);
-        //Verify all Tracks inside Library but outside the library path
         if (!bScanFinishedCleanly) {
-            qDebug() << "Recursive scan interrupted.";
+            qDebug() << "Recursive scaning (" << dir << ") interrupted.";
         } else {
-            qDebug() << "Recursive scan finished cleanly.";
+            qDebug() << "Recursive scaning (" << dir << ") finished cleanly.";
         }
     }
     m_trackDao.verifyTracksOutside(&m_bCancelLibraryScan);
