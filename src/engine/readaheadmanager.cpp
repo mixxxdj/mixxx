@@ -153,7 +153,7 @@ void ReadAheadManager::notifySeek(int iSeekPosition) {
     // }
 }
 
-void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList) {
+void ReadAheadManager::hintReader(double dRate, QList<Hint>* hintList) {
     bool in_reverse = dRate < 0;
     Hint current_position;
 
@@ -174,7 +174,7 @@ void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList) {
 
     // top priority, we need to read this data immediately
     current_position.priority = 1;
-    hintList.append(current_position);
+    hintList->append(current_position);
 }
 
 void ReadAheadManager::addReadLogEntry(double virtualPlaypositionStart,
