@@ -4,6 +4,7 @@
 #include <QItemSelectionModel>
 
 #include "controlobject.h"
+#include "controlpushbutton.h"
 #include "controlobjectthreadmain.h"
 #include "playermanager.h"
 #include "widget/wlibrary.h"
@@ -15,12 +16,12 @@ LoadToGroupController::LoadToGroupController(QObject* pParent,
                                              const QString group) :
         QObject(pParent),
         m_group(group) {
-    m_pLoadControl = new ControlObject(ConfigKey(group, "LoadSelectedTrack"));
+    m_pLoadControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrack"));
     m_pLoadCOTM = new ControlObjectThreadMain(m_pLoadControl->getKey());
     connect(m_pLoadCOTM, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroup(double)));
 
-    m_pLoadAndPlayControl = new ControlObject(ConfigKey(group, "LoadSelectedTrackAndPlay"));
+    m_pLoadAndPlayControl = new ControlPushButton(ConfigKey(group, "LoadSelectedTrackAndPlay"));
     m_pLoadAndPlayCOTM = new ControlObjectThreadMain(m_pLoadAndPlayControl->getKey());
     connect(m_pLoadAndPlayCOTM, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroupAndPlay(double)));
@@ -66,37 +67,37 @@ LibraryControl::LibraryControl(QObject* pParent) : QObject(pParent) {
                 this, PlayerManager::groupForPreviewDeck(i));
     }
 
-    m_pSelectNextTrackCO = new ControlObject(ConfigKey("[Playlist]", "SelectNextTrack"));
+    m_pSelectNextTrackCO = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextTrack"));
     m_pSelectNextTrack = new ControlObjectThreadMain(m_pSelectNextTrackCO->getKey());
     connect(m_pSelectNextTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextTrack(double)));
 
-    m_pSelectPrevTrackCO = new ControlObject(ConfigKey("[Playlist]", "SelectPrevTrack"));
+    m_pSelectPrevTrackCO = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevTrack"));
     m_pSelectPrevTrack = new ControlObjectThreadMain(m_pSelectPrevTrackCO->getKey());
     connect(m_pSelectPrevTrack, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevTrack(double)));
 
-    m_pSelectNextPlaylistCO = new ControlObject(ConfigKey("[Playlist]", "SelectNextPlaylist"));
+    m_pSelectNextPlaylistCO = new ControlPushButton(ConfigKey("[Playlist]", "SelectNextPlaylist"));
     m_pSelectNextPlaylist = new ControlObjectThreadMain(m_pSelectNextPlaylistCO->getKey());
     connect(m_pSelectNextPlaylist, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectNextSidebarItem(double)));
 
-    m_pSelectPrevPlaylistCO = new ControlObject(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
+    m_pSelectPrevPlaylistCO = new ControlPushButton(ConfigKey("[Playlist]", "SelectPrevPlaylist"));
     m_pSelectPrevPlaylist = new ControlObjectThreadMain(m_pSelectPrevPlaylistCO->getKey());
     connect(m_pSelectPrevPlaylist, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectPrevSidebarItem(double)));
 
-    m_pToggleSidebarItemCO = new ControlObject(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
+    m_pToggleSidebarItemCO = new ControlPushButton(ConfigKey("[Playlist]", "ToggleSelectedSidebarItem"));
     m_pToggleSidebarItem = new ControlObjectThreadMain(m_pToggleSidebarItemCO->getKey());
     connect(m_pToggleSidebarItem, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleSelectedSidebarItem(double)));
 
-    m_pLoadSelectedIntoFirstStoppedCO = new ControlObject(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
+    m_pLoadSelectedIntoFirstStoppedCO = new ControlPushButton(ConfigKey("[Playlist]","LoadSelectedIntoFirstStopped"));
     m_pLoadSelectedIntoFirstStopped = new ControlObjectThreadMain(m_pLoadSelectedIntoFirstStoppedCO->getKey());
     connect(m_pLoadSelectedIntoFirstStopped, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadSelectedIntoFirstStopped(double)));
 
-    m_pSelectTrackKnobCO = new ControlObject(ConfigKey("[Playlist]","SelectTrackKnob"));
+    m_pSelectTrackKnobCO = new ControlPushButton(ConfigKey("[Playlist]","SelectTrackKnob"));
     m_pSelectTrackKnob = new ControlObjectThreadMain(m_pSelectTrackKnobCO->getKey());
     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrackKnob(double)));
