@@ -2,6 +2,8 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QItemSelectionModel>
+#include <QMessageBox>
+#include <QTranslator>
 
 #include "library/library.h"
 #include "library/libraryfeature.h"
@@ -245,7 +247,11 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
 }
 
 void Library::slotRequestAddDir(QString dir) {
-    m_directoryDAO.addDirectory(dir);
+    if (!m_directoryDAO.addDirectory(dir)) {
+        QMessageBox::information(0, "Mixxx",
+                tr("Mixxx noticed that the parent directory is already in your"
+                    "library, so it did not add it."));
+    }
 }
 
 void Library::slotRequestRemoveDir(QString dir) {

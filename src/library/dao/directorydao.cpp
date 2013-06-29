@@ -17,14 +17,22 @@ void DirectoryDAO::initialize() {
              << m_database.connectionName();
 }
 
-bool DirectoryDAO::addDirectory(QString dir) {
-    FieldEscaper escaper(m_database);
+bool DirectoryDAO::addDirectory(QString newDir) {
+    // Do nothing if the dir to add is actualle a child of a directory that
+    // is already in the db
+    QStringList dirs = getDirs();
+    foreach (QString dir, dirs) {
+        if ( newDir.indexOf(dir) != -1 ) {
+            return false;
+        }
+    }
+
     QSqlQuery query(m_database);
-    query.prepare("INSERT OR REPLACE INTO " % DIRECTORYDAO_TABLE %
+    query.prepare("INSERT INTO " % DIRECTORYDAO_TABLE %
                   " (" % DIRECTORYDAO_DIR % ") VALUES (:dir)");
-    query.bindValue(":dir",dir);
+    query.bindValue(":dir",newDir);
     if (!query.exec()) {
-        qDebug() << "Adding new dir (" % dir % ") failed:" << query.lastError();
+        qDebug() << "Adding new dir (" % newDir % ") failed:" << query.lastError();
         LOG_FAILED_QUERY(query);
         return false;
     }
@@ -32,7 +40,6 @@ bool DirectoryDAO::addDirectory(QString dir) {
 }
 
 bool DirectoryDAO::purgeDirectory(QString dir) {
-    FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
                    %DIRECTORYDAO_DIR%"=:dir");
@@ -46,7 +53,6 @@ bool DirectoryDAO::purgeDirectory(QString dir) {
 
 bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
     ScopedTransaction transaction(m_database);
-    FieldEscaper escaper(m_database);
     QSqlQuery query(m_database);
     // update directory in directories table
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR % "="
@@ -63,10 +69,10 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
                   "REPLACE(location, :oldFolder1,:newFolder1 )"
                   ", directory="
                   "REPLACE(directory,:oldFolder2,:newFolder2) ");
-    query.bindValue(":newFolder1", escaper.escapeString(newFolder));
-    query.bindValue(":oldFolder1", escaper.escapeString(oldFolder));
-    query.bindValue(":newFolder2", escaper.escapeString(newFolder));
-    query.bindValue(":oldFolder2", escaper.escapeString(oldFolder));
+    query.bindValue(":newFolder1", newFolder);
+    query.bindValue(":oldFolder1", oldFolder);
+    query.bindValue(":newFolder2", newFolder);
+    query.bindValue(":oldFolder2", oldFolder);
     // qDebug() << escaper.escapeString(newFolder);
     // qDebug() << escaper.escapeString(oldFolder);
     qDebug() << query.boundValue(":newFolder1");
