@@ -658,12 +658,8 @@ MixxxApp::~MixxxApp()
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
-    ControlObject* pShowControl = ControlObject::getControl(key);
-    if (pShowControl == NULL) {
-        return;
-    }
     qDebug() << "Setting visibility for" << key.group << key.item << enable;
-    pShowControl->set(enable ? 1.0 : 0.0);
+    ControlObject::set(key, enable ? 1.0 : 0.0);
 }
 
 void MixxxApp::slotViewShowSamplers(bool enable) {
@@ -1165,15 +1161,13 @@ void MixxxApp::initMenuBar()
 
 void MixxxApp::slotFileLoadSongPlayer(int deck) {
     QString group = m_pPlayerManager->groupForDeck(deck-1);
-    ControlObject* play =
-        ControlObject::getControl(ConfigKey(group, "play"));
 
     QString loadTrackText = tr("Load track to Deck %1").arg(QString::number(deck));
     QString deckWarningMessage = tr("Deck %1 is currently playing a track.")
             .arg(QString::number(deck));
     QString areYouSure = tr("Are you sure you want to load a new track?");
 
-    if (play && play->get() > 0.0) {
+    if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
             deckWarningMessage + "\n" + areYouSure,
             QMessageBox::Yes | QMessageBox::No,
@@ -1303,8 +1297,10 @@ void MixxxApp::slotControlVinylControl(double toggle)
                 QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
-            ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
-            ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set(0);
+            ControlObject::set(ConfigKey(
+                    "[Channel1]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
+            ControlObject::set(ConfigKey(
+                    "[Channel1]", "vinylcontrol_enabled"), (double)0);
         }
     }
 #endif
@@ -1313,7 +1309,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
 void MixxxApp::slotCheckboxVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set((double)toggle);
+    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_enabled"), (double)toggle);
 #endif
 }
 
@@ -1332,9 +1328,11 @@ void MixxxApp::slotControlVinylControl2(double toggle)
                 QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
-            ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
-            ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set(0);
-        }
+            ControlObject::set(ConfigKey(
+                    "[Channel2]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
+            ControlObject::set(ConfigKey(
+                    "[Channel2]", "vinylcontrol_enabled"), (double)0);
+          }
     }
 #endif
 }
@@ -1342,7 +1340,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set((double)toggle);
+    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_enabled"), (double)toggle);
 #endif
 }
 
@@ -1578,23 +1576,15 @@ bool MixxxApp::confirmExit() {
     unsigned int deckCount = m_pPlayerManager->numDecks();
     unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
-        ControlObject *pPlayCO(
-            ControlObject::getControl(
-                ConfigKey(QString("[Channel%1]").arg(i + 1), "play")
-            )
-        );
-        if (pPlayCO && pPlayCO->get()) {
+        if (ControlObject::get(
+                ConfigKey(QString("[Channel%1]").arg(i + 1), "play"))) {
             playing = true;
             break;
         }
     }
     for (unsigned int i = 0; i < samplerCount; ++i) {
-        ControlObject *pPlayCO(
-            ControlObject::getControl(
-                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play")
-            )
-        );
-        if (pPlayCO && pPlayCO->get()) {
+        if (ControlObject::get(
+                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play"))) {
             playingSampler = true;
             break;
         }
