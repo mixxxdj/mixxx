@@ -113,7 +113,7 @@ LibraryScanner::~LibraryScanner() {
     }
 
     QString dir;
-    foreach(dir, deletedDirs) {
+    foreach (dir, deletedDirs) {
         m_pCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
     }
     transaction.commit();
@@ -290,8 +290,8 @@ void LibraryScanner::run() {
     emit(scanFinished());
 }
 
-void LibraryScanner::scan() {
-    m_pProgress = new LibraryScannerDlg();
+void LibraryScanner::scan(QWidget* parent) {
+    m_pProgress = new LibraryScannerDlg(parent);
     m_pProgress->setAttribute(Qt::WA_DeleteOnClose);
 
     // The important part here is that we need to use
@@ -316,14 +316,11 @@ void LibraryScanner::scan() {
     start();
 }
 
-//slot
-void LibraryScanner::cancel()
-{
+void LibraryScanner::cancel() {
     m_bCancelLibraryScan = 1;
 }
 
-void LibraryScanner::resetCancel()
-{
+void LibraryScanner::resetCancel() {
     m_bCancelLibraryScan = 0;
 }
 

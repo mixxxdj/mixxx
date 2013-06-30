@@ -1041,7 +1041,6 @@ void TrackDAO::invalidateTrackLocationsInLibrary() {
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
                   "SET needs_verification=1 ");
-    query.bindValue(":dir",dir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in library as needing verification.";

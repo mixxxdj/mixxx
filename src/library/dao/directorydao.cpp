@@ -54,7 +54,6 @@ bool DirectoryDAO::purgeDirectory(QString dir) {
 bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
-    // update directory in directories table
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR % "="
                   ":newFolder WHERE " % DIRECTORYDAO_DIR % "=:oldFolder");
     query.bindValue(":newFolder", newFolder);
@@ -63,27 +62,22 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
         LOG_FAILED_QUERY(query) << "coud not relocate directory";
         return false;
     }
-
-    // update location and directory in track_locations table
+    // Also update information in the track_locations table. This is were
+    // mixxx gets the location information for a track
     query.prepare("UPDATE track_locations SET location="
-                  "REPLACE(location, :oldFolder1,:newFolder1)"
-                  ", directory="
-                  "REPLACE(directory,:oldFolder2,:newFolder2) ");
-    query.bindValue(":newFolder1", newFolder);
-    query.bindValue(":oldFolder1", oldFolder);
-    query.bindValue(":newFolder2", newFolder);
-    query.bindValue(":oldFolder2", oldFolder);
-    // qDebug() << escaper.escapeString(newFolder);
-    // qDebug() << escaper.escapeString(oldFolder);
-    qDebug() << query.boundValue(":newFolder1");
-    qDebug() << query.boundValue(":oldFolder1");
-    qDebug() << query.boundValue(":newFolder2");
-    qDebug() << query.boundValue(":oldFolder2");
+                  "REPLACE(location, :oldLoc,:newLoc), "
+                  "directory=REPLACE(directory,:oldDir,:newDir) "
+                  "WHERE instr(location,:loc)>0");
+    query.bindValue("oldLoc",oldFolder);
+    query.bindValue("newLoc",newFolder);
+    query.bindValue("oldDir",oldFolder);
+    query.bindValue("newDir",newFolder);
+    query.bindValue("loc",oldFolder);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
         return false;
     }
-    qDebug() << query.executedQuery() ;
+
     transaction.commit();
     return true;
 }

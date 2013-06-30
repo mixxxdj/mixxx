@@ -261,6 +261,8 @@ void Library::slotRequestRemoveDir(QString dir) {
 
 void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     m_directoryDAO.relocateDirectory(oldDir,newDir);
+    // Clear cache to that all TIO with the old dir information get updated
+    m_pTrackCollection->getTrackDAO().clearCache();
 }
 
 QStringList Library::getDirs(){

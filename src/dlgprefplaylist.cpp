@@ -99,8 +99,8 @@ void DlgPrefPlaylist::initialiseDirList(){
         m_dirListModel.appendRow(new QStandardItem(dir));
     }
     dirList->setModel(&m_dirListModel);
-    // reselect index if it still exists
     dirList->setCurrentIndex(m_dirListModel.index(0, 0));
+    // reselect index if it still exists
     for (int i=0 ; i<m_dirListModel.rowCount() ; ++i) {
         const QModelIndex index = m_dirListModel.index(i, 0);
         if (index.data().toString() == selected) {

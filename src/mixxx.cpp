@@ -537,7 +537,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
     if (rescan || hasChanged_MusicDir) {
-        m_pLibraryScanner->scan();
+        m_pLibraryScanner->scan(this);
     }
 }
 
@@ -1504,7 +1504,7 @@ void MixxxApp::closeEvent(QCloseEvent *event) {
 void MixxxApp::slotScanLibrary()
 {
     m_pLibraryRescan->setEnabled(false);
-    m_pLibraryScanner->scan();
+    m_pLibraryScanner->scan(this);
 }
 
 void MixxxApp::slotEnableRescanLibraryAction()

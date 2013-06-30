@@ -30,7 +30,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/analysisdao.h"
-
 #include "libraryscannerdlg.h"
 #include "trackcollection.h"
 
@@ -44,22 +43,22 @@ class LibraryScanner : public QThread {
     virtual ~LibraryScanner();
 
     void run();
-    void scan(QString libraryPath, QWidget *parent);
-    void scan();
+    void scan(QWidget *parent);
     
   public slots:
     void cancel();
     void resetCancel();
+
   signals:
     void scanFinished();
     void progressHashing(QString);
+
   private:
     bool recursiveScan(QString dirPath, QStringList& verifiedDirectories);
     TrackCollection* m_pCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
                              // since we run in a different thread */
     LibraryScannerDlg* m_pProgress; // The library scanning window
-
     LibraryHashDAO m_libraryHashDao;
     CueDAO m_cueDao;
     PlaylistDAO m_playlistDao;
@@ -67,7 +66,6 @@ class LibraryScanner : public QThread {
     AnalysisDao m_analysisDao;
     DirectoryDAO m_directoryDao;
     TrackDAO m_trackDao;
-
     QStringList m_nameFilters;
     volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;
