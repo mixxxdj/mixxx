@@ -655,7 +655,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 m_filepos_play--;
             }
 
-            // Perform scaling of Reader buffer into buffer.
+//->        // Perform scaling of Reader buffer into buffer.
             CSAMPLE* output = m_pScale->getScaled(iBufferSize);
             double samplesRead = m_pScale->getSamplesRead();
 
@@ -738,9 +738,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
-    // Give the Reader hints as to which chunks of the current song we
-    // really care about. It will try very hard to keep these in memory
-    hintReader(rate);
+    if (!bTrackLoading) {
+        // Give the Reader hints as to which chunks of the current song we
+        // really care about. It will try very hard to keep these in memory
+        hintReader(rate);
+    }
 
     const double kSmallRate = 0.005;
     if (m_bLastBufferPaused && !bCurBufferPaused) {
