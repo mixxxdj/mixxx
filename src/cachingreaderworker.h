@@ -3,8 +3,8 @@
 
 #include <QDebug>
 #include <QMutex>
-#include <QQueue>
-#include <QWaitCondition>
+#include <QSemaphore>
+#include <QThread>
 
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
@@ -63,12 +63,11 @@ class CachingReaderWorker : public EngineWorker {
     // Request to load a new track. wake() must be called afer wards.
     virtual void newTrack(TrackPointer pTrack);
 
-    // Schedule the Worker 
-    virtual void wake();
-
     // Run upkeep operations like loading tracks and reading from file. Run by a
     // thread pool via the EngineWorkerScheduler.
     virtual void run();
+
+    void quitWait();
 
     // A Chunk is a memory-resident section of audio that has been cached. Each
     // chunk holds a fixed number of samples given by kSamplesPerChunk.
@@ -109,12 +108,11 @@ class CachingReaderWorker : public EngineWorker {
 
     // The current sound source of the track loaded
     Mixxx::SoundSource* m_pCurrentSoundSource;
-    int m_iTrackSampleRate;
     int m_iTrackNumSamples;
 
     // Temporary buffer for reading from SoundSources
     SAMPLE* m_pSample;
-    QMutex m_mutexRun;
+    QAtomicInt m_stop;
 };
 
 

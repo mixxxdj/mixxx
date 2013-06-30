@@ -72,10 +72,14 @@ CachingReader::CachingReader(const char* group,
     connect(m_pWorker, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             this, SIGNAL(trackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
+
+    m_pWorker->start();
 }
 
 
 CachingReader::~CachingReader() {
+
+    m_pWorker->quitWait();
     delete m_pWorker;
     m_freeChunks.clear();
     m_allocatedChunks.clear();
@@ -230,7 +234,7 @@ Chunk* CachingReader::lookupChunk(int chunk_number) {
 
 void CachingReader::newTrack(TrackPointer pTrack) {
     m_pWorker->newTrack(pTrack);
-    m_pWorker->wake();
+    m_pWorker->workReady();
 }
 
 void CachingReader::process() {
@@ -532,6 +536,6 @@ void CachingReader::hintAndMaybeWake(const QVector<Hint>& hintList) {
 
     // If there are chunks to be read, wake up.
     if (shouldWake) {
-        m_pWorker->wake();
+        m_pWorker->workReady();
     }
 }

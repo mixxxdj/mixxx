@@ -36,9 +36,9 @@ CachingReaderWorker::CachingReaderWorker(const char* group,
           m_pChunkReadRequestFIFO(pChunkReadRequestFIFO),
           m_pReaderStatusFIFO(pReaderStatusFIFO),
           m_pCurrentSoundSource(NULL),
-          m_iTrackSampleRate(0),
           m_iTrackNumSamples(0),
-          m_pSample(NULL) {
+          m_pSample(NULL),
+          m_stop(0) {
     int memory_to_use = 5000000; // 5mb, TODO
     Q_ASSERT(memory_to_use >= kChunkLength);
 
@@ -49,11 +49,7 @@ CachingReaderWorker::CachingReaderWorker(const char* group,
 }
 
 CachingReaderWorker::~CachingReaderWorker() {
-    m_mutexRun.lock(); // do not delete if a run is still scheduled;
-                       // no need for unlock, because object is gone after
-
     delete [] m_pSample;
-
     delete m_pCurrentSoundSource;
 }
 
@@ -101,7 +97,7 @@ void CachingReaderWorker::processChunkReadRequest(ChunkReadRequest* request,
     update->chunk->length = samples_read;
 }
 
-// WARNING: Always called from the other thread
+// WARNING: Always called from a different thread (GUI)
 void CachingReaderWorker::newTrack(TrackPointer pTrack) {
     m_newTrackMutex.lock();
     m_newTrack = pTrack;
@@ -110,36 +106,22 @@ void CachingReaderWorker::newTrack(TrackPointer pTrack) {
 
 void CachingReaderWorker::run() {
     TrackPointer pLoadTrack;
+    ChunkReadRequest request;
+    ReaderStatusUpdate status;
 
-    m_newTrackMutex.lock();
-    if (m_newTrack) {
-        pLoadTrack = m_newTrack;
-        m_newTrack = TrackPointer();
-    }
-    m_newTrackMutex.unlock();
-
-    if (pLoadTrack) {
-        loadTrack(pLoadTrack);
-    } else {
-        // Read the requested chunks.
-        ChunkReadRequest request;
-        ReaderStatusUpdate status;
-        while (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
+    while (!m_stop) {
+        if (m_newTrack) {
+            m_newTrackMutex.lock();
+            pLoadTrack = m_newTrack;
+            m_newTrack = TrackPointer();
+            m_newTrackMutex.unlock();
+            loadTrack(pLoadTrack);
+        } else if (m_pChunkReadRequestFIFO->read(&request, 1) == 1) {
+            // Read the requested chunks.
             processChunkReadRequest(&request, &status);
             m_pReaderStatusFIFO->writeBlocking(&status, 1);
-        }
-    }
-    m_mutexRun.unlock(); // Notify that the work we did is done.
-}
-
-// WARNING: Always called from other thread
-void CachingReaderWorker::wake() {
-    //qDebug() << m_pGroup << "CachingReaderWorker::wake()";
-    if(m_mutexRun.tryLock()) {
-        // tryLock succeeds if not already scheduled and not under destruction
-        if(!workReady()){
-            // not scheduled
-            m_mutexRun.unlock();
+        } else {
+            m_semaRun.acquire();
         }
     }
 }
@@ -159,7 +141,6 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
         delete m_pCurrentSoundSource;
         m_pCurrentSoundSource = NULL;
     }
-    m_iTrackSampleRate = 0;
     m_iTrackNumSamples = 0;
 
     QString filename = pTrack->getLocation();
@@ -177,11 +158,11 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
 
     m_pCurrentSoundSource = new SoundSourceProxy(pTrack);
     bool openSucceeded = (m_pCurrentSoundSource->open() == OK); //Open the song for reading
-    m_iTrackSampleRate = m_pCurrentSoundSource->getSampleRate();
+    unsigned int trackSampleRate = m_pCurrentSoundSource->getSampleRate();
     m_iTrackNumSamples = status.trackNumSamples =
             m_pCurrentSoundSource->length();
 
-    if (!openSucceeded || m_iTrackNumSamples == 0 || m_iTrackSampleRate == 0) {
+    if (!openSucceeded || m_iTrackNumSamples == 0 || trackSampleRate == 0) {
         // Must unlock before emitting to avoid deadlock
         qDebug() << m_pGroup << "CachingReaderWorker::loadTrack() load failed for\""
                  << filename << "\", file invalid, unlocked reader lock";
@@ -204,5 +185,11 @@ void CachingReaderWorker::loadTrack(TrackPointer pTrack) {
     }
 
     // Emit that the track is loaded.
-    emit(trackLoaded(pTrack, m_iTrackSampleRate, m_iTrackNumSamples));
+    emit(trackLoaded(pTrack, trackSampleRate, m_iTrackNumSamples));
+}
+
+void CachingReaderWorker::quitWait() {
+    m_stop = 1;
+    m_semaRun.release();
+    wait();
 }

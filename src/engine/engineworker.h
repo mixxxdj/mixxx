@@ -6,7 +6,8 @@
 
 #include <QAtomicInt>
 #include <QObject>
-#include <QRunnable>
+#include <QSemaphore>
+#include <QThread>
 
 // EngineWorker is an interface for running background processing work when the
 // audio callback is not active. While the audio callback is active, an
@@ -15,7 +16,7 @@
 
 class EngineWorkerScheduler;
 
-class EngineWorker : public QObject, public QRunnable {
+class EngineWorker : public QThread {
     Q_OBJECT
   public:
     EngineWorker();
@@ -25,6 +26,12 @@ class EngineWorker : public QObject, public QRunnable {
 
     void setScheduler(EngineWorkerScheduler* pScheduler);
     bool workReady();
+    void wake() {
+        m_semaRun.release();
+    }
+
+  protected:
+    QSemaphore m_semaRun;
 
   private:
     EngineWorkerScheduler* m_pScheduler;

@@ -10,15 +10,11 @@ EngineWorkerScheduler::EngineWorkerScheduler(QObject* pParent)
         : m_scheduleFIFO(MAX_ENGINE_WORKERS),
           m_bQuit(false) {
     Q_UNUSED(pParent);
-    m_workerThreadPool.setMaxThreadCount(ENGINE_WORKER_THREAD_COUNT);
-    // A timeout of 1 minute for threads in the pool.
-    m_workerThreadPool.setExpiryTimeout(60000);
 }
 
 EngineWorkerScheduler::~EngineWorkerScheduler() {
     m_bQuit = true;
     m_waitCondition.wakeAll();
-    m_workerThreadPool.waitForDone();
     wait();
 }
 
@@ -40,7 +36,7 @@ void EngineWorkerScheduler::run() {
         EngineWorker* pWorker = NULL;
         while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
             if (pWorker) {
-                m_workerThreadPool.start(pWorker);
+                pWorker->wake();
             }
         }
         m_mutex.lock();

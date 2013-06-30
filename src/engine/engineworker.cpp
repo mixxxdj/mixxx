@@ -6,7 +6,6 @@
 
 EngineWorker::EngineWorker()
     : m_pScheduler(NULL) {
-    setAutoDelete(false);
 }
 
 EngineWorker::~EngineWorker() {
