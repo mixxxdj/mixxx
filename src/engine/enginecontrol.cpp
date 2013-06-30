@@ -47,7 +47,7 @@ void EngineControl::trackLoaded(TrackPointer) {
 void EngineControl::trackUnloaded(TrackPointer) {
 }
 
-void EngineControl::hintReader(QList<Hint>&) {
+void EngineControl::hintReader(QVector<Hint>*) {
 }
 
 void EngineControl::setEngineMaster(EngineMaster* pEngineMaster) {

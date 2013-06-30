@@ -22,10 +22,6 @@ EngineWorkerScheduler::~EngineWorkerScheduler() {
     wait();
 }
 
-void EngineWorkerScheduler::bindWorker(EngineWorker* pWorker) {
-    pWorker->setScheduler(this);
-}
-
 void EngineWorkerScheduler::workerReady(EngineWorker* pWorker) {
     if (pWorker) {
         // If the write fails, we really can't do much since we should not block
@@ -43,8 +39,7 @@ void EngineWorkerScheduler::run() {
     while (!m_bQuit) {
         EngineWorker* pWorker = NULL;
         while (m_scheduleFIFO.read(&pWorker, 1) == 1) {
-            if (pWorker && !pWorker->isActive()) {
-                pWorker->setActive(true);
+            if (pWorker) {
                 m_workerThreadPool.start(pWorker);
             }
         }

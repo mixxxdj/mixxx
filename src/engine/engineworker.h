@@ -23,22 +23,11 @@ class EngineWorker : public QObject, public QRunnable {
 
     virtual void run();
 
-    // Thread-safe, sets whether this EngineWorker is active.
-    inline void setActive(bool bActive) {
-        m_isActive = bActive;
-    }
-
-    // Thread-safe, returns true if this EngineWorker is active.
-    inline bool isActive() const {
-        return m_isActive > 0;
-    }
-
     void setScheduler(EngineWorkerScheduler* pScheduler);
-    void workReady();
+    bool workReady();
 
   private:
     EngineWorkerScheduler* m_pScheduler;
-    QAtomicInt m_isActive;
 };
 
 #endif /* ENGINEWORKER_H */

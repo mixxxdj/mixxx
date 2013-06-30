@@ -273,7 +273,7 @@ double LoopingControl::getTrigger(const double dRate,
     return kNoTrigger;
 }
 
-void LoopingControl::hintReader(QList<Hint>& hintList) {
+void LoopingControl::hintReader(QVector<Hint>* pHintList) {
     Hint loop_hint;
     // If the loop is enabled, then this is high priority because we will loop
     // sometime potentially very soon! The current audio itself is priority 1,
@@ -287,20 +287,20 @@ void LoopingControl::hintReader(QList<Hint>& hintList) {
             loop_hint.priority = 2;
             loop_hint.sample = m_iLoopStartSample;
             loop_hint.length = 0; // Let it issue the default length
-            hintList.append(loop_hint);
+            pHintList->append(loop_hint);
         }
         if (m_iLoopEndSample >= 0) {
             loop_hint.priority = 10;
             loop_hint.sample = m_iLoopEndSample;
             loop_hint.length = -1; // Let it issue the default (backwards) length
-            hintList.append(loop_hint);
+            pHintList->append(loop_hint);
         }
     } else {
         if (m_iLoopStartSample >= 0) {
             loop_hint.priority = 10;
             loop_hint.sample = m_iLoopStartSample;
             loop_hint.length = 0; // Let it issue the default length
-            hintList.append(loop_hint);
+            pHintList->append(loop_hint);
         }
     }
 }
