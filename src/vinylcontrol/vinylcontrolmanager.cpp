@@ -42,11 +42,11 @@ VinylControlManager::~VinylControlManager() {
     m_pConfig->set(ConfigKey("[Channel1]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey("[Channel2]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey(VINYL_PREF_KEY,"cueing_ch1"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel1]","vinylcontrol_cueing"))->get()));
+        ConfigValue((int)ControlObject::get(
+            ConfigKey("[Channel1]","vinylcontrol_cueing"))));
     m_pConfig->set(ConfigKey(VINYL_PREF_KEY,"cueing_ch2"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel2]","vinylcontrol_cueing"))->get()));
+        ConfigValue((int)ControlObject::get(
+            ConfigKey("[Channel2]","vinylcontrol_cueing"))));
 }
 
 void VinylControlManager::init() {

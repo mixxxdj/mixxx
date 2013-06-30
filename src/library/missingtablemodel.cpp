@@ -16,6 +16,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
 }
 
 void MissingTableModel::setTableModel(int id) {
+    Q_UNUSED(id);
     QSqlQuery query(m_database);
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();

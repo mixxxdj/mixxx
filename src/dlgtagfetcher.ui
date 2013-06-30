@@ -135,7 +135,7 @@
            <item alignment="Qt::AlignHCenter">
             <widget class="QLabel" name="message1">
              <property name="text">
-              <string>Fetching track data from MusicBrainz</string>
+              <string>Fetching track data from the MusicBrainz database</string>
              </property>
             </widget>
            </item>
@@ -241,7 +241,7 @@
          <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_7">
            <property name="styleSheet">
-            <string notr="true">font: 75 12pt &quot;Courier 10 Pitch&quot;;</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string>Error</string>
@@ -379,7 +379,7 @@
          <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_5">
            <property name="styleSheet">
-            <string notr="true">font: 75 12pt &quot;DejaVu Serif&quot;;</string>
+            <string notr="true"/>
            </property>
            <property name="text">
             <string>Error</string>
@@ -480,17 +480,17 @@
          <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label">
            <property name="styleSheet">
-            <string notr="true">font: 75 16pt &quot;DejaVu Serif&quot;;</string>
+            <string notr="true"/>
            </property>
            <property name="text">
-            <string>Sorry</string>
+            <string>Error</string>
            </property>
           </widget>
          </item>
          <item alignment="Qt::AlignHCenter">
           <widget class="QLabel" name="label_2">
            <property name="text">
-            <string>Mixxx could not find this song</string>
+            <string>Mixxx could not find this track in the MusicBrainz database</string>
            </property>
           </widget>
          </item>
@@ -533,7 +533,7 @@
            <item>
             <widget class="QPushButton" name="btnApikey">
              <property name="text">
-              <string>get API-Key</string>
+              <string comment="To be able to submit audio fingerprints to the MusicBrainz database, a free application programming interface key (API key) is required.">Get API-Key</string>
              </property>
             </widget>
            </item>
@@ -566,7 +566,7 @@
            <item>
             <widget class="QPushButton" name="btnSubmit">
              <property name="text">
-              <string>Submit</string>
+              <string comment="Submits audio fingerprints to the MusicBrainz database.">Submit</string>
              </property>
             </widget>
            </item>
@@ -635,14 +635,14 @@
       <item>
        <widget class="QPushButton" name="btnPrev">
         <property name="text">
-         <string>Prev</string>
+         <string>&amp;Previous</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnNext">
         <property name="text">
-         <string>Next</string>
+         <string>&amp;Next</string>
         </property>
        </widget>
       </item>
@@ -662,14 +662,14 @@
       <item>
        <widget class="QPushButton" name="btnApply">
         <property name="text">
-         <string>Apply</string>
+         <string>&amp;Apply</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnQuit">
         <property name="text">
-         <string>Close</string>
+         <string>&amp;Close</string>
         </property>
        </widget>
       </item>
@@ -678,6 +678,17 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>results</tabstop>
+  <tabstop>apikey</tabstop>
+  <tabstop>btnApikey</tabstop>
+  <tabstop>btnSubmit</tabstop>
+  <tabstop>submit_tree</tabstop>
+  <tabstop>btnPrev</tabstop>
+  <tabstop>btnNext</tabstop>
+  <tabstop>btnApply</tabstop>
+  <tabstop>btnQuit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

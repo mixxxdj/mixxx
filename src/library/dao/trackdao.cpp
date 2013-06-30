@@ -1047,8 +1047,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary() {
     }
 }
 
-void TrackDAO::markTrackLocationAsVerified(QString location)
-{
+void TrackDAO::markTrackLocationAsVerified(QString location) {
     //qDebug() << "TrackDAO::markTrackLocationAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTrackLocationAsVerified()" << location;
 
@@ -1168,6 +1167,12 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
         Q_ASSERT(query2.size() <= 1); //WTF duplicate tracks?
         while (query2.next()) {
             newTrackLocationId = query2.value(query2.record().indexOf("id")).toInt();
+        }
+
+        //If we found a moved track...
+        if (newTrackLocationId >= 0) {
+            qDebug() << "Found moved track!" << filename;
+
             //Remove old row from track_locations table
             query3.prepare("DELETE FROM track_locations WHERE id=:id");
             query3.bindValue(":id", oldTrackLocationId);
@@ -1177,13 +1182,17 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
             //table which corresponds to the track in the new location. We need
             //to remove that so we don't end up with two rows in the library table
             //for the same track.
-            query3.prepare("SELECT id FROM library WHERE "
-                           "location=:location");
+            query3.prepare("SELECT id FROM library WHERE location=:location");
             query3.bindValue(":location", newTrackLocationId);
             Q_ASSERT(query3.exec());
-            // We collect all the new tracks the where added to BaseTrackCache as well
-            while (query3.next()) {
-                int newTrackId = query3.value(0).toInt();
+
+            if (query3.next()) {
+                int newTrackId = query3.value(query3.record().indexOf("id")).toInt();
+                query3.prepare("DELETE FROM library WHERE id=:newid");
+                query3.bindValue(":newid", newTrackLocationId);
+                Q_ASSERT(query3.exec());
+
+                // We collect all the new tracks the where added to BaseTrackCache as well
                 tracksMovedSetNew.insert(newTrackId);
             }
             // Delete the track
@@ -1194,24 +1203,22 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
 
             //Update the location foreign key for the existing row in the library table
             //to point to the correct row in the track_locations table.
-            query3.prepare("UPDATE library "
-                           "SET location=:newloc WHERE location=:oldloc");
-            query3.bindValue(":newloc", newTrackLocationId);
-            query3.bindValue(":oldloc", oldTrackLocationId);
+            query3.prepare("SELECT id FROM library WHERE location=:location");
+            query3.bindValue(":location", oldTrackLocationId);
             Q_ASSERT(query3.exec());
 
-            // We collect all the old tracks that has to be updated in BaseTrackCache as well
-            query3.prepare("SELECT id FROM library WHERE "
-                           "location=:location");
-            query3.bindValue(":location", newTrackLocationId);
-            Q_ASSERT(query3.exec());
-            while (query3.next()) {
-                int oldTrackId = query3.value(0).toInt();
+            if (query3.next()) {
+                int oldTrackId = query3.value(query3.record().indexOf("id")).toInt();
+                query3.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
+                query3.bindValue(":newloc", newTrackLocationId);
+                query3.bindValue(":oldid", oldTrackId);
+                Q_ASSERT(query3.exec());
+
+                // We collect all the old tracks that has to be updated in BaseTrackCache as well
                 tracksMovedSetOld.insert(oldTrackId);
             }
         }
     }
-    databaseTracksMoved(tracksMovedSetOld, tracksMovedSetNew);
 }
 
 void TrackDAO::clearCache() {
@@ -1276,8 +1283,8 @@ void TrackDAO::verifyTracksOutside(volatile bool* pCancel) {
     }
 
     query2.prepare("UPDATE track_locations "
-                  "SET fs_deleted=:fs_deleted, needs_verification=0 "
-                  "WHERE location=:location");
+                   "SET fs_deleted=:fs_deleted, needs_verification=0 "
+                   "WHERE location=:location");
 
     while (query.next()) {
         trackLocation = query.value(query.record().indexOf("location")).toString();
