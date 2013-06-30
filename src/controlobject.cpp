@@ -147,7 +147,7 @@ void ControlObject::reset() {
     }
 }
 
-void ControlObject::set(const double& value) {
+void ControlObject::set(double value) {
     if (m_pControl) {
         m_pControl->set(value, this);
     }
