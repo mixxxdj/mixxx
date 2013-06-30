@@ -1263,7 +1263,7 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     return false;
 }
 
-void TrackDAO::verifyTracksOutside(volatile bool* pCancel) {
+void TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     // This function is called from the LibraryScanner Thread
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);

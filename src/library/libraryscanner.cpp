@@ -225,7 +225,7 @@ void LibraryScanner::run() {
 
     QStringList dirs = m_directoryDao.getDirs();
     bool bScanFinishedCleanly=false;
-    //recursivly scan each dir that is saved in the directories table
+    // recursivly scan each dir that is saved in the directories table
     foreach (QString dir , dirs) {
         bScanFinishedCleanly = recursiveScan(dir,verifiedDirectories);
         if (!bScanFinishedCleanly) {
@@ -234,7 +234,11 @@ void LibraryScanner::run() {
             qDebug() << "Recursive scaning (" << dir << ") finished cleanly.";
         }
     }
-    m_trackDao.verifyTracksOutside(&m_bCancelLibraryScan);
+    // After the recursive scan of all watched library directories their are
+    // only a few songs left to check. Mainly the ones that are not inside one
+    // of the library directories or have been moved/renamed/... since the last
+    // scan
+    m_trackDao.verifyRemainingTracks(&m_bCancelLibraryScan);
 
     // Runs inside a transaction
     m_trackDao.addTracksFinish();
