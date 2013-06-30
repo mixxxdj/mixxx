@@ -119,6 +119,7 @@ QString DlgPrefController::presetWikiLink(const ControllerPresetPointer pPreset)
 }
 
 void DlgPrefController::addWidgetToLayout(QWidget* pWidget) {
+    Q_UNUSED(pWidget);
     // Remove the vertical spacer since we're adding stuff
     //m_pLayout->removeItem(m_pVerticalSpacer);
     //m_pLayout->addWidget(pWidget);
