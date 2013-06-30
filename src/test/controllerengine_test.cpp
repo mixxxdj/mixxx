@@ -56,7 +56,6 @@ TEST_F(ControllerEngineTest, scriptSetValue) {
     ControlObject *co = new ControlObject(ConfigKey("[Channel1]", "co"));
     co->set(0.0);
     cEngine->execute("setValue");
-    ControlObject::sync();
     EXPECT_DOUBLE_EQ(co->get(), 1.0f);
 
     delete co;
@@ -72,7 +71,6 @@ TEST_F(ControllerEngineTest, scriptGetSetValue) {
     ScopedControl co(new ControlObject(ConfigKey("[Channel1]", "co")));
     co->set(0.0);
     cEngine->execute("getSetValue");
-    ControlObject::sync();
     EXPECT_DOUBLE_EQ(co->get(), 1.0f);
 }
 
@@ -258,13 +256,11 @@ TEST_F(ControllerEngineTest, automaticReaction) {
     ScopedControl co(new ControlObject(ConfigKey("[Channel1]", "co")));
     co->set(0.0);
     EXPECT_TRUE(cEngine->execute("setUp"));
-    ControlObject::sync();
 
     // The actual test
     //  TODO: Have the JS call a function in this test class so the test framework
     //  can tell if it actually passed or not
     co->set(2.5);
-    ControlObject::sync();
 }
 
 }

@@ -26,7 +26,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
     connect(m_pToggleRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleRecording(double)));
     m_recReadyCO = new ControlObject(ConfigKey(RECORDING_PREF_KEY, "status"));
-    m_recReady = new ControlObjectThread(m_recReadyCO);
+    m_recReady = new ControlObjectThread(m_recReadyCO->getKey());
 
     m_split_size = getFileSplitSize();
 

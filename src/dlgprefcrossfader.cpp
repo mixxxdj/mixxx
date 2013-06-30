@@ -34,11 +34,11 @@
 #define CONFIG_KEY "[Mixer Profile]"
 
 DlgPrefCrossfader::DlgPrefCrossfader(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        : QWidget(parent)
-        , m_COTMode(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderMode")))
-        , m_COTCurve(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCurve")))
-        , m_COTCalibration(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderCalibration")))
-        , m_COTReverse(ControlObject::getControl(ConfigKey(CONFIG_KEY, "xFaderReverse"))) {
+        : QWidget(parent),
+          m_COTMode(CONFIG_KEY, "xFaderMode"),
+          m_COTCurve(CONFIG_KEY, "xFaderCurve"),
+          m_COTCalibration(CONFIG_KEY, "xFaderCalibration"),
+          m_COTReverse(CONFIG_KEY, "xFaderReverse") {
     config = _config;
     m_pxfScene = NULL;
 
@@ -160,16 +160,17 @@ void DlgPrefCrossfader::drawXfaderDisplay()
     }
 
     // Draw graph lines
-    float gain1, gain2;
     QPoint pointTotal, point1, point2;
     QPoint pointTotalPrev, point1Prev, point2Prev;
     for (int i = 0; i < sizeX; i++) {
         double xfadeStep = 2. / (double)sizeX;
 
-        EngineXfader::getXfadeGains(gain1, gain2, (-1. + (xfadeStep * (double) i)),
+        double gain1, gain2;
+        EngineXfader::getXfadeGains((-1. + (xfadeStep * (double) i)),
                                     m_transform, m_cal,
                                     (m_xFaderMode == MIXXX_XFADER_CONSTPWR),
-                                    checkBoxReverse->isChecked());
+                                    checkBoxReverse->isChecked(),
+                                    &gain1, &gain2);
 
         double sum = gain1 + gain2;
         //scale for graph

@@ -43,8 +43,9 @@
 #include "widget/wnumber.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
-#include "widget/woverview.h"
 #include "widget/weffectchain.h"
+#include "widget/woverviewlmh.h"
+#include "widget/woverviewhsv.h"
 #include "widget/wspinny.h"
 #include "widget/wwaveformviewer.h"
 #include "waveform/waveformwidgetfactory.h"
@@ -272,8 +273,7 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
         bool ok = false;
         double value = QString::fromStdString(attribute.value()).toDouble(&ok);
         if (ok) {
-            ControlObject* pControl = controlFromConfigKey(configKey, NULL);
-            ControlObjectThreadMain mainControl(pControl);
+            ControlObjectThreadMain mainControl(configKey);
             mainControl.slotSet(value);
         }
     }
@@ -601,7 +601,15 @@ QWidget* LegacySkinParser::parseOverview(QDomElement node) {
     if (pPlayer == NULL)
         return NULL;
 
-    WOverview* overviewWidget = new WOverview(pSafeChannelStr, m_pConfig, m_pParent);
+    WOverview* overviewWidget = NULL;
+
+    // HSV = "1" or "Filtered" = "0" (LMH) waveform overview type
+    if (m_pConfig->getValueString(ConfigKey("[Waveform]","WaveformOverviewType"),
+            "0").toInt() == 0) {
+        overviewWidget = new WOverviewLMH(pSafeChannelStr, m_pConfig, m_pParent);
+    } else {
+        overviewWidget = new WOverviewHSV(pSafeChannelStr, m_pConfig, m_pParent);
+    }
 
     connect(overviewWidget, SIGNAL(trackDropped(QString, QString)),
             m_pPlayerManager, SLOT(slotLoadToPlayer(QString, QString)));
@@ -650,7 +658,7 @@ QWidget* LegacySkinParser::parseVisual(QDomElement node) {
 
     // Connect control proxy to widget, so delete can be handled by the QT object tree
     ControlObjectThreadWidget * p = new ControlObjectThreadWidget(
-                ControlObject::getControl(ConfigKey(channelStr, "wheel")), viewer);
+            channelStr, "wheel", viewer);
 
     p->setWidget((QWidget *)viewer, true, false,
                  ControlObjectThreadWidget::EMIT_ON_PRESS, Qt::RightButton);
@@ -1357,7 +1365,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             // leaked. OnOff controls do not use the value of the widget at all
             // so we do not give this control's info to the
             // ControllerLearningEventFilter.
-            (new ControlObjectThreadWidget(control, pWidget))->setWidgetOnOff(pWidget);
+            (new ControlObjectThreadWidget(control->getKey(), pWidget))->setWidgetOnOff(pWidget);
         } else {
             // Default to emit on press
             ControlObjectThreadWidget::EmitOption emitOption = ControlObjectThreadWidget::EMIT_ON_PRESS;
@@ -1388,7 +1396,7 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
 
             // Connect control proxy to widget. Parented to pWidget so it is not
             // leaked.
-            (new ControlObjectThreadWidget(control, pWidget))->setWidget(
+            (new ControlObjectThreadWidget(control->getKey(), pWidget))->setWidget(
                         pWidget, connectValueFromWidget, connectValueToWidget,
                         emitOption, state);
 

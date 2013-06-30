@@ -597,18 +597,17 @@ void ControllerEngine::errorDialogButton(QString key, QMessageBox::StandardButto
 
 ControlObjectThread* ControllerEngine::getControlObjectThread(QString group, QString name) {
     ConfigKey key = ConfigKey(group, name);
-
-    ControlObjectThread *cot = NULL;
-    if(!m_controlCache.contains(key)) {
-        ControlObject *co = ControlObject::getControl(key);
-        if(co != NULL) {
-            cot = new ControlObjectThread(co);
+    ControlObjectThread* cot = m_controlCache.value(key, NULL);
+    if (cot == NULL) {
+        // create COT  
+        cot = new ControlObjectThread(key);
+        if (cot->valid()) {
             m_controlCache.insert(key, cot);
+        } else {
+            delete cot;
+            cot = NULL;
         }
-    } else {
-        cot = m_controlCache.value(key);
     }
-
     return cot;
 }
 
@@ -743,6 +742,10 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
         connect(cot, SIGNAL(valueChanged(double)),
                 this, SLOT(slotValueChanged(double)),
                 Qt::QueuedConnection);
+        connect(cot, SIGNAL(valueChangedByThis(double)),
+                this, SLOT(slotValueChanged(double)),
+                Qt::QueuedConnection);
+
 
         ControllerEngineConnection conn;
         conn.key = key;
@@ -793,6 +796,8 @@ void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) 
         // Only disconnect the signal if there are no other instances of this control using it
         if (!m_connectedControls.contains(conn.key)) {
             disconnect(cot, SIGNAL(valueChanged(double)),
+                       this, SLOT(slotValueChanged(double)));
+            disconnect(cot, SIGNAL(valueChangedByThis(double)),
                        this, SLOT(slotValueChanged(double)));
         }
     } else {
