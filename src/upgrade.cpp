@@ -329,10 +329,11 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
-        TrackCollection tc(config);
         QString currentFolder = config->getValueString(ConfigKey("[Playlist]","Directory"));
+        // to migrate the DB just add the current directory to the new
+        // directories table
+        TrackCollection tc(config);
         DirectoryDAO directoryDAO = tc.getDirectoryDAO();
-        // to migrate the DB just add the current directory to it 
         bool successful = directoryDAO.addDirectory(currentFolder);
 
         if (successful) {
