@@ -43,8 +43,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl),
-        m_pRecordingManager(pRecordingManager),
-        m_directoryDAO(m_pTrackCollection->getDirectoryDAO()) {
+        m_pRecordingManager(pRecordingManager) {
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -247,24 +246,51 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
 }
 
 void Library::slotRequestAddDir(QString dir) {
-    if (!m_directoryDAO.addDirectory(dir)) {
+    if (!m_pTrackCollection->getDirectoryDAO().addDirectory(dir)) {
         QMessageBox::information(0, "Mixxx",
                 tr("Mixxx noticed that the parent directory is already in your"
                     "library, so it did not add it."));
+    }
+    // set at least on directory in the config file so that it will be possible
+    // to downgrade from 1.12
+    if (m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")).length() < 1){
+        m_pConfig->set(ConfigKey("[Playlist]","Directory"), dir);
+        m_pConfig->Save();
     }
 }
 
 void Library::slotRequestRemoveDir(QString dir) {
     m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
-    m_directoryDAO.purgeDirectory(dir);
+    m_pTrackCollection->getDirectoryDAO().purgeDirectory(dir);
+    // also update the config file if necessary so that downgrading is still
+    // possible
+    QString confDir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+    if (dir == confDir) {
+        QStringList dirList = m_pTrackCollection->getDirectoryDAO().getDirs();
+        if (!dirList.isEmpty()) {
+            m_pConfig->set(ConfigKey("[Playlist]","Directory"), dirList.first());
+        // Save empty string so that an old version of mixxx know it has to ask
+        // for a new directory
+        } else { 
+            m_pConfig->set(ConfigKey("[Playlist]","Directory"), QString() );
+        }
+        m_pConfig->Save();
+    }
 }
 
 void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
-    m_directoryDAO.relocateDirectory(oldDir,newDir);
+    m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir,newDir);
     // Clear cache to that all TIO with the old dir information get updated
     m_pTrackCollection->getTrackDAO().clearCache();
+    // also update the config file if necessary so that downgrading is still
+    // possible
+    QString conDir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+    if (oldDir == conDir) {
+        m_pConfig->set(ConfigKey("[Playlist]","Directory"), newDir);
+        m_pConfig->Save();
+    }
 }
 
 QStringList Library::getDirs(){
-    return m_directoryDAO.getDirs();
+    return m_pTrackCollection->getDirectoryDAO().getDirs();
 }

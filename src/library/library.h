@@ -15,7 +15,6 @@
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
 #include "preparefeature.h"
-#include "library/dao/directorydao.h"
 
 class TrackModel;
 class TrackCollection;
@@ -99,7 +98,6 @@ public:
     PrepareFeature* m_pPrepareFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
-    DirectoryDAO m_directoryDAO;
 };
 
 #endif /* LIBRARY_H */
