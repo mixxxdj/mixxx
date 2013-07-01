@@ -4,6 +4,7 @@
 #include <QLabel>
 
 #include "widget/wlabel.h"
+#include "controlobjectthread.h"
 
 class WKey : public WLabel  {
     Q_OBJECT
@@ -13,6 +14,11 @@ class WKey : public WLabel  {
 
   private slots:
     void setValue(double dValue);
+    void preferencesUpdated(double dValue);
+
+  private:
+    double m_dOldValue;
+    ControlObjectThread m_preferencesUpdated;
 };
 
 #endif /* WKEY_H */
