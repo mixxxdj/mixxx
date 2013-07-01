@@ -54,6 +54,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void clearSeedTrackInfo();
     void updateFilterText();
     void initHeaderData();
+    QVariant scoreTrack(const QModelIndex& index);
     QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(mixxx::track::io::key::ChromaticKey key);
     bool m_bFilterGenre;
     bool m_bFilterBpm;

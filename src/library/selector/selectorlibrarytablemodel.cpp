@@ -19,6 +19,7 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 const bool sDebug = true;
 const QString tableName = "selector_table";
+const double maxBpmDiff = 10.0;
 
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
@@ -55,7 +56,7 @@ void SelectorLibraryTableModel::setTableModel(int id){
     Q_UNUSED(id);
 
     QStringList columns;
-    columns << "library."+LIBRARYTABLE_ID << "'' as preview" << "100.0 as score";
+    columns << "library."+LIBRARYTABLE_ID << "'' as preview" << "0.0 as score";
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     QString queryString = "CREATE TEMPORARY TABLE IF NOT EXISTS "+tableName+" AS "
@@ -126,7 +127,6 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
 
 void SelectorLibraryTableModel::calculateSimilarity() {
     qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
-    return;
     if (!m_pSeedTrack.isNull()) {
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("UPDATE " + tableName + " SET score=:score "
@@ -134,12 +134,26 @@ void SelectorLibraryTableModel::calculateSimilarity() {
         QVariantList scores;
         QVariantList trackIds;
 
-        // TODO(chrisjr): actually fill these lists
+        for (int i = 0, n = rowCount(); i < n; i++) {
+            QModelIndex index = createIndex(i, fieldIndex(LIBRARYTABLE_ID));
+            int trackId = getTrackId(index);
+            QVariant score = scoreTrack(index);
+
+            // if the score could not be calculated (i.e. a field is missing),
+            // skip it
+            if (!score.isValid())
+                continue;
+
+            trackIds << QVariant(trackId);
+            scores << score;
+        }
 
         query.bindValue(":score", scores);
         query.bindValue(":id", trackIds);
         if (!query.execBatch())
             qDebug() << query.lastError();
+        else
+            select(); // update the view
     }
 }
 
@@ -265,6 +279,26 @@ void SelectorLibraryTableModel::clearSeedTrackInfo() {
     m_seedTrackKey = mixxx::track::io::key::INVALID;
 }
 
+QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
+    // return a QVariant::Double from 0 (no match) to 100 (perfect match)
+    // or QVariant::Invalid if the field is missing
+    // assume that seed track info is valid
+
+    QVariant score;
+
+    QVariant bpm = data(index.sibling(index.row(), fieldIndex("bpm")));
+    if (bpm.isValid()) {
+        double bpmDiff = abs(bpm.toDouble() - m_fSeedTrackBpm);
+        double scoreValue = ((maxBpmDiff - bpmDiff) / maxBpmDiff) * 100.0;
+
+        if (scoreValue > 100.0) scoreValue = 100.0;
+        else if (scoreValue < 0.0) scoreValue = 0.0;
+
+        score.setValue(scoreValue);
+    }
+
+    return score;
+}
 
 void SelectorLibraryTableModel::updateFilterText() {
 	if (!m_bActive) return;
