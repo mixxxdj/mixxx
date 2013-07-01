@@ -18,6 +18,7 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 const bool sDebug = true;
+const QString tableName = "selector_table";
 
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
@@ -34,6 +35,9 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
 
     connect(this, SIGNAL(resetFilters()),
             this, SLOT(slotResetFilters()));
+
+    connect(this, SIGNAL(filtersChanged()),
+            this, SLOT(slotFiltersChanged()));
 
     m_channelBpm = NULL;
     m_channelKey = NULL;
@@ -52,8 +56,6 @@ void SelectorLibraryTableModel::setTableModel(int id){
 
     QStringList columns;
     columns << "library."+LIBRARYTABLE_ID << "'' as preview" << "100.0 as score";
-
-    QString tableName = "selector_table";
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     QString queryString = "CREATE TEMPORARY TABLE IF NOT EXISTS "+tableName+" AS "
@@ -120,6 +122,25 @@ bool SelectorLibraryTableModel::seedTrackBpmExists() {
 bool SelectorLibraryTableModel::seedTrackKeyExists() {
     return ChromaticKey_IsValid(m_seedTrackKey) &&
                m_seedTrackKey != mixxx::track::io::key::INVALID;
+}
+
+void SelectorLibraryTableModel::calculateSimilarity() {
+    qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
+    return;
+    if (!m_pSeedTrack.isNull()) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        query.prepare("UPDATE " + tableName + " SET score=:score "
+                      "WHERE " + LIBRARYTABLE_ID + "=:id;");
+        QVariantList scores;
+        QVariantList trackIds;
+
+        // TODO(chrisjr): actually fill these lists
+
+        query.bindValue(":score", scores);
+        query.bindValue(":id", trackIds);
+        if (!query.execBatch())
+            qDebug() << query.lastError();
+    }
 }
 
 void SelectorLibraryTableModel::filterByGenre(bool value) {

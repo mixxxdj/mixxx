@@ -170,3 +170,7 @@ void DlgSelector::installEventFilter(QObject* pFilter) {
     QWidget::installEventFilter(pFilter);
     m_pTrackTableView->installEventFilter(pFilter);
 }
+
+void DlgSelector::on_buttonCalcSimilarity_clicked() {
+    m_pSelectorLibraryTableModel->calculateSimilarity();
+}

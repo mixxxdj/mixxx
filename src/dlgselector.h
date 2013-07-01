@@ -49,7 +49,10 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString player);
 
-  private:
+private slots:
+    void on_buttonCalcSimilarity_clicked();
+
+private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
