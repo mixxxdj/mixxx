@@ -651,8 +651,6 @@ class MixxxCore(Feature):
                    "library/parserm3u.cpp",
                    "library/parsercsv.cpp",
 
-                   "bpm/bpmscheme.cpp",
-
                    "soundsourceproxy.cpp",
 
                    "widget/wwaveformviewer.cpp",
