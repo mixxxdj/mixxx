@@ -11,6 +11,8 @@
 #include <QCoreApplication>
 #include <QStringList>
 #include <stdlib.h>
+#include <iostream>
+#include <stdio.h>
 
 #include "vamp/vampanalyser.h"
 
