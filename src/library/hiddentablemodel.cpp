@@ -85,6 +85,7 @@ bool HiddenTableModel::isColumnInternal(int column) {
     return false;
 }
 bool HiddenTableModel::isColumnHiddenByDefault(int column) {
+    Q_UNUSED(column);
     return false;
 }
 
