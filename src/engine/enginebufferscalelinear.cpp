@@ -19,6 +19,7 @@
 #include "engine/enginebufferscalelinear.h"
 #include "mathstuff.h"
 #include "sampleutil.h"
+#include "track/keyutils.h"
 
 EngineBufferScaleLinear::EngineBufferScaleLinear(ReadAheadManager *pReadAheadManager)
         : EngineBufferScale(),
@@ -56,13 +57,11 @@ void EngineBufferScaleLinear::setScaleParameters(double* rate_adjust,
         *tempo_adjust = 1.0;
     }
 
-    // TODO(rryan) MAX_SEEK_SPEED?
-
     m_dOldRate = m_dRate;
     // pitch_adjust is measured in octave change. This exp() function (magic
     // constants taken from SoundTouch) converts it from octaves of change to
     // rate change.
-    m_dRate = *rate_adjust * exp(0.69314718056f * *pitch_adjust);
+    m_dRate = *rate_adjust * KeyUtils::octaveChangeToPowerOf2(*pitch_adjust);
 
     // Determine playback direction
     m_bBackwards = m_dRate < 0.0;

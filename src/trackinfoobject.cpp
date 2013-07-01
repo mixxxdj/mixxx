@@ -900,7 +900,6 @@ mixxx::track::io::key::ChromaticKey TrackInfoObject::getKey() const {
     return m_keys.getGlobalKey();
 }
 
-// TODO(rryan): Take an optional source.
 void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
                              mixxx::track::io::key::Source source) {
     QMutexLocker lock(&m_qMutex);
@@ -923,7 +922,6 @@ void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
     emit(keysUpdated());
 }
 
-// TODO(rryan): Take an optional source.
 void TrackInfoObject::setKeyText(QString key,
                                  mixxx::track::io::key::Source source) {
     QMutexLocker lock(&m_qMutex);

@@ -5,7 +5,7 @@
 #include "playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
-        "mixxx_deleted=0 AND fs_deleted=0"; 
+        "mixxx_deleted=0 AND fs_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
@@ -81,6 +81,7 @@ bool LibraryTableModel::isColumnInternal(int column) {
 }
 
 bool LibraryTableModel::isColumnHiddenByDefault(int column) {
+    Q_UNUSED(column);
     return false;
 }
 

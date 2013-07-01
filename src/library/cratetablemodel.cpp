@@ -10,7 +10,7 @@
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 
-CrateTableModel::CrateTableModel(QObject* pParent, 
+CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
                             "mixxx.db.model.crate"),
@@ -147,6 +147,7 @@ bool CrateTableModel::isColumnInternal(int column) {
 }
 
 bool CrateTableModel::isColumnHiddenByDefault(int column) {
+    Q_UNUSED(column);
     return false;
 }
 

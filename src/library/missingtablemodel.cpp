@@ -82,7 +82,9 @@ bool MissingTableModel::isColumnInternal(int column) {
     }
     return false;
 }
+
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
+    Q_UNUSED(column);
     return false;
 }
 
