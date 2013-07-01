@@ -550,11 +550,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         int iNumDecks = m_pNumDecks->get();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
-                QString deckGroup = QString("[Channel%1]").arg(i);
+                // PlayerManager::groupForDeck is 0-indexed.
+                QString deckGroup = PlayerManager::groupForDeck(i - 1);
                 bool deckPlaying = ControlObject::get(
                         ConfigKey(deckGroup, "play")) > 0.0;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
-                    ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
+                    ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
@@ -570,7 +571,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         if (iNumSamplers > 0) {
             m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
-                QString samplerGroup = QString("[Sampler%1]").arg(i);
+                // PlayerManager::groupForSampler is 0-indexed.
+                QString samplerGroup = PlayerManager::groupForSampler(i - 1);
                 bool samplerPlaying = ControlObject::get(
                         ConfigKey(samplerGroup, "play")) > 0.0;
                 bool samplerEnabled = !samplerPlaying && oneSongSelected;
