@@ -727,7 +727,6 @@ class MixxxCore(Feature):
                    "encoder/encodermp3.cpp",
                    "encoder/encodervorbis.cpp",
 
-                   "segmentation.cpp",
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",

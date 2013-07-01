@@ -42,7 +42,6 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
     m_brakeKeylock.resize(kDecks);
-
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
         m_dx[i] = 0.0;
