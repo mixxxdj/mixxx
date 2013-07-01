@@ -50,7 +50,6 @@ class SelectorLibraryTableModel : public LibraryTableModel
     void resetFilters();
     void seedTrackInfoChanged();
   private:
-    int scoreColumn;
     bool m_bActive;
     void clearSeedTrackInfo();
     void updateFilterText();

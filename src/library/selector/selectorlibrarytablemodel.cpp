@@ -18,13 +18,12 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 const bool sDebug = true;
 
+const int scoreColumn = 1;
+
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.selector") {
-
-    // make score column the last column in table
-    scoreColumn = BaseSqlTableModel::columnCount();
 
     // Detect when deck has changed
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
@@ -66,7 +65,7 @@ Qt::ItemFlags SelectorLibraryTableModel::flags(const QModelIndex &index) const {
 
 QVariant SelectorLibraryTableModel::data(const QModelIndex &index, int role) const {
     if (index.column() == scoreColumn && role == Qt::DisplayRole) {
-        // TODO(cjr): calculate the score here using data from other columns
+        // TODO(cjr): calculate the score here using other columns
         int score = 100;
         return score;
     }
