@@ -8,11 +8,6 @@
 #include "playerinfo.h"
 #include "util/timer.h"
 #include "library/trackcollection.h"
-
-#ifdef __TONAL__
-#include "tonal/tonalanalyser.h"
-#endif
-
 #include "analyserwaveform.h"
 #include "analyserrg.h"
 #include "analyserbeats.h"
@@ -135,10 +130,9 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 
 // This is called from the AnalyserQueue thread
 bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource) {
-    // TonalAnalyser requires a block size of 65536. Using a different value
-    // breaks the tonal analyser. We need to use a smaller block size becuase on
-    // Linux, the AnalyserQueue can starve the CPU of its resources, resulting
-    // in xruns.. A block size of 8192 seems to do fine.
+    // We need to use a smaller block size becuase on Linux, the AnalyserQueue
+    // can starve the CPU of its resources, resulting in xruns.. A block size of
+    // 8192 seems to do fine.
     const int ANALYSISBLOCKSIZE = 8192;
 
     int totalSamples = pSoundSource->length();
@@ -397,10 +391,6 @@ void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
 AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
         ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
-
-#ifdef __TONAL__
-    ret->addAnalyser(new TonalAnalyser());
-#endif
 
     ret->addAnalyser(new AnalyserWaveform(_config));
     ret->addAnalyser(new AnalyserGain(_config));

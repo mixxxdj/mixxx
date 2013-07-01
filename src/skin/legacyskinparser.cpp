@@ -1154,7 +1154,8 @@ QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     // will specify the channel as either 1 or 2.
     if (group.size() == 0) {
         int channel = XmlParse::selectNodeInt(node, "Channel");
-        group = QString("[Channel%1]").arg(channel);
+        // groupForDeck is 0-indexed
+        group = PlayerManager::groupForDeck(channel - 1);
     }
 
     return group;

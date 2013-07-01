@@ -55,60 +55,57 @@
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
-                               ConfigObject<ConfigValue> * _config) {
-    m_pControllerManager = controllers;
-
+                               ConfigObject<ConfigValue> * _config)
+        : m_pageSizeHint(QSize(0, 0)),
+          m_pConfig(_config),
+          m_pControllerManager(controllers),
+          m_preferencesUpdated(ConfigKey("[Preferences]", "updated")) {
     setupUi(this);
 #if QT_VERSION >= 0x040400 //setHeaderHidden is a qt4.4 addition so having it in the .ui file breaks the build on OpenBSD4.4 (FIXME: revisit this when OpenBSD4.5 comes out?)
     contentsTreeWidget->setHeaderHidden(true);
 #endif
 
     setWindowTitle(tr("Preferences"));
-    config = _config;
-
     createIcons();
-    //contentsTreeWidget->setCurrentRow(0);
 
-    while (pagesWidget->count() > 0)
-    {
+    while (pagesWidget->count() > 0) {
         pagesWidget->removeWidget(pagesWidget->currentWidget());
     }
-    m_pageSizeHint = QSize(0,0);
 
     // Construct widgets for use in tabs
-    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, config);
+    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, m_pConfig);
     addPageWidget(m_wsound);
-    m_wplaylist = new DlgPrefPlaylist(this, config);
+    m_wplaylist = new DlgPrefPlaylist(this, m_pConfig);
     addPageWidget(m_wplaylist);
-    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
+    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, m_pConfig);
     addPageWidget(m_wcontrols);
-    m_weq = new DlgPrefEQ(this, config);
+    m_weq = new DlgPrefEQ(this, m_pConfig);
     addPageWidget(m_weq);
-    m_wcrossfader = new DlgPrefCrossfader(this, config);
+    m_wcrossfader = new DlgPrefCrossfader(this, m_pConfig);
     addPageWidget(m_wcrossfader);
 
-    m_wbeats = new DlgPrefBeats(this, config);
+    m_wbeats = new DlgPrefBeats(this, m_pConfig);
     addPageWidget (m_wbeats);
-    m_wreplaygain = new DlgPrefReplayGain(this, config);
+    m_wreplaygain = new DlgPrefReplayGain(this, m_pConfig);
     addPageWidget(m_wreplaygain);
-    m_wrecord = new DlgPrefRecord(this, config);
+    m_wrecord = new DlgPrefRecord(this, m_pConfig);
     addPageWidget(m_wrecord);
 #ifdef __VINYLCONTROL__
-    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, config);
+    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, m_pConfig);
     addPageWidget(m_wvinylcontrol);
 #else
-    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, config);
+    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, m_pConfig);
     addPageWidget(m_wnovinylcontrol);
 #endif
 #ifdef __SHOUTCAST__
-    m_wshoutcast = new DlgPrefShoutcast(this, config);
+    m_wshoutcast = new DlgPrefShoutcast(this, m_pConfig);
     addPageWidget(m_wshoutcast);
 #endif
 #ifdef __MODPLUG__
-    m_wmodplug = new DlgPrefModplug(this, config);
+    m_wmodplug = new DlgPrefModplug(this, m_pConfig);
     addPageWidget(m_wmodplug);
 #endif
-    m_wNoControllers = new DlgPrefNoControllers(this, config);
+    m_wNoControllers = new DlgPrefNoControllers(this, m_pConfig);
     addPageWidget(m_wNoControllers);
     setupControllerWidgets();
 
@@ -116,9 +113,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     installEventFilter(this);
 
     // Connections
-    connect(this, SIGNAL(showDlg()), this,      SLOT(slotShow()));
-    connect(this, SIGNAL(closeDlg()), this,      SLOT(slotHide()));
-
     connect(m_pControllerManager, SIGNAL(devicesChanged()), this, SLOT(rescanControllers()));
 
     connect(this, SIGNAL(showDlg()), m_wcontrols, SLOT(onShow()));
@@ -349,21 +343,29 @@ void DlgPreferences::showSoundHardwarePage()
 bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
 {
     // Send a close signal if dialog is closing
-    if (e->type() == QEvent::Hide)
-        emit(closeDlg());
+    if (e->type() == QEvent::Hide) {
+        onHide();
+    }
 
-    if (e->type() == QEvent::Show)
-        emit(showDlg());
+    if (e->type() == QEvent::Show) {
+        onShow();
+    }
 
     // Standard event processing
     return QWidget::eventFilter(o,e);
 }
 
-void DlgPreferences::slotHide() {
+void DlgPreferences::onHide() {
+    // Notify children that we are about to hide.
+    emit(closeDlg());
+
+    // Notify other parts of Mixxx that the preferences window just saved and so
+    // preferences are likely changed.
+    m_preferencesUpdated.set(1);
 }
 
 
-void DlgPreferences::slotShow() {
+void DlgPreferences::onShow() {
     QSize optimumSize;
     QSize deltaSize;
     QSize pagesSize;
@@ -387,6 +389,9 @@ void DlgPreferences::slotShow() {
     QRect optimumRect = geometry();
     optimumRect.setSize(optimumSize);
     setGeometry(optimumRect);
+
+    // Notify children that we are about to show.
+    emit(showDlg());
 }
 
 void DlgPreferences::rescanControllers()
@@ -435,7 +440,7 @@ void DlgPreferences::setupControllerWidgets()
         if (currentDevice->isMappable()) {
             DlgPrefMappableController* controllerDlg =
                 new DlgPrefMappableController(this, currentDevice,
-                                              m_pControllerManager, config);
+                                              m_pControllerManager, m_pConfig);
             connect(controllerDlg, SIGNAL(mappingStarted()),
                     this, SLOT(hide()));
             connect(controllerDlg, SIGNAL(mappingEnded()),
@@ -449,7 +454,7 @@ void DlgPreferences::setupControllerWidgets()
         } else {
             DlgPrefController* controllerDlg =
                 new DlgPrefController(this, currentDevice, m_pControllerManager,
-                                      config);
+                                      m_pConfig);
             m_controllerWindows.append(controllerDlg);
             addPageWidget(controllerDlg);
             connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));

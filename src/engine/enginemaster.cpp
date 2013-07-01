@@ -36,6 +36,7 @@
 #include "sampleutil.h"
 #include "effects/effectsmanager.h"
 #include "util/timer.h"
+#include "playermanager.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
@@ -485,7 +486,7 @@ EngineChannel* EngineMaster::getChannel(QString group) {
 }
 
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
-    return getChannelBuffer(QString("[Channel%1]").arg(i+1));
+    return getChannelBuffer(PlayerManager::groupForDeck(i));
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {

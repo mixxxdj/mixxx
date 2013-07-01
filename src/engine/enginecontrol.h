@@ -8,6 +8,7 @@
 #include <QList>
 
 #include "configobject.h"
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 
 class EngineMaster;
@@ -78,6 +79,7 @@ class EngineControl : public QObject {
   protected:
     void seek(double fractionalPosition);
     void seekAbs(double sample);
+    EngineBuffer* pickSyncTarget();
 
     const char* getGroup();
     ConfigObject<ConfigValue>* getConfig();
@@ -91,6 +93,7 @@ class EngineControl : public QObject {
     double m_dTotalSamples;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
+    ControlObjectThread m_numDecks;
 };
 
 #endif /* ENGINECONTROL_H */
