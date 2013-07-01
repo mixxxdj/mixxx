@@ -8,11 +8,9 @@
 using mixxx::track::io::key::KeyMap;
 
 // static
-Keys KeyFactory::loadKeysFromByteArray(TrackPointer pTrack,
-                                       QString keysVersion,
-                                       QString keysSubVersion,
+Keys KeyFactory::loadKeysFromByteArray(const QString& keysVersion,
+                                       const QString& keysSubVersion,
                                        QByteArray* keysSerialized) {
-    Q_UNUSED(pTrack);
     if (keysVersion == KEY_MAP_VERSION) {
         Keys keys(keysSerialized);
         keys.setSubVersion(keysSubVersion);
@@ -24,10 +22,8 @@ Keys KeyFactory::loadKeysFromByteArray(TrackPointer pTrack,
 }
 
 // static
-Keys KeyFactory::makeBasicKeys(TrackInfoObject* pTrack,
-                               mixxx::track::io::key::ChromaticKey global_key,
+Keys KeyFactory::makeBasicKeys(mixxx::track::io::key::ChromaticKey global_key,
                                mixxx::track::io::key::Source source) {
-    Q_UNUSED(pTrack);
     KeyMap key_map;
     key_map.set_global_key(global_key);
     key_map.set_source(source);
@@ -35,10 +31,8 @@ Keys KeyFactory::makeBasicKeys(TrackInfoObject* pTrack,
 }
 
 // static
-Keys KeyFactory::makeBasicKeysFromText(TrackInfoObject* pTrack,
-                                       QString global_key_text,
+Keys KeyFactory::makeBasicKeysFromText(const QString& global_key_text,
                                        mixxx::track::io::key::Source source) {
-    Q_UNUSED(pTrack);
     KeyMap key_map;
     key_map.set_source(source);
     mixxx::track::io::key::ChromaticKey global_key = KeyUtils::guessKeyFromText(
@@ -59,7 +53,7 @@ QString KeyFactory::getPreferredVersion() {
 
 // static
 QString KeyFactory::getPreferredSubVersion(
-    const QHash<QString, QString> extraVersionInfo) {
+        const QHash<QString, QString>& extraVersionInfo) {
     const char* kSubVersionKeyValueSeparator = "=";
     const char* kSubVersionFragmentSeparator = "|";
     QStringList fragments;
@@ -85,15 +79,13 @@ QString KeyFactory::getPreferredSubVersion(
 
 // static
 Keys KeyFactory::makePreferredKeys(
-    TrackPointer pTrack, const KeyChangeList& key_changes,
-    const QHash<QString, QString> extraVersionInfo,
-    const int iSampleRate, const int iTotalSamples) {
-    Q_UNUSED(pTrack);
+        const KeyChangeList& key_changes,
+        const QHash<QString, QString>& extraVersionInfo,
+        const int iSampleRate, const int iTotalSamples) {
     Q_UNUSED(iSampleRate);
 
     const QString version = getPreferredVersion();
     const QString subVersion = getPreferredSubVersion(extraVersionInfo);
-
 
     if (version == KEY_MAP_VERSION) {
         KeyMap key_map;

@@ -908,7 +908,7 @@ void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
         m_keys = Keys();
         dirty = true;
     } else if (m_keys.getGlobalKey() != key) {
-        m_keys = KeyFactory::makeBasicKeys(this, key, source);
+        m_keys = KeyFactory::makeBasicKeys(key, source);
     }
 
     if (dirty) {
@@ -930,7 +930,7 @@ void TrackInfoObject::setKeyText(QString key,
     bool dirty = !m_keys.isValid() || m_keys.getGlobalKeyText() != key;
 
     if (dirty) {
-        m_keys = KeyFactory::makeBasicKeysFromText(this, key, source);
+        m_keys = KeyFactory::makeBasicKeysFromText(key, source);
         setDirty(true);
         // Might be INVALID. We don't care.
         mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();

@@ -872,7 +872,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             QString keysSubVersion = query.value(query.record().indexOf("keys_sub_version")).toString();
             QByteArray keysBlob = query.value(query.record().indexOf("keys")).toByteArray();
             Keys keys = KeyFactory::loadKeysFromByteArray(
-                pTrack, keysVersion, keysSubVersion, &keysBlob);
+                keysVersion, keysSubVersion, &keysBlob);
 
             if (keys.isValid()) {
                 pTrack->setKeys(keys);

@@ -11,25 +11,24 @@
 
 class KeyFactory {
   public:
-    static Keys loadKeysFromByteArray(TrackPointer pTrack,
-                                      QString keysVersion,
-                                      QString keysSubVersion,
+    static Keys loadKeysFromByteArray(const QString& keysVersion,
+                                      const QString& keysSubVersion,
                                       QByteArray* keysSerialized);
-    static Keys makeBasicKeys(TrackInfoObject* pTrack,
-                              mixxx::track::io::key::ChromaticKey global_key,
+
+    static Keys makeBasicKeys(mixxx::track::io::key::ChromaticKey global_key,
                               mixxx::track::io::key::Source source);
-    static Keys makeBasicKeysFromText(TrackInfoObject* pTrack,
-                                      QString global_key_text,
+
+    static Keys makeBasicKeysFromText(const QString& global_key_text,
                                       mixxx::track::io::key::Source source);
 
     static QString getPreferredVersion();
 
     static QString getPreferredSubVersion(
-        const QHash<QString, QString> extraVersionInfo);
+        const QHash<QString, QString>& extraVersionInfo);
 
     static Keys makePreferredKeys(
-        TrackPointer pTrack, const KeyChangeList& key_changes,
-        const QHash<QString, QString> extraVersionInfo,
+        const KeyChangeList& key_changes,
+        const QHash<QString, QString>& extraVersionInfo,
         const int iSampleRate, const int iTotalSamples);
 };
 

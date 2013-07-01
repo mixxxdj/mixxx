@@ -205,7 +205,7 @@ void AnalyserKey::finalise(TrackPointer tio) {
     QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
         m_pluginId, m_bPreferencesFastAnalysisEnabled);
     Keys track_keys = KeyFactory::makePreferredKeys(
-        tio, key_changes, extraVersionInfo,
+        key_changes, extraVersionInfo,
         m_iSampleRate, m_iTotalSamples);
     tio->setKeys(track_keys);
 }
