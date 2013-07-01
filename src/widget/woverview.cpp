@@ -30,35 +30,30 @@
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
-WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget * parent) :
+WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
         WWidget(parent),
-        m_pGroup(pGroup),
-        m_pConfig(pConfig),
         m_pWaveform(NULL),
         m_pWaveformSourceImage(NULL),
+        m_actualCompletion(0),
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
-        m_actualCompletion(0),
+        m_diffGain(0),
+        m_group(pGroup),
+        m_pConfig(pConfig),
+        m_endOfTrack(0),
         m_bDrag(false),
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
         m_analyserProgress(-1),
-        m_trackLoaded(false),
-        m_diffGain(0) {
-
+        m_trackLoaded(false) {
     m_endOfTrackControl = new ControlObjectThreadMain(
-            m_pGroup,"end_of_track");
+            m_group, "end_of_track");
     connect(m_endOfTrackControl, SIGNAL(valueChanged(double)),
-             this, SLOT( onEndOfTrackChange(double)));
-    m_endOfTrack = false;
-
-    m_trackSamplesControl = new ControlObjectThreadMain(
-            m_pGroup, "track_samples");
+             this, SLOT(onEndOfTrackChange(double)));
+    m_trackSamplesControl = new ControlObjectThreadMain(m_group, "track_samples");
+    m_playControl = new ControlObjectThreadMain(m_group, "play");
     setAcceptDrops(true);
-
-    m_playControl = new ControlObjectThreadMain(
-            m_pGroup, "play");
 }
 
 WOverview::~WOverview() {
@@ -98,7 +93,7 @@ void WOverview::setup(QDomNode node) {
     setPalette(palette);
 
     //setup hotcues and cue and loop(s)
-    m_marks.setup(m_pGroup, node, m_signalColors);
+    m_marks.setup(m_group, node, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
@@ -111,7 +106,7 @@ void WOverview::setup(QDomNode node) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_pGroup, child, m_signalColors);
+            markRange.setup(m_group, child, m_signalColors);
 
             connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
                      this, SLOT(onMarkRangeChange(double)));
@@ -262,7 +257,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << fValue;
 
-    if (e->button() == Qt::RightButton) { 
+    if (e->button() == Qt::RightButton) {
         emit(valueChangedRightUp(fValue));
     } else {
         emit(valueChangedLeftUp(fValue));
@@ -488,7 +483,7 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // in this deck or the settings allow to interrupt the playing deck.
     if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
         if ((m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_pGroup=="[PreviewDeck1]")) {
+            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_group=="[PreviewDeck1]")) {
             event->acceptProposedAction();
         } else {
             event->ignore();
@@ -507,7 +502,7 @@ void WOverview::dropEvent(QDropEvent* event) {
             name = url.toString();
         }
         event->accept();
-        emit(trackDropped(name, m_pGroup));
+        emit(trackDropped(name, m_group));
     } else {
         event->ignore();
     }

@@ -361,7 +361,7 @@ bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirecto
 
     // Try to retrieve a hash from the last time that directory was scanned.
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
-    prevHashExists = (prevHash == -1) ? false : true;
+    prevHashExists = !(prevHash == -1);
 
     // Compare the hashes, and if they don't match, rescan the files in that directory!
     if (prevHash != newHash) {
