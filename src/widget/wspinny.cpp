@@ -467,6 +467,7 @@ void WSpinny::wheelEvent(QWheelEvent *e)
 }
 
 void WSpinny::showEvent(QShowEvent* event) {
+    Q_UNUSED(event);
     // If we want to draw the VC signal on this widget then register for
     // updates.
     if (m_bSignalActive && m_iVinylInput != -1 && m_pVCManager) {
@@ -475,6 +476,7 @@ void WSpinny::showEvent(QShowEvent* event) {
 }
 
 void WSpinny::hideEvent(QHideEvent* event) {
+    Q_UNUSED(event);
     // When we are hidden we do not want signal quality updates.
     if (m_pVCManager) {
         m_pVCManager->removeSignalQualityListener(this);
