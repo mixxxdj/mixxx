@@ -18,8 +18,6 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 const bool sDebug = true;
 
-const int scoreColumn = 1;
-
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
@@ -50,36 +48,9 @@ bool SelectorLibraryTableModel::isColumnInternal(int column) {
     return LibraryTableModel::isColumnInternal(column);
 }
 
-int SelectorLibraryTableModel::columnCount(const QModelIndex &parent) const {
-    const int count = BaseSqlTableModel::columnCount(parent);
-    // add one for our custom score column
-    return count + 1;
+int SelectorLibraryTableModel::rowCount() {
+    return BaseSqlTableModel::rowCount();
 }
-
-Qt::ItemFlags SelectorLibraryTableModel::flags(const QModelIndex &index) const {
-    if (index.column() == scoreColumn) {
-        return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
-    }
-    return BaseSqlTableModel::flags(index);
-}
-
-QVariant SelectorLibraryTableModel::data(const QModelIndex &index, int role) const {
-    if (index.column() == scoreColumn && role == Qt::DisplayRole) {
-        // TODO(cjr): calculate the score here using other columns
-        int score = 100;
-        return score;
-    }
-    return LibraryTableModel::data(index, role);
-}
-
-QVariant SelectorLibraryTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
-     if (orientation == Qt::Horizontal && section == scoreColumn) {
-         return tr("Score");
-     }
-
-     return BaseSqlTableModel::headerData(section, orientation, role);
-}
-
 
 void SelectorLibraryTableModel::active(bool value) {
     m_bActive = value;
