@@ -8,7 +8,7 @@
 #include <QList>
 
 #include "configobject.h"
-#include "controlobject.h"
+#include "controlobjectthread.h"
 #include "trackinfoobject.h"
 
 class EngineMaster;
@@ -93,7 +93,7 @@ class EngineControl : public QObject {
     double m_dTotalSamples;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;
-    ControlObject m_numDecks;
+    ControlObjectThread m_numDecks;
 };
 
 #endif /* ENGINECONTROL_H */

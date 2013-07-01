@@ -13,6 +13,7 @@
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
 #include "mathstuff.h"
+#include "playermanager.h"
 
 // #include <QScriptSyntaxCheckResult>
 
@@ -149,8 +150,8 @@ void ControllerEngine::gracefulShutdown() {
     while (i.hasNext()) {
         i.next();
         qDebug() << "Aborting scratching on deck" << i.value();
-        // Clear scratch2_enable
-        QString group = QString("[Channel%1]").arg(i.value());
+        // Clear scratch2_enable. PlayerManager::groupForDeck is 0-indexed.
+        QString group = PlayerManager::groupForDeck(i.value() - 1);
         ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
         if (cot != NULL) {
             cot->slotSet(0);
@@ -598,7 +599,7 @@ ControlObjectThread* ControllerEngine::getControlObjectThread(QString group, QSt
     ConfigKey key = ConfigKey(group, name);
     ControlObjectThread* cot = m_controlCache.value(key, NULL);
     if (cot == NULL) {
-        // create COT  
+        // create COT
         cot = new ControlObjectThread(key);
         if (cot->valid()) {
             m_controlCache.insert(key, cot);
@@ -1106,7 +1107,8 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     m_rampFactor[deck] = 0.001;
     m_brakeActive[deck] = false;
 
-    QString group = QString("[Channel%1]").arg(deck);
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     // Ramp
     float initVelocity = 0.0;   // Default to stopped
@@ -1191,7 +1193,8 @@ void ControllerEngine::scratchTick(int deck, int interval) {
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
-    QString group = QString("[Channel%1]").arg(deck);
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
     PitchFilter* filter = m_pitchFilter[deck];
     if (!filter) {
         qWarning() << "Scratch filter pointer is null on deck" << deck;
@@ -1267,7 +1270,8 @@ void ControllerEngine::scratchProcess(int timerId) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchDisable(int deck, bool ramp) {
-    QString group = QString("[Channel%1]").arg(deck);
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     m_rampTo[deck] = 0.0;
 
@@ -1326,8 +1330,9 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
     Output:  True if so
     -------- ------------------------------------------------------ */
 bool ControllerEngine::isScratching(int deck) {
-    QString group = QString("[Channel%1]").arg(deck);
-    return getValue(group,"scratch2_enable")>0;
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
+    return getValue(group, "scratch2_enable") > 0;
 }
 
 /*  -------- ------------------------------------------------------
@@ -1366,7 +1371,8 @@ void ControllerEngine::spinback(int deck, bool activate, float factor, float rat
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, float factor, float rate) {
-    QString group = QString("[Channel%1]").arg(deck);
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     // kill timer when both enabling or disabling
     int timerId = m_scratchTimers.key(deck);

@@ -1577,14 +1577,14 @@ bool MixxxApp::confirmExit() {
     unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
         if (ControlObject::get(
-                ConfigKey(QString("[Channel%1]").arg(i + 1), "play"))) {
+                ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
     for (unsigned int i = 0; i < samplerCount; ++i) {
         if (ControlObject::get(
-                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play"))) {
+                ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;
             break;
         }

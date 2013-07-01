@@ -4,6 +4,7 @@
 #include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
+#include "playermanager.h"
 
 EngineControl::EngineControl(const char * _group,
                              ConfigObject<ConfigValue> * _config) :
@@ -108,12 +109,10 @@ EngineBuffer* EngineControl::pickSyncTarget() {
         return NULL;
     }
     QString group = getGroup();
-    QStringList deckGroups;
     EngineBuffer* pFirstNonplayingDeck = NULL;
 
     for (int i = 0; i < m_numDecks.get(); ++i) {
-        // TODO(XXX) format from PlayerManager
-        QString deckGroup = QString("[Channel%1]").arg(i+1);
+        QString deckGroup = PlayerManager::groupForDeck(i);
         if (deckGroup == group) {
             continue;
         }
