@@ -17,6 +17,8 @@ class SelectorLibraryTableModel : public LibraryTableModel
     SelectorLibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);
     ~SelectorLibraryTableModel();
 
+    void setTableModel(int id = -1);
+
     void search(const QString& searchText);
     bool isColumnInternal(int column);
     int rowCount();
@@ -50,6 +52,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bActive;
     void clearSeedTrackInfo();
     void updateFilterText();
+    void initHeaderData();
     QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(mixxx::track::io::key::ChromaticKey key);
     bool m_bFilterGenre;
     bool m_bFilterBpm;

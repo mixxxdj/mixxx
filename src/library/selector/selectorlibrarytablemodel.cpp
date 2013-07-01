@@ -3,6 +3,7 @@
 #include <QObject>
 
 #include "selectorlibrarytablemodel.h"
+#include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "basetrackplayer.h"
 #include "playerinfo.h"
@@ -22,6 +23,7 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.selector") {
+    setTableModel();
 
     // Detect when deck has changed
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
@@ -42,6 +44,39 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
 }
 
 SelectorLibraryTableModel::~SelectorLibraryTableModel() {
+}
+
+
+void SelectorLibraryTableModel::setTableModel(int id){
+    Q_UNUSED(id);
+
+    QStringList columns;
+    columns << "library."+LIBRARYTABLE_ID << "'' as preview" << "100.0 as score";
+
+    QString tableName = "selector_table";
+
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    QString queryString = "CREATE TEMPORARY TABLE IF NOT EXISTS "+tableName+" AS "
+            "SELECT " + columns.join(", ") +
+            " FROM library INNER JOIN track_locations "
+            "ON library.location = track_locations.id "
+            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+    query.prepare(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    QStringList tableColumns;
+    tableColumns << LIBRARYTABLE_ID;
+    tableColumns << "preview";
+    tableColumns << "score";
+    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
+             m_pTrackCollection->getTrackSource("default"));
+
+    initHeaderData();
+
+    setSearch("");
+    setDefaultSort(fieldIndex("score"), Qt::DescendingOrder);
 }
 
 bool SelectorLibraryTableModel::isColumnInternal(int column) {
@@ -194,6 +229,13 @@ void SelectorLibraryTableModel::search(const QString& text) {
 }
 
 // PRIVATE METHODS
+
+void SelectorLibraryTableModel::initHeaderData() {
+    // call the base class method first
+    BaseSqlTableModel::initHeaderData();
+    setHeaderData(fieldIndex("score"),
+                  Qt::Horizontal, tr("Score"));
+}
 
 void SelectorLibraryTableModel::clearSeedTrackInfo() {
     m_sSeedTrackInfo = QString();
