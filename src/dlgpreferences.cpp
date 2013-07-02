@@ -49,6 +49,8 @@
 #include "dlgprefcrossfader.h"
 #include "dlgprefrecord.h"
 #include "dlgprefreplaygain.h"
+#include "dlgpreftimbre.h"
+#include "dlgprefselector.h"
 #include "mixxx.h"
 #include "controllers/controllermanager.h"
 #include "skin/skinloader.h"
@@ -82,6 +84,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     addPageWidget(m_wsound);
     m_wplaylist = new DlgPrefPlaylist(this, config);
     addPageWidget(m_wplaylist);
+    m_wselector = new DlgPrefSelector(this, config);
+    addPageWidget(m_wselector);
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, config);
     addPageWidget(m_wcontrols);
     m_weq = new DlgPrefEQ(this, config);
@@ -95,6 +99,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     m_wkey = new DlgPrefKey(this, config);
     addPageWidget(m_wkey);
 
+    m_wtimbre = new DlgPrefTimbre(this, config);
+    addPageWidget(m_wtimbre);
     m_wreplaygain = new DlgPrefReplayGain(this, config);
     addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, config);
@@ -132,6 +138,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 
     connect(this, SIGNAL(showDlg()), m_wsound,     SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wplaylist,  SLOT(slotUpdate()));
+    connect(this, SIGNAL(showDlg()), m_wselector,  SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wcontrols,  SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_weq,        SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wcrossfader, SLOT(slotUpdate()));
@@ -142,6 +149,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(this, SIGNAL(showDlg()),
             m_wkey, SLOT(slotUpdate()));
 
+    connect(this, SIGNAL(showDlg()),
+            m_wtimbre, SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wreplaygain,SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wrecord,    SLOT(slotUpdate()));
 
@@ -165,6 +174,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #endif
     connect(buttonBox, SIGNAL(accepted()), m_wsound,    SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wplaylist, SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wtimbre,   SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wcontrols, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_weq,       SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wcrossfader,SLOT(slotApply()));
@@ -172,6 +182,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 
     connect(buttonBox, SIGNAL(accepted()), m_wbeats,      SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wkey,      SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wtimbre,    SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wreplaygain,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wrecord,   SLOT(slotApply()));
 #ifdef __SHOUTCAST__
@@ -214,6 +225,13 @@ void DlgPreferences::createIcons()
     m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
+    m_pSelectorButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pSelectorButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
+    m_pSelectorButton->setText(0, tr("Selector"));
+    m_pSelectorButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pSelectorButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+
     m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
     m_pControlsButton->setText(0, tr("Interface"));
@@ -250,6 +268,12 @@ void DlgPreferences::createIcons()
     m_pKeyDetectionButton->setText(0, tr("Key Detection"));
     m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pTimbralAnalysisButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pTimbralAnalysisButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pTimbralAnalysisButton->setText(0, tr("Timbral Analysis"));
+    m_pTimbralAnalysisButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pTimbralAnalysisButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
@@ -306,6 +330,8 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
     	pagesWidget->setCurrentWidget(m_wsound->parentWidget()->parentWidget());
     } else if (current == m_pPlaylistButton) {
     	pagesWidget->setCurrentWidget(m_wplaylist->parentWidget()->parentWidget());
+    } else if (current == m_pSelectorButton) {
+        pagesWidget->setCurrentWidget(m_wselector->parentWidget()->parentWidget());
     } else if (current == m_pControlsButton) {
     	pagesWidget->setCurrentWidget(m_wcontrols->parentWidget()->parentWidget());
     } else if (current == m_pEqButton) {
@@ -318,6 +344,8 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
         pagesWidget->setCurrentWidget(m_wbeats->parentWidget()->parentWidget());
     } else if (current == m_pKeyDetectionButton) {
     	pagesWidget->setCurrentWidget(m_wkey->parentWidget()->parentWidget());
+    } else if (current == m_pTimbralAnalysisButton) {
+        pagesWidget->setCurrentWidget(m_wtimbre->parentWidget()->parentWidget());
     } else if (current == m_pReplayGainButton) {
     	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
 

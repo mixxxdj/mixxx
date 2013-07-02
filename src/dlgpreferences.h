@@ -31,12 +31,14 @@ class DlgPrefSound;
 class DlgPrefController;
 class DlgPrefNoControllers;
 class DlgPrefPlaylist;
+class DlgPrefSelector;
 class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
 class DlgPrefKey;
 class DlgPrefBeats;
+class DlgPrefTimbre;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
 class DlgPrefShoutcast;
@@ -85,12 +87,14 @@ private:
 
     DlgPrefSound* m_wsound;
     DlgPrefPlaylist* m_wplaylist;
+    DlgPrefSelector* m_wselector;
     DlgPrefNoControllers *m_wNoControllers;
     DlgPrefControls* m_wcontrols;
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
     DlgPrefKey* m_wkey;
+    DlgPrefTimbre* m_wtimbre;
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;
@@ -123,6 +127,8 @@ private:
     QTreeWidgetItem* m_pRecordingButton;
     QTreeWidgetItem* m_pBeatDetectionButton;
     QTreeWidgetItem* m_pKeyDetectionButton;
+    QTreeWidgetItem* m_pTimbralAnalysisButton;
+    QTreeWidgetItem* m_pSelectorButton;
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
