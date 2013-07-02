@@ -132,8 +132,8 @@ long SoundSourceOggVorbis::seek(long filepos)
         filepos--;
     }
 
-    if (ov_seekable(&vf)){
-        if(ov_pcm_seek(&vf, filepos/2) != 0) {
+    if (ov_seekable(&vf)) {
+        if (ov_pcm_seek(&vf, filepos/2) != 0) {
             // This is totally common (i.e. you're at EOF). Let's not leave this
             // qDebug on.
 
@@ -144,7 +144,7 @@ long SoundSourceOggVorbis::seek(long filepos)
         // that's what we promised. (Double it because ov_pcm_tell returns
         // frames and we pretend to the world that everything is stereo)
         return ov_pcm_tell(&vf) * 2;
-    } else{
+    } else {
         qDebug() << "ogg vorbis: Seek ERR at file " << m_qFilename;
         return 0;
     }
@@ -256,7 +256,7 @@ int SoundSourceOggVorbis::parseHeader() {
         processXiphComment(tag);
     }
 
-    if (result == ERR) {
+    if (!result) {
         qWarning() << "Error parsing header of file" << m_qFilename;
     }
     return result ? OK : ERR;

@@ -14,7 +14,7 @@
  ***************************************************************************/
 
 #include <QtDebug>
-#include <QUrl>
+//#include <QUrl>
 #include <taglib/mpegfile.h>
 #include <taglib/mp4file.h>
 
@@ -39,13 +39,9 @@ int SoundSourceCoreAudio::open() {
     //Open the audio file.
     OSStatus err;
 
-    //QUrl blah(m_qFilename);
-    QString qurlStr = m_qFilename;//blah.toString();
-    qDebug() << qurlStr;
-
     /** This code blocks works with OS X 10.5+ only. DO NOT DELETE IT for now. */
     CFStringRef urlStr = CFStringCreateWithCharacters(
-        0, reinterpret_cast<const UniChar *>(qurlStr.unicode()), qurlStr.size());
+        0, reinterpret_cast<const UniChar *>(m_qFilename.unicode()), m_qFilename.size());
     CFURLRef urlRef = CFURLCreateWithFileSystemPath(NULL, urlStr, kCFURLPOSIXPathStyle, false);
     err = ExtAudioFileOpenURL(urlRef, &m_audioFile);
     CFRelease(urlStr);
@@ -86,8 +82,7 @@ int SoundSourceCoreAudio::open() {
     // set the client format
     err = ExtAudioFileSetProperty(m_audioFile, kExtAudioFileProperty_ClientDataFormat,
                                   sizeof(m_outputFormat), &m_outputFormat);
-    if (err != noErr)
-    {
+    if (err != noErr) {
         qDebug() << "SSCA: Error setting file property";
         return ERR;
     }
@@ -100,8 +95,7 @@ int SoundSourceCoreAudio::open() {
     SInt64        totalFrameCount;
     dataSize    = sizeof(totalFrameCount); //XXX: This looks sketchy to me - Albert
     err            = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileLengthFrames, &dataSize, &totalFrameCount);
-    if (err != noErr)
-    {
+    if (err != noErr) {
         qDebug() << "SSCA: Error getting number of frames";
         return ERR;
     }
@@ -119,10 +113,8 @@ int SoundSourceCoreAudio::open() {
     UInt32 piSize=sizeof(AudioConverterPrimeInfo);
     memset(&primeInfo, 0, piSize);
     err = AudioConverterGetProperty(acRef, kAudioConverterPrimeInfo, &piSize, &primeInfo);
-    if(err != kAudioConverterErr_PropertyNotSupported) // Only if decompressing
-    {
+    if (err != kAudioConverterErr_PropertyNotSupported) { // Only if decompressing
         //_ThrowExceptionIfErr(@"kAudioConverterPrimeInfo", err);
-
         m_headerFrames=primeInfo.leadingFrames;
     }
 
@@ -236,7 +228,7 @@ int SoundSourceCoreAudio::parseHeader() {
         //      Feels like 1995 again...
     }
 
-    if (result == ERR) {
+    if (!result) {
         qWarning() << "Error parsing header of file" << m_qFilename;
     }
     return result ? OK : ERR;

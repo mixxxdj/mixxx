@@ -148,8 +148,7 @@ int SoundSourceMp3::open()
 
     // This is not a working MP3 file.
     if (currentframe == 0) {
-        qDebug() << "SSMP3: This is not a working MP3 file:"
-                 << m_qFilename;
+        qDebug() << "SSMP3: This is not a working MP3 file:" << m_qFilename;
         return ERR;
     }
 
@@ -214,8 +213,7 @@ long SoundSourceMp3::seek(long filepos) {
 
     MadSeekFrameType* cur = NULL;
 
-    if (filepos==0)
-    {
+    if (filepos==0) {
         // Seek to beginning of file
 
         // Re-init buffer:
@@ -230,9 +228,7 @@ long SoundSourceMp3::seek(long filepos) {
         m_currentSeekFrameIndex = 0;
         cur = getSeekFrame(0);
         //frameIterator.toFront(); //Might not need to do this -- Albert June 19/2010 (during Qt3 purge)
-    }
-    else
-    {
+    } else {
         //qDebug() << "seek precise";
         // Perform precise seek accomplished by using a frame in the seek list
 
@@ -248,8 +244,7 @@ long SoundSourceMp3::seek(long filepos) {
          */
 
         int framePos = findFrame(filepos);
-        if (framePos==0 || framePos>filepos || m_currentSeekFrameIndex < 5)
-        {
+        if (framePos==0 || framePos>filepos || m_currentSeekFrameIndex < 5) {
             //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
 
             // Re-init buffer:
@@ -262,9 +257,7 @@ long SoundSourceMp3::seek(long filepos) {
             rest = -1;
             m_currentSeekFrameIndex = 0;
             cur = getSeekFrame(m_currentSeekFrameIndex);
-        }
-        else
-        {
+        } else {
 //             qDebug() << "frame pos " << cur->pos;
 
             // Start four frame before wanted frame to get in sync...
@@ -590,7 +583,7 @@ int SoundSourceMp3::parseHeader()
         processAPETag(ape);
     }
 
-    if (result == ERR) {
+    if (!result) {
         qWarning() << "Error parsing header of file" << m_qFilename;
     }
     return result ? OK : ERR;
