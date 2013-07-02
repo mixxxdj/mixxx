@@ -8,7 +8,8 @@
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
              : QWidget(parent),
                m_track(NULL),
-               m_TagFetcher(parent) {
+               m_TagFetcher(parent),
+               m_networkError(NOERROR) {
     setupUi(this);
 
     connect(btnApply, SIGNAL(clicked()),
@@ -26,6 +27,8 @@ DlgTagFetcher::DlgTagFetcher(QWidget *parent)
             this, SLOT(fetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
     connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
             this, SLOT(fetchTagProgress(QString)));
+    connect(&m_TagFetcher, SIGNAL(networkError(int, QString)),
+            this, SLOT(slotNetworkError(int, QString)));
 
     // Resize columns, this can't be set in the ui file
     results->setColumnWidth(0, 50);  // Track column
@@ -93,9 +96,24 @@ void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
     updateStack();
 }
 
+void DlgTagFetcher::slotNetworkError(int errorCode, QString app) {
+    m_networkError = errorCode==0 ?  FTWERROR : HTTPERROR;
+    m_data.m_pending = false;
+    ErrorCode->setText(QString::number(errorCode));
+    applicationName->setText(app);
+    applicationName_httpError->setText(app);
+    updateStack();
+}
+
 void DlgTagFetcher::updateStack() {
     if (m_data.m_pending) {
         stack->setCurrentWidget(loading_page);
+        return;
+    } else if (m_networkError == HTTPERROR) {
+        stack->setCurrentWidget(networkError_page);
+        return;
+    } else if (m_networkError == FTWERROR) {
+        stack->setCurrentWidget(generalnetworkError_page);
         return;
     } else if (m_data.m_results.isEmpty()) {
         stack->setCurrentWidget(error_page);

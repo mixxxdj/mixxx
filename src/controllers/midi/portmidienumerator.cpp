@@ -84,6 +84,9 @@ bool namesMatchPattern(const QString input_name,
 
 bool shouldLinkInputToOutput(const QString input_name,
                              const QString output_name) {
+
+    int offset = -1;
+
     // Early exit.
     if (input_name == output_name) {
         return true;
@@ -93,16 +96,28 @@ bool shouldLinkInputToOutput(const QString input_name,
     // ports. If the output and input device names don't match, let's try
     // trimming those words from the start, and seeing if they then match.
 
-    // Ignore "From" text in the device input name.
+    // Ignore "From" text in the beginning of device input name.
     QString input_name_stripped = input_name;
-    if (input_name.indexOf("from", 0, Qt::CaseInsensitive) != -1) {
+    if (input_name.indexOf("from", 0, Qt::CaseInsensitive) == 0) {
         input_name_stripped = input_name.right(input_name.length() - 4);
     }
 
-    // Ignore "To" text in the device output name.
+    // Ignore "To" text in the beginning of device output name.
     QString output_name_stripped = output_name;
-    if (output_name.indexOf("to", 0, Qt::CaseInsensitive) != -1) {
+    if (output_name.indexOf("to", 0, Qt::CaseInsensitive) == 0) {
         output_name_stripped = output_name.right(output_name.length() - 2);
+    }
+
+    if (output_name_stripped != input_name_stripped) {
+        // Ignore "input port" text in the device names
+        offset=input_name_stripped.indexOf(" input port ",0,Qt::CaseInsensitive);
+        if (offset!=-1)
+            input_name_stripped = input_name_stripped.replace(offset,12," ");
+
+        // Ignore "output port" text in the device names
+        offset=output_name_stripped.indexOf(" output port ",0,Qt::CaseInsensitive);
+        if (offset!=-1)
+            output_name_stripped = output_name_stripped.replace(offset,13," ");
     }
 
     if (input_name_stripped == output_name_stripped ||

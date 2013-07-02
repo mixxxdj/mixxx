@@ -192,11 +192,11 @@ int SoundDevicePortAudio::open() {
     // waveform view to properly correct for the latency.
 
     ControlObjectThreadMain* pControlObjectSampleRate =
-        new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","samplerate")));
+            new ControlObjectThreadMain("[Master]","samplerate");
     ControlObjectThreadMain* pControlObjectLatency =
-        new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","latency")));
+            new ControlObjectThreadMain("[Master]","latency");
     ControlObjectThreadMain* pControlObjectAudioBufferSize =
-        new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]","audio_buffer_size")));
+            new ControlObjectThreadMain("[Master]","audio_buffer_size");
 
     pControlObjectLatency->slotSet(currentLatencyMSec);
     pControlObjectSampleRate->slotSet(m_dSampleRate);
@@ -210,12 +210,8 @@ int SoundDevicePortAudio::open() {
     delete pControlObjectAudioBufferSize;
 
     if (m_pMasterUnderflowCount) {
-        ControlObjectThreadMain* pMasterUnderflowCount =
-                new ControlObjectThreadMain(m_pMasterUnderflowCount);
-        pMasterUnderflowCount->slotSet(0);
-        delete pMasterUnderflowCount;
+        m_pMasterUnderflowCount->set(0);
     }
-
     return OK;
 }
 

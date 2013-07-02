@@ -49,7 +49,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
 // static
 ControlDoublePrivate* ControlDoublePrivate::getControl(
-    const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
+        const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
     QMutexLocker locker(&m_sqCOHashMutex);
     QHash<ConfigKey, ControlDoublePrivate*>::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {
@@ -77,28 +77,30 @@ double ControlDoublePrivate::get() const {
     return m_value.getValue();
 }
 
-void ControlDoublePrivate::reset(QObject* pSender) {
+void ControlDoublePrivate::reset() {
     double defaultValue = m_defaultValue.getValue();
-    set(defaultValue, pSender);
+    // NOTE: pSender = NULL is important. The originator of this action does
+    // not know the resulting value so it makes sense that we should emit a
+    // general valueChanged() signal even though we know the originator.
+    set(defaultValue, NULL);
 }
 
-void ControlDoublePrivate::set(const double& value, QObject* pSender) {
+void ControlDoublePrivate::set(double value, QObject* pSender) {
     if (m_bIgnoreNops && get() == value) {
         return;
     }
 
-    double dValue = value;
     // If the behavior says to ignore the set, ignore it.
     ControlNumericBehavior* pBehavior = m_pBehavior;
-    if (pBehavior && !pBehavior->setFilter(&dValue)) {
+    if (pBehavior && !pBehavior->setFilter(&value)) {
         return;
     }
-    m_value.setValue(dValue);
-    emit(valueChanged(dValue, pSender));
+    m_value.setValue(value);
+    emit(valueChanged(value, pSender));
 
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), value);
     }
 }
 
@@ -106,9 +108,9 @@ ControlNumericBehavior* ControlDoublePrivate::setBehavior(ControlNumericBehavior
     return m_pBehavior.fetchAndStoreRelaxed(pBehavior);
 }
 
-void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSetter) {
+void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSender) {
     ControlNumericBehavior* pBehavior = m_pBehavior;
-    set(pBehavior ? pBehavior->widgetParameterToValue(dParam) : dParam, pSetter);
+    set(pBehavior ? pBehavior->widgetParameterToValue(dParam) : dParam, pSender);
 }
 
 double ControlDoublePrivate::getWidgetParameter() const {

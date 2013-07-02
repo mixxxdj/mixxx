@@ -12,6 +12,8 @@ class ControlDoublePrivate;
 
 class ControlNumericBehavior {
   public:
+    virtual ~ControlNumericBehavior() { };
+
     // Returns true if the set should occur. Mutates dValue if the value should
     // be changed.
     virtual bool setFilter(double* dValue);

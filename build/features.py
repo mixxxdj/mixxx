@@ -180,17 +180,18 @@ class CoreAudio(Feature):
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+
         if not build.platform_is_osx:
             raise Exception('CoreAudio is only supported on OS X!');
-        else:
-            build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
-            build.env.Append(CPPPATH='#lib/apple/')
-            build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
-            build.env.Append(CPPDEFINES = '__COREAUDIO__')
+
+        build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
+        build.env.Append(CPPPATH='#lib/apple/')
+        build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+        build.env.Append(CPPDEFINES = '__COREAUDIO__')
 
     def sources(self, build):
         return ['soundsourcecoreaudio.cpp',
-                '#lib/apple/CAStreamBasicDescription.h']
+                '#lib/apple/CAStreamBasicDescription.cpp']
 
 class MediaFoundation(Feature):
     FLAG = 'mediafoundation'
@@ -400,31 +401,6 @@ class VinylControl(Feature):
             sources.append("#lib/xwax/timecoder.c")
             sources.append("#lib/xwax/lut.c")
 
-        return sources
-
-class Tonal(Feature):
-    def description(self):
-        return "NOT-WORKING Tonal Audio Detection"
-
-    def enabled(self, build):
-        build.flags['tonal'] = util.get_flags(build.env, 'tonal', 0)
-        if int(build.flags['tonal']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-
-    def sources(self, build):
-        sources = ['tonal/FourierTransform.cxx',
-                   'tonal/Segmentation.cxx',
-                   'tonal/tonalanalyser.cpp',
-                   'tonal/ConstantQTransform.cxx',
-                   'tonal/ConstantQFolder.cxx']
         return sources
 
 class Vamp(Feature):

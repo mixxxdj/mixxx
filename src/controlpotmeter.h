@@ -31,7 +31,7 @@ class ControlObjectThread;
 class PotmeterControls : public QObject {
     Q_OBJECT
   public:
-    PotmeterControls(ConfigKey key);
+    PotmeterControls(const ConfigKey& key);
     virtual ~PotmeterControls();
 
     void setStep(double dStep) {

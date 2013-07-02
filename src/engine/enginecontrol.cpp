@@ -4,6 +4,7 @@
 #include "engine/enginecontrol.h"
 #include "engine/enginemaster.h"
 #include "engine/enginebuffer.h"
+#include "playermanager.h"
 
 EngineControl::EngineControl(const char * _group,
                              ConfigObject<ConfigValue> * _config) :
@@ -12,13 +13,12 @@ EngineControl::EngineControl(const char * _group,
     m_dCurrentSample(0),
     m_dTotalSamples(0),
     m_pEngineMaster(NULL),
-    m_pEngineBuffer(NULL) {
+    m_pEngineBuffer(NULL),
+    m_numDecks(ConfigKey("[Master]", "num_decks")) {
 }
 
 EngineControl::~EngineControl() {
-
 }
-
 
 double EngineControl::process(const double,
                                const double,
@@ -101,4 +101,40 @@ void EngineControl::seek(double sample) {
 
 void EngineControl::notifySeek(double dNewPlaypos) {
     Q_UNUSED(dNewPlaypos);
+}
+
+EngineBuffer* EngineControl::pickSyncTarget() {
+    EngineMaster* pMaster = getEngineMaster();
+    if (!pMaster) {
+        return NULL;
+    }
+    QString group = getGroup();
+    EngineBuffer* pFirstNonplayingDeck = NULL;
+
+    for (int i = 0; i < m_numDecks.get(); ++i) {
+        QString deckGroup = PlayerManager::groupForDeck(i);
+        if (deckGroup == group) {
+            continue;
+        }
+        EngineChannel* pChannel = pMaster->getChannel(deckGroup);
+        // Only consider channels that have a track loaded and are in the master
+        // mix.
+        if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
+            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
+            if (pBuffer && pBuffer->getBpm() > 0) {
+                // If the deck is playing then go with it immediately.
+                if (fabs(pBuffer->getRate()) > 0) {
+                    return pBuffer;
+                }
+                // Otherwise hold out for a deck that might be playing but
+                // remember the first deck that matched our criteria.
+                if (pFirstNonplayingDeck == NULL) {
+                    pFirstNonplayingDeck = pBuffer;
+                }
+            }
+        }
+    }
+    // No playing decks have a BPM. Go with the first deck that was stopped but
+    // had a BPM.
+    return pFirstNonplayingDeck;
 }
