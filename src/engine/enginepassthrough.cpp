@@ -14,12 +14,12 @@ EnginePassthrough::EnginePassthrough(const char* pGroup)
           m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "passthrough_enabled"))),
-          m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough_passing"))),
+          m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
-    m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
+    m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 }
 
 EnginePassthrough::~EnginePassthrough() {
