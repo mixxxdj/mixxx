@@ -21,6 +21,7 @@
 #include "playermanager.h"
 #include "soundmanager.h"
 #include "sounddevice.h"
+#include "util/rlimit.h"
 
 /**
  * Construct a new sound preferences pane. Initializes and populates all the
@@ -100,6 +101,16 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
                     new ControlObjectThreadMain("[Master]", "latency");
     connect(m_pMasterLatency, SIGNAL(valueChanged(double)),
             this, SLOT(masterLatencyChanged(double)));
+
+    qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
+    qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
+
+#ifdef __LINUX__
+    if (RLimit::isRtPrioAllowed())
+#endif // __LINUX__
+    {
+        limitsHint->hide();
+    }
 }
 
 DlgPrefSound::~DlgPrefSound() {
