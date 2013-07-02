@@ -466,6 +466,8 @@ class MixxxCore(Feature):
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefkey.cpp",
+                   "dlgprefselector.cpp",
+                   "dlgpreftimbre.cpp",
                    "dlgprefreplaygain.cpp",
                    "dlgprefnovinyl.cpp",
                    "dlgabout.cpp",
@@ -792,6 +794,8 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefkeydlg.ui')
         build.env.Uic4('dlgprefreplaygaindlg.ui')
         build.env.Uic4('dlgprefbeatsdlg.ui')
+        build.env.Uic4('dlgpreftimbredlg.ui')
+        build.env.Uic4('dlgprefselectordlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
         build.env.Uic4('dlgprefnovinyldlg.ui')
