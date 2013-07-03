@@ -39,12 +39,6 @@ CachingReaderWorker::CachingReaderWorker(const char* group,
           m_iTrackNumSamples(0),
           m_pSample(NULL),
           m_stop(0) {
-    int memory_to_use = 5000000; // 5mb, TODO
-    Q_ASSERT(memory_to_use >= kChunkLength);
-
-    // Only allocate as many bytes as we will actually use.
-    memory_to_use -= (memory_to_use % kChunkLength);
-
     m_pSample = new SAMPLE[kSamplesPerChunk];
 }
 
@@ -54,7 +48,7 @@ CachingReaderWorker::~CachingReaderWorker() {
 }
 
 void CachingReaderWorker::processChunkReadRequest(ChunkReadRequest* request,
-                                            ReaderStatusUpdate* update) {
+        ReaderStatusUpdate* update) {
     int chunk_number = request->chunk->chunk_number;
     //qDebug() << "Processing ChunkReadRequest for" << chunk_number;
     update->chunk = request->chunk;

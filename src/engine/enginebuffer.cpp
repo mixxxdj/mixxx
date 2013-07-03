@@ -233,7 +233,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 #endif
 
 
-    m_hintList.reserve(16); // Avoid reallocation
+    m_hintList.reserve(256); // Avoid reallocation
 }
 
 EngineBuffer::~EngineBuffer()
@@ -655,7 +655,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 m_filepos_play--;
             }
 
-//->        // Perform scaling of Reader buffer into buffer.
+            // Perform scaling of Reader buffer into buffer.
             CSAMPLE* output = m_pScale->getScaled(iBufferSize);
             double samplesRead = m_pScale->getSamplesRead();
 
