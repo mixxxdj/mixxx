@@ -35,7 +35,7 @@ void AnalysisDao::setDatabase(QSqlDatabase& database) {
     m_db = database;
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(const int trackId) {
     if (!m_db.isOpen() || trackId == -1) {
         return QList<AnalysisInfo>();
     }
@@ -50,7 +50,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
 }
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
-    int trackId, AnalysisType type) {
+    const int trackId, AnalysisType type) {
     if (!m_db.isOpen() || trackId == -1) {
         return QList<AnalysisInfo>();
     }
@@ -65,7 +65,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
     return loadAnalysesFromQuery(trackId, query);
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(int trackId, QSqlQuery& query) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int trackId, QSqlQuery& query) {
     QList<AnalysisDao::AnalysisInfo> analyses;
     QTime time;
     time.start();
@@ -181,7 +181,7 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     return true;
 }
 
-bool AnalysisDao::deleteAnalysis(int analysisId) {
+bool AnalysisDao::deleteAnalysis(const int analysisId) {
     if (analysisId == -1) {
         return false;
     }
@@ -201,7 +201,7 @@ bool AnalysisDao::deleteAnalysis(int analysisId) {
     return true;
 }
 
-void AnalysisDao::deleteAnalysises(QList<int> ids) {
+void AnalysisDao::deleteAnalysises(const QList<int>& ids) {
     QStringList idList;
     foreach (int id, ids) {
         idList << QString::number(id);
@@ -226,7 +226,7 @@ void AnalysisDao::deleteAnalysises(QList<int> ids) {
     }
 }
 
-bool AnalysisDao::deleteAnalysesForTrack(int trackId) {
+bool AnalysisDao::deleteAnalysesForTrack(const int trackId) {
     if (trackId == -1) {
         return false;
     }
@@ -257,7 +257,7 @@ QDir AnalysisDao::getAnalysisStoragePath() const {
     return dir.absolutePath().append("/");
 }
 
-QByteArray AnalysisDao::loadDataFromFile(QString filename) const {
+QByteArray AnalysisDao::loadDataFromFile(const QString& filename) const {
     QFile file(filename);
     if (!file.exists()) {
         return QByteArray();
@@ -268,12 +268,12 @@ QByteArray AnalysisDao::loadDataFromFile(QString filename) const {
     return file.readAll();
 }
 
-bool AnalysisDao::deleteFile(QString fileName) const {
+bool AnalysisDao::deleteFile(const QString& fileName) const {
     QFile file(fileName);
     return file.remove();
 }
 
-bool AnalysisDao::saveDataToFile(QString fileName, QByteArray data) const {
+bool AnalysisDao::saveDataToFile(const QString& fileName, QByteArray& data) const {
     QFile file(fileName);
 
     // If the file exists, do the right thing. Write to a temp file, unlink the

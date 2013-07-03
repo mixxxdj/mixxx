@@ -10,8 +10,8 @@ class SettingsDAO : public QObject {
 
     virtual void initialize();
 
-    QString getValue(QString name, QString defaultValue = QString());
-    bool setValue(QString name, QVariant value);
+    QString getValue(const QString& name, QString defaultValue = QString());
+    bool setValue(const QString& name, const QVariant& value);
 
   private:
     QSqlDatabase m_db;
