@@ -132,7 +132,7 @@
              </property>
             </spacer>
            </item>
-           <item alignment="Qt::AlignHCenter">
+           <item>
             <widget class="QLabel" name="message1">
              <property name="text">
               <string>Fetching track data from the MusicBrainz database</string>
@@ -169,7 +169,7 @@
              </property>
             </spacer>
            </item>
-           <item alignment="Qt::AlignHCenter">
+           <item>
             <widget class="QLabel" name="status">
              <property name="text">
               <string>Status:</string>
@@ -238,7 +238,7 @@
            </property>
           </spacer>
          </item>
-         <item alignment="Qt::AlignHCenter">
+         <item>
           <widget class="QLabel" name="label_7">
            <property name="styleSheet">
             <string notr="true"/>
@@ -376,7 +376,7 @@
            </property>
           </spacer>
          </item>
-         <item alignment="Qt::AlignHCenter">
+         <item>
           <widget class="QLabel" name="label_5">
            <property name="styleSheet">
             <string notr="true"/>
@@ -477,7 +477,7 @@
            </property>
           </spacer>
          </item>
-         <item alignment="Qt::AlignHCenter">
+         <item>
           <widget class="QLabel" name="label">
            <property name="styleSheet">
             <string notr="true"/>
@@ -487,7 +487,7 @@
            </property>
           </widget>
          </item>
-         <item alignment="Qt::AlignHCenter">
+         <item>
           <widget class="QLabel" name="label_2">
            <property name="text">
             <string>Mixxx could not find this track in the MusicBrainz database</string>
