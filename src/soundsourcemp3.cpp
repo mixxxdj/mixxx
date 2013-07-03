@@ -209,11 +209,11 @@ long SoundSourceMp3::seek(long filepos) {
         return 0;
     }
 
-//     qDebug() << "SEEK " << filepos;
+    //qDebug() << "SEEK " << filepos;
 
     MadSeekFrameType* cur = NULL;
 
-    if (filepos==0) {
+    if (filepos == 0) {
         // Seek to beginning of file
 
         // Re-init buffer:
@@ -244,7 +244,7 @@ long SoundSourceMp3::seek(long filepos) {
          */
 
         int framePos = findFrame(filepos);
-        if (framePos==0 || framePos>filepos || m_currentSeekFrameIndex < 5) {
+        if (framePos == 0 || framePos > filepos || m_currentSeekFrameIndex < 5) {
             //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
 
             // Re-init buffer:
@@ -258,9 +258,9 @@ long SoundSourceMp3::seek(long filepos) {
             m_currentSeekFrameIndex = 0;
             cur = getSeekFrame(m_currentSeekFrameIndex);
         } else {
-//             qDebug() << "frame pos " << cur->pos;
+            //qDebug() << "frame pos " << cur->pos;
 
-            // Start four frame before wanted frame to get in sync...
+            // Start four frames before wanted frame to get in sync...
             m_currentSeekFrameIndex -= 4;
             cur = getSeekFrame(m_currentSeekFrameIndex);
             if (cur != NULL) {
@@ -279,10 +279,10 @@ long SoundSourceMp3::seek(long filepos) {
                 mad_frame_mute(Frame);
 
                 // Decode the three frames before
-                mad_frame_decode(Frame,Stream);
-                mad_frame_decode(Frame,Stream);
-                mad_frame_decode(Frame,Stream);
-                mad_frame_decode(Frame,Stream);
+                mad_frame_decode(Frame, Stream);
+                mad_frame_decode(Frame, Stream);
+                mad_frame_decode(Frame, Stream);
+                mad_frame_decode(Frame, Stream);
 
                 // this is also explained in the above mad-dev post
                 mad_synth_frame(Synth, Frame);
@@ -399,16 +399,16 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted) {
         Total_samples_decoded += 2*(Synth->pcm.length-rest);
 
     while (Total_samples_decoded < samples_wanted) {
-        if (mad_frame_decode(Frame,Stream)) {
+        if (mad_frame_decode(Frame, Stream)) {
             if (MAD_RECOVERABLE(Stream->error)) {
                 continue;
-            } else if(Stream->error==MAD_ERROR_BUFLEN) {
+            } else if(Stream->error == MAD_ERROR_BUFLEN) {
                 break;
             } else {
                 break;
             }
         }
-        mad_synth_frame(Synth,Frame);
+        mad_synth_frame(Synth, Frame);
         no = math_min(Synth->pcm.length,(samples_wanted-Total_samples_decoded)/2);
         Total_samples_decoded += 2*no;
     }

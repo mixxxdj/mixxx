@@ -61,7 +61,7 @@ class EngineControl : public QObject {
     // hintReader allows the EngineControl to provide hints to the reader to
     // indicate that the given portion of a song is a potential imminent seek
     // target.
-    virtual void hintReader(QList<Hint>& hintList);
+    virtual void hintReader(QVector<Hint>* pHintList);
 
     void setEngineMaster(EngineMaster* pEngineMaster);
     void setEngineBuffer(EngineBuffer* pEngineBuffer);

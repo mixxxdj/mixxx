@@ -136,6 +136,8 @@ EngineMaster::~EngineMaster()
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
 
+    delete m_pWorkerScheduler;
+
     QMutableListIterator<ChannelInfo*> channel_it(m_channels);
     while (channel_it.hasNext()) {
         ChannelInfo* pChannelInfo = channel_it.next();
@@ -145,8 +147,6 @@ EngineMaster::~EngineMaster()
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo;
     }
-
-    delete m_pWorkerScheduler;
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const
