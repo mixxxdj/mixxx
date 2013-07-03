@@ -14,7 +14,6 @@
  ***************************************************************************/
 
 #include <QtDebug>
-//#include <QUrl>
 #include <taglib/mpegfile.h>
 #include <taglib/mp4file.h>
 
@@ -228,9 +227,6 @@ int SoundSourceCoreAudio::parseHeader() {
         //      Feels like 1995 again...
     }
 
-    if (!result) {
-        qWarning() << "Error parsing header of file" << m_qFilename;
-    }
     return result ? OK : ERR;
 }
 

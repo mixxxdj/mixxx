@@ -229,9 +229,6 @@ int SoundSourceSndFile::parseHeader()
         }
     }
 
-    if (!result) {
-        qWarning() << "Error parsing header of file" << m_qFilename;
-    }
     return result ? OK : ERR;
 }
 

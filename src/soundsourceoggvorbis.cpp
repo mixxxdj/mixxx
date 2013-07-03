@@ -256,9 +256,6 @@ int SoundSourceOggVorbis::parseHeader() {
         processXiphComment(tag);
     }
 
-    if (!result) {
-        qWarning() << "Error parsing header of file" << m_qFilename;
-    }
     return result ? OK : ERR;
 }
 

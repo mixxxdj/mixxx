@@ -173,9 +173,7 @@ int SoundSourceFLAC::parseHeader() {
     if (xiph) {
         processXiphComment(xiph);
     }
-    if (!result) {
-        qWarning() << "Error parsing header of file" << m_qFilename;
-    }
+
     return result ? OK : ERR;
 }
 
