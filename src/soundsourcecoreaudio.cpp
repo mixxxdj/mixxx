@@ -14,7 +14,6 @@
  ***************************************************************************/
 
 #include <QtDebug>
-#include <QUrl>
 #include <taglib/mpegfile.h>
 #include <taglib/mp4file.h>
 
@@ -39,13 +38,9 @@ int SoundSourceCoreAudio::open() {
     //Open the audio file.
     OSStatus err;
 
-    //QUrl blah(m_qFilename);
-    QString qurlStr = m_qFilename;//blah.toString();
-    qDebug() << qurlStr;
-
     /** This code blocks works with OS X 10.5+ only. DO NOT DELETE IT for now. */
     CFStringRef urlStr = CFStringCreateWithCharacters(
-        0, reinterpret_cast<const UniChar *>(qurlStr.unicode()), qurlStr.size());
+        0, reinterpret_cast<const UniChar *>(m_qFilename.unicode()), m_qFilename.size());
     CFURLRef urlRef = CFURLCreateWithFileSystemPath(NULL, urlStr, kCFURLPOSIXPathStyle, false);
     err = ExtAudioFileOpenURL(urlRef, &m_audioFile);
     CFRelease(urlStr);
@@ -59,21 +54,19 @@ int SoundSourceCoreAudio::open() {
         err = ExtAudioFileOpen(&fsRef, &m_audioFile);
     */
 
-    if (err != noErr)
-    {
-        qDebug() << "SSCA: Error opening file.";
-        return ERR;
-    }
+    if (err != noErr) {
+        qDebug() << "SSCA: Error opening file " << m_qFilename;
+		return ERR;
+	}
 
     // get the input file format
     CAStreamBasicDescription inputFormat;
     UInt32 size = sizeof(inputFormat);
     m_inputFormat = inputFormat;
     err = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileDataFormat, &size, &inputFormat);
-    if (err != noErr)
-    {
-        qDebug() << "SSCA: Error getting file format";
-        return ERR;
+    if (err != noErr) {
+        qDebug() << "SSCA: Error getting file format (" << m_qFilename << ")";
+		return ERR;
     }
 
     //Debugging:
@@ -88,8 +81,7 @@ int SoundSourceCoreAudio::open() {
     // set the client format
     err = ExtAudioFileSetProperty(m_audioFile, kExtAudioFileProperty_ClientDataFormat,
                                   sizeof(m_outputFormat), &m_outputFormat);
-    if (err != noErr)
-    {
+    if (err != noErr) {
         qDebug() << "SSCA: Error setting file property";
         return ERR;
     }
@@ -102,8 +94,7 @@ int SoundSourceCoreAudio::open() {
     SInt64        totalFrameCount;
     dataSize    = sizeof(totalFrameCount); //XXX: This looks sketchy to me - Albert
     err            = ExtAudioFileGetProperty(m_audioFile, kExtAudioFileProperty_FileLengthFrames, &dataSize, &totalFrameCount);
-    if (err != noErr)
-    {
+    if (err != noErr) {
         qDebug() << "SSCA: Error getting number of frames";
         return ERR;
     }
@@ -121,10 +112,8 @@ int SoundSourceCoreAudio::open() {
     UInt32 piSize=sizeof(AudioConverterPrimeInfo);
     memset(&primeInfo, 0, piSize);
     err = AudioConverterGetProperty(acRef, kAudioConverterPrimeInfo, &piSize, &primeInfo);
-    if(err != kAudioConverterErr_PropertyNotSupported) // Only if decompressing
-    {
+    if (err != kAudioConverterErr_PropertyNotSupported) { // Only if decompressing
         //_ThrowExceptionIfErr(@"kAudioConverterPrimeInfo", err);
-
         m_headerFrames=primeInfo.leadingFrames;
     }
 
@@ -153,11 +142,10 @@ long SoundSourceCoreAudio::seek(long filepos) {
     //_ThrowExceptionIfErr(@"ExtAudioFileSeek", err);
     //qDebug() << "SSCA: Seeking to" << segmentStart;
 
-    //err = ExtAudioFileSeek(m_audioFile, filepos / 2);
-    if (err != noErr)
-    {
-        qDebug() << "SSCA: Error seeking to" << filepos;// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
-    }
+	//err = ExtAudioFileSeek(m_audioFile, filepos / 2);
+    if (err != noErr) {
+        qDebug() << "SSCA: Error seeking to" << filepos << " (file " << m_qFilename << ")";// << GetMacOSStatusErrorString(err) << GetMacOSStatusCommentString(err);
+	}
     return filepos;
 }
 
@@ -239,10 +227,7 @@ int SoundSourceCoreAudio::parseHeader() {
         //      Feels like 1995 again...
     }
 
-
-    if (result)
-        return OK;
-    return ERR;
+    return result ? OK : ERR;
 }
 
 
