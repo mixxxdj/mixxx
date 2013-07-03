@@ -10,7 +10,7 @@ class AnalyserTimbre : public Analyser
 {
 public:
     AnalyserTimbre(ConfigObject<ConfigValue> *pConfig);
-    ~AnalyserBeats();
+    ~AnalyserTimbre();
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
     bool loadStored(TrackPointer tio) const;
     void process(const CSAMPLE *pIn, const int iLen);

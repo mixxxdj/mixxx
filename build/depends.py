@@ -522,6 +522,7 @@ class MixxxCore(Feature):
                    "analyserqueue.cpp",
                    "analyserwaveform.cpp",
                    "analyserkey.cpp",
+                   "analysertimbre.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",

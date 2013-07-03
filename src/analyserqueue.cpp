@@ -14,6 +14,7 @@
 #include "analyserrg.h"
 #include "analyserbeats.h"
 #include "analyserkey.h"
+#include "analysertimbre.h"
 #include "vamp/vampanalyser.h"
 
 // Measured in 0.1%,
@@ -398,6 +399,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(_config));
     ret->addAnalyser(new AnalyserKey(_config));
+    ret->addAnalyser(new AnalyserTimbre(_config));
 
     ret->start(QThread::IdlePriority);
     return ret;
@@ -413,6 +415,7 @@ AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(
     VampAnalyser::initializePluginPaths();
     ret->addAnalyser(new AnalyserBeats(_config));
     ret->addAnalyser(new AnalyserKey(_config));
+    ret->addAnalyser(new AnalyserTimbre(_config));
 
     ret->start(QThread::IdlePriority);
     return ret;
