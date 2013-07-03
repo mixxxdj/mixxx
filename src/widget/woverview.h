@@ -92,7 +92,7 @@ class WOverview : public WWidget {
 
     }
 
-    const QString m_pGroup;
+    const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
     ControlObjectThreadMain* m_endOfTrackControl;
     double m_endOfTrack;

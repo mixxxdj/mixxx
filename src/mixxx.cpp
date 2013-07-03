@@ -31,6 +31,7 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
+#include "engine/enginepassthrough.h"
 #include "library/library.h"
 #include "library/libraryscanner.h"
 #include "library/librarytablemodel.h"
@@ -285,10 +286,26 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
+    // TODO(rryan): Fold microphone and passthrough creation into a manager
+    // (e.g. PlayerManager, though they aren't players).
+
     EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    // What should channelbase be?
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0);
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
+
+    EnginePassthrough* pPassthrough1 = new EnginePassthrough("[Passthrough1]");
+    // What should channelbase be?
+    AudioInput passthroughInput1 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0);
+    m_pEngine->addChannel(pPassthrough1);
+    m_pSoundManager->registerInput(passthroughInput1, pPassthrough1);
+
+    EnginePassthrough* pPassthrough2 = new EnginePassthrough("[Passthrough2]");
+    // What should channelbase be?
+    AudioInput passthroughInput2 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 1);
+    m_pEngine->addChannel(pPassthrough2);
+    m_pSoundManager->registerInput(passthroughInput2, pPassthrough2);
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -1577,14 +1594,14 @@ bool MixxxApp::confirmExit() {
     unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
         if (ControlObject::get(
-                ConfigKey(QString("[Channel%1]").arg(i + 1), "play"))) {
+                ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
     for (unsigned int i = 0; i < samplerCount; ++i) {
         if (ControlObject::get(
-                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play"))) {
+                ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;
             break;
         }

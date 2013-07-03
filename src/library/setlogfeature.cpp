@@ -12,7 +12,7 @@
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "playerinfo.h"
-
+#include "playermanager.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
@@ -212,8 +212,8 @@ void SetlogFeature::slotJoinWithPrevious() {
 }
 
 void SetlogFeature::slotPlayingDeckChanged(int deck) {
-    if (deck > 0) {
-        QString chan = QString("[Channel%1]").arg(deck);
+    if (deck > -1) {
+        QString chan = PlayerManager::groupForDeck(deck);
         TrackPointer currentPlayingTrack =
                 PlayerInfo::Instance().getTrackInfo(chan);
         if (!currentPlayingTrack) {

@@ -55,7 +55,7 @@ class ControlObject : public QObject {
     // Instantly returns the value of the ControlObject
     static double get(const ConfigKey& key);
     // Sets the ControlObject value
-    void set(const double& value);
+    void set(double value);
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
     // Sets the default value

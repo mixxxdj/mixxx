@@ -121,7 +121,8 @@ QSqlDatabase& TrackCollection::getDatabase() {
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
 bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
-                                    const QStringList & nameFilters, volatile bool* cancel) {
+                                      const QStringList & nameFilters,
+                                      volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());

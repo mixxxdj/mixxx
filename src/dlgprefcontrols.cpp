@@ -52,7 +52,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     setupUi(this);
 
     for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
-        QString group = QString("[Channel%1]").arg(i+1);
+        QString group = PlayerManager::groupForDeck(i);
         m_rateControls.push_back(new ControlObjectThreadMain(
                 group, "rate"));
         m_rateRangeControls.push_back(new ControlObjectThreadMain(
@@ -64,7 +64,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     }
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
-        QString group = QString("[Sampler%1]").arg(i+1);
+        QString group = PlayerManager::groupForSampler(i);
         m_rateControls.push_back(new ControlObjectThreadMain(
                 group, "rate"));
         m_rateRangeControls.push_back(new ControlObjectThreadMain(

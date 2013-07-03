@@ -105,8 +105,6 @@ void MessageHandler(QtMsgType type, const char *input)
         Logfile.open(QIODevice::WriteOnly | QIODevice::Text);
     }
 
-    ErrorDialogHandler* dialogHandler = ErrorDialogHandler::instance();
-
     switch (type) {
     case QtDebugMsg:
 #ifdef __WINDOWS__  //wtf? -kousu 2/2009

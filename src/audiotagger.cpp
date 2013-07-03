@@ -234,6 +234,7 @@ void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph) {
     xiph->addField("COMPOSER", m_key.toStdString());
 }
 void AudioTagger::processMP4Tag(TagLib::MP4::Tag* mp4) {
+    Q_UNUSED(mp4);
     //TODO
 }
 

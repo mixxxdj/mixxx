@@ -8,6 +8,8 @@
 #ifndef ANALYSERBEATS_H_
 #define ANALYSERBEATS_H_
 
+#include <QHash>
+
 #include "analyser.h"
 #include "configobject.h"
 #include "vamp/vampanalyser.h"
@@ -23,6 +25,8 @@ class AnalyserBeats: public Analyser {
     void finalise(TrackPointer tio);
 
   private:
+    static QHash<QString, QString> getExtraVersionInfo(
+        QString pluginId, bool bPreferencesFastAnalysis);
     QVector<double> correctedBeats(QVector<double> rawbeats);
 
     ConfigObject<ConfigValue> *m_pConfig;
