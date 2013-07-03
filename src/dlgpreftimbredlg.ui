@@ -17,7 +17,7 @@
    <item>
     <widget class="QCheckBox" name="checkBoxAnalyserEnabled">
      <property name="text">
-      <string>Enable Timbral Analysis</string>
+      <string>Enable Timbre Analysis</string>
      </property>
     </widget>
    </item>

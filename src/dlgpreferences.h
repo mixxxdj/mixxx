@@ -127,7 +127,7 @@ private:
     QTreeWidgetItem* m_pRecordingButton;
     QTreeWidgetItem* m_pBeatDetectionButton;
     QTreeWidgetItem* m_pKeyDetectionButton;
-    QTreeWidgetItem* m_pTimbralAnalysisButton;
+    QTreeWidgetItem* m_pTimbreAnalysisButton;
     QTreeWidgetItem* m_pSelectorButton;
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;

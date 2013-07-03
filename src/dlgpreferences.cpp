@@ -269,11 +269,11 @@ void DlgPreferences::createIcons()
     m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pTimbralAnalysisButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pTimbralAnalysisButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
-    m_pTimbralAnalysisButton->setText(0, tr("Timbral Analysis"));
-    m_pTimbralAnalysisButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pTimbralAnalysisButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pTimbreAnalysisButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pTimbreAnalysisButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pTimbreAnalysisButton->setText(0, tr("Timbre Analysis"));
+    m_pTimbreAnalysisButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pTimbreAnalysisButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
@@ -344,7 +344,7 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
         pagesWidget->setCurrentWidget(m_wbeats->parentWidget()->parentWidget());
     } else if (current == m_pKeyDetectionButton) {
     	pagesWidget->setCurrentWidget(m_wkey->parentWidget()->parentWidget());
-    } else if (current == m_pTimbralAnalysisButton) {
+    } else if (current == m_pTimbreAnalysisButton) {
         pagesWidget->setCurrentWidget(m_wtimbre->parentWidget()->parentWidget());
     } else if (current == m_pReplayGainButton) {
     	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());

@@ -10,6 +10,6 @@
 
 #define TIMBRE_CONFIG_KEY "[Timbre]"
 
-#define TIMBRE_ANALYSIS_ENABLED "TimbralAnalysisEnabled"
+#define TIMBRE_ANALYSIS_ENABLED "TimbreAnalysisEnabled"
 
 #endif // TIMBRE_PREFERENCES_H
