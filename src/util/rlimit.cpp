@@ -1,4 +1,4 @@
-#include "rlimit.h"
+#include "util/rlimit.h"
 
 #ifdef __LINUX__
 
@@ -6,6 +6,10 @@ extern "C" {
     #include <sys/time.h>
     #include <sys/resource.h>
 }
+
+// TODO(xxx) this is the result from a calculation inside PortAudio
+// We should query the value from PA or do the same calculations
+const rlim_t PA_RTPRIO = 82; // PA sets RtPrio = 82
 
 // static
 unsigned int RLimit::getCurRtPrio() {
@@ -29,7 +33,7 @@ unsigned int RLimit::getMaxRtPrio() {
 
 // static
 bool RLimit::isRtPrioAllowed() {
-    return (getCurRtPrio() >= 82); // PA sets RtPrio = 82
+    return (getCurRtPrio() >= PA_RTPRIO); // PA sets RtPrio = 82
 }
 
 #endif // __LINUX__
