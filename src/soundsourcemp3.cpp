@@ -148,6 +148,7 @@ int SoundSourceMp3::open()
 
     // This is not a working MP3 file.
     if (currentframe == 0) {
+        qDebug() << "SSMP3: This is not a working MP3 file:" << m_qFilename;
         return ERR;
     }
 
@@ -204,6 +205,7 @@ long SoundSourceMp3::seek(long filepos) {
     }
 
     if (!isValid()) {
+        qDebug() << "SSMP3: Error wile seeking file " << m_qFilename;
         return 0;
     }
 
@@ -211,8 +213,7 @@ long SoundSourceMp3::seek(long filepos) {
 
     MadSeekFrameType* cur = NULL;
 
-    if (filepos==0)
-    {
+    if (filepos==0) {
         // Seek to beginning of file
 
         // Re-init buffer:
@@ -227,9 +228,7 @@ long SoundSourceMp3::seek(long filepos) {
         m_currentSeekFrameIndex = 0;
         cur = getSeekFrame(0);
         //frameIterator.toFront(); //Might not need to do this -- Albert June 19/2010 (during Qt3 purge)
-    }
-    else
-    {
+    } else {
         //qDebug() << "seek precise";
         // Perform precise seek accomplished by using a frame in the seek list
 
@@ -245,8 +244,7 @@ long SoundSourceMp3::seek(long filepos) {
          */
 
         int framePos = findFrame(filepos);
-        if (framePos==0 || framePos>filepos || m_currentSeekFrameIndex < 5)
-        {
+        if (framePos==0 || framePos>filepos || m_currentSeekFrameIndex < 5) {
             //qDebug() << "Problem finding good seek frame (wanted " << filepos << ", got " << framePos << "), starting from 0";
 
             // Re-init buffer:
@@ -259,9 +257,7 @@ long SoundSourceMp3::seek(long filepos) {
             rest = -1;
             m_currentSeekFrameIndex = 0;
             cur = getSeekFrame(m_currentSeekFrameIndex);
-        }
-        else
-        {
+        } else {
 //             qDebug() << "frame pos " << cur->pos;
 
             // Start four frame before wanted frame to get in sync...
@@ -298,7 +294,7 @@ long SoundSourceMp3::seek(long filepos) {
             }
         }
 
-        // Synthesize the the samples from the frame which should be discard to reach the requested position
+        // Synthesize the samples from the frame which should be discard to reach the requested position
         if (cur != NULL) //the "if" prevents crashes on bad files.
             discard(filepos-cur->pos);
     }
@@ -347,7 +343,6 @@ long SoundSourceMp3::seek(long filepos) {
     // Unfortunately we don't know the exact fileposition. The returned position is thus an
     // approximation only:
     return filepos;
-
 }
 
 inline long unsigned SoundSourceMp3::length() {
@@ -432,8 +427,10 @@ unsigned long SoundSourceMp3::discard(unsigned long samples_wanted) {
  */
 unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _destination)
 {
-    if (!isValid())
+    if (!isValid()) {
+        qDebug() << "SSMP3: Error while reading " << m_qFilename;
         return 0;
+    }
 
     // Ensure that we are reading an even number of samples. Otherwise this function may
     // go into an infinite loop
@@ -476,7 +473,6 @@ unsigned SoundSourceMp3::read(unsigned long samples_wanted, const SAMPLE * _dest
                 rest = -1;
             return Total_samples_decoded;
         }
-
     }
 
 //     qDebug() << "Decoding";
@@ -587,9 +583,7 @@ int SoundSourceMp3::parseHeader()
         processAPETag(ape);
     }
 
-    if (result)
-        return OK;
-    return ERR;
+    return result ? OK : ERR;
 }
 
 int SoundSourceMp3::findFrame(int pos)
