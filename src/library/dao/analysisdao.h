@@ -61,7 +61,7 @@ class AnalysisDao : public DAO {
     QByteArray loadDataFromFile(const QString& fileName) const;
     bool saveDataToFile(const QString& fileName, const QByteArray& data) const;
     bool deleteFile(const QString& filename) const;
-    QList<AnalysisInfo> loadAnalysesFromQuery(const int trackId, QSqlQuery& query);
+    QList<AnalysisInfo> loadAnalysesFromQuery(const int trackId, QSqlQuery* query);
 
     ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase m_db;

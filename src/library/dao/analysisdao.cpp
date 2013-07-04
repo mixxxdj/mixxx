@@ -46,7 +46,7 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(const int trac
         "WHERE track_id=:trackId").arg(s_analysisTableName));
     query.bindValue(":trackId", trackId);
 
-    return loadAnalysesFromQuery(trackId, query);
+    return loadAnalysesFromQuery(trackId, &query);
 }
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
@@ -62,32 +62,32 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
     query.bindValue(":trackId", trackId);
     query.bindValue(":type", type);
 
-    return loadAnalysesFromQuery(trackId, query);
+    return loadAnalysesFromQuery(trackId, &query);
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int trackId, QSqlQuery& query) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int trackId, QSqlQuery* query) {
     QList<AnalysisDao::AnalysisInfo> analyses;
     QTime time;
     time.start();
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "couldn't get analyses for track" << trackId;
+    if (!query->exec()) {
+        LOG_FAILED_QUERY(*query) << "couldn't get analyses for track" << trackId;
         return analyses;
     }
 
     int bytes = 0;
-    while (query.next()) {
+    while (query->next()) {
         AnalysisDao::AnalysisInfo info;
-        info.analysisId = query.value(query.record().indexOf("id")).toInt();
+        info.analysisId = query->value(query->record().indexOf("id")).toInt();
         info.trackId = trackId;
         info.type = static_cast<AnalysisType>(
-            query.value(query.record().indexOf("type")).toInt());
-        info.description = query.value(
-            query.record().indexOf("description")).toString();
-        info.version = query.value(
-            query.record().indexOf("version")).toString();
-        int checksum = query.value(
-            query.record().indexOf("data_checksum")).toInt();
+            query->value(query->record().indexOf("type")).toInt());
+        info.description = query->value(
+            query->record().indexOf("description")).toString();
+        info.version = query->value(
+            query->record().indexOf("version")).toString();
+        int checksum = query->value(
+            query->record().indexOf("data_checksum")).toInt();
         QString dataPath = getAnalysisStoragePath().absoluteFilePath(
             QString::number(info.analysisId));
         QByteArray compressedData = loadDataFromFile(dataPath);
