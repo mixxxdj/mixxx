@@ -36,7 +36,7 @@ int CueDAO::cueCount() {
     return 0;
 }
 
-int CueDAO::numCuesForTrack(int trackId) {
+int CueDAO::numCuesForTrack(const int trackId) {
     qDebug() << "CueDAO::numCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) FROM " CUE_TABLE " WHERE track_id = :id");
@@ -51,7 +51,7 @@ int CueDAO::numCuesForTrack(int trackId) {
     return 0;
 }
 
-Cue* CueDAO::cueFromRow(QSqlQuery& query) const {
+Cue* CueDAO::cueFromRow(const QSqlQuery& query) const {
     QSqlRecord record = query.record();
     int id = record.value(record.indexOf("id")).toInt();
     int trackId = record.value(record.indexOf("track_id")).toInt();
@@ -66,7 +66,7 @@ Cue* CueDAO::cueFromRow(QSqlQuery& query) const {
     return cue;
 }
 
-Cue* CueDAO::getCue(int cueId) {
+Cue* CueDAO::getCue(const int cueId) {
     qDebug() << "CueDAO::getCue" << QThread::currentThread() << m_database.connectionName();
     if (m_cues.contains(cueId)) {
         return m_cues[cueId];
@@ -85,7 +85,7 @@ Cue* CueDAO::getCue(int cueId) {
     return NULL;
 }
 
-QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
+QList<Cue*> CueDAO::getCuesForTrack(const int trackId) const {
     //qDebug() << "CueDAO::getCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QList<Cue*> cues;
     QSqlQuery query(m_database);
@@ -111,7 +111,7 @@ QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
     return cues;
 }
 
-bool CueDAO::deleteCuesForTrack(int trackId) {
+bool CueDAO::deleteCuesForTrack(const int trackId) {
     qDebug() << "CueDAO::deleteCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CUE_TABLE " WHERE track_id = :track_id");
@@ -124,7 +124,7 @@ bool CueDAO::deleteCuesForTrack(int trackId) {
     return false;
 }
 
-bool CueDAO::deleteCuesForTracks(QList<int> ids) {
+bool CueDAO::deleteCuesForTracks(const QList<int>& ids) {
     qDebug() << "CueDAO::deleteCuesForTracks" << QThread::currentThread() << m_database.connectionName();
 
     QStringList idList;
@@ -210,7 +210,7 @@ bool CueDAO::deleteCue(Cue* cue) {
     return false;
 }
 
-void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
+void CueDAO::saveTrackCues(const int trackId, TrackInfoObject* pTrack) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.
