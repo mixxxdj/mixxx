@@ -101,6 +101,7 @@ protected:
     mutable int m_meansOutput;
     mutable int m_variancesOutput;
     mutable int m_beatSpectraOutput;
+    mutable int m_combinedOutput;
 
     typedef std::vector<double> FeatureColumn;
     typedef std::vector<FeatureColumn> FeatureMatrix;

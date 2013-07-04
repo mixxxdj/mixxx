@@ -354,6 +354,25 @@ SimilarityPlugin::getOutputDescriptors() const
 	
     m_beatSpectraOutput = list.size();
     list.push_back(beatspectrum);
+
+    OutputDescriptor combined;
+    combined.identifier = "combined";
+    combined.name = "Combined Output";
+    combined.description = "Return mean, variance, and beat spectrum for first channel";
+    combined.unit = "";
+    if (m_rhythmClipFrames > 0) {
+        combined.hasFixedBinCount = true;
+        combined.binCount = 3 + m_featureColumnSize + m_featureColumnSize + (m_rhythmClipFrames / 2);
+    } else {
+        combined.hasFixedBinCount = false;
+    }
+    combined.hasKnownExtents = false;
+    combined.isQuantized = false;
+    combined.sampleType = OutputDescriptor::FixedSampleRate;
+    combined.sampleRate = 1;
+    
+    m_combinedOutput = list.size();
+    list.push_back(combined);
     
     return list;
 }
@@ -934,6 +953,29 @@ SimilarityPlugin::getRemainingFeatures()
     }
 
     returnFeatures[m_sortedVectorOutput].push_back(feature);
+
+    Feature combinedFeature;
+    combinedFeature.hasTimestamp = true;
+    combinedFeature.timestamp = Vamp::RealTime::zeroTime;
+    combinedFeature.values.clear();
+    combinedFeature.values.push_back(m_featureColumnSize);
+    combinedFeature.values.push_back(m_featureColumnSize);
+    combinedFeature.values.push_back(m_rhythmClipFrames / 2);
+
+    std::vector<float> mean = returnFeatures[m_meansOutput][0].values;
+    std::vector<float> variance = returnFeatures[m_variancesOutput][0].values;
+    std::vector<float> beatSpectrum = returnFeatures[m_beatSpectraOutput][0].values;
+    for (std::vector<float>::iterator it = mean.begin(); it != mean.end(); ++it) {
+        combinedFeature.values.push_back(*it);
+    }
+    for (std::vector<float>::iterator it = variance.begin(); it != variance.end(); ++it) {
+        combinedFeature.values.push_back(*it);
+    }
+    for (std::vector<float>::iterator it = beatSpectrum.begin(); it != beatSpectrum.end(); ++it) {
+        combinedFeature.values.push_back(*it);
+    }
+
+    returnFeatures[m_combinedOutput].push_back(combinedFeature);
 
     return returnFeatures;
 }

@@ -3,6 +3,7 @@
 
 #include "analysertimbre.h"
 #include "track/timbre_preferences.h"
+#include "track/timbrefactory.h"
 
 
 AnalyserTimbre::AnalyserTimbre(ConfigObject<ConfigValue> *pConfig)
@@ -85,10 +86,14 @@ void AnalyserTimbre::finalise(TrackPointer tio) {
     // Call End() here, because the number of total samples may have been
     // estimated incorrectly.
     bool success = m_pVamp->End();
-    qDebug() << "Timbre analysis " << (success ? "complete" : "failed");
+    qDebug() << "Timbre analysis" << (success ? "complete" : "failed");
 
-    QVector<double> timbre = m_pVamp->GetFirstValuesVector();
+    QVector<double> timbreVector = m_pVamp->GetValuesVector();
     delete m_pVamp;
     m_pVamp = NULL;
 
+    qDebug() << "Timbre vector size:" << timbreVector.size();
+
+    Timbre timbre = TimbreFactory::makeTimbreModelFromVamp(timbreVector);
+    tio->setTimbre(timbre);
 }

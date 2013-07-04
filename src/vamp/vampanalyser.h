@@ -31,6 +31,7 @@ class VampAnalyser {
     QVector<double> GetInitFramesVector();
     QVector<double> GetEndFramesVector();
     QVector<QString> GetLabelsVector();
+    QVector<double> GetValuesVector();
     QVector<double> GetFirstValuesVector();
     QVector<double> GetLastValuesVector();
 

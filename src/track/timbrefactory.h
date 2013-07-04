@@ -13,6 +13,13 @@ class TimbreFactory {
                                                QString timbreVersion,
                                                QString timbreSubVersion,
                                                QByteArray* timbreSerialized);
+
+    static Timbre makeTimbreModel(std::vector<double> mean,
+                                  std::vector<double> variance,
+                                  std::vector<double> beatSpectrum);
+
+    static Timbre makeTimbreModelFromVamp(QVector<double> timbreVector);
+
     static QString getPreferredVersion();
 
     static QString getPreferredSubVersion(
