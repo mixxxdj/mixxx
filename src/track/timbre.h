@@ -3,19 +3,23 @@
 
 #define TIMBRE_MODEL_VERSION "Timbre-1.0"
 
+#include <QObject>
 #include <QByteArray>
 #include <QMutex>
+#include <QSharedPointer>
 
 #include "proto/timbre.pb.h"
 
 class TimbreFactory;
 
-class Timbre {
+class Timbre;
+typedef QSharedPointer<Timbre> TimbrePointer;
+
+class Timbre : public QObject {
+    Q_OBJECT
   public:
     explicit Timbre(const QByteArray* pByteArray=NULL);
-    Timbre(const Timbre& other);
     ~Timbre();
-    Timbre& operator=(const Timbre& other);
     QByteArray* toByteArray() const;
     QString getVersion() const;
     QString getSubVersion() const;

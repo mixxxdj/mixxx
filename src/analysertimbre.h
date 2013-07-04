@@ -6,9 +6,8 @@
 
 #include "vamp/vampanalyser.h"
 
-class AnalyserTimbre : public Analyser
-{
-public:
+class AnalyserTimbre : public Analyser {
+  public:
     AnalyserTimbre(ConfigObject<ConfigValue> *pConfig);
     ~AnalyserTimbre();
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
@@ -16,7 +15,7 @@ public:
     void process(const CSAMPLE *pIn, const int iLen);
     void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
-private:
+  private:
     ConfigObject<ConfigValue> *m_pConfig;
     VampAnalyser* m_pVamp;
     QString m_pluginId;

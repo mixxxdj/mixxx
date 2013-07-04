@@ -94,6 +94,6 @@ void AnalyserTimbre::finalise(TrackPointer tio) {
 
     qDebug() << "Timbre vector size:" << timbreVector.size();
 
-    Timbre timbre = TimbreFactory::makeTimbreModelFromVamp(timbreVector);
-    tio->setTimbre(timbre);
+    TimbrePointer pTimbre = TimbreFactory::makeTimbreModelFromVamp(timbreVector);
+    tio->setTimbre(pTimbre);
 }

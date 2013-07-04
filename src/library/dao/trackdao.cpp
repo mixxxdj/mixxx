@@ -359,14 +359,14 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
 
-    const Timbre& timbre = pTrack->getTimbre();
+    TimbrePointer pTimbre = pTrack->getTimbre();
     QByteArray* pTimbreBlob = NULL;
     QString timbreVersion = "";
     QString timbreSubVersion = "";
-    if (timbre) {
-        pTimbreBlob = timbre.toByteArray();
-        timbreVersion = timbre.getVersion();
-        timbreSubVersion = timbre.getSubVersion();
+    if (pTimbre) {
+        pTimbreBlob = pTimbre->toByteArray();
+        timbreVersion = pTimbre->getVersion();
+        timbreSubVersion = pTimbre->getSubVersion();
     }
     m_pQueryLibraryInsert->bindValue(":timbre_version", timbreVersion);
     m_pQueryLibraryInsert->bindValue(":timbre_sub_version", timbreSubVersion);

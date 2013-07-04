@@ -255,8 +255,8 @@ public:
                 mixxx::track::io::key::Source source);
     void setKeyText(QString key,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
-    Timbre getTimbre() const;
-    void setTimbre(Timbre timbre);
+    TimbrePointer getTimbre() const;
+    void setTimbre(TimbrePointer pTimbre);
 
   public slots:
     void slotCueUpdated();
@@ -366,7 +366,7 @@ public:
 
     Keys m_keys;
 
-    Timbre m_timbre;
+    TimbrePointer m_pTimbre;
 
     /** BPM lock **/
     bool m_bBpmLock;

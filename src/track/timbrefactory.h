@@ -9,21 +9,23 @@
 
 class TimbreFactory {
   public:
-    static Timbre loadTimbreFromByteArray(TrackPointer pTrack,
+    static TimbrePointer loadTimbreFromByteArray(TrackPointer pTrack,
                                                QString timbreVersion,
                                                QString timbreSubVersion,
                                                QByteArray* timbreSerialized);
 
-    static Timbre makeTimbreModel(std::vector<double> mean,
+    static TimbrePointer makeTimbreModel(std::vector<double> mean,
                                   std::vector<double> variance,
                                   std::vector<double> beatSpectrum);
 
-    static Timbre makeTimbreModelFromVamp(QVector<double> timbreVector);
+    static TimbrePointer makeTimbreModelFromVamp(QVector<double> timbreVector);
 
     static QString getPreferredVersion();
 
     static QString getPreferredSubVersion(
         const QHash<QString, QString> extraVersionInfo);
+  private:
+    static void deleteTimbre(Timbre* pTimbre);
 
 };
 

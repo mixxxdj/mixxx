@@ -6,22 +6,23 @@
 using mixxx::track::io::timbre::TimbreModel;
 using mixxx::track::io::timbre::BeatSpectrum;
 
-Timbre TimbreFactory::loadTimbreFromByteArray(TrackPointer pTrack,
+TimbrePointer TimbreFactory::loadTimbreFromByteArray(TrackPointer pTrack,
                                        QString timbreVersion,
                                        QString timbreSubVersion,
                                        QByteArray* timbreSerialized) {
-    Q_UNUSED(pTrack);
     if (timbreVersion == TIMBRE_MODEL_VERSION) {
-        Timbre timbre(timbreSerialized);
-        timbre.setSubVersion(timbreSubVersion);
+        Timbre* pTimbre = new Timbre(timbreSerialized);
+        pTimbre->moveToThread(pTrack->thread());
+        pTimbre->setParent(pTrack.data());
+        pTimbre->setSubVersion(timbreSubVersion);
         qDebug() << "Successfully deserialized TimbreModel";
-        return timbre;
+        return TimbrePointer(pTimbre, &TimbreFactory::deleteTimbre);
     }
-
-    return Timbre();
+    qDebug() << "TimbreFactory::loadTimbreFromByteArray could not parse serialized timbre model.";
+    return TimbrePointer();
 }
 
-Timbre TimbreFactory::makeTimbreModel(std::vector<double> mean,
+TimbrePointer TimbreFactory::makeTimbreModel(std::vector<double> mean,
                                       std::vector<double> variance,
                                       std::vector<double> beatSpectrum) {
     TimbreModel timbre_model;
@@ -35,9 +36,10 @@ Timbre TimbreFactory::makeTimbreModel(std::vector<double> mean,
     for (std::vector<double>::iterator it = beatSpectrum.begin(); it != beatSpectrum.end(); ++it) {
         beat_spectrum->add_feature(*it);
     }
-    return Timbre(timbre_model);
+    Timbre* pTimbre = new Timbre(timbre_model);
+    return TimbrePointer(pTimbre, &TimbreFactory::deleteTimbre);
 }
-Timbre TimbreFactory::makeTimbreModelFromVamp(QVector<double> timbreVector) {
+TimbrePointer TimbreFactory::makeTimbreModelFromVamp(QVector<double> timbreVector) {
     TimbreModel timbre_model;
     BeatSpectrum* beat_spectrum = timbre_model.mutable_beat_spectrum();
 
@@ -56,6 +58,13 @@ Timbre TimbreFactory::makeTimbreModelFromVamp(QVector<double> timbreVector) {
         else if (i < beatSpectrumIndex)
             beat_spectrum->add_feature(val);
     }
-    return Timbre(timbre_model);
+    Timbre* pTimbre = new Timbre(timbre_model);
+    return TimbrePointer(pTimbre, &TimbreFactory::deleteTimbre);
 }
 
+void TimbreFactory::deleteTimbre(Timbre* pTimbre) {
+    QObject* pObject = dynamic_cast<QObject*>(pTimbre);
+    if (pObject != NULL) {
+        pTimbre->deleteLater();
+    }
+}

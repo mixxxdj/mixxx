@@ -15,20 +15,8 @@ Timbre::Timbre(const TimbreModel& timbreModel)
         : m_timbreModel(timbreModel) {
 }
 
-Timbre::Timbre(const Timbre& other)
-        : m_subVersion(other.m_subVersion),
-          m_timbreModel(other.m_timbreModel) {
-}
-
 Timbre::~Timbre() {
 }
-
-Timbre& Timbre::operator=(const Timbre& other) {
-    m_timbreModel = other.m_timbreModel;
-    m_subVersion = other.m_subVersion;
-    return *this;
-}
-
 
 QByteArray* Timbre::toByteArray() const {
     QMutexLocker locker(&m_mutex);
