@@ -6,7 +6,7 @@
 // VAMP_CONFIG_KEY Preferences
 #define VAMP_ANALYSER_TIMBRE_LIBRARY "AnalyserTimbreLibrary"
 #define VAMP_ANALYSER_TIMBRE_PLUGIN_ID "AnalyserTimbrePluginID"
-#define VAMP_ANALYSER_TIMBRE_DEFAULT_PLUGIN_ID "qm-similarity"
+#define VAMP_ANALYSER_TIMBRE_DEFAULT_PLUGIN_ID "qm-similarity:3"
 
 #define TIMBRE_CONFIG_KEY "[Timbre]"
 
