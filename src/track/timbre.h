@@ -1,6 +1,8 @@
 #ifndef TIMBRE_H
 #define TIMBRE_H
 
+#define TIMBRE_VERSION "Timbre-1.0"
+
 class Timbre {
   public:
     explicit Timbre(const QByteArray* pByteArray=NULL);

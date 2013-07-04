@@ -1,3 +1,6 @@
+#include <QMutexLocker>
+#include <QtDebug>
+
 #include "track/timbre.h"
 
 using mixxx::track::io::timbre::TimbreModel;

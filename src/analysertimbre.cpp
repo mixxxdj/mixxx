@@ -87,7 +87,8 @@ void AnalyserTimbre::finalise(TrackPointer tio) {
     bool success = m_pVamp->End();
     qDebug() << "Timbre analysis " << (success ? "complete" : "failed");
 
-    QVector<double> timbre = m_pVamp->GetInitFramesVector();
+    QVector<double> timbre = m_pVamp->GetFirstValuesVector();
     delete m_pVamp;
     m_pVamp = NULL;
+
 }
