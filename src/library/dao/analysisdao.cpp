@@ -273,7 +273,7 @@ bool AnalysisDao::deleteFile(const QString& fileName) const {
     return file.remove();
 }
 
-bool AnalysisDao::saveDataToFile(const QString& fileName, QByteArray& data) const {
+bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data) const {
     QFile file(fileName);
 
     // If the file exists, do the right thing. Write to a temp file, unlink the
