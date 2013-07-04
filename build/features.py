@@ -814,7 +814,7 @@ class Shoutcast(Feature):
 
 class FFMPEG(Feature):
     def description(self):
-        return "NOT-WORKING FFMPEG support"
+        return "FFMPEG/LibAV support"
 
     def enabled(self, build):
         build.flags['ffmpeg'] = util.get_flags(build.env, 'ffmpeg', 0)
@@ -832,34 +832,73 @@ class FFMPEG(Feature):
         if build.platform_is_linux or build.platform_is_osx or build.platform_is_bsd:
             # Check for libavcodec, libavformat
             # I just randomly picked version numbers lower than mine for this - Albert
-            if not conf.CheckForPKG('libavcodec', '51.20.0'):
-                raise Exception('libavcodec not found.')
-            if not conf.CheckForPKG('libavformat', '51.1.0'):
-                raise Exception('libavcodec not found.')
+            if not conf.CheckForPKG('libavcodec', '53.35.0'):
+                raise Exception('libavcodec not found! Version should be at least 53.35.0')
+            if not conf.CheckForPKG('libavformat', '53.21.0'):
+                raise Exception('libavcodec not found! Version should be at least 53.21.0')
+
+            # Needed to build new FFMPEG
+            build.env.Append(CCFLAGS = '-D__STDC_CONSTANT_MACROS') 
+            build.env.Append(CCFLAGS = '-D__STDC_LIMIT_MACROS') 
+            build.env.Append(CCFLAGS = '-D__STDC_FORMAT_MACROS') 
+
             #Grabs the libs and cflags for ffmpeg
             build.env.ParseConfig('pkg-config libavcodec --silence-errors --cflags --libs')
             build.env.ParseConfig('pkg-config libavformat --silence-errors --cflags --libs')
-            build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
+            build.env.ParseConfig('pkg-config libavutil --silence-errors --cflags --libs')
+
+            # FFMPEG 1.1/LIBAV 9.1 have libavresample 1.0.1 FFMPEG 1.0 have 0.0.3 (0.0.2 ain't compatible)
+            # Somebody doesn't want to use AVRESAMPLE so we use swresample if available
+            # If it's not available and somebody wants to use old old old conversion.. go ahead
+            # be my gueststar!
+            if conf.CheckForPKG('libavresample', '0.0.3'):
+                build.env.ParseConfig('pkg-config libavresample --silence-errors --cflags --libs')
+                build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
+                build.env.Append(CPPDEFINES = '__LIBAVRESAMPLE__')
+            elif conf.CheckForPKG('libswresample', '0.0.1'):
+                build.env.ParseConfig('pkg-config libswresample --silence-errors --cflags --libs')
+                build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
+                build.env.Append(CPPDEFINES = '__LIBSWRESAMPLE__')
+            else:
+                build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
+                build.env.Append(CPPDEFINES = '__FFMPEGOLDAPI__')    
+
         else:
             # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev libdts-dev
+            # Append some stuff to CFLAGS in Windows also
+            build.env.Append(CCFLAGS = '-D__STDC_CONSTANT_MACROS') 
+            build.env.Append(CCFLAGS = '-D__STDC_LIMIT_MACROS') 
+            build.env.Append(CCFLAGS = '-D__STDC_FORMAT_MACROS') 
+
             build.env.Append(LIBS = 'avcodec')
             build.env.Append(LIBS = 'avformat')
-            build.env.Append(LIBS = 'z')
-            build.env.Append(LIBS = 'a52')
-            build.env.Append(LIBS = 'dts')
-            build.env.Append(LIBS = 'gsm')
-            build.env.Append(LIBS = 'dc1394_control')
-            build.env.Append(LIBS = 'dl')
-            build.env.Append(LIBS = 'vorbisenc')
-            build.env.Append(LIBS = 'raw1394')
             build.env.Append(LIBS = 'avutil')
+            build.env.Append(LIBS = 'z')
+            build.env.Append(LIBS = 'swresample')
+            #build.env.Append(LIBS = 'a52')
+            #build.env.Append(LIBS = 'dts')
+            build.env.Append(LIBS = 'gsm')
+            #build.env.Append(LIBS = 'dc1394_control')
+            #build.env.Append(LIBS = 'dl')
+            build.env.Append(LIBS = 'vorbisenc')
+            #build.env.Append(LIBS = 'raw1394')
             build.env.Append(LIBS = 'vorbis')
             build.env.Append(LIBS = 'm')
             build.env.Append(LIBS = 'ogg')
             build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
 
+        # Add new path for ffmpeg header files.
+        # Non-crosscompiled builds need this too, don't they?
+        if build.crosscompile and build.platform_is_windows and build.toolchain_is_gnu:
+            build.env.Append(CPPPATH=os.path.join(build.crosscompile_root, 'include', 'ffmpeg'))
+
     def sources(self, build):
-        return ['soundsourceffmpeg.cpp']
+        return ['soundsourceffmpeg.cpp',
+                'encoder/encoderffmpegresample.cpp',
+                'encoder/encoderffmpegcore.cpp',
+                'encoder/encoderffmpegmp3.cpp',
+                'encoder/encoderffmpegmp4.cpp',
+                'encoder/encoderffmpegvorbis.cpp']
 
 class Optimize(Feature):
     def description(self):

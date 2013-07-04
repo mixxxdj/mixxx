@@ -32,16 +32,19 @@ EncoderFfmpegResample::EncoderFfmpegResample(AVCodecContext *codecCtx) {
 }
 
 EncoderFfmpegResample::~EncoderFfmpegResample() {
+   if( m_pSwrCtx != NULL ) {
 #ifndef __FFMPEGOLDAPI__
+
 #ifdef __LIBAVRESAMPLE__
-    avresample_close(m_pSwrCtx);
+      avresample_close(m_pSwrCtx);
 #else
-    swr_free(&m_pSwrCtx);
+      swr_free(&m_pSwrCtx);
 #endif
 
 #else
-    audio_resample_close(m_pSwrCtx);
+      audio_resample_close(m_pSwrCtx);
 #endif
+   }
 }
 
 unsigned int EncoderFfmpegResample::getBufferSize() {

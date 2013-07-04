@@ -37,6 +37,7 @@ extern "C" {
 // Compability
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
+
 }
 
 #include <QByteArray>
@@ -52,7 +53,7 @@ class EncoderCallback;
 
 class EncoderFfmpegCore : public Encoder {
 public:
-#ifndef AV_CODEC_ID_NONE
+#ifdef AV_CODEC_ID_NONE
     EncoderFfmpegCore(EncoderCallback* pCallback=NULL, AVCodecID codec = AV_CODEC_ID_MP2);
 #else
     EncoderFfmpegCore(EncoderCallback* pCallback=NULL, CodecID codec = CODEC_ID_MP2);
@@ -71,9 +72,9 @@ private:
     bool metaDataHasChanged();
     //Call this method in conjunction with shoutcast streaming
     int writeAudioFrame(AVFormatContext *oc, AVStream *st);
-    void closeAudio(AVFormatContext *oc, AVStream *st);
-    void openAudio(AVFormatContext *oc, AVCodec *codec, AVStream *st);
-#ifndef AV_CODEC_ID_NONE
+    void closeAudio(AVStream *st);
+    void openAudio(AVCodec *codec, AVStream *st);
+#ifdef AV_CODEC_ID_NONE
     AVStream *addStream(AVFormatContext *oc, AVCodec **codec, enum AVCodecID codec_id);
 #else
     AVStream *addStream(AVFormatContext *oc, AVCodec **codec, enum CodecID codec_id);
@@ -108,7 +109,7 @@ private:
     uint64_t m_lRecorededBytes;
     uint64_t m_lDts;
     uint64_t m_lPts;
-#ifndef AV_CODEC_ID_NONE
+#ifdef AV_CODEC_ID_NONE
     enum AVCodecID m_SCcodecId;
 #else
     enum CodecID m_SCcodecId;
@@ -126,17 +127,7 @@ private:
 #endif
 
 
-
-#ifndef AV_CODEC_ID_NONE
-    AVCodecID m_SCodecID;
-#else
-    CodecID m_SCodecID;
-#endif
-
     AVStream *m_pStream;
-
-    //ControlObjectThread* m_pSamplerate;
-
 };
 
 #endif

@@ -40,7 +40,7 @@
 //
 
 // Constructor
-#ifndef AV_CODEC_ID_NONE
+#ifdef AV_CODEC_ID_NONE
 EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, AVCodecID codec)
 #else
 EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
@@ -52,7 +52,6 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
     m_strMetaDataArtist = NULL;
     m_strMetaDataAlbum = NULL;
     m_pMetaData = TrackPointer(NULL);
-    m_SCodecID = codec;
 
     m_pEncodeFormatCtx = NULL;
     m_pEncoderAudioStream = NULL;
@@ -112,7 +111,7 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
 }
 
 unsigned int EncoderFfmpegCore::reSample(AVFrame *inframe) {
-    m_pResample->reSample(inframe);
+    return m_pResample->reSample(inframe);
 }
 
 //call sendPackages() or write() after 'flush()' as outlined in engineshoutcast.cpp
@@ -287,7 +286,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
 
     m_pEncoderAudioStream = addStream(m_pEncodeFormatCtx, &m_pEncoderAudioCodec, m_pEncoderFormat->audio_codec);
 
-    openAudio(m_pEncodeFormatCtx, m_pEncoderAudioCodec, m_pEncoderAudioStream);
+    openAudio(m_pEncoderAudioCodec, m_pEncoderAudioStream);
 
     // qDebug() << "jepusti";
 
@@ -427,12 +426,12 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 }
 
 
-void EncoderFfmpegCore::closeAudio(AVFormatContext *formatctx, AVStream *stream) {
+void EncoderFfmpegCore::closeAudio(AVStream *stream) {
     avcodec_close(stream->codec);
     av_free(m_pSamples);
 }
 
-void EncoderFfmpegCore::openAudio(AVFormatContext *formatctx, AVCodec *codec, AVStream *stream) {
+void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
     AVCodecContext *l_SCodecCtx;
     int l_iRet;
 
@@ -475,7 +474,7 @@ void EncoderFfmpegCore::openAudio(AVFormatContext *formatctx, AVCodec *codec, AV
 }
 
 /* Add an output stream. */
-#ifndef AV_CODEC_ID_NONE
+#ifdef AV_CODEC_ID_NONE
 AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **codec, enum AVCodecID codec_id) {
 #else
 AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **codec, enum CodecID codec_id) {
