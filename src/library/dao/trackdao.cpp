@@ -10,6 +10,8 @@
 #include "track/beatfactory.h"
 #include "track/beats.h"
 #include "track/keyfactory.h"
+#include "track/timbre.h"
+#include "track/timbrefactory.h"
 #include "trackinfoobject.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -356,6 +358,20 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":key", keyText);
     m_pQueryLibraryInsert->bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
+
+    const Timbre& timbre = pTrack->getTimbre();
+    QByteArray* pTimbreBlob = NULL;
+    QString timbreVersion = "";
+    QString timbreSubVersion = "";
+    if (timbre) {
+        pTimbreBlob = timbre.toByteArray();
+        timbreVersion = timbre.getVersion();
+        timbreSubVersion = timbre.getSubVersion();
+    }
+    m_pQueryLibraryInsert->bindValue(":timbre_version", timbreVersion);
+    m_pQueryLibraryInsert->bindValue(":timbre_sub_version", timbreSubVersion);
+    m_pQueryLibraryInsert->bindValue(":timbre", pTimbreBlob ? *pTimbreBlob : QVariant(QVariant::ByteArray));
+    delete pTimbreBlob;
 }
 
 void TrackDAO::addTracksPrepare() {
@@ -390,7 +406,8 @@ void TrackDAO::addTracksPrepare() {
             "timesplayed, "
             "channels, mixxx_deleted, header_parsed, "
             "beats_version, beats_sub_version, beats, bpm_lock, "
-            "keys_version, keys_sub_version, keys) "
+            "keys_version, keys_sub_version, keys, "
+            "timbre_version, timbre_sub_version, timbre) "
             "VALUES ("
             ":artist, :title, :album, :year, :genre, :tracknumber, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
@@ -398,7 +415,8 @@ void TrackDAO::addTracksPrepare() {
             ":timesplayed, "
             ":channels, :mixxx_deleted, :header_parsed, "
             ":beats_version, :beats_sub_version, :beats, :bpm_lock, "
-            ":keys_version, :keys_sub_version, :keys)");
+            ":keys_version, :keys_sub_version, :keys, "
+            ":timbre_version, :timbre_sub_version, :timbre)");
 
     m_pQueryLibraryUpdate->prepare("UPDATE library SET mixxx_deleted = 0 "
             "WHERE id = :id");

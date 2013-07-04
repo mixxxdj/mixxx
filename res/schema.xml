@@ -347,4 +347,13 @@ METADATA
       ALTER TABLE Library ADD COLUMN key_id INTEGER DEFAULT 0;
     </sql>
   </revision>
+  <revision version="20" min_compatible="3">
+    <description>
+      Add timbre column to library table.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN timbre BLOB;
+      ALTER TABLE Library ADD COLUMN timbre_version TEXT;
+      ALTER TABLE Library ADD COLUMN timbre_sub_version TEXT;
+    </sql>
 </schema>
