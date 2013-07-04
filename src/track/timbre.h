@@ -1,18 +1,27 @@
 #ifndef TIMBRE_H
 #define TIMBRE_H
 
-#define TIMBRE_VERSION "Timbre-1.0"
+#define TIMBRE_MODEL_VERSION "Timbre-1.0"
+
+#include <QByteArray>
+#include <QMutex>
 
 #include "proto/timbre.pb.h"
+
+class TimbreFactory;
 
 class Timbre {
   public:
     explicit Timbre(const QByteArray* pByteArray=NULL);
+    Timbre(const Timbre& other);
+    ~Timbre();
+    Timbre& operator=(const Timbre& other);
     QByteArray* toByteArray() const;
     QString getVersion() const;
     QString getSubVersion() const;
     void setSubVersion(QString subVersion);
   private:
+    Timbre(const mixxx::track::io::timbre::TimbreModel& m_timbreModel);
     void readByteArray(const QByteArray* pByteArray);
 
     mutable QMutex m_mutex;

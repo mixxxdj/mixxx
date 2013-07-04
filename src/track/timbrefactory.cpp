@@ -8,12 +8,12 @@ Timbre TimbreFactory::loadTimbreFromByteArray(TrackPointer pTrack,
                                        QString timbreSubVersion,
                                        QByteArray* timbreSerialized) {
     Q_UNUSED(pTrack);
-    if (timbreVersion == TIMBRE_VERSION) {
+    if (timbreVersion == TIMBRE_MODEL_VERSION) {
         Timbre timbre(timbreSerialized);
         timbre.setSubVersion(timbreSubVersion);
         qDebug() << "Successfully deserialized TimbreModel";
         return timbre;
     }
 
-    return Keys();
+    return Timbre();
 }
