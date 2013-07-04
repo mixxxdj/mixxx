@@ -51,7 +51,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     bool initialized() const { return m_bInitialized; }
     int getTrackId(const QModelIndex& index) const;
     void search(const QString& searchText, const QString& extraFilter=QString());
-    void setSearch(const QString& searchText, const QString extraFilter=QString());
+    void setSearch(const QString& searchText, const QString& extraFilter=QString());
     const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
     void hideTracks(const QModelIndexList& indices);

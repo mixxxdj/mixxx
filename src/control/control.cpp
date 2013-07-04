@@ -12,7 +12,10 @@ QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
 ControlDoublePrivate::ControlDoublePrivate()
         : m_bIgnoreNops(true),
-          m_bTrack(false) {
+          m_bTrack(false),
+          m_trackType(Stat::UNSPECIFIED),
+          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
     m_defaultValue.setValue(0);
     m_value.setValue(0);
 }
