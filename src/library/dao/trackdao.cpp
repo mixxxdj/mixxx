@@ -803,35 +803,35 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
 
     if (query.exec()) {
         while (query.next()) {
+            QSqlRecord queryRecord = query.record();
             bool shouldDirty = false;
-            // Good god! Assign query.record() to a freaking variable!
-            // int trackId = query.value(query.record().indexOf("id")).toInt();
-            QString artist = query.value(query.record().indexOf("artist")).toString();
-            QString title = query.value(query.record().indexOf("title")).toString();
-            QString album = query.value(query.record().indexOf("album")).toString();
-            QString year = query.value(query.record().indexOf("year")).toString();
-            QString genre = query.value(query.record().indexOf("genre")).toString();
-            QString composer = query.value(query.record().indexOf("composer")).toString();
-            QString tracknumber = query.value(query.record().indexOf("tracknumber")).toString();
-            QString comment = query.value(query.record().indexOf("comment")).toString();
-            QString url = query.value(query.record().indexOf("url")).toString();
-            QString keyText = query.value(query.record().indexOf("key")).toString();
-            int duration = query.value(query.record().indexOf("duration")).toInt();
-            int bitrate = query.value(query.record().indexOf("bitrate")).toInt();
-            int rating = query.value(query.record().indexOf("rating")).toInt();
-            int samplerate = query.value(query.record().indexOf("samplerate")).toInt();
-            int cuepoint = query.value(query.record().indexOf("cuepoint")).toInt();
-            QString bpm = query.value(query.record().indexOf("bpm")).toString();
-            QString replaygain = query.value(query.record().indexOf("replaygain")).toString();
-            int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
-            QDateTime datetime_added = query.value(query.record().indexOf("datetime_added")).toDateTime();
-            int played = query.value(query.record().indexOf("played")).toInt();
-            int channels = query.value(query.record().indexOf("channels")).toInt();
-            //int filesize = query.value(query.record().indexOf("filesize")).toInt();
-            QString filetype = query.value(query.record().indexOf("filetype")).toString();
-            QString location = query.value(query.record().indexOf("location")).toString();
-            bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
-            bool has_bpm_lock = query.value(query.record().indexOf("bpm_lock")).toBool();
+            // int trackId = query.value(queryRecord.indexOf("id")).toInt();
+            QString artist = query.value(queryRecord.indexOf("artist")).toString();
+            QString title = query.value(queryRecord.indexOf("title")).toString();
+            QString album = query.value(queryRecord.indexOf("album")).toString();
+            QString year = query.value(queryRecord.indexOf("year")).toString();
+            QString genre = query.value(queryRecord.indexOf("genre")).toString();
+            QString composer = query.value(queryRecord.indexOf("composer")).toString();
+            QString tracknumber = query.value(queryRecord.indexOf("tracknumber")).toString();
+            QString comment = query.value(queryRecord.indexOf("comment")).toString();
+            QString url = query.value(queryRecord.indexOf("url")).toString();
+            QString keyText = query.value(queryRecord.indexOf("key")).toString();
+            int duration = query.value(queryRecord.indexOf("duration")).toInt();
+            int bitrate = query.value(queryRecord.indexOf("bitrate")).toInt();
+            int rating = query.value(queryRecord.indexOf("rating")).toInt();
+            int samplerate = query.value(queryRecord.indexOf("samplerate")).toInt();
+            int cuepoint = query.value(queryRecord.indexOf("cuepoint")).toInt();
+            QString bpm = query.value(queryRecord.indexOf("bpm")).toString();
+            QString replaygain = query.value(queryRecord.indexOf("replaygain")).toString();
+            int timesplayed = query.value(queryRecord.indexOf("timesplayed")).toInt();
+            QDateTime datetime_added = query.value(queryRecord.indexOf("datetime_added")).toDateTime();
+            int played = query.value(queryRecord.indexOf("played")).toInt();
+            int channels = query.value(queryRecord.indexOf("channels")).toInt();
+            //int filesize = query.value(queryRecord.indexOf("filesize")).toInt();
+            QString filetype = query.value(queryRecord.indexOf("filetype")).toString();
+            QString location = query.value(queryRecord.indexOf("location")).toString();
+            bool header_parsed = query.value(queryRecord.indexOf("header_parsed")).toBool();
+            bool has_bpm_lock = query.value(queryRecord.indexOf("bpm_lock")).toBool();
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(location, false), &TrackDAO::deleteTrack);
 
@@ -857,9 +857,9 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             pTrack->setCuePoint((float)cuepoint);
             pTrack->setReplayGain(replaygain.toFloat());
 
-            QString beatsVersion = query.value(query.record().indexOf("beats_version")).toString();
-            QString beatsSubVersion = query.value(query.record().indexOf("beats_sub_version")).toString();
-            QByteArray beatsBlob = query.value(query.record().indexOf("beats")).toByteArray();
+            QString beatsVersion = query.value(queryRecord.indexOf("beats_version")).toString();
+            QString beatsSubVersion = query.value(queryRecord.indexOf("beats_sub_version")).toString();
+            QByteArray beatsBlob = query.value(queryRecord.indexOf("beats")).toByteArray();
             BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(pTrack, beatsVersion, beatsSubVersion, &beatsBlob);
             if (pBeats) {
                 pTrack->setBeats(pBeats);
@@ -868,9 +868,9 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             }
             pTrack->setBpmLock(has_bpm_lock);
 
-            QString keysVersion = query.value(query.record().indexOf("keys_version")).toString();
-            QString keysSubVersion = query.value(query.record().indexOf("keys_sub_version")).toString();
-            QByteArray keysBlob = query.value(query.record().indexOf("keys")).toByteArray();
+            QString keysVersion = query.value(queryRecord.indexOf("keys_version")).toString();
+            QString keysSubVersion = query.value(queryRecord.indexOf("keys_sub_version")).toString();
+            QByteArray keysBlob = query.value(queryRecord.indexOf("keys")).toByteArray();
             Keys keys = KeyFactory::loadKeysFromByteArray(
                 pTrack, keysVersion, keysSubVersion, &keysBlob);
 
