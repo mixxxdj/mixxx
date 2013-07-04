@@ -193,7 +193,7 @@ void CrateDAO::copyCrateTracks(const int sourceCrateId, const int targetCrateId)
     while (query.next()) {
         trackIds.append(query.value(0).toInt());
     }
-    addTracksToCrate(trackIds, targetCrateId);
+    addTracksToCrate(targetCrateId, &trackIds);
 }
 
 bool CrateDAO::addTrackToCrate(const int trackId, const int crateId) {
@@ -216,33 +216,33 @@ bool CrateDAO::addTrackToCrate(const int trackId, const int crateId) {
 }
 
 
-int CrateDAO::addTracksToCrate(QList<int>& trackIdList, const int crateId) {
+int CrateDAO::addTracksToCrate(const int crateId, QList<int>* trackIdList) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO " CRATE_TRACKS_TABLE " (crate_id, track_id) VALUES (:crate_id, :track_id)");
 
-    for (int i = 0; i < trackIdList.size(); ++i) {
+    for (int i = 0; i < trackIdList->size(); ++i) {
         query.bindValue(":crate_id", crateId);
-        query.bindValue(":track_id", trackIdList.at(i));
+        query.bindValue(":track_id", trackIdList->at(i));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
             // We must emit only those trackID that were added so we need to
             // remove the failed ones.
-            trackIdList.removeAt(i);
+            trackIdList->removeAt(i);
             --i; // account for reduced size of list
         }
     }
     transaction.commit();
 
     // Emitting the trackAdded signals for each trackID outside the transaction
-    foreach(int trackId, trackIdList) {
+    foreach(int trackId, *trackIdList) {
         emit(trackAdded(crateId, trackId));
     }
 
     emit(changed(crateId));
 
     // Return the number of tracks successfully added
-    return trackIdList.size();
+    return trackIdList->size();
 }
 
 bool CrateDAO::removeTrackFromCrate(const int trackId, const int crateId) {

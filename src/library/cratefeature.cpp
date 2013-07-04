@@ -116,7 +116,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
             trackIds.removeAt(trackId--);
         }
     }
-    m_crateDao.addTracksToCrate(trackIds, crateId);
+    m_crateDao.addTracksToCrate(crateId, &trackIds);
     return true;
 }
 
