@@ -31,7 +31,9 @@
 #include "defs.h"
 #include "track/beats.h"
 #include "track/keys.h"
+#include "track/timbre.h"
 #include "proto/keys.pb.h"
+#include "proto/timbre.pb.h"
 #include "library/dao/cue.h"
 
 class QString;
@@ -253,6 +255,8 @@ public:
                 mixxx::track::io::key::Source source);
     void setKeyText(QString key,
                     mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
+    Timbre getTimbre() const;
+    void setTimbre(Timbre timbre);
 
   public slots:
     void slotCueUpdated();
@@ -361,6 +365,8 @@ public:
     QDateTime m_dateAdded;
 
     Keys m_keys;
+
+    Timbre m_timbre;
 
     /** BPM lock **/
     bool m_bBpmLock;

@@ -3,6 +3,8 @@
 
 #define TIMBRE_VERSION "Timbre-1.0"
 
+#include "proto/timbre.pb.h"
+
 class Timbre {
   public:
     explicit Timbre(const QByteArray* pByteArray=NULL);
@@ -15,7 +17,7 @@ class Timbre {
 
     mutable QMutex m_mutex;
     QString m_subVersion;
-    mixxx::track::io::timbre::Timbre m_timbreModel;
+    mixxx::track::io::timbre::TimbreModel m_timbreModel;
 
     // For private constructor access.
     friend class TimbreFactory;
