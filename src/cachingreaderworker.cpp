@@ -22,7 +22,6 @@
 
 // Must be divisible by 8, 4, and 2. Just pick a power of 2.
 #define CHUNK_LENGTH 65536
-//#define CHUNK_LENGTH 524288
 
 const int CachingReaderWorker::kChunkLength = CHUNK_LENGTH;
 const int CachingReaderWorker::kSamplesPerChunk = CHUNK_LENGTH / sizeof(CSAMPLE);
