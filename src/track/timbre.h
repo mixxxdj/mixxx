@@ -24,7 +24,7 @@ class Timbre : public QObject {
     QString getVersion() const;
     QString getSubVersion() const;
     void setSubVersion(QString subVersion);
-    mixxx::track::io::timbre::TimbreModel getTimbreModel();
+    const mixxx::track::io::timbre::TimbreModel& getTimbreModel();
   private:
     Timbre(const mixxx::track::io::timbre::TimbreModel& m_timbreModel);
     void readByteArray(const QByteArray* pByteArray);

@@ -908,6 +908,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             QString timbreVersion = query.value(queryRecord.indexOf("keys_version")).toString();
             QString timbreSubVersion = query.value(queryRecord.indexOf("timbre_sub_version")).toString();
             QByteArray timbreBlob = query.value(queryRecord.indexOf("timbre")).toByteArray();
+
             TimbrePointer pTimbre = TimbreFactory::loadTimbreFromByteArray(
                 pTrack, timbreVersion, timbreSubVersion, &timbreBlob);
 
@@ -1045,7 +1046,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats_sub_version=:beats_sub_version, beats=:beats, "
                   "bpm_lock=:bpm_lock, "
-                  "keys_version=:keys_version, keys_sub_version=:keys_sub_version, keys=:keys "
+                  "keys_version=:keys_version, keys_sub_version=:keys_sub_version, keys=:keys, "
+                  "timbre_version=:timbre_version, timbre_sub_version=:timbre_sub_version, timbre=:timbre "
                   "WHERE id=:track_id");
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -1113,6 +1115,20 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":key", keyText);
     query.bindValue(":key_id", static_cast<int>(key));
     delete pKeysBlob;
+
+    TimbrePointer pTimbre = pTrack->getTimbre();
+    QByteArray* pTimbreBlob = NULL;
+    QString timbreVersion = "";
+    QString timbreSubVersion = "";
+    if (pTimbre) {
+        pTimbreBlob = pTimbre->toByteArray();
+        timbreVersion = pTimbre->getVersion();
+        timbreSubVersion = pTimbre->getSubVersion();
+    }
+    query.bindValue(":timbre", pTimbreBlob ? *pTimbreBlob : QVariant(QVariant::ByteArray));
+    query.bindValue(":timbre_version", timbreVersion);
+    query.bindValue(":timbre_sub_version", timbreSubVersion);
+    delete pTimbreBlob;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

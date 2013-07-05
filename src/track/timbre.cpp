@@ -39,7 +39,9 @@ void Timbre::setSubVersion(QString subVersion) {
     QMutexLocker locker(&m_mutex);
     m_subVersion = subVersion;
 }
-TimbreModel Timbre::getTimbreModel() {
+
+const TimbreModel& Timbre::getTimbreModel() {
+    QMutexLocker locker(&m_mutex);
     return m_timbreModel;
 }
 

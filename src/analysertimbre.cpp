@@ -112,6 +112,7 @@ void AnalyserTimbre::finalise(TrackPointer tio) {
                                                                     extraVersionInfo,
                                                                     m_iSampleRate,
                                                                     m_iTotalSamples);
+//    qDebug() << "Timbre version" << pTimbre->getVersion();
     tio->setTimbre(pTimbre);
 }
 
