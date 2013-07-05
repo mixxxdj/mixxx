@@ -102,8 +102,8 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
     connect(m_pMasterLatency, SIGNAL(valueChanged(double)),
             this, SLOT(masterLatencyChanged(double)));
 
-    qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
-    qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
+    //qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
+    //qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
 
 #ifdef __LINUX__
     if (RLimit::isRtPrioAllowed())
