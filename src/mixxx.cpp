@@ -74,9 +74,9 @@ extern "C" void crashDlg()
 }
 
 
-bool loadTranslations(const QLocale& systemLocale, QString userLocale,
-                      QString translation, QString prefix,
-                      QString translationPath, QTranslator* pTranslator) {
+bool loadTranslations(const QLocale& systemLocale, const QString& userLocale,
+                      const QString& translation, const QString& prefix,
+                      const QString& translationPath, QTranslator* pTranslator) {
 
     if (userLocale.size() == 0) {
 #if QT_VERSION >= 0x040800
@@ -832,7 +832,7 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
     }
 }
 
-QString buildWhatsThis(QString title, QString text) {
+QString buildWhatsThis(QString& title, const QString& text) {
     return QString("%1\n\n%2").arg(title.replace("&", ""), text);
 }
 
