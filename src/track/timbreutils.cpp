@@ -5,7 +5,7 @@
 using mixxx::track::io::timbre::TimbreModel;
 using mixxx::track::io::timbre::BeatSpectrum;
 
-double TimbreUtils::klDivergence(TimbrePointer pTimbre, TimbrePointer pTimbre2) const {
+double TimbreUtils::klDivergence(TimbrePointer pTimbre, TimbrePointer pTimbre2) {
     TimbreModel model1 = pTimbre->getTimbreModel();
     TimbreModel model2 = pTimbre2->getTimbreModel();
 

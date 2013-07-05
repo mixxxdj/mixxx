@@ -734,6 +734,7 @@ class MixxxCore(Feature):
                    "track/keyutils.cpp",
                    "track/timbre.cpp",
                    "track/timbrefactory.cpp",
+                   "track/timbreutils.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",

@@ -13,6 +13,7 @@
 #include "trackinfoobject.h"
 
 #include "track/keyutils.h"
+#include "track/timbreutils.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
@@ -46,6 +47,8 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
 
     slotResetFilters();
     clearSeedTrackInfo();
+    similarityContributions.insert("bpm", 0.0);
+    similarityContributions.insert("timbre", 1.0);
 }
 
 SelectorLibraryTableModel::~SelectorLibraryTableModel() {
@@ -101,6 +104,7 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
         m_sSeedTrackGenre = m_pSeedTrack->getGenre();
         m_fSeedTrackBpm = m_pSeedTrack->getBpm();
         m_seedTrackKey = m_pSeedTrack->getKey();
+        m_pSeedTrackTimbre = m_pSeedTrack->getTimbre();
     } else {
         clearSeedTrackInfo();
         emit(resetFilters());
@@ -124,6 +128,11 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
     return ChromaticKey_IsValid(m_seedTrackKey) &&
                m_seedTrackKey != mixxx::track::io::key::INVALID;
 }
+
+bool SelectorLibraryTableModel::seedTrackTimbreExists() {
+    return !m_pSeedTrackTimbre.isNull();
+}
+
 
 void SelectorLibraryTableModel::calculateSimilarity() {
     qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
@@ -277,6 +286,7 @@ void SelectorLibraryTableModel::clearSeedTrackInfo() {
     m_sSeedTrackGenre = QString();
     m_fSeedTrackBpm = 0;
     m_seedTrackKey = mixxx::track::io::key::INVALID;
+    m_pSeedTrackTimbre = TimbrePointer();
 }
 
 QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
@@ -286,15 +296,34 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
 
     QVariant score;
 
-    QVariant bpm = data(index.sibling(index.row(), fieldIndex("bpm")));
-    if (bpm.isValid()) {
-        double bpmDiff = abs(bpm.toDouble() - m_fSeedTrackBpm);
-        double scoreValue = ((maxBpmDiff - bpmDiff) / maxBpmDiff) * 100.0;
+    // should ensure that similarityContributions's values add up to 1
 
-        if (scoreValue > 100.0) scoreValue = 100.0;
-        else if (scoreValue < 0.0) scoreValue = 0.0;
+    double bpmContribution = similarityContributions.value("bpm");
+    if (bpmContribution > 0.0) {
+        QVariant bpm = data(index.sibling(index.row(), fieldIndex("bpm")));
+        if (bpm.isValid()) {
+            double bpmDiff = abs(bpm.toDouble() - m_fSeedTrackBpm);
+            double bpmScore = ((maxBpmDiff - bpmDiff) / maxBpmDiff);
 
-        score.setValue(scoreValue);
+            if (bpmScore > 1.0) bpmScore = 1.0;
+            else if (bpmScore < 0.0) bpmScore = 0.0;
+            bpmScore *= bpmContribution * 100.0;
+
+            score.setValue(bpmScore + score.toDouble());
+        }
+    }
+
+    double timbreContribution = similarityContributions.value("timbre");
+
+    if (timbreContribution > 0.0) {
+        TrackPointer otherTrack = getTrack(index);
+        TimbrePointer pTimbre = otherTrack->getTimbre();
+        if (!pTimbre.isNull()) {
+            double timbreScore = 1.0 - TimbreUtils::klDivergence(m_pSeedTrackTimbre, pTimbre);
+            timbreScore *= timbreContribution * 100.0;
+            qDebug() << timbreScore;
+            score.setValue(timbreScore + score.toDouble());
+        }
     }
 
     return score;

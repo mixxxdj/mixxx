@@ -3,9 +3,11 @@
 #ifndef SELECTORLIBRARYTABLEMODEL_H_
 #define SELECTORLIBRARYTABLEMODEL_H_
 
+#include <QHash>
 #include <QModelIndexList>
 #include "library/librarytablemodel.h"
 #include "controlobjectthreadmain.h"
+#include "track/timbre.h"
 
 
 class ControlObjectThreadMain;
@@ -29,6 +31,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool seedTrackGenreExists();
     bool seedTrackBpmExists();
     bool seedTrackKeyExists();
+    bool seedTrackTimbreExists();
 
   public slots:
     void filterByGenre(bool value);
@@ -64,11 +67,13 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterKey5th;
     bool m_bFilterKeyRelative;
 
+    QHash<QString, double> similarityContributions;
     // Current Track Properties
     QString m_sSeedTrackInfo;
     QString m_sSeedTrackGenre;
     float m_fSeedTrackBpm;
     mixxx::track::io::key::ChromaticKey m_seedTrackKey;
+    TimbrePointer m_pSeedTrackTimbre;
 
     QString m_pChannel;
     QString m_filterString;
