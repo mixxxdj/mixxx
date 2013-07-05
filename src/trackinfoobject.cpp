@@ -882,10 +882,8 @@ TimbrePointer TrackInfoObject::getTimbre() const {
 
 void TrackInfoObject::setTimbre(TimbrePointer pTimbre) {
     QMutexLocker lock(&m_qMutex);
-    bool dirty = true;
     m_pTimbre = pTimbre;
-    if (dirty)
-        setDirty(true);
+    setDirty(true);
 }
 void TrackInfoObject::setKeys(Keys keys) {
     QMutexLocker lock(&m_qMutex);

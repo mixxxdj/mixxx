@@ -319,9 +319,9 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
         TrackPointer otherTrack = getTrack(index);
         TimbrePointer pTimbre = otherTrack->getTimbre();
         if (!pTimbre.isNull()) {
-            double timbreScore = 1.0 - TimbreUtils::klDivergence(m_pSeedTrackTimbre, pTimbre);
-            timbreScore *= timbreContribution * 100.0;
-            qDebug() << timbreScore;
+            double timbreScore = TimbreUtils::klDivergence(m_pSeedTrackTimbre, pTimbre);
+            qDebug() << m_sSeedTrackInfo << "x" << otherTrack->getInfo() << timbreScore;
+            timbreScore *= timbreContribution;
             score.setValue(timbreScore + score.toDouble());
         }
     }

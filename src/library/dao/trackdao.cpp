@@ -368,9 +368,9 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
         timbreVersion = pTimbre->getVersion();
         timbreSubVersion = pTimbre->getSubVersion();
     }
+    m_pQueryLibraryInsert->bindValue(":timbre", pTimbreBlob ? *pTimbreBlob : QVariant(QVariant::ByteArray));
     m_pQueryLibraryInsert->bindValue(":timbre_version", timbreVersion);
     m_pQueryLibraryInsert->bindValue(":timbre_sub_version", timbreSubVersion);
-    m_pQueryLibraryInsert->bindValue(":timbre", pTimbreBlob ? *pTimbreBlob : QVariant(QVariant::ByteArray));
     delete pTimbreBlob;
 }
 
@@ -903,6 +903,16 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
                 // The in-database data would change because of this. Mark the
                 // track dirty so we save it when it is deleted.
                 shouldDirty = true;
+            }
+
+            QString timbreVersion = query.value(queryRecord.indexOf("keys_version")).toString();
+            QString timbreSubVersion = query.value(queryRecord.indexOf("timbre_sub_version")).toString();
+            QByteArray timbreBlob = query.value(queryRecord.indexOf("timbre")).toByteArray();
+            TimbrePointer pTimbre = TimbreFactory::loadTimbreFromByteArray(
+                pTrack, timbreVersion, timbreSubVersion, &timbreBlob);
+
+            if (pTimbre) {
+                pTrack->setTimbre(pTimbre);
             }
 
             pTrack->setTimesPlayed(timesplayed);

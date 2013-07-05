@@ -965,6 +965,7 @@ SimilarityPlugin::getRemainingFeatures()
     std::vector<float> mean = returnFeatures[m_meansOutput][0].values;
     std::vector<float> variance = returnFeatures[m_variancesOutput][0].values;
     std::vector<float> beatSpectrum = returnFeatures[m_beatSpectraOutput][0].values;
+    
     for (std::vector<float>::iterator it = mean.begin(); it != mean.end(); ++it) {
         combinedFeature.values.push_back(*it);
     }
