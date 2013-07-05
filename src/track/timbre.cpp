@@ -39,6 +39,9 @@ void Timbre::setSubVersion(QString subVersion) {
     QMutexLocker locker(&m_mutex);
     m_subVersion = subVersion;
 }
+TimbreModel Timbre::getTimbreModel() {
+    return m_timbreModel;
+}
 
 void Timbre::readByteArray(const QByteArray* pByteArray) {
     if (!m_timbreModel.ParseFromArray(pByteArray->constData(), pByteArray->size())) {
