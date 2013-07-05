@@ -16,12 +16,17 @@ class AnalyserTimbre : public Analyser {
     void cleanup(TrackPointer tio);
     void finalise(TrackPointer tio);
   private:
+    static QHash<QString, QString> getExtraVersionInfo(
+        QString pluginId, bool bPreferencesFastAnalysis);
+    bool checkStoredTimbre(TrackPointer tio) const;
     ConfigObject<ConfigValue> *m_pConfig;
     VampAnalyser* m_pVamp;
     QString m_pluginId;
+    int m_iSampleRate;
+    int m_iTotalSamples;
+
     bool m_bShouldAnalyze;
     bool m_bPreferencesFastAnalysis;
-    int m_iSampleRate, m_iTotalSamples;
 };
 
 #endif // ANALYSERTIMBRE_H

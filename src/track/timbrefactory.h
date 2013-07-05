@@ -24,6 +24,12 @@ class TimbreFactory {
 
     static QString getPreferredSubVersion(
         const QHash<QString, QString> extraVersionInfo);
+
+    static TimbrePointer makePreferredTimbreModel(TrackPointer pTrack,
+                                                  QVector<double> timbreVector,
+                                                  const QHash<QString, QString> extraVersionInfo,
+                                                  const int iSampleRate, const int iTotalSamples);
+
   private:
     static void deleteTimbre(Timbre* pTimbre);
 

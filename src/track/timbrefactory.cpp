@@ -1,4 +1,5 @@
 #include <QtDebug>
+#include <QStringList>
 
 #include "track/timbre.h"
 #include "track/timbrefactory.h"
@@ -60,6 +61,55 @@ TimbrePointer TimbreFactory::makeTimbreModelFromVamp(QVector<double> timbreVecto
     }
     Timbre* pTimbre = new Timbre(timbre_model);
     return TimbrePointer(pTimbre, &TimbreFactory::deleteTimbre);
+}
+
+//static
+QString TimbreFactory::getPreferredVersion() {
+    return TIMBRE_MODEL_VERSION;
+}
+
+QString TimbreFactory::getPreferredSubVersion(
+    const QHash<QString, QString> extraVersionInfo) {
+    const char* kSubVersionKeyValueSeparator = "=";
+    const char* kSubVersionFragmentSeparator = "|";
+    QStringList fragments;
+
+    QHashIterator<QString, QString> it(extraVersionInfo);
+    while (it.hasNext()) {
+        it.next();
+        if (it.key().contains(kSubVersionKeyValueSeparator) ||
+            it.key().contains(kSubVersionFragmentSeparator) ||
+            it.value().contains(kSubVersionKeyValueSeparator) ||
+            it.value().contains(kSubVersionFragmentSeparator)) {
+            qDebug() << "ERROR: Your analyser key/value contains invalid characters:"
+                     << it.key() << ":" << it.value() << "Skipping.";
+            continue;
+        }
+        fragments << QString("%1%2%3").arg(
+            it.key(), kSubVersionKeyValueSeparator, it.value());
+    }
+
+    qSort(fragments);
+    return (fragments.size() > 0) ? fragments.join(kSubVersionFragmentSeparator) : "";
+}
+
+TimbrePointer TimbreFactory::makePreferredTimbreModel(TrackPointer pTrack,
+                                                      QVector<double> timbreVector,
+                                                      const QHash<QString, QString> extraVersionInfo,
+                                                      const int iSampleRate,
+                                                      const int iTotalSamples) {
+    Q_UNUSED(pTrack);
+    Q_UNUSED(iSampleRate);
+    const QString version = getPreferredVersion();
+    const QString subVersion = getPreferredSubVersion(extraVersionInfo);
+
+    if (version == TIMBRE_MODEL_VERSION) {
+        TimbrePointer pTimbre = makeTimbreModelFromVamp(timbreVector);
+        pTimbre->setSubVersion(subVersion);
+        return pTimbre;
+    }
+    qDebug() << "ERROR: Could not determine what type of TimbreModel to create.";
+    return TimbrePointer();
 }
 
 void TimbreFactory::deleteTimbre(Timbre* pTimbre) {

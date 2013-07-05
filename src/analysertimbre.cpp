@@ -1,5 +1,6 @@
 #include <QtDebug>
 #include <QVector>
+#include <QHash>
 
 #include "analysertimbre.h"
 #include "track/timbre_preferences.h"
@@ -25,6 +26,7 @@ bool AnalyserTimbre::initialise(TrackPointer tio, int sampleRate, int totalSampl
     bool bPreferencesTimbreAnalysisEnabled = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(TIMBRE_CONFIG_KEY, TIMBRE_ANALYSIS_ENABLED)).toInt());
+
     if (!bPreferencesTimbreAnalysisEnabled) {
         qDebug() << "Timbre analysis is deactivated";
         m_bShouldAnalyze = false;
@@ -38,6 +40,13 @@ bool AnalyserTimbre::initialise(TrackPointer tio, int sampleRate, int totalSampl
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
+
+    m_bShouldAnalyze = !checkStoredTimbre(tio);
+
+    if (!m_bShouldAnalyze) {
+        qDebug() << "Timbre model calculation will not start.";
+        return false;
+    }
 
     qDebug() << "Timbre analysis started with plugin" << pluginID;
 
@@ -71,6 +80,7 @@ bool AnalyserTimbre::loadStored(TrackPointer tio) const {
     if (pluginID.isEmpty() || pluginID.isNull())
         pluginID = VAMP_ANALYSER_TIMBRE_DEFAULT_PLUGIN_ID;
 
+    return checkStoredTimbre(tio);
 }
 
 void AnalyserTimbre::cleanup(TrackPointer tio) {
@@ -94,6 +104,50 @@ void AnalyserTimbre::finalise(TrackPointer tio) {
 
     qDebug() << "Timbre vector size:" << timbreVector.size();
 
-    TimbrePointer pTimbre = TimbreFactory::makeTimbreModelFromVamp(timbreVector);
+    QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
+        m_pluginId, m_bPreferencesFastAnalysis);
+
+    TimbrePointer pTimbre = TimbreFactory::makePreferredTimbreModel(tio,
+                                                                    timbreVector,
+                                                                    extraVersionInfo,
+                                                                    m_iSampleRate,
+                                                                    m_iTotalSamples);
     tio->setTimbre(pTimbre);
+}
+
+QHash<QString, QString> AnalyserTimbre::getExtraVersionInfo(
+    QString pluginId, bool bPreferencesFastAnalysis) {
+    QHash<QString, QString> extraVersionInfo;
+    extraVersionInfo["vamp_plugin_id"] = pluginId;
+    if (bPreferencesFastAnalysis) {
+        extraVersionInfo["fast_analysis"] = "1";
+    }
+    return extraVersionInfo;
+}
+
+bool AnalyserTimbre::checkStoredTimbre(TrackPointer tio) const {
+    bool isStored = false;
+    TimbrePointer pTimbre = tio->getTimbre();
+    if (pTimbre) {
+        QString version = pTimbre->getVersion();
+        QString subVersion = pTimbre->getSubVersion();
+        QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
+            m_pluginId, m_bPreferencesFastAnalysis);
+        QString newVersion = TimbreFactory::getPreferredVersion();
+        QString newSubVersion = TimbreFactory::getPreferredSubVersion(extraVersionInfo);
+
+        if (version == newVersion && subVersion == newSubVersion) {
+            qDebug() << "Timbre version/sub-version unchanged since previous analysis. Not analyzing.";
+            isStored = true;
+        } else {
+            qDebug() << "Track has previous timbre model that is not up"
+                     << "to date with latest settings, but user preferences"
+                     << "indicate we should not re-analyze it.";
+            isStored = true;
+        }
+    } else {
+        // If we got here, we want to analyze this track.
+        isStored = false;
+    }
+    return isStored;
 }
