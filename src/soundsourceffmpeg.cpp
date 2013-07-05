@@ -31,8 +31,6 @@
 #include <QDebug>
 
 static QMutex ffmpegmutex;
-static bool ffmpeginit = false;
-
 
 // If some point of time we don't want
 // to use buffering (mostly for debug)
@@ -43,15 +41,6 @@ static bool ffmpeginit = false;
 #define FFMPEG_MP4_FRAME_SIZE 1024
 #define FFMPEG_OPUS_FRAME_SIZE 960
 #define FFMPEG_OGG_FRAME_SIZE 128
-
-static void FFmpegInit() {
-    if (!ffmpeginit) {
-        qDebug() << "Initialising avcodec/avformat";
-        av_register_all();
-        ffmpeginit = true;
-    }
-}
-
 
 SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
     : Mixxx::SoundSource(filename)
@@ -535,8 +524,6 @@ int SoundSourceFFmpeg::parseHeader() {
     AVCodecContext * CodecCtx;
     AVDictionaryEntry *FmtTag = NULL;
     unsigned int i;
-
-    FFmpegInit();
 
     //qDebug() << "ffmpeg: parsing file:" << qBAFilename.constData();
     if(avformat_open_input(&FmtCtx, qBAFilename.constData(), NULL, NULL) !=0 ) {

@@ -40,7 +40,7 @@
 //
 
 // Constructor
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
 EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, AVCodecID codec)
 #else
 EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
@@ -229,15 +229,13 @@ void EncoderFfmpegCore::updateMetaData(char* artist, char* title, char* album) {
 }
 
 int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
-    //av_register_all();
-    //avcodec_register_all();
 
 #ifndef avformat_alloc_output_context2
     qDebug() << "EncoderFfmpegCore::initEncoder: Old Style initialization";
     m_pEncodeFormatCtx = avformat_alloc_context();
 #endif
 
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
     if( m_SCcodecId == AV_CODEC_ID_MP3 ) {
 #else
     if( m_SCcodecId == CODEC_ID_MP3 ) {
@@ -250,7 +248,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
 #endif
 
         m_lBitrate = bitrate * 1000;
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
     } else if( m_SCcodecId == AV_CODEC_ID_AAC ) {
 #else
     } else if( m_SCcodecId == CODEC_ID_AAC ) {
@@ -269,7 +267,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
         m_pEncodeFormatCtx->oformat->audio_codec=AV_CODEC_ID_VORBIS;
 #else
         m_pEncoderFormat = av_guess_format(NULL, "output.ogg", NULL);
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
         m_pEncoderFormat->audio_codec=AV_CODEC_ID_VORBIS;
 #else
         m_pEncoderFormat->audio_codec=CODEC_ID_VORBIS;
@@ -323,7 +321,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
     l_SFrame->nb_samples = m_iAudioInputFrameSize;
     // Mixxx uses float (32 bit) samples..
     l_SFrame->format = AV_SAMPLE_FMT_FLT;
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
     l_SFrame->channel_layout = l_SCodecCtx->channel_layout;
 #endif
 
@@ -357,7 +355,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
         l_SFrame = avcodec_alloc_frame();
         l_SFrame->nb_samples = m_iAudioInputFrameSize;
         l_SFrame->format = l_SCodecCtx->sample_fmt;
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
         l_SFrame->channel_layout = m_pEncoderAudioStream->codec->channel_layout;
 #endif
 
@@ -415,7 +413,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 
     // qDebug() << "!!PP";
     av_free_packet(&l_SPacket);
-#ifndef __FFMPEGOLDAPI__
+#ifdef __FFMPEGOLDAPI__
     av_destruct_packet(&l_SPacket);
     avcodec_free_frame(&l_SFrame);
 #else
@@ -474,7 +472,7 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
 }
 
 /* Add an output stream. */
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
 AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **codec, enum AVCodecID codec_id) {
 #else
 AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **codec, enum CodecID codec_id) {

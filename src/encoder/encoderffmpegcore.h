@@ -53,7 +53,7 @@ class EncoderCallback;
 
 class EncoderFfmpegCore : public Encoder {
 public:
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
     EncoderFfmpegCore(EncoderCallback* pCallback=NULL, AVCodecID codec = AV_CODEC_ID_MP2);
 #else
     EncoderFfmpegCore(EncoderCallback* pCallback=NULL, CodecID codec = CODEC_ID_MP2);
@@ -74,7 +74,7 @@ private:
     int writeAudioFrame(AVFormatContext *oc, AVStream *st);
     void closeAudio(AVStream *st);
     void openAudio(AVCodec *codec, AVStream *st);
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
     AVStream *addStream(AVFormatContext *oc, AVCodec **codec, enum AVCodecID codec_id);
 #else
     AVStream *addStream(AVFormatContext *oc, AVCodec **codec, enum CodecID codec_id);
@@ -109,7 +109,7 @@ private:
     uint64_t m_lRecorededBytes;
     uint64_t m_lDts;
     uint64_t m_lPts;
-#ifdef AV_CODEC_ID_NONE
+#ifndef __FFMPEGOLDAPI__
     enum AVCodecID m_SCcodecId;
 #else
     enum CodecID m_SCcodecId;
