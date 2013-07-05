@@ -21,8 +21,15 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "encoder/encoder.h"
+
+#ifdef __FFMPEGFILE__
+#include "encoder/encoderffmpegmp3.h"
+#include "encoder/encoderffmpegvorbis.h"
+#else
 #include "encoder/encodermp3.h"
 #include "encoder/encodervorbis.h"
+#endif
+
 #include "errordialoghandler.h"
 #include "playerinfo.h"
 #include "recording/defs_recording.h"
@@ -74,24 +81,40 @@ void EngineRecord::updateFromPreferences() {
     }
 
     if (m_Encoding == ENCODING_MP3) {
+#ifdef __FFMPEGFILE__
+        m_encoder = new EncoderFfmpegMp3(this);
+#else
         m_encoder = new EncoderMp3(this);
+#endif
         m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if(m_encoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
                                   m_samplerate->get()) < 0) {
             delete m_encoder;
             m_encoder = NULL;
+#ifdef __FFMPEGFILE__
+            qDebug() << "MP3 recording is not supported. FFMPEG mp3 could not be initialized";
+#else
             qDebug() << "MP3 recording is not supported. Lame could not be initialized";
+#endif
         }
     } else if (m_Encoding == ENCODING_OGG) {
+#ifdef __FFMPEGFILE__
+        m_encoder = new EncoderFfmpegVorbis(this);
+#else
         m_encoder = new EncoderVorbis(this);
+#endif
         m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if (m_encoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
                                    m_samplerate->get()) < 0) {
             delete m_encoder;
             m_encoder = NULL;
+#ifdef __FFMPEGFILE__
+            qDebug() << "OGG recording is not supported. FFMPEG OGG/Vorbis could not be initialized";
+#else
             qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
+#endif
         }
     }
     /*

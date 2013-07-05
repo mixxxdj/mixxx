@@ -52,8 +52,9 @@ unsigned int EncoderFfmpegResample::getBufferSize() {
 }
 
 
-int EncoderFfmpegResample::open(enum AVSampleFormat outSampleFmt) {
+int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt) {
     m_pOutSampleFmt = outSampleFmt;
+    m_pInSampleFmt = inSampleFmt;
 
     // They make big change in FFPEG 1.1 before that every format just passed s16 back to application
     // from FFMPEG 1.1 up MP3 pass s16p (Planar stereo 16 bit) MP4/AAC FLTP (Planar 32 bit float) and OGG also FLTP (WMA same thing)
@@ -61,7 +62,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat outSampleFmt) {
     // NOT Going to work because MIXXX works with pure s16 that is not planar
     // GOOD thing is now this can handle allmost everything..
     // What should be tested is 44800 Hz downsample and 22100 Hz up sample.
-    if ((m_pCodecCtx->sample_fmt != outSampleFmt || m_pCodecCtx->sample_rate != 44100 || m_pCodecCtx->channel_layout != AV_CH_LAYOUT_STEREO) && m_pSwrCtx == NULL ) {
+    if ((inSampleFmt != outSampleFmt || m_pCodecCtx->sample_rate != 44100 || m_pCodecCtx->channel_layout != AV_CH_LAYOUT_STEREO) && m_pSwrCtx == NULL ) {
         if( m_pSwrCtx != NULL ) {
             qDebug() << "Freeing Resample context";
 
@@ -86,6 +87,9 @@ int EncoderFfmpegResample::open(enum AVSampleFormat outSampleFmt) {
             m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
         } else if( m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 1) {
             m_pCodecCtx->channel_layout = AV_CH_LAYOUT_MONO;
+        } else if( m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 0) {
+            m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
+            m_pCodecCtx->channels = 2;
         }
 
         // Create converter from in type to s16 sample rate
@@ -100,7 +104,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat outSampleFmt) {
 #endif
 
         av_opt_set_int(m_pSwrCtx,"in_channel_layout", m_pCodecCtx->channel_layout, 0);
-        av_opt_set_int(m_pSwrCtx,"in_sample_fmt", m_pCodecCtx->sample_fmt, 0);
+        av_opt_set_int(m_pSwrCtx,"in_sample_fmt", inSampleFmt, 0);
         av_opt_set_int(m_pSwrCtx,"in_sample_rate", m_pCodecCtx->sample_rate, 0);
         av_opt_set_int(m_pSwrCtx,"out_channel_layout", AV_CH_LAYOUT_STEREO, 0);
         av_opt_set_int(m_pSwrCtx,"out_sample_fmt", outSampleFmt, 0);
@@ -113,7 +117,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat outSampleFmt) {
                                            m_pCodecCtx->sample_rate,
                                            m_pCodecCtx->sample_rate,
                                            outSampleFmt,
-                                           m_pCodecCtx->sample_fmt,
+                                           inSampleFmt,
                                            16,
                                            10,
                                            0,
@@ -134,13 +138,13 @@ int EncoderFfmpegResample::open(enum AVSampleFormat outSampleFmt) {
         if ( swr_init(m_pSwrCtx) < 0) {
 #endif
             m_pSwrCtx = NULL;
-            qDebug() << "ERROR!! Conventor not created: " <<  m_pCodecCtx->sample_rate << "Hz " << av_get_sample_fmt_name(m_pCodecCtx->sample_fmt) << " " <<  (int)m_pCodecCtx->channels << "(layout:" << m_pCodecCtx->channel_layout << ") channels";
+            qDebug() << "ERROR!! Conventor not created: " <<  m_pCodecCtx->sample_rate << "Hz " << av_get_sample_fmt_name(inSampleFmt) << " " <<  (int)m_pCodecCtx->channels << "(layout:" << m_pCodecCtx->channel_layout << ") channels";
             qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" << av_get_sample_fmt_name(outSampleFmt) << " with 2 channels";
             return -1;
         }
 #endif
 
-        qDebug() << "Created sample rate converter for conversion of" <<  m_pCodecCtx->sample_rate << "Hz format:" << av_get_sample_fmt_name(m_pCodecCtx->sample_fmt) << "with:" <<  (int)m_pCodecCtx->channels << "(layout:" << m_pCodecCtx->channel_layout << ") channels (BPS" << av_get_bytes_per_sample(m_pCodecCtx->sample_fmt) << ")";
+        qDebug() << "Created sample rate converter for conversion of" <<  m_pCodecCtx->sample_rate << "Hz format:" << av_get_sample_fmt_name(inSampleFmt) << "with:" <<  (int)m_pCodecCtx->channels << "(layout:" << m_pCodecCtx->channel_layout << ") channels (BPS" << av_get_bytes_per_sample(m_pCodecCtx->sample_fmt) << ")";
         qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" <<  av_get_sample_fmt_name(outSampleFmt) << "with 2 (layout:" << m_pCodecCtx->channel_layout << ") channels (BPS " << av_get_bytes_per_sample(outSampleFmt) << ")";
     }
 

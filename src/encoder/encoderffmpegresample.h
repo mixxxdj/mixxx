@@ -54,7 +54,7 @@ class EncoderFfmpegResample {
 public:
     EncoderFfmpegResample(AVCodecContext *codecCtx);
     ~EncoderFfmpegResample();
-    int open(enum AVSampleFormat outSampleFmt);
+    int open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt);
     unsigned int getBufferSize();
 
 #ifndef __FFMPEGOLDAPI__
@@ -69,6 +69,7 @@ public:
 private:
     AVCodecContext *m_pCodecCtx;
     enum AVSampleFormat m_pOutSampleFmt;
+    enum AVSampleFormat m_pInSampleFmt;
 
 #ifndef __FFMPEGOLDAPI__
 

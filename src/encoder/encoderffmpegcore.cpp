@@ -235,6 +235,9 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
     m_pEncodeFormatCtx = avformat_alloc_context();
 #endif
 
+        m_lBitrate = bitrate * 1000;
+        m_lSampleRate = samplerate;
+
 #ifndef __FFMPEGOLDAPI__
     if( m_SCcodecId == AV_CODEC_ID_MP3 ) {
 #else
@@ -247,7 +250,6 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
         m_pEncoderFormat = av_guess_format(NULL, "output.mp3", NULL);
 #endif
 
-        m_lBitrate = bitrate * 1000;
 #ifndef __FFMPEGOLDAPI__
     } else if( m_SCcodecId == AV_CODEC_ID_AAC ) {
 #else
@@ -259,7 +261,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
 #else
         m_pEncoderFormat = av_guess_format(NULL, "output.m4a", NULL);
 #endif
-        m_lBitrate = bitrate * 1000;
+
     } else {
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec OGG/Vorbis";
 #ifdef avformat_alloc_output_context2
@@ -273,7 +275,6 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
         m_pEncoderFormat->audio_codec=CODEC_ID_VORBIS;
 #endif
 #endif
-        m_lBitrate = bitrate * 1000;
     }
 
 #ifdef avformat_alloc_output_context2
@@ -343,6 +344,10 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
     // If we have something else than AV_SAMPLE_FMT_FLT we have to convert it to something that
     // fits..
     if( l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT ) {
+
+  	    qDebug() << "!!!! Samplerate not set!" << l_SFrame->sample_rate;
+
+
         reSample(l_SFrame);
         // After we have turned our samples to destination
         // Format we must re-alloc l_SFrame.. it easier like this..
@@ -504,17 +509,18 @@ AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **cod
     case AVMEDIA_TYPE_AUDIO:
         l_SStream->id = 1;
         l_SCodecCtx->sample_fmt = m_pEncoderAudioCodec->sample_fmts[0];
-        m_pResample->open(AV_SAMPLE_FMT_FLT);
 
-        //l_SCodecCtx->bit_rate    = 128000;
         l_SCodecCtx->bit_rate    = m_lBitrate;
         l_SCodecCtx->sample_rate = 44100;
         l_SCodecCtx->channels    = 2;
+
+        m_pResample->open(AV_SAMPLE_FMT_FLT, l_SCodecCtx->sample_fmt);
         break;
 
     default:
         break;
     }
+
 
     /* Some formats want stream headers to be separate. */
     if (formatctx->oformat->flags & AVFMT_GLOBALHEADER)

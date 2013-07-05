@@ -192,7 +192,7 @@ int SoundSourceFFmpeg::open() {
     unlock();
 
     m_pResample = new EncoderFfmpegResample( m_pCodecCtx );
-    m_pResample->open( AV_SAMPLE_FMT_S16 );
+    m_pResample->open( m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_S16 );
 
     this->setChannels( m_pCodecCtx->channels );
     this->setSampleRate( m_pCodecCtx->sample_rate );

@@ -106,6 +106,7 @@ private:
     unsigned int m_iAudioCpyLen;
 
     uint32_t m_lBitrate;
+    uint32_t m_lSampleRate;
     uint64_t m_lRecorededBytes;
     uint64_t m_lDts;
     uint64_t m_lPts;
