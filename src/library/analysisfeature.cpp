@@ -54,6 +54,8 @@ void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
 
     connect(this, SIGNAL(analysisActive(bool)),
             m_pAnalysisView, SLOT(analysisActive(bool)));
+    connect(this, SIGNAL(trackAnalysisStarted(int)),
+            m_pAnalysisView, SLOT(trackAnalysisStarted(int)));
 
     m_pAnalysisView->installEventFilter(keyboard);
 
@@ -83,7 +85,6 @@ void AnalysisFeature::activate() {
 }
 
 void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
-    qDebug() << "kain88 analyse stuff";
     if (m_pAnalyserQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
         m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
@@ -110,6 +111,7 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
             m_pAnalyserQueue->queueAnalyseTrack(pTrack);
         }
     }
+    emit(trackAnalysisStarted(trackIds.size()));
 }
 
 void AnalysisFeature::stopAnalysis() {
@@ -131,7 +133,6 @@ void AnalysisFeature::cleanupAnalyser() {
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
-    qDebug() << "kain88 try to accept it damn you" ;
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
         // XXX: Possible WTF alert - Previously we thought we needed toString() here
@@ -141,7 +142,6 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
         // case. toString() absolutely does not work when you pass the result to a
         files.append(url.toLocalFile());
     }
-    qDebug() << "kain88 accept it damn you" ;
     // Adds track, does not insert duplicates, handles unremoving logic.
     QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
     analyzeTracks(trackIds);

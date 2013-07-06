@@ -112,7 +112,6 @@ void DlgAnalysis::analyze() {
                 trackIds.append(trackId);
             }
         }
-        m_tracksInQueue = trackIds.count();
         m_currentTrack = 1;
         emit(analyzeTracks(trackIds));
     }
@@ -147,6 +146,10 @@ void DlgAnalysis::trackAnalysisProgress(int progress) {
                 QString::number(progress));
         labelProgress->setText(text);
     }
+}
+
+void DlgAnalysis::trackAnalysisStarted(int size) {
+    m_tracksInQueue = size;
 }
 
 void DlgAnalysis::showRecentSongs() {

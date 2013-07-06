@@ -36,6 +36,7 @@ class AnalysisFeature : public LibraryFeature {
 
   signals:
     void analysisActive(bool bActive);
+    void trackAnalysisStarted(int size);
 
   public slots:
     void activate();
