@@ -832,8 +832,9 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
     }
 }
 
-QString buildWhatsThis(QString& title, const QString& text) {
-    return QString("%1\n\n%2").arg(title.replace("&", ""), text);
+QString buildWhatsThis(const QString& title, const QString& text) {
+    QString preparedTitle = title;
+    return QString("%1\n\n%2").arg(preparedTitle.replace("&", ""), text);
 }
 
 /** initializes all QActions of the application */
