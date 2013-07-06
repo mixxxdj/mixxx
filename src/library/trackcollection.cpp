@@ -120,13 +120,13 @@ QSqlDatabase& TrackCollection::getDatabase() {
     @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
-bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
-                                      const QStringList & nameFilters,
+bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
+                                      const QStringList& nameFilters,
                                       volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
-    QFileInfoList files;
+    // QFileInfoList files;
 
     //get a list of the contents of the directory and go through it.
     QDirIterator it(directory, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
