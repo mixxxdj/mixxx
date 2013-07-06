@@ -1,31 +1,30 @@
-#ifndef DLGTRIAGE_H
-#define DLGTRIAGE_H
+#ifndef DLGANALYSIS_H
+#define DLGANALYSIS_H
 
 #include <QItemSelection>
-#include "ui_dlgprepare.h"
+#include "ui_dlganalysis.h"
 #include "configobject.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
-#include "library/preparelibrarytablemodel.h"
+#include "library/analysislibrarytablemodel.h"
 
-class PrepareLibraryTableModel;
-class WPrepareCratesTableView;
-class WPrepareLibraryTableView;
+class AnalysisLibraryTableModel;
+class WAnalysisLibraryTableView;
 
-class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual LibraryView {
+class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual LibraryView {
     Q_OBJECT
   public:
-    DlgPrepare(QWidget *parent,
+    DlgAnalysis(QWidget *parent,
                ConfigObject<ConfigValue>* pConfig,
                TrackCollection* pTrackCollection);
-    virtual ~DlgPrepare();
+    virtual ~DlgAnalysis();
 
     virtual void onSearch(const QString& text);
     virtual void onShow();
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);
-    inline const QString currentSearch() { return m_pPrepareLibraryTableModel->currentSearch(); };
+    inline const QString currentSearch() { return m_pAnalysisLibraryTableModel->currentSearch(); };
 
   public slots:
     void tableSelectionChanged(const QItemSelection& selected,
@@ -51,9 +50,8 @@ class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual Library
     TrackCollection* m_pTrackCollection;
     bool m_bAnalysisActive;
     QButtonGroup m_songsButtonGroup;
-    WPrepareLibraryTableView* m_pPrepareLibraryTableView;
-    PrepareLibraryTableModel* m_pPrepareLibraryTableModel;
-    WPrepareCratesTableView* m_pPrepareCratesTableView;
+    WAnalysisLibraryTableView* m_pAnalysisLibraryTableView;
+    AnalysisLibraryTableModel* m_pAnalysisLibraryTableModel;
     int m_tracksInQueue;
     int m_currentTrack;
 };

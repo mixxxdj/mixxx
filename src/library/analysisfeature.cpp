@@ -4,17 +4,17 @@
 
 #include <QtDebug>
 
-#include "library/preparefeature.h"
+#include "library/analysisfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
-#include "dlgprepare.h"
+#include "dlganalysis.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 #include "analyserqueue.h"
 
-const QString PrepareFeature::m_sPrepareViewName = QString("Prepare");
+const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
-PrepareFeature::PrepareFeature(QObject* parent,
+AnalysisFeature::AnalysisFeature(QObject* parent,
                                ConfigObject<ConfigValue>* pConfig,
                                TrackCollection* pTrackCollection) :
         LibraryFeature(parent),
@@ -23,65 +23,65 @@ PrepareFeature::PrepareFeature(QObject* parent,
         m_pAnalyserQueue(NULL) {
 }
 
-PrepareFeature::~PrepareFeature() {
+AnalysisFeature::~AnalysisFeature() {
     // TODO(XXX) delete these
     //delete m_pLibraryTableModel;
     cleanupAnalyser();
 }
 
-QVariant PrepareFeature::title() {
+QVariant AnalysisFeature::title() {
     return tr("Analyze");
 }
 
-QIcon PrepareFeature::getIcon() {
+QIcon AnalysisFeature::getIcon() {
     return QIcon(":/images/library/ic_library_prepare.png");
 }
 
-void PrepareFeature::bindWidget(WLibrary* libraryWidget,
+void AnalysisFeature::bindWidget(WLibrary* libraryWidget,
                                 MixxxKeyboard* keyboard) {
-    m_pPrepareView = new DlgPrepare(libraryWidget,
+    m_pAnalysisView = new DlgAnalysis(libraryWidget,
                                     m_pConfig,
                                     m_pTrackCollection);
-    connect(m_pPrepareView, SIGNAL(loadTrack(TrackPointer)),
+    connect(m_pAnalysisView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pPrepareView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
+    connect(m_pAnalysisView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
-    connect(m_pPrepareView, SIGNAL(analyzeTracks(QList<int>)),
+    connect(m_pAnalysisView, SIGNAL(analyzeTracks(QList<int>)),
             this, SLOT(analyzeTracks(QList<int>)));
-    connect(m_pPrepareView, SIGNAL(stopAnalysis()),
+    connect(m_pAnalysisView, SIGNAL(stopAnalysis()),
             this, SLOT(stopAnalysis()));
 
     connect(this, SIGNAL(analysisActive(bool)),
-            m_pPrepareView, SLOT(analysisActive(bool)));
+            m_pAnalysisView, SLOT(analysisActive(bool)));
 
-    m_pPrepareView->installEventFilter(keyboard);
+    m_pAnalysisView->installEventFilter(keyboard);
 
-    // Let the DlgPrepare know whether or not analysis is active.
+    // Let the DlgAnalysis know whether or not analysis is active.
     bool bAnalysisActive = m_pAnalyserQueue != NULL;
     emit(analysisActive(bAnalysisActive));
 
-    libraryWidget->registerView(m_sPrepareViewName, m_pPrepareView);
+    libraryWidget->registerView(m_sAnalysisViewName, m_pAnalysisView);
 }
 
-TreeItemModel* PrepareFeature::getChildModel() {
+TreeItemModel* AnalysisFeature::getChildModel() {
     return &m_childModel;
 }
 
-void PrepareFeature::refreshLibraryModels() {
-    if (m_pPrepareView) {
-        m_pPrepareView->onShow();
+void AnalysisFeature::refreshLibraryModels() {
+    if (m_pAnalysisView) {
+        m_pAnalysisView->onShow();
     }
 }
 
-void PrepareFeature::activate() {
-    //qDebug() << "PrepareFeature::activate()";
-    emit(switchToView(m_sPrepareViewName));
-    if (m_pPrepareView) {
-        emit(restoreSearch(m_pPrepareView->currentSearch()));
+void AnalysisFeature::activate() {
+    //qDebug() << "AnalysisFeature::activate()";
+    emit(switchToView(m_sAnalysisViewName));
+    if (m_pAnalysisView) {
+        emit(restoreSearch(m_pAnalysisView->currentSearch()));
     }
 }
 
-void PrepareFeature::analyzeTracks(QList<int> trackIds) {
+void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
     if (m_pAnalyserQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
         m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
@@ -89,12 +89,12 @@ void PrepareFeature::analyzeTracks(QList<int> trackIds) {
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
         // Note: this sucks... we should refactor the prefs/analyser to fix this hacky bit ^^^^.
 
-        m_pAnalyserQueue = AnalyserQueue::createPrepareViewAnalyserQueue(m_pConfig, m_pTrackCollection);
+        m_pAnalyserQueue = AnalyserQueue::createViewAnalyserQueue(m_pConfig, m_pTrackCollection);
 
         connect(m_pAnalyserQueue, SIGNAL(trackProgress(int)),
-                m_pPrepareView, SLOT(trackAnalysisProgress(int)));
+                m_pAnalysisView, SLOT(trackAnalysisProgress(int)));
         connect(m_pAnalyserQueue, SIGNAL(trackFinished(int)),
-                m_pPrepareView, SLOT(trackAnalysisFinished(int)));
+                m_pAnalysisView, SLOT(trackAnalysisFinished(int)));
 
         connect(m_pAnalyserQueue, SIGNAL(queueEmpty()),
                 this, SLOT(cleanupAnalyser()));
@@ -110,14 +110,14 @@ void PrepareFeature::analyzeTracks(QList<int> trackIds) {
     }
 }
 
-void PrepareFeature::stopAnalysis() {
+void AnalysisFeature::stopAnalysis() {
     //qDebug() << this << "stopAnalysis()";
     if (m_pAnalyserQueue != NULL) {
         m_pAnalyserQueue->stop();
     }
 }
 
-void PrepareFeature::cleanupAnalyser() {
+void AnalysisFeature::cleanupAnalyser() {
     emit(analysisActive(false));
     if (m_pAnalyserQueue != NULL) {
         m_pAnalyserQueue->stop();
