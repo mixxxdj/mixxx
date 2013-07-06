@@ -26,6 +26,8 @@ class AnalysisFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
+    bool dropAccept(QList<QUrl> urls, QWidget *pSource);
+    bool dragMoveAccept(QUrl url);
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 

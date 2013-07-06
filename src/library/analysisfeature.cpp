@@ -11,6 +11,7 @@
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 #include "analyserqueue.h"
+#include "soundsourceproxy.h"
 
 const QString AnalysisFeature::m_sAnalysisViewName = QString("Analysis");
 
@@ -82,6 +83,7 @@ void AnalysisFeature::activate() {
 }
 
 void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
+    qDebug() << "kain88 analyse stuff";
     if (m_pAnalyserQueue == NULL) {
         // Save the old BPM detection prefs setting (on or off)
         m_iOldBpmEnabled = m_pConfig->getValueString(ConfigKey("[BPM]","BPMDetectionEnabled")).toInt();
@@ -126,4 +128,27 @@ void AnalysisFeature::cleanupAnalyser() {
         // Restore old BPM detection setting for preferences...
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(m_iOldBpmEnabled));
     }
+}
+
+bool AnalysisFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+    qDebug() << "kain88 try to accept it damn you" ;
+    QList<QFileInfo> files;
+    foreach (QUrl url, urls) {
+        // XXX: Possible WTF alert - Previously we thought we needed toString() here
+        // but what you actually want in any case when converting a QUrl to a file
+        // system path is QUrl::toLocalFile(). This is the second time we have
+        // flip-flopped on this, but I think toLocalFile() should work in any
+        // case. toString() absolutely does not work when you pass the result to a
+        files.append(url.toLocalFile());
+    }
+    qDebug() << "kain88 accept it damn you" ;
+    // Adds track, does not insert duplicates, handles unremoving logic.
+    QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    analyzeTracks(trackIds);
+    return trackIds.size() > 0;
+}
+
+bool AnalysisFeature::dragMoveAccept(QUrl url) {
+    QFileInfo file(url.toLocalFile());
+    return SoundSourceProxy::isFilenameSupported(file.fileName());
 }
