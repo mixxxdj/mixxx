@@ -4,6 +4,11 @@
 #include "controlobjectslave.h"
 #include "control/control.h"
 
+ControlObjectSlave::ControlObjectSlave(QObject* pParent)
+        : QObject(pParent),
+          m_pControl(NULL) {
+}
+
 ControlObjectSlave::ControlObjectSlave(const QString& g, const QString& i, QObject* pParent)
         : QObject(pParent) {
     initialize(ConfigKey(g, i));
@@ -20,13 +25,7 @@ ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
 }
 
 void ControlObjectSlave::initialize(const ConfigKey& key) {
-    m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(m_key, false);
-    if (m_pControl) {
-        connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
-                this, SLOT(slotValueChanged(double, QObject*)),
-                Qt::DirectConnection);
-    }
+    m_pControl = ControlDoublePrivate::getControl(key, false);
 }
 
 ControlObjectSlave::~ControlObjectSlave() {
@@ -34,12 +33,23 @@ ControlObjectSlave::~ControlObjectSlave() {
 
 bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
         const char* method, Qt::ConnectionType type) {
-    return connect((QObject*)this, SIGNAL(valueChanged(double)), receiver, method, type);
+    bool ret = false;
+    if (m_pControl) {
+        ret = connect((QObject*)this, SIGNAL(valueChanged(double)),
+                receiver, method, type);
+        if (ret) {
+            // connect to ControlObjectPrivate only if required
+            ret = connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+                    this, SLOT(slotValueChanged(double, QObject*)),
+                    Qt::DirectConnection);
+        }
+    }
+    return ret;
 }
 
 bool ControlObjectSlave::connectValueChanged(
         const char* method, Qt::ConnectionType type) {
-    return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(), method, type);
+    return connectValueChanged(parent(), method, type);
 }
 
 

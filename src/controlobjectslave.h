@@ -14,6 +14,7 @@ class ControlDoublePrivate;
 class ControlObjectSlave : public QObject {
     Q_OBJECT
   public:
+    ControlObjectSlave(QObject* pParent=NULL);
     ControlObjectSlave(const QString& g, const QString& i, QObject* pParent=NULL);
     ControlObjectSlave(const char* g, const char* i, QObject* pParent=NULL);
     ControlObjectSlave(const ConfigKey& key, QObject* pParent=NULL);
@@ -30,7 +31,6 @@ class ControlObjectSlave : public QObject {
     /** Called from update(); */
     void emitValueChanged();
 
-    inline ConfigKey getKey() const { return m_key; }
     inline bool valid() const { return m_pControl != NULL; }
 
     // Returns the value of the object. Thread safe, non-blocking.
@@ -53,7 +53,6 @@ class ControlObjectSlave : public QObject {
     virtual void slotValueChanged(double v, QObject* pSetter);
 
   protected:
-    ConfigKey m_key;
     // Pointer to connected control.
     ControlDoublePrivate* m_pControl;
 };
