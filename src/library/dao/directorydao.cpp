@@ -51,7 +51,7 @@ bool DirectoryDAO::purgeDirectory(QString dir) {
     return true;
 }
 
-bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
+QSet<int> DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR % "="
@@ -60,7 +60,7 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
     query.bindValue(":oldFolder", oldFolder);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate directory";
-        return false;
+        return QSet<int>();
     }
     // Also update information in the track_locations table. This is were
     // mixxx gets the location information for a track
@@ -75,11 +75,26 @@ bool DirectoryDAO::relocateDirectory(QString oldFolder, QString newFolder) {
     query.bindValue("loc",oldFolder);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
-        return false;
+        return QSet<int>();
+    }
+
+    query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON "
+                  "track_locations.id = library.location WHERE "
+                  "instr(track_locations.location,:loc)>0");
+    query.bindValue(":loc",newFolder);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
+        return QSet<int>();
+    }
+
+    QSet<int> ids;
+    while (query.next()) {
+        ids.insert(query.value(query.record().indexOf("library.id")).toInt());
     }
 
     transaction.commit();
-    return true;
+    return ids;
 }
 
 QStringList DirectoryDAO::getDirs() {

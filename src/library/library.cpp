@@ -279,9 +279,10 @@ void Library::slotRequestRemoveDir(QString dir) {
 }
 
 void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
-    m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir,newDir);
+    QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir,newDir);
     // Clear cache to that all TIO with the old dir information get updated
     m_pTrackCollection->getTrackDAO().clearCache();
+    m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<int>());
     // also update the config file if necessary so that downgrading is still
     // possible
     QString conDir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));

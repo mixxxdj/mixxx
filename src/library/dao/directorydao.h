@@ -16,7 +16,7 @@ class DirectoryDAO : public DAO {
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     bool addDirectory(QString dir);
     bool purgeDirectory(QString dir);
-    bool relocateDirectory(QString oldFolder,QString newFolder);
+    QSet<int> relocateDirectory(QString oldFolder,QString newFolder);
     QStringList getDirs();
 
   private:
