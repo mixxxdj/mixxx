@@ -482,12 +482,6 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
 
     // This is the deck position at the start of the callback.
     double dThisPosition = getCurrentSample();
-    double dOtherLength = ControlObject::get(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"));
-    double dOtherEnginePlayPos = ControlObject::get(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"));
-    double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
-
     double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
     double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
     double beat_length = dNextBeat - dPrevBeat;
