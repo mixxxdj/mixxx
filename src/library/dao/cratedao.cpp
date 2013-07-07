@@ -46,7 +46,7 @@ int CrateDAO::createCrate(const QString& name) {
     return crateId;
 }
 
-bool CrateDAO::renameCrate(int crateId, const QString& newName) {
+bool CrateDAO::renameCrate(const int crateId, const QString& newName) {
     QSqlQuery query(m_database);
     query.prepare("UPDATE " CRATE_TABLE " SET name = :name WHERE id = :id");
     query.bindValue(":name", newName);
@@ -60,7 +60,7 @@ bool CrateDAO::renameCrate(int crateId, const QString& newName) {
     return true;
 }
 
-bool CrateDAO::setCrateLocked(int crateId, bool locked) {
+bool CrateDAO::setCrateLocked(const int crateId, const bool locked) {
     // SQLite3 doesn't support boolean value. Using integer instead.
     int lock = locked ? 1 : 0;
     QSqlQuery query(m_database);
@@ -76,7 +76,7 @@ bool CrateDAO::setCrateLocked(int crateId, bool locked) {
     return true;
 }
 
-bool CrateDAO::isCrateLocked(int crateId) {
+bool CrateDAO::isCrateLocked(const int crateId) {
     QSqlQuery query(m_database);
     query.prepare("SELECT locked FROM " CRATE_TABLE " WHERE id = :id");
     query.bindValue(":id", crateId);
@@ -93,7 +93,7 @@ bool CrateDAO::isCrateLocked(int crateId) {
     return false;
 }
 
-bool CrateDAO::deleteCrate(int crateId) {
+bool CrateDAO::deleteCrate(const int crateId) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CRATE_TRACKS_TABLE " WHERE crate_id = :id");
@@ -132,7 +132,7 @@ int CrateDAO::getCrateIdByName(const QString& name) {
     return -1;
 }
 
-int CrateDAO::getCrateId(int position) {
+int CrateDAO::getCrateId(const int position) {
     QSqlQuery query(m_database);
     query.prepare("SELECT id FROM " CRATE_TABLE);
     if (query.exec()) {
@@ -149,7 +149,7 @@ int CrateDAO::getCrateId(int position) {
     return -1;
 }
 
-QString CrateDAO::crateName(int crateId) {
+QString CrateDAO::crateName(const int crateId) {
     QSqlQuery query(m_database);
     query.prepare("SELECT name FROM " CRATE_TABLE " WHERE id = (:id)");
     query.bindValue(":id", crateId);
@@ -163,7 +163,7 @@ QString CrateDAO::crateName(int crateId) {
     return QString();
 }
 
-unsigned int CrateDAO::crateSize(int crateId) {
+unsigned int CrateDAO::crateSize(const int crateId) {
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) FROM " CRATE_TRACKS_TABLE " WHERE crate_id = (:id)");
     query.bindValue(":id", crateId);
@@ -177,7 +177,7 @@ unsigned int CrateDAO::crateSize(int crateId) {
     return 0;
 }
 
-void CrateDAO::copyCrateTracks(int sourceCrateId, int targetCrateId) {
+void CrateDAO::copyCrateTracks(const int sourceCrateId, const int targetCrateId) {
     // Query Tracks from the source Playlist
     QSqlQuery query(m_database);
     query.prepare("SELECT track_id FROM crate_tracks "
@@ -193,10 +193,10 @@ void CrateDAO::copyCrateTracks(int sourceCrateId, int targetCrateId) {
     while (query.next()) {
         trackIds.append(query.value(0).toInt());
     }
-    addTracksToCrate(trackIds, targetCrateId);
+    addTracksToCrate(targetCrateId, &trackIds);
 }
 
-bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
+bool CrateDAO::addTrackToCrate(const int trackId, const int crateId) {
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO " CRATE_TRACKS_TABLE
                   " (crate_id, track_id) VALUES (:crate_id, :track_id)");
@@ -216,36 +216,36 @@ bool CrateDAO::addTrackToCrate(int trackId, int crateId) {
 }
 
 
-int CrateDAO::addTracksToCrate(QList<int> trackIdList, int crateId) {
+int CrateDAO::addTracksToCrate(const int crateId, QList<int>* trackIdList) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO " CRATE_TRACKS_TABLE " (crate_id, track_id) VALUES (:crate_id, :track_id)");
 
-    for (int i = 0; i < trackIdList.size(); ++i) {
+    for (int i = 0; i < trackIdList->size(); ++i) {
         query.bindValue(":crate_id", crateId);
-        query.bindValue(":track_id", trackIdList.at(i));
+        query.bindValue(":track_id", trackIdList->at(i));
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
             // We must emit only those trackID that were added so we need to
             // remove the failed ones.
-            trackIdList.removeAt(i);
+            trackIdList->removeAt(i);
             --i; // account for reduced size of list
         }
     }
     transaction.commit();
 
     // Emitting the trackAdded signals for each trackID outside the transaction
-    foreach(int trackId, trackIdList) {
+    foreach(int trackId, *trackIdList) {
         emit(trackAdded(crateId, trackId));
     }
 
     emit(changed(crateId));
 
     // Return the number of tracks successfully added
-    return trackIdList.size();
+    return trackIdList->size();
 }
 
-bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
+bool CrateDAO::removeTrackFromCrate(const int trackId, const int crateId) {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CRATE_TRACKS_TABLE " WHERE "
                   "crate_id = :crate_id AND track_id = :track_id");
@@ -262,7 +262,7 @@ bool CrateDAO::removeTrackFromCrate(int trackId, int crateId) {
     return true;
 }
 
-bool CrateDAO::removeTracksFromCrate(QList<int> ids, int crateId) {
+bool CrateDAO::removeTracksFromCrate(const QList<int>& ids, const int crateId) {
     QStringList idList;
     foreach (int id, ids) {
         idList << QString::number(id);
@@ -284,7 +284,7 @@ bool CrateDAO::removeTracksFromCrate(QList<int> ids, int crateId) {
     return true;
 }
 
-void CrateDAO::removeTracksFromCrates(QList<int> ids) {
+void CrateDAO::removeTracksFromCrates(const QList<int>& ids) {
     QStringList idList;
     foreach (int id, ids) {
         idList << QString::number(id);

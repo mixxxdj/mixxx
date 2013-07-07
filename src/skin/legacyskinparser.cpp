@@ -1064,7 +1064,7 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
         "QPushButton#LibraryBPMButton { background: transparent; border: 0; }"
         "QPushButton#LibraryBPMButton:checked {image: url(:/images/library/ic_library_checked.png);}"
         "QPushButton#LibraryBPMButton:!checked {image: url(:/images/library/ic_library_unchecked.png);}"));
-        
+
     if (!XmlParse::selectNode(node, "FgColor").isNull()) {
         color.setNamedColor(XmlParse::selectNodeQString(node, "FgColor"));
         color = WSkinColor::getCorrectColor(color);
@@ -1148,7 +1148,8 @@ QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     // will specify the channel as either 1 or 2.
     if (group.size() == 0) {
         int channel = XmlParse::selectNodeInt(node, "Channel");
-        group = QString("[Channel%1]").arg(channel);
+        // groupForDeck is 0-indexed
+        group = PlayerManager::groupForDeck(channel - 1);
     }
 
     return group;

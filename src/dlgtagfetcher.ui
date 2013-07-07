@@ -63,6 +63,12 @@
            <attribute name="headerMinimumSectionSize">
             <number>50</number>
            </attribute>
+           <attribute name="headerDefaultSectionSize">
+            <number>150</number>
+           </attribute>
+           <attribute name="headerMinimumSectionSize">
+            <number>50</number>
+           </attribute>
            <column>
             <property name="text">
              <string>Track</string>
@@ -132,8 +138,8 @@
              </property>
             </spacer>
            </item>
-           <item alignment="Qt::AlignHCenter">
-            <widget class="QLabel" name="message1">
+           <item>
+            <widget class="QLabel" name="fetchingDataMessage">
              <property name="text">
               <string>Fetching track data from the MusicBrainz database</string>
              </property>
@@ -169,17 +175,10 @@
              </property>
             </spacer>
            </item>
-           <item alignment="Qt::AlignHCenter">
-            <widget class="QLabel" name="status">
-             <property name="text">
-              <string>Status:</string>
-             </property>
-            </widget>
-           </item>
            <item>
-            <widget class="QLabel" name="loading">
+            <widget class="QLabel" name="loadingStatus">
              <property name="text">
-              <string/>
+              <string notr="true">Status: %1</string>
              </property>
             </widget>
            </item>
@@ -238,16 +237,6 @@
            </property>
           </spacer>
          </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_7">
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Error</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_6">
            <item>
@@ -264,16 +253,9 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLabel" name="label_6">
+            <widget class="QLabel" name="cantConnectHttp">
              <property name="text">
-              <string>Mixxx can't connect to </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="applicationName_httpError">
-             <property name="text">
-              <string/>
+              <string notr="true">Mixxx can't connect to %1. </string>
              </property>
             </widget>
            </item>
@@ -308,16 +290,9 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLabel" name="label_4">
+            <widget class="QLabel" name="httpStatus">
              <property name="text">
-              <string>HTTP Status:</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="ErrorCode">
-             <property name="text">
-              <string/>
+              <string notr="true">HTTP Status: %1</string>
              </property>
             </widget>
            </item>
@@ -376,16 +351,6 @@
            </property>
           </spacer>
          </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_5">
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Error</string>
-           </property>
-          </widget>
-         </item>
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_7">
            <item>
@@ -402,23 +367,9 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLabel" name="label_9">
+            <widget class="QLabel" name="cantConnectMessage">
              <property name="text">
-              <string>Mixxx can't connect to </string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="applicationName">
-             <property name="text">
-              <string/>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="label_10">
-             <property name="text">
-              <string> for an unkown reason</string>
+              <string notr="true">Mixxx can't connect to %1 for an unknown reason.</string>
              </property>
             </widget>
            </item>
@@ -477,22 +428,45 @@
            </property>
           </spacer>
          </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label">
-           <property name="styleSheet">
-            <string notr="true"/>
-           </property>
-           <property name="text">
-            <string>Error</string>
-           </property>
-          </widget>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <item>
+            <spacer name="horizontalSpacer_16">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="trackNotFound">
+             <property name="text">
+              <string>Mixxx could not find this track in the MusicBrainz database.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_17">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </item>
-         <item alignment="Qt::AlignHCenter">
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>Mixxx could not find this track in the MusicBrainz database</string>
-           </property>
-          </widget>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_8"/>
          </item>
          <item>
           <spacer name="verticalSpacer_2">
@@ -616,13 +590,6 @@
              <string/>
             </property>
            </item>
-          </widget>
-         </item>
-         <item>
-          <widget class="QLabel" name="progressLabel">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
           </widget>
          </item>
         </layout>

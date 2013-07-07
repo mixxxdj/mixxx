@@ -24,6 +24,7 @@
 
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
+#include "controlpushbutton.h"
 
 class MixxxApp;
 class SoundManager;
@@ -53,35 +54,38 @@ class DlgPrefModplug;
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
-{
+class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
     DlgPreferences(MixxxApp* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
-//                    PlayerManager* pPlayerManager, ControllerManager* controllers, MidiDeviceManager* midi,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config,
                    Library *pLibrary);
+    virtual ~DlgPreferences();
 
-    ~DlgPreferences();
     void createIcons();
+
   public slots:
-    void slotShow();
-    void slotHide();
     void rescanControllers();
     void slotApply();
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
     void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
+
   signals:
     void closeDlg();
     void showDlg();
+
   protected:
     bool eventFilter(QObject*, QEvent*);
+
   private:
     void destroyControllerWidgets();
     void setupControllerWidgets();
     int addPageWidget(QWidget* w);
+    void onShow();
+    void onHide();
+
     QList<DlgPrefController*> m_controllerWindows;
     
     DlgPrefSound* m_wsound;
@@ -119,8 +123,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg
 
     QSize m_pageSizeHint;
 
-    ConfigObject<ConfigValue>* config;
+    ConfigObject<ConfigValue>* m_pConfig;
     ControllerManager* m_pControllerManager;
+    ControlPushButton m_preferencesUpdated;
 };
 
 #endif

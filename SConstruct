@@ -59,7 +59,6 @@ available_features = [features.HifiEq,
                       # "Features" of dubious quality
                       features.PerfTools,
                       features.AsmLib,
-                      features.Tonal,
                       features.IPod,
                       features.FFMPEG,
                       ]

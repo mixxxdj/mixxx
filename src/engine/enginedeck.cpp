@@ -33,13 +33,13 @@ EngineDeck::EngineDeck(const char* group,
                              EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
-          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough_enabled"))),
+          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
 
     // Set up passthrough utilities and fields
-    m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
+    m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pConversionBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_bPassthroughIsActive = false;
     m_bPassthroughWasActive = false;
@@ -140,7 +140,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
 
     const unsigned int iChannels = AudioInput::channelsNeededForType(input.getType());
 
-    // Check that the number of mono samples doesn't exceed MAX_BUFFER_LEN/2
+    // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
     if (nFrames > MAX_BUFFER_LEN / iChannels) {
         qWarning() << "WARNING: Dropping passthrough samples because the input buffer is too large.";

@@ -34,6 +34,7 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "sampleutil.h"
 #include "util/timer.h"
+#include "playermanager.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
@@ -135,6 +136,8 @@ EngineMaster::~EngineMaster()
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
 
+    delete m_pWorkerScheduler;
+
     QMutableListIterator<ChannelInfo*> channel_it(m_channels);
     while (channel_it.hasNext()) {
         ChannelInfo* pChannelInfo = channel_it.next();
@@ -144,8 +147,6 @@ EngineMaster::~EngineMaster()
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo;
     }
-
-    delete m_pWorkerScheduler;
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const
@@ -472,7 +473,7 @@ EngineChannel* EngineMaster::getChannel(QString group) {
 }
 
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
-    return getChannelBuffer(QString("[Channel%1]").arg(i+1));
+    return getChannelBuffer(PlayerManager::groupForDeck(i));
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {

@@ -256,6 +256,7 @@ int SoundDevicePortAudio::close() {
     }
 
     m_pStream = NULL;
+    m_bSetThreadPriority = false;
 
     return 0;
 }

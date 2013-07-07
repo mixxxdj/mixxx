@@ -17,13 +17,11 @@ LibraryHashDAO::~LibraryHashDAO()
 {
 }
 
-void LibraryHashDAO::initialize()
-{
+void LibraryHashDAO::initialize() {
     qDebug() << "LibraryHashDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
-int LibraryHashDAO::getDirectoryHash(QString dirPath)
-{
+int LibraryHashDAO::getDirectoryHash(const QString& dirPath) {
     //qDebug() << "LibraryHashDAO::getDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     int hash = -1;
 
@@ -47,8 +45,7 @@ int LibraryHashDAO::getDirectoryHash(QString dirPath)
     return hash;
 }
 
-void LibraryHashDAO::saveDirectoryHash(QString dirPath, int hash)
-{
+void LibraryHashDAO::saveDirectoryHash(const QString& dirPath, const int hash) {
     //qDebug() << "LibraryHashDAO::saveDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO LibraryHashes (directory_path, hash, directory_deleted) "
@@ -64,8 +61,7 @@ void LibraryHashDAO::saveDirectoryHash(QString dirPath, int hash)
     //qDebug() << "created new hash" << hash;
 }
 
-void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_deleted)
-{
+void LibraryHashDAO::updateDirectoryHash(const QString& dirPath, const int newHash, const int dir_deleted) {
     //qDebug() << "LibraryHashDAO::updateDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
@@ -84,7 +80,7 @@ void LibraryHashDAO::updateDirectoryHash(QString dirPath, int newHash, int dir_d
     //qDebug() << getDirectoryHash(dirPath);
 }
 
-void LibraryHashDAO::updateDirectoryStatuses(QStringList dirPaths, bool deleted, bool verified) {
+void LibraryHashDAO::updateDirectoryStatuses(QStringList dirPaths, const bool deleted, const bool verified) {
     //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
     FieldEscaper escaper(m_database);
     QMutableStringListIterator it(dirPaths);
@@ -106,8 +102,7 @@ void LibraryHashDAO::updateDirectoryStatuses(QStringList dirPaths, bool deleted,
     }
 }
 
-void LibraryHashDAO::markAsExisting(QString dirPath)
-{
+void LibraryHashDAO::markAsExisting(const QString& dirPath) {
     //qDebug() << "LibraryHashDAO::markExisting" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
@@ -120,8 +115,7 @@ void LibraryHashDAO::markAsExisting(QString dirPath)
     }
 }
 
-void LibraryHashDAO::markAsVerified(QString dirPath)
-{
+void LibraryHashDAO::markAsVerified(const QString& dirPath) {
     //qDebug() << "LibraryHashDAO::markExisting" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
