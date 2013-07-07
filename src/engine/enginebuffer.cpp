@@ -233,6 +233,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
 #endif
+
+
+    m_hintList.reserve(256); // Avoid reallocation
 }
 
 EngineBuffer::~EngineBuffer()
@@ -325,11 +328,10 @@ double EngineBuffer::getFileBpm() {
     return m_pBpmControl->getFileBpm();
 }
 
-void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
-{
+void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster) {
     m_engineLock.lock();
-    foreach(EngineControl* e, m_engineControls) {
-        e->setEngineMaster(pEngineMaster);
+    foreach (EngineControl* pControl, m_engineControls) {
+        pControl->setEngineMaster(pEngineMaster);
     }
     m_engineLock.unlock();
 }
@@ -751,9 +753,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
-    // Give the Reader hints as to which chunks of the current song we
-    // really care about. It will try very hard to keep these in memory
-    hintReader(resample_rate);
+    if (!bTrackLoading) {
+        // Give the Reader hints as to which chunks of the current song we
+        // really care about. It will try very hard to keep these in memory
+        hintReader(resample_rate);
+    }
 
     const double kSmallRate = 0.005;
     if (m_bLastBufferPaused && !bCurBufferPaused) {

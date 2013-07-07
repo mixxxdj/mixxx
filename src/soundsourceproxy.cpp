@@ -359,14 +359,13 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setChannels(sndsrc->getChannels());
         p->setKey(sndsrc->getKey());
         p->setHeaderParsed(true);
-    }
-    else
-    {
+    } else {
+        qDebug() << "SoundSourceProxy::ParseHeader() error at file " << qFilename;
         p->setHeaderParsed(false);
     }
     delete sndsrc;
 
-    return 0;
+    return OK;
 }
 
 // static

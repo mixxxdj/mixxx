@@ -5,25 +5,17 @@
 #define CACHINGREADER_H
 
 #include <QDebug>
-#include <QMutex>
-#include <QQueue>
-#include <QWaitCondition>
 #include <QList>
 #include <QVector>
 #include <QLinkedList>
 #include <QHash>
-#include <QThread>
 
 #include "defs.h"
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "engine/engineworker.h"
 #include "util/fifo.h"
-
-class ControlObjectThread;
-namespace Mixxx {
-    class SoundSource;
-}
+#include "cachingreaderworker.h"
 
 // A Hint is an indication to the CachingReader that a certain section of a
 // SoundSource will be used 'soon' and so it should be brought into memory by
@@ -42,42 +34,6 @@ typedef struct Hint {
     int priority;
 } Hint;
 
-// A Chunk is a section of audio that is being cached. The chunk_number can be
-// used to figure out the sample number of the first sample in data by using
-// sampleForChunk()
-typedef struct Chunk {
-    int chunk_number;
-    int length;
-    CSAMPLE* data;
-    Chunk* prev_lru;
-    Chunk* next_lru;
-} Chunk;
-
-typedef struct ChunkReadRequest {
-    Chunk* chunk;
-
-    ChunkReadRequest() { chunk = NULL; }
-} ChunkReadRequest;
-
-enum ReaderStatus {
-    INVALID,
-    TRACK_NOT_LOADED,
-    TRACK_LOADED,
-    CHUNK_READ_SUCCESS,
-    CHUNK_READ_EOF,
-    CHUNK_READ_INVALID
-};
-
-typedef struct ReaderStatusUpdate {
-    ReaderStatus status;
-    Chunk* chunk;
-    int trackNumSamples;
-    ReaderStatusUpdate() {
-        status = INVALID;
-        chunk = NULL;
-    }
-} ReaderStatusUpdate;
-
 // CachingReader provides a layer on top of a SoundSource for reading samples
 // from a file. A cache is provided so that repeated reads to a certain section
 // of a song do not cause disk seeks or unnecessary SoundSource
@@ -85,7 +41,7 @@ typedef struct ReaderStatusUpdate {
 // cache so that areas of a file that will soon be read are present in memory
 // once they are needed. This can be accomplished by issueing 'hints' to the
 // reader of areas of a SoundSource that will be read soon.
-class CachingReader : public EngineWorker {
+class CachingReader : public QObject {
     Q_OBJECT
 
   public:
@@ -104,23 +60,18 @@ class CachingReader : public EngineWorker {
     // that is not in the cache. If any hints do request a chunk not in cache,
     // then wake the reader so that it can process them. Must only be called
     // from the engine callback.
-    virtual void hintAndMaybeWake(QList<Hint>& hintList);
+    virtual void hintAndMaybeWake(const QVector<Hint>& hintList);
 
     // Request that the CachingReader load a new track. These requests are
     // processed in the work thread, so the reader must be woken up via wake()
     // for this to take effect.
     virtual void newTrack(TrackPointer pTrack);
 
-    // Wake the reader up so that it will process newTrack requests and hints.
-    virtual void wake();
+    void setScheduler(EngineWorkerScheduler* pScheduler) {
+        m_pWorker->setScheduler(pScheduler);
+    }
 
-    // Run upkeep operations like loading tracks and reading from file. Run by a
-    // thread pool via the EngineWorkerScheduler.
-    virtual void run();
-
-    // A Chunk is a memory-resident section of audio that has been cached. Each
-    // chunk holds a fixed number of samples given by kSamplesPerChunk.
-    const static int kChunkLength, kSamplesPerChunk;
+    const static int maximumChunksInMemory;
 
   signals:
     // Emitted once a new track is loaded and ready to be read from.
@@ -136,19 +87,9 @@ class CachingReader : public EngineWorker {
 
     // Given a sample number, return the chunk number corresponding to it.
     inline static int chunkForSample(int sample_number) {
-        return sample_number / kSamplesPerChunk;
+        return sample_number / CachingReaderWorker::kSamplesPerChunk;
     }
 
-    // Given a chunk number, return the start sample number for the chunk.
-    inline static int sampleForChunk(int chunk_number) {
-        return chunk_number * kSamplesPerChunk;
-    }
-
-    // Initialize the reader by creating all the chunks from the RAM provided to
-    // the CachingReader.
-    void initialize();
-
-    const char* m_pGroup;
     const ConfigObject<ConfigValue>* m_pConfig;
 
     // Thread-safe FIFOs for communication between the engine callback and
@@ -156,16 +97,7 @@ class CachingReader : public EngineWorker {
     FIFO<ChunkReadRequest> m_chunkReadRequestFIFO;
     FIFO<ReaderStatusUpdate> m_readerStatusFIFO;
 
-    // Queue of Tracks to load, and the corresponding lock. Must acquire the
-    // lock to touch.
-    QMutex m_newTrackMutex;
-    TrackPointer m_newTrack;
-
-    ////////////////////////////////////////////////////////////////////////////
-    // The following may /only/ be called within the engine callback
-    ////////////////////////////////////////////////////////////////////////////
-
-    // Looks for the provided chunk number in the index of in-memory chunks and
+     // Looks for the provided chunk number in the index of in-memory chunks and
     // returns it if it is present. If not, returns NULL.
     Chunk* lookupChunk(int chunk_number);
 
@@ -201,26 +133,9 @@ class CachingReader : public EngineWorker {
     // The raw memory buffer which is divided up into chunks.
     CSAMPLE* m_pRawMemoryBuffer;
 
-    ////////////////////////////////////////////////////////////////////////////
-    // The following may /only/ be called within the reader thread
-    ////////////////////////////////////////////////////////////////////////////
-
-    // Internal method to load a track. Emits trackLoaded when finished.
-    void loadTrack(TrackPointer pTrack);
-
-    // Read the given chunk_number from the file into pChunk's data
-    // buffer. Fills length/sample information about Chunk* as well.
-    void processChunkReadRequest(ChunkReadRequest* request,
-                                 ReaderStatusUpdate* update);
-
-    // The current sound source of the track loaded
-    Mixxx::SoundSource* m_pCurrentSoundSource;
-    int m_iTrackSampleRate;
-    int m_iTrackNumSamples;
     int m_iTrackNumSamplesCallbackSafe;
 
-    // Temporary buffer for reading from SoundSources
-    SAMPLE* m_pSample;
+    CachingReaderWorker* m_pWorker;
 };
 
 

@@ -31,6 +31,7 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
+#include "engine/enginepassthrough.h"
 #include "library/library.h"
 #include "library/libraryscanner.h"
 #include "library/librarytablemodel.h"
@@ -73,9 +74,9 @@ extern "C" void crashDlg()
 }
 
 
-bool loadTranslations(const QLocale& systemLocale, QString userLocale,
-                      QString translation, QString prefix,
-                      QString translationPath, QTranslator* pTranslator) {
+bool loadTranslations(const QLocale& systemLocale, const QString& userLocale,
+                      const QString& translation, const QString& prefix,
+                      const QString& translationPath, QTranslator* pTranslator) {
 
     if (userLocale.size() == 0) {
 #if QT_VERSION >= 0x040800
@@ -285,10 +286,26 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // after the players are added to the engine (as is done currently) -- bkgood
     m_pSoundManager = new SoundManager(m_pConfig, m_pEngine);
 
+    // TODO(rryan): Fold microphone and passthrough creation into a manager
+    // (e.g. PlayerManager, though they aren't players).
+
     EngineMicrophone* pMicrophone = new EngineMicrophone("[Microphone]");
-    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0); // What should channelbase be?
+    // What should channelbase be?
+    AudioInput micInput = AudioInput(AudioPath::MICROPHONE, 0, 0);
     m_pEngine->addChannel(pMicrophone);
     m_pSoundManager->registerInput(micInput, pMicrophone);
+
+    EnginePassthrough* pPassthrough1 = new EnginePassthrough("[Passthrough1]");
+    // What should channelbase be?
+    AudioInput passthroughInput1 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 0);
+    m_pEngine->addChannel(pPassthrough1);
+    m_pSoundManager->registerInput(passthroughInput1, pPassthrough1);
+
+    EnginePassthrough* pPassthrough2 = new EnginePassthrough("[Passthrough2]");
+    // What should channelbase be?
+    AudioInput passthroughInput2 = AudioInput(AudioPath::EXTPASSTHROUGH, 0, 1);
+    m_pEngine->addChannel(pPassthrough2);
+    m_pSoundManager->registerInput(passthroughInput2, pPassthrough2);
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -658,12 +675,8 @@ MixxxApp::~MixxxApp()
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
-    ControlObject* pShowControl = ControlObject::getControl(key);
-    if (pShowControl == NULL) {
-        return;
-    }
     qDebug() << "Setting visibility for" << key.group << key.item << enable;
-    pShowControl->set(enable ? 1.0 : 0.0);
+    ControlObject::set(key, enable ? 1.0 : 0.0);
 }
 
 void MixxxApp::slotViewShowSamplers(bool enable) {
@@ -819,8 +832,9 @@ int MixxxApp::noOutputDlg(bool *continueClicked)
     }
 }
 
-QString buildWhatsThis(QString title, QString text) {
-    return QString("%1\n\n%2").arg(title.replace("&", ""), text);
+QString buildWhatsThis(const QString& title, const QString& text) {
+    QString preparedTitle = title;
+    return QString("%1\n\n%2").arg(preparedTitle.replace("&", ""), text);
 }
 
 /** initializes all QActions of the application */
@@ -1165,15 +1179,13 @@ void MixxxApp::initMenuBar()
 
 void MixxxApp::slotFileLoadSongPlayer(int deck) {
     QString group = m_pPlayerManager->groupForDeck(deck-1);
-    ControlObject* play =
-        ControlObject::getControl(ConfigKey(group, "play"));
 
     QString loadTrackText = tr("Load track to Deck %1").arg(QString::number(deck));
     QString deckWarningMessage = tr("Deck %1 is currently playing a track.")
             .arg(QString::number(deck));
     QString areYouSure = tr("Are you sure you want to load a new track?");
 
-    if (play && play->get() > 0.0) {
+    if (ControlObject::get(ConfigKey(group, "play")) > 0.0) {
         int ret = QMessageBox::warning(this, tr("Mixxx"),
             deckWarningMessage + "\n" + areYouSure,
             QMessageBox::Yes | QMessageBox::No,
@@ -1303,8 +1315,10 @@ void MixxxApp::slotControlVinylControl(double toggle)
                 QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
-            ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
-            ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set(0);
+            ControlObject::set(ConfigKey(
+                    "[Channel1]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
+            ControlObject::set(ConfigKey(
+                    "[Channel1]", "vinylcontrol_enabled"), (double)0);
         }
     }
 #endif
@@ -1313,7 +1327,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
 void MixxxApp::slotCheckboxVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_enabled"))->set((double)toggle);
+    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_enabled"), (double)toggle);
 #endif
 }
 
@@ -1332,9 +1346,11 @@ void MixxxApp::slotControlVinylControl2(double toggle)
                 QMessageBox::Ok);
             m_pPrefDlg->show();
             m_pPrefDlg->showSoundHardwarePage();
-            ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_status"))->set(VINYL_STATUS_DISABLED);
-            ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set(0);
-        }
+            ControlObject::set(ConfigKey(
+                    "[Channel2]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
+            ControlObject::set(ConfigKey(
+                    "[Channel2]", "vinylcontrol_enabled"), (double)0);
+          }
     }
 #endif
 }
@@ -1342,7 +1358,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_enabled"))->set((double)toggle);
+    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_enabled"), (double)toggle);
 #endif
 }
 
@@ -1578,23 +1594,15 @@ bool MixxxApp::confirmExit() {
     unsigned int deckCount = m_pPlayerManager->numDecks();
     unsigned int samplerCount = m_pPlayerManager->numSamplers();
     for (unsigned int i = 0; i < deckCount; ++i) {
-        ControlObject *pPlayCO(
-            ControlObject::getControl(
-                ConfigKey(QString("[Channel%1]").arg(i + 1), "play")
-            )
-        );
-        if (pPlayCO && pPlayCO->get()) {
+        if (ControlObject::get(
+                ConfigKey(PlayerManager::groupForDeck(i), "play"))) {
             playing = true;
             break;
         }
     }
     for (unsigned int i = 0; i < samplerCount; ++i) {
-        ControlObject *pPlayCO(
-            ControlObject::getControl(
-                ConfigKey(QString("[Sampler%1]").arg(i + 1), "play")
-            )
-        );
-        if (pPlayCO && pPlayCO->get()) {
+        if (ControlObject::get(
+                ConfigKey(PlayerManager::groupForSampler(i), "play"))) {
             playingSampler = true;
             break;
         }

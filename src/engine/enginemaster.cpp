@@ -35,6 +35,7 @@
 #include "engine/enginesync.h"
 #include "sampleutil.h"
 #include "util/timer.h"
+#include "playermanager.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
@@ -142,6 +143,8 @@ EngineMaster::~EngineMaster()
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
 
+    delete m_pWorkerScheduler;
+
     QMutableListIterator<ChannelInfo*> channel_it(m_channels);
     while (channel_it.hasNext()) {
         ChannelInfo* pChannelInfo = channel_it.next();
@@ -151,8 +154,6 @@ EngineMaster::~EngineMaster()
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo;
     }
-
-    delete m_pWorkerScheduler;
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const
@@ -451,12 +452,12 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     mixChannels(headphoneOutput, maxChannels, m_pHead, iBufferSize, &m_headphoneGain);
 
     // Calculate the crossfader gains for left and right side of the crossfader
-    float c1_gain, c2_gain;
-    EngineXfader::getXfadeGains(c1_gain, c2_gain,
-                                crossfader->get(), xFaderCurve->get(),
+    double c1_gain, c2_gain;
+    EngineXfader::getXfadeGains(crossfader->get(), xFaderCurve->get(),
                                 xFaderCalibration->get(),
-                                xFaderMode->get()==MIXXX_XFADER_CONSTPWR,
-                                xFaderReverse->get()==1.0);
+                                xFaderMode->get() == MIXXX_XFADER_CONSTPWR,
+                                xFaderReverse->get() == 1.0,
+                                &c1_gain, &c2_gain);
 
     // Now set the gains for overall volume and the left, center, right gains.
     m_masterGain.setGains(m_pMasterVolume->get(), c1_gain, 1.0, c2_gain);
@@ -545,7 +546,7 @@ int EngineMaster::numChannels() const {
     return m_channels.size();
 }
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
-    return getChannelBuffer(QString("[Channel%1]").arg(i+1));
+    return getChannelBuffer(PlayerManager::groupForDeck(i));
 }
 
 const CSAMPLE* EngineMaster::getChannelBuffer(QString group) const {

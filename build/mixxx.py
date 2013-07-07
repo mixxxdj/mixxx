@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+
+from __future__ import with_statement
+
 import logging
 import platform
 import sys
@@ -161,8 +164,8 @@ class MixxxBuild(object):
 
         self.env = Script.Environment(tools=tools, toolpath=toolpath, ENV=os.environ,
                                      **extra_arguments)
-
         self.read_environment_variables()
+        self.virtualize_build_dir()
 
         if self.toolchain_is_gnu:
             if flags_force32:
@@ -195,7 +198,6 @@ class MixxxBuild(object):
             self.env.Append(LIBPATH=os.path.join(crosscompile_root, 'bin'))
 
         self.install_options()
-        self.virtualize_build_dir()
 
     def detect_platform(self):
         if os.name == 'nt' or sys.platform == 'win32':
@@ -242,12 +244,20 @@ class MixxxBuild(object):
             self.env['CACHEDIR'] = str(Script.Dir('#cache/'))
         if not os.path.isdir(self.env['CACHEDIR']):
             os.mkdir(self.env['CACHEDIR'])
+
+        ## Avoid spreading .sconsign files everywhere
+        #env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
+        ## WARNING - We found that the above line causes SCons to randomly not find
+        ##           dependencies for some reason. It might not happen right away, but
+        ##           a good number of users found that it caused weird problems - Albert (May 15/08)
+
         return str(self.env['CACHEDIR'])
 
     def install_options(self):
         cachefile = os.path.join(self.get_cache_dir(), 'custom.py')
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
+        vars.Add('virtualize', 'Dynamically swap out the build directory when switching Git branches.', 1)
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
         if self.platform_is_windows:
             vars.Add('sqlitedll', 'Set to 1 to enable including QSQLite.dll.\
@@ -273,10 +283,11 @@ class MixxxBuild(object):
         vars.Save(cachefile, self.env)
 
     def virtualize_build_dir(self):
-        # Symlinks don't work on Windows.
-        if self.host_platform == 'windows':
-            return
-
+        # WARNING: Do not use SCons self.env.SConsignFile to change the location
+        # of .sconsign.dblite or turn build_dir into a symlink. It will mostly
+        # seem to work fine but eventually cause strange build issues (not
+        # re-building a necessary object file, etc.) and cause instability.
+        # See also: asantoni's warning in get_cache_dir. rryan 6/2013
         should_virtualize = int(Script.ARGUMENTS.get('virtualize', 1))
         if not should_virtualize:
             return
@@ -288,62 +299,66 @@ class MixxxBuild(object):
         # filenames?
         branch_name = re.sub('[/<>|"]', '_', branch_name).lower()
 
-        branch_build_dir = os.path.join(self.get_cache_dir(), branch_name)
-
-        # Write sconsign.dblite files to branch_build_dir so that the file
-        # signatures are kept separate across branches.
-        sconsign_file = os.path.join(branch_build_dir, 'sconsign.dblite')
-        self.env.SConsignFile(sconsign_file)
-
+        cache_dir = self.get_cache_dir()
+        branch_build_dir = os.path.join(cache_dir, branch_name)
+        virtual_build_dir = os.path.join(branch_build_dir, self.build_dir)
+        virtual_sconsign_file = os.path.join(branch_build_dir, 'sconsign.dblite')
         try:
-            print "os.makedirs", branch_build_dir
-            os.makedirs(branch_build_dir)
+            print "os.makedirs", virtual_build_dir
+            os.makedirs(virtual_build_dir)
         except:
-            # os.makedirs throws an exception if branch_build_dir already
+            # os.makedirs throws an exception if virtual_build_dir already
             # exists.
             pass
-        virtual_build_dir = os.path.join(branch_build_dir, self.build_dir)
 
-        # If build_dir is a symlink, check that it points to virtual_build_dir.
+        # Clean up symlinks from our original method of virtualizing.
         if os.path.islink(self.build_dir):
-            # Make sure virtual_build_dir exists. This happens if we are
-            # building for a new branch.
-            try:
-                print "os.makedirs", virtual_build_dir
-                os.makedirs(virtual_build_dir)
-            except:
-                # os.makedirs throws an exception if branch_build_dir already
-                # exists.
-                pass
+            print "os.unlink", self.build_dir
+            os.unlink(self.build_dir)
 
-            # Get the path build_dir points to.
-            build_dir_path = os.readlink(self.build_dir)
+        sconsign_file = '.sconsign.dblite'
+        sconsign_branch_file = '.sconsign.branch'
+        sconsign_branch = ''
+        is_branch_different = True
+        if os.path.isfile(sconsign_branch_file):
+            with open(sconsign_branch_file, 'r') as f:
+                sconsign_branch = f.read()
 
-            # If it does not point to virtual_build_dir then unlink and link it
-            # to virtual_build_dir.
-            if os.path.abspath(build_dir_path) != os.path.abspath(virtual_build_dir):
-                print "os.unlink", self.build_dir
-                os.unlink(self.build_dir)
-                print "os.symlink", virtual_build_dir, self.build_dir
-                os.symlink(virtual_build_dir, self.build_dir)
-        elif os.path.isdir(self.build_dir):
-            # If build_dir is a directory, move it to virtual_build_dir.
-            print "shutil.move", self.build_dir, branch_build_dir
-            shutil.move(self.build_dir, branch_build_dir)
-            print "os.symlink", virtual_build_dir, self.build_dir
-            os.symlink(virtual_build_dir, self.build_dir)
-        else:
-            # Make sure virtual_build_dir exists. This happens if we are
-            # building for a new branch.
-            try:
-                print "os.makedirs", virtual_build_dir
-                os.makedirs(virtual_build_dir)
-            except:
-                # os.makedirs throws an exception if branch_build_dir already
-                # exists.
-                pass
-            print "os.symlink", virtual_build_dir, self.build_dir
-            os.symlink(virtual_build_dir, self.build_dir)
+        is_branch_different = sconsign_branch != branch_name
+        if not is_branch_different:
+            return
+
+        if sconsign_branch:
+            old_branch_build_dir = os.path.join(cache_dir, sconsign_branch)
+            if os.path.isdir(self.build_dir):
+                old_virtual_build_dir = os.path.join(old_branch_build_dir, self.build_dir)
+                print "shutil.move", self.build_dir, old_virtual_build_dir
+                shutil.move(self.build_dir, old_virtual_build_dir)
+
+            if os.path.isfile(sconsign_file):
+                old_virtual_sconsign_file = os.path.join(old_branch_build_dir, 'sconsign.dblite')
+                print "shutil.move", sconsign_file, old_virtual_sconsign_file
+                shutil.move(sconsign_file, old_virtual_sconsign_file)
+
+        # Now there should be no folder self.build_dir or file sconsign_file.
+        if os.path.isdir(virtual_build_dir):
+            if os.path.isdir(self.build_dir):
+                raise Exception('%s exists without a .sconsign.branch file so '
+                                'build virtualization cannot continue. Please '
+                                'move or delete it.' % self.build_dir)
+            print "shutil.move", virtual_build_dir, self.build_dir
+            shutil.move(virtual_build_dir, self.build_dir)
+        if os.path.isfile(virtual_sconsign_file):
+            if os.path.isfile(sconsign_file):
+                raise Exception('%s exists without a .sconsign.branch file so '
+                                'build virtualization cannot continue. Please '
+                                'move or delete it.' % sconsign_file)
+            print "shutil.move", virtual_sconsign_file, sconsign_file
+            shutil.move(virtual_sconsign_file, sconsign_file)
+
+        with open(sconsign_branch_file, 'w+') as f:
+            print 'touch', sconsign_branch_file
+            f.write(branch_name)
 
     def get_features(self):
         return self.available_features

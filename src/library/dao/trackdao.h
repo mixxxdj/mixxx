@@ -74,28 +74,28 @@ class TrackDAO : public QObject, public virtual DAO {
     void setDatabase(QSqlDatabase& database) { m_database = database; };
 
     void initialize();
-    int getTrackId(QString absoluteFilePath);
-    QList<int> getTrackIds(QList<QFileInfo> files);
-    bool trackExistsInDatabase(QString absoluteFilePath);
-    QString getTrackLocation(int id);
+    int getTrackId(const QString& absoluteFilePath);
+    QList<int> getTrackIds(const QList<QFileInfo>& files);
+    bool trackExistsInDatabase(const QString& absoluteFilePath);
+    QString getTrackLocation(const int id);
     int addTrack(const QString& file, bool unremove);
     int addTrack(const QFileInfo& fileInfo, bool unremove);
     void addTracksPrepare();
     bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
     void addTracksFinish();
-    QList<int> addTracks(const QList<QFileInfo> &fileInfoList, bool unremove);
-    void hideTracks(QList<int> ids);
-    void purgeTracks(QList<int> ids);
-    void unhideTracks(QList<int> ids);
-    TrackPointer getTrack(int id, bool cacheOnly=false) const;
+    QList<int> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
+    void hideTracks(const QList<int>& ids);
+    void purgeTracks(const QList<int>& ids);
+    void unhideTracks(const QList<int>& ids);
+    TrackPointer getTrack(const int id, const bool cacheOnly=false) const;
     bool isDirty(int trackId);
 
     // Scanning related calls. Should be elsewhere or private somehow.
-    void markTrackLocationAsVerified(QString location);
-    void markTracksInDirectoriesAsVerified(QStringList directories);
+    void markTrackLocationAsVerified(const QString& location);
+    void markTracksInDirectoriesAsVerified(QStringList& directories);
     void invalidateTrackLocationsInLibrary(QString libraryPath);
     void markUnverifiedTracksAsDeleted();
-    void markTrackLocationsAsDeleted(QString directory);
+    void markTrackLocationsAsDeleted(const QString& directory);
     void detectMovedFiles(QSet<int>* pTracksMovedSetNew, QSet<int>* pTracksMovedSetOld);
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
@@ -134,7 +134,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void saveTrack(TrackInfoObject* pTrack);
     void updateTrack(TrackInfoObject* pTrack);
     void addTrack(TrackInfoObject* pTrack, bool unremove);
-    TrackPointer getTrackFromDB(int id) const;
+    TrackPointer getTrackFromDB(const int id) const;
     QString absoluteFilePath(QString location);
 
     void bindTrackToTrackLocationsInsert(TrackInfoObject* pTrack);

@@ -403,31 +403,6 @@ class VinylControl(Feature):
 
         return sources
 
-class Tonal(Feature):
-    def description(self):
-        return "NOT-WORKING Tonal Audio Detection"
-
-    def enabled(self, build):
-        build.flags['tonal'] = util.get_flags(build.env, 'tonal', 0)
-        if int(build.flags['tonal']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-
-    def sources(self, build):
-        sources = ['tonal/FourierTransform.cxx',
-                   'tonal/Segmentation.cxx',
-                   'tonal/tonalanalyser.cpp',
-                   'tonal/ConstantQTransform.cxx',
-                   'tonal/ConstantQFolder.cxx']
-        return sources
-
 class Vamp(Feature):
     INTERNAL_LINK = False
     INTERNAL_VAMP_PATH = '#lib/vamp-2.3'

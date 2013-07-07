@@ -160,16 +160,17 @@ void DlgPrefCrossfader::drawXfaderDisplay()
     }
 
     // Draw graph lines
-    float gain1, gain2;
     QPoint pointTotal, point1, point2;
     QPoint pointTotalPrev, point1Prev, point2Prev;
     for (int i = 0; i < sizeX; i++) {
         double xfadeStep = 2. / (double)sizeX;
 
-        EngineXfader::getXfadeGains(gain1, gain2, (-1. + (xfadeStep * (double) i)),
+        double gain1, gain2;
+        EngineXfader::getXfadeGains((-1. + (xfadeStep * (double) i)),
                                     m_transform, m_cal,
                                     (m_xFaderMode == MIXXX_XFADER_CONSTPWR),
-                                    checkBoxReverse->isChecked());
+                                    checkBoxReverse->isChecked(),
+                                    &gain1, &gain2);
 
         double sum = gain1 + gain2;
         //scale for graph

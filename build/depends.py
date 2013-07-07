@@ -501,6 +501,7 @@ class MixxxCore(Feature):
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
+                   "cachingreaderworker.cpp",
 
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
@@ -546,6 +547,8 @@ class MixxxCore(Feature):
                    "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
+                   "widget/woverviewlmh.cpp",
+                   "widget/woverviewhsv.cpp",
                    "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wabstractcontrol.cpp",
@@ -650,8 +653,6 @@ class MixxxCore(Feature):
                    "library/parserm3u.cpp",
                    "library/parsercsv.cpp",
 
-                   "bpm/bpmscheme.cpp",
-
                    "soundsourceproxy.cpp",
 
                    "widget/wwaveformviewer.cpp",
@@ -728,7 +729,6 @@ class MixxxCore(Feature):
                    "encoder/encodermp3.cpp",
                    "encoder/encodervorbis.cpp",
 
-                   "segmentation.cpp",
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",
@@ -738,6 +738,7 @@ class MixxxCore(Feature):
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
                    "util/version.cpp",
+                   "util/rlimit.cpp", 
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)

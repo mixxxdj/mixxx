@@ -135,14 +135,28 @@ double ControlObject::get() const {
     return m_pControl ? m_pControl->get() : 0.0;
 }
 
+// static
+double ControlObject::get(const ConfigKey& key) {
+    ControlDoublePrivate* pCop = ControlDoublePrivate::getControl(key, false);
+    return pCop ? pCop->get() : 0.0;
+}
+
 void ControlObject::reset() {
     if (m_pControl) {
         m_pControl->reset();
     }
 }
 
-void ControlObject::set(const double& value) {
+void ControlObject::set(double value) {
     if (m_pControl) {
         m_pControl->set(value, this);
+    }
+}
+
+// static
+void ControlObject::set(const ConfigKey& key, const double& value) {
+    ControlDoublePrivate* pCop = ControlDoublePrivate::getControl(key, false);
+    if (pCop) {
+        pCop->set(value, NULL);
     }
 }
