@@ -38,6 +38,7 @@ class CrateDAO : public QObject, public virtual DAO {
     QString crateName(int crateId);
     unsigned int crateSize(int crateId);
     bool addTrackToCrate(int trackId, int crateId);
+    QList<int> getTrackIds(int crateId);
     // This method takes a list of track ids to be added to crate and returns
     // the number of successful insertions.
     int addTracksToCrate(QList<int> trackIdList, int crateId);

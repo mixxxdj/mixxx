@@ -67,6 +67,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
+    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<int>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
     addFeature(m_pAnalysisFeature);
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
