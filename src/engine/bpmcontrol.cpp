@@ -527,9 +527,8 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     qDebug() << "my     beat distance:" << my_distance;
     qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
 
-    m_dSyncAdjustment = 1.0;
-
     if (userTweakingSync) {
+        m_dSyncAdjustment = 1.0;
         m_dUserOffset = percent_offset;
         //don't do anything else, leave it
     } else {
@@ -540,19 +539,28 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
         // don't even know if we're ahead or behind.  This can occur when quantize was
         // off, but then it gets turned on.
         const double kTrainWreckThreshold = 0.2;
-        // Proportional control constant. The higher this is, the more we
-        // influence sync.
-        const double kSyncAdjustmentProportional = 0.3;
-        const double kSyncAdjustmentCap = 0.1;
+        const double kSyncAdjustmentCap = 0.05;
         if (fabs(error) > kTrainWreckThreshold) {
             // Assume poor reflexes (late button push) -- speed up to catch the other track.
-            m_dSyncAdjustment = 1.02;
-        }
-        if (fabs(error) > kErrorThreshold) {
-            const double adjust = -error * kSyncAdjustmentProportional;
+            m_dSyncAdjustment = 1.0 + kSyncAdjustmentCap;
+        } else if (fabs(error) > kErrorThreshold) {
+            // Proportional control constant. The higher this is, the more we
+            // influence sync.
+            const double kSyncAdjustmentProportional = 0.3;
+            const double kSyncDeltaCap = 0.02;
+
+            // TODO(owilliams): There are a lot of "1.0"s in this code -- can we eliminate them?
+            const double adjust = 1.0 + (-error * kSyncAdjustmentProportional);
+            // Cap the difference between the last adjustment and this one.
+            double delta = adjust - m_dSyncAdjustment;
+            delta = math_max(-kSyncDeltaCap, math_min(kSyncDeltaCap, delta));
+
             // Cap the adjustment between -kSyncAdjustmentCap and +kSyncAdjustmentCap
             m_dSyncAdjustment = 1.0 + math_max(
-                -kSyncAdjustmentCap, math_min(kSyncAdjustmentCap, adjust));
+                -kSyncAdjustmentCap, math_min(kSyncAdjustmentCap, m_dSyncAdjustment - 1.0 + delta));
+        } else {
+            // We are in sync, no adjustment needed.
+            m_dSyncAdjustment = 1.0;
         }
     }
     return m_dSyncAdjustment;
@@ -756,6 +764,7 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
     }
 
     m_dUserOffset = 0.0; //reset for new track
+    m_dSyncAdjustment = 1.0;
 
     if (pTrack) {
         m_pTrack = pTrack;
