@@ -47,8 +47,8 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
 
     slotResetFilters();
     clearSeedTrackInfo();
-    m_similiarityContributions.insert("bpm", 0.0);
-    m_similiarityContributions.insert("timbre", 1.0);
+    m_similarityContributions.insert("bpm", 0.0);
+    m_similarityContributions.insert("timbre", 1.0);
 }
 
 SelectorLibraryTableModel::~SelectorLibraryTableModel() {
@@ -299,7 +299,7 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
 
     // should ensure that similarityContributions's values add up to 1
 
-    double bpmContribution = m_similiarityContributions.value("bpm");
+    double bpmContribution = m_similarityContributions.value("bpm");
     if (bpmContribution > 0.0) {
         QVariant bpm = data(index.sibling(index.row(), fieldIndex("bpm")));
         if (bpm.isValid()) {
@@ -314,7 +314,7 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
         }
     }
 
-    double timbreContribution = m_similiarityContributions.value("timbre");
+    double timbreContribution = m_similarityContributions.value("timbre");
 
     if (timbreContribution > 0.0) {
         TrackPointer otherTrack = getTrack(index);
