@@ -39,6 +39,7 @@ class RateControl;
 class LoopingControl;
 class ReadAheadManager;
 class ControlObject;
+class ControlObjectSlave;
 class ControlPushButton;
 class ControlObjectThreadMain;
 class ControlBeat;
@@ -228,7 +229,7 @@ private:
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
     ControlPotmeter* m_visualPlaypos;
-    ControlObject* m_pSampleRate;
+    ControlObjectSlave* m_pSampleRate;
     ControlPushButton* m_pKeylock;
 
     ControlPushButton* m_pEject;
