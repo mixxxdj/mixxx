@@ -10,5 +10,11 @@
 *~
 .#*
 .sconf_temp
+.sconsign.branch
+.sconsign.dblite
 cache
+lib/*/*.a
+lib/*/lib/*.a
+mixxx
+mixxx-test
 res/qrc_mixxx.cc

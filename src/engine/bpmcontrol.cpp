@@ -19,8 +19,6 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_tapFilter(this, filterLength, maxInterval) {
-    m_pNumDecks = ControlObject::getControl("[Master]", "num_decks");
-
     m_pPlayButton = ControlObject::getControl(_group, "play");
     m_pRateSlider = ControlObject::getControl(_group, "rate");
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
@@ -255,44 +253,6 @@ bool BpmControl::syncTempo(EngineBuffer* pOtherEngineBuffer) {
     return false;
 }
 
-EngineBuffer* BpmControl::pickSyncTarget() {
-    EngineMaster* pMaster = getEngineMaster();
-    if (!pMaster) {
-        return NULL;
-    }
-    QString group = getGroup();
-    QStringList deckGroups;
-    EngineBuffer* pFirstNonplayingDeck = NULL;
-
-    for (int i = 0; i < m_pNumDecks->get(); ++i) {
-        // TODO(XXX) format from PlayerManager
-        QString deckGroup = QString("[Channel%1]").arg(i+1);
-        if (deckGroup == group) {
-            continue;
-        }
-        EngineChannel* pChannel = pMaster->getChannel(deckGroup);
-        // Only consider channels that have a track loaded and are in the master
-        // mix.
-        if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
-            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
-            if (pBuffer && pBuffer->getBpm() > 0) {
-                // If the deck is playing then go with it immediately.
-                if (fabs(pBuffer->getRate()) > 0) {
-                    return pBuffer;
-                }
-                // Otherwise hold out for a deck that might be playing but
-                // remember the first deck that matched our criteria.
-                if (pFirstNonplayingDeck == NULL) {
-                    pFirstNonplayingDeck = pBuffer;
-                }
-            }
-        }
-    }
-    // No playing decks have a BPM. Go with the first deck that was stopped but
-    // had a BPM.
-    return pFirstNonplayingDeck;
-}
-
 bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
     if (!pOtherEngineBuffer) {
         return false;
@@ -312,10 +272,10 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
 
     // Get the current position of both decks
     double dThisPosition = getCurrentSample();
-    double dOtherLength = ControlObject::getControl(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"))->get();
-    double dOtherEnginePlayPos = ControlObject::getControl(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"))->get();
+    double dOtherLength = ControlObject::get(
+        ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"));
+    double dOtherEnginePlayPos = ControlObject::get(
+        ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"));
     double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);

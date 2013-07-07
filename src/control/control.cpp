@@ -12,7 +12,10 @@ QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
 ControlDoublePrivate::ControlDoublePrivate()
         : m_bIgnoreNops(true),
-          m_bTrack(false) {
+          m_bTrack(false),
+          m_trackType(Stat::UNSPECIFIED),
+          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
     m_defaultValue.setValue(0);
     m_value.setValue(0);
 }
@@ -85,23 +88,22 @@ void ControlDoublePrivate::reset() {
     set(defaultValue, NULL);
 }
 
-void ControlDoublePrivate::set(const double& value, QObject* pSender) {
+void ControlDoublePrivate::set(double value, QObject* pSender) {
     if (m_bIgnoreNops && get() == value) {
         return;
     }
 
-    double dValue = value;
     // If the behavior says to ignore the set, ignore it.
     ControlNumericBehavior* pBehavior = m_pBehavior;
-    if (pBehavior && !pBehavior->setFilter(&dValue)) {
+    if (pBehavior && !pBehavior->setFilter(&value)) {
         return;
     }
-    m_value.setValue(dValue);
-    emit(valueChanged(dValue, pSender));
+    m_value.setValue(value);
+    emit(valueChanged(value, pSender));
 
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), value);
     }
 }
 

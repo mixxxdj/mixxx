@@ -9,6 +9,7 @@
 #include "controllers/dlgcontrollerlearning.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "engine/cuecontrol.h"
+#include "playermanager.h"
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
                                              Controller* controller)
@@ -210,8 +211,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Vinylcontrol]", "show_vinylcontrol", tr("Show/hide the vinyl control section"), guiMenu);
     addControl("[PreviewDeck]", "show_previewdeck", tr("Show/hide the preview deck"), guiMenu);
 
-    ControlObject *co = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
-    const int iNumDecks = co->get();
+    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
     QString spinnyText = tr("Show/hide spinning vinyl widget");
     for (int i = 1; i <= iNumDecks; ++i) {
         addControl(QString("[Spinny%1]").arg(i), "show_spinny",
@@ -252,12 +252,9 @@ void DlgControllerLearning::addControl(QString group, QString control, QString d
 void DlgControllerLearning::addPlayerControl(
     QString control, QString controlDescription, QMenu* pMenu,
     bool deckControls, bool samplerControls, bool previewdeckControls, bool addReset) {
-    ControlObject* numSamplers = ControlObject::getControl(ConfigKey("[Master]", "num_samplers"));
-    const int iNumSamplers = numSamplers->get();
-    ControlObject* numDecks = ControlObject::getControl(ConfigKey("[Master]", "num_decks"));
-    const int iNumDecks = numDecks->get();
-    ControlObject* numPreviewDecks = ControlObject::getControl(ConfigKey("[Master]", "num_preview_decks"));
-    const int iNumPreviewDecks = numPreviewDecks->get();
+    const int iNumSamplers = ControlObject::get(ConfigKey("[Master]", "num_samplers"));
+    const int iNumDecks = ControlObject::get(ConfigKey("[Master]", "num_decks"));
+    const int iNumPreviewDecks = ControlObject::get(ConfigKey("[Master]", "num_preview_decks"));
 
     QMenu* controlMenu = new QMenu(controlDescription, pMenu);
     pMenu->addMenu(controlMenu);
@@ -271,7 +268,8 @@ void DlgControllerLearning::addPlayerControl(
     }
 
     for (int i = 1; deckControls && i <= iNumDecks; ++i) {
-        QString group = QString("[Channel%1]").arg(i);
+        // PlayerManager::groupForDeck is 0-indexed.
+        QString group = PlayerManager::groupForDeck(i - 1);
         QString description = QString("%1: %2").arg(
             m_deckStr.arg(QString::number(i)), controlDescription);
         QAction* pAction = controlMenu->addAction(m_deckStr.arg(i), &m_actionMapper, SLOT(map()));
@@ -287,7 +285,8 @@ void DlgControllerLearning::addPlayerControl(
     }
 
     for (int i = 1; previewdeckControls && i <= iNumPreviewDecks; ++i) {
-        QString group = QString("[PreviewDeck%1]").arg(i);
+        // PlayerManager::groupForPreviewDeck is 0-indexed.
+        QString group = PlayerManager::groupForPreviewDeck(i - 1);
         QString description = QString("%1: %2").arg(
             m_previewdeckStr.arg(QString::number(i)), controlDescription);
         QAction* pAction = controlMenu->addAction(m_previewdeckStr.arg(i), &m_actionMapper, SLOT(map()));
@@ -303,7 +302,8 @@ void DlgControllerLearning::addPlayerControl(
     }
 
     for (int i = 1; samplerControls && i <= iNumSamplers; ++i) {
-        QString group = QString("[Sampler%1]").arg(i);
+        // PlayerManager::groupForSampler is 0-indexed.
+        QString group = PlayerManager::groupForSampler(i - 1);
         QString description = QString("%1: %2").arg(
             m_samplerStr.arg(QString::number(i)), controlDescription);
         QAction* pAction = controlMenu->addAction(m_samplerStr.arg(i), &m_actionMapper, SLOT(map()));

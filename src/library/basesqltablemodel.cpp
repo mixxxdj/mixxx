@@ -338,7 +338,7 @@ const QString BaseSqlTableModel::currentSearch() const {
     return m_currentSearch;
 }
 
-void BaseSqlTableModel::setSearch(const QString& searchText, const QString extraFilter) {
+void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
     }

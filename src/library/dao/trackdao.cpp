@@ -91,7 +91,7 @@ void TrackDAO::initialize() {
     @return the track id for the track located at location, or -1 if the track
             is not in the database.
 */
-int TrackDAO::getTrackId(QString absoluteFilePath) {
+int TrackDAO::getTrackId(const QString& absoluteFilePath) {
     //qDebug() << "TrackDAO::getTrackId" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
@@ -111,7 +111,7 @@ int TrackDAO::getTrackId(QString absoluteFilePath) {
     return libraryTrackId;
 }
 
-QList<int> TrackDAO::getTrackIds(QList<QFileInfo> files) {
+QList<int> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
     QStringList pathList;
     FieldEscaper escaper(m_database);
     foreach (QFileInfo file, files) {
@@ -136,7 +136,7 @@ QList<int> TrackDAO::getTrackIds(QList<QFileInfo> files) {
 
 // Some code (eg. drag and drop) needs to just get a track's location, and it's
 // not worth retrieving a whole TrackInfoObject.
-QString TrackDAO::getTrackLocation(int trackId) {
+QString TrackDAO::getTrackLocation(const int trackId) {
     qDebug() << "TrackDAO::getTrackLocation"
              << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
@@ -160,7 +160,7 @@ QString TrackDAO::getTrackLocation(int trackId) {
     @param file_location The full path to the track on disk, including the filename.
     @return true if the track is found in the library table, false otherwise.
 */
-bool TrackDAO::trackExistsInDatabase(QString absoluteFilePath) {
+bool TrackDAO::trackExistsInDatabase(const QString& absoluteFilePath) {
     return (getTrackId(absoluteFilePath) != -1);
 }
 
@@ -526,7 +526,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
     addTracksFinish();
 }
 
-QList<int> TrackDAO::addTracks(const QList<QFileInfo> &fileInfoList,
+QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
                                bool unremove) {
     QSqlQuery query(m_database);
     QList<int> trackIDs;
@@ -610,7 +610,7 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo> &fileInfoList,
     return trackIDs;
 }
 
-void TrackDAO::hideTracks(QList<int> ids) {
+void TrackDAO::hideTracks(const QList<int>& ids) {
     QStringList idList;
     foreach (int id, ids) {
         idList.append(QString::number(id));
@@ -634,7 +634,7 @@ void TrackDAO::hideTracks(QList<int> ids) {
 // up in the library views again.
 // This function should get called if you drag-and-drop a file that's been
 // "hidden" from Mixxx back into the library view.
-void TrackDAO::unhideTracks(QList<int> ids) {
+void TrackDAO::unhideTracks(const QList<int>& ids) {
     QStringList idList;
     foreach (int id, ids) {
         idList.append(QString::number(id));
@@ -652,7 +652,7 @@ void TrackDAO::unhideTracks(QList<int> ids) {
 
 // Warning, purge cannot be undone check before if there is no reference to this
 // track id's on other library tables
-void TrackDAO::purgeTracks(QList<int> ids) {
+void TrackDAO::purgeTracks(const QList<int>& ids) {
     if (ids.empty()) {
         return;
     }
@@ -754,7 +754,7 @@ void TrackDAO::deleteTrack(TrackInfoObject* pTrack) {
     pTrack->deleteLater();
 }
 
-TrackPointer TrackDAO::getTrackFromDB(int id) const {
+TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     QTime time;
     time.start();
     QSqlQuery query(m_database);
@@ -890,7 +890,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
     return TrackPointer();
 }
 
-TrackPointer TrackDAO::getTrack(int id, bool cacheOnly) const {
+TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
     //qDebug() << "TrackDAO::getTrack" << QThread::currentThread() << m_database.connectionName();
     TrackPointer pTrack;
 
@@ -1052,7 +1052,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath) {
     }
 }
 
-void TrackDAO::markTrackLocationAsVerified(QString location)
+void TrackDAO::markTrackLocationAsVerified(const QString& location)
 {
     //qDebug() << "TrackDAO::markTrackLocationAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTrackLocationAsVerified()" << location;
@@ -1068,7 +1068,7 @@ void TrackDAO::markTrackLocationAsVerified(QString location)
     }
 }
 
-void TrackDAO::markTracksInDirectoriesAsVerified(QStringList directories) {
+void TrackDAO::markTracksInDirectoriesAsVerified(QStringList& directories) {
     //qDebug() << "TrackDAO::markTracksInDirectoryAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTracksInDirectoryAsVerified()" << directory;
 
@@ -1104,7 +1104,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
 
 }
 
-void TrackDAO::markTrackLocationsAsDeleted(QString directory) {
+void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
     //qDebug() << "TrackDAO::markTrackLocationsAsDeleted" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE track_locations "
@@ -1157,14 +1157,12 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
         Q_ASSERT(query2.exec());
 
         Q_ASSERT(query2.size() <= 1); //WTF duplicate tracks?
-        while (query2.next())
-        {
+        while (query2.next()) {
             newTrackLocationId = query2.value(query2.record().indexOf("id")).toInt();
         }
 
         //If we found a moved track...
-        if (newTrackLocationId >= 0)
-        {
+        if (newTrackLocationId >= 0) {
             qDebug() << "Found moved track!" << filename;
 
             //Remove old row from track_locations table
@@ -1177,16 +1175,13 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
             //table which corresponds to the track in the new location. We need
             //to remove that so we don't end up with two rows in the library table
             //for the same track.
-            query3.prepare("SELECT id FROM library WHERE "
-                           "location=:location");
+            query3.prepare("SELECT id FROM library WHERE location=:location");
             query3.bindValue(":location", newTrackLocationId);
             Q_ASSERT(query3.exec());
 
-            while (query3.next())
-            {
+            if (query3.next()) {
                 int newTrackId = query3.value(query3.record().indexOf("id")).toInt();
-                query3.prepare("DELETE FROM library WHERE "
-                               "id=:newid");
+                query3.prepare("DELETE FROM library WHERE id=:newid");
                 query3.bindValue(":newid", newTrackLocationId);
                 Q_ASSERT(query3.exec());
 
@@ -1196,18 +1191,13 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
 
             //Update the location foreign key for the existing row in the library table
             //to point to the correct row in the track_locations table.
-            query3.prepare("SELECT id FROM library WHERE "
-                           "location=:location");
+            query3.prepare("SELECT id FROM library WHERE location=:location");
             query3.bindValue(":location", oldTrackLocationId);
             Q_ASSERT(query3.exec());
 
-
-            while (query3.next())
-            {
+            if (query3.next()) {
                 int oldTrackId = query3.value(query3.record().indexOf("id")).toInt();
-
-                query3.prepare("UPDATE library "
-                               "SET location=:newloc WHERE id=:oldid");
+                query3.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
                 query3.bindValue(":newloc", newTrackLocationId);
                 query3.bindValue(":oldid", oldTrackId);
                 Q_ASSERT(query3.exec());
@@ -1268,8 +1258,8 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pC
     }
 
     query2.prepare("UPDATE track_locations "
-                  "SET fs_deleted=:fs_deleted, needs_verification=0 "
-                  "WHERE location=:location");
+                   "SET fs_deleted=:fs_deleted, needs_verification=0 "
+                   "WHERE location=:location");
 
     while (query.next()) {
         trackLocation = query.value(query.record().indexOf("location")).toString();

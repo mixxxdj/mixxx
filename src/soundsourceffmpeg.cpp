@@ -241,7 +241,8 @@ long SoundSourceFFmpeg::seek(long filepos)
     ret = av_seek_frame(pFormatCtx, audioStream, fspos, AVSEEK_FLAG_BACKWARD /*AVSEEK_FLAG_ANY*/);
 
     if (ret){
-        qDebug() << "ffmpeg: Seek ERROR ret(" << ret << ") filepos(" << filepos << "d).";
+        qDebug() << "ffmpeg: Seek ERROR ret(" << ret << ") filepos(" << filepos << "d) at file"
+                 << m_qFilename;
         unlock();
         return 0;
     }
@@ -379,7 +380,7 @@ int SoundSourceFFmpeg::ParseHeader( TrackInfoObject * Track )
 
     fname = location.toAscii();
     FFmpegInit();
-    qDebug() << "ffmpeg: pqrsing file:" << fname;
+    qDebug() << "ffmpeg: parsing file:" << fname;
     if(av_open_input_file(&FmtCtx, fname.constData(), NULL, 0, NULL)!=0)
     {
         qDebug() << "av_open_input_file: cannot open" << fname;

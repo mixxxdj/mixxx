@@ -39,10 +39,9 @@ class VampAnalyser {
     // VAMP_PATH environment variable is already set by the user, then this
     // method appends to that.
     static void initializePluginPaths();
-
-  private:
     void SelectOutput(const int outputnumber);
 
+  private:
     Vamp::HostExt::PluginLoader::PluginKey m_key;
     int m_iSampleCount, m_iOUT, m_iRemainingSamples,
         m_iBlockSize, m_iStepSize, m_rate, m_iOutput;

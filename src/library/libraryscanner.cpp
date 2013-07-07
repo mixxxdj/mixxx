@@ -289,7 +289,7 @@ void LibraryScanner::run()
     emit(scanFinished());
 }
 
-void LibraryScanner::scan(QString libraryPath, QWidget *parent)
+void LibraryScanner::scan(const QString& libraryPath, QWidget *parent)
 {
     m_qLibraryPath = libraryPath;
     m_pProgress = new LibraryScannerDlg(parent);
@@ -336,7 +336,7 @@ void LibraryScanner::scan()
 // Recursively scan a music library. Doesn't import tracks for any directories that
 // have already been scanned and have not changed. Changes are tracked by performing
 // a hash of the directory's file list, and those hashes are stored in the database.
-bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirectories) {
+bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verifiedDirectories) {
     QDirIterator fileIt(dirPath, m_nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     bool bScanFinishedCleanly = true;
@@ -361,7 +361,7 @@ bool LibraryScanner::recursiveScan(QString dirPath, QStringList& verifiedDirecto
 
     // Try to retrieve a hash from the last time that directory was scanned.
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
-    prevHashExists = (prevHash == -1) ? false : true;
+    prevHashExists = !(prevHash == -1);
 
     // Compare the hashes, and if they don't match, rescan the files in that directory!
     if (prevHash != newHash) {

@@ -8,7 +8,8 @@
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
              : QWidget(parent),
                m_track(NULL),
-               m_TagFetcher(parent) {
+               m_TagFetcher(parent),
+               m_networkError(NOERROR) {
     setupUi(this);
 
     connect(btnApply, SIGNAL(clicked()),
@@ -26,6 +27,8 @@ DlgTagFetcher::DlgTagFetcher(QWidget *parent)
             this, SLOT(fetchTagFinished(const TrackPointer,const QList<TrackPointer>&)));
     connect(&m_TagFetcher, SIGNAL(fetchProgress(QString)),
             this, SLOT(fetchTagProgress(QString)));
+    connect(&m_TagFetcher, SIGNAL(networkError(int, QString)),
+            this, SLOT(slotNetworkError(int, QString)));
 
     // Resize columns, this can't be set in the ui file
     results->setColumnWidth(0, 50);  // Track column
@@ -33,8 +36,6 @@ DlgTagFetcher::DlgTagFetcher(QWidget *parent)
     results->setColumnWidth(2, 160); // Title column
     results->setColumnWidth(3, 160); // Artist column
     results->setColumnWidth(4, 160); // Album column
-
-    progressLabel->setText("");
 }
 
 DlgTagFetcher::~DlgTagFetcher() {
@@ -51,21 +52,21 @@ void DlgTagFetcher::init(const TrackPointer track) {
 void DlgTagFetcher::apply() {
     int resultIndex = m_data.m_selectedResult;
     if (resultIndex > -1) {
-        if (!m_data.m_results[resultIndex]->getAlbum().isEmpty()) { 
+        if (!m_data.m_results[resultIndex]->getAlbum().isEmpty()) {
             m_track->setAlbum(m_data.m_results[resultIndex]->getAlbum());
         }
-        if (!m_data.m_results[resultIndex]->getArtist().isEmpty()) { 
+        if (!m_data.m_results[resultIndex]->getArtist().isEmpty()) {
             m_track->setArtist(m_data.m_results[resultIndex]->getArtist());
         }
-        if (!m_data.m_results[resultIndex]->getTitle().isEmpty()) { 
+        if (!m_data.m_results[resultIndex]->getTitle().isEmpty()) {
             m_track->setTitle(m_data.m_results[resultIndex]->getTitle());
         }
         if (!m_data.m_results[resultIndex]->getYear().isEmpty() &&
-             m_data.m_results[resultIndex]->getYear() != "0") { 
+             m_data.m_results[resultIndex]->getYear() != "0") {
             m_track->setYear(m_data.m_results[resultIndex]->getYear());
         }
         if (!m_data.m_results[resultIndex]->getTrackNumber().isEmpty() &&
-             m_data.m_results[resultIndex]->getTrackNumber() != "0") { 
+             m_data.m_results[resultIndex]->getTrackNumber() != "0") {
             m_track->setTrackNumber(m_data.m_results[resultIndex]->getTrackNumber());
         }
     }
@@ -77,7 +78,8 @@ void DlgTagFetcher::quit() {
 }
 
 void DlgTagFetcher::fetchTagProgress(QString text) {
-    loading->setText(text);
+    QString status = tr("Status: %1");
+    loadingStatus->setText(status.arg(text));
 }
 
 void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
@@ -93,9 +95,27 @@ void DlgTagFetcher::fetchTagFinished(const TrackPointer track,
     updateStack();
 }
 
+void DlgTagFetcher::slotNetworkError(int errorCode, QString app) {
+    m_networkError = errorCode==0 ?  FTWERROR : HTTPERROR;
+    m_data.m_pending = false;
+    QString httpStatusMessage = tr("HTTP Status: %1");
+    httpStatus->setText(httpStatusMessage.arg(errorCode));
+    QString unknownError = tr("Mixxx can't connect to %1 for an unknown reason.");
+    cantConnectMessage->setText(unknownError.arg(app));
+    QString cantConnect = tr("Mixxx can't connect to %1.");
+    cantConnectHttp->setText(cantConnect.arg(app));
+    updateStack();
+}
+
 void DlgTagFetcher::updateStack() {
     if (m_data.m_pending) {
         stack->setCurrentWidget(loading_page);
+        return;
+    } else if (m_networkError == HTTPERROR) {
+        stack->setCurrentWidget(networkError_page);
+        return;
+    } else if (m_networkError == FTWERROR) {
+        stack->setCurrentWidget(generalnetworkError_page);
         return;
     } else if (m_data.m_results.isEmpty()) {
         stack->setCurrentWidget(error_page);
@@ -115,7 +135,7 @@ void DlgTagFetcher::updateStack() {
     foreach (const TrackPointer track, m_data.m_results) {
         addTrack(track, trackIndex++, results);
     }
-    
+
     // Find the item that was selected last time
     for (int i=0 ; i<results->model()->rowCount() ; ++i) {
         const QModelIndex index = results->model()->index(i, 0);
