@@ -811,8 +811,9 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
         "header_parsed, timesplayed, played, "
-        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock "
-        "keys_version, keys_sub_version, keys "
+        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock, "
+        "keys_version, keys_sub_version, keys, "
+        "timbre_version, timbre_sub_version, timbre "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -905,7 +906,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
                 shouldDirty = true;
             }
 
-            QString timbreVersion = query.value(queryRecord.indexOf("keys_version")).toString();
+            QString timbreVersion = query.value(queryRecord.indexOf("timbre_version")).toString();
             QString timbreSubVersion = query.value(queryRecord.indexOf("timbre_sub_version")).toString();
             QByteArray timbreBlob = query.value(queryRecord.indexOf("timbre")).toByteArray();
 
