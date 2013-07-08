@@ -136,6 +136,9 @@ bool SelectorLibraryTableModel::seedTrackTimbreExists() {
 
 void SelectorLibraryTableModel::calculateSimilarity() {
     qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
+    QTime time;
+    time.start();
+
     if (!m_pSeedTrack.isNull()) {
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("UPDATE " + tableName + " SET score=:score "
@@ -165,6 +168,8 @@ void SelectorLibraryTableModel::calculateSimilarity() {
             select(); // update the view
         }
     }
+    int elapsed = time.elapsed();
+    qDebug() << "calculateSimilarity took" << elapsed << "ms";
 }
 
 void SelectorLibraryTableModel::filterByGenre(bool value) {
