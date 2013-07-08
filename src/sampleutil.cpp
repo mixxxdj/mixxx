@@ -1008,6 +1008,19 @@ void SampleUtil::sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
 #endif
 }
 
+// static
+void SampleUtil::crossfadeBuffers(CSAMPLE* pDest,
+                                  const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
+                                  int iNumSamples) {
+    double cross_mix = 0.0;
+    double cross_inc = 2.0 / static_cast<double>(iNumSamples);
+    for (int i = 0; i + 1 < iNumSamples; i += 2) {
+        pDest[i] = pSrc2[i] * cross_mix + pSrc1[i] * (1.0 - cross_mix);
+        pDest[i + 1] = pSrc2[i + 1] * cross_mix + pSrc1[i + 1] * (1.0 - cross_mix);
+        cross_mix += cross_inc;
+    }
+}
+
 void SampleUtil::setOptimizations(bool opt) {
     qDebug() << "Opts" << opt;
     m_sOptimizationsOn = opt;

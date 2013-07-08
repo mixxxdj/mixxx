@@ -84,10 +84,14 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp3 = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pXfade = new CSAMPLE[MAX_BUFFER_LEN];
 
     memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp3, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pXfade, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+
+    old_low = old_mid = old_high = 1.0;
 }
 
 EngineFilterBlock::~EngineFilterBlock()
@@ -95,6 +99,7 @@ EngineFilterBlock::~EngineFilterBlock()
     delete high;
     delete band;
     delete low;
+    delete [] m_pXfade;
     delete [] m_pTemp3;
     delete [] m_pTemp2;
     delete [] m_pTemp1;
@@ -170,5 +175,17 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
                               m_pTemp1, fLow,
                               m_pTemp2, fMid,
                               m_pTemp3, fHigh, iBufferSize);
-}
 
+    if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
+        SampleUtil::copy3WithGain(m_pXfade,
+                          m_pTemp1, old_low,
+                          m_pTemp2, old_mid,
+                          m_pTemp3, old_high, iBufferSize);
+
+        SampleUtil::crossfadeBuffers(pOutput, m_pXfade, pOutput, iBufferSize);
+    }
+
+    old_low = fLow;
+    old_mid = fMid;
+    old_high = fHigh;
+}
