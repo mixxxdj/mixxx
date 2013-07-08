@@ -11,11 +11,11 @@
 #include "control/controlvalue.h"
 #include "configobject.h"
 
+class ControlObject;
+
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
-    ControlDoublePrivate();
-    ControlDoublePrivate(ConfigKey key, bool bIgnoreNops, bool bTrack);
     virtual ~ControlDoublePrivate();
 
     // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
@@ -23,13 +23,7 @@ class ControlDoublePrivate : public QObject {
     // does not exist.
     static ControlDoublePrivate* getControl(
         const ConfigKey& key,
-        bool bCreate, bool bIgnoreNops=true, bool bTrack=false);
-    static inline ControlDoublePrivate* getControl(
-        const QString& group, const QString& item,
-        bool bCreate, bool bIgnoreNops=true, bool bTrack=false) {
-        ConfigKey key(group, item);
-        return getControl(key, bCreate, bIgnoreNops, bTrack);
-    }
+        ControlObject* pCreatorCO, bool bIgnoreNops=true, bool bTrack=false);
 
     // Sets the control value.
     void set(double value, QObject* pSender);
@@ -57,9 +51,14 @@ class ControlDoublePrivate : public QObject {
     inline void setDefaultValue(double dValue) {
         m_defaultValue.setValue(dValue);
     }
+
     inline double defaultValue() const {
         double default_value = m_defaultValue.getValue();
         return m_pBehavior ? m_pBehavior->defaultValue(default_value) : default_value;
+    }
+
+    inline ControlObject* getCreatorCO() const {
+        return m_pCreatorCO;
     }
 
   signals:
@@ -68,6 +67,7 @@ class ControlDoublePrivate : public QObject {
     void valueChanged(double value, QObject* pSender);
 
   private:
+    ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO, bool bIgnoreNops, bool bTrack);
     ConfigKey m_key;
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
@@ -84,6 +84,8 @@ class ControlDoublePrivate : public QObject {
     ControlValueAtomic<double> m_defaultValue;
 
     QAtomicPointer<ControlNumericBehavior> m_pBehavior;
+
+    ControlObject* m_pCreatorCO;
 
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey,ControlDoublePrivate*> m_sqCOHash;

@@ -10,6 +10,7 @@
 QHash<ConfigKey, ControlDoublePrivate*> ControlDoublePrivate::m_sqCOHash;
 QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
+/*
 ControlDoublePrivate::ControlDoublePrivate()
         : m_bIgnoreNops(true),
           m_bTrack(false),
@@ -19,8 +20,9 @@ ControlDoublePrivate::ControlDoublePrivate()
     m_defaultValue.setValue(0);
     m_value.setValue(0);
 }
+*/
 
-ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
+ControlDoublePrivate::ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO,
                                            bool bIgnoreNops, bool bTrack)
         : m_key(key),
           m_bIgnoreNops(bIgnoreNops),
@@ -28,7 +30,8 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
           m_trackKey("control " + m_key.group + "," + m_key.item),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_pCreatorCO(pCreatorCO) {
     m_defaultValue.setValue(0);
     m_value.setValue(0);
 
@@ -52,7 +55,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
 // static
 ControlDoublePrivate* ControlDoublePrivate::getControl(
-        const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
+        const ConfigKey& key, ControlObject* pCreatorCO, bool bIgnoreNops, bool bTrack) {
     QMutexLocker locker(&m_sqCOHashMutex);
     QHash<ConfigKey, ControlDoublePrivate*>::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {
@@ -61,8 +64,8 @@ ControlDoublePrivate* ControlDoublePrivate::getControl(
     locker.unlock();
 
     ControlDoublePrivate* pControl = NULL;
-    if (bCreate) {
-        pControl = new ControlDoublePrivate(key, bIgnoreNops, bTrack);
+    if (pCreatorCO) {
+        pControl = new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops, bTrack);
         locker.relock();
         m_sqCOHash.insert(key, pControl);
         locker.unlock();
