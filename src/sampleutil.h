@@ -163,7 +163,7 @@ class SampleUtil {
     static void deinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
                                    const CSAMPLE* pSrc, int iNumSamples);
 
-    // Crossfade two buffers together and put the result in dest.  All the
+    // Crossfade two buffers together and put the result in pDest.  All the
     // buffers must be the same length.  pDest may be an alias of the source
     // buffers. pSrc1 is the buffer that is fading out, pSrc2 is the buffer
     // that is fading in.

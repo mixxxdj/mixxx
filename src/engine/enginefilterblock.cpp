@@ -178,9 +178,9 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
 
     if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
         SampleUtil::copy3WithGain(m_pXfade,
-                          m_pTemp1, old_low,
-                          m_pTemp2, old_mid,
-                          m_pTemp3, old_high, iBufferSize);
+                                  m_pTemp1, old_low,
+                                  m_pTemp2, old_mid,
+                                  m_pTemp3, old_high, iBufferSize);
 
         SampleUtil::crossfadeBuffers(pOutput, m_pXfade, pOutput, iBufferSize);
     }
