@@ -182,7 +182,8 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
                                   m_pTemp2, old_mid,
                                   m_pTemp3, old_high, iBufferSize);
 
-        SampleUtil::crossfadeBuffers(pOutput, m_pXfade, pOutput, iBufferSize);
+        SampleUtil::linearCrossfadeBuffers(pOutput, m_pXfade,
+                                           pOutput, iBufferSize);
     }
 
     old_low = fLow;

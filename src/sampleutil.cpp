@@ -1009,9 +1009,9 @@ void SampleUtil::sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
 }
 
 // static
-void SampleUtil::crossfadeBuffers(CSAMPLE* pDest,
-                                  const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
-                                  int iNumSamples) {
+void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
+                                        const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
+                                        int iNumSamples) {
     double cross_mix = 0.0;
     double cross_inc = 2.0 / static_cast<double>(iNumSamples);
     for (int i = 0; i + 1 < iNumSamples; i += 2) {
