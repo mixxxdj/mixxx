@@ -67,7 +67,7 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool m_bFilterKey5th;
     bool m_bFilterKeyRelative;
 
-    QHash<QString, double> similarityContributions;
+    QHash<QString, double> m_similarityContributions;
     // Current Track Properties
     QString m_sSeedTrackInfo;
     QString m_sSeedTrackGenre;

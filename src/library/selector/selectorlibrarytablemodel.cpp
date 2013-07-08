@@ -47,8 +47,8 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
 
     slotResetFilters();
     clearSeedTrackInfo();
-    similarityContributions.insert("bpm", 0.0);
-    similarityContributions.insert("timbre", 1.0);
+    m_similarityContributions.insert("bpm", 0.0);
+    m_similarityContributions.insert("timbre", 1.0);
 }
 
 SelectorLibraryTableModel::~SelectorLibraryTableModel() {
@@ -59,7 +59,7 @@ void SelectorLibraryTableModel::setTableModel(int id){
     Q_UNUSED(id);
 
     QStringList columns;
-    columns << "library."+LIBRARYTABLE_ID << "'' as preview" << "0.0 as score";
+    columns << "library."+LIBRARYTABLE_ID << "'' as preview" << " 0.0 as score";
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     QString queryString = "CREATE TEMPORARY TABLE IF NOT EXISTS "+tableName+" AS "
@@ -159,10 +159,11 @@ void SelectorLibraryTableModel::calculateSimilarity() {
 
         query.bindValue(":score", scores);
         query.bindValue(":id", trackIds);
-        if (!query.execBatch())
+        if (!query.execBatch()) {
             qDebug() << query.lastError();
-        else
+        } else {
             select(); // update the view
+        }
     }
 }
 
@@ -298,7 +299,7 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
 
     // should ensure that similarityContributions's values add up to 1
 
-    double bpmContribution = similarityContributions.value("bpm");
+    double bpmContribution = m_similarityContributions.value("bpm");
     if (bpmContribution > 0.0) {
         QVariant bpm = data(index.sibling(index.row(), fieldIndex("bpm")));
         if (bpm.isValid()) {
@@ -313,7 +314,7 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
         }
     }
 
-    double timbreContribution = similarityContributions.value("timbre");
+    double timbreContribution = m_similarityContributions.value("timbre");
 
     if (timbreContribution > 0.0) {
         TrackPointer otherTrack = getTrack(index);
