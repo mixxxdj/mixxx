@@ -56,7 +56,7 @@
       <item>
        <widget class="QCheckBox" name="bFastAnalysis">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enable fast timbre analysis. &lt;/p&gt;&lt;p&gt;If activated Mixxx only analyzes the first minute of a track for timbral information. &lt;/p&gt;&lt;p&gt;This can speed up timbral analysis on slower computers but may result in lower quality models.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>Enable fast timbre analysis. If activated Mixxx only analyzes the first minute of a track for timbral information. This can speed up timbral analysis on slower computers but may result in lower quality models.</string>
         </property>
         <property name="text">
          <string>Enable Fast Analysis (For slow computers, may be less accurate)</string>
@@ -66,7 +66,7 @@
       <item>
        <widget class="QCheckBox" name="bReanalyse">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;If unchecked, timbral models will only be recalculated if no previous model has been created.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>If unchecked, timbral models will only be recalculated if no previous model has been created.</string>
         </property>
         <property name="text">
          <string>Re-analyse timbre when settings change or model is outdated</string>

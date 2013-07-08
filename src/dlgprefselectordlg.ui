@@ -37,7 +37,7 @@
       <item>
        <widget class="QSlider" name="horizontalSliderBpmRange">
         <property name="toolTip">
-         <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Bpm filter range&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+         <string>BPM filter range</string>
         </property>
         <property name="maximum">
          <number>8</number>
