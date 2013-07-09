@@ -303,6 +303,9 @@ class MixxxBuild(object):
         branch_build_dir = os.path.join(cache_dir, branch_name)
         virtual_build_dir = os.path.join(branch_build_dir, self.build_dir)
         virtual_sconsign_file = os.path.join(branch_build_dir, 'sconsign.dblite')
+        old_branch_build_dir = ''
+        old_virtual_build_dir = ''
+        old_virtual_sconsign_file = ''
 
         # Clean up symlinks from our original method of virtualizing.
         if os.path.islink(self.build_dir):
