@@ -76,14 +76,14 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     }
     QList<int> trackIds;
     if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+        trackIds = trackDao.getTrackIds(files);
     } else {
         trackIds = trackDao.addTracks(files, true);
     }
 
     int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     // remove tracks that could not be added
-    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
+    for (int trackId = 0; trackId < trackIds.size(); trackId++) {
         if (trackIds.at(trackId) < 0) {
             trackIds.removeAt(trackId--);
         }
