@@ -22,8 +22,8 @@ class ControlDoublePrivate : public QObject {
     // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
     // does not exist.
     static ControlDoublePrivate* getControl(
-        const ConfigKey& key,
-        ControlObject* pCreatorCO, bool bIgnoreNops=true, bool bTrack=false);
+            const ConfigKey& key,
+            ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false);
 
     // Sets the control value.
     void set(double value, QObject* pSender);
