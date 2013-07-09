@@ -25,7 +25,7 @@ class AnalyserQueue : public QThread {
 
     static AnalyserQueue* createDefaultAnalyserQueue(
             ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection);
-    static AnalyserQueue* createViewAnalyserQueue(
+    static AnalyserQueue* createAnalysisFeatureAnalyserQueue(
             ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection);
 
   public slots:

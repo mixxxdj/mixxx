@@ -92,7 +92,7 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
         // Note: this sucks... we should refactor the prefs/analyser to fix this hacky bit ^^^^.
 
-        m_pAnalyserQueue = AnalyserQueue::createViewAnalyserQueue(m_pConfig, m_pTrackCollection);
+        m_pAnalyserQueue = AnalyserQueue::createAnalysisFeatureAnalyserQueue(m_pConfig, m_pTrackCollection);
 
         connect(m_pAnalyserQueue, SIGNAL(trackProgress(int)),
                 m_pAnalysisView, SLOT(trackAnalysisProgress(int)));

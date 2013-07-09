@@ -84,7 +84,8 @@ QString PlaylistDAO::getPlaylistName(int playlistId) {
 
 QList<int> PlaylistDAO::getTrackIds(int playlistId) {
     QSqlQuery query(m_database);
-    query.prepare("SELECT track_id from PlaylistTracks WHERE playlist_id = :id");
+    query.prepare("SELECT DISTINCT track_id from PlaylistTracks "
+                  "WHERE playlist_id = :id");
     query.bindValue(":id", playlistId);
 
     if (!query.exec()) {
