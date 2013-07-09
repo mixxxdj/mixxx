@@ -132,7 +132,9 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     QList<ChannelInfo*> m_channels;
 
-    CSAMPLE *m_pMaster, *m_pHead;
+    CSAMPLE *m_pMaster, *m_pHead, *m_pPrevGainBuffer;
+    double m_dPrevMasterGain, m_dPrevC1Gain, m_dPrevC2Gain;
+    float m_fPrevHeadGain;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 

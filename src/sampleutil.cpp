@@ -1010,13 +1010,16 @@ void SampleUtil::sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
 
 // static
 void SampleUtil::linearCrossfadeBuffers(CSAMPLE* pDest,
-                                        const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
+                                        const CSAMPLE* pSrcFadeOut,
+                                        const CSAMPLE* pSrcFadeIn,
                                         int iNumSamples) {
     double cross_mix = 0.0;
     double cross_inc = 2.0 / static_cast<double>(iNumSamples);
     for (int i = 0; i + 1 < iNumSamples; i += 2) {
-        pDest[i] = pSrc2[i] * cross_mix + pSrc1[i] * (1.0 - cross_mix);
-        pDest[i + 1] = pSrc2[i + 1] * cross_mix + pSrc1[i + 1] * (1.0 - cross_mix);
+        pDest[i] = pSrcFadeIn[i] * cross_mix
+                   + pSrcFadeOut[i] * (1.0 - cross_mix);
+        pDest[i + 1] = pSrcFadeIn[i + 1] * cross_mix
+                       + pSrcFadeOut[i + 1] * (1.0 - cross_mix);
         cross_mix += cross_inc;
     }
 }

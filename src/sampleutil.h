@@ -165,11 +165,10 @@ class SampleUtil {
 
     // Crossfade two buffers together and put the result in pDest.  All the
     // buffers must be the same length.  pDest may be an alias of the source
-    // buffers. pSrc1 is the buffer that is fading out, pSrc2 is the buffer
-    // that is fading in.
+    // buffers.
     static void linearCrossfadeBuffers(CSAMPLE* pDest,
-                                       const CSAMPLE* pSrc1,
-                                       const CSAMPLE* pSrc2,
+                                       const CSAMPLE* pSrcFadeOut,
+                                       const CSAMPLE* pSrcFadeIn,
                                        int iNumSamples);
 
     static void setOptimizations(bool opt);

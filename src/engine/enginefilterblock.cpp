@@ -84,12 +84,12 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     m_pTemp1 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp2 = new CSAMPLE[MAX_BUFFER_LEN];
     m_pTemp3 = new CSAMPLE[MAX_BUFFER_LEN];
-    m_pXfade = new CSAMPLE[MAX_BUFFER_LEN];
+    m_pPrevGainBuffer = new CSAMPLE[MAX_BUFFER_LEN];
 
     memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp3, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
-    memset(m_pXfade, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    memset(m_pPrevGainBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
 
     old_low = old_mid = old_high = 1.0;
 }
@@ -99,7 +99,7 @@ EngineFilterBlock::~EngineFilterBlock()
     delete high;
     delete band;
     delete low;
-    delete [] m_pXfade;
+    delete [] m_pPrevGainBuffer;
     delete [] m_pTemp3;
     delete [] m_pTemp2;
     delete [] m_pTemp1;
@@ -176,13 +176,16 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
                               m_pTemp2, fMid,
                               m_pTemp3, fHigh, iBufferSize);
 
+    // If any eq control object has changed, crossfade a buffer processed with
+    // the old values with a buffer using the new values.  This prevents
+    // soundwave discontinuties causing pops and clicks.
     if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
-        SampleUtil::copy3WithGain(m_pXfade,
+        SampleUtil::copy3WithGain(m_pPrevGainBuffer,
                                   m_pTemp1, old_low,
                                   m_pTemp2, old_mid,
                                   m_pTemp3, old_high, iBufferSize);
 
-        SampleUtil::linearCrossfadeBuffers(pOutput, m_pXfade,
+        SampleUtil::linearCrossfadeBuffers(pOutput, m_pPrevGainBuffer,
                                            pOutput, iBufferSize);
     }
 

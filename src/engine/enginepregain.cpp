@@ -44,10 +44,15 @@ EnginePregain::EnginePregain(const char * group)
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     m_bSmoothFade = false;
+
+    m_pPrevGainBuffer = new CSAMPLE[MAX_BUFFER_LEN];
+    memset(m_pPrevGainBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    m_dPrevGain = 1.0;
 }
 
 EnginePregain::~EnginePregain()
 {
+    delete [] m_pPrevGainBuffer;
     delete potmeterPregain;
     delete m_pControlReplayGain;
     delete m_pTotalGain;
@@ -116,4 +121,12 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
 
     // SampleUtil deals with aliased buffers and gains of 1 or 0.
     SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
+
+    // Prevent soundwave discontinuities by interpolating from old to new gain.
+    if (fGain != m_dPrevGain) {
+        SampleUtil::copyWithGain(m_pPrevGainBuffer, pIn, m_dPrevGain, iBufferSize);
+        SampleUtil::linearCrossfadeBuffers(pOutput, m_pPrevGainBuffer,
+                                           pOutput, iBufferSize);
+    }
+    m_dPrevGain = fGain;
 }
