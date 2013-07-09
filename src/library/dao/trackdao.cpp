@@ -531,6 +531,12 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
     QSqlQuery query(m_database);
     QList<int> trackIDs;
 
+
+    // Prepare to add tracks to the database.
+    // This also begins an SQL transaction.
+    addTracksPrepare();
+
+    // tr0: Why was not in transaction?
     // Create a temporary database of the paths of all the imported tracks.
     query.prepare("CREATE TEMP TABLE playlist_import "
                   "(location varchar (512))");
@@ -538,10 +544,6 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
         LOG_FAILED_QUERY(query);
         return trackIDs;
     }
-
-    // Prepare to add tracks to the database.
-    // This also begins an SQL transaction.
-    addTracksPrepare();
 
     // All all the track paths to this database.
     query.prepare("INSERT INTO playlist_import (location) "
