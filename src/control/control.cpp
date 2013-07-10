@@ -7,7 +7,7 @@
 #include "util/timer.h"
 
 // Static member variable definition
-QHash<ConfigKey, ControlDoublePrivate*> ControlDoublePrivate::m_sqCOHash;
+QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::m_sqCOHash;
 QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
 /*
@@ -54,28 +54,28 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 }
 
 // static
-ControlDoublePrivate* ControlDoublePrivate::getControl(
+QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         const ConfigKey& key, ControlObject* pCreatorCO, bool bIgnoreNops, bool bTrack) {
     QMutexLocker locker(&m_sqCOHashMutex);
-    QHash<ConfigKey, ControlDoublePrivate*>::const_iterator it = m_sqCOHash.find(key);
+    QSharedPointer<ControlDoublePrivate> pControl;
+    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {
-        return it.value();
+        pControl = it.value();
     }
     locker.unlock();
 
-    ControlDoublePrivate* pControl = NULL;
-    if (pCreatorCO) {
-        pControl = new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops, bTrack);
-        locker.relock();
-        m_sqCOHash.insert(key, pControl);
-        locker.unlock();
-    }
-
     if (pControl == NULL) {
-        qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
-                   << key.group << "," << key.item << ")";
+        if (pCreatorCO) {
+            pControl = QSharedPointer<ControlDoublePrivate>(
+                    new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops, bTrack));
+            locker.relock();
+            m_sqCOHash.insert(key, pControl);
+            locker.unlock();
+        } else {
+            qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
+                       << key.group << "," << key.item << ")";
+        }
     }
-
     return pControl;
 }
 

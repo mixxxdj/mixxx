@@ -41,7 +41,7 @@ ControlObject::~ControlObject() {
 void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
     m_key = key;
     m_pControl = ControlDoublePrivate::getControl(m_key, this, bIgnoreNops, bTrack);
-    connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+    connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);
 }
@@ -59,7 +59,7 @@ void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
 // static
 ControlObject* ControlObject::getControl(const ConfigKey& key) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    ControlDoublePrivate* pCDP = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key);
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
@@ -82,7 +82,7 @@ double ControlObject::get() const {
 
 // static
 double ControlObject::get(const ConfigKey& key) {
-    ControlDoublePrivate* pCop = ControlDoublePrivate::getControl(key, NULL);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key, NULL);
     return pCop ? pCop->get() : 0.0;
 }
 
@@ -100,7 +100,7 @@ void ControlObject::set(double value) {
 
 // static
 void ControlObject::set(const ConfigKey& key, const double& value) {
-    ControlDoublePrivate* pCop = ControlDoublePrivate::getControl(key, NULL);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key, NULL);
     if (pCop) {
         pCop->set(value, NULL);
     }

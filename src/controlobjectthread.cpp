@@ -40,7 +40,7 @@ void ControlObjectThread::initialize(const ConfigKey& key) {
     m_key = key;
     m_pControl = ControlDoublePrivate::getControl(key, NULL);
     if (m_pControl) {
-        connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                 this, SLOT(slotValueChanged(double, QObject*)),
                 Qt::DirectConnection);
     }

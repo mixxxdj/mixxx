@@ -80,7 +80,7 @@ class ControlObject : public QObject {
   protected:
     // Key of the object
     ConfigKey m_key;
-    ControlDoublePrivate* m_pControl;
+    QSharedPointer<ControlDoublePrivate> m_pControl;
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);

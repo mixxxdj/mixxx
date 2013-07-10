@@ -21,7 +21,7 @@ class ControlDoublePrivate : public QObject {
     // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
     // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
     // does not exist.
-    static ControlDoublePrivate* getControl(
+    static QSharedPointer<ControlDoublePrivate> getControl(
             const ConfigKey& key,
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false);
 
@@ -88,7 +88,7 @@ class ControlDoublePrivate : public QObject {
     ControlObject* m_pCreatorCO;
 
     // Hash of ControlDoublePrivate instantiations.
-    static QHash<ConfigKey,ControlDoublePrivate*> m_sqCOHash;
+    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > m_sqCOHash;
     // Mutex guarding access to the ControlDoublePrivate hash.
     static QMutex m_sqCOHashMutex;
 };
