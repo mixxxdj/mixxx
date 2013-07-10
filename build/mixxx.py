@@ -367,22 +367,20 @@ class MixxxBuild(object):
             # if not, no problem because scons will rebuild all chaned files in any case    
             # copy the old_virtual_dir back
             if sconsign_branch: 
-                if old_virtual_build_dir:
-                    if os.path.isdir(old_virtual_build_dir):
-                        if os.path.isdir(self.build_dir):
-                            raise Exception('%s exists without a .sconsign.branch file so '
-                                            'build virtualization cannot continue. Please '
-                                            'move or delete it.' % self.build_dir)
-                        print "shutil.copytree", old_virtual_build_dir, self.build_dir
-                        shutil.copytree(old_virtual_build_dir, self.build_dir)
-                if old_virtual_sconsign_file:
-                    if os.path.isfile(old_virtual_sconsign_file):
-                        if os.path.isfile(sconsign_file):
-                            raise Exception('%s exists without a .sconsign.branch file so '
-                                            'build virtualization cannot continue. Please '
-                                            'move or delete it.' % sconsign_file)
-                        print "shutil.copy", virtual_sconsign_file, sconsign_file
-                        shutil.copy(old_virtual_sconsign_file, sconsign_file)
+                if os.path.isdir(old_virtual_build_dir):
+                    if os.path.isdir(self.build_dir):
+                        raise Exception('%s exists without a .sconsign.branch file so '
+                                        'build virtualization cannot continue. Please '
+                                        'move or delete it.' % self.build_dir)
+                    print "shutil.copytree", old_virtual_build_dir, self.build_dir
+                    shutil.copytree(old_virtual_build_dir, self.build_dir)
+                if os.path.isfile(old_virtual_sconsign_file):
+                    if os.path.isfile(sconsign_file):
+                        raise Exception('%s exists without a .sconsign.branch file so '
+                                        'build virtualization cannot continue. Please '
+                                        'move or delete it.' % sconsign_file)
+                    print "shutil.copy", virtual_sconsign_file, sconsign_file
+                    shutil.copy(old_virtual_sconsign_file, sconsign_file)
       
         # create build dir in cache folder for later move       
         print "os.makedirs", branch_build_dir
