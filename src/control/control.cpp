@@ -35,10 +35,6 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key, ControlObject* pCreato
     m_defaultValue.setValue(0);
     m_value.setValue(0);
 
-    m_sqCOHashMutex.lock();
-    m_sqCOHash.insert(m_key, this);
-    m_sqCOHashMutex.unlock();
-
     if (m_bTrack) {
         // TODO(rryan): Make configurable.
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
@@ -67,7 +63,7 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     if (pControl == NULL) {
         if (pCreatorCO) {
             pControl = QSharedPointer<ControlDoublePrivate>(
-                    new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops, bTrack));
+                    new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops, bTrack), &QObject::deleteLater);
             locker.relock();
             m_sqCOHash.insert(key, pControl);
             locker.unlock();
