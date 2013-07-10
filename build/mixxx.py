@@ -382,9 +382,9 @@ class MixxxBuild(object):
                     print "shutil.copy", virtual_sconsign_file, sconsign_file
                     shutil.copy(old_virtual_sconsign_file, sconsign_file)
       
-        # create build dir in cache folder for later move       
-        print "os.makedirs", branch_build_dir
-        os.makedirs(branch_build_dir)
+            # create build dir in cache folder for later move       
+            print "os.makedirs", branch_build_dir
+            os.makedirs(branch_build_dir)
 
         with open(sconsign_branch_file, 'w+') as f:
             print 'touch', sconsign_branch_file
