@@ -11,16 +11,13 @@ PlaylistDAO::PlaylistDAO(QSqlDatabase& database)
         : m_database(database) {
 }
 
-PlaylistDAO::~PlaylistDAO()
-{
+PlaylistDAO::~PlaylistDAO() {
 }
 
-void PlaylistDAO::initialize()
-{
+void PlaylistDAO::initialize() {
 }
 
-int PlaylistDAO::createPlaylist(const QString& name, HiddenType hidden)
-{
+int PlaylistDAO::createPlaylist(const QString& name, HiddenType hidden) {
     // qDebug() << "PlaylistDAO::createPlaylist"
     //          << QThread::currentThread()
     //          << m_database.connectionName();
@@ -64,8 +61,7 @@ int PlaylistDAO::createPlaylist(const QString& name, HiddenType hidden)
     return playlistId;
 }
 
-QString PlaylistDAO::getPlaylistName(const int playlistId)
-{
+QString PlaylistDAO::getPlaylistName(const int playlistId) {
     // qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
@@ -84,6 +80,24 @@ QString PlaylistDAO::getPlaylistName(const int playlistId)
         name = query.value(query.record().indexOf("name")).toString();
     }
     return name;
+}
+
+QList<int> PlaylistDAO::getTrackIds(int playlistId) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT DISTINCT track_id from PlaylistTracks "
+                  "WHERE playlist_id = :id");
+    query.bindValue(":id", playlistId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return QList<int> ();
+    }
+
+    QList<int> ids;
+    while (query.next()) {
+        ids.append(query.value(query.record().indexOf("track_id")).toInt());
+    }
+    return ids;
 }
 
 int PlaylistDAO::getPlaylistIdFromName(const QString& name) {

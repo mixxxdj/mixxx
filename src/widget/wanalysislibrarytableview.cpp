@@ -1,8 +1,8 @@
 
 #include "library/trackcollection.h"
-#include "widget/wpreparelibrarytableview.h"
+#include "widget/wanalysislibrarytableview.h"
 
-WPrepareLibraryTableView::WPrepareLibraryTableView(QWidget* parent,
+WAnalysisLibraryTableView::WAnalysisLibraryTableView(QWidget* parent,
                                                    ConfigObject<ConfigValue>* pConfig,
                                                    TrackCollection* pTrackCollection)
         : WTrackTableView(parent, pConfig, pTrackCollection)
@@ -11,17 +11,17 @@ WPrepareLibraryTableView::WPrepareLibraryTableView(QWidget* parent,
     setDragEnabled(true); //Always enable drag for now (until we have a model that doesn't support this.)
 }
 
-WPrepareLibraryTableView::~WPrepareLibraryTableView()
+WAnalysisLibraryTableView::~WAnalysisLibraryTableView()
 {
 }
 
-void WPrepareLibraryTableView::onSearchStarting() {
+void WAnalysisLibraryTableView::onSearchStarting() {
 }
 
-void WPrepareLibraryTableView::onSearchCleared() {
+void WAnalysisLibraryTableView::onSearchCleared() {
 }
 
-void WPrepareLibraryTableView::onSearch(const QString& text) {
+void WAnalysisLibraryTableView::onSearch(const QString& text) {
     Q_UNUSED(text);
 }
 

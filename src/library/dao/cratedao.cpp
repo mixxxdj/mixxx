@@ -93,6 +93,23 @@ bool CrateDAO::isCrateLocked(const int crateId) {
     return false;
 }
 
+QList<int> CrateDAO::getTrackIds(int crateId) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id from crate_tracks WHERE crate_id = :id");
+    query.bindValue(":id", crateId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return QList<int> ();
+    }
+
+    QList<int> ids;
+    while (query.next()) {
+        ids.append(query.value(query.record().indexOf("track_id")).toInt());
+    }
+    return ids;
+}
+
 bool CrateDAO::deleteCrate(const int crateId) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
