@@ -36,6 +36,7 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
 }
 
 ControlObject::~ControlObject() {
+    m_pControl->removeCreatorCO();
 }
 
 void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {

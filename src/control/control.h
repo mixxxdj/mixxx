@@ -25,6 +25,9 @@ class ControlDoublePrivate : public QObject {
             const ConfigKey& key,
             ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false);
 
+    // Adds all ControlDoublePrivate that currently exist to pControlList
+    static void getControls(QList<ControlDoublePrivate*>* pControlsList);
+
     // Sets the control value.
     void set(double value, QObject* pSender);
     // Gets the control value.
@@ -59,6 +62,14 @@ class ControlDoublePrivate : public QObject {
 
     inline ControlObject* getCreatorCO() const {
         return m_pCreatorCO;
+    }
+
+    inline void removeCreatorCO() {
+        m_pCreatorCO = NULL;
+    }
+
+    inline ConfigKey getKey() {
+        return m_key;
     }
 
   signals:

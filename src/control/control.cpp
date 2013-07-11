@@ -45,6 +45,7 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key, ControlObject* pCreato
 
 ControlDoublePrivate::~ControlDoublePrivate() {
     m_sqCOHashMutex.lock();
+    //qDebug() << "ControlDoublePrivate::m_sqCOHash.remove(" << m_key.group << "," << m_key.item << ")";
     m_sqCOHash.remove(m_key);
     m_sqCOHashMutex.unlock();
 }
@@ -63,8 +64,9 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     if (pControl == NULL) {
         if (pCreatorCO) {
             pControl = QSharedPointer<ControlDoublePrivate>(
-                    new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops, bTrack), &QObject::deleteLater);
+                    new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops, bTrack));
             locker.relock();
+            //qDebug() << "ControlDoublePrivate::m_sqCOHash.insert(" << key.group << "," << key.item << ")";
             m_sqCOHash.insert(key, pControl);
             locker.unlock();
         } else {
@@ -73,6 +75,16 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
         }
     }
     return pControl;
+}
+
+// static
+void ControlDoublePrivate::getControls(QList<ControlDoublePrivate*>* pControlList) {
+    m_sqCOHashMutex.lock();
+    for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.begin();
+         it != m_sqCOHash.end(); ++it) {
+        pControlList->push_back(it.value().data());
+    }
+    m_sqCOHashMutex.unlock();
 }
 
 double ControlDoublePrivate::get() const {

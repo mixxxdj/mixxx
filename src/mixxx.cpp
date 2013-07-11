@@ -640,6 +640,29 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete config " << qTime.elapsed();
     delete m_pConfig;
 
+    // Check for leaked ControlObjects and give warnings.
+    QList<ControlDoublePrivate*> leakedControls;
+    QList<ConfigKey> leakedConfigKeys;
+
+    ControlDoublePrivate::getControls(&leakedControls);
+
+    if (leakedControls.size() > 0) {
+        qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
+        foreach (ControlDoublePrivate* pCOP, leakedControls) {
+            ConfigKey key = pCOP->getKey();
+            qDebug() << key.group << key.item << pCOP->getCreatorCO();
+            leakedConfigKeys.append(key);
+        }
+
+       foreach (ConfigKey key, leakedConfigKeys) {
+           // delete just to satisfy valgrind:
+           // check if the pointer is still valid, the control object may have bin already
+           // deleted by its parent in this loop
+           delete ControlObject::getControl(key);
+       }
+   }
+   qDebug() << "~MixxxApp: All leaking controls deleted.";
+
     delete m_pKeyboard;
     delete m_pKbdConfig;
     delete m_pKbdConfigEmpty;
