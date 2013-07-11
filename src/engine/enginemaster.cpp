@@ -395,13 +395,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                                 &c1_gain, &c2_gain);
 
     // Now set the gains for overall volume and the left, center, right gains.
-    // Copy master volume value into a local in case its value changes during
-    // this call.
-    double current_gain = m_pMasterVolume->get();
-    m_masterGain.setGains(current_gain, c1_gain, 1.0, c2_gain);
+    m_masterGain.setGains(m_pMasterVolume->get(), c1_gain, 1.0, c2_gain);
 
-    // Perform the master mix
+    // Clear volume cache so we properly poll the control objects.
     m_masterGain.resetCache();
+    // Perform the master mix
     mixChannels(masterOutput, maxChannels, m_pMaster, iBufferSize, &m_masterGain);
 
     // Avoid soundwave discontinuties by interpolating from the old gains to new.
