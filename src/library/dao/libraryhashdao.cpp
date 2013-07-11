@@ -134,10 +134,10 @@ void LibraryHashDAO::invalidateAllDirectories()
     //<< QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("UPDATE LibraryHashes "
-                  "SET needs_verification=:needs_verification");
-    query.bindValue(":needs_verification", 1);
+                  "SET needs_verification=1");
     if (!query.exec()) {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query)
+                << "Couldn't mark directories previously hashed as needing verification.";
     }
 }
 

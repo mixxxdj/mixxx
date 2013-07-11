@@ -46,7 +46,7 @@ class LibraryScanner : public QThread {
     void run();
     void scan(QString libraryPath, QWidget *parent);
     void scan();
-    bool recursiveScan(QString dirPath, QStringList& verifiedDirectories);
+    bool recursiveScan(const QString& dirPath, QStringList &verifiedDirectories);
   public slots:
     void cancel();
     void resetCancel();
