@@ -58,6 +58,7 @@ QString chromaprinter::calcFingerPrint(SoundSourceProxy& soundSource){
     int success = chromaprint_feed(ctx, pData, m_NumSamples);
     if (!success) {
         qDebug() << "could not generate fingerprint";
+        delete pData;
         return QString();
     }
     chromaprint_finish(ctx);

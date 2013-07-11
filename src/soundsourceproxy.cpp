@@ -365,7 +365,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
     }
     delete sndsrc;
 
-    return 0;
+    return OK;
 }
 
 // static

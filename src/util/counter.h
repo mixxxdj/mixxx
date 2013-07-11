@@ -13,6 +13,15 @@ class Counter {
                     Stat::COUNT | Stat::SUM | Stat::AVERAGE | Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX,
                     by);
     }
+    Counter& operator+=(int by) {
+        this->increment(by);
+        return *this;
+    }
+    inline Counter operator++(int) { // postfix
+        Counter result = *this;
+        increment(1);
+        return result;
+    }
   private:
     QString m_tag;
 };

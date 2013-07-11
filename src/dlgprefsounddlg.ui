@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>729</width>
-    <height>363</height>
+    <width>743</width>
+    <height>369</height>
    </rect>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout_2">
@@ -106,9 +106,6 @@
        </item>
       </layout>
      </item>
-     <item>
-      <layout class="QHBoxLayout" name="underflowHLayout"/>
-     </item>
     </layout>
    </item>
    <item>
@@ -124,6 +121,16 @@
 &lt;li&gt;Enlarge your audio buffer if the underflow counter is increasing or you hear pops during playback&lt;/li&gt;
 &lt;li&gt;Downsize your audio buffer to improve Mixxx's responsiveness&lt;/li&gt;
 &lt;/ul&gt;</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QLabel" name="limitsHint">
+        <property name="text">
+         <string>&lt;ul&gt;&lt;li&gt;Enable Real-Time scheduling (currently disabled) see the &lt;a href=&quot;http://www.mixxx.org/wiki/doku.php/troubleshooting?s[]=limits&quot;&gt;Mixxx Wiki&lt;/a&gt;&lt;/li&gt;&lt;/ul&gt;</string>
+        </property>
+        <property name="openExternalLinks">
+         <bool>true</bool>
         </property>
        </widget>
       </item>

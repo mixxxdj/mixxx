@@ -57,6 +57,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // position in the database table, not the display order position column
     // stored in the database.
     int getPlaylistId(const int index);
+    QList<int> getTrackIds(int playlistId);
     // Returns true if the playlist with playlistId is hidden
     bool isHidden(const int playlistId);
     // Returns the HiddenType of playlistId

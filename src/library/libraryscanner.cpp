@@ -289,7 +289,7 @@ void LibraryScanner::run()
     emit(scanFinished());
 }
 
-void LibraryScanner::scan(QString libraryPath, QWidget *parent)
+void LibraryScanner::scan(const QString& libraryPath, QWidget *parent)
 {
     m_qLibraryPath = libraryPath;
     m_pProgress = new LibraryScannerDlg(parent);
