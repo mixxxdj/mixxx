@@ -63,7 +63,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pCOShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
-    m_pCOTShufflePlaylist = new ControlObjectThreadMain(m_pCOShufflePlaylist->getKey());
+    m_pCOTShufflePlaylist = new ControlObjectThread(m_pCOShufflePlaylist->getKey());
     connect(m_pCOTShufflePlaylist, SIGNAL(valueChanged(double)),
             this, SLOT(shufflePlaylist(double)));
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
@@ -71,7 +71,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pCOSkipNext = new ControlPushButton(
             ConfigKey("[AutoDJ]", "skip_next"));
-    m_pCOTSkipNext = new ControlObjectThreadMain(m_pCOSkipNext->getKey());
+    m_pCOTSkipNext = new ControlObjectThread(m_pCOSkipNext->getKey());
     connect(m_pCOTSkipNext, SIGNAL(valueChanged(double)),
             this, SLOT(skipNext(double)));
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
@@ -79,7 +79,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pCOFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
-    m_pCOTFadeNow = new ControlObjectThreadMain(m_pCOFadeNow->getKey());
+    m_pCOTFadeNow = new ControlObjectThread(m_pCOFadeNow->getKey());
     connect(m_pCOTFadeNow, SIGNAL(valueChanged(double)),
             this, SLOT(fadeNow(double)));
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
@@ -94,7 +94,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pCOEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
     m_pCOEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
-    m_pCOTEnabledAutoDJ = new ControlObjectThreadMain(m_pCOEnabledAutoDJ->getKey());
+    m_pCOTEnabledAutoDJ = new ControlObjectThread(m_pCOEnabledAutoDJ->getKey());
     connect(m_pCOTEnabledAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(enableAutoDJCo(double)));
 
