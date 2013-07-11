@@ -88,8 +88,8 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     float m_fadeDuration1;
     float m_fadeDuration2;
     int m_backUpTransition;
-    ControlObjectThreadMain* m_pCOPlayPos1;
-    ControlObjectThreadMain* m_pCOPlayPos2;
+    ControlObjectThread* m_pCOPlayPos1;
+    ControlObjectThread* m_pCOPlayPos2;
     ControlObjectThreadMain* m_pCOPlay1;
     ControlObjectThreadMain* m_pCOPlay2;
     ControlObjectThreadMain* m_pCOPlay1Fb;
