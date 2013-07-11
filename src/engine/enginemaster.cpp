@@ -97,10 +97,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pPrevGainBuffer, 0, MAX_BUFFER_LEN);
 
-    // Initialize default "previous" values.
-    m_dPrevMasterGain = m_dPrevC1Gain = m_dPrevC2Gain = 1.0;
-    m_fPrevHeadGain = 1.0;
-
     // Starts a thread for recording and shoutcast
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
@@ -390,15 +386,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     m_headphoneGain.setGain(chead_gain);
     mixChannels(headphoneOutput, maxChannels, m_pHead, iBufferSize, &m_headphoneGain);
 
-    // Avoid soundwave discontinuties by interpolating from the old gain to new.
-    if (chead_gain != m_fPrevHeadGain) {
-        m_headphoneGain.setGain(m_fPrevHeadGain);
-        mixChannels(headphoneOutput, maxChannels, m_pPrevGainBuffer, iBufferSize, &m_headphoneGain);
-        SampleUtil::linearCrossfadeBuffers(m_pHead, m_pPrevGainBuffer,
-                                           m_pHead, iBufferSize);
-    }
-    m_fPrevHeadGain = chead_gain;
-
     // Calculate the crossfader gains for left and right side of the crossfader
     double c1_gain, c2_gain;
     EngineXfader::getXfadeGains(crossfader->get(), xFaderCurve->get(),
@@ -414,23 +401,18 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     m_masterGain.setGains(current_gain, c1_gain, 1.0, c2_gain);
 
     // Perform the master mix
+    m_masterGain.resetCache();
     mixChannels(masterOutput, maxChannels, m_pMaster, iBufferSize, &m_masterGain);
 
     // Avoid soundwave discontinuties by interpolating from the old gains to new.
-    if (current_gain != m_dPrevMasterGain ||
-            c1_gain != m_dPrevC1Gain ||
-            c2_gain != m_dPrevC2Gain) {
-        m_masterGain.setGains(m_dPrevMasterGain, m_dPrevC1Gain, 1.0, m_dPrevC2Gain);
-
+    if (!m_masterGain.compare(m_prevMasterGain)) {
         // We are reusing p_pPrevGainBuffer from above, but its data isn't needed
         // as soon as the crossfade call is complete so this is safe.
-        mixChannels(masterOutput, maxChannels, m_pPrevGainBuffer, iBufferSize, &m_masterGain);
+        mixChannels(masterOutput, maxChannels, m_pPrevGainBuffer, iBufferSize, &m_prevMasterGain);
         SampleUtil::linearCrossfadeBuffers(m_pMaster, m_pPrevGainBuffer,
                                            m_pMaster, iBufferSize);
     }
-    m_dPrevMasterGain = current_gain;
-    m_dPrevC1Gain = c1_gain;
-    m_dPrevC1Gain = c2_gain;
+    m_prevMasterGain = m_masterGain;
 
 #ifdef __LADSPA__
     // LADPSA master effects
