@@ -107,14 +107,22 @@ class EngineMaster : public EngineObject, public AudioSource {
       private:
         double m_dGain;
     };
-    class OrientationVolumeGainCalculator : public GainCalculator {
+    class CachingOrientationVolumeGainCalculator : public GainCalculator {
       public:
+        inline void resetCache() { m_cache.clear(); }
+
         inline double getGain(ChannelInfo* pChannelInfo) {
-            double channelVolume = pChannelInfo->m_pVolumeControl->get();
-            double orientationGain = EngineMaster::gainForOrientation(
+            QMap<ChannelInfo*, double>::const_iterator it = m_cache.find(pChannelInfo);
+            if (it != m_cache.end()) {
+                return *it;
+            }
+            const double channelVolume = pChannelInfo->m_pVolumeControl->get();
+            const double orientationGain = EngineMaster::gainForOrientation(
                 pChannelInfo->m_pChannel->getOrientation(),
                 m_dLeftGain, m_dCenterGain, m_dRightGain);
-            return m_dVolume * channelVolume * orientationGain;
+            const double gain = m_dVolume * channelVolume * orientationGain;
+            m_cache[pChannelInfo] = gain;
+            return gain;
         }
 
         inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain) {
@@ -123,8 +131,17 @@ class EngineMaster : public EngineObject, public AudioSource {
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
         }
+
+        inline bool compare(const CachingOrientationVolumeGainCalculator& other) const {
+            return m_dVolume == other.m_dVolume &&
+                   m_dLeftGain == other.m_dLeftGain &&
+                   m_dCenterGain == other.m_dCenterGain &&
+                   m_dRightGain == other.m_dRightGain &&
+                   m_cache == other.m_cache;
+        }
       private:
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
+        QMap<ChannelInfo*, double> m_cache;
     };
 
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
@@ -133,8 +150,6 @@ class EngineMaster : public EngineObject, public AudioSource {
     QList<ChannelInfo*> m_channels;
 
     CSAMPLE *m_pMaster, *m_pHead, *m_pPrevGainBuffer;
-    double m_dPrevMasterGain, m_dPrevC1Gain, m_dPrevC2Gain;
-    float m_fPrevHeadGain;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 
@@ -157,7 +172,7 @@ class EngineMaster : public EngineObject, public AudioSource {
         *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
-    OrientationVolumeGainCalculator m_masterGain;
+    CachingOrientationVolumeGainCalculator m_masterGain, m_prevMasterGain;
 };
 
 #endif
