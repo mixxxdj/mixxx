@@ -33,7 +33,7 @@ public:
 
 
 private:
-    CSAMPLE *m_pPrevGainBuffer;
+    CSAMPLE *m_pPrevGainBuffer, *m_pNewGainBuffer;
     float m_dPrevGain;
     ControlLogpotmeter *potmeterPregain;
     ControlObject *m_pTotalGain;

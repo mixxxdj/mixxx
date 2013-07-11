@@ -47,12 +47,15 @@ EnginePregain::EnginePregain(const char * group)
 
     m_pPrevGainBuffer = new CSAMPLE[MAX_BUFFER_LEN];
     memset(m_pPrevGainBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+    m_pNewGainBuffer = new CSAMPLE[MAX_BUFFER_LEN];
+    memset(m_pNewGainBuffer, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     m_dPrevGain = 1.0;
 }
 
 EnginePregain::~EnginePregain()
 {
     delete [] m_pPrevGainBuffer;
+    delete [] m_pNewGainBuffer;
     delete potmeterPregain;
     delete m_pControlReplayGain;
     delete m_pTotalGain;
@@ -119,14 +122,16 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
 
     m_pTotalGain->set(fGain);
 
-    // SampleUtil deals with aliased buffers and gains of 1 or 0.
-    SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
-
-    // Prevent soundwave discontinuities by interpolating from old to new gain.
     if (fGain != m_dPrevGain) {
+        // Prevent soundwave discontinuities by interpolating from old to new gain.
+        // Because pOutput == pIn, we need to use a third buffer to do this crossfade.
+        SampleUtil::copyWithGain(m_pNewGainBuffer, pIn, fGain, iBufferSize);
         SampleUtil::copyWithGain(m_pPrevGainBuffer, pIn, m_dPrevGain, iBufferSize);
         SampleUtil::linearCrossfadeBuffers(pOutput, m_pPrevGainBuffer,
-                                           pOutput, iBufferSize);
+                                           m_pNewGainBuffer, iBufferSize);
+    } else {
+        // SampleUtil deals with aliased buffers and gains of 1 or 0.
+        SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
     }
     m_dPrevGain = fGain;
 }
