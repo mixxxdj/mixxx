@@ -263,11 +263,18 @@ void Library::slotRequestAddDir(QString dir) {
 }
 
 void Library::slotRequestRemoveDir(QString dir) {
+    // Mark all tracks in this directory as deleted (but don't purge them in
+    // case the user re-adds them manually).
     m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
-    m_pTrackCollection->getDirectoryDAO().purgeDirectory(dir);
+
+    // Remove the directory from the directory list.
+    m_pTrackCollection->getDirectoryDAO().removeDirectory(dir);
+
     // Also update the config file if necessary so that downgrading is still
     // possible.
     QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+
+    // TODO(rryan): String equality here is brittle. We should use QDir.
     if (dir == confDir) {
         QStringList dirList = m_pTrackCollection->getDirectoryDAO().getDirs();
         if (!dirList.isEmpty()) {
@@ -281,7 +288,8 @@ void Library::slotRequestRemoveDir(QString dir) {
 }
 
 void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
-    QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir,newDir);
+    QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
+
     // Clear cache to that all TIO with the old dir information get updated
     m_pTrackCollection->getTrackDAO().clearCache();
     m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<int>());
