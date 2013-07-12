@@ -251,9 +251,8 @@ QList<TrackPointer> Library::getTracksToAutoLoad() {
 
 void Library::slotRequestAddDir(QString dir) {
     if (!m_pTrackCollection->getDirectoryDAO().addDirectory(dir)) {
-        QMessageBox::information(0, "Mixxx",
-                tr("Mixxx noticed that the parent directory is already in your"
-                    "library, so it did not add it."));
+        QMessageBox::information(0, tr("Add Directory to Library"),
+                tr("This directory is already in your library."));
     }
     // set at least on directory in the config file so that it will be possible
     // to downgrade from 1.12
