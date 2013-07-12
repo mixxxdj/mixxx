@@ -22,6 +22,15 @@ class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
   signals:
     void apply(const QString &);
 
+  private slots:
+    void filterGenreEnabled(int value);
+    void filterBpmEnabled(int value);
+    void filterBpmRange(int value);
+    void filterKeyEnabled(int value);
+    void filterKey4thEnabled(int value);
+    void filterKey5thEnabled(int value);
+    void filterKeyRelativeEnabled(int value);
+
   private:
     void loadSettings();
 

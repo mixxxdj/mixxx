@@ -5,12 +5,28 @@
 #include "ui_dlgprefselectordlg.h"
 #include "library/selector/selector_preferences.h"
 
-DlgPrefSelector::DlgPrefSelector(QWidget *parent, ConfigObject<ConfigValue> *pConfig)
+DlgPrefSelector::DlgPrefSelector(QWidget *parent,
+                                 ConfigObject<ConfigValue> *pConfig)
     : QWidget(parent),
       Ui::DlgPrefSelectorDlg(),
       m_pConfig(pConfig) {
     setupUi(this);
     loadSettings();
+
+    connect(checkBoxGenre, SIGNAL(stateChanged(int)),
+        this, SLOT(filterGenreEnabled(int)));
+    connect(checkBoxBpm, SIGNAL(stateChanged(int)),
+        this, SLOT(filterBpmEnabled(int)));
+    connect(horizontalSliderBpmRange, SIGNAL(stateChanged(int)),
+        this, SLOT(filterBpmRange(int)));
+    connect(checkBoxKey, SIGNAL(stateChanged(int)),
+        this, SLOT(filterKeyEnabled(int)));
+    connect(checkBoxKey4th, SIGNAL(stateChanged(int)),
+        this, SLOT(filterKey4thEnabled(int)));
+    connect(checkBoxKey5th, SIGNAL(stateChanged(int)),
+        this, SLOT(filterKey5thEnabled(int)));
+    connect(checkBoxKeyRelative, SIGNAL(stateChanged(int)),
+        this, SLOT(filterKeyRelativeEnabled(int)));
 }
 
 DlgPrefSelector::~DlgPrefSelector() {
@@ -51,6 +67,35 @@ void DlgPrefSelector::slotUpdate() {
     checkBoxKeyRelative->setChecked(m_bFilterKeyRelative);
     slotApply();
 }
+
+void DlgPrefSelector::filterGenreEnabled(int value) {
+    m_bFilterGenre = static_cast<bool>(value);
+}
+
+void DlgPrefSelector::filterBpmEnabled(int value) {
+    m_bFilterBpm = static_cast<bool>(value);
+}
+
+void DlgPrefSelector::filterBpmRange(int value) {
+    m_iFilterBpmRange = value;
+}
+
+void DlgPrefSelector::filterKeyEnabled(int value) {
+    m_bFilterKey = static_cast<bool>(value);
+}
+
+void DlgPrefSelector::filterKey4thEnabled(int value) {
+    m_bFilterKey4th = static_cast<bool>(value);
+}
+
+void DlgPrefSelector::filterKey5thEnabled(int value) {
+    m_bFilterKey5th = static_cast<bool>(value);
+}
+
+void DlgPrefSelector::filterKeyRelativeEnabled(int value) {
+    m_bFilterKeyRelative = static_cast<bool>(value);
+}
+
 
 void DlgPrefSelector::loadSettings() {
     m_bFilterGenre = static_cast<bool>(m_pConfig->getValueString(
