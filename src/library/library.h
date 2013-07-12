@@ -14,7 +14,7 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "recording/recordingmanager.h"
-#include "preparefeature.h"
+#include "analysisfeature.h"
 
 class TrackModel;
 class TrackCollection;
@@ -95,7 +95,7 @@ public:
     class PromoTracksFeature;
     PromoTracksFeature* m_pPromoTracksFeature;
 #endif
-    PrepareFeature* m_pPrepareFeature;
+    AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
 };
