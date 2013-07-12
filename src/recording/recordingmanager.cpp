@@ -46,6 +46,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
 RecordingManager::~RecordingManager()
 {
     qDebug() << "Delete RecordingManager";
+    delete m_pToggleRecording;
     delete m_recReadyCO;
     delete m_recReady;
 }

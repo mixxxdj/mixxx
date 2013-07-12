@@ -87,6 +87,7 @@ PositionScratchController::PositionScratchController(const char* pGroup)
 
 PositionScratchController::~PositionScratchController() {
     delete m_pScratchEnable;
+    delete m_pScratchPosition;
     delete m_pVelocityController;
     delete m_pRateIIFilter;
 }

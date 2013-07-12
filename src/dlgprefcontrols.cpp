@@ -299,6 +299,8 @@ DlgPrefControls::~DlgPrefControls()
     foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
         delete pControl;
     }
+    
+    delete m_pControlPositionDisplay;
 }
 
 void DlgPrefControls::slotUpdateSchemes()
