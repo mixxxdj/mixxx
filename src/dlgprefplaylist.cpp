@@ -19,6 +19,7 @@
 #include <QFileDialog>
 #include <QStringList>
 #include <QUrl>
+#include <QDir>
 
 #include "dlgprefplaylist.h"
 #include "soundsourceproxy.h"
@@ -32,7 +33,7 @@
 
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config,
                                  Library *pLibrary)
-               : QWidget(parent), 
+               : QWidget(parent),
                  m_dirListModel(),
                  m_pconfig(config),
                  m_pLibrary(pLibrary) {
@@ -197,9 +198,9 @@ void DlgPrefPlaylist::slotUpdate() {
 
 void DlgPrefPlaylist::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(
-                        this, tr("Choose a music library directory"),
-                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-    if ( !fd.isEmpty() ) {
+        this, tr("Choose a music library directory"),
+        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
         slotUpdate();
     }
@@ -215,12 +216,24 @@ void DlgPrefPlaylist::slotRemoveDir() {
 void DlgPrefPlaylist::slotRelocateDir() {
     QModelIndex index = dirList->currentIndex();
     QString currentFd = index.data().toString();
+
+    // If the selected directory exists, use it. If not, go up one directory (if
+    // that directory exists). If neither exist, use the default music
+    // directory.
+    QString startDir = currentFd;
+    QDir dir(startDir);
+    if (!dir.exists() && dir.cdUp()) {
+        startDir = dir.absolutePath();
+    } else if (!dir.exists()) {
+        startDir = QDesktopServices::storageLocation(
+            QDesktopServices::MusicLocation);
+    }
+
     QString fd = QFileDialog::getExistingDirectory(
-                        this, tr("Choose a  music library directory"),
-                        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+        this, tr("Choose a music library directory"), startDir);
 
     if (!fd.isEmpty()) {
-        emit(requestRelocateDir(currentFd,fd));
+        emit(requestRelocateDir(currentFd, fd));
         slotUpdate();
     }
 }
