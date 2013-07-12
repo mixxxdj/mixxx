@@ -287,6 +287,8 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
 DlgPrefControls::~DlgPrefControls()
 {
+    delete m_pControlPositionDisplay;
+    
     foreach (ControlObjectThreadMain* pControl, m_rateControls) {
         delete pControl;
     }
@@ -299,8 +301,6 @@ DlgPrefControls::~DlgPrefControls()
     foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
         delete pControl;
     }
-    
-    delete m_pControlPositionDisplay;
 }
 
 void DlgPrefControls::slotUpdateSchemes()
