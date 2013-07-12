@@ -93,7 +93,7 @@ bool CrateDAO::isCrateLocked(const int crateId) {
     return false;
 }
 
-QList<int> CrateDAO::getTrackIds(int crateId) {
+QList<int> CrateDAO::getTrackIds(const int crateId) {
     QSqlQuery query(m_database);
     query.prepare("SELECT track_id from crate_tracks WHERE crate_id = :id");
     query.bindValue(":id", crateId);
