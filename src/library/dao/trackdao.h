@@ -146,16 +146,16 @@ class TrackDAO : public QObject, public virtual DAO {
     // Called when the TIO reference count drops to 0
     static void deleteTrack(TrackInfoObject* pTrack);
 
-    QSqlDatabase &m_database;
-    CueDAO &m_cueDao;
-    PlaylistDAO &m_playlistDao;
-    CrateDAO &m_crateDao;
+    QSqlDatabase& m_database;
+    CueDAO& m_cueDao;
+    PlaylistDAO& m_playlistDao;
+    CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
     DirectoryDAO& m_directoryDAO;
-    ConfigObject<ConfigValue> * m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
     static QHash<int, TrackWeakPointer> m_sTracks;
     static QMutex m_sTracksMutex;
-    mutable QCache<int,TrackPointer> m_trackCache;
+    mutable QCache<int, TrackPointer> m_trackCache;
 
     QSqlQuery* m_pQueryTrackLocationInsert;
     QSqlQuery* m_pQueryTrackLocationSelect;

@@ -239,7 +239,8 @@ void TrackDAO::databaseTrackAdded(TrackPointer pTrack) {
 
 void TrackDAO::databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew) {
     emit(tracksRemoved(tracksMovedSetNew));
-    emit(tracksAdded(tracksMovedSetOld));  // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
+    // results in a call of BaseTrackCache::updateTracksInIndex(trackIds);
+    emit(tracksAdded(tracksMovedSetOld));
 }
 
 void TrackDAO::slotTrackChanged(TrackInfoObject* pTrack) {
@@ -680,10 +681,12 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     FieldEscaper escaper(m_database);
     QStringList locationList;
     QStringList dirList;
+    const int locationColumn = query.record().indexOf("location");
+    const int directoryColumn = query.record().indexOf("directory");
     while (query.next()) {
-        QString filePath = query.value(query.record().indexOf("location")).toString();
+        QString filePath = query.value(locationColumn).toString();
         locationList << escaper.escapeString(filePath);
-        QString dir = query.value(query.record().indexOf("directory")).toString();
+        QString dir = query.value(directoryColumn).toString();
         dirList << escaper.escapeString(dir);
     }
 
@@ -1040,8 +1043,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary() {
     //qDebug() << "invalidateTrackLocations(" << libraryPath << ")";
 
     QSqlQuery query(m_database);
-    query.prepare("UPDATE track_locations "
-                  "SET needs_verification=1 ");
+    query.prepare("UPDATE track_locations SET needs_verification = 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark tracks in library as needing verification.";
@@ -1086,15 +1088,12 @@ void TrackDAO::markTracksInDirectoriesAsVerified(QStringList& directories) {
 
 void TrackDAO::markUnverifiedTracksAsDeleted() {
     //qDebug() << "TrackDAO::markUnverifiedTracksAsDeleted" << QThread::currentThread() << m_database.connectionName();
-    qDebug() << "markUnverifiedTracksAsDeleted()";
-    
     QSqlQuery query(m_database);
     // TODO(kain88): These are not library ids!
     query.prepare("SELECT id FROM track_locations WHERE needs_verification=1");
     QSet<int> trackIds;
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query)
-                << "Couldn't find unverified tracks";
+        LOG_FAILED_QUERY(query) << "Couldn't find unverified tracks";
     }
     while (query.next()){
         trackIds.insert(query.value(query.record().indexOf("id")).toInt());
@@ -1107,7 +1106,6 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
         LOG_FAILED_QUERY(query)
                 << "Couldn't mark unverified tracks as deleted.";
     }
-
 }
 
 void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
