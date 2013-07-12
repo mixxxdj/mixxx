@@ -174,7 +174,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #endif
     connect(buttonBox, SIGNAL(accepted()), m_wsound,    SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wplaylist, SLOT(slotApply()));
-    connect(buttonBox, SIGNAL(accepted()), m_wtimbre,   SLOT(slotApply()));
+    connect(buttonBox, SIGNAL(accepted()), m_wselector,   SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wcontrols, SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_weq,       SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wcrossfader,SLOT(slotApply()));
@@ -226,7 +226,7 @@ void DlgPreferences::createIcons()
     m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pSelectorButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pSelectorButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
+    m_pSelectorButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_selector.png"));
     m_pSelectorButton->setText(0, tr("Selector"));
     m_pSelectorButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSelectorButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);

@@ -6,6 +6,7 @@
 #include "ui_dlgprefselectordlg.h"
 #include "configobject.h"
 
+
 class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
     Q_OBJECT
     
@@ -22,11 +23,16 @@ class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
     void apply(const QString &);
 
   private:
-    void populate();
     void loadSettings();
 
     ConfigObject<ConfigValue>* m_pConfig;
-
+    bool m_bFilterGenre;
+    bool m_bFilterBpm;
+    int m_iFilterBpmRange;
+    bool m_bFilterKey;
+    bool m_bFilterKey4th;
+    bool m_bFilterKey5th;
+    bool m_bFilterKeyRelative;
 };
 
 #endif // DLGPREFSELECTOR_H

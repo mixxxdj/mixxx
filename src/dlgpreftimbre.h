@@ -4,8 +4,8 @@
 #include <QWidget>
 #include <QList>
 
-#include "ui_dlgpreftimbredlg.h"
 #include "configobject.h"
+#include "ui_dlgpreftimbredlg.h"
 
 class DlgPrefTimbre : public QWidget, Ui::DlgPrefTimbreDlg {
     Q_OBJECT

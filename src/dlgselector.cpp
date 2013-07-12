@@ -1,12 +1,14 @@
 #include <QSqlTableModel>
 
-#include "dlgselector.h"
-
+#include "configobject.h"
 #include "library/selector/selectorlibrarytablemodel.h"
+#include "library/selector/selector_preferences.h"
 #include "library/trackcollection.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "widget/wwidget.h"
+
+#include "dlgselector.h"
 
 DlgSelector::DlgSelector(QWidget* parent,
                          ConfigObject<ConfigValue>* pConfig,
@@ -54,7 +56,31 @@ DlgSelector::DlgSelector(QWidget* parent,
             this, SLOT(resetFilters()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(seedTrackInfoChanged()),
            this, SLOT(slotSeedTrackInfoChanged()));
+
+    // obtain the default filter settings from config
+
+    bool bFilterGenre = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_GENRE)).toInt());
+    bool bFilterBpm = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_BPM)).toInt());
+    bool iFilterBpmRange = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_BPM_RANGE)).toInt();
+    bool bFilterKey = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY)).toInt());
+    bool bFilterKey4th = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_4TH)).toInt());
+    bool bFilterKey5th = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_5TH)).toInt());
+    bool bFilterKeyRelative = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE)).toInt());
             
+    checkBoxGenre->setChecked(bFilterGenre);
+    checkBoxBpm->setChecked(bFilterBpm);
+    horizontalSliderBpmRange->setValue(iFilterBpmRange);
+    checkBoxKey->setChecked(bFilterKey);
+    checkBoxKey4th->setChecked(bFilterKey4th);
+    checkBoxKey5th->setChecked(bFilterKey5th);
+    checkBoxKeyRelative->setChecked(bFilterKeyRelative);
 
 }
 

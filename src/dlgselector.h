@@ -2,11 +2,12 @@
 #define DLGSELECTOR_H
 
 #include <QItemSelection>
-#include "ui_dlgselector.h"
 #include "configobject.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
+
+#include "ui_dlgselector.h"
 
 class SelectorLibraryTableModel;
 class WTrackTableView;
@@ -49,10 +50,10 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString player);
 
-private slots:
+  private slots:
     void on_buttonCalcSimilarity_clicked();
 
-private:
+  private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
