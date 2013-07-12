@@ -290,7 +290,8 @@ void LibraryScanner::run() {
     //m_pProgress->slotStopTiming();
     m_database.close();
 
-    // Update BaseTrackCache via the main TrackDao
+    // Update BaseTrackCache via the main TrackDao.
+    // TODO(rryan): Not ok! We are in the library scanner thread. Use a signal instead.
     m_pCollection->getTrackDAO().databaseTracksMoved(tracksMovedSetOld, tracksMovedSetNew);
 
     emit(scanFinished());
