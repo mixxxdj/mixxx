@@ -121,7 +121,7 @@ double TimbreUtils::distanceCosine(const std::vector<double> &v1,
     double dDenTot = 0;
     double dDen1 = 0;
     double dDen2 = 0;
-    double dSum1 =0;
+    double dSum1 = 0;
     double small = 1e-20;
 
     //check if v1, v2 same size
@@ -131,7 +131,7 @@ double TimbreUtils::distanceCosine(const std::vector<double> &v1,
         return 1.0;
     }
     else {
-        for (int i=0; i<v1.size(); i++) {
+        for (int i=0; i < v1.size(); i++) {
             dSum1 += v1[i]*v2[i];
             dDen1 += v1[i]*v1[i];
             dDen2 += v2[i]*v2[i];
