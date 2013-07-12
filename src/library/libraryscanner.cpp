@@ -215,16 +215,15 @@ void LibraryScanner::run() {
     m_trackDao.invalidateTrackLocationsInLibrary();
 
     qDebug() << "Recursively scanning library.";
-    // Start scanning the library.
-    // this will prepare some querys in TrackDAO, this needs be done because
-    // TrackCollection will call TrackDAO::addTracksAdd and this
-    // function needs the querys
-    m_trackDao.addTracksPrepare();
-    QStringList verifiedDirectories;
 
+    // Start scanning the library. This prepares insertion queries in TrackDAO
+    // (must be called before calling addTracksAdd) and begins a transaction.
+    m_trackDao.addTracksPrepare();
+
+    QStringList verifiedDirectories;
     QStringList dirs = m_directoryDao.getDirs();
     bool bScanFinishedCleanly = false;
-    // recursivly scan each dir that is saved in the directories table
+    // Recursivly scan each directory in the directories table.
     foreach (const QString& dir, dirs) {
         bScanFinishedCleanly = recursiveScan(dir, verifiedDirectories);
         if (!bScanFinishedCleanly) {
@@ -242,12 +241,9 @@ void LibraryScanner::run() {
         bScanFinishedCleanly = m_trackDao.verifyRemainingTracks(&m_bCancelLibraryScan);
     }
 
-    // Runs inside a transaction
-    m_trackDao.addTracksFinish();
-
-    // Start a transaction for all the library hashing (moved file detection)
-    // stuff.
-    ScopedTransaction transaction(m_database);
+    // Clean up and commit or rollback the transaction depending on
+    // bScanFinishedCleanly.
+    m_trackDao.addTracksFinish(!bScanFinishedCleanly);
 
     // At the end of a scan, mark all tracks and directories that
     // weren't "verified" as "deleted" (as long as the scan wasn't canceled
@@ -258,6 +254,10 @@ void LibraryScanner::run() {
     QSet<int> tracksMovedSetOld;
     QSet<int> tracksMovedSetNew;
     if (bScanFinishedCleanly) {
+        // Start a transaction for all the library hashing (moved file detection)
+        // stuff.
+        ScopedTransaction transaction(m_database);
+
         qDebug() << "Marking unchanged directories and tracks as verified";
         m_libraryHashDao.updateDirectoryStatuses(verifiedDirectories, false, true);
         m_trackDao.markTracksInDirectoriesAsVerified(verifiedDirectories);
@@ -281,7 +281,6 @@ void LibraryScanner::run() {
         transaction.commit();
         qDebug() << "Scan finished cleanly";
     } else {
-        transaction.rollback();
         qDebug() << "Scan cancelled";
     }
 

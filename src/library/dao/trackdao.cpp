@@ -52,7 +52,7 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
 TrackDAO::~TrackDAO() {
     qDebug() << "~TrackDAO()";
     //clear all leftover Transactions
-    addTracksFinish();
+    addTracksFinish(true);
 }
 
 void TrackDAO::finish() {
@@ -341,11 +341,11 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
 void TrackDAO::addTracksPrepare() {
 
     if (m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
-        m_pQueryLibrarySelect || m_pQueryTrackLocationSelect ||
-        m_pTransaction) {
-        qDebug() << "TrackDAO::addTracksPrepare: old Querys have been "
-                    "left open, closing them now";
-        addTracksFinish();
+            m_pQueryLibrarySelect || m_pQueryTrackLocationSelect ||
+            m_pTransaction) {
+        qDebug() << "TrackDAO::addTracksPrepare: PROGRAMMING ERROR"
+                 << "old queries have been left open, rolling back.";
+        addTracksFinish(true);
     }
     // Start the transaction
     m_pTransaction = new ScopedTransaction(m_database);
@@ -382,9 +382,14 @@ void TrackDAO::addTracksPrepare() {
             "WHERE location = :location");
 }
 
-void TrackDAO::addTracksFinish() {
+void TrackDAO::addTracksFinish(bool rollback) {
     if (m_pTransaction) {
-        m_pTransaction->commit();
+        if (rollback) {
+            m_pTransaction->rollback();
+            m_tracksAddedSet.clear();
+        } else {
+            m_pTransaction->commit();
+        }
     }
     delete m_pQueryTrackLocationInsert;
     delete m_pQueryTrackLocationSelect;
@@ -527,7 +532,7 @@ void TrackDAO::addTrack(TrackInfoObject* pTrack, bool unremove) {
 
     addTracksPrepare();
     addTracksAdd(pTrack, unremove);
-    addTracksFinish();
+    addTracksFinish(false);
 }
 
 QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
@@ -609,7 +614,7 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
     }
 
     // Finish adding tracks to the database.
-    addTracksFinish();
+    addTracksFinish(false);
 
     // Return the list of track IDs added to the database.
     return trackIDs;

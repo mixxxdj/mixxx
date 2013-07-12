@@ -83,7 +83,7 @@ class TrackDAO : public QObject, public virtual DAO {
     int addTrack(const QFileInfo& fileInfo, bool unremove);
     void addTracksPrepare();
     bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
-    void addTracksFinish();
+    void addTracksFinish(bool rollback);
     QList<int> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
     void hideTracks(const QList<int>& ids);
     void purgeTracks(const QList<int>& ids);
