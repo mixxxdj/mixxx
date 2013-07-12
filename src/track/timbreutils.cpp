@@ -1,4 +1,5 @@
 #include <math.h>
+#include <QDebug>
 #include "proto/timbre.pb.h"
 #include "track/timbre.h"
 #include "timbreutils.h"
@@ -34,6 +35,24 @@ double TimbreUtils::modelDistance(TimbrePointer pTimbre,
         v1[i] = model1.variance(i);
         m2[i] = model2.mean(i);
         v2[i] = model2.variance(i);
+    }
+
+    if (model1.has_beat_spectrum() && model2.has_beat_spectrum()) {
+        const BeatSpectrum& beat1 = model1.beat_spectrum();
+        int beat1_size = beat1.feature_size();
+        std::vector<double> b1(beat1_size);
+        for (int i = 0; i < beat1_size; i++) {
+            b1[i] = beat1.feature(i);
+        }
+
+        const BeatSpectrum& beat2 = model2.beat_spectrum();
+        int beat2_size = beat2.feature_size();
+        std::vector<double> b2(beat2_size);
+        for (int i = 0; i < beat2_size; i++) {
+            b2[i] = beat2.feature(i);
+        }
+        return 0.5 * (distanceFunc(m1, v1, m2, v2) +
+                      distanceCosine(b1, b2));
     }
     return distanceFunc(m1, v1, m2, v2);
 }
@@ -93,4 +112,32 @@ double TimbreUtils::distanceHellinger(const std::vector<double> &m1,
     double h2 = 1 - ((sqrt((sqrt(det_p)*sqrt(det_q)))/sqrt(det_combined)) *
         exp(-0.125 * exp_term));
     return sqrt(h2);
+}
+
+double TimbreUtils::distanceCosine(const std::vector<double> &v1,
+                                   const std::vector<double> &v2) {
+    // copied from QM DSP library -- CosineDistance.cpp
+    double dist = 1.0;
+    double dDenTot = 0;
+    double dDen1 = 0;
+    double dDen2 = 0;
+    double dSum1 =0;
+    double small = 1e-20;
+
+    //check if v1, v2 same size
+    if (v1.size() != v2.size()) {
+        qDebug() << "TimbreUtils::distanceCosine: "
+               << "ERROR: vectors not the same size.";
+        return 1.0;
+    }
+    else {
+        for (int i=0; i<v1.size(); i++) {
+            dSum1 += v1[i]*v2[i];
+            dDen1 += v1[i]*v1[i];
+            dDen2 += v2[i]*v2[i];
+        }
+        dDenTot = sqrt(abs(dDen1*dDen2)) + small;
+        dist = 1-((dSum1)/dDenTot);
+        return dist;
+    }
 }

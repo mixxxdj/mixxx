@@ -28,6 +28,9 @@ class TimbreUtils {
                                     const std::vector<double> &v1,
                                     const std::vector<double> &m2,
                                     const std::vector<double> &v2);
+
+    static double distanceCosine(const std::vector<double> &v1,
+                                 const std::vector<double> &v2);
 };
 
 #endif // TIMBREUTILS_H
