@@ -268,7 +268,7 @@ void LibraryScanner::run() {
         // Check to see if the "deleted" tracks showed up in another location,
         // and if so, do some magic to update all our tables.
         qDebug() << "Detecting moved files.";
-        m_trackDao.detectMovedFiles(tracksMovedSetOld, tracksMovedSetNew);
+        m_trackDao.detectMovedFiles(&tracksMovedSetOld, &tracksMovedSetNew);
 
         // Remove the hashes for any directories that have been
         // marked as deleted to clean up. We need to do this otherwise

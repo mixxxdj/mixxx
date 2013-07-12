@@ -1126,7 +1126,7 @@ void TrackDAO::markTrackLocationsAsDeleted(const QString& directory) {
 // and see if another "file" with the same name and filesize exists in the track_locations
 // table. That means the file has moved instead of being deleted outright, and so
 // we can salvage your existing metadata that you have in your DB (like cue points, etc.).
-void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksMovedSetNew) {
+void TrackDAO::detectMovedFiles(QSet<int>* tracksMovedSetOld, QSet<int>* tracksMovedSetNew) {
     //This function should not start a transaction on it's own!
     //When it's called from libraryscanner.cpp, there already is a transaction
     //started!
@@ -1140,7 +1140,7 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
     // can change by adding more ID3v2 tags
     int duration = -1;
 
-    query.prepare("SELECT track_locations.id,filename, duration FROM track_locations "
+    query.prepare("SELECT track_locations.id, filename, duration FROM track_locations "
                   "INNER JOIN library ON track_locations.id=library.location "
                   "WHERE fs_deleted=1");
 
@@ -1163,9 +1163,15 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
 
         query2.bindValue(":filename", filename);
         query2.bindValue(":duration", duration);
-        Q_ASSERT(query2.exec());
+        if (!query2.exec()) {
+            // Should not happen!
+            LOG_FAILED_QUERY(query2);
+        }
+        // WTF duplicate tracks?
+        if (query2.size() > 1) {
+            LOG_FAILED_QUERY(query2) << "Result size was greater than 1.";
+        }
 
-        Q_ASSERT(query2.size() <= 1); //WTF duplicate tracks?
         while (query2.next()) {
             newTrackLocationId = query2.value(query2.record().indexOf("id")).toInt();
         }
@@ -1174,49 +1180,66 @@ void TrackDAO::detectMovedFiles(QSet<int>& tracksMovedSetOld, QSet<int>& tracksM
         if (newTrackLocationId >= 0) {
             qDebug() << "Found moved track!" << filename;
 
-            //Remove old row from track_locations table
+            // Remove old row from track_locations table
             query3.prepare("DELETE FROM track_locations WHERE id=:id");
             query3.bindValue(":id", oldTrackLocationId);
-            Q_ASSERT(query3.exec());
+            if (!query3.exec()) {
+                // Should not happen!
+                LOG_FAILED_QUERY(query3);
+            }
 
-            //The library scanner will have added a new row to the Library
-            //table which corresponds to the track in the new location. We need
-            //to remove that so we don't end up with two rows in the library table
-            //for the same track.
+            // The library scanner will have added a new row to the Library
+            // table which corresponds to the track in the new location. We need
+            // to remove that so we don't end up with two rows in the library
+            // table for the same track.
             query3.prepare("SELECT id FROM library WHERE location=:location");
             query3.bindValue(":location", newTrackLocationId);
-            Q_ASSERT(query3.exec());
+            if (!query3.exec()) {
+                // Should not happen!
+                LOG_FAILED_QUERY(query3);
+            }
 
             if (query3.next()) {
                 int newTrackId = query3.value(query3.record().indexOf("id")).toInt();
                 query3.prepare("DELETE FROM library WHERE id=:newid");
                 query3.bindValue(":newid", newTrackLocationId);
-                Q_ASSERT(query3.exec());
-
+                if (!query3.exec()) {
+                    // Should not happen!
+                    LOG_FAILED_QUERY(query3);
+                }
                 // We collect all the new tracks the where added to BaseTrackCache as well
-                tracksMovedSetNew.insert(newTrackId);
+                tracksMovedSetNew->insert(newTrackId);
             }
             // Delete the track
-            query3.prepare("DELETE FROM library WHERE "
-                            "id=:newid");
+            query3.prepare("DELETE FROM library WHERE id=:newid");
             query3.bindValue(":newid", newTrackLocationId);
-            Q_ASSERT(query3.exec());
+            if (!query3.exec()) {
+                // Should not happen!
+                LOG_FAILED_QUERY(query3);
+            }
 
-            //Update the location foreign key for the existing row in the library table
-            //to point to the correct row in the track_locations table.
+            // Update the location foreign key for the existing row in the
+            // library table to point to the correct row in the track_locations
+            // table.
             query3.prepare("SELECT id FROM library WHERE location=:location");
             query3.bindValue(":location", oldTrackLocationId);
-            Q_ASSERT(query3.exec());
+            if (!query3.exec()) {
+                // Should not happen!
+                LOG_FAILED_QUERY(query3);
+            }
 
             if (query3.next()) {
                 int oldTrackId = query3.value(query3.record().indexOf("id")).toInt();
                 query3.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
                 query3.bindValue(":newloc", newTrackLocationId);
                 query3.bindValue(":oldid", oldTrackId);
-                Q_ASSERT(query3.exec());
+                if (!query3.exec()) {
+                    // Should not happen!
+                    LOG_FAILED_QUERY(query3);
+                }
 
                 // We collect all the old tracks that has to be updated in BaseTrackCache as well
-                tracksMovedSetOld.insert(oldTrackId);
+                tracksMovedSetOld->insert(oldTrackId);
             }
         }
     }
