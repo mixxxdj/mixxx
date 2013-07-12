@@ -20,7 +20,7 @@ class DirectoryDAO : public DAO {
     QStringList getDirs();
 
   private:
-    QSqlDatabase m_database;
+    QSqlDatabase& m_database;
 };
 
 #endif //DIRECTORYDAO_H
