@@ -14,6 +14,7 @@
 
 #include "track/keyutils.h"
 #include "track/timbreutils.h"
+#include "library/selector/selector_preferences.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;

@@ -54,10 +54,11 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void on_buttonCalcSimilarity_clicked();
 
   private:
+    void setDefaults();
+
     //Note m_pTrackTablePlaceholder is defined in the .ui file
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
-    //QButtonGroup m_songsButtonGroup;
     WTrackTableView* m_pTrackTableView;
     SelectorLibraryTableModel* m_pSelectorLibraryTableModel;
     QSqlTableModel* m_pCratesTableModel;

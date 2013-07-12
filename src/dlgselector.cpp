@@ -53,34 +53,11 @@ DlgSelector::DlgSelector(QWidget* parent,
     connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(resetFilters()),
-            this, SLOT(resetFilters()));
+            this, SLOT(setDefaults()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(seedTrackInfoChanged()),
            this, SLOT(slotSeedTrackInfoChanged()));
 
-    // obtain the default filter settings from config
-
-    bool bFilterGenre = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_GENRE)).toInt());
-    bool bFilterBpm = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_BPM)).toInt());
-    bool iFilterBpmRange = m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_BPM_RANGE)).toInt();
-    bool bFilterKey = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY)).toInt());
-    bool bFilterKey4th = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_4TH)).toInt());
-    bool bFilterKey5th = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_5TH)).toInt());
-    bool bFilterKeyRelative = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE)).toInt());
-            
-    checkBoxGenre->setChecked(bFilterGenre);
-    checkBoxBpm->setChecked(bFilterBpm);
-    horizontalSliderBpmRange->setValue(iFilterBpmRange);
-    checkBoxKey->setChecked(bFilterKey);
-    checkBoxKey4th->setChecked(bFilterKey4th);
-    checkBoxKey5th->setChecked(bFilterKey5th);
-    checkBoxKeyRelative->setChecked(bFilterKeyRelative);
+    setDefaults();
 
 }
 
@@ -199,4 +176,29 @@ void DlgSelector::installEventFilter(QObject* pFilter) {
 
 void DlgSelector::on_buttonCalcSimilarity_clicked() {
     m_pSelectorLibraryTableModel->calculateSimilarity();
+}
+
+void DlgSelector::setDefaults() {
+    bool bFilterGenre = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_GENRE)).toInt());
+    bool bFilterBpm = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_BPM)).toInt());
+    bool iFilterBpmRange = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_BPM_RANGE)).toInt();
+    bool bFilterKey = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY)).toInt());
+    bool bFilterKey4th = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_4TH)).toInt());
+    bool bFilterKey5th = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_5TH)).toInt());
+    bool bFilterKeyRelative = static_cast<bool>(m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE)).toInt());
+
+    checkBoxGenre->setChecked(bFilterGenre);
+    checkBoxBpm->setChecked(bFilterBpm);
+    horizontalSliderBpmRange->setValue(iFilterBpmRange);
+    checkBoxKey->setChecked(bFilterKey);
+    checkBoxKey4th->setChecked(bFilterKey4th);
+    checkBoxKey5th->setChecked(bFilterKey5th);
+    checkBoxKeyRelative->setChecked(bFilterKeyRelative);
 }
