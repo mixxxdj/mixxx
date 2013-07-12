@@ -74,9 +74,31 @@ class FieldEscaper {
     virtual ~FieldEscaper() {
     }
 
+    // Escapes a string for use in a SQL query by wrapping with quotes and
+    // escaping embedded quote characters.
     QString escapeString(const QString& escapeString) const {
         m_stringField.setValue(escapeString);
         return m_database.driver()->formatValue(m_stringField);
+    }
+
+    // Escapes a string for use in a LIKE operation by prefixing instances of
+    // LIKE wildcard characters (% and _) with escapeCharacter. This allows the
+    // caller to then attach wildcard characters to the string. This does NOT
+    // escape the string in the same way that escapeString() does.
+    QString escapeStringForLike(const QString& escapeString, const QChar escapeCharacter) const {
+        QString escapeCharacterStr(escapeCharacter);
+        QString result = escapeString;
+        // Replace instances of escapeCharacter with two escapeCharacters.
+        result = result.replace(
+            escapeCharacter, escapeCharacterStr + escapeCharacterStr);
+        // Replace instances of % or _ with $escapeCharacter%.
+        if (escapeCharacter != '%') {
+            result = result.replace("%", escapeCharacterStr + "%");
+        }
+        if (escapeCharacter != '_') {
+            result = result.replace("_", escapeCharacterStr + "_");
+        }
+        return result;
     }
 
   private:

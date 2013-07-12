@@ -1254,10 +1254,15 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
     // directories.
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT library.id FROM library INNER JOIN track_locations "
-                  "ON library.location = track_locations.id "
-                  "WHERE instr(track_locations.directory, :dir) > 0");
-    query.bindValue(":dir", dir);
+    FieldEscaper escaper(m_database);
+
+    // Capture entries that start with the directory prefix dir.
+    QString likeClause = escaper.escapeStringForLike(dir, '%') + "%";
+
+    query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
+                          "ON library.location = track_locations.id "
+                          "WHERE track_locations.directory LIKE %1")
+                  .arg(escaper.escapeString(likeClause)));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dir;
