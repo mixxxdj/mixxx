@@ -26,7 +26,7 @@
 #include "library/queryutil.h"
 #include "trackinfoobject.h"
 
-LibraryScanner::LibraryScanner(TrackCollection* collection) 
+LibraryScanner::LibraryScanner(TrackCollection* collection)
               : m_pCollection(collection),
                 m_pProgress(NULL),
                 m_libraryHashDao(m_database),
@@ -112,8 +112,7 @@ LibraryScanner::~LibraryScanner() {
         qDebug() << query.lastError();
     }
 
-    QString dir;
-    foreach (dir, deletedDirs) {
+    foreach (QString dir, deletedDirs) {
         m_pCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
     }
     transaction.commit();
@@ -210,8 +209,8 @@ void LibraryScanner::run() {
     // when we rescan, we'll mark any directory that does still exist as verified.
     m_libraryHashDao.invalidateAllDirectories();
 
-    // Mark all the tracks in the directory as needing verification of 
-    // their existance... (ie. we want to check they're still on your hard 
+    // Mark all the tracks in the directory as needing verification of
+    // their existance... (ie. we want to check they're still on your hard
     // drive where we think they are)
     m_trackDao.invalidateTrackLocationsInLibrary();
 
@@ -224,20 +223,21 @@ void LibraryScanner::run() {
     QStringList verifiedDirectories;
 
     QStringList dirs = m_directoryDao.getDirs();
-    bool bScanFinishedCleanly=false;
+    bool bScanFinishedCleanly = false;
     // recursivly scan each dir that is saved in the directories table
-    foreach (QString dir , dirs) {
-        bScanFinishedCleanly = recursiveScan(dir,verifiedDirectories);
+    foreach (const QString& dir, dirs) {
+        bScanFinishedCleanly = recursiveScan(dir, verifiedDirectories);
         if (!bScanFinishedCleanly) {
             qDebug() << "Recursive scaning (" << dir << ") interrupted.";
         } else {
             qDebug() << "Recursive scaning (" << dir << ") finished cleanly.";
         }
     }
-    // After the recursive scan of all watched library directories their are
+
+    // After the recursive scan of all watched library directories there are
     // only a few songs left to check. Mainly the ones that are not inside one
     // of the library directories or have been moved/renamed/... since the last
-    // scan
+    // scan.
     m_trackDao.verifyRemainingTracks(&m_bCancelLibraryScan);
 
     // Runs inside a transaction

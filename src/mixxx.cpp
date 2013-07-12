@@ -375,7 +375,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         QString fd = QFileDialog::getExistingDirectory(
             this, tr("Choose music library directory"),
             QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-        if (fd != "") {
+        if (!fd.isEmpty()) {
             //adds Folder to database
             m_pLibrary->slotRequestAddDir(fd);
             hasChanged_MusicDir = true;
