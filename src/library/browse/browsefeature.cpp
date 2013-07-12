@@ -11,6 +11,7 @@
 #include <QMenu>
 
 #include "trackinfoobject.h"
+#include "library/library_preferences.h"
 #include "library/treeitem.h"
 #include "library/browse/browsefeature.h"
 #include "library/trackcollection.h"
@@ -326,7 +327,7 @@ QString BrowseFeature::extractNameFromPath(QString spath) {
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     //Default configuration
-    QString mixxx_music_dir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+    QString mixxx_music_dir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
     QString os_music_folder_dir = QDesktopServices::storageLocation(
         QDesktopServices::MusicLocation);
     QString os_documents_folder_dir = QDesktopServices::storageLocation(

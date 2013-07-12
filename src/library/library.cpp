@@ -6,6 +6,7 @@
 #include <QTranslator>
 
 #include "library/library.h"
+#include "library/library_preferences.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/sidebarmodel.h"
@@ -256,28 +257,26 @@ void Library::slotRequestAddDir(QString dir) {
     }
     // set at least on directory in the config file so that it will be possible
     // to downgrade from 1.12
-    if (m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")).length() < 1){
-        m_pConfig->set(ConfigKey("[Playlist]","Directory"), dir);
-        m_pConfig->Save();
+    if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1){
+        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dir);
     }
 }
 
 void Library::slotRequestRemoveDir(QString dir) {
     m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
     m_pTrackCollection->getDirectoryDAO().purgeDirectory(dir);
-    // also update the config file if necessary so that downgrading is still
-    // possible
-    QString confDir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+    // Also update the config file if necessary so that downgrading is still
+    // possible.
+    QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
     if (dir == confDir) {
         QStringList dirList = m_pTrackCollection->getDirectoryDAO().getDirs();
         if (!dirList.isEmpty()) {
-            m_pConfig->set(ConfigKey("[Playlist]","Directory"), dirList.first());
-        // Save empty string so that an old version of mixxx know it has to ask
-        // for a new directory
-        } else { 
-            m_pConfig->set(ConfigKey("[Playlist]","Directory"), QString() );
+            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first());
+        } else {
+            // Save empty string so that an old version of mixxx knows it has to
+            // ask for a new directory.
+            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, QString());
         }
-        m_pConfig->Save();
     }
 }
 
@@ -288,10 +287,9 @@ void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
     m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<int>());
     // also update the config file if necessary so that downgrading is still
     // possible
-    QString conDir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+    QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
     if (oldDir == conDir) {
-        m_pConfig->set(ConfigKey("[Playlist]","Directory"), newDir);
-        m_pConfig->Save();
+        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, newDir);
     }
 }
 

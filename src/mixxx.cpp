@@ -33,6 +33,7 @@
 #include "engine/enginemicrophone.h"
 #include "engine/enginepassthrough.h"
 #include "library/library.h"
+#include "library/library_preferences.h"
 #include "library/libraryscanner.h"
 #include "library/librarytablemodel.h"
 #include "controllers/controllermanager.h"
@@ -1191,7 +1192,7 @@ void MixxxApp::slotFileLoadSongPlayer(int deck) {
         QFileDialog::getOpenFileName(
             this,
             loadTrackText,
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),
+            m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR),
             QString("Audio (%1)")
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 

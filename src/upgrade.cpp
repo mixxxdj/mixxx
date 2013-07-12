@@ -19,10 +19,12 @@
 #include <QtCore>
 #include <QMessageBox>
 #include <QTranslator>
+
 #include "defs_version.h"
 #include "controllers/defs_controllers.h"
 #include "track/beat_preferences.h"
 #include "library/trackcollection.h"
+#include "library/library_preferences.h"
 #include "configobject.h"
 #include "upgrade.h"
 
@@ -329,7 +331,7 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
-        QString currentFolder = config->getValueString(ConfigKey("[Playlist]","Directory"));
+        QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
         // to migrate the DB just add the current directory to the new
         // directories table
         TrackCollection tc(config);

@@ -17,6 +17,7 @@
 
 #include <QtDebug>
 
+#include "library/library_preferences.h"
 #include "library/songdownloader.h"
 #include "library/promotracksfeature.h"
 #include "library/bundledsongswebview.h"
@@ -132,7 +133,7 @@ QList<TrackPointer> PromoTracksFeature::getTracksToAutoLoad()
 
 void PromoTracksFeature::bindWidget(WLibrary* libraryWidget,
                                     MixxxKeyboard* keyboard) {
-    QString libraryPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+    QString libraryPath = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
     m_pBundledSongsView = new BundledSongsWebView(libraryWidget, m_pTrackCollection,
