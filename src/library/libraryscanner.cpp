@@ -238,7 +238,9 @@ void LibraryScanner::run() {
     // only a few songs left to check. Mainly the ones that are not inside one
     // of the library directories or have been moved/renamed/... since the last
     // scan.
-    m_trackDao.verifyRemainingTracks(&m_bCancelLibraryScan);
+    if (bScanFinishedCleanly) {
+        bScanFinishedCleanly = m_trackDao.verifyRemainingTracks(&m_bCancelLibraryScan);
+    }
 
     // Runs inside a transaction
     m_trackDao.addTracksFinish();

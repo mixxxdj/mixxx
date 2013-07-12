@@ -1305,9 +1305,8 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     return false;
 }
 
-void TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
+bool TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
     // This function is called from the LibraryScanner Thread
-    ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     QSqlQuery query2(m_database);
     QString trackLocation;
@@ -1321,7 +1320,7 @@ void TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
                   "WHERE needs_verification = 1");
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return;
+        return false;
     }
 
     query2.prepare("UPDATE track_locations "
@@ -1336,12 +1335,11 @@ void TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
             LOG_FAILED_QUERY(query2);
         }
         if (*pCancel) {
-            // Abort the transaction.
-            return;
+            return false;
         }
         emit(progressVerifyTracksOutside(trackLocation));
     }
-    transaction.commit();
     qDebug() << "verifyTracksOutside finished";
+    return true;
 }
 
