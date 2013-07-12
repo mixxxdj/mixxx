@@ -1089,6 +1089,7 @@ void TrackDAO::markUnverifiedTracksAsDeleted() {
     qDebug() << "markUnverifiedTracksAsDeleted()";
     
     QSqlQuery query(m_database);
+    // TODO(kain88): These are not library ids!
     query.prepare("SELECT id FROM track_locations WHERE needs_verification=1");
     QSet<int> trackIds;
     if (!query.exec()) {
