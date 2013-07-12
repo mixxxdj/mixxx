@@ -1332,7 +1332,8 @@ void TrackDAO::verifyRemainingTracks(volatile bool* pCancel) {
             LOG_FAILED_QUERY(query2);
         }
         if (*pCancel) {
-            break;
+            // Abort the transaction.
+            return;
         }
         emit(progressVerifyTracksOutside(trackLocation));
     }
