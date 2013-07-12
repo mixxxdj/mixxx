@@ -708,9 +708,9 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     // mark LibraryHash with needs_verification and invalidate the hash
     // in case the file was not deleted to detect it on a rescan
     // TODO(XXX) delegate to libraryHashDAO
-    query.prepare("UPDATE LibraryHashes SET needs_verification=1,hash=-1 "
-                  "WHERE directory_path in (:dirs)");
-    query.bindValue("dirs",dirList.join(","));
+    query.prepare(QString("UPDATE LibraryHashes SET needs_verification=1, "
+                          "hash=-1 WHERE directory_path in (%1)")
+                  .arg(dirList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
