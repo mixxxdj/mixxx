@@ -9,23 +9,24 @@
 class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
     Q_OBJECT
     
-public:
+  public:
     DlgPrefSelector(QWidget *parent, ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefSelector();
     
-public slots:
-  // Apply changes to widget
-  void slotApply();
-  void slotUpdate();
+  public slots:
+    // Apply changes to preference widget
+    void slotApply();
+    void slotUpdate();
 
-signals:
-  void apply(const QString &);
+  signals:
+    void apply(const QString &);
 
-private:
-  void populate();
-  void loadSettings();
+  private:
+    void populate();
+    void loadSettings();
 
-  ConfigObject<ConfigValue>* m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
+
 };
 
 #endif // DLGPREFSELECTOR_H
