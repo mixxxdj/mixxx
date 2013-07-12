@@ -68,12 +68,12 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
-    if (m_lowFilterControlObject &&
-            m_midFilterControlObject &&
-            m_highFilterControlObject) {
-        lowGain = m_lowFilterControlObject->get();
-        midGain = m_midFilterControlObject->get();
-        highGain = m_highFilterControlObject->get();
+    if (m_pLowFilterControlObject &&
+            m_pMidFilterControlObject &&
+            m_pHighFilterControlObject) {
+        lowGain = m_pLowFilterControlObject->get();
+        midGain = m_pMidFilterControlObject->get();
+        highGain = m_pHighFilterControlObject->get();
     }
     allGain = m_waveformRenderer->getGain();
 

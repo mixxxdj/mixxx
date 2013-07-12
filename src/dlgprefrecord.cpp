@@ -36,7 +36,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     setupUi(this);
 
     //See RECORD_* #defines in defs_recording.h
-    recordControl = new ControlObjectThreadMain(
+    m_recordControl = new ControlObjectThread(
             RECORDING_PREF_KEY, "status");
 
     radioOgg = new QRadioButton("Ogg Vorbis");
@@ -115,7 +115,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     connect(comboBoxSplitting, SIGNAL(activated(int)),   this,   SLOT(slotChangeSplitSize()));
 
     slotApply();
-    recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
+    m_recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
 
     comboBoxSplitting->addItem(SPLIT_650MB);
     comboBoxSplitting->addItem(SPLIT_700MB);
@@ -228,7 +228,7 @@ void DlgPrefRecord::loadMetaData()
 
 DlgPrefRecord::~DlgPrefRecord()
 {
-   delete recordControl;
+   delete m_recordControl;
 }
 
 void DlgPrefRecord::slotRecordPathChange()

@@ -23,7 +23,7 @@
 #include <QRadioButton>
 
 class ControlObject;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 
 
 
@@ -59,7 +59,7 @@ private:
 
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
-    ControlObjectThreadMain* recordControl;
+    ControlObjectThread* m_recordControl;
     bool confirmOverwrite;
     QString fileTypeExtension;
     QRadioButton *radioOgg;

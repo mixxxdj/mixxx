@@ -14,7 +14,7 @@
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
 class TrackInfoObject;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 
 class WaveformWidgetRenderer {
 public:
@@ -95,17 +95,17 @@ protected:
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection
-    ControlObjectThreadMain* m_playPosControlObject;
+    ControlObjectThread* m_pPlayPosControlObject;
     double m_playPos;
-    ControlObjectThreadMain* m_rateControlObject;
+    ControlObjectThread* m_pRateControlObject;
     double m_rate;
-    ControlObjectThreadMain* m_rateRangeControlObject;
+    ControlObjectThread* m_pRateRangeControlObject;
     double m_rateRange;
-    ControlObjectThreadMain* m_rateDirControlObject;
+    ControlObjectThread* m_pRateDirControlObject;
     double m_rateDir;
-    ControlObjectThreadMain* m_gainControlObject;
+    ControlObjectThread* m_pGainControlObject;
     double m_gain;
-    ControlObjectThreadMain* m_trackSamplesControlObject;
+    ControlObjectThread* m_pTrackSamplesControlObject;
     int m_trackSamples;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG

@@ -101,14 +101,14 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     // playposition is from -0.14 to + 1.14
     m_pCOPlayPos1 = new ControlObjectThread("[Channel1]", "playposition");
     m_pCOPlayPos2 = new ControlObjectThread("[Channel2]", "playposition");
-    m_pCOPlay1 = new ControlObjectThreadMain("[Channel1]", "play");
-    m_pCOPlay2 = new ControlObjectThreadMain("[Channel2]", "play");
-    m_pCOPlay1Fb = new ControlObjectThreadMain("[Channel1]", "play");
-    m_pCOPlay2Fb = new ControlObjectThreadMain("[Channel2]", "play");
-    m_pCORepeat1 = new ControlObjectThreadMain("[Channel1]", "repeat");
-    m_pCORepeat2 = new ControlObjectThreadMain("[Channel2]", "repeat");
-    m_pCOCrossfader = new ControlObjectThreadMain("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlObjectThreadMain("[Mixer Profile]", "xFaderReverse");
+    m_pCOPlay1 = new ControlObjectThread("[Channel1]", "play");
+    m_pCOPlay2 = new ControlObjectThread("[Channel2]", "play");
+    m_pCOPlay1Fb = new ControlObjectThread("[Channel1]", "play");
+    m_pCOPlay2Fb = new ControlObjectThread("[Channel2]", "play");
+    m_pCORepeat1 = new ControlObjectThread("[Channel1]", "repeat");
+    m_pCORepeat2 = new ControlObjectThread("[Channel2]", "repeat");
+    m_pCOCrossfader = new ControlObjectThread("[Master]", "crossfader");
+    m_pCOCrossfaderReverse = new ControlObjectThread("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY, kTransitionPreferenceName));
