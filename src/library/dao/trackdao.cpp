@@ -1227,16 +1227,30 @@ void TrackDAO::clearCache() {
     //m_dirtyTracks.clear();
 }
 
-void TrackDAO::markTracksAsMixxxDeleted(QString dir){
-    QSqlQuery query;
-    query.prepare("UPDATE mixxx_deleted FROM library INNER JOIN track_locations "
+void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
+    // TODO(rryan): dir needs to end in a slash otherwise we might match other
+    // directories.
+    QSqlQuery query(m_database);
+
+    query.prepare("SELECT library.id FROM library INNER JOIN track_locations "
                   "ON library.location = track_locations.id "
                   "WHERE instr(track_locations.directory, :dir) > 0");
-    query.bindValue(":dir",dir);
+    query.bindValue(":dir", dir);
 
     if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "could not get tracks within directory:" << dir;
+    }
+
+    QStringList trackIds;
+    const int idColumn = query.record().indexOf("id");
+    while (query.next()) {
+        trackIds.append(QString::number(query.value(idColumn).toInt()));
+    }
+
+    query.prepare(QString("UPDATE library SET mixxx_deleted=1 "
+                          "WHERE id in (%1)").arg(trackIds.join(",")));
+    if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return;
     }
 }
 
