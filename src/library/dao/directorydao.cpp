@@ -54,6 +54,10 @@ bool DirectoryDAO::removeDirectory(const QString& dir) {
 
 QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
                                           const QString& newFolder) {
+    // TODO(rryan): This method could use error reporting. It can fail in
+    // mysterious ways for example if a track in the oldFolder also has a zombie
+    // track location in newFolder then the replace query will fail because the
+    // location column becomes non-unique.
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR % "="
