@@ -8,6 +8,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/cue.h"
 #include "trackinfoobject.h"
+#include "library/queryutil.h"
 
 CueDAO::CueDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -30,7 +31,7 @@ int CueDAO::cueCount() {
             return query.value(0).toInt();
         }
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     //query.finish();
     return 0;
@@ -46,7 +47,7 @@ int CueDAO::numCuesForTrack(const int trackId) {
             return query.value(0).toInt();
         }
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return 0;
 }
@@ -80,7 +81,7 @@ Cue* CueDAO::getCue(const int cueId) {
             return cueFromRow(query);
         }
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return NULL;
 }
@@ -106,7 +107,7 @@ QList<Cue*> CueDAO::getCuesForTrack(const int trackId) const {
             }
         }
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return cues;
 }
@@ -119,7 +120,7 @@ bool CueDAO::deleteCuesForTrack(const int trackId) {
     if (query.exec()) {
         return true;
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return false;
 }
@@ -138,7 +139,7 @@ bool CueDAO::deleteCuesForTracks(const QList<int>& ids) {
     if (query.exec()) {
         return true;
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return false;
 }
@@ -187,7 +188,7 @@ bool CueDAO::saveCue(Cue* cue) {
             cue->setDirty(false);
             return true;
         } else {
-            qDebug() << query.executedQuery() << query.lastError();
+            LOG_FAILED_QUERY(query);
         }
     }
     return false;
@@ -202,7 +203,7 @@ bool CueDAO::deleteCue(Cue* cue) {
         if (query.exec()) {
             return true;
         } else {
-            qDebug() << query.lastError();
+            LOG_FAILED_QUERY(query);
         }
     } else {
         return true;
@@ -261,8 +262,7 @@ void CueDAO::saveTrackCues(const int trackId, TrackInfoObject* pTrack) {
     query.bindValue(":track_id", trackId);
 
     if (!query.exec()) {
-        qDebug() << "Delete cues failed:" << query.lastError();
-        qDebug() << query.executedQuery();
+        LOG_FAILED_QUERY(query) << "Delete cues failed.";
     }
     //qDebug() << "Deleting cues took " << time.elapsed() << "ms";
 }

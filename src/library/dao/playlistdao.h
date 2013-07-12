@@ -34,7 +34,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     // Create a playlist
-    int createPlaylist(const QString& name, HiddenType type = PLHT_NOT_HIDDEN);
+    int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
     // Rename a playlist
@@ -57,7 +57,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // position in the database table, not the display order position column
     // stored in the database.
     int getPlaylistId(const int index);
-    QList<int> getTrackIds(int playlistId);
+    QList<int> getTrackIds(const int playlistId);
     // Returns true if the playlist with playlistId is hidden
     bool isHidden(const int playlistId);
     // Returns the HiddenType of playlistId
