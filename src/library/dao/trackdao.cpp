@@ -1266,7 +1266,7 @@ void TrackDAO::markTracksAsMixxxDeleted(const QString& dir) {
 
     query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations "
                           "ON library.location = track_locations.id "
-                          "WHERE track_locations.directory LIKE %1")
+                          "WHERE track_locations.directory LIKE %1 ESCAPE '%'")
                   .arg(escaper.escapeString(likeClause)));
 
     if (!query.exec()) {

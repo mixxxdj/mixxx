@@ -51,52 +51,58 @@ bool DirectoryDAO::removeDirectory(const QString& dir) {
     return true;
 }
 
+
 QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
                                           const QString& newFolder) {
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     query.prepare("UPDATE " % DIRECTORYDAO_TABLE % " SET " % DIRECTORYDAO_DIR % "="
-                  ":newFolder WHERE " % DIRECTORYDAO_DIR % "=:oldFolder");
+                  ":newFolder WHERE " % DIRECTORYDAO_DIR % " = :oldFolder");
     query.bindValue(":newFolder", newFolder);
     query.bindValue(":oldFolder", oldFolder);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate directory"
                                 << oldFolder << "to" << newFolder;
         return QSet<int>();
-    } else {
-        LOG_FAILED_QUERY(query) << "query ok";
     }
+
+    FieldEscaper escaper(m_database);
+    QString startsWithOldFolder =
+            escaper.escapeString(escaper.escapeStringForLike(oldFolder, '%') + '%');
 
     // Also update information in the track_locations table. This is where mixxx
     // gets the location information for a track.
-    query.prepare("UPDATE track_locations SET "
-                  "location = REPLACE(location, :oldDir, :newDir), "
-                  "directory = REPLACE(directory, :oldDir, :newDir) "
-                  "WHERE instr(location, :oldDir) > 0");
+    // TODO(rryan): This query replaces ALL occurrences of oldDir that are in
+    // location, not just those starting with the string. We should do this
+    // update outside of a query for safety.
+    query.prepare(QString("UPDATE track_locations SET "
+                          "location = REPLACE(location, :oldLoc, :newLoc), "
+                          "directory = REPLACE(directory, :oldDir, :newDir) "
+                          "WHERE location LIKE %1 ESCAPE '%'")
+                  .arg(startsWithOldFolder));
+    query.bindValue("oldLoc", oldFolder);
+    query.bindValue("newLoc", newFolder);
     query.bindValue("oldDir", oldFolder);
     query.bindValue("newDir", newFolder);
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
+        LOG_FAILED_QUERY(query) << "could not relocate path of tracks";
         return QSet<int>();
-    } else {
-        LOG_FAILED_QUERY(query) << "query ok";
     }
 
     // TODO(rryan): This query selects tracks that were already in newFolder.
-    query.prepare("SELECT library.id FROM library INNER JOIN track_locations ON "
-                  "track_locations.id = library.location WHERE "
-                  "instr(track_locations.location, :location) > 0");
-    query.bindValue(":location", newFolder);
-
+    QString startsWithNewFolder =
+            escaper.escapeString(escaper.escapeStringForLike(newFolder, '%') + '%');
+    query.prepare(QString("SELECT library.id FROM library INNER JOIN track_locations ON "
+                          "track_locations.id = library.location WHERE "
+                          "track_locations.location LIKE %1 ESCAPE '%'")
+                  .arg(startsWithNewFolder));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "coud not relocate path of tracks";
         return QSet<int>();
-    } else {
-        LOG_FAILED_QUERY(query) << "query ok";
     }
 
     QSet<int> ids;
-    const int idColumn = query.record().indexOf("library.id");
+    const int idColumn = query.record().indexOf("id");
     while (query.next()) {
         ids.insert(query.value(idColumn).toInt());
     }
