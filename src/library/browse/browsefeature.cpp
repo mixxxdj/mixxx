@@ -29,10 +29,8 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_pConfig(pConfig),
           m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pAddtoLibraryAction(NULL),
-          m_pLastRightClickedItem(NULL),
-          m_pTrackCollection(pTrackCollection){
-
+          m_pTrackCollection(pTrackCollection),
+          m_pLastRightClickedItem(NULL) {
     connect(this, SIGNAL(requestAddDir(QString)),
             parent, SLOT(slotRequestAddDir(QString)));
 
