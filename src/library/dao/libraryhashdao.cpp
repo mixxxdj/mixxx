@@ -80,7 +80,7 @@ void LibraryHashDAO::updateDirectoryHash(const QString& dirPath, const int newHa
     //qDebug() << getDirectoryHash(dirPath);
 }
 
-void LibraryHashDAO::updateDirectoryStatuses(QStringList& dirPaths, const bool deleted, const bool verified) {
+void LibraryHashDAO::updateDirectoryStatuses(QStringList dirPaths, const bool deleted, const bool verified) {
     //qDebug() << "LibraryHashDAO::updateDirectoryStatus" << QThread::currentThread() << m_database.connectionName();
     FieldEscaper escaper(m_database);
     QMutableStringListIterator it(dirPaths);
