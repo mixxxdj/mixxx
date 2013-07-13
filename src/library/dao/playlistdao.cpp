@@ -17,7 +17,7 @@ PlaylistDAO::~PlaylistDAO() {
 void PlaylistDAO::initialize() {
 }
 
-int PlaylistDAO::createPlaylist(const QString& name, HiddenType hidden) {
+int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     // qDebug() << "PlaylistDAO::createPlaylist"
     //          << QThread::currentThread()
     //          << m_database.connectionName();
@@ -82,7 +82,7 @@ QString PlaylistDAO::getPlaylistName(const int playlistId) {
     return name;
 }
 
-QList<int> PlaylistDAO::getTrackIds(int playlistId) {
+QList<int> PlaylistDAO::getTrackIds(const int playlistId) {
     QSqlQuery query(m_database);
     query.prepare("SELECT DISTINCT track_id from PlaylistTracks "
                   "WHERE playlist_id = :id");
@@ -201,9 +201,8 @@ bool PlaylistDAO::appendTracksToPlaylist(const QList<int>& trackIds, const int p
 
     int position = getMaxPosition(playlistId);
 
-    // Append after the last song. If no songs or a failed query then 0 becomes
-    // 1.
-    position++;
+    // Append after the last song. If no songs or a failed query then 0 becomes 1.
+    ++position;
 
     //Insert the song into the PlaylistTracks table
     QSqlQuery query(m_database);
@@ -499,8 +498,8 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds, const int 
         }
 
         // Increment the insert position for the track.
-        insertPositon++;
-        tracksAdded++;
+        ++insertPositon;
+        ++tracksAdded;
     }
 
     transaction.commit();
