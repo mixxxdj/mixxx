@@ -109,6 +109,9 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
     if (RLimit::isRtPrioAllowed()) {
         limitsHint->hide();
     }
+#else
+    // the limits warning is a Linux only thing
+    limitsHint->hide();
 #endif // __LINUX__
 
 }
