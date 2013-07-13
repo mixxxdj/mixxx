@@ -37,9 +37,9 @@ class ControlDoublePrivate : public QObject {
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
-    // Caller must handle appropriate destruction of the previous behavior or
-    // memory will leak.
-    ControlNumericBehavior* setBehavior(ControlNumericBehavior* pBehavior);
+    // The caller must nut delete the behavior at any time. The memory is managed
+    // by this function.
+    void setBehavior(ControlNumericBehavior* pBehavior);
 
     void setWidgetParameter(double dParam, QObject* pSender);
     double getWidgetParameter() const;
@@ -79,6 +79,8 @@ class ControlDoublePrivate : public QObject {
 
   private:
     ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO, bool bIgnoreNops, bool bTrack);
+    void initialize();
+
     ConfigKey m_key;
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
@@ -94,7 +96,7 @@ class ControlDoublePrivate : public QObject {
     // The default control value.
     ControlValueAtomic<double> m_defaultValue;
 
-    QAtomicPointer<ControlNumericBehavior> m_pBehavior;
+    QSharedPointer<ControlNumericBehavior> m_pBehavior;
 
     ControlObject* m_pCreatorCO;
 
