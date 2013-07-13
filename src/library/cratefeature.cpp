@@ -54,6 +54,10 @@ CrateFeature::CrateFeature(QObject* parent,
     connect(m_pDuplicateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDuplicateCrate()));
 
+    m_pAnalyzeCrateAction = new QAction(tr("Analyze entire Crate"),this);
+    connect(m_pAnalyzeCrateAction, SIGNAL(triggered()),
+            this, SLOT(slotAnalyzeCrate()));
+
     connect(&m_crateDao, SIGNAL(added(int)),
             this, SLOT(slotCrateTableChanged(int)));
 
@@ -80,6 +84,7 @@ CrateFeature::~CrateFeature() {
     delete m_pDuplicateCrateAction;
     delete m_pLockCrateAction;
     delete m_pImportPlaylistAction;
+    delete m_pAnalyzeCrateAction;
 }
 
 QVariant CrateFeature::title() {
@@ -190,6 +195,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
     menu.addSeparator();
+    menu.addAction(m_pAnalyzeCrateAction);
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
@@ -200,7 +206,7 @@ void CrateFeature::slotCreateCrate() {
     QString name;
     bool validNameGiven = false;
 
-    do {
+    while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                      tr("New Crate"),
@@ -217,17 +223,14 @@ void CrateFeature::slotCreateCrate() {
             QMessageBox::warning(NULL,
                                  tr("Creating Crate Failed"),
                                  tr("A crate by that name already exists."));
-        }
-        else if (name.isEmpty()) {
+        } else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
                                  tr("Creating Crate Failed"),
                                  tr("A crate cannot have a blank name."));
-        }
-        else {
+        } else {
             validNameGiven = true;
         }
-
-    } while (!validNameGiven);
+    }
 
     int crateId = m_crateDao.createCrate(name);
 
@@ -275,7 +278,7 @@ void CrateFeature::slotRenameCrate() {
     QString newName;
     bool validNameGiven = false;
 
-    do {
+    while (!validNameGiven) {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Crate"),
@@ -294,17 +297,14 @@ void CrateFeature::slotRenameCrate() {
             QMessageBox::warning(NULL,
                                 tr("Renaming Crate Failed"),
                                 tr("A crate by that name already exists."));
-        }
-        else if (newName.isEmpty()) {
+        } else if (newName.isEmpty()) {
             QMessageBox::warning(NULL,
                                 tr("Renaming Crate Failed"),
                                 tr("A crate cannot have a blank name."));
-        }
-        else {
+        } else {
             validNameGiven = true;
         }
-    } while (!validNameGiven);
-
+    } 
 
     if (!m_crateDao.renameCrate(crateId, newName)) {
         qDebug() << "Failed to rename crateId" << crateId;
@@ -318,7 +318,7 @@ void CrateFeature::slotDuplicateCrate() {
     QString name;
     bool validNameGiven = false;
 
-    do {
+    while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                         tr("Duplicate Crate"),
@@ -338,16 +338,14 @@ void CrateFeature::slotDuplicateCrate() {
             QMessageBox::warning(NULL,
                                 tr("Renaming Crate Failed"),
                                 tr("A crate by that name already exists."));
-        }
-        else if (name.isEmpty()) {
+        } else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
                                 tr("Renaming Crate Failed"),
                                 tr("A crate cannot have a blank name."));
-        }
-        else {
+        } else {
             validNameGiven = true;
         }
-    } while (!validNameGiven);
+    }
 
     int newCrateId = m_crateDao.createCrate(name);
     m_crateDao.copyCrateTracks(oldCrateId, newCrateId);
@@ -360,12 +358,10 @@ void CrateFeature::slotDuplicateCrate() {
                              tr("Creating Crate Failed"),
                              tr("An unknown error occurred while creating crate: ")
                              + name);
-
     }
 }
 
-void CrateFeature::slotToggleCrateLock()
-{
+void CrateFeature::slotToggleCrateLock() {
     QString crateName = m_lastRightClickedIndex.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     bool locked = !m_crateDao.isCrateLocked(crateId);
@@ -403,8 +399,7 @@ void CrateFeature::buildCrateList() {
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
 */
-QModelIndex CrateFeature::constructChildModel(int selected_id)
-{
+QModelIndex CrateFeature::constructChildModel(int selected_id) {
     buildCrateList();
     QList<TreeItem*> data_list;
     int selected_row = -1;
@@ -446,8 +441,7 @@ void CrateFeature::clearChildModel() {
     m_crateList.clear();
 }
 
-void CrateFeature::slotImportPlaylist()
-{
+void CrateFeature::slotImportPlaylist() {
     qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 
 
@@ -484,7 +478,18 @@ void CrateFeature::slotImportPlaylist()
         delete playlist_parser;
 }
 
-void CrateFeature::slotExportPlaylist(){
+void CrateFeature::slotAnalyzeCrate() {
+    if (m_lastRightClickedIndex.isValid()) {
+        int playlistId = m_crateDao.getCrateIdByName(
+                m_lastRightClickedIndex.data().toString());
+        if (playlistId >= 0) {
+            QList<int> ids = m_crateDao.getTrackIds(playlistId);
+            emit(analyzeTracks(ids));
+        }
+    }
+}
+
+void CrateFeature::slotExportPlaylist() {
     qDebug() << "Export crate" << m_lastRightClickedIndex.data();
     QString file_location = QFileDialog::getSaveFileName(
         NULL,
