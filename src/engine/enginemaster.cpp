@@ -97,6 +97,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pPrevGainBuffer, 0, MAX_BUFFER_LEN);
 
+    // Master Gain object should not use its cache -- it should always get fresh values.
+    m_masterGain.setUseCache(false);
+
     // Starts a thread for recording and shoutcast
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
@@ -397,8 +400,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Now set the gains for overall volume and the left, center, right gains.
     m_masterGain.setGains(m_pMasterVolume->get(), c1_gain, 1.0, c2_gain);
 
-    // Clear volume cache so we properly poll the control objects.
-    m_masterGain.resetCache();
     // Perform the master mix
     mixChannels(masterOutput, maxChannels, m_pMaster, iBufferSize, &m_masterGain);
 
@@ -409,8 +410,12 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         mixChannels(masterOutput, maxChannels, m_pPrevGainBuffer, iBufferSize, &m_prevMasterGain);
         SampleUtil::linearCrossfadeBuffers(m_pMaster, m_pPrevGainBuffer,
                                            m_pMaster, iBufferSize);
+
+        // Since this copy is fairly expensive, only do it if we need to.
+        m_prevMasterGain = m_masterGain;
+        // Make sure previous master uses the cache.
+        m_prevMasterGain.setUseCache(true);
     }
-    m_prevMasterGain = m_masterGain;
 
 #ifdef __LADSPA__
     // LADPSA master effects
