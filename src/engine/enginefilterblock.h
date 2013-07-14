@@ -45,7 +45,6 @@ private:
     void setFilters(bool forceSetting = false);
 
     CSAMPLE *m_pTemp1, *m_pTemp2, *m_pTemp3;
-    CSAMPLE *m_pPrevGainBuffer;
     EngineObject *low, *band, *high;
     ControlLogpotmeter *filterpotLow, *filterpotMid, *filterpotHigh;
     ControlPushButton *filterKillLow, *filterKillMid, *filterKillHigh;

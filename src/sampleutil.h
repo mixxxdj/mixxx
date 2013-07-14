@@ -52,7 +52,7 @@ class SampleUtil {
                                      int iNumSamples);
 
     // Multiply every sample in pBuffer ramping from gain1 to gain2
-    static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE gain1, CSAMPLE gain2 int iNumSamples);
+    static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE gain1, CSAMPLE gain2, int iNumSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
@@ -77,6 +77,10 @@ class SampleUtil {
     static void copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                              CSAMPLE gain, int iNumSamples);
 
+    // Copy pSrc to pDest and ramp gain
+    static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                    CSAMPLE gain1, CSAMPLE gain2, int iNumSamples);
+
     // Copies the sum of each channel, multiplied by its gain into pDest
     static void copy2WithGain(CSAMPLE* pDest,
                               const CSAMPLE* pSrc1, CSAMPLE gain1,
@@ -88,6 +92,13 @@ class SampleUtil {
                               const CSAMPLE* pSrc1, CSAMPLE gain1,
                               const CSAMPLE* pSrc2, CSAMPLE gain2,
                               const CSAMPLE* pSrc3, CSAMPLE gain3,
+                              int iNumSamples);
+
+    // Copies the sum of each channel into pDest with per-source ramping gain
+    static void copy3WithRampingGain(CSAMPLE* pDest,
+                              const CSAMPLE* pSrc1, CSAMPLE gain1in, CSAMPLE gain1out,
+                              const CSAMPLE* pSrc2, CSAMPLE gain2in, CSAMPLE gain2out,
+                              const CSAMPLE* pSrc3, CSAMPLE gain3in, CSAMPLE gain3out,
                               int iNumSamples);
 
     // Copies the sum of each channel, multiplied by its gain into pDest
@@ -180,7 +191,7 @@ class SampleUtil {
     static void sseApplyGain(CSAMPLE* pBuffer,
                              CSAMPLE gain, int iNumSamples) _ALIGN_STACK;
     static void sseApplyRampingGain(CSAMPLE* pBuffer,
-                                    CSAMPLE gain1, CSAMPLE gain2 int iNumSamples) _ALIGN_STACK;
+                                    CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) _ALIGN_STACK;
     static void sseApplyAlternatingGain(CSAMPLE* pBuffer,
                                         CSAMPLE gain1, CSAMPLE gain2,
                                         int iNumSamples) _ALIGN_STACK;
@@ -198,6 +209,8 @@ class SampleUtil {
 
     static void sseCopyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                 CSAMPLE gain, int iNumSamples) _ALIGN_STACK;
+    static void sseCopyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                       CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) _ALIGN_STACK;
     static void sseCopy2WithGain(CSAMPLE* pDest,
                                  const CSAMPLE* pSrc1, CSAMPLE gain1,
                                  const CSAMPLE* pSrc2, CSAMPLE gain2,
@@ -207,6 +220,11 @@ class SampleUtil {
                                  const CSAMPLE* pSrc2, CSAMPLE gain2,
                                  const CSAMPLE* pSrc3, CSAMPLE gain3,
                                  int iNumSamples) _ALIGN_STACK;
+    static void sseCopy3WithRampingGain(CSAMPLE* pDest,
+                                        const CSAMPLE* pSrc1, CSAMPLE gain1in, CSAMPLE gain1out,
+                                        const CSAMPLE* pSrc2, CSAMPLE gain2in, CSAMPLE gain2out,
+                                        const CSAMPLE* pSrc3, CSAMPLE gain3in, CSAMPLE gain3out,
+                                        int iNumSamples) _ALIGN_STACK;
     static void sseConvert(CSAMPLE* pDest,
                            const SAMPLE* pSrc, int iNumSamples) _ALIGN_STACK;
     static void sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
