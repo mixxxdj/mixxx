@@ -1250,7 +1250,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     }
 
     if (trackIds.size() > 0) {
-        crateDao.addTracksToCrate(trackIds, iCrateId);
+        crateDao.addTracksToCrate(iCrateId, &trackIds);
     }
 }
 

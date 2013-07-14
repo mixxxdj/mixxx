@@ -268,7 +268,7 @@ bool SoundSource::processTaglibFile(TagLib::File& f) {
         }
 
         // If we didn't get any audio properties, this was a failure.
-        return properties;
+        return (properties!=NULL);
     }
     return false;
 }

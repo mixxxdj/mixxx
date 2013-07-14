@@ -42,12 +42,12 @@ class AnalysisDao : public DAO {
     bool saveWaveform(const TrackInfoObject& tio);
     bool removeWaveform(const TrackInfoObject& tio);
 
-    QList<AnalysisInfo> getAnalysesForTrackByType(int trackId, AnalysisType type);
-    QList<AnalysisInfo> getAnalysesForTrack(int trackId);
+    QList<AnalysisInfo> getAnalysesForTrackByType(const int trackId, AnalysisType type);
+    QList<AnalysisInfo> getAnalysesForTrack(const int trackId);
     bool saveAnalysis(AnalysisInfo* analysis);
-    bool deleteAnalysis(int analysisId);
-    void deleteAnalysises(QList<int> ids);
-    bool deleteAnalysesForTrack(int trackId);
+    bool deleteAnalysis(const int analysisId);
+    void deleteAnalysises(const QList<int>& ids);
+    bool deleteAnalysesForTrack(const int trackId);
 
     void saveTrackAnalyses(TrackInfoObject* pTrack);
 
@@ -58,10 +58,10 @@ class AnalysisDao : public DAO {
     bool loadWaveform(const TrackInfoObject& tio,
                       Waveform* waveform, AnalysisType type);
     QDir getAnalysisStoragePath() const;
-    QByteArray loadDataFromFile(QString fileName) const;
-    bool saveDataToFile(QString fileName, QByteArray data) const;
-    bool deleteFile(QString filename) const;
-    QList<AnalysisInfo> loadAnalysesFromQuery(int trackId, QSqlQuery& query);
+    QByteArray loadDataFromFile(const QString& fileName) const;
+    bool saveDataToFile(const QString& fileName, const QByteArray& data) const;
+    bool deleteFile(const QString& filename) const;
+    QList<AnalysisInfo> loadAnalysesFromQuery(const int trackId, QSqlQuery* query);
 
     ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase m_db;

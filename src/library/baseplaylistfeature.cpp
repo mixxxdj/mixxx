@@ -58,6 +58,10 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
+    m_pAnalyzePlaylistAction = new QAction(tr("Analyze entire Playlist"), this);
+    connect(m_pAnalyzePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotAnalyzePlaylist()));
+
     connect(&m_playlistDao, SIGNAL(added(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
 
@@ -82,6 +86,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pAddToAutoDJTopAction;
     delete m_pRenamePlaylistAction;
     delete m_pLockPlaylistAction;
+    delete m_pAnalyzePlaylistAction;
 }
 
 void BasePlaylistFeature::activate() {
@@ -115,7 +120,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
     QString newName;
     bool validNameGiven = false;
 
-    do {
+    while (!validNameGiven) {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Playlist"),
@@ -134,16 +139,14 @@ void BasePlaylistFeature::slotRenamePlaylist() {
             QMessageBox::warning(NULL,
                                 tr("Renaming Playlist Failed"),
                                 tr("A playlist by that name already exists."));
-        }
-        else if (newName.isEmpty()) {
+        } else if (newName.isEmpty()) {
             QMessageBox::warning(NULL,
                                 tr("Renaming Playlist Failed"),
                                 tr("A playlist cannot have a blank name."));
-        }
-        else {
+        } else {
             validNameGiven = true;
         }
-    } while (!validNameGiven);
+    }
 
     m_playlistDao.renamePlaylist(playlistId, newName);
 }
@@ -156,7 +159,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
     QString name;
     bool validNameGiven = false;
 
-    do {
+    while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                         tr("Duplicate Playlist"),
@@ -176,16 +179,14 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
             QMessageBox::warning(NULL,
                                 tr("Playlist Creation Failed"),
                                 tr("A playlist by that name already exists."));
-        }
-        else if (name.isEmpty()) {
+        } else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
                                 tr("Playlist Creation Failed"),
                                 tr("A playlist cannot have a blank name."));
-        }
-        else {
+        } else {
             validNameGiven = true;
         }
-    } while (!validNameGiven);
+    }
 
     int newPlaylistId = m_playlistDao.createPlaylist(name);
 
@@ -213,7 +214,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     QString name;
     bool validNameGiven = false;
 
-    do {
+    while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                      tr("New Playlist"),
@@ -238,15 +239,13 @@ void BasePlaylistFeature::slotCreatePlaylist() {
         } else {
             validNameGiven = true;
         }
-
-    } while (!validNameGiven);
+    }
 
     int playlistId = m_playlistDao.createPlaylist(name);
 
     if (playlistId != -1) {
         emit(showTrackModel(m_pPlaylistTableModel));
-    }
-    else {
+    } else {
         QMessageBox::warning(NULL,
                              tr("Playlist Creation Failed"),
                              tr("An unknown error occurred while creating playlist: ")
@@ -399,7 +398,7 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
 
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
-            m_lastRightClickedIndex.data().toString());
+                m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
             // Insert this playlist
             m_playlistDao.addToAutoDJQueue(playlistId, bTop);
@@ -407,6 +406,16 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     }
 }
 
+void BasePlaylistFeature::slotAnalyzePlaylist() {
+    if (m_lastRightClickedIndex.isValid()) {
+        int playlistId = m_playlistDao.getPlaylistIdFromName(
+                m_lastRightClickedIndex.data().toString());
+        if (playlistId >= 0) {
+            QList<int> ids = m_playlistDao.getTrackIds(playlistId);
+            emit(analyzeTracks(ids));
+        }
+    }
+}
 
 TreeItemModel* BasePlaylistFeature::getChildModel() {
     return &m_childModel;

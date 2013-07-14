@@ -34,6 +34,9 @@ class CrateFeature : public LibraryFeature {
 
     TreeItemModel* getChildModel();
 
+  signals:
+    void analyzeTracks(QList<int>);
+
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
@@ -47,6 +50,7 @@ class CrateFeature : public LibraryFeature {
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
+    void slotAnalyzeCrate();
     void slotCrateTableChanged(int playlistId);
     void htmlLinkClicked(const QUrl & link);
 
@@ -65,6 +69,7 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pDuplicateCrateAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
+    QAction *m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;
