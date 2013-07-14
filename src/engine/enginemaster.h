@@ -89,7 +89,6 @@ class EngineMaster : public EngineObject, public AudioSource {
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
-
     };
 
     class GainCalculator {

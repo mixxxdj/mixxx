@@ -92,8 +92,9 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer,
         return sseApplyRampingGain(pBuffer, gain1, gain2, iNumSamples);
     }
 
-    const CSAMPLE delta = (gain2 - gain1) / iNumSamples;
-    for (int i = 0, CSAMPLE gain = gain1; i < iNumSamples; i += 2, gain += delta) {
+    const CSAMPLE delta = 2 * (gain2 - gain1) / iNumSamples;
+    CSAMPLE gain = gain1;
+    for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
         pBuffer[i] *= gain;
         pBuffer[i + 1] *= gain;
     }
@@ -106,8 +107,12 @@ void SampleUtil::sseApplyRampingGain(_ALIGN_16 CSAMPLE* pBuffer,
 #ifdef __SSE__
     assert_aligned(pBuffer);
     __m128 vSamples;
-    __m128 vGain = _mm_set1_ps(gain1);
-    __m128 vDelta = _mm_set1_ps((gain2 - gain1) / iNumSamples);  //???
+
+    const CSAMPLE delta = 2 * (gain2 - gain1) / iNumSamples;
+    // Because we're processing 4 samples at a time, the delta has to be doubled again.
+    __m128 vDelta = _mm_set1_ps(delta * 2);
+    __m128 vGain = _mm_set_ps(gain1, gain1, gain1 + delta, gain1 + delta);
+
     while (iNumSamples >= 4) {
         vSamples = _mm_loadu_ps(pBuffer);
         vSamples = _mm_mul_ps(vSamples, vGain);
@@ -115,16 +120,15 @@ void SampleUtil::sseApplyRampingGain(_ALIGN_16 CSAMPLE* pBuffer,
 
         iNumSamples -= 4;
         pBuffer += 4;
-        // do something to vgain???
+        vGain = _mm_add_ps(vGain, vDelta);
     }
     if (iNumSamples > 0) {
         qDebug() << "Not div by 4";
     }
     while (iNumSamples > 0) {
-        *pBuffer = *pBuffer * gain;
+        *pBuffer = *pBuffer * gain2;
         pBuffer++;
-        iNumSamples--;
-        // huh???
+        iNumSamples-=2;
     }
 #endif
 }
@@ -414,7 +418,7 @@ void SampleUtil::sseCopyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                      CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
     if (pDest == pSrc) {
-        return applyGain(pDest, gain1, gain2, iNumSamples);
+        return applyRampingGain(pDest, gain1, gain2, iNumSamples);
     }
     if (gain1 == 1.0f && gain2 == 1.0f) {
         memcpy(pDest, pSrc, sizeof(pDest[0]) * iNumSamples);
@@ -426,13 +430,14 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     }
 
     if (m_sOptimizationsOn) {
-        return sseCopyWithGain(pDest, pSrc, gain1, gain2, iNumSamples);
+        return sseCopyWithRampingGain(pDest, pSrc, gain1, gain2, iNumSamples);
     }
 
-    const CSAMPLE delta = (gain2 - gain1) / iNumSamples;
-    for (int i = 0, CSAMPLE gain = gain1; i < iNumSamples; i += 2, gain += delta) {
+    const CSAMPLE delta = 2 * (gain2 - gain1) / iNumSamples;
+    CSAMPLE gain = gain1;
+    for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
         pDest[i] = pSrc[i] * gain;
-        pDest[i + 1] = pSrc[i + 1] * gain;
+        pDest[i + 1] = pSrc[i + 2] * gain;
     }
 
     // OR! need to test which fares better
@@ -444,11 +449,13 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 void SampleUtil::sseCopyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                                         CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
 #ifdef __SSE__
-    //TODO: someone else who knows how this works plz implement.
     assert_aligned(pDest);
     assert_aligned(pSrc);
     __m128 vSrcSamples;
-    __m128 vGain = _mm_set1_ps(gain);
+    const CSAMPLE delta = 2 * (gain2 - gain1) / iNumSamples;
+    // Because we're processing 4 samples at a time, the delta has to be doubled again.
+    __m128 vDelta = _mm_set1_ps(delta * 2);
+    __m128 vGain = _mm_set_ps(gain1, gain1, gain1 + delta, gain1 + delta);
     while (iNumSamples >= 4) {
         vSrcSamples = _mm_loadu_ps(pSrc);
         vSrcSamples = _mm_mul_ps(vSrcSamples, vGain);
@@ -456,12 +463,13 @@ void SampleUtil::sseCopyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
         iNumSamples -= 4;
         pDest += 4;
         pSrc += 4;
+        vGain = _mm_add_ps(vGain, vDelta);
     }
     if (iNumSamples > 0) {
         qDebug() << "Not div by 4";
     }
     while (iNumSamples > 0) {
-        *pDest = *pSrc * gain;
+        *pDest = *pSrc * gain2;
         pDest++;
         pSrc++;
         iNumSamples--;
@@ -590,6 +598,90 @@ void SampleUtil::sseCopy3WithGain(CSAMPLE* pDest,
     }
     while (iNumSamples > 0) {
         *pDest = *pSrc1 * gain1 + *pSrc2 * gain2 + *pSrc3 * gain3;
+        pDest++;
+        pSrc1++;
+        pSrc2++;
+        pSrc3++;
+        iNumSamples--;
+    }
+#endif
+}
+
+// static
+void SampleUtil::copy3WithRampingGain(CSAMPLE* pDest,
+                               const CSAMPLE* pSrc1, CSAMPLE gain1in, CSAMPLE gain1out,
+                               const CSAMPLE* pSrc2, CSAMPLE gain2in, CSAMPLE gain2out,
+                               const CSAMPLE* pSrc3, CSAMPLE gain3in, CSAMPLE gain3out,
+                               int iNumSamples) {
+    if (m_sOptimizationsOn) {
+        return sseCopy3WithRampingGain(pDest,
+                                       pSrc1, gain1in, gain1out,
+                                       pSrc2, gain2in, gain2out,
+                                       pSrc3, gain3in, gain3out,
+                                       iNumSamples);
+    }
+
+    const CSAMPLE delta1 = 2 * (gain1out - gain1in) / iNumSamples;
+    const CSAMPLE delta2 = 2 * (gain2out - gain2in) / iNumSamples;
+    const CSAMPLE delta3 = 2 * (gain3out - gain3in) / iNumSamples;
+    CSAMPLE gain1 = gain1in;
+    CSAMPLE gain2 = gain2in;
+    CSAMPLE gain3 = gain3in;
+    for (int i = 0; i < iNumSamples; i += 2, gain1 +=  delta1, gain2 += delta2, gain3 += delta3) {
+        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
+        pDest[i + 1] = pSrc1[i + 1] * gain1 + pSrc2[i + 1] * gain2 + pSrc3[i + 1] * gain3;
+    }
+}
+
+// static
+void SampleUtil::sseCopy3WithRampingGain(CSAMPLE* pDest,
+                                  const CSAMPLE* pSrc1, CSAMPLE gain1in, CSAMPLE gain1out,
+                                  const CSAMPLE* pSrc2, CSAMPLE gain2in, CSAMPLE gain2out,
+                                  const CSAMPLE* pSrc3, CSAMPLE gain3in, CSAMPLE gain3out,
+                                  int iNumSamples) {
+#ifdef __SSE__
+    assert_aligned(pDest);
+    assert_aligned(pSrc1);
+    assert_aligned(pSrc2);
+    assert_aligned(pSrc3);
+    __m128 vSrc1Samples;
+    __m128 vSrc2Samples;
+    __m128 vSrc3Samples;
+    const CSAMPLE delta1 = 2 * (gain1out - gain1in) / iNumSamples;
+    const CSAMPLE delta2 = 2 * (gain2out - gain2in) / iNumSamples;
+    const CSAMPLE delta3 = 2 * (gain3out - gain3in) / iNumSamples;
+    // Because we're processing 4 samples at a time, the delta has to be doubled again.
+    __m128 vDelta1 = _mm_set1_ps(delta1 * 2);
+    __m128 vDelta2 = _mm_set1_ps(delta2 * 2);
+    __m128 vDelta3 = _mm_set1_ps(delta3 * 2);
+    __m128 vGain1 = _mm_set_ps(gain1in, gain1in, gain1in + delta1, gain1in + delta1);
+    __m128 vGain2 = _mm_set_ps(gain2in, gain2in, gain2in + delta2, gain2in + delta2);
+    __m128 vGain3 = _mm_set_ps(gain3in, gain3in, gain3in + delta3, gain3in + delta3);
+    while (iNumSamples >= 4) {
+        vSrc1Samples = _mm_loadu_ps(pSrc1);
+        vSrc1Samples = _mm_mul_ps(vSrc1Samples, vGain1);
+        vSrc2Samples = _mm_loadu_ps(pSrc2);
+        vSrc2Samples = _mm_mul_ps(vSrc2Samples, vGain2);
+        vSrc3Samples = _mm_loadu_ps(pSrc3);
+        vSrc3Samples = _mm_mul_ps(vSrc3Samples, vGain3);
+
+        vSrc1Samples = _mm_add_ps(vSrc1Samples, vSrc2Samples);
+        vSrc1Samples = _mm_add_ps(vSrc1Samples, vSrc3Samples);
+        _mm_store_ps(pDest, vSrc1Samples);
+        iNumSamples -= 4;
+        pDest += 4;
+        pSrc1 += 4;
+        pSrc2 += 4;
+        pSrc3 += 4;
+        vGain1 = _mm_add_ps(vGain1, vDelta1);
+        vGain2 = _mm_add_ps(vGain2, vDelta2);
+        vGain3 = _mm_add_ps(vGain3, vDelta3);
+    }
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples > 0) {
+        *pDest = *pSrc1 * gain1out + *pSrc2 * gain2out + *pSrc3 * gain3out;
         pDest++;
         pSrc1++;
         pSrc2++;
