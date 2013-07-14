@@ -19,7 +19,13 @@ void WKey::setValue(double dValue) {
     m_dOldValue = dValue;
     mixxx::track::io::key::ChromaticKey key =
             KeyUtils::keyFromNumericValue(dValue);
-    m_pLabel->setText(KeyUtils::keyToString(key));
+
+    if (key != mixxx::track::io::key::INVALID) {
+        // Render this key with the user-provided notation.
+        m_pLabel->setText(KeyUtils::keyToString(key));
+    } else {
+        m_pLabel->setText("");
+    }
 }
 
 void WKey::preferencesUpdated(double dValue) {
