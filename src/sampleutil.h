@@ -51,6 +51,9 @@ class SampleUtil {
                                      CSAMPLE gain1, CSAMPLE gain2,
                                      int iNumSamples);
 
+    // Multiply every sample in pBuffer ramping from gain1 to gain2
+    static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE gain1, CSAMPLE gain2 int iNumSamples);
+
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                             CSAMPLE gain, int iNumSamples);
@@ -176,6 +179,8 @@ class SampleUtil {
   private:
     static void sseApplyGain(CSAMPLE* pBuffer,
                              CSAMPLE gain, int iNumSamples) _ALIGN_STACK;
+    static void sseApplyRampingGain(CSAMPLE* pBuffer,
+                                    CSAMPLE gain1, CSAMPLE gain2 int iNumSamples) _ALIGN_STACK;
     static void sseApplyAlternatingGain(CSAMPLE* pBuffer,
                                         CSAMPLE gain1, CSAMPLE gain2,
                                         int iNumSamples) _ALIGN_STACK;

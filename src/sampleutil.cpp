@@ -79,6 +79,57 @@ void SampleUtil::sseApplyGain(_ALIGN_16 CSAMPLE* pBuffer,
 }
 
 // static
+void SampleUtil::applyRampingGain(CSAMPLE* pBuffer,
+                                  CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
+    if (gain1 == 1.0f && gain2 == 1.0f)
+        return;
+    if (gain1 == 0.0f && gain2 == 0.0f) {
+        memset(pBuffer, 0, sizeof(pBuffer[0]) * iNumSamples);
+        return;
+    }
+
+    if (m_sOptimizationsOn) {
+        return sseApplyRampingGain(pBuffer, gain1, gain2, iNumSamples);
+    }
+
+    const CSAMPLE delta = (gain2 - gain1) / iNumSamples;
+    for (int i = 0, CSAMPLE gain = gain1; i < iNumSamples; i += 2, gain += delta) {
+        pBuffer[i] *= gain;
+        pBuffer[i + 1] *= gain;
+    }
+}
+
+// static
+void SampleUtil::sseApplyRampingGain(_ALIGN_16 CSAMPLE* pBuffer,
+                                     _ALIGN_16 CSAMPLE gain1, _ALIGN_16 CSAMPLE gain2,
+                                     int iNumSamples) {
+#ifdef __SSE__
+    assert_aligned(pBuffer);
+    __m128 vSamples;
+    __m128 vGain = _mm_set1_ps(gain1);
+    __m128 vDelta = _mm_set1_ps((gain2 - gain1) / iNumSamples);  //???
+    while (iNumSamples >= 4) {
+        vSamples = _mm_loadu_ps(pBuffer);
+        vSamples = _mm_mul_ps(vSamples, vGain);
+        _mm_store_ps(pBuffer, vSamples);
+
+        iNumSamples -= 4;
+        pBuffer += 4;
+        // do something to vgain???
+    }
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples > 0) {
+        *pBuffer = *pBuffer * gain;
+        pBuffer++;
+        iNumSamples--;
+        // huh???
+    }
+#endif
+}
+
+// static
 void SampleUtil::applyAlternatingGain(CSAMPLE* pBuffer,
                                       CSAMPLE gain1, CSAMPLE gain2,
                                       int iNumSamples) {
@@ -359,6 +410,64 @@ void SampleUtil::sseCopyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 #endif
 }
 
+// static
+void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                     CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
+    if (pDest == pSrc) {
+        return applyGain(pDest, gain1, gain2, iNumSamples);
+    }
+    if (gain1 == 1.0f && gain2 == 1.0f) {
+        memcpy(pDest, pSrc, sizeof(pDest[0]) * iNumSamples);
+        return;
+    }
+    if (gain1 == 0.0f && gain2 == 0.0f) {
+        memset(pDest, 0, sizeof(pDest[0]) * iNumSamples);
+        return;
+    }
+
+    if (m_sOptimizationsOn) {
+        return sseCopyWithGain(pDest, pSrc, gain1, gain2, iNumSamples);
+    }
+
+    const CSAMPLE delta = (gain2 - gain1) / iNumSamples;
+    for (int i = 0, CSAMPLE gain = gain1; i < iNumSamples; i += 2, gain += delta) {
+        pDest[i] = pSrc[i] * gain;
+        pDest[i + 1] = pSrc[i + 1] * gain;
+    }
+
+    // OR! need to test which fares better
+    // memcpy(pDest, pSrc, sizeof(pDest[0]) * iNumSamples);
+    // applyGain(pDest, gain);
+}
+
+// static
+void SampleUtil::sseCopyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                        CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
+#ifdef __SSE__
+    //TODO: someone else who knows how this works plz implement.
+    assert_aligned(pDest);
+    assert_aligned(pSrc);
+    __m128 vSrcSamples;
+    __m128 vGain = _mm_set1_ps(gain);
+    while (iNumSamples >= 4) {
+        vSrcSamples = _mm_loadu_ps(pSrc);
+        vSrcSamples = _mm_mul_ps(vSrcSamples, vGain);
+        _mm_store_ps(pDest, vSrcSamples);
+        iNumSamples -= 4;
+        pDest += 4;
+        pSrc += 4;
+    }
+    if (iNumSamples > 0) {
+        qDebug() << "Not div by 4";
+    }
+    while (iNumSamples > 0) {
+        *pDest = *pSrc * gain;
+        pDest++;
+        pSrc++;
+        iNumSamples--;
+    }
+#endif
+}
 
 // static
 void SampleUtil::copy2WithGain(CSAMPLE* pDest,
