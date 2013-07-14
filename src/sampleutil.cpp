@@ -92,7 +92,7 @@ void SampleUtil::applyRampingGain(CSAMPLE* pBuffer,
         return sseApplyRampingGain(pBuffer, gain1, gain2, iNumSamples);
     }
 
-    const CSAMPLE delta = 2 * (gain2 - gain1) / iNumSamples;
+    const CSAMPLE delta = 2.0 * (gain2 - gain1) / iNumSamples;
     CSAMPLE gain = gain1;
     for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
         pBuffer[i] *= gain;
@@ -108,9 +108,9 @@ void SampleUtil::sseApplyRampingGain(_ALIGN_16 CSAMPLE* pBuffer,
     assert_aligned(pBuffer);
     __m128 vSamples;
 
-    const CSAMPLE delta = 2 * (gain2 - gain1) / iNumSamples;
+    const CSAMPLE delta = 2.0 * (gain2 - gain1) / iNumSamples;
     // Because we're processing 4 samples at a time, the delta has to be doubled again.
-    __m128 vDelta = _mm_set1_ps(delta * 2);
+    __m128 vDelta = _mm_set1_ps(delta * 2.0);
     __m128 vGain = _mm_set_ps(gain1, gain1, gain1 + delta, gain1 + delta);
 
     while (iNumSamples >= 4) {
@@ -433,11 +433,11 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
         return sseCopyWithRampingGain(pDest, pSrc, gain1, gain2, iNumSamples);
     }
 
-    const CSAMPLE delta = 2 * (gain2 - gain1) / iNumSamples;
+    const CSAMPLE delta = 2.0 * (gain2 - gain1) / iNumSamples;
     CSAMPLE gain = gain1;
     for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
         pDest[i] = pSrc[i] * gain;
-        pDest[i + 1] = pSrc[i + 2] * gain;
+        pDest[i + 1] = pSrc[i + 1] * gain;
     }
 
     // OR! need to test which fares better
@@ -452,9 +452,9 @@ void SampleUtil::sseCopyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     assert_aligned(pDest);
     assert_aligned(pSrc);
     __m128 vSrcSamples;
-    const CSAMPLE delta = 2 * (gain2 - gain1) / iNumSamples;
+    const CSAMPLE delta = 2.0 * (gain2 - gain1) / iNumSamples;
     // Because we're processing 4 samples at a time, the delta has to be doubled again.
-    __m128 vDelta = _mm_set1_ps(delta * 2);
+    __m128 vDelta = _mm_set1_ps(delta * 2.0);
     __m128 vGain = _mm_set_ps(gain1, gain1, gain1 + delta, gain1 + delta);
     while (iNumSamples >= 4) {
         vSrcSamples = _mm_loadu_ps(pSrc);
@@ -621,13 +621,13 @@ void SampleUtil::copy3WithRampingGain(CSAMPLE* pDest,
                                        iNumSamples);
     }
 
-    const CSAMPLE delta1 = 2 * (gain1out - gain1in) / iNumSamples;
-    const CSAMPLE delta2 = 2 * (gain2out - gain2in) / iNumSamples;
-    const CSAMPLE delta3 = 2 * (gain3out - gain3in) / iNumSamples;
+    const CSAMPLE delta1 = 2.0 * (gain1out - gain1in) / iNumSamples;
+    const CSAMPLE delta2 = 2.0 * (gain2out - gain2in) / iNumSamples;
+    const CSAMPLE delta3 = 2.0 * (gain3out - gain3in) / iNumSamples;
     CSAMPLE gain1 = gain1in;
     CSAMPLE gain2 = gain2in;
     CSAMPLE gain3 = gain3in;
-    for (int i = 0; i < iNumSamples; i += 2, gain1 +=  delta1, gain2 += delta2, gain3 += delta3) {
+    for (int i = 0; i < iNumSamples; i += 2, gain1 += delta1, gain2 += delta2, gain3 += delta3) {
         pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
         pDest[i + 1] = pSrc1[i + 1] * gain1 + pSrc2[i + 1] * gain2 + pSrc3[i + 1] * gain3;
     }
@@ -647,13 +647,13 @@ void SampleUtil::sseCopy3WithRampingGain(CSAMPLE* pDest,
     __m128 vSrc1Samples;
     __m128 vSrc2Samples;
     __m128 vSrc3Samples;
-    const CSAMPLE delta1 = 2 * (gain1out - gain1in) / iNumSamples;
-    const CSAMPLE delta2 = 2 * (gain2out - gain2in) / iNumSamples;
-    const CSAMPLE delta3 = 2 * (gain3out - gain3in) / iNumSamples;
+    const CSAMPLE delta1 = 2.0 * (gain1out - gain1in) / iNumSamples;
+    const CSAMPLE delta2 = 2.0 * (gain2out - gain2in) / iNumSamples;
+    const CSAMPLE delta3 = 2.0 * (gain3out - gain3in) / iNumSamples;
     // Because we're processing 4 samples at a time, the delta has to be doubled again.
-    __m128 vDelta1 = _mm_set1_ps(delta1 * 2);
-    __m128 vDelta2 = _mm_set1_ps(delta2 * 2);
-    __m128 vDelta3 = _mm_set1_ps(delta3 * 2);
+    __m128 vDelta1 = _mm_set1_ps(delta1 * 2.0);
+    __m128 vDelta2 = _mm_set1_ps(delta2 * 2.0);
+    __m128 vDelta3 = _mm_set1_ps(delta3 * 2.0);
     __m128 vGain1 = _mm_set_ps(gain1in, gain1in, gain1in + delta1, gain1in + delta1);
     __m128 vGain2 = _mm_set_ps(gain2in, gain2in, gain2in + delta2, gain2in + delta2);
     __m128 vGain3 = _mm_set_ps(gain3in, gain3in, gain3in + delta3, gain3in + delta3);
