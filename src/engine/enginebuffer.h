@@ -108,8 +108,8 @@ public:
 
     void queueNewPlaypos(double newpos);
 
-    /** Reset buffer playpos and set file playpos. This must only be called
-      * while holding the pause mutex */
+    // Reset buffer playpos and set file playpos. This method is not thread safe
+    // and must not be called from outside the engine callback!
     void setNewPlaypos(double playpos);
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);

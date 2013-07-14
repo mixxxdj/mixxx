@@ -1,8 +1,6 @@
 #ifndef ENGINEBUFFERSCALERUBBERBAND_H
 #define ENGINEBUFFERSCALERUBBERBAND_H
 
-#include <QMutex>
-
 #include "engine/enginebufferscale.h"
 
 namespace RubberBand {
@@ -18,7 +16,8 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
     EngineBufferScaleRubberBand(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleRubberBand();
 
-    void setScaleParameters(double* rate_adjust,
+    void setScaleParameters(int iSampleRate,
+                            double* rate_adjust,
                             double* tempo_adjust,
                             double* pitch_adjust);
 
@@ -27,9 +26,6 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
 
     // Flush buffer.
     void clear();
-
-  public slots:
-    void slotSetSamplerate(double dSampleRate);
 
   private:
     void initializeRubberBand(int iSampleRate);
@@ -41,9 +37,6 @@ class EngineBufferScaleRubberBand : public EngineBufferScale {
 
     CSAMPLE* m_retrieve_buffer[2];
     CSAMPLE* m_buffer_back;
-
-    // Used to protect RubberBand calls
-    QMutex m_qMutex;
 
     RubberBand::RubberBandStretcher* m_pRubberBand;
 

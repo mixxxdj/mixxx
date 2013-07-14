@@ -37,7 +37,8 @@ public:
     CSAMPLE *getScaled(unsigned long buf_size);
     void clear();
 
-    void setScaleParameters(double* rate_adjust,
+    void setScaleParameters(int iSampleRate,
+                            double* rate_adjust,
                             double* tempo_adjust,
                             double* pitch_adjust);
 

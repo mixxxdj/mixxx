@@ -1,6 +1,5 @@
 #include <rubberband/RubberBandStretcher.h>
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "engine/enginebufferscalerubberband.h"
@@ -27,10 +26,8 @@ EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
 
-    ControlObject* p = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
-    connect(p, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetSamplerate(double)));
-    initializeRubberBand(p->get());
+    // m_iSampleRate defaults to 44100.
+    initializeRubberBand(m_iSampleRate);
 }
 
 EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
@@ -38,7 +35,6 @@ EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
     SampleUtil::free(m_retrieve_buffer[0]);
     SampleUtil::free(m_retrieve_buffer[1]);
 
-    QMutexLocker locker(&m_qMutex);
     if (m_pRubberBand) {
         delete m_pRubberBand;
         m_pRubberBand = NULL;
@@ -46,7 +42,6 @@ EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
 }
 
 void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
-    QMutexLocker locker(&m_qMutex);
     if (m_pRubberBand) {
         delete m_pRubberBand;
         m_pRubberBand = NULL;
@@ -57,9 +52,15 @@ void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
     m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
 }
 
-void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
+void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
+                                                     double* rate_adjust,
                                                      double* tempo_adjust,
                                                      double* pitch_adjust) {
+    if (m_iSampleRate != iSampleRate) {
+        initializeRubberBand(iSampleRate);
+        m_iSampleRate = iSampleRate;
+    }
+
     // Assumes tempo_adjust and rate_adjust will never both be negative since
     // the way EngineBuffer calls setScaleParameters, either rate_adjust is
     // (speed * baserate) and tempo_adjust is 1.0 or rate_adjust is baserate and
@@ -74,8 +75,6 @@ void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
     bool tempo_changed = tempo_abs != m_dTempoAdjust;
     bool rate_changed = rate_abs != m_dRateAdjust;
     bool pitch_changed = *pitch_adjust != m_dPitchAdjust;
-
-    QMutexLocker locker(&m_qMutex);
 
     if ((tempo_changed || rate_changed)) {
         // Time ratio is the ratio of stretched to unstretched duration. So 1
@@ -105,12 +104,7 @@ void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
     }
 }
 
-void EngineBufferScaleRubberBand::slotSetSamplerate(double dSampleRate) {
-    initializeRubberBand(dSampleRate);
-}
-
 void EngineBufferScaleRubberBand::clear() {
-    QMutexLocker locker(&m_qMutex);
     m_pRubberBand->reset();
 }
 
@@ -153,8 +147,6 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
         m_samplesRead = buf_size;
         return m_buffer;
     }
-
-    QMutexLocker locker(&m_qMutex);
 
     const int iNumChannels = 2;
     unsigned long total_received_frames = 0;
@@ -243,4 +235,3 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
 
     return m_buffer;
 }
-

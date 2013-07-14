@@ -48,9 +48,12 @@ EngineBufferScaleLinear::~EngineBufferScaleLinear()
     delete [] buffer_int;
 }
 
-void EngineBufferScaleLinear::setScaleParameters(double* rate_adjust,
+void EngineBufferScaleLinear::setScaleParameters(int iSampleRate,
+                                                 double* rate_adjust,
                                                  double* tempo_adjust,
                                                  double* pitch_adjust) {
+    m_iSampleRate = iSampleRate;
+
     // EBSL doesn't support tempo adjustment so we assume it is 1.
     if (*tempo_adjust != 1.0) {
         qDebug() << "WARNING: EngineBufferScaleLinear being used with tempo != 1. Ignoring.";

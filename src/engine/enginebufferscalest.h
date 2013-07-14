@@ -25,8 +25,6 @@
 #ifndef ENGINEBUFFERSCALEST_H
 #define ENGINEBUFFERSCALEST_H
 
-#include <QMutex>
-
 #include "engine/enginebufferscale.h"
 
 // Number of samples to read ahead. Setting this too high (10000) causes
@@ -45,7 +43,8 @@ class EngineBufferScaleST : public EngineBufferScale {
     EngineBufferScaleST(ReadAheadManager* pReadAheadManager);
     virtual ~EngineBufferScaleST();
 
-    void setScaleParameters(double* rate_adjust,
+    void setScaleParameters(int iSampleRate,
+                            double* rate_adjust,
                             double* tempo_adjust,
                             double* pitch_adjust);
 
@@ -54,9 +53,6 @@ class EngineBufferScaleST : public EngineBufferScale {
 
     // Flush buffer.
     void clear();
-
-  public slots:
-    void slotSetSamplerate(double dSampleRate);
 
   private:
     // Holds the playback direction.
@@ -67,9 +63,6 @@ class EngineBufferScaleST : public EngineBufferScale {
 
     // SoundTouch time/pitch scaling lib
     soundtouch::SoundTouch* m_pSoundTouch;
-
-    // Used to protect SoundTouch calls
-    QMutex m_qMutex;
 
     // The read-ahead manager that we use to fetch samples
     ReadAheadManager* m_pReadAheadManager;

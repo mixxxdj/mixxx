@@ -75,7 +75,7 @@ class EngineBufferScaleLinearTest : public testing::Test {
         double tempo_adjust = 1.0;
         double pitch_adjust = 1.0;
         m_pScaler->setScaleParameters(
-            &rate_adjust, &tempo_adjust, &pitch_adjust);
+            44100, &rate_adjust, &tempo_adjust, &pitch_adjust);
     }
 
     void SetRateNoLerp(double rate) {

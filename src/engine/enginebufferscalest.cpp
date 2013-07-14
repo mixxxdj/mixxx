@@ -35,20 +35,12 @@ EngineBufferScaleST::EngineBufferScaleST(ReadAheadManager *pReadAheadManager)
     : EngineBufferScale(),
       m_bBackwards(false),
       m_pReadAheadManager(pReadAheadManager) {
-    m_qMutex.lock();
     m_pSoundTouch = new soundtouch::SoundTouch();
-
     m_pSoundTouch->setChannels(2);
     m_pSoundTouch->setRate(1.0);
     m_pSoundTouch->setTempo(1.0);
     m_pSoundTouch->setPitch(1.0);
     m_pSoundTouch->setSetting(SETTING_USE_QUICKSEEK, 1);
-    m_qMutex.unlock();
-
-    ControlObject* p = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
-    slotSetSamplerate(p->get());
-    connect(p, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetSamplerate(double)));
 
     buffer_back = new CSAMPLE[kiSoundTouchReadAheadLength*2];
 }
@@ -58,9 +50,15 @@ EngineBufferScaleST::~EngineBufferScaleST() {
     delete [] buffer_back;
 }
 
-void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
+void EngineBufferScaleST::setScaleParameters(int iSampleRate,
+                                             double* rate_adjust,
                                              double* tempo_adjust,
                                              double* pitch_adjust) {
+    if (m_iSampleRate != iSampleRate) {
+        m_pSoundTouch->setSampleRate(iSampleRate > 0 ? iSampleRate : 44100);
+        m_iSampleRate = iSampleRate;
+    }
+
     // Assumes rate_adjust is just baserate (which cannot be negative) and
     // pitch_adjust cannot be negative because octave change conversion to pitch
     // ratio is an exp(x) function.
@@ -80,7 +78,6 @@ void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
 
     double rate_abs = fabs(*rate_adjust);
 
-    m_qMutex.lock();
     // Note that we do not set the tempo if it is zero. This is because of the
     // above clamping which prevents us from going below MIN_SEEK_SPEED. I think
     // we should handle this better but I have left the logic in place. rryan
@@ -98,27 +95,13 @@ void EngineBufferScaleST::setScaleParameters(double* rate_adjust,
             KeyUtils::octaveChangeToPowerOf2(*pitch_adjust));
         m_dPitchAdjust = *pitch_adjust;
     }
-    m_qMutex.unlock();
 
     // NOTE(rryan) : There used to be logic here that clear()'d when the player
     // changed direction. I removed it because this is handled by EngineBuffer.
 }
 
 void EngineBufferScaleST::clear() {
-    m_qMutex.lock();
     m_pSoundTouch->clear();
-    m_qMutex.unlock();
-}
-
-void EngineBufferScaleST::slotSetSamplerate(double dSampleRate) {
-    int iSrate = (int)dSampleRate;
-
-    m_qMutex.lock();
-    if (iSrate>0)
-        m_pSoundTouch->setSampleRate(iSrate);
-    else
-        m_pSoundTouch->setSampleRate(44100);
-    m_qMutex.unlock();
 }
 
 CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
@@ -129,8 +112,6 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
         m_samplesRead = buf_size;
         return m_buffer;
     }
-
-    m_qMutex.lock();
 
     const int iNumChannels = 2;
     unsigned long total_received_frames = 0;
@@ -187,8 +168,5 @@ CSAMPLE* EngineBufferScaleST::getScaled(unsigned long buf_size) {
     m_samplesRead = m_dTempoAdjust * m_dRateAdjust *
             total_received_frames * iNumChannels;
 
-    m_qMutex.unlock();
-
     return m_buffer;
 }
-

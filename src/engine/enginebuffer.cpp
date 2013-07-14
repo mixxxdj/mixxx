@@ -344,8 +344,9 @@ void EngineBuffer::queueNewPlaypos(double newpos) {
     m_bSeekQueued.fetchAndStoreRelease(1);
 }
 
-void EngineBuffer::setNewPlaypos(double newpos)
-{
+// WARNING: This method is not thread safe and must not be called from outside
+// the engine callback!
+void EngineBuffer::setNewPlaypos(double newpos) {
     //qDebug() << "engine new pos " << newpos;
 
     // Before seeking, read extra buffer for crossfading
@@ -656,7 +657,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 tempo_adjust = speed;
             }
 
-            m_pScale->setScaleParameters(&rate_adjust,
+            m_pScale->setScaleParameters(m_pSampleRate->get(),
+                                         &rate_adjust,
                                          &tempo_adjust,
                                          &pitch_adjust);
 

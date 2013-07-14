@@ -18,7 +18,8 @@
 #include "engine/enginebufferscale.h"
 
 EngineBufferScale::EngineBufferScale()
-        : m_dRateAdjust(1.0),
+        : m_iSampleRate(44100),
+          m_dRateAdjust(1.0),
           m_dTempoAdjust(1.0),
           m_dPitchAdjust(1.0),
           m_buffer(new CSAMPLE[MAX_BUFFER_LEN]),
