@@ -113,7 +113,6 @@ TEST_F(KeyUtilsTest, ShortestStepsToKey_SameTonicZeroSteps) {
 }
 
 TEST_F(KeyUtilsTest, ShortestStepsToKey) {
-
     mixxx::track::io::key::ChromaticKey start_key_minor =
             mixxx::track::io::key::C_MINOR;
     mixxx::track::io::key::ChromaticKey start_key_major =
@@ -141,6 +140,5 @@ TEST_F(KeyUtilsTest, ShortestStepsToKey) {
         start_key_major = KeyUtils::scaleKeySteps(start_key_major, 1);
     }
 }
-
 
 }  // namespace

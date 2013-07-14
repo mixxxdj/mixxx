@@ -86,7 +86,6 @@ double KeyControl::getKey() {
 void KeyControl::slotRateChanged() {
     // If rate is non-1.0 then we have to try and calculate the octave change
     // caused by it.
-
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     bool bKeylock = m_pKeylock->get() > 0;
     if (m_dOldRate != dRate || bKeylock != m_bOldKeylock) {
