@@ -33,9 +33,6 @@ class DlgPrefKey : public QWidget, Ui::DlgPrefKeyDlg {
     void setNotationTraditional(bool);
     void setNotationCustom(bool);
 
-  signals:
-    void apply(const QString &);
-
   private:
     void populate();
     void loadSettings();
