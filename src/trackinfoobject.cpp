@@ -925,12 +925,17 @@ void TrackInfoObject::setKey(mixxx::track::io::key::ChromaticKey key,
 void TrackInfoObject::setKeyText(QString key,
                                  mixxx::track::io::key::Source source) {
     QMutexLocker lock(&m_qMutex);
-    // TODO(rryan): This equality comparison should use the key-formatting
-    // preference.
-    bool dirty = !m_keys.isValid() || m_keys.getGlobalKeyText() != key;
 
+    Keys newKeys = KeyFactory::makeBasicKeysFromText(key, source);
+
+    // We treat this as dirtying if it is parsed to a different key or if we
+    // fail to parse the key, if the text value is different from the current
+    // text value.
+    bool dirty = newKeys.getGlobalKey() != m_keys.getGlobalKey() ||
+            (newKeys.getGlobalKey() == mixxx::track::io::key::INVALID &&
+             newKeys.getGlobalKeyText() != m_keys.getGlobalKeyText());
     if (dirty) {
-        m_keys = KeyFactory::makeBasicKeysFromText(key, source);
+        m_keys = newKeys;
         setDirty(true);
         // Might be INVALID. We don't care.
         mixxx::track::io::key::ChromaticKey newKey = m_keys.getGlobalKey();
