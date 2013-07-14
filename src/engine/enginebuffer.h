@@ -116,7 +116,7 @@ public:
     TrackPointer getLoadedTrack() const;
 
     // For dependency injection of readers.
-    void setReader(CachingReader* pReader);
+    //void setReader(CachingReader* pReader);
 
   public slots:
     void slotControlPlay(double);
@@ -186,7 +186,7 @@ private:
     CachingReader* m_pReader;
 
     // List of hints to provide to the CachingReader
-    QList<Hint> m_hintList;
+    QVector<Hint> m_hintList;
 
     /** The current sample to play in the file. */
     double m_filepos_play;

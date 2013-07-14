@@ -303,13 +303,9 @@ class MixxxBuild(object):
         branch_build_dir = os.path.join(cache_dir, branch_name)
         virtual_build_dir = os.path.join(branch_build_dir, self.build_dir)
         virtual_sconsign_file = os.path.join(branch_build_dir, 'sconsign.dblite')
-        try:
-            print "os.makedirs", virtual_build_dir
-            os.makedirs(virtual_build_dir)
-        except:
-            # os.makedirs throws an exception if virtual_build_dir already
-            # exists.
-            pass
+        old_branch_build_dir = ''
+        old_virtual_build_dir = ''
+        old_virtual_sconsign_file = ''
 
         # Clean up symlinks from our original method of virtualizing.
         if os.path.islink(self.build_dir):
@@ -317,44 +313,78 @@ class MixxxBuild(object):
             os.unlink(self.build_dir)
 
         sconsign_file = '.sconsign.dblite'
-        sconsign_branch_file = '.sconsign.branch'
+        sconsign_branch_file = '.sconsign.branch' #contains the branch name of last build 
         sconsign_branch = ''
         is_branch_different = True
         if os.path.isfile(sconsign_branch_file):
             with open(sconsign_branch_file, 'r') as f:
-                sconsign_branch = f.read()
+                sconsign_branch = f.readline()
+                sconsign_branch = sconsign_branch.strip()
 
+        # check if there was a checkout of a different branch sine the last build
         is_branch_different = sconsign_branch != branch_name
         if not is_branch_different:
+            # nothing to do 
             return
 
         if sconsign_branch:
             old_branch_build_dir = os.path.join(cache_dir, sconsign_branch)
+            old_virtual_build_dir = os.path.join(old_branch_build_dir, self.build_dir)
+            old_virtual_sconsign_file = os.path.join(old_branch_build_dir, 'sconsign.dblite')
             if os.path.isdir(self.build_dir):
-                old_virtual_build_dir = os.path.join(old_branch_build_dir, self.build_dir)
+                if os.path.isdir(old_virtual_build_dir):
+                    raise Exception('%s already exists. '
+                                    'build virtualization cannot continue. Please '
+                                    'move or delete it.' % old_virtual_build_dir)       
                 print "shutil.move", self.build_dir, old_virtual_build_dir
+                #move build dir from last build to chach, named with the old branch name 
                 shutil.move(self.build_dir, old_virtual_build_dir)
 
             if os.path.isfile(sconsign_file):
-                old_virtual_sconsign_file = os.path.join(old_branch_build_dir, 'sconsign.dblite')
                 print "shutil.move", sconsign_file, old_virtual_sconsign_file
+                #move sconsdign-dblite as well
                 shutil.move(sconsign_file, old_virtual_sconsign_file)
 
         # Now there should be no folder self.build_dir or file sconsign_file.
-        if os.path.isdir(virtual_build_dir):
-            if os.path.isdir(self.build_dir):
-                raise Exception('%s exists without a .sconsign.branch file so '
-                                'build virtualization cannot continue. Please '
-                                'move or delete it.' % self.build_dir)
-            print "shutil.move", virtual_build_dir, self.build_dir
-            shutil.move(virtual_build_dir, self.build_dir)
-        if os.path.isfile(virtual_sconsign_file):
-            if os.path.isfile(sconsign_file):
-                raise Exception('%s exists without a .sconsign.branch file so '
-                                'build virtualization cannot continue. Please '
-                                'move or delete it.' % sconsign_file)
-            print "shutil.move", virtual_sconsign_file, sconsign_file
-            shutil.move(virtual_sconsign_file, sconsign_file)
+        if os.path.isdir(branch_build_dir):
+            if os.path.isdir(virtual_build_dir):
+                # found a build_dir in cache from a previous build 
+                if os.path.isdir(self.build_dir):
+                    raise Exception('%s exists without a .sconsign.branch file so '
+                                    'build virtualization cannot continue. Please '
+                                    'move or delete it.' % self.build_dir)
+                print "shutil.move", virtual_build_dir, self.build_dir
+                shutil.move(virtual_build_dir, self.build_dir)
+            if os.path.isfile(virtual_sconsign_file):
+                if os.path.isfile(sconsign_file):
+                    raise Exception('%s exists without a .sconsign.branch file so '
+                                    'build virtualization cannot continue. Please '
+                                    'move or delete it.' % sconsign_file)
+                print "shutil.move", virtual_sconsign_file, sconsign_file
+                shutil.move(virtual_sconsign_file, sconsign_file)
+        else:
+            # no chached build dir found, assume this is a branch from the old branch 
+            # if not, no problem because scons will rebuild all chaned files in any case    
+            # copy the old_virtual_dir back
+            if sconsign_branch: 
+                if os.path.isdir(old_virtual_build_dir):
+                    if os.path.isdir(self.build_dir):
+                        raise Exception('%s exists without a .sconsign.branch file so '
+                                        'build virtualization cannot continue. Please '
+                                        'move or delete it.' % self.build_dir)
+                    print "shutil.copytree", old_virtual_build_dir, self.build_dir
+                    shutil.copytree(old_virtual_build_dir, self.build_dir)
+                if os.path.isfile(old_virtual_sconsign_file):
+                    if os.path.isfile(sconsign_file):
+                        raise Exception('%s exists without a .sconsign.branch file so '
+                                        'build virtualization cannot continue. Please '
+                                        'move or delete it.' % sconsign_file)
+                    print "shutil.copy", virtual_sconsign_file, sconsign_file
+                    shutil.copy(old_virtual_sconsign_file, sconsign_file)
+      
+            # create build dir in cache folder for later move       
+            print "os.makedirs", branch_build_dir
+            os.makedirs(branch_build_dir)
 
         with open(sconsign_branch_file, 'w+') as f:
             print 'touch', sconsign_branch_file

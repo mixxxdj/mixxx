@@ -6,7 +6,6 @@
 #include <QtCore>
 
 #include "trackmodel.h"
-#include "library/dao/trackdao.h"
 #include "library/basesqltablemodel.h"
 
 class TrackCollection;
