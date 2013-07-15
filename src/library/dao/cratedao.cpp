@@ -93,6 +93,23 @@ bool CrateDAO::isCrateLocked(const int crateId) {
     return false;
 }
 
+QList<int> CrateDAO::getTrackIds(const int crateId) {
+    QSqlQuery query(m_database);
+    query.prepare("SELECT track_id from crate_tracks WHERE crate_id = :id");
+    query.bindValue(":id", crateId);
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return QList<int> ();
+    }
+
+    QList<int> ids;
+    while (query.next()) {
+        ids.append(query.value(query.record().indexOf("track_id")).toInt());
+    }
+    return ids;
+}
+
 #ifdef __AUTODJCRATES__
 
 bool CrateDAO::setCrateInAutoDj(int a_iCrateId, bool a_bIn) {
@@ -104,7 +121,7 @@ bool CrateDAO::setCrateInAutoDj(int a_iCrateId, bool a_bIn) {
     // UPDATE crates SET autodj = :in WHERE id = :id AND autodj = :existing;
     query.prepare(QString("UPDATE " CRATE_TABLE
         " SET %1 = :in WHERE %2 = :id AND %1 = :existing")
-        .arg(CRATETABLE_AUTODJ)     // %1
+        .arg(CRATETABLE_AUTODJ_SOURCE)     // %1
         .arg(CRATETABLE_ID));       // %2
     query.bindValue(":in", iIn);
     query.bindValue(":id", a_iCrateId);
@@ -131,8 +148,8 @@ bool CrateDAO::isCrateInAutoDj(int a_iCrateId) {
     query.setForwardOnly(true);
     // SELECT autodj FROM crates WHERE id = :id;
     query.prepare(QString("SELECT %1 FROM " CRATE_TABLE " WHERE %2 = :id")
-        .arg(CRATETABLE_AUTODJ)     // %1
-        .arg(CRATETABLE_ID));       // %2
+        .arg(CRATETABLE_AUTODJ_SOURCE) // %1
+        .arg(CRATETABLE_ID)); // %2
     query.bindValue(":id", a_iCrateId);
 
     if (query.exec()) {
@@ -180,9 +197,9 @@ void CrateDAO::getAutoDjCrates(QMap<QString,int> &ao_rCrateMap, bool a_bIn) {
     // SELECT name, id FROM crates WHERE autodj = 1 ORDER BY name;
     query.prepare(QString("SELECT %1, %2 FROM " CRATE_TABLE
         " WHERE %3 = :in ORDER BY %1")
-        .arg(CRATETABLE_NAME)        // %1
-        .arg(CRATETABLE_ID)          // %2
-        .arg(CRATETABLE_AUTODJ));    // %3
+        .arg(CRATETABLE_NAME) // %1
+        .arg(CRATETABLE_ID) // %2
+        .arg(CRATETABLE_AUTODJ_SOURCE)); // %3
     query.bindValue(":in", (a_bIn) ? 1 : 0);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);

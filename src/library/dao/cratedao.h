@@ -19,7 +19,7 @@ const QString CRATETABLE_NAME = "name";
 const QString CRATETABLE_COUNT = "count";
 const QString CRATETABLE_SHOW = "show";
 const QString CRATETABLE_LOCKED = "locked";
-const QString CRATETABLE_AUTODJ = "autodj";
+const QString CRATETABLE_AUTODJ_SOURCE = "autodj_source";
 
 const QString CRATETRACKSTABLE_TRACKID = "track_id";
 const QString CRATETRACKSTABLE_CRATEID = "crate_id";
@@ -52,6 +52,7 @@ class CrateDAO : public QObject, public virtual DAO {
     QString crateName(const int crateId);
     unsigned int crateSize(const int crateId);
     bool addTrackToCrate(const int trackId, const int crateId);
+    QList<int> getTrackIds(int crateId);
     // This method takes a list of track ids to be added to crate and returns
     // the number of successful insertions.
     int addTracksToCrate(const int crateId, QList<int>* trackIdList);

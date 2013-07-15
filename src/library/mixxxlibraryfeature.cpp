@@ -133,8 +133,7 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
     return &m_childModel;
 }
 
-void MixxxLibraryFeature::refreshLibraryModels()
-{
+void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
         m_pLibraryTableModel->select();
     }

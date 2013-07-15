@@ -135,7 +135,7 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
             .arg(LIBRARYTABLE_MIXXXDELETED)     // %3
             .arg(CRATETRACKSTABLE_CRATEID)      // %4
             .arg(CRATETABLE_ID)                 // %5
-            .arg(CRATETABLE_AUTODJ)             // %6
+            .arg(CRATETABLE_AUTODJ_SOURCE)      // %6
             .arg(LIBRARYTABLE_ID);              // %7
     oQuery.prepare(strQuery);
     if (!oQuery.exec()) {
