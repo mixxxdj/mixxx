@@ -23,10 +23,10 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
-          m_playlistDao(pTrackCollection->getPlaylistDAO())
+          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+          m_pAutoDJView(NULL)
 #ifdef __AUTODJCRATES__
-          , m_pAutoDJView(NULL),
-          m_autoDjCratesDao (pTrackCollection->getDatabase(),
+          , m_autoDjCratesDao (pTrackCollection->getDatabase(),
                              pTrackCollection->getTrackDAO(),
                              pTrackCollection->getCrateDAO(),
                              pTrackCollection->getPlaylistDAO(), pConfig)
@@ -176,7 +176,7 @@ void AutoDJFeature::slotRemoveCrateFromAutoDj() {
 void AutoDJFeature::slotCrateAdded(int a_iCrateId) {
 #ifdef __AUTODJCRATES__
     // If this newly-added crate is in the auto-DJ queue, add it to the list.
-    if (m_crateDao.isCrateInAutoDj (a_iCrateId)) {
+    if (m_crateDao.isCrateInAutoDj(a_iCrateId)) {
         slotCrateAutoDjChanged(a_iCrateId, true);
     }
 #endif // __AUTODJCRATES__
@@ -229,14 +229,13 @@ void AutoDJFeature::slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn) {
                                       m_pCratesTreeItem);
 
         // Prepare to add it to the "Crates" tree-item.
-        QList<TreeItem *> lstItems;
+        QList<TreeItem*> lstItems;
         lstItems.append(item);
 
         // Add it to the "Crates" tree-item.
         QModelIndex oCratesIndex = m_childModel.index(0, 0);
         m_childModel.insertRows(lstItems, iRowIndex, 1, oCratesIndex);
-    }
-    else {
+    } else {
         // Look for this crate ID in our list.  It's OK if it's not found.
         for (int i = 0; i < m_crateList.length(); ++i) {
             if (m_crateList[i].first == a_iCrateId) {
@@ -320,15 +319,14 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         QMenu menu(NULL);
         menu.addAction(m_pRemoveCrateFromAutoDj);
         menu.exec(globalPos);
-    }
-    else {
+    } else {
         // The "Crates" tree-item was right-clicked.
         // Bring up the context menu.
         QMenu menu(NULL);
         QMenu crateMenu(NULL);
-        crateMenu.setTitle(tr("Connect Crate to AutoDJ"));
+        crateMenu.setTitle(tr("Add Crate as Track Source"));
         QMap<QString,int> crateMap;
-        m_crateDao.getAutoDjCrates(crateMap, false);
+        m_crateDao.getAutoDjCrates(false, &crateMap);
         QMapIterator<QString,int> it(crateMap);
         while (it.hasNext()) {
             it.next();

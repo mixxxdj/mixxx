@@ -60,13 +60,10 @@ CrateFeature::CrateFeature(QObject* parent,
 
 #ifdef __AUTODJCRATES__
 
-    m_pAddCrateToAutoDj = new QAction(tr("Connect to AutoDJ"),this);
-    connect(m_pAddCrateToAutoDj, SIGNAL(triggered()),
-            this, SLOT(slotAddCrateToAutoDj()));
-
-    m_pRemoveCrateFromAutoDj = new QAction(tr("Disconnect from AutoDJ"),this);
-    connect(m_pRemoveCrateFromAutoDj, SIGNAL(triggered()),
-            this, SLOT(slotRemoveCrateFromAutoDj()));
+    m_pAutoDjTrackSource = new QAction(tr("Auto DJ Track Source"),this);
+    m_pAutoDjTrackSource->setCheckable(true);
+    connect(m_pAutoDjTrackSource, SIGNAL(changed()),
+            this, SLOT(slotAutoDjTrackSourceChanged()));
 
 #endif // __AUTODJCRATES__
 
@@ -98,8 +95,7 @@ CrateFeature::~CrateFeature() {
     delete m_pImportPlaylistAction;
     delete m_pAnalyzeCrateAction;
 #ifdef __AUTODJCRATES__
-    delete m_pAddCrateToAutoDj;
-    delete m_pRemoveCrateFromAutoDj;
+    delete m_pAutoDjTrackSource;
 #endif // __AUTODJCRATES__
 }
 
@@ -203,8 +199,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 
 #ifdef __AUTODJCRATES__
     bool bAutoDj = m_crateDao.isCrateInAutoDj(crateId);
-    m_pAddCrateToAutoDj->setEnabled(!bAutoDj);
-    m_pRemoveCrateFromAutoDj->setEnabled(bAutoDj);
+    m_pAutoDjTrackSource->setChecked(bAutoDj);
 #endif // __AUTODJCRATES__
 
     m_pLockCrateAction->setText(locked ? tr("Unlock") : tr("Lock"));
@@ -217,8 +212,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
 #ifdef __AUTODJCRATES__
-    menu.addAction(m_pAddCrateToAutoDj);
-    menu.addAction(m_pRemoveCrateFromAutoDj);
+    menu.addAction(m_pAutoDjTrackSource);
 #endif // __AUTODJCRATES__
     menu.addSeparator();
     menu.addAction(m_pAnalyzeCrateAction);
@@ -397,22 +391,12 @@ void CrateFeature::slotToggleCrateLock() {
     }
 }
 
-void CrateFeature::slotAddCrateToAutoDj() {
+void CrateFeature::slotAutoDjTrackSourceChanged() {
 #ifdef __AUTODJCRATES__
     QString crateName = m_lastRightClickedIndex.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     if (crateId != -1) {
-        m_crateDao.setCrateInAutoDj(crateId, true);
-    }
-#endif // __AUTODJCRATES__
-}
-
-void CrateFeature::slotRemoveCrateFromAutoDj() {
-#ifdef __AUTODJCRATES__
-    QString crateName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
-    if (crateId != -1) {
-        m_crateDao.setCrateInAutoDj(crateId, false);
+        m_crateDao.setCrateInAutoDj(crateId, m_pAutoDjTrackSource->isChecked());
     }
 #endif // __AUTODJCRATES__
 }

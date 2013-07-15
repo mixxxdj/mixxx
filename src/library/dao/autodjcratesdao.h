@@ -43,42 +43,6 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     // (Isn't that normal for QObject subclasses?)
     DISALLOW_COPY_AND_ASSIGN(AutoDJCratesDAO);
 
-    // The SQL database we interact with.
-    QSqlDatabase& m_rDatabase;
-
-    // The track database-access-object.
-    // Used to detect changes to the number of times a track has played.
-    TrackDAO& m_rTrackDAO;
-
-    // The crate database-access-object.
-    // Used to detect changes to the auto-DJ status of crates, and to get
-    // the list of tracks in such crates.
-    CrateDAO& m_rCrateDAO;
-
-    // The playlist database-access-object.
-    // Used to detect changes to the auto-DJ playlist.
-    PlaylistDAO& m_rPlaylistDAO;
-
-    // The source of our configuration.
-    ConfigObject<ConfigValue>* m_pConfig;
-
-    // The track loaded into each deck.
-    // This is an array with as many entries as decks.
-    int *m_pDeckTracks;
-
-    // The ID of every set-log playlist.
-    QList<int> m_lstSetLogPlaylistIds;
-
-    // The auto-DJ playlist's ID.
-    int m_iAutoDjPlaylistId;
-
-    // True if active tracks can be tracks that haven't been played in
-    // a while.
-    bool m_bUseIgnoreTime;
-
-    // True if the auto-DJ-crates database has been created.
-    bool m_bAutoDjCratesDbCreated;
-
     // Create the temporary auto-DJ-crates database.
     // Done the first time it's used, since the user might not even make
     // use of this feature.
@@ -140,6 +104,45 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
     // unloaded from, a deck.
     void slotPlayerInfoTrackLoaded(QString a_strGroup, TrackPointer a_pTrack);
     void slotPlayerInfoTrackUnloaded(QString a_strGroup, TrackPointer a_pTrack);
+
+  private:
+
+    // The SQL database we interact with.
+    QSqlDatabase& m_rDatabase;
+
+    // The track database-access-object.
+    // Used to detect changes to the number of times a track has played.
+    TrackDAO& m_rTrackDAO;
+
+    // The crate database-access-object.
+    // Used to detect changes to the auto-DJ status of crates, and to get
+    // the list of tracks in such crates.
+    CrateDAO& m_rCrateDAO;
+
+    // The playlist database-access-object.
+    // Used to detect changes to the auto-DJ playlist.
+    PlaylistDAO& m_rPlaylistDAO;
+
+    // The source of our configuration.
+    ConfigObject<ConfigValue>* m_pConfig;
+
+    // The track loaded into each deck.
+    // This is an array with as many entries as decks.
+    int *m_pDeckTracks;
+
+    // The ID of every set-log playlist.
+    QList<int> m_lstSetLogPlaylistIds;
+
+    // The auto-DJ playlist's ID.
+    int m_iAutoDjPlaylistId;
+
+    // True if active tracks can be tracks that haven't been played in
+    // a while.
+    bool m_bUseIgnoreTime;
+
+    // True if the auto-DJ-crates database has been created.
+    bool m_bAutoDjCratesDbCreated;
+
 };
 
 #endif // AUTODJCRATESDAO_H

@@ -57,6 +57,9 @@ class AutoDJFeature : public LibraryFeature {
 
 #ifdef __AUTODJCRATES__
 
+    // Initialize the list of crates loaded into the auto-DJ queue.
+    void constructCrateChildModel();
+
     // The "Crates" tree-item under the "Auto DJ" tree-item.
     TreeItem* m_pCratesTreeItem;
 
@@ -79,35 +82,32 @@ class AutoDJFeature : public LibraryFeature {
     // Used to map menu-item signals.
     QSignalMapper m_crateMapper;
 
-    // Initialize the list of crates loaded into the auto-DJ queue.
-    void constructCrateChildModel();
-
 #endif // __AUTODJCRATES__
 
   private slots:
     // Add a crate to the auto-DJ queue.
-    void slotAddCrateToAutoDj(int a_iCrateId);
+    void slotAddCrateToAutoDj(int crateId);
 
     // Implements the context-menu item.
     void slotRemoveCrateFromAutoDj();
 
     // Signaled by the crate DAO when a crate is added.
-    void slotCrateAdded(int a_iCrateId);
+    void slotCrateAdded(int crateId);
 
     // Signaled by the crate DAO when a crate is renamed.
-    void slotCrateRenamed(int a_iCrateId, QString a_strName);
+    void slotCrateRenamed(int crateId, QString a_strName);
 
     // Signaled by the crate DAO when a crate is deleted.
-    void slotCrateDeleted(int a_iCrateId);
+    void slotCrateDeleted(int crateId);
 
     // Signaled by the crate DAO when a crate's auto-DJ status changes.
-    void slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn);
+    void slotCrateAutoDjChanged(int crateId, bool a_bIn);
 
     // Adds a random track from all loaded crates to the auto-DJ queue.
     void slotAddRandomTrack(bool);
 
   signals:
-    void enableAddRandom(bool a_bEnabled);
+    void enableAddRandom(bool enabled);
 };
 
 

@@ -214,7 +214,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
 #ifdef __AUTODJCRATES__
 
-    // The auto-DJ active-percentage for randomly-selected tracks
+    // The minimum available for randomly-selected tracks
     autoDjMinimumAvailableSpinBox->setValue(
             m_pConfig->getValueString(
                     ConfigKey("[Auto DJ]", "MinimumAvailable"), "20").toInt());

@@ -675,8 +675,8 @@ void DlgAutoDJ::transitionValueChanged(int value) {
     m_backUpTransition = value;
 }
 
-void DlgAutoDJ::enableRandomButton(bool a_bEnabled) {
+void DlgAutoDJ::enableRandomButton(bool enabled) {
 #ifdef __AUTODJCRATES__
-    pushButtonAddRandom->setEnabled(a_bEnabled);
+    pushButtonAddRandom->setEnabled(enabled);
 #endif // __AUTODJCRATES__
 }

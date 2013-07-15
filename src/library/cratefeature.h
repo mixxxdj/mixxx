@@ -47,8 +47,7 @@ class CrateFeature : public LibraryFeature {
     void slotDeleteCrate();
     void slotRenameCrate();
     void slotDuplicateCrate();
-    void slotAddCrateToAutoDj();
-    void slotRemoveCrateFromAutoDj();
+    void slotAutoDjTrackSourceChanged();
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
@@ -71,8 +70,7 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pLockCrateAction;
     QAction *m_pDuplicateCrateAction;
 #ifdef __AUTODJCRATES__
-    QAction *m_pAddCrateToAutoDj;
-    QAction *m_pRemoveCrateFromAutoDj;
+    QAction *m_pAutoDjTrackSource;
 #endif // __AUTODJCRATES__
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
