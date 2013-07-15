@@ -29,15 +29,13 @@
 
 #define assert_aligned(data) (Q_ASSERT(reinterpret_cast<int64_t>(data) % 16 == 0));
 
-// A group of utilities for working with samples. Automatically use SSE/SSE2
-// optimizations where possible.
+// A group of utilities for working with samples.
 class SampleUtil {
   public:
     static bool m_sOptimizationsOn;
 
     // Allocated a buffer of CSAMPLE's with length size. Ensures that the buffer
-    // is 16-byte aligned for use for use with SampleUtil SSE enhanced
-    // functions.
+    // is 16-byte aligned for SSE enhancement.
     static CSAMPLE* alloc(int size);
 
     // Frees a 16-byte aligned buffer allocated by SampleUtil::alloc()
@@ -184,67 +182,6 @@ class SampleUtil {
                                        const CSAMPLE* pSrcFadeOut,
                                        const CSAMPLE* pSrcFadeIn,
                                        int iNumSamples);
-
-    static void setOptimizations(bool opt);
-
-  private:
-    static void sseApplyGain(CSAMPLE* pBuffer,
-                             CSAMPLE gain, int iNumSamples) _ALIGN_STACK;
-    static void sseApplyRampingGain(CSAMPLE* pBuffer,
-                                    CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) _ALIGN_STACK;
-    static void sseApplyAlternatingGain(CSAMPLE* pBuffer,
-                                        CSAMPLE gain1, CSAMPLE gain2,
-                                        int iNumSamples) _ALIGN_STACK;
-    static void sseAddWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-                               CSAMPLE gain, int iNumSamples) _ALIGN_STACK;
-    static void sseAdd2WithGain(CSAMPLE* pDest,
-                                const CSAMPLE* pSrc1, CSAMPLE gain1,
-                                const CSAMPLE* pSrc2, CSAMPLE gain2,
-                                int iNumSamples) _ALIGN_STACK;
-    static void sseAdd3WithGain(CSAMPLE* pDest,
-                                const CSAMPLE* pSrc1, CSAMPLE gain1,
-                                const CSAMPLE* pSrc2, CSAMPLE gain2,
-                                const CSAMPLE* pSrc3, CSAMPLE gain3,
-                                int iNumSamples) _ALIGN_STACK;
-
-    static void sseCopyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-                                CSAMPLE gain, int iNumSamples) _ALIGN_STACK;
-    static void sseCopyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-                                       CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) _ALIGN_STACK;
-    static void sseCopy2WithGain(CSAMPLE* pDest,
-                                 const CSAMPLE* pSrc1, CSAMPLE gain1,
-                                 const CSAMPLE* pSrc2, CSAMPLE gain2,
-                                 int iNumSamples) _ALIGN_STACK;
-    static void sseCopy3WithGain(CSAMPLE* pDest,
-                                 const CSAMPLE* pSrc1, CSAMPLE gain1,
-                                 const CSAMPLE* pSrc2, CSAMPLE gain2,
-                                 const CSAMPLE* pSrc3, CSAMPLE gain3,
-                                 int iNumSamples) _ALIGN_STACK;
-    static void sseCopy3WithRampingGain(CSAMPLE* pDest,
-                                        const CSAMPLE* pSrc1, CSAMPLE gain1in, CSAMPLE gain1out,
-                                        const CSAMPLE* pSrc2, CSAMPLE gain2in, CSAMPLE gain2out,
-                                        const CSAMPLE* pSrc3, CSAMPLE gain3in, CSAMPLE gain3out,
-                                        int iNumSamples) _ALIGN_STACK;
-    static void sseConvert(CSAMPLE* pDest,
-                           const SAMPLE* pSrc, int iNumSamples) _ALIGN_STACK;
-    static void sseSumAbsPerChannel(CSAMPLE* pfAbsL, CSAMPLE* pfAbsR,
-                                    const CSAMPLE* pBuffer,
-                                    int iNumSamples) _ALIGN_STACK;
-    static bool sseIsOutsideRange(CSAMPLE fMax, CSAMPLE fMin,
-                                  const CSAMPLE* pBuffer,
-                                  int iNumSamples) _ALIGN_STACK;
-    static bool sseCopyClampBuffer(CSAMPLE fMax, CSAMPLE fMin,
-                                   CSAMPLE* pDest, const CSAMPLE* pSrc,
-                                   int iNumSamples) _ALIGN_STACK;
-    static void sseInterleaveBuffer(CSAMPLE* pDest,
-                                    const CSAMPLE* pSrc1, const CSAMPLE* pSrc2,
-                                    int iNumSamples) _ALIGN_STACK;
-    static void sseDeinterleaveBuffer(CSAMPLE* pDest1, CSAMPLE* pDest2,
-                                      const CSAMPLE* pSrc,
-                                      int iNumSamples) _ALIGN_STACK;
-
-
-
 };
 
 
