@@ -157,7 +157,7 @@ void PlaylistDAO::renamePlaylist(const int playlistId, const QString& newName) {
         LOG_FAILED_QUERY(query);
         return;
     }
-    emit(renamed(playlistId));
+    emit(renamed(playlistId, newName));
 }
 
 bool PlaylistDAO::setPlaylistLocked(const int playlistId, const bool locked) {
