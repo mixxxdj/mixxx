@@ -310,6 +310,14 @@ void WTrackTableView::createActions() {
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
 
+    m_pAddToSelector = new QAction(tr("Add to Selector"), this);
+    connect(m_pAddToSelector, SIGNAL(triggered()),
+            this, SLOT(slotAddToSelector()));
+
+    m_pFetchLastFmTagsAct = new QAction(tr("Fetch Tags from Last.fm"), this);
+    connect(m_pFetchLastFmTagsAct, SIGNAL(triggered()),
+            this, SLOT(slotFetchLastFmTags()));
+
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
     QString previewDeckGroup = PlayerManager::groupForPreviewDeck(0);
@@ -728,6 +736,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pReloadMetadataAct);
         m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
+
+        m_pAddToSelector->setEnabled(oneSongSelected);
+        m_pMenu->addAction(m_pAddToSelector);
+        m_pFetchLastFmTagsAct->setEnabled(oneSongSelected);
+        m_pMenu->addAction(m_pFetchLastFmTagsAct);
+
     }
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
@@ -1193,6 +1207,37 @@ void WTrackTableView::slotResetPlayed() {
         if (pTrack) {
             pTrack->setTimesPlayed(0);
         }
+    }
+}
+
+void WTrackTableView::slotAddToSelector() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            // TODO(chrisjr): how to address the selector table model?
+        }
+    }
+}
+
+void WTrackTableView::slotFetchLastFmTags() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (trackModel == NULL) {
+        return;
+    }
+
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        // TODO(chrisjr): instantiate LastFmTagFetcher here?
+        // or offload logic to someplace else?
     }
 }
 

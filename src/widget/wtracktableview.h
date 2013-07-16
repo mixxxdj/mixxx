@@ -61,6 +61,8 @@ class WTrackTableView : public WLibraryTableView {
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void slotResetPlayed();
+    void slotAddToSelector();
+    void slotFetchLastFmTags();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group, bool play = false);
@@ -109,6 +111,12 @@ class WTrackTableView : public WLibraryTableView {
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
     QAction *m_pReloadMetadataFromMusicBrainzAct;
+
+    // Last.fm download
+    QAction *m_pFetchLastFmTagsAct;
+
+    // Use as seed track for selector
+    QAction *m_pAddToSelector;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;

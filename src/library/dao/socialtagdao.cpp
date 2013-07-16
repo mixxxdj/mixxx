@@ -9,7 +9,7 @@
 #include "lastfm/lastfmclient.h"
 
 SocialTagDao::SocialTagDao(QSqlDatabase& database)
-    : m_database(database) {
+    : m_db(database) {
 }
 
 SocialTagDao::~SocialTagDao() {

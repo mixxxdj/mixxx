@@ -1,5 +1,6 @@
 #include <QNetworkReply>
 
+#include <lastfm/ws.h>
 #include <lastfm/Tag.h>
 #include <lastfm/Track.h>
 
@@ -10,6 +11,8 @@ const int LastFmClient::m_DefaultTimeout = 5000; // msec
 LastFmClient::LastFmClient(QObject *parent)
             : QObject(parent),
               m_timeouts(m_DefaultTimeout, this) {
+    lastfm::ws::ApiKey = "154ac2038b19ca6d5d3ef109eca3a7f8";
+    lastfm::ws::SharedSecret = "c084cb4e9cc877fff7675dccd1633962";
 }
 
 void LastFmClient::start(int id, const QString& artist, const QString& title) {
