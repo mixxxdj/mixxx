@@ -357,4 +357,25 @@ METADATA
       ALTER TABLE Library ADD COLUMN timbre_sub_version TEXT;
     </sql>
   </revision>
+  <revision version="21" min_compatible="3">
+    <description>
+      Add tables to store social tags
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS social_tags (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name VARCHAR(512),
+        source VARCHAR(128),
+        UNIQUE (name, source)
+      );
+      CREATE TABLE IF NOT EXISTS track_social_tags (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        track_id INTEGER NOT NULL REFERENCES track_locations(id),
+        tag_id INTEGER NOT NULL REFERENCES social_tags(id),
+        count INTEGER DEFAULT 0 NOT NULL,
+        last_updated DEFAULT CURRENT_TIMESTAMP,
+        UNIQUE (track_id, tag_id)
+      );
+    </sql>
+  </revision>
 </schema>
