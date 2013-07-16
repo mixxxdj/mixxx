@@ -95,13 +95,13 @@ class AutoDJFeature : public LibraryFeature {
     void slotCrateAdded(int crateId);
 
     // Signaled by the crate DAO when a crate is renamed.
-    void slotCrateRenamed(int crateId, QString a_strName);
+    void slotCrateRenamed(int crateId, QString newName);
 
     // Signaled by the crate DAO when a crate is deleted.
     void slotCrateDeleted(int crateId);
 
     // Signaled by the crate DAO when a crate's auto-DJ status changes.
-    void slotCrateAutoDjChanged(int crateId, bool a_bIn);
+    void slotCrateAutoDjChanged(int crateId, bool added);
 
     // Adds a random track from all loaded crates to the auto-DJ queue.
     void slotAddRandomTrack(bool);
