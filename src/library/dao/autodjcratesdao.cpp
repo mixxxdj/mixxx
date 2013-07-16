@@ -20,8 +20,6 @@ AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
           m_rCrateDAO(a_rCrateDAO),
           m_rPlaylistDAO(a_rPlaylistDAO),
           m_pConfig (a_pConfig),
-          // No list of tracks loaded into each deck yet.
-          m_pDeckTracks(NULL),
           // Save the ID of the auto-DJ playlist.
           m_iAutoDjPlaylistId(m_rPlaylistDAO.getPlaylistIdFromName(AUTODJ_TABLE)),
           // By default, active tracks are not tracks that haven't been played in
@@ -32,8 +30,6 @@ AutoDJCratesDAO::AutoDJCratesDAO(QSqlDatabase& a_rDatabase,
 }
 
 AutoDJCratesDAO::~AutoDJCratesDAO() {
-    // Clean up the list of tracks loaded into each deck.
-    delete[] m_pDeckTracks;
 }
 
 void AutoDJCratesDAO::initialize() {
@@ -78,16 +74,6 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
     // If this database has already been created, skip this.
     if (m_bAutoDjCratesDbCreated) {
         return;
-    }
-
-    // Make a list of tracks loaded into each deck.
-    PlayerInfo& rPlayerInfo = PlayerInfo::Instance();
-    unsigned int iDecks = PlayerManager::numDecks();
-    m_pDeckTracks = new int[iDecks];
-    for (unsigned int i = 0; i < iDecks; ++i) {
-        TrackPointer pTrack
-            = rPlayerInfo.getTrackInfo(PlayerManager::groupForDeck (i));
-        m_pDeckTracks[i] = (pTrack != NULL) ? pTrack->getId() : -1;
     }
 
     // Do all of this in a single transaction.
@@ -296,14 +282,16 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences() {
     // Incorporate all tracks loaded into decks.
     // Each track has to be done as a separate database query, in case the same
     // track is loaded into multiple decks.
-    unsigned int iDecks = PlayerManager::numDecks();
-    for (unsigned int i = 0; i < iDecks; ++i) {
-        int iTrackId = m_pDeckTracks[i];
-        if (iTrackId != -1) {
+    int iDecks = (int) PlayerManager::numDecks();
+    for (int i = 0; i < iDecks; ++i) {
+        QString group = PlayerManager::groupForDeck(i);
+        TrackPointer pTrack = PlayerInfo::Instance().getTrackInfo(group);
+        if (pTrack) {
+            int iTrackId = pTrack->getId();
             // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1 WHERE track_id IN (:track_id);
             oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
-                AUTODJCRATESTABLE_AUTODJREFS " = " AUTODJCRATESTABLE_AUTODJREFS
-                " + 1 WHERE " AUTODJCRATESTABLE_TRACKID " IN (:track_id)");
+                    AUTODJCRATESTABLE_AUTODJREFS " = " AUTODJCRATESTABLE_AUTODJREFS
+                    " + 1 WHERE " AUTODJCRATESTABLE_TRACKID " IN (:track_id)");
             oQuery.bindValue(":track_id", iTrackId);
             if (!oQuery.exec()) {
                 LOG_FAILED_QUERY(oQuery);
@@ -311,13 +299,12 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences() {
             }
         }
     }
-
     return true;
 }
 
 // Update the number of auto-DJ-playlist references to the given track in the
 // auto-DJ-crates database.
-bool AutoDJCratesDAO::updateAutoDjPlaylistReferencesForTrack(int a_iTrackId) {
+bool AutoDJCratesDAO::updateAutoDjPlaylistReferencesForTrack(int trackId) {
     QSqlQuery oQuery(m_rDatabase);
 
     // INSERT OR REPLACE INTO temp_autodj_crates (track_id, craterefs, timesplayed, autodjrefs) SELECT * FROM (SELECT :track_id AS new_track_id, craterefs, timesplayed, COUNT (*) AS newautodjrefs FROM PlaylistTracks, temp_autodj_crates WHERE PlaylistTracks.playlist_id IN (SELECT id FROM Playlists WHERE hidden = 1) AND PlaylistTracks.track_id = :track_id AND temp_autodj_crates.track_id = :track_id GROUP BY new_track_id) WHERE newautodjrefs > 0;
@@ -340,9 +327,9 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferencesForTrack(int a_iTrackId) {
                  PLAYLISTTRACKSTABLE_TRACKID, // %3
                  PLAYLISTTABLE_ID, // %4
                  strHidden)); // %5
-    oQuery.bindValue(":track_id_1", a_iTrackId);
-    oQuery.bindValue(":track_id_2", a_iTrackId);
-    oQuery.bindValue(":track_id_3", a_iTrackId);
+    oQuery.bindValue(":track_id_1", trackId);
+    oQuery.bindValue(":track_id_2", trackId);
+    oQuery.bindValue(":track_id_3", trackId);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return false;
@@ -391,7 +378,7 @@ bool AutoDJCratesDAO::updateLastPlayedDateTime() {
 
 // Update the last-played date/time for the given track in the auto-DJ-crates
 // database.
-bool AutoDJCratesDAO::updateLastPlayedDateTimeForTrack(int a_iTrackId) {
+bool AutoDJCratesDAO::updateLastPlayedDateTimeForTrack(int trackId) {
     QSqlQuery oQuery(m_rDatabase);
 
     // Update the last-played date/time for this track.
@@ -418,7 +405,7 @@ bool AutoDJCratesDAO::updateLastPlayedDateTimeForTrack(int a_iTrackId) {
                  PLAYLISTTABLE_ID, // %4
                  PLAYLISTTABLE_HIDDEN, // %5
                  strSetLog)); // %6
-    oQuery.bindValue(":track_id", a_iTrackId);
+    oQuery.bindValue(":track_id", trackId);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return false;
@@ -526,9 +513,9 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
 }
 
 // Signaled by the track DAO when a track's information is updated.
-void AutoDJCratesDAO::slotTrackDirty(int a_iTrackId) {
+void AutoDJCratesDAO::slotTrackDirty(int trackId) {
     // Update our record of the number of times played, if that changed.
-    TrackPointer pTrack = m_rTrackDAO.getTrack(a_iTrackId);
+    TrackPointer pTrack = m_rTrackDAO.getTrack(trackId);
     if (pTrack == NULL) {
         return;
     }
@@ -544,7 +531,7 @@ void AutoDJCratesDAO::slotTrackDirty(int a_iTrackId) {
             AUTODJCRATESTABLE_TIMESPLAYED " = :newplayed WHERE "
             AUTODJCRATESTABLE_TRACKID " = :track_id AND "
             AUTODJCRATESTABLE_TIMESPLAYED " = :oldplayed");
-    oQuery.bindValue(":track_id", a_iTrackId);
+    oQuery.bindValue(":track_id", trackId);
     oQuery.bindValue(":oldplayed", iPlayed - 1);
     oQuery.bindValue(":newplayed", iPlayed);
     if (!oQuery.exec()) {
@@ -554,25 +541,25 @@ void AutoDJCratesDAO::slotTrackDirty(int a_iTrackId) {
 }
 
 // Signaled by the crate DAO when a crate is added.
-void AutoDJCratesDAO::slotCrateAdded(int a_iCrateId) {
+void AutoDJCratesDAO::slotCrateAdded(int crateId) {
     // If this newly-added crate is in the auto-DJ queue, add it to the list.
-    if (m_rCrateDAO.isCrateInAutoDj(a_iCrateId)) {
-        slotCrateAutoDjChanged(a_iCrateId, true);
+    if (m_rCrateDAO.isCrateInAutoDj(crateId)) {
+        slotCrateAutoDjChanged(crateId, true);
     }
 }
 
-void AutoDJCratesDAO::slotCrateDeleted(int a_iCrateId) {
+void AutoDJCratesDAO::slotCrateDeleted(int crateId) {
     // The crate can't be queried for its auto-DJ status, because it's been
     // deleted by the time this code is reached.  But we can handle that.
     // Another solution would be to add a "crateDeleting" signal to CrateDAO.
-    slotCrateAutoDjChanged(a_iCrateId, false);
+    slotCrateAutoDjChanged(crateId, false);
 }
 
-void AutoDJCratesDAO::slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn) {
+void AutoDJCratesDAO::slotCrateAutoDjChanged(int crateId, bool added) {
     // Handle a crate that's entered the auto-DJ queue differently than one that
     // is leaving it.  (Obviously.)
     ScopedTransaction oTransaction(m_rDatabase);
-    if (a_bIn) {
+    if (added) {
         // Add a crate-reference to every track in this crate, if that track is
         // already in the auto-DJ-crates table.
         QSqlQuery oQuery(m_rDatabase);
@@ -586,7 +573,7 @@ void AutoDJCratesDAO::slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn) {
                 ".%1 = " AUTODJCRATES_TABLE "." AUTODJCRATESTABLE_TRACKID ")")
                 .arg(CRATETRACKSTABLE_TRACKID, // %1
                      CRATETRACKSTABLE_CRATEID)); // %2
-        oQuery.bindValue(":crate_id", a_iCrateId);
+        oQuery.bindValue(":crate_id", crateId);
         if (!oQuery.exec()) {
             LOG_FAILED_QUERY(oQuery);
             return;
@@ -613,7 +600,7 @@ void AutoDJCratesDAO::slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn) {
                      CRATETRACKSTABLE_CRATEID, // %2
                      LIBRARYTABLE_ID, // %3
                      LIBRARYTABLE_MIXXXDELETED)); // %4
-        oQuery.bindValue(":crate_id", a_iCrateId);
+        oQuery.bindValue(":crate_id", crateId);
         if (!oQuery.exec()) {
             LOG_FAILED_QUERY(oQuery);
             return;
@@ -651,7 +638,7 @@ void AutoDJCratesDAO::slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn) {
                 CRATE_TRACKS_TABLE " WHERE " CRATE_TRACKS_TABLE ".%2 = :crate_id)")
                 .arg(CRATETRACKSTABLE_TRACKID, // %1
                      CRATETRACKSTABLE_CRATEID)); // %2
-        oQuery.bindValue(":crate_id", a_iCrateId);
+        oQuery.bindValue(":crate_id", crateId);
         if (!oQuery.exec()) {
             LOG_FAILED_QUERY(oQuery);
             return;
@@ -739,9 +726,9 @@ void AutoDJCratesDAO::slotCrateTrackAdded(int a_iCrateId, int a_iTrackId) {
     oTransaction.commit();
 }
 
-void AutoDJCratesDAO::slotCrateTrackRemoved(int a_iCrateId, int a_iTrackId) {
+void AutoDJCratesDAO::slotCrateTrackRemoved(int crateId, int trackId) {
     // Skip this if it's not an auto-DJ crate.
-    if (!m_rCrateDAO.isCrateInAutoDj(a_iCrateId))
+    if (!m_rCrateDAO.isCrateInAutoDj(crateId))
         return;
 
     // Remove a crate-reference from this track.
@@ -751,7 +738,7 @@ void AutoDJCratesDAO::slotCrateTrackRemoved(int a_iCrateId, int a_iTrackId) {
     oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
         AUTODJCRATESTABLE_CRATEREFS " = " AUTODJCRATESTABLE_CRATEREFS
         " - 1 WHERE " AUTODJCRATESTABLE_TRACKID " = :track_id");
-    oQuery.bindValue(":track_id", a_iTrackId);
+    oQuery.bindValue(":track_id", trackId);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return;
@@ -762,7 +749,7 @@ void AutoDJCratesDAO::slotCrateTrackRemoved(int a_iCrateId, int a_iTrackId) {
     oQuery.prepare("DELETE FROM "AUTODJCRATES_TABLE " WHERE "
         AUTODJCRATESTABLE_TRACKID " = :track_id AND "
         AUTODJCRATESTABLE_CRATEREFS " = 0");
-    oQuery.bindValue(":track_id", a_iTrackId);
+    oQuery.bindValue(":track_id", trackId);
     if (!oQuery.exec()) {
         LOG_FAILED_QUERY(oQuery);
         return;
@@ -773,19 +760,19 @@ void AutoDJCratesDAO::slotCrateTrackRemoved(int a_iCrateId, int a_iTrackId) {
 }
 
 // Signaled by the playlistDAO when a playlist is added.
-void AutoDJCratesDAO::slotPlaylistAdded(int a_iPlaylistId) {
+void AutoDJCratesDAO::slotPlaylistAdded(int playlistId) {
     // We only care about changes to set-log playlists.
-    if (m_rPlaylistDAO.getHiddenType(a_iPlaylistId)
+    if (m_rPlaylistDAO.getHiddenType(playlistId)
             == PlaylistDAO::PLHT_SET_LOG) {
-        m_lstSetLogPlaylistIds.append(a_iPlaylistId);
+        m_lstSetLogPlaylistIds.append(playlistId);
         updateLastPlayedDateTime();
     }
 }
 
 // Signaled by the playlistDAO when a playlist is deleted.
-void AutoDJCratesDAO::slotPlaylistDeleted(int a_iPlaylistId) {
+void AutoDJCratesDAO::slotPlaylistDeleted(int playlistId) {
     // We only care about changes to set-log playlists.
-    int iIndex = m_lstSetLogPlaylistIds.indexOf(a_iPlaylistId);
+    int iIndex = m_lstSetLogPlaylistIds.indexOf(playlistId);
     if (iIndex >= 0) {
         m_lstSetLogPlaylistIds.removeAt(iIndex);
         updateLastPlayedDateTime();
@@ -793,51 +780,51 @@ void AutoDJCratesDAO::slotPlaylistDeleted(int a_iPlaylistId) {
 }
 
 // Signaled by the playlist DAO when a track is added to a playlist.
-void AutoDJCratesDAO::slotPlaylistTrackAdded(int a_iPlaylistId, int a_iTrackId,
+void AutoDJCratesDAO::slotPlaylistTrackAdded(int playlistId, int trackId,
                                              int /* a_iPosition */) {
     // Deal with changes to the auto-DJ playlist.
-    if (a_iPlaylistId == m_iAutoDjPlaylistId) {
+    if (playlistId == m_iAutoDjPlaylistId) {
         QSqlQuery oQuery(m_rDatabase);
         // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1 WHERE track_id = :track_id;
         oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
             AUTODJCRATESTABLE_AUTODJREFS " = " AUTODJCRATESTABLE_AUTODJREFS
             " + 1 WHERE " AUTODJCRATESTABLE_TRACKID " = :track_id");
-        oQuery.bindValue(":track_id", a_iTrackId);
+        oQuery.bindValue(":track_id", trackId);
         if (!oQuery.exec()) {
             LOG_FAILED_QUERY(oQuery);
             return;
         }
-    } else if (m_lstSetLogPlaylistIds.contains(a_iPlaylistId)) {
+    } else if (m_lstSetLogPlaylistIds.contains(playlistId)) {
         // Deal with changes to set-log playlists.
         // If this query doesn't succeed, it'll log a message.
         // Do nothing special otherwise -- any change it makes can be part of
         // any current transaction.
-        updateLastPlayedDateTimeForTrack(a_iTrackId);
+        updateLastPlayedDateTimeForTrack(trackId);
     }
 }
 
 // Signaled by the playlist DAO when a track is removed from a playlist.
-void AutoDJCratesDAO::slotPlaylistTrackRemoved(int a_iPlaylistId,
-                                               int a_iTrackId,
+void AutoDJCratesDAO::slotPlaylistTrackRemoved(int playlistId,
+                                               int trackId,
                                                int /* a_iPosition */) {
     // Deal with changes to the auto-DJ playlist.
-    if (a_iPlaylistId == m_iAutoDjPlaylistId) {
+    if (playlistId == m_iAutoDjPlaylistId) {
         QSqlQuery oQuery(m_rDatabase);
         // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs - 1 WHERE track_id = :track_id;
         oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
             AUTODJCRATESTABLE_AUTODJREFS " = " AUTODJCRATESTABLE_AUTODJREFS
             " - 1 WHERE " AUTODJCRATESTABLE_TRACKID " = :track_id");
-        oQuery.bindValue(":track_id", a_iTrackId);
+        oQuery.bindValue(":track_id", trackId);
         if (!oQuery.exec()) {
             LOG_FAILED_QUERY(oQuery);
             return;
         }
-    } else if (m_lstSetLogPlaylistIds.contains(a_iPlaylistId)) {
+    } else if (m_lstSetLogPlaylistIds.contains(playlistId)) {
         // Deal with changes to set-log playlists.
         // If this query doesn't succeed, it'll log a message.
         // Do nothing special otherwise -- any change it makes can be part of
         // any current transaction.
-        updateLastPlayedDateTimeForTrack(a_iTrackId);
+        updateLastPlayedDateTimeForTrack(trackId);
     }
 }
 
@@ -852,12 +839,9 @@ void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(QString a_strGroup,
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
     int iTrackId = a_pTrack->getId();
-    int iDecks = (int) PlayerManager::numDecks();
-    for (int i = 0; i < iDecks; ++i) {
+    unsigned int numDecks = PlayerManager::numDecks();
+    for (unsigned int i = 0; i < numDecks; ++i) {
         if (a_strGroup == PlayerManager::groupForDeck(i)) {
-            // Save the ID of the track in this deck.
-            m_pDeckTracks[i] = iTrackId;
-
             // Update the number of auto-DJ-playlist references to this track.
             QSqlQuery oQuery(m_rDatabase);
             // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1 WHERE track_id = :track_id;
@@ -875,16 +859,15 @@ void AutoDJCratesDAO::slotPlayerInfoTrackLoaded(QString a_strGroup,
 }
 
 // Signaled by the PlayerInfo singleton when a track is unloaded from a deck.
-void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString a_strGroup,
-                                                  TrackPointer a_pTrack) {
+void AutoDJCratesDAO::slotPlayerInfoTrackUnloaded(QString group,
+                                                  TrackPointer pTrack) {
     // This counts as an auto-DJ reference.  The idea is to prevent tracks that
     // are loaded into a deck from being randomly chosen.
-    int iTrackId = a_pTrack->getId();
-    int iDecks = (int) PlayerManager::numDecks();
-    for (int i = 0; i < iDecks; ++i) {
-        if (a_strGroup == PlayerManager::groupForDeck(i)) {
+    int iTrackId = pTrack->getId();
+    unsigned int numDecks = PlayerManager::numDecks();
+    for (unsigned int i = 0; i < numDecks; ++i) {
+        if (group == PlayerManager::groupForDeck(i)) {
             // Get rid of the ID of the track in this deck.
-            m_pDeckTracks[i] = -1;
             QSqlQuery oQuery(m_rDatabase);
             // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs - 1 WHERE track_id = :track_id;
             oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "

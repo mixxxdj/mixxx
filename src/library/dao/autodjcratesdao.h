@@ -57,7 +57,7 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // Update the number of auto-DJ-playlist references to the given track
     // in the auto-DJ-crates database.  Returns true if successful.
-    bool updateAutoDjPlaylistReferencesForTrack(int a_iTrackId);
+    bool updateAutoDjPlaylistReferencesForTrack(int trackId);
 
     // Update the last-played date/time for each track in the
     // auto-DJ-crates database.  Returns true if successful.
@@ -65,45 +65,45 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // Update the last-played date/time for the given track in the
     // auto-DJ-crates database.  Returns true if successful.
-    bool updateLastPlayedDateTimeForTrack(int a_iTrackId);
+    bool updateLastPlayedDateTimeForTrack(int trackId);
 
   private slots:
     // Signaled by the track DAO when a track's information is updated.
-    void slotTrackDirty(int a_iTrackId);
+    void slotTrackDirty(int trackId);
 
     // Signaled by the crate DAO when a crate is added.
-    void slotCrateAdded(int a_iCrateId);
+    void slotCrateAdded(int crateId);
 
     // Signaled by the crate DAO when a crate is deleted.
-    void slotCrateDeleted(int a_iCrateId);
+    void slotCrateDeleted(int crateId);
 
     // Signaled by the crate DAO when a crate's auto-DJ status changes.
-    void slotCrateAutoDjChanged(int a_iCrateId, bool a_bIn);
+    void slotCrateAutoDjChanged(int crateId, bool added);
 
     // Signaled by the crate DAO when a track is added to a crate.
-    void slotCrateTrackAdded(int a_iCrateId, int a_iTrackId);
+    void slotCrateTrackAdded(int crateId, int trackId);
 
     // Signaled by the crate DAO when a track is removed from a crate.
-    void slotCrateTrackRemoved(int a_iCrateId, int a_iTrackId);
+    void slotCrateTrackRemoved(int crateId, int trackId);
 
     // Signaled by the playlist DAO when a playlist is added.
-    void slotPlaylistAdded(int a_iPlaylistId);
+    void slotPlaylistAdded(int playlistId);
 
     // Signaled by the playlist DAO when a playlist is deleted.
-    void slotPlaylistDeleted(int a_iPlaylistId);
+    void slotPlaylistDeleted(int playlistId);
 
     // Signaled by the playlist DAO when a track is added to a playlist.
-    void slotPlaylistTrackAdded(int a_iPlaylistId, int a_iTrackId,
-                                int a_iPosition);
+    void slotPlaylistTrackAdded(int playlistId, int trackId,
+                                int position);
 
     // Signaled by the playlist DAO when a track is removed from a playlist.
-    void slotPlaylistTrackRemoved(int a_iPlaylistId, int a_iTrackId,
-                                  int a_iPosition);
+    void slotPlaylistTrackRemoved(int playlistId, int trackId,
+                                  int position);
 
     // Signaled by the PlayerInfo singleton when a track is loaded to, or
     // unloaded from, a deck.
-    void slotPlayerInfoTrackLoaded(QString a_strGroup, TrackPointer a_pTrack);
-    void slotPlayerInfoTrackUnloaded(QString a_strGroup, TrackPointer a_pTrack);
+    void slotPlayerInfoTrackLoaded(QString group, TrackPointer pTrack);
+    void slotPlayerInfoTrackUnloaded(QString group, TrackPointer pTrack);
 
   private:
 
@@ -125,10 +125,6 @@ class AutoDJCratesDAO : public QObject, public virtual DAO {
 
     // The source of our configuration.
     ConfigObject<ConfigValue>* m_pConfig;
-
-    // The track loaded into each deck.
-    // This is an array with as many entries as decks.
-    int *m_pDeckTracks;
 
     // The ID of every set-log playlist.
     QList<int> m_lstSetLogPlaylistIds;
