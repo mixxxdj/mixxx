@@ -89,6 +89,7 @@ class EngineMaster : public EngineObject, public AudioSource {
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
         ControlObject* m_pVolumeControl;
+        double m_dOldGain;
     };
 
     class GainCalculator {
@@ -107,29 +108,17 @@ class EngineMaster : public EngineObject, public AudioSource {
       private:
         double m_dGain;
     };
-    // This class keeps a cache of values so we can compare them from one buffer iteration
-    // to the next.  We can also choose whether to use the cached CO values or look up
-    // new ones.  This lets us use the crossfade utility to smooth out changes in gain.
-    class CachingOrientationVolumeGainCalculator : public GainCalculator {
+    class OrientationVolumeGainCalculator : public GainCalculator {
       public:
-        CachingOrientationVolumeGainCalculator()
-            : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0),
-              m_bEnabled(true) {}
-
-        inline void setUseCache(bool enabled) { m_bEnabled = enabled; }
+        OrientationVolumeGainCalculator()
+            : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0) {}
 
         inline double getGain(ChannelInfo* pChannelInfo) {
-            QMap<ChannelInfo*, double>::const_iterator it = m_cache.find(pChannelInfo);
-            if (m_bEnabled && it != m_cache.end()) {
-                return *it;
-            }
             const double channelVolume = pChannelInfo->m_pVolumeControl->get();
             const double orientationGain = EngineMaster::gainForOrientation(
                 pChannelInfo->m_pChannel->getOrientation(),
                 m_dLeftGain, m_dCenterGain, m_dRightGain);
-            const double gain = m_dVolume * channelVolume * orientationGain;
-            m_cache[pChannelInfo] = gain;
-            return gain;
+            return m_dVolume * channelVolume * orientationGain;
         }
 
         inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain) {
@@ -138,19 +127,8 @@ class EngineMaster : public EngineObject, public AudioSource {
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
         }
-
-        inline bool compare(const CachingOrientationVolumeGainCalculator& other) const {
-            // Don't compare enabled state, just actual data.
-            return m_dVolume == other.m_dVolume &&
-                   m_dLeftGain == other.m_dLeftGain &&
-                   m_dCenterGain == other.m_dCenterGain &&
-                   m_dRightGain == other.m_dRightGain &&
-                   m_cache == other.m_cache;
-        }
       private:
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
-        QMap<ChannelInfo*, double> m_cache;
-        bool m_bEnabled;
     };
 
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
@@ -158,7 +136,7 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     QList<ChannelInfo*> m_channels;
 
-    CSAMPLE *m_pMaster, *m_pHead, *m_pPrevGainBuffer;
+    CSAMPLE *m_pMaster, *m_pHead;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 
@@ -181,7 +159,7 @@ class EngineMaster : public EngineObject, public AudioSource {
         *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
-    CachingOrientationVolumeGainCalculator m_masterGain, m_prevMasterGain;
+    OrientationVolumeGainCalculator m_masterGain;
 };
 
 #endif

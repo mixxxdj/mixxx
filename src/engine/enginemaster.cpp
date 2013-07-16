@@ -92,13 +92,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
-    m_pPrevGainBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pHead, 0, MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
-    SampleUtil::applyGain(m_pPrevGainBuffer, 0, MAX_BUFFER_LEN);
-
-    // Master Gain object should not use its cache -- it should always get fresh values.
-    m_masterGain.setUseCache(false);
 
     // Starts a thread for recording and shoutcast
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
@@ -140,7 +135,6 @@ EngineMaster::~EngineMaster()
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
-    SampleUtil::free(m_pPrevGainBuffer);
 
     delete m_pWorkerScheduler;
 
@@ -208,10 +202,12 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
         SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
     } else if (totalActive == 1) {
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        double gain1 = pGainCalculator->getGain(pChannel1);
-        SampleUtil::copyWithGain(pOutput,
-                                 pBuffer1, gain1,
-                                 iBufferSize);
+        double gain1old = pChannel1->m_dOldGain;
+        double gain1new = pGainCalculator->getGain(pChannel1);
+        SampleUtil::copyWithRampingGain(pOutput,
+                                        pBuffer1, gain1old, gain1new,
+                                        iBufferSize);
+        pChannel1->m_dOldGain = gain1new;
     } else if (totalActive == 2) {
         CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
         double gain1 = pGainCalculator->getGain(pChannel1);
@@ -402,20 +398,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Perform the master mix
     mixChannels(masterOutput, maxChannels, m_pMaster, iBufferSize, &m_masterGain);
-
-    // Avoid soundwave discontinuties by interpolating from the old gains to new.
-    if (!m_masterGain.compare(m_prevMasterGain)) {
-        // We are reusing p_pPrevGainBuffer from above, but its data isn't needed
-        // as soon as the crossfade call is complete so this is safe.
-        mixChannels(masterOutput, maxChannels, m_pPrevGainBuffer, iBufferSize, &m_prevMasterGain);
-        SampleUtil::linearCrossfadeBuffers(m_pMaster, m_pPrevGainBuffer,
-                                           m_pMaster, iBufferSize);
-
-        // Since this copy is fairly expensive, only do it if we need to.
-        m_prevMasterGain = m_masterGain;
-        // Make sure previous master uses the cache.
-        m_prevMasterGain.setUseCache(true);
-    }
 
 #ifdef __LADSPA__
     // LADPSA master effects
