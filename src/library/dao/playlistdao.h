@@ -10,6 +10,13 @@
 #define PLAYLIST_TABLE "Playlists"
 #define PLAYLIST_TRACKS_TABLE "PlaylistTracks"
 
+const QString PLAYLISTTABLE_ID = "id";
+const QString PLAYLISTTABLE_NAME = "name";
+const QString PLAYLISTTABLE_POSITION = "position";
+const QString PLAYLISTTABLE_HIDDEN = "hidden";
+const QString PLAYLISTTABLE_DATECREATED = "date_created";
+const QString PLAYLISTTABLE_DATEMODIFIED = "date_modified";
+
 const QString PLAYLISTTRACKSTABLE_TRACKID = "track_id";
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
@@ -89,7 +96,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void changed(int playlistId);
     void trackAdded(int playlistId, int trackId, int position);
     void trackRemoved(int playlistId, int trackId, int position);
-    void renamed(int playlistId);
+    void renamed(int playlistId, QString a_strName);
     void lockChanged(int playlistId);
   private:
     QSqlDatabase& m_database;

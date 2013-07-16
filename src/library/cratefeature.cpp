@@ -58,14 +58,23 @@ CrateFeature::CrateFeature(QObject* parent,
     connect(m_pAnalyzeCrateAction, SIGNAL(triggered()),
             this, SLOT(slotAnalyzeCrate()));
 
+#ifdef __AUTODJCRATES__
+
+    m_pAutoDjTrackSource = new QAction(tr("Auto DJ Track Source"),this);
+    m_pAutoDjTrackSource->setCheckable(true);
+    connect(m_pAutoDjTrackSource, SIGNAL(changed()),
+            this, SLOT(slotAutoDjTrackSourceChanged()));
+
+#endif // __AUTODJCRATES__
+
     connect(&m_crateDao, SIGNAL(added(int)),
             this, SLOT(slotCrateTableChanged(int)));
 
     connect(&m_crateDao, SIGNAL(deleted(int)),
             this, SLOT(slotCrateTableChanged(int)));
 
-    connect(&m_crateDao, SIGNAL(renamed(int)),
-            this, SLOT(slotCrateTableChanged(int)));
+    connect(&m_crateDao, SIGNAL(renamed(int,QString)),
+            this, SLOT(slotCrateTableRenamed(int,QString)));
 
     connect(&m_crateDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotCrateTableChanged(int)));
@@ -85,6 +94,9 @@ CrateFeature::~CrateFeature() {
     delete m_pLockCrateAction;
     delete m_pImportPlaylistAction;
     delete m_pAnalyzeCrateAction;
+#ifdef __AUTODJCRATES__
+    delete m_pAutoDjTrackSource;
+#endif // __AUTODJCRATES__
 }
 
 QVariant CrateFeature::title() {
@@ -185,6 +197,11 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     m_pDeleteCrateAction->setEnabled(!locked);
     m_pRenameCrateAction->setEnabled(!locked);
 
+#ifdef __AUTODJCRATES__
+    bool bAutoDj = m_crateDao.isCrateInAutoDj(crateId);
+    m_pAutoDjTrackSource->setChecked(bAutoDj);
+#endif // __AUTODJCRATES__
+
     m_pLockCrateAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
     QMenu menu(NULL);
@@ -194,6 +211,9 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pDuplicateCrateAction);
     menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
+#ifdef __AUTODJCRATES__
+    menu.addAction(m_pAutoDjTrackSource);
+#endif // __AUTODJCRATES__
     menu.addSeparator();
     menu.addAction(m_pAnalyzeCrateAction);
     menu.addAction(m_pImportPlaylistAction);
@@ -369,6 +389,16 @@ void CrateFeature::slotToggleCrateLock() {
     if (!m_crateDao.setCrateLocked(crateId, locked)) {
         qDebug() << "Failed to toggle lock of crateId " << crateId;
     }
+}
+
+void CrateFeature::slotAutoDjTrackSourceChanged() {
+#ifdef __AUTODJCRATES__
+    QString crateName = m_lastRightClickedIndex.data().toString();
+    int crateId = m_crateDao.getCrateIdByName(crateName);
+    if (crateId != -1) {
+        m_crateDao.setCrateInAutoDj(crateId, m_pAutoDjTrackSource->isChecked());
+    }
+#endif // __AUTODJCRATES__
 }
 
 void CrateFeature::buildCrateList() {
@@ -551,6 +581,11 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     m_crateTableModel.setTableModel(crateId);
     // Update selection
     emit(featureSelect(this, m_lastRightClickedIndex));
+}
+
+void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
+                                         QString /* a_strName */) {
+    slotCrateTableChanged(a_iCrateId);
 }
 
 void CrateFeature::htmlLinkClicked(const QUrl & link) {
