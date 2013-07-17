@@ -76,8 +76,9 @@ QString PlaylistDAO::getPlaylistName(const int playlistId) {
 
     // Get the name field
     QString name = "";
-    while (query.next()) {
-        name = query.value(query.record().indexOf("name")).toString();
+    const int nameColumn = query.record().indexOf("name");
+    if (query.next()) {
+        name = query.value(nameColumn).toString();
     }
     return name;
 }
@@ -94,8 +95,9 @@ QList<int> PlaylistDAO::getTrackIds(const int playlistId) {
     }
 
     QList<int> ids;
+    const int trackIdColumn = query.record().indexOf("track_id");
     while (query.next()) {
-        ids.append(query.value(query.record().indexOf("track_id")).toInt());
+        ids.append(query.value(trackIdColumn).toInt());
     }
     return ids;
 }
@@ -674,8 +676,9 @@ int PlaylistDAO::tracksInPlaylist(const int playlistId) {
         return -1;
     }
     int count = -1;
+    const int countColumn = query.record().indexOf("count");
     while (query.next()) {
-        count = query.value(query.record().indexOf("count")).toInt();
+        count = query.value(countColumn).toInt();
     }
     return count;
 }

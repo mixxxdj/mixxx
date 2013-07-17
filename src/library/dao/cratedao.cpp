@@ -104,8 +104,9 @@ QList<int> CrateDAO::getTrackIds(const int crateId) {
     }
 
     QList<int> ids;
+    const int trackIdColumn = query.record().indexOf("track_id");
     while (query.next()) {
-        ids.append(query.value(query.record().indexOf("track_id")).toInt());
+        ids.append(query.value(trackIdColumn).toInt());
     }
     return ids;
 }
