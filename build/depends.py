@@ -489,6 +489,7 @@ class MixxxCore(Feature):
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
                    "engine/enginepassthrough.cpp",
+                   "engine/channelmixer_autogen.cpp",
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
@@ -735,7 +736,7 @@ class MixxxCore(Feature):
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
                    "util/version.cpp",
-                   "util/rlimit.cpp", 
+                   "util/rlimit.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)

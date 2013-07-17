@@ -82,7 +82,6 @@ class EngineMaster : public EngineObject, public AudioSource {
         return m_pSideChain;
     }
 
-  private:
     struct ChannelInfo {
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
@@ -133,10 +132,9 @@ class EngineMaster : public EngineObject, public AudioSource {
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
 
-    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
-                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
-
     QList<ChannelInfo*> m_channels;
+    QList<CSAMPLE> m_channelMasterGainCache;
+    QList<CSAMPLE> m_channelHeadphoneGainCache;
 
     CSAMPLE *m_pMaster, *m_pHead, *m_pPrevGainBuffer;
 
