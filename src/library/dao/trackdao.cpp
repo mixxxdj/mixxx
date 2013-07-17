@@ -127,9 +127,9 @@ QList<int> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
     }
 
     QList<int> ids;
-    const int idCount = query.record().indexOf("id");
+    const int idColumn = query.record().indexOf("id");
     while (query.next()) {
-        ids.append(query.value(idCount).toInt());
+        ids.append(query.value(idColumn).toInt());
     }
 
     return ids;
@@ -814,7 +814,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int beatsColumn = queryRecord.indexOf("beats");
 
         while (query.next()) {
-            // Good god! Assign query.record() to a freaking variable!
             // int trackId = query.value(query.record().indexOf("id")).toInt();
             QString artist = query.value(artistColumn).toString();
             QString title = query.value(titleColumn).toString();

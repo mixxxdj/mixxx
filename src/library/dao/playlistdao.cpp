@@ -74,10 +74,10 @@ QString PlaylistDAO::getPlaylistName(const int playlistId) {
         return "";
     }
 
-    // Get the name field // tr0 why?
+    // Get the name field
     QString name = "";
     const int nameColumn = query.record().indexOf("name");
-    while (query.next()) {
+    if (query.next()) {
         name = query.value(nameColumn).toString();
     }
     return name;
@@ -677,7 +677,6 @@ int PlaylistDAO::tracksInPlaylist(const int playlistId) {
     }
     int count = -1;
     const int countColumn = query.record().indexOf("count");
-    // tr0 why while?
     while (query.next()) {
         count = query.value(countColumn).toInt();
     }
