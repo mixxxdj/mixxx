@@ -16,3 +16,7 @@ mixxx
 res/qrc_mixxx.cc
 .sconf_temp
 cache
+.cproject
+.project
+.gdbinit
+.settings
