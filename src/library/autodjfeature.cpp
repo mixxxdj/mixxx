@@ -289,8 +289,9 @@ void AutoDJFeature::constructCrateChildModel() {
         crateListTableModel.fetchMore();
     }
 
-    int nameColumn = crateListTableModel.record().indexOf(CRATETABLE_NAME);
-    int idColumn = crateListTableModel.record().indexOf(CRATETABLE_ID);
+    QSqlRecord tableModelRecord = crateListTableModel.record();
+    int nameColumn = tableModelRecord.indexOf(CRATETABLE_NAME);
+    int idColumn = tableModelRecord.indexOf(CRATETABLE_ID);
 
     // Create a tree-item for each auto-DJ crate.
     for (int row = 0; row < crateListTableModel.rowCount(); ++row) {

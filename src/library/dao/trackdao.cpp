@@ -46,7 +46,9 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_pQueryLibraryUpdate(NULL),
           m_pQueryLibrarySelect(NULL),
           m_pTransaction(NULL),
-          m_trackLocationIdColumn(UndefinedRecordIndex) {
+          m_trackLocationIdColumn(UndefinedRecordIndex),
+          m_queryLibraryIdColumn(UndefinedRecordIndex),
+          m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
 }
 
 TrackDAO::~TrackDAO() {
@@ -447,11 +449,16 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
                      << pTrack->getFilename();
         } else {
             bool mixxx_deleted = 0;
-            const int queryLibraryIdColumn = m_pQueryLibrarySelect->record().indexOf("id");
-            const int queryLibraryMixxxDeletedColumn = m_pQueryLibrarySelect->record().indexOf("mixxx_deleted");
+            if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
+                QSqlRecord queryLibraryRecord = m_pQueryLibrarySelect->record();
+                m_queryLibraryIdColumn = queryLibraryRecord.indexOf("id");
+                m_queryLibraryMixxxDeletedColumn =
+                        queryLibraryRecord.indexOf("mixxx_deleted");
+            }
+
             while (m_pQueryLibrarySelect->next()) {
-                trackId = m_pQueryLibrarySelect->value(queryLibraryIdColumn).toInt();
-                mixxx_deleted = m_pQueryLibrarySelect->value(queryLibraryMixxxDeletedColumn).toBool();
+                trackId = m_pQueryLibrarySelect->value(m_queryLibraryIdColumn).toInt();
+                mixxx_deleted = m_pQueryLibrarySelect->value(m_queryLibraryMixxxDeletedColumn).toBool();
             }
             if (unremove && mixxx_deleted) {
                 // Set mixxx_deleted back to 0
@@ -819,7 +826,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int beatsColumn = queryRecord.indexOf("beats");
 
         while (query.next()) {
-            // int trackId = query.value(query.record().indexOf("id")).toInt();
             QString artist = query.value(artistColumn).toString();
             QString title = query.value(titleColumn).toString();
             QString album = query.value(albumColumn).toString();
@@ -841,7 +847,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QDateTime datetime_added = query.value(datetimeAddedColumn).toDateTime();
             int played = query.value(playedColumn).toInt();
             int channels = query.value(channelsColumn).toInt();
-            //int filesize = query.value(query.record().indexOf("filesize")).toInt();
             QString filetype = query.value(filetypeColumn).toString();
             QString location = query.value(locationColumn).toString();
             bool header_parsed = query.value(headerParsedColumn).toBool();

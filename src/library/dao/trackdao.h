@@ -163,6 +163,8 @@ class TrackDAO : public QObject, public virtual DAO {
     QSqlQuery* m_pQueryLibrarySelect;
     ScopedTransaction* m_pTransaction;
     int m_trackLocationIdColumn;
+    int m_queryLibraryIdColumn;
+    int m_queryLibraryMixxxDeletedColumn;
 
     QSet<int> m_tracksAddedSet;
 

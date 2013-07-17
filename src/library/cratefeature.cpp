@@ -324,7 +324,7 @@ void CrateFeature::slotRenameCrate() {
         } else {
             validNameGiven = true;
         }
-    } 
+    }
 
     if (!m_crateDao.renameCrate(crateId, newName)) {
         qDebug() << "Failed to rename crateId" << crateId;
@@ -412,8 +412,9 @@ void CrateFeature::buildCrateList() {
     while (crateListTableModel.canFetchMore()) {
         crateListTableModel.fetchMore();
     }
-    int nameColumn = crateListTableModel.record().indexOf("name");
-    int idColumn = crateListTableModel.record().indexOf("id");
+    QSqlRecord record = crateListTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int idColumn = record.indexOf("id");
 
     for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
         int id = crateListTableModel.data(

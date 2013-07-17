@@ -376,7 +376,7 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
 
 
             if (success) {
-                const int idColumn = finder_query.record().indexOf ("id");
+                const int idColumn = finder_query.record().indexOf("id");
                 while (finder_query.next()) {
                     track_id = finder_query.value(idColumn).toInt();
                 }
