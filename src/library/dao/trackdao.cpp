@@ -18,6 +18,8 @@
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
 
+enum { UndefinedRecordIndex = -2 };
+
 // The number of tracks to cache in memory at once. Once the n+1'th track is
 // created, the TrackDAO's QCache deletes its TrackPointer to the track, which
 // allows the track reference count to drop to zero. The track cache basically
@@ -43,7 +45,8 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_pQueryLibraryInsert(NULL),
           m_pQueryLibraryUpdate(NULL),
           m_pQueryLibrarySelect(NULL),
-          m_pTransaction(NULL) {
+          m_pTransaction(NULL),
+          m_trackLocationIdColumn(UndefinedRecordIndex) {
 }
 
 TrackDAO::~TrackDAO() {
@@ -338,7 +341,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
 
 void TrackDAO::addTracksPrepare() {
 
-    if (m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
+        if (m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
         m_pQueryLibrarySelect || m_pQueryTrackLocationSelect ||
         m_pTransaction) {
         qDebug() << "TrackDAO::addTracksPrepare: old Querys have been "
@@ -430,9 +433,11 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
                         << "Can't find track location ID after failing to insert. Something is wrong.";
             return false;
         }
-        const int trackLocationIdColumn = m_pQueryTrackLocationSelect->record().indexOf("id");
+        if (m_trackLocationIdColumn == UndefinedRecordIndex) {
+            m_trackLocationIdColumn = m_pQueryTrackLocationSelect->record().indexOf("id");
+        }
         while (m_pQueryTrackLocationSelect->next()) {
-            trackLocationId = m_pQueryTrackLocationSelect->value(trackLocationIdColumn).toInt();
+            trackLocationId = m_pQueryTrackLocationSelect->value(m_trackLocationIdColumn).toInt();
         }
 
         m_pQueryLibrarySelect->bindValue(":location", trackLocationId);
