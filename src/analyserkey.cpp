@@ -47,17 +47,13 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
             ConfigKey(KEY_CONFIG_KEY, KEY_REANALYZE_WHEN_SETTINGS_CHANGE)).toInt());
 
     QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY));
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY),
+        // TODO(rryan) this default really doesn't belong here.
+        "libmixxxminimal");
     QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID));
-
-    // TODO(rryan): This belongs elsewhere.
-    if (library.isEmpty() || library.isNull())
-        library = "libmixxxminimal";
-
-    // TODO(rryan): This belongs elsewhere.
-    if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID = VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID;
+        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_PLUGIN_ID),
+        // TODO(rryan) this default really doesn't belong here.
+        VAMP_ANALYSER_KEY_DEFAULT_PLUGIN_ID);
 
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
