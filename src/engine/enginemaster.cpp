@@ -166,16 +166,6 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
     return m_pHead;
 }
 
-EngineSync* EngineMaster::getMasterSync(void)
-{
-    return m_pMasterSync;
-}
-
-void EngineMaster::setMasterSync(QString deck)
-{
-    m_pMasterSync->setDeckMaster(deck);
-}
-
 void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                                CSAMPLE* pOutput, unsigned int iBufferSize,
                                GainCalculator* pGainCalculator) {
