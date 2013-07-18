@@ -423,11 +423,6 @@ class Chromaprint(Dependence):
             if not conf.CheckLib(['fftw', 'libfftw', 'fftw3', 'libfftw3']):
                 raise Exception("Could not find fftw3 or its development headers.")
 
-class LastFm(Dependence):
-    def configure(self, build, conf):
-        if not conf.CheckLib(['lastfm', 'liblastfm']):
-            raise Exception("Could not find liblastfm.")
-
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
         libs = ['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']
@@ -970,7 +965,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint, RubberBand, LastFm]
+                Chromaprint, RubberBand]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

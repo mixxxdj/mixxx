@@ -15,12 +15,19 @@ class LastFmClient : public QObject {
   public:
     LastFmClient(QObject *parent = 0);
 
-    typedef QMap<int, QString> TagCounts;
+    typedef QMap<QString, int> TagCounts;
 
     // Starts a request and returns immediately.  finished() will be emitted
     // later with the same ID.
     void start(int id, const QString& artist, const QString& title);
+    static void consumeCurrentElement(QXmlStreamReader& reader);
+
+    // Cancels the request with the given ID.  Finished() will never be emitted
+    // for that ID.  Does nothing if there is no request with the given ID.
     void cancel(int id);
+
+    // Cancels all requests.  Finished() will never be emitted for any pending
+    // requests.
     void cancelAll();
 
   signals:
@@ -31,7 +38,13 @@ class LastFmClient : public QObject {
     void requestFinished();
 
   private:
-    static const int m_DefaultTimeout;
+    static QString escapeString(const QString& string);
+    static TagCounts parseTopTags(QXmlStreamReader& reader);
+
+    static const int m_iDefaultTimeout;
+    static const QString m_sApiKey;
+    static const QString m_sRestUrl;
+    QNetworkAccessManager m_network;
     NetworkTimeouts m_timeouts;
     QMap<QNetworkReply*, int> m_requests;
 };
