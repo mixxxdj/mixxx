@@ -38,16 +38,16 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer,
 
 // static
 void SampleUtil::applyRampingGain(CSAMPLE* pBuffer,
-                                  CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
-    if (gain1 == 1.0f && gain2 == 1.0f)
+                                  CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples) {
+    if (old_gain == 1.0f && new_gain == 1.0f)
         return;
-    if (gain1 == 0.0f && gain2 == 0.0f) {
+    if (old_gain == 0.0f && new_gain == 0.0f) {
         memset(pBuffer, 0, sizeof(pBuffer[0]) * iNumSamples);
         return;
     }
 
-    const CSAMPLE delta = 2.0 * (gain2 - gain1) / iNumSamples;
-    CSAMPLE gain = gain1;
+    const CSAMPLE delta = 2.0 * (new_gain - old_gain) / iNumSamples;
+    CSAMPLE gain = old_gain;
     for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
         pBuffer[i] *= gain;
         pBuffer[i + 1] *= gain;
@@ -155,21 +155,21 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-                                     CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
+                                     CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples) {
     if (pDest == pSrc) {
-        return applyRampingGain(pDest, gain1, gain2, iNumSamples);
+        return applyRampingGain(pDest, old_gain, new_gain, iNumSamples);
     }
-    if (gain1 == 1.0f && gain2 == 1.0f) {
+    if (old_gain == 1.0f && new_gain == 1.0f) {
         memcpy(pDest, pSrc, sizeof(pDest[0]) * iNumSamples);
         return;
     }
-    if (gain1 == 0.0f && gain2 == 0.0f) {
+    if (old_gain == 0.0f && new_gain == 0.0f) {
         memset(pDest, 0, sizeof(pDest[0]) * iNumSamples);
         return;
     }
 
-    const CSAMPLE delta = 2.0 * (gain2 - gain1) / iNumSamples;
-    CSAMPLE gain = gain1;
+    const CSAMPLE delta = 2.0 * (new_gain - old_gain) / iNumSamples;
+    CSAMPLE gain = old_gain;
     for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
         pDest[i] = pSrc[i] * gain;
         pDest[i + 1] = pSrc[i + 1] * gain;

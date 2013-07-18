@@ -50,7 +50,7 @@ class SampleUtil {
                                      int iNumSamples);
 
     // Multiply every sample in pBuffer ramping from gain1 to gain2
-    static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE gain1, CSAMPLE gain2, int iNumSamples);
+    static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
@@ -82,7 +82,7 @@ class SampleUtil {
 
     // Copy pSrc to pDest and ramp gain
     static void copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-                                    CSAMPLE gain1, CSAMPLE gain2, int iNumSamples);
+                                    CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples);
 
     // Convert a buffer of SAMPLEs to a buffer of CSAMPLEs. Does not work
     // in-place! pDest and pSrc must not be aliased.
