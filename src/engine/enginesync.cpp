@@ -29,9 +29,10 @@
 
 static const char* kMasterSyncGroup = "[Master]";
 
-SyncChannel::SyncChannel(const QString& group)
-        : m_group(group) {
-    m_pChannelSyncState = new ControlObject(ConfigKey(group, "sync_state"));
+SyncChannel::SyncChannel(EngineChannel* pChannel)
+        : m_pChannel(pChannel),
+          m_group(pChannel->getGroup()) {
+    m_pChannelSyncState = new ControlObject(ConfigKey(m_group, "sync_state"));
     connect(m_pChannelSyncState, SIGNAL(valueChanged(double)),
             this, SLOT(slotChannelSyncStateChanged(double)),
             Qt::DirectConnection);
@@ -41,6 +42,10 @@ SyncChannel::SyncChannel(const QString& group)
 }
 
 SyncChannel::~SyncChannel() {
+}
+
+EngineChannel* SyncChannel::getChannel() {
+    return m_pChannel;
 }
 
 double SyncChannel::getState() const {
@@ -110,14 +115,15 @@ EngineSync::~EngineSync() {
     delete m_pSyncRateSlider;
 }
 
-void EngineSync::addChannel(const QString& channel) {
+void EngineSync::addChannel(EngineChannel* pChannel) {
+    const QString& group = pChannel->getGroup();
     foreach (const SyncChannel* pChannel, m_channels) {
-        if (pChannel->getGroup() == channel) {
-            qDebug() << "EngineSync: already has deck for deck" << channel;
+        if (pChannel->getGroup() == group) {
+            qDebug() << "EngineSync: already has channel for" << group;
             return;
         }
     }
-    SyncChannel* pSyncChannel = new SyncChannel(channel);
+    SyncChannel* pSyncChannel = new SyncChannel(pChannel);
     connect(pSyncChannel, SIGNAL(channelSyncStateChanged(QString, double)),
             this, SLOT(slotChannelSyncStateChanged(QString, double)),
             Qt::DirectConnection);
@@ -222,7 +228,9 @@ bool EngineSync::setChannelMaster(const QString& deck) {
                 this, SLOT(slotSourceBeatDistanceChanged(double)),
                 Qt::DirectConnection);
 
-        resetInternalBeatDistance(); //reset internal beat distance to equal the new master
+        // reset internal beat distance to equal the new master
+        resetInternalBeatDistance();
+
         //qDebug() << "----------------------------setting new master" << deck;
         m_sSyncSource = deck;
         m_pSyncInternalEnabled->set(FALSE);
@@ -245,7 +253,7 @@ bool EngineSync::setChannelMaster(const QString& deck) {
 QString EngineSync::chooseNewMaster(const QString& dontpick) {
     //qDebug() << "----------=-=-=-=-=-=-=-finding a new master";
     QString fallback = kMasterSyncGroup;
-    foreach (const SyncChannel* pSyncChannel, m_channels) {
+    foreach (SyncChannel* pSyncChannel, m_channels) {
         const QString& group = pSyncChannel->getGroup();
         if (group == dontpick) {
             continue;
@@ -259,8 +267,7 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
             continue;
         }
 
-        // TODO(rryan): EngineMaster::getChannel is O(n)
-        EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
+        EngineChannel* pChannel = pSyncChannel->getChannel();
         if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {

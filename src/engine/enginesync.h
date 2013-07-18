@@ -36,13 +36,14 @@ enum SYNC_STATE {
 class SyncChannel : public QObject {
     Q_OBJECT
   public:
-    SyncChannel(const QString& group);
+    SyncChannel(EngineChannel* pChannel);
     virtual ~SyncChannel();
 
     const QString& getGroup() const {
         return m_group;
     }
 
+    EngineChannel* getChannel();
     void setState(double state);
     double getState() const;
 
@@ -53,6 +54,7 @@ class SyncChannel : public QObject {
     void slotChannelSyncStateChanged(double);
 
   private:
+    EngineChannel* m_pChannel;
     QString m_group;
     ControlObject* m_pChannelSyncState;
 };
@@ -64,7 +66,7 @@ class EngineSync : public EngineControl {
     EngineSync(EngineMaster *master, ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineSync();
 
-    void addChannel(const QString& group);
+    void addChannel(EngineChannel* pChannel);
     EngineChannel* getMaster() const;
     void onCallbackStart(int bufferSize);
 

@@ -519,7 +519,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
 
-    m_pMasterSync->addChannel(pChannel->getGroup());
+    m_pMasterSync->addChannel(pChannel);
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     if (pBuffer != NULL) {
