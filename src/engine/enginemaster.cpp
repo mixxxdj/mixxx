@@ -43,7 +43,9 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
-                           bool bEnableSidechain) {
+                           bool bEnableSidechain)
+        : m_headphoneMasterGainOld(0),
+          m_headphoneVolumeOld(0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
@@ -275,10 +277,14 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
 
     // Add master to headphone with appropriate gain
-    SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
+    SampleUtil::addWithRampingGain(m_pHead, m_pMaster, m_headphoneMasterGainOld,
+                                   cmaster_gain, iBufferSize);
+    m_headphoneMasterGainOld = cmaster_gain;
 
     // Head volume and clipping
-    SampleUtil::applyGain(m_pHead, m_pHeadVolume->get(), iBufferSize);
+    CSAMPLE headphoneVolume = m_pHeadVolume->get();
+    SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld, headphoneVolume, iBufferSize);
+    m_headphoneVolumeOld = headphoneVolume;
     head_clipping->process(m_pHead, m_pHead, iBufferSize);
 
     //Master/headphones interleaving is now done in

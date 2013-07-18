@@ -160,6 +160,8 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
+    CSAMPLE m_headphoneMasterGainOld;
+    CSAMPLE m_headphoneVolumeOld;
 };
 
 #endif
