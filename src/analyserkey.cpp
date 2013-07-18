@@ -35,7 +35,6 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
             ConfigKey(KEY_CONFIG_KEY, KEY_DETECTION_ENABLED)).toInt());
     if (!m_bPreferencesKeyDetectionEnabled) {
         qDebug() << "Key detection is deactivated";
-        m_bShouldAnalyze = false;
         return false;
     }
 
@@ -59,6 +58,7 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 
+    bool bShouldAnalyze = false;
     const Keys& keys = tio->getKeys();
     if (keys.isValid()) {
         QString version = keys.getVersion();
@@ -72,38 +72,40 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         if (version == newVersion && subVersion == newSubVersion) {
             // If the version and settings have not changed then if the world is
             // sane, re-analyzing will do nothing.
-            m_bShouldAnalyze = false;
+            bShouldAnalyze = false;
             qDebug() << "Keys version/sub-version unchanged since previous analysis. Not analyzing.";
         } else if (m_bPreferencesReanalyzeEnabled) {
-            m_bShouldAnalyze = true;
+            bShouldAnalyze = true;
         } else {
-            m_bShouldAnalyze = false;
+            bShouldAnalyze = false;
             qDebug() << "Track has previous key detection result that is not up"
                      << "to date with latest settings but user preferences"
                      << "indicate we should not re-analyze it.";
         }
     } else {
-        // If we got here, we think we may want to analyze this track.
-        m_bShouldAnalyze = true;
+        // No valid keys stored so we want to analyze this track.
+        bShouldAnalyze = true;
     }
 
-    if (!m_bShouldAnalyze) {
+    if (!bShouldAnalyze) {
         qDebug() << "Key calculation will not start.";
+        m_bShouldAnalyze = bShouldAnalyze;
         return false;
     }
 
     qDebug() << "Key calculation started with plugin" << m_pluginId;
     m_pVamp = new VampAnalyser(m_pConfig);
-    m_bShouldAnalyze = m_pVamp->Init(
+    bShouldAnalyze = m_pVamp->Init(
         library, m_pluginId, sampleRate, totalSamples,
         m_bPreferencesFastAnalysisEnabled);
 
-    if (!m_bShouldAnalyze) {
+    if (!bShouldAnalyze) {
         delete m_pVamp;
         m_pVamp = NULL;
     }
 
-    return m_bShouldAnalyze;
+    m_bShouldAnalyze = bShouldAnalyze;
+    return bShouldAnalyze;
 }
 
 // TODO(XXX): Get rid of the horrible duplication here between initialise and
