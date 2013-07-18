@@ -11,7 +11,7 @@
 
 class AnalyserKey : public Analyser {
   public:
-    AnalyserKey(ConfigObject<ConfigValue> *_config);
+    AnalyserKey(ConfigObject<ConfigValue>* pConfig);
     virtual ~AnalyserKey();
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);

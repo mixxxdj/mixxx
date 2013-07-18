@@ -17,8 +17,8 @@
 #include "track/beatutils.h"
 #include "track/beat_preferences.h"
 
-AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config)
-        : m_pConfig(_config),
+AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig),
           m_pVamp(NULL),
           m_bPreferencesReanalyzeOldBpm(false),
           m_bPreferencesFixedTempo(true),
