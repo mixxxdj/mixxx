@@ -26,6 +26,7 @@ def write_channelmixer_autogen(output, num_channels):
     output.append('#include "sampleutil.h"')
     output.append('////////////////////////////////////////////////////////')
     output.append('// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //')
+    output.append('// SEE scripts/generate_sample_functions.py           //')
     output.append('////////////////////////////////////////////////////////')
     output.append('')
     output.append('// static')
@@ -101,6 +102,7 @@ def write_sampleutil_autogen(output, num_channels):
     output.append('#define SAMPLEUTILAUTOGEN_H')
     output.append('////////////////////////////////////////////////////////')
     output.append('// THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //')
+    output.append('// SEE scripts/generate_sample_functions.py           //')
     output.append('////////////////////////////////////////////////////////')
 
     for i in xrange(1, num_channels + 1):
