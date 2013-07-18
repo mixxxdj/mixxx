@@ -131,18 +131,19 @@ bool EngineRecord::metaDataHasChanged()
 }
 
 void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
+
+    float recording_status = m_recReady->get();
+
     // if recording is disabled
-    if (m_recReady->get() == RECORD_OFF) {
+    if (recording_status == RECORD_OFF) {
         //qDebug("Setting record flag to: OFF");
         if (fileOpen()) {
             closeFile();    //close file and free encoder
             emit(isRecording(false));
         }
-    }
-
-    // if we are ready for recording, i.e, the output file has been selected, we
-    // open a new file
-    if (m_recReady->get() == RECORD_READY) {
+    } else if (recording_status == RECORD_READY) {
+        // if we are ready for recording, i.e, the output file has been selected, we
+        // open a new file
         updateFromPreferences();	//update file location from pref
         if (openFile()) {
             qDebug("Setting record flag to: ON");
@@ -163,10 +164,8 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             m_recReady->slotSet(RECORD_OFF);
             emit(isRecording(false));
         }
-    }
-
-    // If recording is enabled process audio to compressed or uncompressed data.
-    if (m_recReady->get() == RECORD_ON) {
+    } else if (m_recReady->get() == RECORD_ON) {
+        // If recording is enabled process audio to compressed or uncompressed data.
         if (m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF) {
             if (m_sndfile != NULL) {
                 sf_write_float(m_sndfile, pBuffer, iBufferSize);
