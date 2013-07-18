@@ -29,6 +29,32 @@
 
 static const char* kMasterSyncGroup = "[Master]";
 
+SyncChannel::SyncChannel(const QString& group)
+        : m_group(group) {
+    m_pChannelSyncState = new ControlObject(ConfigKey(group, "sync_state"));
+    connect(m_pChannelSyncState, SIGNAL(valueChanged(double)),
+            this, SLOT(slotChannelSyncStateChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pChannelSyncState, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotChannelSyncStateChanged(double)),
+            Qt::DirectConnection);
+}
+
+SyncChannel::~SyncChannel() {
+}
+
+double SyncChannel::getState() const {
+    return m_pChannelSyncState->get();
+}
+
+void SyncChannel::setState(double state) {
+    m_pChannelSyncState->set(state);
+}
+
+void SyncChannel::slotChannelSyncStateChanged(double v) {
+    emit(channelSyncStateChanged(m_group, v));
+}
+
 EngineSync::EngineSync(EngineMaster *master,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(kMasterSyncGroup, _config),
@@ -38,8 +64,7 @@ EngineSync::EngineSync(EngineMaster *master,
         m_sSyncSource(kMasterSyncGroup),
         m_dSourceRate(0.0f), //has to be zero so that master bpm gets set correctly on startup
         m_dMasterBpm(124.0f),
-        m_dPseudoBufferPos(0.0f)
-{
+        m_dPseudoBufferPos(0.0f) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
     m_pSampleRate = ControlObject::getControl(ConfigKey(kMasterSyncGroup, "samplerate"));
@@ -85,50 +110,18 @@ EngineSync::~EngineSync() {
     delete m_pSyncRateSlider;
 }
 
-void EngineSync::addDeck(QString deck) {
-    if (m_sDeckList.contains(deck)) {
-        qDebug() << "EngineSync: already has deck for deck" << deck;
-        return;
+void EngineSync::addChannel(const QString& channel) {
+    foreach (const SyncChannel* pChannel, m_channels) {
+        if (pChannel->getGroup() == channel) {
+            qDebug() << "EngineSync: already has deck for deck" << channel;
+            return;
+        }
     }
-    m_sDeckList.append(deck);
-
-    // Connect objects so we can react when the user changes the settings
-    ConfigKey key(deck, "sync_state");
-    ControlObject *deck_sync_state = ControlObject::getControl(key);
-    if (key.group == "[Channel1]") {
-        connect(deck_sync_state, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDeck1StateChanged(double)),
+    SyncChannel* pSyncChannel = new SyncChannel(channel);
+    connect(pSyncChannel, SIGNAL(channelSyncStateChanged(QString, double)),
+            this, SLOT(slotChannelSyncStateChanged(QString, double)),
             Qt::DirectConnection);
-        connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotDeck1StateChanged(double)),
-            Qt::DirectConnection);
-    } else if (key.group == "[Channel2]") {
-        connect(deck_sync_state, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDeck2StateChanged(double)),
-            Qt::DirectConnection);
-        connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotDeck2StateChanged(double)),
-            Qt::DirectConnection);
-    } else if (key.group == "[Channel3]") {
-        connect(deck_sync_state, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDeck3StateChanged(double)),
-            Qt::DirectConnection);
-        connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotDeck3StateChanged(double)),
-            Qt::DirectConnection);
-    } else if (key.group == "[Channel4]") {
-        connect(deck_sync_state, SIGNAL(valueChanged(double)),
-            this, SLOT(slotDeck4StateChanged(double)),
-            Qt::DirectConnection);
-        connect(deck_sync_state, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotDeck4StateChanged(double)),
-            Qt::DirectConnection);
-    } else {
-        qDebug() << "ERROR not a known deck, can't hook up for master sync";
-        return;
-    }
-
-
+    m_channels.append(pSyncChannel);
 }
 
 void EngineSync::disconnectMaster() {
@@ -145,40 +138,27 @@ void EngineSync::disconnectMaster() {
 }
 
 
-void EngineSync::disableDeckMaster(QString deck) {
-    if (deck == "") {
-        foreach (QString deck, m_sDeckList) {
-            if (deck != kMasterSyncGroup) {
-                // Unset master on *all* other decks -- sometimes we end up with two masters
-                // for some reason.
-                ControlObject *sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
-                if (sync_state != NULL && sync_state->get() == SYNC_MASTER) {
-                    sync_state->set(SYNC_SLAVE);
-                }
+void EngineSync::disableChannelMaster(const QString& channel) {
+    bool channelIsEmpty = channel.isEmpty();
+    foreach (SyncChannel* pChannel, m_channels) {
+        // If channel is empty, unset master on *all* other channels -- sometimes we
+        // end up with two masters for some reason.
+        if (channelIsEmpty || pChannel->getGroup() == channel) {
+            if (pChannel->getState() == SYNC_MASTER) {
+                pChannel->setState(SYNC_SLAVE);
             }
-        }
-    } else {
-        //qDebug() << "disabling" << deck << "as master";
-        ControlObject *sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
-        if (sync_state == NULL) {
-            qDebug() << "Error: couldn't get sync_state for deck, couldn't disable master" << deck;
-            return;
-        }
-        if (sync_state->get() == SYNC_MASTER) {
-            //qDebug() << deck << "notifying deck it is not master";
-            sync_state->set(SYNC_SLAVE);
         }
     }
 }
 
-void EngineSync::setMaster(QString group) {
+void EngineSync::setMaster(const QString& group) {
     // Convenience function that can split out to either set internal
     // or set deck master.
     // TODO(owen): midi master? or is that just internal?
     if (group == kMasterSyncGroup) {
         setInternalMaster();
     } else {
-        if (!setDeckMaster(group)) {
+        if (!setChannelMaster(group)) {
             qDebug() << "WARNING: failed to set selected master" << group << ", going with Internal instead";
             setInternalMaster();
         }
@@ -194,7 +174,7 @@ void EngineSync::setInternalMaster(void) {
     QString old_master = m_sSyncSource;
     m_sSyncSource = kMasterSyncGroup;
     resetInternalBeatDistance();
-    disableDeckMaster(old_master);
+    disableChannelMaster(old_master);
     disconnectMaster();
     updateSamplesPerBeat();
 
@@ -202,7 +182,7 @@ void EngineSync::setInternalMaster(void) {
     m_pSyncInternalEnabled->set(TRUE);
 }
 
-bool EngineSync::setDeckMaster(QString deck) {
+bool EngineSync::setChannelMaster(const QString& deck) {
     if (deck.isEmpty()) {
         //qDebug() << "----------------------------------------------------unsetting master (got empty deck spec)";
         disconnectMaster();
@@ -266,37 +246,36 @@ bool EngineSync::setMidiMaster() {
     return false;
 }
 
-QString EngineSync::chooseNewMaster(QString dontpick="") {
+QString EngineSync::chooseNewMaster(const QString& dontpick) {
     //qDebug() << "----------=-=-=-=-=-=-=-finding a new master";
     QString fallback = kMasterSyncGroup;
-    foreach (QString deck, m_sDeckList) {
-        if (deck == dontpick) {
+    foreach (const SyncChannel* pSyncChannel, m_channels) {
+        const QString& group = pSyncChannel->getGroup();
+        if (group == dontpick) {
             continue;
         }
 
-        ControlObject *sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
-        if (sync_state != NULL) {
-            double state = sync_state->get();
-            if (state == SYNC_MASTER) {
-                qDebug() << "already have a new master" << deck;
-                return deck;
-            } else if (state == SYNC_NONE) {
-                continue;
-            }
+        double sync_state = pSyncChannel->getState();
+        if (sync_state == SYNC_MASTER) {
+            qDebug() << "already have a new master" << group;
+            return group;
+        } else if (sync_state == SYNC_NONE) {
+            continue;
         }
-        EngineChannel* pChannel = m_pEngineMaster->getChannel(deck);
+
+        // TODO(rryan): EngineMaster::getChannel is O(n)
+        EngineChannel* pChannel = m_pEngineMaster->getChannel(group);
         if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
-                // If the deck is playing then go with it immediately.
+                // If the channel is playing then go with it immediately.
                 if (fabs(pBuffer->getRate()) > 0) {
-                    //qDebug() << "picked a new master deck:" << deck;
-                    return deck;
+                    //qDebug() << "picked a new master deck:" << group;
+                    return group;
                 }
             }
         }
     }
-
     return fallback;
 }
 
@@ -388,27 +367,11 @@ void EngineSync::slotInternalMasterChanged(double state) {
         setInternalMaster();
     } else {
         //internal has been turned off.  pick a slave
-        setMaster(chooseNewMaster());
+        setMaster(chooseNewMaster(""));
     }
 }
 
-void EngineSync::slotDeck1StateChanged(double state) {
-    deckXStateChanged("[Channel1]", state);
-}
-
-void EngineSync::slotDeck2StateChanged(double state) {
-    deckXStateChanged("[Channel2]", state);
-}
-
-void EngineSync::slotDeck3StateChanged(double state) {
-    deckXStateChanged("[Channel3]", state);
-}
-
-void EngineSync::slotDeck4StateChanged(double state) {
-    deckXStateChanged("[Channel4]", state);
-}
-
-void EngineSync::deckXStateChanged(QString group, double state) {
+void EngineSync::slotChannelSyncStateChanged(const QString& group, double state) {
     qDebug() << "got a master state change from" << group;
 
     // In the following logic, m_sSyncSourcea acts like "previous sync source".
@@ -416,10 +379,10 @@ void EngineSync::deckXStateChanged(QString group, double state) {
         // TODO: don't allow setting of master if not playing
         // Figure out who the old master was and turn them off
         QString old_master = m_sSyncSource;
-        setDeckMaster(group);
+        setChannelMaster(group);
         qDebug() << "disabling previous master " << old_master;
         if (old_master != kMasterSyncGroup) {
-            disableDeckMaster(old_master);
+            disableChannelMaster(old_master);
         }
     } else if (state == SYNC_SLAVE) {
         // Was this deck master before?  If so do a handoff
@@ -434,7 +397,7 @@ void EngineSync::deckXStateChanged(QString group, double state) {
         // if we were the master, choose a new one.
         if (m_sSyncSource == group) {
             qDebug() << group << " current master being set to none, choose new";
-            setMaster(chooseNewMaster());
+            setMaster(chooseNewMaster(""));
         }
     }
 }

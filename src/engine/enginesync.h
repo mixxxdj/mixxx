@@ -33,21 +33,40 @@ enum SYNC_STATE {
     SYNC_MASTER = 2
 };
 
+class SyncChannel : public QObject {
+    Q_OBJECT
+  public:
+    SyncChannel(const QString& group);
+    virtual ~SyncChannel();
+
+    const QString& getGroup() const {
+        return m_group;
+    }
+
+    void setState(double state);
+    double getState() const;
+
+  signals:
+    void channelSyncStateChanged(QString, double);
+
+  private slots:
+    void slotChannelSyncStateChanged(double);
+
+  private:
+    QString m_group;
+    ControlObject* m_pChannelSyncState;
+};
+
 class EngineSync : public EngineControl {
     Q_OBJECT
 
   public:
     EngineSync(EngineMaster *master, ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineSync();
-    void addDeck(QString group);
-    void setMaster(QString group);
-    bool setDeckMaster(QString deck);
-    void setInternalMaster(void);
-    bool setMidiMaster(void);
-    EngineChannel* getMaster() const;
 
+    void addChannel(const QString& group);
+    EngineChannel* getMaster() const;
     void onCallbackStart(int bufferSize);
-    double getInternalBeatDistance(void) const;
 
   private slots:
     void slotMasterBpmChanged(double);
@@ -56,19 +75,20 @@ class EngineSync : public EngineControl {
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
     void slotInternalMasterChanged(double);
-    void slotDeck1StateChanged(double);
-    void slotDeck2StateChanged(double);
-    void slotDeck3StateChanged(double);
-    void slotDeck4StateChanged(double);
+    void slotChannelSyncStateChanged(const QString& group, double);
 
-  protected:
-    QString chooseNewMaster(QString dontpick);
+  private:
+    void setMaster(const QString& group);
+    bool setChannelMaster(const QString& deck);
+    void setInternalMaster(void);
+    bool setMidiMaster(void);
+    QString chooseNewMaster(const QString& dontpick);
     void disconnectMaster(void);
-    void disableDeckMaster(QString deck);
+    void disableChannelMaster(const QString& deck);
     void updateSamplesPerBeat(void);
     void setPseudoPosition(double percent);
     void resetInternalBeatDistance(void);
-    void deckXStateChanged(QString group, double);
+    double getInternalBeatDistance(void) const;
 
     EngineMaster* m_pEngineMaster;
     EngineChannel* m_pMasterChannel;
@@ -80,8 +100,7 @@ class EngineSync : public EngineControl {
     ControlPushButton* m_pSyncInternalEnabled;
     ControlPotmeter* m_pSyncRateSlider;
 
-    QList<QString> m_sDeckList;
-
+    QList<SyncChannel*> m_channels;
     QString m_sSyncSource;
     int m_iSampleRate;
     double m_dSourceRate, m_dMasterBpm;
