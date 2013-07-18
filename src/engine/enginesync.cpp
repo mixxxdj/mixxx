@@ -57,7 +57,7 @@ void SyncChannel::setState(double state) {
 }
 
 void SyncChannel::slotChannelSyncStateChanged(double v) {
-    emit(channelSyncStateChanged(m_group, v));
+    emit(channelSyncStateChanged(this, v));
 }
 
 EngineSync::EngineSync(EngineMaster *master,
@@ -124,8 +124,8 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
         }
     }
     SyncChannel* pSyncChannel = new SyncChannel(pChannel);
-    connect(pSyncChannel, SIGNAL(channelSyncStateChanged(QString, double)),
-            this, SLOT(slotChannelSyncStateChanged(QString, double)),
+    connect(pSyncChannel, SIGNAL(channelSyncStateChanged(SyncChannel*, double)),
+            this, SLOT(slotChannelSyncStateChanged(SyncChannel*, double)),
             Qt::DirectConnection);
     m_channels.append(pSyncChannel);
 }
@@ -165,7 +165,8 @@ void EngineSync::setMaster(const QString& group) {
     if (group == kMasterSyncGroup) {
         setInternalMaster();
     } else {
-        if (!setChannelMaster(group)) {
+        SyncChannel* pSyncChannel = getSyncChannelForGroup(group);
+        if (!setChannelMaster(pSyncChannel)) {
             qDebug() << "WARNING: failed to set selected master" << group << ", going with Internal instead";
             setInternalMaster();
         }
@@ -189,20 +190,19 @@ void EngineSync::setInternalMaster() {
     m_pSyncInternalEnabled->set(TRUE);
 }
 
-bool EngineSync::setChannelMaster(const QString& deck) {
-    if (deck.isEmpty()) {
-        //qDebug() << "----------------------------------------------------unsetting master (got empty deck spec)";
+bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
+    if (pSyncChannel == NULL) {
+        //qDebug() << "----------------------------------------------------unsetting master (got empty SyncChannel)";
         disconnectMaster();
-        setInternalMaster();
-        return true;
+        return false;
     }
 
-    EngineChannel* pChannel = m_pEngineMaster->getChannel(deck);
+    EngineChannel* pChannel = pSyncChannel->getChannel();
+    const QString& group = pChannel->getGroup();
+
     // Only consider channels that have a track loaded and are in the master
     // mix.
-
     //qDebug() << "***********************************************asked to set a new master:" << deck;
-
     if (pChannel) {
         disconnectMaster();
         if (pChannel->getEngineBuffer() == NULL) {
@@ -210,7 +210,7 @@ bool EngineSync::setChannelMaster(const QString& deck) {
         }
         m_pMasterChannel = pChannel;
 
-        m_pSourceRate = ControlObject::getControl(ConfigKey(deck, "rateEngine"));
+        m_pSourceRate = ControlObject::getControl(ConfigKey(group, "rateEngine"));
         if (m_pSourceRate == NULL) {
             //qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
             return false;
@@ -219,7 +219,7 @@ bool EngineSync::setChannelMaster(const QString& deck) {
                 this, SLOT(slotSourceRateChanged(double)),
                 Qt::DirectConnection);
 
-        m_pSourceBeatDistance = ControlObject::getControl(ConfigKey(deck, "beat_distance"));
+        m_pSourceBeatDistance = ControlObject::getControl(ConfigKey(group, "beat_distance"));
         if (m_pSourceBeatDistance == NULL) {
             qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 source beat dist was null";
             return false;
@@ -231,13 +231,13 @@ bool EngineSync::setChannelMaster(const QString& deck) {
         // reset internal beat distance to equal the new master
         resetInternalBeatDistance();
 
-        //qDebug() << "----------------------------setting new master" << deck;
-        m_sSyncSource = deck;
+        //qDebug() << "----------------------------setting new master" << group;
+        m_sSyncSource = group;
         m_pSyncInternalEnabled->set(FALSE);
         slotSourceRateChanged(m_pSourceRate->get());
         // This is not redundant, I swear.  Make sure lights are all up to date
-        ControlObject::getControl(ConfigKey(deck, "sync_master"))->set(TRUE);
-        ControlObject::getControl(ConfigKey(deck, "sync_slave"))->set(FALSE);
+        ControlObject::getControl(ConfigKey(group, "sync_master"))->set(TRUE);
+        ControlObject::getControl(ConfigKey(group, "sync_slave"))->set(FALSE);
         return true;
     } else {
         //qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!did not set master";
@@ -374,7 +374,11 @@ void EngineSync::slotInternalMasterChanged(double state) {
     }
 }
 
-void EngineSync::slotChannelSyncStateChanged(const QString& group, double state) {
+void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double state) {
+    if (!pSyncChannel) {
+        return;
+    }
+    const QString& group = pSyncChannel->getGroup();
     qDebug() << "got a master state change from" << group;
 
     // In the following logic, m_sSyncSourcea acts like "previous sync source".
@@ -382,17 +386,16 @@ void EngineSync::slotChannelSyncStateChanged(const QString& group, double state)
         // TODO: don't allow setting of master if not playing
         // Figure out who the old master was and turn them off
         QString old_master = m_sSyncSource;
-        setChannelMaster(group);
+        setChannelMaster(pSyncChannel);
         qDebug() << "disabling previous master " << old_master;
         if (old_master != kMasterSyncGroup) {
             disableChannelMaster(old_master);
         }
     } else if (state == SYNC_SLAVE) {
         // Was this deck master before?  If so do a handoff
-        ControlObject *sync_state = ControlObject::getControl(ConfigKey(group, "sync_state"));
         if (m_sSyncSource == group) {
             qDebug() << group << " current master, setting us to slave (choose new)";
-            sync_state->set(SYNC_SLAVE);
+            pSyncChannel->setState(SYNC_SLAVE);
             //choose a new master, but don't pick the current one!
             setMaster(chooseNewMaster(group));
         }
@@ -475,4 +478,13 @@ void EngineSync::setPseudoPosition(double percent) {
 
 EngineChannel* EngineSync::getMaster() const {
     return m_pMasterChannel;
+}
+
+SyncChannel* EngineSync::getSyncChannelForGroup(const QString& group) {
+    foreach (SyncChannel* pChannel, m_channels) {
+        if (pChannel->getGroup() == group) {
+            return pChannel;
+        }
+    }
+    return NULL;
 }

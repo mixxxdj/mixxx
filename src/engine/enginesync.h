@@ -48,7 +48,7 @@ class SyncChannel : public QObject {
     double getState() const;
 
   signals:
-    void channelSyncStateChanged(QString, double);
+    void channelSyncStateChanged(SyncChannel*, double);
 
   private slots:
     void slotChannelSyncStateChanged(double);
@@ -77,11 +77,11 @@ class EngineSync : public EngineControl {
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
     void slotInternalMasterChanged(double);
-    void slotChannelSyncStateChanged(const QString& group, double);
+    void slotChannelSyncStateChanged(SyncChannel*, double);
 
   private:
     void setMaster(const QString& group);
-    bool setChannelMaster(const QString& deck);
+    bool setChannelMaster(SyncChannel* pSyncChannel);
     void setInternalMaster();
     QString chooseNewMaster(const QString& dontpick);
     void disconnectMaster();
@@ -90,6 +90,7 @@ class EngineSync : public EngineControl {
     void setPseudoPosition(double percent);
     void resetInternalBeatDistance();
     double getInternalBeatDistance() const;
+    SyncChannel* getSyncChannelForGroup(const QString& group);
 
     EngineMaster* m_pEngineMaster;
     EngineChannel* m_pMasterChannel;
