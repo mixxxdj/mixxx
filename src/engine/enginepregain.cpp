@@ -118,7 +118,6 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
 
     if (fGain != m_fPrevGain) {
         // Prevent soundwave discontinuities by interpolating from old to new gain.
-        // Because pOutput == pIn, we need to use a third buffer to do this crossfade.
         SampleUtil::copyWithRampingGain(pOutput, pIn, m_fPrevGain, fGain, iBufferSize);
     } else {
         // SampleUtil deals with aliased buffers and gains of 1 or 0.

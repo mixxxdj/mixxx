@@ -49,7 +49,9 @@ class SampleUtil {
                                      CSAMPLE gain1, CSAMPLE gain2,
                                      int iNumSamples);
 
-    // Multiply every sample in pBuffer ramping from gain1 to gain2
+    // Multiply every sample in pBuffer ramping from gain1 to gain2.
+    // We use ramping as often as possible to prevent soundwave discontinuities
+    // which can cause audible clicks and pops.
     static void applyRampingGain(CSAMPLE* pBuffer, CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples);
 
     // Add each sample of pSrc, multiplied by the gain, to pDest
@@ -124,7 +126,8 @@ class SampleUtil {
 
     // Crossfade two buffers together and put the result in pDest.  All the
     // buffers must be the same length.  pDest may be an alias of the source
-    // buffers.
+    // buffers.  It is preferable to use the copyWithRamping functions, but
+    // sometimes this function is necessary.
     static void linearCrossfadeBuffers(CSAMPLE* pDest,
                                        const CSAMPLE* pSrcFadeOut,
                                        const CSAMPLE* pSrcFadeIn,

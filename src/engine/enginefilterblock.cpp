@@ -168,9 +168,6 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
     band->process(pIn, m_pTemp2, iBufferSize);
     high->process(pIn, m_pTemp3, iBufferSize);
 
-    // If any eq control object has changed, crossfade a buffer processed with
-    // the old values with a buffer using the new values.  This prevents
-    // soundwave discontinuties causing pops and clicks.
     if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
         SampleUtil::copy3WithRampingGain(pOutput,
                                          m_pTemp1, old_low, fLow,
