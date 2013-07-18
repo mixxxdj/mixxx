@@ -13,8 +13,7 @@ AnalyserKey::AnalyserKey(ConfigObject<ConfigValue> *_config)
         : m_pConfig(_config),
           m_pVamp(NULL),
           m_iSampleRate(0),
-          m_iTotalSamples(0),
-          m_bShouldAnalyze(false) {
+          m_iTotalSamples(0) {
 }
 
 AnalyserKey::~AnalyserKey(){
@@ -24,8 +23,6 @@ AnalyserKey::~AnalyserKey(){
 // TODO(XXX): Get rid of the horrible duplication here between initialise and
 // loadStored.
 bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
-    m_bShouldAnalyze = false;
-
     if (totalSamples == 0) {
         return false;
     }
@@ -87,24 +84,23 @@ bool AnalyserKey::initialise(TrackPointer tio, int sampleRate, int totalSamples)
         bShouldAnalyze = true;
     }
 
-    if (!bShouldAnalyze) {
+    if (bShouldAnalyze) {
+        m_pVamp = new VampAnalyser(m_pConfig);
+        bShouldAnalyze = m_pVamp->Init(
+            library, m_pluginId, sampleRate, totalSamples,
+            m_bPreferencesFastAnalysisEnabled);
+        if (!bShouldAnalyze) {
+            delete m_pVamp;
+            m_pVamp = NULL;
+        }
+    }
+
+    if (bShouldAnalyze) {
+        qDebug() << "Key calculation started with plugin" << m_pluginId;
+    } else {
         qDebug() << "Key calculation will not start.";
-        m_bShouldAnalyze = bShouldAnalyze;
-        return false;
     }
 
-    qDebug() << "Key calculation started with plugin" << m_pluginId;
-    m_pVamp = new VampAnalyser(m_pConfig);
-    bShouldAnalyze = m_pVamp->Init(
-        library, m_pluginId, sampleRate, totalSamples,
-        m_bPreferencesFastAnalysisEnabled);
-
-    if (!bShouldAnalyze) {
-        delete m_pVamp;
-        m_pVamp = NULL;
-    }
-
-    m_bShouldAnalyze = bShouldAnalyze;
     return bShouldAnalyze;
 }
 
@@ -158,10 +154,10 @@ bool AnalyserKey::loadStored(TrackPointer tio) const {
 }
 
 void AnalyserKey::process(const CSAMPLE *pIn, const int iLen) {
-    if (!m_bShouldAnalyze || m_pVamp == NULL)
+    if (m_pVamp == NULL)
         return;
-    m_bShouldAnalyze = m_pVamp->Process(pIn, iLen);
-    if (!m_bShouldAnalyze) {
+    bool success = m_pVamp->Process(pIn, iLen);
+    if (!success) {
         delete m_pVamp;
         m_pVamp = NULL;
     }
@@ -174,7 +170,7 @@ void AnalyserKey::cleanup(TrackPointer tio) {
 }
 
 void AnalyserKey::finalise(TrackPointer tio) {
-    if (!m_bShouldAnalyze || m_pVamp == NULL) {
+    if (m_pVamp == NULL) {
         return;
     }
 

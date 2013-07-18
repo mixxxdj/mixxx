@@ -33,7 +33,6 @@ class AnalyserKey : public Analyser {
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
-    bool m_bShouldAnalyze;
 };
 
 #endif /* ANALYSERKEY_H */

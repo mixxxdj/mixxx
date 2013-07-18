@@ -32,7 +32,6 @@ class AnalyserBeats: public Analyser {
     ConfigObject<ConfigValue> *m_pConfig;
     VampAnalyser* m_pVamp;
     QString m_pluginId;
-    bool m_bShouldAnalyze;
     bool m_bPreferencesReanalyzeOldBpm;
     bool m_bPreferencesFixedTempo;
     bool m_bPreferencesOffsetCorrection;
