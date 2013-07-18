@@ -80,6 +80,20 @@ void SampleUtil::addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     }
 }
 
+void SampleUtil::addWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                    CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples) {
+    if (old_gain == 0.0f && new_gain == 0.0f) {
+        return;
+    }
+
+    const CSAMPLE delta = 2.0 * (new_gain - old_gain) / iNumSamples;
+    CSAMPLE gain = old_gain;
+    for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
+        pDest[i] += pSrc[i] * gain;
+        pDest[i + 1] += pSrc[i + 1] * gain;
+    }
+}
+
 // static
 void SampleUtil::add2WithGain(CSAMPLE* pDest,
                               const CSAMPLE* pSrc1, CSAMPLE gain1,

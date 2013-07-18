@@ -56,6 +56,11 @@ class SampleUtil {
     static void addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
                             CSAMPLE gain, int iNumSamples);
 
+    // Add each sample of pSrc, multiplied by the gain, to pDest
+    static void addWithRampingGain(CSAMPLE* pDest,
+                                   const CSAMPLE* pSrc, CSAMPLE old_gain, CSAMPLE new_gain,
+                                   int iNumSamples);
+
     // Add to each sample of pDest, pSrc1 multiplied by gain1 plus pSrc2
     // multiplied by gain2
     static void add2WithGain(CSAMPLE* pDest,
