@@ -329,44 +329,19 @@ void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxCh
     }
 }
 
-void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize) {
-    static bool haveSetName = false;
-    if (!haveSetName) {
-        QThread::currentThread()->setObjectName("Engine");
-        haveSetName = true;
-    }
-    ScopedTimer t("EngineMaster::process");
+void EngineMaster::processChannels(unsigned int* masterOutput,
+                                   unsigned int* headphoneOutput,
+                                   int iBufferSize) {
+    ScopedTimer timer("EngineMaster::processChannels");
 
-    // Notify EngineSync that we are starting the callback.
-    m_pMasterSync->onCallbackStart(iBufferSize);
-
-    CSAMPLE **pOutput = (CSAMPLE**)pOut;
-    Q_UNUSED(pOutput);
-
-    // Prepare each channel for output
-
-    // Bitvector of enabled channels
-    const unsigned int maxChannels = 32;
-    unsigned int masterOutput = 0;
-    unsigned int headphoneOutput = 0;
-
-    // Compute headphone mix
-    // Head phone left/right mix
-    CSAMPLE cf_val = head_mix->get();
-    CSAMPLE chead_gain = 0.5*(-cf_val+1.);
-    CSAMPLE cmaster_gain = 0.5*(cf_val+1.);
-    // qDebug() << "head val " << cf_val << ", head " << chead_gain
-    //          << ", master " << cmaster_gain;
-
-    // TODO(owen): MIDI goes here, probably.
-
-    //find the Sync Master and process it first
-    //then process all the slaves (and skip the master)
-
-    Timer timer("EngineMaster::process channels");
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     QList<ChannelInfo*>::iterator master_it = NULL;
-    if (m_pMasterSync->getMaster() != NULL) {
+
+    // Find the Sync Master and process it first then process all the slaves
+    // (and skip the master).
+
+    EngineChannel* pMasterChannel = m_pMasterSync->getMaster();
+    if (pMasterChannel != NULL) {
         for (unsigned int channel_number = 0;
              it != m_channels.end(); ++it, ++channel_number) {
             ChannelInfo* pChannelInfo = *it;
@@ -374,26 +349,25 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             if (!pChannel || !pChannel->isActive()) {
                continue;
             }
-            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
-            if (pBuffer == m_pMasterSync->getMaster()->getEngineBuffer()) {
+
+            if (pMasterChannel == pChannel) {
                 master_it = it;
 
-                //proceed with the processing as below
+                // Proceed with the processing as below.
                 bool needsProcessing = false;
                 if (pChannel->isMaster()) {
-                    masterOutput |= (1 << channel_number);
+                    *masterOutput |= (1 << channel_number);
                     needsProcessing = true;
                 }
 
                 // If the channel is enabled for previewing in headphones, copy it
                 // over to the headphone buffer
                 if (pChannel->isPFL()) {
-                    headphoneOutput |= (1 << channel_number);
+                    *headphoneOutput |= (1 << channel_number);
                     needsProcessing = true;
                 }
 
                 // Process the buffer if necessary, which it damn well better be
-                Q_ASSERT(needsProcessing);
                 if (needsProcessing) {
                     pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
                 }
@@ -408,25 +382,26 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         ChannelInfo* pChannelInfo = *it;
         EngineChannel* pChannel = pChannelInfo->m_pChannel;
 
+        // Skip the master since we already processed it.
         if (it == master_it) {
-            // We already processed this.
             continue;
         }
 
-        if (!pChannel->isActive()) {
+        // Skip inactive channels.
+        if (!pChannel || !pChannel->isActive()) {
             continue;
         }
 
         bool needsProcessing = false;
         if (pChannel->isMaster()) {
-            masterOutput |= (1 << channel_number);
+            *masterOutput |= (1 << channel_number);
             needsProcessing = true;
         }
 
         // If the channel is enabled for previewing in headphones, copy it
         // over to the headphone buffer
         if (pChannel->isPFL()) {
-            headphoneOutput |= (1 << channel_number);
+            *headphoneOutput |= (1 << channel_number);
             needsProcessing = true;
         }
 
@@ -435,7 +410,38 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             pChannel->process(NULL, pChannelInfo->m_pBuffer, iBufferSize);
         }
     }
-    timer.elapsed(true);
+}
+
+void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize) {
+    static bool haveSetName = false;
+    if (!haveSetName) {
+        QThread::currentThread()->setObjectName("Engine");
+        haveSetName = true;
+    }
+    ScopedTimer t("EngineMaster::process");
+
+    // Notify EngineSync that we are starting the callback.
+    m_pMasterSync->onCallbackStart(iBufferSize);
+
+    CSAMPLE **pOutput = (CSAMPLE**)pOut;
+    Q_UNUSED(pOutput);
+
+    // Bitvector of enabled channels
+    const unsigned int maxChannels = 32;
+    unsigned int masterOutput = 0;
+    unsigned int headphoneOutput = 0;
+
+    // Prepare each channel for output
+    processChannels(&masterOutput, &headphoneOutput, iBufferSize);
+
+    // Compute headphone mix
+    // Head phone left/right mix
+    CSAMPLE cf_val = head_mix->get();
+    CSAMPLE chead_gain = 0.5*(-cf_val+1.);
+    CSAMPLE cmaster_gain = 0.5*(cf_val+1.);
+    // qDebug() << "head val " << cf_val << ", head " << chead_gain
+    //          << ", master " << cmaster_gain;
+
 
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
