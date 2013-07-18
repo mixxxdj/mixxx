@@ -1,12 +1,8 @@
 #!/usr/bin/env python
-import sys
 import argparse
+import sys
 
 BASIC_INDENT = 4
-
-def indent_separator(depth, offset):
-    indent = BASIC_INDENT * depth + len(offset)
-    return ' +\n' + ' ' * indent
 
 COPY_WITH_GAIN_METHOD_PATTERN = 'copy%(i)dWithGain'
 def copy_with_gain_method_name(i):
@@ -19,6 +15,12 @@ def copy_with_ramping_gain_method_name(i):
 def method_call(method_name, args):
     return '%(method_name)s(%(args)s)' % {'method_name': method_name,
                                           'args': ', '.join(args)}
+
+def hanging_indent(base, groups, hanging_suffix, terminator, depth=0):
+    return map(lambda line: ' ' * BASIC_INDENT * depth + line, map(''.join, zip(
+        [base] + [' ' * len(base)] * (len(groups) - 1),
+        groups,
+        [hanging_suffix] * (len(groups) - 1) + [terminator])))
 
 def write_channelmixer_autogen(output, num_channels):
     output.append('#include "engine/channelmixer.h"')
@@ -39,12 +41,10 @@ def write_channelmixer_autogen(output, num_channels):
             'QList<CSAMPLE>* channelGainCache',
             'CSAMPLE* pOutput',
             'unsigned int iBufferSize']
+    output.extend(hanging_indent(header, args, ',', ') {'))
 
-    separator = ',\n' + ' ' * len(header)
-    output.append(header + separator.join(args) + ') {')
-
-    def write(data, depth=0, indent=0):
-        output.append(' ' * (BASIC_INDENT * depth + indent) + data)
+    def write(data, depth=0):
+        output.append(' ' * (BASIC_INDENT * depth) + data)
 
     write('int activeChannels[%d] = {' % num_channels, depth=1)
     for i in xrange(num_channels):
@@ -80,8 +80,8 @@ def write_channelmixer_autogen(output, num_channels):
 
         arg_groups = ['pOutput'] + ['pBuffer%(j)d, oldGain%(j)d, newGain%(j)d' % {'j': j} for j in xrange(i)] + ['iBufferSize']
         call_prefix = "SampleUtil::" + copy_with_ramping_gain_method_name(i) + '('
-        separator = ',\n' + len(call_prefix) * ' ' + ' ' * BASIC_INDENT * 2
-        write(call_prefix + separator.join(arg_groups) + ');', depth=2)
+        output.extend(hanging_indent(call_prefix, arg_groups, ',', ');', depth=2))
+
 
     write('} else {', depth=1)
     write('// Set pOutput to all 0s', depth=2)
@@ -112,16 +112,16 @@ def write_sampleutil_autogen(output, num_channels):
     output.append('#endif /* SAMPLEUTILAUTOGEN_H */')
 
 def copy_with_gain(output, base_indent_depth, num_channels):
-    def write(data, depth=0, indent=0):
-        output.append(' ' * (BASIC_INDENT * (depth + base_indent_depth) + indent) + data)
+    def write(data, depth=0):
+        output.append(' ' * (BASIC_INDENT * (depth + base_indent_depth)) + data)
 
     header = "static inline void %s(" % copy_with_gain_method_name(num_channels)
-    dest_arg = "CSAMPLE* pDest,"
-    write(header + dest_arg)
+    arg_groups = ['CSAMPLE* pDest'] + [
+        "const CSAMPLE* pSrc%(i)d, CSAMPLE gain%(i)d" % {'i': i}
+        for i in xrange(num_channels)] + ['int iNumSamples']
 
-    for i in xrange(num_channels):
-        write("const CSAMPLE* pSrc%(i)d, CSAMPLE gain%(i)d," % {'i': i}, indent=len(header))
-    write('int iNumSamples) {', indent=len(header))
+    output.extend(hanging_indent(header, arg_groups, ',', ') {',
+                                 depth=base_indent_depth))
 
     if (num_channels == 1):
         write('copyWithGain(pDest, pSrc0, gain0, iNumSamples);', depth=1)
@@ -139,22 +139,23 @@ def copy_with_gain(output, base_indent_depth, num_channels):
     write('for (int i = 0; i < iNumSamples; ++i) {', depth=1)
     terms = ['pSrc%(i)d[i] * gain%(i)d' % {'i': i} for i in xrange(num_channels)]
     assign = 'pDest[i] = '
-    write(assign + indent_separator(base_indent_depth + 2, assign).join(terms) + ';', depth=2)
+    output.extend(hanging_indent(assign, terms, ' +', ';', depth=2))
+
     write('}', depth=1)
     write('}')
 
 
 def copy_with_ramping_gain(output, base_indent_depth, num_channels):
-    def write(data, depth=0, indent=0):
-        output.append(' ' * (BASIC_INDENT * (depth + base_indent_depth) + indent) + data)
+    def write(data, depth=0):
+        output.append(' ' * (BASIC_INDENT * (depth + base_indent_depth)) + data)
 
     header = "static inline void %s(" % copy_with_ramping_gain_method_name(num_channels)
-    dest_arg = "CSAMPLE* pDest,"
-    write(header + dest_arg)
-    for i in range(num_channels):
-        write("const CSAMPLE* pSrc%(i)d, CSAMPLE gain%(i)din, CSAMPLE gain%(i)dout," % {'i': i},
-              indent=len(header))
-    write('int iNumSamples) {', indent=len(header))
+    arg_groups = ['CSAMPLE* pDest'] + [
+        "const CSAMPLE* pSrc%(i)d, CSAMPLE gain%(i)din, CSAMPLE gain%(i)dout" % {'i': i}
+        for i in xrange(num_channels)] + ['int iNumSamples']
+
+    output.extend(hanging_indent(header, arg_groups, ',', ') {',
+                                 depth=base_indent_depth))
 
     if (num_channels == 1):
         write('copyWithRampingGain(pDest, pSrc0, gain0in, gain0out, iNumSamples);', depth=1)
@@ -163,7 +164,7 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
         return
 
 
-    for i in range(num_channels):
+    for i in xrange(num_channels):
         write('if (gain%(i)din == 0.0 && gain%(i)dout == 0.0) {' % {'i': i}, depth=1)
         args = ['pDest',] + ['pSrc%(i)d, gain%(i)din, gain%(i)dout' % {'i': j} for j in xrange(num_channels) if i != j] + ['iNumSamples',]
         write('%s;' % method_call(copy_with_ramping_gain_method_name(num_channels - 1), args),
@@ -171,7 +172,7 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
         write('return;', depth=2)
         write('}', depth=1)
 
-    for i in range(num_channels):
+    for i in xrange(num_channels):
         write('const CSAMPLE delta%(i)d = 2.0 * (gain%(i)dout - gain%(i)din) / iNumSamples;' % {'i': i}, depth=1)
         write('CSAMPLE gain%(i)d = gain%(i)din;' % {'i': i}, depth=1)
 
@@ -179,17 +180,18 @@ def copy_with_ramping_gain(output, base_indent_depth, num_channels):
 
     write('for (int i = 0; i < iNumSamples; %s) {' % ', '.join(increments), depth=1)
 
-    dest1 = []
-    dest2 = []
-    for i in range(num_channels):
-        dest1.append('pSrc%(i)d[i] * gain%(i)d' % {'i': i})
-        dest2.append('pSrc%(i)d[i + 1] * gain%(i)d' % {'i': i})
+    terms1 = []
+    terms2 = []
+    for i in xrange(num_channels):
+        terms1.append('pSrc%(i)d[i] * gain%(i)d' % {'i': i})
+        terms2.append('pSrc%(i)d[i + 1] * gain%(i)d' % {'i': i})
 
     assign1 = 'pDest[i] = '
     assign2 = 'pDest[i + 1] = '
 
-    write(assign1 + indent_separator(base_indent_depth + 2, assign1).join(dest1) + ';', depth=2)
-    write(assign2 + indent_separator(base_indent_depth + 2, assign2).join(dest2) + ';', depth=2)
+    output.extend(hanging_indent(assign1, terms1, ' +', ';', depth=2))
+    output.extend(hanging_indent(assign2, terms2, ' +', ';', depth=2))
+
     write('}', depth=1)
     write('}')
 
