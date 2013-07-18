@@ -390,14 +390,14 @@ void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
 
 // static
 AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
-        ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection) {
+        ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-    ret->addAnalyser(new AnalyserWaveform(_config));
-    ret->addAnalyser(new AnalyserGain(_config));
+    ret->addAnalyser(new AnalyserWaveform(pConfig));
+    ret->addAnalyser(new AnalyserGain(pConfig));
     VampAnalyser::initializePluginPaths();
-    ret->addAnalyser(new AnalyserBeats(_config));
-    ret->addAnalyser(new AnalyserKey(_config));
+    ret->addAnalyser(new AnalyserBeats(pConfig));
+    ret->addAnalyser(new AnalyserKey(pConfig));
 
     ret->start(QThread::IdlePriority);
     return ret;
@@ -405,14 +405,14 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 
 // static
 AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
-        ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection) {
+        ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-    ret->addAnalyser(new AnalyserWaveform(_config));
-    ret->addAnalyser(new AnalyserGain(_config));
+    ret->addAnalyser(new AnalyserWaveform(pConfig));
+    ret->addAnalyser(new AnalyserGain(pConfig));
     VampAnalyser::initializePluginPaths();
-    ret->addAnalyser(new AnalyserBeats(_config));
-    ret->addAnalyser(new AnalyserKey(_config));
+    ret->addAnalyser(new AnalyserBeats(pConfig));
+    ret->addAnalyser(new AnalyserKey(pConfig));
 
     ret->start(QThread::IdlePriority);
     return ret;
