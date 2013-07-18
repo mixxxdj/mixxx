@@ -22,7 +22,6 @@
 #include "engine/enginecontrol.h"
 
 class EngineChannel;
-class EngineMaster;
 class ControlObject;
 class ControlPushButton;
 class ControlPotmeter;
@@ -63,7 +62,7 @@ class EngineSync : public EngineControl {
     Q_OBJECT
 
   public:
-    EngineSync(EngineMaster *master, ConfigObject<ConfigValue>* pConfig);
+    explicit EngineSync(ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineSync();
 
     void addChannel(EngineChannel* pChannel);
@@ -92,7 +91,6 @@ class EngineSync : public EngineControl {
     double getInternalBeatDistance() const;
     SyncChannel* getSyncChannelForGroup(const QString& group);
 
-    EngineMaster* m_pEngineMaster;
     EngineChannel* m_pMasterChannel;
     ControlObject* m_pSourceRate;
     ControlObject* m_pMasterBpm;

@@ -60,7 +60,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pMasterRate = new ControlPotmeter(ConfigKey(group, "rate"), -1.0, 1.0);
 
     // Master sync controller
-    m_pMasterSync = new EngineSync(this, _config);
+    m_pMasterSync = new EngineSync(_config);
 	// TODO(owen): save / restore default bpm
     ControlObject::getControl(ConfigKey("[Master]","sync_bpm"))->set(124.0);
     ControlObject::getControl(ConfigKey("[Master]","rate"))->set(124.0);

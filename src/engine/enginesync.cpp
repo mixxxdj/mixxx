@@ -24,7 +24,6 @@
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/enginecontrol.h"
-#include "engine/enginemaster.h"
 #include "engine/enginesync.h"
 
 static const char* kMasterSyncGroup = "[Master]";
@@ -60,16 +59,14 @@ void SyncChannel::slotChannelSyncStateChanged(double v) {
     emit(channelSyncStateChanged(this, v));
 }
 
-EngineSync::EngineSync(EngineMaster *master,
-                       ConfigObject<ConfigValue>* _config) :
-        EngineControl(kMasterSyncGroup, _config),
-        m_pEngineMaster(master),
-        m_pSourceRate(NULL),
-        m_pSourceBeatDistance(NULL),
-        m_sSyncSource(kMasterSyncGroup),
-        m_dSourceRate(0.0f), //has to be zero so that master bpm gets set correctly on startup
-        m_dMasterBpm(124.0f),
-        m_dPseudoBufferPos(0.0f) {
+EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
+        : EngineControl(kMasterSyncGroup, _config),
+          m_pSourceRate(NULL),
+          m_pSourceBeatDistance(NULL),
+          m_sSyncSource(kMasterSyncGroup),
+          m_dSourceRate(0.0f), //has to be zero so that master bpm gets set correctly on startup
+          m_dMasterBpm(124.0f),
+          m_dPseudoBufferPos(0.0f) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
     m_pSampleRate = ControlObject::getControl(ConfigKey(kMasterSyncGroup, "samplerate"));
