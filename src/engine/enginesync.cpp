@@ -38,6 +38,10 @@ SyncChannel::SyncChannel(EngineChannel* pChannel)
     connect(m_pChannelSyncState, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotChannelSyncStateChanged(double)),
             Qt::DirectConnection);
+
+    m_pFileBpm = ControlObject::getControl(ConfigKey(m_group, "file_bpm"));
+    m_pRateEngine = ControlObject::getControl(ConfigKey(m_group, "rateEngine"));
+    m_pBeatDistance = ControlObject::getControl(ConfigKey(m_group, "beat_distance"));
 }
 
 SyncChannel::~SyncChannel() {
@@ -45,6 +49,10 @@ SyncChannel::~SyncChannel() {
 
 EngineChannel* SyncChannel::getChannel() {
     return m_pChannel;
+}
+
+double SyncChannel::getFileBpm() const {
+    return m_pFileBpm ? m_pFileBpm->get() : 0.0;
 }
 
 double SyncChannel::getState() const {
@@ -59,10 +67,16 @@ void SyncChannel::slotChannelSyncStateChanged(double v) {
     emit(channelSyncStateChanged(this, v));
 }
 
+ControlObject* SyncChannel::getRateEngineControl() {
+    return m_pRateEngine;
+}
+
+ControlObject* SyncChannel::getBeatDistanceControl() {
+    return m_pBeatDistance;
+}
+
 EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
         : EngineControl(kMasterSyncGroup, _config),
-          m_pSourceRate(NULL),
-          m_pSourceBeatDistance(NULL),
           m_sSyncSource(kMasterSyncGroup),
           m_dSourceRate(0.0f), //has to be zero so that master bpm gets set correctly on startup
           m_dMasterBpm(124.0f),
@@ -127,23 +141,24 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
     m_channels.append(pSyncChannel);
 }
 
-void EngineSync::disconnectMaster() {
-    if (m_pSourceRate != NULL) {
-        disconnect(m_pSourceRate, SIGNAL(valueChangedFromEngine(double)),
-                   this, SLOT(slotSourceRateChanged(double)));
-        m_pSourceRate = NULL;
-    }
-    if (m_pSourceBeatDistance != NULL) {
-        disconnect(m_pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
-                   this, SLOT(slotSourceBeatDistanceChanged(double)));
-        m_pSourceBeatDistance = NULL;
-    }
-    qDebug() << "UNSETTING master buffer (disconnected master)";
-    m_pMasterChannel = NULL;
-}
-
-
 void EngineSync::disableChannelMaster(const QString& channel) {
+    qDebug() << "UNSETTING master channel (disconnected master)";
+
+    SyncChannel* pOldChannelMaster = m_pChannelMaster;
+    if (pOldChannelMaster) {
+        ControlObject* pSourceRate = pOldChannelMaster->getRateEngineControl();
+        if (pSourceRate != NULL) {
+            disconnect(pSourceRate, SIGNAL(valueChangedFromEngine(double)),
+                       this, SLOT(slotSourceRateChanged(double)));
+        }
+        ControlObject* pSourceBeatDistance = pOldChannelMaster->getBeatDistanceControl();
+        if (pSourceBeatDistance != NULL) {
+            disconnect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
+                       this, SLOT(slotSourceBeatDistanceChanged(double)));
+        }
+    }
+    m_pChannelMaster = NULL;
+
     bool channelIsEmpty = channel.isEmpty();
     foreach (SyncChannel* pChannel, m_channels) {
         // If channel is empty, unset master on *all* other channels -- sometimes we
@@ -180,7 +195,6 @@ void EngineSync::setInternalMaster() {
     m_sSyncSource = kMasterSyncGroup;
     resetInternalBeatDistance();
     disableChannelMaster(old_master);
-    disconnectMaster();
     updateSamplesPerBeat();
 
     // This is all we have to do, we'll start using the pseudoposition right away.
@@ -188,63 +202,59 @@ void EngineSync::setInternalMaster() {
 }
 
 bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
+    // If a channel is master, disable it.
+    disableChannelMaster(m_sSyncSource);
+
     if (pSyncChannel == NULL) {
-        //qDebug() << "----------------------------------------------------unsetting master (got empty SyncChannel)";
-        disconnectMaster();
         return false;
     }
 
+    // Only accept channels with an EngineBuffer.
     EngineChannel* pChannel = pSyncChannel->getChannel();
+    if (pChannel == NULL || pChannel->getEngineBuffer() == NULL) {
+        return false;
+    }
+
     const QString& group = pChannel->getGroup();
 
     // Only consider channels that have a track loaded and are in the master
     // mix.
     //qDebug() << "***********************************************asked to set a new master:" << deck;
-    if (pChannel) {
-        disconnectMaster();
-        if (pChannel->getEngineBuffer() == NULL) {
-            return false;
-        }
-        m_pMasterChannel = pChannel;
+    m_pChannelMaster = pSyncChannel;
+    m_sSyncSource = group;
 
-        m_pSourceRate = ControlObject::getControl(ConfigKey(group, "rateEngine"));
-        if (m_pSourceRate == NULL) {
-            //qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
-            return false;
-        }
-        connect(m_pSourceRate, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotSourceRateChanged(double)),
-                Qt::DirectConnection);
 
-        m_pSourceBeatDistance = ControlObject::getControl(ConfigKey(group, "beat_distance"));
-        if (m_pSourceBeatDistance == NULL) {
-            qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 source beat dist was null";
-            return false;
-        }
-        connect(m_pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotSourceBeatDistanceChanged(double)),
-                Qt::DirectConnection);
-
-        // reset internal beat distance to equal the new master
-        resetInternalBeatDistance();
-
-        //qDebug() << "----------------------------setting new master" << group;
-        m_sSyncSource = group;
-        m_pSyncInternalEnabled->set(FALSE);
-        slotSourceRateChanged(m_pSourceRate->get());
-        // This is not redundant, I swear.  Make sure lights are all up to date
-        ControlObject::getControl(ConfigKey(group, "sync_master"))->set(TRUE);
-        ControlObject::getControl(ConfigKey(group, "sync_slave"))->set(FALSE);
-        return true;
-    } else {
-        //qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!did not set master";
-        if (pChannel == NULL)
-            qDebug() << "well, it was null!";
-        else
-            qDebug() << pChannel << pChannel->isActive() << pChannel->isMaster();
+    ControlObject* pSourceRate = pSyncChannel->getRateEngineControl();
+    if (pSourceRate == NULL) {
+        //qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
+        return false;
     }
+    connect(pSourceRate, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotSourceRateChanged(double)),
+            Qt::DirectConnection);
 
-    return false;
+    ControlObject* pSourceBeatDistance = pSyncChannel->getBeatDistanceControl();
+    if (pSourceBeatDistance == NULL) {
+        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 source beat dist was null";
+        return false;
+    }
+    connect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotSourceBeatDistanceChanged(double)),
+            Qt::DirectConnection);
+
+    // reset internal beat distance to equal the new master
+    resetInternalBeatDistance();
+
+    //qDebug() << "----------------------------setting new master" << group;
+
+    m_pSyncInternalEnabled->set(FALSE);
+    slotSourceRateChanged(pSourceRate->get());
+
+    // This is not redundant, I swear.  Make sure lights are all up to date
+    ControlObject::getControl(ConfigKey(group, "sync_master"))->set(TRUE);
+    ControlObject::getControl(ConfigKey(group, "sync_slave"))->set(FALSE);
+
+    return true;
 }
 
 QString EngineSync::chooseNewMaster(const QString& dontpick) {
@@ -281,23 +291,24 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
 
 void EngineSync::slotSourceRateChanged(double rate_engine) {
     //master buffer can be null due to timing issues
-    if (m_pMasterChannel != NULL && rate_engine != m_dSourceRate) {
+    if (m_pChannelMaster != NULL && rate_engine != m_dSourceRate) {
         m_dSourceRate = rate_engine;
-
-        double filebpm = m_pMasterChannel->getEngineBuffer()->getFileBpm();
+        double filebpm = m_pChannelMaster->getFileBpm();
         m_dMasterBpm = rate_engine * filebpm;
+
         //qDebug() << "file bpm " << filebpm;
         //qDebug()<< "announcing a master bpm of" <<  m_dMasterBpm;
 
         if (m_dMasterBpm != 0) {
             m_pSyncRateSlider->set(m_dMasterBpm);
         }
-        m_pMasterBpm->set(m_dMasterBpm); //this will trigger all of the slaves to change rate
+        // This will trigger all of the slaves to change rate.
+        m_pMasterBpm->set(m_dMasterBpm);
     }
 }
 
 void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
-    //pass it on to slaves and update internal position marker
+    // Pass it on to slaves and update internal position marker.
     m_pMasterBeatDistance->set(beat_dist);
     setPseudoPosition(beat_dist);
 }
@@ -376,29 +387,27 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
         return;
     }
     const QString& group = pSyncChannel->getGroup();
-    qDebug() << "got a master state change from" << group;
+    qDebug() << "got a master state change from" << group << state;
+
+    const bool channelIsMaster = m_sSyncSource == group;
 
     // In the following logic, m_sSyncSourcea acts like "previous sync source".
     if (state == SYNC_MASTER) {
         // TODO: don't allow setting of master if not playing
-        // Figure out who the old master was and turn them off
-        QString old_master = m_sSyncSource;
         setChannelMaster(pSyncChannel);
-        qDebug() << "disabling previous master " << old_master;
-        if (old_master != kMasterSyncGroup) {
-            disableChannelMaster(old_master);
-        }
     } else if (state == SYNC_SLAVE) {
         // Was this deck master before?  If so do a handoff
-        if (m_sSyncSource == group) {
+        if (channelIsMaster) {
             qDebug() << group << " current master, setting us to slave (choose new)";
+            // TODO(rryan) isn't this redundant? Is this because of MIDI light
+            // breakage?
             pSyncChannel->setState(SYNC_SLAVE);
             //choose a new master, but don't pick the current one!
             setMaster(chooseNewMaster(group));
         }
     } else {
         // if we were the master, choose a new one.
-        if (m_sSyncSource == group) {
+        if (channelIsMaster) {
             qDebug() << group << " current master being set to none, choose new";
             setMaster(chooseNewMaster(""));
         }
@@ -415,13 +424,13 @@ double EngineSync::getInternalBeatDistance() const {
 }
 
 void EngineSync::resetInternalBeatDistance() {
-    if (m_pSourceBeatDistance != NULL) {
-        m_dPseudoBufferPos = m_pSourceBeatDistance->get() * m_dSamplesPerBeat;
-        qDebug() << "Resetting internal beat distance to new master" << m_dPseudoBufferPos << " "
-                 << m_pSourceBeatDistance->get();
-    } else {
-        m_dPseudoBufferPos = 0;
-    }
+    ControlObject* pSourceBeatDistance = m_pChannelMaster != NULL ?
+            m_pChannelMaster->getBeatDistanceControl() : NULL;
+    double beat_distance = pSourceBeatDistance ? pSourceBeatDistance->get() : 0;
+
+    m_dPseudoBufferPos = beat_distance * m_dSamplesPerBeat;
+    qDebug() << "Resetting internal beat distance to new master"
+             << m_dPseudoBufferPos << beat_distance;
 }
 
 void EngineSync::updateSamplesPerBeat() {
@@ -474,7 +483,7 @@ void EngineSync::setPseudoPosition(double percent) {
 }
 
 EngineChannel* EngineSync::getMaster() const {
-    return m_pMasterChannel;
+    return m_pChannelMaster ? m_pChannelMaster->getChannel() : NULL;
 }
 
 SyncChannel* EngineSync::getSyncChannelForGroup(const QString& group) {

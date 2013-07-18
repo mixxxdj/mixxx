@@ -45,6 +45,10 @@ class SyncChannel : public QObject {
     EngineChannel* getChannel();
     void setState(double state);
     double getState() const;
+    double getFileBpm() const;
+
+    ControlObject* getRateEngineControl();
+    ControlObject* getBeatDistanceControl();
 
   signals:
     void channelSyncStateChanged(SyncChannel*, double);
@@ -56,6 +60,9 @@ class SyncChannel : public QObject {
     EngineChannel* m_pChannel;
     QString m_group;
     ControlObject* m_pChannelSyncState;
+    ControlObject* m_pFileBpm;
+    ControlObject* m_pRateEngine;
+    ControlObject* m_pBeatDistance;
 };
 
 class EngineSync : public EngineControl {
@@ -83,7 +90,6 @@ class EngineSync : public EngineControl {
     bool setChannelMaster(SyncChannel* pSyncChannel);
     void setInternalMaster();
     QString chooseNewMaster(const QString& dontpick);
-    void disconnectMaster();
     void disableChannelMaster(const QString& deck);
     void updateSamplesPerBeat();
     void setPseudoPosition(double percent);
@@ -91,10 +97,9 @@ class EngineSync : public EngineControl {
     double getInternalBeatDistance() const;
     SyncChannel* getSyncChannelForGroup(const QString& group);
 
-    EngineChannel* m_pMasterChannel;
-    ControlObject* m_pSourceRate;
+    SyncChannel* m_pChannelMaster;
+
     ControlObject* m_pMasterBpm;
-    ControlObject* m_pSourceBeatDistance;
     ControlObject* m_pMasterBeatDistance;
     ControlObject* m_pSampleRate;
     ControlPushButton* m_pSyncInternalEnabled;
