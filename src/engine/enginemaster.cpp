@@ -134,6 +134,7 @@ EngineMaster::~EngineMaster()
     delete xFaderCurve;
     delete xFaderMode;
 
+    delete m_pMasterSync;
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
     delete m_pMasterAudioBufferSize;
