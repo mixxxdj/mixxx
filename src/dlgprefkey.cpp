@@ -173,7 +173,7 @@ void DlgPrefKey::setDefaults() {
 }
 
 void DlgPrefKey::pluginSelected(int i){
-    if (i==-1) {
+    if (i == -1) {
         return;
     }
     m_selectedAnalyser = m_listIdentifier[i];
