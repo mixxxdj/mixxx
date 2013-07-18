@@ -538,9 +538,6 @@ EngineChannel* EngineMaster::getChannel(QString group) {
     return NULL;
 }
 
-int EngineMaster::numChannels() const {
-    return m_channels.size();
-}
 const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
     return getChannelBuffer(PlayerManager::groupForDeck(i));
 }

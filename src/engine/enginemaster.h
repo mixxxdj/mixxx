@@ -53,7 +53,6 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    int numChannels() const;
     const CSAMPLE* buffer(AudioOutput output) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
