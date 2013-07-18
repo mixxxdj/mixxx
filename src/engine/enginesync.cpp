@@ -165,7 +165,7 @@ void EngineSync::setMaster(const QString& group) {
     }
 }
 
-void EngineSync::setInternalMaster(void) {
+void EngineSync::setInternalMaster() {
     if (m_sSyncSource == kMasterSyncGroup) {
         qDebug() << "already internal master";
         return;
@@ -402,7 +402,7 @@ void EngineSync::slotChannelSyncStateChanged(const QString& group, double state)
     }
 }
 
-double EngineSync::getInternalBeatDistance(void) const {
+double EngineSync::getInternalBeatDistance() const {
     //returns number of samples distance from the last beat.
     if (m_dPseudoBufferPos < 0) {
         qDebug() << "ERROR: Internal beat distance should never be less than zero";
@@ -421,7 +421,7 @@ void EngineSync::resetInternalBeatDistance() {
     }
 }
 
-void EngineSync::updateSamplesPerBeat(void) {
+void EngineSync::updateSamplesPerBeat() {
     //to get samples per beat, do:
     //
     // samples   samples     60 seconds     minutes

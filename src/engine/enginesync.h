@@ -80,15 +80,15 @@ class EngineSync : public EngineControl {
   private:
     void setMaster(const QString& group);
     bool setChannelMaster(const QString& deck);
-    void setInternalMaster(void);
-    bool setMidiMaster(void);
+    void setInternalMaster();
+    bool setMidiMaster();
     QString chooseNewMaster(const QString& dontpick);
-    void disconnectMaster(void);
+    void disconnectMaster();
     void disableChannelMaster(const QString& deck);
-    void updateSamplesPerBeat(void);
+    void updateSamplesPerBeat();
     void setPseudoPosition(double percent);
-    void resetInternalBeatDistance(void);
-    double getInternalBeatDistance(void) const;
+    void resetInternalBeatDistance();
+    double getInternalBeatDistance() const;
 
     EngineMaster* m_pEngineMaster;
     EngineChannel* m_pMasterChannel;
@@ -103,7 +103,8 @@ class EngineSync : public EngineControl {
     QList<SyncChannel*> m_channels;
     QString m_sSyncSource;
     int m_iSampleRate;
-    double m_dSourceRate, m_dMasterBpm;
+    double m_dSourceRate;
+    double m_dMasterBpm;
     double m_dSamplesPerBeat;
     double m_dPseudoBufferPos;
 };
