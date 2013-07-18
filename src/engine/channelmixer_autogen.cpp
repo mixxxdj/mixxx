@@ -3,6 +3,7 @@
 #include "sampleutil.h"
 ////////////////////////////////////////////////////////
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //
+// SEE scripts/generate_sample_functions.py           //
 ////////////////////////////////////////////////////////
 
 // static
@@ -12,7 +13,7 @@ void ChannelMixer::mixChannels(const QList<EngineMaster::ChannelInfo*>& channels
                                unsigned int maxChannels,
                                QList<CSAMPLE>* channelGainCache,
                                CSAMPLE* pOutput,
-                               unsigned int iBufferSize) { 
+                               unsigned int iBufferSize) {
     int activeChannels[32] = {
         -1,
         -1,

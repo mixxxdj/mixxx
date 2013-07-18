@@ -2,6 +2,7 @@
 #define SAMPLEUTILAUTOGEN_H
 ////////////////////////////////////////////////////////
 // THIS FILE IS AUTO-GENERATED. DO NOT EDIT DIRECTLY! //
+// SEE scripts/generate_sample_functions.py           //
 ////////////////////////////////////////////////////////
 static inline void copy1WithGain(CSAMPLE* pDest,
                                  const CSAMPLE* pSrc0, CSAMPLE gain0,
