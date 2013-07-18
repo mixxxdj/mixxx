@@ -337,6 +337,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
     ScopedTimer t("EngineMaster::process");
 
+    // Notify EngineSync that we are starting the callback.
+    m_pMasterSync->onCallbackStart(iBufferSize);
+
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);
 
@@ -354,9 +357,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     CSAMPLE cmaster_gain = 0.5*(cf_val+1.);
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
-
-    // Increment internal buffer first in case it is the master
-    m_pMasterSync->incrementPseudoPosition(iBufferSize);
 
     // TODO(owen): MIDI goes here, probably.
 

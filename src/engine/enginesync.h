@@ -46,7 +46,7 @@ class EngineSync : public EngineControl {
     bool setMidiMaster(void);
     EngineChannel* getMaster() const;
 
-    void incrementPseudoPosition(int bufferSize);
+    void onCallbackStart(int bufferSize);
     double getInternalBeatDistance(void) const;
 
   private slots:

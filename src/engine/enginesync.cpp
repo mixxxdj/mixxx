@@ -27,20 +27,22 @@
 #include "engine/enginemaster.h"
 #include "engine/enginesync.h"
 
+static const char* kMasterSyncGroup = "[Master]";
+
 EngineSync::EngineSync(EngineMaster *master,
                        ConfigObject<ConfigValue>* _config) :
-        EngineControl("[Master]", _config),
+        EngineControl(kMasterSyncGroup, _config),
         m_pEngineMaster(master),
         m_pSourceRate(NULL),
         m_pSourceBeatDistance(NULL),
-        m_sSyncSource("[Master]"),
+        m_sSyncSource(kMasterSyncGroup),
         m_dSourceRate(0.0f), //has to be zero so that master bpm gets set correctly on startup
         m_dMasterBpm(124.0f),
         m_dPseudoBufferPos(0.0f)
 {
-    m_pMasterBeatDistance = new ControlObject(ConfigKey("[Master]", "beat_distance"));
+    m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
-    m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    m_pSampleRate = ControlObject::getControl(ConfigKey(kMasterSyncGroup, "samplerate"));
     connect(m_pSampleRate, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotSampleRateChanged(double)),
             Qt::DirectConnection);
@@ -53,7 +55,7 @@ EngineSync::EngineSync(EngineMaster *master,
         m_iSampleRate = 44100;
     }
 
-    m_pMasterBpm = new ControlObject(ConfigKey("[Master]", "sync_bpm"));
+    m_pMasterBpm = new ControlObject(ConfigKey(kMasterSyncGroup, "sync_bpm"));
     connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotMasterBpmChanged(double)),
             Qt::DirectConnection);
@@ -61,13 +63,13 @@ EngineSync::EngineSync(EngineMaster *master,
             this, SLOT(slotMasterBpmChanged(double)),
             Qt::DirectConnection);
 
-    m_pSyncInternalEnabled = new ControlPushButton(ConfigKey("[Master]", "sync_master"));
+    m_pSyncInternalEnabled = new ControlPushButton(ConfigKey(kMasterSyncGroup, "sync_master"));
     m_pSyncInternalEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pSyncInternalEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotInternalMasterChanged(double)),
             Qt::DirectConnection);
 
-    m_pSyncRateSlider = new ControlPotmeter(ConfigKey("[Master]", "rate"), 40.0, 200.0);
+    m_pSyncRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "rate"), 40.0, 200.0);
     connect(m_pSyncRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
@@ -146,7 +148,7 @@ void EngineSync::disconnectMaster() {
 void EngineSync::disableDeckMaster(QString deck) {
     if (deck == "") {
         foreach (QString deck, m_sDeckList) {
-            if (deck != "[Master]") {
+            if (deck != kMasterSyncGroup) {
                 // Unset master on *all* other decks -- sometimes we end up with two masters
                 // for some reason.
                 ControlObject *sync_state = ControlObject::getControl(ConfigKey(deck, "sync_state"));
@@ -173,7 +175,7 @@ void EngineSync::setMaster(QString group) {
     // Convenience function that can split out to either set internal
     // or set deck master.
     // TODO(owen): midi master? or is that just internal?
-    if (group == "[Master]") {
+    if (group == kMasterSyncGroup) {
         setInternalMaster();
     } else {
         if (!setDeckMaster(group)) {
@@ -184,13 +186,13 @@ void EngineSync::setMaster(QString group) {
 }
 
 void EngineSync::setInternalMaster(void) {
-    if (m_sSyncSource == "[Master]") {
+    if (m_sSyncSource == kMasterSyncGroup) {
         qDebug() << "already internal master";
         return;
     }
     m_dMasterBpm = m_pMasterBpm->get();
     QString old_master = m_sSyncSource;
-    m_sSyncSource = "[Master]";
+    m_sSyncSource = kMasterSyncGroup;
     resetInternalBeatDistance();
     disableDeckMaster(old_master);
     disconnectMaster();
@@ -266,7 +268,7 @@ bool EngineSync::setMidiMaster() {
 
 QString EngineSync::chooseNewMaster(QString dontpick="") {
     //qDebug() << "----------=-=-=-=-=-=-=-finding a new master";
-    QString fallback = "[Master]";
+    QString fallback = kMasterSyncGroup;
     foreach (QString deck, m_sDeckList) {
         if (deck == dontpick) {
             continue;
@@ -322,7 +324,7 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
 }
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
-    if (m_sSyncSource != "[Master]") {
+    if (m_sSyncSource != kMasterSyncGroup) {
         // TODO: this should be prevented by setting the slider to disabled.
         m_pSyncRateSlider->set(m_dMasterBpm);
         return;
@@ -336,7 +338,7 @@ void EngineSync::slotMasterBpmChanged(double new_bpm) {
     m_pSyncRateSlider->set(new_bpm);
     if (new_bpm != m_dMasterBpm) {
   //      qDebug() << "set slider";
-        if (m_sSyncSource != "[Master]") {
+        if (m_sSyncSource != kMasterSyncGroup) {
             //qDebug() << "can't set master sync when sync isn't internal";
             //XXX(Owen):
             //it looks like this is Good Enough for preventing accidental
@@ -416,7 +418,7 @@ void EngineSync::deckXStateChanged(QString group, double state) {
         QString old_master = m_sSyncSource;
         setDeckMaster(group);
         qDebug() << "disabling previous master " << old_master;
-        if (old_master != "[Master]") {
+        if (old_master != kMasterSyncGroup) {
             disableDeckMaster(old_master);
         }
     } else if (state == SYNC_SLAVE) {
@@ -475,13 +477,13 @@ void EngineSync::updateSamplesPerBeat(void) {
     }
 }
 
-void EngineSync::incrementPseudoPosition(int bufferSize) {
+void EngineSync::onCallbackStart(int bufferSize) {
     // Enginemaster calls this function, it is used to keep track of the internal
     // clock (when there is no other master like a deck or MIDI
     // the pseudo position is a double because we want to be precise,
     // and bpms may not line up exactly with samples.
 
-    if (m_sSyncSource != "[Master]") {
+    if (m_sSyncSource != kMasterSyncGroup) {
         //we don't care, it will get set in setPseudoPosition
         return;
     }
