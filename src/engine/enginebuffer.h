@@ -152,7 +152,7 @@ public:
                              QString reason);
 
   private:
-    void enablePitchAndTimeScaling(bool b);
+    void enablePitchAndTimeScaling(bool bEnable);
 
     void updateIndicators(double rate, int iBufferSize);
 

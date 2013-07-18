@@ -304,17 +304,17 @@ double EngineBuffer::fractionalPlayposFromAbsolute(double absolutePlaypos) {
     return fFractionalPlaypos;
 }
 
-void EngineBuffer::enablePitchAndTimeScaling(bool b) {
+void EngineBuffer::enablePitchAndTimeScaling(bool bEnable) {
     // MUST ACQUIRE THE PAUSE MUTEX BEFORE CALLING THIS METHOD
 
     // When no time-stretching or pitch-shifting is needed we use our own linear
     // interpolation code (EngineBufferScaleLinear). It is faster and sounds
     // much better for scratching.
 
-    if (b && m_pScale != m_pScaleRB) {
+    if (bEnable && m_pScale != m_pScaleRB) {
         m_pScale = m_pScaleRB;
         m_bScalerChanged = true;
-    } else if (!b && m_pScale != m_pScaleLinear) {
+    } else if (!bEnable && m_pScale != m_pScaleLinear) {
         m_pScale = m_pScaleLinear;
         m_bScalerChanged = true;
     }
