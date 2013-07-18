@@ -11,7 +11,7 @@ class ControlPushButton;
 class KeyControl : public EngineControl {
     Q_OBJECT
   public:
-    KeyControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    KeyControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig);
     virtual ~KeyControl();
 
     // Returns a value describing the pitch adjustment measured in octaves. A

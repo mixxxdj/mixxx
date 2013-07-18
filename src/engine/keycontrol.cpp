@@ -8,12 +8,12 @@
 #include "engine/enginebuffer.h"
 #include "track/keyutils.h"
 
-KeyControl::KeyControl(const char* _group,
-                       ConfigObject<ConfigValue>* _config)
-        : EngineControl(_group, _config),
+KeyControl::KeyControl(const char* pGroup,
+                       ConfigObject<ConfigValue>* pConfig)
+        : EngineControl(pGroup, pConfig),
           m_dOldRate(0.0),
           m_bOldKeylock(false) {
-    m_pPitch = new ControlPotmeter(ConfigKey(_group, "pitch"), -1.f, 1.f);
+    m_pPitch = new ControlPotmeter(ConfigKey(pGroup, "pitch"), -1.f, 1.f);
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
@@ -21,22 +21,22 @@ KeyControl::KeyControl(const char* _group,
             this, SLOT(slotPitchChanged(double)),
             Qt::DirectConnection);
 
-    m_pButtonSyncKey = new ControlPushButton(ConfigKey(_group, "sync_key"));
+    m_pButtonSyncKey = new ControlPushButton(ConfigKey(pGroup, "sync_key"));
     connect(m_pButtonSyncKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncKey(double)),
             Qt::DirectConnection);
 
-    m_pFileKey = new ControlObject(ConfigKey(_group, "file_key"));
+    m_pFileKey = new ControlObject(ConfigKey(pGroup, "file_key"));
     connect(m_pFileKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileKeyChanged(double)),
             Qt::DirectConnection);
 
-    m_pEngineKey = new ControlObject(ConfigKey(_group, "key"));
+    m_pEngineKey = new ControlObject(ConfigKey(pGroup, "key"));
     connect(m_pEngineKey, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetEngineKey(double)),
             Qt::DirectConnection);
 
-    m_pRateSlider = ControlObject::getControl(ConfigKey(_group, "rate"));
+    m_pRateSlider = ControlObject::getControl(ConfigKey(pGroup, "rate"));
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
@@ -44,7 +44,7 @@ KeyControl::KeyControl(const char* _group,
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pRateRange = ControlObject::getControl(ConfigKey(_group, "rateRange"));
+    m_pRateRange = ControlObject::getControl(ConfigKey(pGroup, "rateRange"));
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
@@ -52,7 +52,7 @@ KeyControl::KeyControl(const char* _group,
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pRateDir = ControlObject::getControl(ConfigKey(_group, "rate_dir"));
+    m_pRateDir = ControlObject::getControl(ConfigKey(pGroup, "rate_dir"));
     connect(m_pRateDir, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
@@ -60,7 +60,7 @@ KeyControl::KeyControl(const char* _group,
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
 
-    m_pKeylock = ControlObject::getControl(ConfigKey(_group, "keylock"));
+    m_pKeylock = ControlObject::getControl(ConfigKey(pGroup, "keylock"));
     connect(m_pKeylock, SIGNAL(valueChanged(double)),
             this, SLOT(slotRateChanged()),
             Qt::DirectConnection);
@@ -71,8 +71,9 @@ KeyControl::KeyControl(const char* _group,
 
 KeyControl::~KeyControl() {
     delete m_pPitch;
-    delete m_pEngineKey;
+    delete m_pButtonSyncKey;
     delete m_pFileKey;
+    delete m_pEngineKey;
 }
 
 double KeyControl::getPitchAdjustOctaves() {
