@@ -156,7 +156,6 @@ void EngineSync::disableChannelMaster(const QString& channel) {
 void EngineSync::setMaster(const QString& group) {
     // Convenience function that can split out to either set internal
     // or set deck master.
-    // TODO(owen): midi master? or is that just internal?
     if (group == kMasterSyncGroup) {
         setInternalMaster();
     } else {
@@ -240,11 +239,6 @@ bool EngineSync::setChannelMaster(const QString& deck) {
             qDebug() << pChannel << pChannel->isActive() << pChannel->isMaster();
     }
 
-    return false;
-}
-
-bool EngineSync::setMidiMaster() {
-    // Stub for now.
     return false;
 }
 
@@ -443,19 +437,19 @@ void EngineSync::updateSamplesPerBeat() {
 }
 
 void EngineSync::onCallbackStart(int bufferSize) {
-    // Enginemaster calls this function, it is used to keep track of the internal
-    // clock (when there is no other master like a deck or MIDI
-    // the pseudo position is a double because we want to be precise,
-    // and bpms may not line up exactly with samples.
+    // EngineMaster calls this function, it is used to keep track of the
+    // internal clock (when there is no other master like a deck or MIDI) the
+    // pseudo position is a double because we want to be precise, and beats may
+    // not line up exactly with samples.
 
     if (m_sSyncSource != kMasterSyncGroup) {
-        //we don't care, it will get set in setPseudoPosition
+        // We don't care, it will get set in setPseudoPosition.
         return;
     }
 
-    m_dPseudoBufferPos += bufferSize / 2; //stereo samples, so divide by 2
+    m_dPseudoBufferPos += bufferSize / 2; // stereo samples, so divide by 2
 
-    //can't use mod because we're in double land
+    // can't use mod because we're in double land
     if (m_dSamplesPerBeat <= 0) {
         qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
                  << "setting to about 124 bpm at 44.1Khz.";

@@ -81,7 +81,6 @@ class EngineSync : public EngineControl {
     void setMaster(const QString& group);
     bool setChannelMaster(const QString& deck);
     void setInternalMaster();
-    bool setMidiMaster();
     QString chooseNewMaster(const QString& dontpick);
     void disconnectMaster();
     void disableChannelMaster(const QString& deck);
