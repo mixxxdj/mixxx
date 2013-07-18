@@ -126,11 +126,13 @@ void EngineSync::addChannel(const QString& channel) {
 
 void EngineSync::disconnectMaster() {
     if (m_pSourceRate != NULL) {
-        m_pSourceRate->disconnect();
+        disconnect(m_pSourceRate, SIGNAL(valueChangedFromEngine(double)),
+                   this, SLOT(slotSourceRateChanged(double)));
         m_pSourceRate = NULL;
     }
     if (m_pSourceBeatDistance != NULL) {
-        m_pSourceBeatDistance->disconnect();
+        disconnect(m_pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
+                   this, SLOT(slotSourceBeatDistanceChanged(double)));
         m_pSourceBeatDistance = NULL;
     }
     qDebug() << "UNSETTING master buffer (disconnected master)";
