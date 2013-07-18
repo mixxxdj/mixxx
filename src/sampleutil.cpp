@@ -38,16 +38,16 @@ void SampleUtil::applyGain(CSAMPLE* pBuffer,
 
 // static
 void SampleUtil::applyRampingGain(CSAMPLE* pBuffer,
-                                  CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
-    if (gain1 == 1.0f && gain2 == 1.0f)
+                                  CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples) {
+    if (old_gain == 1.0f && new_gain == 1.0f)
         return;
-    if (gain1 == 0.0f && gain2 == 0.0f) {
+    if (old_gain == 0.0f && new_gain == 0.0f) {
         memset(pBuffer, 0, sizeof(pBuffer[0]) * iNumSamples);
         return;
     }
 
-    const CSAMPLE delta = 2.0 * (gain2 - gain1) / iNumSamples;
-    CSAMPLE gain = gain1;
+    const CSAMPLE delta = 2.0 * (new_gain - old_gain) / iNumSamples;
+    CSAMPLE gain = old_gain;
     for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
         pBuffer[i] *= gain;
         pBuffer[i + 1] *= gain;
@@ -77,6 +77,20 @@ void SampleUtil::addWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 
     for (int i = 0; i < iNumSamples; ++i) {
         pDest[i] += pSrc[i] * gain;
+    }
+}
+
+void SampleUtil::addWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
+                                    CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples) {
+    if (old_gain == 0.0f && new_gain == 0.0f) {
+        return;
+    }
+
+    const CSAMPLE delta = 2.0 * (new_gain - old_gain) / iNumSamples;
+    CSAMPLE gain = old_gain;
+    for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
+        pDest[i] += pSrc[i] * gain;
+        pDest[i + 1] += pSrc[i + 1] * gain;
     }
 }
 
@@ -141,21 +155,21 @@ void SampleUtil::copyWithGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
 
 // static
 void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
-                                     CSAMPLE gain1, CSAMPLE gain2, int iNumSamples) {
+                                     CSAMPLE old_gain, CSAMPLE new_gain, int iNumSamples) {
     if (pDest == pSrc) {
-        return applyRampingGain(pDest, gain1, gain2, iNumSamples);
+        return applyRampingGain(pDest, old_gain, new_gain, iNumSamples);
     }
-    if (gain1 == 1.0f && gain2 == 1.0f) {
+    if (old_gain == 1.0f && new_gain == 1.0f) {
         memcpy(pDest, pSrc, sizeof(pDest[0]) * iNumSamples);
         return;
     }
-    if (gain1 == 0.0f && gain2 == 0.0f) {
+    if (old_gain == 0.0f && new_gain == 0.0f) {
         memset(pDest, 0, sizeof(pDest[0]) * iNumSamples);
         return;
     }
 
-    const CSAMPLE delta = 2.0 * (gain2 - gain1) / iNumSamples;
-    CSAMPLE gain = gain1;
+    const CSAMPLE delta = 2.0 * (new_gain - old_gain) / iNumSamples;
+    CSAMPLE gain = old_gain;
     for (int i = 0; i < iNumSamples; i += 2, gain += delta) {
         pDest[i] = pSrc[i] * gain;
         pDest[i + 1] = pSrc[i + 1] * gain;
@@ -164,198 +178,6 @@ void SampleUtil::copyWithRampingGain(CSAMPLE* pDest, const CSAMPLE* pSrc,
     // OR! need to test which fares better
     // memcpy(pDest, pSrc, sizeof(pDest[0]) * iNumSamples);
     // applyGain(pDest, gain);
-}
-
-// static
-void SampleUtil::copy2WithGain(CSAMPLE* pDest,
-                               const CSAMPLE* pSrc1, CSAMPLE gain1,
-                               const CSAMPLE* pSrc2, CSAMPLE gain2,
-                               int iNumSamples) {
-    if (gain1 == 0.0f) {
-        return copyWithGain(pDest, pSrc2, gain2, iNumSamples);
-    }
-    if (gain2 == 0.0f) {
-        return copyWithGain(pDest, pSrc1, gain1, iNumSamples);
-    }
-
-    for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2;
-    }
-}
-
-// static
-void SampleUtil::copy3WithGain(CSAMPLE* pDest,
-                               const CSAMPLE* pSrc1, CSAMPLE gain1,
-                               const CSAMPLE* pSrc2, CSAMPLE gain2,
-                               const CSAMPLE* pSrc3, CSAMPLE gain3,
-                               int iNumSamples) {
-    if (gain1 == 0.0f) {
-        return copy2WithGain(pDest, pSrc2, gain2, pSrc3, gain3, iNumSamples);
-    }
-    if (gain2 == 0.0f) {
-        return copy2WithGain(pDest, pSrc1, gain1, pSrc3, gain3, iNumSamples);
-    }
-    if (gain3 == 0.0f) {
-        return copy2WithGain(pDest, pSrc1, gain1, pSrc2, gain2, iNumSamples);
-    }
-
-    for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
-    }
-}
-
-// static
-void SampleUtil::copy3WithRampingGain(CSAMPLE* pDest,
-                               const CSAMPLE* pSrc1, CSAMPLE gain1in, CSAMPLE gain1out,
-                               const CSAMPLE* pSrc2, CSAMPLE gain2in, CSAMPLE gain2out,
-                               const CSAMPLE* pSrc3, CSAMPLE gain3in, CSAMPLE gain3out,
-                               int iNumSamples) {
-    const CSAMPLE delta1 = 2.0 * (gain1out - gain1in) / iNumSamples;
-    const CSAMPLE delta2 = 2.0 * (gain2out - gain2in) / iNumSamples;
-    const CSAMPLE delta3 = 2.0 * (gain3out - gain3in) / iNumSamples;
-    CSAMPLE gain1 = gain1in;
-    CSAMPLE gain2 = gain2in;
-    CSAMPLE gain3 = gain3in;
-    for (int i = 0; i < iNumSamples; i += 2, gain1 += delta1, gain2 += delta2, gain3 += delta3) {
-        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3;
-        pDest[i + 1] = pSrc1[i + 1] * gain1 + pSrc2[i + 1] * gain2 + pSrc3[i + 1] * gain3;
-    }
-}
-
-// static
-void SampleUtil::copy4WithGain(CSAMPLE* pDest,
-                               const CSAMPLE* pSrc1, CSAMPLE gain1,
-                               const CSAMPLE* pSrc2, CSAMPLE gain2,
-                               const CSAMPLE* pSrc3, CSAMPLE gain3,
-                               const CSAMPLE* pSrc4, CSAMPLE gain4,
-                               int iNumSamples) {
-    if (gain1 == 0.0f) {
-        return copy3WithGain(pDest, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, iNumSamples);
-    }
-    if (gain2 == 0.0f) {
-        return copy3WithGain(pDest, pSrc1, gain1, pSrc3, gain3, pSrc4, gain4, iNumSamples);
-    }
-    if (gain3 == 0.0f) {
-        return copy3WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc4, gain4, iNumSamples);
-    }
-    if (gain4 == 0.0f) {
-        return copy3WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, iNumSamples);
-    }
-    for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3 + pSrc4[i] * gain4;
-    }
-}
-
-// static
-void SampleUtil::copy5WithGain(CSAMPLE* pDest,
-                               const CSAMPLE* pSrc1, CSAMPLE gain1,
-                               const CSAMPLE* pSrc2, CSAMPLE gain2,
-                               const CSAMPLE* pSrc3, CSAMPLE gain3,
-                               const CSAMPLE* pSrc4, CSAMPLE gain4,
-                               const CSAMPLE* pSrc5, CSAMPLE gain5,
-                               int iNumSamples) {
-    if (gain1 == 0.0f) {
-        return copy4WithGain(pDest, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, iNumSamples);
-    }
-    if (gain2 == 0.0f) {
-        return copy4WithGain(pDest, pSrc1, gain1, pSrc3, gain3, pSrc4, gain4, pSrc5, gain5, iNumSamples);
-    }
-    if (gain3 == 0.0f) {
-        return copy4WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc4, gain4, pSrc5, gain5, iNumSamples);
-    }
-    if (gain4 == 0.0f) {
-        return copy4WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc5, gain5, iNumSamples);
-    }
-    if (gain5 == 0.0f) {
-        return copy4WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4, iNumSamples);
-    }
-
-    for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3 + pSrc4[i] * gain4 + pSrc5[i] * gain5;
-    }
-}
-
-// static
-void SampleUtil::copy6WithGain(CSAMPLE* pDest,
-                               const CSAMPLE* pSrc1, CSAMPLE gain1,
-                               const CSAMPLE* pSrc2, CSAMPLE gain2,
-                               const CSAMPLE* pSrc3, CSAMPLE gain3,
-                               const CSAMPLE* pSrc4, CSAMPLE gain4,
-                               const CSAMPLE* pSrc5, CSAMPLE gain5,
-                               const CSAMPLE* pSrc6, CSAMPLE gain6,
-                               int iNumSamples) {
-    if (gain1 == 0.0f) {
-        return copy5WithGain(pDest, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4,
-                             pSrc5, gain5, pSrc6, gain6, iNumSamples);
-    }
-    if (gain2 == 0.0f) {
-        return copy5WithGain(pDest, pSrc1, gain1, pSrc3, gain3, pSrc4, gain4,
-                             pSrc5, gain5, pSrc6, gain6, iNumSamples);
-    }
-    if (gain3 == 0.0f) {
-        return copy5WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc4, gain4,
-                             pSrc5, gain5, pSrc6, gain6, iNumSamples);
-    }
-    if (gain4 == 0.0f) {
-        return copy5WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
-                             pSrc5, gain5, pSrc6, gain6, iNumSamples);
-    }
-    if (gain5 == 0.0f) {
-        return copy5WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
-                             pSrc4, gain4, pSrc6, gain6, iNumSamples);
-    }
-    if (gain6 == 0.0f) {
-        return copy5WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
-                             pSrc4, gain4, pSrc5, gain5, iNumSamples);
-    }
-    for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3 +
-                pSrc4[i] * gain4 + pSrc5[i] * gain5 + pSrc6[i] * gain6;
-    }
-}
-
-// static
-void SampleUtil::copy7WithGain(CSAMPLE* pDest,
-                               const CSAMPLE* pSrc1, CSAMPLE gain1,
-                               const CSAMPLE* pSrc2, CSAMPLE gain2,
-                               const CSAMPLE* pSrc3, CSAMPLE gain3,
-                               const CSAMPLE* pSrc4, CSAMPLE gain4,
-                               const CSAMPLE* pSrc5, CSAMPLE gain5,
-                               const CSAMPLE* pSrc6, CSAMPLE gain6,
-                               const CSAMPLE* pSrc7, CSAMPLE gain7,
-                               int iNumSamples) {
-    if (gain1 == 0.0f) {
-        return copy6WithGain(pDest, pSrc2, gain2, pSrc3, gain3, pSrc4, gain4,
-                             pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
-    }
-    if (gain2 == 0.0f) {
-        return copy6WithGain(pDest, pSrc1, gain1, pSrc3, gain3, pSrc4, gain4,
-                             pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
-    }
-    if (gain3 == 0.0f) {
-        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc4, gain4,
-                             pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
-    }
-    if (gain4 == 0.0f) {
-        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
-                             pSrc5, gain5, pSrc6, gain6, pSrc7, gain7, iNumSamples);
-    }
-    if (gain5 == 0.0f) {
-        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
-                             pSrc4, gain4, pSrc6, gain6, pSrc7, gain7, iNumSamples);
-    }
-    if (gain6 == 0.0f) {
-        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
-                             pSrc4, gain4, pSrc5, gain5, pSrc7, gain7, iNumSamples);
-    }
-    if (gain7 == 0.0f) {
-        return copy6WithGain(pDest, pSrc1, gain1, pSrc2, gain2, pSrc3, gain3,
-                             pSrc4, gain4, pSrc5, gain5, pSrc6, gain6, iNumSamples);
-    }
-    for (int i = 0; i < iNumSamples; ++i) {
-        pDest[i] = pSrc1[i] * gain1 + pSrc2[i] * gain2 + pSrc3[i] * gain3 +
-                pSrc4[i] * gain4 + pSrc5[i] * gain5 + pSrc6[i] * gain6 + pSrc7[i] * gain7;
-    }
 }
 
 // static
