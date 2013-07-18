@@ -364,8 +364,8 @@ METADATA
     <sql>
       CREATE TABLE IF NOT EXISTS social_tags (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name VARCHAR(512),
-        source VARCHAR(128),
+        name TEXT,
+        source TEXT,
         UNIQUE (name, source)
       );
       CREATE TABLE IF NOT EXISTS track_social_tags (
