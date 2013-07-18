@@ -59,7 +59,6 @@ class BpmControl : public EngineControl {
 
   private:
     double getBeatDistance(double dThisPosition) const;
-    EngineBuffer* pickSyncTarget();
     bool syncTempo();
     bool syncPhase();
 
