@@ -122,6 +122,9 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
 }
 
 EngineSync::~EngineSync() {
+    while (!m_channels.isEmpty()) {
+        delete m_channels.takeLast();
+    }
     delete m_pMasterBpm;
     delete m_pMasterBeatDistance;
     delete m_pSyncRateSlider;
