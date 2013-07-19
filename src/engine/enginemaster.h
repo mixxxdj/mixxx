@@ -53,13 +53,9 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
-    int numChannels() const;
     const CSAMPLE* buffer(AudioOutput output) const;
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
-    
-    EngineSync* getMasterSync(void);
-    void setMasterSync(QString deck);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --
     // only call it before the engine has started mixing.
@@ -135,6 +131,14 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
                      CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
+
+    // Processes active channels. The master sync channel (if any) is processed
+    // first and all others are processed after. Sets the i'th bit of
+    // masterOutput and headphoneOutput if the i'th channel is enabled for the
+    // master output or headphone output, respectively.
+    void processChannels(unsigned int* masterOutput,
+                         unsigned int* headphoneOutput,
+                         int iBufferSize);
 
     QList<ChannelInfo*> m_channels;
 
