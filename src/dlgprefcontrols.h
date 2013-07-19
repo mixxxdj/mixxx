@@ -59,6 +59,9 @@ public slots:
     void slotSetCueDefault(int);
     void slotSetCueRecall(int);
     void slotSetAutoDjRequeue(int);
+    void slotSetAutoDjMinimumAvailable(int);
+    void slotSetAutoDjUseIgnoreTime(int);
+    void slotSetAutoDjIgnoreTime(const QTime &a_rTime);
     void slotSetRateRamp(bool);
     void slotSetRateRampSensitivity(int);
     void slotSetLocale(int);

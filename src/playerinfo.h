@@ -32,8 +32,10 @@ class PlayerInfo : public QObject {
     TrackPointer getTrackInfo(const QString& group);
     void setTrackInfo(const QString& group, const TrackPointer& trackInfoObj);
     TrackPointer getCurrentPlayingTrack();
+    QMap<QString, TrackPointer> getLoadedTracks();
     bool isTrackLoaded(const TrackPointer& pTrack) const;
     bool isFileLoaded(const QString& track_location) const;
+
 
   signals:
     void currentPlayingDeckChanged(int deck);

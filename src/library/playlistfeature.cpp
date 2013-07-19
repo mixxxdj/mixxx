@@ -78,6 +78,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
     menu.addSeparator();
+    menu.addAction(m_pAnalyzePlaylistAction);
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
@@ -145,8 +146,9 @@ void PlaylistFeature::buildPlaylistList() {
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
     }
-    int nameColumn = playlistTableModel.record().indexOf("name");
-    int idColumn = playlistTableModel.record().indexOf("id");
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int idColumn = record.indexOf("id");
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id = playlistTableModel.data(
