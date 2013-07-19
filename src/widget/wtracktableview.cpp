@@ -26,7 +26,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_pLastFmTagFetcher(NULL),
+          m_LastFmTagFetcher(NULL),
           m_DlgTagFetcher(NULL),
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
@@ -1259,7 +1259,7 @@ void WTrackTableView::slotFetchLastFmTags() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            m_pLastFmTagFetcher->startFetch(pTrack);
+            m_LastFmTagFetcher.startFetch(pTrack);
         }
 
     }

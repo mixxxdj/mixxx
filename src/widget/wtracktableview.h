@@ -98,7 +98,7 @@ class WTrackTableView : public WLibraryTableView {
     ConfigObject<ConfigValue> * m_pConfig;
     TrackCollection* m_pTrackCollection;
 
-    LastFmTagFetcher* m_pLastFmTagFetcher;
+    LastFmTagFetcher m_LastFmTagFetcher;
 
     QSignalMapper m_loadTrackMapper;
 
