@@ -654,6 +654,7 @@ class MixxxCore(Feature):
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
                    "library/dao/analysisdao.cpp",
+                   "library/dao/socialtagdao.cpp",
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",

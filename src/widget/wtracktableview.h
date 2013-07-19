@@ -8,8 +8,9 @@
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
-#include "widget/wlibrarytableview.h"
+#include "lastfm/lastfmtagfetcher.h"
 #include "dlgtagfetcher.h"
+#include "widget/wlibrarytableview.h"
 
 class ControlObjectThreadMain;
 class DlgTrackInfo;
@@ -96,6 +97,8 @@ class WTrackTableView : public WLibraryTableView {
 
     ConfigObject<ConfigValue> * m_pConfig;
     TrackCollection* m_pTrackCollection;
+
+    LastFmTagFetcher* m_pLastFmTagFetcher;
 
     QSignalMapper m_loadTrackMapper;
 

@@ -885,6 +885,18 @@ void TrackInfoObject::setTimbre(TimbrePointer pTimbre) {
     m_pTimbre = pTimbre;
     setDirty(true);
 }
+
+LastFmClient::TagCounts TrackInfoObject::getTags() const {
+    QMutexLocker lock(&m_qMutex);
+    return m_pTagCounts;
+}
+
+void TrackInfoObject::setTags(const LastFmClient::TagCounts& pTagCounts) {
+    QMutexLocker lock(&m_qMutex);
+    m_pTagCounts = pTagCounts;
+    setDirty(true);
+}
+
 void TrackInfoObject::setKeys(Keys keys) {
     QMutexLocker lock(&m_qMutex);
     setDirty(true);

@@ -3,16 +3,20 @@
 #include <QSqlResult>
 #include <QSqlError>
 #include <QDebug>
+#include <QStringBuilder>
 
-#include "library/dao/socialtagdao.h"
 #include "library/queryutil.h"
 #include "lastfm/lastfmclient.h"
+#include "library/dao/socialtagdao.h"
 
 SocialTagDao::SocialTagDao(QSqlDatabase& database)
     : m_db(database) {
 }
 
 SocialTagDao::~SocialTagDao() {
+}
+
+void SocialTagDao::initialize() {
 }
 
 void SocialTagDao::setDatabase(QSqlDatabase& database) {
@@ -33,6 +37,13 @@ LastFmClient::TagCounts SocialTagDao::getTagsForTrack(int trackId) {
     query.bindValue(":trackId", trackId);
 
     return loadTagsFromQuery(trackId, query);
+}
+
+void SocialTagDao::saveTrackTags(int trackId, TrackInfoObject* pTrack) {
+    LastFmClient::TagCounts tags = pTrack->getTags();
+    if (!tags.isEmpty()) {
+        setTagsForTrack(trackId, tags);
+    }
 }
 
 bool SocialTagDao::setTagsForTrack(int trackId, LastFmClient::TagCounts tags) {
@@ -63,7 +74,8 @@ bool SocialTagDao::setTagsForTrack(int trackId, LastFmClient::TagCounts tags) {
     }
 
     QSqlQuery query(m_db);
-    query.prepare("INSERT INTO " TRACK_TAG_TABLE " (track_id, tag_id, count) "
+    query.prepare("INSERT OR REPLACE INTO " TRACK_TAG_TABLE
+        " (track_id, tag_id, count) "
         "VALUES (:trackId,:tagId,:count)");
 
     query.bindValue(":trackId", trackIds);
@@ -91,6 +103,23 @@ bool SocialTagDao::clearTagsForTrack(int trackId) {
     }
     return true;
 
+}
+
+bool SocialTagDao::clearTagsForTracks(QList<int> ids) {
+    QStringList idList;
+    foreach (int id, ids) {
+        idList << QString::number(id);
+    }
+
+    QSqlQuery query(m_db);
+    query.prepare(QString("DELETE FROM " TRACK_TAG_TABLE
+            " WHERE track_id in (") % idList.join(",") % QString(")"));
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query) << "couldn't delete analysis";
+        return false;
+    }
+
+    return true;
 }
 
 LastFmClient::TagCounts SocialTagDao::loadTagsFromQuery(int trackId,

@@ -31,6 +31,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "library/dao/socialtagdao.h"
 
 class TrackInfoObject;
 
@@ -80,6 +81,7 @@ class TrackCollection : public QObject
     CrateDAO m_crateDao;
     CueDAO m_cueDao;
     AnalysisDao m_analysisDao;
+    SocialTagDao m_socialTagDao;
     TrackDAO m_trackDao;
     const QRegExp m_supportedFileExtensionsRegex;
 };

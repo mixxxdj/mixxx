@@ -26,7 +26,8 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_DlgTagFetcher(NULL) ,
+          m_pLastFmTagFetcher(NULL),
+          m_DlgTagFetcher(NULL),
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
     // it unreadable. Bug #673411
@@ -111,6 +112,8 @@ WTrackTableView::~WTrackTableView() {
         pHeader->saveHeaderState();
     }
 
+    delete m_pSetSeedTrack;
+    delete m_pFetchLastFmTagsAct;
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
@@ -1255,8 +1258,10 @@ void WTrackTableView::slotFetchLastFmTags() {
 
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
-        // TODO(chrisjr): instantiate LastFmTagFetcher here?
-        // or offload logic to someplace else?
+        if (pTrack) {
+            m_pLastFmTagFetcher->startFetch(pTrack);
+        }
+
     }
 }
 
