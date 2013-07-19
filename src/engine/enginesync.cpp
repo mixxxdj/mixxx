@@ -45,6 +45,7 @@ SyncChannel::SyncChannel(EngineChannel* pChannel)
 }
 
 SyncChannel::~SyncChannel() {
+    delete m_pChannelSyncState;
 }
 
 EngineChannel* SyncChannel::getChannel() {
