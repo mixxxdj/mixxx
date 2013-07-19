@@ -25,12 +25,11 @@ LastFmClient::TagCounts SocialTagDao::getTagsForTrack(int trackId) {
     }
 
     QSqlQuery query(m_db);
-    query.prepare(QString(
-        "SELECT name, count FROM %1 as tags, %2 as tracktags "
+    query.prepare(
+        "SELECT name, count FROM " TAG_TABLE " as tags, "
+        TRACK_TAG_TABLE " as tracktags "
         "WHERE tracktags.track_id=:trackId "
-        "AND tags.id = tracktags.tag_id")
-        .arg(m_sTagTableName)
-        .arg(m_sTrackTagTableName));
+        "AND tags.id = tracktags.tag_id");
     query.bindValue(":trackId", trackId);
 
     return loadTagsFromQuery(trackId, query);
@@ -38,9 +37,9 @@ LastFmClient::TagCounts SocialTagDao::getTagsForTrack(int trackId) {
 
 bool SocialTagDao::setTagsForTrack(int trackId, LastFmClient::TagCounts tags) {
     QSqlQuery tagQuery(m_db);
-    tagQuery.prepare(QString(
-        "INSERT OR REPLACE INTO %1 (name, source) "
-        "VALUES(:name, :source)").arg(m_sTagTableName));
+    tagQuery.prepare(
+        "INSERT OR REPLACE INTO " TAG_TABLE " (name, source) "
+        "VALUES(:name, :source)");
 
     QMapIterator<QString, int> mapIt(tags);
 
@@ -64,10 +63,8 @@ bool SocialTagDao::setTagsForTrack(int trackId, LastFmClient::TagCounts tags) {
     }
 
     QSqlQuery query(m_db);
-    query.prepare(QString(
-        "INSERT INTO %1 (track_id, tag_id, count) "
-        "VALUES (:trackId,:tagId,:count)")
-                  .arg(m_sTrackTagTableName));
+    query.prepare("INSERT INTO " TRACK_TAG_TABLE " (track_id, tag_id, count) "
+        "VALUES (:trackId,:tagId,:count)");
 
     query.bindValue(":trackId", trackIds);
     query.bindValue(":tagId", tagIds);
@@ -86,8 +83,7 @@ bool SocialTagDao::clearTagsForTrack(int trackId) {
         return false;
     }
     QSqlQuery query(m_db);
-    query.prepare(QString(
-        "DELETE FROM %1 WHERE track_id = :track_id").arg(m_sTrackTagTableName));
+    query.prepare("DELETE FROM " TAG_TABLE " WHERE track_id = :track_id");
     query.bindValue(":track_id", trackId);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't clear tags for" << trackId;
@@ -115,6 +111,3 @@ LastFmClient::TagCounts SocialTagDao::loadTagsFromQuery(int trackId,
     }
     return tags;
 }
-
-const QString SocialTagDao::m_sTagTableName = "social_tags";
-const QString SocialTagDao::m_sTrackTagTableName = "track_social_tags";

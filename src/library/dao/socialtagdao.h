@@ -6,6 +6,9 @@
 
 #include "lastfm/lastfmclient.h"
 
+#define TAG_TABLE "social_tags"
+#define TRACK_TAG_TABLE "track_social_tags"
+
 class SocialTagDao: public DAO {
   public:
     SocialTagDao(QSqlDatabase& database);
@@ -18,8 +21,6 @@ class SocialTagDao: public DAO {
 
   private:
     LastFmClient::TagCounts loadTagsFromQuery(int trackId, QSqlQuery& query);
-    static const QString m_sTagTableName;
-    static const QString m_sTrackTagTableName;
     QSqlDatabase m_db;
 };
 
