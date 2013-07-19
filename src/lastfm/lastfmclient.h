@@ -32,7 +32,7 @@ class LastFmClient : public QObject {
 
   signals:
     // Emitted when song's social tags have been fetched
-    void finished(int id, TagCounts tags);
+    void finished(int id, LastFmClient::TagCounts tags);
     
   private slots:
     void requestFinished();

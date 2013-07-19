@@ -34,7 +34,7 @@ void LastFmTagFetcher::tagsFetched(int index,
     if (index >= m_tracks.count()) {
         return;
     }
-    // qDebug() << "LastFmTagFetcher got tags";
+    qDebug() << "LastFmTagFetcher retrieved tags";
     const TrackPointer pTrack = m_tracks[index];
     pTrack->setTags(tags);
 }

@@ -32,7 +32,7 @@ LastFmClient::TagCounts SocialTagDao::getTagsForTrack(int trackId) {
     query.prepare(
         "SELECT name, count FROM " TAG_TABLE " as tags, "
         TRACK_TAG_TABLE " as tracktags "
-        "WHERE tracktags.track_id=:trackId "
+        "WHERE tracktags.track_id = :trackId "
         "AND tags.id = tracktags.tag_id");
     query.bindValue(":trackId", trackId);
 
