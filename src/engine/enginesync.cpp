@@ -392,10 +392,13 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
 
     const bool channelIsMaster = m_sSyncSource == group;
 
-    // In the following logic, m_sSyncSourcea acts like "previous sync source".
+    // In the following logic, m_sSyncSource acts like "previous sync source".
     if (state == SYNC_MASTER) {
         // TODO: don't allow setting of master if not playing
-        setChannelMaster(pSyncChannel);
+        // If setting this channel as master fails, pick a new master.
+        if (!setChannelMaster(pSyncChannel)) {
+            setMaster(chooseNewMaster(group));
+        }
     } else if (state == SYNC_SLAVE) {
         // Was this deck master before?  If so do a handoff
         if (channelIsMaster) {
