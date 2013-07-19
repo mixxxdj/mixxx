@@ -930,6 +930,7 @@ TrackPointer TrackDAO::getTrackFromDB(int id) const {
             pTrack->setLocation(location);
             pTrack->setHeaderParsed(header_parsed);
             pTrack->setCuePoints(m_cueDao.getCuesForTrack(id));
+            pTrack->setTags(m_socialTagDao.getTagsForTrack(id));
 
             // Normally we will set the track as clean but sometimes when
             // loading from the database we need to perform upkeep that ought to

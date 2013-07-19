@@ -40,6 +40,7 @@ LastFmClient::TagCounts SocialTagDao::getTagsForTrack(int trackId) {
 }
 
 void SocialTagDao::saveTrackTags(int trackId, TrackInfoObject* pTrack) {
+    qDebug() << "Saving track tags";
     LastFmClient::TagCounts tags = pTrack->getTags();
     if (!tags.isEmpty()) {
         setTagsForTrack(trackId, tags);

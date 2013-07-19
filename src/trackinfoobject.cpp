@@ -892,6 +892,7 @@ LastFmClient::TagCounts TrackInfoObject::getTags() const {
 }
 
 void TrackInfoObject::setTags(const LastFmClient::TagCounts& pTagCounts) {
+    qDebug() << "setting tags";
     QMutexLocker lock(&m_qMutex);
     m_pTagCounts = pTagCounts;
     setDirty(true);
