@@ -57,6 +57,10 @@ void SelectorFeature::activate() {
     emit(switchToView(m_sSelectorViewName));
 }
 
+void SelectorFeature::setSeedTrack(TrackPointer pTrack) {
+    m_pSelectorView->setSeedTrack(pTrack);
+}
+
 bool SelectorFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 

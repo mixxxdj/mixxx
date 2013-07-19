@@ -34,6 +34,7 @@ class SelectorFeature : public LibraryFeature {
 
   public slots:
     void activate();
+    void setSeedTrack(TrackPointer pTrack);
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;

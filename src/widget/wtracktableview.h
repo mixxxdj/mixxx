@@ -47,6 +47,10 @@ class WTrackTableView : public WLibraryTableView {
     void slotUnhide();
     void slotPurge();
 
+  signals:
+    void setSeedTrack(TrackPointer pTrack);
+    void switchToSelector();
+
   private slots:
     void slotRemove();
     void slotHide();
@@ -61,7 +65,7 @@ class WTrackTableView : public WLibraryTableView {
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void slotResetPlayed();
-    void slotAddToSelector();
+    void slotSetSeedTrack();
     void slotFetchLastFmTags();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
@@ -116,7 +120,7 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pFetchLastFmTagsAct;
 
     // Use as seed track for selector
-    QAction *m_pAddToSelector;
+    QAction *m_pSetSeedTrack;
 
     // Load Track to PreviewDeck
     QAction* m_pAddToPreviewDeck;

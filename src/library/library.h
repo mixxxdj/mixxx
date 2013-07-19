@@ -27,6 +27,7 @@ class WSearchLineEdit;
 class MixxxLibraryFeature;
 class PlaylistFeature;
 class CrateFeature;
+class SelectorFeature;
 class LibraryControl;
 class MixxxKeyboard;
 
@@ -65,6 +66,8 @@ public:
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
+    void slotSetSeedTrack(TrackPointer pTrack);
+    void slotSwitchToSelector();
     void onSkinLoadFinished();
 
   signals:
@@ -92,6 +95,7 @@ public:
     PromoTracksFeature* m_pPromoTracksFeature;
 #endif
     PrepareFeature* m_pPrepareFeature;
+    SelectorFeature* m_pSelectorFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
 };

@@ -70,7 +70,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
     m_pPrepareFeature = new PrepareFeature(this, pConfig, m_pTrackCollection);
     addFeature(m_pPrepareFeature);
-    addFeature(new SelectorFeature(this, m_pConfig, m_pTrackCollection));
+    m_pSelectorFeature = new SelectorFeature(this, m_pConfig, m_pTrackCollection);
+    addFeature(m_pSelectorFeature);
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
@@ -136,6 +137,11 @@ void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 
 void Library::bindWidget(WLibrary* pLibraryWidget,
                          MixxxKeyboard* pKeyboard) {
+    connect(pLibraryWidget, SIGNAL(switchToSelector()),
+            this, SLOT(slotSwitchToSelector()));
+    connect(pLibraryWidget, SIGNAL(setSeedTrack(TrackPointer)),
+            this, SLOT(slotSetSeedTrack(TrackPointer)));
+
     WTrackTableView* pTrackTableView =
             new WTrackTableView(pLibraryWidget, m_pConfig, m_pTrackCollection);
     pTrackTableView->installEventFilter(pKeyboard);
@@ -231,6 +237,17 @@ void Library::slotCreatePlaylist() {
 void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
+
+void Library::slotSetSeedTrack(TrackPointer pTrack) {
+    m_pSelectorFeature->setSeedTrack(pTrack);
+}
+
+void Library::slotSwitchToSelector() {
+    qDebug() << "switch to Selector";
+    m_pSidebarModel->slotFeatureSelect(m_pSelectorFeature);
+    emit(switchToView("Selector"));
+}
+
 
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.

@@ -9,6 +9,7 @@
 #include <QStackedWidget>
 #include <QString>
 
+#include "trackinfoobject.h"
 #include "library/libraryview.h"
 
 class MixxxKeyboard;
@@ -36,6 +37,11 @@ class WLibrary : public QStackedWidget {
     void switchToView(const QString& name);
 
     void search(const QString&);
+
+  signals:
+    void switchToSelector();
+    void setSeedTrack(TrackPointer pTrack);
+
   private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;

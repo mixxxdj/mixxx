@@ -35,6 +35,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
                                const QItemSelection& deselected);
     void selectAll();
     void resetFilters();
+    void setDefaults();
     void filterByGenre();
     void filterByBpm();
     void spinBoxBpmRangeChanged(int value);
@@ -54,8 +55,6 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void on_buttonCalcSimilarity_clicked();
 
   private:
-    void setDefaults();
-
     //Note m_pTrackTablePlaceholder is defined in the .ui file
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;

@@ -7,6 +7,7 @@
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableviewheader.h"
+#include "widget/wlibrary.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
 #include "trackinfoobject.h"
@@ -83,6 +84,23 @@ WTrackTableView::WTrackTableView(QWidget * parent,
             this, SLOT(addSelectionToPlaylist(int)));
     connect(&m_crateMapper, SIGNAL(mapped(int)),
             this, SLOT(addSelectionToCrate(int)));
+
+    WLibrary* pLibraryWidget;
+    if (WLibrary* pLW = qobject_cast<WLibrary*>(parentWidget())) {
+        pLibraryWidget = pLW;
+    } else if (WLibrary* pLW = qobject_cast<WLibrary*>(
+                parentWidget()->parentWidget())) {
+        pLibraryWidget = pLW;
+    } else {
+        qDebug() << "WTrackTableView could not obtain library widget.";
+    }
+    if (pLibraryWidget) {
+        connect(this, SIGNAL(switchToSelector()),
+                pLibraryWidget, SIGNAL(switchToSelector()));
+        connect(this, SIGNAL(setSeedTrack(TrackPointer)),
+                pLibraryWidget, SIGNAL(setSeedTrack(TrackPointer)));
+    }
+
 }
 
 WTrackTableView::~WTrackTableView() {
@@ -310,9 +328,9 @@ void WTrackTableView::createActions() {
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
 
-    m_pAddToSelector = new QAction(tr("Add to Selector"), this);
-    connect(m_pAddToSelector, SIGNAL(triggered()),
-            this, SLOT(slotAddToSelector()));
+    m_pSetSeedTrack = new QAction(tr("Get Follow-up Tracks"), this);
+    connect(m_pSetSeedTrack, SIGNAL(triggered()),
+            this, SLOT(slotSetSeedTrack()));
 
     m_pFetchLastFmTagsAct = new QAction(tr("Fetch Tags from Last.fm"), this);
     connect(m_pFetchLastFmTagsAct, SIGNAL(triggered()),
@@ -737,8 +755,8 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pReloadMetadataFromMusicBrainzAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
 
-        m_pAddToSelector->setEnabled(oneSongSelected);
-        m_pMenu->addAction(m_pAddToSelector);
+        m_pSetSeedTrack->setEnabled(oneSongSelected);
+        m_pMenu->addAction(m_pSetSeedTrack);
         m_pFetchLastFmTagsAct->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pFetchLastFmTagsAct);
 
@@ -1210,7 +1228,7 @@ void WTrackTableView::slotResetPlayed() {
     }
 }
 
-void WTrackTableView::slotAddToSelector() {
+void WTrackTableView::slotSetSeedTrack() {
     QModelIndexList indices = selectionModel()->selectedRows();
     TrackModel* trackModel = getTrackModel();
 
@@ -1221,7 +1239,8 @@ void WTrackTableView::slotAddToSelector() {
     foreach (QModelIndex index, indices) {
         TrackPointer pTrack = trackModel->getTrack(index);
         if (pTrack) {
-            // TODO(chrisjr): how to address the selector table model?
+            emit(setSeedTrack(pTrack));
+            emit(switchToSelector());
         }
     }
 }
