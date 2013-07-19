@@ -325,7 +325,7 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
     if (timbreContribution > 0.0) {
         TrackPointer otherTrack = getTrack(index);
         TimbrePointer pTimbre = otherTrack->getTimbre();
-        if (!pTimbre.isNull()) {
+        if (!m_pSeedTrackTimbre.isNull() && !pTimbre.isNull()) {
             double timbreScore =
                     1 - TimbreUtils::hellingerDistance(m_pSeedTrackTimbre,
                                                        pTimbre);
