@@ -19,12 +19,15 @@ void LastFmClient::start(int id, const QString& artist, const QString& title) {
     QList<Param> parameters;
     parameters << Param("method", "track.getTopTags");
     parameters << Param("artist", escapeString(artist));
-    parameters << Param("title", escapeString(title));
+    parameters << Param("track", escapeString(title));
     parameters << Param("api_key", m_sApiKey);
 
     QUrl url(m_sRestUrl);
     url.setQueryItems(parameters);
     QNetworkRequest req(url);
+
+//    qDebug() << url;
+    qDebug() << "sending request for " << artist << "-" << title;
 
     QNetworkReply* reply = m_network.get(req);
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
@@ -75,7 +78,7 @@ void LastFmClient::cancelAll() {
 QString LastFmClient::escapeString(const QString& string) {
     QString escaped(string);
     escaped.toLower();
-    escaped.replace(QChar(' '), QChar('+'));
+    escaped.replace(' ', '+');
     return escaped;
 }
 
@@ -93,6 +96,8 @@ LastFmClient::TagCounts LastFmClient::parseTopTags(QXmlStreamReader& reader) {
                 tag_name = reader.readElementText();
             } else if (name == "count") {
                 count = reader.readElementText().toInt();
+
+                qDebug() << tag_name << ":" << count;
                 ret.insert(tag_name, count);
             }
         }
