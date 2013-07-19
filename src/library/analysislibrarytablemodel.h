@@ -1,16 +1,16 @@
-#ifndef PREPARELIBRARYTABLEMODEL_H_
-#define PREPARELIBRARYTABLEMODEL_H_
+#ifndef ANALYSISLIBRARYTABLEMODEL_H_
+#define ANALYSISLIBRARYTABLEMODEL_H_
 
 #include <QModelIndexList>
 #include "librarytablemodel.h"
 
-class PrepareLibraryTableModel : public LibraryTableModel
+class AnalysisLibraryTableModel : public LibraryTableModel
 {
     Q_OBJECT
   public:
-    PrepareLibraryTableModel(QObject* parent,
+    AnalysisLibraryTableModel(QObject* parent,
                              TrackCollection* pTrackCollection);
-    virtual ~PrepareLibraryTableModel();
+    virtual ~AnalysisLibraryTableModel();
 
   public slots:
     void showRecentSongs();

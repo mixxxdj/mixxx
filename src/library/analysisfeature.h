@@ -1,4 +1,4 @@
-// preparefeature.h
+// analysisfeature.h
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 // Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
 
@@ -9,23 +9,25 @@
 #include "library/libraryfeature.h"
 #include "configobject.h"
 #include "treeitemmodel.h"
-#include "dlgprepare.h"
+#include "dlganalysis.h"
 
 class AnalyserQueue;
 class LibraryTableModel;
 class TrackCollection;
 
-class PrepareFeature : public LibraryFeature {
+class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    PrepareFeature(QObject* parent,
+    AnalysisFeature(QObject* parent,
                    ConfigObject<ConfigValue>* pConfig,
                    TrackCollection* pTrackCollection);
-    virtual ~PrepareFeature();
+    virtual ~AnalysisFeature();
 
     QVariant title();
     QIcon getIcon();
 
+    bool dropAccept(QList<QUrl> urls, QWidget *pSource);
+    bool dragMoveAccept(QUrl url);
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
@@ -34,12 +36,13 @@ class PrepareFeature : public LibraryFeature {
 
   signals:
     void analysisActive(bool bActive);
+    void trackAnalysisStarted(int size);
 
   public slots:
     void activate();
+    void analyzeTracks(QList<int> trackIds);
 
   private slots:
-    void analyzeTracks(QList<int> trackIds);
     void stopAnalysis();
     void cleanupAnalyser();
 
@@ -50,9 +53,9 @@ class PrepareFeature : public LibraryFeature {
     // Used to temporarily enable BPM detection in the prefs before we analyse
     int m_iOldBpmEnabled;
     TreeItemModel m_childModel;
-    const static QString m_sPrepareViewName;
-    DlgPrepare* m_pPrepareView;
+    const static QString m_sAnalysisViewName;
+    DlgAnalysis* m_pAnalysisView;
 };
 
 
-#endif /* PREPAREFEATURE_H */
+#endif /* ANALYSISFEATURE_H */

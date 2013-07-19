@@ -56,19 +56,15 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     // We put this folder on a "black list"
     // On Windows, the iTunes folder is contained within the standard music folder
     // Hence, Mixxx will scan the "Album Arts folder" for standard users which is wasting time
-    QString iTunesArtFolder = "";
-#if defined(__WINDOWS__)
-    iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\iTunes\\Album Artwork";
-    iTunesArtFolder.replace(QString("\\"), QString("/"));
-#elif defined(__APPLE__)
-    iTunesArtFolder = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/Album Artwork";
-#endif
+    QString iTunesArtFolder = QDir::toNativeSeparators(
+                QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/iTunes/Album Artwork" );
     m_directoriesBlacklist << iTunesArtFolder;
     qDebug() << "iTunes Album Art path is:" << iTunesArtFolder;
 
 #ifdef __WINDOWS__
     //Blacklist the _Serato_ directory that pollutes "My Music" on Windows.
-    QString seratoDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "\\_Serato_";
+    QString seratoDir = QDir::toNativeSeparators(
+                QDesktopServices::storageLocation(QDesktopServices::MusicLocation) + "/_Serato_" );
     m_directoriesBlacklist << seratoDir;
 #endif
 }
@@ -95,12 +91,13 @@ LibraryScanner::~LibraryScanner()
     query.prepare("SELECT directory_path FROM LibraryHashes "
                   "WHERE directory_deleted=1");
     if (query.exec()) {
+        const int directoryPathColumn = query.record().indexOf("directory_path");
         while (query.next()) {
-            QString directory = query.value(query.record().indexOf("directory_path")).toString();
+            QString directory = query.value(directoryPathColumn).toString();
             deletedDirs << directory;
         }
     } else {
-        qDebug() << "Couldn't SELECT deleted directories" << query.lastError();
+        LOG_FAILED_QUERY(query) << "Couldn't SELECT deleted directories.";
     }
 
     // Delete any directories that have been marked as deleted...
@@ -110,7 +107,7 @@ LibraryScanner::~LibraryScanner()
 
     // Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
 
     QString dir;
