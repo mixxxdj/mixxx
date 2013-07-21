@@ -132,14 +132,6 @@ bool AudioPath::channelsClash(const AudioPath &other) const {
     return m_channelGroup.clashesWith(other.m_channelGroup);
 }
 
-const CSAMPLE* AudioPath::getBuffer() const {
-    return m_pBuffer;
-}
-
-void AudioPath::setBuffer(const CSAMPLE* pBuffer) {
-    m_pBuffer = pBuffer;
-}
-
 /**
  * Returns a string describing the AudioPath for user benefit.
  */

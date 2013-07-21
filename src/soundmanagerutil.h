@@ -69,8 +69,6 @@ public:
     unsigned int getHash() const;
     bool channelsClash(const AudioPath &other) const;
     QString getString() const;
-    const CSAMPLE* getBuffer() const;
-    void setBuffer(const CSAMPLE* pBuffer);
     static QString getStringFromType(AudioPathType type);
     static QString getTrStringFromType(AudioPathType type);
     static AudioPathType getTypeFromString(QString string);
@@ -82,7 +80,6 @@ protected:
     AudioPathType m_type;
     ChannelGroup m_channelGroup;
     unsigned char m_index;
-    const CSAMPLE* m_pBuffer;
 };
 
 /**
@@ -92,15 +89,19 @@ protected:
  *        channels on an audio interface.
  */
 class AudioOutput : public AudioPath {
-public:
+  public:
     AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                 unsigned char index = 0);
     virtual ~AudioOutput();
     QDomElement toXML(QDomElement *element) const;
+    inline const CSAMPLE* getBuffer() const { return m_pBuffer; };
+    inline void setBuffer(const CSAMPLE* pBuffer) { m_pBuffer = pBuffer; };
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
-protected:
+  protected:
     void setType(AudioPathType type);
+  private:
+    const CSAMPLE* m_pBuffer;
 };
 
 /**
@@ -115,10 +116,13 @@ public:
                unsigned char index = 0);
     virtual ~AudioInput();
     QDomElement toXML(QDomElement *element) const;
+    inline CSAMPLE* getBuffer() const { return m_pBuffer; };
+    inline void setBuffer(CSAMPLE* pBuffer) { m_pBuffer = pBuffer; };
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
 protected:
     void setType(AudioPathType type);
+    CSAMPLE* m_pBuffer;
 };
 
 class AudioSource {
