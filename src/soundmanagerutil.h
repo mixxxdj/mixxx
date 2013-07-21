@@ -69,6 +69,8 @@ public:
     unsigned int getHash() const;
     bool channelsClash(const AudioPath &other) const;
     QString getString() const;
+    const CSAMPLE* getBuffer() const;
+    void setBuffer(const CSAMPLE* pBuffer);
     static QString getStringFromType(AudioPathType type);
     static QString getTrStringFromType(AudioPathType type);
     static AudioPathType getTypeFromString(QString string);
@@ -80,6 +82,7 @@ protected:
     AudioPathType m_type;
     ChannelGroup m_channelGroup;
     unsigned char m_index;
+    const CSAMPLE* m_pBuffer;
 };
 
 /**

@@ -147,9 +147,6 @@ void SoundManager::closeDevices() {
     m_pClkRefDevice = NULL;
     //m_requestBufferMutex.unlock();
 
-    m_outputBuffers.clear(); // anti-cruft (safe because outputs only have
-                             // pointers to memory owned by EngineMaster)
-
     foreach (AudioInput in, m_inputBuffers.keys()) {
         // Need to tell all registered AudioDestinations for this AudioInput
         // that the input was disconnected.
@@ -311,13 +308,14 @@ int SoundManager::setupDevices() {
             isOutput = true;
             // following keeps us from asking for a channel buffer EngineMaster
             // doesn't have -- bkgood
-            if (m_registeredSources[out]->buffer(out) == NULL) {
+            const CSAMPLE* pBuffer = m_registeredSources[out]->buffer(out);
+            if (pBuffer == NULL) {
                 qDebug() << "AudioSource returned null for" << out.getString();
                 continue;
             }
+            out.setBuffer(pBuffer);
             err = device->addOutput(out);
             if (err != OK) goto closeAndError;
-            m_outputBuffers[out] = m_registeredSources[out]->buffer(out);
             if (out.getType() == AudioOutput::MASTER) {
                 m_pClkRefDevice = device;
             } else if (out.getType() == AudioOutput::DECK
@@ -452,17 +450,8 @@ void SoundManager::requestBuffer(
                  e = outputs.end(); i != e; ++i) {
         const AudioOutput& out = *i;
 
-        QHash<AudioOutput, const CSAMPLE*>::const_iterator it =
-                m_outputBuffers.find(out);
-        if (it == m_outputBuffers.end()) {
-            continue;
-        }
-
-        const CSAMPLE* input = it.value();
-        if (input == NULL) {
-            continue;
-        }
-
+        // buffer is always !NULL
+        const CSAMPLE* pAudioOutputBuffer = out.getBuffer();
         const ChannelGroup outChans = out.getChannelGroup();
         const int iChannelCount = outChans.getChannelCount();
         const int iChannelBase = outChans.getChannelBase();
@@ -476,7 +465,7 @@ void SoundManager::requestBuffer(
             // this will make sure a sample from each channel is copied
             for (int iChannel = 0; iChannel < iChannelCount; ++iChannel) {
                 outputBuffer[iFrameBase + iChannelBase + iChannel] =
-                        input[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
+                        pAudioOutputBuffer[iLocalFrameBase + iChannel] * SHRT_CONVERSION_FACTOR;
 
                 // Input audio pass-through (useful for debugging)
                 //if (in)
