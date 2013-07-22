@@ -99,7 +99,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void detectMovedFiles(QSet<int>* pTracksMovedSetNew, QSet<int>* pTracksMovedSetOld);
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
-    void verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel);
+    void verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel, volatile bool *pPaused);
 
   signals:
     void trackDirty(int trackId);
@@ -109,6 +109,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void tracksRemoved(QSet<int> trackIds);
     void dbTrackAdded(TrackPointer pTrack);
     void progressVerifyTracksOutside(QString path);
+    void pauseInProgress(bool pause);
 
   public slots:
     // The public interface to the TrackDAO requires a TrackPointer so that we
@@ -143,6 +144,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void writeAudioMetaData(TrackInfoObject* pTrack);
     // Called when the TIO reference count drops to 0
     static void deleteTrack(TrackInfoObject* pTrack);
+
+    void waitWhilePaused();
 
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;

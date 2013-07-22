@@ -25,6 +25,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
    QWidget(parent, f)
 {
     m_bCancelled = false;
+    m_bPaused = false;
 
 	setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
@@ -38,6 +39,13 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
     connect(pCancel, SIGNAL(clicked()),
             this, SLOT(slotCancel()));
     pLayout->addWidget(pCancel);
+
+    // tr0: pause button
+    QPushButton* pPause = new QPushButton(tr("Pause"), this);
+    pPause->setObjectName("pauseBtn");
+    connect(pPause, SIGNAL(clicked()),
+            this, SLOT(slotPause()));
+    pLayout->addWidget(pPause);
 
     QLabel* pCurrent = new QLabel(this);
     pCurrent->setMaximumWidth(600);
@@ -77,6 +85,27 @@ void LibraryScannerDlg::slotCancel()
     // Need to use close() or else if you close the Mixxx window and then hit
     // Cancel, Mixxx will not shutdown.
     close();
+}
+
+void LibraryScannerDlg::slotPause() {
+    qDebug() << "# # # IN LibraryScannerDlg::slotPause()";
+
+    QPushButton *pauseBtn = findChild<QPushButton*>("pauseBtn");
+    if (m_bPaused) { // resuming
+        qDebug() << "\t resuming";
+        m_bPaused = false;
+        if (pauseBtn) {
+            pauseBtn->setText("Pause");
+        }
+        emit(scanResumed());
+    } else { // making pause
+        qDebug() << "\t making pause";
+        if (pauseBtn) {
+            pauseBtn->setText("Resume");
+        }
+        m_bPaused = true;
+        emit(scanPaused());
+    }
 }
 
 void LibraryScannerDlg::slotScanFinished()

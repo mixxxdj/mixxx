@@ -52,7 +52,7 @@ void LibraryHashDAO::saveDirectoryHash(const QString& dirPath, const int hash) {
                     "VALUES (:directory_path, :hash, :directory_deleted)");
     query.bindValue(":directory_path", dirPath);
     query.bindValue(":hash", hash);
-    query.bindValue(":directory_deleted", 0);
+    query.bindValue(":directory_deleted", 0); // avoid "0"
 
 
     if (!query.exec()) {

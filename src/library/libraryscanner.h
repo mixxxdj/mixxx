@@ -50,9 +50,12 @@ class LibraryScanner : public QThread {
   public slots:
     void cancel();
     void resetCancel();
+    void makePause();
+    void resumePause();
   signals:
     void scanFinished();
     void progressHashing(QString);
+    void pauseInProgress(bool pause);
   private:
     TrackCollection* m_pCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
@@ -70,6 +73,11 @@ class LibraryScanner : public QThread {
     QStringList m_nameFilters;
     volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;
+
+    // tr0
+    volatile bool m_bPausedLibraryScan;
+    // since it is thread, we can do waiting function
+    void waitWhilePaused();
 };
 
 #endif

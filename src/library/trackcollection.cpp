@@ -12,6 +12,8 @@
 #include "trackinfoobject.h"
 #include "xmlparse.h"
 
+#include "util/sleepableqthread.h"
+
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
           m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
@@ -35,6 +37,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     if (m_db.lastError().isValid()) {
         qDebug() << "Error loading database:" << m_db.lastError();
     }
+
     // Check for tables and create them if missing
     if (!checkForTables()) {
         // TODO(XXX) something a little more elegant
@@ -122,7 +125,8 @@ QSqlDatabase& TrackCollection::getDatabase() {
 */
 bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
                                       const QStringList& nameFilters,
-                                      volatile bool* cancel) {
+                                      volatile bool* cancel,
+                                      volatile bool* pause) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -136,6 +140,8 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
         if (*cancel) {
             return false;
         }
+        // tr0
+        waitWhilePaused(pause);
 
         QString absoluteFilePath = it.next();
 
@@ -193,4 +199,17 @@ void TrackCollection::addTrackSource(
     const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
+}
+
+void TrackCollection::waitWhilePaused(volatile bool* pause) {
+    const int waitInterval = 50;
+    int waitingCycles = 0;
+    emit (pauseInProgress(true));
+    while (*pause) {
+        SleepableQThread::sleep(waitInterval);
+        ++waitingCycles;
+    }
+    emit (pauseInProgress(false));
+    qDebug() << "TrackCollection::waitWhilePaused() waited "
+             << waitingCycles << " = " << waitingCycles*waitInterval;
 }

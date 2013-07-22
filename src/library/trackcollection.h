@@ -51,7 +51,7 @@ class TrackCollection : public QObject
 
     /** Import the files in a given diretory, without recursing into subdirectories */
     bool importDirectory(const QString &directory, TrackDAO &trackDao,
-                         const QStringList & nameFilters, volatile bool* cancel);
+                         const QStringList & nameFilters, volatile bool* cancel, volatile bool *pause);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
@@ -71,6 +71,7 @@ class TrackCollection : public QObject
     void startedLoading();
     void progressLoading(QString path);
     void finishedLoading();
+    void pauseInProgress(bool); // tr0
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
@@ -82,6 +83,7 @@ class TrackCollection : public QObject
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
     const QRegExp m_supportedFileExtensionsRegex;
+    void waitWhilePaused(volatile bool* pause);
 };
 
 #endif

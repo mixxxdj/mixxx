@@ -14,6 +14,8 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "util/sleepableqthread.h" // tr0
+
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
@@ -755,6 +757,19 @@ void TrackDAO::deleteTrack(TrackInfoObject* pTrack) {
     pTrack->deleteLater();
 }
 
+void TrackDAO::waitWhilePaused() {
+//    const int waitInterval = 50;
+//    int waitingCycles = 0;
+//    emit (pauseInProgress(true));
+//    while (m_bPausedLibraryScan) {
+//        wait(waitInterval);
+//        ++waitingCycles;
+//    }
+//    emit (pauseInProgress(false));
+//    qDebug() << "TrackDAO::waitWhilePaused() waited "
+//             << waitingCycles << " = " << waitingCycles*waitInterval;
+}
+
 TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     QTime time;
     time.start();
@@ -1239,7 +1254,8 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     return false;
 }
 
-void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel) {
+void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel,
+                                   volatile bool* pPaused) {
     // This function is called from the LibraryScanner Thread
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
@@ -1271,6 +1287,12 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pC
         }
         if (*pCancel) {
             break;
+        }
+        if (*pPaused) {
+            // tr0: yes, I hang UI here
+            while (!*pPaused)
+                SleepableQThread::sleep(50);
+
         }
         emit(progressVerifyTracksOutside(trackLocation));
     }
