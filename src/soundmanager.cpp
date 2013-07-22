@@ -156,7 +156,7 @@ void SoundManager::closeDevices() {
             it.value()->onInputDisconnected(in);
         }
 
-        short *buffer = m_inputBuffers.value(in);
+        SAMPLE *buffer = m_inputBuffers.value(in);
         if (buffer != NULL) {
             delete [] buffer;
             m_inputBuffers.insert(in, NULL);
