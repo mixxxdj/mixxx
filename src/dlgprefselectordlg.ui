@@ -92,19 +92,16 @@
      <property name="title">
       <string>Similarity Metrics</string>
      </property>
-     <layout class="QFormLayout" name="formLayout">
-      <property name="fieldGrowthPolicy">
-       <enum>QFormLayout::FieldsStayAtSizeHint</enum>
-      </property>
+     <layout class="QGridLayout" name="gridLayout">
       <item row="0" column="0">
-       <widget class="QLabel" name="label">
+       <widget class="QLabel" name="labelTimbre">
         <property name="text">
          <string>Timbre</string>
         </property>
        </widget>
       </item>
       <item row="0" column="1">
-       <widget class="QSlider" name="horizontalSlider">
+       <widget class="QSlider" name="horizontalSliderTimbre">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -117,27 +114,14 @@
        </widget>
       </item>
       <item row="1" column="0">
-       <widget class="QLabel" name="label_2">
+       <widget class="QLabel" name="labelRhythm">
         <property name="text">
          <string>Rhythm</string>
         </property>
        </widget>
       </item>
       <item row="1" column="1">
-       <widget class="QSlider" name="horizontalSlider_2">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
-        </property>
-        <property name="tickPosition">
-         <enum>QSlider::TicksBelow</enum>
-        </property>
-        <property name="tickInterval">
-         <number>10</number>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1">
-       <widget class="QSlider" name="horizontalSlider_3">
+       <widget class="QSlider" name="horizontalSliderRhythm">
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -150,14 +134,34 @@
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QLabel" name="label_3">
+       <widget class="QLabel" name="labelLastFm">
         <property name="text">
          <string>Last.fm Tags</string>
         </property>
        </widget>
       </item>
+      <item row="2" column="1">
+       <widget class="QSlider" name="horizontalSliderLastFm">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="tickPosition">
+         <enum>QSlider::TicksBelow</enum>
+        </property>
+        <property name="tickInterval">
+         <number>10</number>
+        </property>
+       </widget>
+      </item>
       <item row="3" column="1">
-       <widget class="QTextBrowser" name="textBrowser"/>
+       <widget class="QTextBrowser" name="descriptionBox"/>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelDescription">
+        <property name="text">
+         <string>Description</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
