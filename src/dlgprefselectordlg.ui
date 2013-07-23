@@ -102,6 +102,9 @@
       </item>
       <item row="0" column="1">
        <widget class="QSlider" name="horizontalSliderTimbre">
+        <property name="maximum">
+         <number>99</number>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -122,6 +125,9 @@
       </item>
       <item row="1" column="1">
        <widget class="QSlider" name="horizontalSliderRhythm">
+        <property name="maximum">
+         <number>99</number>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>
@@ -142,6 +148,12 @@
       </item>
       <item row="2" column="1">
        <widget class="QSlider" name="horizontalSliderLastFm">
+        <property name="maximum">
+         <number>99</number>
+        </property>
+        <property name="pageStep">
+         <number>10</number>
+        </property>
         <property name="orientation">
          <enum>Qt::Horizontal</enum>
         </property>

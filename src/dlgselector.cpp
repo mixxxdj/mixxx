@@ -194,6 +194,22 @@ void DlgSelector::setDefaults() {
     bool bFilterKeyRelative = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE)).toInt());
 
+    bool iTimbreCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT)).toInt();
+    bool iRhythmCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT)).toInt();
+    bool iLastFmCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT)).toInt();
+
+    QHash<QString, double> contributions;
+    contributions.insert("timbre", iTimbreCoefficient/100.0);
+    contributions.insert("rhythm", iRhythmCoefficient/100.0);
+    contributions.insert("lastfm", iLastFmCoefficient/100.0);
+
+    // TODO(chrisjr): ensure all non-zero values sum to 1
+
+    m_pSelectorLibraryTableModel->setSimilarityContributions(contributions);
+
     checkBoxGenre->setChecked(bFilterGenre);
     checkBoxBpm->setChecked(bFilterBpm);
     horizontalSliderBpmRange->setValue(iFilterBpmRange);

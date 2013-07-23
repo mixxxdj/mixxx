@@ -30,6 +30,9 @@ class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
     void filterKey4thEnabled(int value);
     void filterKey5thEnabled(int value);
     void filterKeyRelativeEnabled(int value);
+    void setTimbreCoefficient(int value);
+    void setRhythmCoefficient(int value);
+    void setLastFmCoefficient(int value);
 
   private:
     void loadSettings();
@@ -42,6 +45,9 @@ class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
     bool m_bFilterKey4th;
     bool m_bFilterKey5th;
     bool m_bFilterKeyRelative;
+    int m_iTimbreCoefficient;
+    int m_iRhythmCoefficient;
+    int m_iLastFmCoefficient;
 };
 
 #endif // DLGPREFSELECTOR_H

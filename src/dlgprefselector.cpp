@@ -27,6 +27,12 @@ DlgPrefSelector::DlgPrefSelector(QWidget *parent,
         this, SLOT(filterKey5thEnabled(int)));
     connect(checkBoxKeyRelative, SIGNAL(stateChanged(int)),
         this, SLOT(filterKeyRelativeEnabled(int)));
+    connect(horizontalSliderTimbre, SIGNAL(stateChanged(int)),
+        this, SLOT(setTimbreCoefficient(int)));
+    connect(horizontalSliderRhythm, SIGNAL(stateChanged(int)),
+        this, SLOT(setRhythmCoefficient(int)));
+    connect(horizontalSliderLastFm, SIGNAL(stateChanged(int)),
+        this, SLOT(setLastFmCoefficient(int)));
 }
 
 DlgPrefSelector::~DlgPrefSelector() {
@@ -54,6 +60,15 @@ void DlgPrefSelector::slotApply() {
     m_pConfig->set(
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE),
         ConfigValue(m_bFilterKeyRelative ? 1 : 0));
+    m_pConfig->set(
+        ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT),
+        ConfigValue(m_iTimbreCoefficient));
+    m_pConfig->set(
+        ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT),
+        ConfigValue(m_iRhythmCoefficient));
+    m_pConfig->set(
+        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT),
+        ConfigValue(m_iLastFmCoefficient));
     m_pConfig->Save();
 }
 
@@ -65,6 +80,9 @@ void DlgPrefSelector::slotUpdate() {
     checkBoxKey4th->setChecked(m_bFilterKey4th);
     checkBoxKey5th->setChecked(m_bFilterKey5th);
     checkBoxKeyRelative->setChecked(m_bFilterKeyRelative);
+    horizontalSliderTimbre->setValue(m_iTimbreCoefficient);
+    horizontalSliderRhythm->setValue(m_iRhythmCoefficient);
+    horizontalSliderLastFm->setValue(m_iLastFmCoefficient);
     slotApply();
 }
 
@@ -96,6 +114,17 @@ void DlgPrefSelector::filterKeyRelativeEnabled(int value) {
     m_bFilterKeyRelative = static_cast<bool>(value);
 }
 
+void DlgPrefSelector::setTimbreCoefficient(int value) {
+    m_iTimbreCoefficient = value;
+}
+
+void DlgPrefSelector::setRhythmCoefficient(int value) {
+    m_iRhythmCoefficient = value;
+}
+
+void DlgPrefSelector::setLastFmCoefficient(int value) {
+    m_iLastFmCoefficient = value;
+}
 
 void DlgPrefSelector::loadSettings() {
     m_bFilterGenre = static_cast<bool>(m_pConfig->getValueString(
@@ -112,6 +141,12 @@ void DlgPrefSelector::loadSettings() {
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_5TH)).toInt());
     m_bFilterKeyRelative = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE)).toInt());
+    m_iTimbreCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT)).toInt();
+    m_iRhythmCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT)).toInt();
+    m_iLastFmCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT)).toInt();
 
     slotUpdate();
 }

@@ -12,8 +12,7 @@
 
 class ControlObjectThreadMain;
 
-class SelectorLibraryTableModel : public LibraryTableModel
-{
+class SelectorLibraryTableModel : public LibraryTableModel {
     Q_OBJECT
   public:
     SelectorLibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);
@@ -32,6 +31,9 @@ class SelectorLibraryTableModel : public LibraryTableModel
     bool seedTrackBpmExists();
     bool seedTrackKeyExists();
     bool seedTrackTimbreExists();
+
+    void setSimilarityContributions(
+            const QHash<QString, double>& contributions);
 
   public slots:
     void filterByGenre(bool value);

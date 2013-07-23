@@ -48,6 +48,9 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
 
     slotResetFilters();
     clearSeedTrackInfo();
+
+    // TODO(chrisjr): calculate appropriate floats in dlgselector
+
     m_similarityContributions.insert("bpm", 0.0);
     m_similarityContributions.insert("timbre", 1.0);
 }
@@ -132,6 +135,11 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
 
 bool SelectorLibraryTableModel::seedTrackTimbreExists() {
     return !m_pSeedTrackTimbre.isNull();
+}
+
+void SelectorLibraryTableModel::setSimilarityContributions(
+        const QHash<QString, double>& contributions) {
+    m_similarityContributions = contributions;
 }
 
 
