@@ -126,7 +126,7 @@ QSqlDatabase& TrackCollection::getDatabase() {
 bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
                                       const QStringList& nameFilters,
                                       volatile bool* cancel,
-                                      volatile bool* pause) {
+                                      QSemaphore* sem) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -140,8 +140,8 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
         if (*cancel) {
             return false;
         }
-        // tr0
-        waitWhilePaused(pause);
+
+        sem->acquire();
 
         QString absoluteFilePath = it.next();
 
@@ -158,12 +158,11 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
         // "Right-Click -> Remove". These tracks stay in the library, but
         // their mixxx_deleted column is 1.
         if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
-            //qDebug() << "Loading" << it.fileName();
+            qDebug() << "Loading" << it.fileName();
             emit(progressLoading(it.fileName()));
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
-
             if (trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
@@ -173,6 +172,8 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
                 qDebug() << "Track ("+absoluteFilePath+") could not be added";
             }
         }
+
+        sem->release();
     }
     emit(finishedLoading());
     return true;
@@ -211,5 +212,5 @@ void TrackCollection::waitWhilePaused(volatile bool* pause) {
     }
     emit (pauseInProgress(false));
     qDebug() << "TrackCollection::waitWhilePaused() waited "
-             << waitingCycles << " = " << waitingCycles*waitInterval;
+             << waitingCycles << "cycles = " << waitingCycles*waitInterval << "ms";
 }

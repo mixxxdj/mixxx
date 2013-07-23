@@ -59,6 +59,8 @@ class AnalysisDao;
 class CueDAO;
 class CrateDAO;
 
+class QSemaphore;
+
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
@@ -99,7 +101,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void detectMovedFiles(QSet<int>* pTracksMovedSetNew, QSet<int>* pTracksMovedSetOld);
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
-    void verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel, volatile bool *pPaused);
+    void verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel, QSemaphore* sem);
 
   signals:
     void trackDirty(int trackId);

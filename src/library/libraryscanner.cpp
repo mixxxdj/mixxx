@@ -42,8 +42,12 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     // conn is in the right thread.
     m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
     m_bCancelLibraryScan(0), // false
-    m_bPausedLibraryScan(false)
+    sem (NULL)
 {
+    // Create semaphore
+    if (sem!=NULL) delete sem;
+    sem = new QSemaphore(1);
+    qDebug() << "\tCreated sem; sem.avaiable = " << sem->available();
 
     qDebug() << "Constructed LibraryScanner";
 
@@ -133,6 +137,7 @@ LibraryScanner::~LibraryScanner()
         m_database.close();
     }
 
+    delete sem;
     qDebug() << "LibraryScanner destroyed";
 }
 
@@ -186,6 +191,7 @@ void LibraryScanner::run()
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
     if (!upgradefile.exists()) {
+//        sem->acquire();
         LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
         connect(&libImport, SIGNAL(progress(QString)),
                 m_pProgress, SLOT(slotUpdate(QString)),
@@ -193,6 +199,7 @@ void LibraryScanner::run()
         ScopedTransaction transaction(m_database);
         libImport.import();
         transaction.commit();
+//        sem->release();
         qDebug("Legacy importer took %d ms", t2.elapsed());
     }
 
@@ -207,14 +214,16 @@ void LibraryScanner::run()
     // First, we're going to mark all the directories that we've
     // previously hashed as needing verification. As we search through the directory tree
     // when we rescan, we'll mark any directory that does still exist as verified.
+    qDebug() << "LibraryScanner::run(), sem: " << sem->available();
+//    sem->acquire();
     m_libraryHashDao.invalidateAllDirectories();
-
     // Mark all the tracks in the library as needing
     // verification of their existance...
     // (ie. we want to check they're still on your hard drive where
     // we think they are)
     m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
-
+    qDebug() << "LibraryScanner::run(), sem: " << sem->available();
+//    sem->release();
     qDebug() << "Recursively scanning library.";
     // Start scanning the library.
     // this will prepare some querys in TrackDAO, this needs be done because
@@ -234,14 +243,13 @@ void LibraryScanner::run()
     // Runs inside a transaction
     m_trackDao.addTracksFinish();
 
+
     //Verify all Tracks inside Library but outside the library path
-    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan,
-                                   &m_bPausedLibraryScan);
+    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan, sem);
+
 
     // Start a transaction for all the library hashing (moved file detection)
     // stuff.
-
-    // tro
     ScopedTransaction transaction(m_database);
 
     // At the end of a scan, mark all tracks and directories that
@@ -322,7 +330,6 @@ void LibraryScanner::scan(const QString& libraryPath, QWidget *parent)
             this, SLOT(makePause()));
     connect(m_pProgress, SIGNAL(scanResumed()),
             this, SLOT(resumePause()));
-
     scan();
 }
 
@@ -340,30 +347,19 @@ void LibraryScanner::resetCancel()
 void LibraryScanner::makePause()
 {
     qDebug() << "IN LibraryScanner::makePause()";
-    m_bPausedLibraryScan = true;
+    qDebug() << "\tsemaphore.avaiable=" << sem->available();
+    sem->acquire();
+    qDebug() << "\tafter release semaphore.avaiable=" << sem->available();
 }
 
 void LibraryScanner::resumePause()
 {
     qDebug() << "IN LibraryScanner::resumePause()";
-    m_bPausedLibraryScan = false;
-    qDebug() << "\t m_bPausedLibraryScan = " << m_bPausedLibraryScan;
+    qDebug() << "\tsemaphore.avaiable=" << sem->available();
+    sem->release();
+    qDebug() << "\tafter acquire semaphore.avaiable=" << sem->available();
 }
 
-void LibraryScanner::waitWhilePaused() {
-    if (!m_bPausedLibraryScan) return;
-
-    const int waitInterval = 50;
-    int waitingCycles = 0;
-    emit (pauseInProgress(true));
-    while (m_bPausedLibraryScan) {
-        SleepableQThread::msleep(waitInterval);
-        ++waitingCycles;
-    }
-    emit (pauseInProgress(false));
-    qDebug() << "LibraryScanner::waitWhilePaused() waited "
-             << waitingCycles << "cycles = " << waitingCycles*waitInterval << "ms";
-}
 
  void LibraryScanner::scan()
 {
@@ -397,6 +393,7 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     newHash = qHash(newHashStr);
 
     // Try to retrieve a hash from the last time that directory was scanned.
+    qDebug() << "LibraryScanner::recursiveScan, sem: " << sem->available();
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
     prevHashExists = !(prevHash == -1);
 
@@ -415,21 +412,20 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
         // Rescan that mofo!
         bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao,
                                                               m_nameFilters, &m_bCancelLibraryScan,
-                                                              &m_bPausedLibraryScan);
+                                                              sem);
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
         // (and the tracks inside them) will be marked as verified
         emit(progressHashing(dirPath));
         verifiedDirectories.append(dirPath);
     }
+    qDebug() << "LibraryScanner::recursiveScan, sem: " << sem->available();
 
     // Let us break out of library directory hashing (the actual file scanning
     // stuff is in TrackCollection::importDirectory)
     if (m_bCancelLibraryScan) {
         return false;
     }
-    // tr0
-    waitWhilePaused();
 
     // Look at all the subdirectories and scan them recursively...
     QDirIterator dirIt(dirPath, QDir::Dirs | QDir::NoDotAndDotDot);
@@ -446,7 +442,6 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
             bScanFinishedCleanly = false;
         }
     }
-
     return bScanFinishedCleanly;
 }
 

@@ -74,10 +74,7 @@ class LibraryScanner : public QThread {
     volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;
 
-    // tr0
-    volatile bool m_bPausedLibraryScan;
-    // since it is thread, we can do waiting function
-    void waitWhilePaused();
+    QSemaphore* sem;
 };
 
 #endif
