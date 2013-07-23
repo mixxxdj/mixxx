@@ -17,7 +17,7 @@ DlgPrefSelector::DlgPrefSelector(QWidget *parent,
         this, SLOT(filterGenreEnabled(int)));
     connect(checkBoxBpm, SIGNAL(stateChanged(int)),
         this, SLOT(filterBpmEnabled(int)));
-    connect(horizontalSliderBpmRange, SIGNAL(stateChanged(int)),
+    connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
         this, SLOT(filterBpmRange(int)));
     connect(checkBoxKey, SIGNAL(stateChanged(int)),
         this, SLOT(filterKeyEnabled(int)));
@@ -27,11 +27,11 @@ DlgPrefSelector::DlgPrefSelector(QWidget *parent,
         this, SLOT(filterKey5thEnabled(int)));
     connect(checkBoxKeyRelative, SIGNAL(stateChanged(int)),
         this, SLOT(filterKeyRelativeEnabled(int)));
-    connect(horizontalSliderTimbre, SIGNAL(stateChanged(int)),
+    connect(horizontalSliderTimbre, SIGNAL(valueChanged(int)),
         this, SLOT(setTimbreCoefficient(int)));
-    connect(horizontalSliderRhythm, SIGNAL(stateChanged(int)),
+    connect(horizontalSliderRhythm, SIGNAL(valueChanged(int)),
         this, SLOT(setRhythmCoefficient(int)));
-    connect(horizontalSliderLastFm, SIGNAL(stateChanged(int)),
+    connect(horizontalSliderLastFm, SIGNAL(valueChanged(int)),
         this, SLOT(setLastFmCoefficient(int)));
 }
 
