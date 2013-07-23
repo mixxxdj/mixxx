@@ -41,13 +41,11 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
     m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
-    m_bCancelLibraryScan(0), // false
-    sem (NULL)
+    m_bCancelLibraryScan(0) // false
 {
-    // Create semaphore
-    if (sem!=NULL) delete sem;
-    sem = new QSemaphore(1);
-    qDebug() << "\tCreated sem; sem.avaiable = " << sem->available();
+    // init semaphore
+    m_semPause.release();
+    qDebug() << "\tCreated sem; sem.avaiable = " << m_semPause.available();
 
     qDebug() << "Constructed LibraryScanner";
 
@@ -137,7 +135,6 @@ LibraryScanner::~LibraryScanner()
         m_database.close();
     }
 
-    delete sem;
     qDebug() << "LibraryScanner destroyed";
 }
 
@@ -214,7 +211,7 @@ void LibraryScanner::run()
     // First, we're going to mark all the directories that we've
     // previously hashed as needing verification. As we search through the directory tree
     // when we rescan, we'll mark any directory that does still exist as verified.
-    qDebug() << "LibraryScanner::run(), sem: " << sem->available();
+    qDebug() << "LibraryScanner::run(), sem: " << m_semPause.available();
 //    sem->acquire();
     m_libraryHashDao.invalidateAllDirectories();
     // Mark all the tracks in the library as needing
@@ -222,7 +219,7 @@ void LibraryScanner::run()
     // (ie. we want to check they're still on your hard drive where
     // we think they are)
     m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
-    qDebug() << "LibraryScanner::run(), sem: " << sem->available();
+    qDebug() << "LibraryScanner::run(), sem: " << m_semPause.available();
 //    sem->release();
     qDebug() << "Recursively scanning library.";
     // Start scanning the library.
@@ -245,7 +242,7 @@ void LibraryScanner::run()
 
 
     //Verify all Tracks inside Library but outside the library path
-    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan, sem);
+    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan, m_semPause);
 
 
     // Start a transaction for all the library hashing (moved file detection)
@@ -347,17 +344,17 @@ void LibraryScanner::resetCancel()
 void LibraryScanner::makePause()
 {
     qDebug() << "IN LibraryScanner::makePause()";
-    qDebug() << "\tsemaphore.avaiable=" << sem->available();
-    sem->acquire();
-    qDebug() << "\tafter release semaphore.avaiable=" << sem->available();
+    qDebug() << "\tsemaphore.avaiable=" << m_semPause.available();
+    m_semPause.acquire();
+    qDebug() << "\tafter release semaphore.avaiable=" << m_semPause.available();
 }
 
 void LibraryScanner::resumePause()
 {
     qDebug() << "IN LibraryScanner::resumePause()";
-    qDebug() << "\tsemaphore.avaiable=" << sem->available();
-    sem->release();
-    qDebug() << "\tafter acquire semaphore.avaiable=" << sem->available();
+    qDebug() << "\tsemaphore.avaiable=" << m_semPause.available();
+    m_semPause.release();
+    qDebug() << "\tafter acquire semaphore.avaiable=" << m_semPause.available();
 }
 
 
@@ -393,7 +390,7 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     newHash = qHash(newHashStr);
 
     // Try to retrieve a hash from the last time that directory was scanned.
-    qDebug() << "LibraryScanner::recursiveScan, sem: " << sem->available();
+    qDebug() << "LibraryScanner::recursiveScan, sem: " << m_semPause.available();
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
     prevHashExists = !(prevHash == -1);
 
@@ -412,14 +409,14 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
         // Rescan that mofo!
         bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao,
                                                               m_nameFilters, &m_bCancelLibraryScan,
-                                                              sem);
+                                                              m_semPause);
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
         // (and the tracks inside them) will be marked as verified
         emit(progressHashing(dirPath));
         verifiedDirectories.append(dirPath);
     }
-    qDebug() << "LibraryScanner::recursiveScan, sem: " << sem->available();
+    qDebug() << "LibraryScanner::recursiveScan, sem: " << m_semPause.available();
 
     // Let us break out of library directory hashing (the actual file scanning
     // stuff is in TrackCollection::importDirectory)

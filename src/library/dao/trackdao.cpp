@@ -1255,7 +1255,7 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
 }
 
 void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel,
-                                   QSemaphore* sem) {
+                                   QSemaphore& semPause) {
     // This function is called from the LibraryScanner Thread
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
@@ -1283,12 +1283,12 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pC
         query2.bindValue(":fs_deleted", (int)!QFile::exists(trackLocation));
         query2.bindValue(":location", trackLocation);
         qDebug() << "IN TrackDAO::verifyTracksOutside"
-                 << "\t semaphor.avaiable =" << sem->available();
-        sem->acquire();
+                 << "\t semaphor.avaiable =" << semPause.available();
+        semPause.acquire();
         if (!query2.exec()) {
             LOG_FAILED_QUERY(query2);
         }
-        sem->release();
+        semPause.release();
         if (*pCancel) {
             break;
         }

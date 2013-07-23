@@ -126,7 +126,7 @@ QSqlDatabase& TrackCollection::getDatabase() {
 bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
                                       const QStringList& nameFilters,
                                       volatile bool* cancel,
-                                      QSemaphore* sem) {
+                                      QSemaphore& semPause) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -141,7 +141,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             return false;
         }
 
-        sem->acquire();
+        semPause.acquire();
 
         QString absoluteFilePath = it.next();
 
@@ -173,7 +173,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             }
         }
 
-        sem->release();
+        semPause.release();
     }
     emit(finishedLoading());
     return true;
