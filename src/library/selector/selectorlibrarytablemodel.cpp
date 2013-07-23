@@ -2,7 +2,6 @@
 
 #include <QObject>
 
-#include "selectorlibrarytablemodel.h"
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
 #include "basetrackplayer.h"
@@ -14,7 +13,10 @@
 
 #include "track/keyutils.h"
 #include "track/timbreutils.h"
+#include "track/tagutils.h"
+
 #include "library/selector/selector_preferences.h"
+#include "library/selector/selectorlibrarytablemodel.h"
 
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
@@ -49,10 +51,6 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     slotResetFilters();
     clearSeedTrackInfo();
 
-    // TODO(chrisjr): calculate appropriate floats in dlgselector
-
-    m_similarityContributions.insert("bpm", 0.0);
-    m_similarityContributions.insert("timbre", 1.0);
 }
 
 SelectorLibraryTableModel::~SelectorLibraryTableModel() {
@@ -109,6 +107,7 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
         m_fSeedTrackBpm = m_pSeedTrack->getBpm();
         m_seedTrackKey = m_pSeedTrack->getKey();
         m_pSeedTrackTimbre = m_pSeedTrack->getTimbre();
+        m_seedTrackTags = m_pSeedTrack->getTags();
     } else {
         clearSeedTrackInfo();
         emit(resetFilters());
@@ -302,6 +301,7 @@ void SelectorLibraryTableModel::clearSeedTrackInfo() {
     m_fSeedTrackBpm = 0;
     m_seedTrackKey = mixxx::track::io::key::INVALID;
     m_pSeedTrackTimbre = TimbrePointer();
+    m_seedTrackTags = TagCounts();
 }
 
 QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
@@ -311,7 +311,7 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
 
     QVariant score;
 
-    // should ensure that similarityContributions's values add up to 1
+    // m_similarityContributions's values add up to 1
 
     double bpmContribution = m_similarityContributions.value("bpm");
     if (bpmContribution > 0.0) {
@@ -329,17 +329,36 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
     }
 
     double timbreContribution = m_similarityContributions.value("timbre");
+    double rhythmContribution = m_similarityContributions.value("rhythm");
 
-    if (timbreContribution > 0.0) {
+    if (timbreContribution > 0.0 || rhythmContribution > 0.0) {
         TrackPointer otherTrack = getTrack(index);
         TimbrePointer pTimbre = otherTrack->getTimbre();
         if (!m_pSeedTrackTimbre.isNull() && !pTimbre.isNull()) {
             double timbreScore =
                     1 - TimbreUtils::hellingerDistance(m_pSeedTrackTimbre,
                                                        pTimbre);
-            qDebug() << m_sSeedTrackInfo << "x" << otherTrack->getInfo() << timbreScore;
+            double rhythmScore =
+                    1 - TimbreUtils::modelDistanceBeats(m_pSeedTrackTimbre,
+                                                        pTimbre);
+
+//            qDebug() << m_sSeedTrackInfo << "x"
+//                     << otherTrack->getInfo() << timbreScore;
             timbreScore *= timbreContribution;
-            score.setValue(timbreScore + score.toDouble());
+            rhythmScore *= rhythmContribution;
+            score.setValue(timbreScore + rhythmScore + score.toDouble());
+        }
+    }
+
+    double lastFmContribution = m_similarityContributions.value("lastfm");
+    if (lastFmContribution > 0.0) {
+        TrackPointer otherTrack = getTrack(index);
+        TagCounts otherTags = otherTrack->getTags();
+        if (!m_seedTrackTags.isEmpty() && !otherTags.isEmpty()) {
+            double tagsScore =
+                TagUtils::jaccardSimilarity(m_seedTrackTags, otherTags);
+            tagsScore *= lastFmContribution;
+            score.setValue(lastFmContribution + score.toDouble());
         }
     }
 

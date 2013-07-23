@@ -9,7 +9,9 @@ class TimbreUtils {
                                TimbrePointer pTimbre2);
     static double hellingerDistance(TimbrePointer pTimbre,
                                     TimbrePointer pTimbre2);
-  private:
+    static double modelDistanceBeats(TimbrePointer pTimbre,
+                                     TimbrePointer pTimbre2);
+private:
     typedef double (*DistanceFunc)(const std::vector<double> &, //mean 1
                                    const std::vector<double> &, //variance 1
                                    const std::vector<double> &, //mean 2

@@ -37,6 +37,14 @@ double TimbreUtils::modelDistance(TimbrePointer pTimbre,
         v2[i] = model2.variance(i);
     }
 
+    return distanceFunc(m1, v1, m2, v2);
+}
+
+double TimbreUtils::modelDistanceBeats(TimbrePointer pTimbre,
+                                       TimbrePointer pTimbre2) {
+    const TimbreModel& model1 = pTimbre->getTimbreModel();
+    const TimbreModel& model2 = pTimbre2->getTimbreModel();
+
     if (model1.has_beat_spectrum() && model2.has_beat_spectrum()) {
         const BeatSpectrum& beat1 = model1.beat_spectrum();
         int beat1_size = beat1.feature_size();
@@ -51,10 +59,9 @@ double TimbreUtils::modelDistance(TimbrePointer pTimbre,
         for (int i = 0; i < beat2_size; i++) {
             b2[i] = beat2.feature(i);
         }
-        return 0.5 * (distanceFunc(m1, v1, m2, v2) +
-                      distanceCosine(b1, b2));
+        return distanceCosine(b1, b2);
     }
-    return distanceFunc(m1, v1, m2, v2);
+    return 1.0;
 }
 
 double TimbreUtils::distanceKL(const std::vector<double> &m1,
