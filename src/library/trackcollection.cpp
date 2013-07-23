@@ -206,7 +206,7 @@ void TrackCollection::waitWhilePaused(volatile bool* pause) {
     int waitingCycles = 0;
     emit (pauseInProgress(true));
     while (*pause) {
-        SleepableQThread::sleep(waitInterval);
+        SleepableQThread::msleep(waitInterval);
         ++waitingCycles;
     }
     emit (pauseInProgress(false));

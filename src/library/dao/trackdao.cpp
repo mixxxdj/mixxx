@@ -1291,7 +1291,7 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pC
         if (*pPaused) {
             // tr0: yes, I hang UI here
             while (!*pPaused)
-                SleepableQThread::sleep(50);
+                SleepableQThread::msleep(50);
 
         }
         emit(progressVerifyTracksOutside(trackLocation));

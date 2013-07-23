@@ -357,12 +357,12 @@ void LibraryScanner::waitWhilePaused() {
     int waitingCycles = 0;
     emit (pauseInProgress(true));
     while (m_bPausedLibraryScan) {
-        SleepableQThread::sleep(waitInterval);
+        SleepableQThread::msleep(waitInterval);
         ++waitingCycles;
     }
     emit (pauseInProgress(false));
     qDebug() << "LibraryScanner::waitWhilePaused() waited "
-             << waitingCycles << " = " << waitingCycles*waitInterval;
+             << waitingCycles << "cycles = " << waitingCycles*waitInterval << "ms";
 }
 
  void LibraryScanner::scan()

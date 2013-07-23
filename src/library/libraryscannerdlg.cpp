@@ -91,18 +91,18 @@ void LibraryScannerDlg::slotPause() {
     qDebug() << "# # # IN LibraryScannerDlg::slotPause()";
 
     QPushButton *pauseBtn = findChild<QPushButton*>("pauseBtn");
+    if (!pauseBtn) {
+        qDebug() << "\t ERROR: pauseBtn == NULL";
+        return;
+    }
     if (m_bPaused) { // resuming
         qDebug() << "\t resuming";
         m_bPaused = false;
-        if (pauseBtn) {
-            pauseBtn->setText("Pause");
-        }
+        pauseBtn->setText("Pause");
         emit(scanResumed());
     } else { // making pause
         qDebug() << "\t making pause";
-        if (pauseBtn) {
-            pauseBtn->setText("Resume");
-        }
+        pauseBtn->setText("Resume");
         m_bPaused = true;
         emit(scanPaused());
     }
