@@ -32,6 +32,7 @@
 #include "track/beatfactory.h"
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
+#include "track/tagutils.h"
 #include "mixxxutils.cpp"
 
 TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
@@ -886,12 +887,12 @@ void TrackInfoObject::setTimbre(TimbrePointer pTimbre) {
     setDirty(true);
 }
 
-LastFmClient::TagCounts TrackInfoObject::getTags() const {
+TagCounts TrackInfoObject::getTags() const {
     QMutexLocker lock(&m_qMutex);
     return m_pTagCounts;
 }
 
-void TrackInfoObject::setTags(const LastFmClient::TagCounts& pTagCounts) {
+void TrackInfoObject::setTags(const TagCounts& pTagCounts) {
     QMutexLocker lock(&m_qMutex);
     m_pTagCounts = pTagCounts;
     setDirty(true);

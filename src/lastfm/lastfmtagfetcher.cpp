@@ -1,11 +1,14 @@
+#include <QDebug>
+#include "trackinfoobject.h"
+#include "track/tagutils.h"
 #include "lastfm/lastfmtagfetcher.h"
 #include "lastfm/lastfmclient.h"
 
 LastFmTagFetcher::LastFmTagFetcher(QObject *parent)
                 : QObject(parent),
                   m_LastFmClient(this) {
-    connect(&m_LastFmClient, SIGNAL(finished(int,LastFmClient::TagCounts)),
-            this, SLOT(tagsFetched(int,LastFmClient::TagCounts)));
+    connect(&m_LastFmClient, SIGNAL(finished(int, const TagCounts&)),
+            this, SLOT(tagsFetched(int, const TagCounts&)));
 }
 
 void LastFmTagFetcher::startFetch(const TrackPointer track) {
@@ -30,7 +33,7 @@ void LastFmTagFetcher::cancel() {
 }
 
 void LastFmTagFetcher::tagsFetched(int index,
-                                   const LastFmClient::TagCounts& tags) {
+                                   const TagCounts& tags) {
     if (index >= m_tracks.count()) {
         return;
     }

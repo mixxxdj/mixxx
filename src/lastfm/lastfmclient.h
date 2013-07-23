@@ -6,6 +6,7 @@
 #include <QtNetwork>
 
 #include "network.h"
+#include "track/tagutils.h"
 
 class LastFmClient : public QObject {
   Q_OBJECT
@@ -14,8 +15,6 @@ class LastFmClient : public QObject {
 
   public:
     LastFmClient(QObject *parent = 0);
-
-    typedef QMap<QString, int> TagCounts;
 
     // Starts a request and returns immediately.  finished() will be emitted
     // later with the same ID.
@@ -32,7 +31,7 @@ class LastFmClient : public QObject {
 
   signals:
     // Emitted when song's social tags have been fetched
-    void finished(int id, LastFmClient::TagCounts tags);
+    void finished(int id, const TagCounts& tags);
     
   private slots:
     void requestFinished();

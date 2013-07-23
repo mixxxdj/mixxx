@@ -1,7 +1,8 @@
 #include <QNetworkReply>
 #include <QStringBuilder>
 
-#include "lastfmclient.h"
+#include "lastfm/lastfmclient.h"
+#include "track/tagutils.h"
 
 const int LastFmClient::m_iDefaultTimeout = 5000; // msec
 const QString LastFmClient::m_sApiKey = "154ac2038b19ca6d5d3ef109eca3a7f8";
@@ -48,7 +49,8 @@ void LastFmClient::requestFinished() {
     int id = m_requests.take(reply);
 
     TagCounts ret;
-    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
+    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+            != 200) {
         emit finished(id, ret);
         return;
     }
@@ -82,7 +84,7 @@ QString LastFmClient::escapeString(const QString& string) {
     return escaped;
 }
 
-LastFmClient::TagCounts LastFmClient::parseTopTags(QXmlStreamReader& reader) {
+TagCounts LastFmClient::parseTopTags(QXmlStreamReader& reader) {
     TagCounts ret;
     QString tag_name;
     int count;

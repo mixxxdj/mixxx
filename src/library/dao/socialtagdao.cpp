@@ -6,8 +6,10 @@
 #include <QStringBuilder>
 
 #include "library/queryutil.h"
-#include "lastfm/lastfmclient.h"
 #include "library/dao/socialtagdao.h"
+#include "lastfm/lastfmclient.h"
+#include "track/tagutils.h"
+
 
 SocialTagDao::SocialTagDao(QSqlDatabase& database)
     : m_db(database) {
@@ -23,9 +25,9 @@ void SocialTagDao::setDatabase(QSqlDatabase& database) {
     m_db = database;
 }
 
-LastFmClient::TagCounts SocialTagDao::getTagsForTrack(int trackId) {
+TagCounts SocialTagDao::getTagsForTrack(int trackId) {
     if (!m_db.isOpen() || trackId == -1) {
-        return LastFmClient::TagCounts();
+        return TagCounts();
     }
 
     QSqlQuery query(m_db);
@@ -41,27 +43,26 @@ LastFmClient::TagCounts SocialTagDao::getTagsForTrack(int trackId) {
 
 void SocialTagDao::saveTrackTags(int trackId, TrackInfoObject* pTrack) {
     qDebug() << "Saving track tags";
-    LastFmClient::TagCounts tags = pTrack->getTags();
+    TagCounts tags = pTrack->getTags();
     if (!tags.isEmpty()) {
         setTagsForTrack(trackId, tags);
     }
 }
 
-bool SocialTagDao::setTagsForTrack(int trackId, LastFmClient::TagCounts tags) {
+bool SocialTagDao::setTagsForTrack(int trackId, TagCounts tags) {
     QSqlQuery tagQuery(m_db);
     tagQuery.prepare(
         "INSERT OR REPLACE INTO " TAG_TABLE " (name, source) "
         "VALUES(:name, :source)");
 
-    QMapIterator<QString, int> mapIt(tags);
-
     QList<QVariant> trackIds;
     QList<QVariant> tagIds;
     QList<QVariant> counts;
 
-    while (mapIt.hasNext()) {
-        mapIt.next();
-        tagQuery.bindValue(":name", mapIt.key());
+    for (TagCounts::const_iterator it = tags.constBegin();
+         it != tags.constEnd();
+         ++it) {
+        tagQuery.bindValue(":name", it.key());
 
         //TODO(chrisjr): allow for multiple sources, rather than hard-coding
         tagQuery.bindValue(":source", "last.fm");
@@ -71,7 +72,7 @@ bool SocialTagDao::setTagsForTrack(int trackId, LastFmClient::TagCounts tags) {
         }
         trackIds << trackId;
         tagIds << tagQuery.lastInsertId();
-        counts << mapIt.value();
+        counts << it.value();
     }
 
     QSqlQuery query(m_db);
@@ -123,9 +124,9 @@ bool SocialTagDao::clearTagsForTracks(QList<int> ids) {
     return true;
 }
 
-LastFmClient::TagCounts SocialTagDao::loadTagsFromQuery(int trackId,
+TagCounts SocialTagDao::loadTagsFromQuery(int trackId,
                                                         QSqlQuery &query) {
-    LastFmClient::TagCounts tags;
+    TagCounts tags;
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't get tags for track" << trackId;
         return tags;

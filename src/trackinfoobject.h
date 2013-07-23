@@ -32,9 +32,9 @@
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/timbre.h"
+#include "track/tagutils.h"
 #include "proto/keys.pb.h"
 #include "proto/timbre.pb.h"
-#include "lastfm/lastfmclient.h"
 #include "library/dao/cue.h"
 
 class QString;
@@ -259,8 +259,8 @@ public:
     TimbrePointer getTimbre() const;
     void setTimbre(TimbrePointer pTimbre);
 
-    LastFmClient::TagCounts getTags() const;
-    void setTags(const LastFmClient::TagCounts& pTags);
+    TagCounts getTags() const;
+    void setTags(const TagCounts& pTags);
 
   public slots:
     void slotCueUpdated();
@@ -372,7 +372,7 @@ public:
 
     TimbrePointer m_pTimbre;
 
-    LastFmClient::TagCounts m_pTagCounts;
+    TagCounts m_pTagCounts;
 
     /** BPM lock **/
     bool m_bBpmLock;
