@@ -33,6 +33,9 @@ class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
     void setTimbreCoefficient(int value);
     void setRhythmCoefficient(int value);
     void setLastFmCoefficient(int value);
+    void displayTimbreDescription();
+    void displayRhythmDescription();
+    void displayLastFmDescription();
 
   private:
     void loadSettings();

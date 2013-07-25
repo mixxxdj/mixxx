@@ -14,25 +14,31 @@ DlgPrefSelector::DlgPrefSelector(QWidget *parent,
     loadSettings();
 
     connect(checkBoxGenre, SIGNAL(stateChanged(int)),
-        this, SLOT(filterGenreEnabled(int)));
+            this, SLOT(filterGenreEnabled(int)));
     connect(checkBoxBpm, SIGNAL(stateChanged(int)),
-        this, SLOT(filterBpmEnabled(int)));
+            this, SLOT(filterBpmEnabled(int)));
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
-        this, SLOT(filterBpmRange(int)));
+            this, SLOT(filterBpmRange(int)));
     connect(checkBoxKey, SIGNAL(stateChanged(int)),
-        this, SLOT(filterKeyEnabled(int)));
+            this, SLOT(filterKeyEnabled(int)));
     connect(checkBoxKey4th, SIGNAL(stateChanged(int)),
-        this, SLOT(filterKey4thEnabled(int)));
+            this, SLOT(filterKey4thEnabled(int)));
     connect(checkBoxKey5th, SIGNAL(stateChanged(int)),
-        this, SLOT(filterKey5thEnabled(int)));
+            this, SLOT(filterKey5thEnabled(int)));
     connect(checkBoxKeyRelative, SIGNAL(stateChanged(int)),
-        this, SLOT(filterKeyRelativeEnabled(int)));
+            this, SLOT(filterKeyRelativeEnabled(int)));
+    connect(horizontalSliderTimbre, SIGNAL(sliderPressed()),
+            this, SLOT(displayTimbreDescription()));
     connect(horizontalSliderTimbre, SIGNAL(valueChanged(int)),
-        this, SLOT(setTimbreCoefficient(int)));
+            this, SLOT(setTimbreCoefficient(int)));
+    connect(horizontalSliderRhythm, SIGNAL(sliderPressed()),
+            this, SLOT(displayRhythmDescription()));
     connect(horizontalSliderRhythm, SIGNAL(valueChanged(int)),
-        this, SLOT(setRhythmCoefficient(int)));
+            this, SLOT(setRhythmCoefficient(int)));
+    connect(horizontalSliderLastFm, SIGNAL(sliderPressed()),
+            this, SLOT(displayLastFmDescription()));
     connect(horizontalSliderLastFm, SIGNAL(valueChanged(int)),
-        this, SLOT(setLastFmCoefficient(int)));
+            this, SLOT(setLastFmCoefficient(int)));
 }
 
 DlgPrefSelector::~DlgPrefSelector() {
@@ -124,6 +130,19 @@ void DlgPrefSelector::setRhythmCoefficient(int value) {
 
 void DlgPrefSelector::setLastFmCoefficient(int value) {
     m_iLastFmCoefficient = value;
+}
+
+void DlgPrefSelector::displayTimbreDescription() {
+    descriptionBox->setText(tr("Compare track timbres."));
+}
+
+void DlgPrefSelector::displayRhythmDescription() {
+    descriptionBox->setText(tr("Compare track rhythms "
+                               "(cosine distance between beat spectra)."));
+}
+
+void DlgPrefSelector::displayLastFmDescription() {
+    descriptionBox->setText(tr("Compare tracks using Last.fm tags."));
 }
 
 void DlgPrefSelector::loadSettings() {
