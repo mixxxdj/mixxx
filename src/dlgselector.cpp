@@ -207,12 +207,10 @@ void DlgSelector::setDefaults() {
     contributions.insert("lastfm", iLastFmCoefficient/100.0);
 
     // ensure non-zero items sum to 1
-    QList<double> coefs = contributions.values();
     double total = 0.0;
 
-    for (QList<double>::const_iterator constIt = coefs.constBegin();
-         constIt != coefs.constEnd(); ++constIt) {
-        total += *constIt;
+    foreach (double value, contributions.values()) {
+        total += value;
     }
 
     if (total > 0.0) {
