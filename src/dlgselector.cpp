@@ -206,7 +206,21 @@ void DlgSelector::setDefaults() {
     contributions.insert("rhythm", iRhythmCoefficient/100.0);
     contributions.insert("lastfm", iLastFmCoefficient/100.0);
 
-    // TODO(chrisjr): ensure all non-zero values sum to 1
+    // ensure non-zero items sum to 1
+    QList<double> coefs = contributions.values();
+    double total = 0.0;
+
+    for (QList<double>::const_iterator constIt = coefs.constBegin();
+         constIt != coefs.constEnd(); ++constIt) {
+        total += *constIt;
+    }
+
+    if (total > 0.0) {
+        for (QHash<QString, double>::iterator it = contributions.begin();
+             it != contributions.end(); ++it) {
+            *it = *it / total;
+        }
+    }
 
     m_pSelectorLibraryTableModel->setSimilarityContributions(contributions);
 
