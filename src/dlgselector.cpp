@@ -214,9 +214,8 @@ void DlgSelector::setDefaults() {
     }
 
     if (total > 0.0) {
-        for (QHash<QString, double>::iterator it = contributions.begin();
-             it != contributions.end(); ++it) {
-            *it = *it / total;
+        foreach (QString key, contributions.keys()) {
+            contributions[key] /= total;
         }
     }
 
