@@ -36,6 +36,7 @@ inline void zap_buffer_denormals(double *buf, int bufSize)
 EngineFilterButterworth8::EngineFilterButterworth8(filterType type, int sampleRate, double freqCorner1, double freqCorner2)
 {
 	m_type = type;
+    m_sampleRate = sampleRate;
 
 	switch(type)
 	{
@@ -63,6 +64,29 @@ EngineFilterButterworth8::EngineFilterButterworth8(filterType type, int sampleRa
 		m_buf1[i] = 0;
 		m_buf2[i] = 0;
 	}
+}
+
+void EngineFilterButterworth8::reset(double freqCorner1, double freqCorner2)
+{
+    switch(m_type)
+    {
+        case FILTER_LOWPASS:
+            Q_ASSERT(freqCorner2 == 0);
+            m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "LpBu8", m_sampleRate,
+                                            freqCorner1, 0, 0);
+            break;
+
+        case FILTER_BANDPASS:
+            m_coef[0]= 1 * fid_design_coef(m_coef + 1, 16, "BpBu8", m_sampleRate,
+                                           freqCorner1, freqCorner2, 0);
+            break;
+
+        case FILTER_HIGHPASS:
+            Q_ASSERT(freqCorner2 == 0);
+            m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "HpBu8", m_sampleRate,
+                                            freqCorner1, 0, 0);
+            break;
+    }
 }
 
 EngineFilterButterworth8::~EngineFilterButterworth8()
