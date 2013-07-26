@@ -85,6 +85,13 @@ void EngineFilterButterworth8::reset(double freqCorner1, double freqCorner2)
                                             freqCorner1, 0, 0);
             break;
     }
+
+    //Initialize Buffers
+    for(int i=0; i < m_bufSize; i++)
+    {
+        m_buf1[i] = 0;
+        m_buf2[i] = 0;
+    }
 }
 
 EngineFilterButterworth8::~EngineFilterButterworth8()
