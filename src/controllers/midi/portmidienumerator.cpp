@@ -85,6 +85,7 @@ bool namesMatchPattern(const QString input_name,
 bool shouldLinkInputToOutput(const QString input_name,
                              const QString output_name) {
 
+    int input_offset = -1;
     int offset = -1;
 
     // Early exit.
@@ -127,6 +128,16 @@ bool shouldLinkInputToOutput(const QString input_name,
         namesMatchPattern(input_name, output_name)) {
         return true;
     }
+
+    // Linee Lemur Daemon support
+    input_offset = LEMUR_INPUT_RE.indexIn(input_name);
+    offset = LEMUR_OUTPUT_RE.indexIn(output_name);
+    if (input_offset>-1 && offset>-1) {
+        // Ports are for lemur, check it's same port index (1-8)
+        if (LEMUR_INPUT_RE.cap(1) == LEMUR_OUTPUT_RE.cap(1))
+            return true;
+    }
+
     return false;
 }
 

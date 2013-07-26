@@ -13,6 +13,7 @@
 
 #include "controllers/controllerenumerator.h"
 #include "controllers/midi/midicontroller.h"
+#include "controllers/midi/midicontroller_name_regexps.h"
 
 class MidiEnumerator : public ControllerEnumerator {
     Q_OBJECT
