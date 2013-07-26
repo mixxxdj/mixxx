@@ -71,7 +71,6 @@ void EngineFilterButterworth8::reset(double freqCorner1, double freqCorner2)
     switch(m_type)
     {
         case FILTER_LOWPASS:
-            Q_ASSERT(freqCorner2 == 0);
             m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "LpBu8", m_sampleRate,
                                             freqCorner1, 0, 0);
             break;
@@ -82,7 +81,6 @@ void EngineFilterButterworth8::reset(double freqCorner1, double freqCorner2)
             break;
 
         case FILTER_HIGHPASS:
-            Q_ASSERT(freqCorner2 == 0);
             m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "HpBu8", m_sampleRate,
                                             freqCorner1, 0, 0);
             break;
