@@ -49,6 +49,8 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
 
     QLabel* pCurrent = new QLabel(this);
     pCurrent->setMaximumWidth(600);
+    pCurrent->setMinimumHeight( pCurrent->fontMetrics().boundingRect("Gg").height()*2 );
+    pCurrent->setMaximumHeight( pCurrent->fontMetrics().boundingRect("Gg").height() *3 );
     pCurrent->setWordWrap(true);
     connect(this, SIGNAL(progress(QString)),
             pCurrent, SLOT(setText(QString)));
@@ -65,7 +67,9 @@ LibraryScannerDlg::~LibraryScannerDlg()
 
 void LibraryScannerDlg::slotUpdate(QString path) {
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
-    if (!m_bCancelled && m_timer.elapsed() > 2000) {
+
+    // tr0: must show it for debug puroposes :)
+    if (!m_bCancelled /*&& m_timer.elapsed() > 2000*/) {
        setVisible(true);
     }
 
@@ -98,11 +102,11 @@ void LibraryScannerDlg::slotPause() {
     if (m_bPaused) { // resuming
         qDebug() << "\t resuming";
         m_bPaused = false;
-        pauseBtn->setText("Pause");
+        pauseBtn->setText(tr("Pause"));
         emit(scanResumed());
     } else { // making pause
         qDebug() << "\t making pause";
-        pauseBtn->setText("Resume");
+        pauseBtn->setText(tr("Resume"));
         m_bPaused = true;
         emit(scanPaused());
     }
