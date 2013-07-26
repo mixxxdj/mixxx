@@ -12,10 +12,16 @@ double TagUtils::jaccardSimilarity(const TagCounts& tags1,
     QSet<QString> keys2 = QSet<QString>::fromList(tags2.keys());
     keys.unite(keys2);
     foreach (QString key, keys)  {
-        int count1 = tags1.value(key);
-        int count2 = tags2.value(key);
-        iTagIntersection += std::min(count1, count2);
-        iTagUnion += count1 + count2;
+//        int count1 = tags1.value(key);
+//        int count2 = tags2.value(key);
+//        iTagIntersection += std::min(count1, count2);
+//        iTagUnion += count1 + count2;
+        if (tags1.contains(key) && tags2.contains(key)) {
+            iTagIntersection++;
+        }
+        iTagUnion++;
     }
-    return iTagUnion > 0 ? double(iTagIntersection)/iTagUnion : 0.0;
+    double result = iTagUnion > 0 ? double(iTagIntersection) / iTagUnion : 0.0;
+    qDebug() << iTagIntersection << iTagUnion << result;
+    return result;
 }
