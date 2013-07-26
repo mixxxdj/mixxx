@@ -71,6 +71,8 @@ class CachingReader : public QObject {
         m_pWorker->setScheduler(pScheduler);
     }
 
+    const static int maximumChunksInMemory;
+
   signals:
     // Emitted once a new track is loaded and ready to be read from.
     void trackLoading();

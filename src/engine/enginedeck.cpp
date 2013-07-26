@@ -161,7 +161,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
         qWarning() << "EnginePassthrough got greater than stereo input. Not currently handled.";
     }
 
-    const int samplesToWrite = nFrames * iChannels;
+    const unsigned int samplesToWrite = nFrames * iChannels;
 
     // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
     unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, samplesToWrite);

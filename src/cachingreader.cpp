@@ -13,6 +13,10 @@
 #include "sampleutil.h"
 #include "util/counter.h"
 
+// currently CachingReaderWorker::kChunkLength is 65536 (0x10000);
+// For 80 chunks we need 5242880 (0x500000) bytes (5 MiB) of Memory
+//static
+const int CachingReader::maximumChunksInMemory = 80;
 
 CachingReader::CachingReader(const char* group,
                              ConfigObject<ConfigValue>* config)
@@ -24,27 +28,17 @@ CachingReader::CachingReader(const char* group,
           m_lruChunk(NULL),
           m_pRawMemoryBuffer(NULL),
           m_iTrackNumSamplesCallbackSafe(0) {
-    int memory_to_use = 5000000; // 5mb, TODO
-    Q_ASSERT(memory_to_use >= CachingReaderWorker::kChunkLength);
-
-    // Only allocate as many bytes as we will actually use.
-    memory_to_use -= (memory_to_use % CachingReaderWorker::kChunkLength);
-
-    int total_chunks = memory_to_use / CachingReaderWorker::kChunkLength;
-
-    //qDebug() << "CachingReader using" << memory_to_use << "bytes.";
-
-    int rawMemoryBufferLength = CachingReaderWorker::kSamplesPerChunk * total_chunks;
+    int rawMemoryBufferLength = CachingReaderWorker::kSamplesPerChunk * maximumChunksInMemory;
     m_pRawMemoryBuffer = new CSAMPLE[rawMemoryBufferLength];
 
-    m_allocatedChunks.reserve(total_chunks);
+    m_allocatedChunks.reserve(maximumChunksInMemory);
 
     CSAMPLE* bufferStart = m_pRawMemoryBuffer;
 
     // Divide up the allocated raw memory buffer into total_chunks
     // chunks. Initialize each chunk to hold nothing and add it to the free
     // list.
-    for (int i=0; i < total_chunks; i++) {
+    for (int i=0; i < maximumChunksInMemory; i++) {
         Chunk* c = new Chunk;
         c->chunk_number = -1;
         c->length = 0;

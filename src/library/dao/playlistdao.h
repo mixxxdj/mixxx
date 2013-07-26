@@ -10,6 +10,13 @@
 #define PLAYLIST_TABLE "Playlists"
 #define PLAYLIST_TRACKS_TABLE "PlaylistTracks"
 
+const QString PLAYLISTTABLE_ID = "id";
+const QString PLAYLISTTABLE_NAME = "name";
+const QString PLAYLISTTABLE_POSITION = "position";
+const QString PLAYLISTTABLE_HIDDEN = "hidden";
+const QString PLAYLISTTABLE_DATECREATED = "date_created";
+const QString PLAYLISTTABLE_DATEMODIFIED = "date_modified";
+
 const QString PLAYLISTTRACKSTABLE_TRACKID = "track_id";
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
@@ -34,7 +41,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; };
     // Create a playlist
-    int createPlaylist(const QString& name, HiddenType type = PLHT_NOT_HIDDEN);
+    int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
     // Rename a playlist
@@ -57,6 +64,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // position in the database table, not the display order position column
     // stored in the database.
     int getPlaylistId(const int index);
+    QList<int> getTrackIds(const int playlistId);
     // Returns true if the playlist with playlistId is hidden
     bool isHidden(const int playlistId);
     // Returns the HiddenType of playlistId
@@ -88,7 +96,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void changed(int playlistId);
     void trackAdded(int playlistId, int trackId, int position);
     void trackRemoved(int playlistId, int trackId, int position);
-    void renamed(int playlistId);
+    void renamed(int playlistId, QString a_strName);
     void lockChanged(int playlistId);
   private:
     QSqlDatabase& m_database;
