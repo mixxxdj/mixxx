@@ -18,6 +18,9 @@ class LastFmClient : public QObject {
 
     // Starts a request and returns immediately.  finished() will be emitted
     // later with the same ID.
+    // A query with just the artist returns similar artists
+    void start(int id, const QString& artist);
+    // A query with artist and title gets top tags
     void start(int id, const QString& artist, const QString& title);
     static void consumeCurrentElement(QXmlStreamReader& reader);
 
@@ -39,6 +42,7 @@ class LastFmClient : public QObject {
   private:
     static QString escapeString(const QString& string);
     static TagCounts parseTopTags(QXmlStreamReader& reader);
+    static TagCounts parseSimilarArtists(QXmlStreamReader& reader);
 
     static const int m_iDefaultTimeout;
     static const QString m_sApiKey;

@@ -14,6 +14,27 @@ LastFmClient::LastFmClient(QObject *parent)
               m_timeouts(m_iDefaultTimeout, this) {
 }
 
+void LastFmClient::start(int id, const QString& artist) {
+    typedef QPair<QString, QString> Param;
+
+    QList<Param> parameters;
+    parameters << Param("method", "artist.getSimilar");
+    parameters << Param("artist", escapeString(artist));
+    parameters << Param("api_key", m_sApiKey);
+
+    QUrl url(m_sRestUrl);
+    url.setQueryItems(parameters);
+    QNetworkRequest req(url);
+
+    qDebug() << "sending request for " << artist;
+
+    QNetworkReply* reply = m_network.get(req);
+    connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
+    m_requests[reply] = id;
+
+    m_timeouts.addReply(reply);
+}
+
 void LastFmClient::start(int id, const QString& artist, const QString& title) {
     typedef QPair<QString, QString> Param;
 
@@ -57,9 +78,12 @@ void LastFmClient::requestFinished() {
 
     QXmlStreamReader reader(reply);
     while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement
-            && reader.name() == "toptags") {
-            ret = parseTopTags(reader);
+        if (reader.readNext() == QXmlStreamReader::StartElement) {
+            if (reader.name() == "toptags") {
+                ret = parseTopTags(reader);
+            } else if (reader.name() == "similarartists") {
+                ret = parseSimilarArtists(reader);
+            }
         }
     }
     emit finished(id, ret);
@@ -104,8 +128,42 @@ TagCounts LastFmClient::parseTopTags(QXmlStreamReader& reader) {
             }
         }
 
-        if (type == QXmlStreamReader::EndElement && reader.name() == "toptags") {
-        break;
+        if (type == QXmlStreamReader::EndElement
+                && reader.name() == "toptags") {
+            break;
+        }
+    }
+    return ret;
+}
+
+
+// TODO(chrisjr): If this approach is kept, a different result object class
+// should be created. This is an ugly, temporary hack to parse a list of
+// similar artists as "tags."
+
+TagCounts LastFmClient::parseSimilarArtists(QXmlStreamReader& reader) {
+    TagCounts ret;
+    QString tag_name;
+    int count;
+
+    while (!reader.atEnd()) {
+        QXmlStreamReader::TokenType type = reader.readNext();
+
+        if (type == QXmlStreamReader::StartElement) {
+            QStringRef name = reader.name();
+            if (name == "name") {
+                tag_name = reader.readElementText();
+            } else if (name == "match") {
+                count = (int) (100.0f * reader.readElementText().toFloat());
+
+                qDebug() << tag_name << ":" << count;
+                ret.insert(tag_name, count);
+            }
+        }
+
+        if (type == QXmlStreamReader::EndElement
+                && reader.name() == "similarartists") {
+            break;
         }
     }
     return ret;

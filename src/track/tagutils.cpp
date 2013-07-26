@@ -1,3 +1,4 @@
+#include <QtDebug>
 #include <QSet>
 
 #include "lastfm/lastfmclient.h"
