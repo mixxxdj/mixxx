@@ -42,7 +42,8 @@ class LastFmClient : public QObject {
   private:
     static QString escapeString(const QString& string);
     static TagCounts parseTopTags(QXmlStreamReader& reader);
-    static TagCounts parseSimilarArtists(QXmlStreamReader& reader);
+    static TagCounts parseSimilarArtists(const QString& origArtist,
+                                         QXmlStreamReader& reader);
 
     static const int m_iDefaultTimeout;
     static const QString m_sApiKey;

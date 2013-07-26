@@ -82,7 +82,9 @@ void LastFmClient::requestFinished() {
             if (reader.name() == "toptags") {
                 ret = parseTopTags(reader);
             } else if (reader.name() == "similarartists") {
-                ret = parseSimilarArtists(reader);
+                QXmlStreamAttributes attributes = reader.attributes();
+                QString origArtist = attributes.value("artist").toString();
+                ret = parseSimilarArtists(origArtist, reader);
             }
         }
     }
@@ -141,10 +143,12 @@ TagCounts LastFmClient::parseTopTags(QXmlStreamReader& reader) {
 // should be created. This is an ugly, temporary hack to parse a list of
 // similar artists as "tags."
 
-TagCounts LastFmClient::parseSimilarArtists(QXmlStreamReader& reader) {
+TagCounts LastFmClient::parseSimilarArtists(const QString& origArtist,
+                                            QXmlStreamReader& reader) {
     TagCounts ret;
     QString tag_name;
     int count;
+    ret.insert(origArtist, 100);
 
     while (!reader.atEnd()) {
         QXmlStreamReader::TokenType type = reader.readNext();
