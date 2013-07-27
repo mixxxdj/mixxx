@@ -52,6 +52,8 @@ private:
     static ControlPotmeter *s_loEqFreq, *s_hiEqFreq;
     static ControlPushButton *s_lofiEq;
 
+    double old_low, old_mid, old_high;
+
     int ilowFreq, ihighFreq;
     bool blofi;
 };

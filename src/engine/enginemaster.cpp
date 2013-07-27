@@ -36,6 +36,7 @@
 #include "sampleutil.h"
 #include "util/timer.h"
 #include "playermanager.h"
+#include "engine/channelmixer.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
@@ -43,7 +44,9 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
-                           bool bEnableSidechain) {
+                           bool bEnableSidechain)
+        : m_headphoneMasterGainOld(0),
+          m_headphoneVolumeOld(0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
@@ -167,169 +170,6 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
     return m_pHead;
 }
 
-void EngineMaster::mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
-                               CSAMPLE* pOutput, unsigned int iBufferSize,
-                               GainCalculator* pGainCalculator) {
-    // Common case: 2 decks, 4 samplers, 1 mic
-    ChannelInfo* pChannel1 = NULL;
-    ChannelInfo* pChannel2 = NULL;
-    ChannelInfo* pChannel3 = NULL;
-    ChannelInfo* pChannel4 = NULL;
-    ChannelInfo* pChannel5 = NULL;
-    ChannelInfo* pChannel6 = NULL;
-    ChannelInfo* pChannel7 = NULL;
-
-    unsigned int totalActive = 0;
-    for (unsigned int i = 0; i < maxChannels; ++i) {
-        if ((channelBitvector & (1 << i)) == 0) {
-            continue;
-        }
-
-        ++totalActive;
-
-        if (pChannel1 == NULL) {
-            pChannel1 = m_channels[i];
-        } else if (pChannel2 == NULL) {
-            pChannel2 = m_channels[i];
-        } else if (pChannel3 == NULL) {
-            pChannel3 = m_channels[i];
-        } else if (pChannel4 == NULL) {
-            pChannel4 = m_channels[i];
-        } else if (pChannel5 == NULL) {
-            pChannel5 = m_channels[i];
-        } else if (pChannel6 == NULL) {
-            pChannel6 = m_channels[i];
-        } else if (pChannel7 == NULL) {
-            pChannel7 = m_channels[i];
-        }
-    }
-
-    ScopedTimer t(QString("EngineMaster::mixChannels_%1active").arg(totalActive));
-
-    if (totalActive == 0) {
-        SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
-    } else if (totalActive == 1) {
-        CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        double gain1 = pGainCalculator->getGain(pChannel1);
-        SampleUtil::copyWithGain(pOutput,
-                                 pBuffer1, gain1,
-                                 iBufferSize);
-    } else if (totalActive == 2) {
-        CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        double gain1 = pGainCalculator->getGain(pChannel1);
-        CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        double gain2 = pGainCalculator->getGain(pChannel2);
-        SampleUtil::copy2WithGain(pOutput,
-                                  pBuffer1, gain1,
-                                  pBuffer2, gain2,
-                                  iBufferSize);
-    } else if (totalActive == 3) {
-        CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        double gain1 = pGainCalculator->getGain(pChannel1);
-        CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        double gain2 = pGainCalculator->getGain(pChannel2);
-        CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        double gain3 = pGainCalculator->getGain(pChannel3);
-
-        SampleUtil::copy3WithGain(pOutput,
-                                  pBuffer1, gain1,
-                                  pBuffer2, gain2,
-                                  pBuffer3, gain3,
-                                  iBufferSize);
-    } else if (totalActive == 4) {
-        CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        double gain1 = pGainCalculator->getGain(pChannel1);
-        CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        double gain2 = pGainCalculator->getGain(pChannel2);
-        CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        double gain3 = pGainCalculator->getGain(pChannel3);
-        CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        double gain4 = pGainCalculator->getGain(pChannel4);
-        SampleUtil::copy4WithGain(pOutput,
-                                  pBuffer1, gain1,
-                                  pBuffer2, gain2,
-                                  pBuffer3, gain3,
-                                  pBuffer4, gain4,
-                                  iBufferSize);
-    } else if (totalActive == 5) {
-        CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        double gain1 = pGainCalculator->getGain(pChannel1);
-        CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        double gain2 = pGainCalculator->getGain(pChannel2);
-        CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        double gain3 = pGainCalculator->getGain(pChannel3);
-        CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        double gain4 = pGainCalculator->getGain(pChannel4);
-        CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        double gain5 = pGainCalculator->getGain(pChannel5);
-
-        SampleUtil::copy5WithGain(pOutput,
-                                  pBuffer1, gain1,
-                                  pBuffer2, gain2,
-                                  pBuffer3, gain3,
-                                  pBuffer4, gain4,
-                                  pBuffer5, gain5,
-                                  iBufferSize);
-    } else if (totalActive == 6) {
-        CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        double gain1 = pGainCalculator->getGain(pChannel1);
-        CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        double gain2 = pGainCalculator->getGain(pChannel2);
-        CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        double gain3 = pGainCalculator->getGain(pChannel3);
-        CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        double gain4 = pGainCalculator->getGain(pChannel4);
-        CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        double gain5 = pGainCalculator->getGain(pChannel5);
-        CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        double gain6 = pGainCalculator->getGain(pChannel6);
-        SampleUtil::copy6WithGain(pOutput,
-                                  pBuffer1, gain1,
-                                  pBuffer2, gain2,
-                                  pBuffer3, gain3,
-                                  pBuffer4, gain4,
-                                  pBuffer5, gain5,
-                                  pBuffer6, gain6,
-                                  iBufferSize);
-    } else if (totalActive == 7) {
-        CSAMPLE* pBuffer1 = pChannel1->m_pBuffer;
-        double gain1 = pGainCalculator->getGain(pChannel1);
-        CSAMPLE* pBuffer2 = pChannel2->m_pBuffer;
-        double gain2 = pGainCalculator->getGain(pChannel2);
-        CSAMPLE* pBuffer3 = pChannel3->m_pBuffer;
-        double gain3 = pGainCalculator->getGain(pChannel3);
-        CSAMPLE* pBuffer4 = pChannel4->m_pBuffer;
-        double gain4 = pGainCalculator->getGain(pChannel4);
-        CSAMPLE* pBuffer5 = pChannel5->m_pBuffer;
-        double gain5 = pGainCalculator->getGain(pChannel5);
-        CSAMPLE* pBuffer6 = pChannel6->m_pBuffer;
-        double gain6 = pGainCalculator->getGain(pChannel6);
-        CSAMPLE* pBuffer7 = pChannel7->m_pBuffer;
-        double gain7 = pGainCalculator->getGain(pChannel7);
-        SampleUtil::copy7WithGain(pOutput,
-                                  pBuffer1, gain1,
-                                  pBuffer2, gain2,
-                                  pBuffer3, gain3,
-                                  pBuffer4, gain4,
-                                  pBuffer5, gain5,
-                                  pBuffer6, gain6,
-                                  pBuffer7, gain7,
-                                  iBufferSize);
-    } else {
-        // Set pOutput to all 0s
-        SampleUtil::applyGain(pOutput, 0.0f, iBufferSize);
-
-        for (unsigned int i = 0; i < maxChannels; ++i) {
-            if (channelBitvector & (1 << i)) {
-                ChannelInfo* pChannelInfo = m_channels[i];
-                CSAMPLE* pBuffer = pChannelInfo->m_pBuffer;
-                double gain = pGainCalculator->getGain(pChannelInfo);
-                SampleUtil::addWithGain(pOutput, pBuffer, gain, iBufferSize);
-            }
-        }
-    }
-}
-
 void EngineMaster::processChannels(unsigned int* masterOutput,
                                    unsigned int* headphoneOutput,
                                    int iBufferSize) {
@@ -446,7 +286,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
-    mixChannels(headphoneOutput, maxChannels, m_pHead, iBufferSize, &m_headphoneGain);
+
+    ChannelMixer::mixChannels(m_channels, m_headphoneGain, headphoneOutput,
+                              maxChannels, &m_channelHeadphoneGainCache,
+                              m_pHead, iBufferSize);
 
     // Calculate the crossfader gains for left and right side of the crossfader
     double c1_gain, c2_gain;
@@ -460,7 +303,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     m_masterGain.setGains(m_pMasterVolume->get(), c1_gain, 1.0, c2_gain);
 
     // Perform the master mix
-    mixChannels(masterOutput, maxChannels, m_pMaster, iBufferSize, &m_masterGain);
+    ChannelMixer::mixChannels(m_channels, m_masterGain, masterOutput,
+                              maxChannels, &m_channelMasterGainCache,
+                              m_pMaster, iBufferSize);
 
 #ifdef __LADSPA__
     // LADPSA master effects
@@ -494,10 +339,14 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
 
     // Add master to headphone with appropriate gain
-    SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
+    SampleUtil::addWithRampingGain(m_pHead, m_pMaster, m_headphoneMasterGainOld,
+                                   cmaster_gain, iBufferSize);
+    m_headphoneMasterGainOld = cmaster_gain;
 
     // Head volume and clipping
-    SampleUtil::applyGain(m_pHead, m_pHeadVolume->get(), iBufferSize);
+    CSAMPLE headphoneVolume = m_pHeadVolume->get();
+    SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld, headphoneVolume, iBufferSize);
+    m_headphoneVolumeOld = headphoneVolume;
     head_clipping->process(m_pHead, m_pHead, iBufferSize);
 
     //Master/headphones interleaving is now done in
@@ -518,8 +367,8 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(pChannelInfo->m_pBuffer, 0, MAX_BUFFER_LEN);
     m_channels.push_back(pChannelInfo);
-
-    m_pMasterSync->addChannel(pChannel);
+    m_channelMasterGainCache.push_back(0);
+    m_channelHeadphoneGainCache.push_back(0);
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
     if (pBuffer != NULL) {

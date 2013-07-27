@@ -18,14 +18,11 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
-#include <QMap>
-
 #include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
 #include "soundmanagerutil.h"
 #include "recording/recordingmanager.h"
-#include <QtCore>
 
 class EngineWorkerScheduler;
 class EngineBuffer;
@@ -86,7 +83,6 @@ class EngineMaster : public EngineObject, public AudioSource {
         return m_pSideChain;
     }
 
-  private:
     struct ChannelInfo {
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
@@ -95,11 +91,11 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     class GainCalculator {
       public:
-        virtual double getGain(ChannelInfo* pChannelInfo) = 0;
+        virtual double getGain(ChannelInfo* pChannelInfo) const = 0;
     };
     class ConstantGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) {
+        inline double getGain(ChannelInfo* pChannelInfo) const {
             Q_UNUSED(pChannelInfo);
             return m_dGain;
         }
@@ -111,9 +107,12 @@ class EngineMaster : public EngineObject, public AudioSource {
     };
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) {
-            double channelVolume = pChannelInfo->m_pVolumeControl->get();
-            double orientationGain = EngineMaster::gainForOrientation(
+        OrientationVolumeGainCalculator()
+                : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0) { }
+
+        inline double getGain(ChannelInfo* pChannelInfo) const {
+            const double channelVolume = pChannelInfo->m_pVolumeControl->get();
+            const double orientationGain = EngineMaster::gainForOrientation(
                 pChannelInfo->m_pChannel->getOrientation(),
                 m_dLeftGain, m_dCenterGain, m_dRightGain);
             return m_dVolume * channelVolume * orientationGain;
@@ -125,6 +124,7 @@ class EngineMaster : public EngineObject, public AudioSource {
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
         }
+
       private:
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
@@ -141,6 +141,8 @@ class EngineMaster : public EngineObject, public AudioSource {
                          int iBufferSize);
 
     QList<ChannelInfo*> m_channels;
+    QList<CSAMPLE> m_channelMasterGainCache;
+    QList<CSAMPLE> m_channelHeadphoneGainCache;
 
     CSAMPLE *m_pMaster, *m_pHead;
 
@@ -167,6 +169,8 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
+    CSAMPLE m_headphoneMasterGainOld;
+    CSAMPLE m_headphoneVolumeOld;
 };
 
 #endif
