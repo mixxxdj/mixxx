@@ -41,17 +41,19 @@ class BpmDetector;
 /**
    @author Albert Santoni
 */
+
 class TrackCollection : public QObject
 {
     Q_OBJECT
-  public:
+public:
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
     ~TrackCollection();
     bool checkForTables();
 
     /** Import the files in a given diretory, without recursing into subdirectories */
     bool importDirectory(const QString &directory, TrackDAO &trackDao,
-                         const QStringList & nameFilters, volatile bool* cancel, QSemaphore& semPause);
+                         const QStringList & nameFilters, volatile bool* cancel,
+                         volatile bool *pause);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
@@ -67,13 +69,13 @@ class TrackCollection : public QObject
         return m_pConfig;
     }
 
-  signals:
+signals:
     void startedLoading();
     void progressLoading(QString path);
     void finishedLoading();
     void pauseInProgress(bool); // tr0
 
-  private:
+private:
     ConfigObject<ConfigValue>* m_pConfig;
     QSqlDatabase m_db;
     QHash<QString, QSharedPointer<BaseTrackCache> > m_trackSources;

@@ -400,6 +400,33 @@ void TrackDAO::addTracksFinish() {
     m_tracksAddedSet.clear();
 }
 
+bool TrackDAO::addTracksAddOrPause(TrackInfoObject* pTrack, bool unremove,
+                                   volatile bool* cancel, volatile bool* pause)
+{
+    if (*pause) {
+        commitOnPause();
+        while (*pause) { // wait in pause
+            if (*cancel) { // if we want cancel in pause
+                return false;
+            }
+            SleepableQThread::msleep(50);
+        }
+        addTracksPrepare();
+    }
+    return addTracksAdd(pTrack, unremove);
+}
+
+void TrackDAO::commitOnPause()
+{
+    if (m_pTransaction) {
+        m_pTransaction->commit();
+        delete m_pTransaction;
+        m_pTransaction = NULL;
+    }
+    emit (tracksAdded (m_tracksAddedSet));
+    m_tracksAddedSet.clear();
+}
+
 bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
 
     if (!m_pQueryLibraryInsert || !m_pQueryTrackLocationInsert ||
@@ -1254,8 +1281,8 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     return false;
 }
 
-void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel,
-                                   QSemaphore& semPause) {
+void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel/*,
+                                   QSemaphore& semPause*/) {
     // This function is called from the LibraryScanner Thread
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
@@ -1282,13 +1309,11 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pC
         trackLocation = query.value(query.record().indexOf("location")).toString();
         query2.bindValue(":fs_deleted", (int)!QFile::exists(trackLocation));
         query2.bindValue(":location", trackLocation);
-        qDebug() << "IN TrackDAO::verifyTracksOutside"
-                 << "\t semaphor.avaiable =" << semPause.available();
-        semPause.acquire();
+//        semPause.acquire();
         if (!query2.exec()) {
             LOG_FAILED_QUERY(query2);
         }
-        semPause.release();
+//        semPause.release();
         if (*pCancel) {
             break;
         }

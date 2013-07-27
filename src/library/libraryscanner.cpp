@@ -41,11 +41,10 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
     m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
-    m_bCancelLibraryScan(0) // false
+    m_bCancelLibraryScan(false),
+    m_bInPause(false),
+    m_semPause(1)
 {
-    // init semaphore
-    m_semPause.release();
-    qDebug() << "\tCreated sem; sem.avaiable = " << m_semPause.available();
 
     qDebug() << "Constructed LibraryScanner";
 
@@ -150,6 +149,7 @@ void LibraryScanner::run()
 
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
+
     if (!m_database.isValid()) {
         m_database = QSqlDatabase::cloneDatabase(m_pCollection->getDatabase(), "LIBRARY_SCANNER");
     }
@@ -161,6 +161,8 @@ void LibraryScanner::run()
             return;
         }
     }
+
+//    m_pCollection->setDbConnectionDelegate(this);
 
     m_libraryHashDao.setDatabase(m_database);
     m_cueDao.setDatabase(m_database);
@@ -188,7 +190,6 @@ void LibraryScanner::run()
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
     if (!upgradefile.exists()) {
-//        sem->acquire();
         LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
         connect(&libImport, SIGNAL(progress(QString)),
                 m_pProgress, SLOT(slotUpdate(QString)),
@@ -196,7 +197,6 @@ void LibraryScanner::run()
         ScopedTransaction transaction(m_database);
         libImport.import();
         transaction.commit();
-//        sem->release();
         qDebug("Legacy importer took %d ms", t2.elapsed());
     }
 
@@ -211,16 +211,13 @@ void LibraryScanner::run()
     // First, we're going to mark all the directories that we've
     // previously hashed as needing verification. As we search through the directory tree
     // when we rescan, we'll mark any directory that does still exist as verified.
-    qDebug() << "LibraryScanner::run(), sem: " << m_semPause.available();
-//    sem->acquire();
     m_libraryHashDao.invalidateAllDirectories();
     // Mark all the tracks in the library as needing
     // verification of their existance...
     // (ie. we want to check they're still on your hard drive where
     // we think they are)
     m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
-    qDebug() << "LibraryScanner::run(), sem: " << m_semPause.available();
-//    sem->release();
+
     qDebug() << "Recursively scanning library.";
     // Start scanning the library.
     // this will prepare some querys in TrackDAO, this needs be done because
@@ -240,13 +237,12 @@ void LibraryScanner::run()
     // Runs inside a transaction
     m_trackDao.addTracksFinish();
 
-
     //Verify all Tracks inside Library but outside the library path
-    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan, m_semPause);
+    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan/*, m_semPause*/);
 
+    qDebug("Scan took: %d ms", t.elapsed());
 
-    // Start a transaction for all the library hashing (moved file detection)
-    // stuff.
+    // Start a transaction for all the library hashing (moved file detection) stuff.
     ScopedTransaction transaction(m_database);
 
     // At the end of a scan, mark all tracks and directories that
@@ -284,8 +280,6 @@ void LibraryScanner::run()
         transaction.rollback();
         qDebug() << "Scan cancelled";
     }
-
-    qDebug("Scan took: %d ms", t.elapsed());
 
     //m_pProgress->slotStopTiming();
     m_database.close();
@@ -328,33 +322,39 @@ void LibraryScanner::scan(const QString& libraryPath, QWidget *parent)
     connect(m_pProgress, SIGNAL(scanResumed()),
             this, SLOT(resumePause()));
     scan();
+//    m_pCollection->setDbConnectionDelegate(NULL);
 }
 
 //slot
 void LibraryScanner::cancel()
 {
-    m_bCancelLibraryScan = 1; // true
+    m_bCancelLibraryScan = true;
+//    m_bInPause = false;
 }
 
 void LibraryScanner::resetCancel()
 {
-    m_bCancelLibraryScan = 0;  // false
+    m_bCancelLibraryScan = false;
+//    m_bInPause = false;
 }
 
 void LibraryScanner::makePause()
 {
     qDebug() << "IN LibraryScanner::makePause()";
-    qDebug() << "\tsemaphore.avaiable=" << m_semPause.available();
-    m_semPause.acquire();
-    qDebug() << "\tafter release semaphore.avaiable=" << m_semPause.available();
+//    m_semPause.acquire();
+    m_bInPause = true;
+
+    // close transaction
+    m_pCollection->getTrackDAO().addTracksFinish();
 }
 
 void LibraryScanner::resumePause()
 {
     qDebug() << "IN LibraryScanner::resumePause()";
-    qDebug() << "\tsemaphore.avaiable=" << m_semPause.available();
-    m_semPause.release();
-    qDebug() << "\tafter acquire semaphore.avaiable=" << m_semPause.available();
+//    m_semPause.release();
+    m_bInPause = false;
+
+    m_pCollection->getTrackDAO().addTracksPrepare();
 }
 
 
@@ -379,8 +379,7 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     int prevHash = -1;
     // Note: A hash of "0" is a real hash if the directory contains no files!
 
-    while (fileIt.hasNext())
-    {
+    while (fileIt.hasNext()) {
         currentFile = fileIt.next();
         //qDebug() << currentFile;
         newHashStr += currentFile;
@@ -390,7 +389,7 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     newHash = qHash(newHashStr);
 
     // Try to retrieve a hash from the last time that directory was scanned.
-    qDebug() << "LibraryScanner::recursiveScan, sem: " << m_semPause.available();
+//    qDebug() << "LibraryScanner::recursiveScan, sem: " << m_semPause.available();
     prevHash = m_libraryHashDao.getDirectoryHash(dirPath);
     prevHashExists = !(prevHash == -1);
 
@@ -409,14 +408,14 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
         // Rescan that mofo!
         bScanFinishedCleanly = m_pCollection->importDirectory(dirPath, m_trackDao,
                                                               m_nameFilters, &m_bCancelLibraryScan,
-                                                              m_semPause);
+                                                              &m_bInPause);
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
         // (and the tracks inside them) will be marked as verified
         emit(progressHashing(dirPath));
         verifiedDirectories.append(dirPath);
     }
-    qDebug() << "LibraryScanner::recursiveScan, sem: " << m_semPause.available();
+//    qDebug() << "LibraryScanner::recursiveScan, sem: " << m_semPause.available();
 
     // Let us break out of library directory hashing (the actual file scanning
     // stuff is in TrackCollection::importDirectory)
@@ -441,6 +440,7 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     }
     return bScanFinishedCleanly;
 }
+
 
 // Table: LibraryHashes
 // PRIMARY KEY string directory

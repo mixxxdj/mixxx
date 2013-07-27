@@ -85,6 +85,8 @@ class TrackDAO : public QObject, public virtual DAO {
     void addTracksPrepare();
     bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
     void addTracksFinish();
+    bool addTracksAddOrPause(TrackInfoObject* pTrack, bool unremove, volatile bool *cancel, volatile bool* pause);
+    void commitOnPause();
     QList<int> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
     void hideTracks(const QList<int>& ids);
     void purgeTracks(const QList<int>& ids);
@@ -101,7 +103,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void detectMovedFiles(QSet<int>* pTracksMovedSetNew, QSet<int>* pTracksMovedSetOld);
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
-    void verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel, QSemaphore& semPause);
+    void verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel);
 
   signals:
     void trackDirty(int trackId);

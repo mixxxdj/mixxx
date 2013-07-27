@@ -126,7 +126,8 @@ QSqlDatabase& TrackCollection::getDatabase() {
 bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
                                       const QStringList& nameFilters,
                                       volatile bool* cancel,
-                                      QSemaphore& semPause) {
+                                      volatile bool* pause/*,
+                                      QSemaphore& semPause*/) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -141,7 +142,20 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             return false;
         }
 
-        semPause.acquire();
+//        if (*pause) {
+//            if (m_dbAccessDelegate) {
+//                m_trackDao.commitOnPause();
+//            }
+//            while (*pause) { // wait in pause
+//                if (*cancel) { // if we want cancel in pause
+//                    return false;
+//                }
+//                SleepableQThread::msleep(50);
+//            }
+//            if (m_dbAccessDelegate) {
+//                m_trackDao.addTracksPrepare();
+//            }
+//        }
 
         QString absoluteFilePath = it.next();
 
@@ -163,7 +177,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
-            if (trackDao.addTracksAdd(pTrack.data(), false)) {
+            if (trackDao.addTracksAddOrPause(pTrack.data(), false, cancel, pause)) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
                 // new Track in the database
@@ -173,7 +187,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             }
         }
 
-        semPause.release();
+//        semPause.release();
     }
     emit(finishedLoading());
     return true;
