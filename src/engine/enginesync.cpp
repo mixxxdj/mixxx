@@ -79,7 +79,7 @@ ControlObject* SyncChannel::getBeatDistanceControl() {
 EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
         : EngineControl(kMasterSyncGroup, _config),
           m_sSyncSource(kMasterSyncGroup),
-          m_dSourceRate(0.0f), //has to be zero so that master bpm gets set correctly on startup
+          m_dSourceRate(0.0f),  // Has to be zero so that master bpm gets set correctly on startup
           m_dMasterBpm(124.0f),
           m_dPseudoBufferPos(0.0f) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
@@ -116,8 +116,8 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
 
-    //TODO: get this from configuration
-    m_pMasterBpm->set(m_dMasterBpm); //this will initialize all our values
+    // TODO: get this from configuration
+    m_pMasterBpm->set(m_dMasterBpm);  // This will initialize all our values
     updateSamplesPerBeat();
 }
 
@@ -146,8 +146,6 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
 }
 
 void EngineSync::disableChannelMaster(const QString& channel) {
-    qDebug() << "UNSETTING master channel (disconnected master)";
-
     SyncChannel* pOldChannelMaster = m_pChannelMaster;
     if (pOldChannelMaster) {
         ControlObject* pSourceRate = pOldChannelMaster->getRateEngineControl();
@@ -191,7 +189,6 @@ void EngineSync::setMaster(const QString& group) {
 
 void EngineSync::setInternalMaster() {
     if (m_sSyncSource == kMasterSyncGroup) {
-        qDebug() << "already internal master";
         return;
     }
     m_dMasterBpm = m_pMasterBpm->get();
@@ -223,14 +220,12 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
 
     // Only consider channels that have a track loaded and are in the master
     // mix.
-    //qDebug() << "***********************************************asked to set a new master:" << deck;
     m_pChannelMaster = pSyncChannel;
     m_sSyncSource = group;
 
 
     ControlObject* pSourceRate = pSyncChannel->getRateEngineControl();
     if (pSourceRate == NULL) {
-        //qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!! source true rate was null";
         return false;
     }
     connect(pSourceRate, SIGNAL(valueChangedFromEngine(double)),
@@ -239,17 +234,14 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
 
     ControlObject* pSourceBeatDistance = pSyncChannel->getBeatDistanceControl();
     if (pSourceBeatDistance == NULL) {
-        qDebug() << "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!1 source beat dist was null";
         return false;
     }
     connect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotSourceBeatDistanceChanged(double)),
             Qt::DirectConnection);
 
-    // reset internal beat distance to equal the new master
+    // Reset internal beat distance to equal the new master
     resetInternalBeatDistance();
-
-    //qDebug() << "----------------------------setting new master" << group;
 
     m_pSyncInternalEnabled->set(FALSE);
     slotSourceRateChanged(pSourceRate->get());
@@ -262,7 +254,6 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
 }
 
 QString EngineSync::chooseNewMaster(const QString& dontpick) {
-    //qDebug() << "----------=-=-=-=-=-=-=-finding a new master";
     QString fallback = kMasterSyncGroup;
     foreach (SyncChannel* pSyncChannel, m_channels) {
         const QString& group = pSyncChannel->getGroup();
@@ -284,7 +275,6 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the channel is playing then go with it immediately.
                 if (fabs(pBuffer->getRate()) > 0) {
-                    //qDebug() << "picked a new master deck:" << group;
                     return group;
                 }
             }
@@ -294,14 +284,11 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
 }
 
 void EngineSync::slotSourceRateChanged(double rate_engine) {
-    //master buffer can be null due to timing issues
+    // Master buffer can be null due to timing issues
     if (m_pChannelMaster != NULL && rate_engine != m_dSourceRate) {
         m_dSourceRate = rate_engine;
         double filebpm = m_pChannelMaster->getFileBpm();
         m_dMasterBpm = rate_engine * filebpm;
-
-        //qDebug() << "file bpm " << filebpm;
-        //qDebug()<< "announcing a master bpm of" <<  m_dMasterBpm;
 
         if (m_dMasterBpm != 0) {
             m_pSyncRateSlider->set(m_dMasterBpm);
@@ -323,38 +310,34 @@ void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
         m_pSyncRateSlider->set(m_dMasterBpm);
         return;
     }
-    //qDebug() << "trying to set internal master to " << new_bpm;
     m_pMasterBpm->set(new_bpm);
 }
 
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
-//    qDebug() << "~~~~~~~~~~~~~~~~~~~~~~new master bpm" << new_bpm;
     m_pSyncRateSlider->set(new_bpm);
     if (new_bpm != m_dMasterBpm) {
-  //      qDebug() << "set slider";
         if (m_sSyncSource != kMasterSyncGroup) {
-            //qDebug() << "can't set master sync when sync isn't internal";
-            //XXX(Owen):
-            //it looks like this is Good Enough for preventing accidental
-            //tweaking of rate.  But maybe it should set master to internal?
+            // XXX(Owen):
+            // it looks like this is Good Enough for preventing accidental
+            // tweaking of rate.  But maybe it should set master to internal?
 
-            //Changing to internal is weird, feels like a bug having master
-            //designation turn off
-            //setInternalMaster();
+            // Changing to internal is weird, feels like a bug having master
+            // designation turn off
+            // setInternalMaster();
 
-            //how about just setting the bpm value for the deck master?
-            //problem with that is here we have bpm, but deck expects
-            //a percentage.  Let's keep this to "no you can't do that" for now
+            // how about just setting the bpm value for the deck master?
+            // problem with that is here we have bpm, but deck expects
+            // a percentage.  Let's keep this to "no you can't do that" for now
 
+            // TODO: Use CO validation instead of this pattern.
             m_pMasterBpm->set(m_dMasterBpm);
             return;
         }
-    //    qDebug() << "using it";
         m_dMasterBpm = new_bpm;
         updateSamplesPerBeat();
 
-        //this change could hypothetically push us over distance 1.0, so check
-        //XXX: is this code correct?  I think it'll work but it seems off
+        // This change could hypothetically push us over distance 1.0, so check
+        // XXX: is this code correct?  I think it'll work but it seems off
         if (m_dSamplesPerBeat <= 0) {
             qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
                      << "setting to about 124bpm at 44.1Khz.";
@@ -371,7 +354,7 @@ void EngineSync::slotSampleRateChanged(double srate) {
     double internal_position = getInternalBeatDistance();
     if (new_rate != m_iSampleRate) {
         m_iSampleRate = new_rate;
-        //recalculate pseudo buffer position based on new sample rate
+        // Recalculate pseudo buffer position based on new sample rate.
         m_dPseudoBufferPos = new_rate * internal_position / m_dSamplesPerBeat;
         updateSamplesPerBeat();
     }
@@ -381,7 +364,7 @@ void EngineSync::slotInternalMasterChanged(double state) {
     if (state) {
         setInternalMaster();
     } else {
-        //internal has been turned off.  pick a slave
+        // Internal has been turned off. Pick a slave.
         setMaster(chooseNewMaster(""));
     }
 }
@@ -391,7 +374,6 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
         return;
     }
     const QString& group = pSyncChannel->getGroup();
-    qDebug() << "got a master state change from" << group << state;
 
     const bool channelIsMaster = m_sSyncSource == group;
 
@@ -405,24 +387,22 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
     } else if (state == SYNC_SLAVE) {
         // Was this deck master before?  If so do a handoff
         if (channelIsMaster) {
-            qDebug() << group << " current master, setting us to slave (choose new)";
             // TODO(rryan) isn't this redundant? Is this because of MIDI light
             // breakage?
             pSyncChannel->setState(SYNC_SLAVE);
-            //choose a new master, but don't pick the current one!
+            // Choose a new master, but don't pick the current one!
             setMaster(chooseNewMaster(group));
         }
     } else {
         // if we were the master, choose a new one.
         if (channelIsMaster) {
-            qDebug() << group << " current master being set to none, choose new";
             setMaster(chooseNewMaster(""));
         }
     }
 }
 
 double EngineSync::getInternalBeatDistance() const {
-    //returns number of samples distance from the last beat.
+    // Returns number of samples distance from the last beat.
     if (m_dPseudoBufferPos < 0) {
         qDebug() << "ERROR: Internal beat distance should never be less than zero";
         return 0.0;
@@ -454,7 +434,7 @@ void EngineSync::updateSamplesPerBeat() {
     }
     m_dSamplesPerBeat = (m_iSampleRate * 60.0) / m_dMasterBpm;
     if (m_dSamplesPerBeat <= 0) {
-        qDebug() << "something went horribly wrong setting samples per beat";
+        qDebug() << "WARNING: Tried to set samples per beat <=0";
         m_dSamplesPerBeat = m_iSampleRate;
     }
 }
@@ -472,7 +452,7 @@ void EngineSync::onCallbackStart(int bufferSize) {
 
     m_dPseudoBufferPos += bufferSize / 2; // stereo samples, so divide by 2
 
-    // can't use mod because we're in double land
+    // Can't use mod because we're in double land.
     if (m_dSamplesPerBeat <= 0) {
         qDebug() << "ERROR: Calculated <= 0 samples per beat which is impossible.  Forcibly "
                  << "setting to about 124 bpm at 44.1Khz.";

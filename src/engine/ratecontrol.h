@@ -124,7 +124,7 @@ public:
     ControlObject* m_pSyncState;
     int m_iSyncState;
 
-    /** The current loaded file's detected BPM */
+    // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
     double m_dFileBpm;
 
