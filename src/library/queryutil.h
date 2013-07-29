@@ -107,6 +107,4 @@ class FieldEscaper {
     const QSqlDatabase& m_database;
     mutable QSqlField m_stringField;
 };
-
-
 #endif /* QUERYUTIL_H */

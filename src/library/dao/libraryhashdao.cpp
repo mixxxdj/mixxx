@@ -22,7 +22,7 @@ void LibraryHashDAO::initialize() {
 }
 
 int LibraryHashDAO::getDirectoryHash(const QString& dirPath) {
-//    qDebug() << "LibraryHashDAO::getDirectoryHash" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "LibraryHashDAO::getDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     int hash = -1;
 
     QSqlQuery query(m_database);

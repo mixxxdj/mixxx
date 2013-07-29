@@ -26,13 +26,8 @@ class DAO {
 public:
     static void enterLockState(const QString where);
     static void exitLockState(const QString where);
-    static Semaphore& pauseSemaphore() {
-        return s_semaphorePause;
-    }
+    static Semaphore& pauseSemaphore() { return s_semaphorePause; }
     static Semaphore& transactionSemaphore() { return s_semaphoreTransaction; }
-
-    static void pauseAcquire(const QString& who) { s_semaphorePause.acquire(who); }
-    static void transactionAcquire(const QString& who) { s_semaphoreTransaction.acquire(who); }
 
 protected:
     static Semaphore s_semaphorePause;

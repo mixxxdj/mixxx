@@ -697,9 +697,7 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     }
     QString idListJoined = idList.join(",");
 
-//    ScopedTransaction transaction(m_database);
     // Start the transaction
-
     QScopedPointer<ScopedTransactionLibrary> transaction
             ( (m_isForLibrary ? new ScopedTransactionLibrary(m_database)
                               : new ScopedTransaction(m_database)) );
@@ -991,7 +989,6 @@ TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
 
 // Saves a track's info back to the database
 void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
-//    ScopedTransaction transaction(m_database);
     QScopedPointer<ScopedTransactionLibrary> transaction
             ( m_isForLibrary ? new ScopedTransactionLibrary(m_database)
                              : new ScopedTransaction(m_database) );
@@ -1296,7 +1293,6 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
 void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel/*,
                                    QSemaphore& semPause*/) {
     // This function is called from the LibraryScanner Thread
-//    ScopedTransaction transaction(m_database);
     QScopedPointer<ScopedTransactionLibrary> transaction
             ( m_isForLibrary ? new ScopedTransactionLibrary(m_database)
                              : new ScopedTransaction(m_database) );

@@ -71,8 +71,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
 #endif
 }
 
-LibraryScanner::~LibraryScanner()
-{
+LibraryScanner::~LibraryScanner() {
     // IMPORTANT NOTE: This code runs in the GUI thread, so it should _NOT_ use
     //                the m_trackDao that lives inside this class. It should use
     //                the DAOs that live in m_pTrackCollection.
@@ -135,8 +134,7 @@ LibraryScanner::~LibraryScanner()
     qDebug() << "LibraryScanner destroyed";
 }
 
-void LibraryScanner::run()
-{
+void LibraryScanner::run() {
     unsigned static id = 0; // the id of this thread, for debugging purposes
             //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
@@ -215,7 +213,6 @@ void LibraryScanner::run()
     m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
 
     // qDebug() << "\t\tavaiable = " << DAO::transactionSemaphore().available();
-
     DAO::transactionSemaphore().acquire("Library scanner run");
     // qDebug() << "\t in LibraryScanner::run() transactionSemaphore acquired!";
 
@@ -293,8 +290,7 @@ void LibraryScanner::run()
     emit(scanFinished());
 }
 
-void LibraryScanner::scan(const QString& libraryPath, QWidget *parent)
-{
+void LibraryScanner::scan(const QString& libraryPath, QWidget *parent) {
     m_qLibraryPath = libraryPath;
     m_pProgress = new LibraryScannerDlg(parent);
     m_pProgress->setAttribute(Qt::WA_DeleteOnClose);
@@ -328,35 +324,27 @@ void LibraryScanner::scan(const QString& libraryPath, QWidget *parent)
 }
 
 //slot
-void LibraryScanner::cancel()
-{
+void LibraryScanner::cancel() {
     m_bCancelLibraryScan = true;
     DAO::exitLockState("Making cancel from UI");
 }
 
-void LibraryScanner::resetCancel()
-{
+void LibraryScanner::resetCancel() {
     m_bCancelLibraryScan = false;
 }
 
-void LibraryScanner::makePause()
-{
+void LibraryScanner::makePause() {
     // qDebug() << "IN LibraryScanner::makePause()";
     DAO::enterLockState("Making pause from UI");
-
-    // close transaction
-//    m_pCollection->getTrackDAO().addTracksFinish();
 }
 
-void LibraryScanner::resumePause()
-{
+void LibraryScanner::resumePause() {
     // qDebug() << "IN LibraryScanner::resumePause()";
     DAO::exitLockState("Making resume from UI");
 }
 
 
-void LibraryScanner::scan()
-{
+void LibraryScanner::scan() {
     start(); // Starts the thread by calling run()
 }
 

@@ -146,11 +146,11 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             trackDao.addTracksFinish();
             DAO::transactionSemaphore().release();
             transactionFinished = true;
-            DAO::pauseSemaphore().acquire("TC");
+            DAO::pauseSemaphore().acquire("TrackCollection");
         }
 
         if (transactionFinished) {
-            DAO::transactionSemaphore().acquire("TC");
+            DAO::transactionSemaphore().acquire("TrackCollection");
             trackDao.addTracksPrepare();
         }
 
@@ -169,7 +169,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
         // "Right-Click -> Remove". These tracks stay in the library, but
         // their mixxx_deleted column is 1.
         if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
-//            qDebug() << "Loading" << it.fileName();
+            // qDebug() << "Loading" << it.fileName();
             emit(progressLoading(it.fileName()));
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
