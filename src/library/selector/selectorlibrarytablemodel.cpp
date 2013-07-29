@@ -358,7 +358,7 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
             double tagsScore =
                 TagUtils::jaccardSimilarity(m_seedTrackTags, otherTags);
             tagsScore *= lastFmContribution;
-            score.setValue(lastFmContribution + score.toDouble());
+            score.setValue(tagsScore + score.toDouble());
         }
     }
 
