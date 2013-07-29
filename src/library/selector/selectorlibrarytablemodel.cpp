@@ -356,7 +356,7 @@ QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
         TagCounts otherTags = otherTrack->getTags();
         if (!m_seedTrackTags.isEmpty() && !otherTags.isEmpty()) {
             double tagsScore =
-                TagUtils::jaccardSimilarity(m_seedTrackTags, otherTags);
+                TagUtils::overlapSimilarity(m_seedTrackTags, otherTags);
             tagsScore *= lastFmContribution;
             score.setValue(tagsScore + score.toDouble());
         }

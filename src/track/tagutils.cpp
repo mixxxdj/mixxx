@@ -25,3 +25,20 @@ double TagUtils::jaccardSimilarity(const TagCounts& tags1,
     qDebug() << iTagIntersection << iTagUnion << result;
     return result;
 }
+
+// Also known as Simpson similarity; if either set is a subset of the other,
+// this equals 1.
+double TagUtils::overlapSimilarity(const TagCounts& tags1,
+                                   const TagCounts& tags2) {
+    int iTagIntersection = 0;
+    QSet<QString> keys = QSet<QString>::fromList(tags1.keys());
+    QSet<QString> keys2 = QSet<QString>::fromList(tags2.keys());
+    keys.unite(keys2);
+    foreach (QString key, keys)  {
+        if (tags1.contains(key) && tags2.contains(key)) {
+            iTagIntersection++;
+        }
+    }
+    int iTagCardinality = std::min(keys.size(), keys2.size());
+    return iTagCardinality != 0 ? double(iTagIntersection)/iTagCardinality: 0.0;
+}

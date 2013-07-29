@@ -22,9 +22,9 @@ void LastFmTagFetcher::startFetch(const TrackPointer track) {
 //    }
     for (int i = 0; i < m_tracks.size(); i++) {
         QString artist = m_tracks[i]->getArtist();
-        m_LastFmClient.start(i, artist);
-//        QString title = m_tracks[i]->getTitle();
-//        m_LastFmClient.start(i, artist, title);
+//        m_LastFmClient.start(i, artist);
+        QString title = m_tracks[i]->getTitle();
+        m_LastFmClient.start(i, artist, title);
     }
 }
 

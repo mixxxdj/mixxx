@@ -10,6 +10,8 @@ class TagUtils {
   public:
     static double jaccardSimilarity(const TagCounts& tags1,
                                     const TagCounts& tags2);
+    static double overlapSimilarity(const TagCounts& tags1,
+                                    const TagCounts& tags2);
 };
 
 #endif // TAGUTILS_H
