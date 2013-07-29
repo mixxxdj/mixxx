@@ -115,6 +115,7 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
         track->setDuration(result.m_duration);
         track->setTrackNumber(QString::number(result.m_track));
         track->setYear(QString::number(result.m_year));
+        track->setTags(result.m_tags);
         tracksGuessed << track;
     }
     emit resultAvailable(originalTrack, tracksGuessed);

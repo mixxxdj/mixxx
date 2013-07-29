@@ -17,6 +17,7 @@
 #include <QtNetwork>
 
 #include "network.h"
+#include "track/tagutils.h"
 
 class MusicBrainzClient : public QObject {
   Q_OBJECT
@@ -62,6 +63,7 @@ class MusicBrainzClient : public QObject {
         int m_duration;
         int m_track;
         int m_year;
+        TagCounts m_tags;
     };
     typedef QList<Result> ResultList;
 
@@ -105,6 +107,7 @@ class MusicBrainzClient : public QObject {
 
     static ResultList parseTrack(QXmlStreamReader& reader);
     static void parseArtist(QXmlStreamReader& reader, QString& artist);
+    static TagCounts parseTags(QXmlStreamReader& reader);
     static Release parseRelease(QXmlStreamReader& reader);
     static ResultList uniqueResults(const ResultList& results);
 
