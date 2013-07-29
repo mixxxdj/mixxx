@@ -73,10 +73,7 @@ class LibraryScanner : public QThread {
 
     QStringList m_nameFilters;
     volatile bool m_bCancelLibraryScan;
-    volatile bool m_bInPause;
     QStringList m_directoriesBlacklist;
-
-    QSemaphore m_semPause;
 };
 
 #endif

@@ -599,6 +599,8 @@ class MixxxCore(Feature):
                    "library/browse/browsethread.cpp",
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
+                   
+                   "library/dao/dao.cpp",
 
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",

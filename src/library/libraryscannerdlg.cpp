@@ -40,7 +40,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
             this, SLOT(slotCancel()));
     pLayout->addWidget(pCancel);
 
-    // tr0: pause button
+    // pause button
     QPushButton* pPause = new QPushButton(tr("Pause"), this);
     pPause->setObjectName("pauseBtn");
     connect(pPause, SIGNAL(clicked()),
@@ -68,8 +68,7 @@ LibraryScannerDlg::~LibraryScannerDlg()
 void LibraryScannerDlg::slotUpdate(QString path) {
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
 
-    // tr0: must show it for debug puroposes :)
-    if (!m_bCancelled /*&& m_timer.elapsed() > 2000*/) {
+    if (!m_bCancelled && m_timer.elapsed() > 2000) {
        setVisible(true);
     }
 
@@ -92,20 +91,21 @@ void LibraryScannerDlg::slotCancel()
 }
 
 void LibraryScannerDlg::slotPause() {
-    qDebug() << "# # # IN LibraryScannerDlg::slotPause()";
-
     QPushButton *pauseBtn = findChild<QPushButton*>("pauseBtn");
     if (!pauseBtn) {
         qDebug() << "\t ERROR: pauseBtn == NULL";
         return;
     }
-    if (m_bPaused) { // resuming
-        qDebug() << "\t resuming";
+    if (m_bPaused) {
+        // resuming
+        // qDebug() << "\t resuming";
+        // TODO(tr0) make disabled while in transaction
         m_bPaused = false;
         pauseBtn->setText(tr("Pause"));
         emit(scanResumed());
-    } else { // making pause
-        qDebug() << "\t making pause";
+    } else {
+        // making pause
+        // qDebug() << "\t making pause";
         pauseBtn->setText(tr("Resume"));
         m_bPaused = true;
         emit(scanPaused());

@@ -125,9 +125,7 @@ QSqlDatabase& TrackCollection::getDatabase() {
 */
 bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
                                       const QStringList& nameFilters,
-                                      volatile bool* cancel,
-                                      volatile bool* pause/*,
-                                      QSemaphore& semPause*/) {
+                                      volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -142,20 +140,19 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             return false;
         }
 
-//        if (*pause) {
-//            if (m_dbAccessDelegate) {
-//                m_trackDao.commitOnPause();
-//            }
-//            while (*pause) { // wait in pause
-//                if (*cancel) { // if we want cancel in pause
-//                    return false;
-//                }
-//                SleepableQThread::msleep(50);
-//            }
-//            if (m_dbAccessDelegate) {
-//                m_trackDao.addTracksPrepare();
-//            }
-//        }
+        bool transactionFinished = false;
+
+        if ( !DAO::pauseSemaphore().tryAcquire() ) {
+            trackDao.addTracksFinish();
+            DAO::transactionSemaphore().release();
+            transactionFinished = true;
+            DAO::pauseSemaphore().acquire("TC");
+        }
+
+        if (transactionFinished) {
+            DAO::transactionSemaphore().acquire("TC");
+            trackDao.addTracksPrepare();
+        }
 
         QString absoluteFilePath = it.next();
 
@@ -172,12 +169,12 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
         // "Right-Click -> Remove". These tracks stay in the library, but
         // their mixxx_deleted column is 1.
         if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
-            qDebug() << "Loading" << it.fileName();
+//            qDebug() << "Loading" << it.fileName();
             emit(progressLoading(it.fileName()));
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
-            if (trackDao.addTracksAddOrPause(pTrack.data(), false, cancel, pause)) {
+            if (trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
                 // new Track in the database
@@ -186,8 +183,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
                 qDebug() << "Track ("+absoluteFilePath+") could not be added";
             }
         }
-
-//        semPause.release();
+        DAO::pauseSemaphore().release();
     }
     emit(finishedLoading());
     return true;

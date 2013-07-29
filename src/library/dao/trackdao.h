@@ -15,6 +15,7 @@
 #include "library/dao/dao.h"
 #include "trackinfoobject.h"
 #include "util.h"
+#include "library/queryutil.h"
 
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
@@ -70,10 +71,16 @@ class TrackDAO : public QObject, public virtual DAO {
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
              AnalysisDao& analysisDao,
              ConfigObject<ConfigValue>* pConfig);
+    TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
+             PlaylistDAO& playlistDao, CrateDAO& crateDao,
+             AnalysisDao& analysisDao,
+             ConfigObject<ConfigValue>* pConfig,
+             const bool isForLibrary);
+
     virtual ~TrackDAO();
 
     void finish();
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    void setDatabase(QSqlDatabase& database) { m_database = database; }
 
     void initialize();
     int getTrackId(const QString& absoluteFilePath);
@@ -85,8 +92,6 @@ class TrackDAO : public QObject, public virtual DAO {
     void addTracksPrepare();
     bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
     void addTracksFinish();
-    bool addTracksAddOrPause(TrackInfoObject* pTrack, bool unremove, volatile bool *cancel, volatile bool* pause);
-    void commitOnPause();
     QList<int> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
     void hideTracks(const QList<int>& ids);
     void purgeTracks(const QList<int>& ids);
@@ -166,9 +171,11 @@ class TrackDAO : public QObject, public virtual DAO {
     QSqlQuery* m_pQueryLibraryInsert;
     QSqlQuery* m_pQueryLibraryUpdate;
     QSqlQuery* m_pQueryLibrarySelect;
-    ScopedTransaction* m_pTransaction;
+    ScopedTransactionLibrary* m_pTransaction;
+    bool m_isForLibrary;
 
     QSet<int> m_tracksAddedSet;
+
 
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };
