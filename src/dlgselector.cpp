@@ -206,19 +206,6 @@ void DlgSelector::setDefaults() {
     contributions.insert("rhythm", iRhythmCoefficient/100.0);
     contributions.insert("lastfm", iLastFmCoefficient/100.0);
 
-    // ensure non-zero items sum to 1
-    double total = 0.0;
-
-    foreach (double value, contributions.values()) {
-        total += value;
-    }
-
-    if (total > 0.0) {
-        foreach (QString key, contributions.keys()) {
-            contributions[key] /= total;
-        }
-    }
-
     m_pSelectorLibraryTableModel->setSimilarityContributions(contributions);
 
     checkBoxGenre->setChecked(bFilterGenre);

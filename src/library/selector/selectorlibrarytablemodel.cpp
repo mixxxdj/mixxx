@@ -132,22 +132,41 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
                m_seedTrackKey != mixxx::track::io::key::INVALID;
 }
 
-bool SelectorLibraryTableModel::seedTrackTimbreExists() {
-    return !m_pSeedTrackTimbre.isNull();
-}
-
 void SelectorLibraryTableModel::setSimilarityContributions(
         const QHash<QString, double>& contributions) {
     m_similarityContributions = contributions;
+    normalizeContributions();
 }
 
+void SelectorLibraryTableModel::normalizeContributions() {
+    if (m_seedTrackTags.isEmpty()) {
+        m_similarityContributions["lastfm"] = 0.0;
+    }
+    if (m_pSeedTrackTimbre.isNull()) {
+        m_similarityContributions["timbre"] = 0.0;
+        m_similarityContributions["beat"] = 0.0;
+    }
 
+    // ensure non-zero items sum to 1
+    double total = 0.0;
+
+    foreach (double value, m_similarityContributions.values()) {
+        total += value;
+    }
+
+    if (total > 0.0) {
+        foreach (QString key, m_similarityContributions.keys()) {
+            m_similarityContributions[key] /= total;
+        }
+    }
+}
 void SelectorLibraryTableModel::calculateSimilarity() {
     qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
     QTime time;
     time.start();
 
     if (!m_pSeedTrack.isNull()) {
+        normalizeContributions();
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("UPDATE " + tableName + " SET score=:score "
                       "WHERE " + LIBRARYTABLE_ID + "=:id;");

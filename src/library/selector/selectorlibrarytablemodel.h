@@ -32,10 +32,10 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     bool seedTrackGenreExists();
     bool seedTrackBpmExists();
     bool seedTrackKeyExists();
-    bool seedTrackTimbreExists();
 
     void setSimilarityContributions(
             const QHash<QString, double>& contributions);
+    void normalizeContributions();
 
   public slots:
     void filterByGenre(bool value);
