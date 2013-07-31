@@ -1,6 +1,7 @@
 // Created 3/17/2012 by Keith Salisbury (keithsalisbury@gmail.com)
 
 #include <QObject>
+#include <QStringBuilder>
 
 #include "library/queryutil.h"
 #include "library/trackcollection.h"
@@ -194,9 +195,44 @@ void SelectorLibraryTableModel::calculateSimilarity() {
         } else {
             select(); // update the view
         }
+    } else if (sDebug) {
+        // TODO(chrisjr): create a different way to invoke this
+        calculateAllSimilarities();
     }
     int elapsed = time.elapsed();
     qDebug() << "calculateSimilarity took" << elapsed << "ms";
+}
+
+void SelectorLibraryTableModel::calculateAllSimilarities() {
+    QFile file("/Users/chrisjr/ismir04/comparisons.csv");
+    file.open(QIODevice::WriteOnly | QIODevice::Text);
+    QTextStream out(&file);
+
+    for (int i = 0, n = rowCount(); i < n; i++) {
+        QModelIndex index1 = createIndex(i, fieldIndex(LIBRARYTABLE_ID));
+        TrackPointer pTrack1 = getTrack(index1);
+        TimbrePointer pTimbre1 = pTrack1->getTimbre();
+        QString sTrack1 = pTrack1->getFilename();
+        for (int j = i + 1; j < n; j++) {
+            QModelIndex index2 = createIndex(j, fieldIndex(LIBRARYTABLE_ID));
+            TrackPointer pTrack2 = getTrack(index2);
+            TimbrePointer pTimbre2 = pTrack2->getTimbre();
+            QString sTrack2 = pTrack2->getFilename();
+            double timbreScore =
+                    TimbreUtils::hellingerDistance(pTimbre1,
+                                                       pTimbre2);
+            double rhythmScore =
+                    TimbreUtils::modelDistanceBeats(pTimbre1,
+                                                        pTimbre2);
+            double score = 0.5 * (timbreScore + rhythmScore);
+            out << sTrack1 % "," % sTrack2 % "," % QString::number(score);
+            if (i % 100 == 0 && j % 100 == 0) {
+                qDebug() << QString::number(i*j) << "comparisons processed";
+            }
+        }
+    }
+
+    file.close();
 }
 
 void SelectorLibraryTableModel::filterByGenre(bool value) {

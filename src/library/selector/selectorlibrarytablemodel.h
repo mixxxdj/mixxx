@@ -45,6 +45,7 @@ class SelectorLibraryTableModel : public LibraryTableModel {
 	void filterByKey5th(bool value);
 	void filterByKeyRelative(bool value);
     void calculateSimilarity();
+    void calculateAllSimilarities();
 
   private slots:
     void slotPlayingDeckChanged(int deck);
