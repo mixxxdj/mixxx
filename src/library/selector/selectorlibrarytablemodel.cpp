@@ -195,16 +195,15 @@ void SelectorLibraryTableModel::calculateSimilarity() {
         } else {
             select(); // update the view
         }
-    } else if (sDebug) {
-        // TODO(chrisjr): create a different way to invoke this
-        calculateAllSimilarities();
     }
+
     int elapsed = time.elapsed();
     qDebug() << "calculateSimilarity took" << elapsed << "ms";
 }
 
-void SelectorLibraryTableModel::calculateAllSimilarities() {
-    QFile file("/Users/chrisjr/ismir04/comparisons.csv");
+void SelectorLibraryTableModel::calculateAllSimilarities(
+        const QString& filename) {
+    QFile file(filename);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
 
@@ -219,13 +218,16 @@ void SelectorLibraryTableModel::calculateAllSimilarities() {
             TimbrePointer pTimbre2 = pTrack2->getTimbre();
             QString sTrack2 = pTrack2->getFilename();
             double timbreScore =
-                    TimbreUtils::hellingerDistance(pTimbre1,
+                    TimbreUtils::symmetricKlDivergence(pTimbre1,
                                                        pTimbre2);
             double rhythmScore =
                     TimbreUtils::modelDistanceBeats(pTimbre1,
                                                         pTimbre2);
             double score = 0.5 * (timbreScore + rhythmScore);
-            out << sTrack1 % "," % sTrack2 % "," % QString::number(score);
+            out << sTrack1 % "," % sTrack2 % "," %
+                   QString::number(timbreScore) % "," %
+                   QString::number(rhythmScore) % "," %
+                   QString::number(score) % "\n";
             if (i % 100 == 0 && j % 100 == 0) {
                 qDebug() << QString::number(i*j) << "comparisons processed";
             }

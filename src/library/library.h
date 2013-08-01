@@ -68,6 +68,7 @@ public:
     void slotCreateCrate();
     void slotSetSeedTrack(TrackPointer pTrack);
     void slotSwitchToSelector();
+    void slotCalculateAllSimilarities(const QString& filename);
     void onSkinLoadFinished();
 
   signals:

@@ -248,6 +248,10 @@ void Library::slotSwitchToSelector() {
     emit(switchToView("Selector"));
 }
 
+void Library::slotCalculateAllSimilarities(const QString& filename) {
+    m_pSelectorFeature->calculateAllSimilarities(filename);
+}
+
 
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.

@@ -46,6 +46,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void installEventFilter(QObject* pFilter);
     void slotFiltersChanged();
     void slotSeedTrackInfoChanged();
+    void calculateAllSimilarities(const QString& filename);
 
   signals:
     void loadTrack(TrackPointer pTrack);

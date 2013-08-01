@@ -19,6 +19,7 @@
 #include <QtCore>
 #include <QtGui>
 #include <QTranslator>
+#include <QFileDialog>
 
 #include "mixxx.h"
 
@@ -1094,6 +1095,19 @@ void MixxxApp::initActions()
     m_pDeveloperReloadSkin->setWhatsThis(buildWhatsThis(reloadSkinTitle, reloadSkinText));
     connect(m_pDeveloperReloadSkin, SIGNAL(toggled(bool)),
             this, SLOT(slotDeveloperReloadSkin(bool)));
+
+    QString calcSimilaritiesTitle = tr("&Calculate similarities");
+    QString calcSimilaritiesText = tr("Calculate similarities");
+    m_pDeveloperCalculateSimilarities = new QAction(calcSimilaritiesText, this);
+//    m_pDeveloperCalculateSimilarities->setShortcut(QKeySequence(tr("Ctrl+Shift+C")));
+//    m_pDeveloperCalculateSimilarities->setShortcutContext(Qt::ApplicationShortcut);
+    m_pDeveloperCalculateSimilarities->setCheckable(true);
+    m_pDeveloperCalculateSimilarities->setChecked(false);
+    m_pDeveloperCalculateSimilarities->setStatusTip(calcSimilaritiesText);
+    m_pDeveloperCalculateSimilarities->setWhatsThis(
+        buildWhatsThis(calcSimilaritiesTitle, calcSimilaritiesText));
+    connect(m_pDeveloperCalculateSimilarities, SIGNAL(toggled(bool)),
+            this, SLOT(slotDeveloperCalculateSimilarities(bool)));
 }
 
 void MixxxApp::initMenuBar()
@@ -1149,6 +1163,7 @@ void MixxxApp::initMenuBar()
 
     // Developer Menu
     m_pDeveloperMenu->addAction(m_pDeveloperReloadSkin);
+    m_pDeveloperMenu->addAction(m_pDeveloperCalculateSimilarities);
 
     // menuBar entry helpMenu
     m_pHelpMenu->addAction(m_pHelpSupport);
@@ -1236,6 +1251,17 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
 void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
     Q_UNUSED(toggle);
     rebootMixxxView();
+}
+void MixxxApp::slotDeveloperCalculateSimilarities(bool toggle) {
+    Q_UNUSED(toggle);
+    QString filename =
+        QFileDialog::getSaveFileName(this,
+                                     tr("Save Comparison CSV File"),
+                                     "/Users/chrisjr/ismir04/comparisons.csv",
+                                     tr("CSV (*.csv)"));
+    if (!filename.isNull()) {
+        m_pLibrary->slotCalculateAllSimilarities(filename);
+    }
 }
 
 void MixxxApp::slotViewFullScreen(bool toggle)

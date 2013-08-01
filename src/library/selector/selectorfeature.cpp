@@ -61,6 +61,10 @@ void SelectorFeature::setSeedTrack(TrackPointer pTrack) {
     m_pSelectorView->setSeedTrack(pTrack);
 }
 
+void SelectorFeature::calculateAllSimilarities(const QString& filename) {
+    m_pSelectorView->calculateAllSimilarities(filename);
+}
+
 bool SelectorFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 

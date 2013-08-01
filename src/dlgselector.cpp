@@ -107,6 +107,10 @@ void DlgSelector::setSeedTrack(TrackPointer pSeedTrack) {
     m_pSelectorLibraryTableModel->setSeedTrack(pSeedTrack);
 }
 
+void DlgSelector::calculateAllSimilarities(const QString& filename) {
+    m_pSelectorLibraryTableModel->calculateAllSimilarities(filename);
+}
+
 void DlgSelector::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
