@@ -89,15 +89,28 @@ protected:
  *        channels on an audio interface.
  */
 class AudioOutput : public AudioPath {
-public:
+  public:
     AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                 unsigned char index = 0);
     virtual ~AudioOutput();
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
-protected:
+  protected:
     void setType(AudioPathType type);
+};
+
+// This class is required to add the buffer, without changing the hash used as ID
+class AudioOutputBuffer : public AudioOutput {
+  public:
+    AudioOutputBuffer(const AudioOutput& out, const CSAMPLE* pBuffer)
+            : AudioOutput(out),
+              m_pBuffer(pBuffer) {
+
+    };
+    inline const CSAMPLE* getBuffer() const { return m_pBuffer; };
+  private:
+    const CSAMPLE* m_pBuffer;
 };
 
 /**
@@ -107,16 +120,30 @@ protected:
  *        that is be processed in Mixxx.
  */
 class AudioInput : public AudioPath {
-public:
+  public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                unsigned char index = 0);
     virtual ~AudioInput();
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
-protected:
+  protected:
     void setType(AudioPathType type);
 };
+
+// This class is required to add the buffer, without changing the hash used as ID
+class AudioInputBuffer : public AudioInput {
+  public:
+    AudioInputBuffer(const AudioInput& id, SAMPLE* pBuffer)
+            : AudioInput(id),
+              m_pBuffer(pBuffer) {
+
+    };
+    inline SAMPLE* getBuffer() const { return m_pBuffer; };
+ private:
+    SAMPLE* m_pBuffer;
+};
+
 
 class AudioSource {
 public:

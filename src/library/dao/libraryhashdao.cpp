@@ -37,8 +37,7 @@ int LibraryHashDAO::getDirectoryHash(const QString& dirPath) {
     if (query.next()) {
         hash = query.value(query.record().indexOf("hash")).toInt();
         //qDebug() << "prev hash exists" << hash << dirPath;
-    }
-    else {
+    } else {
         //qDebug() << "prev hash does not exist" << dirPath;
     }
 

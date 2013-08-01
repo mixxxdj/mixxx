@@ -17,6 +17,8 @@
 #include "util.h"
 #include "library/queryutil.h"
 
+#define LIBRARY_TABLE "library"
+
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
 const QString LIBRARYTABLE_TITLE = "title";
@@ -154,8 +156,6 @@ class TrackDAO : public QObject, public virtual DAO {
     // Called when the TIO reference count drops to 0
     static void deleteTrack(TrackInfoObject* pTrack);
 
-    void waitWhilePaused();
-
     QSqlDatabase &m_database;
     CueDAO &m_cueDao;
     PlaylistDAO &m_playlistDao;
@@ -171,11 +171,15 @@ class TrackDAO : public QObject, public virtual DAO {
     QSqlQuery* m_pQueryLibraryInsert;
     QSqlQuery* m_pQueryLibraryUpdate;
     QSqlQuery* m_pQueryLibrarySelect;
+
     ScopedTransactionLibrary* m_pTransaction;
     bool m_isForLibrary;
 
-    QSet<int> m_tracksAddedSet;
+    int m_trackLocationIdColumn;
+    int m_queryLibraryIdColumn;
+    int m_queryLibraryMixxxDeletedColumn;
 
+    QSet<int> m_tracksAddedSet;
 
     DISALLOW_COPY_AND_ASSIGN(TrackDAO);
 };
