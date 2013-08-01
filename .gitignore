@@ -9,6 +9,7 @@
 *_build
 *~
 .#*
+.DS_Store
 .sconf_temp
 .sconsign.branch
 .sconsign.dblite
