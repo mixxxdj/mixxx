@@ -110,7 +110,7 @@ double TimbreUtils::distanceSymmetricKL(const std::vector<double> &m1,
         double pv = v1[k] + small;
         double qv = v2[k] + small;
         double inv_pv = 1.0 / pv;
-        double inv_qv = 1.0 / pv;
+        double inv_qv = 1.0 / qv;
 
         cov_term += (pv * inv_qv) + (qv * inv_pv);
 
