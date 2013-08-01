@@ -12,6 +12,11 @@ double TimbreUtils::klDivergence(TimbrePointer pTimbre,
     return modelDistance(pTimbre, pTimbre2, distanceKL);
 }
 
+double TimbreUtils::symmetricKlDivergence(TimbrePointer pTimbre,
+                                          TimbrePointer pTimbre2) {
+    return modelDistance(pTimbre, pTimbre2, distanceSymmetricKL);
+}
+
 double TimbreUtils::hellingerDistance(TimbrePointer pTimbre,
                                   TimbrePointer pTimbre2) {
     return modelDistance(pTimbre, pTimbre2, distanceHellinger);
@@ -87,6 +92,34 @@ double TimbreUtils::distanceKL(const std::vector<double> &m1,
     d /= 2.0;
 
     return d;
+}
+
+
+double TimbreUtils::distanceSymmetricKL(const std::vector<double> &m1,
+                                        const std::vector<double> &v1,
+                                        const std::vector<double> &m2,
+                                        const std::vector<double> &v2) {
+    int dim = m1.size();
+
+    double small = 1e-20;
+
+    double cov_term = 0.0;
+    double mean_term = 0.0;
+
+    for (int k = 0; k < dim; k++) {
+        double pv = v1[k] + small;
+        double qv = v2[k] + small;
+        double inv_pv = 1.0 / pv;
+        double inv_qv = 1.0 / pv;
+
+        cov_term += (pv * inv_qv) + (qv * inv_pv);
+
+        double diff_mean = (m1[k] - m2[k]) + small;
+
+        mean_term += diff_mean * (inv_pv + inv_qv) * diff_mean;
+    }
+
+    return (0.5 * (cov_term + mean_term)) - dim;
 }
 
 double TimbreUtils::distanceHellinger(const std::vector<double> &m1,
