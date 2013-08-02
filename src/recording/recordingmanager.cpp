@@ -46,8 +46,10 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
 RecordingManager::~RecordingManager()
 {
     qDebug() << "Delete RecordingManager";
-    delete m_recReadyCO;
+    
     delete m_recReady;
+    delete m_recReadyCO;
+    delete m_pToggleRecording;
 }
 
 QString RecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
