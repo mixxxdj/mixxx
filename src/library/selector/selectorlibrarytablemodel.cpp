@@ -27,9 +27,11 @@ const QString tableName = "selector_table";
 const double maxBpmDiff = 10.0;
 
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
-                                                   TrackCollection* pTrackCollection)
+                                                     ConfigObject<ConfigValue>* pConfig,
+                                                     TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
-                            "mixxx.db.model.selector") {
+                            "mixxx.db.model.selector"),
+          m_pConfig(pConfig) {
     setTableModel();
 
     // Detect when deck has changed
@@ -113,6 +115,7 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
         clearSeedTrackInfo();
         emit(resetFilters());
     }
+    loadStoredSimilarityContributions();
     emit(seedTrackInfoChanged());
 }
 
@@ -139,6 +142,21 @@ void SelectorLibraryTableModel::setSimilarityContributions(
     normalizeContributions();
 }
 
+void SelectorLibraryTableModel::loadStoredSimilarityContributions() {
+    int iTimbreCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT)).toInt();
+    int iRhythmCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT)).toInt();
+    int iLastFmCoefficient = m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT)).toInt();
+
+    QHash<QString, double> contributions;
+    contributions.insert("timbre", iTimbreCoefficient/100.0);
+    contributions.insert("rhythm", iRhythmCoefficient/100.0);
+    contributions.insert("lastfm", iLastFmCoefficient/100.0);
+    setSimilarityContributions(contributions);
+}
+
 void SelectorLibraryTableModel::normalizeContributions() {
     if (m_seedTrackTags.isEmpty()) {
         m_similarityContributions["lastfm"] = 0.0;
@@ -163,6 +181,7 @@ void SelectorLibraryTableModel::normalizeContributions() {
 }
 void SelectorLibraryTableModel::calculateSimilarity() {
     qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
+    loadStoredSimilarityContributions();
     QTime time;
     time.start();
 

@@ -33,7 +33,8 @@ DlgSelector::DlgSelector(QWidget* parent,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(2, m_pTrackTableView);
 
-    m_pSelectorLibraryTableModel =  new SelectorLibraryTableModel(this, pTrackCollection);
+    m_pSelectorLibraryTableModel =
+            new SelectorLibraryTableModel(this, pConfig, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pSelectorLibraryTableModel);
 
     connect(checkBoxGenre, SIGNAL(clicked()),
@@ -198,11 +199,11 @@ void DlgSelector::setDefaults() {
     bool bFilterKeyRelative = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE)).toInt());
 
-    bool iTimbreCoefficient = m_pConfig->getValueString(
+    int iTimbreCoefficient = m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT)).toInt();
-    bool iRhythmCoefficient = m_pConfig->getValueString(
+    int iRhythmCoefficient = m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT)).toInt();
-    bool iLastFmCoefficient = m_pConfig->getValueString(
+    int iLastFmCoefficient = m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT)).toInt();
 
     QHash<QString, double> contributions;

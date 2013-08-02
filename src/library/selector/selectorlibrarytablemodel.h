@@ -17,7 +17,9 @@ class ControlObjectThreadMain;
 class SelectorLibraryTableModel : public LibraryTableModel {
     Q_OBJECT
   public:
-    SelectorLibraryTableModel(QObject* parent, TrackCollection* pTrackCollection);
+    SelectorLibraryTableModel(QObject* parent,
+                              ConfigObject<ConfigValue>* pConfig,
+                              TrackCollection* pTrackCollection);
     ~SelectorLibraryTableModel();
 
     void setTableModel(int id = -1);
@@ -35,6 +37,7 @@ class SelectorLibraryTableModel : public LibraryTableModel {
 
     void setSimilarityContributions(
             const QHash<QString, double>& contributions);
+    void loadStoredSimilarityContributions();
     void normalizeContributions();
 
   public slots:
@@ -87,6 +90,8 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     TrackPointer m_pLoadedTrack;
     ControlObjectThreadMain* m_channelBpm;
     ControlObjectThreadMain* m_channelKey;
+
+    ConfigObject<ConfigValue>* m_pConfig;
 };
 
 
