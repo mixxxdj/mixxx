@@ -49,7 +49,7 @@ bool EngineChannel::isMaster() {
     return m_pMaster->get() > 0.0;
 }
 
-EngineChannel::ChannelOrientation EngineChannel::getOrientation() {
+EngineChannel::ChannelOrientation EngineChannel::getOrientation() const {
     double dOrientation = m_pOrientation->get();
     if (dOrientation == LEFT) {
         return LEFT;
