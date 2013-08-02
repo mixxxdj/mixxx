@@ -140,17 +140,10 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             return false;
         }
 
-        bool transactionFinished = false;
-
         if ( !DAO::tryAcquirePause() ) {
             trackDao.addTracksFinish();
             DAO::releaseTransaction();
-            transactionFinished = true;
-            DAO::acquirePause("TrackCollection");
-        }
-
-        if (transactionFinished) {
-            DAO::acquireTransaction("TrackCollection");
+            DAO::enterLockState("TrackCollection");
             trackDao.addTracksPrepare();
         }
 
