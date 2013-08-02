@@ -16,6 +16,8 @@
 #include "track/timbreutils.h"
 #include "track/tagutils.h"
 
+#include "util/timer.h"
+
 #include "library/selector/selector_preferences.h"
 #include "library/selector/selectorlibrarytablemodel.h"
 
@@ -180,10 +182,9 @@ void SelectorLibraryTableModel::normalizeContributions() {
     }
 }
 void SelectorLibraryTableModel::calculateSimilarity() {
-    qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
+    ScopedTimer t("SelectorLibraryTableModel::calculateSimilarity()");
+//    qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
     loadStoredSimilarityContributions();
-    QTime time;
-    time.start();
 
     if (!m_pSeedTrack.isNull()) {
         normalizeContributions();
@@ -215,9 +216,6 @@ void SelectorLibraryTableModel::calculateSimilarity() {
             select(); // update the view
         }
     }
-
-    int elapsed = time.elapsed();
-    qDebug() << "calculateSimilarity took" << elapsed << "ms";
 }
 
 void SelectorLibraryTableModel::calculateAllSimilarities(
