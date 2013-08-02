@@ -142,15 +142,15 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
 
         bool transactionFinished = false;
 
-        if ( !DAO::pauseSemaphore().tryAcquire() ) {
+        if ( !DAO::tryAcquirePause() ) {
             trackDao.addTracksFinish();
-            DAO::transactionSemaphore().release();
+            DAO::releaseTransaction();
             transactionFinished = true;
-            DAO::pauseSemaphore().acquire("TrackCollection");
+            DAO::acquirePause("TrackCollection");
         }
 
         if (transactionFinished) {
-            DAO::transactionSemaphore().acquire("TrackCollection");
+            DAO::acquireTransaction("TrackCollection");
             trackDao.addTracksPrepare();
         }
 
@@ -183,7 +183,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
                 qDebug() << "Track ("+absoluteFilePath+") could not be added";
             }
         }
-        DAO::pauseSemaphore().release();
+        DAO::releasePause();
     }
     emit(finishedLoading());
     return true;

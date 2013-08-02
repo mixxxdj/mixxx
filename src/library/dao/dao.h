@@ -8,15 +8,18 @@
 #include <QDebug>
 #include <QString>
 
+// type lambda function -- to test C++0x
+typedef std::function <void ()> func;
+
 class Semaphore : public QSemaphore {
 
 public:
     explicit Semaphore(int n = 1) : QSemaphore(n) {}
     ~Semaphore(){}
-    void acquire(const QString who, int n = 1) {
-        // qDebug() << "\tin semaphore, acq by" << who;
+    void acquire(const QString who = QString(), int n = 1) {
+        qDebug() << "\tin semaphore, acq by" << who;
         QSemaphore::acquire(n);
-        // qDebug() << "\tsemaphore is acq by" << who;
+        qDebug() << "\tsemaphore is acq by" << who;
     }
 };
 
@@ -24,10 +27,13 @@ class DAO {
     virtual void initialize() = 0;
 
 public:
-    static void enterLockState(const QString where);
-    static void exitLockState(const QString where);
-    static Semaphore& pauseSemaphore() { return s_semaphorePause; }
-    static Semaphore& transactionSemaphore() { return s_semaphoreTransaction; }
+    static void enterLockState(const QString& where);
+    static void exitLockState(const QString& where);
+    static bool tryAcquirePause() { return s_semaphorePause.tryAcquire(); }
+    static void acquirePause(const QString& where);
+    static void releasePause();
+    static void acquireTransaction(const QString &where);
+    static void releaseTransaction();
 
 protected:
     static Semaphore s_semaphorePause;

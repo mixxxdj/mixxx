@@ -214,7 +214,7 @@ void LibraryScanner::run() {
     m_trackDao.invalidateTrackLocationsInLibrary(m_qLibraryPath);
 
     // qDebug() << "\t\tavaiable = " << DAO::transactionSemaphore().available();
-    DAO::transactionSemaphore().acquire("Library scanner run");
+    DAO::acquireTransaction("Library scanner run");
     // qDebug() << "\t in LibraryScanner::run() transactionSemaphore acquired!";
 
     qDebug() << "Recursively scanning library.";
@@ -233,7 +233,7 @@ void LibraryScanner::run() {
         qDebug() << "Recursive scan finished cleanly.";
     }
 
-    DAO::transactionSemaphore().release();
+    DAO::releaseTransaction();
 
     // Runs inside a transaction
     m_trackDao.addTracksFinish();

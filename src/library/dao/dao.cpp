@@ -11,7 +11,7 @@ Semaphore DAO::s_semaphoreTransaction(1);
 qint32 DAO::s_semaphoresLockedCount = 0;
 
 
-void DAO::enterLockState(const QString where) {
+void DAO::enterLockState(const QString& where) {
     qDebug() << "DAO::enterLockState from " << where;
     if (s_semaphoresLockedCount == 0) {
         PerformanceTimer t;
@@ -25,7 +25,7 @@ void DAO::enterLockState(const QString where) {
     ++s_semaphoresLockedCount;
 }
 
-void DAO::exitLockState(const QString where) {
+void DAO::exitLockState(const QString &where) {
     qDebug() << "DAO::exitLockState from " << where;
     --s_semaphoresLockedCount;
 
@@ -42,4 +42,24 @@ void DAO::exitLockState(const QString where) {
     if (s_semaphoresLockedCount < 0) {
         s_semaphoresLockedCount = 0;
     }
+}
+
+void DAO::acquirePause(const QString &where) {
+    s_semaphorePause.acquire(where);
+}
+
+void DAO::acquireTransaction(const QString &where) {
+    s_semaphoreTransaction.acquire(where);
+}
+
+void DAO::releaseTransaction() {
+    if (s_semaphoreTransaction.available()>0)
+        return;
+    s_semaphoreTransaction.release();
+}
+
+void DAO::releasePause() {
+    if (s_semaphorePause.available()>0)
+        return;
+    s_semaphorePause.release();
 }
