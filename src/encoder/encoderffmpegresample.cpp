@@ -96,10 +96,10 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFo
 #ifndef __FFMPEGOLDAPI__
 
 #ifdef __LIBAVRESAMPLE__
-        qDebug() << "ffmpeg: Using libavresample";
+        qDebug() << "ffmpeg: NEW FFMPEG API using libavresample";
         m_pSwrCtx = avresample_alloc_context();
 #else
-        qDebug() << "ffmpeg: Using libswresample";
+        qDebug() << "ffmpeg: NEW FFMPEG API using libswresample";
         m_pSwrCtx = swr_alloc();
 #endif
 
@@ -185,6 +185,8 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
         uint8_t **l_pIn = (uint8_t **)inframe->extended_data;
 #endif
 
+// Left here for reason!
+// Sometime in time we will need this!
 #else
         int64_t l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
                                  inframe->nb_samples,
@@ -204,7 +206,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
         int l_iOutSamplesLines = 0;
 
         // Alloc too much.. if not enough we are in trouble!
-        av_samples_alloc(&m_pOut, &l_iOutSamplesLines, 2, l_iOutSamples, AV_SAMPLE_FMT_S16, 0);
+        av_samples_alloc(&m_pOut, &l_iOutSamplesLines, 2, l_iOutSamples, m_pOutSampleFmt, 0);
 #else
         int l_iOutSamples = av_rescale_rnd(inframe->nb_samples, m_pCodecCtx->sample_rate, m_pCodecCtx->sample_rate, AV_ROUND_UP);
 
@@ -220,36 +222,39 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
         int l_iLen = 0;
 #ifndef __FFMPEGOLDAPI__
 
-        // OLD API (0.0.3) ... still NEW API (1.0.0 and above).. very frustrating..
-        // USED IN FFMPEG 1.0 (LibAV SOMETHING!). New in FFMPEG 1.1 and libav 9
 #ifdef __LIBAVRESAMPLE__
 
+// OLD API (0.0.3) ... still NEW API (1.0.0 and above).. very frustrating..
+// USED IN FFMPEG 1.0 (LibAV SOMETHING!). New in FFMPEG 1.1 and libav 9
 #if LIBAVRESAMPLE_VERSION_INT <= 3
+        // AVResample OLD
+        //qDebug() << "OLD AVRESAMPLE INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes;
         l_iLen = avresample_convert(m_pSwrCtx, (void **)&m_pOut, 0, l_iOutSamples,
                                     (void **)l_pIn, 0, inframe->nb_samples);
 #else
+        //AVResample NEW
+        //qDebug() << "NEW OLD AVRESAMPLE INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes;
         l_iLen = avresample_convert(m_pSwrCtx, (uint8_t **)&m_pOut, 0, l_iOutSamples,
                                     (uint8_t **)l_pIn, 0, inframe->nb_samples);
 #endif
 
 #else
-        // qDebug() << "INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes;
+        // SWResample
+        //qDebug() << "SWRESAMPLE INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes;
         l_iLen = swr_convert(m_pSwrCtx, (uint8_t **)&m_pOut, l_iOutSamples,
                              (const uint8_t **)l_pIn, inframe->nb_samples);
 #endif
 
-        l_iOutBytes = av_samples_get_buffer_size(NULL, 2,l_iLen,m_pOutSampleFmt, 1);
+        l_iOutBytes = av_samples_get_buffer_size(NULL, 2, l_iLen, m_pOutSampleFmt, 1);
 
 #else
-        //qDebug() << "INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes << "INBYTES" << l_lInReadBytes;
+        // qDebug() << "INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes << "INBYTES" << l_lInReadBytes;
         l_iLen = audio_resample(m_pSwrCtx,
                                 (short *)m_pOut, (short *)inframe->data[0],
                                 inframe->nb_samples);
 
         // qDebug() << "U" << l_iLen;
 
-
-        // m_pOutSize = l_iOutBytes;
 #endif
         if (l_iLen < 0) {
             qDebug() << "Sample format conversion failed!";

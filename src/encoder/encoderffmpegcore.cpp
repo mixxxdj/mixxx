@@ -68,9 +68,6 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
     m_iAudioCpyLen = 0;
     m_iFltAudioCpyLen = 0;
 
-    m_pOut = NULL;
-    m_pOutSize = 0;
-
     m_SCcodecId = codec;
     m_lBitrate = 128000;
     m_lDts = 0;
@@ -345,9 +342,6 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
     // fits..
     if( l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT ) {
 
-  	    qDebug() << "!!!! Samplerate not set!" << l_SFrame->sample_rate;
-
-
         reSample(l_SFrame);
         // After we have turned our samples to destination
         // Format we must re-alloc l_SFrame.. it easier like this..
@@ -366,7 +360,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 
         l_iRet = avcodec_fill_audio_frame(l_SFrame, l_SCodecCtx->channels,
                                           l_SCodecCtx->sample_fmt,
-                                          (const uint8_t *)m_pOut,
+                                          (const uint8_t *)m_pResample->getBuffer(),
                                           m_iAudioCpyLen,
                                           1);
 
@@ -418,12 +412,8 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 
     // qDebug() << "!!PP";
     av_free_packet(&l_SPacket);
-#ifdef __FFMPEGOLDAPI__
     av_destruct_packet(&l_SPacket);
-    avcodec_free_frame(&l_SFrame);
-#else
     av_free(l_SFrame);
-#endif
 
     return 0;
 }

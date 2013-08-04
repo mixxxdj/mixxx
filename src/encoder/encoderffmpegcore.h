@@ -117,17 +117,6 @@ private:
 #endif
 
     EncoderFfmpegResample *m_pResample;
-
-#ifndef __FFMPEGOLDAPI__
-    // Conveter stuff
-    uint8_t *m_pOut;
-    unsigned int m_pOutSize;
-#else
-    short *m_pOut;
-    unsigned int m_pOutSize;
-#endif
-
-
     AVStream *m_pStream;
 };
 

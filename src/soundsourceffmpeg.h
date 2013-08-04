@@ -78,17 +78,6 @@ private:
 
     EncoderFfmpegResample *m_pResample;
 
-//#ifndef __FFMPEGOLDAPI__
-    // Conveter stuff
-//    uint8_t *m_pOut;
-//    unsigned int m_pOutSize;
-//#else
-    // Conveter stuff
-//    short *m_pOut;
-//    unsigned int m_pOutSize;
-//#endif
-
-
     unsigned int m_iOffset;
     int64_t m_iCurrentMixxTs;
     int64_t m_iNextMixxxPCMPoint;
