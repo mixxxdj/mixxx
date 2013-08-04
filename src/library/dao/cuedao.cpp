@@ -8,6 +8,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/cue.h"
 #include "trackinfoobject.h"
+#include "library/queryutil.h"
 
 CueDAO::CueDAO(QSqlDatabase& database)
         : m_database(database) {
@@ -30,13 +31,13 @@ int CueDAO::cueCount() {
             return query.value(0).toInt();
         }
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     //query.finish();
     return 0;
 }
 
-int CueDAO::numCuesForTrack(int trackId) {
+int CueDAO::numCuesForTrack(const int trackId) {
     qDebug() << "CueDAO::numCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(*) FROM " CUE_TABLE " WHERE track_id = :id");
@@ -46,12 +47,12 @@ int CueDAO::numCuesForTrack(int trackId) {
             return query.value(0).toInt();
         }
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return 0;
 }
 
-Cue* CueDAO::cueFromRow(QSqlQuery& query) const {
+Cue* CueDAO::cueFromRow(const QSqlQuery& query) const {
     QSqlRecord record = query.record();
     int id = record.value(record.indexOf("id")).toInt();
     int trackId = record.value(record.indexOf("track_id")).toInt();
@@ -66,7 +67,7 @@ Cue* CueDAO::cueFromRow(QSqlQuery& query) const {
     return cue;
 }
 
-Cue* CueDAO::getCue(int cueId) {
+Cue* CueDAO::getCue(const int cueId) {
     qDebug() << "CueDAO::getCue" << QThread::currentThread() << m_database.connectionName();
     if (m_cues.contains(cueId)) {
         return m_cues[cueId];
@@ -80,21 +81,22 @@ Cue* CueDAO::getCue(int cueId) {
             return cueFromRow(query);
         }
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return NULL;
 }
 
-QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
+QList<Cue*> CueDAO::getCuesForTrack(const int trackId) const {
     //qDebug() << "CueDAO::getCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QList<Cue*> cues;
     QSqlQuery query(m_database);
     query.prepare("SELECT * FROM " CUE_TABLE " WHERE track_id = :id");
     query.bindValue(":id", trackId);
     if (query.exec()) {
+        const int idColumn = query.record().indexOf("id");
         while (query.next()) {
             Cue* cue = NULL;
-            int cueId = query.value(query.record().indexOf("id")).toInt();
+            int cueId = query.value(idColumn).toInt();
             if (m_cues.contains(cueId)) {
                 cue = m_cues[cueId];
             }
@@ -106,12 +108,12 @@ QList<Cue*> CueDAO::getCuesForTrack(int trackId) const {
             }
         }
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return cues;
 }
 
-bool CueDAO::deleteCuesForTrack(int trackId) {
+bool CueDAO::deleteCuesForTrack(const int trackId) {
     qDebug() << "CueDAO::deleteCuesForTrack" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " CUE_TABLE " WHERE track_id = :track_id");
@@ -119,12 +121,12 @@ bool CueDAO::deleteCuesForTrack(int trackId) {
     if (query.exec()) {
         return true;
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return false;
 }
 
-bool CueDAO::deleteCuesForTracks(QList<int> ids) {
+bool CueDAO::deleteCuesForTracks(const QList<int>& ids) {
     qDebug() << "CueDAO::deleteCuesForTracks" << QThread::currentThread() << m_database.connectionName();
 
     QStringList idList;
@@ -138,7 +140,7 @@ bool CueDAO::deleteCuesForTracks(QList<int> ids) {
     if (query.exec()) {
         return true;
     } else {
-        qDebug() << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
     return false;
 }
@@ -187,7 +189,7 @@ bool CueDAO::saveCue(Cue* cue) {
             cue->setDirty(false);
             return true;
         } else {
-            qDebug() << query.executedQuery() << query.lastError();
+            LOG_FAILED_QUERY(query);
         }
     }
     return false;
@@ -202,7 +204,7 @@ bool CueDAO::deleteCue(Cue* cue) {
         if (query.exec()) {
             return true;
         } else {
-            qDebug() << query.lastError();
+            LOG_FAILED_QUERY(query);
         }
     } else {
         return true;
@@ -210,7 +212,7 @@ bool CueDAO::deleteCue(Cue* cue) {
     return false;
 }
 
-void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
+void CueDAO::saveTrackCues(const int trackId, TrackInfoObject* pTrack) {
     //qDebug() << "CueDAO::saveTrackCues" << QThread::currentThread() << m_database.connectionName();
     // TODO(XXX) transaction, but people who are already in a transaction call
     // this.
@@ -261,8 +263,7 @@ void CueDAO::saveTrackCues(int trackId, TrackInfoObject* pTrack) {
     query.bindValue(":track_id", trackId);
 
     if (!query.exec()) {
-        qDebug() << "Delete cues failed:" << query.lastError();
-        qDebug() << query.executedQuery();
+        LOG_FAILED_QUERY(query) << "Delete cues failed.";
     }
     //qDebug() << "Deleting cues took " << time.elapsed() << "ms";
 }

@@ -5,7 +5,6 @@
 #include <QMimeData>
 
 #include "library/trackmodel.h"
-#include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
 #include "recording/recordingmanager.h"
 
@@ -51,6 +50,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     const QString currentSearch() const;
     bool isColumnInternal(int);
     void moveTrack(const QModelIndex&, const QModelIndex&);
+    bool isLocked() { return false;}
     bool isColumnHiddenByDefault(int column);
     const QList<int>& searchColumns() const;
     Qt::ItemFlags flags(const QModelIndex &index) const;

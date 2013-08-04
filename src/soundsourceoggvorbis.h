@@ -17,10 +17,11 @@
 #ifndef SOUNDSOURCEOGGVORBIS_H
 #define SOUNDSOURCEOGGVORBIS_H
 
-#include <qstring.h>
-#include "soundsource.h"
-#include <vorbis/codec.h>
+#include <QString>
+#define OV_EXCLUDE_STATIC_CALLBACKS
 #include <vorbis/vorbisfile.h>
+
+#include "soundsource.h"
 
 class SoundSourceOggVorbis : public Mixxx::SoundSource {
  public:

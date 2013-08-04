@@ -12,9 +12,11 @@ QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
 ControlDoublePrivate::ControlDoublePrivate()
         : m_bIgnoreNops(true),
-          m_bTrack(false) {
-    m_defaultValue.setValue(0);
-    m_value.setValue(0);
+          m_bTrack(false),
+          m_trackType(Stat::UNSPECIFIED),
+          m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+    initialize();
 }
 
 ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
@@ -26,6 +28,10 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                        Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+    initialize();
+}
+
+void ControlDoublePrivate::initialize() {
     m_defaultValue.setValue(0);
     m_value.setValue(0);
 
@@ -49,7 +55,7 @@ ControlDoublePrivate::~ControlDoublePrivate() {
 
 // static
 ControlDoublePrivate* ControlDoublePrivate::getControl(
-    const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
+        const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
     QMutexLocker locker(&m_sqCOHashMutex);
     QHash<ConfigKey, ControlDoublePrivate*>::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {
@@ -77,48 +83,60 @@ double ControlDoublePrivate::get() const {
     return m_value.getValue();
 }
 
-void ControlDoublePrivate::reset(QObject* pSender) {
+void ControlDoublePrivate::reset() {
     double defaultValue = m_defaultValue.getValue();
-    set(defaultValue, pSender);
+    // NOTE: pSender = NULL is important. The originator of this action does
+    // not know the resulting value so it makes sense that we should emit a
+    // general valueChanged() signal even though we know the originator.
+    set(defaultValue, NULL);
 }
 
-void ControlDoublePrivate::set(const double& value, QObject* pSender) {
+void ControlDoublePrivate::set(double value, QObject* pSender) {
     if (m_bIgnoreNops && get() == value) {
         return;
     }
 
-    double dValue = value;
     // If the behavior says to ignore the set, ignore it.
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    if (pBehavior && !pBehavior->setFilter(&dValue)) {
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    if (!pBehavior.isNull() && !pBehavior->setFilter(&value)) {
         return;
     }
-    m_value.setValue(dValue);
-    emit(valueChanged(dValue, pSender));
+    m_value.setValue(value);
+    emit(valueChanged(value, pSender));
 
     if (m_bTrack) {
         Stat::track(m_trackKey, static_cast<Stat::StatType>(m_trackType),
-                    static_cast<Stat::ComputeFlags>(m_trackFlags), dValue);
+                    static_cast<Stat::ComputeFlags>(m_trackFlags), value);
     }
 }
 
-ControlNumericBehavior* ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
-    return m_pBehavior.fetchAndStoreRelaxed(pBehavior);
+void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
+    // This marks the old mpBehaviour for deletion. It is deleted once it is not
+    // used in any other function
+    m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }
 
-void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSetter) {
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    set(pBehavior ? pBehavior->widgetParameterToValue(dParam) : dParam, pSetter);
+void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSender) {
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    if (pBehavior.isNull()) {
+        set(dParam, pSender);
+    } else {
+        set(pBehavior->widgetParameterToValue(dParam), pSender);
+    }
 }
 
 double ControlDoublePrivate::getWidgetParameter() const {
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    return pBehavior ? pBehavior->valueToWidgetParameter(get()) : get();
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    double value = get();
+    if (!pBehavior.isNull()) {
+        value = pBehavior->valueToWidgetParameter(value);
+    }
+    return value;
 }
 
 void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    if (pBehavior) {
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    if (!pBehavior.isNull()) {
         pBehavior->setValueFromMidiParameter(opcode, dParam, this);
     } else {
         set(dParam, NULL);
@@ -126,7 +144,11 @@ void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
 }
 
 double ControlDoublePrivate::getMidiParameter() const {
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    return pBehavior ? pBehavior->valueToMidiParameter(get()) : get();
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    double value = get();
+    if (!pBehavior.isNull()) {
+        value = pBehavior->valueToMidiParameter(value);
+    }
+    return value;
 }
 

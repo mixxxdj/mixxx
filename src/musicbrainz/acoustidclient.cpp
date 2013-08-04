@@ -75,7 +75,9 @@ void AcoustidClient::requestFinished() {
     int id = m_requests.take(reply);
     
     if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-        emit finished(id, QString());
+        emit(networkError(
+             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
+             "AcoustID"));
         return;
     }
 
@@ -88,7 +90,7 @@ void AcoustidClient::requestFinished() {
             }
     }
 
-    emit finished(id, ID);
+    emit(finished(id, ID));
 }
 
 QString AcoustidClient::parseResult(QXmlStreamReader& reader){

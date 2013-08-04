@@ -37,13 +37,15 @@ EnginePregain::EnginePregain(const char * group)
     //Replay Gain things
     m_pControlReplayGain = new ControlObject(ConfigKey(group, "replaygain"));
     m_pTotalGain = new ControlObject(ConfigKey(group, "total_gain"));
-    m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough_enabled"));
+    m_pPassthroughEnabled = ControlObject::getControl(ConfigKey(group, "passthrough"));
 
     if (s_pReplayGainBoost == NULL) {
         s_pReplayGainBoost = new ControlPotmeter(ConfigKey("[ReplayGain]", "InitialReplayGainBoost"),0., 15.);
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     m_bSmoothFade = false;
+
+    m_fPrevGain = 1.0;
 }
 
 EnginePregain::~EnginePregain()
@@ -73,7 +75,7 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
     fGain = fGain/2;
 
     // Override replaygain value if passing through
-    if (fPassing == 1.0) {
+    if (fPassing > 0) {
         fReplayGain = 1.0;
     } else if (fReplayGain*fEnableReplayGain != 0) {
         // Here is the point, when ReplayGain Analyser takes its action, suggested gain changes from 0 to a nonzero value
@@ -114,6 +116,12 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
 
     m_pTotalGain->set(fGain);
 
-    // SampleUtil deals with aliased buffers and gains of 1 or 0.
-    SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
+    if (fGain != m_fPrevGain) {
+        // Prevent soundwave discontinuities by interpolating from old to new gain.
+        SampleUtil::copyWithRampingGain(pOutput, pIn, m_fPrevGain, fGain, iBufferSize);
+    } else {
+        // SampleUtil deals with aliased buffers and gains of 1 or 0.
+        SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
+    }
+    m_fPrevGain = fGain;
 }

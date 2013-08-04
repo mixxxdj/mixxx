@@ -185,7 +185,7 @@ void WTrackTableViewHeader::showOrHideColumn(int column) {
 int WTrackTableViewHeader::hiddenCount() {
     int count = 0;
     for (QMap<int, QAction*>::iterator it = m_columnActions.begin();
-         it != m_columnActions.end(); it++) {
+         it != m_columnActions.end(); ++it) {
         QAction* pAction = *it;
         if (!pAction->isChecked())
             count += 1;

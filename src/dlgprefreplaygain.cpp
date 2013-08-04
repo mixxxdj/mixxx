@@ -17,9 +17,9 @@
 
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        :  QWidget(parent)
-        , m_COTInitialBoost(ControlObject::getControl(ConfigKey(CONFIG_KEY, "InitialReplayGainBoost")))
-        , m_COTEnabled(ControlObject::getControl(ConfigKey(CONFIG_KEY, "ReplayGainEnabled"))) {
+        :  QWidget(parent),
+          m_COTInitialBoost(CONFIG_KEY, "InitialReplayGainBoost"),
+          m_COTEnabled(CONFIG_KEY, "ReplayGainEnabled") {
     config = _config;
 
     setupUi(this);

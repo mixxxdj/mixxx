@@ -35,7 +35,7 @@ void AnalysisDao::setDatabase(QSqlDatabase& database) {
     m_db = database;
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(const int trackId) {
     if (!m_db.isOpen() || trackId == -1) {
         return QList<AnalysisInfo>();
     }
@@ -46,11 +46,11 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrack(int trackId) {
         "WHERE track_id=:trackId").arg(s_analysisTableName));
     query.bindValue(":trackId", trackId);
 
-    return loadAnalysesFromQuery(trackId, query);
+    return loadAnalysesFromQuery(trackId, &query);
 }
 
 QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
-    int trackId, AnalysisType type) {
+    const int trackId, AnalysisType type) {
     if (!m_db.isOpen() || trackId == -1) {
         return QList<AnalysisInfo>();
     }
@@ -62,32 +62,35 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::getAnalysesForTrackByType(
     query.bindValue(":trackId", trackId);
     query.bindValue(":type", type);
 
-    return loadAnalysesFromQuery(trackId, query);
+    return loadAnalysesFromQuery(trackId, &query);
 }
 
-QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(int trackId, QSqlQuery& query) {
+QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int trackId, QSqlQuery* query) {
     QList<AnalysisDao::AnalysisInfo> analyses;
     QTime time;
     time.start();
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "couldn't get analyses for track" << trackId;
+    if (!query->exec()) {
+        LOG_FAILED_QUERY(*query) << "couldn't get analyses for track" << trackId;
         return analyses;
     }
 
     int bytes = 0;
-    while (query.next()) {
+    QSqlRecord queryRecord = query->record();
+    const int idColumn = queryRecord.indexOf("id");
+    const int typeColumn = queryRecord.indexOf("type");
+    const int descriptionColumn = queryRecord.indexOf("description");
+    const int versionColumn = queryRecord.indexOf("version");
+    const int dataChecksumColumn = queryRecord.indexOf("data_checksum");
+
+    while (query->next()) {
         AnalysisDao::AnalysisInfo info;
-        info.analysisId = query.value(query.record().indexOf("id")).toInt();
+        info.analysisId = query->value(idColumn).toInt();
         info.trackId = trackId;
-        info.type = static_cast<AnalysisType>(
-            query.value(query.record().indexOf("type")).toInt());
-        info.description = query.value(
-            query.record().indexOf("description")).toString();
-        info.version = query.value(
-            query.record().indexOf("version")).toString();
-        int checksum = query.value(
-            query.record().indexOf("data_checksum")).toInt();
+        info.type = static_cast<AnalysisType>(query->value(typeColumn).toInt());
+        info.description = query->value(descriptionColumn).toString();
+        info.version = query->value(versionColumn).toString();
+        int checksum = query->value(dataChecksumColumn).toInt();
         QString dataPath = getAnalysisStoragePath().absoluteFilePath(
             QString::number(info.analysisId));
         QByteArray compressedData = loadDataFromFile(dataPath);
@@ -181,7 +184,7 @@ bool AnalysisDao::saveAnalysis(AnalysisDao::AnalysisInfo* info) {
     return true;
 }
 
-bool AnalysisDao::deleteAnalysis(int analysisId) {
+bool AnalysisDao::deleteAnalysis(const int analysisId) {
     if (analysisId == -1) {
         return false;
     }
@@ -201,7 +204,7 @@ bool AnalysisDao::deleteAnalysis(int analysisId) {
     return true;
 }
 
-void AnalysisDao::deleteAnalysises(QList<int> ids) {
+void AnalysisDao::deleteAnalysises(const QList<int>& ids) {
     QStringList idList;
     foreach (int id, ids) {
         idList << QString::number(id);
@@ -212,8 +215,9 @@ void AnalysisDao::deleteAnalysises(QList<int> ids) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
+    const int idColumn = query.record().indexOf("id");
     while(query.next()){
-        int id = query.value(query.record().indexOf("id")).toInt();
+        int id = query.value(idColumn).toInt();
         QString dataPath = getAnalysisStoragePath().absoluteFilePath(
                             QString::number(id));
         qDebug() << dataPath;
@@ -226,7 +230,7 @@ void AnalysisDao::deleteAnalysises(QList<int> ids) {
     }
 }
 
-bool AnalysisDao::deleteAnalysesForTrack(int trackId) {
+bool AnalysisDao::deleteAnalysesForTrack(const int trackId) {
     if (trackId == -1) {
         return false;
     }
@@ -241,9 +245,10 @@ bool AnalysisDao::deleteAnalysesForTrack(int trackId) {
     }
 
     QList<int> analysesToDelete;
+    const int idColumn = query.record().indexOf("id");
     while (query.next()) {
         analysesToDelete.append(
-            query.value(query.record().indexOf("id")).toInt());
+            query.value(idColumn).toInt());
     }
     foreach (int analysisId, analysesToDelete) {
         deleteAnalysis(analysisId);
@@ -257,7 +262,7 @@ QDir AnalysisDao::getAnalysisStoragePath() const {
     return dir.absolutePath().append("/");
 }
 
-QByteArray AnalysisDao::loadDataFromFile(QString filename) const {
+QByteArray AnalysisDao::loadDataFromFile(const QString& filename) const {
     QFile file(filename);
     if (!file.exists()) {
         return QByteArray();
@@ -268,12 +273,12 @@ QByteArray AnalysisDao::loadDataFromFile(QString filename) const {
     return file.readAll();
 }
 
-bool AnalysisDao::deleteFile(QString fileName) const {
+bool AnalysisDao::deleteFile(const QString& fileName) const {
     QFile file(fileName);
     return file.remove();
 }
 
-bool AnalysisDao::saveDataToFile(QString fileName, QByteArray data) const {
+bool AnalysisDao::saveDataToFile(const QString& fileName, const QByteArray& data) const {
     QFile file(fileName);
 
     // If the file exists, do the right thing. Write to a temp file, unlink the

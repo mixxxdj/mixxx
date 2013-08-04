@@ -63,7 +63,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pCOShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
-    m_pCOTShufflePlaylist = new ControlObjectThreadMain(m_pCOShufflePlaylist);
+    m_pCOTShufflePlaylist = new ControlObjectThreadMain(m_pCOShufflePlaylist->getKey());
     connect(m_pCOTShufflePlaylist, SIGNAL(valueChanged(double)),
             this, SLOT(shufflePlaylist(double)));
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
@@ -71,15 +71,23 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pCOSkipNext = new ControlPushButton(
             ConfigKey("[AutoDJ]", "skip_next"));
-    m_pCOTSkipNext = new ControlObjectThreadMain(m_pCOSkipNext);
+    m_pCOTSkipNext = new ControlObjectThreadMain(m_pCOSkipNext->getKey());
     connect(m_pCOTSkipNext, SIGNAL(valueChanged(double)),
             this, SLOT(skipNext(double)));
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
             this, SLOT(skipNextButton(bool)));
 
+#ifdef __AUTODJCRATES__
+    connect(pushButtonAddRandom, SIGNAL(clicked(bool)),
+            this, SIGNAL(addRandomButton(bool)));
+#else // __AUTODJCRATES__
+    pushButtonAddRandom->setVisible(false);
+    horizontalLayout->removeWidget(pushButtonAddRandom);
+#endif // __AUTODJCRATES__
+
     m_pCOFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
-    m_pCOTFadeNow = new ControlObjectThreadMain(m_pCOFadeNow);
+    m_pCOTFadeNow = new ControlObjectThreadMain(m_pCOFadeNow->getKey());
     connect(m_pCOTFadeNow, SIGNAL(valueChanged(double)),
             this, SLOT(fadeNow(double)));
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
@@ -94,31 +102,21 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pCOEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
     m_pCOEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
-    m_pCOTEnabledAutoDJ = new ControlObjectThreadMain(m_pCOEnabledAutoDJ);
+    m_pCOTEnabledAutoDJ = new ControlObjectThreadMain(m_pCOEnabledAutoDJ->getKey());
     connect(m_pCOTEnabledAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(enableAutoDJCo(double)));
 
     // playposition is from -0.14 to + 1.14
-    m_pCOPlayPos1 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "playposition")));
-    m_pCOPlayPos2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "playposition")));
-    m_pCOPlay1 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "play")));
-    m_pCOPlay2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "play")));
-    m_pCOPlay1Fb = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "play")));
-    m_pCOPlay2Fb = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "play")));
-    m_pCORepeat1 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel1]", "repeat")));
-    m_pCORepeat2 = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Channel2]", "repeat")));
-    m_pCOCrossfader = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "crossfader")));
-    m_pCOCrossfaderReverse = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Mixer Profile]", "xFaderReverse")));
+    m_pCOPlayPos1 = new ControlObjectThreadMain("[Channel1]", "playposition");
+    m_pCOPlayPos2 = new ControlObjectThreadMain("[Channel2]", "playposition");
+    m_pCOPlay1 = new ControlObjectThreadMain("[Channel1]", "play");
+    m_pCOPlay2 = new ControlObjectThreadMain("[Channel2]", "play");
+    m_pCOPlay1Fb = new ControlObjectThreadMain("[Channel1]", "play");
+    m_pCOPlay2Fb = new ControlObjectThreadMain("[Channel2]", "play");
+    m_pCORepeat1 = new ControlObjectThreadMain("[Channel1]", "repeat");
+    m_pCORepeat2 = new ControlObjectThreadMain("[Channel2]", "repeat");
+    m_pCOCrossfader = new ControlObjectThreadMain("[Master]", "crossfader");
+    m_pCOCrossfaderReverse = new ControlObjectThreadMain("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY, kTransitionPreferenceName));
@@ -675,4 +673,10 @@ void DlgAutoDJ::transitionValueChanged(int value) {
     m_pConfig->set(ConfigKey(CONFIG_KEY, kTransitionPreferenceName),
                    ConfigValue(value));
     m_backUpTransition = value;
+}
+
+void DlgAutoDJ::enableRandomButton(bool enabled) {
+#ifdef __AUTODJCRATES__
+    pushButtonAddRandom->setEnabled(enabled);
+#endif // __AUTODJCRATES__
 }

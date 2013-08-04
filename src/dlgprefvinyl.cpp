@@ -32,8 +32,8 @@
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            ConfigObject<ConfigValue> * _config)
         : QWidget(parent),
-          m_COSpeed1(ControlObject::getControl(ConfigKey("[Channel1]", "vinylcontrol_speed_type"))),
-          m_COSpeed2(ControlObject::getControl(ConfigKey("[Channel2]", "vinylcontrol_speed_type"))) {
+          m_COSpeed1("[Channel1]", "vinylcontrol_speed_type"),
+          m_COSpeed2("[Channel2]", "vinylcontrol_speed_type") {
     m_pVCManager = pVCMan;
     config = _config;
 
@@ -200,13 +200,11 @@ void DlgPrefVinyl::VinylTypeSlotApply()
     }
 }
 
-void DlgPrefVinyl::VinylGainSlotApply()
-{
+void DlgPrefVinyl::VinylGainSlotApply() {
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << VinylGain->value();
-    //Update the config key...
-    config->set(ConfigKey(VINYL_PREF_KEY,"gain"), ConfigValue(VinylGain->value()));
+    // Update the config key...
+    config->set(ConfigKey(VINYL_PREF_KEY, "gain"), ConfigValue(VinylGain->value()));
 
-    //Update the ControlObject...
-    ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"));
-    pControlObjectVinylControlGain->set(VinylGain->value());
+    // Update the ControlObject...
+    ControlObject::set(ConfigKey(VINYL_PREF_KEY, "gain"), VinylGain->value());
 }

@@ -19,20 +19,24 @@
 #include <QtDebug>
 
 #include "controlobjectthread.h"
-#include "controlobject.h"
 #include "control/control.h"
 
-ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
+ControlObjectThread::ControlObjectThread(const QString& g, const QString& i, QObject* pParent)
         : QObject(pParent) {
-    initialize(pControlObject ? pControlObject->getKey() : ConfigKey());
+    initialize(ConfigKey(g, i));
 }
 
-ControlObjectThread::ControlObjectThread(ConfigKey key, QObject* pParent)
+ControlObjectThread::ControlObjectThread(const char* g, const char* i, QObject* pParent)
+        : QObject(pParent) {
+    initialize(ConfigKey(g, i));
+}
+
+ControlObjectThread::ControlObjectThread(const ConfigKey& key, QObject* pParent)
         : QObject(pParent) {
     initialize(key);
 }
 
-void ControlObjectThread::initialize(ConfigKey key) {
+void ControlObjectThread::initialize(const ConfigKey& key) {
     m_key = key;
     m_pControl = ControlDoublePrivate::getControl(m_key, false);
     if (m_pControl) {
@@ -43,10 +47,6 @@ void ControlObjectThread::initialize(ConfigKey key) {
 }
 
 ControlObjectThread::~ControlObjectThread() {
-}
-
-bool ControlObjectThread::valid() const {
-    return m_pControl != NULL;
 }
 
 double ControlObjectThread::get() {
@@ -70,7 +70,7 @@ void ControlObjectThread::reset() {
         // general valueChanged() signal even though the change originated from
         // us. For this reason, we provide NULL here so that the change is
         // broadcast as valueChanged() and not valueChangedByThis().
-        m_pControl->reset(NULL);
+        m_pControl->reset();
     }
 }
 

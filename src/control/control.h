@@ -32,19 +32,19 @@ class ControlDoublePrivate : public QObject {
     }
 
     // Sets the control value.
-    void set(const double& value, QObject* pSetter);
+    void set(double value, QObject* pSender);
     // Gets the control value.
     double get() const;
     // Resets the control value to its default.
-    void reset(QObject* pSetter);
+    void reset();
 
     // Set the behavior to be used when setting values and translating between
     // parameter and value space. Returns the previously set behavior (if any).
-    // Caller must handle appropriate destruction of the previous behavior or
-    // memory will leak.
-    ControlNumericBehavior* setBehavior(ControlNumericBehavior* pBehavior);
+    // The caller must nut delete the behavior at any time. The memory is managed
+    // by this function.
+    void setBehavior(ControlNumericBehavior* pBehavior);
 
-    void setWidgetParameter(double dParam, QObject* pSetter);
+    void setWidgetParameter(double dParam, QObject* pSender);
     double getWidgetParameter() const;
 
     void setMidiParameter(MidiOpCode opcode, double dParam);
@@ -63,11 +63,13 @@ class ControlDoublePrivate : public QObject {
     }
 
   signals:
-    // Emitted when the ControlDoublePrivate value changes. pSetter is a
+    // Emitted when the ControlDoublePrivate value changes. pSender is a
     // pointer to the setter of the value (potentially NULL).
-    void valueChanged(double value, QObject* pSetter);
+    void valueChanged(double value, QObject* pSender);
 
   private:
+    void initialize();
+
     ConfigKey m_key;
     // Whether to ignore sets which would have no effect.
     bool m_bIgnoreNops;
@@ -83,7 +85,7 @@ class ControlDoublePrivate : public QObject {
     // The default control value.
     ControlValueAtomic<double> m_defaultValue;
 
-    QAtomicPointer<ControlNumericBehavior> m_pBehavior;
+    QSharedPointer<ControlNumericBehavior> m_pBehavior;
 
     // Hash of ControlDoublePrivate instantiations.
     static QHash<ConfigKey,ControlDoublePrivate*> m_sqCOHash;

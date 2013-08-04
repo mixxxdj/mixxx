@@ -44,6 +44,7 @@ class VampAnalyser {
   private:
     
 
+  private:
     Vamp::HostExt::PluginLoader::PluginKey m_key;
     int m_iSampleCount, m_iOUT, m_iRemainingSamples,
         m_iBlockSize, m_iStepSize, m_rate, m_iOutput;

@@ -475,8 +475,8 @@ class MixxxCore(Feature):
                    "dlgprefcrossfader.cpp",
                    "dlgtagfetcher.cpp",
                    "dlgtrackinfo.cpp",
-                   "dlgprepare.cpp",
                    "dlgselector.cpp",
+                   "dlganalysis.cpp",
                    "dlgautodj.cpp",
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
@@ -505,6 +505,7 @@ class MixxxCore(Feature):
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
                    "engine/enginepassthrough.cpp",
+                   "engine/channelmixer_autogen.cpp",
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
@@ -517,6 +518,7 @@ class MixxxCore(Feature):
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
+                   "cachingreaderworker.cpp",
 
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
@@ -564,6 +566,8 @@ class MixxxCore(Feature):
                    "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
+                   "widget/woverviewlmh.cpp",
+                   "widget/woverviewhsv.cpp",
                    "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wabstractcontrol.cpp",
@@ -594,23 +598,21 @@ class MixxxCore(Feature):
                    "widget/wlibrarysidebar.cpp",
                    "widget/wlibrary.cpp",
                    "widget/wlibrarytableview.cpp",
-                   "widget/wpreparelibrarytableview.cpp",
-                   "widget/wpreparecratestableview.cpp",
+                   "widget/wanalysislibrarytableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",
-                   "library/preparecratedelegate.cpp",
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
                    "library/searchqueryparser.cpp",
-                   "library/preparelibrarytablemodel.cpp",
+                   "library/analysislibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
                    "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
-                   "library/preparefeature.cpp",
+                   "library/analysisfeature.cpp",
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/baseplaylistfeature.cpp",
@@ -767,6 +769,8 @@ class MixxxCore(Feature):
                    "util/stat.cpp",
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
+                   "util/version.cpp",
+                   "util/rlimit.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)
@@ -812,8 +816,8 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgaboutdlg.ui')
         build.env.Uic4('dlgtagfetcher.ui')
         build.env.Uic4('dlgtrackinfo.ui')
-        build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgselector.ui')
+        build.env.Uic4('dlganalysis.ui')
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
         build.env.Uic4('dlgrecording.ui')

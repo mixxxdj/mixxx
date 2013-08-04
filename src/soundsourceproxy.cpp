@@ -360,14 +360,13 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setKeyText(sndsrc->getKey(),
 		      mixxx::track::io::key::FILE_METADATA);
         p->setHeaderParsed(true);
-    }
-    else
-    {
+    } else {
+        qDebug() << "SoundSourceProxy::ParseHeader() error at file " << qFilename;
         p->setHeaderParsed(false);
     }
     delete sndsrc;
 
-    return 0;
+    return OK;
 }
 
 // static

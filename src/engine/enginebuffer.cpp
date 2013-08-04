@@ -243,6 +243,9 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     df.open(QIODevice::WriteOnly | QIODevice::Text);
     writer.setDevice(&df);
 #endif
+
+
+    m_hintList.reserve(256); // Avoid reallocation
 }
 
 EngineBuffer::~EngineBuffer()
@@ -327,7 +330,11 @@ double EngineBuffer::getFileBpm() {
 }
 
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster) {
-    m_pBpmControl->setEngineMaster(pEngineMaster);
+    m_engineLock.lock();
+    foreach (EngineControl* pControl, m_engineControls) {
+        pControl->setEngineMaster(pEngineMaster);
+    }
+    m_engineLock.unlock();
 }
 
 void EngineBuffer::queueNewPlaypos(double newpos) {
@@ -779,9 +786,11 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         bCurBufferPaused = true;
     }
 
-    // Give the Reader hints as to which chunks of the current song we
-    // really care about. It will try very hard to keep these in memory
-    hintReader(rate);
+    if (!bTrackLoading) {
+        // Give the Reader hints as to which chunks of the current song we
+        // really care about. It will try very hard to keep these in memory
+        hintReader(rate);
+    }
 
     const double kSmallRate = 0.005;
     if (m_bLastBufferPaused && !bCurBufferPaused) {
@@ -892,7 +901,7 @@ void EngineBuffer::hintReader(const double dRate) {
     m_engineLock.lock();
 
     m_hintList.clear();
-    m_pReadAheadManager->hintReader(dRate, m_hintList);
+    m_pReadAheadManager->hintReader(dRate, &m_hintList);
 
     //if slipping, hint about virtual position so we're ready for it
     if (m_bSlipEnabled) {
@@ -906,7 +915,7 @@ void EngineBuffer::hintReader(const double dRate) {
     QListIterator<EngineControl*> it(m_engineControls);
     while (it.hasNext()) {
         EngineControl* pControl = it.next();
-        pControl->hintReader(m_hintList);
+        pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);
 
@@ -919,7 +928,6 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
     // trackLoading and then either with trackLoaded or trackLoadFailed signals.
     m_bPlayAfterLoading = play;
     m_pReader->newTrack(pTrack);
-    m_pReader->wake();
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {
@@ -937,7 +945,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
 }
 
 void EngineBuffer::bindWorkers(EngineWorkerScheduler* pWorkerScheduler) {
-    pWorkerScheduler->bindWorker(m_pReader);
+    m_pReader->setScheduler(pWorkerScheduler);
 }
 
 bool EngineBuffer::isTrackLoaded() {
@@ -953,6 +961,7 @@ void EngineBuffer::slotEjectTrack(double v) {
     }
 }
 
+/*
 void EngineBuffer::setReader(CachingReader* pReader) {
     disconnect(m_pReader, 0, this, 0);
     delete m_pReader;
@@ -968,3 +977,4 @@ void EngineBuffer::setReader(CachingReader* pReader) {
             this, SLOT(slotTrackLoadFailed(TrackPointer, QString)),
             Qt::DirectConnection);
 }
+*/

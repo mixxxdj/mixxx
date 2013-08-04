@@ -406,7 +406,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 }
 
 // static
-AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(
+AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
         ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
