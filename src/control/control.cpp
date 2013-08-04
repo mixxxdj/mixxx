@@ -100,6 +100,10 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
     setInner(value, pSender);
 }
 
+void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
+    setInner(value, pSender);
+}
+
 
 void ControlDoublePrivate::setInner(double value, QObject* pSender) {
     if (m_bIgnoreNops && get() == value) {

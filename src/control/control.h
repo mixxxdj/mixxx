@@ -33,6 +33,8 @@ class ControlDoublePrivate : public QObject {
 
     // Sets the control value.
     void set(double value, QObject* pSender);
+    // Sets the control value.
+    void setAndConfirm(double value, QObject* pSender);
     // Gets the control value.
     double get() const;
     // Resets the control value to its default.
