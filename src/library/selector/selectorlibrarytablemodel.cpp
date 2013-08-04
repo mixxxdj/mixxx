@@ -302,11 +302,9 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
         }
 
         // get the new pitch slider object
-        m_channelBpm = new ControlObjectThreadMain(
-                    ControlObject::getControl(ConfigKey(m_pChannel, "bpm")));
+        m_channelBpm = new ControlObjectThreadMain(m_pChannel, "bpm");
 
-        m_channelKey = new ControlObjectThreadMain(
-                    ControlObject::getControl(ConfigKey(m_pChannel, "key")));
+        m_channelKey = new ControlObjectThreadMain(m_pChannel, "key");
 
         // listen for slider change events
         connect(m_channelBpm, SIGNAL(valueChanged(double)), this,

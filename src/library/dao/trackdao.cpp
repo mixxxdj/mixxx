@@ -959,6 +959,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             if (keys.isValid()) {
                 pTrack->setKeys(keys);
             } else {
+                QString keyText = pTrack->getKeyText();
                 // Typically this happens if we are upgrading from an older
                 // (<1.12.0) version of Mixxx that didn't support Keys. We treat
                 // all legacy data as user-generated because that way it will be
@@ -966,7 +967,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
                 pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
                 // The in-database data would change because of this. Mark the
                 // track dirty so we save it when it is deleted.
-                shouldDirty = true;
+                pTrack->setDirty(true);
             }
 
             QString timbreVersion = query.value(timbreVersionColumn).toString();
@@ -993,7 +994,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             // Normally we will set the track as clean but sometimes when
             // loading from the database we need to perform upkeep that ought to
             // be written back to the database when the track is deleted.
-            pTrack->setDirty(shouldDirty);
+//            pTrack->setDirty(shouldDirty);
 
             // Listen to dirty and changed signals
             connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
