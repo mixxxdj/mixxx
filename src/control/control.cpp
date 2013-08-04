@@ -92,13 +92,17 @@ void ControlDoublePrivate::reset() {
 }
 
 void ControlDoublePrivate::set(double value, QObject* pSender) {
-    if (m_bIgnoreNops && get() == value) {
-        return;
-    }
-
     // If the behavior says to ignore the set, ignore it.
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior.isNull() && !pBehavior->setFilter(&value)) {
+        return;
+    }
+    setInner(value, pSender);
+}
+
+
+void ControlDoublePrivate::setInner(double value, QObject* pSender) {
+    if (m_bIgnoreNops && get() == value) {
         return;
     }
     m_value.setValue(value);

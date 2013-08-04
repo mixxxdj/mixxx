@@ -69,6 +69,7 @@ class ControlDoublePrivate : public QObject {
 
   private:
     void initialize();
+    void setInner(double value, QObject* pSender);
 
     ConfigKey m_key;
     // Whether to ignore sets which would have no effect.
