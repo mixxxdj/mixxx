@@ -101,6 +101,7 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     //BPM of the current song
 
     m_pBPM = new ControlObjectThreadMain(group, "file_bpm");
+    m_pKey = new ControlObjectThreadMain(group, "file_key");
     m_pReplayGain = new ControlObjectThreadMain(group, "replaygain");
     m_pPlay = new ControlObjectThreadMain(group, "play");
 }

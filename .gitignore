@@ -18,6 +18,6 @@ lib/*/*.a
 lib/*/lib/*.a
 mixxx
 mixxx-test
-mixxx.pro
-mixxx.pro.user
+*.pro
+*.pro.user
 res/qrc_mixxx.cc
