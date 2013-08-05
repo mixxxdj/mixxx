@@ -38,6 +38,12 @@ EngineFilterButterworth8::EngineFilterButterworth8(filterType type, int sampleRa
 	m_type = type;
     m_sampleRate = sampleRate;
 
+    // Set buffer size
+    if (type == FILTER_BANDPASS)
+        m_bufSize = 16;
+    else
+        m_bufSize = 8;
+
     setFrequencyCorners(freqCorner1, freqCorner2);
 }
 
