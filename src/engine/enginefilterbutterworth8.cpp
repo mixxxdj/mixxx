@@ -38,32 +38,7 @@ EngineFilterButterworth8::EngineFilterButterworth8(filterType type, int sampleRa
 	m_type = type;
     m_sampleRate = sampleRate;
 
-	switch(type)
-	{
-		case FILTER_LOWPASS:
-			m_bufSize = 8;
-			Q_ASSERT(freqCorner2 == 0);
-			m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "LpBu8", sampleRate, freqCorner1, 0, 0);
-			break;
-
-		case FILTER_BANDPASS:
-			m_bufSize = 16;
-			m_coef[0]= 1 * fid_design_coef(m_coef + 1, 16, "BpBu8", sampleRate, freqCorner1, freqCorner2, 0);
-			break;
-
-		case FILTER_HIGHPASS:
-			m_bufSize = 8;
-			Q_ASSERT(freqCorner2 == 0);
-			m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "HpBu8", sampleRate, freqCorner1, 0, 0);
-			break;
-	}
-
-	//Initialize Buffers
-	for(int i=0; i < m_bufSize; i++)
-	{
-		m_buf1[i] = 0;
-		m_buf2[i] = 0;
-	}
+    setFrequencyCorners(freqCorner1, freqCorner2);
 }
 
 void EngineFilterButterworth8::setFrequencyCorners(double freqCorner1,
