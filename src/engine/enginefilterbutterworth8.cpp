@@ -66,7 +66,8 @@ EngineFilterButterworth8::EngineFilterButterworth8(filterType type, int sampleRa
 	}
 }
 
-void EngineFilterButterworth8::reset(double freqCorner1, double freqCorner2)
+void EngineFilterButterworth8::setFrequencyCorners(double freqCorner1,
+                                                   double freqCorner2)
 {
     switch(m_type)
     {

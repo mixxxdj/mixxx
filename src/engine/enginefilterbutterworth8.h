@@ -10,7 +10,7 @@ public:
 	~EngineFilterButterworth8();
 
     // Update filter without recreating it
-    void reset(double freqCorner1, double freqCorner2 = 0);
+    void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
 	void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
 
 private:
