@@ -70,6 +70,9 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
+    bool connectValueChangeRequest(const QObject* receiver,
+            const char* method, Qt::ConnectionType type);
+
   signals:
     void valueChanged(double);
     void valueChangedFromEngine(double);

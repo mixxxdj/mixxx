@@ -64,10 +64,14 @@ class ControlDoublePrivate : public QObject {
         return m_pBehavior ? m_pBehavior->defaultValue(default_value) : default_value;
     }
 
+    bool connectValueChangeRequest(const QObject* receiver,
+            const char* method, Qt::ConnectionType type);
+
   signals:
     // Emitted when the ControlDoublePrivate value changes. pSender is a
     // pointer to the setter of the value (potentially NULL).
     void valueChanged(double value, QObject* pSender);
+    void valueChangeRequest(double value);
 
   private:
     void initialize();
@@ -82,6 +86,7 @@ class ControlDoublePrivate : public QObject {
     QString m_trackKey;
     int m_trackType;
     int m_trackFlags;
+    bool m_confirmRequired;
 
     // The control value.
     ControlValueAtomic<double> m_value;

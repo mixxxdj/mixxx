@@ -15,7 +15,8 @@ ControlDoublePrivate::ControlDoublePrivate()
           m_bTrack(false),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_confirmRequired(false) {
     initialize();
 }
 
@@ -97,7 +98,11 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
     if (!pBehavior.isNull() && !pBehavior->setFilter(&value)) {
         return;
     }
-    setInner(value, pSender);
+    if(m_confirmRequired) {
+        emit(valueChangeRequest(value));
+    } else {
+        setInner(value, pSender);
+    }
 }
 
 void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
@@ -160,3 +165,11 @@ double ControlDoublePrivate::getMidiParameter() const {
     return value;
 }
 
+bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
+        const char* method, Qt::ConnectionType type) {
+    bool ret = false;
+    ret = connect(this, SIGNAL(valueChangeRequest(double)),
+                receiver, method, type);
+    m_confirmRequired = ret;
+    return ret;
+}

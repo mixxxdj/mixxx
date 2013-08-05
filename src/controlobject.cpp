@@ -160,3 +160,13 @@ void ControlObject::set(const ConfigKey& key, const double& value) {
         pCop->set(value, NULL);
     }
 }
+
+bool ControlObject::connectValueChangeRequest(const QObject* receiver,
+        const char* method, Qt::ConnectionType type) {
+    bool ret = false;
+    if (m_pControl) {
+        ret = m_pControl->connectValueChangeRequest(receiver, method, type);
+    }
+    return ret;
+}
+
