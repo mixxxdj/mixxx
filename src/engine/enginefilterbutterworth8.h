@@ -6,15 +6,16 @@
 class EngineFilterButterworth8 : public EngineObject
 {
 public:
-	EngineFilterButterworth8(filterType type, int sampleRate, double freqCorner1, double freqCorner2 = 0);
+    EngineFilterButterworth8(int sampleRate);
 	~EngineFilterButterworth8();
 
     // Update filter without recreating it
-    void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
-	void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
+    virtual void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0) = 0;
+    void initBuffers();
+    virtual void process(const CSAMPLE *pIn, const CSAMPLE *ppOut,
+            const int iBufferSize) = 0;
 
-private:
-	filterType m_type;
+protected:
 
     int m_sampleRate;
 
@@ -26,4 +27,33 @@ private:
 
 	//channel 2 state
 	double m_buf2[MAX_INTERNAL_BUF];
+};
+
+
+// Low Butterworth filter
+class EngineFilterButterworth8Low : public EngineFilterButterworth8
+{
+public:
+    EngineFilterButterworth8Low(int sampleRate, double freqCorner1);
+    void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
+    void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
+};
+
+// Bandpass Butterworth filter
+class EngineFilterButterworth8Band : public EngineFilterButterworth8
+{
+public:
+    EngineFilterButterworth8Band(int sampleRate, double freqCorner1,
+                                     double freqCorner2);
+    void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
+    void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
+};
+
+// High Butterworth filter
+class EngineFilterButterworth8High : public EngineFilterButterworth8
+{
+public:
+    EngineFilterButterworth8High(int sampleRate, double freqCorner1);
+    void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
+    void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
 };
