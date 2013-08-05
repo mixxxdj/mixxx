@@ -4,8 +4,6 @@
 #include <QThread>
 #include "dao.h"
 
-
-
 // Lambda function
 typedef std::function <void ()> func;
 

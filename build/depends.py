@@ -569,7 +569,6 @@ class MixxxCore(Feature):
                    "musicbrainz/chromaprinter.cpp",
                    "musicbrainz/musicbrainzclient.cpp",
 
-                   "library/dao/threaddao.cpp"
 
                    "rotary.cpp",
                    "widget/wtracktableview.cpp",
@@ -622,6 +621,9 @@ class MixxxCore(Feature):
                    "library/libraryscannerdlg.cpp",
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
+
+                   # Library concurency refactoring
+                   "library/dao/threaddao.cpp",
 
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",

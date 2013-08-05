@@ -4,7 +4,7 @@
 #include <QPushButton>
 
 #include "threaddao.h"
-#include "sleeperthread.h"
+#include "util/sleepableqthread.h"
 
 const int SleepTimeMs = 10;
 const int TooLong = 100;
@@ -13,8 +13,7 @@ ThreadDAO::ThreadDAO(QObject *parent) :
     QThread(parent),
     m_haveFunction(false),
     m_callFinished(false),
-    m_stop(false),
-    m_progressindicator(progressIndicator) {
+    m_stop(false) {
 }
 
 
@@ -22,7 +21,7 @@ void ThreadDAO::run() {
     qDebug() << "ThreadDAO::run";
     while (!m_stop) {
         while (!m_haveFunction) {
-            SleeperThread::msSleep(SleepTimeMs);
+            SleepableQThread::msleep(SleepTimeMs);
         }
         m_callFinished = false;
 
@@ -48,12 +47,12 @@ void ThreadDAO::callSync(func lambda, QWidget &w) {
 
     while (m_haveFunction && !m_callFinished) {
         qApp->processEvents( QEventLoop::AllEvents );
-        SleeperThread::msSleep(SleepTimeMs);
+        SleepableQThread::msleep(SleepTimeMs);
         ++waitCycles;
         if (waitCycles > TooLong && !animationIsShowed) {
             qDebug() << "Start animation";
             w.setEnabled(false);
-            m_progressindicator.startAnimation();
+//            m_progressindicator.startAnimation();
             animationIsShowed = true;
         }
     }
@@ -61,7 +60,7 @@ void ThreadDAO::callSync(func lambda, QWidget &w) {
     if (animationIsShowed) {
         qDebug() << "Stop animation";
         w.setEnabled(true);
-        m_progressindicator.stopAnimation();
+//        m_progressindicator.stopAnimation();
     }
 }
 
