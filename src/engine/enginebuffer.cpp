@@ -389,7 +389,7 @@ void EngineBuffer::slotTrackLoading() {
     m_iTrackLoading = 1;
     m_pause.unlock();
 
-    m_playButton->set(0.0); //Stop playback
+    m_playButton->set(0.0); // Stop playback
     m_pTrackSamples->set(0); // Stop renderer
 }
 
