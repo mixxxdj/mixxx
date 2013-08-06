@@ -10,6 +10,8 @@
 #include "library/librarytablemodel.h"
 #include "track/timbre.h"
 #include "track/tagutils.h"
+#include "library/selector/selectorsimilarity.h"
+
 
 
 class ControlObjectThreadMain;
@@ -34,11 +36,6 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     bool seedTrackGenreExists();
     bool seedTrackBpmExists();
     bool seedTrackKeyExists();
-
-    void setSimilarityContributions(
-            const QHash<QString, double>& contributions);
-    void loadStoredSimilarityContributions();
-    void normalizeContributions();
 
   public slots:
     void filterByGenre(bool value);
@@ -75,7 +72,6 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     bool m_bFilterKey5th;
     bool m_bFilterKeyRelative;
 
-    QHash<QString, double> m_similarityContributions;
     // Current Track Properties
     QString m_sSeedTrackInfo;
     QString m_sSeedTrackGenre;
@@ -92,6 +88,8 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     ControlObjectThreadMain* m_channelKey;
 
     ConfigObject<ConfigValue>* m_pConfig;
+
+    SelectorSimilarity m_selectorSimilarity;
 };
 
 

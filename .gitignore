@@ -7,6 +7,8 @@
 *.pyc
 *.rej
 *_build
+*.pro
+*.pro.user
 *~
 .#*
 .DS_Store
@@ -18,6 +20,4 @@ lib/*/*.a
 lib/*/lib/*.a
 mixxx
 mixxx-test
-*.pro
-*.pro.user
 res/qrc_mixxx.cc

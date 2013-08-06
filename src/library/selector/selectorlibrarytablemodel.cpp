@@ -33,7 +33,8 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                      TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.selector"),
-          m_pConfig(pConfig) {
+          m_pConfig(pConfig),
+          m_selectorSimilarity(parent, pTrackCollection, pConfig) {
     setTableModel();
 
     // Detect when deck has changed
@@ -117,7 +118,6 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
         clearSeedTrackInfo();
         emit(resetFilters());
     }
-    loadStoredSimilarityContributions();
     emit(seedTrackInfoChanged());
 }
 
@@ -138,78 +138,34 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
                m_seedTrackKey != mixxx::track::io::key::INVALID;
 }
 
-void SelectorLibraryTableModel::setSimilarityContributions(
-        const QHash<QString, double>& contributions) {
-    m_similarityContributions = contributions;
-    normalizeContributions();
-}
-
-void SelectorLibraryTableModel::loadStoredSimilarityContributions() {
-    int iTimbreCoefficient = m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT)).toInt();
-    int iRhythmCoefficient = m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT)).toInt();
-    int iLastFmCoefficient = m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT)).toInt();
-
-    QHash<QString, double> contributions;
-    contributions.insert("timbre", iTimbreCoefficient/100.0);
-    contributions.insert("rhythm", iRhythmCoefficient/100.0);
-    contributions.insert("lastfm", iLastFmCoefficient/100.0);
-    setSimilarityContributions(contributions);
-}
-
-void SelectorLibraryTableModel::normalizeContributions() {
-    if (m_seedTrackTags.isEmpty()) {
-        m_similarityContributions["lastfm"] = 0.0;
-    }
-    if (m_pSeedTrackTimbre.isNull()) {
-        m_similarityContributions["timbre"] = 0.0;
-        m_similarityContributions["beat"] = 0.0;
-    }
-
-    // ensure non-zero items sum to 1
-    double total = 0.0;
-
-    foreach (double value, m_similarityContributions.values()) {
-        total += value;
-    }
-
-    if (total > 0.0) {
-        foreach (QString key, m_similarityContributions.keys()) {
-            m_similarityContributions[key] /= total;
-        }
-    }
-}
 void SelectorLibraryTableModel::calculateSimilarity() {
     ScopedTimer t("SelectorLibraryTableModel::calculateSimilarity()");
-//    qDebug() << "SelectorLibraryTableModel::calculateSimilarity()";
-    loadStoredSimilarityContributions();
 
     if (!m_pSeedTrack.isNull()) {
-        normalizeContributions();
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("UPDATE " + tableName + " SET score=:score "
                       "WHERE " + LIBRARYTABLE_ID + "=:id;");
-        QVariantList scores;
-        QVariantList trackIds;
+        QVariantList queryTrackIds;
+        QVariantList queryScores;
 
+        QList<int> trackIds;
         for (int i = 0, n = rowCount(); i < n; i++) {
             QModelIndex index = createIndex(i, fieldIndex(LIBRARYTABLE_ID));
-            int trackId = getTrackId(index);
-            QVariant score = scoreTrack(index);
-
-            // if the score could not be calculated (i.e. a field is missing),
-            // skip it
-            if (!score.isValid())
-                continue;
-
-            trackIds << QVariant(trackId);
-            scores << score;
+            trackIds << getTrackId(index);
         }
 
-        query.bindValue(":score", scores);
-        query.bindValue(":id", trackIds);
+        QList<QPair<int, double> > results =
+            m_selectorSimilarity.calculateSimilarities(m_pSeedTrack->getId(),
+                                                       trackIds);
+
+        QPair<int, double> pair;
+        foreach (pair, results) {
+            queryTrackIds << pair.first;
+            queryScores << pair.second;
+        }
+
+        query.bindValue(":score", queryScores);
+        query.bindValue(":id", queryTrackIds);
         if (!query.execBatch()) {
             qDebug() << query.lastError();
         } else {
@@ -374,67 +330,6 @@ void SelectorLibraryTableModel::clearSeedTrackInfo() {
     m_seedTrackKey = mixxx::track::io::key::INVALID;
     m_pSeedTrackTimbre = TimbrePointer();
     m_seedTrackTags = TagCounts();
-}
-
-QVariant SelectorLibraryTableModel::scoreTrack(const QModelIndex& index) {
-    // return a QVariant::Double from 0 (no match) to 100 (perfect match)
-    // or QVariant::Invalid if the field is missing
-    // assume that seed track info is valid
-
-    QVariant score;
-
-    // m_similarityContributions's values add up to 1
-
-    double bpmContribution = m_similarityContributions.value("bpm");
-    if (bpmContribution > 0.0) {
-        QVariant bpm = data(index.sibling(index.row(), fieldIndex("bpm")));
-        if (bpm.isValid()) {
-            double bpmDiff = abs(bpm.toDouble() - m_fSeedTrackBpm);
-            double bpmScore = ((maxBpmDiff - bpmDiff) / maxBpmDiff);
-
-            if (bpmScore > 1.0) bpmScore = 1.0;
-            else if (bpmScore < 0.0) bpmScore = 0.0;
-            bpmScore *= bpmContribution * 100.0;
-
-            score.setValue(bpmScore + score.toDouble());
-        }
-    }
-
-    double timbreContribution = m_similarityContributions.value("timbre");
-    double rhythmContribution = m_similarityContributions.value("rhythm");
-
-    if (timbreContribution > 0.0 || rhythmContribution > 0.0) {
-        TrackPointer otherTrack = getTrack(index);
-        TimbrePointer pTimbre = otherTrack->getTimbre();
-        if (!m_pSeedTrackTimbre.isNull() && !pTimbre.isNull()) {
-            double timbreScore =
-                    1 - TimbreUtils::hellingerDistance(m_pSeedTrackTimbre,
-                                                       pTimbre);
-            double rhythmScore =
-                    1 - TimbreUtils::modelDistanceBeats(m_pSeedTrackTimbre,
-                                                        pTimbre);
-
-//            qDebug() << m_sSeedTrackInfo << "x"
-//                     << otherTrack->getInfo() << timbreScore;
-            timbreScore *= timbreContribution;
-            rhythmScore *= rhythmContribution;
-            score.setValue(timbreScore + rhythmScore + score.toDouble());
-        }
-    }
-
-    double lastFmContribution = m_similarityContributions.value("lastfm");
-    if (lastFmContribution > 0.0) {
-        TrackPointer otherTrack = getTrack(index);
-        TagCounts otherTags = otherTrack->getTags();
-        if (!m_seedTrackTags.isEmpty() && !otherTags.isEmpty()) {
-            double tagsScore =
-                TagUtils::overlapSimilarity(m_seedTrackTags, otherTags);
-            tagsScore *= lastFmContribution;
-            score.setValue(tagsScore + score.toDouble());
-        }
-    }
-
-    return score;
 }
 
 void SelectorLibraryTableModel::updateFilterText() {

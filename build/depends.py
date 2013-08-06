@@ -631,6 +631,7 @@ class MixxxCore(Feature):
 
                    "library/selector/selectorfeature.cpp",
                    "library/selector/selectorlibrarytablemodel.cpp",
+                   "library/selector/selectorsimilarity.cpp",
 
                    # External Library Features
                    "library/baseexternallibraryfeature.cpp",

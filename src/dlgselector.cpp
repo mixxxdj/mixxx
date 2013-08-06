@@ -199,8 +199,6 @@ void DlgSelector::setDefaults() {
     bool bFilterKeyRelative = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE)).toInt());
 
-    m_pSelectorLibraryTableModel->loadStoredSimilarityContributions();
-
     checkBoxGenre->setChecked(bFilterGenre);
     checkBoxBpm->setChecked(bFilterBpm);
     horizontalSliderBpmRange->setValue(iFilterBpmRange);

@@ -717,7 +717,8 @@ HEADERS += osx64_build/build.h \
            src/mixxxutils.cpp \
            plugins/soundsourcem4a/m4a/mp4-mixxx.cpp \
            vamp-plugins/dsp/CQprecalc.cpp \
-           lib/vamp-2.3/src/vamp-sdk/RealTime.cpp
+           lib/vamp-2.3/src/vamp-sdk/RealTime.cpp \
+    src/library/selector/selectorsimilarity.h
 FORMS += src/dlgaboutdlg.ui \
          src/dlganalysis.ui \
          src/dlgautodj.ui \
@@ -1294,7 +1295,8 @@ SOURCES += res/qrc_mixxx.cc \
            lib/vamp-2.3/src/vamp-sdk/PluginAdapter.cpp \
            lib/vamp-2.3/src/vamp-sdk/RealTime.cpp \
            lib/gtest-1.5.0/xcode/Samples/FrameworkSample/widget.cc \
-           lib/gtest-1.5.0/xcode/Samples/FrameworkSample/widget_test.cc
+           lib/gtest-1.5.0/xcode/Samples/FrameworkSample/widget_test.cc \
+    src/library/selector/selectorsimilarity.cpp
 RESOURCES += res/mixxx.qrc
 TRANSLATIONS += res/translations/mixxx.ts \
                 res/translations/mixxx_ar.ts \
@@ -1354,3 +1356,6 @@ TRANSLATIONS += res/translations/mixxx.ts \
                 res/translations/mixxx_uz.ts \
                 res/translations/mixxx_zh_CN.ts \
                 res/translations/mixxx_zh_TW.ts
+
+OTHER_FILES += \
+    build/depends.py

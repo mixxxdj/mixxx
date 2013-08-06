@@ -8,7 +8,7 @@ using mixxx::track::io::timbre::TimbreModel;
 using mixxx::track::io::timbre::BeatSpectrum;
 
 double TimbreUtils::klDivergence(TimbrePointer pTimbre,
-                                  TimbrePointer pTimbre2) {
+                                 TimbrePointer pTimbre2) {
     return modelDistance(pTimbre, pTimbre2, distanceKL);
 }
 
@@ -18,7 +18,7 @@ double TimbreUtils::symmetricKlDivergence(TimbrePointer pTimbre,
 }
 
 double TimbreUtils::hellingerDistance(TimbrePointer pTimbre,
-                                  TimbrePointer pTimbre2) {
+                                      TimbrePointer pTimbre2) {
     return modelDistance(pTimbre, pTimbre2, distanceHellinger);
 }
 
