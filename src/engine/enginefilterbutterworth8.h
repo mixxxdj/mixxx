@@ -5,7 +5,7 @@
 
 class EngineFilterButterworth8 : public EngineObject
 {
-public:
+  public:
     EngineFilterButterworth8(int sampleRate);
 	~EngineFilterButterworth8();
 
@@ -15,7 +15,7 @@ public:
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *ppOut,
             const int iBufferSize) = 0;
 
-protected:
+  protected:
 
     int m_sampleRate;
 
@@ -33,7 +33,7 @@ protected:
 // Low Butterworth filter
 class EngineFilterButterworth8Low : public EngineFilterButterworth8
 {
-public:
+  public:
     EngineFilterButterworth8Low(int sampleRate, double freqCorner1);
     void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
     void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
@@ -42,7 +42,7 @@ public:
 // Bandpass Butterworth filter
 class EngineFilterButterworth8Band : public EngineFilterButterworth8
 {
-public:
+  public:
     EngineFilterButterworth8Band(int sampleRate, double freqCorner1,
                                      double freqCorner2);
     void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
@@ -52,7 +52,7 @@ public:
 // High Butterworth filter
 class EngineFilterButterworth8High : public EngineFilterButterworth8
 {
-public:
+  public:
     EngineFilterButterworth8High(int sampleRate, double freqCorner1);
     void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
     void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
