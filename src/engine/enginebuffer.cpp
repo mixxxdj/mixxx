@@ -108,8 +108,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_playButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlPlay(double)),
+    m_playButton->connectValueChangeRequest(
+            this, SLOT(slotControlPlayRequest(double)),
             Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
@@ -481,14 +481,15 @@ void EngineBuffer::slotControlSeekAbs(double abs)
     slotControlSeek(abs / m_file_length_old);
 }
 
-void EngineBuffer::slotControlPlay(double v)
+void EngineBuffer::slotControlPlayRequest(double v)
 {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
-        m_playButton->set(0.0f);
+        return;
     }
+    m_playButton->setAndConfirm(v);
 }
 
 void EngineBuffer::slotControlStart(double v)

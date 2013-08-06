@@ -28,7 +28,8 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
           m_trackKey("control " + m_key.group + "," + m_key.item),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_confirmRequired(false) {
     initialize();
 }
 
