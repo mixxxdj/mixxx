@@ -137,13 +137,10 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
 
     float *l_fNormalizedSamples = (float *)malloc(size * sizeof(float));
 
-    // For FFMPEG/LIBAV <= 1.0/0.8.5 needed thing to make this not to clip..
-    //
-    // Don't know why but input is too high..
-    // Thats why we divide by 10000
-    //
+    // Because of normalization to SHORT_MAX = 0x7FFF we have to make this not to clip!
+    // Comments also: https://bugs.launchpad.net/mixxx/+bug/1204039
     for(j = 0; j < size; j ++) {
-        l_fNormalizedSamples[j] = samples[j] / 10000;
+        l_fNormalizedSamples[j] = samples[j] / 0x7FFF;
     }
 
     //CSAMPLE *l_pSampleLocation = (CSAMPLE *)samples;
