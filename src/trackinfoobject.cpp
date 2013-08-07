@@ -195,7 +195,7 @@ int TrackInfoObject::parse()
     parseFilename();
 
     // Parse the using information stored in the sound file
-    bool result = SoundSourceProxy::ParseHeader(this);
+    int result = SoundSourceProxy::ParseHeader(this);
     m_bIsValid = result == OK;
     return result;
 }
@@ -829,17 +829,6 @@ void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
     setDirty(true);
     lock.unlock();
     emit(cuesUpdated());
-}
-
-const Segmentation<QString>* TrackInfoObject::getChordData() {
-    QMutexLocker lock(&m_qMutex);
-    return &m_chordData;
-}
-
-void TrackInfoObject::setChordData(Segmentation<QString> cd) {
-    QMutexLocker lock(&m_qMutex);
-    m_chordData = cd;
-    setDirty(true);
 }
 
 void TrackInfoObject::setDirty(bool bDirty) {

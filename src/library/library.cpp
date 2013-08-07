@@ -17,7 +17,6 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
-#include "library/preparefeature.h"
 #ifdef __PROMO__
 #include "library/promotracksfeature.h"
 #endif
@@ -67,8 +66,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
-    m_pPrepareFeature = new PrepareFeature(this, pConfig, m_pTrackCollection);
-    addFeature(m_pPrepareFeature);
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+    connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
+    connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<int>)),
+            m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
+    addFeature(m_pAnalysisFeature);
     //iTunes and Rhythmbox should be last until we no longer have an obnoxious
     //messagebox popup when you select them. (This forces you to reach for your
     //mouse or keyboard if you're using MIDI control and you scroll through them...)
@@ -219,7 +222,7 @@ void Library::slotRestoreSearch(const QString& text) {
 
 void Library::slotRefreshLibraryModels() {
    m_pMixxxLibraryFeature->refreshLibraryModels();
-   m_pPrepareFeature->refreshLibraryModels();
+   m_pAnalysisFeature->refreshLibraryModels();
 }
 
 void Library::slotCreatePlaylist() {

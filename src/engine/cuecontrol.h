@@ -86,7 +86,7 @@ class CueControl : public EngineControl {
                ConfigObject<ConfigValue> * _config);
     virtual ~CueControl();
 
-    virtual void hintReader(QList<Hint>& hintList);
+    virtual void hintReader(QVector<Hint>* pHintList);
 
   public slots:
     void trackLoaded(TrackPointer pTrack);

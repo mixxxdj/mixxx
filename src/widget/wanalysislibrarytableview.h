@@ -1,5 +1,5 @@
-#ifndef WPREPARELIBRARYTABLEVIEW_H
-#define WPREPARELIBRARYTABLEVIEW_H
+#ifndef WANALYSISLIBRARYTABLEVIEW_H
+#define WANALYSISLIBRARYTABLEVIEW_H
 
 #include <QWidget>
 
@@ -8,12 +8,12 @@
 
 class TrackCollection;
 
-class WPrepareLibraryTableView : public WTrackTableView
+class WAnalysisLibraryTableView : public WTrackTableView
 {
     public:
-        WPrepareLibraryTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
+        WAnalysisLibraryTableView(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                                  TrackCollection* pTrackCollection);
-        ~WPrepareLibraryTableView();
+        ~WAnalysisLibraryTableView();
 
         virtual void onSearchStarting();
         virtual void onSearchCleared();

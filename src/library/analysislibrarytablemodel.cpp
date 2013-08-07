@@ -1,11 +1,11 @@
 #include <QObject>
 
-#include "preparelibrarytablemodel.h"
+#include "analysislibrarytablemodel.h"
 #include "library/trackcollection.h"
 
 const QString RECENT_FILTER = "datetime_added > datetime('now', '-7 days')";
 
-PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
+AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
                                                    TrackCollection* pTrackCollection)
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.prepare") {
@@ -15,16 +15,16 @@ PrepareLibraryTableModel::PrepareLibraryTableModel(QObject* parent,
 }
 
 
-PrepareLibraryTableModel::~PrepareLibraryTableModel() {
+AnalysisLibraryTableModel::~AnalysisLibraryTableModel() {
 }
 
 
-void PrepareLibraryTableModel::showRecentSongs() {
+void AnalysisLibraryTableModel::showRecentSongs() {
    m_bShowRecentSongs = true;
    search(currentSearch());
 }
 
-void PrepareLibraryTableModel::showAllSongs() {
+void AnalysisLibraryTableModel::showAllSongs() {
     m_bShowRecentSongs = false;
     search(currentSearch());
 }

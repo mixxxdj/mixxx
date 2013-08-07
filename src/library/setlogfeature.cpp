@@ -138,8 +138,9 @@ void SetlogFeature::buildPlaylistList() {
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
     }
-    int nameColumn = playlistTableModel.record().indexOf("name");
-    int idColumn = playlistTableModel.record().indexOf("id");
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int idColumn = record.indexOf("id");
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id = playlistTableModel.data(

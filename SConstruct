@@ -55,11 +55,11 @@ available_features = [features.HifiEq,
                       features.MSVSHacks,
                       features.Vamp,
                       features.PromoTracks,
+                      features.AutoDjCrates,
 
                       # "Features" of dubious quality
                       features.PerfTools,
                       features.AsmLib,
-                      features.Tonal,
                       features.IPod,
                       features.FFMPEG,
                       ]

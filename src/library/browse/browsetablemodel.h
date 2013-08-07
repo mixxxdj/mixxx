@@ -5,7 +5,6 @@
 #include <QMimeData>
 
 #include "library/trackmodel.h"
-#include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
 #include "recording/recordingmanager.h"
 

@@ -42,21 +42,16 @@ PlayerInfo &PlayerInfo::Instance() {
 
 TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
     QMutexLocker locker(&m_mutex);
-
-    if (m_loadedTrackMap.contains(group)) {
-        return m_loadedTrackMap[group];
-    }
-
-    return TrackPointer();
+    return m_loadedTrackMap.value(group);
 }
 
 void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
     QMutexLocker locker(&m_mutex);
-    TrackPointer pOld = m_loadedTrackMap[group];
+    TrackPointer pOld = m_loadedTrackMap.value(group);
     if (pOld) {
         emit(trackUnloaded(group, pOld));
     }
-    m_loadedTrackMap[group] = track;
+    m_loadedTrackMap.insert(group, track);
     emit(trackLoaded(group, track));
 }
 
@@ -66,6 +61,24 @@ bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
     while (it.hasNext()) {
         it.next();
         if (it.value() == pTrack) {
+            return true;
+        }
+    }
+    return false;
+}
+
+QMap<QString, TrackPointer> PlayerInfo::getLoadedTracks() {
+    QMutexLocker locker(&m_mutex);
+    QMap<QString, TrackPointer> ret = m_loadedTrackMap;
+    return ret;
+}
+
+bool PlayerInfo::isFileLoaded(const QString& track_location) const {
+    QMutexLocker locker(&m_mutex);
+    QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
+    while (it.hasNext()) {
+        it.next();
+        if (it.value()->getLocation() == track_location) {
             return true;
         }
     }

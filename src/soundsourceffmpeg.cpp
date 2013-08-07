@@ -279,7 +279,6 @@ long SoundSourceFFmpeg::seek(long filepos) {
 
     avcodec_flush_buffers(m_pCodecCtx);
 
-
     if (ret) {
         qDebug() << "ffmpeg: Seek ERROR ret(" << ret << ") filepos(" << filepos << "d).";
         return 0;

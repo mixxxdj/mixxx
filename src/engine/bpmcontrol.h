@@ -38,12 +38,8 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslate(double);
 
   private:
-    EngineBuffer* pickSyncTarget();
     bool syncTempo(EngineBuffer* pOtherEngineBuffer);
     bool syncPhase(EngineBuffer* pOtherEngineBuffer);
-
-    // ControlObjects that come from PlayerManager
-    ControlObject* m_pNumDecks;
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;

@@ -77,6 +77,14 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
             this, SLOT(skipNextButton(bool)));
 
+#ifdef __AUTODJCRATES__
+    connect(pushButtonAddRandom, SIGNAL(clicked(bool)),
+            this, SIGNAL(addRandomButton(bool)));
+#else // __AUTODJCRATES__
+    pushButtonAddRandom->setVisible(false);
+    horizontalLayout->removeWidget(pushButtonAddRandom);
+#endif // __AUTODJCRATES__
+
     m_pCOFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
     m_pCOTFadeNow = new ControlObjectThreadMain(m_pCOFadeNow->getKey());
@@ -665,4 +673,10 @@ void DlgAutoDJ::transitionValueChanged(int value) {
     m_pConfig->set(ConfigKey(CONFIG_KEY, kTransitionPreferenceName),
                    ConfigValue(value));
     m_backUpTransition = value;
+}
+
+void DlgAutoDJ::enableRandomButton(bool enabled) {
+#ifdef __AUTODJCRATES__
+    pushButtonAddRandom->setEnabled(enabled);
+#endif // __AUTODJCRATES__
 }
