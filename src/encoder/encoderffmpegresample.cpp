@@ -16,12 +16,6 @@
  *                                                                         *
  ***************************************************************************/
 
-/*
-   FFMPEG encoder class..
-     - Supports what FFMPEG is compiled to supported
-     - Same interface for all codecs
-*/
-
 #include "encoder/encoderffmpegresample.h"
 
 EncoderFfmpegResample::EncoderFfmpegResample(AVCodecContext *codecCtx) {

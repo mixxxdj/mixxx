@@ -16,17 +16,17 @@
  *                                                                         *
  ***************************************************************************/
 
-/*
-   FFMPEG encoder class..
-     - Supports what FFMPEG is compiled to supported
-     - Same interface for all codecs
-*/
+//
+//   FFMPEG encoder class..
+//     - Supports what FFMPEG is compiled to supported
+//     - Same interface for all codecs
+//
 
 #include "encoder/encoderffmpegcore.h"
 
-#include <stdlib.h> // needed for random num gen
-#include <time.h> // needed for random num gen
-#include <string.h> // needed for memcpy
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
 #include <QDebug>
 
 #include "encoder/encodercallback.h"
@@ -115,10 +115,10 @@ unsigned int EncoderFfmpegCore::reSample(AVFrame *inframe) {
 void EncoderFfmpegCore::flush() {
 }
 
-/*
-  Get new random serial number
-  -> returns random number
-*/
+
+//  Get new random serial number
+//  -> returns random number
+
 int EncoderFfmpegCore::getSerial() {
     int l_iSerial = 0;
     return l_iSerial;
@@ -213,11 +213,11 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     free(l_fNormalizedSamples);
 }
 
-/* Originally called from engineshoutcast.cpp to update metadata information
- * when streaming, however, this causes pops
- *
- * Currently this method is used before init() once to save artist, title and album
-*/
+// Originally called from engineshoutcast.cpp to update metadata information
+// when streaming, however, this causes pops
+//
+// Currently this method is used before init() once to save artist, title and album
+//
 void EncoderFfmpegCore::updateMetaData(char* artist, char* title, char* album) {
     qDebug() << "ffmpegecodercore: UpdateMetadata: !" << artist << " - " << title << " - " << album;
     m_strMetaDataTitle = title;
@@ -432,7 +432,7 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
 
     qDebug() << "openCodec!";
 
-    /* open it */
+    // open it
     l_iRet = avcodec_open2(l_SCodecCtx, codec, NULL);
     if (l_iRet < 0) {
         qDebug() << "Could not open audio codec!";
@@ -466,7 +466,7 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
 
 }
 
-/* Add an output stream. */
+// Add an output stream.
 #ifndef __FFMPEGOLDAPI__
 AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **codec, enum AVCodecID codec_id) {
 #else
@@ -475,7 +475,7 @@ AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **cod
     AVCodecContext *l_SCodecCtx = NULL;
     AVStream *l_SStream = NULL;
 
-    /* find the encoder */
+    // find the encoder
     *codec = avcodec_find_encoder(codec_id);
     if (!(*codec)) {
 #ifdef avcodec_get_name
@@ -512,7 +512,7 @@ AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **cod
     }
 
 
-    /* Some formats want stream headers to be separate. */
+    // Some formats want stream headers to be separate.
     if (formatctx->oformat->flags & AVFMT_GLOBALHEADER)
         l_SCodecCtx->flags |= CODEC_FLAG_GLOBAL_HEADER;
 

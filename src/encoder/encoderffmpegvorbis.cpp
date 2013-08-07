@@ -16,12 +16,6 @@
  *                                                                         *
  ***************************************************************************/
 
-/*
-   FFMPEG encoder class..
-     - Supports what FFMPEG is compiled to supported
-     - Same interface for all codecs
-*/
-
 #include "encoder/encoderffmpegvorbis.h"
 
 // Constructor

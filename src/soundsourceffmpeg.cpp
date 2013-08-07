@@ -124,16 +124,16 @@ int SoundSourceFFmpeg::open() {
 
     m_iOffset = 0;
 #ifdef __WINDOWS__
-    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
-     * If you try this conversion, f.isValid() will return false in many cases
-     * and processTaglibFile() will fail
-     *
-     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
-     * The returned byte array is undefined if the string contains characters not supported
-     * by the local 8-bit encoding.
-     *
-     * See https://ffmpeg.org/trac/ffmpeg/ticket/819 for relevant bug report.
-     */
+    // From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+    // If you try this conversion, f.isValid() will return false in many cases
+    // and processTaglibFile() will fail
+    //
+    // The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+    // The returned byte array is undefined if the string contains characters not supported
+    // by the local 8-bit encoding.
+    //
+    // See https://ffmpeg.org/trac/ffmpeg/ticket/819 for relevant bug report.
+    //
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 #else
     QByteArray qBAFilename = m_qFilename.toUtf8();
@@ -221,8 +221,6 @@ int SoundSourceFFmpeg::open() {
     return OK;
 }
 
-/* PLAYGROUND */
-
 // This make all the magic in seeking with FFMPEG
 long SoundSourceFFmpeg::seek(long filepos) {
     int ret = 0;
@@ -295,10 +293,10 @@ long SoundSourceFFmpeg::seek(long filepos) {
     return filepos;
 }
 
-/*
-   read <size> samples into <destination>, and return the number of
-   samples actually read.
- */
+//
+//   read <size> samples into <destination>, and return the number of
+//   samples actually read.
+//
 unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destination) {
     // Is this really needed?
     //Q_ASSERT(size%2==0);
@@ -495,25 +493,25 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
 
 }
 
-/*
-   Parse the the file to get metadata
-
-   TODO: Support all possible tags :) (Is it even possible?)
- */
+//
+//   Parse the the file to get metadata
+//
+//   TODO: Support all possible tags :) (Is it even possible?)
+//
 
 int SoundSourceFFmpeg::parseHeader() {
     qDebug() << "ffmpeg: SoundSourceFFmpeg::parseHeader" << m_qFilename;
 #ifdef __WINDOWS__
-    /* From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
-     * If you try this conversion, f.isValid() will return false in many cases
-     * and processTaglibFile() will fail
-     *
-     * The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
-     * The returned byte array is undefined if the string contains characters not supported
-     * by the local 8-bit encoding.
-     *
-     * See https://ffmpeg.org/trac/ffmpeg/ticket/819 for relevant bug report.
-     */
+    // From Tobias: A Utf-8 string did not work on my Windows XP (German edition)
+    // If you try this conversion, f.isValid() will return false in many cases
+    // and processTaglibFile() will fail
+    //
+    // The method toLocal8Bit() returns the local 8-bit representation of the string as a QByteArray.
+    // The returned byte array is undefined if the string contains characters not supported
+    // by the local 8-bit encoding.
+    //
+    // See https://ffmpeg.org/trac/ffmpeg/ticket/819 for relevant bug report.
+    //
     QByteArray qBAFilename = m_qFilename.toLocal8Bit();
 #else
     QByteArray qBAFilename = m_qFilename.toUtf8();
@@ -616,9 +614,9 @@ int SoundSourceFFmpeg::parseHeader() {
     return OK;
 }
 
-/*
-   Return the length of the file in samples.
- */
+//
+//   Return the length of the file in samples.
+//
 inline long unsigned SoundSourceFFmpeg::length() {
     return filelength;
 }
