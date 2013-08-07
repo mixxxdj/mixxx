@@ -152,6 +152,9 @@ EngineFilterButterworth8Low::EngineFilterButterworth8Low(int sampleRate,
     setFrequencyCorners(freqCorner1);
 }
 
+// TODO(XXX) We need to do ramping in the next process() call
+// if one or both corners are changed
+// https://bugs.launchpad.net/mixxx/+bug/1209294
 void EngineFilterButterworth8Low::setFrequencyCorners(double freqCorner1,
         double freqCorner2) {
     m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "LpBu8", m_sampleRate,
