@@ -54,8 +54,8 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
             score += bpmScore;
         }
 
-        double timbreContribution = m_similarityContributions.value("timbre");
-        double rhythmContribution = m_similarityContributions.value("rhythm");
+        double timbreContribution = contributions.value("timbre");
+        double rhythmContribution = contributions.value("rhythm");
 
         if (timbreContribution > 0.0 || rhythmContribution > 0.0) {
             TimbrePointer pTimbre = pTrack->getTimbre();
