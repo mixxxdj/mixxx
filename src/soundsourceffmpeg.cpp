@@ -61,12 +61,12 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
-    if( m_pCodecCtx != NULL ) {
+    if(m_pCodecCtx != NULL) {
         avcodec_close(m_pCodecCtx);
         avformat_close_input(&m_pFormatCtx);
     }
 
-    if( m_pResample != NULL ) {
+    if(m_pResample != NULL) {
         delete m_pResample;
     }
 
@@ -92,7 +92,7 @@ int64_t SoundSourceFFmpeg::ffmpeg2mixxx(int64_t pos, const AVRational &time_base
     l_lReturnValue = round(((double)pos / (double)time_base.den * (double)this->getSampleRate() * (double)2.));
     // qDebug() << "Streolab: " << pos << "/" << time_base.den << " * " << this->getSampleRate() << " * "<< 2;
 
-    if( (l_lReturnValue % 4) != 0 ) {
+    if((l_lReturnValue % 4) != 0) {
         l_iAddvalue = 4 - (l_lReturnValue % 4);
         l_lReturnValue += l_iAddvalue;
     }
@@ -109,7 +109,7 @@ int64_t SoundSourceFFmpeg::mixxx2ffmpeg(int64_t pos, const AVRational &time_base
     // If round is not here calculation of 1,9 will retun 1 not 2 (like it should).
     lReturnValue = round(((double)pos / (double)this->getSampleRate() / (double)2. * (double)time_base.den));
 
-    if( this->getType().compare("wma") < 0 ) {
+    if(this->getType().compare("wma") < 0) {
         return lReturnValue + (lReturnValue % 2);
     } else {
         return lReturnValue;
@@ -191,11 +191,11 @@ int SoundSourceFFmpeg::open() {
     }
     unlock();
 
-    m_pResample = new EncoderFfmpegResample( m_pCodecCtx );
-    m_pResample->open( m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_S16 );
+    m_pResample = new EncoderFfmpegResample(m_pCodecCtx);
+    m_pResample->open(m_pCodecCtx->sample_fmt, AV_SAMPLE_FMT_S16);
 
-    this->setChannels( m_pCodecCtx->channels );
-    this->setSampleRate( m_pCodecCtx->sample_rate );
+    this->setChannels(m_pCodecCtx->channels);
+    this->setSampleRate(m_pCodecCtx->sample_rate);
 
     // qDebug() << "ffmpeg: Samplerate: " << this->getSampleRate() << ", Channels: " << this->getChannels() << "\n";
     if(this->getChannels() > 2) {
@@ -206,13 +206,13 @@ int SoundSourceFFmpeg::open() {
 
     // qDebug() << "ffmpeg: filelength: " << filelength << "d -|- duration: " << m_pFormatCtx->duration << "ld -- starttime: " << m_pFormatCtx->streams[audioStream]->start_time << "ld -- " << AV_TIME_BASE << " " << m_pFormatCtx->streams[audioStream]->codec_info_duration << "ld";
 
-    if( this->getType().compare("mp3") == 0 ) {
+    if(this->getType().compare("mp3") == 0) {
         m_pCodecCtx->frame_size = FFMPEG_MP3_FRAME_SIZE;
-    } else if ( this->getType().compare("mp4") == 0  || this->getType().compare("m4a") ) {
+    } else if (this->getType().compare("mp4") == 0  || this->getType().compare("m4a")) {
         m_pCodecCtx->frame_size = FFMPEG_MP4_FRAME_SIZE;
-    } else if ( this->getType().compare("ogg") == 0 ) {
+    } else if (this->getType().compare("ogg") == 0) {
         m_pCodecCtx->frame_size = FFMPEG_OGG_FRAME_SIZE;
-    } else if ( this->getType().compare("opus") == 0 ) {
+    } else if (this->getType().compare("opus") == 0) {
         m_pCodecCtx->frame_size = FFMPEG_OPUS_FRAME_SIZE;
     } else {
         m_pCodecCtx->frame_size = FFMPEG_MP3_FRAME_SIZE;
@@ -236,7 +236,7 @@ long SoundSourceFFmpeg::seek(long filepos) {
     // This is what is most of the times wanted
     // Jumping around is not.. so we have stuff
     // In cache play there and just go go go..
-    if( m_iNextMixxxPCMPoint == filepos && filepos != 0) {
+    if(m_iNextMixxxPCMPoint == filepos && filepos != 0) {
         return filepos;
     }
 
@@ -248,7 +248,7 @@ long SoundSourceFFmpeg::seek(long filepos) {
     // Anything that we need there..
     m_strBuffer.clear();
 
-    if( filepos >=  (m_pCodecCtx->frame_size * 4)) {
+    if(filepos >=  (m_pCodecCtx->frame_size * 4)) {
         // Calculate position on 4608 based.. MP3 will be happy..
         minus = ((double)filepos) / (m_pCodecCtx->frame_size * 2);
 
@@ -269,12 +269,12 @@ long SoundSourceFFmpeg::seek(long filepos) {
 
     m_iOffset = 0;
 
-    ret = avformat_seek_file    ( m_pFormatCtx,
-                                  m_iAudioStream,
-                                  0,
-                                  fspos,
-                                  fspos,
-                                  AVSEEK_FLAG_BACKWARD);
+    ret = avformat_seek_file    (m_pFormatCtx,
+                                 m_iAudioStream,
+                                 0,
+                                 fspos,
+                                 fspos,
+                                 AVSEEK_FLAG_BACKWARD);
 
 
     avcodec_flush_buffers(m_pCodecCtx);
@@ -286,7 +286,7 @@ long SoundSourceFFmpeg::seek(long filepos) {
 
     m_iOffset = ffmpeg2mixxx(fspos - m_pFormatCtx->streams[m_iAudioStream]->cur_dts, time_base);
 
-    if( m_iOffset ) {
+    if(m_iOffset) {
         qDebug() << "ffmpeg: Offset: " << m_iOffset << " calcpos/real: "<< fspos << "/" << m_pFormatCtx->streams[m_iAudioStream]->cur_dts << " DTS (MIXXX) "<< ffmpeg2mixxx(m_pFormatCtx->streams[m_iAudioStream]->cur_dts, time_base) << " MIXXX (real): " << filepos;
     }
 
@@ -332,7 +332,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
 
     // Just make sure everything is zeroed before use
     // Needless but..
-    memset( pRead, 0x00, copysize );
+    memset(pRead, 0x00, copysize);
 
     readByteArray.clear();
 
@@ -340,7 +340,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
 
     // If we don't seek like we don't on analyzer.. keep
     // place in mind..
-    if( m_bIsSeeked == FALSE ) {
+    if(m_bIsSeeked == FALSE) {
         m_iCurrentMixxTs += size;
     }
 
@@ -351,7 +351,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
     // This is the next assumed point if don't seek anywhere
     m_iNextMixxxPCMPoint += size;
 
-    if( m_strBuffer.size() != 0 ) {
+    if(m_strBuffer.size() != 0) {
         readBuffer.write(m_strBuffer.data(), m_strBuffer.size());
         m_strBuffer.clear();
         // So we buffered this amount of bytes from last time
@@ -368,7 +368,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
     while (currentFFMPEGPosSec < toMixxPosSec) {
         readBytes = 0;
 
-        if( av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
+        if(av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
             if(l_SPacket.stream_index==m_iAudioStream) {
                 ret = avcodec_decode_audio4(m_pCodecCtx,l_pFrame,&frameFinished,&l_SPacket);
 
@@ -380,13 +380,13 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
 
                 //frame->
                 if(frameFinished) {
-                    m_pResample->reSample( l_pFrame );
+                    m_pResample->reSample(l_pFrame);
                     readBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
                                                            l_pFrame->nb_samples,
                                                            m_pCodecCtx->sample_fmt, 1);
 
                     // Skip pre-gap..
-                    //if( packet.pts == 0 &&  (readBytes / 2) < 100){
+                    //if(packet.pts == 0 &&  (readBytes / 2) < 100) {
                     //  continue;
                     //}
 
@@ -397,22 +397,22 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
                     //currentReadedTime = ((double)(readBytes / 2)) / (44100 * 2);
 
                     // THIS SHOULD HAPPEN EVER! JUST IN CASE IT DOES..
-                    //if( (currentFFMPEGPosByte % 4) == 3 )
+                    //if((currentFFMPEGPosByte % 4) == 3)
                     //{
                     //    currentFFMPEGPosByte ++;
                     //    qDebug() << "ffmpeg: We messed our byte place really hard!";
                     //}
 
-                    //if( (mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) - packet.pts) != 0 ){
+                    //if((mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) - packet.pts) != 0) {
                     // qDebug() << "**** P PTS/DTS (" << l_SPacket.pts<< "/" << l_SPacket.dts << ") C PTS: (" << mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) << ") C: " << mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) << " - " << mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) - l_SPacket.pts << " R/S/N: " << readBytes << "/" << readByteArray.size() << "/" << needed << " CUR S/B:" << currentFFMPEGPosSec << "/" << currentFFMPEGPosByte;
                     //}
 
                     // Now we really really know where we are.. so
                     // Calculate diffrence in stream (Ogg Vorbis.. CBR works without)
-                    if( isFirstPacket == TRUE && m_bIsSeeked == TRUE && l_SPacket.pts >= 0 ) {
+                    if(isFirstPacket == TRUE && m_bIsSeeked == TRUE && l_SPacket.pts >= 0) {
 
 
-                        if( m_iCurrentMixxTs > currentFFMPEGPosByte ) {
+                        if(m_iCurrentMixxTs > currentFFMPEGPosByte) {
                             m_iOffset = m_iCurrentMixxTs - currentFFMPEGPosByte;
                         }
 
@@ -424,7 +424,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
                         //qDebug() << "OFFSET: " << m_iOffset;
 
 
-                        if( mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) - l_SPacket.pts != 0 ) {
+                        if(mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) - l_SPacket.pts != 0) {
                             qDebug() << "Diff sec: " << fromMixxPosSec - currentFFMPEGPosSec << " diff B: " << m_iCurrentMixxTs - currentFFMPEGPosByte;
                             qDebug() << "**** Packet PTS/DTS" << l_SPacket.pts<< "/" << l_SPacket.dts << " Time: " << currentFFMPEGPosSec << "/" << currentFFMPEGPosByte << " count: " << mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) << " - " << mixxx2ffmpeg(currentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base) - l_SPacket.pts;
                         }
@@ -462,7 +462,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
         }
 
 
-        if( (unsigned) readByteArray.size() > (size * 2) ) {
+        if((unsigned) readByteArray.size() > (size * 2)) {
             // qDebug() << "ffmpeg: Got too much!" << readByteArray.size() << "NEEDED: " << (size * 2);
             break;
             // needed = 0;
@@ -478,8 +478,8 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
 
     m_strBuffer.clear();
 
-    if( (m_iOffset + copysize) < (unsigned) readByteArray.size() ) {
-        m_strBuffer = readByteArray.right( readByteArray.size() - (m_iOffset + copysize) );
+    if((m_iOffset + copysize) < (unsigned) readByteArray.size()) {
+        m_strBuffer = readByteArray.right(readByteArray.size() - (m_iOffset + copysize));
     }
 
     m_iOffset = 0;
@@ -525,7 +525,7 @@ int SoundSourceFFmpeg::parseHeader() {
     unsigned int i;
 
     //qDebug() << "ffmpeg: parsing file:" << qBAFilename.constData();
-    if(avformat_open_input(&FmtCtx, qBAFilename.constData(), NULL, NULL) !=0 ) {
+    if(avformat_open_input(&FmtCtx, qBAFilename.constData(), NULL, NULL) !=0) {
         qDebug() << "av_open_input_file: cannot open" << qBAFilename.constData();
         return ERR;
     }
@@ -552,19 +552,19 @@ int SoundSourceFFmpeg::parseHeader() {
     while ((FmtTag = av_dict_get(FmtCtx->metadata, "", FmtTag, AV_DICT_IGNORE_SUFFIX))) {
         QString strValue (QString::fromUtf8 (FmtTag->value));
 
-        if( !strncmp( FmtTag->key, "artist", 7) ) {
+        if(!strncmp(FmtTag->key, "artist", 7)) {
             //qDebug() << "ffmpeg: HEADER [MP3,WMA] artist: " << FmtTag->key << " = "<< strValue;
             this->setArtist(strValue);
-        } else if( !strncmp( FmtTag->key, "album", 5) ) {
+        } else if(!strncmp(FmtTag->key, "album", 5)) {
             //qDebug() << "ffmpeg: HEADER [MP3,WMA] album: " << FmtTag->key << " = "<< strValue;
             this->setAlbum(strValue);
-        } else if( !strncmp( FmtTag->key, "date", 4) ) {
+        } else if(!strncmp(FmtTag->key, "date", 4)) {
             //qDebug() << "ffmpeg: HEADER [MP3,WMA] date: " << FmtTag->key << " = "<< strValue;
             this->setYear(strValue);
-        } else if( !strncmp( FmtTag->key, "genre", 5) ) {
+        } else if(!strncmp(FmtTag->key, "genre", 5)) {
             //qDebug() << "ffmpeg: HEADER [MP3,WMA] genre: " << FmtTag->key << " = "<< strValue;
             this->setGenre(strValue);
-        } else if( !strncmp( FmtTag->key, "title", 5) ) {
+        } else if(!strncmp(FmtTag->key, "title", 5)) {
             //qDebug() << "ffmpeg: HEADER [MP3,WMA] genre: " << FmtTag->key << " = "<< strValue;
             this->setTitle(strValue);
         }
@@ -578,29 +578,29 @@ int SoundSourceFFmpeg::parseHeader() {
         // Convert the value from UTF-8.
         QString strValue (QString::fromUtf8 (FmtTag->value));
 
-        if( !strncmp( FmtTag->key, "ARTIST", 7) ) {
+        if(!strncmp(FmtTag->key, "ARTIST", 7)) {
             //qDebug() << "ffmpeg: HEADER [OGG] artist: " << FmtTag->key << " = "<< strValue;
             this->setArtist(strValue);
-        } else if( !strncmp( FmtTag->key, "ALBUM", 5) ) {
+        } else if(!strncmp(FmtTag->key, "ALBUM", 5)) {
             //qDebug() << "ffmpeg: HEADER [OGG] album: " << FmtTag->key << " = "<< strValue;
             this->setAlbum(strValue);
-        } else if( !strncmp( FmtTag->key, "YEAR", 4) ) {
+        } else if(!strncmp(FmtTag->key, "YEAR", 4)) {
             //qDebug() << "ffmpeg: HEADER [OGG] year: " << FmtTag->key << " = "<< strValue;
             this->setYear(strValue);
-        } else if( !strncmp( FmtTag->key, "GENRE", 5) ) {
+        } else if(!strncmp(FmtTag->key, "GENRE", 5)) {
             //qDebug() << "ffmpeg: HEADER [OGG] genre: " << FmtTag->key << " = "<< strValue;
             this->setGenre(strValue);
-        } else if( !strncmp( FmtTag->key, "TITLE", 5) ) {
+        } else if(!strncmp(FmtTag->key, "TITLE", 5)) {
             //qDebug() << "ffmpeg: HEADER [OGG] title: " << FmtTag->key << " = "<< strValue;
             this->setTitle(strValue);
-        } else if( !strncmp( FmtTag->key, "REPLAYGAIN_TRACK_PEAK", 20) ) {
+        } else if(!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_PEAK", 20)) {
             //qDebug() << "ffmpeg: HEADER [OGG] REPLAYGAIN_TRACK_PEAK: " << FmtTag->key << " = "<< strValue;
-        } else if( !strncmp( FmtTag->key, "REPLAYGAIN_TRACK_GAIN", 20) ) {
+        } else if(!strncmp(FmtTag->key, "REPLAYGAIN_TRACK_GAIN", 20)) {
             //qDebug() << "ffmpeg: HEADER [OGG] REPLAYGAIN_TRACK_GAIN: " << FmtTag->key << " = "<< strValue;
             this->parseReplayGainString (strValue);
-        } else if( !strncmp( FmtTag->key, "REPLAYGAIN_ALBUM_PEAK", 20) ) {
+        } else if(!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_PEAK", 20)) {
             //qDebug() << "ffmpeg: HEADER [OGG] REPLAYGAIN_ALBUM_PEAK: " << FmtTag->key << " = "<< strValue;
-        } else if( !strncmp( FmtTag->key, "REPLAYGAIN_ALBUM_GAIN", 20) ) {
+        } else if(!strncmp(FmtTag->key, "REPLAYGAIN_ALBUM_GAIN", 20)) {
             //qDebug() << "ffmpeg: HEADER [OGG] REPLAYGAIN_ALBUM_GAIN: " << FmtTag->key << " = "<< strValue;
         }
 
@@ -628,7 +628,7 @@ QList<QString> SoundSourceFFmpeg::supportedFileExtensions() {
     AVInputFormat *l_SInputFmt  = NULL;
 
     while ((l_SInputFmt = av_iformat_next(l_SInputFmt))) {
-        if( l_SInputFmt->name == NULL ) {
+        if(l_SInputFmt->name == NULL) {
             break;
         }
 

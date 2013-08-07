@@ -63,7 +63,7 @@ EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback, CodecID codec)
     m_pFltSamples = NULL;
     m_iAudioInputFrameSize = -1;
 
-    memset( m_SBuffer, 0x00, (65355 * 2) );
+    memset(m_SBuffer, 0x00, (65355 * 2));
     m_lBufferSize = 0;
     m_iAudioCpyLen = 0;
     m_iFltAudioCpyLen = 0;
@@ -95,11 +95,11 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
     }
 
 
-    if( m_pStream != NULL ) {
+    if(m_pStream != NULL) {
         avcodec_close(m_pStream->codec);
     }
 
-    if( m_pEncodeFormatCtx != NULL ) {
+    if(m_pEncodeFormatCtx != NULL) {
         av_free(m_pEncodeFormatCtx);
     }
 
@@ -135,20 +135,20 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     unsigned int l_iBufPos = 0;
     unsigned int l_iPos = 0;
 
-    float *l_fNormalizedSamples = (float *)malloc( size * sizeof(float) );
+    float *l_fNormalizedSamples = (float *)malloc(size * sizeof(float));
 
     // For FFMPEG/LIBAV <= 1.0/0.8.5 needed thing to make this not to clip..
     //
     // Don't know why but input is too high..
     // Thats why we divide by 10000
     //
-    for( j = 0; j < size; j ++) {
+    for(j = 0; j < size; j ++) {
         l_fNormalizedSamples[j] = samples[j] / 10000;
     }
 
     //CSAMPLE *l_pSampleLocation = (CSAMPLE *)samples;
     //  m_bStreamInitialized = true;
-    if( m_bStreamInitialized == false ) {
+    if(m_bStreamInitialized == false) {
         m_bStreamInitialized = true;
         // Write a header.
         avio_open_dyn_buf(&m_pEncodeFormatCtx->pb);
@@ -167,12 +167,12 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     // qDebug() << "Sample data: " << size << "Input frame_size" << m_iAudioInputFrameSize << "Audio cpy size" << l_iAudioCpyLen;
     // qDebug() << "FLT data size: " << av_samples_get_buffer_size(NULL, 2, m_iAudioInputFrameSize, AV_SAMPLE_FMT_FLT,1);
 
-    while( l_iLeft > (m_iFltAudioCpyLen / 4)) {
+    while(l_iLeft > (m_iFltAudioCpyLen / 4)) {
         memset(m_pFltSamples, 0x00, m_iFltAudioCpyLen);
 
         for (j = 0; j < m_iFltAudioCpyLen / 4; j++) {
             // qDebug() << m_lBufferSize << "O" << j << ":" << (m_iFltAudioCpyLen / 2) << ";" << l_iPos;
-            if( m_lBufferSize > 0 ) {
+            if(m_lBufferSize > 0) {
                 m_pFltSamples[j] = m_SBuffer[ l_iBufPos ++ ];
                 m_lBufferSize --;
                 m_lRecorededBytes ++;
@@ -182,7 +182,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
                 m_lRecorededBytes ++;
             }
 
-            if( l_iLeft <= 0 ) {
+            if(l_iLeft <= 0) {
                 qDebug() << "ffmpegecodercore: No samples left.. for encoding!";
                 break;
             }
@@ -190,12 +190,12 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
 
         m_lBufferSize = 0;
 
-        if( avio_open_dyn_buf(&m_pEncodeFormatCtx->pb) < 0) {
+        if(avio_open_dyn_buf(&m_pEncodeFormatCtx->pb) < 0) {
             qDebug() << "Can't alloc Dyn buffer!";
             return;
         }
 
-        if( ! writeAudioFrame(m_pEncodeFormatCtx, m_pEncoderAudioStream) ) {
+        if(! writeAudioFrame(m_pEncodeFormatCtx, m_pEncoderAudioStream)) {
             l_iBufferLen = avio_close_dyn_buf(m_pEncodeFormatCtx->pb, (uint8_t**)(&l_strBuffer));
             // qDebug() << l_iLeft << "JEEEEA bytz:" << l_iBufferLen;
             m_pCallback->write(NULL, l_strBuffer, 0, l_iBufferLen);
@@ -204,9 +204,9 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     }
 
     // Keep things clean
-    memset( m_SBuffer, 0x00, 65535);
+    memset(m_SBuffer, 0x00, 65535);
 
-    for( j = 0; j < l_iLeft; j ++ ) {
+    for(j = 0; j < l_iLeft; j ++) {
         m_SBuffer[ j ] = l_fNormalizedSamples[ l_iPos ++ ];
     }
     m_lBufferSize = l_iLeft;
@@ -232,13 +232,13 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
     m_pEncodeFormatCtx = avformat_alloc_context();
 #endif
 
-        m_lBitrate = bitrate * 1000;
-        m_lSampleRate = samplerate;
+    m_lBitrate = bitrate * 1000;
+    m_lSampleRate = samplerate;
 
 #ifndef __FFMPEGOLDAPI__
-    if( m_SCcodecId == AV_CODEC_ID_MP3 ) {
+    if(m_SCcodecId == AV_CODEC_ID_MP3) {
 #else
-    if( m_SCcodecId == CODEC_ID_MP3 ) {
+    if(m_SCcodecId == CODEC_ID_MP3) {
 #endif
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec MP3";
 #ifdef avformat_alloc_output_context2
@@ -248,9 +248,9 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
 #endif
 
 #ifndef __FFMPEGOLDAPI__
-    } else if( m_SCcodecId == AV_CODEC_ID_AAC ) {
+    } else if(m_SCcodecId == AV_CODEC_ID_AAC) {
 #else
-    } else if( m_SCcodecId == CODEC_ID_AAC ) {
+    } else if(m_SCcodecId == CODEC_ID_AAC) {
 #endif
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec M4A";
 #ifdef avformat_alloc_output_context2
@@ -311,7 +311,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 
     l_SCodecCtx = stream->codec;
 #ifdef av_make_error_string
-    memset( l_strErrorBuff, 0x00, 256 );
+    memset(l_strErrorBuff, 0x00, 256);
 #endif
 
     // printf("MEGQ: %d * %d * %d = %d\n",m_iAudioInputFrameSize, av_get_bytes_per_sample(l_SCodecCtx->sample_fmt), l_SCodecCtx->channels, m_iAudioCpyLen);
@@ -330,9 +330,9 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
                                       m_iFltAudioCpyLen,
                                       1);
 
-    if ( l_iRet != 0 ) {
+    if (l_iRet != 0) {
 #ifdef av_make_error_string
-        qDebug() << "Can't fill FFMPEG frame: error " << l_iRet << "String '" << av_make_error_string( l_strErrorBuff, 256, l_iRet ) << "'" <<  m_iFltAudioCpyLen;
+        qDebug() << "Can't fill FFMPEG frame: error " << l_iRet << "String '" << av_make_error_string(l_strErrorBuff, 256, l_iRet) << "'" <<  m_iFltAudioCpyLen;
 #endif
         qDebug() << "Can't refill 1st FFMPEG frame!";
         return -1;
@@ -340,7 +340,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 
     // If we have something else than AV_SAMPLE_FMT_FLT we have to convert it to something that
     // fits..
-    if( l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT ) {
+    if(l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT) {
 
         reSample(l_SFrame);
         // After we have turned our samples to destination
@@ -364,9 +364,9 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
                                           m_iAudioCpyLen,
                                           1);
 
-        if ( l_iRet != 0 ) {
+        if (l_iRet != 0) {
 #ifdef av_make_error_string
-            qDebug() << "Can't refill FFMPEG frame: error " << l_iRet << "String '" << av_make_error_string( l_strErrorBuff, 256, l_iRet ) << "'" <<  m_iAudioCpyLen << " " <<  av_samples_get_buffer_size(NULL, 2, m_iAudioInputFrameSize,m_pEncoderAudioStream->codec->sample_fmt,1) << " " << m_pOutSize;
+            qDebug() << "Can't refill FFMPEG frame: error " << l_iRet << "String '" << av_make_error_string(l_strErrorBuff, 256, l_iRet) << "'" <<  m_iAudioCpyLen << " " <<  av_samples_get_buffer_size(NULL, 2, m_iAudioInputFrameSize,m_pEncoderAudioStream->codec->sample_fmt,1) << " " << m_pOutSize;
 #endif
             qDebug() << "Can't refill 2nd FFMPEG frame!";
             return -1;
@@ -397,7 +397,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 
     // Some times den is zero.. so 0 dived by 0 is
     // Something?
-    if( m_pEncoderAudioStream->pts.den == 0 ) {
+    if(m_pEncoderAudioStream->pts.den == 0) {
         qDebug() << "Time hack!";
         m_pEncoderAudioStream->pts.den = 1;
     }
@@ -453,9 +453,9 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
     m_iFltAudioCpyLen = av_samples_get_buffer_size(NULL, 2, m_iAudioInputFrameSize, AV_SAMPLE_FMT_FLT,1);
 
     // m_pSamples is destination samples.. m_pFltSamples is FLOAT (32 bit) samples..
-    m_pSamples = (uint8_t *)av_malloc(m_iAudioCpyLen * sizeof( uint8_t ));
+    m_pSamples = (uint8_t *)av_malloc(m_iAudioCpyLen * sizeof(uint8_t));
     //m_pFltSamples = (uint16_t *)av_malloc(m_iFltAudioCpyLen);
-    m_pFltSamples = (float *)av_malloc(m_iFltAudioCpyLen * sizeof( float ));
+    m_pFltSamples = (float *)av_malloc(m_iFltAudioCpyLen * sizeof(float));
 
     if (!m_pSamples) {
         qDebug() << "Could not allocate audio samples buffer";
@@ -493,7 +493,7 @@ AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx, AVCodec **cod
     l_SStream->id = formatctx->nb_streams-1;
     l_SCodecCtx = l_SStream->codec;
 
-    m_pResample = new EncoderFfmpegResample( l_SCodecCtx );
+    m_pResample = new EncoderFfmpegResample(l_SCodecCtx);
 
     switch ((*codec)->type) {
     case AVMEDIA_TYPE_AUDIO:
