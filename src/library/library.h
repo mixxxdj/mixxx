@@ -29,6 +29,7 @@ class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class MixxxKeyboard;
+//class ThreadDAO;
 
 class Library : public QObject {
     Q_OBJECT
@@ -53,6 +54,8 @@ public:
         return m_pTrackCollection;
     }
 
+//    ThreadDAO* getThreadDAO() { return m_pThreadDAO; }
+
     //static Library* buildDefaultLibrary();
 
   public slots:
@@ -66,6 +69,8 @@ public:
     void slotCreatePlaylist();
     void slotCreateCrate();
     void onSkinLoadFinished();
+
+    void setUiEnabled(const bool enabled);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -81,6 +86,7 @@ public:
     ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
+//    ThreadDAO* m_pThreadDAO;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;

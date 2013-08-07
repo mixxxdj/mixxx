@@ -551,7 +551,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Scan the library directory. Initialize this after the skinloader has
     // loaded a skin, see Bug #1047435
-    m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
+    m_pLibraryScanner = new LibraryScanner( m_pLibrary->getTrackCollection() );
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 

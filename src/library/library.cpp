@@ -17,6 +17,7 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
+#include "library/dao/threaddao.h"
 #ifdef __PROMO__
 #include "library/promotracksfeature.h"
 #endif
@@ -39,12 +40,20 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
+//        m_pThreadDAO(new ThreadDAO(pConfig)),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
 
+    m_pTrackCollection->start();
+
+    QEventLoop loop;
+    QObject::connect(m_pTrackCollection, SIGNAL(initialized()), &loop, SLOT(quit()));
+    loop.exec();
+
+
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
 
 #ifdef __PROMO__
@@ -236,6 +245,10 @@ void Library::slotCreateCrate() {
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.
     m_pSidebarModel->activateDefaultSelection();
+}
+
+void Library::setUiEnabled(const bool enabled) {
+    qDebug() << "Library::setUiEnabled" << enabled;
 }
 
 QList<TrackPointer> Library::getTracksToAutoLoad() {

@@ -176,7 +176,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     return true;
 }
 
-bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
+bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
     QTime timer;
     timer.start();
 

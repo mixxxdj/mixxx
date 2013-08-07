@@ -39,8 +39,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
     m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
-    m_bCancelLibraryScan(0)
-{
+    m_bCancelLibraryScan(0) {
 
     qDebug() << "Constructed LibraryScanner";
 

@@ -15,12 +15,13 @@ PlaylistDAO::~PlaylistDAO() {
 }
 
 void PlaylistDAO::initialize() {
+    qDebug() << "PlaylistDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
-    // qDebug() << "PlaylistDAO::createPlaylist"
-    //          << QThread::currentThread()
-    //          << m_database.connectionName();
+    qDebug() << "PlaylistDAO::createPlaylist"
+             << QThread::currentThread()
+             << m_database.connectionName();
     //Start the transaction
     ScopedTransaction transaction(m_database);
 

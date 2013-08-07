@@ -32,6 +32,9 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 
+// Lambda function
+typedef std::function <void ()> func;
+
 class TrackInfoObject;
 
 #define AUTODJ_TABLE "Auto DJ"
@@ -41,17 +44,23 @@ class BpmDetector;
 /**
    @author Albert Santoni
 */
-class TrackCollection : public QObject
-{
+
+class TrackCollection : public QThread {
     Q_OBJECT
   public:
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
     ~TrackCollection();
+    void run();
+    void callSync(func lambda, QWidget& w);
+    void stopThread();
+    void setLambda(func lambda);
+
+
     bool checkForTables();
 
     /** Import the files in a given diretory, without recursing into subdirectories */
-    bool importDirectory(const QString &directory, TrackDAO &trackDao,
-                         const QStringList & nameFilters, volatile bool* cancel);
+    bool importDirectory(const QString& directory, TrackDAO& trackDao,
+                         const QStringList& nameFilters, volatile bool* cancel);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
@@ -71,17 +80,25 @@ class TrackCollection : public QObject
     void startedLoading();
     void progressLoading(QString path);
     void finishedLoading();
+    void initialized();
 
   private:
+    void createAndPopulateDbConnection();
     ConfigObject<ConfigValue>* m_pConfig;
-    QSqlDatabase m_db;
+    QSqlDatabase* m_database;
     QHash<QString, QSharedPointer<BaseTrackCache> > m_trackSources;
-    PlaylistDAO m_playlistDao;
-    CrateDAO m_crateDao;
-    CueDAO m_cueDao;
-    AnalysisDao m_analysisDao;
-    TrackDAO m_trackDao;
+    PlaylistDAO* m_playlistDao;
+    CrateDAO* m_crateDao;
+    CueDAO* m_cueDao;
+    AnalysisDao* m_analysisDao;
+    TrackDAO* m_trackDao;
     const QRegExp m_supportedFileExtensionsRegex;
+
+    // all from threadDAO
+    func m_lambda;
+    bool m_haveFunction;
+    bool m_callFinished;
+    bool m_stop;
 };
 
 #endif

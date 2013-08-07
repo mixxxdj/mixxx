@@ -11,58 +11,153 @@
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "xmlparse.h"
+#include "util/sleepableqthread.h"
+
+const int SleepTimeMs = 10;
+const int TooLong = 100;
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
-          m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
-          m_playlistDao(m_db),
-          m_crateDao(m_db),
-          m_cueDao(m_db),
-          m_analysisDao(m_db, pConfig),
-          m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
-                     m_analysisDao, pConfig),
+          m_database(NULL),
+          m_playlistDao(NULL),
+          m_crateDao(NULL),
+          m_cueDao(NULL),
+          m_analysisDao(NULL),
+          m_trackDao(NULL),
+//          m_database(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
+//          m_playlistDao(m_database),
+//          m_crateDao(m_database),
+//          m_cueDao(m_database),
+//          m_analysisDao(m_database, pConfig),
+//          m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao,
+//                     m_analysisDao, pConfig),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
-    qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
 
-    m_db.setHostName("localhost");
-    m_db.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
-    m_db.setUserName("mixxx");
-    m_db.setPassword("mixxx");
-    bool ok = m_db.open();
-    qDebug() << "DB status:" << m_db.databaseName() << "=" << ok;
-    if (m_db.lastError().isValid()) {
-        qDebug() << "Error loading database:" << m_db.lastError();
-    }
-    // Check for tables and create them if missing
-    if (!checkForTables()) {
-        // TODO(XXX) something a little more elegant
-        exit(-1);
-    }
+
+    qDebug() << "### TrackCollection constructor ###";
+    qDebug() << "\tfrom thread id=" << QThread::currentThreadId()
+             << "name=" << QThread::currentThread()->objectName();
+//    qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
+
+//    m_db.setHostName("localhost");
+//    m_db.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+//    m_db.setUserName("mixxx");
+//    m_db.setPassword("mixxx");
+//    bool ok = m_db.open();
+//    qDebug() << "DB status:" << m_db.databaseName() << "=" << ok;
+//    if (m_db.lastError().isValid()) {
+//        qDebug() << "Error loading database:" << m_db.lastError();
+//    }
+//    // Check for tables and create them if missing
+//    if (!checkForTables()) {
+//        // TODO(XXX) something a little more elegant
+//        exit(-1);
+//    }
 }
 
 TrackCollection::~TrackCollection() {
     qDebug() << "~TrackCollection()";
-    m_trackDao.finish();
+    m_trackDao->finish();
 
-    if (m_db.isOpen()) {
+    if (m_database->isOpen()) {
         // There should never be an outstanding transaction when this code is
         // called. If there is, it means we probably aren't committing a
         // transaction somewhere that should be.
-        if (m_db.rollback()) {
+        if (m_database->rollback()) {
             qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
                     << "There is a logic error somewhere.";
         }
-        m_db.close();
+        m_database->close();
     } else {
         qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
                 << "There is a logic error somewhere.";
     }
+    delete m_playlistDao;
+    delete m_crateDao;
+    delete m_cueDao;
+    delete m_analysisDao;
+    delete m_trackDao;
+}
+
+void TrackCollection::run() {
+    QThread::currentThread()->setObjectName("TrackCollection");
+    qDebug() << "ThreadDAO::run, id=" << QThread::currentThreadId()
+             << "name=" << QThread::currentThread()->objectName();
+
+    qDebug() << "### Initializing DAOs inside TrackCollection's thread";
+    createAndPopulateDbConnection();
+
+    m_trackDao->initialize();
+    m_playlistDao->initialize();
+    m_crateDao->initialize();
+    m_cueDao->initialize();
+
+    emit(initialized());
+
+    // main TrackCollection's loop
+    while (!m_stop) {
+        while (!m_haveFunction) {
+            SleepableQThread::msleep(SleepTimeMs);
+        }
+        m_callFinished = false;
+
+        m_lambda();
+
+        m_haveFunction = false;
+        m_callFinished = true;
+    }
+}
+
+void TrackCollection::callSync(func lambda, QWidget& w) {
+    //TODO(tro) check lambda
+
+    int waitCycles = 0;
+    while(!m_callFinished) {
+        qApp->processEvents( QEventLoop::AllEvents );
+        SleepableQThread::msleep(SleepTimeMs);
+        ++waitCycles;
+    }
+    qDebug() << "\tWaited before setLambda:" << waitCycles;
+    setLambda(lambda);
+    waitCycles = 0;
+    bool animationIsShowed = false;
+
+    while (m_haveFunction && !m_callFinished) {
+        qApp->processEvents( QEventLoop::AllEvents );
+        SleepableQThread::msleep(SleepTimeMs);
+        ++waitCycles;
+        if (waitCycles > TooLong && !animationIsShowed) {
+            qDebug() << "Start animation";
+            w.setEnabled(false);
+//            m_progressindicator.startAnimation();
+            animationIsShowed = true;
+        }
+    }
+    qDebug() << "\tWaited execution of lambda:" << waitCycles;
+
+    if (animationIsShowed) {
+        qDebug() << "Stop animation";
+        w.setEnabled(true);
+//        m_progressindicator.stopAnimation();
+    }
+}
+
+void TrackCollection::stopThread() {
+    // TODO(tro) Think on how to do canceling
+    qDebug() << "Stopping thread";
+    m_stop = true;
+}
+
+void TrackCollection::setLambda(func lambda) {
+    m_lambda = lambda;
+    m_haveFunction = true;
+    m_callFinished = false;
 }
 
 bool TrackCollection::checkForTables() {
-    if (!m_db.open()) {
+    if (!m_database->open()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                             tr("Unable to establish a database connection.\n"
                                 "Mixxx requires QT with SQLite support. Please read "
@@ -72,14 +167,14 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 20;
+    int requiredSchemaVersion = 20; // TODO avoid constant 20
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
     QString upgradeFailed = tr("Cannot upgrade database schema");
     QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
             .arg(QString::number(requiredSchemaVersion));
-    int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, m_db, requiredSchemaVersion);
+    int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, *m_database, requiredSchemaVersion);
     if (result < 0) {
         if (result == -1) {
             QMessageBox::warning(0, upgradeFailed,
@@ -103,17 +198,15 @@ bool TrackCollection::checkForTables() {
         }
         return false;
     }
-
-    m_trackDao.initialize();
-    m_playlistDao.initialize();
-    m_crateDao.initialize();
-    m_cueDao.initialize();
-
+//    m_trackDao->initialize();
+//    m_playlistDao->initialize();
+//    m_crateDao->initialize();
+//    m_cueDao->initialize();
     return true;
 }
 
 QSqlDatabase& TrackCollection::getDatabase() {
-    return m_db;
+    return *m_database;
 }
 
 /** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
@@ -162,7 +255,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
                 // new Track in the database
-                m_trackDao.databaseTrackAdded(pTrack);
+                m_trackDao->databaseTrackAdded(pTrack);
             } else {
                 qDebug() << "Track ("+absoluteFilePath+") could not be added";
             }
@@ -173,15 +266,15 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
 }
 
 CrateDAO& TrackCollection::getCrateDAO() {
-    return m_crateDao;
+    return *m_crateDao;
 }
 
 TrackDAO& TrackCollection::getTrackDAO() {
-    return m_trackDao;
+    return *m_trackDao;
 }
 
 PlaylistDAO& TrackCollection::getPlaylistDAO() {
-    return m_playlistDao;
+    return *m_playlistDao;
 }
 
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
@@ -193,4 +286,33 @@ void TrackCollection::addTrackSource(
     const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
+}
+
+void TrackCollection::createAndPopulateDbConnection() {
+
+    // initialize database connection in ThreadDAO's thread -- copypaste from TrackCollection
+    qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
+    // TODO(tro) Check is QSQLITE is avaiable
+    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
+
+    m_database->setHostName("localhost");
+    m_database->setDatabaseName(m_pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+    m_database->setUserName("mixxx");
+    m_database->setPassword("mixxx");
+    bool ok = m_database->open();
+    qDebug() << "DB status:" << m_database->databaseName() << "=" << ok;
+    if (m_database->lastError().isValid()) {
+        qDebug() << "Error loading database:" << m_database->lastError();
+    }
+    // Check for tables and create them if missing
+    if (!checkForTables()) {
+        // TODO(XXX) something a little more elegant
+        exit(-1);
+    }
+
+    m_playlistDao = new PlaylistDAO(*m_database);
+    m_crateDao = new CrateDAO(*m_database);
+    m_cueDao = new CueDAO(*m_database);
+    m_analysisDao = new AnalysisDao(*m_database, m_pConfig);
+    m_trackDao = new TrackDAO(*m_database, *m_cueDao, *m_playlistDao, *m_crateDao, *m_analysisDao, m_pConfig);
 }
