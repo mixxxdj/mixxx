@@ -780,8 +780,8 @@ void DlgPrefControls::updateDeckOrderCombo(int deck_count) {
     // every time they change the value, this shouldn't cause weird overwrites.
 
     QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
-    textDeckOrder->setVisible(deck_count != 0);
-    ComboBoxDeckOrder->setVisible(deck_count != 0);
+    //textDeckOrder->setVisible(deck_count != 0);
+    //ComboBoxDeckOrder->setVisible(deck_count != 0);
     ComboBoxDeckOrder->clear();
     if (deck_count == 0) {
         return;
