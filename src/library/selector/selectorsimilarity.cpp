@@ -27,7 +27,9 @@ SelectorSimilarity::~SelectorSimilarity() {
 QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
         int seedTrackId, QList<int> trackIds) {
 
-    ScopedTimer t("SelectorSimilarity::calculateSimilarities");
+    QTime timer;
+    timer.start();
+//    ScopedTimer t("SelectorSimilarity::calculateSimilarities");
 
     loadStoredSimilarityContributions();
     QList<QPair<int, double> > scores;
@@ -91,6 +93,8 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
         }
         scores << QPair<int, double>(trackId, score);
     }
+
+    qDebug() << "calculateSimilarities:" << timer.elapsed() << "ms";
     return scores;
 }
 
