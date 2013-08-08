@@ -817,9 +817,9 @@ class FFMPEG(Feature):
             # Check for libavcodec, libavformat
             # I just randomly picked version numbers lower than mine for this - Albert
             if not conf.CheckForPKG('libavcodec', '53.35.0'):
-                raise Exception('libavcodec not found! Version should be at least 53.35.0')
+                raise Exception('libavcodec not found! Version should be at least: 53.35.0')
             if not conf.CheckForPKG('libavformat', '53.21.0'):
-                raise Exception('libavcodec not found! Version should be at least 53.21.0')
+                raise Exception('libavformat not found! Version should be at least: 53.21.0')
 
             # Needed to build new FFMPEG
             build.env.Append(CCFLAGS = '-D__STDC_CONSTANT_MACROS') 
