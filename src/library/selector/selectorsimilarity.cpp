@@ -36,12 +36,15 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
     TimbrePointer pSeedTrackTimbre = pSeedTrack->getTimbre();
     TagCounts seedTrackTags = pSeedTrack->getTags();
 
+    double bpmContribution = contributions.value("bpm");
+    double timbreContribution = contributions.value("timbre");
+    double rhythmContribution = contributions.value("rhythm");
+
     foreach (int trackId, trackIds) {
         double score = 0.0;
 
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
-        double bpmContribution = contributions.value("bpm");
         if (bpmContribution > 0.0) {
             double bpm = pTrack->getBpm();
             double bpmDiff = abs(bpm - seedTrackBpm);
@@ -54,17 +57,14 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
             score += bpmScore;
         }
 
-        double timbreContribution = contributions.value("timbre");
-        double rhythmContribution = contributions.value("rhythm");
-
         if (timbreContribution > 0.0 || rhythmContribution > 0.0) {
             TimbrePointer pTimbre = pTrack->getTimbre();
             if (!pSeedTrackTimbre.isNull() && !pTimbre.isNull()) {
                 double timbreScore =
-                        1 - TimbreUtils::hellingerDistance(pSeedTrackTimbre,
+                        1.0 - TimbreUtils::hellingerDistance(pSeedTrackTimbre,
                                                            pTimbre);
                 double rhythmScore =
-                        1 - TimbreUtils::modelDistanceBeats(pSeedTrackTimbre,
+                        1.0 - TimbreUtils::modelDistanceBeats(pSeedTrackTimbre,
                                                             pTimbre);
 
     //            qDebug() << m_sSeedTrackInfo << "x"
