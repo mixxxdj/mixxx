@@ -4,6 +4,8 @@
 #include "track/timbreutils.h"
 #include "track/tagutils.h"
 
+#include "util/timer.h"
+
 #include "library/selector/selector_preferences.h"
 #include "library/selector/selectorsimilarity.h"
 
@@ -24,6 +26,8 @@ SelectorSimilarity::~SelectorSimilarity() {
 
 QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
         int seedTrackId, QList<int> trackIds) {
+
+    ScopedTimer t("SelectorSimilarity::calculateSimilarities");
 
     loadStoredSimilarityContributions();
     QList<QPair<int, double> > scores;

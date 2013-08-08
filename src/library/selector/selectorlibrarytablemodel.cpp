@@ -139,8 +139,6 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
 }
 
 void SelectorLibraryTableModel::calculateSimilarity() {
-    ScopedTimer t("SelectorLibraryTableModel::calculateSimilarity()");
-
     if (!m_pSeedTrack.isNull()) {
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("UPDATE " + tableName + " SET score=:score "
