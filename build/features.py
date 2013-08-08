@@ -881,7 +881,6 @@ class FFMPEG(Feature):
                 'encoder/encoderffmpegresample.cpp',
                 'encoder/encoderffmpegcore.cpp',
                 'encoder/encoderffmpegmp3.cpp',
-                'encoder/encoderffmpegmp4.cpp',
                 'encoder/encoderffmpegvorbis.cpp']
 
 class Optimize(Feature):
