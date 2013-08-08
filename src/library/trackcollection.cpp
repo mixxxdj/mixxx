@@ -27,37 +27,12 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_haveFunction(false),
           m_callFinished(true),
           m_stop(false),
-//          m_database(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
-//          m_playlistDao(m_database),
-//          m_crateDao(m_database),
-//          m_cueDao(m_database),
-//          m_analysisDao(m_database, pConfig),
-//          m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao,
-//                     m_analysisDao, pConfig),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
-
-
     qDebug() << "### TrackCollection constructor ###";
     qDebug() << "\tfrom thread id=" << QThread::currentThreadId()
              << "name=" << QThread::currentThread()->objectName();
-//    qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
-
-//    m_db.setHostName("localhost");
-//    m_db.setDatabaseName(pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
-//    m_db.setUserName("mixxx");
-//    m_db.setPassword("mixxx");
-//    bool ok = m_db.open();
-//    qDebug() << "DB status:" << m_db.databaseName() << "=" << ok;
-//    if (m_db.lastError().isValid()) {
-//        qDebug() << "Error loading database:" << m_db.lastError();
-//    }
-//    // Check for tables and create them if missing
-//    if (!checkForTables()) {
-//        // TODO(XXX) something a little more elegant
-//        exit(-1);
-//    }
 }
 
 TrackCollection::~TrackCollection() {
@@ -86,7 +61,7 @@ TrackCollection::~TrackCollection() {
 
 void TrackCollection::run() {
     QThread::currentThread()->setObjectName("TrackCollection");
-    qDebug() << "ThreadDAO::run, id=" << QThread::currentThreadId()
+    qDebug() << "TrackCollection::run, id=" << QThread::currentThreadId()
              << "name=" << QThread::currentThread()->objectName();
 
     qDebug() << "### Initializing DAOs inside TrackCollection's thread";

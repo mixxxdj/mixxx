@@ -1118,8 +1118,7 @@ void WTrackTableView::slotSendToAutoDJ() {
     qDebug() << "in WTrackTableView::slotSendToAutoDJ";
     m_pTrackCollection->callSync(
                 // lambda goes here
-                [this] (void)
-    {
+                [this] (void) {
         qDebug() << "\t in lambda";
         sendToAutoDJ(false); // bTop = false
         qDebug() << "\t lambda ends";
@@ -1127,7 +1126,15 @@ void WTrackTableView::slotSendToAutoDJ() {
 }
 
 void WTrackTableView::slotSendToAutoDJTop() {
-    sendToAutoDJ(true); // bTop = true
+    // append to auto DJ
+    qDebug() << "in WTrackTableView::slotSendToAutoDJ";
+    m_pTrackCollection->callSync(
+                // lambda goes here
+                [this] (void) {
+        qDebug() << "\t in lambda";
+        sendToAutoDJ(true); // bTop = true
+        qDebug() << "\t lambda ends";
+    });
 }
 
 void WTrackTableView::sendToAutoDJ(bool bTop) {
