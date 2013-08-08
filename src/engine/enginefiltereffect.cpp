@@ -91,14 +91,14 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
         if (depth < 0.0f) {
             // Lowpass + bandpass
             // Freq from 2^5=32Hz to 2^(5+9)=16384
-            freq = pow(2.0, 5.0f+(depth+1.0f)*9.0f);
-            freq2 = pow(2.0, 5.0f+(depth+1.0f+bandpass_size)*9.0f);
+            freq = pow(2.0, 5.0f + (depth + 1.0f) * 9.0f);
+            freq2 = pow(2.0, 5.0f + (depth + 1.0f + bandpass_size) * 9.0f);
             m_pLowFilter->setFrequencyCorners(freq2);
             m_pBandpassFilter->setFrequencyCorners(freq, freq2);
         } else {
             // Highpass + bandpass
-            freq = pow(2.0, 5.0f+depth*9.0f);
-            freq2 = pow(2.0, 5.0f+(depth+bandpass_size)*9.0f);
+            freq = pow(2.0, 5.0f + depth * 9.0f);
+            freq2 = pow(2.0, 5.0f + (depth + bandpass_size) * 9.0f);
             m_pHighFilter->setFrequencyCorners(freq);
             m_pBandpassFilter->setFrequencyCorners(freq, freq2);
         }

@@ -19,7 +19,8 @@ class EngineFilterEffect : public EngineObject {
     void applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
     // Buffers for old filter's value and for bandpass filter
-    CSAMPLE* m_pCrossfade_buffer, *m_pBandpass_buffer;
+    CSAMPLE* m_pCrossfade_buffer;
+    CSAMPLE* m_pBandpass_buffer;
     EngineFilterButterworth8Low* m_pLowFilter;
     EngineFilterButterworth8Band* m_pBandpassFilter;
     EngineFilterButterworth8High* m_pHighFilter;
