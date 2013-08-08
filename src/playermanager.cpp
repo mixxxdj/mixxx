@@ -204,7 +204,18 @@ void PlayerManager::slotNumDecksControlChanged(double v) {
 }
 
 void PlayerManager::slotSkinNumDecksControlChanged(double v) {
-    s_currentDeckOrder = s_deckOrderingManager.getDefaultOrder(v);
+    QString config_order = m_pConfig->getValueString(ConfigKey("[Controls]", "DeckOrder"));
+    bool found_valid = false;
+    foreach(const PlayerManager::DeckOrderingManager::deck_order_t& order,
+            PlayerManager::getDeckOrderings(v)) {
+        if (order.label == config_order) {
+            found_valid = true;
+            s_currentDeckOrder = order;
+        }
+    }
+    if (!found_valid) {
+        s_currentDeckOrder = s_deckOrderingManager.getDefaultOrder(v);
+    }
     slotNumDecksControlChanged(v);
 }
 
