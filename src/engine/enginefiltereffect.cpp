@@ -6,8 +6,7 @@
 #include "controlpushbutton.h"
 #include "controlpotmeter.h"
 
-EngineFilterEffect::EngineFilterEffect(const char * group)
-{
+EngineFilterEffect::EngineFilterEffect(const char* group) {
     potmeterDepth = ControlObject::getControl(ConfigKey(group, "filterDepth"));
     if (potmeterDepth == NULL)
         potmeterDepth = new ControlPotmeter(ConfigKey(group, "filterDepth"),
@@ -24,8 +23,7 @@ EngineFilterEffect::EngineFilterEffect(const char * group)
     m_pBandpass_buffer = SampleUtil::alloc(MAX_BUFFER_LEN);
 }
 
-EngineFilterEffect::~EngineFilterEffect()
-{
+EngineFilterEffect::~EngineFilterEffect() {
     delete m_pLowFilter;
     delete m_pBandpassFilter;
     delete m_pHighFilter;
@@ -34,9 +32,8 @@ EngineFilterEffect::~EngineFilterEffect()
     SampleUtil::free(m_pBandpass_buffer);
 }
 
-void EngineFilterEffect::applyFilters(const CSAMPLE *pIn, CSAMPLE *pOut,
-                                      const int iBufferSize)
-{
+void EngineFilterEffect::applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut,
+                                      const int iBufferSize) {
     // Gain of bandpass filter
     float bandpass_gain = 0.3f;
 
@@ -56,10 +53,9 @@ void EngineFilterEffect::applyFilters(const CSAMPLE *pIn, CSAMPLE *pOut,
     SampleUtil::addWithGain(pOut, m_pBandpass_buffer, bandpass_gain, iBufferSize);
 }
 
-void EngineFilterEffect::process(const CSAMPLE *pIn, const CSAMPLE *pOut,
-                                 const int iBufferSize)
-{   
-    CSAMPLE * pOutput = (CSAMPLE *)pOut;
+void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
+                                 const int iBufferSize) {
+    CSAMPLE* pOutput = (CSAMPLE*)pOut;
     float depth = potmeterDepth->get();
 
     // Filter is disabled
@@ -67,11 +63,11 @@ void EngineFilterEffect::process(const CSAMPLE *pIn, const CSAMPLE *pOut,
         return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
     }
 
-    if(depth == 0.0f) {
+    if (depth == 0.0f) {
         // Nothing to do
         old_depth = depth;
         return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
-    } else if(depth == -1.0f || depth == 1.0f ) {
+    } else if (depth == -1.0f || depth == 1.0f ) {
         // Kill sound
         old_depth = depth;
         return SampleUtil::copyWithGain(pOutput, pIn, 0.0f, iBufferSize);
@@ -111,7 +107,7 @@ void EngineFilterEffect::process(const CSAMPLE *pIn, const CSAMPLE *pOut,
     applyFilters(pIn, pOutput, iBufferSize);
 
     // Crossfade old and new depth values
-    if( depth != old_depth ) {
+    if (depth != old_depth) {
         SampleUtil::linearCrossfadeBuffers(pOutput, m_pCrossfade_buffer,
                                            pOutput, iBufferSize);
     }

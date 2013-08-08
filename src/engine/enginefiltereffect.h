@@ -9,24 +9,23 @@ class EngineFilterButterworth8Low;
 class EngineFilterButterworth8Band;
 class EngineFilterButterworth8High;
 
-class EngineFilterEffect : public EngineObject
-{
-public:
-    EngineFilterEffect(const char * group);
+class EngineFilterEffect : public EngineObject {
+  public:
+    EngineFilterEffect(const char* group);
     ~EngineFilterEffect();
 
-    void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-private:
-    void applyFilters(const CSAMPLE *pIn, CSAMPLE *pOut, const int iBufferSize);
+    void process(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize);
+  private:
+    void applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
 
     // Buffers for old filter's value and for bandpass filter
-    CSAMPLE *m_pCrossfade_buffer, *m_pBandpass_buffer;
-    EngineFilterButterworth8Low *m_pLowFilter;
-    EngineFilterButterworth8Band *m_pBandpassFilter;
-    EngineFilterButterworth8High *m_pHighFilter;
+    CSAMPLE* m_pCrossfade_buffer, *m_pBandpass_buffer;
+    EngineFilterButterworth8Low* m_pLowFilter;
+    EngineFilterButterworth8Band* m_pBandpassFilter;
+    EngineFilterButterworth8High* m_pHighFilter;
 
-    ControlObject *potmeterDepth;
-    ControlPushButton *filterEnable;
+    ControlObject* potmeterDepth;
+    ControlPushButton* filterEnable;
 
     float old_depth;
 };
