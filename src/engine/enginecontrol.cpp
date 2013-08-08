@@ -14,7 +14,7 @@ EngineControl::EngineControl(const char * _group,
     m_dTotalSamples(0),
     m_pEngineMaster(NULL),
     m_pEngineBuffer(NULL),
-    m_numDecks(ConfigKey("[Master]", "num_decks")) {
+    m_numDecks(ConfigKey("[Skin]", "num_decks")) {
 }
 
 EngineControl::~EngineControl() {

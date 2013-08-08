@@ -19,7 +19,6 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_tapFilter(this, filterLength, maxInterval) {
-    m_pNumDecks = ControlObject::getControl(ConfigKey("[Skin]", "num_decks"));
     m_pPlayButton = ControlObject::getControl(_group, "play");
     m_pRateSlider = ControlObject::getControl(_group, "rate");
     connect(m_pRateSlider, SIGNAL(valueChanged(double)),

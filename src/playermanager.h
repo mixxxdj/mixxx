@@ -203,7 +203,6 @@ class PlayerManager : public QObject {
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;
-    VinylControlManager* m_pVCManager;
     AnalyserQueue* m_pAnalyserQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
