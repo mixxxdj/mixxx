@@ -15,6 +15,8 @@ EngineFilterEffect::EngineFilterEffect(const char* group) {
     filterEnable = new ControlPushButton(ConfigKey(group, "filter"));
     filterEnable->setButtonMode(ControlPushButton::TOGGLE);
 
+    // TODO(XXX) 44100 should be changed to real sample rate
+    // https://bugs.launchpad.net/mixxx/+bug/1208816
     m_pLowFilter = new EngineFilterButterworth8Low(44100, 20);
     m_pBandpassFilter = new EngineFilterButterworth8Band(44100, 20, 200);
     m_pHighFilter = new EngineFilterButterworth8High(44100, 20);
