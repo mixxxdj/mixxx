@@ -95,11 +95,11 @@ EncoderFfmpegCore::~EncoderFfmpegCore() {
     }
 
 
-    if(m_pStream != NULL) {
+    if (m_pStream != NULL) {
         avcodec_close(m_pStream->codec);
     }
 
-    if(m_pEncodeFormatCtx != NULL) {
+    if (m_pEncodeFormatCtx != NULL) {
         av_free(m_pEncodeFormatCtx);
     }
 
@@ -139,13 +139,13 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
 
     // Because of normalization to SHORT_MAX = 0x7FFF we have to make this not to clip!
     // Comments also: https://bugs.launchpad.net/mixxx/+bug/1204039
-    for(j = 0; j < size; j ++) {
+    for (j = 0; j < size; j ++) {
         l_fNormalizedSamples[j] = samples[j] / 0x7FFF;
     }
 
     //CSAMPLE *l_pSampleLocation = (CSAMPLE *)samples;
     //  m_bStreamInitialized = true;
-    if(m_bStreamInitialized == false) {
+    if (m_bStreamInitialized == false) {
         m_bStreamInitialized = true;
         // Write a header.
         avio_open_dyn_buf(&m_pEncodeFormatCtx->pb);
@@ -169,7 +169,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
 
         for (j = 0; j < m_iFltAudioCpyLen / 4; j++) {
             // qDebug() << m_lBufferSize << "O" << j << ":" << (m_iFltAudioCpyLen / 2) << ";" << l_iPos;
-            if(m_lBufferSize > 0) {
+            if (m_lBufferSize > 0) {
                 m_pFltSamples[j] = m_SBuffer[ l_iBufPos ++ ];
                 m_lBufferSize --;
                 m_lRecorededBytes ++;
@@ -179,7 +179,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
                 m_lRecorededBytes ++;
             }
 
-            if(l_iLeft <= 0) {
+            if (l_iLeft <= 0) {
                 qDebug() << "ffmpegecodercore: No samples left.. for encoding!";
                 break;
             }
@@ -187,12 +187,12 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
 
         m_lBufferSize = 0;
 
-        if(avio_open_dyn_buf(&m_pEncodeFormatCtx->pb) < 0) {
+        if (avio_open_dyn_buf(&m_pEncodeFormatCtx->pb) < 0) {
             qDebug() << "Can't alloc Dyn buffer!";
             return;
         }
 
-        if(! writeAudioFrame(m_pEncodeFormatCtx, m_pEncoderAudioStream)) {
+        if (! writeAudioFrame(m_pEncodeFormatCtx, m_pEncoderAudioStream)) {
             l_iBufferLen = avio_close_dyn_buf(m_pEncodeFormatCtx->pb, (uint8_t**)(&l_strBuffer));
             // qDebug() << l_iLeft << "JEEEEA bytz:" << l_iBufferLen;
             m_pCallback->write(NULL, l_strBuffer, 0, l_iBufferLen);
@@ -203,7 +203,7 @@ void EncoderFfmpegCore::encodeBuffer(const CSAMPLE *samples, const int size) {
     // Keep things clean
     memset(m_SBuffer, 0x00, 65535);
 
-    for(j = 0; j < l_iLeft; j ++) {
+    for (j = 0; j < l_iLeft; j ++) {
         m_SBuffer[ j ] = l_fNormalizedSamples[ l_iPos ++ ];
     }
     m_lBufferSize = l_iLeft;
@@ -233,9 +233,9 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
     m_lSampleRate = samplerate;
 
 #ifndef __FFMPEGOLDAPI__
-    if(m_SCcodecId == AV_CODEC_ID_MP3) {
+    if (m_SCcodecId == AV_CODEC_ID_MP3) {
 #else
-    if(m_SCcodecId == CODEC_ID_MP3) {
+    if (m_SCcodecId == CODEC_ID_MP3) {
 #endif
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec MP3";
 #ifdef avformat_alloc_output_context2
@@ -245,9 +245,9 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
 #endif
 
 #ifndef __FFMPEGOLDAPI__
-    } else if(m_SCcodecId == AV_CODEC_ID_AAC) {
+    } else if (m_SCcodecId == AV_CODEC_ID_AAC) {
 #else
-    } else if(m_SCcodecId == CODEC_ID_AAC) {
+    } else if (m_SCcodecId == CODEC_ID_AAC) {
 #endif
         qDebug() << "EncoderFfmpegCore::initEncoder: Codec M4A";
 #ifdef avformat_alloc_output_context2
@@ -337,7 +337,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 
     // If we have something else than AV_SAMPLE_FMT_FLT we have to convert it to something that
     // fits..
-    if(l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT) {
+    if (l_SCodecCtx->sample_fmt != AV_SAMPLE_FMT_FLT) {
 
         reSample(l_SFrame);
         // After we have turned our samples to destination
@@ -394,7 +394,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx, AVStream *str
 
     // Some times den is zero.. so 0 dived by 0 is
     // Something?
-    if(m_pEncoderAudioStream->pts.den == 0) {
+    if (m_pEncoderAudioStream->pts.den == 0) {
         qDebug() << "Time hack!";
         m_pEncoderAudioStream->pts.den = 1;
     }

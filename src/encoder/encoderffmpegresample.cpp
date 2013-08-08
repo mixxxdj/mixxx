@@ -26,7 +26,7 @@ EncoderFfmpegResample::EncoderFfmpegResample(AVCodecContext *codecCtx) {
 }
 
 EncoderFfmpegResample::~EncoderFfmpegResample() {
-    if(m_pSwrCtx != NULL) {
+    if (m_pSwrCtx != NULL) {
 #ifndef __FFMPEGOLDAPI__
 
 #ifdef __LIBAVRESAMPLE__
@@ -57,7 +57,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFo
     // GOOD thing is now this can handle allmost everything..
     // What should be tested is 44800 Hz downsample and 22100 Hz up sample.
     if ((inSampleFmt != outSampleFmt || m_pCodecCtx->sample_rate != 44100 || m_pCodecCtx->channel_layout != AV_CH_LAYOUT_STEREO) && m_pSwrCtx == NULL) {
-        if(m_pSwrCtx != NULL) {
+        if (m_pSwrCtx != NULL) {
             qDebug() << "Freeing Resample context";
 
 // __FFMPEGOLDAPI__ Is what is used in FFMPEG < 0.10 and libav < 0.8.3. NO libresample available..
@@ -77,11 +77,11 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFo
 
         // Some MP3/WAV don't tell this so make assumtion that
         // They are stereo not 5.1
-        if(m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 2) {
+        if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 2) {
             m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
-        } else if(m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 1) {
+        } else if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 1) {
             m_pCodecCtx->channel_layout = AV_CH_LAYOUT_MONO;
-        } else if(m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 0) {
+        } else if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 0) {
             m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
             m_pCodecCtx->channels = 2;
         }
@@ -118,7 +118,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFo
                                            0.8);
 
 #endif
-        if(!m_pSwrCtx) {
+        if (!m_pSwrCtx) {
             qDebug() << "Can't init convertor!";
             return -1;
         }
