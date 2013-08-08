@@ -87,7 +87,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
     TrackCollection* m_pTrackCollection;
-//    ThreadDAO* m_pThreadDAO;
 
     TrackDAO& m_trackDAO;
     QSqlDatabase m_database;

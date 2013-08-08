@@ -46,10 +46,11 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 
     m_pTrackCollection->start();
 
+    // Since m_pTrackCollection is separate thread, here we must wait when
+    // all inside m_pTrackCollection will be initialized, so we can access members.
     QEventLoop loop;
     QObject::connect(m_pTrackCollection, SIGNAL(initialized()), &loop, SLOT(quit()));
     loop.exec();
-
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary

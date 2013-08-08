@@ -24,6 +24,9 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_cueDao(NULL),
           m_analysisDao(NULL),
           m_trackDao(NULL),
+          m_haveFunction(false),
+          m_callFinished(true),
+          m_stop(false),
 //          m_database(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
 //          m_playlistDao(m_database),
 //          m_crateDao(m_database),
@@ -110,11 +113,13 @@ void TrackCollection::run() {
     }
 }
 
-void TrackCollection::callSync(func lambda, QWidget& w) {
+void TrackCollection::callSync(func lambda) {
     //TODO(tro) check lambda
+    qDebug() << "IN TrackCollection::callSync";
 
     int waitCycles = 0;
     while(!m_callFinished) {
+        qDebug() << "waiting while m_callFinished";
         qApp->processEvents( QEventLoop::AllEvents );
         SleepableQThread::msleep(SleepTimeMs);
         ++waitCycles;
@@ -130,7 +135,7 @@ void TrackCollection::callSync(func lambda, QWidget& w) {
         ++waitCycles;
         if (waitCycles > TooLong && !animationIsShowed) {
             qDebug() << "Start animation";
-            w.setEnabled(false);
+//            w.setEnabled(false);
 //            m_progressindicator.startAnimation();
             animationIsShowed = true;
         }
@@ -139,7 +144,7 @@ void TrackCollection::callSync(func lambda, QWidget& w) {
 
     if (animationIsShowed) {
         qDebug() << "Stop animation";
-        w.setEnabled(true);
+//        w.setEnabled(true);
 //        m_progressindicator.stopAnimation();
     }
 }

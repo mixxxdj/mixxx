@@ -44,17 +44,17 @@ void BaseExternalLibraryFeature::onRightClickChild(const QPoint& globalPos, QMod
 }
 
 void BaseExternalLibraryFeature::slotAddToAutoDJ() {
-    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
     addToAutoDJ(false);
 }
 
 void BaseExternalLibraryFeature::slotAddToAutoDJTop() {
-    //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
+    qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
     addToAutoDJ(true);
 }
 
 void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+     qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     if (!m_lastRightClickedIndex.isValid()) {
         return;

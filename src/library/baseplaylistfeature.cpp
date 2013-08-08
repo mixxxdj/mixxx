@@ -389,12 +389,13 @@ void BasePlaylistFeature::slotExportPlaylist() {
 }
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
-    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+
     addToAutoDJ(false); // Top = True
 }
 
 void BasePlaylistFeature::slotAddToAutoDJTop() {
-    //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
+    qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
     addToAutoDJ(true); // bTop = True
 }
 

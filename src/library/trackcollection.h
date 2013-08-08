@@ -51,7 +51,7 @@ class TrackCollection : public QThread {
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
     ~TrackCollection();
     void run();
-    void callSync(func lambda, QWidget& w);
+    void callSync(func lambda/*, QWidget& w = QPushButton()*/);
     void stopThread();
     void setLambda(func lambda);
 

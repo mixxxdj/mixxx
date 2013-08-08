@@ -1115,7 +1115,15 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
 
 void WTrackTableView::slotSendToAutoDJ() {
     // append to auto DJ
-    sendToAutoDJ(false); // bTop = false
+    qDebug() << "in WTrackTableView::slotSendToAutoDJ";
+    m_pTrackCollection->callSync(
+                // lambda goes here
+                [this] (void)
+    {
+        qDebug() << "\t in lambda";
+        sendToAutoDJ(false); // bTop = false
+        qDebug() << "\t lambda ends";
+    });
 }
 
 void WTrackTableView::slotSendToAutoDJTop() {
