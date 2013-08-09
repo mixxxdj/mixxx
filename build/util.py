@@ -65,7 +65,7 @@ def get_git_revision():
     return len(os.popen("git log --pretty=oneline --first-parent").read().splitlines())
 
 def get_git_modified():
-    modified_matcher = re.compile("^#.*modified:   (?P<filename>.*?)$")
+    modified_matcher = re.compile("^#.*:   (?P<filename>.*?)$") # note output might be translated
     modified_files = []
     for line in os.popen("git status").read().splitlines():
         match = modified_matcher.match(line)
@@ -157,7 +157,7 @@ def write_build_header(path):
     f = open(path, 'w')
     try:
         branch_name = get_branch_name()
-        modified = get_modified() > 0
+        modified = len(get_modified()) > 0
         # Do not emit BUILD_BRANCH on release branches.
         if not branch_name.startswith('release'):
             f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
