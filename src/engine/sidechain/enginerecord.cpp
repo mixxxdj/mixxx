@@ -169,6 +169,9 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (m_Encoding == ENCODING_WAVE || m_Encoding == ENCODING_AIFF) {
             if (m_sndfile != NULL) {
                 sf_write_float(m_sndfile, pBuffer, iBufferSize);
+
+                // TODO(carl) isn't this actually samples recorded, not bytes recorded.
+                // correct number would be iBufferSize * sizeOf(CSAMPLE);
                 emit(bytesRecorded(iBufferSize));
             }
         } else {
