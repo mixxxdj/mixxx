@@ -807,19 +807,22 @@ class FFMPEG(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('ffmpeg', '(NOT-WORKING) Set to 1 to enable FFMPEG support', 0)
+        vars.Add('ffmpeg', 'Set to 1 to enable FFMPEG/Libav support (supported FFMPEG 0.11-1.2 and Libav 0.8.x-9)', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
+        # Supported version are FFMPEG 0.11-1.2 and Libav 0.8.x-9.
+        # FFMPEG is multimedia library that can be found http://ffmpeg.org/
+        # Libav is fork of FFMPEG that is used mainly in Debian and Ubuntu that can be found http://libav.org
         if build.platform_is_linux or build.platform_is_osx or build.platform_is_bsd:
             # Check for libavcodec, libavformat
             # I just randomly picked version numbers lower than mine for this - Albert
             if not conf.CheckForPKG('libavcodec', '53.35.0'):
-                raise Exception('libavcodec not found! Version should be at least: 53.35.0')
+                raise Exception('Missing libavcodec or it\'s too old! It can be separated from main package so check your operating system packages.')
             if not conf.CheckForPKG('libavformat', '53.21.0'):
-                raise Exception('libavformat not found! Version should be at least: 53.21.0')
+                raise Exception('Missing libavformat  or it\'s too old! It can be separated from main package so check your operating system packages.')
 
             # Needed to build new FFMPEG
             build.env.Append(CCFLAGS = '-D__STDC_CONSTANT_MACROS') 
@@ -831,21 +834,40 @@ class FFMPEG(Feature):
             build.env.ParseConfig('pkg-config libavformat --silence-errors --cflags --libs')
             build.env.ParseConfig('pkg-config libavutil --silence-errors --cflags --libs')
 
-            # FFMPEG 1.1/LIBAV 9.1 have libavresample 1.0.1 FFMPEG 1.0 have 0.0.3 (0.0.2 ain't compatible)
-            # Somebody doesn't want to use AVRESAMPLE so we use swresample if available
-            # If it's not available and somebody wants to use old old old conversion.. go ahead
-            # be my gueststar!
+            # What are libavresample and libswresample??
+            # Libav forked from FFMPEG in version 0.10 and there wasn't any separated library for resampling audio
+            # There we resample API (actually two and they are both a big mess). API is now marked as depricated 
+            # but still available in current version FFMPEG up to version 1.2 or Libav up to version 9
+            # In some point developers FFMPEG decided to make libswresample (Software Resample). Libav people
+            # also noticed API problem and created libavresample. After that libavresample were imported in FFMPEG
+            # and it's API/ABI compatible with LibAV.
+            # If you have FFMPEG version 0.10 or Libav version 0.8.x your resampling is done through inner API
+            # FFMPEG 0.11 Have libswresample but ain't libavresample
+            # FFMPEG 1.0 and above have libswresample and libavresample
+            # Libav after 0.8.x and between 9 have some libavresample
+            # Libav 9 have libavresample have libavresample
+            # Most Linux systems have separated packages for libswresample/libavresample
+            # so you can have them installed or not in you system most use libavresample.
+            # Ubuntu/Debian only have Libav 0.8.x available (There is PPA for libav 9)
+            # Fedora uses newest FFMPEG 1.x
+            # openSUSE uses newest FFMPEG 1.x
+            # Mac OS X does have FFMPEG available (with libswresample) from macports or homebrew
+            # Microsoft Windows can download FFMPEG or Libav resample libraries
+
             if conf.CheckForPKG('libavresample', '0.0.3'):
                 build.env.ParseConfig('pkg-config libavresample --silence-errors --cflags --libs')
                 build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
                 build.env.Append(CPPDEFINES = '__LIBAVRESAMPLE__')
+                self.status = "Enabled -- with libavresample"
             elif conf.CheckForPKG('libswresample', '0.0.1'):
                 build.env.ParseConfig('pkg-config libswresample --silence-errors --cflags --libs')
                 build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
                 build.env.Append(CPPDEFINES = '__LIBSWRESAMPLE__')
+                self.status = "Enabled -- with libswresample"
             else:
                 build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
-                build.env.Append(CPPDEFINES = '__FFMPEGOLDAPI__')    
+                build.env.Append(CPPDEFINES = '__FFMPEGOLDAPI__')
+                self.status = "Enabled --  with old resample API"
 
         else:
             # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev libdts-dev
