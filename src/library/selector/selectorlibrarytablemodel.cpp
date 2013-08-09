@@ -243,33 +243,29 @@ void SelectorLibraryTableModel::filterByKeyRelative(bool value) {
 // PRIVATE SLOTS
 
 void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
-    if (deck > 0) {
-        m_pChannel = QString("[Channel%1]").arg(deck);
+    m_pChannel = QString("[Channel%1]").arg(deck);
 
-        // disconnect the old pitch slider
-        if (m_channelBpm) {
-            disconnect(m_channelBpm, 0, this, 0);
-        }
-
-        if (m_channelKey) {
-            disconnect(m_channelKey, 0, this, 0);
-        }
-
-        // get the new pitch slider object
-        m_channelBpm = new ControlObjectThreadMain(m_pChannel, "bpm");
-
-        m_channelKey = new ControlObjectThreadMain(m_pChannel, "key");
-
-        // listen for slider change events
-        connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
-            SLOT(slotChannelBpmChanged(double)));
-        connect(m_channelKey, SIGNAL(valueChanged(double)), this,
-            SLOT(slotChannelKeyChanged(double)));
-
-        m_pLoadedTrack = PlayerInfo::Instance().getTrackInfo(m_pChannel);
-    } else {
-        m_pLoadedTrack = TrackPointer();
+    // disconnect the old pitch slider
+    if (m_channelBpm) {
+        disconnect(m_channelBpm, 0, this, 0);
     }
+
+    if (m_channelKey) {
+        disconnect(m_channelKey, 0, this, 0);
+    }
+
+    // get the new pitch slider object
+    m_channelBpm = new ControlObjectThreadMain(m_pChannel, "bpm");
+
+    m_channelKey = new ControlObjectThreadMain(m_pChannel, "key");
+
+    // listen for slider change events
+    connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
+        SLOT(slotChannelBpmChanged(double)));
+    connect(m_channelKey, SIGNAL(valueChanged(double)), this,
+        SLOT(slotChannelKeyChanged(double)));
+
+    m_pLoadedTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
 
     setSeedTrack(m_pLoadedTrack);
     emit(seedTrackInfoChanged());
