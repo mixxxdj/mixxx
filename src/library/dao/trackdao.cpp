@@ -994,7 +994,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             // Normally we will set the track as clean but sometimes when
             // loading from the database we need to perform upkeep that ought to
             // be written back to the database when the track is deleted.
-//            pTrack->setDirty(shouldDirty);
+            pTrack->setDirty(false);
 
             // Listen to dirty and changed signals
             connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
