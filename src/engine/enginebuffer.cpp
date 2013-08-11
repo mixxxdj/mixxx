@@ -482,7 +482,6 @@ void EngineBuffer::slotControlPlayRequest(double v)
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
-    qDebug() << m_pCurrentTrack;
     if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
         v = 0.0;
     }
