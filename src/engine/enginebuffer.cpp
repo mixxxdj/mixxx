@@ -486,9 +486,11 @@ void EngineBuffer::slotControlPlayRequest(double v)
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
+    qDebug() << m_pCurrentTrack;
     if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
-        return;
+        v = 0.0;
     }
+    // set and confirm must be called in any case to update the widget toggle state
     m_playButton->setAndConfirm(v);
 }
 
