@@ -33,7 +33,8 @@ class ControlDoublePrivate : public QObject {
 
     // Sets the control value.
     void set(double value, QObject* pSender);
-    // Sets the control value.
+    // directly sets the control value. Must be used from and only from the
+    // ValueChangeRequest slot.
     void setAndConfirm(double value, QObject* pSender);
     // Gets the control value.
     double get() const;
@@ -64,6 +65,12 @@ class ControlDoublePrivate : public QObject {
         return m_pBehavior ? m_pBehavior->defaultValue(default_value) : default_value;
     }
 
+    // Connects a slot to the ValueChange request for CO validation.
+    // All change requests issued by set are routed though the connected slot
+    // This can decide with its own thread safe solution if the requested value
+    // can be confirmed by setAndConfirm() or not.
+    // Note: Once connected, the CO value itself is ONLY set by setAndConfirm() typically
+    // called in the connected slot.
     bool connectValueChangeRequest(const QObject* receiver,
             const char* method, Qt::ConnectionType type);
 
