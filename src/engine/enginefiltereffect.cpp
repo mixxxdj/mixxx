@@ -24,12 +24,17 @@ EngineFilterEffect::EngineFilterEffect(const char* group) {
 
     m_pCrossfade_buffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBandpass_buffer = SampleUtil::alloc(MAX_BUFFER_LEN);
+
+    old_depth = 1.0f;
 }
 
 EngineFilterEffect::~EngineFilterEffect() {
     delete m_pLowFilter;
     delete m_pBandpassFilter;
     delete m_pHighFilter;
+
+    delete potmeterDepth;
+    delete filterEnable;
 
     SampleUtil::free(m_pCrossfade_buffer);
     SampleUtil::free(m_pBandpass_buffer);
