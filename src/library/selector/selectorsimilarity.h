@@ -23,14 +23,22 @@ class SelectorSimilarity : public QObject {
             const QHash<QString, double>& contributions);
 
   private:
+    typedef double (*SimilarityFunc)(TrackPointer pTrack1,
+                                     TrackPointer pTrack2);
+
     void loadStoredSimilarityContributions();
     QHash<QString, double> normalizeContributions(TrackPointer pSeedTrack);
+
+    static double timbreSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
+    static double beatSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
+    static double tagSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
 
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     TrackDAO& m_trackDAO;
 
     QHash<QString, double> m_similarityContributions;
+    QHash<QString, SimilarityFunc> m_similarityFunctions;
 
 };
 

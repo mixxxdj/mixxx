@@ -9,9 +9,6 @@
 #include "library/selector/selector_preferences.h"
 #include "library/selector/selectorsimilarity.h"
 
-
-const double maxBpmDiff = 10.0;
-
 SelectorSimilarity::SelectorSimilarity(QObject* parent,
                                        TrackCollection* pTrackCollection,
                                        ConfigObject<ConfigValue>* pConfig)
@@ -19,6 +16,9 @@ SelectorSimilarity::SelectorSimilarity(QObject* parent,
       m_pConfig(pConfig),
       m_pTrackCollection(pTrackCollection),
       m_trackDAO(m_pTrackCollection->getTrackDAO()) {
+    m_similarityFunctions.insert("timbre", timbreSimilarity);
+    m_similarityFunctions.insert("beat", beatSimilarity);
+    m_similarityFunctions.insert("tags", tagSimilarity);
 }
 
 SelectorSimilarity::~SelectorSimilarity() {
@@ -29,7 +29,6 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
 
     QTime timer;
     timer.start();
-//    ScopedTimer t("SelectorSimilarity::calculateSimilarities");
 
     loadStoredSimilarityContributions();
     QList<QPair<int, double> > scores;
@@ -38,59 +37,20 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
 
     qDebug() << contributions;
 
-    double seedTrackBpm = pSeedTrack->getBpm();
-    TimbrePointer pSeedTrackTimbre = pSeedTrack->getTimbre();
-    TagCounts seedTrackTags = pSeedTrack->getTags();
-
-    double bpmContribution = contributions.value("bpm");
-    double timbreContribution = contributions.value("timbre");
-    double rhythmContribution = contributions.value("rhythm");
-
     foreach (int trackId, trackIds) {
         double score = 0.0;
 
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
-        if (bpmContribution > 0.0) {
-            double bpm = pTrack->getBpm();
-            double bpmDiff = abs(bpm - seedTrackBpm);
-            double bpmScore = ((maxBpmDiff - bpmDiff) / maxBpmDiff);
-
-            if (bpmScore > 1.0) bpmScore = 1.0;
-            else if (bpmScore < 0.0) bpmScore = 0.0;
-            bpmScore *= bpmContribution;
-
-            score += bpmScore;
-        }
-
-        if (timbreContribution > 0.0 || rhythmContribution > 0.0) {
-            TimbrePointer pTimbre = pTrack->getTimbre();
-            if (!pSeedTrackTimbre.isNull() && !pTimbre.isNull()) {
-                double timbreScore =
-                        1.0 - TimbreUtils::hellingerDistance(pSeedTrackTimbre,
-                                                           pTimbre);
-                double rhythmScore =
-                        1.0 - TimbreUtils::modelDistanceBeats(pSeedTrackTimbre,
-                                                            pTimbre);
-
-    //            qDebug() << m_sSeedTrackInfo << "x"
-    //                     << otherTrack->getInfo() << timbreScore;
-                timbreScore *= timbreContribution;
-                rhythmScore *= rhythmContribution;
-                score += timbreScore + rhythmScore;
+        foreach (QString key, contributions.keys()) {
+            double contribution = contributions.value(key);
+            if (contribution != 0.0) {
+                qDebug() << key;
+                SimilarityFunc simFunc = m_similarityFunctions[key];
+                score += simFunc(pSeedTrack, pTrack) * contribution;
             }
         }
 
-        double lastFmContribution = m_similarityContributions.value("lastfm");
-        if (lastFmContribution > 0.0) {
-            TagCounts trackTags = pTrack->getTags();
-            if (!seedTrackTags.isEmpty() && !trackTags.isEmpty()) {
-                double tagsScore =
-                    TagUtils::overlapSimilarity(seedTrackTags, trackTags);
-                tagsScore *= lastFmContribution;
-                score += tagsScore;
-            }
-        }
         scores << QPair<int, double>(trackId, score);
     }
 
@@ -142,4 +102,34 @@ QHash<QString, double> SelectorSimilarity::normalizeContributions(
         }
     }
     return contributions;
+}
+
+double SelectorSimilarity::timbreSimilarity(TrackPointer pTrack1,
+                                            TrackPointer pTrack2) {
+    TimbrePointer pTimbre1 = pTrack1->getTimbre();
+    TimbrePointer pTimbre2 = pTrack2->getTimbre();
+    if (!pTimbre1.isNull() && !pTimbre2.isNull()) {
+        return 1.0 - TimbreUtils::hellingerDistance(pTimbre1, pTimbre2);
+    }
+    return 0.0;
+}
+
+double SelectorSimilarity::beatSimilarity(TrackPointer pTrack1,
+                                          TrackPointer pTrack2) {
+    TimbrePointer pTimbre1 = pTrack1->getTimbre();
+    TimbrePointer pTimbre2 = pTrack2->getTimbre();
+    if (!pTimbre1.isNull() && !pTimbre2.isNull()) {
+        return 1.0 - TimbreUtils::modelDistanceBeats(pTimbre1, pTimbre2);
+    }
+    return 0.0;
+}
+
+double SelectorSimilarity::tagSimilarity(TrackPointer pTrack1,
+                                         TrackPointer pTrack2) {
+    TagCounts trackTags1 = pTrack1->getTags();
+    TagCounts trackTags2 = pTrack2->getTags();
+    if (!trackTags1.isEmpty() && !trackTags2.isEmpty()) {
+        return TagUtils::overlapSimilarity(trackTags1, trackTags2);
+    }
+    return 0.0;
 }
