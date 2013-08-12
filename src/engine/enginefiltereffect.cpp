@@ -25,7 +25,7 @@ EngineFilterEffect::EngineFilterEffect(const char* group) {
     m_pCrossfade_buffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBandpass_buffer = SampleUtil::alloc(MAX_BUFFER_LEN);
 
-    old_depth = 1.0f;
+    old_depth = 0.0f;
 }
 
 EngineFilterEffect::~EngineFilterEffect() {
