@@ -66,12 +66,8 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
         return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
     }
 
-    if (depth == 0.0f) {
-        // Nothing to do
-        old_depth = depth;
-        return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
-    } else if (depth == -1.0f || depth == 1.0f ) {
-        // Kill sound
+    // Kill sound on min and max depth
+    if (depth == -1.0f || depth == 1.0f ) {
         old_depth = depth;
         return SampleUtil::copyWithGain(pOutput, pIn, 0.0f, iBufferSize);
     }
@@ -90,7 +86,22 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
         } else {
             applyFilters(pIn, m_pCrossfade_buffer, iBufferSize);
         }
+    }
 
+    if (depth == 0.0f) {
+        if( old_depth == depth ) {
+            // Nothing to do
+            return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
+        } else {
+            old_depth = depth;
+            SampleUtil::linearCrossfadeBuffers(pOutput, m_pCrossfade_buffer,
+                                               pIn, iBufferSize);
+            return;
+        }
+    }
+
+    // Update filter depth
+    if (old_depth != depth) {
         if (depth < 0.0f) {
             // Lowpass + bandpass
             // Freq from 2^5=32Hz to 2^(5+9)=16384
