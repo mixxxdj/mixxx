@@ -8,9 +8,10 @@
 
 EngineFilterEffect::EngineFilterEffect(const char* group) {
     potmeterDepth = ControlObject::getControl(ConfigKey(group, "filterDepth"));
-    if (potmeterDepth == NULL)
+    if (potmeterDepth == NULL) {
         potmeterDepth = new ControlPotmeter(ConfigKey(group, "filterDepth"),
                                             -1., 1.);
+    }
 
     filterEnable = new ControlPushButton(ConfigKey(group, "filter"));
     filterEnable->setButtonMode(ControlPushButton::TOGGLE);
@@ -40,18 +41,13 @@ void EngineFilterEffect::applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut,
     float bandpass_gain = 0.3f;
 
     if (potmeterDepth->get() < 0.0f) {
-        // Apply lowpass filter into output buffer
         m_pLowFilter->process(pIn, pOut, iBufferSize);
-        // Apply bandpass filter into bandpass buffer
         m_pBandpassFilter->process(pIn, m_pBandpass_buffer, iBufferSize);
     } else {
-        // Apply highpass filter into output buffer
         m_pHighFilter->process(pIn, pOut, iBufferSize);
-        // Apply bandpass filter into bandpass buffer
         m_pBandpassFilter->process(pIn, m_pBandpass_buffer, iBufferSize);
     }
 
-    // Mix output buffer with bandpass buffer
     SampleUtil::addWithGain(pOut, m_pBandpass_buffer, bandpass_gain, iBufferSize);
 }
 
