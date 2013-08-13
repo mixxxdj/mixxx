@@ -30,7 +30,7 @@ class SelectorSimilarity : public QObject {
     QHash<QString, double> normalizeContributions(TrackPointer pSeedTrack);
 
     static double timbreSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
-    static double beatSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
+    static double rhythmSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
     static double tagSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
 
     ConfigObject<ConfigValue>* m_pConfig;

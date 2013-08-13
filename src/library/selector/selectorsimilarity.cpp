@@ -16,9 +16,9 @@ SelectorSimilarity::SelectorSimilarity(QObject* parent,
       m_pConfig(pConfig),
       m_pTrackCollection(pTrackCollection),
       m_trackDAO(m_pTrackCollection->getTrackDAO()) {
-    m_similarityFunctions.insert("timbre", timbreSimilarity);
-    m_similarityFunctions.insert("beat", beatSimilarity);
-    m_similarityFunctions.insert("tags", tagSimilarity);
+    m_similarityFunctions.insert("timbre", &timbreSimilarity);
+    m_similarityFunctions.insert("rhythm", &rhythmSimilarity);
+    m_similarityFunctions.insert("tags", &tagSimilarity);
 }
 
 SelectorSimilarity::~SelectorSimilarity() {
@@ -114,7 +114,7 @@ double SelectorSimilarity::timbreSimilarity(TrackPointer pTrack1,
     return 0.0;
 }
 
-double SelectorSimilarity::beatSimilarity(TrackPointer pTrack1,
+double SelectorSimilarity::rhythmSimilarity(TrackPointer pTrack1,
                                           TrackPointer pTrack2) {
     TimbrePointer pTimbre1 = pTrack1->getTimbre();
     TimbrePointer pTimbre2 = pTrack2->getTimbre();
