@@ -34,15 +34,14 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void tableSelectionChanged(const QItemSelection& selected,
                                const QItemSelection& deselected);
     void selectAll();
-    void resetFilters();
-    void setDefaults();
-    void filterByGenre();
-    void filterByBpm();
-    void spinBoxBpmRangeChanged(int value);
-    void filterByKey();
-    void filterByKey4th();
-    void filterByKey5th();
-    void filterByKeyRelative();
+    void loadStoredFilterSettings();
+    void filterByGenre(bool checked);
+    void filterByBpm(bool checked);
+    void bpmRangeChanged(int value);
+    void filterByKey(bool checked);
+    void filterByKey4th(bool checked);
+    void filterByKey5th(bool checked);
+    void filterByKeyRelative(bool checked);
     void installEventFilter(QObject* pFilter);
     void slotFiltersChanged();
     void slotSeedTrackInfoChanged();

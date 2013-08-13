@@ -37,28 +37,28 @@ DlgSelector::DlgSelector(QWidget* parent,
             new SelectorLibraryTableModel(this, pConfig, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pSelectorLibraryTableModel);
 
-    connect(checkBoxGenre, SIGNAL(clicked()),
-            this, SLOT(filterByGenre()));
-    connect(checkBoxBpm, SIGNAL(clicked()),
-            this, SLOT(filterByBpm()));
-    connect(checkBoxKey, SIGNAL(clicked()),
-            this, SLOT(filterByKey()));
-    connect(checkBoxKey4th, SIGNAL(clicked()),
-            this, SLOT(filterByKey4th()));
-    connect(checkBoxKey5th, SIGNAL(clicked()),
-            this, SLOT(filterByKey5th()));
-    connect(checkBoxKeyRelative, SIGNAL(clicked()),
-            this, SLOT(filterByKeyRelative()));
+    connect(checkBoxGenre, SIGNAL(toggled(bool)),
+            this, SLOT(filterByGenre(bool)));
+    connect(checkBoxBpm, SIGNAL(toggled(bool)),
+            this, SLOT(filterByBpm(bool)));
+    connect(checkBoxKey, SIGNAL(toggled(bool)),
+            this, SLOT(filterByKey(bool)));
+    connect(checkBoxKey4th, SIGNAL(toggled(bool)),
+            this, SLOT(filterByKey4th(bool)));
+    connect(checkBoxKey5th, SIGNAL(toggled(bool)),
+            this, SLOT(filterByKey5th(bool)));
+    connect(checkBoxKeyRelative, SIGNAL(toggled(bool)),
+            this, SLOT(filterByKeyRelative(bool)));
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
-            this, SLOT(spinBoxBpmRangeChanged(int)));
+            this, SLOT(bpmRangeChanged(int)));
     connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(resetFilters()),
-            this, SLOT(setDefaults()));
+            this, SLOT(loadStoredFilterSettings()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(seedTrackInfoChanged()),
            this, SLOT(slotSeedTrackInfoChanged()));
 
-    setDefaults();
+    loadStoredFilterSettings();
 
 }
 
@@ -134,44 +134,34 @@ void DlgSelector::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
-void DlgSelector::resetFilters() {
-    checkBoxGenre->setChecked(false);
-    checkBoxBpm->setChecked(false);
-    checkBoxKey->setChecked(false);
-    checkBoxKey4th->setChecked(false);
-    checkBoxKey5th->setChecked(false);
-    checkBoxKeyRelative->setChecked(false);
+void DlgSelector::filterByGenre(bool checked) {
+    m_pSelectorLibraryTableModel->filterByGenre(checked);
 }
 
-void DlgSelector::filterByGenre() {
-    m_pSelectorLibraryTableModel->filterByGenre(checkBoxGenre->isChecked());
-}
-
-void DlgSelector::filterByBpm() {
-    bool bpm = checkBoxBpm->isChecked();
+void DlgSelector::filterByBpm(bool checked) {
     int range = horizontalSliderBpmRange->value();
-    m_pSelectorLibraryTableModel->filterByBpm(bpm, range);
+    m_pSelectorLibraryTableModel->filterByBpm(checked, range);
 }
 
-void DlgSelector::spinBoxBpmRangeChanged(int value) {
+void DlgSelector::bpmRangeChanged(int value) {
     Q_UNUSED(value);
-    filterByBpm();
+    filterByBpm(checkBoxBpm->isChecked());
 }
 
-void DlgSelector::filterByKey() {
-    m_pSelectorLibraryTableModel->filterByKey(checkBoxKey->isChecked());
+void DlgSelector::filterByKey(bool checked) {
+    m_pSelectorLibraryTableModel->filterByKey(checked);
 }
 
-void DlgSelector::filterByKey4th() {
-    m_pSelectorLibraryTableModel->filterByKey4th(checkBoxKey4th->isChecked());
+void DlgSelector::filterByKey4th(bool checked) {
+    m_pSelectorLibraryTableModel->filterByKey4th(checked);
 }
 
-void DlgSelector::filterByKey5th() {
-    m_pSelectorLibraryTableModel->filterByKey5th(checkBoxKey5th->isChecked());
+void DlgSelector::filterByKey5th(bool checked) {
+    m_pSelectorLibraryTableModel->filterByKey5th(checked);
 }
 
-void DlgSelector::filterByKeyRelative() {
-    m_pSelectorLibraryTableModel->filterByKeyRelative(checkBoxKeyRelative->isChecked());
+void DlgSelector::filterByKeyRelative(bool checked) {
+    m_pSelectorLibraryTableModel->filterByKeyRelative(checked);
 }
 
 void DlgSelector::installEventFilter(QObject* pFilter) {
@@ -183,7 +173,7 @@ void DlgSelector::on_buttonCalcSimilarity_clicked() {
     m_pSelectorLibraryTableModel->calculateSimilarity();
 }
 
-void DlgSelector::setDefaults() {
+void DlgSelector::loadStoredFilterSettings() {
     bool bFilterGenre = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_GENRE)).toInt());
     bool bFilterBpm = static_cast<bool>(m_pConfig->getValueString(
