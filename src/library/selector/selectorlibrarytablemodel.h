@@ -12,7 +12,7 @@
 #include "track/tagutils.h"
 #include "library/selector/selectorsimilarity.h"
 
-
+#define SELECTOR_TABLE "selector_table"
 
 class ControlObjectThreadMain;
 

@@ -25,8 +25,6 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 const bool sDebug = true;
-const QString tableName = "selector_table";
-const double maxBpmDiff = 10.0;
 
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                      ConfigObject<ConfigValue>* pConfig,
@@ -67,14 +65,15 @@ void SelectorLibraryTableModel::setTableModel(int id){
     Q_UNUSED(id);
 
     QStringList columns;
-    columns << "library."+LIBRARYTABLE_ID << "'' as preview" << " 0.0 as score";
+    columns << "library." % LIBRARYTABLE_ID << "'' as preview" << " 0.0 as score";
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY TABLE IF NOT EXISTS "+tableName+" AS "
-            "SELECT " + columns.join(", ") +
+    QString queryString = "CREATE TEMPORARY TABLE IF NOT EXISTS "
+            SELECTOR_TABLE " AS "
+            "SELECT " % columns.join(", ") %
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+            "WHERE (" % LibraryTableModel::DEFAULT_LIBRARYFILTER % ")";
     query.prepare(queryString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -84,7 +83,7 @@ void SelectorLibraryTableModel::setTableModel(int id){
     tableColumns << LIBRARYTABLE_ID;
     tableColumns << "preview";
     tableColumns << "score";
-    setTable(tableName, LIBRARYTABLE_ID, tableColumns,
+    setTable(SELECTOR_TABLE, LIBRARYTABLE_ID, tableColumns,
              m_pTrackCollection->getTrackSource("default"));
 
     initHeaderData();
@@ -141,8 +140,8 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
 void SelectorLibraryTableModel::calculateSimilarity() {
     if (!m_pSeedTrack.isNull()) {
         QSqlQuery query(m_pTrackCollection->getDatabase());
-        query.prepare("UPDATE " + tableName + " SET score=:score "
-                      "WHERE " + LIBRARYTABLE_ID + "=:id;");
+        query.prepare("UPDATE " SELECTOR_TABLE " SET score=:score "
+                      "WHERE " % LIBRARYTABLE_ID % "=:id;");
         QVariantList queryTrackIds;
         QVariantList queryScores;
 
