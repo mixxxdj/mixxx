@@ -45,9 +45,6 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     connect(this, SIGNAL(resetFilters()),
             this, SLOT(slotResetFilters()));
 
-    connect(this, SIGNAL(filtersChanged()),
-            this, SLOT(slotFiltersChanged()));
-
     m_channelBpm = NULL;
     m_channelKey = NULL;
     m_bActive = false;
@@ -65,7 +62,7 @@ void SelectorLibraryTableModel::setTableModel(int id){
     Q_UNUSED(id);
 
     QStringList columns;
-    columns << "library." % LIBRARYTABLE_ID << "'' as preview" << " 0.0 as score";
+    columns << "library." % LIBRARYTABLE_ID << "'' as preview" << "0.0 as score";
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     QString queryString = "CREATE TEMPORARY TABLE IF NOT EXISTS "
@@ -267,7 +264,6 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     m_pLoadedTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
 
     setSeedTrack(m_pLoadedTrack);
-    emit(seedTrackInfoChanged());
     updateFilterText();
 }
 
