@@ -98,10 +98,11 @@ void DlgSelector::slotSeedTrackInfoChanged() {
     checkBoxGenre->setEnabled(m_pSelectorLibraryTableModel->seedTrackGenreExists());
     checkBoxBpm->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
     horizontalSliderBpmRange->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
-    checkBoxKey->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
-    checkBoxKey4th->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
-    checkBoxKey5th->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
-    checkBoxKeyRelative->setEnabled(m_pSelectorLibraryTableModel->seedTrackKeyExists());
+    bool hasKey = m_pSelectorLibraryTableModel->seedTrackKeyExists();
+    checkBoxKey->setEnabled(hasKey);
+    checkBoxKey4th->setEnabled(hasKey);
+    checkBoxKey5th->setEnabled(hasKey);
+    checkBoxKeyRelative->setEnabled(hasKey);
 }
 
 void DlgSelector::setSeedTrack(TrackPointer pSeedTrack) {
@@ -122,16 +123,6 @@ void DlgSelector::loadSelectedTrackToGroup(QString group) {
 
 void DlgSelector::moveSelection(int delta) {
     m_pTrackTableView->moveSelection(delta);
-}
-
-void DlgSelector::tableSelectionChanged(const QItemSelection& selected, 
-    const QItemSelection& deselected) {
-    Q_UNUSED(selected);
-    Q_UNUSED(deselected);
-}
-
-void DlgSelector::selectAll() {
-    m_pTrackTableView->selectAll();
 }
 
 void DlgSelector::filterByGenre(bool checked) {

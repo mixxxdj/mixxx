@@ -31,9 +31,6 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void moveSelection(int delta);
 
   public slots:
-    void tableSelectionChanged(const QItemSelection& selected,
-                               const QItemSelection& deselected);
-    void selectAll();
     void loadStoredFilterSettings();
     void filterByGenre(bool checked);
     void filterByBpm(bool checked);
