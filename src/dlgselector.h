@@ -42,14 +42,12 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void installEventFilter(QObject* pFilter);
     void slotFiltersChanged();
     void slotSeedTrackInfoChanged();
+    void calculateSimilarity();
     void calculateAllSimilarities(const QString& filename);
 
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString player);
-
-  private slots:
-    void on_buttonCalcSimilarity_clicked();
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file

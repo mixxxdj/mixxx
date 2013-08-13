@@ -27,8 +27,6 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     void setTableModel(int id = -1);
 
     void search(const QString& searchText);
-    bool isColumnInternal(int column);
-    int rowCount();
 	void active(bool value);
 
     void setSeedTrack(TrackPointer pSeedTrack);
@@ -53,10 +51,12 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     void slotChannelKeyChanged(double value);
     void slotFiltersChanged();
     void slotResetFilters();
+
   signals:
     void filtersChanged();
     void resetFilters();
     void seedTrackInfoChanged();
+
   private:
     bool m_bActive;
     void clearSeedTrackInfo();

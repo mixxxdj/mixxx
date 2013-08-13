@@ -89,14 +89,6 @@ void SelectorLibraryTableModel::setTableModel(int id){
     setDefaultSort(fieldIndex("score"), Qt::DescendingOrder);
 }
 
-bool SelectorLibraryTableModel::isColumnInternal(int column) {
-    return LibraryTableModel::isColumnInternal(column);
-}
-
-int SelectorLibraryTableModel::rowCount() {
-    return BaseSqlTableModel::rowCount();
-}
-
 void SelectorLibraryTableModel::active(bool value) {
     m_bActive = value;
 }

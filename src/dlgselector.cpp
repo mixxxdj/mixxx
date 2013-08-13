@@ -51,12 +51,14 @@ DlgSelector::DlgSelector(QWidget* parent,
             this, SLOT(filterByKeyRelative(bool)));
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
             this, SLOT(bpmRangeChanged(int)));
+    connect(buttonCalcSimilarity, SIGNAL(clicked()),
+            this, SLOT(calculateSimilarity()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(resetFilters()),
             this, SLOT(loadStoredFilterSettings()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(seedTrackInfoChanged()),
-           this, SLOT(slotSeedTrackInfoChanged()));
+            this, SLOT(slotSeedTrackInfoChanged()));
 
     loadStoredFilterSettings();
 
@@ -65,15 +67,12 @@ DlgSelector::DlgSelector(QWidget* parent,
 DlgSelector::~DlgSelector() {
 }
 
-void DlgSelector::onShow()
-{
-    qDebug() << "DlgSelector::onShow()";
+void DlgSelector::onShow() {
     m_pSelectorLibraryTableModel->active(true);
     slotSeedTrackInfoChanged();
 }
 
 void DlgSelector::onHide() {
-    qDebug() << "DlgSelector::onHide()";
     m_pSelectorLibraryTableModel->active(false);
 }
 
@@ -85,7 +84,8 @@ void DlgSelector::onSearch(const QString& text) {
 void DlgSelector::slotFiltersChanged() {
     int count = m_pSelectorLibraryTableModel->rowCount();
     QString pluralize = ((count > 1 || count == 0) ? QString("s") : QString(""));
-    QString labelMatchText = QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
+    QString labelMatchText =
+            QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
     labelMatchCount->setText(labelMatchText);
 }
 
@@ -95,10 +95,13 @@ void DlgSelector::slotSeedTrackInfoChanged() {
     labelSeedTrackInfo->setText(labelSeedTrackText);
 
     // check which filters to activate
-    checkBoxGenre->setEnabled(m_pSelectorLibraryTableModel->seedTrackGenreExists());
-    checkBoxBpm->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
-    horizontalSliderBpmRange->setEnabled(m_pSelectorLibraryTableModel->seedTrackBpmExists());
+    bool hasGenre = m_pSelectorLibraryTableModel->seedTrackGenreExists();
+    bool hasBpm = m_pSelectorLibraryTableModel->seedTrackBpmExists();
     bool hasKey = m_pSelectorLibraryTableModel->seedTrackKeyExists();
+
+    checkBoxGenre->setEnabled(hasGenre);
+    checkBoxBpm->setEnabled(hasBpm);
+    horizontalSliderBpmRange->setEnabled(hasBpm);
     checkBoxKey->setEnabled(hasKey);
     checkBoxKey4th->setEnabled(hasKey);
     checkBoxKey5th->setEnabled(hasKey);
@@ -160,7 +163,7 @@ void DlgSelector::installEventFilter(QObject* pFilter) {
     m_pTrackTableView->installEventFilter(pFilter);
 }
 
-void DlgSelector::on_buttonCalcSimilarity_clicked() {
+void DlgSelector::calculateSimilarity() {
     m_pSelectorLibraryTableModel->calculateSimilarity();
 }
 
