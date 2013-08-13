@@ -56,6 +56,8 @@ class ControlObject : public QObject {
     static double get(const ConfigKey& key);
     // Sets the ControlObject value
     void set(double value);
+    // Sets the ControlObject value
+    void setAndConfirm(double value);
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
     // Sets the default value
@@ -69,6 +71,9 @@ class ControlObject : public QObject {
     inline double defaultValue() const {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
+
+    bool connectValueChangeRequest(const QObject* receiver,
+            const char* method, Qt::ConnectionType type);
 
   signals:
     void valueChanged(double);
