@@ -16,7 +16,8 @@ class EngineFilterEffect : public EngineObject {
 
     void process(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize);
   private:
-    void applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize);
+    void applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut, const int iBufferSize,
+                      float depth);
 
     // Buffers for old filter's value and for bandpass filter
     CSAMPLE* m_pCrossfade_buffer;

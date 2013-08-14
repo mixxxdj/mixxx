@@ -41,11 +41,11 @@ EngineFilterEffect::~EngineFilterEffect() {
 }
 
 void EngineFilterEffect::applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut,
-                                      const int iBufferSize) {
+                                      const int iBufferSize, float depth) {
     // Gain of bandpass filter
     float bandpass_gain = 0.3f;
 
-    if (potmeterDepth->get() < 0.0f) {
+    if (depth < 0.0f) {
         m_pLowFilter->process(pIn, pOut, iBufferSize);
         m_pBandpassFilter->process(pIn, m_pBandpass_buffer, iBufferSize);
     } else {
@@ -75,7 +75,7 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
         } else if (old_depth == -1.0f || old_depth == 1.0f) {
             SampleUtil::copyWithGain(m_pCrossfade_buffer, pIn, 0.0f, iBufferSize);
         } else {
-            applyFilters(pIn, m_pCrossfade_buffer, iBufferSize);
+            applyFilters(pIn, m_pCrossfade_buffer, iBufferSize, old_depth);
         }
         if (depth < 0.0f) {
             // Lowpass + bandpass
@@ -98,7 +98,7 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
     } else if (depth == -1.0f || depth == 1.0f) {
         SampleUtil::copyWithGain(pOutput, pIn, 0.0f, iBufferSize);
     } else {
-        applyFilters(pIn, pOutput, iBufferSize);
+        applyFilters(pIn, pOutput, iBufferSize, depth);
     }
 
     if (depth != old_depth) {
