@@ -22,6 +22,7 @@
 #include "engineclipping.h"
 #include "enginepregain.h"
 #include "engineflanger.h"
+#include "enginefiltereffect.h"
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
 #include "enginefilteriir.h"
@@ -53,6 +54,7 @@ EngineDeck::EngineDeck(const char* group,
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
     m_pFlanger = new EngineFlanger(group);
+    m_pFilterEffect = new EngineFilterEffect(group);
     m_pClipping = new EngineClipping(group);
     m_pBuffer = new EngineBuffer(group, pConfig);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
@@ -67,6 +69,7 @@ EngineDeck::~EngineDeck() {
     delete m_pClipping;
     delete m_pFilter;
     delete m_pFlanger;
+    delete m_pFilterEffect;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
     delete m_pVUMeter;
@@ -108,6 +111,7 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
     m_pFilter->process(pOut, pOut, iBufferSize);
     // TODO(XXX) LADSPA
     m_pFlanger->process(pOut, pOut, iBufferSize);
+    m_pFilterEffect->process(pOut, pOut, iBufferSize);
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
