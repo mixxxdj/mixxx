@@ -61,24 +61,15 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
     CSAMPLE* pOutput = (CSAMPLE*)pOut;
     float depth = potmeterDepth->get();
 
-    // Filter is disabled
     if (filterEnable->get() == 0.0f) {
-        return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
-    }
-
-    // Kill sound on min and max depth
-    if (depth == -1.0f || depth == 1.0f ) {
-        old_depth = depth;
-        return SampleUtil::copyWithGain(pOutput, pIn, 0.0f, iBufferSize);
+        depth = 0.0;
     }
 
     float freq, freq2;
     // Length of bandpass filter
     float bandpass_size = 0.01f;
 
-    // Need to apply old filters value into crossfade buffer and reset filters
-    if (old_depth != depth) {
-        // Apply old value into crossfade buffer
+    if (depth != old_depth) {
         if (old_depth == 0.0f) {
             SampleUtil::copyWithGain(m_pCrossfade_buffer, pIn, 1.0f, iBufferSize);
         } else if (old_depth == -1.0f || old_depth == 1.0f) {
@@ -86,22 +77,6 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
         } else {
             applyFilters(pIn, m_pCrossfade_buffer, iBufferSize);
         }
-    }
-
-    if (depth == 0.0f) {
-        if( old_depth == depth ) {
-            // Nothing to do
-            return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
-        } else {
-            old_depth = depth;
-            SampleUtil::linearCrossfadeBuffers(pOutput, m_pCrossfade_buffer,
-                                               pIn, iBufferSize);
-            return;
-        }
-    }
-
-    // Update filter depth
-    if (old_depth != depth) {
         if (depth < 0.0f) {
             // Lowpass + bandpass
             // Freq from 2^5=32Hz to 2^(5+9)=16384
@@ -118,15 +93,19 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
         }
     }
 
-    applyFilters(pIn, pOutput, iBufferSize);
+    if (depth == 0.0f) {
+        SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
+    } else if (depth == -1.0f || depth == 1.0f) {
+        SampleUtil::copyWithGain(pOutput, pIn, 0.0f, iBufferSize);
+    } else {
+        applyFilters(pIn, pOutput, iBufferSize);
+    }
 
-    // Crossfade old and new depth values
     if (depth != old_depth) {
         SampleUtil::linearCrossfadeBuffers(pOutput, m_pCrossfade_buffer,
                                            pOutput, iBufferSize);
     }
 
-    // Save current depth value
     old_depth = depth;
 }
 
