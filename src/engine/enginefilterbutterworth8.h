@@ -10,7 +10,6 @@ class EngineFilterButterworth8 : public EngineObject
 	~EngineFilterButterworth8();
 
     // Update filter without recreating it
-    virtual void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0) = 0;
     void initBuffers();
     virtual void process(const CSAMPLE *pIn, const CSAMPLE *ppOut,
             const int iBufferSize) = 0;
@@ -35,7 +34,7 @@ class EngineFilterButterworth8Low : public EngineFilterButterworth8
 {
   public:
     EngineFilterButterworth8Low(int sampleRate, double freqCorner1);
-    void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
+    void setFrequencyCorners(double freqCorner1);
     void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
 };
 
@@ -54,6 +53,6 @@ class EngineFilterButterworth8High : public EngineFilterButterworth8
 {
   public:
     EngineFilterButterworth8High(int sampleRate, double freqCorner1);
-    void setFrequencyCorners(double freqCorner1, double freqCorner2 = 0);
+    void setFrequencyCorners(double freqCorner1);
     void process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize);
 };
