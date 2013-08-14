@@ -119,7 +119,7 @@ public:
     //void setReader(CachingReader* pReader);
 
   public slots:
-    void slotControlPlay(double);
+    void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
     void slotControlJumpToStartAndStop(double);
     void slotControlStop(double);
