@@ -31,7 +31,7 @@ static const char* kMasterSyncGroup = "[Master]";
 SyncChannel::SyncChannel(EngineChannel* pChannel)
         : m_pChannel(pChannel),
           m_group(pChannel->getGroup()) {
-    m_pChannelSyncState = new ControlObject(ConfigKey(m_group, "sync_state"));
+    m_pChannelSyncState = ControlObject::getControl(ConfigKey(m_group, "sync_state"));
     connect(m_pChannelSyncState, SIGNAL(valueChanged(double)),
             this, SLOT(slotChannelSyncStateChanged(double)),
             Qt::DirectConnection);
@@ -45,7 +45,6 @@ SyncChannel::SyncChannel(EngineChannel* pChannel)
 }
 
 SyncChannel::~SyncChannel() {
-    delete m_pChannelSyncState;
 }
 
 EngineChannel* SyncChannel::getChannel() {

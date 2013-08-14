@@ -135,7 +135,6 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotSyncInternalChanged(double)),
             Qt::DirectConnection);
 
-
     m_pSyncState = new ControlObject(ConfigKey(_group, "sync_state"));
     connect(m_pSyncState, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncStateChanged(double)),
@@ -153,6 +152,7 @@ BpmControl::BpmControl(const char* _group,
 }
 
 BpmControl::~BpmControl() {
+    delete m_pSyncState;
     delete m_pEngineBpm;
     delete m_pFileBpm;
     delete m_pButtonSync;
