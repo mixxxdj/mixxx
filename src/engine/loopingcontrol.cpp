@@ -640,8 +640,27 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             // TODO: If in reverse, should probably choose nextBeat.
             double prevBeat =
                     floorf(m_pBeats->findPrevBeat(getCurrentSample()));
-            loop_in = (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) ?
-                    prevBeat : floorf(getCurrentSample());
+
+            if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
+                if( beats >= 1.0f ) {
+                    loop_in = prevBeat;
+                } else {
+                    double nextBeat =
+                            floorf(m_pBeats->findNextBeat(getCurrentSample()));
+                    double beat_len = nextBeat - prevBeat;
+                    double loops_per_beat = 1.0 / beats;
+                    double beat_pos = getCurrentSample() - prevBeat;
+                    int beat_frac =
+                            static_cast<int>(floor((beat_pos / beat_len) *
+                                                   loops_per_beat));
+                    loop_in = prevBeat + beat_len/loops_per_beat*beat_frac;
+                }
+
+            } else {
+                loop_in = floorf(getCurrentSample());
+            }
+
+
             if (!even(loop_in)) {
                 loop_in--;
             }
