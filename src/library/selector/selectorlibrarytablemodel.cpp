@@ -324,37 +324,36 @@ void SelectorLibraryTableModel::updateFilterText() {
 
         // Genre
         if (m_bFilterGenre) {
-            QString TrackGenre = m_sSeedTrackGenre;
-            if (TrackGenre != "")
-                filters << QString("Genre == '%1'").arg(TrackGenre);
+            QString trackGenre = m_sSeedTrackGenre;
+            if (!trackGenre.isEmpty())
+                filters << "Genre == '" % trackGenre % "'";
         }
 
         // BPM
         if (m_bFilterBpm) {
             if (m_fSeedTrackBpm > 0)
-                filters << QString("(Bpm > %1 AND Bpm < %2)").arg(
-                    floor(m_fSeedTrackBpm - m_iFilterBpmRange)).arg(
-                    ceil(m_fSeedTrackBpm + m_iFilterBpmRange));
+                filters << "(Bpm > " % QString::number(
+                               floor(m_fSeedTrackBpm - m_iFilterBpmRange)) %
+                           " AND Bpm < " % QString::number(
+                               ceil(m_fSeedTrackBpm + m_iFilterBpmRange)) %
+                           ")";
         } 
 
         // Keys
 
         QList<ChromaticKey> hKeys = getHarmonicKeys(m_seedTrackKey);
-
-        if (!hKeys.isEmpty()) {
-            QStringList keyNames;
-
-            while (!hKeys.isEmpty()) {
-                ChromaticKey key = hKeys.takeFirst();
-                keyNames.append(QString("'%1'").arg(KeyUtils::keyToString(key)));
-            }
-            if (!keyNames.isEmpty()) {
-                QString keyString = keyNames.join(",");
-                qDebug() << "Match keys " << keyString;
-                filters << QString("Key in (%1)").arg(keyString);
-            }
+        QStringList keyNames;
+        foreach(ChromaticKey key, hKeys) {
+            QString keyName = "'" % KeyUtils::keyToString(key) % "'";
+            keyNames << keyName;
         }
-                    
+
+        QString keyString = keyNames.join(",");
+        if (!keyString.isEmpty()) {
+                qDebug() << "Match keys " << keyString;
+                filters << "Key in (" % keyString % ")";
+        }
+
         QString filterString = filters.join(" AND ");
         if (m_filterString != filterString) {
             m_filterString = filterString;
