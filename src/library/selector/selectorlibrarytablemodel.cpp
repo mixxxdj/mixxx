@@ -65,14 +65,16 @@ void SelectorLibraryTableModel::setTableModel(int id){
     columns << "library." % LIBRARYTABLE_ID << "'' as preview" << "0.0 as score";
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY TABLE IF NOT EXISTS "
-            SELECTOR_TABLE " AS "
+    QString queryStringClear = "DROP TABLE IF EXISTS " SELECTOR_TABLE;
+    QString queryStringCreate = "CREATE TEMPORARY TABLE " SELECTOR_TABLE " AS "
             "SELECT " % columns.join(", ") %
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
             "WHERE (" % LibraryTableModel::DEFAULT_LIBRARYFILTER % ")";
-    query.prepare(queryString);
-    if (!query.exec()) {
+    if (!query.exec(queryStringClear)) {
+        LOG_FAILED_QUERY(query);
+    }
+    if (!query.exec(queryStringCreate)) {
         LOG_FAILED_QUERY(query);
     }
 
@@ -94,6 +96,7 @@ void SelectorLibraryTableModel::active(bool value) {
 }
 
 void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
+    setTableModel();
     m_pSeedTrack = pSeedTrack;
     if (!m_pSeedTrack.isNull()) {
         m_sSeedTrackInfo = m_pSeedTrack->getInfo();
@@ -106,6 +109,7 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
         clearSeedTrackInfo();
         emit(resetFilters());
     }
+    updateFilterText();
     emit(seedTrackInfoChanged());
 }
 
@@ -242,21 +246,20 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
         disconnect(m_channelKey, 0, this, 0);
     }
 
-    // get the new pitch slider object
-    m_channelBpm = new ControlObjectThreadMain(m_pChannel, "bpm");
+    if (deck >= 0) {
+        m_channelBpm = new ControlObjectThreadMain(m_pChannel, "bpm");
+        m_channelKey = new ControlObjectThreadMain(m_pChannel, "key");
 
-    m_channelKey = new ControlObjectThreadMain(m_pChannel, "key");
-
-    // listen for slider change events
-    connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
-        SLOT(slotChannelBpmChanged(double)));
-    connect(m_channelKey, SIGNAL(valueChanged(double)), this,
-        SLOT(slotChannelKeyChanged(double)));
+        // listen for slider change events
+        connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
+            SLOT(slotChannelBpmChanged(double)));
+        connect(m_channelKey, SIGNAL(valueChanged(double)), this,
+            SLOT(slotChannelKeyChanged(double)));
+    }
 
     m_pLoadedTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
 
     setSeedTrack(m_pLoadedTrack);
-    updateFilterText();
 }
 
 void SelectorLibraryTableModel::slotChannelBpmChanged(double value) {
@@ -276,6 +279,7 @@ void SelectorLibraryTableModel::slotChannelKeyChanged(double value) {
 }
 
 void SelectorLibraryTableModel::slotFiltersChanged() {
+    qDebug() << m_filterString;
     search("");
 }
 
@@ -338,7 +342,6 @@ void SelectorLibraryTableModel::updateFilterText() {
         QList<ChromaticKey> hKeys = getHarmonicKeys(m_seedTrackKey);
 
         if (!hKeys.isEmpty()) {
-            // string business is a hack until filters use ChromaticKey directly
             QStringList keyNames;
 
             while (!hKeys.isEmpty()) {
@@ -361,6 +364,7 @@ void SelectorLibraryTableModel::updateFilterText() {
     } else { // no seed track
         emit(filtersChanged());
     }
+
 }
 
 QList<ChromaticKey> SelectorLibraryTableModel::getHarmonicKeys(ChromaticKey key) {
