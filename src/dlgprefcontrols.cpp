@@ -474,7 +474,9 @@ void DlgPrefControls::slotSetAutoDjRequeue(int)
 
 void DlgPrefControls::slotSetDeckOrder(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"), ConfigValue(ComboBoxDeckOrder->currentText()));
+    QString deckorder = ComboBoxDeckOrder->currentText();
+    m_pConfig->set(ConfigKey("[Controls]", "DeckOrder"), ConfigValue(deckorder));
+    m_pPlayerManager->slotSkinNumDecksControlChanged(deckorder.length());
 }
 
 void DlgPrefControls::slotSetAutoDjMinimumAvailable(int a_iValue) {
