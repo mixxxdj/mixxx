@@ -638,18 +638,19 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             // loop_in is set to the previous beat if quantize is on.  The
             // closest beat might be ahead of play position which would cause a seek.
             // TODO: If in reverse, should probably choose nextBeat.
+            double cur_pos = getCurrentSample();
             double prevBeat =
-                    floorf(m_pBeats->findPrevBeat(getCurrentSample()));
+                    floorf(m_pBeats->findPrevBeat(cur_pos));
 
             if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
                 if( beats >= 1.0f ) {
                     loop_in = prevBeat;
                 } else {
                     double nextBeat =
-                            floorf(m_pBeats->findNextBeat(getCurrentSample()));
+                            floorf(m_pBeats->findNextBeat(cur_pos));
                     double beat_len = nextBeat - prevBeat;
                     double loops_per_beat = 1.0 / beats;
-                    double beat_pos = getCurrentSample() - prevBeat;
+                    double beat_pos = cur_pos - prevBeat;
                     int beat_frac =
                             static_cast<int>(floor((beat_pos / beat_len) *
                                                    loops_per_beat));
@@ -657,7 +658,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
                 }
 
             } else {
-                loop_in = floorf(getCurrentSample());
+                loop_in = floorf(cur_pos);
             }
 
 
