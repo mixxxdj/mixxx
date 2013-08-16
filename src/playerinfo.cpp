@@ -78,8 +78,11 @@ bool PlayerInfo::isFileLoaded(const QString& track_location) const {
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
         it.next();
-        if (it.value()->getLocation() == track_location) {
-            return true;
+        TrackPointer pTrack = it.value();
+        if (pTrack) {
+            if (pTrack->getLocation() == track_location) {
+                return true;
+            }
         }
     }
     return false;

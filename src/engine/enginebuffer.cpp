@@ -108,8 +108,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Play button
     m_playButton = new ControlPushButton(ConfigKey(m_group, "play"));
     m_playButton->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_playButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlPlay(double)),
+    m_playButton->connectValueChangeRequest(
+            this, SLOT(slotControlPlayRequest(double)),
             Qt::DirectConnection);
 
     //Play from Start Button (for sampler)
@@ -389,7 +389,8 @@ void EngineBuffer::slotTrackLoading() {
     m_iTrackLoading = 1;
     m_pause.unlock();
 
-    m_playButton->set(0.0); //Stop playback
+    // Set play here, to signal the user that the play command is adopted
+    m_playButton->set((double)m_bPlayAfterLoading);
     m_pTrackSamples->set(0); // Stop renderer
 }
 
@@ -411,16 +412,11 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
-    if (m_bPlayAfterLoading) {
-        m_bPlayAfterLoading = false;
-        m_playButton->set(1);
-    }
 }
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
-    m_bPlayAfterLoading = false;
     m_playButton->set(0.0f);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
@@ -481,14 +477,16 @@ void EngineBuffer::slotControlSeekAbs(double abs)
     slotControlSeek(abs / m_file_length_old);
 }
 
-void EngineBuffer::slotControlPlay(double v)
+void EngineBuffer::slotControlPlayRequest(double v)
 {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
     if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
-        m_playButton->set(0.0f);
+        v = 0.0;
     }
+    // set and confirm must be called in any case to update the widget toggle state
+    m_playButton->setAndConfirm(v);
 }
 
 void EngineBuffer::slotControlStart(double v)
