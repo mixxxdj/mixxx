@@ -646,6 +646,13 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
                 if( beats >= 1.0f ) {
                     loop_in = prevBeat;
                 } else {
+                    // In case of beat length less then 1 beat:
+                    // (| - beats, ^ - current track's position):
+                    //
+                    // ...|...................^........|...
+                    //
+                    // If we press 1/2 beatloop we want loop from 50% to 100%,
+                    // If I press 1/4 beatloop, we want loop from 50% to 75% etc
                     double nextBeat =
                             floorf(m_pBeats->findNextBeat(cur_pos));
                     double beat_len = nextBeat - prevBeat;
