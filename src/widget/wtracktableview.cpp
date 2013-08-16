@@ -1118,8 +1118,11 @@ void WTrackTableView::slotSendToAutoDJ() {
     qDebug() << "in WTrackTableView::slotSendToAutoDJ";
     m_pTrackCollection->callSync(
                 // lambda goes here
-                [this] (void) {
+                [this]       // Say to capture object to call its methods
+                (void) {
         qDebug() << "\t in lambda";
+        // Here goes exactly the same code as it was previously
+        // try to change someValue
         sendToAutoDJ(false); // bTop = false
         qDebug() << "\t lambda ends";
     });

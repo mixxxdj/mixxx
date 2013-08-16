@@ -155,152 +155,158 @@ QString BaseSqlTableModel::orderByClause() const {
 }
 
 void BaseSqlTableModel::select() {
-    if (!m_bInitialized) {
-        return;
-    }
 
-    // We should be able to detect when a select() would be a no-op. The DAO's
-    // do not currently broadcast signals for when common things happen. In the
-    // future, we can turn this check on and avoid a lot of needless
-    // select()'s. rryan 9/2011
-    // if (!m_bDirty) {
-    //     if (sDebug) {
-    //         qDebug() << this << "Skipping non-dirty select()";
-    //     }
-    //     return;
-    // }
+    m_pTrackCollection->callSync(
+                [this]
+                () {
 
-    if (sDebug) {
-        qDebug() << this << "select()";
-    }
+        if (!m_bInitialized) {
+            return;
+        }
 
-    QTime time;
-    time.start();
+        // We should be able to detect when a select() would be a no-op. The DAO's
+        // do not currently broadcast signals for when common things happen. In the
+        // future, we can turn this check on and avoid a lot of needless
+        // select()'s. rryan 9/2011
+        // if (!m_bDirty) {
+        //     if (sDebug) {
+        //         qDebug() << this << "Skipping non-dirty select()";
+        //     }
+        //     return;
+        // }
 
-    QString columns = m_tableColumnsJoined;
-    QString orderBy = orderByClause();
-    QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(columns, m_tableName, orderBy);
+        if (sDebug) {
+            qDebug() << this << "select()";
+        }
 
-    if (sDebug) {
-        qDebug() << this << "select() executing:" << queryString;
-    }
+        QTime time;
+        time.start();
 
-    QSqlQuery query(m_database);
-    // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
-    // won't allocate a giant in-memory table that we won't use at all.
-    query.setForwardOnly(true);
-    query.prepare(queryString);
+        QString columns = m_tableColumnsJoined;
+        QString orderBy = orderByClause();
+        QString queryString = QString("SELECT %1 FROM %2 %3")
+                              .arg(columns, m_tableName, orderBy);
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
+        if (sDebug) {
+            qDebug() << this << "select() executing:" << queryString;
+        }
 
-    // Remove all the rows from the table. We wait to do this until after the
-    // table query has succeeded. See Bug #1090888.
-    // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
-        m_rowInfo.clear();
+        QSqlQuery query(m_database);
+        // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
+        // won't allocate a giant in-memory table that we won't use at all.
+        query.setForwardOnly(true);
+        query.prepare(queryString);
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+            return;
+        }
+
+        // Remove all the rows from the table. We wait to do this until after the
+        // table query has succeeded. See Bug #1090888.
+        // TODO(rryan) we could edit the table in place instead of clearing it?
+        if (m_rowInfo.size() > 0) {
+            beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+            m_rowInfo.clear();
+            m_trackIdToRows.clear();
+            endRemoveRows();
+        }
+
+        QSqlRecord record = query.record();
+        int idColumn = record.indexOf(m_idColumn);
+
+        QLinkedList<int> tableColumnIndices;
+        foreach (QString column, m_tableColumns) {
+            Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
+            tableColumnIndices.push_back(record.indexOf(column));
+        }
+
+        // sqlite does not set size and m_rowInfo was just cleared
+        //if (sDebug) {
+        //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
+        //}
+
+        QVector<RowInfo> rowInfo;
+        QSet<int> trackIds;
+        while (query.next()) {
+            int id = query.value(idColumn).toInt();
+            trackIds.insert(id);
+
+            RowInfo thisRowInfo;
+            thisRowInfo.trackId = id;
+            thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located
+            // Get all the table columns and store them in the hash for this
+            // row-info section.
+
+            foreach (int tableColumnIndex, tableColumnIndices) {
+                thisRowInfo.metadata[tableColumnIndex] =
+                        query.value(tableColumnIndex);
+            }
+            rowInfo.push_back(thisRowInfo);
+        }
+
+        if (sDebug) {
+            qDebug() << "Rows actually received:" << rowInfo.size();
+        }
+
+        // Adjust sort column to remove table columns and add 1 to add an id column.
+        int sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
+
+        if (sortColumn < 0) {
+            sortColumn = 0;
+        }
+
+        // If we were sorting a table column, then secondary sort by id. TODO(rryan)
+        // we should look into being able to drop the secondary sort to save time
+        // but going for correctness first.
+        m_trackSource->filterAndSort(trackIds, m_currentSearch,
+                                     m_currentSearchFilter,
+                                     sortColumn, m_eSortOrder,
+                                     &m_trackSortOrder);
+
+        // Re-sort the track IDs since filterAndSort can change their order or mark
+        // them for removal (by setting their row to -1).
+        for (QVector<RowInfo>::iterator it = rowInfo.begin();
+             it != rowInfo.end(); ++it) {
+            // If the sort column is not a track column then we will sort only to
+            // separate removed tracks (order == -1) from present tracks (order ==
+            // 0). Otherwise we sort by the order that filterAndSort returned to us.
+            if (sortColumn == 0) {
+                it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
+            } else {
+                it->order = m_trackSortOrder.value(it->trackId, -1);
+            }
+        }
+
+        // RowInfo::operator< sorts by the order field, except -1 is placed at the
+        // end so we can easily slice off rows that are no longer present. Stable
+        // sort is necessary because the tracks may be in pre-sorted order so we
+        // should not disturb that if we are only removing tracks.
+        qStableSort(rowInfo.begin(), rowInfo.end());
+
         m_trackIdToRows.clear();
-        endRemoveRows();
-    }
+        for (int i = 0; i < rowInfo.size(); ++i) {
+            const RowInfo& row = rowInfo[i];
 
-    QSqlRecord record = query.record();
-    int idColumn = record.indexOf(m_idColumn);
-
-    QLinkedList<int> tableColumnIndices;
-    foreach (QString column, m_tableColumns) {
-        Q_ASSERT(record.indexOf(column) == m_tableColumnIndex[column]);
-        tableColumnIndices.push_back(record.indexOf(column));
-    }
-
-    // sqlite does not set size and m_rowInfo was just cleared
-    //if (sDebug) {
-    //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
-    //}
-
-    QVector<RowInfo> rowInfo;
-    QSet<int> trackIds;
-    while (query.next()) {
-        int id = query.value(idColumn).toInt();
-        trackIds.insert(id);
-
-        RowInfo thisRowInfo;
-        thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located
-        // Get all the table columns and store them in the hash for this
-        // row-info section.
-
-        foreach (int tableColumnIndex, tableColumnIndices) {
-            thisRowInfo.metadata[tableColumnIndex] =
-                    query.value(tableColumnIndex);
+            if (row.order == -1) {
+                // We've reached the end of valid rows. Resize rowInfo to cut off
+                // this and all further elements.
+                rowInfo.resize(i);
+                break;
+            }
+            QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
+            rows.push_back(i);
         }
-        rowInfo.push_back(thisRowInfo);
-    }
 
-    if (sDebug) {
-        qDebug() << "Rows actually received:" << rowInfo.size();
-    }
+        // We're done! Issue the update signals and replace the master maps.
+        beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
+        m_rowInfo = rowInfo;
+        m_bDirty = false;
+        endInsertRows();
 
-    // Adjust sort column to remove table columns and add 1 to add an id column.
-    int sortColumn = m_iSortColumn - m_tableColumns.size() + 1;
-
-    if (sortColumn < 0) {
-        sortColumn = 0;
-    }
-
-    // If we were sorting a table column, then secondary sort by id. TODO(rryan)
-    // we should look into being able to drop the secondary sort to save time
-    // but going for correctness first.
-    m_trackSource->filterAndSort(trackIds, m_currentSearch,
-                                 m_currentSearchFilter,
-                                 sortColumn, m_eSortOrder,
-                                 &m_trackSortOrder);
-
-    // Re-sort the track IDs since filterAndSort can change their order or mark
-    // them for removal (by setting their row to -1).
-    for (QVector<RowInfo>::iterator it = rowInfo.begin();
-         it != rowInfo.end(); ++it) {
-        // If the sort column is not a track column then we will sort only to
-        // separate removed tracks (order == -1) from present tracks (order ==
-        // 0). Otherwise we sort by the order that filterAndSort returned to us.
-        if (sortColumn == 0) {
-            it->order = m_trackSortOrder.contains(it->trackId) ? 0 : -1;
-        } else {
-            it->order = m_trackSortOrder.value(it->trackId, -1);
-        }
-    }
-
-    // RowInfo::operator< sorts by the order field, except -1 is placed at the
-    // end so we can easily slice off rows that are no longer present. Stable
-    // sort is necessary because the tracks may be in pre-sorted order so we
-    // should not disturb that if we are only removing tracks.
-    qStableSort(rowInfo.begin(), rowInfo.end());
-
-    m_trackIdToRows.clear();
-    for (int i = 0; i < rowInfo.size(); ++i) {
-        const RowInfo& row = rowInfo[i];
-
-        if (row.order == -1) {
-            // We've reached the end of valid rows. Resize rowInfo to cut off
-            // this and all further elements.
-            rowInfo.resize(i);
-            break;
-        }
-        QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
-        rows.push_back(i);
-    }
-
-    // We're done! Issue the update signals and replace the master maps.
-    beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
-    m_rowInfo = rowInfo;
-    m_bDirty = false;
-    endInsertRows();
-
-    int elapsed = time.elapsed();
-    qDebug() << this << "select() took" << elapsed << "ms";
+        int elapsed = time.elapsed();
+        qDebug() << this << "select() took" << elapsed << "ms";
+    });
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,

@@ -29,7 +29,6 @@ class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class MixxxKeyboard;
-//class ThreadDAO;
 
 class Library : public QObject {
     Q_OBJECT
@@ -53,8 +52,6 @@ public:
     TrackCollection* getTrackCollection() {
         return m_pTrackCollection;
     }
-
-//    ThreadDAO* getThreadDAO() { return m_pThreadDAO; }
 
     //static Library* buildDefaultLibrary();
 
@@ -86,7 +83,6 @@ public:
     ConfigObject<ConfigValue>* m_pConfig;
     SidebarModel* m_pSidebarModel;
     TrackCollection* m_pTrackCollection;
-//    ThreadDAO* m_pThreadDAO;
     QList<LibraryFeature*> m_features;
     const static QString m_sTrackViewName;
     const static QString m_sAutoDJViewName;

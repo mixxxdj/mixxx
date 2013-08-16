@@ -17,7 +17,7 @@
 #include "treeitemmodel.h"
 
 class TrackModel;
-class WLibrarySidebar;
+//class WLibrarySidebar;
 class WLibrary;
 class MixxxKeyboard;
 

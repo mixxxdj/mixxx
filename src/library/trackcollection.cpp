@@ -13,8 +13,10 @@
 #include "xmlparse.h"
 #include "util/sleepableqthread.h"
 
-const int SleepTimeMs = 10;
+const int SleepTimeMs = 13;
 const int TooLong = 100;
+
+#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -24,15 +26,16 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_cueDao(NULL),
           m_analysisDao(NULL),
           m_trackDao(NULL),
-          m_haveFunction(false),
-          m_callFinished(true),
+          m_lambda(NULL),
           m_stop(false),
+          m_inCallSync(false),
+          m_semLambdaExecutes(1),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
-    qDebug() << "### TrackCollection constructor ###";
-    qDebug() << "\tfrom thread id=" << QThread::currentThreadId()
-             << "name=" << QThread::currentThread()->objectName();
+    DBG() << "TrackCollection constructor \tfrom thread id="
+          << QThread::currentThreadId() << "name="
+          << QThread::currentThread()->objectName();
 }
 
 TrackCollection::~TrackCollection() {
@@ -61,10 +64,11 @@ TrackCollection::~TrackCollection() {
 
 void TrackCollection::run() {
     QThread::currentThread()->setObjectName("TrackCollection");
-    qDebug() << "TrackCollection::run, id=" << QThread::currentThreadId()
-             << "name=" << QThread::currentThread()->objectName();
+    DBG() << "id=" << QThread::currentThreadId()
+          << "name=" << QThread::currentThread()->objectName();
 
-    qDebug() << "### Initializing DAOs inside TrackCollection's thread";
+    DBG() << "Initializing DAOs inside TrackCollection's thread";
+
     createAndPopulateDbConnection();
 
     m_trackDao->initialize();
@@ -72,69 +76,77 @@ void TrackCollection::run() {
     m_crateDao->initialize();
     m_cueDao->initialize();
 
-    emit(initialized());
+    emit(initialized()); // to notify that Daos can be used
 
     // main TrackCollection's loop
     while (!m_stop) {
-        while (!m_haveFunction) {
-            SleepableQThread::msleep(SleepTimeMs);
+        // execute lambda in TrackCollection's thread
+        if (m_lambda!=NULL) {
+            m_semLambdaExecutes.acquire(1); // 1. Lock lambda, so noone can change it
+            m_lambda();                     // 2. Execute lambda
+            m_lambda = NULL;                // 3. Clear lambda
+            m_semLambdaExecutes.release(1); // 4. Unlock lambda, so it can be changed
         }
-        m_callFinished = false;
-
-        m_lambda();
-
-        m_haveFunction = false;
-        m_callFinished = true;
+        SleepableQThread::msleep(SleepTimeMs/2);
     }
 }
 
+// callSync calls from GUI thread.
 void TrackCollection::callSync(func lambda) {
-    //TODO(tro) check lambda
-    qDebug() << "IN TrackCollection::callSync";
+    DBG() << "thread=" << QThread::currentThread()->objectName();
+
+    if (m_inCallSync) {
+        DBG() << "ERROR! Recursive callSync call!";
+        return;
+    }
+
+
+    m_inCallSync = true;
+
+    setLambda(lambda);
 
     int waitCycles = 0;
-    while(!m_callFinished) {
-        qDebug() << "waiting while m_callFinished";
-        qApp->processEvents( QEventLoop::AllEvents );
-        SleepableQThread::msleep(SleepTimeMs);
-        ++waitCycles;
-    }
-    qDebug() << "\tWaited before setLambda:" << waitCycles;
-    setLambda(lambda);
-    waitCycles = 0;
     bool animationIsShowed = false;
 
-    while (m_haveFunction && !m_callFinished) {
+    while(m_lambda!=NULL) {
         qApp->processEvents( QEventLoop::AllEvents );
         SleepableQThread::msleep(SleepTimeMs);
         ++waitCycles;
         if (waitCycles > TooLong && !animationIsShowed) {
-            qDebug() << "Start animation";
-//            w.setEnabled(false);
-//            m_progressindicator.startAnimation();
+            DBG() << "Start animation";
             animationIsShowed = true;
         }
     }
-    qDebug() << "\tWaited execution of lambda:" << waitCycles;
+    DBG() << "Waited execution of lambda:" << waitCycles;
 
     if (animationIsShowed) {
-        qDebug() << "Stop animation";
-//        w.setEnabled(true);
-//        m_progressindicator.stopAnimation();
+        DBG() << "Stop animation";
     }
+    m_inCallSync = false;
+}
+
+void TrackCollection::setLambda(func lambda) {
+    DBG() << "thread=" << QThread::currentThread()->objectName();
+    //TODO(tro) check lambda
+    int waitCycles = 0;
+    if (lambda == NULL) return;
+    while (!m_semLambdaExecutes.tryAcquire(1)) {
+        qApp->processEvents( QEventLoop::AllEvents );
+        SleepableQThread::msleep(1);
+        ++waitCycles;
+    }
+    DBG() << "Waited " << waitCycles << "cycles";
+    // we have acquired m_semLambdaExecutes
+    m_lambda = lambda;
+    m_semLambdaExecutes.release(1);
 }
 
 void TrackCollection::stopThread() {
     // TODO(tro) Think on how to do canceling
-    qDebug() << "Stopping thread";
+    DBG() << "Stopping thread";
     m_stop = true;
 }
 
-void TrackCollection::setLambda(func lambda) {
-    m_lambda = lambda;
-    m_haveFunction = true;
-    m_callFinished = false;
-}
 
 bool TrackCollection::checkForTables() {
     if (!m_database->open()) {

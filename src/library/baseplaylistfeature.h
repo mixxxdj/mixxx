@@ -7,7 +7,7 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 
-class WLibrarySidebar;
+//class WLibrarySidebar;
 class WLibrary;
 class MixxxKeyboard;
 class PlaylistTableModel;

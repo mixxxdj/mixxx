@@ -20,7 +20,9 @@
 
 #include <QtSql>
 #include <QList>
+#include <QQueue>
 #include <QRegExp>
+#include <QSemaphore>
 #include <QSharedPointer>
 #include <QSqlDatabase>
 
@@ -51,7 +53,7 @@ class TrackCollection : public QThread {
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
     ~TrackCollection();
     void run();
-    void callSync(func lambda/*, QWidget& w = QPushButton()*/);
+    void callSync(func lambda);
     void stopThread();
     void setLambda(func lambda);
 
@@ -96,9 +98,9 @@ class TrackCollection : public QThread {
 
     // all from threadDAO
     func m_lambda;
-    bool m_haveFunction;
-    bool m_callFinished;
-    bool m_stop;
+    volatile bool m_stop;
+    bool m_inCallSync;
+    QSemaphore m_semLambdaExecutes;
 };
 
 #endif

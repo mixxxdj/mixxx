@@ -11,7 +11,7 @@
 #include "library/parsercsv.h"
 
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
+//#include "widget/wlibrarysidebar.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "library/trackcollection.h"
 #include "library/playlisttablemodel.h"

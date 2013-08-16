@@ -245,7 +245,8 @@ bool PlaylistDAO::appendTrackToPlaylist(const int trackId, const int playlistId)
 /** Find out how many playlists exist. */
 unsigned int PlaylistDAO::playlistCount()
 {
-    // qDebug() << "PlaylistDAO::playlistCount" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "PlaylistDAO::playlistCount" << QThread::currentThread() << m_database.connectionName();
+
     QSqlQuery query(m_database);
     query.prepare("SELECT count(*) as count FROM Playlists");
     if (!query.exec()) {

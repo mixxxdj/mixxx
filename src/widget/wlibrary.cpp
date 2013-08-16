@@ -11,10 +11,10 @@
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           m_mutex(QMutex::Recursive) {
+    qDebug() << "\t###" << __FUNCTION__ << parent;
 }
 
 WLibrary::~WLibrary() {
-
 }
 
 bool WLibrary::registerView(QString name, QWidget* view) {
