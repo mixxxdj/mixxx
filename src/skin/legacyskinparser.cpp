@@ -222,6 +222,10 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
                 QString configKey = attribute_element.attribute("config_key");
+                if (isLegacyAttribute(configKey)) {
+                    qWarning() << "Warning: Skin uses old [Master] attribute instead of [Skin]";
+                    configKey = convertLegacyAttribute(configKey);
+                }
                 QString value = attribute_element.text();
                 SkinManifest::Attribute* attr = manifest.add_attribute();
                 attr->set_config_key(configKey.toStdString());
@@ -230,6 +234,16 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
         }
     }
     return manifest;
+}
+
+// static
+bool LegacySkinParser::isLegacyAttribute(QString configKey) {
+    return (configKey.indexOf("[Master]") != -1);
+}
+
+// static
+QString LegacySkinParser::convertLegacyAttribute(QString configKey) {
+    return configKey.replace("[Master]", "[Skin]");
 }
 
 QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
@@ -1482,4 +1496,3 @@ void LegacySkinParser::addShortcutToToolTip(QWidget* pWidget, const QString& sho
     tooltip += nativeShortcut;
     pWidget->setToolTip(tooltip);
 }
-
