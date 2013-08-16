@@ -653,7 +653,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
                     int beat_frac =
                             static_cast<int>(floor((beat_pos / beat_len) *
                                                    loops_per_beat));
-                    loop_in = prevBeat + beat_len/loops_per_beat*beat_frac;
+                    loop_in = prevBeat + beat_len / loops_per_beat * beat_frac;
                 }
 
             } else {
