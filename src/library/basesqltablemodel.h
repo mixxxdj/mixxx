@@ -81,6 +81,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
 
+
     // Use this if you want a model that is read-only.
     Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
     // Use this if you want a model that can be changed
@@ -94,6 +95,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
   private slots:
     void tracksChanged(QSet<int> trackIds);
     void trackLoaded(QString group, TrackPointer pTrack);
+    void selectMain();
+
+ signals:
+    void callSelectMain();
 
   private:
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);

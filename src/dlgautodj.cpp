@@ -587,13 +587,23 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
         return false;
     }
 
-    // remove the top track
-    m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
-    // Re-queue if configured
-    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
-        m_pAutoDJTableModel->appendTrack(loadedId);
-    }
+    qDebug() << "in DlgAutoDJ::removePlayingTrackFromQueue(QString group)";
+    m_pTrackCollection->callSync(
+                // lambda goes here
+                [this, loadedId] (void) {
+        qDebug() << "\t in lambda";
+
+        // remove the top track
+        m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
+
+        // Re-queue if configured
+        if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
+            m_pAutoDJTableModel->appendTrack(loadedId);
+        }
+
+        qDebug() << "\t lambda ends";
+    });
     return true;
 }
 

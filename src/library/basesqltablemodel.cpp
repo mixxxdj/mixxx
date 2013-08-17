@@ -35,6 +35,10 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
     connect(&PlayerInfo::Instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
     trackLoaded(m_previewDeckGroup, PlayerInfo::Instance().getTrackInfo(m_previewDeckGroup));
+
+    connect(this, SIGNAL(callSelectMain()),
+            this, SLOT(selectMain()), Qt::BlockingQueuedConnection);
+
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -154,7 +158,20 @@ QString BaseSqlTableModel::orderByClause() const {
     return s;
 }
 
+// can be called from any thread
 void BaseSqlTableModel::select() {
+    qDebug() << "BaseSqlTableModel::select() start";
+    if (QThread::currentThread()->objectName() == "Main") {
+        selectMain();
+    } else {
+        qDebug() << "BaseSqlTableModel::callSelectMain()";
+        emit(callSelectMain());
+    }
+    qDebug() << "BaseSqlTableModel::select() end";
+}
+
+// Must be called from Main (GUI) Thread only
+void BaseSqlTableModel::selectMain() {
     if (!m_bInitialized) {
         return;
     }
@@ -170,9 +187,9 @@ void BaseSqlTableModel::select() {
     //     return;
     // }
 
-    if (sDebug) {
+    //if (sDebug) {
         qDebug() << this << "select()";
-    }
+    //}
 
     QTime time;
     time.start();
