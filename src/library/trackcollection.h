@@ -58,6 +58,7 @@ class TrackCollection : public QThread {
     void setLambda(func lambda);
 
 
+
     bool checkForTables();
 
     /** Import the files in a given diretory, without recursing into subdirectories */
@@ -99,9 +100,8 @@ class TrackCollection : public QThread {
     // all from threadDAO
     func m_lambda;
     volatile bool m_stop;
-    bool m_inCallSync;
-    QSemaphore m_semLambdaExecutes;
-
+    QMutex m_inCallSync;
+    QSemaphore m_semLambdaReadyToCall;
 };
 
 #endif

@@ -28,8 +28,6 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_trackDao(NULL),
           m_lambda(NULL),
           m_stop(false),
-          m_inCallSync(false),
-          m_semLambdaExecutes(1),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
@@ -81,13 +79,13 @@ void TrackCollection::run() {
     // main TrackCollection's loop
     while (!m_stop) {
         // execute lambda in TrackCollection's thread
-        if (m_lambda!=NULL) {
-            m_semLambdaExecutes.acquire(1); // 1. Lock lambda, so noone can change it
+        m_semLambdaReadyToCall.acquire(1); // 1. Lock lambda, so noone can change it
+        if (m_lambda) {
             m_lambda();                     // 2. Execute lambda
             m_lambda = NULL;                // 3. Clear lambda
-            m_semLambdaExecutes.release(1); // 4. Unlock lambda, so it can be changed
         }
-        SleepableQThread::msleep(SleepTimeMs/2);
+        m_inCallSync.unlock();
+        // TODO(xxx) read next lambda from queue
     }
 }
 
@@ -95,50 +93,23 @@ void TrackCollection::run() {
 void TrackCollection::callSync(func lambda) {
     DBG() << "thread=" << QThread::currentThread()->objectName();
 
-    if (m_inCallSync) {
-        DBG() << "ERROR! Recursive callSync call!";
+    if (lambda == NULL) return;
+
+    if (!m_inCallSync.tryLock()) {
+        DBG() << "callSync locked!";
+        //TODO(xxx): queue Lambda
         return;
     }
 
-
-    m_inCallSync = true;
-
+    //TODO(xxx): lock GUI elements by setting [playlist] "isBusy"
     setLambda(lambda);
-
-    int waitCycles = 0;
-    bool animationIsShowed = false;
-
-    while(m_lambda!=NULL) {
-        qApp->processEvents( QEventLoop::AllEvents );
-        SleepableQThread::msleep(SleepTimeMs);
-        ++waitCycles;
-        if (waitCycles > TooLong && !animationIsShowed) {
-            DBG() << "Start animation";
-            animationIsShowed = true;
-        }
-    }
-    DBG() << "Waited execution of lambda:" << waitCycles;
-
-    if (animationIsShowed) {
-        DBG() << "Stop animation";
-    }
-    m_inCallSync = false;
 }
 
 void TrackCollection::setLambda(func lambda) {
     DBG() << "thread=" << QThread::currentThread()->objectName();
     //TODO(tro) check lambda
-    int waitCycles = 0;
-    if (lambda == NULL) return;
-    while (!m_semLambdaExecutes.tryAcquire(1)) {
-        qApp->processEvents( QEventLoop::AllEvents );
-        SleepableQThread::msleep(1);
-        ++waitCycles;
-    }
-    DBG() << "Waited " << waitCycles << "cycles";
-    // we have acquired m_semLambdaExecutes
     m_lambda = lambda;
-    m_semLambdaExecutes.release(1);
+    m_semLambdaReadyToCall.release(1);
 }
 
 void TrackCollection::stopThread() {

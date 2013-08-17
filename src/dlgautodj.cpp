@@ -594,6 +594,8 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
                 [this, loadedId] (void) {
         qDebug() << "\t in lambda";
 
+        // TODO(xxx): remove all this dependency
+
         // remove the top track
         m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
