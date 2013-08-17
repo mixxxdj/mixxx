@@ -101,6 +101,7 @@ class TrackCollection : public QThread {
     volatile bool m_stop;
     bool m_inCallSync;
     QSemaphore m_semLambdaExecutes;
+
 };
 
 #endif

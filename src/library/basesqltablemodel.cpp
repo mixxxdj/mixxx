@@ -155,6 +155,7 @@ QString BaseSqlTableModel::orderByClause() const {
 }
 
 void BaseSqlTableModel::select() {
+    qDebug() << " before Lambda " << this << "select()";
 
     m_pTrackCollection->callSync(
                 [this]
@@ -174,6 +175,8 @@ void BaseSqlTableModel::select() {
         //     }
         //     return;
         // }
+
+        qDebug() << "during Lambda " << this << "select()";
 
         if (sDebug) {
             qDebug() << this << "select()";
