@@ -917,9 +917,15 @@ void WTrackTableView::dropEvent(QDropEvent * event){
     // up to the top, which is confusing when you're dragging and dropping. :)
     saveVScrollBarPos();
 
-    // The model index where the track or tracks are destined to go. :)
+
+    // Calculate the model index where the track or tracks are destined to go.
     // (the "drop" position in a drag-and-drop)
-    QModelIndex destIndex = indexAt(event->pos());
+    // The user usually drops on the seam between two rows.
+    // We take the row below the seam for reference.
+    int dropRow = rowAt(event->pos().y());
+    int hight = rowHeight(dropRow);
+    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + hight / 2);
+    QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();
 
@@ -980,18 +986,20 @@ void WTrackTableView::dropEvent(QDropEvent * event){
 
             //If you drag a contiguous selection of multiple tracks and drop
             //them somewhere inside that same selection, do nothing.
-            if (destIndex.row() >= minRow && destIndex.row() <= maxRow)
+            if (destIndex.row() >= minRow && destIndex.row() <= maxRow) {
                 return;
+            }
 
-            //If we're moving the tracks _up_, then reverse the order of the row selection
-            //to make the algorithm below work without added complexity.
             if (destIndex.row() < minRow) {
+                // If we're moving the tracks _up_, then reverse the order of the row selection
+                // to make the algorithm below work without added complexity.
                 qSort(selectedRows.begin(), selectedRows.end(), qGreater<int>());
             }
 
             if (destIndex.row() > maxRow) {
-                //Shuffle the row we're going to start making a new selection at:
-                firstRowToSelect = firstRowToSelect - selectedRowCount + 1;
+                // // If we're moving the tracks _down_,
+                // Shuffle the row we're going to start making a new selection at:
+                firstRowToSelect = firstRowToSelect - selectedRowCount;
             }
 
             //For each row that needs to be moved...
