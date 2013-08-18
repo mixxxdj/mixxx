@@ -196,6 +196,9 @@ class PlayerManager : public QObject {
     // Must hold m_mutex before calling this method. Internal method that
     // creates a new preview deck.
     void addPreviewDeckInner();
+    // When the skin changes, we need to change the orientations of the decks
+    // because deck B might have moved from the right to the left.
+    void reorientDecks();
 
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;

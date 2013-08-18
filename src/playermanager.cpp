@@ -217,6 +217,21 @@ void PlayerManager::slotSkinNumDecksControlChanged(double v) {
         s_currentDeckOrder = s_deckOrderingManager.getDefaultOrder(v);
     }
     slotNumDecksControlChanged(v);
+    reorientDecks();
+}
+
+void PlayerManager::reorientDecks() {
+    int total_decks = static_cast<int>(m_pCOSkinNumDecks->get());
+    for (int i = 1; i < total_decks + 1; ++i) {
+        ControlObject* orientation =
+            ControlObject::getControl(
+                ConfigKey(QString("[Channel%1]").arg(i), "orientation"));
+        if (i > total_decks / 2) {
+            orientation->set(EngineChannel::RIGHT);
+        } else {
+            orientation->set(EngineChannel::LEFT);
+        }
+    }
 }
 
 void PlayerManager::slotNumSamplersControlChanged(double v) {
