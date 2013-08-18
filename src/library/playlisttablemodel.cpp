@@ -61,9 +61,16 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
+
+    connect(&m_playlistDao, SIGNAL(changed(int)),
+            this, SLOT(playlistChanged(int)));
 }
 
 int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+    if (locations.size() == 0) {
+        return 0;
+    }
+
     const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumn).data().toInt();
 
@@ -82,9 +89,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locat
     int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
         trackIds, m_iPlaylistId, position);
 
-    if (tracksAdded > 0) {
-        select();
-    } else if (locations.size() - tracksAdded > 0) {
+    if (locations.size() - tracksAdded > 0) {
         qDebug() << "PlaylistTableModel::addTracks could not add"
                  << locations.size() - tracksAdded
                  << "to playlist" << m_iPlaylistId;
@@ -96,11 +101,7 @@ bool PlaylistTableModel::appendTrack(int trackId) {
     if (trackId < 0) {
         return false;
     }
-
-    m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
-
-    select(); //Repopulate the data model.
-    return true;
+    return m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index) {
@@ -111,7 +112,6 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
-    select(); //Repopulate the data model.
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
@@ -130,9 +130,6 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
-
-    // Have to re-lookup every track b/c their playlist ranks might have changed
-    select();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
@@ -333,4 +330,10 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     }
 
     return caps;
+}
+
+void PlaylistTableModel::playlistChanged(int playlistId) {
+    if (playlistId == m_iPlaylistId) {
+        select(); // Repopulate the data model.
+    }
 }

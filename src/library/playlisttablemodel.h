@@ -31,6 +31,9 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void shuffleTracks(const QModelIndex& shuffleStartIndex);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
+  private slots:
+    void playlistChanged(int playlistId);
+
   private:
     PlaylistDAO& m_playlistDao;
     int m_iPlaylistId;
