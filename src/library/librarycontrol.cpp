@@ -92,6 +92,10 @@ LibraryControl::LibraryControl(QObject* pParent)
     m_pSelectTrackKnob = new ControlPushButton(ConfigKey("[Playlist]","SelectTrackKnob"));
     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrackKnob(double)));
+
+    m_pIsBusy = new ControlObject(ConfigKey("[Playlist]","isBusy"));
+    connect(m_pIsBusy, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSetPlaylistBusy(double)));
 }
 
 LibraryControl::~LibraryControl() {
@@ -102,6 +106,7 @@ LibraryControl::~LibraryControl() {
    delete m_pToggleSidebarItem;
    delete m_pLoadSelectedIntoFirstStopped;
    delete m_pSelectTrackKnob;
+   delete m_pIsBusy;
    deleteMapValues(&m_loadToGroupControllers);
 }
 
@@ -147,6 +152,12 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
     for (int i = 0; i < iNumPreviewDecks; ++i) {
         maybeCreateGroupController(PlayerManager::groupForPreviewDeck(i));
     }
+}
+
+void LibraryControl::slotSetPlaylistBusy(double v) {
+    bool enabled (v > 0.0f); // Binary means it's either on (non-zero) or off (zero)
+    m_pLibraryWidget->setEnabled(enabled);
+    m_pSidebarWidget->setEnabled(enabled);
 }
 
 void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {

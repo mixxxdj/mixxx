@@ -48,11 +48,7 @@ void WLibrary::search(const QString& name) {
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
     lock.unlock();
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        view->onSearch(name);
-    });
+    view->onSearch(name);
 }
 
 LibraryView* WLibrary::getActiveView() const {
