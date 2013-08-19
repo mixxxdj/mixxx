@@ -53,7 +53,7 @@ class TrackCollection : public QThread {
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
     ~TrackCollection();
     void run();
-    void callSync(func lambda);
+    void callAsync(func lambda);
     void stopThread();
     void setLambda(func lambda);
 
@@ -95,13 +95,14 @@ class TrackCollection : public QThread {
     CueDAO* m_cueDao;
     AnalysisDao* m_analysisDao;
     TrackDAO* m_trackDao;
-    const QRegExp m_supportedFileExtensionsRegex;
 
     // all from threadDAO
     func m_lambda;
     volatile bool m_stop;
     QMutex m_inCallSync;
     QSemaphore m_semLambdaReadyToCall;
+
+    const QRegExp m_supportedFileExtensionsRegex;
 };
 
 #endif

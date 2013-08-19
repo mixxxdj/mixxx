@@ -10,8 +10,11 @@ AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.prepare") {
     m_bShowRecentSongs = true;
-    setSearch("", RECENT_FILTER);
-
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        setSearch("", RECENT_FILTER);
+    });
 }
 
 
@@ -20,8 +23,8 @@ AnalysisLibraryTableModel::~AnalysisLibraryTableModel() {
 
 
 void AnalysisLibraryTableModel::showRecentSongs() {
-   m_bShowRecentSongs = true;
-   search(currentSearch());
+    m_bShowRecentSongs = true;
+    search(currentSearch());
 }
 
 void AnalysisLibraryTableModel::showAllSongs() {

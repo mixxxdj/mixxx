@@ -11,7 +11,6 @@
 WLibrary::WLibrary(QWidget* parent)
         : QStackedWidget(parent),
           m_mutex(QMutex::Recursive) {
-    qDebug() << "\t###" << __FUNCTION__ << parent;
 }
 
 WLibrary::~WLibrary() {
@@ -49,7 +48,11 @@ void WLibrary::search(const QString& name) {
     QWidget* current = currentWidget();
     LibraryView* view = dynamic_cast<LibraryView*>(current);
     lock.unlock();
-    view->onSearch(name);
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        view->onSearch(name);
+    });
 }
 
 LibraryView* WLibrary::getActiveView() const {

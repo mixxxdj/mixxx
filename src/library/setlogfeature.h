@@ -47,6 +47,9 @@ public:
     QLinkedList<int> m_recentTracks;
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
+
+signals:
+    void plylistTableChanged(int);
 };
 
 #endif /* SETLOGFEATURE_H */

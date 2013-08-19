@@ -155,7 +155,11 @@ DlgAutoDJ::~DlgAutoDJ() {
 }
 
 void DlgAutoDJ::onShow() {
-    m_pAutoDJTableModel->select();
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pAutoDJTableModel->select();
+    });
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {
@@ -199,8 +203,12 @@ void DlgAutoDJ::shufflePlaylist(double value) {
     if (value <= 0.0) {
         return;
     }
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
     int row = m_eState == ADJ_DISABLED ? 0 : 1;
     m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
+    });
 }
 
 void DlgAutoDJ::skipNextButton(bool) {
@@ -212,14 +220,19 @@ void DlgAutoDJ::skipNext(double value) {
     if (value <= 0.0 || m_eState == ADJ_DISABLED) {
         return;
     }
-    // Load the next song from the queue.
-    if (m_pCOPlay1Fb->get() == 0.0f) {
-        removePlayingTrackFromQueue("[Channel1]");
-        loadNextTrackFromQueue();
-    } else if (m_pCOPlay2Fb->get() == 0.0f) {
-        removePlayingTrackFromQueue("[Channel2]");
-        loadNextTrackFromQueue();
-    }
+
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        // Load the next song from the queue.
+        if (m_pCOPlay1Fb->get() == 0.0f) {
+            removePlayingTrackFromQueue("[Channel1]");
+            loadNextTrackFromQueue();
+        } else if (m_pCOPlay2Fb->get() == 0.0f) {
+            removePlayingTrackFromQueue("[Channel2]");
+            loadNextTrackFromQueue();
+        }
+    });
 }
 
 void DlgAutoDJ::fadeNowButton(bool) {
@@ -589,11 +602,8 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
 
 
     qDebug() << "in DlgAutoDJ::removePlayingTrackFromQueue(QString group)";
-    m_pTrackCollection->callSync(
-                // lambda goes here
+    m_pTrackCollection->callAsync(
                 [this, loadedId] (void) {
-        qDebug() << "\t in lambda";
-
         // TODO(xxx): remove all this dependency
 
         // remove the top track
@@ -603,8 +613,6 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
         if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
             m_pAutoDJTableModel->appendTrack(loadedId);
         }
-
-        qDebug() << "\t lambda ends";
     });
     return true;
 }

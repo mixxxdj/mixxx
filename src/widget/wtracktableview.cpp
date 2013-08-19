@@ -1116,7 +1116,7 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
 void WTrackTableView::slotSendToAutoDJ() {
     // append to auto DJ
     qDebug() << "in WTrackTableView::slotSendToAutoDJ";
-    m_pTrackCollection->callSync(
+    m_pTrackCollection->callAsync(
                 // lambda goes here
                 [this]       // Say to capture object to call its methods
                 (void) {
@@ -1131,7 +1131,7 @@ void WTrackTableView::slotSendToAutoDJ() {
 void WTrackTableView::slotSendToAutoDJTop() {
     // append to auto DJ
     qDebug() << "in WTrackTableView::slotSendToAutoDJ";
-    m_pTrackCollection->callSync(
+    m_pTrackCollection->callAsync(
                 // lambda goes here
                 [this] (void) {
         qDebug() << "\t in lambda";

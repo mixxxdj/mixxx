@@ -13,9 +13,6 @@
 #include "xmlparse.h"
 #include "util/sleepableqthread.h"
 
-const int SleepTimeMs = 13;
-const int TooLong = 100;
-
 #define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
@@ -28,6 +25,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_trackDao(NULL),
           m_lambda(NULL),
           m_stop(false),
+          m_semLambdaReadyToCall(0),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
@@ -77,20 +75,23 @@ void TrackCollection::run() {
     emit(initialized()); // to notify that Daos can be used
 
     // main TrackCollection's loop
+    int loopCount = 0;
     while (!m_stop) {
         // execute lambda in TrackCollection's thread
         m_semLambdaReadyToCall.acquire(1); // 1. Lock lambda, so noone can change it
         if (m_lambda) {
+            DBG()<<"BEGIN execute lambda"<<loopCount;
             m_lambda();                     // 2. Execute lambda
             m_lambda = NULL;                // 3. Clear lambda
+            DBG()<<"END execute lambda"<<loopCount++;
         }
         m_inCallSync.unlock();
         // TODO(xxx) read next lambda from queue
     }
 }
 
-// callSync calls from GUI thread.
-void TrackCollection::callSync(func lambda) {
+// callAsync calls from GUI thread.
+void TrackCollection::callAsync(func lambda) {
     DBG() << "thread=" << QThread::currentThread()->objectName();
 
     if (lambda == NULL) return;

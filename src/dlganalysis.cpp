@@ -64,11 +64,20 @@ DlgAnalysis::~DlgAnalysis() {
 void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
-    m_pAnalysisLibraryTableModel->select();
+
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pAnalysisLibraryTableModel->select();
+    });
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
-    m_pAnalysisLibraryTableModel->search(text);
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this, text] (void) {
+        m_pAnalysisLibraryTableModel->search(text);
+    });
 }
 
 void DlgAnalysis::loadSelectedTrack() {
@@ -153,11 +162,19 @@ void DlgAnalysis::trackAnalysisStarted(int size) {
 }
 
 void DlgAnalysis::showRecentSongs() {
-    m_pAnalysisLibraryTableModel->showRecentSongs();
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pAnalysisLibraryTableModel->showRecentSongs();
+    });
 }
 
 void DlgAnalysis::showAllSongs() {
-    m_pAnalysisLibraryTableModel->showAllSongs();
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pAnalysisLibraryTableModel->showAllSongs();
+    });
 }
 
 void DlgAnalysis::installEventFilter(QObject* pFilter) {
