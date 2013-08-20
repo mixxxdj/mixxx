@@ -195,15 +195,6 @@ void LoopRecordingManager::slotLoadToLoopDeck() {
     }
 }
 
-//void LoopRecordingManager::slotCountSamplesRecorded(int samples) {
-//    m_iNumSamplesRecorded += samples;
-//
-//    if ((m_iLoopLength > 0) && (m_iNumSamplesRecorded >= m_iLoopLength)) {
-//        qDebug() << "!-!-!-! Stop recording: Loop Length: " << m_iLoopLength << " Samples: " << m_iNumSamplesRecorded;
-//        stopRecording();
-//    }
-//}
-
 // Private Slots
 
 void LoopRecordingManager::slotChangeExportDestination(double v) {
@@ -306,6 +297,7 @@ void LoopRecordingManager::slotToggleExport(double v) {
 }
 
 void LoopRecordingManager::slotToggleLoopRecording(double v) {
+    // TODO(carl): Handle recorder INPUT_OFF state
     if (v > 0.) {
         if (m_isRecording) {
             stopRecording();
@@ -393,12 +385,11 @@ unsigned int LoopRecordingManager::getLoopLength() {
         return 0;
     }
 
-    // loop length in samples = x beats * y sec/beat * z sample rate * 2 channels
+    // loop length in samples = x beats * y sample rate * 2 channels * 60 sec/min / z bpm
     double loopLength = m_pCOLoopLength->get();
     double sampleRate = m_pSampleRate->get();
-    //float secondsPerBeat = 60.0f/bpm;
-
-    unsigned int length = (unsigned int)((loopLength * 60. * sampleRate * 2.)/bpm);
+    
+    unsigned int length = (unsigned int)((loopLength * sampleRate * 2.0 * 60.0)/bpm);
 
     qDebug() << "!!!!!!!LoopRecordingManager::getloopLength sampleRate: " << sampleRate
              << " loopLength: " << loopLength << " bpm: " << bpm

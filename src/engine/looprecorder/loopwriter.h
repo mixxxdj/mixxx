@@ -47,7 +47,6 @@ class LoopWriter : public QObject {
     bool m_bIsRecording;
     unsigned int m_iBreakPoint;
     unsigned int m_iLoopLength;
-    //unsigned int m_iLoopRemainder;
     quint64 m_iSamplesRecorded;
     SNDFILE* m_pSndfile;
 };

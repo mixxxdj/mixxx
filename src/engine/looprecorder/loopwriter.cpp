@@ -42,7 +42,7 @@ void LoopWriter::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     }
 
     if (m_sampleFifo.writeAvailable() < LOOP_BUFFER_SIZE/4) {
-        // Signal to the loop recorder that samples are available.
+        // Signal to the loop writer that samples are available.
         emit(samplesAvailable());
     }
 }
@@ -66,8 +66,7 @@ void LoopWriter::slotSetFile(SNDFILE* pFile) {
 void LoopWriter::slotStartRecording(int samples) {
     m_iSamplesRecorded = 0;
 
-    // TODO(carl): figure out extra padding needed.
-    // I think the loops are getting shortened by the crossfade.
+    // TODO(carl): figure out if extra padding is needed.
     m_iLoopLength = samples;
     m_iBreakPoint = m_iLoopLength - WORK_BUFFER_SIZE;
 
@@ -99,15 +98,9 @@ void LoopWriter::slotStopRecording(bool playLoop) {
 }
 
 void LoopWriter::slotProcessSamples() {
-    qDebug() << "!~!~!~!~!~! LoopWriter::slotProcessSamples !~!~!~!~!~!~!";
+    //qDebug() << "!~!~!~!~!~! LoopWriter::slotProcessSamples !~!~!~!~!~!~!";
     int iSamplesRead;
     if ((iSamplesRead = m_sampleFifo.read(m_pWorkBuffer, WORK_BUFFER_SIZE))) {
-
-        // States for recording:
-        // 1. not recording
-        // 2. Recording, but file not yet open
-        // 3. Recording, file open
-        // 4. Stopping recording (closing file, sending to deck)
 
         if (m_bIsRecording) {
             writeBuffer(m_pWorkBuffer, iSamplesRead);
