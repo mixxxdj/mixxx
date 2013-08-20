@@ -312,8 +312,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         SampleUtil::copyWithGain(m_pLoop, m_pHead, 1.0, iBufferSize);
     }
 
-    m_pLoopRecorder->writeSamples(m_pLoop, iBufferSize);
-
+    if (loop_source != INPUT_NONE) {
+        m_pLoopRecorder->writeSamples(m_pLoop, iBufferSize);
+    }
     
     // Submit master samples to the side chain to do shoutcasting, recording,
     // etc.  (cpu intensive non-realtime tasks)
