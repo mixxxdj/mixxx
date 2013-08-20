@@ -25,6 +25,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
         m_recordingFile(""),
         m_recordingLocation(""),
         m_isRecording(false),
+        m_iCurrentPlayingDeck(0),
         m_iLoopLength(0),
         m_iLoopNumber(0),
         m_iNumDecks(0),
@@ -72,6 +73,9 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
             this, SLOT(slotNumDecksChanged(double)));
     connect(m_pNumSamplers, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumSamplersChanged(double)));
+
+    connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
+            this, SLOT(slotCurrentPlayingDeckChanged(int)));
 
     // Get the current number of decks and samplers.
     m_iNumDecks = m_pNumDecks->get();
@@ -152,6 +156,12 @@ void LoopRecordingManager::slotClearRecorder() {
         }
     }
     m_filesRecorded.clear();
+}
+
+void LoopRecordingManager::slotCurrentPlayingDeckChanged(int deck) {
+    qDebug() << "LoopRecordingManager::slotCurrentPlayingDeckChanged Deck: "
+            << deck;
+    m_iCurrentPlayingDeck = deck;
 }
 
 void LoopRecordingManager::slotIsRecording(bool isRecordingActive) {

@@ -24,19 +24,17 @@ class LoopRecordingManager : public QObject {
   public:
     LoopRecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine);
     virtual ~LoopRecordingManager();
-//    bool isLoopRecordingActive();
 
   public slots:
     void slotClearRecorder();
+    void slotCurrentPlayingDeckChanged(int);
     void slotIsRecording(bool);
     void slotLoadToLoopDeck();
-//    void slotCountSamplesRecorded(int);
 
   signals:
     void clearWriter();
     void exportToPlayer(QString, QString);
     void fileOpen(SNDFILE*);
-//    void isLoopRecording(bool);
     void loadToLoopDeck(TrackPointer, QString, bool);
     void startWriter(int);
     void stopWriter(bool);
@@ -107,6 +105,7 @@ class LoopRecordingManager : public QObject {
     
     bool m_isRecording;
 
+    int m_iCurrentPlayingDeck;
     unsigned int m_iLoopLength;
     unsigned int m_iLoopNumber;
     unsigned int m_iNumDecks;
