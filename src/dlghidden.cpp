@@ -47,13 +47,9 @@ DlgHidden::~DlgHidden() {
 }
 
 void DlgHidden::onShow() {
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        m_pHiddenTableModel->select();
-        // no buttons can be selected
-        activateButtons(false);
-    });
+    m_pHiddenTableModel->select();
+    // no buttons can be selected
+    activateButtons(false);
 }
 
 void DlgHidden::onSearch(const QString& text) {

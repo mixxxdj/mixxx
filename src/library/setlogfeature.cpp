@@ -78,7 +78,7 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotPlayingDeckChanged(int)));
 
-    connect(this, SIGNAL(plylistTableChanged(int)),
+    connect(this, SIGNAL(playlistTableChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
 
     qRegisterMetaType<Qt::Orientation>("Qt::Orientation");
@@ -212,7 +212,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                     if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
                         m_playlistDao.deletePlaylist(currentPlaylistId);
                         // slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                        emit(plylistTableChanged(previousPlaylistId)); // For moving selection
+                        emit(playlistTableChanged(previousPlaylistId)); // For moving selection
                         emit(showTrackModel(m_pPlaylistTableModel));
                     }
                 }

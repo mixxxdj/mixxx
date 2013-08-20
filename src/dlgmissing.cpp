@@ -42,12 +42,8 @@ DlgMissing::~DlgMissing() {
 }
 
 void DlgMissing::onShow() {
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        m_pMissingTableModel->select();
-        activateButtons(false);
-    });
+    m_pMissingTableModel->select();
+    activateButtons(false);
 }
 
 void DlgMissing::clicked() {

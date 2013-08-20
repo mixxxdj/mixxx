@@ -262,6 +262,7 @@ void DlgAutoDJ::fadeNow(double value) {
 }
 
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
+    // TODO(tro) wrap to callAsync
     bool deck1Playing = m_pCOPlay1Fb->get() == 1.0f;
     bool deck2Playing = m_pCOPlay2Fb->get() == 1.0f;
 
@@ -358,6 +359,8 @@ void DlgAutoDJ::enableAutoDJCo(double value) {
 }
 
 void DlgAutoDJ::player1PositionChanged(double value) {
+    // TODO(tro) wrap to callAsync
+
     // 95% playback is when we crossfade and do stuff
     // const float posThreshold = 0.95;
 
@@ -454,6 +457,8 @@ void DlgAutoDJ::player1PositionChanged(double value) {
 }
 
 void DlgAutoDJ::player2PositionChanged(double value) {
+    // TODO(tro) wrap to callAsync
+
     // 95% playback is when we crossfade and do stuff
     // const float posThreshold = 0.95;
 
@@ -602,18 +607,15 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
 
 
     qDebug() << "in DlgAutoDJ::removePlayingTrackFromQueue(QString group)";
-    m_pTrackCollection->callAsync(
-                [this, loadedId] (void) {
-        // TODO(xxx): remove all this dependency
+    // TODO(xxx): remove all this dependency
 
-        // remove the top track
-        m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
+    // remove the top track
+    m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
-        // Re-queue if configured
-        if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
-            m_pAutoDJTableModel->appendTrack(loadedId);
-        }
-    });
+    // Re-queue if configured
+    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
+        m_pAutoDJTableModel->appendTrack(loadedId);
+    }
     return true;
 }
 

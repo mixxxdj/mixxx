@@ -49,7 +49,7 @@ public:
     int m_playlistId;
 
 signals:
-    void plylistTableChanged(int);
+    void playlistTableChanged(int);
 };
 
 #endif /* SETLOGFEATURE_H */

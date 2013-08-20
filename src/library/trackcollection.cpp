@@ -30,6 +30,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_lambda(NULL),
           m_stop(false),
           m_semLambdaReadyToCall(0),
+          m_pControlPlaylist(NULL),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
@@ -77,8 +78,7 @@ void TrackCollection::run() {
     m_cueDao->initialize();
     emit(initialized()); // to notify that Daos can be used
 
-    ControlObjectThreadMain* controlPlaylist =
-            new ControlObjectThreadMain(ConfigKey("[Playlist]", "isBusy"));
+    m_pControlPlaylist = new ControlObjectThreadMain(ConfigKey("[Playlist]", "isBusy"));
 
     // main TrackCollection's loop
     int loopCount = 0;
@@ -87,9 +87,9 @@ void TrackCollection::run() {
         m_semLambdaReadyToCall.acquire(1); // 1. Lock lambda, so noone can change it
         if (m_lambda) {
             DBG()<<"BEGIN execute lambda"<<loopCount;
-            controlPlaylist->set(0.0f);
+            m_pControlPlaylist->set(0.0f);
             m_lambda();                     // 2. Execute lambda
-            controlPlaylist->set(1.0f);
+            m_pControlPlaylist->set(1.0f);
             m_lambda = NULL;                // 3. Clear lambda
             DBG()<<"END execute lambda"<<loopCount++;
         }

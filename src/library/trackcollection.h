@@ -34,13 +34,13 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 
+#define AUTODJ_TABLE "Auto DJ"
+
 // Lambda function
 typedef std::function <void ()> func;
 
 class TrackInfoObject;
-
-#define AUTODJ_TABLE "Auto DJ"
-
+class ControlObjectThreadMain;
 class BpmDetector;
 
 /**
@@ -101,6 +101,7 @@ class TrackCollection : public QThread {
     volatile bool m_stop;
     QMutex m_inCallSync;
     QSemaphore m_semLambdaReadyToCall;
+    ControlObjectThreadMain* m_pControlPlaylist;
 
     const QRegExp m_supportedFileExtensionsRegex;
 };
