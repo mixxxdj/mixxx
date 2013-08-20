@@ -115,9 +115,7 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
-    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
-
-    if (locked) {
+    if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
 
@@ -155,64 +153,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         newPosition = rowCount();
     }
 
-    // Start the transaction
-    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
-
-    // Find out the highest position existing in the playlist so we know what
-    // position this track should have.
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-
-    // Insert the song into the PlaylistTracks table
-
-    // ALGORITHM for code below
-    // Case 1: destination < source (newPositon < oldPosition)
-    //    1) Set position = -1 where pos=source -- Gives that track a dummy index to keep stuff simple.
-    //    2) Decrement position where pos >= dest AND pos < source
-    //    3) Set position = dest where pos=-1 -- Move track from dummy pos to final destination.
-
-     // Case 2: destination > source (newPos > oldPos)
-     //   1) Set position=-1 where pos=source -- Give track a dummy index again.
-     //   2) Decrement position where pos > source AND pos <= dest
-     //   3) Set postion=dest where pos=-1 -- Move that track from dummy pos to final destination
-
-    QString queryString;
-
-    // Move moved track to  dummy position -1
-    queryString = QString("UPDATE PlaylistTracks SET position=-1 "
-                          "WHERE position=%1 AND "
-                          "playlist_id=%2").arg(QString::number(oldPosition),
-                                                QString::number(m_iPlaylistId));
-    query.exec(queryString);
-
-    if (newPosition < oldPosition) {
-        queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
-                              "WHERE position >= %1 AND position < %2 AND "
-                              "playlist_id=%3").arg(QString::number(newPosition),
-                                                    QString::number(oldPosition),
-                                                    QString::number(m_iPlaylistId));
-    } else {
-        queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
-                              "WHERE position>%1 AND position<=%2 AND "
-                              "playlist_id=%3").arg(QString::number(oldPosition),
-                                                    QString::number(newPosition),
-                                                    QString::number(m_iPlaylistId));
-    }
-    query.exec(queryString);
-
-    queryString = QString("UPDATE PlaylistTracks SET position = %1 "
-                          "WHERE position=-1 AND "
-                          "playlist_id=%2").arg(QString::number(newPosition),
-                                                QString::number(m_iPlaylistId));
-    query.exec(queryString);
-
-    transaction.commit();
-
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-        qDebug() << query.lastError();
-    }
-
-    select();
+    m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);
 }
 
 bool PlaylistTableModel::isLocked(){
