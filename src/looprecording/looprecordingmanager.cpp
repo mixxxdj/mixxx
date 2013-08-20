@@ -73,13 +73,18 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
             this, SLOT(slotNumDecksChanged(double)));
     connect(m_pNumSamplers, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumSamplersChanged(double)));
-
     connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotCurrentPlayingDeckChanged(int)));
 
     // Get the current number of decks and samplers.
     m_iNumDecks = m_pNumDecks->get();
     m_iNumSamplers = m_pNumSamplers->get();
+
+    for (int i = 1; i <= m_iNumDecks; i++) {
+        qDebug() << QString("Loop Recording Manager: Adding Rate Control [Channel%1]").arg(i);
+        m_deckRateControls.append(new ControlObjectThread(
+                                      ConfigKey(QString("[Channel%1]").arg(i), "rateEngine")));
+    }
 
     // Set default loop export value to Sampler1.
     m_pCOExportDestination->set(1.0);
@@ -117,6 +122,12 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 LoopRecordingManager::~LoopRecordingManager() {
     qDebug() << "~LoopRecordingManager";
     // TODO(carl) delete temporary loop recorder files.
+
+    while (!m_deckRateControls.empty()) {
+        ControlObjectThread* pControl = m_deckRateControls.takeLast();
+        delete pControl;
+    }
+
     delete m_pTogglePlayback;
     delete m_pToggleLoopRecording;
     delete m_pExportLoop;
@@ -259,6 +270,15 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
 
 void LoopRecordingManager::slotNumDecksChanged(double v) {
     m_iNumDecks = (int) v;
+    int iNumRateControls = m_deckRateControls.size();
+
+    if(m_iNumDecks > iNumRateControls) {
+        for (int i = iNumRateControls+1; i <= m_iNumDecks; i++) {
+            qDebug() << QString("Loop Recording Manager: Adding Rate Control [Channel%1]").arg(i);
+            m_deckRateControls.append(new ControlObjectThread(
+                                          ConfigKey(QString("[Channel%1]").arg(i), "rateEngine")));
+        }
+    }
 }
 
 void LoopRecordingManager::slotNumSamplersChanged(double v) {
@@ -341,7 +361,17 @@ double LoopRecordingManager::getCurrentBPM() {
     // When master_sync is merged this will become trivial, because we can get the
     // bpm from the sync_bpm control object.
 
-    return PlayerInfo::Instance().getCurrentPlayingTrack()->getBpm();
+    double baseTrackBPM = PlayerInfo::Instance().getCurrentPlayingTrack()->getBpm();
+
+    if ((m_iCurrentPlayingDeck >= 0) && (m_iCurrentPlayingDeck < m_deckRateControls.size())) {
+        double rate = m_deckRateControls[m_iCurrentPlayingDeck]->get();
+        qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Base BPM: " << baseTrackBPM
+        << " Rate: " << rate;
+        return baseTrackBPM * rate;
+    } else {
+        qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() 0";
+        return 0;
+    }
 }
 
 unsigned int LoopRecordingManager::getLoopLength() {

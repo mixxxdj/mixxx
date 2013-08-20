@@ -89,6 +89,8 @@ class LoopRecordingManager : public QObject {
     ControlPushButton* m_pToggleLoopRecording;
     ControlPushButton* m_pTogglePlayback;
 
+    QList<ControlObjectThread*> m_deckRateControls;
+
     // Stores paths of all files recorded.
     QList<QString> m_filesRecorded;
 
@@ -108,8 +110,8 @@ class LoopRecordingManager : public QObject {
     int m_iCurrentPlayingDeck;
     unsigned int m_iLoopLength;
     unsigned int m_iLoopNumber;
-    unsigned int m_iNumDecks;
-    unsigned int m_iNumSamplers;
+    int m_iNumDecks;
+    int m_iNumSamplers;
 };
 
 #endif // LOOPRECORDINGMANAGER_H
