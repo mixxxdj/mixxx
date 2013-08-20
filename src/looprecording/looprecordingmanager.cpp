@@ -327,6 +327,10 @@ QString LoopRecordingManager::formatDateTimeForFilename(QDateTime dateTime) cons
 }
 
 double LoopRecordingManager::getCurrentBPM() {
+    // Note: This doesn't account for any changes to the BPM using the rate slider.
+    // When master_sync is merged this will become trivial, because we can get the
+    // bpm from the sync_bpm control object.
+
     return PlayerInfo::Instance().getCurrentPlayingTrack()->getBpm();
 }
 
