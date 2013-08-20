@@ -56,6 +56,7 @@ class LoopRecordingManager : public QObject {
     void clearLoopDeck();
     void exportLoopToPlayer(QString group);
     QString formatDateTimeForFilename(QDateTime dateTime) const;
+    double getCurrentBPM();
     unsigned int getLoopLength();
     SNDFILE* openSndFile(QString);
     void playLoopDeck();
@@ -73,7 +74,6 @@ class LoopRecordingManager : public QObject {
 
     ControlObjectThread* m_pLoopPlayReady;
     ControlObjectThread* m_pLoopSource;
-    ControlObjectThread* m_pMasterBPM;
     ControlObjectThread* m_pNumDecks;
     ControlObjectThread* m_pNumSamplers;
     ControlObjectThread* m_pRecReady;

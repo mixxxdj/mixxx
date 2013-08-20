@@ -14,6 +14,7 @@
 #include "engine/looprecorder/loopwriter.h"
 #include "looprecording/defs_looprecording.h"
 #include "looprecording/looprecordingmanager.h"
+#include "playerinfo.h"
 #include "trackinfoobject.h"
 
 LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
@@ -36,7 +37,6 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
     m_pLoopPlayReady = new ControlObjectThread(m_pCOLoopPlayReady->getKey());
     m_pLoopSource = new ControlObjectThread(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_source"));
-    m_pMasterBPM = new ControlObjectThread("[Master]","sync_bpm");
     m_pNumDecks = new ControlObjectThread("[Master]","num_decks");
     m_pNumSamplers = new ControlObjectThread("[Master]","num_samplers");
     m_pRecReady = new ControlObjectThread(LOOP_RECORDING_PREF_KEY, "rec_status");
@@ -127,7 +127,6 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pRecReady;
     delete m_pNumSamplers;
     delete m_pNumDecks;
-    delete m_pMasterBPM;
     delete m_pLoopSource;
     delete m_pLoopPlayReady;
     delete m_pCOLoopPlayReady;
@@ -275,7 +274,6 @@ void LoopRecordingManager::slotToggleExport(double v) {
 
 void LoopRecordingManager::slotToggleLoopRecording(double v) {
     if (v > 0.) {
-        //qDebug() << "LoopRecordingManager::slotToggleLoopRecording BPM: " << m_pMasterBPM->get();
         if (m_isRecording) {
             stopRecording();
         } else {
@@ -328,8 +326,12 @@ QString LoopRecordingManager::formatDateTimeForFilename(QDateTime dateTime) cons
     return formatted;
 }
 
+double LoopRecordingManager::getCurrentBPM() {
+    return PlayerInfo::Instance().getCurrentPlayingTrack()->getBpm();
+}
+
 unsigned int LoopRecordingManager::getLoopLength() {
-    double bpm = m_pMasterBPM->get();
+    double bpm = getCurrentBPM();
     if (bpm == 0.) {
         return 0;
     }
