@@ -38,6 +38,7 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class SyncWorker;
+class EngineLoopRecorder;
 
 class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
@@ -80,6 +81,10 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     EngineSideChain* getSideChain() const {
         return m_pSideChain;
+    }
+    
+    EngineLoopRecorder* getLoopRecorder() const {
+        return m_pLoopRecorder;
     }
 
     struct ChannelInfo {
@@ -133,7 +138,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
-    CSAMPLE *m_pMaster, *m_pHead;
+    CSAMPLE *m_pMaster, *m_pHead, *m_pLoop;
 
     EngineWorkerScheduler *m_pWorkerScheduler;
 
@@ -155,6 +160,10 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlPotmeter *crossfader, *head_mix, *m_pBalance,
         *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
 
+    ControlPushButton* m_pLoopRecSource;
+    ControlObject* m_pLoopSource;
+    EngineLoopRecorder* m_pLoopRecorder;
+    
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_headphoneMasterGainOld;

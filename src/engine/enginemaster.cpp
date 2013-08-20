@@ -34,7 +34,9 @@
 #include "engine/sidechain/enginesidechain.h"
 #include "sampleutil.h"
 #include "util/timer.h"
+#include "engine/looprecorder/enginelooprecorder.h"
 #include "playermanager.h"
+#include "looprecording/defs_looprecording.h"
 #include "engine/channelmixer.h"
 
 #ifdef __LADSPA__
@@ -95,8 +97,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pLoop = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pHead, 0, MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
+    SampleUtil::applyGain(m_pLoop, 0, MAX_BUFFER_LEN);
 
     // Starts a thread for recording and shoutcast
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
@@ -110,10 +114,15 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
         ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
     xFaderReverse = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
+    
+    m_pLoopRecSource = new ControlPushButton(ConfigKey(group,"loop_recorder_source"));
+
+    m_pLoopSource = new ControlObject(ConfigKey("[Loop_Recording]", "loop_source"));
+
+    m_pLoopRecorder = new EngineLoopRecorder();
 }
 
-EngineMaster::~EngineMaster()
-{
+EngineMaster::~EngineMaster() {
     qDebug() << "in ~EngineMaster()";
     delete crossfader;
     delete m_pBalance;
@@ -124,7 +133,10 @@ EngineMaster::~EngineMaster()
     delete vumeter;
     delete head_clipping;
     delete m_pSideChain;
-
+    delete m_pLoopRecorder;
+    delete m_pLoopRecSource;
+    delete m_pLoopSource;
+    
     delete xFaderReverse;
     delete xFaderCalibration;
     delete xFaderCurve;
@@ -138,6 +150,7 @@ EngineMaster::~EngineMaster()
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
+    SampleUtil::free(m_pLoop);
 
     delete m_pWorkerScheduler;
 
@@ -180,6 +193,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     unsigned int masterOutput = 0;
     unsigned int headphoneOutput = 0;
 
+    float loop_source = m_pLoopSource->get();
+    SampleUtil::applyGain(m_pLoop, 0.0f, iBufferSize);
+    
     // Compute headphone mix
     // Head phone left/right mix
     CSAMPLE cf_val = head_mix->get();
@@ -210,6 +226,28 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         if (pChannel->isPFL()) {
             headphoneOutput |= (1 << channel_number);
             needsProcessing = true;
+        }
+        
+        // Copy audio from individual inputs to loop recorder buffer.
+        QString group = pChannel->getGroup();
+        if (loop_source == INPUT_MICROPHONE && group == "[Microphone]") {
+            SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
+        } else if (loop_source == INPUT_PT1 && group == "[Passthrough1]") {
+            SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
+        } else if (loop_source == INPUT_PT2 && group == "[Passthrough2]") {
+            SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
+        } else if (loop_source > INPUT_DECK_BASE && loop_source < INPUT_SAMPLER_BASE) {
+            int deckNum = loop_source - INPUT_DECK_BASE;
+            QString num = QString::number(deckNum);
+            if (group == QString("[Channel%1]").arg(num)) {
+                SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
+            }
+        } else if (loop_source > INPUT_SAMPLER_BASE) {
+            int samplerNum = loop_source - INPUT_SAMPLER_BASE;
+            QString num = QString::number(samplerNum);
+            if (group == QString("[Sampler%1]").arg(num)) {
+                SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
+            }
         }
 
         // Process the buffer if necessary
@@ -267,8 +305,18 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     if (vumeter != NULL)
         vumeter->process(m_pMaster, m_pMaster, iBufferSize);
 
-    //Submit master samples to the side chain to do shoutcasting, recording,
-    //etc.  (cpu intensive non-realtime tasks)
+    // Loop Recorder: Send master/headphone mix to loop recorder if selected.
+    if (loop_source == INPUT_MASTER) {
+        SampleUtil::copyWithGain(m_pLoop, m_pMaster, 1.0, iBufferSize);
+    } else if (loop_source == INPUT_HEAD) {
+        SampleUtil::copyWithGain(m_pLoop, m_pHead, 1.0, iBufferSize);
+    }
+
+    m_pLoopRecorder->writeSamples(m_pLoop, iBufferSize);
+
+    
+    // Submit master samples to the side chain to do shoutcasting, recording,
+    // etc.  (cpu intensive non-realtime tasks)
     if (m_pSideChain != NULL) {
         m_pSideChain->writeSamples(m_pMaster, iBufferSize);
     }
