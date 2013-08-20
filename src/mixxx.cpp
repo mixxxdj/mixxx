@@ -41,6 +41,7 @@
 #include "recording/defs_recording.h"
 #include "recording/recordingmanager.h"
 #include "shoutcast/shoutcastmanager.h"
+#include "looprecording/looprecordingmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundmanager.h"
@@ -253,7 +254,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #ifdef __SHOUTCAST__
     m_pShoutcastManager = NULL;
 #endif
-
+    m_pLoopRecordingManager = NULL;
+              
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
@@ -366,6 +368,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
+    m_pPlayerManager->addLoopRecorderDeck();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
@@ -378,11 +381,15 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     pModplugPrefs->applySettings();
     delete pModplugPrefs; // not needed anymore
 #endif
+              
+    // Initialize loop recording manager.
+    m_pLoopRecordingManager = new LoopRecordingManager(m_pConfig, m_pEngine);
 
     m_pLibrary = new Library(this, m_pConfig,
                              bFirstRun || bUpgraded,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
+    m_pPlayerManager->bindToLoopRecorder(m_pLoopRecordingManager);
 
     // Call inits to invoke all other construction parts
 
@@ -625,6 +632,10 @@ MixxxApp::~MixxxApp()
     delete m_pShoutcastManager;
 #endif
 
+    // LoopRecordingManager depends on config, engine
+    qDebug() << "delete LoopRecordingManager " << qTime.elapsed();
+    delete m_pLoopRecordingManager;
+    
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
