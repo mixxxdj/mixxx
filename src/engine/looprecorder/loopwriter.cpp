@@ -99,7 +99,7 @@ void LoopWriter::slotStopRecording(bool playLoop) {
 }
 
 void LoopWriter::slotProcessSamples() {
-    //qDebug() << "!~!~!~!~!~! LoopWriter::slotProcessSamples !~!~!~!~!~!~!";
+    qDebug() << "!~!~!~!~!~! LoopWriter::slotProcessSamples !~!~!~!~!~!~!";
     int iSamplesRead;
     if ((iSamplesRead = m_sampleFifo.read(m_pWorkBuffer, WORK_BUFFER_SIZE))) {
 
