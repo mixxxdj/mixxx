@@ -361,14 +361,24 @@ double LoopRecordingManager::getCurrentBPM() {
     // When master_sync is merged this will become trivial, because we can get the
     // bpm from the sync_bpm control object.
 
-    double baseTrackBPM = PlayerInfo::Instance().getCurrentPlayingTrack()->getBpm();
+    TrackPointer pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+
+    if (pTrack == NULL) {
+        return 0.0;
+    }
+
+    double baseTrackBPM = pTrack->getBpm();
 
     if ((m_iCurrentPlayingDeck >= 0) && (m_iCurrentPlayingDeck < m_deckRateControls.size())) {
+
         double rate = m_deckRateControls[m_iCurrentPlayingDeck]->get();
         qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Base BPM: " << baseTrackBPM
         << " Rate: " << rate;
+
         return baseTrackBPM * rate;
+
     } else {
+
         qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() 0";
         return 0;
     }
