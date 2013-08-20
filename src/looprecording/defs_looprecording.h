@@ -16,11 +16,12 @@
 // Arbitrary loop buffer length
 #define LOOP_BUFFER_LENGTH 500000
 
-#define INPUT_MASTER 0.0f
-#define INPUT_HEAD 1.0f
-#define INPUT_MICROPHONE 2.0f
-#define INPUT_PT1 3.0f
-#define INPUT_PT2 4.0f
+#define INPUT_NONE 0.0f
+#define INPUT_MASTER 1.0f
+#define INPUT_HEAD 2.0f
+#define INPUT_MICROPHONE 3.0f
+#define INPUT_PT1 4.0f
+#define INPUT_PT2 5.0f
 #define INPUT_DECK_BASE 100.0f
 #define INPUT_SAMPLER_BASE 200.f
 

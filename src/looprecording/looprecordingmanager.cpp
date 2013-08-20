@@ -91,6 +91,8 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
     m_pCOLoopLength->set(4.0);
 
+    m_pLoopSource->slotSet(INPUT_MASTER);
+
     // Set encoding format for loops to WAV.
     // TODO(carl) create prefences option to change between WAV and AIFF.
     m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"),QString("WAV"));
@@ -242,7 +244,8 @@ void LoopRecordingManager::slotChangeLoopLength(double v) {
 }
 
 void LoopRecordingManager::slotChangeLoopSource(double v) {
-    // Available sources: Master out, PFL out, microphone, passthrough1, passthrough2,
+    // Available sources: None (Loop Recorder is off), Master out, PFL out,
+    // microphone, passthrough1, passthrough2,
     // all main decks, all samplers.
     // Sources are defined in defs_looprecording.h
 
@@ -263,7 +266,7 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
         } else if (source > INPUT_SAMPLER_BASE && source < INPUT_SAMPLER_BASE+m_iNumSamplers) {
             m_pLoopSource->slotSet(source+1.0);
         } else {
-            m_pLoopSource->slotSet(INPUT_MASTER);
+            m_pLoopSource->slotSet(INPUT_NONE);
         }
     }
 }
