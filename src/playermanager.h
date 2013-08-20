@@ -14,6 +14,7 @@ class ControlObject;
 class Deck;
 class Sampler;
 class PreviewDeck;
+class LoopRecorderDeck;
 class BaseTrackPlayer;
 
 class Library;
@@ -21,6 +22,7 @@ class EngineMaster;
 class AnalyserQueue;
 class SoundManager;
 class TrackCollection;
+class LoopRecordingManager;
 
 class PlayerManager : public QObject {
     Q_OBJECT
@@ -39,6 +41,8 @@ class PlayerManager : public QObject {
     // Add a PreviewDeck to the PlayerManager
     void addPreviewDeck();
 
+    void addLoopRecorderDeck();
+    
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
 
@@ -51,6 +55,9 @@ class PlayerManager : public QObject {
 
     // Return the number of preview decks. Thread-safe.
     static unsigned int numPreviewDecks();
+    
+    // Return the number of loop recorder decks. Thread-safe.
+    static unsigned int numLoopDecks();
 
     // Get a BaseTrackPlayer (i.e. a Deck or a Sampler) by its group
     BaseTrackPlayer* getPlayer(QString group) const;
@@ -62,10 +69,15 @@ class PlayerManager : public QObject {
 
     // Get the sampler by its number. Samplers are numbered starting with 1.
     Sampler* getSampler(unsigned int sampler) const;
+    
+    // Get a loop recorder deck by its number. Loop decks are numbered starting with 1.
+    LoopRecorderDeck* getLoopRecorderDeck(unsigned int libLoopPlayer) const;
 
     // Binds signals between PlayerManager and Library. Does not store a pointer
     // to the Library.
     void bindToLibrary(Library* pLibrary);
+    
+    void bindToLoopRecorder(LoopRecordingManager* pLoopRecordingManager);
 
     // Returns the group for the ith sampler where i is zero indexed
     static QString groupForSampler(int i) {
@@ -80,6 +92,11 @@ class PlayerManager : public QObject {
     // Returns the group for the ith PreviewDeck where i is zero indexed
     static QString groupForPreviewDeck(int i) {
         return QString("[PreviewDeck%1]").arg(i+1);
+    }
+    
+    // Returns the group for the ith LoopRecorderDeck where i is zero indexed
+    static QString groupForLoopDeck(int i) {
+        return QString("[LoopRecorderDeck%1]").arg(i+1);
     }
 
     // Used to determine if the user has configured an input for the given vinyl deck.
@@ -105,6 +122,7 @@ class PlayerManager : public QObject {
     void slotNumDecksControlChanged(double v);
     void slotNumSamplersControlChanged(double v);
     void slotNumPreviewDecksControlChanged(double v);
+    void slotNumLoopDecksControlChanged(double v);
 
   signals:
     void loadLocationToPlayer(QString location, QString group);
@@ -121,6 +139,8 @@ class PlayerManager : public QObject {
     // creates a new preview deck.
     void addPreviewDeckInner();
 
+    void addLoopRecorderDeckInner();
+    
     // Used to protect access to PlayerManager state across threads.
     mutable QMutex m_mutex;
 
@@ -131,10 +151,12 @@ class PlayerManager : public QObject {
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
     ControlObject* m_pCONumPreviewDecks;
+    ControlObject* m_pCONumLoopDecks;
 
     QList<Deck*> m_decks;
     QList<Sampler*> m_samplers;
     QList<PreviewDeck*> m_preview_decks;
+    QList<LoopRecorderDeck*> m_loop_decks;
     QMap<QString, BaseTrackPlayer*> m_players;
 };
 
