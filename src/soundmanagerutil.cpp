@@ -136,11 +136,7 @@ bool AudioPath::channelsClash(const AudioPath &other) const {
  * Returns a string describing the AudioPath for user benefit.
  */
 QString AudioPath::getString() const {
-    if (isIndexed(getType())) {
-        return QString("%1 %2").arg(getTrStringFromType(getType()),
-                                    QString::number(m_index + 1));
-    }
-    return getTrStringFromType(getType());
+    return getTrStringFromType(m_type, m_index);
 }
 
 /**
@@ -174,7 +170,7 @@ QString AudioPath::getStringFromType(AudioPathType type) {
  * Returns a translated string given an AudioPathType.
  * @note This method is static.
  */
-QString AudioPath::getTrStringFromType(AudioPathType type) {
+QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) {
     switch (type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
@@ -185,7 +181,8 @@ QString AudioPath::getTrStringFromType(AudioPathType type) {
     case HEADPHONES:
         return QString(QObject::tr("Headphones"));
     case DECK:
-        return QString(QObject::tr("Deck"));
+        return QString("%1 %2").arg(QObject::tr("Deck"),
+                                    QString::number(index + 1));
     case VINYLCONTROL:
         return QString(QObject::tr("Vinyl Control"));
     case MICROPHONE:

@@ -70,7 +70,7 @@ public:
     bool channelsClash(const AudioPath &other) const;
     QString getString() const;
     static QString getStringFromType(AudioPathType type);
-    static QString getTrStringFromType(AudioPathType type);
+    static QString getTrStringFromType(AudioPathType type, unsigned char index);
     static AudioPathType getTypeFromString(QString string);
     static bool isIndexed(AudioPathType type);
     static AudioPathType getTypeFromInt(int typeInt);
