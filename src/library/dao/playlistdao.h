@@ -93,6 +93,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // moved Track to a new position
     void moveTrack(const int playlistId,
             const int oldPosition, const int newPosition);
+    // shuffles all tracks in the position List
+    void shuffleTracks(const int playlistId, const QList<int>& positions);
 
   signals:
     void added(int playlistId);

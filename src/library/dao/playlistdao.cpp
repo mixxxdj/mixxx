@@ -698,10 +698,9 @@ int PlaylistDAO::tracksInPlaylist(const int playlistId) const {
 
 void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const int newPosition) {
     ScopedTransaction transaction(m_database);
-
     QSqlQuery query(m_database);
 
-    // ALGORITHM for code below
+    // Algorithm for code below
     // Case 1: destination < source (newPositon < oldPosition)
     //    1) Set position = -1 where pos=source -- Gives that track a dummy index to keep stuff simple.
     //    2) Decrement position where pos >= dest AND pos < source
@@ -749,6 +748,38 @@ void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const i
         qDebug() << query.lastError();
     }
 
+    emit(changed(playlistId));
+}
+
+void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& positions) {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+
+    int seed = QDateTime::currentDateTime().toTime_t();
+    qsrand(seed);
+
+    // This is a simple Fisher-Yates shuffling algorithm
+    foreach (int oldPosition, positions) {
+        int random = (int)(qrand() / (RAND_MAX + 1.0) * (positions.count()));
+        int newPosition = positions.at(random);
+        qDebug() << "Swapping tracks " << oldPosition << " and " << newPosition;
+        QString swapQuery = "UPDATE PlaylistTracks SET position=%1 "
+                "WHERE position=%2 AND playlist_id=%3";
+        query.exec(swapQuery.arg(QString::number(-1),
+                                 QString::number(oldPosition),
+                                 QString::number(playlistId)));
+        query.exec(swapQuery.arg(QString::number(oldPosition),
+                                 QString::number(newPosition),
+                                 QString::number(playlistId)));
+        query.exec(swapQuery.arg(QString::number(newPosition),
+                                 QString::number(-1),
+                                 QString::number(playlistId)));
+
+        if (query.lastError().isValid())
+            qDebug() << query.lastError();
+    }
+
+    transaction.commit();
     emit(changed(playlistId));
 }
 

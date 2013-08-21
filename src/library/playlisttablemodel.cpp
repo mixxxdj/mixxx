@@ -162,37 +162,16 @@ bool PlaylistTableModel::isLocked(){
 
 void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
     int numOfTracks = rowCount();
-    int seed = QDateTime::currentDateTime().toTime_t();
-    qsrand(seed);
-    QSqlQuery query(m_pTrackCollection->getDatabase());
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int shuffleStartRow = shuffleStartIndex.row();
+    QList<int> positions;
 
-    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
-
-    // This is a simple Fisher-Yates shuffling algorithm
-    for (int i=numOfTracks-1; i >= shuffleStartRow; i--) {
+    for (int i = numOfTracks - 1; i >= shuffleStartRow; i--) {
         int oldPosition = index(i, positionColumnIndex).data().toInt();
-        int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks - shuffleStartRow) + shuffleStartRow + 1);
-        qDebug() << "Swapping tracks " << oldPosition << " and " << random;
-        QString swapQuery = "UPDATE PlaylistTracks SET position=%1 WHERE position=%2 AND playlist_id=%3";
-        query.exec(swapQuery.arg(QString::number(-1),
-                                 QString::number(oldPosition),
-                                 QString::number(m_iPlaylistId)));
-        query.exec(swapQuery.arg(QString::number(oldPosition),
-                                 QString::number(random),
-                                 QString::number(m_iPlaylistId)));
-        query.exec(swapQuery.arg(QString::number(random),
-                                 QString::number(-1),
-                                 QString::number(m_iPlaylistId)));
-
-        if (query.lastError().isValid())
-            qDebug() << query.lastError();
+        positions.append(oldPosition);
     }
 
-    transaction.commit();
-    // TODO(XXX) set dirty because someday select() will only do work on dirty.
-    select();
+    m_playlistDao.shuffleTracks(m_iPlaylistId, positions);
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
