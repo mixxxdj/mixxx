@@ -371,7 +371,9 @@ double LoopRecordingManager::getCurrentBPM() {
         qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Base BPM: " << baseTrackBPM
         << " Rate: " << rate;
 
-        return baseTrackBPM * rate;
+        // Rate is incorrect for other higher sample rates.
+        //return baseTrackBPM * rate;
+        return baseTrackBPM;
 
     } else {
 
