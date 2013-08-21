@@ -55,6 +55,7 @@ public:
     enum AudioPathType {
         MASTER,
         HEADPHONES,
+        BUS,
         DECK,
         VINYLCONTROL,
         MICROPHONE,

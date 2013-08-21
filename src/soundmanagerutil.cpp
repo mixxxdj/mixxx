@@ -15,6 +15,7 @@
 
 #include <QtCore>
 #include "soundmanagerutil.h"
+#include "engine/enginechannel.h"
 
 /**
  * Constructs a ChannelGroup.
@@ -154,6 +155,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Master");
     case HEADPHONES:
         return QString::fromAscii("Headphones");
+    case BUS:
+        return QString::fromAscii("Bus");
     case DECK:
         return QString::fromAscii("Deck");
     case VINYLCONTROL:
@@ -180,6 +183,17 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         return QString(QObject::tr("Master"));
     case HEADPHONES:
         return QString(QObject::tr("Headphones"));
+    case BUS:
+        switch (index) {
+        case EngineChannel::LEFT:
+            return QString(QObject::tr("Left bus"));
+        case EngineChannel::CENTER:
+            return QString(QObject::tr("Center bus"));
+        case EngineChannel::RIGHT:
+            return QString(QObject::tr("Right bus"));
+        default:
+            return QObject::tr("Invalid Bus");
+        }
     case DECK:
         return QString("%1 %2").arg(QObject::tr("Deck"),
                                     QString::number(index + 1));
@@ -203,6 +217,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::MASTER;
     } else if (string == AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
         return AudioPath::HEADPHONES;
+    } else if (string == AudioPath::getStringFromType(AudioPath::BUS).toLower()) {
+        return AudioPath::BUS;
     } else if (string == AudioPath::getStringFromType(AudioPath::DECK).toLower()) {
         return AudioPath::DECK;
     } else if (string == AudioPath::getStringFromType(AudioPath::VINYLCONTROL).toLower()) {
@@ -222,6 +238,7 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
  */
 bool AudioPath::isIndexed(AudioPathType type) {
     switch (type) {
+    case BUS:
     case DECK:
     case VINYLCONTROL:
     case EXTPASSTHROUGH:
@@ -309,6 +326,7 @@ QList<AudioPathType> AudioOutput::getSupportedTypes() {
     QList<AudioPathType> types;
     types.append(MASTER);
     types.append(HEADPHONES);
+    types.append(BUS);
     types.append(DECK);
     return types;
 }
