@@ -359,6 +359,7 @@ double LoopRecordingManager::getCurrentBPM() {
     TrackPointer pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
 
     if (pTrack == NULL) {
+        qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Current Track NULL";
         return 0.0;
     }
 
