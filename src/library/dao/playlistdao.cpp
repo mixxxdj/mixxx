@@ -640,20 +640,27 @@ int PlaylistDAO::getMaxPosition(const int playlistId) const {
 }
 
 void PlaylistDAO::removeTrackFromPlaylists(const int trackId) {
-    QList<int> ids;
-    ids.append(trackId);
-    removeTracksFromPlaylists(ids);
+    QStringList idList;
+    idList << QString::number(trackId);
+    removeTracksFromPlaylistsInner(idList);
 }
 
-void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& ids) {
-    QStringList idList;
-    foreach (int id, ids) {
-        idList << QString::number(id);
+void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
+    QStringList trackIdList;
+    foreach (int id, trackIds) {
+        if (trackIdList.count() >= 255) { // TODO(xxx) test the real limit
+            // Avoid SQL Queries with unlimited length
+            removeTracksFromPlaylistsInner(trackIdList);
+        }
+        trackIdList << QString::number(id);
     }
+    removeTracksFromPlaylistsInner(trackIdList);
+}
 
+void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList) {
     QSqlQuery query(m_database);
     query.prepare(QString("SELECT DISTINCT playlist_id FROM PlaylistTracks WHERE track_id in (%1)")
-                  .arg(idList.join(",")));
+                  .arg(trackIdList.join(",")));
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -667,7 +674,7 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& ids) {
     }
 
     query.prepare(QString("DELETE FROM PlaylistTracks WHERE track_id in (%1)")
-                  .arg(idList.join(",")));
+                  .arg(trackIdList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return;

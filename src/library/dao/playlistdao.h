@@ -106,6 +106,8 @@ class PlaylistDAO : public QObject, public virtual DAO {
     void lockChanged(int playlistId);
 
   private:
+    void removeTracksFromPlaylistsInner(const QStringList& idList);
+
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };
