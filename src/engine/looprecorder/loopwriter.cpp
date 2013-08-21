@@ -26,6 +26,9 @@ LoopWriter::LoopWriter()
 
 LoopWriter::~LoopWriter() {
     qDebug() << "!~!~!~!~!~! Loop writer deleted !~!~!~!~!~!~!";
+    if(m_bIsRecording) {
+        slotStopRecording(false);
+    }
     SampleUtil::free(m_pWorkBuffer);
     //emit(finished());
 }
