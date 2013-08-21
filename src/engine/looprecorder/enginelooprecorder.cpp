@@ -20,7 +20,7 @@ EngineLoopRecorder::EngineLoopRecorder()
     connect(LoopRecorderThread, SIGNAL(started()), this, SLOT(slotThreadStarted()));
 
     // TODO(carl) make sure Thread exits properly.
-    connect(m_pLoopWriter, SIGNAL(finished()), LoopRecorderThread, SLOT(quit()));
+    connect(m_pLoopWriter, SIGNAL(destroyed()), LoopRecorderThread, SLOT(quit()));
     connect(LoopRecorderThread, SIGNAL(finished()), LoopRecorderThread, SLOT(deleteLater()));
 }
 

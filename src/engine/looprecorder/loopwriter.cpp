@@ -27,7 +27,7 @@ LoopWriter::LoopWriter()
 LoopWriter::~LoopWriter() {
     qDebug() << "!~!~!~!~!~! Loop writer deleted !~!~!~!~!~!~!";
     SampleUtil::free(m_pWorkBuffer);
-    emit(finished());
+    //emit(finished());
 }
 
 void LoopWriter::process(const CSAMPLE* pBuffer, const int iBufferSize) {
