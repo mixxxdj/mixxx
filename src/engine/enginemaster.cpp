@@ -215,6 +215,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             continue;
         }
 
+        if (pChannel->getGroup().contains("LoopRecorder")) {
+            // TODO(carl): Don't mix loop recorder playback channels right
+            // away.
+        }
+
         bool needsProcessing = false;
         if (pChannel->isMaster()) {
             masterOutput |= (1 << channel_number);
