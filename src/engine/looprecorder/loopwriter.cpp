@@ -9,7 +9,7 @@
 #include "util/counter.h"
 
 #define LOOP_BUFFER_SIZE 16384
-#define WORK_BUFFER_SIZE 4096
+#define WORK_BUFFER_SIZE 2048
 
 LoopWriter::LoopWriter()
         : m_sampleFifo(LOOP_BUFFER_SIZE),
