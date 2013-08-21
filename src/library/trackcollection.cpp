@@ -13,7 +13,7 @@
 #include "xmlparse.h"
 #include "util/sleepableqthread.h"
 
-#include "controlobjectthreadmain.h"
+#include "controlobjectthread.h"
 #include "controlobject.h"
 #include "configobject.h"
 
@@ -30,7 +30,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_lambda(NULL),
           m_stop(false),
           m_semLambdaReadyToCall(0),
-          m_pControlPlaylist(NULL),
+          m_pCOTPlaylistIsBusy(NULL),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
@@ -78,7 +78,7 @@ void TrackCollection::run() {
     m_cueDao->initialize();
     emit(initialized()); // to notify that Daos can be used
 
-    m_pControlPlaylist = new ControlObjectThreadMain(ConfigKey("[Playlist]", "isBusy"));
+    m_pCOTPlaylistIsBusy = new ControlObjectThread(ConfigKey("[Playlist]", "isBusy"));
 
     // main TrackCollection's loop
     int loopCount = 0;
@@ -87,9 +87,9 @@ void TrackCollection::run() {
         m_semLambdaReadyToCall.acquire(1); // 1. Lock lambda, so noone can change it
         if (m_lambda) {
             DBG()<<"BEGIN execute lambda"<<loopCount;
-            m_pControlPlaylist->set(0.0f);
+            m_pCOTPlaylistIsBusy->set(0.0f);
             m_lambda();                     // 2. Execute lambda
-            m_pControlPlaylist->set(1.0f);
+            m_pCOTPlaylistIsBusy->set(1.0f);
             m_lambda = NULL;                // 3. Clear lambda
             DBG()<<"END execute lambda"<<loopCount++;
         }

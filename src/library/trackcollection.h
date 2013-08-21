@@ -40,7 +40,7 @@
 typedef std::function <void ()> func;
 
 class TrackInfoObject;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 class BpmDetector;
 
 /**
@@ -101,7 +101,7 @@ class TrackCollection : public QThread {
     volatile bool m_stop;
     QMutex m_inCallSync;
     QSemaphore m_semLambdaReadyToCall;
-    ControlObjectThreadMain* m_pControlPlaylist;
+    ControlObjectThread* m_pCOTPlaylistIsBusy;
 
     const QRegExp m_supportedFileExtensionsRegex;
 };
