@@ -96,6 +96,7 @@ LibraryControl::LibraryControl(QObject* pParent)
     m_pIsBusy = new ControlObject(ConfigKey("[Playlist]", "isBusy")); // binary control with range (0.0f - off, else on).
     connect(m_pIsBusy, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetPlaylistBusy(double)));
+    m_pIsBusy->set(0.0f);
 }
 
 LibraryControl::~LibraryControl() {
@@ -155,7 +156,7 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 }
 
 void LibraryControl::slotSetPlaylistBusy(double v) {
-    bool enabled (v > 0.0f); // Binary means it's either on (non-zero) or off (zero)
+    bool enabled (v == 0.0f); // true means it is busy, so need to disable
     m_pLibraryWidget->setEnabled(enabled);
     m_pSidebarWidget->setEnabled(enabled);
 }

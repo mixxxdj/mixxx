@@ -42,6 +42,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
     connect(this, SIGNAL(callSelectMain()),
             this, SLOT(selectMain()), Qt::BlockingQueuedConnection);
 
+    connect(this, SIGNAL(selectQueryExecuted()), this, SLOT(slotPopulateSelectQuery()));
+
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -96,10 +98,6 @@ void BaseSqlTableModel::initHeaderData() {
     setHeaderData(fieldIndex("preview"),
                   Qt::Horizontal, tr("Preview"));
 }
-
-//QSqlDatabase BaseSqlTableModel::database() const {
-//    return m_database;
-//}
 
 bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
                                       const QVariant &value, int role) {
@@ -171,7 +169,7 @@ void BaseSqlTableModel::select() {
     } else {
         qDebug() << "BaseSqlTableModel::callSelectMain()";
         emit(callSelectMain());
-    }
+    }    
     qDebug() << "BaseSqlTableModel::select() end";
 }
 
@@ -212,8 +210,8 @@ void BaseSqlTableModel::selectMain() {
             return;
         }
         DBG() << "Select ended from" << QThread::currentThread()->objectName()
-              << "Next we emit slotPopulateSelectQuery()";
-        emit (slotPopulateSelectQuery());
+              << "Next we emit selectQueryExecuted()";
+        emit (selectQueryExecuted());
     });
 }
 

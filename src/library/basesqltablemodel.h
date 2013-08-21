@@ -27,7 +27,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     //  Functions that have to/can be reimplemented
     ///////////////////////////////////////////////////////////////////////////
     //  This class also has protected variables that should be used in childs
-    //  m_database, m_pTrackCollection, m_trackDAO
+    //  m_pTrackCollection, m_trackDAO
 
     virtual void setTableModel(int id=-1) = 0;
     virtual bool isColumnInternal(int column) = 0;
@@ -81,6 +81,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
 
+    QSqlDatabase m_database; // TODO: AVOID IT!
 
     // Use this if you want a model that is read-only.
     Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
@@ -90,16 +91,18 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     TrackCollection* m_pTrackCollection;
 
     TrackDAO& m_trackDAO;
-    QSqlDatabase m_database;
+
+  public slots:
+    void selectMain();
 
   private slots:
     void tracksChanged(QSet<int> trackIds);
     void trackLoaded(QString group, TrackPointer pTrack);
-    void selectMain();
     void slotPopulateSelectQuery();
 
  signals:
     void callSelectMain();
+    void selectQueryExecuted();
 
   private:
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
@@ -108,7 +111,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // names in the table provided to setTable. Must be called after setTable is
     // called.
     QString orderByClause() const;
-//    QSqlDatabase database() const;
 
     struct RowInfo {
         int trackId;

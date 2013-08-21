@@ -84,13 +84,13 @@ void TrackCollection::run() {
     int loopCount = 0;
     while (!m_stop) {
         // execute lambda in TrackCollection's thread
-        m_semLambdaReadyToCall.acquire(1); // 1. Lock lambda, so noone can change it
+        m_semLambdaReadyToCall.acquire(1);      // 1. Lock lambda, so noone can change it
         if (m_lambda) {
             DBG()<<"BEGIN execute lambda"<<loopCount;
-            m_pCOTPlaylistIsBusy->set(0.0f);
-            m_lambda();                     // 2. Execute lambda
-            m_pCOTPlaylistIsBusy->set(1.0f);
-            m_lambda = NULL;                // 3. Clear lambda
+            m_pCOTPlaylistIsBusy->set(1.0f);    // Set "busy"
+            m_lambda();                         // 2. Execute lambda
+            m_pCOTPlaylistIsBusy->set(0.0f);    // Set "free"
+            m_lambda = NULL;                    // 3. Clear lambda
             DBG()<<"END execute lambda"<<loopCount++;
         }
         m_inCallSync.unlock();

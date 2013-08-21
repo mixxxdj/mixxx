@@ -134,12 +134,12 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 }
 
 void MixxxLibraryFeature::refreshLibraryModels() {
+    if (m_pLibraryTableModel) {
+        m_pLibraryTableModel->select();
+    }
     // tro's lambda idea
     m_pTrackCollection->callAsync(
                 [this] (void) {
-        if (m_pLibraryTableModel) {
-            m_pLibraryTableModel->select();
-        }
         if (m_pMissingView) {
             m_pMissingView->onShow();
         }
