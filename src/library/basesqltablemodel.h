@@ -96,6 +96,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void tracksChanged(QSet<int> trackIds);
     void trackLoaded(QString group, TrackPointer pTrack);
     void selectMain();
+    void slotPopulateSelectQuery();
 
  signals:
     void callSelectMain();
@@ -107,7 +108,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // names in the table provided to setTable. Must be called after setTable is
     // called.
     QString orderByClause() const;
-    QSqlDatabase database() const;
+//    QSqlDatabase database() const;
 
     struct RowInfo {
         int trackId;
@@ -136,6 +137,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     Qt::SortOrder m_eSortOrder;
     bool m_bInitialized;
     bool m_bDirty;
+    QSqlQuery* m_pSelectQuery;
     QSqlRecord m_queryRecord;
     QHash<int, int> m_trackSortOrder;
     QHash<int, QLinkedList<int> > m_trackIdToRows;

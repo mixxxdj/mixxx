@@ -15,6 +15,8 @@
 #include "playermanager.h"
 #include "playerinfo.h"
 
+#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
+
 const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
@@ -24,7 +26,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
            TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_database(pTrackCollection->getDatabase()),
+//           m_database(pTrackCollection->getDatabase()),
+           m_pSelectQuery(NULL),
            m_currentSearch(""),
            m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
            m_iPreviewDeckTrackId(-1) {
@@ -42,6 +45,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
+    if (m_pSelectQuery)
+        delete m_pSelectQuery;
 }
 
 void BaseSqlTableModel::initHeaderData() {
@@ -92,9 +97,9 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Preview"));
 }
 
-QSqlDatabase BaseSqlTableModel::database() const {
-    return m_database;
-}
+//QSqlDatabase BaseSqlTableModel::database() const {
+//    return m_database;
+//}
 
 bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
                                       const QVariant &value, int role) {
@@ -187,33 +192,34 @@ void BaseSqlTableModel::selectMain() {
     //     return;
     // }
 
-    //if (sDebug) {
-        qDebug() << this << "select()";
-    //}
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        QString columns = m_tableColumnsJoined;
+        QString orderBy = orderByClause();
+        QString queryString = QString("SELECT %1 FROM %2 %3")
+                .arg(columns, m_tableName, orderBy);
+        if (m_pSelectQuery)
+            delete m_pSelectQuery;
+        m_pSelectQuery = new QSqlQuery(m_pTrackCollection->getDatabase());
+        // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
+        // won't allocate a giant in-memory table that we won't use at all.
+        m_pSelectQuery->setForwardOnly(true);
+        m_pSelectQuery->prepare(queryString);
 
-    QTime time;
-    time.start();
+        if (!m_pSelectQuery->exec()) {
+            LOG_FAILED_QUERY(*m_pSelectQuery);
+            return;
+        }
+        DBG() << "Select ended from" << QThread::currentThread()->objectName()
+              << "Next we emit slotPopulateSelectQuery()";
+        emit (slotPopulateSelectQuery());
+    });
+}
 
-    QString columns = m_tableColumnsJoined;
-    QString orderBy = orderByClause();
-    QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(columns, m_tableName, orderBy);
-
-    if (sDebug) {
-        qDebug() << this << "select() executing:" << queryString;
-    }
-
-    QSqlQuery query(m_database);
-    // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
-    // won't allocate a giant in-memory table that we won't use at all.
-    query.setForwardOnly(true);
-    query.prepare(queryString);
-
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-        return;
-    }
-
+void BaseSqlTableModel::slotPopulateSelectQuery() {
+    DBG();
+    if (m_pSelectQuery==NULL) return;
     // Remove all the rows from the table. We wait to do this until after the
     // table query has succeeded. See Bug #1090888.
     // TODO(rryan) we could edit the table in place instead of clearing it?
@@ -224,7 +230,7 @@ void BaseSqlTableModel::selectMain() {
         endRemoveRows();
     }
 
-    QSqlRecord record = query.record();
+    QSqlRecord record = m_pSelectQuery->record();
     int idColumn = record.indexOf(m_idColumn);
 
     QLinkedList<int> tableColumnIndices;
@@ -240,8 +246,8 @@ void BaseSqlTableModel::selectMain() {
 
     QVector<RowInfo> rowInfo;
     QSet<int> trackIds;
-    while (query.next()) {
-        int id = query.value(idColumn).toInt();
+    while (m_pSelectQuery->next()) {
+        int id = m_pSelectQuery->value(idColumn).toInt();
         trackIds.insert(id);
 
         RowInfo thisRowInfo;
@@ -252,7 +258,7 @@ void BaseSqlTableModel::selectMain() {
 
         foreach (int tableColumnIndex, tableColumnIndices) {
             thisRowInfo.metadata[tableColumnIndex] =
-                    query.value(tableColumnIndex);
+                    m_pSelectQuery->value(tableColumnIndex);
         }
         rowInfo.push_back(thisRowInfo);
     }
@@ -315,10 +321,8 @@ void BaseSqlTableModel::selectMain() {
     m_rowInfo = rowInfo;
     m_bDirty = false;
     endInsertRows();
-
-    int elapsed = time.elapsed();
-    qDebug() << this << "select() took" << elapsed << "ms";
 }
+
 
 void BaseSqlTableModel::setTable(const QString& tableName,
                                  const QString& idColumn,
