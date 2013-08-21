@@ -651,6 +651,7 @@ void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
         if (trackIdList.count() >= 255) { // TODO(xxx) test the real limit
             // Avoid SQL Queries with unlimited length
             removeTracksFromPlaylistsInner(trackIdList);
+            trackIdList.clear();
         }
         trackIdList << QString::number(id);
     }
