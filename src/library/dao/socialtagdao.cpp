@@ -12,7 +12,7 @@
 
 
 SocialTagDao::SocialTagDao(QSqlDatabase& database)
-    : m_db(database) {
+            : m_db(database) {
 }
 
 SocialTagDao::~SocialTagDao() {
@@ -124,8 +124,7 @@ bool SocialTagDao::clearTagsForTracks(QList<int> ids) {
     return true;
 }
 
-TagCounts SocialTagDao::loadTagsFromQuery(int trackId,
-                                                        QSqlQuery &query) {
+TagCounts SocialTagDao::loadTagsFromQuery(int trackId, QSqlQuery &query) {
     TagCounts tags;
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't get tags for track" << trackId;

@@ -8,9 +8,9 @@ using mixxx::track::io::timbre::TimbreModel;
 using mixxx::track::io::timbre::BeatSpectrum;
 
 TimbrePointer TimbreFactory::loadTimbreFromByteArray(TrackPointer pTrack,
-                                       QString timbreVersion,
-                                       QString timbreSubVersion,
-                                       QByteArray* timbreSerialized) {
+                                                     QString timbreVersion,
+                                                     QString timbreSubVersion,
+                                                     QByteArray* timbreSerialized) {
     if (timbreVersion == TIMBRE_MODEL_VERSION) {
         Timbre* pTimbre = new Timbre(timbreSerialized);
         pTimbre->moveToThread(pTrack->thread());
@@ -24,8 +24,8 @@ TimbrePointer TimbreFactory::loadTimbreFromByteArray(TrackPointer pTrack,
 }
 
 TimbrePointer TimbreFactory::makeTimbreModel(std::vector<double> mean,
-                                      std::vector<double> variance,
-                                      std::vector<double> beatSpectrum) {
+                                             std::vector<double> variance,
+                                             std::vector<double> beatSpectrum) {
     TimbreModel timbre_model;
     BeatSpectrum* beat_spectrum = timbre_model.mutable_beat_spectrum();
     for (std::vector<double>::iterator it = mean.begin(); it != mean.end(); ++it) {

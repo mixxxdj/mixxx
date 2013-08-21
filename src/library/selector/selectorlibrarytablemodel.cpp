@@ -318,9 +318,9 @@ void SelectorLibraryTableModel::clearSeedTrackInfo() {
 }
 
 void SelectorLibraryTableModel::updateFilterText() {
-	if (!m_bActive) return;
+    if (!m_bActive) return;
     if (m_pSeedTrack) {
-		QStringList filters;
+        QStringList filters;
 
         // Genre
         if (m_bFilterGenre) {
@@ -337,7 +337,7 @@ void SelectorLibraryTableModel::updateFilterText() {
                            " AND Bpm < " % QString::number(
                                ceil(m_fSeedTrackBpm + m_iFilterBpmRange)) %
                            ")";
-        } 
+        }
 
         // Keys
 

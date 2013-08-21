@@ -12,7 +12,7 @@ class DlgPrefTimbre : public QWidget, Ui::DlgPrefTimbreDlg {
   public:
     DlgPrefTimbre(QWidget *parent, ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefTimbre();
-    
+
   public slots:
     void slotApply();
     void slotUpdate();
