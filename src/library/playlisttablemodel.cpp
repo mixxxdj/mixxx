@@ -160,15 +160,30 @@ bool PlaylistTableModel::isLocked(){
     return m_playlistDao.isPlaylistLocked(m_iPlaylistId);
 }
 
-void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
-    int numOfTracks = rowCount();
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-    int shuffleStartRow = shuffleStartIndex.row();
+void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
     QList<int> positions;
-
-    for (int i = numOfTracks - 1; i >= shuffleStartRow; i--) {
-        int oldPosition = index(i, positionColumnIndex).data().toInt();
-        positions.append(oldPosition);
+    const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    int excludePos = -1;
+    if (exclude.row() > -1) {
+        excludePos = exclude.sibling(exclude.row(), positionColumn).data().toInt();
+    }
+    if (shuffle.count() > 1) {
+        // Only shuffle if there are at least two selected rows
+        foreach(QModelIndex shuffleIndex, shuffle) {
+            int oldPosition = shuffleIndex.sibling(shuffleIndex.row(), positionColumn).data().toInt();
+            if (oldPosition != excludePos) {
+                positions.append(oldPosition);
+            }
+        }
+    } else {
+        // Shuffle all tracks
+        int numOfTracks = rowCount();
+        for (int i = 0; i < numOfTracks; i++) {
+            int oldPosition = index(i, positionColumn).data().toInt();
+            if (oldPosition != excludePos) {
+                positions.append(oldPosition);
+            }
+        }
     }
 
     m_playlistDao.shuffleTracks(m_iPlaylistId, positions);
