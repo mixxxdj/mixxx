@@ -110,7 +110,8 @@ void TrackCollection::callAsync(func lambda) {
         return;
     }
 
-    //TODO(xxx): lock GUI elements by setting [playlist] "isBusy"
+    // lock GUI elements by setting [playlist] "isBusy"
+    m_pCOTPlaylistIsBusy->set(1.0f);
     setLambda(lambda);
 }
 
