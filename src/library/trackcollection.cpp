@@ -49,12 +49,12 @@ TrackCollection::~TrackCollection() {
         // transaction somewhere that should be.
         if (m_database->rollback()) {
             qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
-                    << "There is a logic error somewhere.";
+                     << "There is a logic error somewhere.";
         }
         m_database->close();
     } else {
         qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
-                << "There is a logic error somewhere.";
+                 << "There is a logic error somewhere.";
     }
     delete m_playlistDao;
     delete m_crateDao;

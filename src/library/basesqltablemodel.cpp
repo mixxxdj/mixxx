@@ -40,10 +40,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
     trackLoaded(m_previewDeckGroup, PlayerInfo::Instance().getTrackInfo(m_previewDeckGroup));
 
     connect(this, SIGNAL(callSelectMain()),
-            this, SLOT(selectMain()), Qt::BlockingQueuedConnection);
-
-    connect(this, SIGNAL(selectQueryExecuted()), this, SLOT(slotPopulateSelectQuery()));
-
+            this, SLOT(selectMain())/*, Qt::BlockingQueuedConnection*/);
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -163,22 +160,9 @@ QString BaseSqlTableModel::orderByClause() const {
 
 // can be called from any thread
 void BaseSqlTableModel::select() {
-    qDebug() << "BaseSqlTableModel::select() start";
-    if (QThread::currentThread()->objectName() == "Main") {
-        selectMain();
-    } else {
-        qDebug() << "BaseSqlTableModel::callSelectMain()";
-        emit(callSelectMain());
-    }    
-    qDebug() << "BaseSqlTableModel::select() end";
-}
-
-// Must be called from Main (GUI) Thread only
-void BaseSqlTableModel::selectMain() {
     if (!m_bInitialized) {
         return;
     }
-
     // We should be able to detect when a select() would be a no-op. The DAO's
     // do not currently broadcast signals for when common things happen. In the
     // future, we can turn this check on and avoid a lot of needless
@@ -193,6 +177,7 @@ void BaseSqlTableModel::selectMain() {
     // tro's lambda idea
     m_pTrackCollection->callAsync(
                 [this] (void) {
+        qDebug() << "BaseSqlTableModel::select() start";
         QString columns = m_tableColumnsJoined;
         QString orderBy = orderByClause();
         QString queryString = QString("SELECT %1 FROM %2 %3")
@@ -211,11 +196,18 @@ void BaseSqlTableModel::selectMain() {
         }
         DBG() << "Select ended from" << QThread::currentThread()->objectName()
               << "Next we emit selectQueryExecuted()";
-        emit (selectQueryExecuted());
+        emit(callSelectMain());
     });
+
+//    if (QThread::currentThread()->objectName() == "Main") {
+//        selectMain();
+//    } else {
+//        qDebug() << "BaseSqlTableModel::callSelectMain()";
+//    }
 }
 
-void BaseSqlTableModel::slotPopulateSelectQuery() {
+// Must be called from Main (GUI) Thread only
+void BaseSqlTableModel::selectMain() {
     DBG();
     if (m_pSelectQuery==NULL) return;
     // Remove all the rows from the table. We wait to do this until after the
@@ -319,8 +311,8 @@ void BaseSqlTableModel::slotPopulateSelectQuery() {
     m_rowInfo = rowInfo;
     m_bDirty = false;
     endInsertRows();
+    qDebug() << "BaseSqlTableModel::select() end";
 }
-
 
 void BaseSqlTableModel::setTable(const QString& tableName,
                                  const QString& idColumn,

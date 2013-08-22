@@ -98,11 +98,9 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
   private slots:
     void tracksChanged(QSet<int> trackIds);
     void trackLoaded(QString group, TrackPointer pTrack);
-    void slotPopulateSelectQuery();
 
  signals:
     void callSelectMain();
-    void selectQueryExecuted();
 
   private:
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
