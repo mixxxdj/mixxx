@@ -55,7 +55,7 @@ class TrackCollection : public QThread {
     void run();
     void callAsync(func lambda);
     void stopThread();
-    void setLambda(func lambda);
+    void addLambdaToQueue(func lambda);
 
 
 
@@ -98,8 +98,10 @@ class TrackCollection : public QThread {
 
     // all from threadDAO
     func m_lambda;
+    QQueue<func> m_lambdas;
+
     volatile bool m_stop;
-    QMutex m_inCallSync;
+    QMutex m_lambdasMutex;
     QSemaphore m_semLambdaReadyToCall;
     ControlObjectThread* m_pCOTPlaylistIsBusy;
 

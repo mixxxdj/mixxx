@@ -8,6 +8,7 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
          : QWidget(parent),
            Ui::DlgHidden(),
+           m_pTrackCollection(pTrackCollection),
            m_pTrackTableView(
                new WTrackTableView(this,pConfig,pTrackCollection, false)) {
     setupUi(this);
@@ -37,6 +38,9 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+
+    connect(this, SIGNAL(activateButtons(bool)),
+            this, SLOT(slotActivateButtons(bool)));
 }
 
 DlgHidden::~DlgHidden() {
@@ -47,9 +51,13 @@ DlgHidden::~DlgHidden() {
 }
 
 void DlgHidden::onShow() {
-    m_pHiddenTableModel->select();
-    // no buttons can be selected
-    activateButtons(false);
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pHiddenTableModel->select();
+        // no buttons can be selected
+        emit(activateButtons(false));
+    });
 }
 
 void DlgHidden::onSearch(const QString& text) {
@@ -65,7 +73,7 @@ void DlgHidden::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
-void DlgHidden::activateButtons(bool enable) {
+void DlgHidden::slotActivateButtons(bool enable) {
     btnPurge->setEnabled(enable);
     btnUnhide->setEnabled(enable);
 }
@@ -73,5 +81,5 @@ void DlgHidden::activateButtons(bool enable) {
 void DlgHidden::selectionChanged(const QItemSelection &selected,
                                  const QItemSelection &deselected) {
     Q_UNUSED(deselected);
-    activateButtons(!selected.indexes().isEmpty());
+    slotActivateButtons(!selected.indexes().isEmpty());
 }

@@ -93,14 +93,14 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     TrackDAO& m_trackDAO;
 
   public slots:
-    void selectMain();
+    void slotPopulateQueryResult();
 
   private slots:
     void tracksChanged(QSet<int> trackIds);
     void trackLoaded(QString group, TrackPointer pTrack);
 
  signals:
-    void callSelectMain();
+    void queryExecuted();
 
   private:
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
@@ -125,7 +125,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
             return order < other.order;
         }
     };
-    QVector<RowInfo> m_rowInfo;
+    QVector<RowInfo>* m_pRowInfo;
+    QVector<RowInfo>* m_pNewRowInfo;
 
     QString m_tableName;
     QString m_idColumn;
@@ -137,7 +138,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     Qt::SortOrder m_eSortOrder;
     bool m_bInitialized;
     bool m_bDirty;
-    QSqlQuery* m_pSelectQuery;
     QSqlRecord m_queryRecord;
     QHash<int, int> m_trackSortOrder;
     QHash<int, QLinkedList<int> > m_trackIdToRows;

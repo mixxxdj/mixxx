@@ -155,7 +155,11 @@ DlgAutoDJ::~DlgAutoDJ() {
 }
 
 void DlgAutoDJ::onShow() {
-    m_pAutoDJTableModel->select();
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pAutoDJTableModel->select();
+    });
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {

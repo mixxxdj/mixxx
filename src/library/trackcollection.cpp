@@ -40,7 +40,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 }
 
 TrackCollection::~TrackCollection() {
-    qDebug() << "~TrackCollection()";
+    DBG() << "~TrackCollection()";
     m_trackDao->finish();
 
     if (m_database->isOpen()) {
@@ -76,9 +76,11 @@ void TrackCollection::run() {
     m_playlistDao->initialize();
     m_crateDao->initialize();
     m_cueDao->initialize();
-    emit(initialized()); // to notify that Daos can be used
 
     m_pCOTPlaylistIsBusy = new ControlObjectThread(ConfigKey("[Playlist]", "isBusy"));
+    Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
+
+    emit(initialized()); // to notify that Daos can be used
 
     // main TrackCollection's loop
     int loopCount = 0;
@@ -86,39 +88,38 @@ void TrackCollection::run() {
         // unlock GUI elements
         m_pCOTPlaylistIsBusy->set(0.0f);
         // execute lambda in TrackCollection's thread
-        m_semLambdaReadyToCall.acquire(1);      // 1. Lock lambda, so noone can change it
-        if (m_lambda) {
-            DBG()<<"BEGIN execute lambda"<<loopCount;
-            m_lambda();                         // 2. Execute lambda
-            m_lambda = NULL;                    // 3. Clear lambda
-            DBG()<<"END execute lambda"<<loopCount++;
+        m_semLambdaReadyToCall.acquire(1);
+        if (m_lambdas.count() > 0) {
+            DBG() << "BEGIN execute lambda" << loopCount
+                  << "Before deque m_lambdas.count() =" << m_lambdas.count();
+            m_lambdasMutex.lock();
+            m_lambdas.dequeue()();
+            m_lambdasMutex.unlock();
+            DBG() << "After dequeue m_lambdas.count() =" << m_lambdas.count()
+                  << "END execute lambda" << loopCount++;
         }
-        m_inCallSync.unlock();
-        // TODO(xxx) read next lambda from queue
+        if (m_lambdas.count() > 0) {
+            m_semLambdaReadyToCall.release(1);
+        }
     }
+    DBG() << " ### Thread ended ###";
 }
 
 // callAsync calls from GUI thread.
 void TrackCollection::callAsync(func lambda) {
-    DBG() << "thread=" << QThread::currentThread()->objectName();
-
     if (lambda == NULL) return;
-
-    if (!m_inCallSync.tryLock()) {
-        DBG() << "callSync locked!";
-        //TODO(xxx): queue Lambda
-        return;
-    }
+    Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
 
     // lock GUI elements by setting [playlist] "isBusy"
     m_pCOTPlaylistIsBusy->set(1.0f);
-    setLambda(lambda);
+    addLambdaToQueue(lambda);
 }
 
-void TrackCollection::setLambda(func lambda) {
-    DBG() << "thread=" << QThread::currentThread()->objectName();
+void TrackCollection::addLambdaToQueue(func lambda) {
     //TODO(tro) check lambda
-    m_lambda = lambda;
+    m_lambdasMutex.lock();
+    m_lambdas.enqueue(lambda);
+    m_lambdasMutex.unlock();
     m_semLambdaReadyToCall.release(1);
 }
 
