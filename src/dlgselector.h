@@ -25,13 +25,11 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void onShow();
     void onHide();
     void onSearch(const QString &text);
-    void setSeedTrack(TrackPointer pSeedTrack);
     void loadSelectedTrack();
     void loadSelectedTrackToGroup(QString group);
     void moveSelection(int delta);
 
   public slots:
-    void loadStoredFilterSettings();
     void filterByGenre(bool checked);
     void filterByBpm(bool checked);
     void bpmRangeChanged(int value);
@@ -40,14 +38,20 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     void filterByKey5th(bool checked);
     void filterByKeyRelative(bool checked);
     void installEventFilter(QObject* pFilter);
-    void slotFiltersChanged();
+    void setSeedTrack(TrackPointer pSeedTrack);
     void slotSeedTrackInfoChanged();
+    void slotFiltersChanged();
     void calculateSimilarity();
     void calculateAllSimilarities(const QString& filename);
 
   signals:
     void loadTrack(TrackPointer pTrack);
     void loadTrackToPlayer(TrackPointer pTrack, QString player);
+
+  private slots:
+    void clearFilters();
+    void loadStoredFilterSettings();
+    void applyFilters();
 
   private:
     //Note m_pTrackTablePlaceholder is defined in the .ui file

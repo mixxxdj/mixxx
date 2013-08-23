@@ -37,25 +37,23 @@ DlgSelector::DlgSelector(QWidget* parent,
             new SelectorLibraryTableModel(this, pConfig, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pSelectorLibraryTableModel);
 
-    connect(checkBoxGenre, SIGNAL(toggled(bool)),
+    connect(checkBoxGenre, SIGNAL(clicked(bool)),
             this, SLOT(filterByGenre(bool)));
-    connect(checkBoxBpm, SIGNAL(toggled(bool)),
+    connect(checkBoxBpm, SIGNAL(clicked(bool)),
             this, SLOT(filterByBpm(bool)));
-    connect(checkBoxKey, SIGNAL(toggled(bool)),
+    connect(checkBoxKey, SIGNAL(clicked(bool)),
             this, SLOT(filterByKey(bool)));
-    connect(checkBoxKey4th, SIGNAL(toggled(bool)),
+    connect(checkBoxKey4th, SIGNAL(clicked(bool)),
             this, SLOT(filterByKey4th(bool)));
-    connect(checkBoxKey5th, SIGNAL(toggled(bool)),
+    connect(checkBoxKey5th, SIGNAL(clicked(bool)),
             this, SLOT(filterByKey5th(bool)));
-    connect(checkBoxKeyRelative, SIGNAL(toggled(bool)),
+    connect(checkBoxKeyRelative, SIGNAL(clicked(bool)),
             this, SLOT(filterByKeyRelative(bool)));
     connect(horizontalSliderBpmRange, SIGNAL(valueChanged(int)),
             this, SLOT(bpmRangeChanged(int)));
     connect(buttonCalcSimilarity, SIGNAL(clicked()),
             this, SLOT(calculateSimilarity()));
-    connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
-            this, SLOT(slotFiltersChanged()));
-    connect(m_pSelectorLibraryTableModel, SIGNAL(resetFilters()),
+    connect(m_pSelectorLibraryTableModel, SIGNAL(loadStoredFilterSettings()),
             this, SLOT(loadStoredFilterSettings()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(seedTrackInfoChanged()),
             this, SLOT(slotSeedTrackInfoChanged()));
@@ -80,13 +78,61 @@ void DlgSelector::onSearch(const QString& text) {
     m_pSelectorLibraryTableModel->search(text);
 }
 
+void DlgSelector::loadSelectedTrack() {
+    m_pTrackTableView->loadSelectedTrack();
+}
 
-void DlgSelector::slotFiltersChanged() {
-    int count = m_pSelectorLibraryTableModel->rowCount();
-    QString pluralize = ((count > 1 || count == 0) ? QString("s") : QString(""));
-    QString labelMatchText =
-            QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
-    labelMatchCount->setText(labelMatchText);
+void DlgSelector::loadSelectedTrackToGroup(QString group) {
+    m_pTrackTableView->loadSelectedTrackToGroup(group, false);
+}
+
+void DlgSelector::moveSelection(int delta) {
+    m_pTrackTableView->moveSelection(delta);
+}
+
+void DlgSelector::filterByGenre(bool checked) {
+    m_pSelectorLibraryTableModel->setGenreFilter(checked);
+    m_pSelectorLibraryTableModel->applyFilters();
+}
+
+void DlgSelector::filterByBpm(bool checked) {
+    int range = horizontalSliderBpmRange->value();
+    m_pSelectorLibraryTableModel->setBpmFilter(checked, range);
+    m_pSelectorLibraryTableModel->applyFilters();
+}
+
+void DlgSelector::bpmRangeChanged(int value) {
+    Q_UNUSED(value);
+    filterByBpm(checkBoxBpm->isChecked());
+}
+
+void DlgSelector::filterByKey(bool checked) {
+    m_pSelectorLibraryTableModel->setKeyFilter(checked);
+    m_pSelectorLibraryTableModel->applyFilters();
+}
+
+void DlgSelector::filterByKey4th(bool checked) {
+    m_pSelectorLibraryTableModel->setKey4thFilter(checked);
+    m_pSelectorLibraryTableModel->applyFilters();
+}
+
+void DlgSelector::filterByKey5th(bool checked) {
+    m_pSelectorLibraryTableModel->setKey5thFilter(checked);
+    m_pSelectorLibraryTableModel->applyFilters();
+}
+
+void DlgSelector::filterByKeyRelative(bool checked) {
+    m_pSelectorLibraryTableModel->setKeyRelativeFilter(checked);
+    m_pSelectorLibraryTableModel->applyFilters();
+}
+
+void DlgSelector::installEventFilter(QObject* pFilter) {
+    QWidget::installEventFilter(pFilter);
+    m_pTrackTableView->installEventFilter(pFilter);
+}
+
+void DlgSelector::setSeedTrack(TrackPointer pSeedTrack) {
+    m_pSelectorLibraryTableModel->setSeedTrack(pSeedTrack);
 }
 
 void DlgSelector::slotSeedTrackInfoChanged() {
@@ -106,65 +152,34 @@ void DlgSelector::slotSeedTrackInfoChanged() {
     checkBoxKey4th->setEnabled(hasKey);
     checkBoxKey5th->setEnabled(hasKey);
     checkBoxKeyRelative->setEnabled(hasKey);
+
+    loadStoredFilterSettings();
 }
 
-void DlgSelector::setSeedTrack(TrackPointer pSeedTrack) {
-    m_pSelectorLibraryTableModel->setSeedTrack(pSeedTrack);
+void DlgSelector::slotFiltersChanged() {
+    int count = m_pSelectorLibraryTableModel->rowCount();
+    QString pluralize = ((count > 1 || count == 0) ? QString("s") : QString(""));
+    QString labelMatchText =
+            QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
+    labelMatchCount->setText(labelMatchText);
+}
+
+void DlgSelector::calculateSimilarity() {
+    m_pSelectorLibraryTableModel->calculateSimilarity();
 }
 
 void DlgSelector::calculateAllSimilarities(const QString& filename) {
     m_pSelectorLibraryTableModel->calculateAllSimilarities(filename);
 }
 
-void DlgSelector::loadSelectedTrack() {
-    m_pTrackTableView->loadSelectedTrack();
-}
-
-void DlgSelector::loadSelectedTrackToGroup(QString group) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group, false);
-}
-
-void DlgSelector::moveSelection(int delta) {
-    m_pTrackTableView->moveSelection(delta);
-}
-
-void DlgSelector::filterByGenre(bool checked) {
-    m_pSelectorLibraryTableModel->filterByGenre(checked);
-}
-
-void DlgSelector::filterByBpm(bool checked) {
-    int range = horizontalSliderBpmRange->value();
-    m_pSelectorLibraryTableModel->filterByBpm(checked, range);
-}
-
-void DlgSelector::bpmRangeChanged(int value) {
-    Q_UNUSED(value);
-    filterByBpm(checkBoxBpm->isChecked());
-}
-
-void DlgSelector::filterByKey(bool checked) {
-    m_pSelectorLibraryTableModel->filterByKey(checked);
-}
-
-void DlgSelector::filterByKey4th(bool checked) {
-    m_pSelectorLibraryTableModel->filterByKey4th(checked);
-}
-
-void DlgSelector::filterByKey5th(bool checked) {
-    m_pSelectorLibraryTableModel->filterByKey5th(checked);
-}
-
-void DlgSelector::filterByKeyRelative(bool checked) {
-    m_pSelectorLibraryTableModel->filterByKeyRelative(checked);
-}
-
-void DlgSelector::installEventFilter(QObject* pFilter) {
-    QWidget::installEventFilter(pFilter);
-    m_pTrackTableView->installEventFilter(pFilter);
-}
-
-void DlgSelector::calculateSimilarity() {
-    m_pSelectorLibraryTableModel->calculateSimilarity();
+void DlgSelector::clearFilters() {
+    checkBoxGenre->setChecked(false);
+    checkBoxBpm->setChecked(false);
+    horizontalSliderBpmRange->setValue(0);
+    checkBoxKey->setChecked(false);
+    checkBoxKey4th->setChecked(false);
+    checkBoxKey5th->setChecked(false);
+    checkBoxKeyRelative->setChecked(false);
 }
 
 void DlgSelector::loadStoredFilterSettings() {
@@ -190,4 +205,20 @@ void DlgSelector::loadStoredFilterSettings() {
     checkBoxKey4th->setChecked(bFilterKey4th);
     checkBoxKey5th->setChecked(bFilterKey5th);
     checkBoxKeyRelative->setChecked(bFilterKeyRelative);
+
+    applyFilters();
+}
+
+void DlgSelector::applyFilters() {
+    bool iBpmRange = horizontalSliderBpmRange->value();
+
+    m_pSelectorLibraryTableModel->setGenreFilter(checkBoxGenre->isChecked());
+    m_pSelectorLibraryTableModel->setBpmFilter(checkBoxBpm->isChecked(),
+                                               iBpmRange);
+    m_pSelectorLibraryTableModel->setKeyFilter(checkBoxKey->isChecked());
+    m_pSelectorLibraryTableModel->setKey4thFilter(checkBoxKey4th->isChecked());
+    m_pSelectorLibraryTableModel->setKey5thFilter(checkBoxKey5th->isChecked());
+    m_pSelectorLibraryTableModel->setKeyRelativeFilter(checkBoxKeyRelative->
+                                                       isChecked());
+    m_pSelectorLibraryTableModel->applyFilters();
 }

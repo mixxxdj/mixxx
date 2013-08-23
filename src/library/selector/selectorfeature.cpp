@@ -35,7 +35,7 @@ QIcon SelectorFeature::getIcon() {
 }
 
 void SelectorFeature::bindWidget(WLibrary* libraryWidget,
-                                MixxxKeyboard* keyboard) {
+                                 MixxxKeyboard* keyboard) {
     m_pSelectorView = new DlgSelector(libraryWidget,
                                       m_pConfig,
                                       m_pTrackCollection,

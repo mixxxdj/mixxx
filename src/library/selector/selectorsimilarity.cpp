@@ -45,7 +45,7 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
         foreach (QString key, contributions.keys()) {
             double contribution = contributions.value(key);
             if (contribution != 0.0) {
-                qDebug() << key;
+//                qDebug() << key;
                 SimilarityFunc simFunc = m_similarityFunctions[key];
                 score += simFunc(pSeedTrack, pTrack) * contribution;
             }

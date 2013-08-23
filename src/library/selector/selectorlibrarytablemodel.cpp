@@ -29,10 +29,11 @@ const bool sDebug = true;
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                      ConfigObject<ConfigValue>* pConfig,
                                                      TrackCollection* pTrackCollection)
-        : LibraryTableModel(parent, pTrackCollection,
-                            "mixxx.db.model.selector"),
-          m_pConfig(pConfig),
-          m_selectorSimilarity(parent, pTrackCollection, pConfig) {
+                         : LibraryTableModel(parent, pTrackCollection,
+                                             "mixxx.db.model.selector"),
+                           m_pConfig(pConfig),
+                           m_selectorSimilarity(parent, pTrackCollection,
+                                                pConfig) {
     setTableModel();
 
     // Detect when deck has changed
@@ -42,14 +43,11 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     connect(this, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
 
-    connect(this, SIGNAL(resetFilters()),
-            this, SLOT(slotResetFilters()));
-
     m_channelBpm = NULL;
     m_channelKey = NULL;
     m_bActive = false;
 
-    slotResetFilters();
+    clearFilters();
     clearSeedTrackInfo();
 
 }
@@ -107,9 +105,9 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
         m_seedTrackTags = m_pSeedTrack->getTags();
     } else {
         clearSeedTrackInfo();
-        emit(resetFilters());
     }
-    updateFilterText();
+    clearFilters();
+    emit(loadStoredFilterSettings());
     emit(seedTrackInfoChanged());
 }
 
@@ -200,35 +198,32 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
     file.close();
 }
 
-void SelectorLibraryTableModel::filterByGenre(bool value) {
+void SelectorLibraryTableModel::setGenreFilter(bool value) {
     m_bFilterGenre = value;
-    updateFilterText();
 }
 
-void SelectorLibraryTableModel::filterByBpm(bool value, int range) {
+void SelectorLibraryTableModel::setBpmFilter(bool value, int range) {
     m_bFilterBpm = value;
     m_iFilterBpmRange = range;
-    updateFilterText();
 }
 
-
-void SelectorLibraryTableModel::filterByKey(bool value) {
+void SelectorLibraryTableModel::setKeyFilter(bool value) {
     m_bFilterKey = value;
-    updateFilterText();
 }
 
-void SelectorLibraryTableModel::filterByKey4th(bool value) {
+void SelectorLibraryTableModel::setKey4thFilter(bool value) {
     m_bFilterKey4th = value;
-    updateFilterText();
 }
 
-void SelectorLibraryTableModel::filterByKey5th(bool value) {
+void SelectorLibraryTableModel::setKey5thFilter(bool value) {
     m_bFilterKey5th = value;
-    updateFilterText();
 }
 
-void SelectorLibraryTableModel::filterByKeyRelative(bool value) {
+void SelectorLibraryTableModel::setKeyRelativeFilter(bool value) {
     m_bFilterKeyRelative = value;
+}
+
+void SelectorLibraryTableModel::applyFilters() {
     updateFilterText();
 }
 
@@ -283,7 +278,7 @@ void SelectorLibraryTableModel::slotFiltersChanged() {
     search("");
 }
 
-void SelectorLibraryTableModel::slotResetFilters() {
+void SelectorLibraryTableModel::clearFilters() {
     m_bFilterGenre = false;
     m_bFilterBpm = false;
     m_iFilterBpmRange = 0;

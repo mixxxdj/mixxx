@@ -27,7 +27,7 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     void setTableModel(int id = -1);
 
     void search(const QString& searchText);
-	void active(bool value);
+    void active(bool value);
 
     void setSeedTrack(TrackPointer pSeedTrack);
     QString getSeedTrackInfo();
@@ -36,12 +36,13 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     bool seedTrackKeyExists();
 
   public slots:
-    void filterByGenre(bool value);
-    void filterByBpm(bool value, int range);
-	void filterByKey(bool value);
-	void filterByKey4th(bool value);
-	void filterByKey5th(bool value);
-	void filterByKeyRelative(bool value);
+    void setGenreFilter(bool value);
+    void setBpmFilter(bool value, int range);
+    void setKeyFilter(bool value);
+    void setKey4thFilter(bool value);
+    void setKey5thFilter(bool value);
+    void setKeyRelativeFilter(bool value);
+    void applyFilters();
     void calculateSimilarity();
     void calculateAllSimilarities(const QString& filename);
 
@@ -50,20 +51,23 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     void slotChannelBpmChanged(double value);
     void slotChannelKeyChanged(double value);
     void slotFiltersChanged();
-    void slotResetFilters();
+    void clearFilters();
 
   signals:
     void filtersChanged();
-    void resetFilters();
+    void loadStoredFilterSettings();
     void seedTrackInfoChanged();
 
   private:
-    bool m_bActive;
+    void initHeaderData();
+
     void clearSeedTrackInfo();
     void updateFilterText();
-    void initHeaderData();
-    QVariant scoreTrack(const QModelIndex& index);
-    QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(mixxx::track::io::key::ChromaticKey key);
+
+    QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(
+            mixxx::track::io::key::ChromaticKey key);
+
+    bool m_bActive;
     bool m_bFilterGenre;
     bool m_bFilterBpm;
     int m_iFilterBpmRange;
