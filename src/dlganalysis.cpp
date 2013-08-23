@@ -72,7 +72,11 @@ void DlgAnalysis::onShow() {
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
-    m_pAnalysisLibraryTableModel->search(text);
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this, text] (void) {
+        m_pAnalysisLibraryTableModel->search(text);
+    });
 }
 
 void DlgAnalysis::loadSelectedTrack() {

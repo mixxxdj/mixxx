@@ -61,7 +61,11 @@ void DlgHidden::onShow() {
 }
 
 void DlgHidden::onSearch(const QString& text) {
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this, text] (void) {
         m_pHiddenTableModel->search(text);
+    });
 }
 
 void DlgHidden::clicked() {

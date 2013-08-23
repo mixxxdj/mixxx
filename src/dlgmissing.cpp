@@ -7,6 +7,7 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
          : QWidget(parent),
            Ui::DlgMissing(),
+           m_pTrackCollection(pTrackCollection),
            m_pTrackTableView(
                new WTrackTableView(this,pConfig,pTrackCollection, false)) {
     setupUi(this);
@@ -32,6 +33,9 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+
+    connect(this, SIGNAL(activateButtons(bool)),
+            this, SLOT(slotActivateButtons(bool)));
 }
 
 DlgMissing::~DlgMissing() {
@@ -42,8 +46,13 @@ DlgMissing::~DlgMissing() {
 }
 
 void DlgMissing::onShow() {
-    m_pMissingTableModel->select();
-    activateButtons(false);
+    // tro's lambda idea
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pMissingTableModel->select();
+        // no buttons can be selected
+        emit(activateButtons(false));
+    });
 }
 
 void DlgMissing::clicked() {
@@ -59,12 +68,12 @@ void DlgMissing::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
-void DlgMissing::activateButtons(bool enable) {
+void DlgMissing::slotActivateButtons(bool enable) {
     btnPurge->setEnabled(enable);
 }
 
 void DlgMissing::selectionChanged(const QItemSelection &selected,
                                   const QItemSelection &deselected) {
     Q_UNUSED(deselected);
-    activateButtons(!selected.indexes().isEmpty());
+    slotActivateButtons(!selected.indexes().isEmpty());
 }
