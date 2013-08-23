@@ -230,7 +230,7 @@ void SelectorLibraryTableModel::applyFilters() {
 // PRIVATE SLOTS
 
 void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
-    m_pChannel = QString("[Channel%1]").arg(deck);
+    m_pChannel = QString("[Channel%1]").arg(deck + 1);
 
     // disconnect the old pitch slider
     if (m_channelBpm) {
