@@ -45,8 +45,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
-    if (m_pRowInfo) delete m_pRowInfo;
-    if (m_pNewRowInfo) delete m_pNewRowInfo;
+    delete m_pRowInfo;
+    delete m_pNewRowInfo;
 }
 
 void BaseSqlTableModel::initHeaderData() {
