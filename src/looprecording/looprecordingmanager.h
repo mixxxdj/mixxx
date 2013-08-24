@@ -17,6 +17,7 @@ class EngineMaster;
 class ControlPushButton;
 class ControlObject;
 class ControlObjectThread;
+class LoopTracker;
 class TrackInfoObject;
 
 class LoopRecordingManager : public QObject {
@@ -51,6 +52,10 @@ class LoopRecordingManager : public QObject {
     void slotTogglePlayback(double v);
 
   private:
+//    struct LoopInfo {
+//        QString path;
+//        unsigned int length;
+//    };
     void clearLoopDeck();
     void exportLoopToPlayer(QString group);
     QString formatDateTimeForFilename(QDateTime dateTime) const;
@@ -92,7 +97,8 @@ class LoopRecordingManager : public QObject {
     QList<ControlObjectThread*> m_deckRateControls;
 
     // Stores paths of all files recorded.
-    QList<QString> m_filesRecorded;
+    LoopTracker* m_pLoopTracker;
+    //    QList<LoopInfo*> m_filesRecorded;
 
     QString date_time_str;
     QString encodingType;
