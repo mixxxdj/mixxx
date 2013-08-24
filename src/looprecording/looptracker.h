@@ -12,7 +12,9 @@ class LoopTracker {
     virtual ~LoopTracker();
     
     void addLoopLayer(QString path, unsigned int length);
-    void clearLayers();
+    void clear();
+    bool finalizeLoop(QString newPath);
+    QString getCurrentPath();
     void setCurrentLength(unsigned int length);
 
   private:
@@ -22,6 +24,8 @@ class LoopTracker {
     };
     QList<LayerInfo*> m_layers;
     int currentLayer;
+    bool m_bIsUndoAvailable;
+    bool m_bIsRedoAvailable;
 };
 
 #endif

@@ -52,10 +52,6 @@ class LoopRecordingManager : public QObject {
     void slotTogglePlayback(double v);
 
   private:
-//    struct LoopInfo {
-//        QString path;
-//        unsigned int length;
-//    };
     void clearLoopDeck();
     void exportLoopToPlayer(QString group);
     QString formatDateTimeForFilename(QDateTime dateTime) const;
@@ -63,7 +59,7 @@ class LoopRecordingManager : public QObject {
     unsigned int getLoopLength();
     SNDFILE* openSndFile(QString);
     void playLoopDeck();
-    bool saveLoop(QString newFileLocation);
+//    bool saveLoop(QString newFileLocation);
     void setRecordingDir();
     void startRecording();
     void stopRecording();
@@ -96,9 +92,8 @@ class LoopRecordingManager : public QObject {
 
     QList<ControlObjectThread*> m_deckRateControls;
 
-    // Stores paths of all files recorded.
+    // Tracks all loop layers recorded.
     LoopTracker* m_pLoopTracker;
-    //    QList<LoopInfo*> m_filesRecorded;
 
     QString date_time_str;
     QString encodingType;

@@ -164,17 +164,7 @@ void LoopRecordingManager::slotClearRecorder() {
     m_pTogglePlayback->set(0.0);
     stopLoopDeck();
     clearLoopDeck();
-
-//    while (!m_filesRecorded.empty()) {
-//        LoopInfo* pFile = m_filesRecorded.takeLast();
-//        qDebug() << "LoopRecordingManager::slotClearRecorder deleteing: " << pFile->path;
-//        QFile file(pFile->path);
-//
-//        if (file.exists()) {
-//            file.remove();
-//        }
-//        delete pFile;
-//    }
+    m_pLoopTracker->clear();
 }
 
 void LoopRecordingManager::slotCurrentPlayingDeckChanged(int deck) {
@@ -192,13 +182,13 @@ void LoopRecordingManager::slotIsRecording(bool isRecordingActive) {
 // Connected to EngineLoopRecorder.
 void LoopRecordingManager::slotLoadToLoopDeck() {
     //qDebug() << "LoopRecordingManager::loadToLoopDeck m_filesRecorded: " << m_filesRecorded;
-//    if (!m_filesRecorded.isEmpty()) {
-//
-//        TrackPointer pTrackToPlay = TrackPointer(new TrackInfoObject(m_filesRecorded.last()->path), &QObject::deleteLater);
-//        // Signal to Player manager to load and play track.
-//        emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
-//        m_pTogglePlayback->set(1.0);
-//    }
+    QString path = m_pLoopTracker->getCurrentPath();
+    if (path != "") {
+        TrackPointer pTrackToPlay = TrackPointer(new TrackInfoObject(path), &QObject::deleteLater);
+        // Signal to Player manager to load and play track.
+        emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
+        m_pTogglePlayback->set(1.0);
+    }
 }
 
 // Private Slots
@@ -340,14 +330,12 @@ void LoopRecordingManager::exportLoopToPlayer(QString group) {
     QString newFileLocation = QString("%1%2_%3.%4")
         .arg(dir,"loop",cur_date_time_str, encodingType.toLower());
 
-//    if (!m_filesRecorded.isEmpty()) {
-//
-//        if (saveLoop(newFileLocation)) {
-//            emit(exportToPlayer(newFileLocation, group));
-//        } else {
-//            qDebug () << "LoopRecordingManager::exportLoopToPlayer Error Saving File: " << newFileLocation;
-//        }
-//    }
+    if(m_pLoopTracker->finalizeLoop(newFileLocation)) {
+        emit(exportToPlayer(newFileLocation, group));
+    } else {
+        qDebug () << "LoopRecordingManager::exportLoopToPlayer Error Saving File: " << newFileLocation;
+    }
+    slotClearRecorder();
 }
 
 QString LoopRecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
@@ -377,6 +365,7 @@ double LoopRecordingManager::getCurrentBPM() {
         qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Base BPM: " << baseTrackBPM
         << " Rate: " << rate;
 
+        // TODO(Carl) get scaling working for sample rates other than 44.1 kHz
         // Rate is incorrect for sample rates higher than 44.1.
         //return baseTrackBPM * rate;
         return baseTrackBPM;
@@ -439,10 +428,10 @@ void LoopRecordingManager::playLoopDeck() {
     m_pLoopDeck1Play->slotSet(1.0);
 }
 
-bool LoopRecordingManager::saveLoop(QString newFileLocation) {
-
-    // Right now just save the last recording created.
-    // In the future this will be more complex.
+//bool LoopRecordingManager::saveLoop(QString newFileLocation) {
+//
+//    // Right now just save the last recording created.
+//    // In the future this will be more complex.
 //    if (!m_filesRecorded.isEmpty()) {
 //
 //        QString oldFileLocation = m_filesRecorded.last()->path;
@@ -452,9 +441,9 @@ bool LoopRecordingManager::saveLoop(QString newFileLocation) {
 //            return file.copy(newFileLocation);
 //        }
 //    }
-
-    return false;
-}
+//
+//    return false;
+//}
 
 void LoopRecordingManager::setRecordingDir() {
     QDir recordDir(m_pConfig->getValueString(
@@ -477,13 +466,8 @@ void LoopRecordingManager::startRecording() {
 
     m_iLoopLength = getLoopLength();
     emit(startWriter(m_iLoopLength));
-    //m_isRecording = true;
 
     QString number_str = QString::number(m_iLoopNumber++);
-
-    // TODO(carl) do we really need this?
-    //m_recordingFile = QString("%1_%2.%3")
-    //.arg("loop",date_time_str, encodingType.toLower());
 
     // Storing the absolutePath of the recording file without file extension
     m_recording_base_file = QString("%1/%2_%3_%4").arg(m_recordingDir,"loop",number_str,date_time_str);
@@ -494,13 +478,11 @@ void LoopRecordingManager::startRecording() {
     SNDFILE* pSndFile = openSndFile(m_recordingLocation);
     if (pSndFile != NULL) {
         emit fileOpen(pSndFile);
-        // add to file registry
-//        LoopInfo* pFileInfo = new LoopInfo();
-//        pFileInfo->path = m_recordingLocation;
-//        pFileInfo->length = 0;
-//        m_filesRecorded.append(pFileInfo);
+        // add to loop tracker
+
+        m_pLoopTracker->addLoopLayer(m_recordingLocation, m_iLoopLength);
     } else {
-        // error message and stop recording.
+        // TODO: error message and stop recording.
     }
 }
 
@@ -509,7 +491,6 @@ void LoopRecordingManager::stopRecording()
     //qDebug() << "LoopRecordingManager::stopRecording NumSamples: " << m_iNumSamplesRecorded;
     qDebug() << "LoopRecordingManager::stopRecording";
     emit(stopWriter(true));
-    //m_iNumSamplesRecorded = 0;
     m_recordingFile = "";
     m_recordingLocation = "";
 }

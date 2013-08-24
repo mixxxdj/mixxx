@@ -6,10 +6,13 @@
 #include "looprecording/looptracker.h"
 
 
-LoopTracker::LoopTracker() : currentLayer(0) { }
+LoopTracker::LoopTracker()
+        : currentLayer(-1),
+        m_bIsUndoAvailable(false),
+        m_bIsRedoAvailable(false) { }
 
 LoopTracker::~LoopTracker() {
-    clearLayers();
+    clear();
 }
 
 void LoopTracker::addLoopLayer(QString path, unsigned int length) {
@@ -17,9 +20,10 @@ void LoopTracker::addLoopLayer(QString path, unsigned int length) {
     layer->path = path;
     layer->length = length;
     m_layers.append(layer);
+    currentLayer++;
 }
 
-void LoopTracker::clearLayers() {
+void LoopTracker::clear() {
     while (!m_layers.empty()) {
         LayerInfo* pFile = m_layers.takeLast();
         qDebug() << "!~!~!~! LoopTracker::clearLayers deleteing: " << pFile->path;
@@ -29,6 +33,29 @@ void LoopTracker::clearLayers() {
             file.remove();
         }
         delete pFile;
+    }
+    currentLayer = -1;
+}
+
+bool LoopTracker::finalizeLoop(QString newPath) {
+    // TODO: implement multiple layer mixing.
+    if (currentLayer > -1) {
+
+        QString oldFileLocation = m_layers.at(currentLayer)->path;
+        QFile file(oldFileLocation);
+
+        if (file.exists()) {
+            return file.copy(newPath);
+        }
+    }
+    return false;
+}
+
+QString LoopTracker::getCurrentPath() {
+    if (m_layers.empty()) {
+        return QString::QString("");
+    } else {
+        return m_layers.at(currentLayer)->path;
     }
 }
 
