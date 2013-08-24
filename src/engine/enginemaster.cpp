@@ -63,11 +63,11 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
 #ifdef __LADSPA__
     // LADSPA
-    ladspa = new EngineLADSPA();
+    m_pLadspa = new EngineLADSPA();
 #endif
 
     // Crossfader
-    crossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
+    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
 
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
@@ -76,21 +76,21 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pMasterVolume = new ControlLogpotmeter(ConfigKey(group, "volume"), 5.);
 
     // Clipping
-    clipping = new EngineClipping(group);
+    m_pClipping = new EngineClipping(group);
 
     // VU meter:
-    vumeter = new EngineVuMeter(group);
+    m_pVumeter = new EngineVuMeter(group);
 
     // Headphone volume
     m_pHeadVolume = new ControlLogpotmeter(ConfigKey(group, "headVolume"), 5.);
 
     // Headphone mix (left/right)
-    head_mix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
-    head_mix->setDefaultValue(-1.);
-    head_mix->set(-1.);
+    m_pHeadMix = new ControlPotmeter(ConfigKey(group, "headMix"),-1.,1.);
+    m_pHeadMix->setDefaultValue(-1.);
+    m_pHeadMix->set(-1.);
 
     // Headphone Clipping
-    head_clipping = new EngineClipping("");
+    m_pHeadClipping = new EngineClipping("");
 
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
@@ -102,33 +102,32 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
     // X-Fader Setup
-    xFaderMode = new ControlPotmeter(
+    m_pXFaderMode = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderMode"), 0., 1.);
-    xFaderCurve = new ControlPotmeter(
+    m_pXFaderCurve = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderCurve"), 0., 2.);
-    xFaderCalibration = new ControlPotmeter(
+    m_pXFaderCalibration = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
-    xFaderReverse = new ControlPotmeter(
+    m_pXFaderReverse = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
 }
 
-EngineMaster::~EngineMaster()
-{
+EngineMaster::~EngineMaster() {
     qDebug() << "in ~EngineMaster()";
-    delete crossfader;
+    delete m_pCrossfader;
     delete m_pBalance;
-    delete head_mix;
+    delete m_pHeadMix;
     delete m_pMasterVolume;
     delete m_pHeadVolume;
-    delete clipping;
-    delete vumeter;
-    delete head_clipping;
+    delete m_pClipping;
+    delete m_pVumeter;
+    delete m_pHeadClipping;
     delete m_pSideChain;
 
-    delete xFaderReverse;
-    delete xFaderCalibration;
-    delete xFaderCurve;
-    delete xFaderMode;
+    delete m_pXFaderReverse;
+    delete m_pXFaderCalibration;
+    delete m_pXFaderCurve;
+    delete m_pXFaderMode;
 
     delete m_pMasterSampleRate;
     delete m_pMasterLatency;
@@ -152,13 +151,11 @@ EngineMaster::~EngineMaster()
     }
 }
 
-const CSAMPLE* EngineMaster::getMasterBuffer() const
-{
+const CSAMPLE* EngineMaster::getMasterBuffer() const {
     return m_pMaster;
 }
 
-const CSAMPLE* EngineMaster::getHeadphoneBuffer() const
-{
+const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
     return m_pHead;
 }
 
@@ -182,7 +179,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Compute headphone mix
     // Head phone left/right mix
-    CSAMPLE cf_val = head_mix->get();
+    CSAMPLE cf_val = m_pHeadMix->get();
     CSAMPLE chead_gain = 0.5*(-cf_val+1.);
     CSAMPLE cmaster_gain = 0.5*(cf_val+1.);
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
@@ -228,10 +225,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Calculate the crossfader gains for left and right side of the crossfader
     double c1_gain, c2_gain;
-    EngineXfader::getXfadeGains(crossfader->get(), xFaderCurve->get(),
-                                xFaderCalibration->get(),
-                                xFaderMode->get() == MIXXX_XFADER_CONSTPWR,
-                                xFaderReverse->get() == 1.0,
+    EngineXfader::getXfadeGains(m_pCrossfader->get(), m_pXFaderCurve->get(),
+                                m_pXFaderCalibration->get(),
+                                m_pXFaderMode->get() == MIXXX_XFADER_CONSTPWR,
+                                m_pXFaderReverse->get() == 1.0,
                                 &c1_gain, &c2_gain);
 
     // Now set the gains for overall volume and the left, center, right gains.
@@ -244,11 +241,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
 #ifdef __LADSPA__
     // LADPSA master effects
-    ladspa->process(m_pMaster, m_pMaster, iBufferSize);
+    m_pLadspa->process(m_pMaster, m_pMaster, iBufferSize);
 #endif
 
     // Clipping
-    clipping->process(m_pMaster, m_pMaster, iBufferSize);
+    m_pClipping->process(m_pMaster, m_pMaster, iBufferSize);
 
     // Balance values
     CSAMPLE balright = 1.;
@@ -264,8 +261,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Update VU meter (it does not return anything). Needs to be here so that
     // master balance is reflected in the VU meter.
-    if (vumeter != NULL)
-        vumeter->process(m_pMaster, m_pMaster, iBufferSize);
+    if (m_pVumeter != NULL) {
+        m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
+    }
 
     //Submit master samples to the side chain to do shoutcasting, recording,
     //etc.  (cpu intensive non-realtime tasks)
@@ -282,7 +280,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     CSAMPLE headphoneVolume = m_pHeadVolume->get();
     SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld, headphoneVolume, iBufferSize);
     m_headphoneVolumeOld = headphoneVolume;
-    head_clipping->process(m_pHead, m_pHead, iBufferSize);
+    m_pHeadClipping->process(m_pHead, m_pHead, iBufferSize);
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
@@ -296,7 +294,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     ChannelInfo* pChannelInfo = new ChannelInfo();
     pChannelInfo->m_pChannel = pChannel;
     pChannelInfo->m_pVolumeControl = new ControlLogpotmeter(
-        ConfigKey(pChannel->getGroup(), "volume"), 1.0);
+            ConfigKey(pChannel->getGroup(), "volume"), 1.0);
     pChannelInfo->m_pVolumeControl->setDefaultValue(1.0);
     pChannelInfo->m_pVolumeControl->set(1.0);
     pChannelInfo->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);

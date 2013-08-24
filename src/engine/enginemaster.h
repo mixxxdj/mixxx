@@ -133,9 +133,10 @@ class EngineMaster : public EngineObject, public AudioSource {
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
-    CSAMPLE *m_pMaster, *m_pHead;
+    CSAMPLE* m_pMaster;
+    CSAMPLE* m_pHead;
 
-    EngineWorkerScheduler *m_pWorkerScheduler;
+    EngineWorkerScheduler* m_pWorkerScheduler;
 
     ControlObject* m_pMasterVolume;
     ControlObject* m_pHeadVolume;
@@ -144,16 +145,22 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pMasterUnderflowCount;
     ControlPotmeter* m_pMasterRate;
-    EngineClipping *clipping, *head_clipping;
+    EngineClipping* m_pClipping;
+    EngineClipping* m_pHeadClipping;
 
 #ifdef __LADSPA__
-    EngineLADSPA *ladspa;
+    EngineLADSPA* m_pLadspa;
 #endif
-    EngineVuMeter *vumeter;
+    EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pSideChain;
 
-    ControlPotmeter *crossfader, *head_mix, *m_pBalance,
-        *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
+    ControlPotmeter* m_pCrossfader;
+    ControlPotmeter* m_pHeadMix;
+    ControlPotmeter* m_pBalance;
+    ControlPotmeter* m_pXFaderMode;
+    ControlPotmeter* m_pXFaderCurve;
+    ControlPotmeter* m_pXFaderCalibration;
+    ControlPotmeter* m_pXFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
