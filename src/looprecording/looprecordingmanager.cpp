@@ -44,9 +44,9 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
     m_pRecReady = new ControlObjectThread(LOOP_RECORDING_PREF_KEY, "rec_status");
     m_pSampleRate = new ControlObjectThread("[Master]", "samplerate");
 
-    m_pLoopDeck1Play = new ControlObjectThread("[LoopRecorderDeck1]","play");
-    m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");
-    m_pLoopDeck1Eject = new ControlObjectThread("[LoopRecorderDeck1]","eject");
+//    m_pLoopDeck1Play = new ControlObjectThread("[LoopRecorderDeck1]","play");
+//    m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");
+//    m_pLoopDeck1Eject = new ControlObjectThread("[LoopRecorderDeck1]","eject");
 
     m_pChangeExportDestination = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY,"change_export_destination"));
     m_pChangeLoopLength = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY, "change_loop_length"));
@@ -142,9 +142,9 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pChangeLoopSource;
     delete m_pChangeLoopLength;
     delete m_pChangeExportDestination;
-    delete m_pLoopDeck1Eject;
-    delete m_pLoopDeck1Stop;
-    delete m_pLoopDeck1Play;
+//    delete m_pLoopDeck1Eject;
+//    delete m_pLoopDeck1Stop;
+//    delete m_pLoopDeck1Play;
     delete m_pSampleRate;
     delete m_pRecReady;
     delete m_pNumSamplers;
@@ -162,8 +162,7 @@ LoopRecordingManager::~LoopRecordingManager() {
 void LoopRecordingManager::slotClearRecorder() {
 
     m_pTogglePlayback->set(0.0);
-    stopLoopDeck();
-    clearLoopDeck();
+    m_pLoopTracker->stop(true);
     m_pLoopTracker->clear();
 }
 
@@ -174,12 +173,11 @@ void LoopRecordingManager::slotCurrentPlayingDeckChanged(int deck) {
 }
 
 void LoopRecordingManager::slotIsRecording(bool isRecordingActive) {
-
     m_isRecording = isRecordingActive;
-    //emit(isLoopRecording(isRecordingActive));
 }
 
 // Connected to EngineLoopRecorder.
+// TODO: move to LoopTracker?
 void LoopRecordingManager::slotLoadToLoopDeck() {
     //qDebug() << "LoopRecordingManager::loadToLoopDeck m_filesRecorded: " << m_filesRecorded;
     QString path = m_pLoopTracker->getCurrentPath();
@@ -276,6 +274,8 @@ void LoopRecordingManager::slotNumSamplersChanged(double v) {
     //qDebug() << "!!!!LoopRecordingManager::slotNumSamplersChanged num: " << m_iNumSamplers;
 }
 
+
+// TODO: review this method.
 void LoopRecordingManager::slotToggleClear(double v) {
     //qDebug() << "LoopRecordingManager::slotClearRecorder v: " << v;
     if (v > 0.) {
@@ -306,15 +306,10 @@ void LoopRecordingManager::slotToggleLoopRecording(double v) {
 void LoopRecordingManager::slotTogglePlayback(double v) {
     qDebug() << "Toggle Playback: " << v;
     if (v > 0.0) {
-        playLoopDeck();
+        m_pLoopTracker->play();
     } else {
-        stopLoopDeck();
+        m_pLoopTracker->stop(false);
     }
-}
-
-void LoopRecordingManager::clearLoopDeck() {
-    m_pLoopDeck1Eject->slotSet(1.0);
-    m_pLoopDeck1Eject->slotSet(0.0);
 }
 
 void LoopRecordingManager::exportLoopToPlayer(QString group) {
@@ -326,6 +321,8 @@ void LoopRecordingManager::exportLoopToPlayer(QString group) {
     QString encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
     //Append file extension
     QString cur_date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
+
+    // TODO(Carl) better file naming.
 
     QString newFileLocation = QString("%1%2_%3.%4")
         .arg(dir,"loop",cur_date_time_str, encodingType.toLower());
@@ -424,27 +421,6 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
     return pSndFile;
 }
 
-void LoopRecordingManager::playLoopDeck() {
-    m_pLoopDeck1Play->slotSet(1.0);
-}
-
-//bool LoopRecordingManager::saveLoop(QString newFileLocation) {
-//
-//    // Right now just save the last recording created.
-//    // In the future this will be more complex.
-//    if (!m_filesRecorded.isEmpty()) {
-//
-//        QString oldFileLocation = m_filesRecorded.last()->path;
-//        QFile file(oldFileLocation);
-//
-//        if (file.exists()) {
-//            return file.copy(newFileLocation);
-//        }
-//    }
-//
-//    return false;
-//}
-
 void LoopRecordingManager::setRecordingDir() {
     QDir recordDir(m_pConfig->getValueString(
                     ConfigKey("[Recording]", "Directory")).append(LOOP_RECORDING_DIR));
@@ -486,17 +462,10 @@ void LoopRecordingManager::startRecording() {
     }
 }
 
-void LoopRecordingManager::stopRecording()
-{
+void LoopRecordingManager::stopRecording() {
     //qDebug() << "LoopRecordingManager::stopRecording NumSamples: " << m_iNumSamplesRecorded;
     qDebug() << "LoopRecordingManager::stopRecording";
     emit(stopWriter(true));
     m_recordingFile = "";
     m_recordingLocation = "";
-}
-
-void LoopRecordingManager::stopLoopDeck() {
-    //m_pLoopDeck1Stop->slotSet(1.0);
-    //m_pLoopDeck1Stop->slotSet(0.0);
-    m_pLoopDeck1Play->slotSet(0.0);
 }
