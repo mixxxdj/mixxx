@@ -36,6 +36,7 @@
 #include "util/timer.h"
 #include "playermanager.h"
 #include "engine/channelmixer.h"
+#include "engine/guitick.h"
 
 #ifdef __LADSPA__
 #include "engineladspa.h"
@@ -110,6 +111,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
         ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
     m_pXFaderReverse = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
+
+    m_pGuiTick = new GuiTick(this);
 }
 
 EngineMaster::~EngineMaster() {
@@ -284,6 +287,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     //Master/headphones interleaving is now done in
     //SoundManager::requestBuffer() - Albert Nov 18/07
+
+    // Do all timer things at the end of the callback
+    // Qt timers are not that useful in our case, because they
+    // are handled with priority without respecting the callback
+    m_pGuiTick->process();
 
     // We're close to the end of the callback. Wake up the engine worker
     // scheduler so that it runs the workers.

@@ -501,6 +501,7 @@ class MixxxCore(Feature):
                    "engine/quantizecontrol.cpp",
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
+                   "engine/guitick.cpp", 
                    "cachingreader.cpp",
                    "cachingreaderworker.cpp",
 

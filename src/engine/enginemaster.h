@@ -38,6 +38,7 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class SyncWorker;
+class GuiTick;
 
 class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
@@ -166,6 +167,8 @@ class EngineMaster : public EngineObject, public AudioSource {
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_headphoneMasterGainOld;
     CSAMPLE m_headphoneVolumeOld;
+
+    GuiTick* m_pGuiTick;
 };
 
 #endif
