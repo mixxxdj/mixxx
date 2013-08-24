@@ -29,6 +29,7 @@
 #include "controlobject.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
+#include "engine/guitick.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -265,15 +266,11 @@ QString SoundDevicePortAudio::getError() const {
     return m_lastError;
 }
 
-/** -------- ------------------------------------------------------
-        Purpose: This callback function gets called everytime the sound device runs
-                 out of samples (ie. when it needs more sound to play)
-        -------- ------------------------------------------------------
- */
+// This callback function gets called every time the sound device runs
+// out of samples (ie. when it needs more sound to play)
 int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
-        float *output, short *in, const PaStreamCallbackTimeInfo *timeInfo,
-        PaStreamCallbackFlags statusFlags) {
-    Q_UNUSED(timeInfo);
+            float *output, short *in, const PaStreamCallbackTimeInfo *timeInfo,
+            PaStreamCallbackFlags statusFlags) {
     ScopedTimer t("SoundDevicePortAudio::callbackProcess " + getInternalName());
 
     //qDebug() << "SoundDevicePortAudio::callbackProcess:" << getInternalName();
@@ -283,6 +280,8 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
         m_bSetThreadPriority = true;
     }
+
+    GuiTick::setStreamTime((double)timeInfo->outputBufferDacTime);
 
     if (!m_undeflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
@@ -339,13 +338,9 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     return paContinue;
 }
 
-/* -------- ------------------------------------------------------
-   Purpose: Wrapper function to call processing loop function,
-            implemented as a method in a class. Used in PortAudio,
-            which knows nothing about C++.
-   Input:   .
-   Output:  -
-   -------- ------------------------------------------------------ */
+// Wrapper function to call processing loop function,
+// implemented as a method in a class. Used in PortAudio,
+// which knows nothing about C++.
 int paV19Callback(const void *inputBuffer, void *outputBuffer,
                   unsigned long framesPerBuffer,
                   const PaStreamCallbackTimeInfo *timeInfo,
