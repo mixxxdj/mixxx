@@ -91,8 +91,9 @@ LibraryScanner::~LibraryScanner()
     query.prepare("SELECT directory_path FROM LibraryHashes "
                   "WHERE directory_deleted=1");
     if (query.exec()) {
+        const int directoryPathColumn = query.record().indexOf("directory_path");
         while (query.next()) {
-            QString directory = query.value(query.record().indexOf("directory_path")).toString();
+            QString directory = query.value(directoryPathColumn).toString();
             deletedDirs << directory;
         }
     } else {
