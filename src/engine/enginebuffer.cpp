@@ -23,6 +23,7 @@
 #include "sampleutil.h"
 
 #include "controlpushbutton.h"
+#include "controlindicator.h"
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "controllinpotmeter.h"
@@ -111,6 +112,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_playButton->connectValueChangeRequest(
             this, SLOT(slotControlPlayRequest(double)),
             Qt::DirectConnection);
+
+    m_playIndicator = new ControlIndicator(ConfigKey(m_group, "play_indicator"));
 
     //Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
@@ -367,6 +370,9 @@ void EngineBuffer::setNewPlaypos(double newpos)
         EngineControl *pControl = *it;
         pControl->notifySeek(m_filepos_play);
     }
+
+    m_playButton->set(m_playButton->get()); // verify or update play button and indicator
+
     m_engineLock.unlock();
 }
 
@@ -429,8 +435,9 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 void EngineBuffer::ejectTrack() {
     // Don't allow ejections while playing a track. We don't need to lock to
     // call ControlObject::get() so this is fine.
-    if (m_playButton->get() > 0)
+    if (m_playButton->get() > 0) {
         return;
+    }
 
     m_pause.lock();
     m_iTrackLoading = 0;
@@ -482,10 +489,18 @@ void EngineBuffer::slotControlPlayRequest(double v)
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
-    if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
+    if ((!m_pCurrentTrack && m_iTrackLoading == 0) ||
+            (m_pCurrentTrack && m_filepos_play >= m_file_length_old )) {
         v = 0.0;
+        m_playIndicator->setBlinkValue(ControlIndicator::OFF);
+    } else {
+        if (v) {
+            m_playIndicator->setBlinkValue(ControlIndicator::ON);
+        } else {
+            m_playIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+        }
     }
-    // set and confirm must be called in any case to update the widget toggle state
+    // set and  must be called in any case to update the widget toggle state
     m_playButton->setAndConfirm(v);
 }
 

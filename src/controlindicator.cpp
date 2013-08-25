@@ -4,8 +4,8 @@
 ControlIndicator::ControlIndicator(ConfigKey key)
         : ControlObject(key, false),
           m_blinkValue(OFF),
-          m_on(FALSE),
           m_nextSwitchTime(0.0) {
+    m_pCOTStreamTime = new ControlObjectThread("[Master]", "streamTime");
     m_pCOTGuiTick50ms = new ControlObjectThread("[Master]", "guiTick50ms");
     connect(m_pCOTGuiTick50ms, SIGNAL(valueChanged(double)),
             this, SLOT(slotGuiTick50ms(double)));
@@ -13,23 +13,32 @@ ControlIndicator::ControlIndicator(ConfigKey key)
 }
 
 ControlIndicator::~ControlIndicator() {
+    delete m_pCOTStreamTime;
     delete m_pCOTGuiTick50ms;
 }
 
 void ControlIndicator::setBlinkValue(enum BlinkValue bv) {
-    m_blinkValue = bv;
-    switch (m_blinkValue) {
-    case OFF:
-        set(0.0);
-        break;
-    case ON:
-        set(1.0);
-        break;
-    case RATIO1TO1_500MS: // fall through
-    case RATIO1TO1_250MS: // fall through
-    default:
-        // nothing to do
-        break;
+    if (m_blinkValue != bv) {
+        m_blinkValue = bv; // must be set at first, to avoid timer toggle
+        switch (m_blinkValue) {
+        case OFF:
+            set(0.0);
+            break;
+        case ON:
+            set(1.0);
+            break;
+        case RATIO1TO1_500MS:
+            toggle();
+            m_nextSwitchTime = m_pCOTStreamTime->get() + 0.5;
+            break;
+        case RATIO1TO1_250MS:
+            toggle();
+            m_nextSwitchTime = m_pCOTStreamTime->get() + 0.25;
+            break;
+        default:
+            // nothing to do
+            break;
+        }
     }
 }
 
@@ -38,11 +47,11 @@ void ControlIndicator::slotGuiTick50ms(double streamTime) {
         switch (m_blinkValue) {
         case RATIO1TO1_500MS:
             toggle();
-            m_nextSwitchTime += 0.5;
+            m_nextSwitchTime = streamTime + 0.5;
             break;
         case RATIO1TO1_250MS:
             toggle();
-            m_nextSwitchTime += 0.25;
+            m_nextSwitchTime = streamTime + 0.25;
             break;
         case OFF: // fall through
         case ON: // fall through
@@ -54,6 +63,5 @@ void ControlIndicator::slotGuiTick50ms(double streamTime) {
 }
 
 void ControlIndicator::toggle() {
-    set(m_on?0.0:1.0);
-    m_on = !m_on;
+    set(get()?0.0:1.0);
 }

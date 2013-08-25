@@ -27,8 +27,8 @@ class ControlIndicator : public ControlObject {
     void toggle();
 
     enum BlinkValue m_blinkValue;
-    bool m_on;
     double m_nextSwitchTime;
+    ControlObjectThread* m_pCOTStreamTime;
     ControlObjectThread* m_pCOTGuiTick50ms;
 };
 
