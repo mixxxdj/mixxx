@@ -33,6 +33,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     radioOgg = 0;
     radioAiff= 0;
     radioWav = 0;
+    radioLoopAiff = 0;
+    radioLoopWav = 0;
     setupUi(this);
 
     //See RECORD_* #defines in defs_recording.h
@@ -104,6 +106,40 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
         radioWav->setChecked(true);
         config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
     }
+
+    // Loop Recording format
+    //AIFF and WAVE are supported by default
+    radioLoopWav = new QRadioButton(ENCODING_WAVE);
+    connect(radioLoopWav, SIGNAL(clicked()),
+            this, SLOT(slotApply()));
+    horizontalLoopLayout->addWidget(radioLoopWav);
+
+    radioLoopAiff = new QRadioButton(ENCODING_AIFF);
+    connect(radioLoopAiff, SIGNAL(clicked()),
+            this, SLOT(slotApply()));
+    horizontalLoopLayout->addWidget(radioLoopAiff);
+
+    //Read config and check radio button
+//    QString format = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding"));
+//    if(format == ENCODING_WAVE)
+//        radioWav->setChecked(true);
+//    else if(format == ENCODING_OGG)
+//        radioOgg->setChecked(true);
+//    else if (format == ENCODING_MP3)
+//        radioMp3->setChecked(true);
+//    else if (format == ENCODING_AIFF)
+//        radioAiff->setChecked(true);
+//#ifdef SF_FORMAT_FLAC
+//    else if (format == ENCODING_FLAC)
+//        radioFlac->setChecked(true);
+//#endif
+//    else //Invalid, so set default and save
+//    {
+//        //If no config was available, set to WAVE as default
+//        radioWav->setChecked(true);
+//        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
+//    }
+
 
     loadMetaData();
 

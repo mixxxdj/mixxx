@@ -67,6 +67,9 @@ private:
     QRadioButton *radioAiff;
     QRadioButton *radioFlac;
     QRadioButton *radioWav;
+
+    QRadioButton *radioLoopAiff;
+    QRadioButton *radioLoopWav;
 };
 
 #endif
