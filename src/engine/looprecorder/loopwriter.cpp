@@ -130,26 +130,26 @@ void LoopWriter::writeBuffer(const CSAMPLE* pBuffer, const int iBufferSize) {
 
         // TODO(carl) check for buffers to flush
         if ((m_iLoopLength > 0) && (m_iSamplesRecorded >= m_iBreakPoint)) {
-            qDebug () << "Passed breakpoint.";
+            //qDebug () << "Passed breakpoint.";
             if ((m_iSamplesRecorded + iBufferSize) >= m_iLoopLength) {
                 // Trim loop to exact length specified.
                 unsigned int iRemainder = m_iLoopLength - m_iSamplesRecorded;
-                qDebug() << "!~!~!~!~!~! Trimming Loop. Remainder: " << iRemainder
-                        << " Samples Rec: " << m_iSamplesRecorded << " !~!~!~!~!~!~!";
+                //qDebug() << "!~!~!~!~!~! Trimming Loop. Remainder: " << iRemainder
+                //        << " Samples Rec: " << m_iSamplesRecorded << " !~!~!~!~!~!~!";
                 sf_write_float(m_pSndfile, pBuffer, iRemainder);
                 m_iSamplesRecorded += iRemainder;
-                qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded
-                        << "Remainder: " << iRemainder << " !~!~!~!~!~!~!";
+                //qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded
+                //        << "Remainder: " << iRemainder << " !~!~!~!~!~!~!";
                 slotStopRecording(true);
             } else {
                 sf_write_float(m_pSndfile, pBuffer, iBufferSize);
                 m_iSamplesRecorded += iBufferSize;
-                qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded <<  " !~!~!~!~!~!~!";
+                //qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded <<  " !~!~!~!~!~!~!";
             }
         } else {
             sf_write_float(m_pSndfile, pBuffer, iBufferSize);
             m_iSamplesRecorded += iBufferSize;
-            qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded <<  " !~!~!~!~!~!~!";
+            //qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded <<  " !~!~!~!~!~!~!";
         }
     } else {
         // TODO(carl) write to temporary buffer.
