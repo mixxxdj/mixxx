@@ -361,6 +361,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager = new PlayerManager(m_pConfig, m_pSoundManager, m_pEngine);
     m_pPlayerManager->addDeck();
     m_pPlayerManager->addDeck();
+    m_pPlayerManager->addDeck();
+    m_pPlayerManager->addDeck();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
