@@ -22,7 +22,7 @@ class GuiTick : public QObject {
 
     double m_lastUpdateTime;
 
-    static double m_streamtime; // Stream Time in seconds
+    static double m_streamTime; // Stream Time in seconds
 };
 
 #endif // GUITICK_H

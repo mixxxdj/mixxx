@@ -3,7 +3,7 @@
 
 
 // static
-double GuiTick::m_streamtime = 0.0;
+double GuiTick::m_streamTime = 0.0;
 
 GuiTick::GuiTick(QObject* pParent)
         : QObject(pParent),
@@ -18,20 +18,21 @@ GuiTick::~GuiTick() {
 }
 
 void GuiTick::process() {
-    m_pCOStreamTime->set(m_streamtime);
-    if (m_lastUpdateTime > m_streamtime || m_lastUpdateTime + 0.05 < m_streamtime) {
-        m_pCOGuiTick50ms->set(m_streamtime);
+    m_pCOStreamTime->set(m_streamTime);
+    if (m_lastUpdateTime > m_streamTime || m_lastUpdateTime + 0.05 < m_streamTime) {
+        m_lastUpdateTime = m_streamTime;
+        m_pCOGuiTick50ms->set(m_streamTime);
     }
 }
 
 // static
 void GuiTick::setStreamTime(double streamTime) {
-    m_streamtime = streamTime;
+    m_streamTime = streamTime;
 }
 
 // static
 double GuiTick::streamTime() {
-    return m_streamtime;
+    return m_streamTime;
 }
 
 
