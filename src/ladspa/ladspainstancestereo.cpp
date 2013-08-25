@@ -27,6 +27,7 @@ LADSPAInstanceStereo::LADSPAInstanceStereo(const LADSPA_Descriptor * descriptor,
     for (unsigned long port = 0; port < descriptor->PortCount; port++)
     {
         qDebug() << "LADSPA: Port " << port << "u: " << descriptor->PortNames[port];
+
         if (LADSPA_IS_PORT_AUDIO(descriptor->PortDescriptors [port]))
         {
             if (LADSPA_IS_PORT_INPUT(descriptor->PortDescriptors [port]))

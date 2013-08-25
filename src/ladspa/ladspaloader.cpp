@@ -17,6 +17,42 @@ LADSPALoader::LADSPALoader()
     
     QStringList plugin_paths;
 
+    // set up the plugin paths...
+
+    qDebug() << "Setting up plugin paths...";
+
+    QString ladspaPath = QString(getenv("LADSPA_PATH"));
+
+    // Is this really necessary? Can't we add all the paths?
+    if (!ladspaPath.isEmpty())
+    {
+            // get the list of directories containing LADSPA plugins
+    #ifdef __WINDOWS__
+            plugin_paths.ladspaPath.split(';');
+    #else  //this doesn't work, I think we need to iterate over the splitting to do it properly
+            plugin_paths = ladspaPath.split(':');
+    #endif
+    }
+    else
+    {
+            // add default path if LADSPA_PATH is not set
+    #ifdef __LINUX__
+            plugin_paths.push_back ("/usr/lib/ladspa/");
+            plugin_paths.push_back ("/usr/lib64/ladspa/");
+    #elif __APPLE__
+            QDir dir(QCoreApplication::applicationDirPath());
+            dir.cdUp();
+            dir.cd("PlugIns");
+             plugin_paths.push_back ("/Library/Audio/Plug-ins/LADSPA");
+             plugin_paths.push_back (dir.absolutePath()); //ladspa_plugins directory in Mixxx.app bundle //XXX work in QApplication::appdir()
+    #elif __WINDOWS__
+            // not tested yet but should work:
+            QString programFiles = QString(getenv("ProgramFiles"));
+             plugin_paths.push_back (programFiles+"\\LADSPA Plugins");
+             plugin_paths.push_back (programFiles+"\\Audacity\\Plug-Ins");
+    #endif
+    }
+    qDebug() << "...done.";
 
     // load each directory
     for (QStringList::iterator path = plugin_paths.begin(); path != plugin_paths.end(); path++)
@@ -66,7 +102,7 @@ LADSPALoader::~LADSPALoader()
     // TODO: unload & free everything
 }
 
-const LADSPAPlugin * LADSPALoader::getByIndex(uint index)
+LADSPAPlugin * LADSPALoader::getByIndex(uint index)
 {
     if (index < m_PluginCount)
     {

@@ -27,11 +27,9 @@ class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
-class EngineFlanger;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
 class ControlPushButton;
-class ControlObject;
 
 class EngineChannel : public EngineObject {
     Q_OBJECT

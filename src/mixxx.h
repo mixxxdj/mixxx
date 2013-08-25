@@ -37,8 +37,8 @@ class PlayerManager;
 class RecordingManager;
 class ShoutcastManager;
 class SkinLoader;
+class EffectsManager;
 class VinylControlManager;
-
 class DlgPreferences;
 class SoundManager;
 
@@ -137,6 +137,9 @@ class MixxxApp : public QMainWindow {
     // Pointer to the root GUI widget
     QWidget* m_pView;
     QWidget* m_pWidgetParent;
+
+    // The effects processing system
+    EffectsManager* m_pEffectsManager;
 
     // The mixing engine.
     EngineMaster* m_pEngine;

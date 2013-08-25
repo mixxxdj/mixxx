@@ -465,6 +465,24 @@ class MixxxCore(Feature):
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
 
+                   "effects/effectmanifest.cpp",
+                   "effects/effectmanifestparameter.cpp",
+
+                   "effects/effectchain.cpp",
+                   "effects/effect.cpp",
+                   "effects/effectparameter.cpp",
+
+                   "effects/effectchainslot.cpp",
+                   "effects/effectslot.cpp",
+                   "effects/effectparameterslot.cpp",
+
+                   "effects/effectsmanager.cpp",
+                   "effects/effectchainmanager.cpp",
+                   "effects/effectsbackend.cpp",
+
+                   "effects/native/nativebackend.cpp",
+                   "effects/native/flangereffect.cpp",
+
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
                    "engine/enginebuffer.cpp",
@@ -558,6 +576,7 @@ class MixxxCore(Feature):
                    "widget/wimagestore.cpp",
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
+                   "widget/weffectchain.cpp",
                    "widget/wtime.cpp",
 
                    "mathstuff.cpp",

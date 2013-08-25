@@ -14,7 +14,7 @@
 
 LADSPAPlugin::LADSPAPlugin(const LADSPA_Descriptor * descriptor)
 {
-    m_pDescriptor = descriptor;
+	m_pDescriptor = descriptor;
 }
 
 LADSPAPlugin::~LADSPAPlugin()
@@ -82,4 +82,33 @@ LADSPAInstance * LADSPAPlugin::instantiate(int slot)
 const QString LADSPAPlugin::getLabel()
 {
   return QString(m_pDescriptor->Label);
+}
+
+const LADSPA_Descriptor * LADSPAPlugin::getDescriptor(){
+	return m_pDescriptor;
+}
+
+bool LADSPAPlugin::isSupported(){
+    int inputs = 0;
+    int outputs = 0;
+    for (unsigned long port = 0; port < m_pDescriptor->PortCount; port++)
+    {
+        if (LADSPA_IS_PORT_AUDIO(m_pDescriptor->PortDescriptors [port]))
+        {
+            if (LADSPA_IS_PORT_INPUT(m_pDescriptor->PortDescriptors [port]))
+            {
+                inputs++;
+            }
+            else
+            {
+                outputs++;
+            }
+        }
+    }
+
+    if ((inputs == 2 && outputs == 2) || (inputs == 1 && outputs == 1)){
+    	return true;
+    } else {
+    	return false;
+    }
 }

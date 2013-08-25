@@ -27,6 +27,7 @@
 class EngineWorkerScheduler;
 class EngineBuffer;
 class EngineChannel;
+class EngineDeck;
 class EngineClipping;
 class EngineFlanger;
 #ifdef __LADSPA__
@@ -37,6 +38,7 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
+class EffectsManager;
 class SyncWorker;
 
 class EngineMaster : public EngineObject, public AudioSource {
@@ -44,12 +46,25 @@ class EngineMaster : public EngineObject, public AudioSource {
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
+                 EffectsManager* pEffectsManager,
                  bool bEnableSidechain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
+
+    const QString getMasterChannelId() const {
+        return QString("[Master]");
+    }
+
+    const QString getHeadphoneChannelId() const {
+        return QString("[Headphone]");
+    }
+
+    EffectsManager* getEffectsManager() const {
+        return m_pEffectsManager;
+    }
 
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 
@@ -129,6 +144,7 @@ class EngineMaster : public EngineObject, public AudioSource {
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
 
+    EffectsManager* m_pEffectsManager;
     QList<ChannelInfo*> m_channels;
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;

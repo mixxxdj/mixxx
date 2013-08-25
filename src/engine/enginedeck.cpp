@@ -16,13 +16,12 @@
 ***************************************************************************/
 
 #include "controlpushbutton.h"
+#include "effects/effectsmanager.h"
 #include "enginebuffer.h"
 #include "enginevinylsoundemu.h"
 #include "enginedeck.h"
 #include "engineclipping.h"
 #include "enginepregain.h"
-#include "engineflanger.h"
-#include "enginefiltereffect.h"
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
 #include "enginefilteriir.h"
@@ -30,14 +29,17 @@
 #include "sampleutil.h"
 
 EngineDeck::EngineDeck(const char* group,
-                             ConfigObject<ConfigValue>* pConfig,
-                             EngineChannel::ChannelOrientation defaultOrientation)
+                       ConfigObject<ConfigValue>* pConfig,
+                       EffectsManager* pEffectsManager,
+                       EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
+          m_pEffectsManager(pEffectsManager),
           m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
+    m_pEffectsManager->registerChannel(getGroup());
 
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -53,8 +55,6 @@ EngineDeck::EngineDeck(const char* group,
     // Set up additional engines
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
-    m_pFlanger = new EngineFlanger(group);
-    m_pFilterEffect = new EngineFilterEffect(group);
     m_pClipping = new EngineClipping(group);
     m_pBuffer = new EngineBuffer(group, pConfig);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
@@ -68,8 +68,6 @@ EngineDeck::~EngineDeck() {
     delete m_pBuffer;
     delete m_pClipping;
     delete m_pFilter;
-    delete m_pFlanger;
-    delete m_pFilterEffect;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
     delete m_pVUMeter;
@@ -109,9 +107,8 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
     m_pPregain->process(pOut, pOut, iBufferSize);
     // Filter the channel with EQs
     m_pFilter->process(pOut, pOut, iBufferSize);
-    // TODO(XXX) LADSPA
-    m_pFlanger->process(pOut, pOut, iBufferSize);
-    m_pFilterEffect->process(pOut, pOut, iBufferSize);
+    // Process effects enabled for this channel
+    m_pEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
@@ -202,4 +199,3 @@ bool EngineDeck::isPassthroughActive() {
 void EngineDeck::slotPassingToggle(double v) {
     m_bPassthroughIsActive = v > 0;
 }
-

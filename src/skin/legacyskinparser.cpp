@@ -26,6 +26,8 @@
 #include "skin/colorschemeparser.h"
 #include "skin/propertybinder.h"
 
+#include "effects/effectsmanager.h"
+
 #include "widget/wwidget.h"
 #include "widget/wabstractcontrol.h"
 #include "widget/wknob.h"
@@ -41,6 +43,7 @@
 #include "widget/wnumber.h"
 #include "widget/wnumberpos.h"
 #include "widget/wnumberrate.h"
+#include "widget/weffectchain.h"
 #include "widget/woverviewlmh.h"
 #include "widget/woverviewhsv.h"
 #include "widget/wspinny.h"
@@ -88,14 +91,16 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
-                                   VinylControlManager* pVCMan)
-    : m_pConfig(pConfig),
-      m_pKeyboard(pKeyboard),
-      m_pPlayerManager(pPlayerManager),
-      m_pControllerManager(pControllerManager),
-      m_pLibrary(pLibrary),
-      m_pVCManager(pVCMan),
-      m_pParent(NULL) {
+                                   VinylControlManager* pVCMan,
+                                   EffectsManager* pEffectsManager)
+        : m_pConfig(pConfig),
+          m_pKeyboard(pKeyboard),
+          m_pPlayerManager(pPlayerManager),
+          m_pControllerManager(pControllerManager),
+          m_pLibrary(pLibrary),
+          m_pVCManager(pVCMan),
+          m_pEffectsManager(pEffectsManager),
+          m_pParent(NULL) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -348,6 +353,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseWidgetStack(node);
     } else if (nodeName == "Style") {
         return parseStyle(node);
+    } else if (nodeName == "EffectChainName") {
+        return parseEffectChainName(node);
     } else if (nodeName == "Spinny") {
         return parseSpinny(node);
     } else if (nodeName == "Time") {
@@ -381,7 +388,6 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
     }
 
     QDomNode childrenNode = XmlParse::selectNode(node, "Children");
-
     QWidget* pOldParent = m_pParent;
     m_pParent = pSplitter;
 
@@ -1176,6 +1182,26 @@ QWidget* LegacySkinParser::parseStyle(QDomElement node) {
     QString style = node.text();
     m_pParent->setStyleSheet(style);
     return m_pParent;
+}
+
+QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
+    WEffectChain* pEffectChain = new WEffectChain(m_pParent);
+
+    // To Mixxx users, EffectChains are 1-indexed, but code-wise the chains are
+    // 0-indexed.
+    unsigned int chainNumber = XmlParse::selectNodeInt(node, "EffectChain") - 1;
+
+    EffectChainSlotPointer pChainSlot = m_pEffectsManager->getEffectChainSlot(chainNumber);
+
+    if (pChainSlot) {
+        pEffectChain->setEffectChainSlot(pChainSlot);
+    } else {
+        qDebug() << "EffectChainName node had invalid EffectChainSlot number.";
+    }
+
+    setupWidget(node, pEffectChain);
+    pEffectChain->installEventFilter(m_pKeyboard);
+    return pEffectChain;
 }
 
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {

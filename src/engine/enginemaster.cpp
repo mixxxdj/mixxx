@@ -28,11 +28,13 @@
 #include "engine/engineworkerscheduler.h"
 #include "enginebuffer.h"
 #include "enginechannel.h"
+#include "engine/enginedeck.h"
 #include "engineclipping.h"
 #include "enginevumeter.h"
 #include "enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "sampleutil.h"
+#include "effects/effectsmanager.h"
 #include "util/timer.h"
 #include "playermanager.h"
 #include "engine/channelmixer.h"
@@ -43,11 +45,16 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
+                           EffectsManager* pEffectsManager,
                            bool bEnableSidechain)
-        : m_headphoneMasterGainOld(0),
+        : m_pEffectsManager(pEffectsManager),
+          m_headphoneMasterGainOld(0),
           m_headphoneVolumeOld(0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
+
+    m_pEffectsManager->registerChannel(getMasterChannelId());
+    m_pEffectsManager->registerChannel(getHeadphoneChannelId());
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
@@ -239,6 +246,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                               maxChannels, &m_channelMasterGainCache,
                               m_pMaster, iBufferSize);
 
+    // Process master channel effects
+    m_pEffectsManager->process(getMasterChannelId(), m_pMaster, m_pMaster, iBufferSize);
+
 #ifdef __LADSPA__
     // LADPSA master effects
     m_pLadspa->process(m_pMaster, m_pMaster, iBufferSize);
@@ -275,6 +285,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     SampleUtil::addWithRampingGain(m_pHead, m_pMaster, m_headphoneMasterGainOld,
                                    cmaster_gain, iBufferSize);
     m_headphoneMasterGainOld = cmaster_gain;
+
+    // Process headphone channel effects
+    m_pEffectsManager->process(getHeadphoneChannelId(), m_pHead, m_pHead, iBufferSize);
 
     // Head volume and clipping
     CSAMPLE headphoneVolume = m_pHeadVolume->get();

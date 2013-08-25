@@ -31,6 +31,15 @@
 #include "dlgpreferences.h"
 #include "engine/enginemaster.h"
 #include "engine/enginemicrophone.h"
+#include "effects/effectsmanager.h"
+#include "effects/native/nativebackend.h"
+
+// TODO(rryan) REMOVE THESE LATER
+#include "effects/effectchain.h"
+#include "effects/effectslot.h"
+#include "effects/effect.h"
+// TODO(rryan) REMOVE THESE LATER
+
 #include "engine/enginepassthrough.h"
 #include "library/library.h"
 #include "library/libraryscanner.h"
@@ -273,8 +282,23 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     initializeKeyboard();
 
+    // Setup the effects manager with four effects chains
+    m_pEffectsManager = new EffectsManager(this);
+    m_pEffectsManager->addEffectChainSlot();
+    m_pEffectsManager->addEffectChainSlot();
+    m_pEffectsManager->addEffectChainSlot();
+    m_pEffectsManager->addEffectChainSlot();
+
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true);
+
+    // TODO(rryan) the only reason I'm creating the effects backends here is
+    // that I'm not totally confident some effect backend is going to want to
+    // look up a control that is produced by the engine.
+    NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
+    m_pEffectsManager->addEffectsBackend(pNativeBackend);
+
+    m_pEffectsManager->setupDefaultChains();
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
 #ifdef __SHOUTCAST__
@@ -487,7 +511,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // Loads the skin as a child of m_pView
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
-        m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager,
+        m_pLibrary, m_pVCManager, m_pEffectsManager))) {
         reportCriticalErrorAndQuit("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         //TODO (XXX) add dialog to warn user and launch skin choice page
@@ -628,6 +653,9 @@ MixxxApp::~MixxxApp()
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
+
+    qDebug() << "deleting effects manager, " << qTime.elapsed();
+    delete m_pEffectsManager;
 
     // HACK: Save config again. We saved it once before doing some dangerous
     // stuff. We only really want to save it here, but the first one was just
@@ -1451,13 +1479,13 @@ void MixxxApp::rebootMixxxView() {
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
                                                            m_pLibrary,
-                                                           m_pVCManager))) {
+                                                           m_pVCManager,
+                                                           m_pEffectsManager))) {
 
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
-    }
-    else {
+    } else {
         // keep gui centered (esp for fullscreen)
         m_pView->setLayout( new QHBoxLayout(m_pView));
         m_pView->layout()->setContentsMargins(0,0,0,0);

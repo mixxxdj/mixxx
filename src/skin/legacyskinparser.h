@@ -17,6 +17,7 @@ class Library;
 class MixxxKeyboard;
 class PlayerManager;
 class WAbstractControl;
+class EffectsManager;
 class ControllerManager;
 
 class LegacySkinParser : public QObject, public SkinParser {
@@ -25,7 +26,8 @@ class LegacySkinParser : public QObject, public SkinParser {
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
-                     Library* pLibrary, VinylControlManager* pVCMan);
+                     Library* pLibrary, VinylControlManager* pVCMan,
+                     EffectsManager* pEffectsManager);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(QString skinPath);
@@ -67,6 +69,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseKnob(QDomElement node);
     QWidget* parseTableView(QDomElement node);
     QWidget* parseStyle(QDomElement node);
+    QWidget* parseEffectChainName(QDomElement node);
     QWidget* parseSpinny(QDomElement node);
     QWidget* parseSearchBox(QDomElement node);
     QWidget* parseSplitter(QDomElement node);
@@ -89,6 +92,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;
     VinylControlManager* m_pVCManager;
+    EffectsManager* m_pEffectsManager;
     QWidget *m_pParent;
     Tooltips m_tooltips;
     static QList<const char*> s_channelStrs;

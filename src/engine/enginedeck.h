@@ -31,8 +31,7 @@ class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
-class EngineFlanger;
-class EngineFilterEffect;
+class EffectsManager;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
 class ControlPushButton;
@@ -41,6 +40,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
     EngineDeck(const char *group, ConfigObject<ConfigValue>* pConfig,
+               EffectsManager* pEffectsManager,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 
@@ -74,11 +74,10 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EngineBuffer* m_pBuffer;
     EngineClipping* m_pClipping;
     EngineFilterBlock* m_pFilter;
-    EngineFlanger* m_pFlanger;
-    EngineFilterEffect* m_pFilterEffect;
     EnginePregain* m_pPregain;
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVuMeter* m_pVUMeter;
+    EffectsManager* m_pEffectsManager;
 
     // Begin vinyl passthrough fields
     ControlPushButton* m_pPassing;
