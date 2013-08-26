@@ -27,7 +27,6 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_cueDao(NULL),
           m_analysisDao(NULL),
           m_trackDao(NULL),
-          m_lambda(NULL),
           m_stop(false),
           m_semLambdaReadyToCall(0),
           m_pCOTPlaylistIsBusy(NULL),
@@ -92,9 +91,11 @@ void TrackCollection::run() {
         if (m_lambdas.count() > 0) {
             DBG() << "BEGIN execute lambda" << loopCount
                   << "Before deque m_lambdas.count() =" << m_lambdas.count();
+            func lambda;
             m_lambdasMutex.lock();
-            m_lambdas.dequeue()();
+            lambda = m_lambdas.dequeue();
             m_lambdasMutex.unlock();
+            lambda();
             DBG() << "After dequeue m_lambdas.count() =" << m_lambdas.count()
                   << "END execute lambda" << loopCount++;
         }

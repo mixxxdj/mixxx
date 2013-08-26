@@ -96,8 +96,6 @@ class TrackCollection : public QThread {
     AnalysisDao* m_analysisDao;
     TrackDAO* m_trackDao;
 
-    // all from threadDAO
-    func m_lambda;
     QQueue<func> m_lambdas;
 
     volatile bool m_stop;
