@@ -19,20 +19,23 @@
 
 #define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
 
+#define MAX_LAMBDA_COUNT 8
+
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
-        : m_pConfig(pConfig),
-          m_database(NULL),
-          m_playlistDao(NULL),
-          m_crateDao(NULL),
-          m_cueDao(NULL),
-          m_analysisDao(NULL),
-          m_trackDao(NULL),
-          m_stop(false),
-          m_semLambdaReadyToCall(0),
-          m_pCOTPlaylistIsBusy(NULL),
-          m_supportedFileExtensionsRegex(
-              SoundSourceProxy::supportedFileExtensionsRegex(),
-              Qt::CaseInsensitive) {
+    : m_pConfig(pConfig),
+      m_database(NULL),
+      m_playlistDao(NULL),
+      m_crateDao(NULL),
+      m_cueDao(NULL),
+      m_analysisDao(NULL),
+      m_trackDao(NULL),
+//      m_lambdas(MAX_LAMBDA_COUNT), // USAGE OF FIFO
+      m_stop(false),
+      m_semLambdaReadyToCall(0),
+      m_pCOTPlaylistIsBusy(NULL),
+      m_supportedFileExtensionsRegex(
+          SoundSourceProxy::supportedFileExtensionsRegex(),
+          Qt::CaseInsensitive) {
     DBG() << "TrackCollection constructor \tfrom thread id="
           << QThread::currentThreadId() << "name="
           << QThread::currentThread()->objectName();
@@ -88,20 +91,20 @@ void TrackCollection::run() {
         m_pCOTPlaylistIsBusy->set(0.0f);
         // execute lambda in TrackCollection's thread
         m_semLambdaReadyToCall.acquire(1);
-        if (m_lambdas.count() > 0) {
-            DBG() << "BEGIN execute lambda" << loopCount
-                  << "Before deque m_lambdas.count() =" << m_lambdas.count();
+
+        while (m_lambdas.count()>0) {
             func lambda;
             m_lambdasMutex.lock();
             lambda = m_lambdas.dequeue();
             m_lambdasMutex.unlock();
             lambda();
-            DBG() << "After dequeue m_lambdas.count() =" << m_lambdas.count()
-                  << "END execute lambda" << loopCount++;
         }
-        if (m_lambdas.count() > 0) {
-            m_semLambdaReadyToCall.release(1);
-        }
+        // USAGE OF FIFO
+        //        while (m_lambdas.readAvailable()>0) {
+        //            func lambda;
+        //            m_lambdas.read(&lambda, 1);
+        //            lambda();
+        //        }
     }
     DBG() << " ### Thread ended ###";
 }
@@ -121,6 +124,7 @@ void TrackCollection::addLambdaToQueue(func lambda) {
     m_lambdasMutex.lock();
     m_lambdas.enqueue(lambda);
     m_lambdasMutex.unlock();
+//    m_lambdas.write(&lambda, 1); // USAGE OF FIFO
     m_semLambdaReadyToCall.release(1);
 }
 
@@ -134,11 +138,11 @@ void TrackCollection::stopThread() {
 bool TrackCollection::checkForTables() {
     if (!m_database->open()) {
         QMessageBox::critical(0, tr("Cannot open database"),
-                            tr("Unable to establish a database connection.\n"
-                                "Mixxx requires QT with SQLite support. Please read "
-                                "the Qt SQL driver documentation for information on how "
-                                "to build it.\n\n"
-                                "Click OK to exit."), QMessageBox::Ok);
+                              tr("Unable to establish a database connection.\n"
+                                 "Mixxx requires QT with SQLite support. Please read "
+                                 "the Qt SQL driver documentation for information on how "
+                                 "to build it.\n\n"
+                                 "Click OK to exit."), QMessageBox::Ok);
         return false;
     }
 
@@ -153,30 +157,30 @@ bool TrackCollection::checkForTables() {
     if (result < 0) {
         if (result == -1) {
             QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your %1 file may be outdated.").arg(schemaFilename) +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
+                                 upgradeToVersionFailed + "\n" +
+                                 tr("Your %1 file may be outdated.").arg(schemaFilename) +
+                                 "\n\n" + okToExit,
+                                 QMessageBox::Ok);
         } else if (result == -2) {
             QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                                tr("Try renaming it and restarting Mixxx.") +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
+                                 upgradeToVersionFailed + "\n" +
+                                 tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
+                                 tr("Try renaming it and restarting Mixxx.") +
+                                 "\n\n" + okToExit,
+                                 QMessageBox::Ok);
         } else { // -3
             QMessageBox::warning(0, upgradeFailed,
-                                upgradeToVersionFailed + "\n" +
-                                tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
-                                "\n\n" + okToExit,
-                                QMessageBox::Ok);
+                                 upgradeToVersionFailed + "\n" +
+                                 tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
+                                 "\n\n" + okToExit,
+                                 QMessageBox::Ok);
         }
         return false;
     }
-//    m_trackDao->initialize();
-//    m_playlistDao->initialize();
-//    m_crateDao->initialize();
-//    m_cueDao->initialize();
+    //    m_trackDao->initialize();
+    //    m_playlistDao->initialize();
+    //    m_crateDao->initialize();
+    //    m_cueDao->initialize();
     return true;
 }
 
@@ -224,7 +228,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             emit(progressLoading(it.fileName()));
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
-                              absoluteFilePath), &QObject::deleteLater);
+                                                   absoluteFilePath), &QObject::deleteLater);
 
             if (trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successful added
@@ -253,12 +257,12 @@ PlaylistDAO& TrackCollection::getPlaylistDAO() {
 }
 
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
-    const QString& name) {
+        const QString& name) {
     return m_trackSources.value(name, QSharedPointer<BaseTrackCache>());
 }
 
 void TrackCollection::addTrackSource(
-    const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
+        const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
 }

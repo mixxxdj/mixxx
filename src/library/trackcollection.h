@@ -34,6 +34,8 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 
+#include "util/fifo.h"
+
 #define AUTODJ_TABLE "Auto DJ"
 
 // Lambda function
@@ -97,6 +99,7 @@ class TrackCollection : public QThread {
     TrackDAO* m_trackDao;
 
     QQueue<func> m_lambdas;
+//    FIFO<func> m_lambdas; // USAGE OF FIFO
 
     volatile bool m_stop;
     QMutex m_lambdasMutex;
