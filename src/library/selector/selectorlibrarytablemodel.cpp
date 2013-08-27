@@ -129,7 +129,7 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
 
 void SelectorLibraryTableModel::calculateSimilarity() {
     if (!m_pSeedTrack.isNull()) {
-        qDebug() << m_selectorSimilarity.getFollowupTracks(m_pSeedTrack->getId());
+//        qDebug() << m_selectorSimilarity.getTopFollowupTrack(m_pSeedTrack->getId());
 
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("UPDATE " SELECTOR_TABLE " SET score=:score "

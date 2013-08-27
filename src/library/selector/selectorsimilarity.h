@@ -33,6 +33,9 @@ class SelectorSimilarity : public QObject {
     void loadStoredSimilarityContributions();
     QHash<QString, double> normalizeContributions(TrackPointer pSeedTrack);
 
+    static bool similaritySort(const QPair<int, double> s1,
+                               const QPair<int, double> s2);
+
     static double timbreSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
     static double rhythmSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
     static double tagSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);

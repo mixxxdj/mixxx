@@ -69,10 +69,9 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
     TrackPointer pSeedTrack = m_trackDAO.getTrack(iSeedTrackId);
     QString filterString = m_selectorFilters.getFilterString(pSeedTrack);
     QSqlQuery query(m_database);
-    QString queryString = "SELECT id FROM library WHERE "
-                          "mixxx_deleted=0 AND fs_deleted=0 AND " %
-                          filterString;
-    query.prepare(queryString);
+    query.prepare("SELECT id FROM library WHERE "
+                  "mixxx_deleted=0 AND " %
+                  filterString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     } else {
@@ -90,6 +89,8 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
         if (n == -1 || n > resultsSize) {
             n = resultsSize;
         }
+
+        qSort(ranks.begin(), ranks.end(), similaritySort);
 
         for (int i = 0; i < n; i++) {
             results << ranks.at(i).first; // id
@@ -153,6 +154,11 @@ QHash<QString, double> SelectorSimilarity::normalizeContributions(
         }
     }
     return contributions;
+}
+
+bool SelectorSimilarity::similaritySort(const QPair<int, double> s1,
+                    const QPair<int, double> s2) {
+    return s1.second >= s2.second;
 }
 
 double SelectorSimilarity::timbreSimilarity(TrackPointer pTrack1,
