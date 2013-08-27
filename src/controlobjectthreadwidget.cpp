@@ -72,9 +72,14 @@ void ControlObjectThreadWidget::setWidget(QWidget * widget, bool connectValueFro
     emit(valueChanged(get()));
 }
 
-void ControlObjectThreadWidget::setWidgetOnOff(QWidget* widget)
-{
-    QApplication::connect(this, SIGNAL(valueChanged(double)),
+void ControlObjectThreadWidget::setIndicatorWidget(QWidget* widget) {
+    connect(this, SIGNAL(valueChanged(double)),
+                          widget, SLOT(setIndicatorValue(double)));
+    emit(valueChanged(get()));
+}
+
+void ControlObjectThreadWidget::setWidgetOnOff(QWidget* widget) {
+    connect(this, SIGNAL(valueChanged(double)),
                           widget, SLOT(setOnOff(double)));
     emit(valueChanged(get()));
 }

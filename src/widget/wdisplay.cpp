@@ -77,7 +77,7 @@ void WDisplay::setPixmap(int iPos, const QString &filename) {
 
 void WDisplay::paintEvent(QPaintEvent *) {
     if (m_pPixmaps) {
-        int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
+        int idx = (int)(m_value*(float)(m_iNoPos)/128.);
         // Range check
         if (idx>(m_iNoPos-1))
             idx = m_iNoPos-1;

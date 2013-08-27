@@ -1360,20 +1360,33 @@ void LegacySkinParser::setupConnections(QDomNode node, QWidget* pWidget) {
             if (XmlParse::selectNodeQString(con, "ConnectValueToWidget").contains("false", Qt::CaseInsensitive))
                 connectValueToWidget = false;
 
+
+
             Qt::MouseButton state = Qt::NoButton;
+            bool isIndicator = false;
             if (!XmlParse::selectNode(con, "ButtonState").isNull()) {
                 if (XmlParse::selectNodeQString(con, "ButtonState").contains("LeftButton", Qt::CaseInsensitive)) {
                     state = Qt::LeftButton;
                 } else if (XmlParse::selectNodeQString(con, "ButtonState").contains("RightButton", Qt::CaseInsensitive)) {
                     state = Qt::RightButton;
+                } else if (XmlParse::selectNodeQString(con, "ButtonState").contains("Indicator", Qt::CaseInsensitive)) {
+                    isIndicator = true;
+                    connectValueFromWidget = false;
                 }
             }
 
-            // Connect control proxy to widget. Parented to pWidget so it is not
-            // leaked.
-            (new ControlObjectThreadWidget(control->getKey(), pWidget))->setWidget(
-                        pWidget, connectValueFromWidget, connectValueToWidget,
-                        emitOption, state);
+            if (isIndicator) {
+                // Connect control proxy to widget. Parented to pWidget so it is not
+                // leaked.
+                (new ControlObjectThreadWidget(
+                        control->getKey(), pWidget))->setIndicatorWidget(pWidget);
+            } else {
+                // Connect control proxy to widget. Parented to pWidget so it is not
+                // leaked.
+                (new ControlObjectThreadWidget(control->getKey(), pWidget))->setWidget(
+                            pWidget, connectValueFromWidget, connectValueToWidget,
+                            emitOption, state);
+            }
 
             // We only add info for controls that this widget affects, not
             // controls that only affect the widget.

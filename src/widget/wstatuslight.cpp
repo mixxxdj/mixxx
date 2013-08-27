@@ -53,7 +53,7 @@ void WStatusLight::setNoPos(int iNoPos)
     if (iNoPos < 2)
         iNoPos = 2; //values less than 2 make no sense (need at least off, on)
     m_iNoPos = iNoPos;
-    m_fValue = 0.;
+    m_value = 0.;
 
     m_pPixmapSLs = new QPixmap*[m_iNoPos];
     for (int i = 0; i < m_iNoPos; ++i) {
