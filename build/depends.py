@@ -630,6 +630,7 @@ class MixxxCore(Feature):
                    "engine/sidechain/enginerecord.cpp",
 
                    "library/selector/selectorfeature.cpp",
+                   "library/selector/selectorfilters.cpp",
                    "library/selector/selectorlibrarytablemodel.cpp",
                    "library/selector/selectorsimilarity.cpp",
 

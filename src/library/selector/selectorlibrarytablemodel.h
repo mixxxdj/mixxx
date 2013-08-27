@@ -10,6 +10,7 @@
 #include "library/librarytablemodel.h"
 #include "track/timbre.h"
 #include "track/tagutils.h"
+#include "library/selector/selectorfilters.h"
 #include "library/selector/selectorsimilarity.h"
 
 #define SELECTOR_TABLE "selector_table"
@@ -36,12 +37,7 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     bool seedTrackKeyExists();
 
   public slots:
-    void setGenreFilter(bool value);
-    void setBpmFilter(bool value, int range);
-    void setKeyFilter(bool value);
-    void setKey4thFilter(bool value);
-    void setKey5thFilter(bool value);
-    void setKeyRelativeFilter(bool value);
+    SelectorFilters& getFilters();
     void applyFilters();
     void calculateSimilarity();
     void calculateAllSimilarities(const QString& filename);
@@ -51,7 +47,6 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     void slotChannelBpmChanged(double value);
     void slotChannelKeyChanged(double value);
     void slotFiltersChanged();
-    void clearFilters();
 
   signals:
     void filtersChanged();
@@ -64,17 +59,7 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     void clearSeedTrackInfo();
     void updateFilterText();
 
-    QList<mixxx::track::io::key::ChromaticKey> getHarmonicKeys(
-            mixxx::track::io::key::ChromaticKey key);
-
     bool m_bActive;
-    bool m_bFilterGenre;
-    bool m_bFilterBpm;
-    int m_iFilterBpmRange;
-    bool m_bFilterKey;
-    bool m_bFilterKey4th;
-    bool m_bFilterKey5th;
-    bool m_bFilterKeyRelative;
 
     // Current Track Properties
     QString m_sSeedTrackInfo;
@@ -93,6 +78,7 @@ class SelectorLibraryTableModel : public LibraryTableModel {
 
     ConfigObject<ConfigValue>* m_pConfig;
 
+    SelectorFilters m_selectorFilters;
     SelectorSimilarity m_selectorSimilarity;
 };
 

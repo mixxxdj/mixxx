@@ -37,6 +37,8 @@ DlgSelector::DlgSelector(QWidget* parent,
             new SelectorLibraryTableModel(this, pConfig, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pSelectorLibraryTableModel);
 
+    m_pSelectorFilters = &(m_pSelectorLibraryTableModel->getFilters());
+
     connect(checkBoxGenre, SIGNAL(clicked(bool)),
             this, SLOT(filterByGenre(bool)));
     connect(checkBoxBpm, SIGNAL(clicked(bool)),
@@ -91,13 +93,13 @@ void DlgSelector::moveSelection(int delta) {
 }
 
 void DlgSelector::filterByGenre(bool checked) {
-    m_pSelectorLibraryTableModel->setGenreFilter(checked);
+    m_pSelectorFilters->setGenreFilter(checked);
     m_pSelectorLibraryTableModel->applyFilters();
 }
 
 void DlgSelector::filterByBpm(bool checked) {
     int range = horizontalSliderBpmRange->value();
-    m_pSelectorLibraryTableModel->setBpmFilter(checked, range);
+    m_pSelectorFilters->setBpmFilter(checked, range);
     m_pSelectorLibraryTableModel->applyFilters();
 }
 
@@ -107,22 +109,22 @@ void DlgSelector::bpmRangeChanged(int value) {
 }
 
 void DlgSelector::filterByKey(bool checked) {
-    m_pSelectorLibraryTableModel->setKeyFilter(checked);
+    m_pSelectorFilters->setKeyFilter(checked);
     m_pSelectorLibraryTableModel->applyFilters();
 }
 
 void DlgSelector::filterByKey4th(bool checked) {
-    m_pSelectorLibraryTableModel->setKey4thFilter(checked);
+    m_pSelectorFilters->setKey4thFilter(checked);
     m_pSelectorLibraryTableModel->applyFilters();
 }
 
 void DlgSelector::filterByKey5th(bool checked) {
-    m_pSelectorLibraryTableModel->setKey5thFilter(checked);
+    m_pSelectorFilters->setKey5thFilter(checked);
     m_pSelectorLibraryTableModel->applyFilters();
 }
 
 void DlgSelector::filterByKeyRelative(bool checked) {
-    m_pSelectorLibraryTableModel->setKeyRelativeFilter(checked);
+    m_pSelectorFilters->setKeyRelativeFilter(checked);
     m_pSelectorLibraryTableModel->applyFilters();
 }
 
@@ -210,15 +212,17 @@ void DlgSelector::loadStoredFilterSettings() {
 }
 
 void DlgSelector::applyFilters() {
+    SelectorFilters& selectorFilters =
+            m_pSelectorLibraryTableModel->getFilters();
     bool iBpmRange = horizontalSliderBpmRange->value();
 
-    m_pSelectorLibraryTableModel->setGenreFilter(checkBoxGenre->isChecked());
-    m_pSelectorLibraryTableModel->setBpmFilter(checkBoxBpm->isChecked(),
+    selectorFilters.setGenreFilter(checkBoxGenre->isChecked());
+    selectorFilters.setBpmFilter(checkBoxBpm->isChecked(),
                                                iBpmRange);
-    m_pSelectorLibraryTableModel->setKeyFilter(checkBoxKey->isChecked());
-    m_pSelectorLibraryTableModel->setKey4thFilter(checkBoxKey4th->isChecked());
-    m_pSelectorLibraryTableModel->setKey5thFilter(checkBoxKey5th->isChecked());
-    m_pSelectorLibraryTableModel->setKeyRelativeFilter(checkBoxKeyRelative->
+    selectorFilters.setKeyFilter(checkBoxKey->isChecked());
+    selectorFilters.setKey4thFilter(checkBoxKey4th->isChecked());
+    selectorFilters.setKey5thFilter(checkBoxKey5th->isChecked());
+    selectorFilters.setKeyRelativeFilter(checkBoxKeyRelative->
                                                        isChecked());
     m_pSelectorLibraryTableModel->applyFilters();
 }

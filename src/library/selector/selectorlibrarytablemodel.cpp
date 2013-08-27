@@ -32,8 +32,9 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                          : LibraryTableModel(parent, pTrackCollection,
                                              "mixxx.db.model.selector"),
                            m_pConfig(pConfig),
+                           m_selectorFilters(parent, pConfig),
                            m_selectorSimilarity(parent, pTrackCollection,
-                                                pConfig) {
+                                                pConfig, m_selectorFilters) {
     setTableModel();
 
     // Detect when deck has changed
@@ -47,7 +48,6 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_channelKey = NULL;
     m_bActive = false;
 
-    clearFilters();
     clearSeedTrackInfo();
 
 }
@@ -106,7 +106,6 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
     } else {
         clearSeedTrackInfo();
     }
-    clearFilters();
     emit(loadStoredFilterSettings());
     emit(seedTrackInfoChanged());
 }
@@ -130,6 +129,8 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
 
 void SelectorLibraryTableModel::calculateSimilarity() {
     if (!m_pSeedTrack.isNull()) {
+        qDebug() << m_selectorSimilarity.getFollowupTracks(m_pSeedTrack->getId());
+
         QSqlQuery query(m_pTrackCollection->getDatabase());
         query.prepare("UPDATE " SELECTOR_TABLE " SET score=:score "
                       "WHERE " % LIBRARYTABLE_ID % "=:id;");
@@ -198,29 +199,8 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
     file.close();
 }
 
-void SelectorLibraryTableModel::setGenreFilter(bool value) {
-    m_bFilterGenre = value;
-}
-
-void SelectorLibraryTableModel::setBpmFilter(bool value, int range) {
-    m_bFilterBpm = value;
-    m_iFilterBpmRange = range;
-}
-
-void SelectorLibraryTableModel::setKeyFilter(bool value) {
-    m_bFilterKey = value;
-}
-
-void SelectorLibraryTableModel::setKey4thFilter(bool value) {
-    m_bFilterKey4th = value;
-}
-
-void SelectorLibraryTableModel::setKey5thFilter(bool value) {
-    m_bFilterKey5th = value;
-}
-
-void SelectorLibraryTableModel::setKeyRelativeFilter(bool value) {
-    m_bFilterKeyRelative = value;
+SelectorFilters& SelectorLibraryTableModel::getFilters() {
+    return m_selectorFilters;
 }
 
 void SelectorLibraryTableModel::applyFilters() {
@@ -278,17 +258,6 @@ void SelectorLibraryTableModel::slotFiltersChanged() {
     search("");
 }
 
-void SelectorLibraryTableModel::clearFilters() {
-    m_bFilterGenre = false;
-    m_bFilterBpm = false;
-    m_iFilterBpmRange = 0;
-    m_bFilterKey = false;
-    m_bFilterKey4th = false;
-    m_bFilterKey5th = false;
-    m_bFilterKeyRelative = false;
-    m_filterString = QString();
-}
-
 void SelectorLibraryTableModel::search(const QString& text) {
     setSearch(text, m_filterString);
     select();
@@ -314,70 +283,9 @@ void SelectorLibraryTableModel::clearSeedTrackInfo() {
 
 void SelectorLibraryTableModel::updateFilterText() {
     if (!m_bActive) return;
-    if (m_pSeedTrack) {
-        QStringList filters;
-
-        // Genre
-        if (m_bFilterGenre) {
-            QString trackGenre = m_sSeedTrackGenre;
-            if (!trackGenre.isEmpty())
-                filters << "Genre == '" % trackGenre % "'";
-        }
-
-        // BPM
-        if (m_bFilterBpm) {
-            if (m_fSeedTrackBpm > 0)
-                filters << "(Bpm > " % QString::number(
-                               floor(m_fSeedTrackBpm - m_iFilterBpmRange)) %
-                           " AND Bpm < " % QString::number(
-                               ceil(m_fSeedTrackBpm + m_iFilterBpmRange)) %
-                           ")";
-        }
-
-        // Keys
-
-        QList<ChromaticKey> hKeys = getHarmonicKeys(m_seedTrackKey);
-        QStringList keyNames;
-        foreach(ChromaticKey key, hKeys) {
-            QString keyName = "'" % KeyUtils::keyToString(key) % "'";
-            keyNames << keyName;
-        }
-
-        QString keyString = keyNames.join(",");
-        if (!keyString.isEmpty()) {
-                qDebug() << "Match keys " << keyString;
-                filters << "Key in (" % keyString % ")";
-        }
-
-        QString filterString = filters.join(" AND ");
-        if (m_filterString != filterString) {
-            m_filterString = filterString;
-            emit(filtersChanged());
-        }
-
-    } else { // no seed track
+    QString filterString = m_selectorFilters.getFilterString(m_pSeedTrack);
+    if (m_filterString != filterString) {
+        m_filterString = filterString;
         emit(filtersChanged());
     }
-
-}
-
-QList<ChromaticKey> SelectorLibraryTableModel::getHarmonicKeys(ChromaticKey key) {
-    QList<ChromaticKey> keys;
-
-    if (seedTrackKeyExists()) {
-        if (m_bFilterKey) {
-            keys.append(key);
-        }
-        if (m_bFilterKey4th) {
-            keys.append(KeyUtils::scaleKeySteps(key, 5));
-        }
-        if (m_bFilterKey5th) {
-            keys.append(KeyUtils::scaleKeySteps(key, 7));
-        }
-        if (m_bFilterKeyRelative) {
-            keys.append(KeyUtils::keyToRelativeMajorOrMinor(key));
-        }
-    }
-
-    return keys;
 }

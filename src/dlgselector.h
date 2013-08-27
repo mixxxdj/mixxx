@@ -7,6 +7,8 @@
 #include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
 
+#include "library/selector/selectorfilters.h"
+
 #include "ui_dlgselector.h"
 
 class SelectorLibraryTableModel;
@@ -59,6 +61,7 @@ class DlgSelector : public QWidget, public Ui::DlgSelector, public LibraryView {
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     SelectorLibraryTableModel* m_pSelectorLibraryTableModel;
+    SelectorFilters* m_pSelectorFilters;
     QSqlTableModel* m_pCratesTableModel;
 };
 

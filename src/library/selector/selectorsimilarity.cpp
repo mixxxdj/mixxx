@@ -1,3 +1,4 @@
+#include <QStringBuilder>
 
 #include "trackinfoobject.h"
 
@@ -5,17 +6,22 @@
 #include "track/tagutils.h"
 
 #include "util/timer.h"
+#include "library/queryutil.h"
 
 #include "library/selector/selector_preferences.h"
+#include "library/selector/selectorfilters.h"
 #include "library/selector/selectorsimilarity.h"
 
 SelectorSimilarity::SelectorSimilarity(QObject* parent,
                                        TrackCollection* pTrackCollection,
-                                       ConfigObject<ConfigValue>* pConfig)
+                                       ConfigObject<ConfigValue>* pConfig,
+                                       SelectorFilters& selectorFilters)
     : QObject(parent),
       m_pConfig(pConfig),
       m_pTrackCollection(pTrackCollection),
-      m_trackDAO(m_pTrackCollection->getTrackDAO()) {
+      m_database(m_pTrackCollection->getDatabase()),
+      m_trackDAO(m_pTrackCollection->getTrackDAO()),
+      m_selectorFilters(selectorFilters) {
     m_similarityFunctions.insert("timbre", &timbreSimilarity);
     m_similarityFunctions.insert("rhythm", &rhythmSimilarity);
     m_similarityFunctions.insert("tags", &tagSimilarity);
@@ -25,14 +31,14 @@ SelectorSimilarity::~SelectorSimilarity() {
 }
 
 QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
-        int seedTrackId, QList<int> trackIds) {
+        int iSeedTrackId, QList<int> trackIds) {
 
     QTime timer;
     timer.start();
 
     loadStoredSimilarityContributions();
     QList<QPair<int, double> > scores;
-    TrackPointer pSeedTrack = m_trackDAO.getTrack(seedTrackId);
+    TrackPointer pSeedTrack = m_trackDAO.getTrack(iSeedTrackId);
     QHash<QString, double> contributions = normalizeContributions(pSeedTrack);
 
     qDebug() << contributions;
@@ -56,6 +62,51 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
 
     qDebug() << "calculateSimilarities:" << timer.elapsed() << "ms";
     return scores;
+}
+
+QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
+    QList<int> results;
+    TrackPointer pSeedTrack = m_trackDAO.getTrack(iSeedTrackId);
+    QString filterString = m_selectorFilters.getFilterString(pSeedTrack);
+    QSqlQuery query(m_database);
+    QString queryString = "SELECT id FROM library WHERE "
+                          "mixxx_deleted=0 AND fs_deleted=0 AND " %
+                          filterString;
+    query.prepare(queryString);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+    } else {
+        QList<int> unrankedResults;
+        while (query.next()) {
+            int trackId = query.value(0).toInt();
+            if (trackId != iSeedTrackId) {
+                unrankedResults << trackId;
+            }
+        }
+        QList<QPair<int, double> > ranks =
+                calculateSimilarities(iSeedTrackId, unrankedResults);
+
+        int resultsSize = ranks.size();
+        if (n == -1 || n > resultsSize) {
+            n = resultsSize;
+        }
+
+        for (int i = 0; i < n; i++) {
+            results << ranks.at(i).first; // id
+        }
+    }
+    return results;
+}
+
+int SelectorSimilarity::getTopFollowupTrack(int iSeedTrackId) {
+    int iFollowupTrackId = -1;
+    QList<int> results = getFollowupTracks(iSeedTrackId);
+    if (!results.isEmpty()) {
+        // TODO(chrisjr): ensure that follow-up has not been played recently
+        iFollowupTrackId = results.first();
+    }
+
+    return iFollowupTrackId;
 }
 
 void SelectorSimilarity::setSimilarityContributions(
