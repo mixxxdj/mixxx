@@ -217,12 +217,10 @@ void DlgSelector::applyFilters() {
     bool iBpmRange = horizontalSliderBpmRange->value();
 
     selectorFilters.setGenreFilter(checkBoxGenre->isChecked());
-    selectorFilters.setBpmFilter(checkBoxBpm->isChecked(),
-                                               iBpmRange);
+    selectorFilters.setBpmFilter(checkBoxBpm->isChecked(), iBpmRange);
     selectorFilters.setKeyFilter(checkBoxKey->isChecked());
     selectorFilters.setKey4thFilter(checkBoxKey4th->isChecked());
     selectorFilters.setKey5thFilter(checkBoxKey5th->isChecked());
-    selectorFilters.setKeyRelativeFilter(checkBoxKeyRelative->
-                                                       isChecked());
+    selectorFilters.setKeyRelativeFilter(checkBoxKeyRelative->isChecked());
     m_pSelectorLibraryTableModel->applyFilters();
 }

@@ -16,7 +16,8 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 SelectorFilters::SelectorFilters(QObject* pParent,
                                  ConfigObject<ConfigValue>* pConfig)
-               : m_pConfig(pConfig) {
+               : QObject(pParent),
+                 m_pConfig(pConfig) {
     loadStoredFilterSettings();
 }
 

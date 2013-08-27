@@ -2,6 +2,7 @@
 #define SELECTOR_PREFERENCES_H
 
 #define SELECTOR_CONFIG_KEY "[Selector]"
+#define HAS_RUN "HasRun"
 #define FILTER_GENRE "FilterGenre"
 #define FILTER_BPM "FilterBpm"
 #define FILTER_BPM_RANGE "FilterBpmRange"

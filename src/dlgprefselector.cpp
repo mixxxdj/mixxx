@@ -92,6 +92,22 @@ void DlgPrefSelector::slotUpdate() {
     slotApply();
 }
 
+void DlgPrefSelector::setDefaults() {
+    m_pConfig->set(
+        ConfigKey(SELECTOR_CONFIG_KEY, HAS_RUN),
+        ConfigValue(1));
+    m_bFilterGenre = false;
+    m_bFilterBpm = false;
+    m_iFilterBpmRange = 5;
+    m_bFilterKey = false;
+    m_bFilterKey4th = false;
+    m_bFilterKey5th = false;
+    m_bFilterKeyRelative = false;
+    m_iTimbreCoefficient = 50;
+    m_iRhythmCoefficient = 50;
+    m_iLastFmCoefficient = 0;
+}
+
 void DlgPrefSelector::filterGenreEnabled(int value) {
     m_bFilterGenre = static_cast<bool>(value);
 }
@@ -146,6 +162,14 @@ void DlgPrefSelector::displayLastFmDescription() {
 }
 
 void DlgPrefSelector::loadSettings() {
+    if (m_pConfig->
+            getValueString(ConfigKey(SELECTOR_CONFIG_KEY, HAS_RUN)).toInt()
+            == 0) {
+        setDefaults();
+        slotApply();
+        return;
+    }
+
     m_bFilterGenre = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_GENRE)).toInt());
     m_bFilterBpm = static_cast<bool>(m_pConfig->getValueString(
