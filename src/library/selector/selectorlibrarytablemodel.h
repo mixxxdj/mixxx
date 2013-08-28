@@ -31,6 +31,9 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     void active(bool value);
 
     void setSeedTrack(TrackPointer pSeedTrack);
+
+    // The following functions are called by DlgSelector to update the UI
+    // and determine which filter checkboxes should be enabled.
     QString getSeedTrackInfo();
     bool seedTrackGenreExists();
     bool seedTrackBpmExists();
@@ -54,6 +57,7 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     void seedTrackInfoChanged();
 
   private:
+    // Override BaseSqlTableModel method to add "Score" column.
     void initHeaderData();
 
     void clearSeedTrackInfo();

@@ -49,7 +49,6 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_bActive = false;
 
     clearSeedTrackInfo();
-
 }
 
 SelectorLibraryTableModel::~SelectorLibraryTableModel() {
@@ -180,11 +179,9 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
             TimbrePointer pTimbre2 = pTrack2->getTimbre();
             QString sTrack2 = pTrack2->getFilename();
             double timbreScore =
-                    TimbreUtils::symmetricKlDivergence(pTimbre1,
-                                                       pTimbre2);
+                    TimbreUtils::symmetricKlDivergence(pTimbre1, pTimbre2);
             double rhythmScore =
-                    TimbreUtils::modelDistanceBeats(pTimbre1,
-                                                        pTimbre2);
+                    TimbreUtils::modelDistanceBeats(pTimbre1, pTimbre2);
             double score = 0.5 * (timbreScore + rhythmScore);
             out << sTrack1 % "," % sTrack2 % "," %
                    QString::number(timbreScore) % "," %

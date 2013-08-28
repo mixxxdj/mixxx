@@ -16,12 +16,12 @@ SelectorSimilarity::SelectorSimilarity(QObject* parent,
                                        TrackCollection* pTrackCollection,
                                        ConfigObject<ConfigValue>* pConfig,
                                        SelectorFilters& selectorFilters)
-    : QObject(parent),
-      m_pConfig(pConfig),
-      m_pTrackCollection(pTrackCollection),
-      m_database(m_pTrackCollection->getDatabase()),
-      m_trackDAO(m_pTrackCollection->getTrackDAO()),
-      m_selectorFilters(selectorFilters) {
+                  : QObject(parent),
+                    m_pConfig(pConfig),
+                    m_pTrackCollection(pTrackCollection),
+                    m_database(m_pTrackCollection->getDatabase()),
+                    m_trackDAO(m_pTrackCollection->getTrackDAO()),
+                    m_selectorFilters(selectorFilters) {
     m_similarityFunctions.insert("timbre", &timbreSimilarity);
     m_similarityFunctions.insert("rhythm", &rhythmSimilarity);
     m_similarityFunctions.insert("tags", &tagSimilarity);
@@ -41,8 +41,6 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
     TrackPointer pSeedTrack = m_trackDAO.getTrack(iSeedTrackId);
     QHash<QString, double> contributions = normalizeContributions(pSeedTrack);
 
-    qDebug() << contributions;
-
     foreach (int trackId, trackIds) {
         double score = 0.0;
 
@@ -51,7 +49,6 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
         foreach (QString key, contributions.keys()) {
             double contribution = contributions.value(key);
             if (contribution != 0.0) {
-//                qDebug() << key;
                 SimilarityFunc simFunc = m_similarityFunctions[key];
                 score += simFunc(pSeedTrack, pTrack) * contribution;
             }
@@ -64,6 +61,8 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
     return scores;
 }
 
+// Return up to n followup tracks for a given seed track, filtered and ranked
+// according to current settings. (n defaults to -1, which returns all results.)
 QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
     QList<int> results;
     TrackPointer pSeedTrack = m_trackDAO.getTrack(iSeedTrackId);
@@ -74,27 +73,29 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
                   filterString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-    } else {
-        QList<int> unrankedResults;
-        while (query.next()) {
-            int trackId = query.value(0).toInt();
-            if (trackId != iSeedTrackId) {
-                unrankedResults << trackId;
-            }
-        }
-        QList<QPair<int, double> > ranks =
-                calculateSimilarities(iSeedTrackId, unrankedResults);
+        return QList<int>();
+    }
 
-        int resultsSize = ranks.size();
-        if (n == -1 || n > resultsSize) {
-            n = resultsSize;
+    QList<int> unrankedResults;
+    while (query.next()) {
+        int trackId = query.value(0).toInt();
+        if (trackId != iSeedTrackId) {
+            unrankedResults << trackId;
         }
+    }
 
-        qSort(ranks.begin(), ranks.end(), similaritySort);
+    QList<QPair<int, double> > ranks =
+            calculateSimilarities(iSeedTrackId, unrankedResults);
 
-        for (int i = 0; i < n; i++) {
-            results << ranks.at(i).first; // id
-        }
+    int resultsSize = ranks.size();
+    if (n == -1 || n > resultsSize) {
+        n = resultsSize;
+    }
+
+    qSort(ranks.begin(), ranks.end(), similaritySort);
+
+    for (int i = 0; i < n; i++) {
+        results << ranks.at(i).first; // track id
     }
     return results;
 }
@@ -157,7 +158,7 @@ QHash<QString, double> SelectorSimilarity::normalizeContributions(
 }
 
 bool SelectorSimilarity::similaritySort(const QPair<int, double> s1,
-                    const QPair<int, double> s2) {
+                                        const QPair<int, double> s2) {
     return s1.second >= s2.second;
 }
 
@@ -172,7 +173,7 @@ double SelectorSimilarity::timbreSimilarity(TrackPointer pTrack1,
 }
 
 double SelectorSimilarity::rhythmSimilarity(TrackPointer pTrack1,
-                                          TrackPointer pTrack2) {
+                                            TrackPointer pTrack2) {
     TimbrePointer pTimbre1 = pTrack1->getTimbre();
     TimbrePointer pTimbre2 = pTrack2->getTimbre();
     if (!pTimbre1.isNull() && !pTimbre2.isNull()) {
