@@ -142,9 +142,6 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pChangeLoopSource;
     delete m_pChangeLoopLength;
     delete m_pChangeExportDestination;
-//    delete m_pLoopDeck1Eject;
-//    delete m_pLoopDeck1Stop;
-//    delete m_pLoopDeck1Play;
     delete m_pSampleRate;
     delete m_pRecReady;
     delete m_pNumSamplers;
