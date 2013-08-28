@@ -274,15 +274,15 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function, it does not change
-        // m_fValue due the leak of visual feedback we do not allow a toggle
+        // m_value due the leak of visual feedback we do not allow a toggle
         // function
         if (m_bRightClickForcePush) {
             m_bPressed = false;
-            emit(valueChangedRightDown(0.0f));
+            emit(valueChangedRightUp(0.0f));
             update();
         } else if (m_iNoStates == 1) {
             m_bPressed = false;
-            emit(valueChangedRightDown(0.0f));
+            emit(valueChangedRightUp(0.0f));
             update();
         }
         return;
@@ -301,7 +301,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             // Nothing special happens when releasing a toggle button
         }
         m_bPressed = false;
-        emit(valueChangedLeftDown(emitValue));
+        emit(valueChangedLeftUp(emitValue));
         update();
     }
 }
