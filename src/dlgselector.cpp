@@ -55,6 +55,8 @@ DlgSelector::DlgSelector(QWidget* parent,
             this, SLOT(bpmRangeChanged(int)));
     connect(buttonCalcSimilarity, SIGNAL(clicked()),
             this, SLOT(calculateSimilarity()));
+    connect(m_pSelectorLibraryTableModel, SIGNAL(filtersChanged()),
+            this, SLOT(slotFiltersChanged()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(loadStoredFilterSettings()),
             this, SLOT(loadStoredFilterSettings()));
     connect(m_pSelectorLibraryTableModel, SIGNAL(seedTrackInfoChanged()),
