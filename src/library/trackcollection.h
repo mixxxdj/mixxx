@@ -98,12 +98,13 @@ class TrackCollection : public QThread {
     AnalysisDao* m_analysisDao;
     TrackDAO* m_trackDao;
 
-    QQueue<func> m_lambdas;
-//    FIFO<func> m_lambdas; // USAGE OF FIFO
+    FIFO<func> m_lambdas; // USAGE OF FIFO
 
     volatile bool m_stop;
     QMutex m_lambdasMutex;
     QSemaphore m_semLambdaReadyToCall;
+    QSemaphore m_semLambdasReady;
+    QSemaphore m_semLambdasFree;
     ControlObjectThread* m_pCOTPlaylistIsBusy;
 
     const QRegExp m_supportedFileExtensionsRegex;

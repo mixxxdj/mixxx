@@ -1,9 +1,21 @@
 #include "library/hiddentablemodel.h"
 
+#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
+
 HiddenTableModel::HiddenTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent,pTrackCollection,"mixxx.db.model.missing") {
-    setTableModel();
+    DBG();
+    // tro's lambda idea
+    QMutex mutex;
+    m_pTrackCollection->callAsync(
+                [this, &mutex] (void) {
+        mutex.lock();
+        setTableModel();
+        mutex.unlock();
+    });
+    mutex.lock();
+    mutex.unlock();
 }
 
 HiddenTableModel::~HiddenTableModel() {

@@ -29,9 +29,11 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
       m_cueDao(NULL),
       m_analysisDao(NULL),
       m_trackDao(NULL),
-//      m_lambdas(MAX_LAMBDA_COUNT), // USAGE OF FIFO
+      m_lambdas(MAX_LAMBDA_COUNT),
       m_stop(false),
       m_semLambdaReadyToCall(0),
+      m_semLambdasFree(MAX_LAMBDA_COUNT),
+      m_semLambdasReady(0),
       m_pCOTPlaylistIsBusy(NULL),
       m_supportedFileExtensionsRegex(
           SoundSourceProxy::supportedFileExtensionsRegex(),
@@ -87,25 +89,17 @@ void TrackCollection::run() {
     // main TrackCollection's loop
     int loopCount = 0;
     while (!m_stop) {
-        // unlock GUI elements
-        m_pCOTPlaylistIsBusy->set(0.0f);
-        // execute lambda in TrackCollection's thread
-        m_semLambdaReadyToCall.acquire(1);
-
-        while (m_lambdas.count()>0) {
-            func lambda;
-            m_lambdasMutex.lock();
-            lambda = m_lambdas.dequeue();
-            m_lambdasMutex.unlock();
-            lambda();
+        if (!m_semLambdasReady.tryAcquire(1)) {
+            // no Lambda available, so unlock GUI.
+            m_pCOTPlaylistIsBusy->set(0.0f);
+            m_semLambdasReady.acquire(1); // Sleep until new Lambdas have arrived
         }
-        // USAGE OF FIFO
-        //        while (m_lambdas.readAvailable()>0) {
-        //            func lambda;
-        //            m_lambdas.read(&lambda, 1);
-        //            lambda();
-        //        }
+        func lambda;
+        m_lambdas.read(&lambda, 1);
+        m_semLambdasFree.release(1);
+        lambda();
     }
+
     DBG() << " ### Thread ended ###";
 }
 
@@ -121,11 +115,9 @@ void TrackCollection::callAsync(func lambda) {
 
 void TrackCollection::addLambdaToQueue(func lambda) {
     //TODO(tro) check lambda
-    m_lambdasMutex.lock();
-    m_lambdas.enqueue(lambda);
-    m_lambdasMutex.unlock();
-//    m_lambdas.write(&lambda, 1); // USAGE OF FIFO
-    m_semLambdaReadyToCall.release(1);
+    m_semLambdasFree.acquire(1);  // Blocks if FIFO is entirely occupied (see MAX_LAMBDA_COUNT)
+    m_lambdas.write(&lambda, 1);
+    m_semLambdasReady.release(1);
 }
 
 void TrackCollection::stopThread() {
@@ -139,7 +131,7 @@ bool TrackCollection::checkForTables() {
     if (!m_database->open()) {
         QMessageBox::critical(0, tr("Cannot open database"),
                               tr("Unable to establish a database connection.\n"
-                                 "Mixxx requires QT with SQLite support. Please read "
+                                 "Mixxx requires Qt with SQLite support. Please read "
                                  "the Qt SQL driver documentation for information on how "
                                  "to build it.\n\n"
                                  "Click OK to exit."), QMessageBox::Ok);
