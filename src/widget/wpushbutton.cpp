@@ -185,8 +185,9 @@ void WPushButton::paintEvent(QPaintEvent *) {
 void WPushButton::mousePressEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
-
     const bool leftPowerWindowStyle = m_leftButtonMode == ControlPushButton::POWERWINDOW;
+    const bool leftLongPressLatchingStyle = m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING;
+
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
             if (m_value == 0.0f) {
@@ -198,6 +199,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             emit(valueChangedLeftDown(1.0f));
             update();
         }
+        // discharge right clicks here, because is used for latching in POWERWINDOW mode
         return;
     }
 
@@ -230,7 +232,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         double emitValue;
         if (m_bLeftClickForcePush) {
             // This may a button with different functions on each mouse button
-            // m_fValue is changed by a separate feedback connection
+            // m_value is changed by a separate feedback connection
             emitValue = 1.0f;
         } else if (m_iNoStates == 1) {
             // This is a Pushbutton
@@ -238,6 +240,10 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         } else {
             // Toggle thru the states
             m_value = emitValue = (int)(m_value + 1.) % m_iNoStates;
+            if (leftLongPressLatchingStyle) {
+                m_clickTimer.setSingleShot(true);
+                m_clickTimer.start(ControlPushButtonBehavior::kLongPressLatchingTimeMillis);
+            }
         }
         m_bPressed = true;
         emit(valueChangedLeftDown(emitValue));
@@ -255,6 +261,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
     const bool leftPowerWindowStyle = m_leftButtonMode == ControlPushButton::POWERWINDOW;
+    const bool leftLongPressLatchingStyle = m_leftButtonMode == ControlPushButton::LONGPRESSLATCHING;
 
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
@@ -275,7 +282,8 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     if (rightClick) {
         // This is the secondary clickButton function, it does not change
         // m_value due the leak of visual feedback we do not allow a toggle
-        // function
+        // function. It is always a pushbutton, so "RightClickIsPushButton"
+        // is obsolete
         if (m_bRightClickForcePush) {
             m_bPressed = false;
             emit(valueChangedRightUp(0.0f));
@@ -298,7 +306,14 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             // This is a Pushbutton
             m_value = emitValue = 0.0f;
         } else {
-            // Nothing special happens when releasing a toggle button
+            if (leftLongPressLatchingStyle && m_clickTimer.isActive() && m_value >= 1.0) {
+                // revert toggle if button is released too early
+                m_value = emitValue = (int)(m_value - 1.0) % m_iNoStates;
+                m_clickTimer.setSingleShot(true);
+                m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
+            } else {
+                // Nothing special happens when releasing a normal toggle button
+            }
         }
         m_bPressed = false;
         emit(valueChangedLeftUp(emitValue));
