@@ -32,7 +32,8 @@ class ControlPushButton : public ControlObject {
     enum ButtonMode {
          PUSH = 0,
          TOGGLE,
-         POWERWINDOW
+         POWERWINDOW,
+         LONGPRESSLATCHING,
     };
 
     ControlPushButton(ConfigKey key);
