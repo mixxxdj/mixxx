@@ -74,9 +74,9 @@ void WPushButton::setup(QDomNode node) {
     m_bLeftClickForcePush = selectNodeQString(node, "LeftClickIsPushButton")
             .contains("true", Qt::CaseInsensitive);
 
-    m_bRightClickForcePush = selectNodeQString(node, "RightClickIsPushButton")
-            .contains("true", Qt::CaseInsensitive);
-
+    if (!selectNodeQString(node, "RightClickIsPushButton").isEmpty()) {
+        qDebug() << "using <RightClickIsPushButton> in skins is obsolete.";
+    }
 
     QDomNode con = selectNode(node, "Connection");
     while (!con.isNull()) {
@@ -204,19 +204,12 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     }
 
     if (rightClick) {
-        // This is the secondary button function, it does not change m_fValue
-        // due the leak of visual feedback we do not allow a toggle function
-        if (m_bRightClickForcePush) {
-            m_bPressed = true;
-            emit(valueChangedRightDown(1.0f));
-            update();
-        } else if (m_iNoStates == 1) {
-            // This is a Pushbutton
-            m_value = 1.0f;
-            m_bPressed = true;
-            emit(valueChangedRightDown(1.0f));
-            update();
-        }
+        // This is the secondary button function, it does not change m_value
+        // Due the leak of visual feedback the right button is always a
+        // pushbutton so "RightClickIsPushButton" is obsolete
+        m_bPressed = true;
+        emit(valueChangedRightDown(1.0f));
+        update();
 
         // Do not allow right-clicks to change button state other than when
         // forced to be a push button. This is how Mixxx <1.8.0 worked so
@@ -284,15 +277,9 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         // m_value due the leak of visual feedback we do not allow a toggle
         // function. It is always a pushbutton, so "RightClickIsPushButton"
         // is obsolete
-        if (m_bRightClickForcePush) {
-            m_bPressed = false;
-            emit(valueChangedRightUp(0.0f));
-            update();
-        } else if (m_iNoStates == 1) {
-            m_bPressed = false;
-            emit(valueChangedRightUp(0.0f));
-            update();
-        }
+        m_bPressed = false;
+        emit(valueChangedRightUp(0.0f));
+        update();
         return;
     }
 
