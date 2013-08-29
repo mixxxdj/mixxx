@@ -6,13 +6,26 @@
 #include "library/librarytablemodel.h"
 #include "mixxxutils.cpp"
 
+#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
+
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
 
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent, pTrackCollection,
                             "mixxx.db.model.missing") {
-    setTableModel();
+    // tro's lambda idea,
+    // this code calls synchronously!
+    QMutex mutex;
+    mutex.lock();
+    m_pTrackCollection->callAsync(
+                [this, &mutex] (void) {
+        setTableModel();    // TODO(xxx) move to initialize()
+        mutex.unlock();
+    });
+    mutex.lock();
+    mutex.unlock();
+
 }
 
 void MissingTableModel::setTableModel(int id) {

@@ -6,12 +6,13 @@ HiddenTableModel::HiddenTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent,pTrackCollection,"mixxx.db.model.missing") {
     DBG();
-    // tro's lambda idea
+    // tro's lambda idea,
+    // this code calls synchronously!
     QMutex mutex;
+    mutex.lock();
     m_pTrackCollection->callAsync(
                 [this, &mutex] (void) {
-        mutex.lock();
-        setTableModel();
+        setTableModel();    // TODO(xxx) move to initialize()
         mutex.unlock();
     });
     mutex.lock();
@@ -53,7 +54,6 @@ void HiddenTableModel::setTableModel(int id){
     initHeaderData();
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
-
 }
 
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {

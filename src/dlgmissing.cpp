@@ -35,7 +35,7 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 
     connect(this, SIGNAL(activateButtons(bool)),
-            this, SLOT(slotActivateButtons(bool)));
+            this, SLOT(slotActivateButtons(bool)), Qt::BlockingQueuedConnection);
 }
 
 DlgMissing::~DlgMissing() {
@@ -61,7 +61,10 @@ void DlgMissing::clicked() {
 }
 
 void DlgMissing::onSearch(const QString& text) {
-    m_pMissingTableModel->search(text);
+    m_pTrackCollection->callAsync(
+                [this, text] (void) {
+        m_pMissingTableModel->search(text);
+    });
 }
 
 void DlgMissing::selectAll() {
