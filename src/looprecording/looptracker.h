@@ -36,7 +36,7 @@ class LoopTracker : public QObject {
         unsigned int length;
     };
     QList<LayerInfo*> m_layers;
-    int currentLayer;
+    int m_iCurrentLayer;
     bool m_bIsUndoAvailable;
     bool m_bIsRedoAvailable;
 

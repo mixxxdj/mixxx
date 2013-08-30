@@ -9,7 +9,7 @@
 #include "trackinfoobject.h"
 
 LoopTracker::LoopTracker()
-        : currentLayer(-1),
+        : m_iCurrentLayer(-1),
         m_bIsUndoAvailable(false),
         m_bIsRedoAvailable(false) {
 
@@ -34,7 +34,7 @@ void LoopTracker::addLoopLayer(QString path, unsigned int length) {
     layer->path = path;
     layer->length = length;
     m_layers.append(layer);
-    currentLayer++;
+    m_iCurrentLayer++;
 }
 
 void LoopTracker::clear() {
@@ -48,14 +48,14 @@ void LoopTracker::clear() {
         }
         delete pFile;
     }
-    currentLayer = -1;
+    m_iCurrentLayer = -1;
 }
 
 bool LoopTracker::finalizeLoop(QString newPath) {
     // TODO: implement multiple layer mixing.
-    if (currentLayer > -1) {
+    if (m_iCurrentLayer > -1) {
 
-        QString oldFileLocation = m_layers.at(currentLayer)->path;
+        QString oldFileLocation = m_layers.at(m_iCurrentLayer)->path;
         QFile file(oldFileLocation);
 
         if (file.exists()) {
@@ -81,7 +81,7 @@ QString LoopTracker::getCurrentPath() {
     if (m_layers.empty()) {
         return QString::QString("");
     } else {
-        return m_layers.at(currentLayer)->path;
+        return m_layers.at(m_iCurrentLayer)->path;
     }
 }
 
@@ -94,8 +94,14 @@ void LoopTracker::slotLoadToLoopDeck() {
     QString path = getCurrentPath();
     if (path != "") {
         TrackPointer pTrackToPlay = TrackPointer(new TrackInfoObject(path), &QObject::deleteLater);
+
         // Signal to Player manager to load and play track.
-        emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
+        if (m_iCurrentLayer == 1) {
+            emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
+
+        } else if (m_iCurrentLayer == 2) {
+            emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck2]"), true));
+        }
         m_pTogglePlayback->set(1.0);
     }
 }
