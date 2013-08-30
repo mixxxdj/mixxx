@@ -96,10 +96,10 @@ void LoopTracker::slotLoadToLoopDeck() {
         TrackPointer pTrackToPlay = TrackPointer(new TrackInfoObject(path), &QObject::deleteLater);
 
         // Signal to Player manager to load and play track.
-        if (m_iCurrentLayer == 1) {
+        if (m_iCurrentLayer == 0) {
             emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
 
-        } else if (m_iCurrentLayer == 2) {
+        } else if (m_iCurrentLayer == 1) {
             emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck2]"), true));
         }
         m_pTogglePlayback->set(1.0);
