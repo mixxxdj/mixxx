@@ -35,6 +35,7 @@
 #include "widget/wvumeter.h"
 #include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
+#include "widget/wloopsourcetext.h"
 #include "widget/wtime.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
@@ -336,6 +337,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseNumber(node);
     } else if (nodeName == "Label") {
         return parseLabel(node);
+    } else if (nodeName == "LoopSource") {
+        return parseLoopSource(node);
     } else if (nodeName == "Knob") {
         return parseKnob(node);
     } else if (nodeName == "TableView") {
@@ -836,6 +839,24 @@ QWidget* LegacySkinParser::parseNumberPos(QDomElement node) {
 
 QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     WNumber* p = new WNumber(m_pParent);
+    setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+QWidget* LegacySkinParser::parseLoopSource(QDomElement node) {
+    WLoopSourceText* p = new WLoopSourceText(m_pParent);
     setupWidget(node, p);
     // NOTE(rryan): To support color schemes, the WWidget::setup() call must
     // come first. This is because WNumber/WLabel both change the palette based

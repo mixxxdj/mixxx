@@ -1,21 +1,21 @@
 #include "widget/wloopsourcetext.h"
+#include "looprecording/defs_looprecording.h"
 
-WLoopSourceText::WLoopSourceText : WNumber(pParent) {
-    m_pRateControl = new ControlObjectThreadMain(group, "loop_source");
-    connect(m_pRateControl, SIGNAL(valueChanged(double)),
-            this, SLOT(setValue(double)));
-    // Initialize the widget.
-    setValue(0);
+WLoopSourceText::WLoopSourceText(QWidget *pParent) : WNumber(pParent) {
+
 }
 
 WLoopSourceText::~WLoopSourceText() {
 
 }
 
-void WLoopSourceText::slotSourceChanged() {
-    updateLabel();
-}
 
-void WLoopSourceText::updateLabel() {
-        m_pLabel->setText("");
+void WLoopSourceText::setValue(double dValue) {
+    QString text = "";
+    if (dValue == INPUT_NONE) {
+        text = "Off";
+    } else {
+        text = "On";
+    }
+    m_pLabel->setText(QString(m_qsText).append(text));
 }
