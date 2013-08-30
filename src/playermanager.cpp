@@ -20,6 +20,7 @@
 #include "util/stat.h"
 #include "engine/enginedeck.h"
 #include "looprecording/looprecordingmanager.h"
+#include "looprecording/looptracker.h"
 
 PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
                              SoundManager* pSoundManager,
@@ -131,7 +132,7 @@ void PlayerManager::bindToLoopRecorder(LoopRecordingManager* pLoopRecordingManag
     
     connect(pLoopRecordingManager, SIGNAL(exportToPlayer(QString, QString)),
             this, SLOT(slotLoadToPlayer(QString, QString)));
-    connect(pLoopRecordingManager, SIGNAL(loadToLoopDeck(TrackPointer, QString, bool)),
+    connect(pLoopRecordingManager->getLoopTracker(), SIGNAL(loadToLoopDeck(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
 }
 

@@ -6,9 +6,12 @@
 
 #include <QtCore>
 
+#include "trackinfoobject.h"
+
 class ControlObjectThread;
 
-class LoopTracker {
+class LoopTracker : public QObject {
+    Q_OBJECT
   public:
     LoopTracker();
     virtual ~LoopTracker();
@@ -21,6 +24,12 @@ class LoopTracker {
     void stop(bool clearDeck);
     void setCurrentLength(unsigned int length);
 
+  public slots:
+    void slotLoadToLoopDeck();
+
+  signals:
+    void loadToLoopDeck(TrackPointer, QString, bool);
+    
   private:
     struct LayerInfo {
         QString path;
@@ -34,6 +43,7 @@ class LoopTracker {
     ControlObjectThread* m_pLoopDeck1Play;
     ControlObjectThread* m_pLoopDeck1Stop;
     ControlObjectThread* m_pLoopDeck1Eject;
+    ControlObjectThread* m_pTogglePlayback;
 };
 
 #endif

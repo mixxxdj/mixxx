@@ -111,7 +111,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
     if (pLoopWriter) {
         connect(pLoopWriter, SIGNAL(isRecording(bool)), this, SLOT(slotIsRecording(bool)));
         connect(pLoopWriter, SIGNAL(clearRecorder()), this, SLOT(slotClearRecorder()));
-        connect(pLoopWriter, SIGNAL(loadAudio()), this, SLOT(slotLoadToLoopDeck()));
+        connect(pLoopWriter, SIGNAL(loadAudio()), m_pLoopTracker, SLOT(slotLoadToLoopDeck()));
         connect(this, SIGNAL(clearWriter()), pLoopWriter, SLOT(slotClearWriter()));
         connect(this, SIGNAL(startWriter(int)), pLoopWriter, SLOT(slotStartRecording(int)));
         connect(this, SIGNAL(stopWriter(bool)), pLoopWriter, SLOT(slotStopRecording(bool)));
@@ -153,6 +153,10 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pCOExportDestination;
 }
 
+LoopTracker* LoopRecordingManager::getLoopTracker() {
+    return m_pLoopTracker;
+}
+
 // Public Slots
 
 // Connected to EngineLoopRecorder.
@@ -171,19 +175,6 @@ void LoopRecordingManager::slotCurrentPlayingDeckChanged(int deck) {
 
 void LoopRecordingManager::slotIsRecording(bool isRecordingActive) {
     m_isRecording = isRecordingActive;
-}
-
-// Connected to EngineLoopRecorder.
-// TODO: move to LoopTracker?
-void LoopRecordingManager::slotLoadToLoopDeck() {
-    //qDebug() << "LoopRecordingManager::loadToLoopDeck m_filesRecorded: " << m_filesRecorded;
-    QString path = m_pLoopTracker->getCurrentPath();
-    if (path != "") {
-        TrackPointer pTrackToPlay = TrackPointer(new TrackInfoObject(path), &QObject::deleteLater);
-        // Signal to Player manager to load and play track.
-        emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
-        m_pTogglePlayback->set(1.0);
-    }
 }
 
 // Private Slots

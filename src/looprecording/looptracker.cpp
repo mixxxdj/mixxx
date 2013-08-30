@@ -3,8 +3,10 @@
 //
 // TODO: Should this be declared inline in LoopRecordingManager?
 
+#include "looprecording/defs_looprecording.h"
 #include "looprecording/looptracker.h"
 #include "controlobjectthread.h"
+#include "trackinfoobject.h"
 
 LoopTracker::LoopTracker()
         : currentLayer(-1),
@@ -14,11 +16,14 @@ LoopTracker::LoopTracker()
     m_pLoopDeck1Play = new ControlObjectThread("[LoopRecorderDeck1]","play");
     m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");
     m_pLoopDeck1Eject = new ControlObjectThread("[LoopRecorderDeck1]","eject");
+    m_pTogglePlayback = new ControlObjectThread(LOOP_RECORDING_PREF_KEY, "toggle_playback");
+
 }
 
 LoopTracker::~LoopTracker() {
     clear();
 
+    delete m_pTogglePlayback;
     delete m_pLoopDeck1Eject;
     delete m_pLoopDeck1Stop;
     delete m_pLoopDeck1Play;
@@ -82,4 +87,15 @@ QString LoopTracker::getCurrentPath() {
 
 void LoopTracker::setCurrentLength(unsigned int length) {
 
+}
+
+void LoopTracker::slotLoadToLoopDeck() {
+    //qDebug() << "LoopRecordingManager::loadToLoopDeck m_filesRecorded: " << m_filesRecorded;
+    QString path = getCurrentPath();
+    if (path != "") {
+        TrackPointer pTrackToPlay = TrackPointer(new TrackInfoObject(path), &QObject::deleteLater);
+        // Signal to Player manager to load and play track.
+        emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
+        m_pTogglePlayback->set(1.0);
+    }
 }
