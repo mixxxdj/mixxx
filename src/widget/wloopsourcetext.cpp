@@ -1,8 +1,11 @@
 #include "widget/wloopsourcetext.h"
 
-WLoopSourceText::WLoopSourceText(QWidget* pParent)
-        : WLabel(pParent) {
-
+WLoopSourceText::WLoopSourceText : WNumber(pParent) {
+    m_pRateControl = new ControlObjectThreadMain(group, "loop_source");
+    connect(m_pRateControl, SIGNAL(valueChanged(double)),
+            this, SLOT(setValue(double)));
+    // Initialize the widget.
+    setValue(0);
 }
 
 WLoopSourceText::~WLoopSourceText() {
