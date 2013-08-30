@@ -75,13 +75,17 @@ bool LoopTracker::finalizeLoop(QString newPath) {
 
 void LoopTracker::play() {
     m_pLoopDeck1Play->slotSet(1.0);
+    m_pLoopDeck2Play->slotSet(1.0);
 }
 
 void LoopTracker::stop(bool clearDeck) {
     m_pLoopDeck1Play->slotSet(0.0);
+    m_pLoopDeck2Play->slotSet(0.0);
     if(clearDeck) {
         m_pLoopDeck1Eject->slotSet(1.0);
+        m_pLoopDeck2Eject->slotSet(1.0);
         m_pLoopDeck1Eject->slotSet(0.0);
+        m_pLoopDeck2Eject->slotSet(0.0);
     }
 }
 
