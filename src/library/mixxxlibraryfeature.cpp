@@ -114,6 +114,8 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
     m_pHiddenView = new DlgHidden(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
+    m_pHiddenView->init();
+
     pLibrary->registerView(kHiddenTitle, m_pHiddenView);
     m_pMissingView = new DlgMissing(pLibrary,
                                   m_pConfig, m_pTrackCollection,

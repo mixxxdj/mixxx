@@ -10,24 +10,46 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
            Ui::DlgHidden(),
            m_pTrackCollection(pTrackCollection),
            m_pTrackTableView(
-               new WTrackTableView(this,pConfig,pTrackCollection, false)) {
+               new WTrackTableView(this, pConfig, pTrackCollection, false)) {
     setupUi(this);
     m_pTrackTableView->installEventFilter(pKeyboard);
-    
+
     // Install our own trackTable
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
+}
 
-    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
+DlgHidden::~DlgHidden() {
+    // Delete m_pTrackTableView before the table model. This is because the
+    // table view saves the header state using the model.
+    delete m_pTrackTableView;
+    delete m_pHiddenTableModel;
+}
+
+void DlgHidden::init() {
+    m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
+    qDebug() << "before lambda: " << this << m_pHiddenTableModel << m_pTrackCollection;
+
+    // tro's lambda idea, this code calls synchronously!
+    QMutex mutex;
+    mutex.lock();
+    m_pTrackCollection->callAsync(
+                [this, &mutex] (void) {
+        qDebug() << "in lambda: " << m_pHiddenTableModel;
+        m_pHiddenTableModel->init();
+        mutex.unlock();
+    });
+    mutex.lock();
+    mutex.unlock();
 
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
-    connect(btnUnhide, SIGNAL(clicked()), 
+    connect(btnUnhide, SIGNAL(clicked()),
             m_pTrackTableView, SLOT(slotUnhide()));
-    connect(btnUnhide, SIGNAL(clicked()), 
+    connect(btnUnhide, SIGNAL(clicked()),
             this, SLOT(clicked()));
     connect(btnPurge, SIGNAL(clicked()),
             m_pTrackTableView, SLOT(slotPurge()));
@@ -42,13 +64,6 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     connect(this, SIGNAL(activateButtons(bool)),
             this, SLOT(slotActivateButtons(bool)));
-}
-
-DlgHidden::~DlgHidden() {
-    // Delete m_pTrackTableView before the table model. This is because the
-    // table view saves the header state using the model.
-    delete m_pTrackTableView;
-    delete m_pHiddenTableModel;
 }
 
 void DlgHidden::onShow() {

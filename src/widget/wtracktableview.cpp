@@ -125,7 +125,7 @@ WTrackTableView::~WTrackTableView() {
 
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
 
@@ -1115,32 +1115,25 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
 
 void WTrackTableView::slotSendToAutoDJ() {
     // append to auto DJ
-    qDebug() << "in WTrackTableView::slotSendToAutoDJ";
+    // qDebug() << "in WTrackTableView::slotSendToAutoDJ";
+    // tro's lambda idea
     m_pTrackCollection->callAsync(
-                // lambda goes here
-                [this]       // Say to capture object to call its methods
-                (void) {
-        qDebug() << "\t in lambda";
-        // Here goes exactly the same code as it was previously
-        // try to change someValue
+                [this](void) {
         sendToAutoDJ(false); // bTop = false
-        qDebug() << "\t lambda ends";
     });
 }
 
 void WTrackTableView::slotSendToAutoDJTop() {
     // append to auto DJ
-    qDebug() << "in WTrackTableView::slotSendToAutoDJ";
+    // qDebug() << "in WTrackTableView::slotSendToAutoDJ";
     m_pTrackCollection->callAsync(
-                // lambda goes here
                 [this] (void) {
-        qDebug() << "\t in lambda";
         sendToAutoDJ(true); // bTop = true
-        qDebug() << "\t lambda ends";
     });
 }
 
 void WTrackTableView::sendToAutoDJ(bool bTop) {
+    // Fucntion can be used in callAsync
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
     }

@@ -2,29 +2,22 @@
 
 #define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
 
-HiddenTableModel::HiddenTableModel(QObject* parent,
-                                     TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(parent,pTrackCollection,"mixxx.db.model.missing") {
+HiddenTableModel::HiddenTableModel(QObject* parent, TrackCollection* pTrackCollection)
+        : BaseSqlTableModel(parent, pTrackCollection, "mixxx.db.model.missing") {  // WTF!? COPYPASTE
     DBG();
-    // tro's lambda idea,
-    // this code calls synchronously!
-    QMutex mutex;
-    mutex.lock();
-    m_pTrackCollection->callAsync(
-                [this, &mutex] (void) {
-        setTableModel();    // TODO(xxx) move to initialize()
-        mutex.unlock();
-    });
-    mutex.lock();
-    mutex.unlock();
+    // Do not forget to init() after c-tor
 }
 
 HiddenTableModel::~HiddenTableModel() {
 }
 
+void HiddenTableModel::init() {
+    setTableModel();
+}
+
 void HiddenTableModel::setTableModel(int id){
     Q_UNUSED(id);
-    QSqlQuery query;
+    QSqlQuery query(m_pTrackCollection->getDatabase());
     QString tableName("hidden_songs");
 
     QStringList columns;

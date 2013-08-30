@@ -31,8 +31,7 @@ void doNothing(TrackInfoObject*) {
 LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
                                              PlaylistDAO& playlistDao) : QObject(),
     m_trackDao(trackDao),
-    m_playlistDao(playlistDao)
-{
+    m_playlistDao(playlistDao) {
 }
 
 /** Upgrade from <= 1.7 library to 1.8 DB format */
@@ -142,7 +141,7 @@ void LegacyLibraryImporter::import()
 
 
         //Create the imported playlists
-        QListIterator<LegacyPlaylist> it(legacyPlaylists);
+        QListIterator<LegacyPlaylist> it(legacyPlaylists);                                  // TODO(tro) BEGIN wrap to callAsync
         LegacyPlaylist current;
         while (it.hasNext())
         {
@@ -176,7 +175,7 @@ void LegacyLibraryImporter::import()
                     m_playlistDao.appendTrackToPlaylist(dbTrackId, playlistId);
                 }
             }
-        }
+        }                                                                                   // TODO(tro) END wrap to callAsync
 
         QString upgrade_filename = settingPath17.append("DBUPGRADED");
         //now create stub so that the library is not readded next time program loads

@@ -14,8 +14,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent, pTrackCollection,
                             "mixxx.db.model.missing") {
-    // tro's lambda idea,
-    // this code calls synchronously!
+    // tro's lambda idea, this code calls synchronously!
     QMutex mutex;
     mutex.lock();
     m_pTrackCollection->callAsync(
@@ -25,7 +24,6 @@ MissingTableModel::MissingTableModel(QObject* parent,
     });
     mutex.lock();
     mutex.unlock();
-
 }
 
 void MissingTableModel::setTableModel(int id) {
@@ -62,7 +60,6 @@ void MissingTableModel::setTableModel(int id) {
     initHeaderData();
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
-
 }
 
 MissingTableModel::~MissingTableModel() {

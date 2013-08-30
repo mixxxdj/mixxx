@@ -351,9 +351,9 @@ const QString BaseSqlTableModel::currentSearch() const {
 }
 
 void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
-    if (sDebug) {
+//    if (sDebug) {
         qDebug() << this << "setSearch" << searchText;
-    }
+//    }
 
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());

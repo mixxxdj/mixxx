@@ -73,7 +73,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
         return;
     }
 
-    pPlaylistModelToAdd->select();
+    pPlaylistModelToAdd->select();                                                          // TODO(tro) BEGIN wrap to callAsync
     PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
     int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
 
@@ -96,7 +96,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
             // TODO(XXX): Care whether the append succeeded.
             playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
         }
-    }
+    }                                                                                       // TODO(tro) END wrap to callAsync
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
@@ -118,7 +118,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         return;
     }
 
-    pPlaylistModelToAdd->select();
+    pPlaylistModelToAdd->select();                                                          // TODO(tro) BEGIN wrap to callAsync
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
     int playlistId = playlistDao.getPlaylistIdFromName(playlist);
@@ -154,7 +154,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
                              tr("Playlist Creation Failed"),
                              tr("An unknown error occurred while creating playlist: ")
                              + playlist);
-    }
+    }                                                                                       // TODO(tro) END wrap to callAsync
 }
 
 

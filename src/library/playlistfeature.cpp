@@ -57,10 +57,10 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName); // TODO(tro) wrap to callAsync
 
 
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);           // TODO(tro) wrap to callAsync
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
 
@@ -88,7 +88,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
                                       QWidget *pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName); // TODO(tro) wrap to callAsync
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
@@ -119,15 +119,15 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     }
 
     // Return whether appendTracksToPlaylist succeeded.
-    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);  // TODO(tro) wrap to callAsync
 }
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
 
-    QString playlistName = index.data().toString();
+    QString playlistName = index.data().toString();                     // TODO(tro) BEGIN wrap to callAsync
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);           // TODO(tro) END wrap to callAsync
 
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
@@ -160,11 +160,13 @@ void PlaylistFeature::buildPlaylistList() {
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
+    // TODO(tro) BEGIN wrap to callAsync
     if (m_playlistDao.isPlaylistLocked(playlist_id)) {
         item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
     } else {
         item->setIcon(QIcon());
     }
+    // TODO(tro) END wrap to callAsync
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
@@ -172,6 +174,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         return;
     }
 
+    // TODO(tro) BEGIN wrap to callAsync
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
@@ -186,6 +189,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
             emit(featureSelect(this, m_lastRightClickedIndex));
         }
     }
+    // TODO(tro) END wrap to callAsync
 }
 
 QString PlaylistFeature::getRootViewHtml() const {

@@ -33,6 +33,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     set_log_name_format = set_log_name + " (%1)";
     int i = 1;
 
+    // TODO(tro) BEGIN wrap to callAsync
     // calculate name of the todays setlog
     while (m_playlistDao.getPlaylistIdFromName(set_log_name) != -1) {
         set_log_name = set_log_name_format.arg(++i);
@@ -41,6 +42,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
     qDebug() << "Creating session history playlist name:" << set_log_name;
     m_playlistId = m_playlistDao.createPlaylist(set_log_name,
                                                 PlaylistDAO::PLHT_SET_LOG);
+    // TODO(tro) END wrap to callAsync
 
     if (m_playlistId == -1) {
         qDebug() << "Setlog playlist Creation Failed";
@@ -57,10 +59,12 @@ SetlogFeature::~SetlogFeature() {
     // If the history playlist we created doesn't have any tracks in it then
     // delete it so we don't end up with tons of empty playlists. This is mostly
     // for developers since they regularly open Mixxx without loading a track.
+    // TODO(tro) BEGIN wrap to callAsync
     if (m_playlistId != -1 &&
         m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
         m_playlistDao.deletePlaylist(m_playlistId);
     }
+    // TODO(tro) END wrap to callAsync
 }
 
 QVariant SetlogFeature::title() {
@@ -97,12 +101,15 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
 
 void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
+    // TODO(tro) BEGIN wrap to callAsync
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
 
 
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    // TODO(tro) END wrap to callAsync
+
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
 
@@ -157,6 +164,7 @@ void SetlogFeature::buildPlaylistList() {
 }
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
+    // TODO(tro) BEGIN wrap to callAsync
     if (playlist_id == m_playlistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
     } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
@@ -164,6 +172,7 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
     } else {
         item->setIcon(QIcon());
     }
+    // TODO(tro) END wrap to callAsync
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
@@ -260,7 +269,7 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
         if (currentPlayingTrackId < 0) {
             return;
         }
-
+        // TODO(tro) BEGIN wrap to callAsync
         if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
             // View needs a refresh
             m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
@@ -269,6 +278,7 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
             m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
                                                 m_playlistId);
         }
+        // TODO(tro) END wrap to callAsync
     }
 }
 
@@ -276,7 +286,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (!m_pPlaylistTableModel) {
         return;
     }
-
+    // TODO(tro) BEGIN wrap to callAsync
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
     if (type == PlaylistDAO::PLHT_SET_LOG ||
@@ -291,6 +301,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
             emit(featureSelect(this, m_lastRightClickedIndex));
         }
     }
+    // TODO(tro) END wrap to callAsync
 }
 
 

@@ -98,16 +98,16 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
 
     // Switch the playlist table model's playlist.
-    QString playlistName = index.data().toString();
+    QString playlistName = index.data().toString();                             // TODO(tro) BEGIN wrap to callAsync
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     if (m_pPlaylistTableModel) {
         m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
-    }
+    }                                                                           // TODO(tro) END wrap to callAsync
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {
-    QString oldName = m_lastRightClickedIndex.data().toString();
+    QString oldName = m_lastRightClickedIndex.data().toString();                // TODO(tro) BEGIN wrap to callAsync
     int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
@@ -148,7 +148,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
         }
     }
 
-    m_playlistDao.renamePlaylist(playlistId, newName);
+    m_playlistDao.renamePlaylist(playlistId, newName);                          // TODO(tro) END wrap to callAsync
 }
 
 void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
@@ -158,7 +158,7 @@ void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);
+    int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);                               // TODO(tro) BEGIN wrap to callAsync
 
 
     QString name;
@@ -198,12 +198,12 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
     if (newPlaylistId != -1 &&
         m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
         emit(showTrackModel(m_pPlaylistTableModel));
-    }
+    }                                                                                               // TODO(tro) END wrap to callAsync
 }
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
     QString playlistName = m_lastRightClickedIndex.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);                             // TODO(tro) BEGIN wrap to callAsync
     bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
 
     if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
@@ -255,13 +255,13 @@ void BasePlaylistFeature::slotCreatePlaylist() {
                              tr("Playlist Creation Failed"),
                              tr("An unknown error occurred while creating playlist: ")
                               + name);
-    }
+    }                                                                                               // TODO(tro) END wrap to callAsync
 }
 
 
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+    int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());    // TODO(tro) BEGIN wrap to callAsync
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     if (locked) {
@@ -274,7 +274,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
 
         m_playlistDao.deletePlaylist(playlistId);
         activate();
-    }
+    }                                                                                                   // TODO(tro) END wrap to callAsync
 }
 
 

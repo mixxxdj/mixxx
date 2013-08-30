@@ -40,7 +40,6 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
-//        m_pThreadDAO(new ThreadDAO(pConfig)),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
 
@@ -187,12 +186,12 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    //qDebug() << "Library::slotShowTrackModel" << model;
+    qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
     Q_ASSERT(trackModel);
     emit(showTrackModel(model));
     emit(switchToView(m_sTrackViewName));
-    emit(restoreSearch(trackModel->currentSearch()));
+    emit(restoreSearch(trackModel->currentSearch())); // #TRO#
 }
 
 void Library::slotSwitchToView(const QString& view) {
@@ -205,7 +204,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();                        // TODO(tro) BEGIN wrap to callAsync
     int track_id = track_dao.getTrackId(location);
     if (track_id < 0) {
         // Add Track to library
@@ -219,7 +218,7 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
     } else {
         pTrack = track_dao.getTrack(track_id);
     }
-    emit(loadTrackToPlayer(pTrack, group));
+    emit(loadTrackToPlayer(pTrack, group));                                         // TODO(tro) END wrap to callAsync
 }
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {

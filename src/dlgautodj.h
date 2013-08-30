@@ -6,7 +6,6 @@
 #include "configobject.h"
 #include "controlpushbutton.h"
 #include "trackinfoobject.h"
-#include "library/dao/playlistdao.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
 #include "mixxxkeyboard.h"
@@ -31,25 +30,29 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void moveSelection(int delta);
 
   public slots:
-    void shufflePlaylistButton(bool buttonChecked);
-    void skipNextButton(bool buttonChecked);
-    void fadeNowButton(bool buttonChecked);
-    void toggleAutoDJButton(bool enable);
-    void enableAutoDJCo(double value);
-    void shufflePlaylist(double value);
-    void skipNext(double value);
-    void fadeNow(double value);
-    void player1PositionChanged(double value);
-    void player2PositionChanged(double value);
-    void player1PlayChanged(double value);
-    void player2PlayChanged(double value);
-    void transitionValueChanged(int value);
-    void enableRandomButton(bool enabled);
+    void shufflePlaylistButton(bool buttonChecked); // done
+    void skipNextButton(bool buttonChecked); // done
+    void fadeNowButton(bool buttonChecked); // no need
+    void toggleAutoDJButton(bool enable); // done
+    void enableAutoDJCo(double value); // done
+    void shufflePlaylist(double value); // done
+    void skipNext(double value); // done
+    void fadeNow(double value); // done
+    void player1PositionChanged(double value); //done
+    void player2PositionChanged(double value); // done
+    void player1PlayChanged(double value); // no need
+    void player2PlayChanged(double value); // no need
+    void transitionValueChanged(int value); // no need
+    void enableRandomButton(bool enabled); // no need
+    void slotSpinBoxTransitionSetValue(int value);
+    void slotPushButtonAutoDJSetChecked(bool checked);
 
   signals:
     void addRandomButton(bool buttonChecked);
     void loadTrack(TrackPointer tio);
     void loadTrackToPlayer(TrackPointer tio, QString group, bool);
+    void spinBoxTransitionSetValue(int);
+    void pushButtonAutoDJSetChecked(bool);
 
   private:
     enum ADJstates {
@@ -75,7 +78,7 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
-    PlaylistTableModel* m_pAutoDJTableModel;
+    PlaylistTableModel*  m_pAutoDJTableModel;
 
     // Makes our Auto DJ logic assume the next track that should be played is
     // already loaded. We need this flag to make our

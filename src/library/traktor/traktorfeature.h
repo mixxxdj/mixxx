@@ -17,7 +17,7 @@
 #include "library/treeitemmodel.h"
 
 class LibraryTableModel;
-class MissingTableModel;
+//class MissingTableModel;
 class TrackCollection;
 class BaseExternalPlaylistModel;
 

@@ -96,10 +96,11 @@ bool PlaylistTableModel::appendTrack(int trackId) {
     if (trackId < 0) {
         return false;
     }
-
+    // TODO(tro) BEGIN wrap to callAsync
     m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
 
     select(); //Repopulate the data model.
+    // TODO(tro) END wrap to callAsync
     return true;
 }
 
@@ -107,7 +108,6 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
     if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
-
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
@@ -120,7 +120,6 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     if (locked) {
         return;
     }
-
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
 
     QList<int> trackPositions;
@@ -248,13 +247,14 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
 }
 
 bool PlaylistTableModel::isLocked(){
-    return m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+    return m_playlistDao.isPlaylistLocked(m_iPlaylistId); // TODO(tro) wrap to callAsync
 }
 
 void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
     int numOfTracks = rowCount();
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
+
     QSqlQuery query(m_pTrackCollection->getDatabase());
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int shuffleStartRow = shuffleStartIndex.row();

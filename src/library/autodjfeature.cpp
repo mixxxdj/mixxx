@@ -129,7 +129,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
             files.append(file);
         }
     }
-    QList<int> trackIds;
+    QList<int> trackIds;                                                    // TODO(tro) BEGIN wrap to callAsync
     if (pSource) {
         trackIds = trackDao.getTrackIds(files);
     } else {
@@ -145,7 +145,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     }
 
     // Return whether the tracks were appended.
-    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);      // TODO(tro) END wrap to callAsync
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
@@ -258,7 +258,7 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
     // Get access to the auto-DJ playlist.
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();                // TODO(tro) BEGIN wrap to callAsync
     int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
     if (iAutoDJPlaylistId >= 0) {
         // Get the ID of a randomly-selected track.
@@ -270,7 +270,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
             // Display the newly-added track.
             m_pAutoDJView->onShow();
         }
-    }
+    }                                                                               // TODO(tro) END wrap to callAsync
 #endif // __AUTODJCRATES__
 }
 

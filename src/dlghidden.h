@@ -17,6 +17,7 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     DlgHidden(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
               TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
     virtual ~DlgHidden();
+    void init();
 
     void onShow();
     void onSearch(const QString& text);
