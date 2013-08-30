@@ -16,6 +16,11 @@ LoopTracker::LoopTracker()
     m_pLoopDeck1Play = new ControlObjectThread("[LoopRecorderDeck1]","play");
     m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");
     m_pLoopDeck1Eject = new ControlObjectThread("[LoopRecorderDeck1]","eject");
+    m_pLoopDeck2Play = new ControlObjectThread("[LoopRecorderDeck2]","play");
+    m_pLoopDeck2Stop = new ControlObjectThread("[LoopRecorderDeck2]","stop");
+    m_pLoopDeck2Eject = new ControlObjectThread("[LoopRecorderDeck2]","eject");
+
+
     m_pTogglePlayback = new ControlObjectThread(LOOP_RECORDING_PREF_KEY, "toggle_playback");
 
 }
@@ -24,6 +29,9 @@ LoopTracker::~LoopTracker() {
     clear();
 
     delete m_pTogglePlayback;
+    delete m_pLoopDeck2Eject;
+    delete m_pLoopDeck2Stop;
+    delete m_pLoopDeck2Play;
     delete m_pLoopDeck1Eject;
     delete m_pLoopDeck1Stop;
     delete m_pLoopDeck1Play;

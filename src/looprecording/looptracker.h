@@ -43,6 +43,9 @@ class LoopTracker : public QObject {
     ControlObjectThread* m_pLoopDeck1Play;
     ControlObjectThread* m_pLoopDeck1Stop;
     ControlObjectThread* m_pLoopDeck1Eject;
+    ControlObjectThread* m_pLoopDeck2Play;
+    ControlObjectThread* m_pLoopDeck2Stop;
+    ControlObjectThread* m_pLoopDeck2Eject;
     ControlObjectThread* m_pTogglePlayback;
 };
 
