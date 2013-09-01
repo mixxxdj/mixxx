@@ -60,6 +60,11 @@ public:
     //static int ParseHeader(TrackInfoObject * );
     bool readInput();
     static QList<QString> supportedFileExtensions();
+    AVCodecContext *getCodecContext();
+    AVFormatContext *getFormatContext();
+    int getAudioStreamIndex();
+    double convertFfmpegToMixxx(double pos, const AVRational &time_base);
+    double convertMixxxToFfmpeg(double pos, const AVRational &time_base);
 
 protected:
     int64_t ffmpeg2mixxx(int64_t pos, const AVRational &time_base);
@@ -84,6 +89,8 @@ private:
     bool m_bIsSeeked;
     int64_t m_iReadedBytes;
     QByteArray m_strBuffer;
+
+    double_t m_fMixxBytePosition;
 
 };
 
