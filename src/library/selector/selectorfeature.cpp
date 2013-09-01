@@ -77,6 +77,12 @@ bool SelectorFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
             files.append(file);
         }
     }
+
+    // We can only seed one track so don't accept if there are more dropped
+    if (files.size() != 1) {
+        return false;
+    }
+
     QList<int> trackIds;
     if (pSource) {
         trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
@@ -84,16 +90,11 @@ bool SelectorFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
         trackIds = trackDao.addTracks(files, true);
     }
 
-    // get rid of any tracks not added
-    for (int trackId = 0; trackId < trackIds.size(); trackId++) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
-        }
-    }
-
 //    qDebug() << "Track ID: " << trackIds.first();
 
-    m_pSelectorView->setSeedTrack(trackDao.getTrack(trackIds.first()));
+    if (trackIds.first() > 0) {
+        m_pSelectorView->setSeedTrack(trackDao.getTrack(trackIds.first()));
+    }
 
     return true;
 }
