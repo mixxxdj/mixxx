@@ -391,27 +391,23 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
         currentBufferPosSec = (((double)(readByteArray.size() / 2) / (double)this->getSampleRate())) / 2;
         // We are in position at least this..
         currentFFMPEGPosSec = currentBufferPosSec + fromMixxPosSec;
-        qDebug() << "ffmpeg: BUFFERED Mixxx t: " << currentBufferPosSec << " currentFFMPEGPosSec: " << currentFFMPEGPosSec << "Bytes BUffered" << readByteArray.size();
+        // qDebug() << "ffmpeg: BUFFERED Mixxx t: " << currentBufferPosSec << " currentFFMPEGPosSec: " << currentFFMPEGPosSec << "Bytes BUffered" << readByteArray.size();
     }
 
     //qDebug() << "ffmpeg: FROM Mixxx t: " << fromMixxPosSec << " (B: " << m_iCurrentMixxTs << ")";
     //qDebug() << "ffmpeg: TO   Mixxx t: " << toMixxPosSec << " (B: " << (m_iCurrentMixxTs + size) << ")";
 
-    l_SPacket.data = NULL;
-    l_SPacket.size = 0; 
-
+    // If packet is done then INIT..
+    // Make sure we don't have any grab after seek to make us suffer!
+    if( m_bIsSeeked == TRUE || (l_SPacket.data == NULL && l_SPacket.size == 0)){
+         l_SPacket.data = NULL;
+         l_SPacket.size = 0; 
+         av_init_packet(&l_SPacket);
+    }
 
     //while (readByteArray.size() < needed)
     while (!m_bReadLoop) {
         readBytes = 0;
-        
-        // If packet is done then INIT..
-        // Make sure we don't have any grab after seek to make us suffer!
-        if( m_bIsSeeked == TRUE || (l_SPacket.data == NULL && l_SPacket.size == 0)){
-            l_SPacket.data = NULL;
-            l_SPacket.size = 0; 
-            av_init_packet(&l_SPacket);
-        }
 
         if (av_read_frame(m_pFormatCtx, &l_SPacket) >= 0) {
             if (l_SPacket.stream_index==m_iAudioStream) {
@@ -429,11 +425,6 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
                     readBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
                                                            l_pFrame->nb_samples,
                                                            m_pCodecCtx->sample_fmt, 1);
-
-                    // Skip pre-gap..
-                    //if (packet.pts <= 0 ||  (readBytes / 2) <= 255) {
-                    //  continue;
-                    //}
 
                     m_iReadedBytes += (readBytes / 2);
 
@@ -483,9 +474,11 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
                         readBuffer.write((const char *)(l_pFrame->data[0]), readBytes);
                     }
 
-                    av_free_packet(&l_SPacket);
+                    //av_free_packet(&l_SPacket);
+                    av_free( l_SPacket.data );
                     l_SPacket.data = NULL;
                     l_SPacket.size = 0; 
+                    avcodec_get_frame_defaults(l_pFrame);
 
                 } else {
                     qDebug() <<  "ffmpeg: libavcodec 'avcodec_decode_audio4' didn't succeed or frame not finished (File could also just end!)";
@@ -494,7 +487,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
             }
             
             if( currentFFMPEGPosSec >= (toMixxPosSec + 0.02) ) {
-               if( readByteArray.size() >= needed ){
+               if( readByteArray.size() >= (m_iOffset + copysize) ){
 				 m_bReadLoop = TRUE;   
 			   }
 		   } 
@@ -509,7 +502,6 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
         } else {
             qDebug() << "ffmpeg: libavcodec 'av_read_frame' didn't succeed!";
             break;
-            // needed = 0;
         }
 
         // Just here for if something goes deeply wrong!
@@ -527,10 +519,10 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size, const SAMPLE * destinat
 
     m_strBuffer.clear();
 
-    if ((m_iOffset + copysize) < (unsigned) readByteArray.size()) {
+    if ((m_iOffset + copysize) <= (unsigned) readByteArray.size()) {
         m_strBuffer = readByteArray.right(readByteArray.size() - (m_iOffset + copysize));
     } else {
-        qDebug() << "ffmpeg: Something not so wonderfull just happened!";
+        qDebug() << "ffmpeg: Too less bytes " << readByteArray.size() << "needed" << (m_iOffset + copysize);
     }
 
     m_iOffset = 0;
