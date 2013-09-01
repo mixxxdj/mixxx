@@ -102,14 +102,12 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
 }
 
 int SelectorSimilarity::getTopFollowupTrack(int iSeedTrackId) {
-    int iFollowupTrackId = -1;
     QList<int> results = getFollowupTracks(iSeedTrackId, 1);
-    if (!results.isEmpty()) {
-        // TODO(chrisjr): ensure that follow-up has not been played recently
-        iFollowupTrackId = results.first();
+    if (results.isEmpty()) {
+        return -1; // invalid track Id
     }
-
-    return iFollowupTrackId;
+    // TODO(chrisjr): ensure that follow-up has not been played recently
+    return results.first();
 }
 
 void SelectorSimilarity::setSimilarityContributions(
