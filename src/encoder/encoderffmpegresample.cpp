@@ -50,6 +50,20 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFo
     m_pOutSampleFmt = outSampleFmt;
     m_pInSampleFmt = inSampleFmt;
 
+    qDebug() << m_pCodecCtx->sample_rate << "!" << m_pCodecCtx->channel_layout << ":" << m_pCodecCtx->channels;
+
+    // Some MP3/WAV don't tell this so make assumtion that
+    // They are stereo not 5.1
+    if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 2) {
+          m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
+    } else if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 1) {
+          m_pCodecCtx->channel_layout = AV_CH_LAYOUT_MONO;
+    } else if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 0) {
+          m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
+          m_pCodecCtx->channels = 2;
+    }
+
+
     // They make big change in FFPEG 1.1 before that every format just passed s16 back to application
     // from FFMPEG 1.1 up MP3 pass s16p (Planar stereo 16 bit) MP4/AAC FLTP (Planar 32 bit float) and OGG also FLTP (WMA same thing)
     // IF sample type aint' S16 (Stero 16) example FFMPEG 1.1 mp3 is s16p that ain't and mp4 FLTP (32 bit float)
@@ -75,16 +89,6 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFo
             m_pSwrCtx = NULL;
         }
 
-        // Some MP3/WAV don't tell this so make assumtion that
-        // They are stereo not 5.1
-        if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 2) {
-            m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
-        } else if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 1) {
-            m_pCodecCtx->channel_layout = AV_CH_LAYOUT_MONO;
-        } else if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 0) {
-            m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
-            m_pCodecCtx->channels = 2;
-        }
 
         // Create converter from in type to s16 sample rate
 #ifndef __FFMPEGOLDAPI__
