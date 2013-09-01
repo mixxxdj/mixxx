@@ -62,7 +62,8 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
 }
 
 // Return up to n followup tracks for a given seed track, filtered and ranked
-// according to current settings. (n defaults to -1, which returns all results.)
+// according to current settings in dlgprefselctor.
+// (n defaults to -1, which returns all results.)
 QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
     QList<int> results;
     TrackPointer pSeedTrack = m_trackDAO.getTrack(iSeedTrackId);
@@ -102,7 +103,7 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
 
 int SelectorSimilarity::getTopFollowupTrack(int iSeedTrackId) {
     int iFollowupTrackId = -1;
-    QList<int> results = getFollowupTracks(iSeedTrackId);
+    QList<int> results = getFollowupTracks(iSeedTrackId, 1);
     if (!results.isEmpty()) {
         // TODO(chrisjr): ensure that follow-up has not been played recently
         iFollowupTrackId = results.first();
