@@ -23,6 +23,9 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowTrackTimeRemaining->get());
 
+    m_pVisualPlaypos = new ControlObjectThreadMain(group, "visual_playposition");
+    connect(m_pVisualPlaypos, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+
     m_pTrackSamples = new ControlObjectThreadWidget(
             group, "track_samples");
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
@@ -66,13 +69,18 @@ void WNumberPos::slotSetTrackSampleRate(double dSampleRate) {
 }
 
 void WNumberPos::setValue(double dValue) {
+    // Ignore midi-scaled signals from the skin connection.
+    Q_UNUSED(dValue);
+}
+
+void WNumberPos::slotSetValue(double dValue) {
     m_dOldValue = dValue;
 
     double valueMillis = 0.0f;
     double durationMillis = 0.0f;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
         double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
-        valueMillis = dValue * 500.0f / 127.0f * m_dTrackSamples / m_dTrackSampleRate;
+        valueMillis = dValue * 500.0f * m_dTrackSamples / m_dTrackSampleRate;
         durationMillis = dDuration * 1000.0f;
         if (m_bRemain)
             valueMillis = math_max(durationMillis - valueMillis, 0.0f);
@@ -111,3 +119,9 @@ void WNumberPos::setRemain(bool bRemain)
     // Have the widget redraw itself with its current value.
     setValue(m_dOldValue);
 }
+
+
+
+
+
+

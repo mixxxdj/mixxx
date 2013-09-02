@@ -471,7 +471,7 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 
 void WOverview::resizeEvent(QResizeEvent *) {
     //Those coeficient map position from [0;width-1] to value [0;127]
-    m_a = (float)((width()-1))/(127.f);
+    m_a = static_cast<float>(width() - 1) / 127.f;
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
 }

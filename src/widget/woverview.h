@@ -85,10 +85,10 @@ class WOverview : public WWidget {
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
     inline int valueToPosition(float value) const {
-        return (int)(m_a * value);
+        return static_cast<int>(m_a * value);
     }
     inline double positionToValue(int position) const {
-        return ((float)position) / m_a;
+        return static_cast<float>(position) / m_a;
 
     }
 
