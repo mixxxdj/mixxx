@@ -30,14 +30,13 @@ SelectorSimilarity::SelectorSimilarity(QObject* parent,
 SelectorSimilarity::~SelectorSimilarity() {
 }
 
-QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
-        int iSeedTrackId, QList<int> trackIds) {
-
+QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
+                                                           QList<int> trackIds) {
     QTime timer;
     timer.start();
 
     loadStoredSimilarityContributions();
-    QList<QPair<int, double> > scores;
+    QList<ScorePair> scores;
     TrackPointer pSeedTrack = m_trackDAO.getTrack(iSeedTrackId);
     QHash<QString, double> contributions = normalizeContributions(pSeedTrack);
 
@@ -54,7 +53,7 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
             }
         }
 
-        scores << QPair<int, double>(trackId, score);
+        scores << ScorePair(trackId, score);
     }
 
     qDebug() << "calculateSimilarities:" << timer.elapsed() << "ms";
@@ -62,7 +61,7 @@ QList<QPair<int, double> > SelectorSimilarity::calculateSimilarities(
 }
 
 // Return up to n followup tracks for a given seed track, filtered and ranked
-// according to current settings in dlgprefselctor.
+// according to current settings in DlgPrefSelector.
 // (n defaults to -1, which returns all results.)
 QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
     QList<int> results;
@@ -85,7 +84,7 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
         }
     }
 
-    QList<QPair<int, double> > ranks =
+    QList<ScorePair> ranks =
             calculateSimilarities(iSeedTrackId, unrankedResults);
 
     int resultsSize = ranks.size();
@@ -156,8 +155,8 @@ QHash<QString, double> SelectorSimilarity::normalizeContributions(
     return contributions;
 }
 
-bool SelectorSimilarity::similaritySort(const QPair<int, double> s1,
-                                        const QPair<int, double> s2) {
+bool SelectorSimilarity::similaritySort(const ScorePair s1,
+                                        const ScorePair s2) {
     return s1.second >= s2.second;
 }
 

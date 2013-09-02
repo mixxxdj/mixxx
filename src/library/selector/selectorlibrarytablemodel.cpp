@@ -19,6 +19,7 @@
 #include "util/timer.h"
 
 #include "library/selector/selector_preferences.h"
+#include "library/selector/selectorsimilarity.h"
 #include "library/selector/selectorlibrarytablemodel.h"
 
 using mixxx::track::io::key::ChromaticKey;
@@ -135,14 +136,12 @@ void SelectorLibraryTableModel::calculateSimilarity() {
             trackIds << getTrackId(index);
         }
 
-        QList<QPair<int, double> > results =
+        QList<ScorePair> results =
             m_selectorSimilarity.calculateSimilarities(m_pSeedTrack->getId(),
                                                        trackIds);
 
         QVariantList queryTrackIds;
         QVariantList queryScores;
-        // using a typedef for your QPair could be nice, but your current solution is also fine
-        typedef QPair<int, double> ScorePair;
         foreach (ScorePair pair, results) {
             queryTrackIds << pair.first;
             queryScores << pair.second;
@@ -167,7 +166,6 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
 
-    // ALWAYS only initialize ONE variable here, it is harder to read if there are more
     for (int i = 0; i < rowCount(); i++) {
         QModelIndex index1 = createIndex(i, fieldIndex(LIBRARYTABLE_ID));
         TrackPointer pTrack1 = getTrack(index1);

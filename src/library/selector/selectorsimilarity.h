@@ -9,6 +9,9 @@
 #include "library/trackcollection.h"
 #include "library/selector/selectorfilters.h"
 
+// type to store track ID and similarity score from 0 to 1
+typedef QPair<int, double> ScorePair;
+
 class SelectorSimilarity : public QObject {
     Q_OBJECT
 
@@ -19,8 +22,8 @@ class SelectorSimilarity : public QObject {
                        SelectorFilters& selectorFilters);
     ~SelectorSimilarity();
 
-    QList<QPair<int, double> > calculateSimilarities(int iSeedTrackId,
-                                                     QList<int> trackIds);
+    QList<ScorePair> calculateSimilarities(int iSeedTrackId,
+                                           QList<int> trackIds);
 
 
   public slots:
@@ -38,8 +41,8 @@ class SelectorSimilarity : public QObject {
     void loadStoredSimilarityContributions();
     QHash<QString, double> normalizeContributions(TrackPointer pSeedTrack);
 
-    static bool similaritySort(const QPair<int, double> s1,
-                               const QPair<int, double> s2);
+    static bool similaritySort(const ScorePair s1,
+                               const ScorePair s2);
 
     static double timbreSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
     static double rhythmSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
