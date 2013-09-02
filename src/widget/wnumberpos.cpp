@@ -63,12 +63,17 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
 
 void WNumberPos::slotSetTrackSamples(double dSamples) {
     m_dTrackSamples = dSamples;
-    setValue(m_dOldValue);
+    slotSetValue(m_dOldValue);
 }
 
 void WNumberPos::slotSetTrackSampleRate(double dSampleRate) {
     m_dTrackSampleRate = dSampleRate;
-    setValue(m_dOldValue);
+    slotSetValue(m_dOldValue);
+}
+
+void WNumberPos::setValue(double dValue) {
+    // Ignore midi-scaled signals from the skin connection.
+    Q_UNUSED(dValue);
 }
 
 void WNumberPos::slotSetValue(double dValue) {
@@ -115,5 +120,5 @@ void WNumberPos::setRemain(bool bRemain)
         m_qsText = "";
 
     // Have the widget redraw itself with its current value.
-    setValue(m_dOldValue);
+    slotSetValue(m_dOldValue);
 }

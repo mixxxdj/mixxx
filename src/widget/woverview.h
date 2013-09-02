@@ -89,7 +89,6 @@ class WOverview : public WWidget {
     }
     inline double positionToValue(int position) const {
         return static_cast<float>(position) / m_a;
-
     }
 
     const QString m_group;
