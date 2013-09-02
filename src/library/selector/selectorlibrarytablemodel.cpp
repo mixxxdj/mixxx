@@ -24,8 +24,6 @@
 using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
-const bool sDebug = true;
-
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
                                                      ConfigObject<ConfigValue>* pConfig,
                                                      TrackCollection* pTrackCollection)
@@ -130,11 +128,6 @@ void SelectorLibraryTableModel::calculateSimilarity() {
     if (!m_pSeedTrack.isNull()) {
 //        qDebug() << m_selectorSimilarity.getTopFollowupTrack(m_pSeedTrack->getId());
 
-        QSqlQuery query(m_pTrackCollection->getDatabase());
-        query.prepare("UPDATE " SELECTOR_TABLE " SET score=:score "
-                      "WHERE " % LIBRARYTABLE_ID % "=:id;");
-        QVariantList queryTrackIds;
-        QVariantList queryScores;
 
         QList<int> trackIds;
         for (int i = 0, n = rowCount(); i < n; i++) {
@@ -146,12 +139,18 @@ void SelectorLibraryTableModel::calculateSimilarity() {
             m_selectorSimilarity.calculateSimilarities(m_pSeedTrack->getId(),
                                                        trackIds);
 
-        QPair<int, double> pair;
-        foreach (pair, results) {
+        QVariantList queryTrackIds;
+        QVariantList queryScores;
+        // using a typedef for your QPair could be nice, but your current solution is also fine
+        typedef QPair<int, double> ScorePair;
+        foreach (ScorePair pair, results) {
             queryTrackIds << pair.first;
             queryScores << pair.second;
         }
 
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        query.prepare("UPDATE " SELECTOR_TABLE " SET score=:score "
+                      "WHERE " % LIBRARYTABLE_ID % "=:id;");
         query.bindValue(":score", queryScores);
         query.bindValue(":id", queryTrackIds);
         if (!query.execBatch()) {
@@ -168,12 +167,13 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
 
-    for (int i = 0, n = rowCount(); i < n; i++) {
+    // ALWAYS only initialize ONE variable here, it is harder to read if there are more
+    for (int i = 0; i < rowCount(); i++) {
         QModelIndex index1 = createIndex(i, fieldIndex(LIBRARYTABLE_ID));
         TrackPointer pTrack1 = getTrack(index1);
         TimbrePointer pTimbre1 = pTrack1->getTimbre();
         QString sTrack1 = pTrack1->getFilename();
-        for (int j = i + 1; j < n; j++) {
+        for (int j = i + 1; j < rowCount(); j++) {
             QModelIndex index2 = createIndex(j, fieldIndex(LIBRARYTABLE_ID));
             TrackPointer pTrack2 = getTrack(index2);
             TimbrePointer pTimbre2 = pTrack2->getTimbre();

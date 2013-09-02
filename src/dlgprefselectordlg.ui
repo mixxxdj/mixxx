@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>592</width>
-    <height>334</height>
+    <width>1052</width>
+    <height>769</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -93,14 +93,27 @@
       <string>Similarity Metrics</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
-      <item row="0" column="0">
-       <widget class="QLabel" name="labelTimbre">
+      <item row="1" column="0">
+       <widget class="QLabel" name="labelRhythm">
         <property name="text">
-         <string>Timbre</string>
+         <string>Rhythm</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
+      <item row="4" column="1">
+       <spacer name="verticalSpacer">
+        <property name="orientation">
+         <enum>Qt::Vertical</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>20</width>
+          <height>40</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item row="0" column="2">
        <widget class="QSlider" name="horizontalSliderTimbre">
         <property name="maximum">
          <number>99</number>
@@ -116,14 +129,7 @@
         </property>
        </widget>
       </item>
-      <item row="1" column="0">
-       <widget class="QLabel" name="labelRhythm">
-        <property name="text">
-         <string>Rhythm</string>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="1">
+      <item row="1" column="2">
        <widget class="QSlider" name="horizontalSliderRhythm">
         <property name="maximum">
          <number>99</number>
@@ -146,7 +152,34 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="1">
+      <item row="3" column="1" colspan="2">
+       <widget class="QLabel" name="labelDescriptionText">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="labelDescription">
+        <property name="styleSheet">
+         <string notr="true"/>
+        </property>
+        <property name="text">
+         <string>Description:</string>
+        </property>
+       </widget>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="labelTimbre">
+        <property name="text">
+         <string>Timbre</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="2">
        <widget class="QSlider" name="horizontalSliderLastFm">
         <property name="maximum">
          <number>99</number>
@@ -162,16 +195,6 @@
         </property>
         <property name="tickInterval">
          <number>10</number>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="1">
-       <widget class="QTextBrowser" name="descriptionBox"/>
-      </item>
-      <item row="3" column="0">
-       <widget class="QLabel" name="labelDescription">
-        <property name="text">
-         <string>Description</string>
         </property>
        </widget>
       </item>

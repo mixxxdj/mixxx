@@ -11,6 +11,7 @@
 
 class SelectorSimilarity : public QObject {
     Q_OBJECT
+
   public:
     SelectorSimilarity(QObject *parent,
                        TrackCollection* pTrackCollection,
@@ -20,7 +21,11 @@ class SelectorSimilarity : public QObject {
 
     QList<QPair<int, double> > calculateSimilarities(int iSeedTrackId,
                                                      QList<int> trackIds);
+
+
   public slots:
+    // Return up to n followup tracks for a given seed track, filtered and ranked
+    // according to current settings. (n defaults to -1, which returns all results.)
     QList<int> getFollowupTracks(int iSeedTrackId, int n = -1);
     int getTopFollowupTrack(int iSeedTrackId);
     void setSimilarityContributions(
@@ -49,7 +54,6 @@ class SelectorSimilarity : public QObject {
     QHash<QString, SimilarityFunc> m_similarityFunctions;
 
     SelectorFilters& m_selectorFilters;
-
 };
 
 #endif // SELECTORSIMILARITY_H

@@ -149,16 +149,16 @@ void DlgPrefSelector::setLastFmCoefficient(int value) {
 }
 
 void DlgPrefSelector::displayTimbreDescription() {
-    descriptionBox->setText(tr("Compare track timbres."));
+    labelDescriptionText->setText(tr("Compare track timbres."));
 }
 
 void DlgPrefSelector::displayRhythmDescription() {
-    descriptionBox->setText(tr("Compare track rhythms "
+    labelDescriptionText->setText(tr("Compare track rhythms "
                                "(cosine distance between beat spectra)."));
 }
 
 void DlgPrefSelector::displayLastFmDescription() {
-    descriptionBox->setText(tr("Compare tracks using Last.fm tags."));
+    labelDescriptionText->setText(tr("Compare tracks using Last.fm tags."));
 }
 
 void DlgPrefSelector::loadSettings() {
