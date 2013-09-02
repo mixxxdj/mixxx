@@ -106,7 +106,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(m_pCOTEnabledAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(enableAutoDJCo(double)));
 
-    // playposition is from -0.14 to + 1.14
     m_pCOPlayPos1 = new ControlObjectThreadMain("[Channel1]", "playposition");
     m_pCOPlayPos2 = new ControlObjectThreadMain("[Channel2]", "playposition");
     m_pCOPlay1 = new ControlObjectThreadMain("[Channel1]", "play");

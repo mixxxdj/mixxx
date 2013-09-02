@@ -85,10 +85,10 @@ class WOverview : public WWidget {
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
     inline int valueToPosition(float value) const {
-        return (int)(m_a * value - m_b + 0.5);
+        return (int)(m_a * value);
     }
     inline double positionToValue(int position) const {
-        return ((float)position + m_b) / m_a;
+        return ((float)position) / m_a;
 
     }
 
@@ -118,7 +118,6 @@ class WOverview : public WWidget {
 
     // Coefficient value-position linear transposition
     float m_a;
-    float m_b;
 
     int m_analyserProgress; // In 0.1%
     bool m_trackLoaded;

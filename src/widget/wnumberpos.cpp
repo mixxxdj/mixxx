@@ -71,9 +71,8 @@ void WNumberPos::setValue(double dValue) {
     double valueMillis = 0.0f;
     double durationMillis = 0.0f;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
-        //map midi value taking in to account 14 = 0 and 114 = 1
         double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
-        valueMillis = (dValue - 14) * 1000.0f * m_dTrackSamples / 2.0f / 100.0f / m_dTrackSampleRate;
+        valueMillis = dValue * 500.0f / 127.0f * m_dTrackSamples / m_dTrackSampleRate;
         durationMillis = dDuration * 1000.0f;
         if (m_bRemain)
             valueMillis = math_max(durationMillis - valueMillis, 0.0f);
@@ -112,9 +111,3 @@ void WNumberPos::setRemain(bool bRemain)
     // Have the widget redraw itself with its current value.
     setValue(m_dOldValue);
 }
-
-
-
-
-
-
