@@ -94,23 +94,23 @@ void SoundSourceFFmpeg::unlock() {
     ffmpegmutex.unlock();
 }
 
-double SoundSourceFFmpeg::convertFfmpegToMixxx(double pos,
-        const AVRational &time_base) {
-    return (pos / (double)time_base.den * (double)this->getSampleRate() *
+double SoundSourceFFmpeg::convertPtsToByteOffset(double pts,
+        const AVRational &ffmpegtime) {
+    return (pts / (double)ffmpegtime.den * (double)this->getSampleRate() *
             (double)2.);
 }
 
-double SoundSourceFFmpeg::convertMixxxToFfmpeg(double pos,
-        const AVRational &time_base) {
-    return (pos / (double)this->getSampleRate() / (double)2.) *
-           (double)time_base.den;
+double SoundSourceFFmpeg::convertByteOffsetToPts(double byteoffset,
+        const AVRational &ffmpegtime) {
+    return (byteoffset / (double)this->getSampleRate() / (double)2.) *
+           (double)ffmpegtime.den;
 }
 
-int64_t SoundSourceFFmpeg::ffmpeg2mixxx(int64_t pos,
-                                        const AVRational &time_base) {
+int64_t SoundSourceFFmpeg::convertPtsToByteOffsetOld(int64_t pts,
+                                        const AVRational &ffmpegbase) {
     int64_t l_lReturnValue = 0;
 
-    l_lReturnValue = round(convertFfmpegToMixxx(pos, time_base));
+    l_lReturnValue = round(convertPtsToByteOffset(pts, ffmpegbase));
 
     if ((l_lReturnValue % 4) != 0) {
         l_lReturnValue += 4 - (l_lReturnValue % 4);
@@ -119,10 +119,10 @@ int64_t SoundSourceFFmpeg::ffmpeg2mixxx(int64_t pos,
     return l_lReturnValue;
 }
 
-int64_t SoundSourceFFmpeg::mixxx2ffmpeg(int64_t pos,
-                                        const AVRational &time_base) {
+int64_t SoundSourceFFmpeg::convertByteOffsetToPtsOld(int64_t byteoffset,
+                                        const AVRational &ffmpegtime) {
     int64_t l_lReturnValue = 0;
-    l_lReturnValue = round(convertMixxxToFfmpeg(pos, time_base));
+    l_lReturnValue = round(convertByteOffsetToPts(byteoffset, ffmpegtime));
     return l_lReturnValue + (l_lReturnValue % 2);
 }
 
@@ -275,8 +275,8 @@ long SoundSourceFFmpeg::seek(long filepos) {
         minus = filepos;
     }
 
-    fspos = mixxx2ffmpeg(minus, time_base);
-    fspos = (int64_t) round(convertMixxxToFfmpeg(minus, time_base));
+    fspos = convertByteOffsetToPtsOld(minus, time_base);
+    fspos = (int64_t) round(convertByteOffsetToPts(minus, time_base));
     m_iCurrentMixxTs = filepos;
 
     m_iOffset = 0;
@@ -297,7 +297,7 @@ long SoundSourceFFmpeg::seek(long filepos) {
         return 0;
     }
 
-    m_iOffset = ffmpeg2mixxx(fspos - m_pFormatCtx->streams[m_iAudioStream]->cur_dts,
+    m_iOffset = convertPtsToByteOffsetOld(fspos - m_pFormatCtx->streams[m_iAudioStream]->cur_dts,
                              time_base);
 
     m_bIsSeeked = TRUE;
@@ -413,7 +413,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
                     currentFFMPEGPosSec = l_SPacket.pts * av_q2d(
                               m_pFormatCtx->streams[m_iAudioStream]->time_base);
-                    l_fCurrentFFMPEGPosByte = convertFfmpegToMixxx(l_SPacket.pts,
+                    l_fCurrentFFMPEGPosByte = convertPtsToByteOffset(l_SPacket.pts,
                               m_pFormatCtx->streams[m_iAudioStream]->time_base);
                     currentFFMPEGPosByte = round(l_fCurrentFFMPEGPosByte);
                     currentFFMPEGPosByte2 = (currentFFMPEGPosSec * (44100 * 2));
@@ -437,12 +437,12 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
                         needed = (size * this->getChannels()) + m_iOffset;
 
-                        if (((int64_t) round(convertMixxxToFfmpeg(
+                        if (((int64_t) round(convertByteOffsetToPts(
                         l_fCurrentFFMPEGPosByte,
                         m_pFormatCtx->streams[m_iAudioStream]->time_base))) -
                         l_SPacket.pts != 0) {
                             int64_t l_iWarning1 = (int64_t) 
-                            round(convertMixxxToFfmpeg(
+                            round(convertByteOffsetToPts(
                             l_fCurrentFFMPEGPosByte, 
                             m_pFormatCtx->streams[m_iAudioStream]->time_base));
                             
@@ -452,7 +452,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
                                 (m_iCurrentMixxTs - currentFFMPEGPosByte)
                                 * 2 << " ! " << 
                                 (int64_t) round(
-                                convertMixxxToFfmpeg(l_fCurrentFFMPEGPosByte,
+                                convertByteOffsetToPts(l_fCurrentFFMPEGPosByte,
                                 m_pFormatCtx->streams[m_iAudioStream]->time_base));
                             qDebug() << "ffmpeg: Warning: **** Packet PTS/DTS" 
                                 << l_SPacket.pts<< "/" <<
@@ -467,7 +467,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
                     }
 
-                    if ( (((int64_t) round(convertMixxxToFfmpeg(
+                    if ( (((int64_t) round(convertByteOffsetToPts(
                            l_fCurrentFFMPEGPosByte,
                            m_pFormatCtx->streams[m_iAudioStream]->time_base))) - 
                            l_SPacket.pts) != 0) {

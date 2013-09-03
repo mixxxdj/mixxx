@@ -63,12 +63,12 @@ public:
     AVCodecContext *getCodecContext();
     AVFormatContext *getFormatContext();
     int getAudioStreamIndex();
-    double convertFfmpegToMixxx(double pos, const AVRational &time_base);
-    double convertMixxxToFfmpeg(double pos, const AVRational &time_base);
+    double convertPtsToByteOffset(double pts, const AVRational &ffmpegtime);
+    double convertByteOffsetToPts(double byteoffset, const AVRational &ffmpegtime);
 
 protected:
-    int64_t ffmpeg2mixxx(int64_t pos, const AVRational &time_base);
-    int64_t mixxx2ffmpeg(int64_t pos, const AVRational &time_base);
+    int64_t convertPtsToByteOffsetOld(int64_t pos, const AVRational &time_base);
+    int64_t convertByteOffsetToPtsOld(int64_t pos, const AVRational &time_base);
     void lock();
     void unlock();
 
