@@ -87,38 +87,25 @@ int SoundSourceFFmpeg::getAudioStreamIndex() {
 
 
 void SoundSourceFFmpeg::lock() {
-    //  qDebug() << "ffmpeg: Before lock";
     ffmpegmutex.lock();
-    //qDebug() << "ffmpeg: After lock";
 }
 
 void SoundSourceFFmpeg::unlock() {
-    //qDebug() << "ffmpeg: Before unlock";
     ffmpegmutex.unlock();
-    //qDebug() << "ffmpeg: After unlock";
 }
 
-///
-// Accurate calculate correct place in FFMPEG to MIXXX byte place
-//
 double SoundSourceFFmpeg::convertFfmpegToMixxx(double pos,
         const AVRational &time_base) {
     return (pos / (double)time_base.den * (double)this->getSampleRate() *
             (double)2.);
 }
 
-///
-// Accurate calculate correct place in MIXXX to FFMPEG PTS place
-//
 double SoundSourceFFmpeg::convertMixxxToFfmpeg(double pos,
         const AVRational &time_base) {
     return (pos / (double)this->getSampleRate() / (double)2.) *
            (double)time_base.den;
 }
 
-///
-// Calculate byte position from FFMPEG PTS (point of time) value
-//
 int64_t SoundSourceFFmpeg::ffmpeg2mixxx(int64_t pos,
                                         const AVRational &time_base) {
     int64_t l_lReturnValue = 0;
@@ -132,9 +119,6 @@ int64_t SoundSourceFFmpeg::ffmpeg2mixxx(int64_t pos,
     return l_lReturnValue;
 }
 
-///
-// Calculate FFMPEG PTS (Point of time) value from Mixxx byte position
-//
 int64_t SoundSourceFFmpeg::mixxx2ffmpeg(int64_t pos,
                                         const AVRational &time_base) {
     int64_t l_lReturnValue = 0;
@@ -142,7 +126,6 @@ int64_t SoundSourceFFmpeg::mixxx2ffmpeg(int64_t pos,
     return l_lReturnValue + (l_lReturnValue % 2);
 }
 
-// SoundSource overrides
 int SoundSourceFFmpeg::open() {
     unsigned int i;
 
@@ -249,7 +232,6 @@ int SoundSourceFFmpeg::open() {
     return OK;
 }
 
-// This make all the magic in seeking with FFMPEG
 long SoundSourceFFmpeg::seek(long filepos) {
     int ret = 0;
     int64_t fspos = 0;
@@ -323,10 +305,6 @@ long SoundSourceFFmpeg::seek(long filepos) {
     return filepos;
 }
 
-//
-//   read <size> samples into <destination>, and return the number of
-//   samples actually read.
-//
 unsigned int SoundSourceFFmpeg::read(unsigned long size,
                                      const SAMPLE * destination) {
     // Is this really needed?
@@ -459,10 +437,15 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
                         needed = (size * this->getChannels()) + m_iOffset;
 
-                        if (((int64_t) round(convertMixxxToFfmpeg(l_fCurrentFFMPEGPosByte,
-                                             m_pFormatCtx->streams[m_iAudioStream]->time_base))) - l_SPacket.pts != 0) {
-                            int64_t l_iWarning1 = (int64_t) round(convertMixxxToFfmpeg(
-                                    l_fCurrentFFMPEGPosByte, m_pFormatCtx->streams[m_iAudioStream]->time_base));
+                        if (((int64_t) round(convertMixxxToFfmpeg(
+                        l_fCurrentFFMPEGPosByte,
+                        m_pFormatCtx->streams[m_iAudioStream]->time_base))) -
+                        l_SPacket.pts != 0) {
+                            int64_t l_iWarning1 = (int64_t) 
+                            round(convertMixxxToFfmpeg(
+                            l_fCurrentFFMPEGPosByte, 
+                            m_pFormatCtx->streams[m_iAudioStream]->time_base));
+                            
                             qDebug() << "ffmpeg: Warning: Diff sec: " << 
                                 fromMixxPosSec -currentFFMPEGPosSec << 
                                 " diff B: " << 
@@ -575,12 +558,6 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
 }
 
-//
-//   Parse the the file to get metadata
-//
-//   TODO: Support all possible tags :) (Is it even possible?)
-//
-
 int SoundSourceFFmpeg::parseHeader() {
     qDebug() << "ffmpeg: SoundSourceFFmpeg::parseHeader" << m_qFilename;
 #ifdef __WINDOWS__
@@ -685,9 +662,6 @@ int SoundSourceFFmpeg::parseHeader() {
     return OK;
 }
 
-//
-//   Return the length of the file in samples.
-//
 inline long unsigned SoundSourceFFmpeg::length() {
     return filelength;
 }
