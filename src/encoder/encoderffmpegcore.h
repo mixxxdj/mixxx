@@ -54,9 +54,11 @@ class EncoderCallback;
 class EncoderFfmpegCore : public Encoder {
 public:
 #ifndef __FFMPEGOLDAPI__
-    EncoderFfmpegCore(EncoderCallback* pCallback=NULL, AVCodecID codec = AV_CODEC_ID_MP2);
+    EncoderFfmpegCore(EncoderCallback* pCallback=NULL,
+                      AVCodecID codec = AV_CODEC_ID_MP2);
 #else
-    EncoderFfmpegCore(EncoderCallback* pCallback=NULL, CodecID codec = CODEC_ID_MP2);
+    EncoderFfmpegCore(EncoderCallback* pCallback=NULL,
+                      CodecID codec = CODEC_ID_MP2);
 #endif
     ~EncoderFfmpegCore();
     int initEncoder(int bitrate, int samplerate);
@@ -75,9 +77,11 @@ private:
     void closeAudio(AVStream *st);
     void openAudio(AVCodec *codec, AVStream *st);
 #ifndef __FFMPEGOLDAPI__
-    AVStream *addStream(AVFormatContext *oc, AVCodec **codec, enum AVCodecID codec_id);
+    AVStream *addStream(AVFormatContext *oc, AVCodec **codec,
+                        enum AVCodecID codec_id);
 #else
-    AVStream *addStream(AVFormatContext *oc, AVCodec **codec, enum CodecID codec_id);
+    AVStream *addStream(AVFormatContext *oc, AVCodec **codec,
+                        enum CodecID codec_id);
 #endif
     bool m_bStreamInitialized;
 

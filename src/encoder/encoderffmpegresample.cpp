@@ -46,35 +46,41 @@ unsigned int EncoderFfmpegResample::getBufferSize() {
 }
 
 
-int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFormat outSampleFmt) {
+int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
+                                enum AVSampleFormat outSampleFmt) {
     m_pOutSampleFmt = outSampleFmt;
     m_pInSampleFmt = inSampleFmt;
 
-    qDebug() << m_pCodecCtx->sample_rate << "!" << m_pCodecCtx->channel_layout << ":" << m_pCodecCtx->channels;
+    qDebug() << m_pCodecCtx->sample_rate << "!" << m_pCodecCtx->channel_layout <<
+             ":" << m_pCodecCtx->channels;
 
     // Some MP3/WAV don't tell this so make assumtion that
     // They are stereo not 5.1
     if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 2) {
-          m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
+        m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
     } else if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 1) {
-          m_pCodecCtx->channel_layout = AV_CH_LAYOUT_MONO;
+        m_pCodecCtx->channel_layout = AV_CH_LAYOUT_MONO;
     } else if (m_pCodecCtx->channel_layout == 0 && m_pCodecCtx->channels == 0) {
-          m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
-          m_pCodecCtx->channels = 2;
+        m_pCodecCtx->channel_layout = AV_CH_LAYOUT_STEREO;
+        m_pCodecCtx->channels = 2;
     }
 
 
-    // They make big change in FFPEG 1.1 before that every format just passed s16 back to application
-    // from FFMPEG 1.1 up MP3 pass s16p (Planar stereo 16 bit) MP4/AAC FLTP (Planar 32 bit float) and OGG also FLTP (WMA same thing)
-    // IF sample type aint' S16 (Stero 16) example FFMPEG 1.1 mp3 is s16p that ain't and mp4 FLTP (32 bit float)
+    // They make big change in FFPEG 1.1 before that every format just passed 
+    // s16 back to application from FFMPEG 1.1 up MP3 pass s16p (Planar stereo 
+    // 16 bit) MP4/AAC FLTP (Planar 32 bit float) and OGG also FLTP 
+    // (WMA same thing) If sample type aint' S16 (Stero 16) example FFMPEG 1.1 
+    // mp3 is s16p that ain't and mp4 FLTP (32 bit float)
     // NOT Going to work because MIXXX works with pure s16 that is not planar
     // GOOD thing is now this can handle allmost everything..
     // What should be tested is 44800 Hz downsample and 22100 Hz up sample.
-    if ((inSampleFmt != outSampleFmt || m_pCodecCtx->sample_rate != 44100 || m_pCodecCtx->channel_layout != AV_CH_LAYOUT_STEREO) && m_pSwrCtx == NULL) {
+    if ((inSampleFmt != outSampleFmt || m_pCodecCtx->sample_rate != 44100 ||
+            m_pCodecCtx->channel_layout != AV_CH_LAYOUT_STEREO) && m_pSwrCtx == NULL) {
         if (m_pSwrCtx != NULL) {
             qDebug() << "Freeing Resample context";
 
-// __FFMPEGOLDAPI__ Is what is used in FFMPEG < 0.10 and libav < 0.8.3. NO libresample available..
+// __FFMPEGOLDAPI__ Is what is used in FFMPEG < 0.10 and libav < 0.8.3. NO 
+// libresample available..
 #ifndef __FFMPEGOLDAPI__
 
 #ifdef __LIBAVRESAMPLE__
@@ -136,14 +142,29 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt, enum AVSampleFo
         if (swr_init(m_pSwrCtx) < 0) {
 #endif
             m_pSwrCtx = NULL;
-            qDebug() << "ERROR!! Conventor not created: " <<  m_pCodecCtx->sample_rate << "Hz " << av_get_sample_fmt_name(inSampleFmt) << " " <<  (int)m_pCodecCtx->channels << "(layout:" << m_pCodecCtx->channel_layout << ") channels";
-            qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" << av_get_sample_fmt_name(outSampleFmt) << " with 2 channels";
+            qDebug() << "ERROR!! Conventor not created: " <<  
+                      m_pCodecCtx->sample_rate <<
+                     "Hz " << av_get_sample_fmt_name(inSampleFmt) << " " <<
+                     (int)m_pCodecCtx->channels << "(layout:" << 
+                     m_pCodecCtx->channel_layout <<
+                     ") channels";
+            qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" <<
+                     av_get_sample_fmt_name(outSampleFmt) << " with 2 channels";
             return -1;
         }
 #endif
 
-        qDebug() << "Created sample rate converter for conversion of" <<  m_pCodecCtx->sample_rate << "Hz format:" << av_get_sample_fmt_name(inSampleFmt) << "with:" <<  (int)m_pCodecCtx->channels << "(layout:" << m_pCodecCtx->channel_layout << ") channels (BPS" << av_get_bytes_per_sample(m_pCodecCtx->sample_fmt) << ")";
-        qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" <<  av_get_sample_fmt_name(outSampleFmt) << "with 2 (layout:" << m_pCodecCtx->channel_layout << ") channels (BPS " << av_get_bytes_per_sample(outSampleFmt) << ")";
+        qDebug() << "Created sample rate converter for conversion of" <<
+                 m_pCodecCtx->sample_rate << "Hz format:" << 
+                 av_get_sample_fmt_name(inSampleFmt) 
+                 << "with:" <<  (int)m_pCodecCtx->channels << "(layout:" <<
+                 m_pCodecCtx->channel_layout << ") channels (BPS" 
+                 << av_get_bytes_per_sample(
+                     m_pCodecCtx->sample_fmt) << ")";
+        qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" <<
+                 av_get_sample_fmt_name(outSampleFmt) << "with 2 (layout:" <<
+                 m_pCodecCtx->channel_layout << ") channels (BPS " << 
+                 av_get_bytes_per_sample(outSampleFmt) << ")";
     }
 
     return 0;
@@ -196,24 +217,34 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
 
 #if __LIBAVRESAMPLE__
         int l_iOutSamples = av_rescale_rnd(avresample_get_delay(m_pSwrCtx) +
-                                           inframe->nb_samples, m_pCodecCtx->sample_rate, m_pCodecCtx->sample_rate, AV_ROUND_UP);
+                                           inframe->nb_samples, 
+                                           m_pCodecCtx->sample_rate,
+                                           m_pCodecCtx->sample_rate,
+                                           AV_ROUND_UP);
 #else
-        int l_iOutSamples = av_rescale_rnd(swr_get_delay(m_pSwrCtx, m_pCodecCtx->sample_rate) +
-                                           inframe->nb_samples, m_pCodecCtx->sample_rate, m_pCodecCtx->sample_rate, AV_ROUND_UP);
+        int l_iOutSamples = av_rescale_rnd(swr_get_delay(m_pSwrCtx,
+                                           m_pCodecCtx->sample_rate) +
+                                           inframe->nb_samples,
+                                           m_pCodecCtx->sample_rate,
+                                           m_pCodecCtx->sample_rate,
+                                           AV_ROUND_UP);
 #endif
         int l_iOutSamplesLines = 0;
 
         // Alloc too much.. if not enough we are in trouble!
-        av_samples_alloc(&m_pOut, &l_iOutSamplesLines, 2, l_iOutSamples, m_pOutSampleFmt, 0);
+        av_samples_alloc(&m_pOut, &l_iOutSamplesLines, 2, l_iOutSamples,
+                         m_pOutSampleFmt, 0);
 #else
-        int l_iOutSamples = av_rescale_rnd(inframe->nb_samples, m_pCodecCtx->sample_rate, m_pCodecCtx->sample_rate, AV_ROUND_UP);
+        int l_iOutSamples = av_rescale_rnd(inframe->nb_samples,
+                                           m_pCodecCtx->sample_rate,
+                                           m_pCodecCtx->sample_rate,
+                                           AV_ROUND_UP);
 
         int l_iOutBytes =  av_samples_get_buffer_size(NULL, 2,
                            l_iOutSamples,
                            m_pOutSampleFmt, 1);
 
 
-        //av_samples_alloc(&m_pOut, NULL, 2, l_iOutSamples, AV_SAMPLE_FMT_S16, 0);
         m_pOut = (short *)malloc(l_iOutBytes * 2);
 #endif
 
@@ -226,19 +257,16 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
 // USED IN FFMPEG 1.0 (LibAV SOMETHING!). New in FFMPEG 1.1 and libav 9
 #if LIBAVRESAMPLE_VERSION_INT <= 3
         // AVResample OLD
-        //qDebug() << "OLD AVRESAMPLE INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes;
         l_iLen = avresample_convert(m_pSwrCtx, (void **)&m_pOut, 0, l_iOutSamples,
                                     (void **)l_pIn, 0, inframe->nb_samples);
 #else
         //AVResample NEW
-        //qDebug() << "NEW OLD AVRESAMPLE INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes;
         l_iLen = avresample_convert(m_pSwrCtx, (uint8_t **)&m_pOut, 0, l_iOutSamples,
                                     (uint8_t **)l_pIn, 0, inframe->nb_samples);
 #endif
 
 #else
         // SWResample
-        //qDebug() << "SWRESAMPLE INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes;
         l_iLen = swr_convert(m_pSwrCtx, (uint8_t **)&m_pOut, l_iOutSamples,
                              (const uint8_t **)l_pIn, inframe->nb_samples);
 #endif
@@ -246,12 +274,9 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
         l_iOutBytes = av_samples_get_buffer_size(NULL, 2, l_iLen, m_pOutSampleFmt, 1);
 
 #else
-        // qDebug() << "INSAMPLE" << inframe->nb_samples << "OUTSAMPLE" << l_iOutSamples << "OUTBYTES" << l_iOutBytes << "INBYTES" << l_lInReadBytes;
         l_iLen = audio_resample(m_pSwrCtx,
                                 (short *)m_pOut, (short *)inframe->data[0],
                                 inframe->nb_samples);
-
-        // qDebug() << "U" << l_iLen;
 
 #endif
         if (l_iLen < 0) {
