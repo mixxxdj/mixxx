@@ -26,7 +26,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
     // Use the engine's playposition value instead of midi-clamped value for displaying position.
     // This allows us to display preroll values like -5:00.  It also means that the
     // <Connection> parameter is no longer necessary in skin definitions.
-    m_pVisualPlaypos = new ControlObjectThreadMain(group, "visual_playposition");
+    m_pVisualPlaypos = new ControlObjectThreadMain(group, "playposition");
     connect(m_pVisualPlaypos, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
 
     m_pTrackSamples = new ControlObjectThreadWidget(
