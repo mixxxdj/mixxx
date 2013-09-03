@@ -27,6 +27,7 @@
 #include "util/timer.h"
 #include "controlobjectthread.h"
 #include "controlobject.h"
+#include "sampleutil.h"
 
 /****** TODO *******
    Stuff to maybe implement here
@@ -100,8 +101,18 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     }
 
     double speed = 1.0f;
-    if (strVinylSpeed == MIXXX_VINYL_SPEED_45)
+    double rpm = 100.0 / 33.0;
+    if (strVinylSpeed == MIXXX_VINYL_SPEED_45) {
+        rpm = 45.0;
         speed = 1.35f;
+    }
+
+    // The pitch ring size should be just enough to capture one revolution
+    // of the platter.  That's the period of most predictable variation.
+    double latency = ControlObject::getControl(
+            ConfigKey("[Master]", "latency"))->get();
+    int iPitchRingSize = static_cast<int>(60000 / (rpm * latency));
+    m_pPitchRing = SampleUtil::alloc(iPitchRingSize);
 
     qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
@@ -139,6 +150,7 @@ VinylControlXwax::~VinylControlXwax()
 {
     delete m_pSteadySubtle;
     delete m_pSteadyGross;
+    delete m_pPitchRing;
 
     //Cleanup xwax nicely
     timecoder_monitor_clear(&timecoder);
@@ -565,10 +577,11 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
 
         if (reportedPlayButton) {
             // Only add to the ring if pitch is stable
-            dPitchRing[ringPos] = dVinylPitch;
-            if(ringFilled < RING_SIZE)
+            m_pPitchRing[ringPos] = dVinylPitch;
+            if (ringFilled < iPitchRingSize) {
                 ringFilled++;
-            ringPos = (ringPos + 1) % RING_SIZE;
+            }
+            ringPos = (ringPos + 1) % iPitchRingSize;
         } else {
             // Reset ring if pitch isn't steady
             ringPos = 0;
@@ -578,11 +591,11 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
         //only smooth when we have good position (no smoothing for scratching)
         double averagePitch = 0.0f;
         if (iPosition != -1 && reportedPlayButton) {
-            for (int i=0; i < ringFilled; i++) {
-                averagePitch += dPitchRing[i];
+            for (int i = 0; i < ringFilled; ++i) {
+                averagePitch += m_pPitchRing[i];
             }
             averagePitch /= ringFilled;
-            //round out some of the noise
+            // Round out some of the noise
             averagePitch = round(averagePitch * 1000.0f);
             averagePitch /= 1000.0f;
         } else {
