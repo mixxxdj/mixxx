@@ -103,7 +103,7 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     if (strVinylSpeed == MIXXX_VINYL_SPEED_45)
         speed = 1.35f;
 
-    //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
+    qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
 
 
@@ -205,7 +205,7 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
     if (!bIsEnabled)
         return;
 
-    dVinylPitch = timecoder_get_pitch(&timecoder);
+    dVinylPitch = static_cast<int>(timecoder_get_pitch(&timecoder) * 1000.0) / 1000.0;
 
     //if no track loaded, let track selection work but that's it
     if (duration == NULL)
@@ -518,8 +518,9 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
 
             //Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
             //(This is caused by the manufacturing process of the vinyl.)
-            if (fabs(dDriftAmt) > 0.1 && fabs(dDriftAmt) < 5.0) {
-                dDriftControl = dDriftAmt;
+            if (iVCMode == MIXXX_VCMODE_ABSOLUTE &&
+                fabs(dDriftAmt) > 0.1 && fabs(dDriftAmt) < 5.0) {
+                dDriftControl = dDriftAmt * .01;
             } else {
                 dDriftControl = 0.0;
             }
@@ -562,16 +563,13 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
         //playbutton status may have changed
         reportedPlayButton = playButton->get();
 
-        if (reportedPlayButton)
-        {
+        if (reportedPlayButton) {
             //only add to the ring if pitch is stable
             dPitchRing[ringPos] = dVinylPitch;
             if(ringFilled < RING_SIZE)
                 ringFilled++;
             ringPos = (ringPos + 1) % RING_SIZE;
-        }
-        else
-        {
+        } else {
             //reset ring if pitch isn't steady
             ringPos = 0;
             ringFilled = 0;
@@ -579,37 +577,23 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
 
         //only smooth when we have good position (no smoothing for scratching)
         double averagePitch = 0.0f;
-        if (iPosition != -1 && reportedPlayButton)
-        {
-            for (int i=0; i<ringFilled; i++)
-            {
+        if (iPosition != -1 && reportedPlayButton) {
+            for (int i=0; i<ringFilled; i++) {
                 averagePitch += dPitchRing[i];
             }
             averagePitch /= ringFilled;
             //round out some of the noise
-            averagePitch = (double)(int)(averagePitch * 10000.0f);
-            averagePitch /= 10000.0f;
-        }
-        else
+            averagePitch = (double)(int)(averagePitch * 1000.0f);
+            averagePitch /= 1000.0f;
+        } else {
             averagePitch = dVinylPitch;
-
-        if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
-        {
-            controlScratch->slotSet(dVinylPitch + dDriftControl);
-            if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
-            {
-                rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch + dDriftControl) - 1.0f) / fRateRange);
-                dUiUpdateTime = filePosition;
-            }
         }
-        else if (iVCMode == MIXXX_VCMODE_RELATIVE)
-        {
-            controlScratch->slotSet(averagePitch);
-            if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
-            {
-                rateSlider->slotSet(rateDir->get() * (fabs(averagePitch) - 1.0f) / fRateRange);
-                dUiUpdateTime = filePosition;
-            }
+
+        controlScratch->slotSet(averagePitch + dDriftControl);
+        if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition)) {
+            rateSlider->slotSet(rateDir->get() *
+                                (fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+            dUiUpdateTime = filePosition;
         }
 
         dOldFilePos = filePosition;
