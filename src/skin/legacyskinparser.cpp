@@ -858,11 +858,6 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
 QWidget* LegacySkinParser::parseLoopSource(QDomElement node) {
     WLoopSourceText* p = new WLoopSourceText(m_pParent);
     setupWidget(node, p);
-    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
-    // come first. This is because WNumber/WLabel both change the palette based
-    // on the node and setupWidget() will set the widget style. If the style is
-    // set before the palette is set then the custom palette will not take
-    // effect which breaks color scheme support.
     p->setup(node);
     if (p->getComposedWidget()) {
         setupWidget(node, p->getComposedWidget(), false);

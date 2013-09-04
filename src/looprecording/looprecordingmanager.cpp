@@ -32,7 +32,8 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
         m_iNumDecks(0),
         m_iNumSamplers(0) {
 
-    m_pCOExportDestination = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "export_destination"));
+    m_pCOExportDestination = new ControlObject(
+                                    ConfigKey(LOOP_RECORDING_PREF_KEY, "export_destination"));
     m_pCOLoopLength = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_length"));
     m_pCOLoopPlayReady = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "play_status"));
 
@@ -48,13 +49,20 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 //    m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");
 //    m_pLoopDeck1Eject = new ControlObjectThread("[LoopRecorderDeck1]","eject");
 
-    m_pChangeExportDestination = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY,"change_export_destination"));
-    m_pChangeLoopLength = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY, "change_loop_length"));
-    m_pChangeLoopSource = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY, "change_loop_source"));
-    m_pClearRecorder = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY, "clear_recorder"));
-    m_pExportLoop = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY, "export_loop"));
-    m_pTogglePlayback = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY, "toggle_playback"));
-    m_pToggleLoopRecording = new ControlPushButton(ConfigKey(LOOP_RECORDING_PREF_KEY, "toggle_loop_recording"));
+    m_pChangeExportDestination = new ControlPushButton(
+                                    ConfigKey(LOOP_RECORDING_PREF_KEY,"change_export_destination"));
+    m_pChangeLoopLength = new ControlPushButton(
+                                    ConfigKey(LOOP_RECORDING_PREF_KEY, "change_loop_length"));
+    m_pChangeLoopSource = new ControlPushButton(
+                                    ConfigKey(LOOP_RECORDING_PREF_KEY, "change_loop_source"));
+    m_pClearRecorder = new ControlPushButton(
+                                    ConfigKey(LOOP_RECORDING_PREF_KEY, "clear_recorder"));
+    m_pExportLoop = new ControlPushButton(
+                                    ConfigKey(LOOP_RECORDING_PREF_KEY, "export_loop"));
+    m_pTogglePlayback = new ControlPushButton(
+                                    ConfigKey(LOOP_RECORDING_PREF_KEY, "toggle_playback"));
+    m_pToggleLoopRecording = new ControlPushButton(
+                                    ConfigKey(LOOP_RECORDING_PREF_KEY, "toggle_loop_recording"));
     
     connect(m_pToggleLoopRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleLoopRecording(double)));
@@ -96,7 +104,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
     // Set encoding format for loops to WAV.
     // TODO(carl) create prefences option to change between WAV and AIFF.
-    m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"),QString("WAV"));
+    m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), QString("WAV"));
 
     date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
     encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
@@ -306,14 +314,15 @@ void LoopRecordingManager::exportLoopToPlayer(QString group) {
     // TODO(carl) handle multi-layered loops.
     setRecordingDir();
     QString dir = m_recordingDir;
-    QString encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
+    QString encodingType = m_pConfig->getValueString(
+                                            ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
     //Append file extension
     QString cur_date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
 
     // TODO(Carl) better file naming.
 
     QString newFileLocation = QString("%1%2_%3.%4")
-        .arg(dir,"loop",cur_date_time_str, encodingType.toLower());
+        .arg(dir, "loop", cur_date_time_str, encodingType.toLower());
 
     if(m_pLoopTracker->finalizeLoop(newFileLocation)) {
         emit(exportToPlayer(newFileLocation, group));
@@ -402,7 +411,8 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
 //        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
 //        props->setType(DLG_WARNING);
 //        props->setTitle(tr("Loop Recording"));
-//        props->setText(tr("<html>Could not create audio file for loop recording!<p><br>Maybe you do not have enough free disk space or file permissions.</html>"));
+//        props->setText(tr("<html>Could not create audio file for loop recording!<p><br>
+//        Maybe you do not have enough free disk space or file permissions.</html>"));
 //        ErrorDialogHandler::instance()->requestErrorDialog(props);
 //        return false;
 //    }
@@ -419,6 +429,8 @@ void LoopRecordingManager::setRecordingDir() {
             qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
         } else {
             qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
+            return;
+            // TODO: prevent recording from happening at all?
         }
     }
     m_recordingDir = recordDir.absolutePath();
@@ -434,7 +446,8 @@ void LoopRecordingManager::startRecording() {
     QString number_str = QString::number(m_iLoopNumber++);
 
     // Storing the absolutePath of the recording file without file extension
-    m_recording_base_file = QString("%1/%2_%3_%4").arg(m_recordingDir,"loop",number_str,date_time_str);
+    m_recording_base_file = QString("%1/%2_%3_%4").arg(
+                                    m_recordingDir, "loop", number_str, date_time_str);
     //m_recording_base_file.append("/loop_" + m_iLoopNumber + "_" + date_time_str);
     // appending file extension to get the filelocation
     m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();

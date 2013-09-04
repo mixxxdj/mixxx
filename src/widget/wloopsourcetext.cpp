@@ -1,17 +1,14 @@
 #include "widget/wloopsourcetext.h"
 #include "looprecording/defs_looprecording.h"
 
-WLoopSourceText::WLoopSourceText(QWidget *pParent) : WNumber(pParent) {
+WLoopSourceText::WLoopSourceText(QWidget *pParent) : WNumber(pParent) { }
 
-}
-
-WLoopSourceText::~WLoopSourceText() {
-
-}
-
+WLoopSourceText::~WLoopSourceText() { }
 
 void WLoopSourceText::setValue(double dValue) {
     QString text = "";
+
+    // TODO: switch statement here?
     if (dValue == INPUT_NONE) {
         text = "off";
     } else if (dValue == INPUT_MASTER) {

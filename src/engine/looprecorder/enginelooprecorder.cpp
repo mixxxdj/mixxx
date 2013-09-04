@@ -10,12 +10,12 @@
 #include "engine/looprecorder/loopwriter.h"
 
 EngineLoopRecorder::EngineLoopRecorder()
-        : m_bIsThreadReady(false) {
+        : m_bThreadReady(false) {
 
     m_pLoopWriter = new LoopWriter();
 
     LoopRecorderThread = new QThread;
-    LoopRecorderThread->setObjectName(QString("LoopRecorder"));
+    LoopRecorderThread->setObjectName("LoopRecorder");
 
     connect(LoopRecorderThread, SIGNAL(started()), this, SLOT(slotThreadStarted()));
 
@@ -29,7 +29,7 @@ EngineLoopRecorder::~EngineLoopRecorder() {
 }
 
 void EngineLoopRecorder::writeSamples(const CSAMPLE* pBuffer, const int iBufferSize) {
-    if(!m_bIsThreadReady) {
+    if(!m_bThreadReady) {
         return;
     }
 
@@ -44,5 +44,5 @@ void EngineLoopRecorder::startThread() {
 
 void EngineLoopRecorder::slotThreadStarted() {
     qDebug() << "!~!~!~! EngineLoopRecorder::slotThreadStarted() !~!~!~!";
-    m_bIsThreadReady = true;
+    m_bThreadReady = true;
 }

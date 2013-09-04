@@ -1,5 +1,7 @@
-//  looptracker.h
-//  Created by Carl Pillot on 8/23/13.
+// looptracker.h
+// Created by Carl Pillot on 8/23/13.
+// Responsible for tracking the status of loop layers and mixing them into
+// final loops.
 
 #ifndef __LOOPTRACKER_H__
 #define __LOOPTRACKER_H__

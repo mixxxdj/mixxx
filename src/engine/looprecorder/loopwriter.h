@@ -43,8 +43,8 @@ class LoopWriter : public QObject {
     FIFO<CSAMPLE> m_sampleFifo;
     CSAMPLE* m_pWorkBuffer;
 
-    bool m_bIsFileAvailable;
-    bool m_bIsRecording;
+    bool m_bFileAvailable;
+    bool m_bRecording;
     unsigned int m_iBreakPoint;
     unsigned int m_iLoopLength;
     quint64 m_iSamplesRecorded;

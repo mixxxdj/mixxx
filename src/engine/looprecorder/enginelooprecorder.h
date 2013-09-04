@@ -37,7 +37,7 @@ class EngineLoopRecorder : public QObject {
     QThread* LoopRecorderThread;
     LoopWriter* m_pLoopWriter;
 
-    bool m_bIsThreadReady;
+    bool m_bThreadReady;
 };
 
 #endif
