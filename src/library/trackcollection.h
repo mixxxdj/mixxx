@@ -98,8 +98,7 @@ class TrackCollection : public QThread {
     AnalysisDao* m_analysisDao;
     TrackDAO* m_trackDao;
 
-    FIFO<func> m_lambdas; // USAGE OF FIFO
-
+    FIFO<func> m_lambdas; // test commit
     volatile bool m_stop;
     QMutex m_lambdasMutex;
     QSemaphore m_semLambdaReadyToCall;
