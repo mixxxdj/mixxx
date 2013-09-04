@@ -28,7 +28,7 @@ MissingTableModel::MissingTableModel(QObject* parent,
 
 void MissingTableModel::setTableModel(int id) {
     Q_UNUSED(id);
-    QSqlQuery query(m_database);
+    QSqlQuery query(m_pTrackCollection->getDatabase());
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
     QString tableName("missing_songs");
@@ -49,7 +49,7 @@ void MissingTableModel::setTableModel(int id) {
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
     QStringList tableColumns;

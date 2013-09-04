@@ -172,6 +172,7 @@ void CrateFeature::activate() {
 void CrateFeature::activateChild(const QModelIndex& index) {
     if (!index.isValid())
         return;
+    // TODO(tro) WRAP
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     m_crateTableModel.setTableModel(crateId);
@@ -577,6 +578,8 @@ void CrateFeature::slotExportPlaylist() {
 void CrateFeature::slotCrateTableChanged(int crateId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
+
+    //TODO(tro) WRAP
     m_lastRightClickedIndex = constructChildModel(crateId);
     // Switch the view to the crate.
     m_crateTableModel.setTableModel(crateId);

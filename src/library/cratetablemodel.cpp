@@ -10,7 +10,7 @@
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 
-CrateTableModel::CrateTableModel(QObject* pParent, 
+CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
                             "mixxx.db.model.crate"),
@@ -30,8 +30,8 @@ void CrateTableModel::setTableModel(int crateId) {
     m_iCrateId = crateId;
 
     QString tableName = QString("crate_%1").arg(m_iCrateId);
-    QSqlQuery query(m_database);
-    FieldEscaper escaper(m_database);
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    FieldEscaper escaper(m_pTrackCollection->getDatabase());
     QString filter = "library.mixxx_deleted = 0";
     QStringList columns;
     columns << "crate_tracks."+CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID

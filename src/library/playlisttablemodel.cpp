@@ -25,8 +25,8 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     m_iPlaylistId = playlistId;
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
-    QSqlQuery query(m_database);
-    FieldEscaper escaper(m_database);
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    FieldEscaper escaper(m_pTrackCollection->getDatabase());
 
     QStringList columns;
     columns << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID

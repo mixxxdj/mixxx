@@ -81,8 +81,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
                   QSharedPointer<BaseTrackCache> trackSource);
     void initHeaderData();
 
-    QSqlDatabase m_database; // TODO: AVOID IT!
-
     // Use this if you want a model that is read-only.
     Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
     // Use this if you want a model that can be changed
