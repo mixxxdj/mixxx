@@ -3,6 +3,7 @@
 #include <QtAlgorithms>
 #include <QtDebug>
 #include <QTime>
+#include <QVector>
 
 #include "library/basesqltablemodel.h"
 
@@ -27,7 +28,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_pRowInfo(new QVector<RowInfo>),
-           m_pNewRowInfo(NULL),
+           m_pNewRowInfo(new QVector<RowInfo>),
            m_currentSearch(""),
            m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
            m_iPreviewDeckTrackId(-1) {
@@ -205,11 +206,10 @@ void BaseSqlTableModel::select() {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
     //}
 
-    if (m_pNewRowInfo) {
-        delete m_pNewRowInfo;
-        m_pNewRowInfo = NULL;
+    if (m_pNewRowInfo->count()>0) {
+        m_pNewRowInfo->clear();
     }
-    m_pNewRowInfo = new QVector<RowInfo>;
+
     QSet<int> trackIds;
     while (selectQuery.next()) {
         int id = selectQuery.value(idColumn).toInt();
@@ -217,7 +217,7 @@ void BaseSqlTableModel::select() {
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = m_pNewRowInfo->size(); // save rows where this currently track id is located
+        thisRowInfo.order = m_pRowInfo->size(); // save rows where this currently track id is located
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
@@ -306,9 +306,11 @@ void BaseSqlTableModel::slotPopulateQueryResult() {
 
     // We're done! Issue the update signals and replace the master maps.
     beginInsertRows(QModelIndex(), 0, m_pNewRowInfo->size()-1);
-    delete m_pRowInfo;
+
+    QVector<RowInfo>* pOldRowInfo = m_pRowInfo;
     m_pRowInfo = m_pNewRowInfo;
-    m_pNewRowInfo = NULL;
+    m_pNewRowInfo = pOldRowInfo;
+
     m_bDirty = false;
     endInsertRows();
     qDebug() << "BaseSqlTableModel::select() end";
