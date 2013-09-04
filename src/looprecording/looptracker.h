@@ -1,6 +1,6 @@
 // looptracker.h
 // Created by Carl Pillot on 8/23/13.
-// Responsible for tracking the status of loop layers and mixing them into
+// Responsible for tracking the playback status of loop layers and mixing them into
 // final loops.
 
 #ifndef __LOOPTRACKER_H__
