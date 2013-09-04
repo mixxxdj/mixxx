@@ -29,7 +29,6 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
       m_cueDao(NULL),
       m_analysisDao(NULL),
       m_trackDao(NULL),
-      m_lambdas(MAX_LAMBDA_COUNT),
       m_stop(false),
       m_semLambdaReadyToCall(0),
       m_semLambdasFree(MAX_LAMBDA_COUNT),
@@ -95,7 +94,12 @@ void TrackCollection::run() {
             m_semLambdasReady.acquire(1); // Sleep until new Lambdas have arrived
         }
         func lambda;
-        m_lambdas.read(&lambda, 1);
+        m_lambdasMutex.lock();
+        lambda = m_lambdas.dequeue();
+        m_lambdasMutex.unlock();
+
+        lambda();
+
         m_semLambdasFree.release(1);
         lambda();
     }
@@ -109,14 +113,16 @@ void TrackCollection::callAsync(func lambda) {
     Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
 
     // lock GUI elements by setting [playlist] "isBusy"
-    m_pCOTPlaylistIsBusy->set(1.0f);
+    m_pCOTPlaylistIsBusy->set(1.0);
     addLambdaToQueue(lambda);
 }
 
 void TrackCollection::addLambdaToQueue(func lambda) {
     //TODO(tro) check lambda
     m_semLambdasFree.acquire(1);  // Blocks if FIFO is entirely occupied (see MAX_LAMBDA_COUNT)
-    m_lambdas.write(&lambda, 1);
+    m_lambdasMutex.lock();
+    m_lambdas.enqueue(lambda);
+    m_lambdasMutex.unlock();
     m_semLambdasReady.release(1);
 }
 
