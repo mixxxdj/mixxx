@@ -20,7 +20,7 @@ class TrackModel;
 class TrackCollection;
 class SidebarModel;
 class LibraryFeature;
-class LibraryTableModel;
+//class LibraryTableModel;
 class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;

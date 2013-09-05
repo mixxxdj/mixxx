@@ -46,8 +46,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pAutoDJTableModel = new PlaylistTableModel(this, m_pTrackCollection,
                                                  "mixxx.db.model.autodj");
-    // tro's lambda idea,
-    // this code calls synchronously!
+    // tro's lambda idea, this code calls synchronously!
     QMutex mutex;
     mutex.lock();
     m_pTrackCollection->callAsync(

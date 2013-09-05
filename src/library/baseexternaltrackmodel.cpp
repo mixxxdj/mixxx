@@ -10,6 +10,9 @@ BaseExternalTrackModel::BaseExternalTrackModel(QObject* parent,
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace),
           m_trackTable(trackTable),
           m_trackSource(trackSource) {
+}
+
+void BaseExternalTrackModel::init() {
     setTableModel();
 }
 

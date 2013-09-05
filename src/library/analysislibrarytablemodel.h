@@ -11,6 +11,7 @@ class AnalysisLibraryTableModel : public LibraryTableModel
     AnalysisLibraryTableModel(QObject* parent,
                              TrackCollection* pTrackCollection);
     virtual ~AnalysisLibraryTableModel();
+    void init();
 
   public slots:
     void showRecentSongs();

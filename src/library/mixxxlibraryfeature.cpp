@@ -90,9 +90,18 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
-
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
+    // tro's lambda idea. This code calls synchronously!
+//    QMutex mutex;
+//    mutex.lock();
+//    m_pTrackCollection->callAsync(
+//                [this, &mutex] (void) {
+        m_pLibraryTableModel->init();
+//        mutex.unlock();
+//    });
+//    mutex.lock();
+//    mutex.unlock();
 
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
@@ -174,7 +183,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
             // case. toString() absolutely does not work when you pass the result to a
             files.append(url.toLocalFile());
         }
-    
+
         // Adds track, does not insert duplicates, handles unremoving logic.
         QList<int> trackIds = m_trackDao.addTracks(files, true);
         return trackIds.size() > 0;

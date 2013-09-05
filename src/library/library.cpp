@@ -39,10 +39,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
-        m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
 
+    m_pTrackCollection = new TrackCollection(pConfig);
     m_pTrackCollection->start();
 
     // Since m_pTrackCollection is separate thread, here we must wait when
@@ -53,7 +53,18 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
+
+    // TODO(tro) !!!
+    // tro's lambda idea. This code calls synchronously!
+//    QMutex mutex;
+//    mutex.lock();
+//    m_pTrackCollection->callAsync(
+//                [this, &mutex] (void) {
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
+//        mutex.unlock();
+//    });
+//    mutex.lock();
+//    mutex.unlock();
     addFeature(m_pMixxxLibraryFeature);
 
 #ifdef __PROMO__

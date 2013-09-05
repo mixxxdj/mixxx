@@ -5,16 +5,19 @@
 #include "playermanager.h"
 
 const QString LibraryTableModel::DEFAULT_LIBRARYFILTER =
-        "mixxx_deleted=0 AND fs_deleted=0"; 
+        "mixxx_deleted=0 AND fs_deleted=0";
 
 LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      QString settingsNamespace)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace){
-    setTableModel();
 }
 
 LibraryTableModel::~LibraryTableModel() {
+}
+
+void LibraryTableModel::init() {
+    setTableModel();
 }
 
 void LibraryTableModel::setTableModel(int id){

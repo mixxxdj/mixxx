@@ -5,6 +5,7 @@
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
 #include "mixxxutils.cpp"
+#include "queryutil.h"
 
 #define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
 
@@ -44,12 +45,7 @@ void MissingTableModel::setTableModel(int id) {
                   "ON library.location=track_locations.id "
                   "WHERE " + MissingTableModel::MISSINGFILTER);
     if (!query.exec()) {
-        qDebug() << query.executedQuery() << query.lastError();
-    }
-
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-        qDebug() << __FILE__ << __LINE__ << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
 
     QStringList tableColumns;

@@ -33,8 +33,19 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pAnalysisLibraryTableView);
 
-    m_pAnalysisLibraryTableModel =  new AnalysisLibraryTableModel(this,
-                                    pTrackCollection);
+    m_pAnalysisLibraryTableModel =  new AnalysisLibraryTableModel(this, pTrackCollection);
+
+    // tro's lambda idea. This code calls synchronously!
+    QMutex mutex;
+    mutex.lock();
+    m_pTrackCollection->callAsync(
+                [this, &mutex] (void) {
+        m_pAnalysisLibraryTableModel->init();
+        mutex.unlock();
+    });
+    mutex.lock();
+    mutex.unlock();
+
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),

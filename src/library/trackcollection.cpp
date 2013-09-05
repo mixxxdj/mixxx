@@ -31,8 +31,8 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
       m_trackDao(NULL),
       m_stop(false),
       m_semLambdaReadyToCall(0),
-      m_semLambdasFree(MAX_LAMBDA_COUNT),
       m_semLambdasReady(0),
+      m_semLambdasFree(MAX_LAMBDA_COUNT),
       m_pCOTPlaylistIsBusy(NULL),
       m_supportedFileExtensionsRegex(
           SoundSourceProxy::supportedFileExtensionsRegex(),
@@ -86,11 +86,12 @@ void TrackCollection::run() {
     emit(initialized()); // to notify that Daos can be used
 
     // main TrackCollection's loop
-    int loopCount = 0;
+    //    int loopCount = 0;
+
     while (!m_stop) {
         if (!m_semLambdasReady.tryAcquire(1)) {
             // no Lambda available, so unlock GUI.
-            m_pCOTPlaylistIsBusy->set(0.0f);
+            m_pCOTPlaylistIsBusy->set(0.0);
             m_semLambdasReady.acquire(1); // Sleep until new Lambdas have arrived
         }
         func lambda;
@@ -101,7 +102,6 @@ void TrackCollection::run() {
         lambda();
 
         m_semLambdasFree.release(1);
-        lambda();
     }
 
     DBG() << " ### Thread ended ###";

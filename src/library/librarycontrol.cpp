@@ -156,7 +156,7 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 }
 
 void LibraryControl::slotSetPlaylistBusy(double v) {
-    bool enabled (v == 0.0f); // true means it is busy, so need to disable
+    bool enabled (v == 0.0); // true means it is busy, so need to disable
     m_pLibraryWidget->setEnabled(enabled);
     m_pSidebarWidget->setEnabled(enabled);
 }

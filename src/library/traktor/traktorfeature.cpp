@@ -24,6 +24,10 @@ TraktorTrackModel::TraktorTrackModel(QObject* parent,
                                  "traktor") {
 }
 
+void TraktorTrackModel::init() {
+    BaseExternalTrackModel::init();
+}
+
 bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY) ||
         column == fieldIndex(LIBRARYTABLE_BITRATE)) {

@@ -3,7 +3,6 @@
 
 #include <QModelIndex>
 #include <QObject>
-#include <QSqlDatabase>
 #include <QString>
 
 #include "library/trackmodel.h"
@@ -20,6 +19,7 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
                            QString trackTable,
                            QString trackSource);
     virtual ~BaseExternalTrackModel();
+    void init();
 
     void setTableModel(int id=-1);
     TrackModel::CapabilitiesFlags getCapabilities() const;
