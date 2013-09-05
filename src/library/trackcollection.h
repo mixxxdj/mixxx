@@ -53,7 +53,10 @@ class TrackCollection : public QThread {
     TrackCollection(ConfigObject<ConfigValue>* pConfig);
     ~TrackCollection();
     void run();
+
     void callAsync(func lambda);
+    void callSync(func lambda);
+
     void stopThread();
     void addLambdaToQueue(func lambda);
 

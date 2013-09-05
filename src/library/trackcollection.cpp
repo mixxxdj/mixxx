@@ -117,6 +117,21 @@ void TrackCollection::callAsync(func lambda) {
     addLambdaToQueue(lambda);
 }
 
+void TrackCollection::callSync(func lambda) {
+    DBG();
+    QMutex mutex;
+    mutex.lock();
+    callAsync( [&mutex, &lambda] (void) {
+        DBG() << "Before exec lambda in callSync";
+        lambda();
+        DBG();
+        mutex.unlock();
+    });
+    mutex.lock();
+    mutex.unlock(); // QMutxes should be allays destroyed in unlocked state.
+    DBG();
+}
+
 void TrackCollection::addLambdaToQueue(func lambda) {
     //TODO(tro) check lambda
     m_semLambdasFree.acquire(1);  // Blocks if FIFO is entirely occupied (see MAX_LAMBDA_COUNT)
