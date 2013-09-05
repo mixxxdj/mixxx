@@ -77,10 +77,6 @@ CueControl::CueControl(const char * _group,
     connect(m_pCueDefault, SIGNAL(valueChanged(double)),
             this, SLOT(cueDefault(double)),
             Qt::DirectConnection);
-
-    connect(m_pPlayButton, SIGNAL(valueChanged(double)),
-            this, SLOT(playFromCuePreview(double)),
-            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
