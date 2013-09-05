@@ -37,6 +37,8 @@
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/quantizecontrol.h"
+#include "engine/cuecontrol.h"
+#include "engine/clockcontrol.h"
 #include "util/timer.h"
 
 #ifdef __VINYLCONTROL__
@@ -204,6 +206,15 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
+
+    // Create the clock controller
+    m_pClockControl = new ClockControl(_group, _config);
+    addControl(m_pClockControl);
+
+    // Create the cue controller
+    m_pCueControl = new CueControl(_group, _config);
+    addControl(m_pCueControl);
+
 
     m_pReadAheadManager = new ReadAheadManager(m_pReader);
     m_pReadAheadManager->addEngineControl(m_pLoopingControl);

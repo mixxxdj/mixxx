@@ -37,6 +37,8 @@ class EngineControl;
 class BpmControl;
 class RateControl;
 class LoopingControl;
+class ClockControl;
+class CueControl;
 class ReadAheadManager;
 class ControlObject;
 class ControlPushButton;
@@ -163,23 +165,28 @@ private:
     // as m_engineControls and m_hintList
     QMutex m_engineLock;
 
-    /** Holds the name of the control group */
+    // Holds the name of the control group
     const char* m_group;
     ConfigObject<ConfigValue>* m_pConfig;
 
-    /** Pointer to the loop control object */
+    // Pointer to the loop control object
     LoopingControl* m_pLoopingControl;
 
-    /** Pointer to the rate control object */
+    // Pointer to the rate control object
     RateControl* m_pRateControl;
 
-    /** Pointer to the BPM control object */
+    // Pointer to the BPM control object
     BpmControl* m_pBpmControl;
+
+    // Pointer to the clock control object
+    ClockControl* m_pClockControl;
+
+    // Pointer to the cue control object
+    CueControl* m_pCueControl;
 
     QList<EngineControl*> m_engineControls;
 
-    /** The read ahead manager for EngineBufferScale's that need to read
-        ahead */
+    // The read ahead manager for EngineBufferScale's that need to read ahead
     ReadAheadManager* m_pReadAheadManager;
 
     // The reader used to read audio files

@@ -725,7 +725,7 @@ void CueControl::playFromCuePreview(double v) {
     QMutexLocker lock(&m_mutex);
 
     if (m_bPreviewing) {
-    // we're previewing? Then stop previewing and go into normal play mode.
+        // we're previewing? Then stop previewing and go into normal play mode.
         m_pPlayButton->set(1.0);
         m_bPreviewing = false;
     }
