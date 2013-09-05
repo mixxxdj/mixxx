@@ -157,8 +157,10 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 
 void LibraryControl::slotSetPlaylistBusy(double v) {
     bool enabled (v == 0.0); // true means it is busy, so need to disable
-    m_pLibraryWidget->setEnabled(enabled);
-    m_pSidebarWidget->setEnabled(enabled);
+    if (m_pLibraryWidget!=NULL)
+        m_pLibraryWidget->setEnabled(enabled);
+    if (m_pSidebarWidget!=NULL)
+        m_pSidebarWidget->setEnabled(enabled);
 }
 
 void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
