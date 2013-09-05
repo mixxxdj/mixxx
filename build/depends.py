@@ -537,6 +537,7 @@ class MixxxCore(Feature):
                    "widget/wwidgetstack.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
+                   "widget/wloopexporttext.cpp",
                    "widget/wloopsourcetext.cpp",
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
