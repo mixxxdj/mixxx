@@ -122,14 +122,11 @@ void TrackCollection::callSync(func lambda) {
     QMutex mutex;
     mutex.lock();
     callAsync( [&mutex, &lambda] (void) {
-        DBG() << "Before exec lambda in callSync";
         lambda();
-        DBG();
         mutex.unlock();
     });
     mutex.lock();
-    mutex.unlock(); // QMutxes should be allays destroyed in unlocked state.
-    DBG();
+    mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
 }
 
 void TrackCollection::addLambdaToQueue(func lambda) {
