@@ -56,15 +56,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
 
     // TODO(tro) !!!
     // tro's lambda idea. This code calls synchronously!
-//    QMutex mutex;
-//    mutex.lock();
-//    m_pTrackCollection->callAsync(
-//                [this, &mutex] (void) {
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
-//        mutex.unlock();
-//    });
-//    mutex.lock();
-//    mutex.unlock();
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
+    });
     addFeature(m_pMixxxLibraryFeature);
 
 #ifdef __PROMO__

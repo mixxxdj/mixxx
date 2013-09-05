@@ -34,16 +34,10 @@ void DlgHidden::init() {
     qDebug() << "before lambda: " << this << m_pHiddenTableModel << m_pTrackCollection;
 
     // tro's lambda idea, this code calls synchronously!
-    QMutex mutex;
-    mutex.lock();
-    m_pTrackCollection->callAsync(
-                [this, &mutex] (void) {
-        qDebug() << "in lambda: " << m_pHiddenTableModel;
+    m_pTrackCollection->callSync(
+                [this] (void) {
         m_pHiddenTableModel->init();
-        mutex.unlock();
     });
-    mutex.lock();
-    mutex.unlock();
 
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 

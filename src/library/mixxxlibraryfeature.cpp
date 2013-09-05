@@ -93,15 +93,10 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     // These rely on the 'default' track source being present.
     m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
     // tro's lambda idea. This code calls synchronously!
-//    QMutex mutex;
-//    mutex.lock();
-//    m_pTrackCollection->callAsync(
-//                [this, &mutex] (void) {
+    m_pTrackCollection->callSync(
+                [this] (void) {
         m_pLibraryTableModel->init();
-//        mutex.unlock();
-//    });
-//    mutex.lock();
-//    mutex.unlock();
+    });
 
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,

@@ -36,15 +36,10 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_pAnalysisLibraryTableModel =  new AnalysisLibraryTableModel(this, pTrackCollection);
 
     // tro's lambda idea. This code calls synchronously!
-//    QMutex mutex;
-//    mutex.lock();
     m_pTrackCollection->callSync(
-                [this/*, &mutex*/] (void) {
+                [this] (void) {
         m_pAnalysisLibraryTableModel->init();
-//        mutex.unlock();
     });
-//    mutex.lock();
-//    mutex.unlock();
 
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 

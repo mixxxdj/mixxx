@@ -16,15 +16,10 @@ MissingTableModel::MissingTableModel(QObject* parent,
         : BaseSqlTableModel(parent, pTrackCollection,
                             "mixxx.db.model.missing") {
     // tro's lambda idea, this code calls synchronously!
-    QMutex mutex;
-    mutex.lock();
-    m_pTrackCollection->callAsync(
-                [this, &mutex] (void) {
+    m_pTrackCollection->callSync(
+                [this] (void) {
         setTableModel();    // TODO(xxx) move to initialize()
-        mutex.unlock();
     });
-    mutex.lock();
-    mutex.unlock();
 }
 
 void MissingTableModel::setTableModel(int id) {

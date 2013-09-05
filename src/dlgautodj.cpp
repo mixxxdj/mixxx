@@ -47,10 +47,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pAutoDJTableModel = new PlaylistTableModel(this, m_pTrackCollection,
                                                  "mixxx.db.model.autodj");
     // tro's lambda idea, this code calls synchronously!
-    QMutex mutex;
-    mutex.lock();
-    m_pTrackCollection->callAsync(
-                [this, &mutex] (void) {
+    m_pTrackCollection->callSync(
+                [this] (void) {
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         int playlistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
         if (playlistId < 0) {
@@ -58,10 +56,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                                                     PlaylistDAO::PLHT_AUTO_DJ);
         }
         m_pAutoDJTableModel->setTableModel(playlistId);
-        mutex.unlock();
     });
-    mutex.lock();
-    mutex.unlock();
 
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
@@ -295,11 +290,10 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
         }
 
         TrackPointer nextTrack;
-        // tro's lambda idea,
-        // this code calls synchronously!
+        // tro's lambda idea. This code calls synchronously!
         QMutex mutex;
         mutex.lock();
-        m_pTrackCollection->callAsync(
+        m_pTrackCollection->callSync(
                     [this, &deck1Playing, &deck2Playing, &nextTrack, &mutex] (void) {
             // Never load the same track if it is already playing
             if (deck1Playing) {
@@ -409,15 +403,10 @@ void DlgAutoDJ::player1PositionChanged(double value) {
             m_pCOPlay1->slotSet(1.0);  // Play the track in player 1
 
             // tro's lambda idea, this code calls SYNCHRONOUSLY!
-            QMutex mutex;
-            mutex.lock();
             m_pTrackCollection->callAsync(
-                        [this, &mutex] (void) {
+                        [this] (void) {
                 removePlayingTrackFromQueue("[Channel1]");
-                mutex.unlock();
             });
-            mutex.lock();
-            mutex.unlock();
         } else {
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
@@ -426,15 +415,10 @@ void DlgAutoDJ::player1PositionChanged(double value) {
                 // or if it was started just before
 
                 // tro's lambda idea, this code calls SYNCHRONOUSLY!
-                QMutex mutex;
-                mutex.lock();
-                m_pTrackCollection->callAsync(
-                            [this, &mutex] (void) {
+                m_pTrackCollection->callSync(
+                            [this] (void) {
                     loadNextTrackFromQueue();
-                    mutex.unlock();
                 });
-                mutex.lock();
-                mutex.unlock();
 
                 // if we start the deck from code we don`t get a signal
                 player1PlayChanged(1.0);
@@ -477,15 +461,10 @@ void DlgAutoDJ::player1PositionChanged(double value) {
                 }
             }
             // tro's lambda idea, this code calls SYNCHRONOUSLY!
-            QMutex mutex;
-            mutex.lock();
-            m_pTrackCollection->callAsync(
-                        [this, &mutex] (void) {
+            m_pTrackCollection->callSync(
+                        [this] (void) {
                 removePlayingTrackFromQueue("[Channel2]");
-                mutex.unlock();
             });
-            mutex.lock();
-            mutex.unlock();
             m_eState = ADJ_P1FADING;
             pushButtonFadeNow->setEnabled(false);
         }
@@ -536,15 +515,10 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
             // tro's lambda idea, this code calls SYNCHRONOUSLY!
-            QMutex mutex;
-            mutex.lock();
-            m_pTrackCollection->callAsync(
-                        [this, &mutex] (void) {
+            m_pTrackCollection->callSync(
+                        [this] (void) {
                 loadNextTrackFromQueue();
-                mutex.unlock();
             });
-            mutex.lock();
-            mutex.unlock();
         }
         return;
     }
@@ -567,15 +541,11 @@ void DlgAutoDJ::player2PositionChanged(double value) {
                     m_pCOPlayPos1->slotSet(m_fadeDuration1);
                 }
             }
-            QMutex mutex;
-            mutex.lock();
-            m_pTrackCollection->callAsync(
-                        [this, &mutex] (void) {
+            // tro's lambda idea, this code calls SYNCHRONOUSLY!
+            m_pTrackCollection->callSync(
+                        [this] (void) {
                 removePlayingTrackFromQueue("[Channel1]");
-                mutex.unlock();
             });
-            mutex.lock();
-            mutex.unlock();
             m_eState = ADJ_P2FADING;
             pushButtonFadeNow->setEnabled(false);
         }

@@ -56,15 +56,10 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         "itunes");
 
     // tro's lambda idea. This code calls synchronously!
-    QMutex mutex;
-    mutex.lock();
-    m_pTrackCollection->callAsync(
-                [this, &mutex] (void) {
+    m_pTrackCollection->callSync(
+                [this] (void) {
         m_pITunesTrackModel->init();
-        mutex.unlock();
     });
-    mutex.lock();
-    mutex.unlock();
 
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
