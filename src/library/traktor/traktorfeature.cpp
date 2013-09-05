@@ -80,6 +80,18 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
 
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection);
+
+    // tro's lambda idea. This code calls synchronously!
+    QMutex mutex;
+    mutex.lock();
+    m_pTrackCollection->callAsync(
+                [this, &mutex] (void) {
+        m_pTraktorTableModel->init();
+        mutex.unlock();
+    });
+    mutex.lock();
+    mutex.unlock();
+
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
 
     m_title = tr("Traktor");
