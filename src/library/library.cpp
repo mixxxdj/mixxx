@@ -54,7 +54,6 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
 
-    // TODO(tro) !!!
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
                 [this] (void) {

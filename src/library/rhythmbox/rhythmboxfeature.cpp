@@ -39,11 +39,7 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
         "rhythmbox_library",
         "rhythmbox");
 
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        m_pRhythmboxTrackModel->init();
-    });
+    m_pRhythmboxTrackModel->init();
     m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.rhythmbox_playlist",

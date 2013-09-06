@@ -31,9 +31,7 @@ DlgHidden::~DlgHidden() {
 
 void DlgHidden::init() {
     m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
-    qDebug() << "before lambda: " << this << m_pHiddenTableModel << m_pTrackCollection;
-
-    // tro's lambda idea, this code calls synchronously!
+    // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
                 [this] (void) {
         m_pHiddenTableModel->init();
