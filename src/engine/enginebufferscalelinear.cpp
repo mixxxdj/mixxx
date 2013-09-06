@@ -203,7 +203,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         int iNextSample = static_cast<int>(ceil(m_dNextSampleIndex)) * 2;
         if (iNextSample + 1 < buffer_int_size) {
             for (int i = iNextSample;
-                 samples_needed > 2 && i < buffer_int_size; i+=2) {
+                 samples_needed > 2 && i < buffer_int_size; i += 2) {
                 *write_buf = buffer_int[i]; write_buf++;
                 *write_buf = buffer_int[i+1]; write_buf++;
                 samples_needed -= 2;
@@ -386,7 +386,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         //increment the index for the next loop
         m_dNextSampleIndex = m_dCurSampleIndex +
                 (i < iRateLerpLength ? fabs(rate_add) : fabs(rate_add_new));
-        i+=2;
+        i +=2 ;
     }
 
     SampleUtil::applyGain(&buf[i], 0.0f, buf_size - i);
