@@ -38,7 +38,6 @@ const QString Library::m_sTrackViewName = QString("WTrackTableView");
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
-        m_pSidebarModel(new SidebarModel(parent)),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
 
@@ -51,14 +50,18 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     QObject::connect(m_pTrackCollection, SIGNAL(initialized()), &loop, SLOT(quit()));
     loop.exec();
 
+    m_pSidebarModel = new SidebarModel(m_pTrackCollection, parent);
+
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
 
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
                 [this] (void) {
-        m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
+        m_pMixxxLibraryFeature->init();
     });
+    m_pMixxxLibraryFeature->initUI();
     addFeature(m_pMixxxLibraryFeature);
 
 #ifdef __PROMO__

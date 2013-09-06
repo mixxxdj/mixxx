@@ -26,6 +26,9 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
+}
+
+void MixxxLibraryFeature::init() {
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
@@ -51,7 +54,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED;
 
-    QSqlQuery query(pTrackCollection->getDatabase());
+    QSqlQuery query(m_pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
     QString queryString = QString(
         "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
@@ -74,7 +77,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
     }
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-        pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
+        m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     connect(&m_trackDao, SIGNAL(trackDirty(int)),
             pBaseTrackCache, SLOT(slotTrackDirty(int)));
     connect(&m_trackDao, SIGNAL(trackClean(int)),
@@ -89,15 +92,17 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
-    pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
+    m_pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        m_pLibraryTableModel->init();
-    });
+    m_pLibraryTableModel = new LibraryTableModel(this, m_pTrackCollection);
 
+    // NOTE(tro) No need to wrap into callSync, since this method must be executed in callAsync
+    m_pLibraryTableModel->init();
+}
+
+// NOTE(tro) Moved to separate method, since we cannot create children for
+//           a parent that is in a different thread
+void MixxxLibraryFeature::initUI() {
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
                                        this, pRootItem);
@@ -112,6 +117,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
 }
+
 
 void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
                     MixxxKeyboard* pKeyboard) {

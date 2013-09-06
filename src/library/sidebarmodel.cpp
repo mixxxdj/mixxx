@@ -5,10 +5,12 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
+#include "library/trackcollection.h"
 
-SidebarModel::SidebarModel(QObject* parent)
+SidebarModel::SidebarModel(TrackCollection* tc, QObject* parent)
         : QAbstractItemModel(parent),
-          m_iDefaultSelectedIndex(0) {
+          m_iDefaultSelectedIndex(0),
+          m_pTrackCollection(tc) {
 }
 
 SidebarModel::~SidebarModel() {
@@ -254,12 +256,21 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            return m_sFeatures[index.row()]->dropAccept(urls, pSource);
+            // TODO (tro) DISSCUSS THIS MOMENT
+            // tro's lambda idea. This code calls asynchronously!
+            m_pTrackCollection->callAsync(
+                        [this, &index, urls, pSource] (void) {
+                return m_sFeatures[index.row()]->dropAccept(urls, pSource);
+            });
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
-                return feature->dropAcceptChild(index, urls,pSource);
+                // tro's lambda idea. This code calls asynchronously!
+                m_pTrackCollection->callAsync(
+                            [this, &feature, &index, urls, pSource] (void) {
+                    return feature->dropAcceptChild(index, urls, pSource);
+                });
             }
         }
     }

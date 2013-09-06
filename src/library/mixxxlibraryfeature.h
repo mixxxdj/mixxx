@@ -25,6 +25,8 @@ class MixxxLibraryFeature : public LibraryFeature {
                         TrackCollection* pTrackCollection,
                         ConfigObject<ConfigValue>* pConfig);
     virtual ~MixxxLibraryFeature();
+    void init();
+    void initUI();
 
     QVariant title();
     QIcon getIcon();
