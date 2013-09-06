@@ -44,6 +44,7 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_bDrag(false),
         m_iPos(0),
         m_a(1.0),
+        m_b(0.0),
         m_analyserProgress(-1),
         m_trackLoaded(false) {
     m_endOfTrackControl = new ControlObjectThreadMain(
@@ -470,8 +471,9 @@ void WOverview::paintText(const QString &text, QPainter *painter) {
 }
 
 void WOverview::resizeEvent(QResizeEvent *) {
-    //Those coeficient map position from [0;width-1] to value [0;127]
-    m_a = static_cast<float>(width() - 1) / 127.f;
+    //Those coeficient map position from [0;width-1] to value [14;114]
+    m_a = (float)((width()-1))/( 114.f - 14.f);
+    m_b = 14.f * m_a;
     m_waveformImageScaled = QImage();
     m_diffGain = 0;
 }

@@ -10,7 +10,7 @@ VinylControl::VinylControl(ConfigObject<ConfigValue> * pConfig, QString group)
     iSampleRate = m_pConfig->getValueString(ConfigKey("[Soundcard]","Samplerate")).toULong();
 
     // Get Control objects
-    playPos             = new ControlObjectThread(group, "playposition");
+    playPos             = new ControlObjectThread(group, "playposition");    //Range: -.14 to 1.14
     trackSamples        = new ControlObjectThread(group, "track_samples");
     trackSampleRate     = new ControlObjectThread(group, "track_samplerate");
     vinylSeek           = new ControlObjectThread(group, "vinylcontrol_seek");
@@ -111,3 +111,4 @@ float VinylControl::getSpeed()
 {
     return dVinylScratch;
 }
+

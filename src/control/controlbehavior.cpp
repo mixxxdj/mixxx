@@ -55,11 +55,11 @@ double ControlPotmeterBehavior::valueToWidgetParameter(double dValue) {
         dValue = m_dMinValue;
     }
     double dNorm = (dValue - m_dMinValue) / m_dValueRange;
-    return dNorm < 0.5 ? dNorm * 127.0 : dNorm * 126.0 + 1.0;
+    return dNorm < 0.5 ? dNorm * 128.0 : dNorm * 126.0 + 1.0;
 }
 
 double ControlPotmeterBehavior::widgetParameterToValue(double dParam) {
-    double dNorm = dParam < 64 ? dParam / 127.0 : (dParam - 1.0) / 126.0;
+    double dNorm = dParam < 64 ? dParam / 128.0 : (dParam - 1.0) / 126.0;
     return m_dMinValue + dNorm * m_dValueRange;
 }
 
@@ -141,11 +141,11 @@ double ControlLinPotmeterBehavior::valueToWidgetParameter(double dValue) {
         dValue = m_dMinValue;
     }
     double dNorm = (dValue - m_dMinValue) / m_dValueRange;
-    return math_min(dNorm * 127, 127);
+    return math_min(dNorm * 128, 127);
 }
 
 double ControlLinPotmeterBehavior::widgetParameterToValue(double dParam) {
-    double dNorm = dParam / 127.0;
+    double dNorm = dParam / 128.0;
     return m_dMinValue + dNorm * m_dValueRange;
 }
 
@@ -220,3 +220,4 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
         }
     }
 }
+
