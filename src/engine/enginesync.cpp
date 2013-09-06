@@ -31,7 +31,7 @@ static const char* kMasterSyncGroup = "[Master]";
 SyncChannel::SyncChannel(EngineChannel* pChannel)
         : m_pChannel(pChannel),
           m_group(pChannel->getGroup()) {
-    m_pChannelSyncState = ControlObject::getControl(ConfigKey(m_group, "sync_state"));
+    m_pChannelSyncState = new ControlObject(ConfigKey(m_group, "sync_state"));
     connect(m_pChannelSyncState, SIGNAL(valueChanged(double)),
             this, SLOT(slotChannelSyncStateChanged(double)),
             Qt::DirectConnection);
@@ -42,9 +42,16 @@ SyncChannel::SyncChannel(EngineChannel* pChannel)
     m_pFileBpm = ControlObject::getControl(ConfigKey(m_group, "file_bpm"));
     m_pRateEngine = ControlObject::getControl(ConfigKey(m_group, "rateEngine"));
     m_pBeatDistance = ControlObject::getControl(ConfigKey(m_group, "beat_distance"));
+    m_pRateRange = ControlObject::getControl(m_group, "rateRange");
+    m_pRateDir = ControlObject::getControl(m_group, "rate_dir");
+    m_pRateSlider = ControlObject::getControl(ConfigKey(m_group, "rate"));
+    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
+            this, SLOT(slotChannelRateSliderChanged(double)),
+            Qt::DirectConnection);
 }
 
 SyncChannel::~SyncChannel() {
+    delete m_pChannelSyncState;
 }
 
 EngineChannel* SyncChannel::getChannel() {
@@ -63,8 +70,19 @@ void SyncChannel::setState(double state) {
     m_pChannelSyncState->set(state);
 }
 
+void SyncChannel::setBpm(double bpm) {
+    const double new_rate = ((bpm / m_pFileBpm->get()) - 1.0) /
+                            m_pRateDir->get() / m_pRateRange->get();
+    m_pRateSlider->set(new_rate);
+}
+
 void SyncChannel::slotChannelSyncStateChanged(double v) {
     emit(channelSyncStateChanged(this, v));
+}
+
+void SyncChannel::slotChannelRateSliderChanged(double v) {
+    const double new_bpm = getFileBpm() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
+    emit(channelRateSliderChanged(this, new_bpm));
 }
 
 ControlObject* SyncChannel::getRateEngineControl() {
@@ -140,6 +158,9 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
     SyncChannel* pSyncChannel = new SyncChannel(pChannel);
     connect(pSyncChannel, SIGNAL(channelSyncStateChanged(SyncChannel*, double)),
             this, SLOT(slotChannelSyncStateChanged(SyncChannel*, double)),
+            Qt::DirectConnection);
+    connect(pSyncChannel, SIGNAL(channelRateSliderChanged(SyncChannel*, double)),
+            this, SLOT(slotChannelRateSliderChanged(SyncChannel*, double)),
             Qt::DirectConnection);
     m_channels.append(pSyncChannel);
 }
@@ -304,11 +325,6 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
 }
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
-    if (m_sSyncSource != kMasterSyncGroup) {
-        // TODO: this should be prevented by setting the slider to disabled.
-        m_pSyncRateSlider->set(m_dMasterBpm);
-        return;
-    }
     m_pMasterBpm->set(new_bpm);
 }
 
@@ -397,6 +413,15 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
         if (channelIsMaster) {
             setMaster(chooseNewMaster(""));
         }
+    }
+}
+
+void EngineSync::slotChannelRateSliderChanged(SyncChannel* pSyncChannel, double new_bpm) {
+    // A deck's rate slider was twiddled -- if it's a slave, we should affect
+    // master bpm anyway.
+
+    if (pSyncChannel->getState() == SYNC_SLAVE and new_bpm != 0) {
+        m_pChannelMaster->setBpm(new_bpm);
     }
 }
 

@@ -46,15 +46,18 @@ class SyncChannel : public QObject {
     void setState(double state);
     double getState() const;
     double getFileBpm() const;
+    void setBpm(double bpm);
 
     ControlObject* getRateEngineControl();
     ControlObject* getBeatDistanceControl();
 
   signals:
     void channelSyncStateChanged(SyncChannel*, double);
+    void channelRateSliderChanged(SyncChannel*, double);
 
   private slots:
     void slotChannelSyncStateChanged(double);
+    void slotChannelRateSliderChanged(double);
 
   private:
     EngineChannel* m_pChannel;
@@ -63,6 +66,9 @@ class SyncChannel : public QObject {
     ControlObject* m_pFileBpm;
     ControlObject* m_pRateEngine;
     ControlObject* m_pBeatDistance;
+    ControlObject* m_pRateSlider;
+    ControlObject* m_pRateRange;
+    ControlObject* m_pRateDir;
 };
 
 class EngineSync : public EngineControl {
@@ -84,6 +90,7 @@ class EngineSync : public EngineControl {
     void slotSampleRateChanged(double);
     void slotInternalMasterChanged(double);
     void slotChannelSyncStateChanged(SyncChannel*, double);
+    void slotChannelRateSliderChanged(SyncChannel*, double);
 
   private:
     void setMaster(const QString& group);

@@ -175,4 +175,3 @@ bool ControlObject::connectValueChangeRequest(const QObject* receiver,
     }
     return ret;
 }
-
