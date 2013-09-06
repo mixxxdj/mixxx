@@ -16,7 +16,7 @@
 #include "playermanager.h"
 #include "playerinfo.h"
 
-#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
+#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__ << __FILE__ << __LINE__
 
 const bool sDebug = false;
 
@@ -175,7 +175,7 @@ void BaseSqlTableModel::select() {
     //     return;
     // }
 
-    qDebug() << "BaseSqlTableModel::select() start";
+    DBG() << "BaseSqlTableModel::select() start by" << this;
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
@@ -313,7 +313,7 @@ void BaseSqlTableModel::slotPopulateQueryResult() {
 
     m_bDirty = false;
     endInsertRows();
-    qDebug() << "BaseSqlTableModel::select() end";
+    DBG() << "BaseSqlTableModel::select() end";
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,

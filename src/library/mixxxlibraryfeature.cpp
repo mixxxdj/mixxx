@@ -21,6 +21,7 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         : LibraryFeature(parent),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
+          m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
           m_pMissingView(NULL),
           m_pHiddenView(NULL),
           m_trackDao(pTrackCollection->getTrackDAO()),
@@ -93,8 +94,11 @@ void MixxxLibraryFeature::init() {
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     m_pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
+
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, m_pTrackCollection);
+
+    // NOTE(tro) Moved next commented line to c-tor initialization list
+    // m_pLibraryTableModel = new LibraryTableModel(this, m_pTrackCollection);
 
     // NOTE(tro) No need to wrap into callSync, since this method must be executed in callAsync
     m_pLibraryTableModel->init();

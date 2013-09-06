@@ -20,6 +20,8 @@ public:
     SetlogFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
     virtual ~SetlogFeature();
+    void init();
+    void constructChildModel();
 
     QVariant title();
     QIcon getIcon();

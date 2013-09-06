@@ -60,43 +60,45 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
         return;
     }
 
-    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
-    // use the dataPath because models with nested playlists need to use the
-    // full path/name of the playlist.
-    QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, bTop] (void) {
+        // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
+        // use the dataPath because models with nested playlists need to use the
+        // full path/name of the playlist.
+        QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
+        QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
+            getPlaylistModelForPlaylist(playlist));
 
-    QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-        getPlaylistModelForPlaylist(playlist));
-
-    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::addToAutoDJ could not initialize a playlist model for playlist:" << playlist;
-        return;
-    }
-
-    pPlaylistModelToAdd->select();                                                          // TODO(tro) BEGIN wrap to callAsync
-    PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
-    int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-
-    int rows = pPlaylistModelToAdd->rowCount();
-    for (int i = 0; i < rows; ++i) {
-        QModelIndex index = pPlaylistModelToAdd->index(i, 0);
-        if (!index.isValid()) {
-            continue;
+        if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
+            qDebug() << "BaseExternalLibraryFeature::addToAutoDJ could not initialize a playlist model for playlist:" << playlist;
+            return;
         }
-        TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+        pPlaylistModelToAdd->select();
+        PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
+        int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
 
-        if (!track || track->getId() == -1) {
-            continue;
-        }
+        int rows = pPlaylistModelToAdd->rowCount();
+        for (int i = 0; i < rows; ++i) {
+            QModelIndex index = pPlaylistModelToAdd->index(i, 0);
+            if (!index.isValid()) {
+                continue;
+            }
+            TrackPointer track = pPlaylistModelToAdd->getTrack(index);
 
-        if (bTop) {
-            // Start at position 2 because position 1 was already loaded to the deck
-            playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
-        } else {
-            // TODO(XXX): Care whether the append succeeded.
-            playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
+            if (!track || track->getId() == -1) {
+                continue;
+            }
+
+            if (bTop) {
+                // Start at position 2 because position 1 was already loaded to the deck
+                playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
+            } else {
+                // TODO(XXX): Care whether the append succeeded.
+                playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
+            }
         }
-    }                                                                                       // TODO(tro) END wrap to callAsync
+    });
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
@@ -106,55 +108,59 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         return;
     }
 
-    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
-    // use the dataPath because models with nested playlists need to use the
-    // full path/name of the playlist.
-    QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
-    QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-        getPlaylistModelForPlaylist(playlist));
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
+        // use the dataPath because models with nested playlists need to use the
+        // full path/name of the playlist.
+        QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
+        QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
+                    getPlaylistModelForPlaylist(playlist));
 
-    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::slotImportAsMixxxPlaylist could not initialize a playlist model for playlist:" << playlist;
-        return;
-    }
-
-    pPlaylistModelToAdd->select();                                                          // TODO(tro) BEGIN wrap to callAsync
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-
-    int playlistId = playlistDao.getPlaylistIdFromName(playlist);
-    int i = 1;
-
-    if (playlistId != -1) {
-        // Calculate a unique name
-        playlist += "(%1)";
-        while (playlistId != -1) {
-            i++;
-            playlistId = playlistDao.getPlaylistIdFromName(playlist.arg(i));
+        if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
+            qDebug() << "BaseExternalLibraryFeature::slotImportAsMixxxPlaylist could not initialize a playlist model for playlist:" << playlist;
+            return;
         }
-        playlist = playlist.arg(i);
-    }
-    playlistId = playlistDao.createPlaylist(playlist);
 
-    if (playlistId != -1) {
-        // Copy Tracks
-        int rows = pPlaylistModelToAdd->rowCount();
-        for (int i = 0; i < rows; ++i) {
-            QModelIndex index = pPlaylistModelToAdd->index(i,0);
-            if (index.isValid()) {
-                qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
-                TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-                // TODO(XXX): Care whether the append succeeded.
-                playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
+        pPlaylistModelToAdd->select();
+        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+
+        int playlistId = playlistDao.getPlaylistIdFromName(playlist);
+        int i = 1;
+
+        if (playlistId != -1) {
+            // Calculate a unique name
+            playlist += "(%1)";
+            while (playlistId != -1) {
+                i++;
+                playlistId = playlistDao.getPlaylistIdFromName(playlist.arg(i));
             }
+            playlist = playlist.arg(i);
         }
-    } else {
-        // Do not change strings here without also changing strings in
-        // src/library/baseplaylistfeature.cpp
-        QMessageBox::warning(NULL,
-                             tr("Playlist Creation Failed"),
-                             tr("An unknown error occurred while creating playlist: ")
-                             + playlist);
-    }                                                                                       // TODO(tro) END wrap to callAsync
+        playlistId = playlistDao.createPlaylist(playlist);
+
+        if (playlistId != -1) {
+            // Copy Tracks
+            int rows = pPlaylistModelToAdd->rowCount();
+            for (int i = 0; i < rows; ++i) {
+                QModelIndex index = pPlaylistModelToAdd->index(i,0);
+                if (index.isValid()) {
+                    qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
+                    TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+                    // TODO(XXX): Care whether the append succeeded.
+                    playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
+                }
+            }
+        } else {
+            // Do not change strings here without also changing strings in
+            // src/library/baseplaylistfeature.cpp
+            QMessageBox::warning(NULL,
+                                 tr("Playlist Creation Failed"),
+                                 tr("An unknown error occurred while creating playlist: ")
+                                 + playlist);
+        }
+    });
 }
 
 

@@ -82,7 +82,14 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
-    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
+    SetlogFeature* setlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [&setlogFeature] (void) {
+        setlogFeature->init();
+    });
+    setlogFeature->constructChildModel();
+    addFeature(setlogFeature);
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));

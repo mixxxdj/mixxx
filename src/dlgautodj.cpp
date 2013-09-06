@@ -291,10 +291,8 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
 
         TrackPointer nextTrack;
         // tro's lambda idea. This code calls synchronously!
-        QMutex mutex;
-        mutex.lock();
         m_pTrackCollection->callSync(
-                    [this, &deck1Playing, &deck2Playing, &nextTrack, &mutex] (void) {
+                    [this, &deck1Playing, &deck2Playing, &nextTrack] (void) {
             // Never load the same track if it is already playing
             if (deck1Playing) {
                 removePlayingTrackFromQueue("[Channel1]");
@@ -303,10 +301,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
                 removePlayingTrackFromQueue("[Channel2]");
             }
             nextTrack = getNextTrackFromQueue();
-            mutex.unlock();
         });
-        mutex.lock();
-        mutex.unlock();
 
         if (!nextTrack) {
             qDebug() << "Queue is empty now";
@@ -436,7 +431,11 @@ void DlgAutoDJ::player1PositionChanged(double value) {
             setCrossfader(-1.0);  // Move crossfader to the left!
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
-            loadNextTrackFromQueue();
+            // tro's lambda idea. This code calls synchronously!
+            m_pTrackCollection->callSync(
+                        [this] (void) {
+                loadNextTrackFromQueue();
+            });
         }
         return;
     }
@@ -573,7 +572,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
 }
 
 TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
-    // This function can be wrapped into callAsync
+    // NOTE(tro) This function can be wrapped into callAsync/callAsync
 
     // Get the track at the top of the playlist...
     TrackPointer nextTrack;
@@ -581,25 +580,23 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     // This will also signal valueChanged and by that change m_backUpTransition
     // so we need to copy to orignal value back
 
-    // spinBoxTransition->setValue(m_backUpTransition);  // # UI
     emit(spinBoxTransitionSetValue(m_backUpTransition));
     m_backUpTransition = tmp;
 
     while (true) {
-        nextTrack = m_pAutoDJTableModel->getTrack(    // # DB
+        nextTrack = m_pAutoDJTableModel->getTrack(
             m_pAutoDJTableModel->index(0, 0));
 
         if (nextTrack) {
             if (nextTrack->exists()) {
                 // found a valid Track
                 if (nextTrack->getDuration() < m_backUpTransition)
-                    // spinBoxTransition->setValue(nextTrack->getDuration()/2);  // # UI
                     emit(spinBoxTransitionSetValue(nextTrack->getDuration()/2));
                     m_backUpTransition = tmp;
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist
-                m_pAutoDJTableModel->removeTrack(       // DB
+                m_pAutoDJTableModel->removeTrack(
                     m_pAutoDJTableModel->index(0, 0));
             }
         } else {
@@ -611,7 +608,7 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
 }
 
 bool DlgAutoDJ::loadNextTrackFromQueue() {
-    // Can be used from lambda
+    // NOTE(tro) This function can be wrapped into callAsync/callAsync
     TrackPointer nextTrack = getNextTrackFromQueue();
 
     // We ran out of tracks in the queue...

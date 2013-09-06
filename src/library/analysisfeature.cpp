@@ -104,6 +104,7 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
         emit(analysisActive(true));
     }
 
+    // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
                 [this, trackIds] (void) {
         foreach(int trackId, trackIds) {

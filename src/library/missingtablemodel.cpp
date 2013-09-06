@@ -15,11 +15,10 @@ MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent, pTrackCollection,
                             "mixxx.db.model.missing") {
-    // tro's lambda idea, this code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        setTableModel();    // TODO(xxx) move to initialize()
-    });
+}
+
+void MissingTableModel::init() {
+    setTableModel();
 }
 
 void MissingTableModel::setTableModel(int id) {

@@ -15,6 +15,7 @@ class MissingTableModel : public BaseSqlTableModel {
   public:
     MissingTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~MissingTableModel();
+    void init();
 
     void setTableModel(int id = -1);
     bool isColumnInternal(int column);

@@ -53,7 +53,6 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 }
 
 DlgRecording::~DlgRecording() {
-
 }
 
 void DlgRecording::onShow() {

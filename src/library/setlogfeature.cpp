@@ -24,8 +24,11 @@ SetlogFeature::SetlogFeature(QObject* parent,
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
+}
 
-    //create a new playlist for today
+void SetlogFeature::init() {
+    // NOTE(tro) This method will be called in callSync
+    // create a new playlist for today
     QString set_log_name_format;
     QString set_log_name;
 
@@ -33,7 +36,6 @@ SetlogFeature::SetlogFeature(QObject* parent,
     set_log_name_format = set_log_name + " (%1)";
     int i = 1;
 
-    // TODO(tro) BEGIN wrap to callAsync
     // calculate name of the todays setlog
     while (m_playlistDao.getPlaylistIdFromName(set_log_name) != -1) {
         set_log_name = set_log_name_format.arg(++i);
@@ -42,17 +44,17 @@ SetlogFeature::SetlogFeature(QObject* parent,
     qDebug() << "Creating session history playlist name:" << set_log_name;
     m_playlistId = m_playlistDao.createPlaylist(set_log_name,
                                                 PlaylistDAO::PLHT_SET_LOG);
-    // TODO(tro) END wrap to callAsync
 
     if (m_playlistId == -1) {
         qDebug() << "Setlog playlist Creation Failed";
         qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
     }
+}
 
-    //construct child model
+void SetlogFeature::constructChildModel() {
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
-    constructChildModel(-1);
+    BasePlaylistFeature::constructChildModel(-1);
 }
 
 SetlogFeature::~SetlogFeature() {
@@ -292,7 +294,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (type == PlaylistDAO::PLHT_SET_LOG ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+        m_lastRightClickedIndex = BasePlaylistFeature::constructChildModel(playlistId);
 
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             // Switch the view to the playlist.

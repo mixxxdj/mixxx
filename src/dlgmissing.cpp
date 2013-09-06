@@ -21,6 +21,11 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     box->insertWidget(1, m_pTrackTableView);
 
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
+    // tro's lambda idea, this code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        m_pMissingTableModel->init();
+    });
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, SIGNAL(clicked()),
