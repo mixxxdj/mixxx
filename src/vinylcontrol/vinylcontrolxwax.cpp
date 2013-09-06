@@ -101,18 +101,22 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     }
 
     double speed = 1.0f;
-    double rpm = 100.0 / 33.0;
+    double rpm = 100.0 / 3.0;
     if (strVinylSpeed == MIXXX_VINYL_SPEED_45) {
         rpm = 45.0;
         speed = 1.35f;
     }
 
-    // The pitch ring size should be just enough to capture one revolution
-    // of the platter.  That's the period of most predictable variation.
     double latency = ControlObject::getControl(
             ConfigKey("[Master]", "latency"))->get();
-    int iPitchRingSize = static_cast<int>(60000 / (rpm * latency));
-    m_pPitchRing = SampleUtil::alloc(iPitchRingSize);
+    if (latency == 0) {
+        qDebug() << "latency is, like 20";
+        latency = 20;
+    }
+    // Set pitch ring size to 1/4 of one revolution -- a full revolution adds too much stickiness
+    // to the pitch.
+    iPitchRingSize = static_cast<int>(60000 / (rpm * latency * 4));
+    m_pPitchRing = new double[iPitchRingSize];
 
     qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
@@ -217,7 +221,7 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
     if (!bIsEnabled)
         return;
 
-    dVinylPitch = round(timecoder_get_pitch(&timecoder) * 1000.0) / 1000.0;
+    dVinylPitch = timecoder_get_pitch(&timecoder);
 
     //if no track loaded, let track selection work but that's it
     if (duration == NULL)
@@ -596,8 +600,8 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
             }
             averagePitch /= ringFilled;
             // Round out some of the noise
-            averagePitch = round(averagePitch * 1000.0f);
-            averagePitch /= 1000.0f;
+            averagePitch = round(averagePitch * 10000.0f);
+            averagePitch /= 10000.0f;
         } else {
             averagePitch = dVinylPitch;
         }

@@ -60,7 +60,7 @@ class VinylControlXwax : public VinylControl {
     float filePosition;
     double dDriftAmt;
     int iPitchRingSize;
-    CSAMPLE* m_pPitchRing;
+    double* m_pPitchRing;
     int ringPos;
     int ringFilled;
     double old_duration;
