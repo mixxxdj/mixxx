@@ -98,7 +98,8 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
           m_sSyncSource(kMasterSyncGroup),
           m_dSourceRate(0.0f),  // Has to be zero so that master bpm gets set correctly on startup
           m_dMasterBpm(124.0f),
-          m_dPseudoBufferPos(0.0f) {
+          m_dPseudoBufferPos(0.0f),
+          m_pChannelMaster(NULL) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
     m_pSampleRate = ControlObject::getControl(ConfigKey(kMasterSyncGroup, "samplerate"));
@@ -167,7 +168,7 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
 
 void EngineSync::disableChannelMaster(const QString& channel) {
     SyncChannel* pOldChannelMaster = m_pChannelMaster;
-    if (pOldChannelMaster) {
+    if (pOldChannelMaster != NULL) {
         ControlObject* pSourceRate = pOldChannelMaster->getRateEngineControl();
         if (pSourceRate != NULL) {
             disconnect(pSourceRate, SIGNAL(valueChangedFromEngine(double)),
@@ -494,7 +495,7 @@ void EngineSync::setPseudoPosition(double percent) {
 }
 
 EngineChannel* EngineSync::getMaster() const {
-    return m_pChannelMaster ? m_pChannelMaster->getChannel() : NULL;
+    return m_pChannelMaster != NULL ? m_pChannelMaster->getChannel() : NULL;
 }
 
 SyncChannel* EngineSync::getSyncChannelForGroup(const QString& group) {
