@@ -8,6 +8,7 @@
 #include "defs.h"
 #include "library/librarytablemodel.h"
 #include "library/schemamanager.h"
+#include "library/queryutil.h"
 #include "soundsourceproxy.h"
 #include "trackinfoobject.h"
 #include "xmlparse.h"
@@ -16,8 +17,6 @@
 #include "controlobjectthread.h"
 #include "controlobject.h"
 #include "configobject.h"
-
-#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
 
 #define MAX_LAMBDA_COUNT 8
 

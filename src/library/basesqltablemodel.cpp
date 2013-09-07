@@ -16,8 +16,6 @@
 #include "playermanager.h"
 #include "playerinfo.h"
 
-#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__ << __FILE__ << __LINE__
-
 const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
@@ -353,7 +351,7 @@ const QString BaseSqlTableModel::currentSearch() const {
 
 void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
 //    if (sDebug) {
-        qDebug() << this << "setSearch" << searchText;
+    DBG() << this << "setSearch" << searchText;
 //    }
 
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;

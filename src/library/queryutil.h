@@ -7,6 +7,8 @@
 #define LOG_FAILED_QUERY(query) qDebug() << __FILE__ << __LINE__ << "FAILED QUERY [" \
     << (query).executedQuery() << "]" << (query).lastError()
 
+#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__<<"("<<__FILE__<< __LINE__<<"): "
+
 class ScopedTransaction {
   public:
     explicit ScopedTransaction(QSqlDatabase& database) :
