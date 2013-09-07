@@ -152,6 +152,7 @@ void PreviewButtonDelegate::buttonClicked() {
     TrackPointer pOldTrack = PlayerInfo::Instance().getTrackInfo(group);
     bool playing = m_pPreviewDeckPlay->get() > 0.0;
 
+    // TODO(tro) WRAP
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
     if (pTrack && pTrack != pOldTrack) {
         emit(loadTrackToPlayer(pTrack, group, true));
@@ -169,6 +170,8 @@ void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
         if (!pTrackModel) {
             return;
         }
+
+        // TODO(tro) WRAP
         QString group = PlayerManager::groupForPreviewDeck(0);
         TrackPointer pPreviewTrack = PlayerInfo::Instance().getTrackInfo(group);
         TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);

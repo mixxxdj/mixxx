@@ -12,7 +12,6 @@
 #include "recording/recordingmanager.h"
 #include "mixxxkeyboard.h"
 
-class PlaylistTableModel;
 class WTrackTableView;
 class AnalyserQueue;
 class QSqlTableModel;

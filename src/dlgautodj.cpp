@@ -33,7 +33,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
-    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),                             // ############# SIGNAL-SIGNAL connection!
+    connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
     connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));

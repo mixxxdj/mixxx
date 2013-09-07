@@ -16,7 +16,6 @@
 #include "library/dao/autodjcratesdao.h"
 #endif // __AUTODJCRATES__
 
-class PlaylistTableModel;
 class TrackCollection;
 
 class AutoDJFeature : public LibraryFeature {

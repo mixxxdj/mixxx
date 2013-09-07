@@ -117,7 +117,6 @@ void TrackCollection::callAsync(func lambda) {
 }
 
 void TrackCollection::callSync(func lambda) {
-    DBG();
     QMutex mutex;
     mutex.lock();
     callAsync( [&mutex, &lambda] (void) {
@@ -130,7 +129,7 @@ void TrackCollection::callSync(func lambda) {
 
 void TrackCollection::addLambdaToQueue(func lambda) {
     //TODO(tro) check lambda
-    m_semLambdasFree.acquire(1);  // Blocks if FIFO is entirely occupied (see MAX_LAMBDA_COUNT)
+    m_semLambdasFree.acquire(1);
     m_lambdasMutex.lock();
     m_lambdas.enqueue(lambda);
     m_lambdasMutex.unlock();

@@ -33,6 +33,7 @@ public:
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void slotJoinWithPrevious();
+    void slotConstructChildModel(int playlistId);
 
   protected:
     void buildPlaylistList();
@@ -50,8 +51,9 @@ public:
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
 
-signals:
+  signals:
     void playlistTableChanged(int);
+    void constructChildModelBlocking(int);
 };
 
 #endif /* SETLOGFEATURE_H */

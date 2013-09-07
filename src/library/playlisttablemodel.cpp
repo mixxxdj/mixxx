@@ -96,11 +96,9 @@ bool PlaylistTableModel::appendTrack(int trackId) {
     if (trackId < 0) {
         return false;
     }
-    // TODO(tro) BEGIN wrap to callAsync
     m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
 
     select(); //Repopulate the data model.
-    // TODO(tro) END wrap to callAsync
     return true;
 }
 

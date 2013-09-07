@@ -95,6 +95,7 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
         return TrackPointer();
     }
 
+    // TODO(tro) WRAP
     TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
     int track_id = track_dao.getTrackId(track_location);
     if (track_id < 0) {

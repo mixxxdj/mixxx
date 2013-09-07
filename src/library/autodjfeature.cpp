@@ -4,8 +4,11 @@
 
 #include <QtDebug>
 
+#ifdef __AUTODJCRATES__
+#include <QMenu>
+#endif // __AUTODJCRATES__
+
 #include "library/autodjfeature.h"
-#include "library/playlisttablemodel.h"
 
 #include "library/trackcollection.h"
 #include "dlgautodj.h"
