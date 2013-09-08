@@ -311,10 +311,10 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (!m_pPlaylistTableModel) {
         return;
     }
-    DBG();
+    // TODO(tro) PROBLEM WITH WRAPPING
     // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this, &playlistId] (void) {
+//    m_pTrackCollection->callSync(
+//                [this, &playlistId] (void) {
         DBG();
         //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
         PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
@@ -331,7 +331,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
                 emit(featureSelect(this, m_lastRightClickedIndex));
             }
         }
-    });
+//    });
 }
 
 
