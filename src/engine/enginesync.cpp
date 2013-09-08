@@ -95,11 +95,11 @@ ControlObject* SyncChannel::getBeatDistanceControl() {
 
 EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
         : EngineControl(kMasterSyncGroup, _config),
+          m_pChannelMaster(NULL),
           m_sSyncSource(kMasterSyncGroup),
           m_dSourceRate(0.0f),  // Has to be zero so that master bpm gets set correctly on startup
           m_dMasterBpm(124.0f),
-          m_dPseudoBufferPos(0.0f),
-          m_pChannelMaster(NULL) {
+          m_dPseudoBufferPos(0.0f) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
     m_pSampleRate = ControlObject::getControl(ConfigKey(kMasterSyncGroup, "samplerate"));
@@ -168,14 +168,14 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
 
 void EngineSync::disableChannelMaster(const QString& channel) {
     SyncChannel* pOldChannelMaster = m_pChannelMaster;
-    if (pOldChannelMaster != NULL) {
+    if (pOldChannelMaster) {
         ControlObject* pSourceRate = pOldChannelMaster->getRateEngineControl();
-        if (pSourceRate != NULL) {
+        if (pSourceRate) {
             disconnect(pSourceRate, SIGNAL(valueChangedFromEngine(double)),
                        this, SLOT(slotSourceRateChanged(double)));
         }
         ControlObject* pSourceBeatDistance = pOldChannelMaster->getBeatDistanceControl();
-        if (pSourceBeatDistance != NULL) {
+        if (pSourceBeatDistance) {
             disconnect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
                        this, SLOT(slotSourceBeatDistanceChanged(double)));
         }
@@ -227,13 +227,13 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
     // If a channel is master, disable it.
     disableChannelMaster(m_sSyncSource);
 
-    if (pSyncChannel == NULL) {
+    if (!pSyncChannel) {
         return false;
     }
 
     // Only accept channels with an EngineBuffer.
     EngineChannel* pChannel = pSyncChannel->getChannel();
-    if (pChannel == NULL || pChannel->getEngineBuffer() == NULL) {
+    if (!pChannel || !pChannel->getEngineBuffer()) {
         return false;
     }
 
@@ -246,7 +246,7 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
 
 
     ControlObject* pSourceRate = pSyncChannel->getRateEngineControl();
-    if (pSourceRate == NULL) {
+    if (!pSourceRate) {
         return false;
     }
     connect(pSourceRate, SIGNAL(valueChangedFromEngine(double)),
@@ -254,7 +254,7 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
             Qt::DirectConnection);
 
     ControlObject* pSourceBeatDistance = pSyncChannel->getBeatDistanceControl();
-    if (pSourceBeatDistance == NULL) {
+    if (!pSourceBeatDistance) {
         return false;
     }
     connect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
@@ -306,7 +306,7 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
 
 void EngineSync::slotSourceRateChanged(double rate_engine) {
     // Master buffer can be null due to timing issues
-    if (m_pChannelMaster != NULL && rate_engine != m_dSourceRate) {
+    if (m_pChannelMaster && rate_engine != m_dSourceRate) {
         m_dSourceRate = rate_engine;
         double filebpm = m_pChannelMaster->getFileBpm();
         m_dMasterBpm = rate_engine * filebpm;
@@ -436,7 +436,7 @@ double EngineSync::getInternalBeatDistance() const {
 }
 
 void EngineSync::resetInternalBeatDistance() {
-    ControlObject* pSourceBeatDistance = m_pChannelMaster != NULL ?
+    ControlObject* pSourceBeatDistance = m_pChannelMaster ?
             m_pChannelMaster->getBeatDistanceControl() : NULL;
     double beat_distance = pSourceBeatDistance ? pSourceBeatDistance->get() : 0;
 
@@ -495,7 +495,7 @@ void EngineSync::setPseudoPosition(double percent) {
 }
 
 EngineChannel* EngineSync::getMaster() const {
-    return m_pChannelMaster != NULL ? m_pChannelMaster->getChannel() : NULL;
+    return m_pChannelMaster ? m_pChannelMaster->getChannel() : NULL;
 }
 
 SyncChannel* EngineSync::getSyncChannelForGroup(const QString& group) {
