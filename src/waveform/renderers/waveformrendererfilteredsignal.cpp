@@ -226,11 +226,17 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     }
 
     painter->setPen(QPen(QBrush(m_pColors->getLowColor()), 1));
-    painter->drawLines(&m_lowLines[0], actualLowLineNumber);
+    if (m_lowKillControlObject && m_lowKillControlObject->get() == 0.0) {
+       painter->drawLines(&m_lowLines[0], actualLowLineNumber);
+    }
     painter->setPen(QPen(QBrush(m_pColors->getMidColor()), 1));
-    painter->drawLines(&m_midLines[0], actualMidLineNumber);
+    if (m_midKillControlObject && m_midKillControlObject->get() == 0.0) {
+        painter->drawLines(&m_midLines[0], actualMidLineNumber);
+    }
     painter->setPen(QPen(QBrush(m_pColors->getHighColor()), 1));
-    painter->drawLines(&m_highLines[0], actualHighLineNumber);
+    if (m_highKillControlObject && m_highKillControlObject->get() == 0.0) {
+        painter->drawLines(&m_highLines[0], actualHighLineNumber);
+    }
 
     painter->restore();
 }
