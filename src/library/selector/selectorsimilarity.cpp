@@ -42,7 +42,6 @@ QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
 
     foreach (int trackId, trackIds) {
         double score = 0.0;
-
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
 
         foreach (QString key, contributions.keys()) {

@@ -132,8 +132,7 @@ void SelectorLibraryTableModel::calculateSimilarity() {
 
         QList<int> trackIds;
         for (int i = 0, n = rowCount(); i < n; i++) {
-            QModelIndex index = createIndex(i, fieldIndex(LIBRARYTABLE_ID));
-            trackIds << getTrackId(index);
+            trackIds << index(i, fieldIndex(LIBRARYTABLE_ID)).data().toInt();
         }
 
         QList<ScorePair> results =
@@ -167,26 +166,25 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
     QTextStream out(&file);
 
     for (int i = 0; i < rowCount(); i++) {
-        QModelIndex index1 = createIndex(i, fieldIndex(LIBRARYTABLE_ID));
-        TrackPointer pTrack1 = getTrack(index1);
-        TimbrePointer pTimbre1 = pTrack1->getTimbre();
-        QString sTrack1 = pTrack1->getFilename();
+        TrackPointer pTrack_i = getTrack(index(i, fieldIndex(LIBRARYTABLE_ID)));
+        TimbrePointer pTimbre_i = pTrack_i->getTimbre();
+        QString sTrack_i = pTrack_i->getFilename();
         for (int j = i + 1; j < rowCount(); j++) {
-            QModelIndex index2 = createIndex(j, fieldIndex(LIBRARYTABLE_ID));
-            TrackPointer pTrack2 = getTrack(index2);
-            TimbrePointer pTimbre2 = pTrack2->getTimbre();
-            QString sTrack2 = pTrack2->getFilename();
+            TrackPointer pTrack_j = getTrack(index(j, fieldIndex(LIBRARYTABLE_ID)));
+            TimbrePointer pTimbre_j = pTrack_j->getTimbre();
+            QString sTrack_j = pTrack_j->getFilename();
             double timbreScore =
-                    TimbreUtils::symmetricKlDivergence(pTimbre1, pTimbre2);
+                    TimbreUtils::symmetricKlDivergence(pTimbre_i, pTimbre_j);
             double rhythmScore =
-                    TimbreUtils::modelDistanceBeats(pTimbre1, pTimbre2);
+                    TimbreUtils::modelDistanceBeats(pTimbre_i, pTimbre_j);
             double score = 0.5 * (timbreScore + rhythmScore);
-            out << sTrack1 % "," % sTrack2 % "," %
+            out << sTrack_i % "," % sTrack_j % "," %
                    QString::number(timbreScore) % "," %
                    QString::number(rhythmScore) % "," %
                    QString::number(score) % "\n";
             if (i % 100 == 0 && j % 100 == 0) {
-                qDebug() << QString::number(i*j) << "comparisons processed";
+                qDebug() << QString::number(i*j) << " comparisons of " << 
+                            QString::number(rowCount()*rowCount())"  processed";
             }
         }
     }

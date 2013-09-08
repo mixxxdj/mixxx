@@ -9,12 +9,11 @@
 #include "library/trackcollection.h"
 #include "library/selector/selectorfilters.h"
 
-// type to store track ID and similarity score from 0 to 1
+// type to store track ID(int) and similarity score(double) from 0 to 1
 typedef QPair<int, double> ScorePair;
 
 class SelectorSimilarity : public QObject {
     Q_OBJECT
-
   public:
     SelectorSimilarity(QObject *parent,
                        TrackCollection* pTrackCollection,
@@ -35,26 +34,28 @@ class SelectorSimilarity : public QObject {
             const QHash<QString, double>& contributions);
 
   private:
-    typedef double (*SimilarityFunc)(TrackPointer pTrack1,
-                                     TrackPointer pTrack2);
 
     void loadStoredSimilarityContributions();
     QHash<QString, double> normalizeContributions(TrackPointer pSeedTrack);
+    QHash<QString, double> m_similarityContributions;
 
     static bool similaritySort(const ScorePair s1,
                                const ScorePair s2);
-
-    static double timbreSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
-    static double rhythmSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
-    static double tagSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
 
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     QSqlDatabase& m_database;
     TrackDAO& m_trackDAO;
 
-    QHash<QString, double> m_similarityContributions;
+    // typedef to store similarity functions in a QHash
+    typedef double (*SimilarityFunc)(TrackPointer pTrack1,
+                                     TrackPointer pTrack2);
     QHash<QString, SimilarityFunc> m_similarityFunctions;
+    // This nice QHash only works if we ensure that these are callable without
+    // having to initiate a class instance
+    static double timbreSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
+    static double rhythmSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
+    static double tagSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
 
     SelectorFilters& m_selectorFilters;
 };
