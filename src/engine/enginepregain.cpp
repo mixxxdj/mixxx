@@ -44,6 +44,8 @@ EnginePregain::EnginePregain(const char * group)
         s_pEnableReplayGain = new ControlObject(ConfigKey("[ReplayGain]", "ReplayGainEnabled"));
     }
     m_bSmoothFade = false;
+
+    m_fPrevGain = 1.0;
 }
 
 EnginePregain::~EnginePregain()
@@ -114,6 +116,12 @@ void EnginePregain::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int
 
     m_pTotalGain->set(fGain);
 
-    // SampleUtil deals with aliased buffers and gains of 1 or 0.
-    SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
+    if (fGain != m_fPrevGain) {
+        // Prevent soundwave discontinuities by interpolating from old to new gain.
+        SampleUtil::copyWithRampingGain(pOutput, pIn, m_fPrevGain, fGain, iBufferSize);
+    } else {
+        // SampleUtil deals with aliased buffers and gains of 1 or 0.
+        SampleUtil::copyWithGain(pOutput, pIn, fGain, iBufferSize);
+    }
+    m_fPrevGain = fGain;
 }

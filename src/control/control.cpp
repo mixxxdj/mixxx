@@ -15,9 +15,9 @@ ControlDoublePrivate::ControlDoublePrivate()
           m_bTrack(false),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
-    m_defaultValue.setValue(0);
-    m_value.setValue(0);
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_confirmRequired(false) {
+    initialize();
 }
 
 ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
@@ -28,7 +28,12 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
           m_trackKey("control " + m_key.group + "," + m_key.item),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_confirmRequired(false) {
+    initialize();
+}
+
+void ControlDoublePrivate::initialize() {
     m_defaultValue.setValue(0);
     m_value.setValue(0);
 
@@ -89,13 +94,25 @@ void ControlDoublePrivate::reset() {
 }
 
 void ControlDoublePrivate::set(double value, QObject* pSender) {
-    if (m_bIgnoreNops && get() == value) {
+    // If the behavior says to ignore the set, ignore it.
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    if (!pBehavior.isNull() && !pBehavior->setFilter(&value)) {
         return;
     }
+    if(m_confirmRequired) {
+        emit(valueChangeRequest(value));
+    } else {
+        setInner(value, pSender);
+    }
+}
 
-    // If the behavior says to ignore the set, ignore it.
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    if (pBehavior && !pBehavior->setFilter(&value)) {
+void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
+    setInner(value, pSender);
+}
+
+
+void ControlDoublePrivate::setInner(double value, QObject* pSender) {
+    if (m_bIgnoreNops && get() == value) {
         return;
     }
     m_value.setValue(value);
@@ -107,23 +124,33 @@ void ControlDoublePrivate::set(double value, QObject* pSender) {
     }
 }
 
-ControlNumericBehavior* ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
-    return m_pBehavior.fetchAndStoreRelaxed(pBehavior);
+void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
+    // This marks the old mpBehaviour for deletion. It is deleted once it is not
+    // used in any other function
+    m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }
 
 void ControlDoublePrivate::setWidgetParameter(double dParam, QObject* pSender) {
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    set(pBehavior ? pBehavior->widgetParameterToValue(dParam) : dParam, pSender);
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    if (pBehavior.isNull()) {
+        set(dParam, pSender);
+    } else {
+        set(pBehavior->widgetParameterToValue(dParam), pSender);
+    }
 }
 
 double ControlDoublePrivate::getWidgetParameter() const {
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    return pBehavior ? pBehavior->valueToWidgetParameter(get()) : get();
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    double value = get();
+    if (!pBehavior.isNull()) {
+        value = pBehavior->valueToWidgetParameter(value);
+    }
+    return value;
 }
 
 void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    if (pBehavior) {
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    if (!pBehavior.isNull()) {
         pBehavior->setValueFromMidiParameter(opcode, dParam, this);
     } else {
         set(dParam, NULL);
@@ -131,7 +158,18 @@ void ControlDoublePrivate::setMidiParameter(MidiOpCode opcode, double dParam) {
 }
 
 double ControlDoublePrivate::getMidiParameter() const {
-    ControlNumericBehavior* pBehavior = m_pBehavior;
-    return pBehavior ? pBehavior->valueToMidiParameter(get()) : get();
+    QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
+    double value = get();
+    if (!pBehavior.isNull()) {
+        value = pBehavior->valueToMidiParameter(value);
+    }
+    return value;
 }
 
+bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
+        const char* method, Qt::ConnectionType type) {
+    // confirmation is only required if connect was successful
+    m_confirmRequired = connect(this, SIGNAL(valueChangeRequest(double)),
+                receiver, method, type);
+    return m_confirmRequired;
+}
