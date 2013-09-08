@@ -321,7 +321,8 @@ int SoundManager::setupDevices() {
             if (err != OK) goto closeAndError;
             if (out.getType() == AudioOutput::MASTER) {
                 m_pClkRefDevice = device;
-            } else if (out.getType() == AudioOutput::DECK
+            } else if ((out.getType() == AudioOutput::DECK ||
+                        out.getType() == AudioOutput::BUS)
                     && !m_pClkRefDevice) {
                 m_pClkRefDevice = device;
             }
