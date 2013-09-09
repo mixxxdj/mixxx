@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DlgPrefModplug</class>
+ <widget class="QDialog" name="DlgPrefModplug">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>791</width>
+    <height>549</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Modplug Preferences</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <property name="spacing">
+    <number>10</number>
+   </property>
+   <item row="2" column="5">
+    <widget class="QSpinBox" name="memoryLimitSpin">
+     <property name="minimum">
+      <number>16</number>
+     </property>
+     <property name="maximum">
+      <number>512</number>
+     </property>
+     <property name="value">
+      <number>256</number>
+     </property>
+    </widget>
+   </item>
+   <item row="12" column="3">
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
+   </item>
+   <item row="9" column="0">
+    <widget class="QCheckBox" name="showAdvanced">
+     <property name="text">
+      <string>Show advanced settings</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" colspan="6">
+    <widget class="QLabel" name="label_11">
+     <property name="text">
+      <string>Decoding options for libmodplug. Module files are decoded at once and kept in RAM to allow for seeking and smooth operation in Mixxx. About 10MB of RAM are required for 1 minute of audio.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="11" column="0" colspan="6">
+    <widget class="QLabel" name="label_12">
+     <property name="text">
+      <string>All settings take effect on next track load. Currently loaded tracks are not affected. For an explanation of these settings, see the &lt;a href=&quot;http://wiki.openmpt.org/Manual:_Setup/Player&quot;&gt;OpenMPT manual&lt;/a&gt;.</string>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="10" column="0" colspan="6">
+    <widget class="QGroupBox" name="advancedSettings">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Expanding" vsizetype="MinimumExpanding">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <item>
+       <layout class="QGridLayout" name="gridLayout_2">
+        <property name="spacing">
+         <number>15</number>
+        </property>
+        <item row="4" column="5">
+         <widget class="QSlider" name="maxMixChannels">
+          <property name="minimum">
+           <number>32</number>
+          </property>
+          <property name="maximum">
+           <number>256</number>
+          </property>
+          <property name="value">
+           <number>128</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="5">
+         <widget class="QSlider" name="surroundDelay">
+          <property name="minimum">
+           <number>5</number>
+          </property>
+          <property name="maximum">
+           <number>50</number>
+          </property>
+          <property name="value">
+           <number>10</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="5">
+         <widget class="QSlider" name="bassCutoff">
+          <property name="minimum">
+           <number>10</number>
+          </property>
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>80</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QSlider" name="stereoSeparation">
+          <property name="minimum">
+           <number>1</number>
+          </property>
+          <property name="maximum">
+           <number>256</number>
+          </property>
+          <property name="value">
+           <number>1</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="tickPosition">
+           <enum>QSlider::NoTicks</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="1">
+         <widget class="QSlider" name="bassDepth">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>30</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QSlider" name="reverbDepth">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>30</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="4" colspan="3">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Maximum Number of Mixing Channels:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="1">
+         <widget class="QSlider" name="surroundDepth">
+          <property name="maximum">
+           <number>100</number>
+          </property>
+          <property name="value">
+           <number>30</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="0">
+         <widget class="QLabel" name="label_2">
+          <property name="text">
+           <string>Low</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="4" colspan="3">
+         <widget class="QLabel" name="label_7">
+          <property name="text">
+           <string>Reverb Delay:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QLabel" name="label_13">
+          <property name="text">
+           <string>Low</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="2">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>High</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="3">
+         <spacer name="horizontalSpacer">
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+          <property name="sizeType">
+           <enum>QSizePolicy::Preferred</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item row="4" column="0">
+         <widget class="QLabel" name="label_8">
+          <property name="text">
+           <string>None</string>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="0" colspan="3">
+         <widget class="QCheckBox" name="megabass">
+          <property name="text">
+           <string>Bass Expansion</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="5">
+         <widget class="QSlider" name="reverbDelay">
+          <property name="minimum">
+           <number>10</number>
+          </property>
+          <property name="maximum">
+           <number>250</number>
+          </property>
+          <property name="value">
+           <number>50</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Horizontal</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="6" column="4" colspan="3">
+         <widget class="QLabel" name="label_3">
+          <property name="text">
+           <string>Bass Range:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="4">
+         <widget class="QLabel" name="label_18">
+          <property name="text">
+           <string>16</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="4" colspan="3">
+         <widget class="QLabel" name="label_9">
+          <property name="text">
+           <string>Front/Rear Delay:</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="2">
+         <widget class="QLabel" name="label_17">
+          <property name="text">
+           <string>High</string>
+          </property>
+         </widget>
+        </item>
+        <item row="10" column="0" colspan="3">
+         <widget class="QCheckBox" name="surround">
+          <property name="text">
+           <string>Pro-Logic Surround</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="2">
+         <widget class="QLabel" name="label_15">
+          <property name="text">
+           <string>Full</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="0">
+         <widget class="QLabel" name="label_14">
+          <property name="text">
+           <string>Low</string>
+          </property>
+         </widget>
+        </item>
+        <item row="8" column="0" colspan="3">
+         <widget class="QCheckBox" name="reverb">
+          <property name="text">
+           <string>Reverb</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="0" colspan="3">
+         <widget class="QLabel" name="label_4">
+          <property name="text">
+           <string>Stereo separation</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="2">
+         <widget class="QLabel" name="label_16">
+          <property name="text">
+           <string>High</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="4">
+         <widget class="QLabel" name="label_19">
+          <property name="text">
+           <string>10Hz</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="4">
+         <widget class="QLabel" name="label_20">
+          <property name="text">
+           <string>10ms</string>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="6">
+         <widget class="QLabel" name="label_22">
+          <property name="text">
+           <string>256</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="4">
+         <widget class="QLabel" name="label_21">
+          <property name="text">
+           <string>5ms</string>
+          </property>
+         </widget>
+        </item>
+        <item row="7" column="6">
+         <widget class="QLabel" name="label_23">
+          <property name="text">
+           <string>100Hz</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="6">
+         <widget class="QLabel" name="label_24">
+          <property name="text">
+           <string>250ms</string>
+          </property>
+         </widget>
+        </item>
+        <item row="11" column="6">
+         <widget class="QLabel" name="label_25">
+          <property name="text">
+           <string>50ms</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0" colspan="3">
+         <widget class="QCheckBox" name="noiseReduction">
+          <property name="text">
+           <string>Noise reduction</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="3" column="2">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Resampling mode (interpolation)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="0">
+    <widget class="QCheckBox" name="oversampling">
+     <property name="text">
+      <string>Enable oversampling</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+   </item>
+   <item row="3" column="3" colspan="3">
+    <widget class="QComboBox" name="resampleMode">
+     <property name="currentIndex">
+      <number>1</number>
+     </property>
+     <item>
+      <property name="text">
+       <string>Nearest (very fast, extremely bad quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Linear (fast, good quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>Cubic Spline (high quality)</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>8-tap FIR (extremely high quality)</string>
+      </property>
+     </item>
+    </widget>
+   </item>
+   <item row="2" column="0" colspan="2">
+    <widget class="QLabel" name="label_10">
+     <property name="text">
+      <string>Memory limit for single track (MB)</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="2" colspan="3">
+    <widget class="QSlider" name="memoryLimit">
+     <property name="toolTip">
+      <string extracomment="1 minute of decoded audio requires about 10MB of RAM."/>
+     </property>
+     <property name="minimum">
+      <number>16</number>
+     </property>
+     <property name="maximum">
+      <number>512</number>
+     </property>
+     <property name="value">
+      <number>256</number>
+     </property>
+     <property name="sliderPosition">
+      <number>256</number>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>memoryLimit</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>memoryLimitSpin</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>405</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>556</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>memoryLimitSpin</sender>
+   <signal>valueChanged(int)</signal>
+   <receiver>memoryLimit</receiver>
+   <slot>setValue(int)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>556</x>
+     <y>58</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>405</x>
+     <y>58</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>showAdvanced</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>advancedSettings</receiver>
+   <slot>setVisible(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>97</x>
+     <y>154</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>395</x>
+     <y>323</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
