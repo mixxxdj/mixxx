@@ -230,7 +230,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             headphoneOutput |= (1 << channel_number);
             needsProcessing = true;
         }
-        
+
+        // TODO(carl): rework this so it is less ugly.  Maybe make it depend on type of input
+        // as suggested by ywwg.
         // Copy audio from individual inputs to loop recorder buffer.
         QString group = pChannel->getGroup();
         if (loop_source == INPUT_MICROPHONE && group == "[Microphone]") {
