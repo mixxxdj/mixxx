@@ -24,11 +24,19 @@ class EngineLoopRecorder : public QObject {
     // Moves the recorder object to the new thread and starts execution.
     void startThread();
 
+    // Returns the currently selected loop recording source channel.
+    QString getLoopSource() {
+        return m_loopSource;
+    }
+
     // Returns a pointer to the LoopWriter object.
     // Used to connect signals and slots with the LoopRecordingManager.
     LoopWriter* getLoopWriter() {
         return m_pLoopWriter;
     }
+
+  public slots:
+    void slotSourceChanged(QString);
 
   private slots:
     void slotThreadStarted();
@@ -37,6 +45,7 @@ class EngineLoopRecorder : public QObject {
     QThread* LoopRecorderThread;
     LoopWriter* m_pLoopWriter;
 
+    QString m_loopSource;
     bool m_bThreadReady;
 };
 

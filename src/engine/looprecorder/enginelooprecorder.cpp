@@ -10,7 +10,8 @@
 #include "engine/looprecorder/loopwriter.h"
 
 EngineLoopRecorder::EngineLoopRecorder()
-        : m_bThreadReady(false) {
+        : m_loopSource(""),
+        m_bThreadReady(false) {
 
     m_pLoopWriter = new LoopWriter();
 
@@ -40,6 +41,11 @@ void EngineLoopRecorder::startThread() {
     qDebug() << "!~!~!~! EngineLoopRecorder::startThread() !~!~!~!";
     m_pLoopWriter->moveToThread(LoopRecorderThread);
     LoopRecorderThread->start();
+}
+
+void EngineLoopRecorder::slotSourceChanged(QString source) {
+    m_loopSource = source;
+    qDebug() << "!~!~!~! EngineLoopRecorder::slotSourceChanged: " << m_loopSource << " !~!~!~!";
 }
 
 void EngineLoopRecorder::slotThreadStarted() {

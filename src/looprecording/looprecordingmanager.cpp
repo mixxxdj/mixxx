@@ -21,6 +21,7 @@
 LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
                                            EngineMaster* pEngine)
         : m_pConfig(pConfig),
+        m_sLoopSource("Master"),
         m_recordingDir(""),
         m_recording_base_file(""),
         m_recordingFile(""),
@@ -39,7 +40,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
 
     m_pLoopPlayReady = new ControlObjectThread(m_pCOLoopPlayReady->getKey());
-    m_pLoopSource = new ControlObjectThread(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_source"));
+//    m_pLoopSource = new ControlObjectThread(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_source"));
     m_pNumDecks = new ControlObjectThread("[Master]","num_decks");
     m_pNumSamplers = new ControlObjectThread("[Master]","num_samplers");
     m_pRecReady = new ControlObjectThread(LOOP_RECORDING_PREF_KEY, "rec_status");
@@ -100,22 +101,26 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
     m_pCOLoopLength->set(4.0);
 
-    m_pLoopSource->slotSet(INPUT_MASTER);
+//    m_pLoopSource->slotSet(INPUT_MASTER);
 
     // Set encoding format for loops to WAV.
     // TODO(carl) create prefences option to change between WAV and AIFF.
     m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), QString("WAV"));
 
-    date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
-    encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
+    m_dateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
+    m_encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
 
     setRecordingDir();
 
     m_pLoopTracker = new LoopTracker();
 
-    // Connect with EngineLoopRecorder
+    // Connect with EngineLoopRecorder and Loop Writer
+    // TODO(carl): disable loop recording if fails.
     EngineLoopRecorder* pLoopRecorder = pEngine->getLoopRecorder();
     LoopWriter* pLoopWriter = pLoopRecorder->getLoopWriter();
+    if (pLoopRecorder) {
+        connect(this, SIGNAL(sourceChanged(QString)), pLoopRecorder, SLOT(slotSourceChanged(QString)));
+    }
     if (pLoopWriter) {
         connect(pLoopWriter, SIGNAL(isRecording(bool)), this, SLOT(slotIsRecording(bool)));
         connect(pLoopWriter, SIGNAL(clearRecorder()), this, SLOT(slotClearRecorder()));
@@ -154,7 +159,7 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pRecReady;
     delete m_pNumSamplers;
     delete m_pNumDecks;
-    delete m_pLoopSource;
+//    delete m_pLoopSource;
     delete m_pLoopPlayReady;
     delete m_pCOLoopPlayReady;
     delete m_pCOLoopLength;
@@ -228,28 +233,34 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
     // Available sources: None (Loop Recorder is off), Master out, PFL out,
     // microphone, passthrough1, passthrough2,
     // all main decks, all samplers.
-    // Sources are defined in defs_looprecording.h
-
-    if (v > 0.) {
-        //float numDecks = m_pNumDecks->get();
-        //float numSamplers = m_pNumSamplers->get();
-        float source = m_pLoopSource->get();
-
-        if (source < INPUT_PT2) {
-            m_pLoopSource->slotSet(source+1.0);
-        } else if (source >= INPUT_PT2 && source < INPUT_DECK_BASE){
-            // Set to first deck
-            m_pLoopSource->slotSet(INPUT_DECK_BASE+1.0);
-        } else if (source > INPUT_DECK_BASE && source < INPUT_DECK_BASE+m_iNumDecks) {
-            m_pLoopSource->slotSet(source+1.0);
-        } else if (m_iNumSamplers > 0.0 && source >= INPUT_DECK_BASE+m_iNumDecks && source < INPUT_SAMPLER_BASE) {
-            m_pLoopSource->slotSet(INPUT_SAMPLER_BASE+1.0);
-        } else if (source > INPUT_SAMPLER_BASE && source < INPUT_SAMPLER_BASE+m_iNumSamplers) {
-            m_pLoopSource->slotSet(source+1.0);
-        } else {
-            m_pLoopSource->slotSet(INPUT_NONE);
-        }
+    if (m_sLoopSource == "Master") {
+        m_sLoopSource = "[Channel1]";
+    } else {
+        m_sLoopSource = "Master";
     }
+
+    emit(sourceChanged(m_sLoopSource));
+
+//    if (v > 0.) {
+//        //float numDecks = m_pNumDecks->get();
+//        //float numSamplers = m_pNumSamplers->get();
+//        float source = m_pLoopSource->get();
+//
+//        if (source < INPUT_PT2) {
+//            m_pLoopSource->slotSet(source+1.0);
+//        } else if (source >= INPUT_PT2 && source < INPUT_DECK_BASE){
+//            // Set to first deck
+//            m_pLoopSource->slotSet(INPUT_DECK_BASE+1.0);
+//        } else if (source > INPUT_DECK_BASE && source < INPUT_DECK_BASE+m_iNumDecks) {
+//            m_pLoopSource->slotSet(source+1.0);
+//        } else if (m_iNumSamplers > 0.0 && source >= INPUT_DECK_BASE+m_iNumDecks && source < INPUT_SAMPLER_BASE) {
+//            m_pLoopSource->slotSet(INPUT_SAMPLER_BASE+1.0);
+//        } else if (source > INPUT_SAMPLER_BASE && source < INPUT_SAMPLER_BASE+m_iNumSamplers) {
+//            m_pLoopSource->slotSet(source+1.0);
+//        } else {
+//            m_pLoopSource->slotSet(INPUT_NONE);
+//        }
+//    }
 }
 
 void LoopRecordingManager::slotNumDecksChanged(double v) {
@@ -314,15 +325,15 @@ void LoopRecordingManager::exportLoopToPlayer(QString group) {
     // TODO(carl) handle multi-layered loops.
     setRecordingDir();
     QString dir = m_recordingDir;
-    QString encodingType = m_pConfig->getValueString(
+    QString m_encodingType = m_pConfig->getValueString(
                                             ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
     //Append file extension
-    QString cur_date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
+    QString currentDateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
 
     // TODO(Carl) better file naming.
 
     QString newFileLocation = QString("%1%2_%3.%4")
-        .arg(dir, "loop", cur_date_time_str, encodingType.toLower());
+        .arg(dir, "loop", currentDateTime, m_encodingType.toLower());
 
     if(m_pLoopTracker->finalizeLoop(newFileLocation)) {
         emit(exportToPlayer(newFileLocation, group));
@@ -447,10 +458,10 @@ void LoopRecordingManager::startRecording() {
 
     // Storing the absolutePath of the recording file without file extension
     m_recording_base_file = QString("%1/%2_%3_%4").arg(
-                                    m_recordingDir, "loop", number_str, date_time_str);
-    //m_recording_base_file.append("/loop_" + m_iLoopNumber + "_" + date_time_str);
+                                    m_recordingDir, "loop", number_str, m_dateTime);
+    //m_recording_base_file.append("/loop_" + m_iLoopNumber + "_" + m_dateTime);
     // appending file extension to get the filelocation
-    m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
+    m_recordingLocation = m_recording_base_file + "."+ m_encodingType.toLower();
 
     SNDFILE* pSndFile = openSndFile(m_recordingLocation);
     if (pSndFile != NULL) {

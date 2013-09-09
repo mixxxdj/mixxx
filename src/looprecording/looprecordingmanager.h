@@ -37,6 +37,7 @@ class LoopRecordingManager : public QObject {
     void exportToPlayer(QString, QString);
     void fileOpen(SNDFILE*);
 //    void loadToLoopDeck(TrackPointer, QString, bool);
+    void sourceChanged(QString);
     void startWriter(int);
     void stopWriter(bool);
 
@@ -72,7 +73,7 @@ class LoopRecordingManager : public QObject {
     ControlObject* m_pCOLoopPlayReady;
 
     ControlObjectThread* m_pLoopPlayReady;
-    ControlObjectThread* m_pLoopSource;
+//    ControlObjectThread* m_pLoopSource;
     ControlObjectThread* m_pNumDecks;
     ControlObjectThread* m_pNumSamplers;
     ControlObjectThread* m_pRecReady;
@@ -91,8 +92,9 @@ class LoopRecordingManager : public QObject {
     // Tracks all loop layers recorded.
     LoopTracker* m_pLoopTracker;
 
-    QString date_time_str;
-    QString encodingType;
+    QString m_dateTime;
+    QString m_encodingType;
+    QString m_sLoopSource;
     QString m_recordingDir;
 
     //the base file

@@ -36,7 +36,7 @@
 #include "util/timer.h"
 #include "engine/looprecorder/enginelooprecorder.h"
 #include "playermanager.h"
-#include "looprecording/defs_looprecording.h"
+//#include "looprecording/defs_looprecording.h"
 #include "engine/channelmixer.h"
 
 #ifdef __LADSPA__
@@ -116,6 +116,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Starts a thread for recording and shoutcast
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
+    m_pLoopRecorder = new EngineLoopRecorder();
+
     // X-Fader Setup
     m_pXFaderMode = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderMode"), 0., 1.);
@@ -125,12 +127,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
         ConfigKey("[Mixer Profile]", "xFaderCalibration"), -2., 2.);
     m_pXFaderReverse = new ControlPotmeter(
         ConfigKey("[Mixer Profile]", "xFaderReverse"), 0., 1.);
-    
-    m_pLoopRecSource = new ControlPushButton(ConfigKey(group,"loop_recorder_source"));
-
-    m_pLoopSource = new ControlObject(ConfigKey("[Loop_Recording]", "loop_source"));
-
-    m_pLoopRecorder = new EngineLoopRecorder();
 }
 
 EngineMaster::~EngineMaster() {
@@ -145,8 +141,6 @@ EngineMaster::~EngineMaster() {
     delete m_pHeadClipping;
     delete m_pSideChain;
     delete m_pLoopRecorder;
-    delete m_pLoopRecSource;
-    delete m_pLoopSource;
     
     delete m_pXFaderReverse;
     delete m_pXFaderCalibration;
@@ -206,7 +200,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     unsigned int busChannelConnectionFlags[3] = { 0, 0, 0 };
     unsigned int headphoneOutput = 0;
 
-    float loop_source = m_pLoopSource->get();
+    QString loopSource = m_pLoopRecorder->getLoopSource();
+    bool bLoopCopied = false;
     SampleUtil::applyGain(m_pLoop, 0.0f, iBufferSize);
     
     // Compute headphone mix
@@ -246,28 +241,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             needsProcessing = true;
         }
 
-        // TODO(carl): rework this so it is less ugly.  Maybe make it depend on type of input
-        // as suggested by ywwg.
-        // Copy audio from individual inputs to loop recorder buffer.
-        QString group = pChannel->getGroup();
-        if (loop_source == INPUT_MICROPHONE && group == "[Microphone]") {
+        // Copy audio from input to loop recorder buffer.
+        if (loopSource == pChannel->getGroup()) {
             SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
-        } else if (loop_source == INPUT_PT1 && group == "[Passthrough1]") {
-            SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
-        } else if (loop_source == INPUT_PT2 && group == "[Passthrough2]") {
-            SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
-        } else if (loop_source > INPUT_DECK_BASE && loop_source < INPUT_SAMPLER_BASE) {
-            int deckNum = loop_source - INPUT_DECK_BASE;
-            QString num = QString::number(deckNum);
-            if (group == QString("[Channel%1]").arg(num)) {
-                SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
-            }
-        } else if (loop_source > INPUT_SAMPLER_BASE) {
-            int samplerNum = loop_source - INPUT_SAMPLER_BASE;
-            QString num = QString::number(samplerNum);
-            if (group == QString("[Sampler%1]").arg(num)) {
-                SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
-            }
+            bLoopCopied = true;
         }
 
         // Process the buffer if necessary
@@ -335,13 +312,15 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
 
     // Loop Recorder: Send master/headphone mix to loop recorder if selected.
-    if (loop_source == INPUT_MASTER) {
+    if (loopSource == "Master") {
         SampleUtil::copyWithGain(m_pLoop, m_pMaster, 1.0, iBufferSize);
-    } else if (loop_source == INPUT_HEAD) {
+        bLoopCopied = true;
+    } else if (loopSource == "Headphones") {
         SampleUtil::copyWithGain(m_pLoop, m_pHead, 1.0, iBufferSize);
+        bLoopCopied = true;
     }
 
-    if (loop_source != INPUT_NONE) {
+    if (bLoopCopied) {
         m_pLoopRecorder->writeSamples(m_pLoop, iBufferSize);
     }
     
