@@ -223,42 +223,34 @@ void LoopRecordingManager::slotChangeLoopLength(double v) {
 }
 
 void LoopRecordingManager::slotChangeLoopSource(double v) {
-
     if (v < 1.0) {
         return;
     }
+    // TODO(Carl): Figure out a clever way to iterate through available sources.
+    // right now it's incomplete.
 
     // Available sources: None (Loop Recorder is off), Master out, PFL out,
     // microphone, passthrough1, passthrough2,
     // all main decks, all samplers.
-    if (m_sLoopSource == "Master") {
-        m_sLoopSource = "[Channel1]";
-    } else {
-        m_sLoopSource = "Master";
+    switch (m_sLoopSource) {
+        case "Master":
+            m_sLoopSource = "Headphones";
+            break;
+        case "Headphones":
+            m_sLoopSource = "Microphone";
+            break;
+        case "Microphone":
+            m_sLoopSource = "[Channel1]";
+            break;
+        case "[Channel1]":
+            m_sLoopSource = "[Sampler1]";
+            break;
+        default:
+            m_sLoopSource = "Master";
+            break;
     }
-
+    
     emit(sourceChanged(m_sLoopSource));
-
-//    if (v > 0.) {
-//        //float numDecks = m_pNumDecks->get();
-//        //float numSamplers = m_pNumSamplers->get();
-//        float source = m_pLoopSource->get();
-//
-//        if (source < INPUT_PT2) {
-//            m_pLoopSource->slotSet(source+1.0);
-//        } else if (source >= INPUT_PT2 && source < INPUT_DECK_BASE){
-//            // Set to first deck
-//            m_pLoopSource->slotSet(INPUT_DECK_BASE+1.0);
-//        } else if (source > INPUT_DECK_BASE && source < INPUT_DECK_BASE+m_iNumDecks) {
-//            m_pLoopSource->slotSet(source+1.0);
-//        } else if (m_iNumSamplers > 0.0 && source >= INPUT_DECK_BASE+m_iNumDecks && source < INPUT_SAMPLER_BASE) {
-//            m_pLoopSource->slotSet(INPUT_SAMPLER_BASE+1.0);
-//        } else if (source > INPUT_SAMPLER_BASE && source < INPUT_SAMPLER_BASE+m_iNumSamplers) {
-//            m_pLoopSource->slotSet(source+1.0);
-//        } else {
-//            m_pLoopSource->slotSet(INPUT_NONE);
-//        }
-//    }
 }
 
 void LoopRecordingManager::slotNumDecksChanged(double v) {
