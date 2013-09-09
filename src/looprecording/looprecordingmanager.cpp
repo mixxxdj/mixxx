@@ -284,6 +284,8 @@ void LoopRecordingManager::slotToggleExport(double v) {
 }
 
 void LoopRecordingManager::slotToggleLoopRecording(double v) {
+    qDebug() << "LoopRecordingManager::slotToggleLR";
+
     // TODO(carl): Handle recorder INPUT_OFF state
     if (v > 0.) {
         if (m_isRecording) {
