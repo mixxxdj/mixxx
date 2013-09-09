@@ -11,14 +11,12 @@
 #include "controlobjectthread.h"
 #include "controlobjectthreadmain.h"
 #include "looprecording/defs_looprecording.h"
-//#include "trackinfoobject.h"
 
 class EngineMaster;
 class ControlPushButton;
 class ControlObject;
 class ControlObjectThread;
 class LoopTracker;
-//class TrackInfoObject;
 
 class LoopRecordingManager : public QObject {
     Q_OBJECT
@@ -36,7 +34,6 @@ class LoopRecordingManager : public QObject {
     void clearWriter();
     void exportToPlayer(QString, QString);
     void fileOpen(SNDFILE*);
-//    void loadToLoopDeck(TrackPointer, QString, bool);
     void sourceChanged(QString);
     void startWriter(int);
     void stopWriter(bool);
@@ -60,7 +57,6 @@ class LoopRecordingManager : public QObject {
     unsigned int getLoopLength();
     SNDFILE* openSndFile(QString);
     void playLoopDeck();
-//    bool saveLoop(QString newFileLocation);
     void setRecordingDir();
     void startRecording();
     void stopRecording();
@@ -73,7 +69,6 @@ class LoopRecordingManager : public QObject {
     ControlObject* m_pCOLoopPlayReady;
 
     ControlObjectThread* m_pLoopPlayReady;
-//    ControlObjectThread* m_pLoopSource;
     ControlObjectThread* m_pNumDecks;
     ControlObjectThread* m_pNumSamplers;
     ControlObjectThread* m_pRecReady;

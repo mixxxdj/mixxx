@@ -40,15 +40,10 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
 
     m_pLoopPlayReady = new ControlObjectThread(m_pCOLoopPlayReady->getKey());
-//    m_pLoopSource = new ControlObjectThread(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_source"));
     m_pNumDecks = new ControlObjectThread("[Master]","num_decks");
     m_pNumSamplers = new ControlObjectThread("[Master]","num_samplers");
     m_pRecReady = new ControlObjectThread(LOOP_RECORDING_PREF_KEY, "rec_status");
     m_pSampleRate = new ControlObjectThread("[Master]", "samplerate");
-
-//    m_pLoopDeck1Play = new ControlObjectThread("[LoopRecorderDeck1]","play");
-//    m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");
-//    m_pLoopDeck1Eject = new ControlObjectThread("[LoopRecorderDeck1]","eject");
 
     m_pChangeExportDestination = new ControlPushButton(
                                     ConfigKey(LOOP_RECORDING_PREF_KEY,"change_export_destination"));
@@ -101,8 +96,6 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
     m_pCOLoopLength->set(4.0);
 
-//    m_pLoopSource->slotSet(INPUT_MASTER);
-
     // Set encoding format for loops to WAV.
     // TODO(carl) create prefences option to change between WAV and AIFF.
     m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), QString("WAV"));
@@ -120,6 +113,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
     LoopWriter* pLoopWriter = pLoopRecorder->getLoopWriter();
     if (pLoopRecorder) {
         connect(this, SIGNAL(sourceChanged(QString)), pLoopRecorder, SLOT(slotSourceChanged(QString)));
+        emit(sourceChanged("Master"));
     }
     if (pLoopWriter) {
         connect(pLoopWriter, SIGNAL(isRecording(bool)), this, SLOT(slotIsRecording(bool)));
@@ -159,7 +153,6 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pRecReady;
     delete m_pNumSamplers;
     delete m_pNumDecks;
-//    delete m_pLoopSource;
     delete m_pLoopPlayReady;
     delete m_pCOLoopPlayReady;
     delete m_pCOLoopLength;
@@ -193,21 +186,22 @@ void LoopRecordingManager::slotIsRecording(bool isRecordingActive) {
 // Private Slots
 
 void LoopRecordingManager::slotChangeExportDestination(double v) {
-    if (v > 0.) {
-        //float numSamplers = m_pNumSamplers->get();
-        float destination = m_pCOExportDestination->get();
 
-        if (destination >= m_iNumSamplers) {
-            m_pCOExportDestination->set(1.0);
-        } else {
-            m_pCOExportDestination->set(destination+1.0);
-        }
+    if (v <= 0.) {
+        return;
+    }
+    float destination = m_pCOExportDestination->get();
+
+    if (destination >= m_iNumSamplers) {
+        m_pCOExportDestination->set(1.0);
+    } else {
+        m_pCOExportDestination->set(destination+1.0);
     }
 }
 
 void LoopRecordingManager::slotChangeLoopLength(double v) {
 
-    if (v < 1.0) {
+    if (v <= 0.0) {
         return;
     }
 
@@ -223,7 +217,7 @@ void LoopRecordingManager::slotChangeLoopLength(double v) {
 }
 
 void LoopRecordingManager::slotChangeLoopSource(double v) {
-    if (v < 1.0) {
+    if (v <= 0.0) {
         return;
     }
     // TODO(Carl): Figure out a clever way to iterate through available sources.
@@ -269,30 +263,33 @@ void LoopRecordingManager::slotNumSamplersChanged(double v) {
 // TODO: review this method.
 void LoopRecordingManager::slotToggleClear(double v) {
     //qDebug() << "LoopRecordingManager::slotClearRecorder v: " << v;
-    if (v > 0.) {
-        emit(clearWriter());
-        m_pToggleLoopRecording->set(0.);
+    if (v <= 0.) {
+        return;
     }
+    emit(clearWriter());
+    m_pToggleLoopRecording->set(0.);
 }
 
 void LoopRecordingManager::slotToggleExport(double v) {
     //qDebug() << "LoopRecordingManager::slotToggleExport v: " << v;
-    if (v > 0.) {
-        QString dest_str = QString::number((int)m_pCOExportDestination->get());
-        exportLoopToPlayer(QString("[Sampler%1]").arg(dest_str));
+    if (v <= 0.) {
+        return;
     }
+    QString dest_str = QString::number((int)m_pCOExportDestination->get());
+    exportLoopToPlayer(QString("[Sampler%1]").arg(dest_str));
 }
 
 void LoopRecordingManager::slotToggleLoopRecording(double v) {
     qDebug() << "LoopRecordingManager::slotToggleLR";
 
     // TODO(carl): Handle recorder INPUT_OFF state
-    if (v > 0.) {
-        if (m_isRecording) {
-            stopRecording();
-        } else {
-            startRecording();
-        }
+    if (v <= 0.) {
+        return;
+    }
+    if (m_isRecording) {
+        stopRecording();
+    } else {
+        startRecording();
     }
 }
 
@@ -402,17 +399,6 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
     if (pSndFile) {
         sf_command(pSndFile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
     }
-    // TODO(carl) graceful error handling. 
-//    // check if file is really open
-//    if (!isFileOpen()) {
-//        ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
-//        props->setType(DLG_WARNING);
-//        props->setTitle(tr("Loop Recording"));
-//        props->setText(tr("<html>Could not create audio file for loop recording!<p><br>
-//        Maybe you do not have enough free disk space or file permissions.</html>"));
-//        ErrorDialogHandler::instance()->requestErrorDialog(props);
-//        return false;
-//    }
     return pSndFile;
 }
 
