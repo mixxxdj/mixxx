@@ -88,7 +88,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
                 [&setlogFeature] (void) {
         setlogFeature->init();
     });
-    setlogFeature->constructChildModel();
+    setlogFeature->createChildModel();
     addFeature(setlogFeature);
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),

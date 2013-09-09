@@ -26,8 +26,8 @@ SetlogFeature::SetlogFeature(QObject* parent,
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
 
-    connect(this, SIGNAL(constructChildModelBlocking()),
-            this, SLOT(slotConstructChildModel()), Qt::BlockingQueuedConnection);
+    connect(this, SIGNAL(constructChildModelBlocking(int)),
+            this, SLOT(slotConstructChildModel(int)), Qt::BlockingQueuedConnection);
 }
 
 void SetlogFeature::init() {
@@ -55,7 +55,7 @@ void SetlogFeature::init() {
     }
 }
 
-void SetlogFeature::constructChildModel() {
+void SetlogFeature::createChildModel() {
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
     BasePlaylistFeature::constructChildModel(-1);
@@ -238,7 +238,6 @@ void SetlogFeature::slotJoinWithPrevious() {
                     qDebug() << "slotJoinWithPrevious() current:" << currentPlaylistId << " previous:" << previousPlaylistId;
                     if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
                         m_playlistDao.deletePlaylist(currentPlaylistId);
-                        // slotPlaylistTableChanged(previousPlaylistId); // For moving selection
                         emit(playlistTableChanged(previousPlaylistId)); // For moving selection
                         emit(showTrackModel(m_pPlaylistTableModel));
                     }
@@ -249,8 +248,10 @@ void SetlogFeature::slotJoinWithPrevious() {
 }
 
 void SetlogFeature::slotConstructChildModel(int playlistId) {
+    DBG() << "begin";
     clearChildModel();
     m_lastRightClickedIndex = BasePlaylistFeature::constructChildModel(playlistId);
+    DBG() << "end";
 }
 
 void SetlogFeature::slotPlayingDeckChanged(int deck) {
@@ -311,19 +312,17 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (!m_pPlaylistTableModel) {
         return;
     }
-    // TODO(tro) PROBLEM WITH WRAPPING
-    // tro's lambda idea. This code calls synchronously!
-//    m_pTrackCollection->callSync(
-//                [this, &playlistId] (void) {
-        DBG();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, playlistId] (void) {
+        DBG() << "begin";
         //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
         PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
         if (type == PlaylistDAO::PLHT_SET_LOG ||
                 type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-            // clearChildModel();
-            // m_lastRightClickedIndex = BasePlaylistFeature::constructChildModel(playlistId);     // WE CANNOT CONSTRUCT FROM OTHER THREAD
+            DBG() << "before emit (constructChildModelBlocking(playlistId))";
             emit (constructChildModelBlocking(playlistId));
-
+            DBG() << "after emit (constructChildModelBlocking(playlistId))";
             if (type != PlaylistDAO::PLHT_UNKNOWN) {
                 // Switch the view to the playlist.
                 m_pPlaylistTableModel->setTableModel(playlistId);
@@ -331,7 +330,8 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
                 emit(featureSelect(this, m_lastRightClickedIndex));
             }
         }
-//    });
+        DBG() << "end";
+    });
 }
 
 

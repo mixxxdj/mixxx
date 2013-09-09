@@ -21,7 +21,7 @@ public:
                   TrackCollection* pTrackCollection);
     virtual ~SetlogFeature();
     void init();
-    void constructChildModel();
+    void createChildModel();
 
     QVariant title();
     QIcon getIcon();
@@ -42,7 +42,6 @@ public:
   private slots:
     void slotPlayingDeckChanged(int deck);
     void slotPlaylistTableChanged(int playlistId);
-
 
   private:
     QString getRootViewHtml() const;
