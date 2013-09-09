@@ -76,6 +76,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     // These are really only exposed for tests to use.
     const CSAMPLE* getMasterBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
+    const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
     const CSAMPLE* getChannelBuffer(QString name) const;
 
@@ -135,9 +136,13 @@ class EngineMaster : public EngineObject, public AudioSource {
     };
 
     QList<ChannelInfo*> m_channels;
-    QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
+    struct OutputBus {
+        CSAMPLE *m_pBuffer;
+        OrientationVolumeGainCalculator m_gain;
+        QList<CSAMPLE> m_gainCache;
+    } m_OutputBus[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
     CSAMPLE* m_pLoop;
