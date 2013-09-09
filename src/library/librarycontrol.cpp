@@ -95,7 +95,7 @@ LibraryControl::LibraryControl(QObject* pParent)
 
     m_pIsBusy = new ControlObject(ConfigKey("[Playlist]", "isBusy")); // binary control with range (0.0f - off, else on).
     connect(m_pIsBusy, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetPlaylistBusy(double)), Qt::DirectConnection);
+            this, SLOT(slotSetPlaylistBusy(double)));
     m_pIsBusy->set(0.0f);
 }
 

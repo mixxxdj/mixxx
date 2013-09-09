@@ -123,7 +123,16 @@ void TrackCollection::callSync(func lambda) {
         lambda();
         mutex.unlock();
     });
-    mutex.lock();
+
+    while (!mutex.tryLock(1000)) {
+        DBG() << "Warning: callSync takes longer than 1 s! This might be caused by a deadlock ";
+        // This is required if a CallAsync is waiting for the Main thread
+        // TODO(tro) this must not happen because we have possible race conditions
+        // Maybe we must somehow allow only one callSync at a time
+        qApp->processEvents(QEventLoop::AllEvents);
+        DBG() << "Start animation";
+        // animationIsShowed = true;
+    }
     mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
 }
 

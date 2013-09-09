@@ -462,7 +462,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id)
 
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-         it != m_playlistList.end(); ++it, ++row) {
+            it != m_playlistList.end(); ++it, ++row) {
         int playlist_id = it->first;
         QString playlist_name = it->second;
 
