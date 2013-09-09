@@ -38,7 +38,7 @@ void EngineLoopRecorder::writeSamples(const CSAMPLE* pBuffer, const int iBufferS
 }
 
 void EngineLoopRecorder::startThread() {
-    qDebug() << "!~!~!~! EngineLoopRecorder::startThread() !~!~!~!";
+    //qDebug() << "!~!~!~! EngineLoopRecorder::startThread() !~!~!~!";
     m_pLoopWriter->moveToThread(LoopRecorderThread);
     LoopRecorderThread->start();
 }
@@ -49,6 +49,6 @@ void EngineLoopRecorder::slotSourceChanged(QString source) {
 }
 
 void EngineLoopRecorder::slotThreadStarted() {
-    qDebug() << "!~!~!~! EngineLoopRecorder::slotThreadStarted() !~!~!~!";
+    //qDebug() << "!~!~!~! EngineLoopRecorder::slotThreadStarted() !~!~!~!";
     m_bThreadReady = true;
 }
