@@ -10,7 +10,7 @@
 #include "engine/looprecorder/loopwriter.h"
 
 EngineLoopRecorder::EngineLoopRecorder()
-        : m_loopSource(""),
+        : m_loopSource("Master"),
         m_bThreadReady(false) {
 
     m_pLoopWriter = new LoopWriter();
