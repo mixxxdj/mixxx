@@ -232,22 +232,16 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
     // Available sources: None (Loop Recorder is off), Master out, PFL out,
     // microphone, passthrough1, passthrough2,
     // all main decks, all samplers.
-    switch (m_sLoopSource) {
-        case "Master":
-            m_sLoopSource = "Headphones";
-            break;
-        case "Headphones":
-            m_sLoopSource = "Microphone";
-            break;
-        case "Microphone":
-            m_sLoopSource = "[Channel1]";
-            break;
-        case "[Channel1]":
-            m_sLoopSource = "[Sampler1]";
-            break;
-        default:
-            m_sLoopSource = "Master";
-            break;
+    if (m_sLoopSource == "Master") {
+        m_sLoopSource = "Headphones";
+    } else if (m_sLoopSource == "Headphones") {
+        m_sLoopSource = "[Microphone]";
+    } else if (m_sLoopSource == "[Microphone]") {
+        m_sLoopSource = "[Channel1]";
+    } else if (m_sLoopSource == "[Channel1]") {
+        m_sLoopSource = "[Sampler1]";
+    } else {
+        m_sLoopSource = "Master";
     }
     
     emit(sourceChanged(m_sLoopSource));
