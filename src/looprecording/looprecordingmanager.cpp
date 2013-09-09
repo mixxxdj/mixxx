@@ -206,26 +206,19 @@ void LoopRecordingManager::slotChangeExportDestination(double v) {
 }
 
 void LoopRecordingManager::slotChangeLoopLength(double v) {
-    if (v > 0.) {
-        float loopLength = m_pCOLoopLength->get();
-        if (loopLength == 0.0f) {
-            m_pCOLoopLength->set(2.0f);
 
-        } else if (loopLength == 2.0f) {
-            m_pCOLoopLength->set(4.0f);
+    if (v < 1.0) {
+        return;
+    }
 
-        } else if (loopLength == 4.0f) {
-            m_pCOLoopLength->set(8.0f);
+    float loopLength = m_pCOLoopLength->get();
 
-        } else if (loopLength == 8.0f) {
-            m_pCOLoopLength->set(16.0f);
-
-        } else if (loopLength == 16.0f) {
-            m_pCOLoopLength->set(0.0f);
-
-        } else {
-            m_pCOLoopLength->set(0.0f);
-        }
+    if (loopLength == 0.0f) {
+        m_pCOLoopLength->set(2.0f);
+    } else if (loopLength == 16.0f) {
+        m_pCOLoopLength->set(0.0f);
+    } else {
+        m_pCOLoopLength->set(loopLength * 2.0f);
     }
 }
 
