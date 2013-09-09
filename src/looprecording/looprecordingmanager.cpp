@@ -230,6 +230,11 @@ void LoopRecordingManager::slotChangeLoopLength(double v) {
 }
 
 void LoopRecordingManager::slotChangeLoopSource(double v) {
+
+    if (v < 1.0) {
+        return;
+    }
+
     // Available sources: None (Loop Recorder is off), Master out, PFL out,
     // microphone, passthrough1, passthrough2,
     // all main decks, all samplers.
