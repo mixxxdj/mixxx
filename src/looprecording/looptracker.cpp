@@ -54,6 +54,7 @@ void LoopTracker::clear() {
         if (file.exists()) {
             file.remove();
         }
+        delete pFile;
     }
     m_iCurrentLayer = -1;
 }
