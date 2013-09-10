@@ -47,8 +47,8 @@
 
 #include "trackinfoobject.h"
 
-const double kMaxPlayposRange = 1.14;
-const double kMinPlayposRange = -0.14;
+const double kMaxPlayposRange = 1.0;
+const double kMinPlayposRange = 0.0;
 
 EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
     m_engineLock(QMutex::Recursive),
@@ -161,7 +161,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_visualBpm = new ControlObject(ConfigKey(m_group, "visual_bpm"));
 
     // Slider to show and change song position
-    //these bizarre choices map conveniently to the 0-127 range of midi
     m_playposSlider = new ControlLinPotmeter(
         ConfigKey(m_group, "playposition"), kMinPlayposRange, kMaxPlayposRange);
     connect(m_playposSlider, SIGNAL(valueChanged(double)),
@@ -462,7 +461,7 @@ void EngineBuffer::ejectTrack() {
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
-    if(isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
+    if(isnan(change)) {
         // This seek is ridiculous.
         return;
     }

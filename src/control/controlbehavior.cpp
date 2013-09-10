@@ -39,11 +39,7 @@ ControlPotmeterBehavior::~ControlPotmeterBehavior() {
 }
 
 bool ControlPotmeterBehavior::setFilter(double* dValue) {
-    if (*dValue > m_dMaxValue) {
-        *dValue = m_dMaxValue;
-    } else if (*dValue < m_dMinValue) {
-        *dValue = m_dMinValue;
-    }
+    Q_UNUSED(dValue);
     return true;
 }
 
@@ -53,12 +49,17 @@ double ControlPotmeterBehavior::defaultValue(double dDefault) const {
 }
 
 double ControlPotmeterBehavior::valueToWidgetParameter(double dValue) {
+    if (dValue > m_dMaxValue) {
+        dValue = m_dMaxValue;
+    } else if (dValue < m_dMinValue) {
+        dValue = m_dMinValue;
+    }
     double dNorm = (dValue - m_dMinValue) / m_dValueRange;
-    return dNorm < 0.5 ? dNorm * 128.0 : dNorm * 126.0 + 1.0;
+    return dNorm < 0.5 ? dNorm * 127.0 : dNorm * 126.0 + 1.0;
 }
 
 double ControlPotmeterBehavior::widgetParameterToValue(double dParam) {
-    double dNorm = dParam < 64 ? dParam / 128.0 : (dParam - 1.0) / 126.0;
+    double dNorm = dParam < 64 ? dParam / 127.0 : (dParam - 1.0) / 126.0;
     return m_dMinValue + dNorm * m_dValueRange;
 }
 
@@ -98,6 +99,11 @@ double ControlLogpotmeterBehavior::defaultValue(double dDefault) {
 }
 
 double ControlLogpotmeterBehavior::valueToWidgetParameter(double dValue) {
+    if (dValue > m_dMaxValue) {
+        dValue = m_dMaxValue;
+    } else if (dValue < m_dMinValue) {
+        dValue = m_dMinValue;
+    }
     if (!m_bTwoState) {
         return log10(dValue + 1) / m_dB1;
     } else {
@@ -129,12 +135,17 @@ ControlLinPotmeterBehavior::~ControlLinPotmeterBehavior() {
 }
 
 double ControlLinPotmeterBehavior::valueToWidgetParameter(double dValue) {
+    if (dValue > m_dMaxValue) {
+        dValue = m_dMaxValue;
+    } else if (dValue < m_dMinValue) {
+        dValue = m_dMinValue;
+    }
     double dNorm = (dValue - m_dMinValue) / m_dValueRange;
-    return math_min(dNorm * 128, 127);
+    return math_min(dNorm * 127, 127);
 }
 
 double ControlLinPotmeterBehavior::widgetParameterToValue(double dParam) {
-    double dNorm = dParam / 128.0;
+    double dNorm = dParam / 127.0;
     return m_dMinValue + dNorm * m_dValueRange;
 }
 
@@ -209,4 +220,3 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
         }
     }
 }
-
