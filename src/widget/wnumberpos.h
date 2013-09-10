@@ -26,6 +26,7 @@ class WNumberPos : public WNumber {
     void mousePressEvent(QMouseEvent* pEvent);
 
   private slots:
+    void slotSetValue(double);
     void slotSetRemain(double dRemain);
     void slotSetTrackSampleRate(double dSampleRate);
     void slotSetTrackSamples(double dSamples);
@@ -38,8 +39,9 @@ class WNumberPos : public WNumber {
     /** True if remaining content is being shown */
     bool m_bRemain;
     ControlObjectThreadMain* m_pShowTrackTimeRemaining;
-    // Pointer to control object for rate and track info
-    ControlObjectThreadWidget* m_pTrackSamples; 
+    // Pointer to control object for position, rate, and track info
+    ControlObjectThreadMain* m_pVisualPlaypos;
+    ControlObjectThreadWidget* m_pTrackSamples;
     ControlObjectThreadWidget* m_pTrackSampleRate;
 };
 
