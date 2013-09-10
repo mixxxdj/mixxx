@@ -7,8 +7,6 @@
 #include "mixxxutils.cpp"
 #include "queryutil.h"
 
-#define DBG() qDebug()<<"  #"<<__PRETTY_FUNCTION__
-
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
 
 MissingTableModel::MissingTableModel(QObject* parent,

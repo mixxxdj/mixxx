@@ -55,7 +55,6 @@ class MainExecuter : public QObject {
     Q_OBJECT
 public:
     ~MainExecuter() {}
-    volatile bool b;
     QMutex m_lambdaMutex;
 
     static void callAsync(func lambda) {
@@ -73,13 +72,10 @@ public:
         connect(me, SIGNAL(runOnMainThread()),
                 me, SLOT(call()), Qt::QueuedConnection);
 
-//        me->m_lambdaMutex.lock();
-        me->b = true;
+        me->m_lambdaMutex.lock();
         emit(me->runOnMainThread());
-        while(me->b) {
-        }
-//        me->m_lambdaMutex.lock();
-//        me->m_lambdaMutex.unlock();
+        me->m_lambdaMutex.lock();
+        me->m_lambdaMutex.unlock();
     }
 
 signals:
@@ -89,13 +85,12 @@ private slots:
     void call() {
         DBG();
         m_lambda();
-        b = false;
-//        m_lambdaMutex.unlock();
+        m_lambdaMutex.unlock();
         deleteLater();
     }
 
 private:
-    MainExecuter(func lambda) : m_lambda(lambda), b(false) {  }
+    MainExecuter(func lambda) : m_lambda(lambda) {  }
     func m_lambda;
 };
 
