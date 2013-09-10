@@ -99,14 +99,14 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
 
     // Setup the output buses
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        struct OutputBus* bus = &m_OutputBus[o];
+    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
+        struct OutputBus* bus = &m_outputBus[o];
         bus->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
         SampleUtil::applyGain(bus->m_pBuffer, 0, MAX_BUFFER_LEN);
         bus->m_gain.setGains(1.0,
-                             1.0*(o == EngineChannel::LEFT),
-                             1.0*(o == EngineChannel::CENTER),
-                             1.0*(o == EngineChannel::RIGHT));
+                             o == EngineChannel::LEFT ? 1.0 : 0.0,
+                             o == EngineChannel::CENTER ? 1.0 : 0.0,
+                             o == EngineChannel::RIGHT ? 1.0 : 0.0);
     }
 
     // Starts a thread for recording and shoutcast
@@ -149,7 +149,7 @@ EngineMaster::~EngineMaster() {
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        SampleUtil::free(m_OutputBus[o].m_pBuffer);
+        SampleUtil::free(m_outputBus[o].m_pBuffer);
     }
 
     delete m_pWorkerScheduler;
@@ -239,10 +239,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     // Make the mix for each output bus
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        ChannelMixer::mixChannels(m_channels, m_OutputBus[o].m_gain,
+        ChannelMixer::mixChannels(m_channels, m_outputBus[o].m_gain,
                                   busChannelConnectionFlags[o], maxChannels,
-                                  &m_OutputBus[o].m_gainCache,
-                                  m_OutputBus[o].m_pBuffer, iBufferSize);
+                                  &m_outputBus[o].m_gainCache,
+                                  m_outputBus[o].m_pBuffer, iBufferSize);
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
@@ -256,9 +256,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // And mix the 3 buses into the master
     float master_gain = m_pMasterVolume->get();
     SampleUtil::copy3WithGain(m_pMaster,
-                              m_OutputBus[EngineChannel::LEFT].m_pBuffer, c1_gain*master_gain,
-                              m_OutputBus[EngineChannel::CENTER].m_pBuffer, master_gain,
-                              m_OutputBus[EngineChannel::RIGHT].m_pBuffer, c2_gain*master_gain,
+                              m_outputBus[EngineChannel::LEFT].m_pBuffer, c1_gain*master_gain,
+                              m_outputBus[EngineChannel::CENTER].m_pBuffer, master_gain,
+                              m_outputBus[EngineChannel::RIGHT].m_pBuffer, c2_gain*master_gain,
                               iBufferSize);
 
 #ifdef __LADSPA__
@@ -324,7 +324,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     m_channels.push_back(pChannelInfo);
     m_channelHeadphoneGainCache.push_back(0);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_OutputBus[o].m_gainCache.push_back(0);
+        m_outputBus[o].m_gainCache.push_back(0);
     }
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
@@ -351,7 +351,7 @@ const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
 
 const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
     if (i <= EngineChannel::RIGHT)
-        return m_OutputBus[i].m_pBuffer;
+        return m_outputBus[i].m_pBuffer;
     return NULL;
 }
 
