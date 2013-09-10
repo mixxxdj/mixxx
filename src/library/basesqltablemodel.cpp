@@ -38,8 +38,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
             this, SLOT(trackLoaded(QString, TrackPointer)));
     trackLoaded(m_previewDeckGroup, PlayerInfo::Instance().getTrackInfo(m_previewDeckGroup));
 
-    connect(this, SIGNAL(queryExecuted()),
-            this, SLOT(slotPopulateQueryResult()), Qt::QueuedConnection);
+//    connect(this, SIGNAL(queryExecuted()),
+//            this, SLOT(slotPopulateQueryResult())/*, Qt::BlockingQueuedConnection*/);
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -283,11 +283,18 @@ void BaseSqlTableModel::select() {
 
     DBG() << "Select ended from" << QThread::currentThread()->objectName()
           << "Next we emit selectQueryExecuted()";
-    if (QThread::currentThread()->objectName() == "Main") {
+//    if (QThread::currentThread()->objectName() == "Main") {
+//        slotPopulateQueryResult();
+//    } else {
+//        emit(queryExecuted());
+//    }
+    DBG() << "BEFORE";
+    MainExecuter::callSync( [this](){
+        DBG() << "IN";
         slotPopulateQueryResult();
-    } else {
-        emit(queryExecuted());
-    }
+        DBG() << "OUT";
+    });
+    DBG() << "AFTER";
 }
 
 // Must be called from Main (GUI) Thread only

@@ -135,28 +135,31 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void PlaylistFeature::buildPlaylistList() {
-    m_playlistList.clear();
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
-    playlistTableModel.setTable("Playlists");
-    playlistTableModel.setFilter("hidden=0");
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("name"),
-                               Qt::AscendingOrder);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        m_playlistList.clear();
+        // Setup the sidebar playlist model
+        QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+        playlistTableModel.setTable("Playlists");
+        playlistTableModel.setFilter("hidden=0");
+        playlistTableModel.setSort(playlistTableModel.fieldIndex("name"),
+                                   Qt::AscendingOrder);
+        playlistTableModel.select();
+        while (playlistTableModel.canFetchMore()) {
+            playlistTableModel.fetchMore();
+        }
+        QSqlRecord record = playlistTableModel.record();
+        int nameColumn = record.indexOf("name");
+        int idColumn = record.indexOf("id");
 
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id = playlistTableModel.data(
-            playlistTableModel.index(row, idColumn)).toInt();
-        QString name = playlistTableModel.data(
-            playlistTableModel.index(row, nameColumn)).toString();
-        m_playlistList.append(qMakePair(id, name));
-    }
+        for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+            int id = playlistTableModel.data(
+                playlistTableModel.index(row, idColumn)).toInt();
+            QString name = playlistTableModel.data(
+                playlistTableModel.index(row, nameColumn)).toString();
+            m_playlistList.append(qMakePair(id, name));
+        }
+    });
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
@@ -174,9 +177,12 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
         return;
     }
 
-    // TODO(tro) BEGIN wrap to callAsync
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-    enum PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
+    PlaylistDAO::HiddenType type;
+    m_pTrackCollection->callSync(
+                [this, playlistId, &type] (void) {
+        type = m_playlistDao.getHiddenType(playlistId);
+    });
+
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
         clearChildModel();

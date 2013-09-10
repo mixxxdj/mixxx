@@ -23,8 +23,11 @@
 #include <QQueue>
 #include <QRegExp>
 #include <QSemaphore>
+#include <QMutex>
 #include <QSharedPointer>
 #include <QSqlDatabase>
+#include <QApplication>
+#include <QThread>
 
 #include "configobject.h"
 #include "library/basetrackcache.h"
@@ -33,6 +36,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "library/queryutil.h"
 
 #define AUTODJ_TABLE "Auto DJ"
 
@@ -46,6 +50,57 @@ class BpmDetector;
 /**
    @author Albert Santoni
 */
+
+class MainExecuter : public QObject {
+    Q_OBJECT
+public:
+    ~MainExecuter() {}
+    volatile bool b;
+    QMutex m_lambdaMutex;
+
+    static void callAsync(func lambda) {
+        MainExecuter* me = new MainExecuter(lambda);
+        me->moveToThread(qApp->thread());
+        connect(me, SIGNAL(runOnMainThread()),
+                me, SLOT(call()), Qt::QueuedConnection);
+        emit(me->runOnMainThread());
+    }
+
+    static void callSync(func lambda) {
+        MainExecuter* me = new MainExecuter(lambda);
+        me->moveToThread(qApp->thread());
+
+        connect(me, SIGNAL(runOnMainThread()),
+                me, SLOT(call()), Qt::QueuedConnection);
+
+//        me->m_lambdaMutex.lock();
+        me->b = true;
+        emit(me->runOnMainThread());
+        while(me->b) {
+        }
+//        me->m_lambdaMutex.lock();
+//        me->m_lambdaMutex.unlock();
+    }
+
+signals:
+    void runOnMainThread();
+
+private slots:
+    void call() {
+        DBG();
+        m_lambda();
+        b = false;
+//        m_lambdaMutex.unlock();
+        deleteLater();
+    }
+
+private:
+    MainExecuter(func lambda) : m_lambda(lambda), b(false) {  }
+    func m_lambda;
+};
+
+
+
 
 class TrackCollection : public QThread {
     Q_OBJECT

@@ -85,8 +85,6 @@ void TrackCollection::run() {
     emit(initialized()); // to notify that Daos can be used
 
     // main TrackCollection's loop
-    //    int loopCount = 0;
-
     while (!m_stop) {
         if (!m_semLambdasReady.tryAcquire(1)) {
             // no Lambda available, so unlock GUI.
@@ -98,7 +96,9 @@ void TrackCollection::run() {
         lambda = m_lambdas.dequeue();
         m_lambdasMutex.unlock();
 
+        DBG() << "begin lambda exec";
         lambda();
+        DBG() << "end lambda exec";
 
         m_semLambdasFree.release(1);
     }
@@ -108,6 +108,7 @@ void TrackCollection::run() {
 
 // callAsync calls from GUI thread.
 void TrackCollection::callAsync(func lambda) {
+    DBG();
     if (lambda == NULL) return;
     Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
 
@@ -117,13 +118,26 @@ void TrackCollection::callAsync(func lambda) {
 }
 
 void TrackCollection::callSync(func lambda) {
+    DBG();
     QMutex mutex;
     mutex.lock();
     callAsync( [&mutex, &lambda] (void) {
         lambda();
         mutex.unlock();
     });
-    mutex.lock();
+
+    while (!mutex.tryLock(10)) {
+        DBG() << "Lambda count:" << m_lambdas.count();
+//        Q_ASSERT(1==0);
+        DBG() << "Warning: callSync takes longer than 1 s! This might be caused by a deadlock ";
+        // This is required if a CallAsync is waiting for the Main thread
+        // TODO(tro) this must not happen because we have possible race conditions
+        // Maybe we must somehow allow only one callSync at a time
+        qApp->processEvents(QEventLoop::AllEvents);
+        DBG() << "Start animation";
+        // animationIsShowed = true;
+    }
+//    mutex.lock();
     mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
 }
 

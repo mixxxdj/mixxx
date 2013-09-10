@@ -31,28 +31,32 @@ SetlogFeature::SetlogFeature(QObject* parent,
 }
 
 void SetlogFeature::init() {
-    // NOTE(tro) This method will be called in callSync
-    // create a new playlist for today
-    QString set_log_name_format;
-    QString set_log_name;
+    createChildModel();
 
-    set_log_name = QDate::currentDate().toString(Qt::ISODate);
-    set_log_name_format = set_log_name + " (%1)";
-    int i = 1;
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        QString set_log_name_format;
+        QString set_log_name;
 
-    // calculate name of the todays setlog
-    while (m_playlistDao.getPlaylistIdFromName(set_log_name) != -1) {
-        set_log_name = set_log_name_format.arg(++i);
-    }
+        set_log_name = QDate::currentDate().toString(Qt::ISODate);
+        set_log_name_format = set_log_name + " (%1)";
+        int i = 1;
 
-    qDebug() << "Creating session history playlist name:" << set_log_name;
-    m_playlistId = m_playlistDao.createPlaylist(set_log_name,
-                                                PlaylistDAO::PLHT_SET_LOG);
+        // calculate name of the todays setlog
+        while (m_playlistDao.getPlaylistIdFromName(set_log_name) != -1) {
+            set_log_name = set_log_name_format.arg(++i);
+        }
 
-    if (m_playlistId == -1) {
-        qDebug() << "Setlog playlist Creation Failed";
-        qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
-    }
+        qDebug() << "Creating session history playlist name:" << set_log_name;
+        m_playlistId = m_playlistDao.createPlaylist(set_log_name,
+                                                    PlaylistDAO::PLHT_SET_LOG);
+
+        if (m_playlistId == -1) {
+            qDebug() << "Setlog playlist Creation Failed";
+            qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
+        }
+    });
 }
 
 void SetlogFeature::createChildModel() {
@@ -151,28 +155,31 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
 
 void SetlogFeature::buildPlaylistList() {
-    m_playlistList.clear();
-    // Setup the sidebar playlist model
-    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
-    playlistTableModel.setTable("Playlists");
-    playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
-                               Qt::AscendingOrder);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        m_playlistList.clear();
+        // Setup the sidebar playlist model
+        QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+        playlistTableModel.setTable("Playlists");
+        playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
+        playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
+                                   Qt::AscendingOrder);
+        playlistTableModel.select();
+        while (playlistTableModel.canFetchMore()) {
+            playlistTableModel.fetchMore();
+        }
+        QSqlRecord record = playlistTableModel.record();
+        int nameColumn = record.indexOf("name");
+        int idColumn = record.indexOf("id");
 
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id = playlistTableModel.data(
-            playlistTableModel.index(row, idColumn)).toInt();
-        QString name = playlistTableModel.data(
-            playlistTableModel.index(row, nameColumn)).toString();
-        m_playlistList.append(qMakePair(id, name));
-    }
+        for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+            int id = playlistTableModel.data(
+                playlistTableModel.index(row, idColumn)).toInt();
+            QString name = playlistTableModel.data(
+                playlistTableModel.index(row, nameColumn)).toString();
+            m_playlistList.append(qMakePair(id, name));
+        }
+    });
 }
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
@@ -312,27 +319,24 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     if (!m_pPlaylistTableModel) {
         return;
     }
-    // tro's lambda idea. This code calls asynchronously!
-//    m_pTrackCollection->callAsync(
-//                [this, playlistId] (void) {
-        DBG() << "begin";
-        //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-        PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-        if (type == PlaylistDAO::PLHT_SET_LOG ||
-                type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-            DBG() << "before emit (constructChildModelBlocking(playlistId))";
-            slotConstructChildModel(playlistId);
-//            emit (constructChildModelBlocking(playlistId));
-            DBG() << "after emit (constructChildModelBlocking(playlistId))";
-            if (type != PlaylistDAO::PLHT_UNKNOWN) {
-                // Switch the view to the playlist.
-                m_pPlaylistTableModel->setTableModel(playlistId);
-                // Update selection
-                emit(featureSelect(this, m_lastRightClickedIndex));
-            }
+
+    PlaylistDAO::HiddenType type;
+    m_pTrackCollection->callSync(
+                [this, playlistId, &type] (void) {
+        type = m_playlistDao.getHiddenType(playlistId);
+    });
+
+    if (type == PlaylistDAO::PLHT_SET_LOG ||
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        clearChildModel();
+        constructChildModel(playlistId);
+        if (type != PlaylistDAO::PLHT_UNKNOWN) {
+            // Switch the view to the playlist.
+            m_pPlaylistTableModel->setTableModel(playlistId);
+            // Update selection
+            emit(featureSelect(this, m_lastRightClickedIndex));
         }
-        DBG() << "end";
-//    });
+    }
 }
 
 
