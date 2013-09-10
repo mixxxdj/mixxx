@@ -330,62 +330,66 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QString playlist_filename = m_lastRightClickedIndex.data().toString();
     QString music_directory = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
     QString file_location = QFileDialog::getSaveFileName(
-        NULL,
-        tr("Export Playlist"),
-        music_directory.append("/").append(playlist_filename),
-        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
-           "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+                NULL,
+                tr("Export Playlist"),
+                music_directory.append("/").append(playlist_filename),
+                tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
+                   "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
     }
 
-    // Create a new table model since the main one might have an active search.
-    // This will only export songs that we think exist on default
-    QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-        new PlaylistTableModel(this, m_pTrackCollection,
-                               "mixxx.db.model.playlist_export"));
+    m_pTrackCollection->callAsync(
+                [this, file_location](void) {
+        QString fileLocation(file_location);
+        // Create a new table model since the main one might have an active search.
+        // This will only export songs that we think exist on default
+        QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
+                    new PlaylistTableModel(this, m_pTrackCollection,
+                                           "mixxx.db.model.playlist_export"));
 
-    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
-    pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
-    pPlaylistTableModel->select();
+        pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
+        pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
+        pPlaylistTableModel->select();
 
-    // check config if relative paths are desired
-    bool useRelativePath = static_cast<bool>(m_pConfig->getValueString(
-        ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
+        // check config if relative paths are desired
+        bool useRelativePath = static_cast<bool>(m_pConfig->getValueString(
+                                                     ConfigKey("[Library]", "UseRelativePathOnExport")).toInt());
 
-    if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
-        ParserCsv::writeCSVFile(file_location, pPlaylistTableModel.data(), useRelativePath);
-    } else if (file_location.endsWith(".txt", Qt::CaseInsensitive)) {
-        if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) == PlaylistDAO::PLHT_SET_LOG) {
-            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(), true);
-        } else {
-            ParserCsv::writeReadableTextFile(file_location, pPlaylistTableModel.data(), false);
-        }
-    } else {
-        // Create and populate a list of files of the playlist
-        QList<QString> playlist_items;
-        int rows = pPlaylistTableModel->rowCount();
-        for (int i = 0; i < rows; ++i) {
-            QModelIndex index = pPlaylistTableModel->index(i, 0);
-            playlist_items << pPlaylistTableModel->getTrackLocation(index);
-        }
-
-        if (file_location.endsWith(".pls", Qt::CaseInsensitive)) {
-            ParserPls::writePLSFile(file_location, playlist_items, useRelativePath);
-        } else if (file_location.endsWith(".m3u8", Qt::CaseInsensitive)) {
-            ParserM3u::writeM3U8File(file_location, playlist_items, useRelativePath);
-        } else {
-            //default export to M3U if file extension is missing
-            if(!file_location.endsWith(".m3u", Qt::CaseInsensitive))
-            {
-                qDebug() << "Crate export: No valid file extension specified. Appending .m3u "
-                         << "and exporting to M3U.";
-                file_location.append(".m3u");
+        if (fileLocation.endsWith(".csv", Qt::CaseInsensitive)) {
+            ParserCsv::writeCSVFile(fileLocation, pPlaylistTableModel.data(), useRelativePath);
+        } else if (fileLocation.endsWith(".txt", Qt::CaseInsensitive)) {
+            if (m_playlistDao.getHiddenType(pPlaylistTableModel->getPlaylist()) == PlaylistDAO::PLHT_SET_LOG) {
+                ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), true);
+            } else {
+                ParserCsv::writeReadableTextFile(fileLocation, pPlaylistTableModel.data(), false);
             }
-            ParserM3u::writeM3UFile(file_location, playlist_items, useRelativePath);
+        } else {
+            // Create and populate a list of files of the playlist
+            QList<QString> playlist_items;
+            int rows = pPlaylistTableModel->rowCount();
+            for (int i = 0; i < rows; ++i) {
+                QModelIndex index = pPlaylistTableModel->index(i, 0);
+                playlist_items << pPlaylistTableModel->getTrackLocation(index);
+            }
+
+            if (fileLocation.endsWith(".pls", Qt::CaseInsensitive)) {
+                ParserPls::writePLSFile(fileLocation, playlist_items, useRelativePath);
+            } else if (fileLocation.endsWith(".m3u8", Qt::CaseInsensitive)) {
+                ParserM3u::writeM3U8File(fileLocation, playlist_items, useRelativePath);
+            } else {
+                //default export to M3U if file extension is missing
+                if(!fileLocation.endsWith(".m3u", Qt::CaseInsensitive))
+                {
+                    qDebug() << "Crate export: No valid file extension specified. Appending .m3u "
+                             << "and exporting to M3U.";
+                    fileLocation.append(".m3u");
+                }
+                ParserM3u::writeM3UFile(fileLocation, playlist_items, useRelativePath);
+            }
         }
-    }
+    });
 }
 
 void BasePlaylistFeature::slotAddToAutoDJ() {

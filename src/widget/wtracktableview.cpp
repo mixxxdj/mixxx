@@ -1280,7 +1280,12 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         trackIds.insert(trackId);
     }
 
-    sortByColumn(headerSection);
+    // TODO(tro) WRAP
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &headerSection] (void) {
+        sortByColumn(headerSection);
+    });
 
     QItemSelectionModel* currentSelection = selectionModel();
 

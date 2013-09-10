@@ -484,7 +484,6 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
 }
 
 void CrateFeature::buildCrateList() {
-    DBG() << "YEP, DOING IT";
     m_crateList.clear();
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
     crateListTableModel.setTable("crates");

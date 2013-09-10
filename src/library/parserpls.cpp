@@ -121,9 +121,9 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
             ++iPos;
 
             filename = textline.right(textline.length()-iPos);
-           
+
             //Rythmbox playlists starts with file://<path>
-            //We remove the file protocol if found. 
+            //We remove the file protocol if found.
             filename.remove("file://");
             QByteArray strlocbytes = filename.toUtf8();
             QUrl location = QUrl::fromEncoded(strlocbytes);
@@ -148,7 +148,7 @@ QString ParserPls::getFilepath(QTextStream *stream, QString basepath)
     return 0;
 
 }
-bool ParserPls::writePLSFile(QString &file_str, QList<QString> &items, bool useRelativePath)
+bool ParserPls::writePLSFile(const QString &file_str, QList<QString> &items, bool useRelativePath)
 {
     QFile file(file_str);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)){

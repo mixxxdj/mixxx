@@ -313,15 +313,16 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         return;
     }
     // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, playlistId] (void) {
+//    m_pTrackCollection->callAsync(
+//                [this, playlistId] (void) {
         DBG() << "begin";
         //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
         PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
         if (type == PlaylistDAO::PLHT_SET_LOG ||
                 type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
             DBG() << "before emit (constructChildModelBlocking(playlistId))";
-            emit (constructChildModelBlocking(playlistId));
+            slotConstructChildModel(playlistId);
+//            emit (constructChildModelBlocking(playlistId));
             DBG() << "after emit (constructChildModelBlocking(playlistId))";
             if (type != PlaylistDAO::PLHT_UNKNOWN) {
                 // Switch the view to the playlist.
@@ -331,7 +332,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
             }
         }
         DBG() << "end";
-    });
+//    });
 }
 
 

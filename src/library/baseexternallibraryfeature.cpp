@@ -62,7 +62,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, bTop] (void) {
+                [this, &bTop] (void) {
         // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
         // use the dataPath because models with nested playlists need to use the
         // full path/name of the playlist.

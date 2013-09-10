@@ -287,7 +287,7 @@ void AutoDJFeature::constructCrateChildModel() {
     crateListTableModel.setSort(crateListTableModel.fieldIndex(CRATETABLE_NAME),
                                 Qt::AscendingOrder);
     crateListTableModel.setFilter(CRATETABLE_AUTODJ_SOURCE + " = 1 AND " + CRATETABLE_SHOW + " = 1");
-    crateListTableModel.select();
+    crateListTableModel.select();                                                                   // TODO(tro) WRAP
     while (crateListTableModel.canFetchMore()) {
         crateListTableModel.fetchMore();
     }

@@ -39,7 +39,7 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
     trackLoaded(m_previewDeckGroup, PlayerInfo::Instance().getTrackInfo(m_previewDeckGroup));
 
     connect(this, SIGNAL(queryExecuted()),
-            this, SLOT(slotPopulateQueryResult()), Qt::BlockingQueuedConnection);
+            this, SLOT(slotPopulateQueryResult()), Qt::QueuedConnection);
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -174,6 +174,8 @@ void BaseSqlTableModel::select() {
     // }
 
     DBG() << "BaseSqlTableModel::select() start by" << this;
+    Q_ASSERT(QThread::currentThread() != m_pTrackCollection->thread());
+
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
