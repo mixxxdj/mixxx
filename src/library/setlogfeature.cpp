@@ -32,7 +32,6 @@ SetlogFeature::SetlogFeature(QObject* parent,
 
 void SetlogFeature::init() {
     createChildModel();
-
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
                 [this] (void) {

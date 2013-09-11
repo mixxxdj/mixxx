@@ -29,8 +29,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
       m_analysisDao(NULL),
       m_trackDao(NULL),
       m_stop(false),
-      m_semLambdaReadyToCall(0),
-      m_semLambdasReady(0),
+      m_semLambdasReadyToCall(0),
       m_semLambdasFree(MAX_LAMBDA_COUNT),
       m_pCOTPlaylistIsBusy(NULL),
       m_supportedFileExtensionsRegex(
@@ -84,23 +83,24 @@ void TrackCollection::run() {
 
     emit(initialized()); // to notify that Daos can be used
 
+    func lambda;
     // main TrackCollection's loop
     while (!m_stop) {
-        if (!m_semLambdasReady.tryAcquire(1)) {
+        if (!m_semLambdasReadyToCall.tryAcquire(1)) {
             // no Lambda available, so unlock GUI.
             m_pCOTPlaylistIsBusy->set(0.0);
-            m_semLambdasReady.acquire(1); // Sleep until new Lambdas have arrived
+            m_semLambdasReadyToCall.acquire(1); // Sleep until new Lambdas have arrived
         }
-        func lambda;
-        m_lambdasMutex.lock();
+        m_lambdasQueueMutex.lock();
         lambda = m_lambdas.dequeue();
-        m_lambdasMutex.unlock();
+        m_lambdasQueueMutex.unlock();
 
-        DBG() << "begin lambda exec";
+//        DBG() << "begin lambda exec";
         lambda();
-        DBG() << "end lambda exec";
+//        DBG() << "end lambda exec";
 
         m_semLambdasFree.release(1);
+//        m_semLambdasReadyToCall.release(1);
     }
 
     DBG() << " ### Thread ended ###";
@@ -118,7 +118,7 @@ void TrackCollection::callAsync(func lambda) {
 }
 
 void TrackCollection::callSync(func lambda) {
-    DBG();
+//    DBG();
     QMutex mutex;
     mutex.lock();
     callAsync( [&mutex, &lambda] (void) {
@@ -140,11 +140,11 @@ void TrackCollection::callSync(func lambda) {
 
 void TrackCollection::addLambdaToQueue(func lambda) {
     //TODO(tro) check lambda
-    m_semLambdasFree.acquire(1);
-    m_lambdasMutex.lock();
+    m_semLambdasFree.acquire(1); // we'll wait here if lambdas count in queue is greater then MAX_LAMBDA_COUNT
+    m_lambdasQueueMutex.lock();
     m_lambdas.enqueue(lambda);
-    m_lambdasMutex.unlock();
-    m_semLambdasReady.release(1);
+    m_lambdasQueueMutex.unlock();
+    m_semLambdasReadyToCall.release(1);
 }
 
 void TrackCollection::stopThread() {

@@ -85,6 +85,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     SetlogFeature* setlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
+
     setlogFeature->init();
     addFeature(setlogFeature);
 
