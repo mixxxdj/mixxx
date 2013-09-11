@@ -1157,7 +1157,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>play</key>
+                <key>play_indicator</key>
                 <description></description>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
@@ -1168,7 +1168,7 @@
             </output>
             <output>
                 <group>[Channel1]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <description></description>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
@@ -1234,7 +1234,7 @@
             </output>
 	        <output>
                 <group>[Channel2]</group>
-                <key>play</key>
+                <key>play_indicator</key>
                 <description></description>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>
@@ -1245,7 +1245,7 @@
             </output>
             <output>
                 <group>[Channel2]</group>
-                <key>cue_default</key>
+                <key>cue_indicator</key>
                 <description></description>
                 <minimum>0.5</minimum>
                 <maximum>1</maximum>

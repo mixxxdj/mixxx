@@ -7,6 +7,7 @@
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include "controlindicator.h"
 #include "trackinfoobject.h"
 #include "library/dao/cue.h"
 #include "cachingreader.h"
@@ -77,6 +78,8 @@ CueControl::CueControl(const char * _group,
     connect(m_pCueDefault, SIGNAL(valueChanged(double)),
             this, SLOT(cueDefault(double)),
             Qt::DirectConnection);
+
+    m_pCueIndicator = new ControlIndicator(ConfigKey(_group, "cue_indicator"));
 }
 
 CueControl::~CueControl() {
@@ -90,6 +93,7 @@ CueControl::~CueControl() {
     delete m_pCuePreview;
     delete m_pCueCDJ;
     delete m_pCueDefault;
+    delete m_pCueIndicator;
     while (m_hotcueControl.size() > 0) {
         HotcueControl* pControl = m_hotcueControl.takeLast();
         delete pControl;
@@ -194,6 +198,10 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     } else {
         m_pCuePoint->set(0.0f);
     }
+    if (m_pCueMode->get() == 0.0f) {
+        // in CDJ mode Cue Button is lit if a cue point is set
+        m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+    }
 
     int cueRecall = getConfig()->getValueString(
         ConfigKey("[Controls]","CueRecall")).toInt();
@@ -236,7 +244,10 @@ void CueControl::trackUnloaded(TrackPointer pTrack) {
         }
         loadCue->setPosition(cuePoint);
     }
-
+    if (m_pCueMode->get() == 0.0f) {
+        // in CDJ mode Cue Button is off if no track loaded
+        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+    }
     m_pLoadedTrack.clear();
 }
 

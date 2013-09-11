@@ -16,6 +16,7 @@
 class ControlObject;
 class ControlPushButton;
 class Cue;
+class ControlIndicator;
 
 class HotcueControl : public QObject {
     Q_OBJECT
@@ -140,6 +141,7 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueSimple;
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
+    ControlIndicator* m_pCueIndicator;
     ControlPushButton* m_pCueGoto;
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCueGotoAndStop;

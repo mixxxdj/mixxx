@@ -260,6 +260,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pReader;
 
     delete m_playButton;
+    delete m_playIndicator;
     delete m_playStartButton;
     delete m_stopStartButton;
 

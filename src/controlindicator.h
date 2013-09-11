@@ -25,6 +25,8 @@ class ControlIndicator : public ControlObject {
 
   private:
     void toggle();
+    // set() is private, use setBlinkValue instead
+    void set(double value) { ControlObject::set(value); };
 
     enum BlinkValue m_blinkValue;
     double m_nextSwitchTime;
