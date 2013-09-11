@@ -3,6 +3,7 @@
 
 #include <QTime>
 
+#include "soundmanagerutil.h"
 #include "vinylcontrol/vinylcontrol.h"
 #include "vinylcontrol/steadypitch.h"
 
@@ -16,7 +17,6 @@ extern "C" {
 
 #define XWAX_DEVICE_FRAME 32
 #define XWAX_SMOOTHING (128 / XWAX_DEVICE_FRAME) /* result value is in frames */
-#define RING_SIZE 30
 #define QUALITY_RING_SIZE 100
 #define MIN_SIGNAL 75
 
@@ -59,7 +59,8 @@ class VinylControlXwax : public VinylControl {
     int iPosition;
     float filePosition;
     double dDriftAmt;
-    double dPitchRing[RING_SIZE];
+    int iPitchRingSize;
+    double* m_pPitchRing;
     int ringPos;
     int ringFilled;
     double old_duration;

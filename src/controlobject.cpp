@@ -168,11 +168,11 @@ void ControlObject::set(const ConfigKey& key, const double& value) {
 }
 
 bool ControlObject::connectValueChangeRequest(const QObject* receiver,
-        const char* method, Qt::ConnectionType type) {
+                                              const char* method,
+                                              Qt::ConnectionType type) {
     bool ret = false;
     if (m_pControl) {
         ret = m_pControl->connectValueChangeRequest(receiver, method, type);
     }
     return ret;
 }
-

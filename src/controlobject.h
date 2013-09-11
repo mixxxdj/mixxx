@@ -54,9 +54,9 @@ class ControlObject : public QObject {
     double get() const;
     // Instantly returns the value of the ControlObject
     static double get(const ConfigKey& key);
-    // Sets the ControlObject value
+    // Sets the ControlObject value. May require confirmation by owner.
     void set(double value);
-    // Sets the ControlObject value
+    // Sets the ControlObject value and confirms it.
     void setAndConfirm(double value);
     // Instantly sets the value of the ControlObject
     static void set(const ConfigKey& key, const double& value);
@@ -72,8 +72,10 @@ class ControlObject : public QObject {
         return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
+    // Connects a Qt slot to a signal that is delivered when a new value change
+    // request arrives for this control.
     bool connectValueChangeRequest(const QObject* receiver,
-            const char* method, Qt::ConnectionType type);
+                                   const char* method, Qt::ConnectionType type);
 
   signals:
     void valueChanged(double);
