@@ -497,8 +497,13 @@ void EngineBuffer::slotControlSeekAbs(double abs)
 
 void EngineBuffer::slotControlPlayRequest(double v)
 {
-    if (v == 0.0 && m_pCueControl->isCuePreviewing()) {
+    // if "play" is set by cue button, a toggle request (play = 0.0) is
+    // used for latching play.
+    bool previewing = m_pCueControl->isCuePreviewing(v == 0.0);
+    if (v == 0.0 && previewing) {
+        // play remains in play state when latching
         v = 1.0;
+        previewing = false;
     }
 
     // If no track is currently loaded, turn play off. If a track is loading
@@ -509,9 +514,11 @@ void EngineBuffer::slotControlPlayRequest(double v)
         v = 0.0;
         m_playIndicator->setBlinkValue(ControlIndicator::OFF);
     } else {
-        if (v) {
+        if (v && !previewing) {
+            // Indicates a latched Play
             m_playIndicator->setBlinkValue(ControlIndicator::ON);
         } else {
+            // Indicates Play is possible
             m_playIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
         }
     }

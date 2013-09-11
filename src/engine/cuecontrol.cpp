@@ -450,8 +450,8 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
         if (pCue && pCue->getPosition() != -1) {
             m_iCurrentlyPreviewingHotcues++;
             int iPosition = pCue->getPosition();
-            m_pPlayButton->set(1.0);
             m_bPreviewingHotcue = true;
+            m_pPlayButton->set(1.0);
             pControl->setPreviewing(true);
             pControl->setPreviewingPosition(iPosition);
 
@@ -480,7 +480,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                 if (bHotcueCancel) {
                     // Re-trigger the play button value so controllers get the correct one
                     // after.
-                    m_pPlayButton->set(m_pPlayButton->get());
+                    //m_pPlayButton->set(m_pPlayButton->get());
                 } else {
                     m_pPlayButton->set(0.0);
                     // Need to unlock before emitting any signals to prevent deadlock.
@@ -625,8 +625,8 @@ void CueControl::cuePreview(double v)
     QMutexLocker lock(&m_mutex);
 
     if (v) {
-        m_pPlayButton->set(1.0);
         m_bPreviewing = true;
+        m_pPlayButton->set(1.0);
     } else if (!v && m_bPreviewing) {
         m_bPreviewing = false;
         m_pPlayButton->set(0.0);
@@ -683,8 +683,8 @@ void CueControl::cueCDJ(double v) {
             seekAbs(cuePoint);
         } else {
             if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
-                m_pPlayButton->set(1.0);
                 m_bPreviewing = true;
+                m_pPlayButton->set(1.0);
             } else {
                 cueSet(v);
                 // Just in case.
@@ -706,30 +706,35 @@ void CueControl::cueCDJ(double v) {
         lock.unlock();
 
         seekAbs(cuePoint);
-    }
-    else {
+    } else {
         // Re-trigger the play button value so controllers get the correct one
         // after playFromCuePreview() changes it.
-        m_pPlayButton->set(m_pPlayButton->get());
+        //m_pPlayButton->set(m_pPlayButton->get());
     }
 }
 
-bool CueControl::isCuePreviewing() {
+bool CueControl::isCuePreviewing(bool latchPlay) {
     QMutexLocker lock(&m_mutex);
 
     if (m_bPreviewing) {
         // we're previewing? Then stop previewing and go into normal play mode.
-        m_bPreviewing = false;
+        if (latchPlay) {
+            m_bPreviewing = false;
+        }
         return true;
     }
 
     if (m_bPreviewingHotcue) {
-        m_bHotcueCancel = true;
+        if (latchPlay) {
+            m_bHotcueCancel = true;
+        }
         return true;
     }
 
     return false;
 }
+
+
 
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference

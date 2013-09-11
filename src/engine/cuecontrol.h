@@ -87,7 +87,7 @@ class CueControl : public EngineControl {
     virtual ~CueControl();
 
     virtual void hintReader(QVector<Hint>* pHintList);
-    bool isCuePreviewing();
+    bool isCuePreviewing(bool latchPlay);
 
   public slots:
     void trackLoaded(TrackPointer pTrack);
