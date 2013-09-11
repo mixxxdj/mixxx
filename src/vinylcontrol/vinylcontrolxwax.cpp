@@ -154,7 +154,7 @@ VinylControlXwax::~VinylControlXwax()
 {
     delete m_pSteadySubtle;
     delete m_pSteadyGross;
-    delete m_pPitchRing;
+    delete [] m_pPitchRing;
 
     //Cleanup xwax nicely
     timecoder_monitor_clear(&timecoder);

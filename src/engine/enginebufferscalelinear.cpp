@@ -316,11 +316,8 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // Smooth any changes in the playback rate over iRateLerpLength
         // samples. This prevents the change from being discontinuous and helps
         // improve sound quality.
-        float rate_add = rate_add_new;
-        if (i < iRateLerpLength) {
-            rate_add = static_cast<float>(i) * (rate_add_diff) /
-                       static_cast<float>(iRateLerpLength) + rate_add_old;
-        }
+        float rate_add = static_cast<float>(i) * (rate_add_diff) /
+                         static_cast<float>(iRateLerpLength) + rate_add_old;
 
         // if we don't have enough samples, load some more
         while (static_cast<int>(ceil(m_dCurSampleIndex)) * 2 + 1 >=
