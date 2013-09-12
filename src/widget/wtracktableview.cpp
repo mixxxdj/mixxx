@@ -1120,7 +1120,7 @@ void WTrackTableView::slotSendToAutoDJ() {
     m_pTrackCollection->callAsync(
                 [this](void) {
         sendToAutoDJ(false); // bTop = false
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void WTrackTableView::slotSendToAutoDJTop() {
@@ -1129,7 +1129,7 @@ void WTrackTableView::slotSendToAutoDJTop() {
     m_pTrackCollection->callAsync(
                 [this] (void) {
         sendToAutoDJ(true); // bTop = true
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void WTrackTableView::sendToAutoDJ(bool bTop) {
@@ -1280,12 +1280,11 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         trackIds.insert(trackId);
     }
 
-    // TODO(tro) WRAP
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
                 [this, &headerSection] (void) {
         sortByColumn(headerSection);
-    });
+    }, __PRETTY_FUNCTION__);
 
     QItemSelectionModel* currentSelection = selectionModel();
 

@@ -115,7 +115,7 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
             }
         }
         emit(trackAnalysisStarted(trackIds.size()));
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void AnalysisFeature::stopAnalysis() {

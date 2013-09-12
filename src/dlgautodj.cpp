@@ -56,7 +56,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                                                     PlaylistDAO::PLHT_AUTO_DJ);
         }
         m_pAutoDJTableModel->setTableModel(playlistId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
@@ -171,7 +171,7 @@ void DlgAutoDJ::onShow() {
     m_pTrackCollection->callAsync(
                 [this] (void) {
         m_pAutoDJTableModel->select();
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {
@@ -220,7 +220,7 @@ void DlgAutoDJ::shufflePlaylist(double value) {
                 [this] (void) {
         int row = m_eState == ADJ_DISABLED ? 0 : 1;
         m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAutoDJ::skipNextButton(bool) {
@@ -244,7 +244,7 @@ void DlgAutoDJ::skipNext(double value) {
             removePlayingTrackFromQueue("[Channel2]");
             loadNextTrackFromQueue();
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAutoDJ::fadeNowButton(bool) {
@@ -301,7 +301,7 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
                 removePlayingTrackFromQueue("[Channel2]");
             }
             nextTrack = getNextTrackFromQueue();
-        });
+        }, __PRETTY_FUNCTION__);
 
         if (!nextTrack) {
             qDebug() << "Queue is empty now";
@@ -401,7 +401,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
             m_pTrackCollection->callSync(
                         [this] (void) {
                 removePlayingTrackFromQueue("[Channel1]");
-            });
+            }, __PRETTY_FUNCTION__);
         } else {
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
@@ -413,7 +413,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
                 m_pTrackCollection->callSync(
                             [this] (void) {
                     loadNextTrackFromQueue();
-                });
+                }, __PRETTY_FUNCTION__);
 
                 // if we start the deck from code we don`t get a signal
                 player1PlayChanged(1.0);
@@ -435,7 +435,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
             m_pTrackCollection->callSync(
                         [this] (void) {
                 loadNextTrackFromQueue();
-            });
+            }, __PRETTY_FUNCTION__);
         }
         return;
     }
@@ -463,7 +463,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
             m_pTrackCollection->callSync(
                         [this] (void) {
                 removePlayingTrackFromQueue("[Channel2]");
-            });
+            }, __PRETTY_FUNCTION__);
             m_eState = ADJ_P1FADING;
             pushButtonFadeNow->setEnabled(false);
         }
@@ -517,7 +517,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             m_pTrackCollection->callSync(
                         [this] (void) {
                 loadNextTrackFromQueue();
-            });
+            }, __PRETTY_FUNCTION__);
         }
         return;
     }
@@ -544,7 +544,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             m_pTrackCollection->callSync(
                         [this] (void) {
                 removePlayingTrackFromQueue("[Channel1]");
-            });
+            }, __PRETTY_FUNCTION__);
             m_eState = ADJ_P2FADING;
             pushButtonFadeNow->setEnabled(false);
         }

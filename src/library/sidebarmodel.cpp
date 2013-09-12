@@ -261,7 +261,7 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
             m_pTrackCollection->callAsync(
                         [this, &index, urls, pSource] (void) {
                 return m_sFeatures[index.row()]->dropAccept(urls, pSource);
-            });
+            }, __PRETTY_FUNCTION__);
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
@@ -270,7 +270,7 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
                 m_pTrackCollection->callAsync(
                             [this, &feature, &index, urls, pSource] (void) {
                     return feature->dropAcceptChild(index, urls, pSource);
-                });
+                }, __PRETTY_FUNCTION__);
             }
         }
     }

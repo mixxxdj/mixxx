@@ -85,7 +85,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_pTrackCollection->callSync(
                 [this] (void) {
         m_pTraktorTableModel->init();
-    });
+    }, __PRETTY_FUNCTION__);
 
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
 

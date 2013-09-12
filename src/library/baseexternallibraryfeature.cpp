@@ -98,7 +98,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
                 playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
             }
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
@@ -160,7 +160,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
                                  tr("An unknown error occurred while creating playlist: ")
                                  + playlist);
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 

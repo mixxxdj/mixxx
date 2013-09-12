@@ -149,7 +149,7 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
                 [this, &crateId, &locked, &crateName] (void) {
         crateId = m_crateDao.getCrateIdByName(crateName);
         locked = m_crateDao.isCrateLocked(crateId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
@@ -187,7 +187,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
         int crateId = m_crateDao.getCrateIdByName(crateName);
         m_crateTableModel.setTableModel(crateId);
         emit(showTrackModel(&m_crateTableModel));
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
@@ -208,7 +208,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
                 [this, &crateId, &locked, &crateName] (void) {
         crateId = m_crateDao.getCrateIdByName(crateName);
         locked = m_crateDao.isCrateLocked(crateId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     m_pDeleteCrateAction->setEnabled(!locked);
     m_pRenameCrateAction->setEnabled(!locked);
@@ -219,7 +219,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     m_pTrackCollection->callSync(
                 [this, &bAutoDj, &crateId] (void) {
         bAutoDj = m_crateDao.isCrateInAutoDj(crateId);
-    });
+    }, __PRETTY_FUNCTION__);
     m_pAutoDjTrackSource->setChecked(bAutoDj);
 #endif // __AUTODJCRATES__
 
@@ -262,7 +262,7 @@ void CrateFeature::slotCreateCrate() {
         m_pTrackCollection->callSync(
                     [this, &existingId, &name] (void) {
             existingId = m_crateDao.getCrateIdByName(name);
-        });
+        }, __PRETTY_FUNCTION__);
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
@@ -282,7 +282,7 @@ void CrateFeature::slotCreateCrate() {
     m_pTrackCollection->callSync(
                 [this, &crateId, &name] (void) {
         crateId = m_crateDao.createCrate(name);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (crateId != -1) {
         emit(showTrackModel(&m_crateTableModel));
@@ -304,7 +304,7 @@ void CrateFeature::slotDeleteCrate() {
                 [this, &crateId, &locked, &crateName] (void) {
         crateId = m_crateDao.getCrateIdByName(crateName);
         locked = m_crateDao.isCrateLocked(crateId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (locked) {
         qDebug() << "Skipping crate deletion because crate" << crateId << "is locked.";
@@ -316,7 +316,7 @@ void CrateFeature::slotDeleteCrate() {
     m_pTrackCollection->callSync(
                 [this, &deleted, &crateId] (void) {
         deleted = m_crateDao.deleteCrate(crateId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (deleted) {
         activate();
@@ -334,7 +334,7 @@ void CrateFeature::slotRenameCrate() {
                 [this, &crateId, &locked, &oldName] (void) {
         crateId = m_crateDao.getCrateIdByName(oldName);
         locked = m_crateDao.isCrateLocked(crateId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (locked) {
         qDebug() << "Skipping crate rename because crate" << crateId << "is locked.";
@@ -362,7 +362,7 @@ void CrateFeature::slotRenameCrate() {
         m_pTrackCollection->callSync(
                     [this, &existingId, &newName] (void) {
             existingId = m_crateDao.getCrateIdByName(newName);
-        });
+        }, __PRETTY_FUNCTION__);
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
@@ -382,7 +382,7 @@ void CrateFeature::slotRenameCrate() {
     m_pTrackCollection->callSync(
                 [this, &renameResult, &crateId, &newName] (void) {
         renameResult = m_crateDao.renameCrate(crateId, newName);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (!renameResult) {
         qDebug() << "Failed to rename crateId" << crateId;
@@ -397,7 +397,7 @@ void CrateFeature::slotDuplicateCrate() {
     m_pTrackCollection->callSync(
                 [this, &oldCrateId, &oldName] (void) {
         oldCrateId = m_crateDao.getCrateIdByName(oldName);
-    });
+    }, __PRETTY_FUNCTION__);
 
     QString name;
     bool validNameGiven = false;
@@ -421,7 +421,7 @@ void CrateFeature::slotDuplicateCrate() {
         m_pTrackCollection->callSync(
                     [this, &existingId, &name] (void) {
             existingId = m_crateDao.getCrateIdByName(name);
-        });
+        }, __PRETTY_FUNCTION__);
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
@@ -442,7 +442,7 @@ void CrateFeature::slotDuplicateCrate() {
                 [this, &newCrateId, &oldCrateId, &name] (void) {
         newCrateId = m_crateDao.createCrate(name);
         m_crateDao.copyCrateTracks(oldCrateId, newCrateId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (newCrateId != -1) {
         emit(showTrackModel(&m_crateTableModel));
@@ -466,7 +466,7 @@ void CrateFeature::slotToggleCrateLock() {
         if (!m_crateDao.setCrateLocked(crateId, locked)) {
             qDebug() << "Failed to toggle lock of crateId " << crateId;
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void CrateFeature::slotAutoDjTrackSourceChanged() {

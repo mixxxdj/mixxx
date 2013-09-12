@@ -51,71 +51,71 @@ class BpmDetector;
    @author Albert Santoni
 */
 
-class MainExecuter : public QObject {
-    Q_OBJECT
-public:
-    ~MainExecuter() {}
+//class MainExecuter : public QObject {
+//    Q_OBJECT
+//public:
+//    ~MainExecuter() {}
 
-    static MainExecuter& getInstance() {
-        static MainExecuter instance;
-        return instance;
-    }
-    QMutex lambdaMutex;
-    func lambda;
+//    static MainExecuter& getInstance() {
+//        static MainExecuter instance;
+//        return instance;
+//    }
+//    QMutex lambdaMutex;
+//    func lambda;
 
-    static void callAsync(func lambda) {
-//        MainExecuter* me = new MainExecuter(lambda);
-//        me->moveToThread(qApp->thread());
-//        connect(me, SIGNAL(runOnMainThread()),
-//                me, SLOT(call()), Qt::QueuedConnection);
-//        emit(me->runOnMainThread());
-        MainExecuter* instance = &getInstance();
-        instance->setLambda(lambda);
-        instance->moveToThread(qApp->thread());
+//    static void callAsync(func lambda) {
+////        MainExecuter* me = new MainExecuter(lambda);
+////        me->moveToThread(qApp->thread());
+////        connect(me, SIGNAL(runOnMainThread()),
+////                me, SLOT(call()), Qt::QueuedConnection);
+////        emit(me->runOnMainThread());
+//        MainExecuter* instance = &getInstance();
+//        instance->setLambda(lambda);
+//        instance->moveToThread(qApp->thread());
 
-        connect(instance, SIGNAL(runOnMainThread()),
-                instance, SLOT(call()), Qt::QueuedConnection);
-        emit(instance->runOnMainThread());
-    }
+//        connect(instance, SIGNAL(runOnMainThread()),
+//                instance, SLOT(call()), Qt::QueuedConnection);
+//        emit(instance->runOnMainThread());
+//    }
 
-    static void callSync(func lambda) {
-//        MainExecuter* me = new MainExecuter(lambda);
-//        me->moveToThread(qApp->thread());
-//        connect(me, SIGNAL(runOnMainThread()),
-//                me, SLOT(call()), Qt::QueuedConnection);
-//        me->m_lambdaMutex.lock();
-//        emit(me->runOnMainThread());
-//        me->m_lambdaMutex.lock();
-//        me->m_lambdaMutex.unlock();
-        MainExecuter* instance = &getInstance();
-        instance->setLambda(lambda);
-        instance->moveToThread(qApp->thread());
+//    static void callSync(func lambda) {
+////        MainExecuter* me = new MainExecuter(lambda);
+////        me->moveToThread(qApp->thread());
+////        connect(me, SIGNAL(runOnMainThread()),
+////                me, SLOT(call()), Qt::QueuedConnection);
+////        me->m_lambdaMutex.lock();
+////        emit(me->runOnMainThread());
+////        me->m_lambdaMutex.lock();
+////        me->m_lambdaMutex.unlock();
+//        MainExecuter* instance = &getInstance();
+//        instance->setLambda(lambda);
+//        instance->moveToThread(qApp->thread());
 
-        connect(instance, SIGNAL(runOnMainThread()),
-                instance, SLOT(call()), Qt::QueuedConnection);
-        instance->lambdaMutex.lock();
-        emit(instance->runOnMainThread());
-        instance->lambdaMutex.lock();
-        instance->lambdaMutex.unlock();
-    }
+//        connect(instance, SIGNAL(runOnMainThread()),
+//                instance, SLOT(call()), Qt::QueuedConnection);
+//        instance->lambdaMutex.lock();
+//        emit(instance->runOnMainThread());
+//        instance->lambdaMutex.lock();
+//        instance->lambdaMutex.unlock();
+//    }
 
-signals:
-    void runOnMainThread();
+//signals:
+//    void runOnMainThread();
 
-private slots:
-    void call() {
-        DBG() << "calling lambda in " << QThread::currentThread()->objectName();
-        MainExecuter* instance = &getInstance();
-        instance->lambda();
-        instance->lambdaMutex.unlock();
-        disconnect(instance, 0, 0, 0);
-    }
+//private slots:
+//    void call() {
+//        DBG() << "calling lambda in " << QThread::currentThread()->objectName();
+//        MainExecuter* instance = &getInstance();
+//        instance->lambda();
+//        instance->lambdaMutex.unlock();
+//        disconnect(instance, 0, 0, 0);
+//    }
 
-private:
-//    MainExecuter(func lambda) : m_lambda(lambda) {  }
-    MainExecuter() : lambda(NULL) { static short count = 0; DBG() << ++count; }
-    void setLambda(func newLambda) { lambda = newLambda; }
-};
+//private:
+////    MainExecuter(func lambda) : m_lambda(lambda) {  }
+//    MainExecuter() : lambda(NULL) { static short count = 0; DBG() << ++count; }
+//    void setLambda(func newLambda) { lambda = newLambda; }
+//};
 
 
 
@@ -126,15 +126,15 @@ class TrackCollection : public QThread {
     ~TrackCollection();
     void run();
 
-    void callAsync(func lambda);
-    void callSync(func lambda);
+    void callAsync(func lambda, QString where = QString());
+    void callSync(func lambda, QString where = QString());
 
     void stopThread();
     void addLambdaToQueue(func lambda);
 
     bool checkForTables();
 
-    /** Import the files in a given diretory, without recursing into subdirectories */
+    // Import the files in a given diretory, without recursing into subdirectories
     bool importDirectory(const QString& directory, TrackDAO& trackDao,
                          const QStringList& nameFilters, volatile bool* cancel);
 

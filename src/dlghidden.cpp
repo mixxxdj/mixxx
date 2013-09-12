@@ -35,7 +35,7 @@ void DlgHidden::init() {
     m_pTrackCollection->callSync(
                 [this] (void) {
         m_pHiddenTableModel->init();
-    });
+    }, __PRETTY_FUNCTION__);
 
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
@@ -65,7 +65,7 @@ void DlgHidden::onShow() {
         m_pHiddenTableModel->select();
         // no buttons can be selected
         emit(activateButtons(false));
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgHidden::onSearch(const QString& text) {
@@ -73,7 +73,7 @@ void DlgHidden::onSearch(const QString& text) {
     m_pTrackCollection->callAsync(
                 [this, text] (void) {
         m_pHiddenTableModel->search(text);
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgHidden::clicked() {

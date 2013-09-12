@@ -26,14 +26,14 @@ SetlogFeature::SetlogFeature(QObject* parent,
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
 
-    connect(this, SIGNAL(constructChildModelBlocking(int)),
-            this, SLOT(slotConstructChildModel(int)), Qt::BlockingQueuedConnection);
+//    connect(this, SIGNAL(constructChildModelBlocking(int)),
+//            this, SLOT(slotConstructChildModel(int)), Qt::BlockingQueuedConnection);
 }
 
 void SetlogFeature::init() {
     createChildModel();
     // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
+    m_pTrackCollection->callSync(
                 [this] (void) {
         QString set_log_name_format;
         QString set_log_name;
@@ -55,7 +55,7 @@ void SetlogFeature::init() {
             qDebug() << "Setlog playlist Creation Failed";
             qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void SetlogFeature::createChildModel() {
@@ -76,7 +76,7 @@ SetlogFeature::~SetlogFeature() {
                 m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
             m_playlistDao.deletePlaylist(m_playlistId);
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 QVariant SetlogFeature::title() {
@@ -123,7 +123,7 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
                 [this, &playlistId, &locked, &playlistName] (void) {
         playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
         locked = m_playlistDao.isPlaylistLocked(playlistId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
@@ -154,11 +154,11 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
 
 void SetlogFeature::buildPlaylistList() {
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
     m_pTrackCollection->callSync(
-                [this] (void) {
+                [this, &playlistTableModel] (void) {
         m_playlistList.clear();
         // Setup the sidebar playlist model
-        QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
         playlistTableModel.setTable("Playlists");
         playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
         playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
@@ -178,7 +178,7 @@ void SetlogFeature::buildPlaylistList() {
                 playlistTableModel.index(row, nameColumn)).toString();
             m_playlistList.append(qMakePair(id, name));
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
@@ -190,7 +190,7 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
         m_pTrackCollection->callSync(
                     [this, &locked, &playlist_id] (void) {
             locked = m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(playlist_id);
-        });
+        }, __PRETTY_FUNCTION__ + QString(", playlist_id=%1").arg(playlist_id));
         if (locked) {
             item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
         } else {
@@ -250,7 +250,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                 }
             }
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void SetlogFeature::slotConstructChildModel(int playlistId) {
@@ -310,7 +310,7 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
                 m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
                                                     m_playlistId);
             }
-        });
+        }, __PRETTY_FUNCTION__);
     }
 }
 
@@ -323,7 +323,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     m_pTrackCollection->callSync(
                 [this, playlistId, &type] (void) {
         type = m_playlistDao.getHiddenType(playlistId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (type == PlaylistDAO::PLHT_SET_LOG ||
             type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist

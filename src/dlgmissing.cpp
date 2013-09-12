@@ -25,7 +25,7 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackCollection->callSync(
                 [this] (void) {
         m_pMissingTableModel->init();
-    });
+    }, __PRETTY_FUNCTION__);
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, SIGNAL(clicked()),
@@ -57,7 +57,7 @@ void DlgMissing::onShow() {
         m_pMissingTableModel->select();
         // no buttons can be selected
         emit(activateButtons(false));
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgMissing::clicked() {
@@ -69,7 +69,7 @@ void DlgMissing::onSearch(const QString& text) {
     m_pTrackCollection->callAsync(
                 [this, text] (void) {
         m_pMissingTableModel->search(text);
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgMissing::selectAll() {

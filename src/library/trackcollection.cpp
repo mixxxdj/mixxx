@@ -100,33 +100,30 @@ void TrackCollection::run() {
 //        DBG() << "end lambda exec";
 
         m_semLambdasFree.release(1);
-//        m_semLambdasReadyToCall.release(1);
     }
 
     DBG() << " ### Thread ended ###";
 }
 
 // callAsync calls from GUI thread.
-void TrackCollection::callAsync(func lambda) {
-    DBG();
+void TrackCollection::callAsync(func lambda, QString where) {
+    qDebug() << "callAsync from" << where;
     if (lambda == NULL) return;
     Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
-
     // lock GUI elements by setting [playlist] "isBusy"
     m_pCOTPlaylistIsBusy->set(1.0);
     addLambdaToQueue(lambda);
 }
 
-void TrackCollection::callSync(func lambda) {
-//    DBG();
+void TrackCollection::callSync(func lambda, QString where) {
     QMutex mutex;
     mutex.lock();
     callAsync( [&mutex, &lambda] (void) {
         lambda();
         mutex.unlock();
-    });
+    }, where);
 
-    while (!mutex.tryLock(10)) {
+    while (!mutex.tryLock(5)) {
         // DBG() << "Warning: callSync takes longer than 1 s! This might be caused by a deadlock ";
         // This is required if a CallAsync is waiting for the Main thread
         // TODO(tro) this must not happen because we have possible race conditions

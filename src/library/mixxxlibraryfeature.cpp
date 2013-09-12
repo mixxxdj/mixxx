@@ -162,7 +162,7 @@ void MixxxLibraryFeature::refreshLibraryModels() {
         if (m_pHiddenView) {
             m_pHiddenView->onShow();
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void MixxxLibraryFeature::activate() {

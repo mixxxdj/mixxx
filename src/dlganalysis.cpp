@@ -38,7 +38,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_pTrackCollection->callSync(
                 [this] (void) {
         m_pAnalysisLibraryTableModel->init();
-    });
+    }, __PRETTY_FUNCTION__);
 
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
@@ -73,7 +73,7 @@ void DlgAnalysis::onShow() {
     m_pTrackCollection->callAsync(
                 [this] (void) {
         m_pAnalysisLibraryTableModel->select();
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
@@ -81,7 +81,7 @@ void DlgAnalysis::onSearch(const QString& text) {
     m_pTrackCollection->callAsync(
                 [this, text] (void) {
         m_pAnalysisLibraryTableModel->search(text);
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAnalysis::loadSelectedTrack() {
@@ -170,7 +170,7 @@ void DlgAnalysis::showRecentSongs() {
     m_pTrackCollection->callAsync(
                 [this] (void) {
         m_pAnalysisLibraryTableModel->showRecentSongs();
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAnalysis::showAllSongs() {
@@ -178,7 +178,7 @@ void DlgAnalysis::showAllSongs() {
     m_pTrackCollection->callAsync(
                 [this] (void) {
         m_pAnalysisLibraryTableModel->showAllSongs();
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAnalysis::installEventFilter(QObject* pFilter) {

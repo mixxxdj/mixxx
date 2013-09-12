@@ -135,15 +135,15 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 }
 
 void PlaylistFeature::buildPlaylistList() {
+    QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
     m_pTrackCollection->callSync(
-                [this] (void) {
+                [this, &playlistTableModel] (void) {
         m_playlistList.clear();
         // Setup the sidebar playlist model
-        QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
+
         playlistTableModel.setTable("Playlists");
         playlistTableModel.setFilter("hidden=0");
-        playlistTableModel.setSort(playlistTableModel.fieldIndex("name"),
-                                   Qt::AscendingOrder);
+        playlistTableModel.setSort(playlistTableModel.fieldIndex("name"), Qt::AscendingOrder);
         playlistTableModel.select();
         while (playlistTableModel.canFetchMore()) {
             playlistTableModel.fetchMore();
@@ -159,7 +159,7 @@ void PlaylistFeature::buildPlaylistList() {
                 playlistTableModel.index(row, nameColumn)).toString();
             m_playlistList.append(qMakePair(id, name));
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
@@ -178,10 +178,11 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     }
 
     PlaylistDAO::HiddenType type;
+
     m_pTrackCollection->callSync(
                 [this, playlistId, &type] (void) {
         type = m_playlistDao.getHiddenType(playlistId);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
@@ -195,7 +196,6 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
             emit(featureSelect(this, m_lastRightClickedIndex));
         }
     }
-    // TODO(tro) END wrap to callAsync
 }
 
 QString PlaylistFeature::getRootViewHtml() const {

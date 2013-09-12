@@ -389,7 +389,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
                 ParserM3u::writeM3UFile(fileLocation, playlist_items, useRelativePath);
             }
         }
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void BasePlaylistFeature::slotAddToAutoDJ() {

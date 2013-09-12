@@ -59,7 +59,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_pTrackCollection->callSync(
                 [this] (void) {
         m_pITunesTrackModel->init();
-    });
+    }, __PRETTY_FUNCTION__);
 
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,

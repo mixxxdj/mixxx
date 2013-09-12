@@ -60,7 +60,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     m_pTrackCollection->callSync(
                 [this] (void) {
         m_pMixxxLibraryFeature->init();
-    });
+    }, __PRETTY_FUNCTION__);
     m_pMixxxLibraryFeature->initUI();
     addFeature(m_pMixxxLibraryFeature);
 
@@ -86,10 +86,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     SetlogFeature* setlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
 
+    DBG() << "setlogFeature->init();";
     setlogFeature->init();
+    DBG() << "addFeature(setlogFeature)";
     addFeature(setlogFeature);
 
-    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+   m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<int>)),
@@ -138,7 +140,9 @@ Library::~Library() {
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
     // we never see the TrackCollection's destructor being called... - Albert
     // Has to be deleted at last because the features holds references of it.
-    delete m_pTrackCollection;
+    m_pTrackCollection->stopThread();
+    wait();
+//    delete m_pTrackCollection;
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
