@@ -81,4 +81,20 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
     EXPECT_TRUE(dirs.size() == 0);
 }
 
+TEST_F(DirectoryDAOTest, getDirTest) {
+    DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
+    QString testdir = "TestDir";
+    QString testdir2 = "TestDir2";
+
+    m_DirectoryDao.addDirectory(testdir);
+    m_DirectoryDao.addDirectory(testdir2);
+
+    QStringList dirs = m_DirectoryDao.getDirs();
+
+    // the db should have now no entries left anymore
+    EXPECT_TRUE(dirs.size() == 2);
+    EXPECT_TRUE(dirs.at(0) == testdir);
+    EXPECT_TRUE(dirs.at(1) == testdir2);
+}
+
 }  // namespace
