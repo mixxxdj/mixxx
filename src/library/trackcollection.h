@@ -28,6 +28,7 @@
 #include <QSqlDatabase>
 #include <QApplication>
 #include <QThread>
+#include <QAtomicInt>
 
 #include "configobject.h"
 #include "library/basetrackcache.h"
@@ -60,8 +61,6 @@ public:
         static MainExecuter instance;
         return instance;
     }
-    QMutex m_lambdaMutex;
-    func m_lambda;
 
     static void callAsync(func lambda) {
         MainExecuter* instance = &getInstance();
@@ -92,11 +91,13 @@ public:
 signals:
     void runOnMainThread();
 
-private slots:
+public slots:
     void call() {
         DBG() << "calling m_lambda in " << QThread::currentThread()->objectName();
-        m_lambda();
-        m_lambdaMutex.unlock();
+        if (m_lamdaCount.testAndSetAcquire(1,0)) {;
+            m_lambda();
+            m_lambdaMutex.unlock();
+        }
     }
 
 private:
@@ -110,7 +111,14 @@ private:
                 this, SLOT(call()), Qt::QueuedConnection);
     }
 
-    void setLambda(func newLambda) { m_lambda = newLambda; }
+    void setLambda(func newLambda) {
+        m_lambda = newLambda;
+        m_lamdaCount = 1;
+    }
+
+    QMutex m_lambdaMutex;
+    func m_lambda;
+    QAtomicInt m_lamdaCount;
 };
 
 
