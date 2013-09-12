@@ -58,4 +58,27 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     }
 }
 
+TEST_F(DirectoryDAOTest, removeDirTest) {
+    DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
+    QString testdir = "TestDir";
+
+    // check if directory doa adds and thinks everything is ok
+    m_DirectoryDao.addDirectory(testdir);
+
+    bool success = m_DirectoryDao.removeDirectory(testdir);
+    EXPECT_TRUE(success);
+
+    // we do not trust what directory dao thinks and better check up on it
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
+    success = query.exec();
+    QStringList dirs;
+    while (query.next()) {
+        dirs << query.value(0).toString();
+    }
+
+    // the db should have now no entries left anymore
+    EXPECT_TRUE(dirs.size() == 0);
+}
+
 }  // namespace
