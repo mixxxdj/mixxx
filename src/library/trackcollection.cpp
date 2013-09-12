@@ -109,6 +109,7 @@ bool TrackCollection::checkForTables() {
     m_playlistDao.initialize();
     m_crateDao.initialize();
     m_cueDao.initialize();
+    m_directoryDao.initialize();
 
     return true;
 }
