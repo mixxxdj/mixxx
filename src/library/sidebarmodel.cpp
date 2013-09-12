@@ -254,28 +254,29 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
 bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
                               QWidget* pSource) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
+    bool result = false;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
             // TODO (tro) DISSCUSS THIS MOMENT
             // tro's lambda idea. This code calls asynchronously!
-            m_pTrackCollection->callAsync(
-                        [this, &index, urls, pSource] (void) {
-                return m_sFeatures[index.row()]->dropAccept(urls, pSource);
+            m_pTrackCollection->callSync(
+                        [this, &index, &urls, &pSource, &result] (void) {
+                result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
             }, __PRETTY_FUNCTION__);
+
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
                 // tro's lambda idea. This code calls asynchronously!
-                m_pTrackCollection->callAsync(
-                            [this, &feature, &index, urls, pSource] (void) {
-                    return feature->dropAcceptChild(index, urls, pSource);
+                m_pTrackCollection->callSync(
+                            [this, &feature, &index, &urls, &pSource, &result] (void) {
+                    result = feature->dropAcceptChild(index, urls, pSource);
                 }, __PRETTY_FUNCTION__);
             }
         }
     }
-
-    return false;
+    return result;
 }
 
 bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url)

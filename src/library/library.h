@@ -20,7 +20,6 @@ class TrackModel;
 class TrackCollection;
 class SidebarModel;
 class LibraryFeature;
-//class LibraryTableModel;
 class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;
@@ -30,11 +29,13 @@ class CrateFeature;
 class LibraryControl;
 class MixxxKeyboard;
 
-class Library : public QObject {
+class
+        Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
+            TrackCollection* pTrackCollection,
             bool firstRun, RecordingManager* pRecordingManager);
     virtual ~Library();
 

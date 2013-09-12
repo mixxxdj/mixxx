@@ -104,18 +104,14 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
         emit(analysisActive(true));
     }
 
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, trackIds] (void) {
-        foreach(int trackId, trackIds) {
-            TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
-            if (pTrack) {
-                //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
-                m_pAnalyserQueue->queueAnalyseTrack(pTrack);
-            }
+    foreach(int trackId, trackIds) {
+        TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+        if (pTrack) {
+            //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
+            m_pAnalyserQueue->queueAnalyseTrack(pTrack);
         }
-        emit(trackAnalysisStarted(trackIds.size()));
-    }, __PRETTY_FUNCTION__);
+    }
+    emit(trackAnalysisStarted(trackIds.size()));
 }
 
 void AnalysisFeature::stopAnalysis() {
@@ -137,6 +133,7 @@ void AnalysisFeature::cleanupAnalyser() {
 }
 
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+    Q_UNUSED(pSource);
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
         // XXX: Possible WTF alert - Previously we thought we needed toString() here

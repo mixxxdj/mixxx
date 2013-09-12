@@ -132,7 +132,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
             files.append(file);
         }
     }
-    QList<int> trackIds;                                                    // TODO(tro) BEGIN wrap to callAsync
+    QList<int> trackIds;
     if (pSource) {
         trackIds = trackDao.getTrackIds(files);
     } else {
@@ -148,7 +148,7 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     }
 
     // Return whether the tracks were appended.
-    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);      // TODO(tro) END wrap to callAsync
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
@@ -157,13 +157,13 @@ bool AutoDJFeature::dragMoveAccept(QUrl url) {
 }
 
 // Add a crate to the auto-DJ queue.
-void AutoDJFeature::slotAddCrateToAutoDj(int crateId) {
+void AutoDJFeature::slotAddCrateToAutoDj(int crateId) {  // TODO(tro) wrap
 #ifdef __AUTODJCRATES__
     m_crateDao.setCrateInAutoDj(crateId, true);
 #endif // __AUTODJCRATES__
 }
 
-void AutoDJFeature::slotRemoveCrateFromAutoDj() {
+void AutoDJFeature::slotRemoveCrateFromAutoDj() {  // TODO(tro) wrap
 #ifdef __AUTODJCRATES__
     // Get the crate that was right-clicked on.
     QString crateName = m_lastRightClickedIndex.data().toString();
@@ -176,7 +176,7 @@ void AutoDJFeature::slotRemoveCrateFromAutoDj() {
 #endif // __AUTODJCRATES__
 }
 
-void AutoDJFeature::slotCrateAdded(int crateId) {
+void AutoDJFeature::slotCrateAdded(int crateId) {  // TODO(tro) wrap
 #ifdef __AUTODJCRATES__
     // If this newly-added crate is in the auto-DJ queue, add it to the list.
     if (m_crateDao.isCrateInAutoDj(crateId)) {
@@ -205,7 +205,7 @@ void AutoDJFeature::slotCrateRenamed(int crateId, QString newName) {
 #endif // __AUTODJCRATES__
 }
 
-void AutoDJFeature::slotCrateDeleted(int crateId) {
+void AutoDJFeature::slotCrateDeleted(int crateId) {  // TODO(tro) wrap
 #ifdef __AUTODJCRATES__
     // The crate can't be queried for its auto-DJ status, because it's been
     // deleted by the time this code is reached.  But we can handle that.
@@ -214,7 +214,7 @@ void AutoDJFeature::slotCrateDeleted(int crateId) {
 #endif // __AUTODJCRATES__
 }
 
-void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
+void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {  // TODO(tro) wrap
 #ifdef __AUTODJCRATES__
     if (added) {
         // Get the name of the crate being added to the auto-DJ list.
@@ -279,7 +279,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
 
 #ifdef __AUTODJCRATES__
 
-void AutoDJFeature::constructCrateChildModel() {
+void AutoDJFeature::constructCrateChildModel() { // TODO(tro) WRAP
     // Create a crate table-model with a list of crates that have been added
     // to the auto-DJ queue (and are visible).
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
@@ -287,7 +287,7 @@ void AutoDJFeature::constructCrateChildModel() {
     crateListTableModel.setSort(crateListTableModel.fieldIndex(CRATETABLE_NAME),
                                 Qt::AscendingOrder);
     crateListTableModel.setFilter(CRATETABLE_AUTODJ_SOURCE + " = 1 AND " + CRATETABLE_SHOW + " = 1");
-    crateListTableModel.select();                                                                   // TODO(tro) WRAP
+    crateListTableModel.select();
     while (crateListTableModel.canFetchMore()) {
         crateListTableModel.fetchMore();
     }
@@ -310,7 +310,7 @@ void AutoDJFeature::constructCrateChildModel() {
     }
 }
 
-void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
+void AutoDJFeature::onRightClickChild(const QPoint& globalPos, // TODO(tro) WRAP
                                       QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;

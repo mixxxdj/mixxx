@@ -17,7 +17,6 @@
 #include "treeitemmodel.h"
 
 class TrackModel;
-//class WLibrarySidebar;
 class WLibrary;
 class MixxxKeyboard;
 
@@ -32,12 +31,14 @@ class LibraryFeature : public QObject {
     virtual QIcon getIcon() = 0;
 
     virtual bool dropAccept(QList<QUrl> urls, QWidget *pSource) {
+        // NOTE: this method will be called in lambda
         Q_UNUSED(urls);
         Q_UNUSED(pSource);
         return false;
     }
     virtual bool dropAcceptChild(const QModelIndex& index,
                                  QList<QUrl> urls, QWidget *pSource) {
+        // NOTE: this method will be called in lambda
         Q_UNUSED(index);
         Q_UNUSED(urls);
         Q_UNUSED(pSource);

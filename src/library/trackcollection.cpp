@@ -101,7 +101,7 @@ void TrackCollection::run() {
 
         m_semLambdasFree.release(1);
     }
-
+    deleteLater();
     DBG() << " ### Thread ended ###";
 }
 

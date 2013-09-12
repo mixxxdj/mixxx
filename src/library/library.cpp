@@ -35,20 +35,12 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection, bool firstRun,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
+        m_pTrackCollection(pTrackCollection),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
-
-    m_pTrackCollection = new TrackCollection(pConfig);
-    m_pTrackCollection->start();
-
-    // Since m_pTrackCollection is separate thread, here we must wait when
-    // all inside m_pTrackCollection will be initialized, so we can access members.
-    QEventLoop loop;
-    QObject::connect(m_pTrackCollection, SIGNAL(initialized()), &loop, SLOT(quit()));
-    loop.exec();
 
     m_pSidebarModel = new SidebarModel(m_pTrackCollection, parent);
 
@@ -140,8 +132,7 @@ Library::~Library() {
     //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
     // we never see the TrackCollection's destructor being called... - Albert
     // Has to be deleted at last because the features holds references of it.
-    m_pTrackCollection->stopThread();
-    wait();
+//    m_pTrackCollection->stopThread();
 //    delete m_pTrackCollection;
 }
 

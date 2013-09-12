@@ -42,6 +42,8 @@ class VinylControlManager;
 class DlgPreferences;
 class SoundManager;
 
+class TrackCollection;
+
 #include "configobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
@@ -231,6 +233,8 @@ class MixxxApp : public QMainWindow {
     Timer m_runtime_timer;
 
     const CmdlineArgs& m_cmdLineArgs;
+
+    TrackCollection* m_pTrackCollection;
 };
 
 #endif
