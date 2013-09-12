@@ -20,6 +20,11 @@ class DirectoryDAOTest : public testing::Test {
     }
 
     virtual void TearDown() {
+        // make sure we clean up the db
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
+        query.exec();
+
         delete m_pTrackCollection;
         delete m_pConfig;
     }
@@ -32,30 +37,25 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
     QString testdir = "TestDir";
 
+    // check if directory doa adds and thinks everything is ok
     bool success = m_DirectoryDao.addDirectory(testdir);
     EXPECT_TRUE(success);
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
-
     success = query.exec();
-    EXPECT_TRUE(success);
 
+    // we do not trust what directory dao thinks and better check up on it
     QStringList dirs;
     while (query.next()) {
         dirs << query.value(0).toString();
     }
 
+    // the test db should be always empty when tests are started.
     EXPECT_TRUE(dirs.size() == 1);
     if ( dirs.size() > 0) {
         EXPECT_TRUE(dirs.at(0) == testdir);
     }
-
-    query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
-                   % DIRECTORYDAO_DIR % "= :dir");
-    query.bindValue(":dir", testdir);
-    success = query.exec();
-    EXPECT_TRUE(success);
 }
 
 }  // namespace
