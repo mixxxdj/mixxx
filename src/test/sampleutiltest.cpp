@@ -10,12 +10,7 @@ namespace {
 class SampleUtilTest : public testing::Test {
   protected:
     virtual void SetUp() {
-        SampleUtil::setOptimizations(false);
-#ifdef __SSE__
-        sseAvailable = SampleUtil::m_sOptimizationsOn ? 1 : 0;
-#else
         sseAvailable = 0;
-#endif
         sizes.append(1024);
         sizes.append(1025);
         sizes.append(1026);
@@ -73,7 +68,6 @@ TEST_F(SampleUtilTest, applyGain1DoesNothing) {
             AssertWholeBufferEquals(buffer, 1.0, size);
         }
 
-        SampleUtil::setOptimizations(true);
     }
 
 }
@@ -87,7 +81,6 @@ TEST_F(SampleUtilTest, applyGain0ClearsBuffer) {
             SampleUtil::applyGain(buffer, 0.0, size);
             AssertWholeBufferEquals(buffer, 0.0, size);
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -100,7 +93,6 @@ TEST_F(SampleUtilTest, applyGain) {
             SampleUtil::applyGain(buffer, 0.5, size);
             AssertWholeBufferEquals(buffer, 0.5, size);
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -117,7 +109,6 @@ TEST_F(SampleUtilTest, applyAlternatingGain) {
                 EXPECT_FLOAT_EQ(buffer[s+1], -0.5);
             }
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -135,7 +126,6 @@ TEST_F(SampleUtilTest, addWithGain) {
             AssertWholeBufferEquals(buffer, 4.0f, size);
             delete buffer2;
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -163,7 +153,6 @@ TEST_F(SampleUtilTest, add2WithGain) {
             delete buffer2;
             delete buffer3;
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -195,7 +184,6 @@ TEST_F(SampleUtilTest, add3WithGain) {
             delete buffer3;
             delete buffer4;
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -213,7 +201,6 @@ TEST_F(SampleUtilTest, copyWithGain) {
             AssertWholeBufferEquals(buffer, 2.0f, size);
             delete buffer2;
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -226,7 +213,6 @@ TEST_F(SampleUtilTest, copyWithGainAliased) {
             SampleUtil::copyWithGain(buffer, buffer, 2.0, size);
             AssertWholeBufferEquals(buffer, 2.0f, size);
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -253,7 +239,6 @@ TEST_F(SampleUtilTest, copy2WithGain) {
             delete buffer2;
             delete buffer3;
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -274,7 +259,6 @@ TEST_F(SampleUtilTest, copy2WithGainAliased) {
                                       size);
             AssertWholeBufferEquals(buffer, 10.0f, size);
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -307,7 +291,6 @@ TEST_F(SampleUtilTest, copy3WithGain) {
             delete buffer3;
             delete buffer4;
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -330,7 +313,6 @@ TEST_F(SampleUtilTest, copy3WithGainAliased) {
                                       size);
             AssertWholeBufferEquals(buffer, 27.0f, size);
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -350,7 +332,6 @@ TEST_F(SampleUtilTest, convert) {
             }
             delete [] s16;
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -367,7 +348,6 @@ TEST_F(SampleUtilTest, sumAbsPerChannel) {
             EXPECT_FLOAT_EQ(fSumL, size/2);
             EXPECT_FLOAT_EQ(fSumR, size);
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -392,7 +372,6 @@ TEST_F(SampleUtilTest, interleaveBuffer) {
                 EXPECT_FLOAT_EQ(buffer3[j*2+1], -j);
             }
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 
@@ -420,7 +399,6 @@ TEST_F(SampleUtilTest, deinterleaveBuffer) {
             delete buffer2;
             delete buffer3;
         }
-        SampleUtil::setOptimizations(true);
     }
 }
 

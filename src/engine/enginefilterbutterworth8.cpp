@@ -15,14 +15,11 @@
 *                                                                         *
 ***************************************************************************/
 
-
-
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilter.h"
 #include "engine/engineobject.h"
 #include "../lib/fidlib-0.9.10/fidlib.h"
 
-/* Local Prototypes */
 inline double _processLowpass(double *coef, double *buf, register double val);
 inline double _processBandpass(double *coef, double *buf, register double val);
 double inline _processHighpass(double *coef, double *buf, register double val);
@@ -32,8 +29,9 @@ inline void zap_buffer_denormals(double *buf, int bufSize) {
 		buf[i] = zap_denormal(buf[i]);
 }
 
-EngineFilterButterworth8::EngineFilterButterworth8(int sampleRate) {
-    m_sampleRate = sampleRate;
+EngineFilterButterworth8::EngineFilterButterworth8(int sampleRate, int bufSize)
+        : m_sampleRate(sampleRate),
+          m_bufSize(bufSize) {
 }
 
 EngineFilterButterworth8::~EngineFilterButterworth8() {
@@ -147,8 +145,7 @@ double inline _processHighpass(double *coef, double *buf, register double val) {
 
 EngineFilterButterworth8Low::EngineFilterButterworth8Low(int sampleRate,
         double freqCorner1)
-    : EngineFilterButterworth8(sampleRate) {
-    m_bufSize = 8;
+        : EngineFilterButterworth8(sampleRate, 8) {
     setFrequencyCorners(freqCorner1);
 }
 
@@ -175,10 +172,10 @@ void EngineFilterButterworth8Low::process(const CSAMPLE *pIn,
 }
 
 
-EngineFilterButterworth8Band::EngineFilterButterworth8Band(
-        int sampleRate, double freqCorner1, double freqCorner2)
-    : EngineFilterButterworth8(sampleRate) {
-    m_bufSize = 16;
+EngineFilterButterworth8Band::EngineFilterButterworth8Band(int sampleRate,
+                                                           double freqCorner1,
+                                                           double freqCorner2)
+        : EngineFilterButterworth8(sampleRate, 16) {
     setFrequencyCorners(freqCorner1, freqCorner2);
 }
 
@@ -208,9 +205,8 @@ void EngineFilterButterworth8Band::process(const CSAMPLE *pIn,
 
 
 EngineFilterButterworth8High::EngineFilterButterworth8High(int sampleRate,
-        double freqCorner1)
-    : EngineFilterButterworth8(sampleRate) {
-    m_bufSize = 8;
+                                                           double freqCorner1)
+        : EngineFilterButterworth8(sampleRate, 8) {
     setFrequencyCorners(freqCorner1);
 }
 
@@ -221,7 +217,8 @@ void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
 }
 
 void EngineFilterButterworth8High::process(const CSAMPLE *pIn,
-        const CSAMPLE *ppOut, const int iBufferSize) {
+                                           const CSAMPLE *ppOut,
+                                           const int iBufferSize) {
     CSAMPLE *pOutput = (CSAMPLE *)ppOut;
 
     for (int i=0; i < iBufferSize; i += 2) {
