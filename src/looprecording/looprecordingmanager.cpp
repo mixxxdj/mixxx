@@ -229,11 +229,28 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
     if (m_sLoopSource == "Master") {
         m_sLoopSource = "Headphones";
     } else if (m_sLoopSource == "Headphones") {
-        m_sLoopSource = "[Microphone]";
-    } else if (m_sLoopSource == "[Microphone]") {
-        m_sLoopSource = "[Channel1]";
-    } else if (m_sLoopSource == "[Channel1]") {
-        m_sLoopSource = "[Sampler1]";
+        m_sLoopSource = "Microphone";
+    } else if (m_sLoopSource == "Microphone") {
+        m_sLoopSource = "Channel1";
+    } else if (m_sLoopSource.startsWith("Channel")) {
+        int deckNum = m_sLoopSource.right(1).toInt();
+
+        qDebug() << "Channel: " << deckNum;
+
+        if (deckNum > 0 && deckNum < m_iNumDecks) {
+            m_sLoopSource = QString::QString("Channel%1").arg(++deckNum);
+        } else if (deckNum >= m_iNumDecks && m_iNumSamplers > 0) {
+            m_sLoopSource = "Sampler1";
+        } else {
+            m_sLoopSource = "Master";
+        }
+    } else if (m_sLoopSource.startsWith("Sampler")) {
+        int samplerNum = m_sLoopSource.right(1).toInt();
+        if (samplerNum > 0 && samplerNum < m_iNumSamplers) {
+            m_sLoopSource = QString::QString("Sampler%1").arg(++samplerNum);
+        } else {
+            m_sLoopSource = "Master";
+        }
     } else {
         m_sLoopSource = "Master";
     }

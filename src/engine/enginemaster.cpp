@@ -223,10 +223,10 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             continue;
         }
 
-        if (pChannel->getGroup().contains("LoopRecorder")) {
-            // TODO(carl): Don't mix loop recorder playback channels right
-            // away.
-        }
+//        if (pChannel->getGroup().contains("LoopRecorder")) {
+//            // TODO(carl): Don't mix loop recorder playback channels right
+//            // away.
+//        }
 
         bool needsProcessing = false;
         if (pChannel->isMaster()) {
@@ -242,7 +242,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
 
         // Copy audio from input to loop recorder buffer.
-        if (loopSource == pChannel->getGroup()) {
+        if (pChannel->getGroup().contains(loopSource)) {
             SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
             bLoopCopied = true;
         }
