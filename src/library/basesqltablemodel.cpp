@@ -174,7 +174,7 @@ void BaseSqlTableModel::select() {
     // }
 
     DBG() << "BaseSqlTableModel::select() start by" << this;
-    Q_ASSERT(QThread::currentThread() != m_pTrackCollection->thread());
+ //   Q_ASSERT(QThread::currentThread() != m_pTrackCollection->thread());
 
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();

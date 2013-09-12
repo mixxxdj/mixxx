@@ -60,43 +60,33 @@ public:
         static MainExecuter instance;
         return instance;
     }
-    QMutex lambdaMutex;
-    func lambda;
+    QMutex m_lambdaMutex;
+    func m_lambda;
 
     static void callAsync(func lambda) {
-//        MainExecuter* me = new MainExecuter(lambda);
-//        me->moveToThread(qApp->thread());
-//        connect(me, SIGNAL(runOnMainThread()),
-//                me, SLOT(call()), Qt::QueuedConnection);
-//        emit(me->runOnMainThread());
         MainExecuter* instance = &getInstance();
-        instance->setLambda(lambda);
-        instance->moveToThread(qApp->thread());
-
-        connect(instance, SIGNAL(runOnMainThread()),
-                instance, SLOT(call()), Qt::QueuedConnection);
-        emit(instance->runOnMainThread());
+        if (QThread::currentThread() == qApp->thread()) {
+            // We are already on Main thread
+            lambda();
+        } else {
+            instance->m_lambdaMutex.lock();
+            instance->setLambda(lambda);
+            emit(instance->runOnMainThread());
+        }
     }
 
     static void callSync(func lambda) {
-//        MainExecuter* me = new MainExecuter(lambda);
-//        me->moveToThread(qApp->thread());
-//        connect(me, SIGNAL(runOnMainThread()),
-//                me, SLOT(call()), Qt::QueuedConnection);
-//        me->m_lambdaMutex.lock();
-//        emit(me->runOnMainThread());
-//        me->m_lambdaMutex.lock();
-//        me->m_lambdaMutex.unlock();
         MainExecuter* instance = &getInstance();
-        instance->setLambda(lambda);
-        instance->moveToThread(qApp->thread());
-
-        connect(instance, SIGNAL(runOnMainThread()),
-                instance, SLOT(call()), Qt::QueuedConnection);
-        instance->lambdaMutex.lock();
-        emit(instance->runOnMainThread());
-        instance->lambdaMutex.lock();
-        instance->lambdaMutex.unlock();
+        if (QThread::currentThread() == qApp->thread()) {
+            // We are already on Main thread
+            lambda();
+        } else {
+            instance->m_lambdaMutex.lock();
+            instance->setLambda(lambda);
+            emit(instance->runOnMainThread());
+            instance->m_lambdaMutex.lock();
+            instance->m_lambdaMutex.unlock();
+        }
     }
 
 signals:
@@ -104,17 +94,23 @@ signals:
 
 private slots:
     void call() {
-        DBG() << "calling lambda in " << QThread::currentThread()->objectName();
-        MainExecuter* instance = &getInstance();
-        instance->lambda();
-        instance->lambdaMutex.unlock();
-        disconnect(instance, 0, 0, 0);
+        DBG() << "calling m_lambda in " << QThread::currentThread()->objectName();
+        m_lambda();
+        m_lambdaMutex.unlock();
     }
 
 private:
-//    MainExecuter(func lambda) : m_lambda(lambda) {  }
-    MainExecuter() : lambda(NULL) { static short count = 0; DBG() << ++count; }
-    void setLambda(func newLambda) { lambda = newLambda; }
+    MainExecuter()
+            : m_lambda(NULL) {
+        static short count = 0;
+        DBG() << ++count;
+        moveToThread(qApp->thread());
+
+        connect(this, SIGNAL(runOnMainThread()),
+                this, SLOT(call()), Qt::QueuedConnection);
+    }
+
+    void setLambda(func newLambda) { m_lambda = newLambda; }
 };
 
 
