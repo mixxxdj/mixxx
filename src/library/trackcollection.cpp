@@ -120,9 +120,11 @@ void TrackCollection::callAsync(func lambda) {
 void TrackCollection::callSync(func lambda) {
 //    DBG();
     QMutex mutex;
+    //SleepableQThread::sleep(5);
     mutex.lock();
     callAsync( [&mutex, &lambda] (void) {
         lambda();
+        //SleepableQThread::sleep(5);
         mutex.unlock();
     });
 

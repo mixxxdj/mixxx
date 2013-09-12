@@ -63,28 +63,28 @@ public:
     }
 
     static void callAsync(func lambda) {
-        MainExecuter* instance = &getInstance();
         if (QThread::currentThread() == qApp->thread()) {
             // We are already on Main thread
             lambda();
         } else {
-            instance->m_lambdaMutex.lock();
-            instance->setLambda(lambda);
-            emit(instance->runOnMainThread());
+            MainExecuter& instance = getInstance();
+            instance.m_lambdaMutex.lock();
+            instance.setLambda(lambda);
+            emit(instance.runOnMainThread());
         }
     }
 
     static void callSync(func lambda) {
-        MainExecuter* instance = &getInstance();
         if (QThread::currentThread() == qApp->thread()) {
             // We are already on Main thread
             lambda();
         } else {
-            instance->m_lambdaMutex.lock();
-            instance->setLambda(lambda);
-            emit(instance->runOnMainThread());
-            instance->m_lambdaMutex.lock();
-            instance->m_lambdaMutex.unlock();
+            MainExecuter& instance = getInstance();
+            instance.m_lambdaMutex.lock();
+            instance.setLambda(lambda);
+            emit(instance.runOnMainThread());
+            instance.m_lambdaMutex.lock();
+            instance.m_lambdaMutex.unlock();
         }
     }
 
@@ -93,8 +93,8 @@ signals:
 
 public slots:
     void call() {
-        DBG() << "calling m_lambda in " << QThread::currentThread()->objectName();
         if (m_lamdaCount.testAndSetAcquire(1,0)) {;
+            DBG() << "calling m_lambda in " << QThread::currentThread()->objectName();
             m_lambda();
             m_lambdaMutex.unlock();
         }
