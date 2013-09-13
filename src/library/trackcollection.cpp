@@ -91,13 +91,15 @@ void TrackCollection::run() {
             m_pCOTPlaylistIsBusy->set(0.0);
             m_semLambdasReadyToCall.acquire(1); // Sleep until new Lambdas have arrived
         }
+        if (m_stop) {
+            DBG() << "Need to stop thread";
+            break;
+        }
         m_lambdasQueueMutex.lock();
         lambda = m_lambdas.dequeue();
         m_lambdasQueueMutex.unlock();
 
-//        DBG() << "begin lambda exec";
         lambda();
-//        DBG() << "end lambda exec";
 
         m_semLambdasFree.release(1);
     }
@@ -151,6 +153,7 @@ void TrackCollection::stopThread() {
     // TODO(tro) Think on how to do canceling
     DBG() << "Stopping thread";
     m_stop = true;
+    m_semLambdasReadyToCall.release(1);
 }
 
 
