@@ -11,6 +11,7 @@
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "widget/wwidget.h"
+#include "util/sleepableqthread.h"
 
 #define CONFIG_KEY "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";
@@ -170,6 +171,7 @@ void DlgAutoDJ::onShow() {
     // tro's lambda idea
     m_pTrackCollection->callAsync(
                 [this] (void) {
+        //SleepableQThread::sleep(5);
         m_pAutoDJTableModel->select();
     }, __PRETTY_FUNCTION__);
 }

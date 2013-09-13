@@ -117,9 +117,11 @@ void TrackCollection::callAsync(func lambda, QString where) {
 
 void TrackCollection::callSync(func lambda, QString where) {
     QMutex mutex;
+    //SleepableQThread::sleep(5);
     mutex.lock();
     callAsync( [&mutex, &lambda] (void) {
         lambda();
+        //SleepableQThread::sleep(5);
         mutex.unlock();
     }, where);
 
@@ -128,7 +130,8 @@ void TrackCollection::callSync(func lambda, QString where) {
         // This is required if a CallAsync is waiting for the Main thread
         // TODO(tro) this must not happen because we have possible race conditions
         // Maybe we must somehow allow only one callSync at a time
-        qApp->processEvents(QEventLoop::AllEvents);
+        MainExecuter::getInstance().call();
+ //       qApp->processEvents(QEventLoop::AllEvents);
         // DBG() << "Start animation";
         // animationIsShowed = true;
     }

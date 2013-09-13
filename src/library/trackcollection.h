@@ -28,6 +28,7 @@
 #include <QSqlDatabase>
 #include <QApplication>
 #include <QThread>
+#include <QAtomicInt>
 
 #include "configobject.h"
 #include "library/basetrackcache.h"
@@ -51,71 +52,74 @@ class BpmDetector;
    @author Albert Santoni
 */
 
-//class MainExecuter : public QObject {
-//    Q_OBJECT
-//public:
-//    ~MainExecuter() {}
+class MainExecuter : public QObject {
+    Q_OBJECT
+public:
+    ~MainExecuter() {}
 
-//    static MainExecuter& getInstance() {
-//        static MainExecuter instance;
-//        return instance;
-//    }
-//    QMutex lambdaMutex;
-//    func lambda;
+    static MainExecuter& getInstance() {
+        static MainExecuter instance;
+        return instance;
+    }
 
-//    static void callAsync(func lambda) {
-////        MainExecuter* me = new MainExecuter(lambda);
-////        me->moveToThread(qApp->thread());
-////        connect(me, SIGNAL(runOnMainThread()),
-////                me, SLOT(call()), Qt::QueuedConnection);
-////        emit(me->runOnMainThread());
-//        MainExecuter* instance = &getInstance();
-//        instance->setLambda(lambda);
-//        instance->moveToThread(qApp->thread());
+    static void callAsync(func lambda) {
+        if (QThread::currentThread() == qApp->thread()) {
+            // We are already on Main thread
+            lambda();
+        } else {
+            MainExecuter& instance = getInstance();
+            instance.m_lambdaMutex.lock();
+            instance.setLambda(lambda);
+            emit(instance.runOnMainThread());
+        }
+    }
 
-//        connect(instance, SIGNAL(runOnMainThread()),
-//                instance, SLOT(call()), Qt::QueuedConnection);
-//        emit(instance->runOnMainThread());
-//    }
+    static void callSync(func lambda) {
+        if (QThread::currentThread() == qApp->thread()) {
+            // We are already on Main thread
+            lambda();
+        } else {
+            MainExecuter& instance = getInstance();
+            instance.m_lambdaMutex.lock();
+            instance.setLambda(lambda);
+            emit(instance.runOnMainThread());
+            instance.m_lambdaMutex.lock();
+            instance.m_lambdaMutex.unlock();
+        }
+    }
 
-//    static void callSync(func lambda) {
-////        MainExecuter* me = new MainExecuter(lambda);
-////        me->moveToThread(qApp->thread());
-////        connect(me, SIGNAL(runOnMainThread()),
-////                me, SLOT(call()), Qt::QueuedConnection);
-////        me->m_lambdaMutex.lock();
-////        emit(me->runOnMainThread());
-////        me->m_lambdaMutex.lock();
-////        me->m_lambdaMutex.unlock();
-//        MainExecuter* instance = &getInstance();
-//        instance->setLambda(lambda);
-//        instance->moveToThread(qApp->thread());
+signals:
+    void runOnMainThread();
 
-//        connect(instance, SIGNAL(runOnMainThread()),
-//                instance, SLOT(call()), Qt::QueuedConnection);
-//        instance->lambdaMutex.lock();
-//        emit(instance->runOnMainThread());
-//        instance->lambdaMutex.lock();
-//        instance->lambdaMutex.unlock();
-//    }
+public slots:
+    void call() {
+        if (m_lamdaCount.testAndSetAcquire(1,0)) {;
+            DBG() << "calling m_lambda in " << QThread::currentThread()->objectName();
+            m_lambda();
+            m_lambdaMutex.unlock();
+        }
+    }
 
-//signals:
-//    void runOnMainThread();
+private:
+    MainExecuter()
+            : m_lambda(NULL) {
+        static short count = 0;
+        DBG() << ++count;
+        moveToThread(qApp->thread());
 
-//private slots:
-//    void call() {
-//        DBG() << "calling lambda in " << QThread::currentThread()->objectName();
-//        MainExecuter* instance = &getInstance();
-//        instance->lambda();
-//        instance->lambdaMutex.unlock();
-//        disconnect(instance, 0, 0, 0);
-//    }
+        connect(this, SIGNAL(runOnMainThread()),
+                this, SLOT(call()), Qt::QueuedConnection);
+    }
 
-//private:
-////    MainExecuter(func lambda) : m_lambda(lambda) {  }
-//    MainExecuter() : lambda(NULL) { static short count = 0; DBG() << ++count; }
-//    void setLambda(func newLambda) { lambda = newLambda; }
-//};
+    void setLambda(func newLambda) {
+        m_lambda = newLambda;
+        m_lamdaCount = 1;
+    }
+
+    QMutex m_lambdaMutex;
+    func m_lambda;
+    QAtomicInt m_lamdaCount;
+};
 
 
 
