@@ -53,32 +53,27 @@ void DlgHidden::init() {
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
-
-    connect(this, SIGNAL(activateButtons(bool)),
-            this, SLOT(slotActivateButtons(bool)));
 }
 
 void DlgHidden::onShow() {
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        m_pHiddenTableModel->select();
-        // no buttons can be selected
-        emit(activateButtons(false));
-    }, __PRETTY_FUNCTION__);
+    m_pHiddenTableModel->select();
+    // no buttons can be selected
+    MainExecuter::callAsync([this](void) {
+        slotActivateButtons(false);
+    });
 }
 
 void DlgHidden::onSearch(const QString& text) {
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this, text] (void) {
-        m_pHiddenTableModel->search(text);
-    }, __PRETTY_FUNCTION__);
+    m_pHiddenTableModel->search(text);
 }
 
 void DlgHidden::clicked() {
     // all marked tracks are gone now anyway
-    onShow();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        onShow();
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgHidden::selectAll() {

@@ -257,7 +257,6 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
     bool result = false;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            // TODO (tro) DISSCUSS THIS MOMENT
             // tro's lambda idea. This code calls asynchronously!
             m_pTrackCollection->callSync(
                         [this, &index, &urls, &pSource, &result] (void) {

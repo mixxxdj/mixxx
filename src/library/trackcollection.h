@@ -93,7 +93,7 @@ signals:
 
 public slots:
     void call() {
-        if (m_lamdaCount.testAndSetAcquire(1,0)) {;
+        if (m_lamdaCount.testAndSetAcquire(1, 0)) {;
             DBG() << "calling m_lambda in " << QThread::currentThread()->objectName();
             m_lambda();
             m_lambdaMutex.unlock();
@@ -120,8 +120,6 @@ private:
     func m_lambda;
     QAtomicInt m_lamdaCount;
 };
-
-
 
 class TrackCollection : public QThread {
     Q_OBJECT

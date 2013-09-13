@@ -91,17 +91,18 @@ void TrackCollection::run() {
             m_pCOTPlaylistIsBusy->set(0.0);
             m_semLambdasReadyToCall.acquire(1); // Sleep until new Lambdas have arrived
         }
+        // got lambda on queue (or needness to stop thread)
         if (m_stop) {
             DBG() << "Need to stop thread";
             break;
         }
-        m_lambdasQueueMutex.lock();
-        lambda = m_lambdas.dequeue();
-        m_lambdasQueueMutex.unlock();
-
-        lambda();
-
-        m_semLambdasFree.release(1);
+        if (!m_lambdas.isEmpty()) {
+            m_lambdasQueueMutex.lock();
+            lambda = m_lambdas.dequeue();
+            m_lambdasQueueMutex.unlock();
+            lambda();
+            m_semLambdasFree.release(1);
+        }
     }
     deleteLater();
     DBG() << " ### Thread ended ###";
@@ -128,12 +129,9 @@ void TrackCollection::callSync(func lambda, QString where) {
     }, where);
 
     while (!mutex.tryLock(5)) {
-        // DBG() << "Warning: callSync takes longer than 1 s! This might be caused by a deadlock ";
-        // This is required if a CallAsync is waiting for the Main thread
         // TODO(tro) this must not happen because we have possible race conditions
         // Maybe we must somehow allow only one callSync at a time
         MainExecuter::getInstance().call();
- //       qApp->processEvents(QEventLoop::AllEvents);
         // DBG() << "Start animation";
         // animationIsShowed = true;
     }

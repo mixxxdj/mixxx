@@ -51,25 +51,24 @@ DlgMissing::~DlgMissing() {
 }
 
 void DlgMissing::onShow() {
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        m_pMissingTableModel->select();
-        // no buttons can be selected
-        emit(activateButtons(false));
-    }, __PRETTY_FUNCTION__);
+    m_pMissingTableModel->select();
+    // no buttons can be selected
+    MainExecuter::callAsync([this](void) {
+        slotActivateButtons(false);
+    });
 }
 
 void DlgMissing::clicked() {
     // all marked tracks are gone now anyway
-    onShow();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        onShow();
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgMissing::onSearch(const QString& text) {
-    m_pTrackCollection->callAsync(
-                [this, text] (void) {
-        m_pMissingTableModel->search(text);
-    }, __PRETTY_FUNCTION__);
+    m_pMissingTableModel->search(text);
 }
 
 void DlgMissing::selectAll() {

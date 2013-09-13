@@ -11,6 +11,7 @@ class ControllerManager;
 class Library;
 class MixxxView;
 class VinylControlManager;
+class TrackCollection;
 
 class SkinLoader {
   public:
@@ -21,12 +22,14 @@ class SkinLoader {
                              PlayerManager* pPlayerManager,
                              ControllerManager* pControllerManager,
                              Library* pLibrary,
-                             VinylControlManager* pVCMan);
+                             VinylControlManager* pVCMan,
+                             TrackCollection* pTrackCollection);
 
     QString getConfiguredSkinPath();
 
   private:
     ConfigObject<ConfigValue>* m_pConfig;
+    TrackCollection* m_pTrackCollection;
 };
 
 

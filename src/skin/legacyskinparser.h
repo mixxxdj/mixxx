@@ -18,11 +18,13 @@ class MixxxKeyboard;
 class PlayerManager;
 class WAbstractControl;
 class ControllerManager;
+class TrackCollection;
 
 class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
+                     TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
                      Library* pLibrary, VinylControlManager* pVCMan);
@@ -93,6 +95,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     Tooltips m_tooltips;
     static QList<const char*> s_channelStrs;
     static QMutex s_safeStringMutex;
+    TrackCollection* m_pTrackCollection;
 };
 
 

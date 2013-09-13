@@ -57,15 +57,21 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName); // TODO(tro) wrap to callAsync
+    int playlistId = -1;
+    bool locked = false;
+
+    // tro's lambda idea. This code calls asynchronously!
+     m_pTrackCollection->callAsync(
+                 [this, &playlistName, &playlistId, &locked] (void) {
+         playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+         locked = m_playlistDao.isPlaylistLocked(playlistId);
+     }, __PRETTY_FUNCTION__);
 
 
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);           // TODO(tro) wrap to callAsync
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
-
 
     //Create the right-click menu
     QMenu menu(NULL);
@@ -88,7 +94,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
                                       QWidget *pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName); // TODO(tro) wrap to callAsync
+    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
@@ -119,7 +125,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     }
 
     // Return whether appendTracksToPlaylist succeeded.
-    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);  // TODO(tro) wrap to callAsync
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {

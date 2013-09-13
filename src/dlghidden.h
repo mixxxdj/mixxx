@@ -30,9 +30,6 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
   private slots:
     void slotActivateButtons(bool enable);
 
-  signals:
-    void activateButtons(bool);
-
   private:
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;

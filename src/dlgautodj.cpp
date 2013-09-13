@@ -168,12 +168,7 @@ DlgAutoDJ::~DlgAutoDJ() {
 }
 
 void DlgAutoDJ::onShow() {
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        //SleepableQThread::sleep(5);
-        m_pAutoDJTableModel->select();
-    }, __PRETTY_FUNCTION__);
+    m_pAutoDJTableModel->select();
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {

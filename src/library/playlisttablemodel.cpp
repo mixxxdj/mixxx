@@ -244,8 +244,14 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     select();
 }
 
-bool PlaylistTableModel::isLocked(){
-    return m_playlistDao.isPlaylistLocked(m_iPlaylistId); // TODO(tro) wrap to callAsync
+bool PlaylistTableModel::isLocked() {
+    bool locked = false;
+    // tro's lambda idea. This code calls synchronously!
+     m_pTrackCollection->callSync(
+                 [this, &locked] (void) {
+         locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
+     }, __PRETTY_FUNCTION__);
+    return locked;
 }
 
 void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
