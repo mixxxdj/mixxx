@@ -428,6 +428,7 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
+    m_iTrackLoading = 0;
     m_playButton->set(0.0f);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
