@@ -45,7 +45,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
                            bool bEnableSidechain)
         : m_headphoneMasterGainOld(0),
-          m_headphoneVolumeOld(0) {
+          m_headphoneVolumeOld(1) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
