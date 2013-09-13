@@ -1,5 +1,6 @@
 #include <QtSql>
 #include <QtDebug>
+#include <QDir>
 #include <QStringBuilder>
 
 #include "library/dao/directorydao.h"
@@ -17,14 +18,19 @@ void DirectoryDAO::initialize() {
              << m_database.connectionName();
 }
 
-bool DirectoryDAO::addDirectory(const QString& newDir) {
+int DirectoryDAO::addDirectory(const QString& newDir) {
+    QDir qdir(newDir);
+    if (!qdir.exists()) {
+        return DIR_NOT_EXISTING;
+    }
+
     // Do nothing if the dir to add is a child of a directory that is already in
-    // the db.
+    // the db.:
     QStringList dirs = getDirs();
     foreach (const QString& dir, dirs) {
         // TODO(rryan): dir needs to end in a slash otherwise we will mis-match.
-        if (newDir.startsWith(dir)) {
-            return false;
+        if (qdir.canonicalPath().startsWith(dir)) {
+            return ALREADY_WATCHING;
         }
     }
 
@@ -34,21 +40,21 @@ bool DirectoryDAO::addDirectory(const QString& newDir) {
     query.bindValue(":dir", newDir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Adding new dir (" % newDir % ") failed.";
-        return false;
+        return SQL_ERROR;
     }
-    return true;
+    return ALL_FINE;
 }
 
-bool DirectoryDAO::removeDirectory(const QString& dir) {
+int DirectoryDAO::removeDirectory(const QString& dir) {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE  % " WHERE "
                    % DIRECTORYDAO_DIR % "= :dir");
     query.bindValue(":dir", dir);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "purging dir (" % dir % ") failed";
-        return false;
+        return SQL_ERROR;
     }
-    return true;
+    return ALL_FINE;
 }
 
 

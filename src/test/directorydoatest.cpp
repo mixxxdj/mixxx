@@ -15,9 +15,11 @@ namespace {
 class DirectoryDAOTest : public testing::Test {
   protected:
     virtual void SetUp() {
-        m_pConfig = new ConfigObject<ConfigValue>(QDir::currentPath().append("/src/test/test_data/test.cfg"));
+        m_pConfig = new ConfigObject<ConfigValue>(
+                QDir::currentPath().append("/src/test/test_data/test.cfg"));
         // make sure to use the current schema.xml file in the repo
-        m_pConfig->set(ConfigKey("[Config]","Path"), (QDir::currentPath().append("/res")));
+        m_pConfig->set(ConfigKey("[Config]","Path"),
+                (QDir::currentPath().append("/res")));
         m_pTrackCollection = new TrackCollection(m_pConfig);
     }
 
@@ -37,11 +39,19 @@ class DirectoryDAOTest : public testing::Test {
 
 TEST_F(DirectoryDAOTest, addDirTest) {
     DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
-    QString testdir = "TestDir";
+    QString testdir = QDir::currentPath().append("/src/test/test_data");
 
     // check if directory doa adds and thinks everything is ok
-    bool success = m_DirectoryDao.addDirectory(testdir);
-    EXPECT_TRUE(success);
+    int success = m_DirectoryDao.addDirectory(testdir);
+    EXPECT_EQ(success, ALL_FINE );
+
+    // check that we don't add the directory again
+    success = m_DirectoryDao.addDirectory(testdir);
+    EXPECT_EQ(success, ALREADY_WATCHING );
+
+    // check that we only add existing dirs
+    success = m_DirectoryDao.addDirectory("Hello World");
+    EXPECT_EQ(success, DIR_NOT_EXISTING);
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
@@ -62,13 +72,13 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 
 TEST_F(DirectoryDAOTest, removeDirTest) {
     DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
-    QString testdir = "TestDir";
+    QString testdir = QDir::currentPath().append("/src/test/test_data");
 
     // check if directory doa adds and thinks everything is ok
     m_DirectoryDao.addDirectory(testdir);
 
-    bool success = m_DirectoryDao.removeDirectory(testdir);
-    EXPECT_TRUE(success);
+    int success = m_DirectoryDao.removeDirectory(testdir);
+    EXPECT_EQ(success, ALL_FINE);
 
     // we do not trust what directory dao thinks and better check up on it
     QSqlQuery query(m_pTrackCollection->getDatabase());
