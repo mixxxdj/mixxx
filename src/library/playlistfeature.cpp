@@ -131,9 +131,9 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
 
-    QString playlistName = index.data().toString();                     // TODO(tro) BEGIN wrap to callAsync
+    QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);           // TODO(tro) END wrap to callAsync
+    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
@@ -169,13 +169,15 @@ void PlaylistFeature::buildPlaylistList() {
 }
 
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
-    // TODO(tro) BEGIN wrap to callAsync
-    if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
-    } else {
-        item->setIcon(QIcon());
-    }
-    // TODO(tro) END wrap to callAsync
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, item, playlist_id] (void) {
+        if (m_playlistDao.isPlaylistLocked(playlist_id)) {
+            item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+        } else {
+            item->setIcon(QIcon());
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {

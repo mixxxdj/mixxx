@@ -213,21 +213,28 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
 }
 
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();                        // TODO(tro) BEGIN wrap to callAsync
-    int track_id = track_dao.getTrackId(location);
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(location, true);
-    }
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, location, group] (void) {
+        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+        int track_id = track_dao.getTrackId(location);
+        if (track_id < 0) {
+            // Add Track to library
+            track_id = track_dao.addTrack(location, true);
+        }
 
-    TrackPointer pTrack;
-    if (track_id < 0) {
-        // Add Track to library failed, create a transient TrackInfoObject
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    } else {
-        pTrack = track_dao.getTrack(track_id);
-    }
-    emit(loadTrackToPlayer(pTrack, group));                                         // TODO(tro) END wrap to callAsync
+        TrackPointer pTrack;
+        if (track_id < 0) {
+            // Add Track to library failed, create a transient TrackInfoObject
+            pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+        } else {
+            pTrack = track_dao.getTrack(track_id);
+        }
+        MainExecuter::callSync(
+                    [this, &pTrack, &group](void) {
+            emit(loadTrackToPlayer(pTrack, group));
+        });
+    }, __PRETTY_FUNCTION__);
 }
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {

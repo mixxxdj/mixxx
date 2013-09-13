@@ -142,15 +142,8 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString crateName = index.data().toString();
-    int crateId = -1;
-    bool locked = false;
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this, &crateId, &locked, &crateName] (void) {
-        crateId = m_crateDao.getCrateIdByName(crateName);
-        locked = m_crateDao.isCrateLocked(crateId);
-    }, __PRETTY_FUNCTION__);
-
+    int crateId = m_crateDao.getCrateIdByName(crateName);
+    bool locked = m_crateDao.isCrateLocked(crateId);
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
     return !locked && formatSupported;
