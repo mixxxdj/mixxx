@@ -15,13 +15,13 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                                          ConfigObject<ConfigValue>* pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
-                    : LibraryFeature(parent),
-                      m_pConfig(pConfig),
-                      m_pTrackCollection(pTrackCollection),
-                      m_playlistDao(pTrackCollection->getPlaylistDAO()),
-                      m_trackDao(pTrackCollection->getTrackDAO()),
-                      m_pPlaylistTableModel(NULL),
-                      m_rootViewName(rootViewName) {
+    : LibraryFeature(parent),
+      m_pConfig(pConfig),
+      m_pTrackCollection(pTrackCollection),
+      m_playlistDao(pTrackCollection->getPlaylistDAO()),
+      m_trackDao(pTrackCollection->getTrackDAO()),
+      m_pPlaylistTableModel(NULL),
+      m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
@@ -98,57 +98,69 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     //qDebug() << "BasePlaylistFeature::activateChild()" << index;
 
     // Switch the playlist table model's playlist.
-    QString playlistName = index.data().toString();                             // TODO(tro) BEGIN wrap to callAsync
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-    if (m_pPlaylistTableModel) {
-        m_pPlaylistTableModel->setTableModel(playlistId);
-        emit(showTrackModel(m_pPlaylistTableModel));
-    }                                                                           // TODO(tro) END wrap to callAsync
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, index] (void) {
+        QString playlistName = index.data().toString();
+        int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+        if (m_pPlaylistTableModel) {
+            m_pPlaylistTableModel->setTableModel(playlistId);
+            MainExecuter::callSync([this](void) {
+                emit(showTrackModel(m_pPlaylistTableModel));
+            });
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {
-    QString oldName = m_lastRightClickedIndex.data().toString();                // TODO(tro) BEGIN wrap to callAsync
-    int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        QString oldName = m_lastRightClickedIndex.data().toString();
+        int playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
+        bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
-    if (locked) {
-        qDebug() << "Skipping playlist rename because playlist" << playlistId
-                 << "is locked.";
-        return;
-    }
-
-    QString newName;
-    bool validNameGiven = false;
-
-    while (!validNameGiven) {
-        bool ok = false;
-        newName = QInputDialog::getText(NULL,
-                                        tr("Rename Playlist"),
-                                        tr("New playlist name:"),
-                                        QLineEdit::Normal,
-                                        oldName,
-                                        &ok).trimmed();
-
-        if (!ok || oldName == newName) {
+        if (locked) {
+            qDebug() << "Skipping playlist rename because playlist" << playlistId
+                     << "is locked.";
             return;
         }
+        QString newName;
+        bool validNameGiven = false;
 
-        int existingId = m_playlistDao.getPlaylistIdFromName(newName);
+        while (!validNameGiven) {
+            bool ok = false;
+            MainExecuter::callSync(
+                        [this, &ok, &oldName, &newName] (void) {
+                newName = QInputDialog::getText(NULL,
+                                                tr("Rename Playlist"),
+                                                tr("New playlist name:"),
+                                                QLineEdit::Normal,
+                                                oldName,
+                                                &ok).trimmed();
+            });
+            if (!ok || oldName == newName) {
+                return;
+            }
+            int existingId = m_playlistDao.getPlaylistIdFromName(newName);
 
-        if (existingId != -1) {
-            QMessageBox::warning(NULL,
-                                tr("Renaming Playlist Failed"),
-                                tr("A playlist by that name already exists."));
-        } else if (newName.isEmpty()) {
-            QMessageBox::warning(NULL,
-                                tr("Renaming Playlist Failed"),
-                                tr("A playlist cannot have a blank name."));
-        } else {
-            validNameGiven = true;
+            MainExecuter::callSync(
+                        [this, &existingId, &newName, &validNameGiven](void) {
+                if (existingId != -1) {
+                    QMessageBox::warning(NULL,
+                                         tr("Renaming Playlist Failed"),
+                                         tr("A playlist by that name already exists."));
+                } else if (newName.isEmpty()) {
+                    QMessageBox::warning(NULL,
+                                         tr("Renaming Playlist Failed"),
+                                         tr("A playlist cannot have a blank name."));
+                } else {
+                    validNameGiven = true;
+                }
+            });
         }
-    }
-
-    m_playlistDao.renamePlaylist(playlistId, newName);                          // TODO(tro) END wrap to callAsync
+        m_playlistDao.renamePlaylist(playlistId, newName);
+    }, __PRETTY_FUNCTION__);
 }
 
 void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
@@ -157,124 +169,153 @@ void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
 }
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {
-    QString oldName = m_lastRightClickedIndex.data().toString();
-    int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);                               // TODO(tro) BEGIN wrap to callAsync
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        QString oldName = m_lastRightClickedIndex.data().toString();
+        int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);
+        QString name;
+        bool validNameGiven = false;
 
+        while (!validNameGiven) {
+            bool ok = false;
+            MainExecuter::callSync(
+                        [this, &ok, &name, &oldName] (void) {
+                name = QInputDialog::getText(NULL,
+                                             tr("Duplicate Playlist"),
+                                             tr("Playlist name:"),
+                                             QLineEdit::Normal,
+                                             //: Appendix to default name when duplicating a playlist
+                                             oldName + tr("_copy" , "[noun]"),
+                                             &ok).trimmed();
+            });
+            if (!ok || oldName == name) {
+                return;
+            }
 
-    QString name;
-    bool validNameGiven = false;
+            int existingId = m_playlistDao.getPlaylistIdFromName(name);
 
-    while (!validNameGiven) {
-        bool ok = false;
-        name = QInputDialog::getText(NULL,
-                                        tr("Duplicate Playlist"),
-                                        tr("Playlist name:"),
-                                        QLineEdit::Normal,
-                                        //: Appendix to default name when duplicating a playlist
-                                        oldName + tr("_copy" , "[noun]"),
-                                        &ok).trimmed();
-
-        if (!ok || oldName == name) {
-            return;
+            MainExecuter::callSync(
+                        [this, &existingId, &validNameGiven, &name] (void) {
+                if (existingId != -1) {
+                    QMessageBox::warning(NULL,
+                                         tr("Playlist Creation Failed"),
+                                         tr("A playlist by that name already exists."));
+                } else if (name.isEmpty()) {
+                    QMessageBox::warning(NULL,
+                                         tr("Playlist Creation Failed"),
+                                         tr("A playlist cannot have a blank name."));
+                } else {
+                    validNameGiven = true;
+                }
+            });
         }
 
-        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+        int newPlaylistId = m_playlistDao.createPlaylist(name);
 
-        if (existingId != -1) {
-            QMessageBox::warning(NULL,
-                                tr("Playlist Creation Failed"),
-                                tr("A playlist by that name already exists."));
-        } else if (name.isEmpty()) {
-            QMessageBox::warning(NULL,
-                                tr("Playlist Creation Failed"),
-                                tr("A playlist cannot have a blank name."));
-        } else {
-            validNameGiven = true;
+        if (newPlaylistId != -1 &&
+                m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
+            MainExecuter::callSync(
+                        [this] (void) {
+                emit(showTrackModel(m_pPlaylistTableModel));
+            });
         }
-    }
-
-    int newPlaylistId = m_playlistDao.createPlaylist(name);
-
-    if (newPlaylistId != -1 &&
-        m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
-        emit(showTrackModel(m_pPlaylistTableModel));
-    }                                                                                               // TODO(tro) END wrap to callAsync
+    }, __PRETTY_FUNCTION__);
 }
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
-    QString playlistName = m_lastRightClickedIndex.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);                             // TODO(tro) BEGIN wrap to callAsync
-    bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        QString playlistName = m_lastRightClickedIndex.data().toString();
+        int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+        bool locked = !m_playlistDao.isPlaylistLocked(playlistId);
 
-    if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
-        qDebug() << "Failed to toggle lock of playlistId " << playlistId;
-    }
+        if (!m_playlistDao.setPlaylistLocked(playlistId, locked)) {
+            qDebug() << "Failed to toggle lock of playlistId " << playlistId;
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 void BasePlaylistFeature::slotCreatePlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
     }
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        QString name;
+        bool validNameGiven = false;
 
-    QString name;
-    bool validNameGiven = false;
-
-    while (!validNameGiven) {
-        bool ok = false;
-        name = QInputDialog::getText(NULL,
-                                     tr("New Playlist"),
-                                     tr("Playlist name:"),
-                                     QLineEdit::Normal,
-                                     tr("New Playlist"),
-                                     &ok).trimmed();
-
-        if (!ok)
-            return;
-
-        int existingId = m_playlistDao.getPlaylistIdFromName(name);
-
-        if (existingId != -1) {
-            QMessageBox::warning(NULL,
-                                 tr("Playlist Creation Failed"),
-                                 tr("A playlist by that name already exists."));
-        } else if (name.isEmpty()) {
-            QMessageBox::warning(NULL,
-                                 tr("Playlist Creation Failed"),
-                                 tr("A playlist cannot have a blank name."));
-        } else {
-            validNameGiven = true;
+        while (!validNameGiven) {
+            bool ok = false;
+            MainExecuter::callSync(
+                        [this, &ok, &name] (void) {
+                name = QInputDialog::getText(NULL,
+                                             tr("New Playlist"),
+                                             tr("Playlist name:"),
+                                             QLineEdit::Normal,
+                                             tr("New Playlist"),
+                                             &ok).trimmed();
+            });
+            if (!ok) {
+                return;
+            }
+            int existingId = m_playlistDao.getPlaylistIdFromName(name);
+            MainExecuter::callSync(
+                        [this, &existingId, &validNameGiven, &name] (void) {
+                if (existingId != -1) {
+                    QMessageBox::warning(NULL,
+                                         tr("Playlist Creation Failed"),
+                                         tr("A playlist by that name already exists."));
+                } else if (name.isEmpty()) {
+                    QMessageBox::warning(NULL,
+                                         tr("Playlist Creation Failed"),
+                                         tr("A playlist cannot have a blank name."));
+                } else {
+                    validNameGiven = true;
+                }
+            });
+            int playlistId = m_playlistDao.createPlaylist(name);
+            MainExecuter::callSync(
+                        [this, &playlistId, &name] {
+                if (playlistId != -1) {
+                    emit(showTrackModel(m_pPlaylistTableModel));
+                } else {
+                    QMessageBox::warning(NULL,
+                                         tr("Playlist Creation Failed"),
+                                         tr("An unknown error occurred while creating playlist: ")
+                                         + name);
+                }
+            });
         }
-    }
-
-    int playlistId = m_playlistDao.createPlaylist(name);
-
-    if (playlistId != -1) {
-        emit(showTrackModel(m_pPlaylistTableModel));
-    } else {
-        QMessageBox::warning(NULL,
-                             tr("Playlist Creation Failed"),
-                             tr("An unknown error occurred while creating playlist: ")
-                              + name);
-    }                                                                                               // TODO(tro) END wrap to callAsync
+    }, __PRETTY_FUNCTION__);
 }
 
 
 void BasePlaylistFeature::slotDeletePlaylist() {
-    //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());    // TODO(tro) BEGIN wrap to callAsync
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
+        int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+        bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
-    if (locked) {
-        qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
-        return;
-    }
+        if (locked) {
+            qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
+            return;
+        }
 
-    if (m_lastRightClickedIndex.isValid()) {
-        Q_ASSERT(playlistId >= 0);
+        if (m_lastRightClickedIndex.isValid()) {
+            Q_ASSERT(playlistId >= 0);
 
-        m_playlistDao.deletePlaylist(playlistId);
-        activate();
-    }                                                                                                   // TODO(tro) END wrap to callAsync
+            m_playlistDao.deletePlaylist(playlistId);
+            MainExecuter::callSync(
+                        [this](void) {
+                activate();
+            });
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 
@@ -286,10 +327,10 @@ void BasePlaylistFeature::slotImportPlaylist() {
     }
 
     QString playlist_file = QFileDialog::getOpenFileName(
-        NULL,
-        tr("Import Playlist"),
-        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-        tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+                NULL,
+                tr("Import Playlist"),
+                QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+                tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty()) {
         return;
@@ -298,7 +339,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
     Parser* playlist_parser = NULL;
 
     if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
-        playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
+            playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
         playlist_parser = new ParserM3u();
     } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
         playlist_parser = new ParserPls();
@@ -309,20 +350,23 @@ void BasePlaylistFeature::slotImportPlaylist() {
     }
     QList<QString> entries = playlist_parser->parse(playlist_file);
 
-    // Iterate over the List that holds URLs of playlist entires
-    m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
-
     // delete the parser object
     if (playlist_parser) {
         delete playlist_parser;
     }
+
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, entries] (void) {
+        // Iterate over the List that holds URLs of playlist entires
+        m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
+    }, __PRETTY_FUNCTION__);
 }
 
 void BasePlaylistFeature::slotExportPlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
     }
-
     qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
     // Open a dialog to let the user choose the file location for playlist export.
     // By default, the directory is set to the OS's Music directory and the file
@@ -394,35 +438,43 @@ void BasePlaylistFeature::slotExportPlaylist() {
 
 void BasePlaylistFeature::slotAddToAutoDJ() {
     qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-
-    addToAutoDJ(false); // Top = True
+        addToAutoDJ(false); // Top = True
 }
 
 void BasePlaylistFeature::slotAddToAutoDJTop() {
     qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(true); // bTop = True
+        addToAutoDJ(true); // bTop = True
 }
 
 void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-
-    if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(
-                m_lastRightClickedIndex.data().toString());
-        if (playlistId >= 0) {
-            // Insert this playlist
-            m_playlistDao.addToAutoDJQueue(playlistId, bTop);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, &bTop] (void) {
+        if (m_lastRightClickedIndex.isValid()) {
+            int playlistId = m_playlistDao.getPlaylistIdFromName(
+                        m_lastRightClickedIndex.data().toString());
+            if (playlistId >= 0) {
+                // Insert this playlist
+                m_playlistDao.addToAutoDJQueue(playlistId, bTop);
+            }
         }
-    }
+    }, __PRETTY_FUNCTION__);
 }
 
 void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
-                m_lastRightClickedIndex.data().toString());
+                    m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
-            QList<int> ids = m_playlistDao.getTrackIds(playlistId);
-            emit(analyzeTracks(ids));
+            // tro's lambda idea. This code calls asynchronously!
+            m_pTrackCollection->callAsync(
+                        [this, playlistId] (void) {
+                QList<int> ids = m_playlistDao.getTrackIds(playlistId);
+                MainExecuter::callSync( [this, &ids](void) {
+                    emit(analyzeTracks(ids));
+                });
+            }, __PRETTY_FUNCTION__);
         }
     }
 }
@@ -437,9 +489,8 @@ void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit,SIGNAL(anchorClicked(const QUrl)),
-        this,SLOT(htmlLinkClicked(const QUrl))
-    );
+    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+            this, SLOT(htmlLinkClicked(const QUrl)) );
     libraryWidget->registerView(m_rootViewName, edit);
 }
 
@@ -456,8 +507,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
 */
-QModelIndex BasePlaylistFeature::constructChildModel(int selected_id)
-{
+QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     buildPlaylistList();
     QList<TreeItem*> data_list;
     int selected_row = -1;
@@ -466,7 +516,7 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id)
 
     int row = 0;
     for (QList<QPair<int, QString> >::const_iterator it = m_playlistList.begin();
-            it != m_playlistList.end(); ++it, ++row) {
+         it != m_playlistList.end(); ++it, ++row) {
         int playlist_id = it->first;
         QString playlist_name = it->second;
 

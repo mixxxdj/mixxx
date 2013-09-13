@@ -17,26 +17,25 @@
 #include "trackinfoobject.h" //needed for importing 1.7.x library
 #include "xmlparse.h" //needed for importing 1.7.x library
 #include "legacylibraryimporter.h"
+#include "library/trackcollection.h"
 
-struct LegacyPlaylist
-{
+struct LegacyPlaylist {
     QString name;
     QList<int> indexes;
 };
 
 void doNothing(TrackInfoObject*) {
-
 }
 
-LegacyLibraryImporter::LegacyLibraryImporter(TrackDAO& trackDao,
+LegacyLibraryImporter::LegacyLibraryImporter(TrackCollection* pTrackCollection, TrackDAO& trackDao,
                                              PlaylistDAO& playlistDao) : QObject(),
     m_trackDao(trackDao),
-    m_playlistDao(playlistDao) {
+    m_playlistDao(playlistDao),
+    m_pTrackCollection(pTrackCollection) {
 }
 
 /** Upgrade from <= 1.7 library to 1.8 DB format */
-void LegacyLibraryImporter::import()
-{
+void LegacyLibraryImporter::import() {
     // TODO(XXX) SETTINGS_PATH may change in new Mixxx Versions. Here we need
     // the SETTINGS_PATH from Mixxx V <= 1.7
     QString settingPath17 = QDir::homePath().append("/").append(SETTINGS_PATH);
@@ -63,8 +62,7 @@ void LegacyLibraryImporter::import()
 
         QDomNodeList playlistList = doc.elementsByTagName("Playlist");
         QDomNode playlist;
-        for (int i = 0; i < playlistList.size(); i++)
-        {
+        for (int i = 0; i < playlistList.size(); i++) {
             LegacyPlaylist legPlaylist;
             playlist = playlistList.at(i);
 
@@ -76,8 +74,7 @@ void LegacyLibraryImporter::import()
             //and also store them in-order in a temporary playlist struct.
             QDomElement listNode = playlist.firstChildElement("List").toElement();
             QDomNodeList trackIDs = listNode.elementsByTagName("Id");
-            for (int j = 0; j < trackIDs.size(); j++)
-            {
+            for (int j = 0; j < trackIDs.size(); j++) {
                 int id = trackIDs.at(j).toElement().text().toInt();
                 if (!playlistHashTable.contains(id))
                     playlistHashTable.insert(id, "");
@@ -128,6 +125,11 @@ void LegacyLibraryImporter::import()
 
                 // Provide a no-op deleter b/c this Track is on the stack.
                 TrackPointer pTrack(&trackInfo17, &doNothing);
+                // tro's lambda idea. This code calls asynchronously!
+                m_pTrackCollection->callAsync(
+                            [this] (void) {
+                }, __PRETTY_FUNCTION__);
+
                 m_trackDao.saveTrack(pTrack);
 
                 //Check if this track is used in a playlist anywhere. If it is, save the
@@ -139,43 +141,47 @@ void LegacyLibraryImporter::import()
             }
         }
 
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &legacyPlaylists, &playlistHashTable] (void) {
 
-        //Create the imported playlists
-        QListIterator<LegacyPlaylist> it(legacyPlaylists);                                  // TODO(tro) BEGIN wrap to callAsync
-        LegacyPlaylist current;
-        while (it.hasNext())
-        {
-            current = it.next();
-            emit(progress("Upgrading Mixxx 1.7 Playlists: " + current.name));
+            //Create the imported playlists
+            QListIterator<LegacyPlaylist> it(legacyPlaylists);
+            LegacyPlaylist current;
+            while (it.hasNext()) {
+                current = it.next();
+                emit(progress("Upgrading Mixxx 1.7 Playlists: " + current.name));
 
-            //Create the playlist with the imported name.
-            //qDebug() << "Importing playlist:" << current.name;
-            int playlistId = m_playlistDao.createPlaylist(current.name);
+                //Create the playlist with the imported name.
+                //qDebug() << "Importing playlist:" << current.name;
+                int playlistId = m_playlistDao.createPlaylist(current.name);
 
-            //For each track ID in the XML...
-            QList<int> trackIDs = current.indexes;
-            for (int i = 0; i < trackIDs.size(); i++)
-            {
-                QString trackLocation;
-                int id = trackIDs[i];
-                //qDebug() << "track ID:" << id;
+                //For each track ID in the XML...
+                QList<int> trackIDs = current.indexes;
+                for (int i = 0; i < trackIDs.size(); i++)
+                {
+                    QString trackLocation;
+                    int id = trackIDs[i];
+                    //qDebug() << "track ID:" << id;
 
-                //Try to resolve the (XML's) track ID to a track location.
-                if (playlistHashTable.contains(id)) {
-                    trackLocation = playlistHashTable[id];
-                    //qDebug() << "Resolved to:" << trackLocation;
-                }
+                    //Try to resolve the (XML's) track ID to a track location.
+                    if (playlistHashTable.contains(id)) {
+                        trackLocation = playlistHashTable[id];
+                        //qDebug() << "Resolved to:" << trackLocation;
+                    }
 
-                //Get the database's track ID (NOT the XML's track ID!)
-                int dbTrackId = m_trackDao.getTrackId(trackLocation);
+                    //Get the database's track ID (NOT the XML's track ID!)
+                    int dbTrackId = m_trackDao.getTrackId(trackLocation);
 
-                if (dbTrackId >= 0) {
-                    // Add it to the database's playlist.
-                    // TODO(XXX): Care if the append succeeded.
-                    m_playlistDao.appendTrackToPlaylist(dbTrackId, playlistId);
+                    if (dbTrackId >= 0) {
+                        // Add it to the database's playlist.
+                        // TODO(XXX): Care if the append succeeded.
+                        m_playlistDao.appendTrackToPlaylist(dbTrackId, playlistId);
+                    }
                 }
             }
-        }                                                                                   // TODO(tro) END wrap to callAsync
+        }, __PRETTY_FUNCTION__);
+
 
         QString upgrade_filename = settingPath17.append("DBUPGRADED");
         //now create stub so that the library is not readded next time program loads

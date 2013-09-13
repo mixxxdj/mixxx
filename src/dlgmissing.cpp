@@ -53,7 +53,7 @@ DlgMissing::~DlgMissing() {
 void DlgMissing::onShow() {
     m_pMissingTableModel->select();
     // no buttons can be selected
-    MainExecuter::callAsync([this](void) {
+    MainExecuter::callSync([this](void) {
         slotActivateButtons(false);
     });
 }

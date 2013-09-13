@@ -1281,10 +1281,10 @@ void WTrackTableView::doSortByColumn(int headerSection) {
     }
 
     // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this, &headerSection] (void) {
+//    m_pTrackCollection->callSync(
+//                [this, &headerSection] (void) {
         sortByColumn(headerSection);
-    }, __PRETTY_FUNCTION__);
+//    }, __PRETTY_FUNCTION__);
 
     QItemSelectionModel* currentSelection = selectionModel();
 

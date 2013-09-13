@@ -35,7 +35,6 @@ ThreadDAO::~ThreadDAO() {
     qDebug() << "### ThreadDAO destructor ###";
 
     if (isRunning()) {
-        // TODO(tro) Cancel any running queries
         stopThread();
         wait(); // Wait for thread to finish
     }
@@ -109,8 +108,6 @@ void ThreadDAO::run() {
 //             second parameter - UI's control, what must be locked/unlocked
 //             while lambda will be executed.
 void ThreadDAO::callSync(func lambda, QWidget &w) {
-    //TODO(tro) check lambda
-
     int waitCycles = 0;
     while(!m_callFinished) {
         qApp->processEvents( QEventLoop::AllEvents );
@@ -143,7 +140,6 @@ void ThreadDAO::callSync(func lambda, QWidget &w) {
 }
 
 void ThreadDAO::stopThread() {
-    // TODO(tro) Think on how to do canceling
     qDebug() << "Stopping thread";
     m_stop = true;
 }

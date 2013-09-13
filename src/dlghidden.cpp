@@ -58,7 +58,7 @@ void DlgHidden::init() {
 void DlgHidden::onShow() {
     m_pHiddenTableModel->select();
     // no buttons can be selected
-    MainExecuter::callAsync([this](void) {
+    MainExecuter::callSync([this](void) {
         slotActivateButtons(false);
     });
 }

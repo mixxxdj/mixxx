@@ -95,15 +95,20 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
         return TrackPointer();
     }
 
-    // TODO(tro) WRAP
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(track_location);
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(track_location, true);
-    }
+    TrackPointer track;
+    // tro's lambda idea. This code calls Synchronously!
+    m_pTrackCollection->callSync(
+                [this, &track_location, &track] (void) {
+        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+        int track_id = track_dao.getTrackId(track_location);
+        if (track_id < 0) {
+            // Add Track to library
+            track_id = track_dao.addTrack(track_location, true);
+        }
+        track = track_dao.getTrack(track_id);
+    }, __PRETTY_FUNCTION__);
 
-    return track_dao.getTrack(track_id);
+    return track;
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {

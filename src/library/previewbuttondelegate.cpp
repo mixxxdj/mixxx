@@ -3,14 +3,16 @@
 
 #include "library/previewbuttondelegate.h"
 #include "library/trackmodel.h"
+#include "library/trackcollection.h"
 #include "playerinfo.h"
 #include "playermanager.h"
 #include "trackinfoobject.h"
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 
-PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
+PreviewButtonDelegate::PreviewButtonDelegate(TrackCollection *pTrackCollection, QObject *parent, int column)
         : QStyledItemDelegate(parent),
+          m_pTrackCollection(pTrackCollection),
           m_pTableView(NULL),
           m_pButton(NULL),
           m_isOneCellInEditMode(false),
@@ -152,15 +154,19 @@ void PreviewButtonDelegate::buttonClicked() {
     TrackPointer pOldTrack = PlayerInfo::Instance().getTrackInfo(group);
     bool playing = m_pPreviewDeckPlay->get() > 0.0;
 
-    // TODO(tro) WRAP
-    TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
-    if (pTrack && pTrack != pOldTrack) {
-        emit(loadTrackToPlayer(pTrack, group, true));
-    } else if (pTrack == pOldTrack && !playing) {
-        m_pPreviewDeckPlay->slotSet(1.0);
-    } else {
-        m_pPreviewDeckPlay->slotSet(0.0);
-    }
+    m_pTrackCollection->callAsync(
+                [this, pTrackModel, pOldTrack, playing, group] (void) {
+        TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
+        if (pTrack && pTrack != pOldTrack) {
+            MainExecuter::callSync([this, pTrack, group](void){
+                emit(loadTrackToPlayer(pTrack, group, true)); // NOTE: we'll emit it from Main thread
+            });
+        } else if (pTrack == pOldTrack && !playing) {
+            m_pPreviewDeckPlay->slotSet(1.0);
+        } else {
+            m_pPreviewDeckPlay->slotSet(0.0);
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
@@ -171,13 +177,19 @@ void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
             return;
         }
 
-        // TODO(tro) WRAP
-        QString group = PlayerManager::groupForPreviewDeck(0);
-        TrackPointer pPreviewTrack = PlayerInfo::Instance().getTrackInfo(group);
-        TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
-        if (pTrack && pTrack == pPreviewTrack) {
-            emit(buttonSetChecked(v > 0.0));
-        }
+        // tro's lambda idea. This code calls asynchronously!
+        m_pTrackCollection->callAsync(
+                    [this, pTrackModel, v] (void) {
+            QString group = PlayerManager::groupForPreviewDeck(0);
+            TrackPointer pPreviewTrack = PlayerInfo::Instance().getTrackInfo(group);
+            TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
+            if (pTrack && pTrack == pPreviewTrack) {
+                MainExecuter::callSync([this, pTrack, group, v](void) {
+                    emit(buttonSetChecked(v > 0.0)); // NOTE: we'll emit it from Main thread
+                });
+            }
+        }, __PRETTY_FUNCTION__);
+
     }
 }
 

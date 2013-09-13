@@ -69,6 +69,8 @@ void TrackCollection::run() {
     DBG() << "id=" << QThread::currentThreadId()
           << "name=" << QThread::currentThread()->objectName();
 
+    qRegisterMetaType<QSet<int> >("QSet<int>");
+
     DBG() << "Initializing DAOs inside TrackCollection's thread";
 
     createAndPopulateDbConnection();
@@ -129,8 +131,6 @@ void TrackCollection::callSync(func lambda, QString where) {
     }, where);
 
     while (!mutex.tryLock(5)) {
-        // TODO(tro) this must not happen because we have possible race conditions
-        // Maybe we must somehow allow only one callSync at a time
         MainExecuter::getInstance().call();
         // DBG() << "Start animation";
         // animationIsShowed = true;
@@ -148,7 +148,6 @@ void TrackCollection::addLambdaToQueue(func lambda) {
 }
 
 void TrackCollection::stopThread() {
-    // TODO(tro) Think on how to do canceling
     DBG() << "Stopping thread";
     m_stop = true;
     m_semLambdasReadyToCall.release(1);

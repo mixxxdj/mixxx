@@ -827,7 +827,7 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
     } else if (i == fieldIndex(LIBRARYTABLE_BPM)) {
         return new BPMDelegate(pParent, i, fieldIndex(LIBRARYTABLE_BPM_LOCK));
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
-        return new PreviewButtonDelegate(pParent, i);
+        return new PreviewButtonDelegate(m_pTrackCollection, pParent, i);
     }
     return NULL;
 }

@@ -183,7 +183,7 @@ void LibraryScanner::run()
     qDebug() << "upgrade filename is " << upgrade_filename;
     QFile upgradefile(upgrade_filename);
     if (!upgradefile.exists()) {
-        LegacyLibraryImporter libImport(m_trackDao, m_playlistDao);
+        LegacyLibraryImporter libImport(m_pCollection, m_trackDao, m_playlistDao);
         connect(&libImport, SIGNAL(progress(QString)),
                 m_pProgress, SLOT(slotUpdate(QString)),
                 Qt::BlockingQueuedConnection);

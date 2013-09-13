@@ -533,7 +533,14 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
 
         // Create the TreeItem whose parent is the invisible root item
         TreeItem* item = new TreeItem(crate_name, crate_name, this, root);
-        bool locked = m_crateDao.isCrateLocked(crate_id);
+
+        bool locked = false;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &locked, crate_id] (void) {
+            locked = m_crateDao.isCrateLocked(crate_id);
+        }, __PRETTY_FUNCTION__);
+
         item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
         data_list.append(item);
     }
@@ -660,12 +667,18 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
 
-    //TODO(tro) WRAP
     m_lastRightClickedIndex = constructChildModel(crateId);
-    // Switch the view to the crate.
-    m_crateTableModel.setTableModel(crateId);
-    // Update selection
-    emit(featureSelect(this, m_lastRightClickedIndex));
+
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, crateId] (void) {
+        // Switch the view to the crate.
+        m_crateTableModel.setTableModel(crateId);
+        // Update selection
+        MainExecuter::callSync([this]() {
+            emit(featureSelect(this, m_lastRightClickedIndex));
+        });
+    }, __PRETTY_FUNCTION__);
 }
 
 void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
