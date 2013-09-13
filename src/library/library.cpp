@@ -17,7 +17,6 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
-#include "library/dao/threaddao.h"
 #ifdef __PROMO__
 #include "library/promotracksfeature.h"
 #endif

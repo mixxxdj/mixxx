@@ -35,7 +35,6 @@
 #include "trackcollection.h"
 
 class TrackInfoObject;
-//class ThreadDAO;
 
 class LibraryScanner : public QThread {
     Q_OBJECT

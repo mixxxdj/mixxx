@@ -623,9 +623,6 @@ class MixxxCore(Feature):
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
 
-                   # Library concurency refactoring
-                   "library/dao/threaddao.cpp",
-
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",
                    "library/dao/cuedao.cpp",

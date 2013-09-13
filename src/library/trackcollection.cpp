@@ -283,8 +283,7 @@ void TrackCollection::addTrackSource(
 }
 
 void TrackCollection::createAndPopulateDbConnection() {
-
-    // initialize database connection in ThreadDAO's thread -- copypaste from TrackCollection
+    // initialize database connection in TrackCollection
     qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
     // TODO(tro) Check is QSQLITE is avaiable
     m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
