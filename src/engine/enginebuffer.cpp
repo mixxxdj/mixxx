@@ -440,8 +440,9 @@ TrackPointer EngineBuffer::getLoadedTrack() const {
 void EngineBuffer::ejectTrack() {
     // Don't allow ejections while playing a track. We don't need to lock to
     // call ControlObject::get() so this is fine.
-    if (m_playButton->get() > 0)
+    if (m_playButton->get() > 0 || !m_pCurrentTrack) {
         return;
+    }
 
     m_pause.lock();
     m_iTrackLoading = 0;
