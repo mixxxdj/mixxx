@@ -16,6 +16,8 @@ class DirectoryDAOTest : public testing::Test {
   protected:
     virtual void SetUp() {
         m_pConfig = new ConfigObject<ConfigValue>(QDir::currentPath().append("/src/test/test_data/test.cfg"));
+        // make sure to use the current schema.xml file in the repo
+        m_pConfig->set(ConfigKey("[Config]","Path"), (QDir::currentPath().append("/res")));
         m_pTrackCollection = new TrackCollection(m_pConfig);
     }
 
@@ -91,10 +93,11 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 
     QStringList dirs = m_DirectoryDao.getDirs();
 
-    // the db should have now no entries left anymore
     EXPECT_TRUE(dirs.size() == 2);
-    EXPECT_TRUE(dirs.at(0) == testdir);
-    EXPECT_TRUE(dirs.at(1) == testdir2);
+    if (dirs.size() == 2) {
+        EXPECT_TRUE(dirs.at(0) == testdir);
+        EXPECT_TRUE(dirs.at(1) == testdir2);
+    }
 }
 
 }  // namespace
