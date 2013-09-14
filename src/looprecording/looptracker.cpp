@@ -6,6 +6,7 @@
 #include "looprecording/defs_looprecording.h"
 #include "looprecording/looptracker.h"
 #include "controlobjectthread.h"
+#include "controllogpotmeter.h"
 #include "trackinfoobject.h"
 
 LoopTracker::LoopTracker()
@@ -16,22 +17,29 @@ LoopTracker::LoopTracker()
     m_pLoopDeck1Play = new ControlObjectThread("[LoopRecorderDeck1]","play");
     m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");
     m_pLoopDeck1Eject = new ControlObjectThread("[LoopRecorderDeck1]","eject");
+    m_pLoopDeck1Pregain = new ControlObjectThread("[LoopRecorderDeck1]","pregain");
     m_pLoopDeck2Play = new ControlObjectThread("[LoopRecorderDeck2]","play");
     m_pLoopDeck2Stop = new ControlObjectThread("[LoopRecorderDeck2]","stop");
     m_pLoopDeck2Eject = new ControlObjectThread("[LoopRecorderDeck2]","eject");
-
+    m_pLoopDeck2Pregain = new ControlObjectThread("[LoopRecorderDeck2]","pregain");
 
     m_pTogglePlayback = new ControlObjectThread(LOOP_RECORDING_PREF_KEY, "toggle_playback");
+    m_pLoopPregain = new ControlLogpotmeter(ConfigKey(LOOP_RECORDING_PREF_KEY, "pregain"));
 
+    connect(m_pLoopPregain, SIGNAL(valueChanged(double)),
+            this, SLOT(slotChangeLoopPregain(double)));
 }
 
 LoopTracker::~LoopTracker() {
     clear();
 
+    delete m_pLoopPregain;
     delete m_pTogglePlayback;
+    delete m_pLoopDeck2Pregain;
     delete m_pLoopDeck2Eject;
     delete m_pLoopDeck2Stop;
     delete m_pLoopDeck2Play;
+    delete m_pLoopDeck1Pregain;
     delete m_pLoopDeck1Eject;
     delete m_pLoopDeck1Stop;
     delete m_pLoopDeck1Play;
@@ -116,4 +124,10 @@ void LoopTracker::slotLoadToLoopDeck() {
         }
         m_pTogglePlayback->set(1.0);
     }
+}
+
+void LoopTracker::slotChangeLoopPregain(double v) {
+    qDebug() << "!~!~!~! slotChangeLoopPregain: " << v << " !~!~!~!";
+    m_pLoopDeck1Pregain->slotSet(v);
+    m_pLoopDeck2Pregain->slotSet(v);
 }

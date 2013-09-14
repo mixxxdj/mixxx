@@ -11,6 +11,7 @@
 #include "trackinfoobject.h"
 
 class ControlObjectThread;
+class ControlLogpotmeter;
 
 class LoopTracker : public QObject {
     Q_OBJECT
@@ -31,7 +32,10 @@ class LoopTracker : public QObject {
 
   signals:
     void loadToLoopDeck(TrackPointer, QString, bool);
-    
+
+  private slots:
+    void slotChangeLoopPregain(double);
+
   private:
     struct LayerInfo {
         QString path;
@@ -45,10 +49,13 @@ class LoopTracker : public QObject {
     ControlObjectThread* m_pLoopDeck1Play;
     ControlObjectThread* m_pLoopDeck1Stop;
     ControlObjectThread* m_pLoopDeck1Eject;
+    ControlObjectThread* m_pLoopDeck1Pregain;
     ControlObjectThread* m_pLoopDeck2Play;
     ControlObjectThread* m_pLoopDeck2Stop;
     ControlObjectThread* m_pLoopDeck2Eject;
+    ControlObjectThread* m_pLoopDeck2Pregain;
     ControlObjectThread* m_pTogglePlayback;
+    ControlLogpotmeter* m_pLoopPregain;
 };
 
 #endif
