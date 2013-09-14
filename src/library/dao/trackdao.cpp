@@ -17,6 +17,7 @@
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
+QMutex TrackDAO::m_sTrackCacheMutex;
 
 enum { UndefinedRecordIndex = -2 };
 
@@ -919,7 +920,10 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             m_sTracks[id] = pTrack;
             qDebug() << "m_sTracks.count() =" << m_sTracks.count();
             m_sTracksMutex.unlock();
+
+            m_sTrackCacheMutex.lock(); // tro
             m_trackCache.insert(id, new TrackPointer(pTrack));
+            m_sTrackCacheMutex.unlock();
 
             // If the header hasn't been parsed, parse it but only after we set the
             // track clean and hooked it up to the track cache, because this will

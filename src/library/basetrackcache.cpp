@@ -144,7 +144,9 @@ void BaseTrackCache::ensureCached(QSet<int> trackIds) {
 TrackPointer BaseTrackCache::lookupCachedTrack(int trackId) const {
     // Only get the Track from the TrackDAO if it's in the cache
     if (m_bIsCaching) {
-        return m_trackDAO.getTrack(trackId, true);
+        TrackPointer trackPointer;
+        trackPointer = m_trackDAO.getTrack(trackId, true);
+        return trackPointer;
     }
     return TrackPointer();
 }
@@ -177,6 +179,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
 }
 
 bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
+    // this method can be called from TrackCollection
     QTime timer;
     timer.start();
 
@@ -232,9 +235,13 @@ void BaseTrackCache::buildIndex() {
     // we don't see.
     m_trackInfo.clear();
 
-    if (!updateIndexWithQuery(queryString)) {
-        qDebug() << "buildIndex failed!";
-    }
+    // tro's lambda idea. This code calls Synchronously!
+    m_pTrackCollection->callSync(
+                [this, queryString] (void) {
+        if (!updateIndexWithQuery(queryString)) {
+            qDebug() << "buildIndex failed!";
+        }
+    }, __PRETTY_FUNCTION__);
 
     m_bIndexBuilt = true;
 }
@@ -262,11 +269,18 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
         qDebug() << this << "updateTracksInIndex update query:" << queryString;
     }
 
-    if (!updateIndexWithQuery(queryString)) {
-        qDebug() << "updateTracksInIndex failed!";
-        return;
-    }
-    emit(tracksChanged(trackIds));
+//    // tro's lambda idea. This code calls asynchronously!
+//    m_pTrackCollection->callAsync(
+//                [this, queryString, trackIds] (void) {
+        if (!updateIndexWithQuery(queryString)) {
+            qDebug() << "updateTracksInIndex failed!";
+            return;
+        }
+        //    MainExecuter::callSync(
+        //                [this, &trackIds] (void) {
+        emit(tracksChanged(trackIds));
+        //    });
+//    }, __PRETTY_FUNCTION__);
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
@@ -365,7 +379,7 @@ bool BaseTrackCache::trackMatches(const TrackPointer& pTrack,
     // To properly AND search queries, concatenate all searchable fields
     QString combined_values;
     int i = 0;
-    foreach (QString column, m_searchColumns) {
+    foreach (QString column, m_searchColumns) {  // WTF: why not just for (i=0; m_searchColumns.count()...)?
         int columnIndex = m_searchColumnIndices[i++];
         QVariant value;
         getTrackValueForColumn(pTrack, columnIndex, value);

@@ -34,6 +34,8 @@ class WTrackTableView : public WLibraryTableView {
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
 
+    static volatile bool m_sReloadingMetadata;
+
     enum BPMScale {
         DOUBLE,
         HALVE,

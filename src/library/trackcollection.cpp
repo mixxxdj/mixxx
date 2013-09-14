@@ -296,7 +296,7 @@ void TrackCollection::createAndPopulateDbConnection() {
         });
     }
 
-    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
+    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE", "track_collection_connection"));
     m_database->setHostName("localhost");
     m_database->setDatabaseName(m_pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
     m_database->setUserName("mixxx");

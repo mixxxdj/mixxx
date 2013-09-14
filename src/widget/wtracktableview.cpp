@@ -17,6 +17,8 @@
 #include "soundsourceproxy.h"
 #include "playermanager.h"
 
+volatile bool WTrackTableView::m_sReloadingMetadata = false;
+
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
                                  TrackCollection* pTrackCollection, bool sorting)
@@ -305,6 +307,7 @@ void WTrackTableView::createActions() {
     m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
+    m_pReloadMetadataAct->setEnabled( !WTrackTableView::m_sReloadingMetadata );
 
     m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
@@ -1182,20 +1185,30 @@ void WTrackTableView::slotReloadTrackMetadata() {
         return;
     }
 
-    QModelIndexList indices = selectionModel()->selectedRows();
-
     TrackModel* trackModel = getTrackModel();
 
     if (trackModel == NULL) {
         return;
     }
 
-    foreach (QModelIndex index, indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            pTrack->parse();
+    QModelIndexList indices = selectionModel()->selectedRows();
+
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, indices, trackModel] (void) {
+        WTrackTableView::m_sReloadingMetadata = true;
+        DBG() << "Start";
+        foreach (QModelIndex index, indices) {
+            TrackPointer pTrack = trackModel->getTrack(index);
+            if (pTrack) {
+                DBG()<<"Before pTrack->parse();";
+                    pTrack->parse();
+                DBG()<<"After pTrack->parse();";
+            }
         }
-    }
+        DBG() << "End";
+        WTrackTableView::m_sReloadingMetadata = false;
+    }, __PRETTY_FUNCTION__);
 }
 
 //slot for reset played count, sets count to 0 of one or more tracks

@@ -103,10 +103,7 @@ public slots:
 private:
     MainExecuter()
             : m_lambda(NULL) {
-        static short count = 0;
-        DBG() << ++count;
         moveToThread(qApp->thread());
-
         connect(this, SIGNAL(runOnMainThread()),
                 this, SLOT(call()), Qt::QueuedConnection);
     }
