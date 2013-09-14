@@ -165,7 +165,7 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 20; // TODO avoid constant 20
+    int requiredSchemaVersion = 20; // TODO(xxx) avoid constant 20
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
@@ -284,10 +284,19 @@ void TrackCollection::addTrackSource(
 
 void TrackCollection::createAndPopulateDbConnection() {
     // initialize database connection in TrackCollection
-    qDebug() << "Available QtSQL drivers:" << QSqlDatabase::drivers();
-    // TODO(tro) Check is QSQLITE is avaiable
-    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
+    const QStringList avaiableDrivers = QSqlDatabase::drivers();
+    const QString sqliteDriverName("QSQLITE");
 
+    if (!avaiableDrivers.contains(sqliteDriverName)) {
+        QString errorMsg = QString("No QSQLITE driver! Available QtSQL drivers: %1")
+                .arg(avaiableDrivers.join(","));
+        qDebug() << errorMsg;
+        MainExecuter::callSync([this, errorMsg](void) {
+            reportCriticalErrorAndQuit(errorMsg);
+        });
+    }
+
+    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE"));
     m_database->setHostName("localhost");
     m_database->setDatabaseName(m_pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
     m_database->setUserName("mixxx");
