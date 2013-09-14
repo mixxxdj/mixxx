@@ -67,7 +67,7 @@ void LoopTracker::clear() {
     m_iCurrentLayer = -1;
 }
 
-bool LoopTracker::finalizeLoop(QString newPath) {
+bool LoopTracker::finalizeLoop(QString newPath, double bpm) {
     // TODO: implement multiple layer mixing.
     if (m_iCurrentLayer > -1) {
 

@@ -102,6 +102,7 @@ class LoopRecordingManager : public QObject {
     bool m_isRecording;
 
     int m_iCurrentPlayingDeck;
+    double m_dLoopBPM;
     unsigned int m_iLoopLength;
     unsigned int m_iLoopNumber;
     int m_iNumDecks;

@@ -28,6 +28,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
         m_recordingLocation(""),
         m_isRecording(false),
         m_iCurrentPlayingDeck(0),
+        m_dLoopBPM(0.0),
         m_iLoopLength(0),
         m_iLoopNumber(0),
         m_iNumDecks(0),
@@ -285,6 +286,7 @@ void LoopRecordingManager::slotToggleClear(double v) {
     }
     emit(clearWriter());
     m_pToggleLoopRecording->set(0.);
+    m_dLoopBPM = 0.0;
 }
 
 void LoopRecordingManager::slotToggleExport(double v) {
@@ -335,7 +337,7 @@ void LoopRecordingManager::exportLoopToPlayer(QString group) {
     QString newFileLocation = QString("%1%2_%3.%4")
         .arg(dir, "loop", currentDateTime, m_encodingType.toLower());
 
-    if(m_pLoopTracker->finalizeLoop(newFileLocation)) {
+    if(m_pLoopTracker->finalizeLoop(newFileLocation, m_dLoopBPM)) {
         emit(exportToPlayer(newFileLocation, group));
     } else {
         qDebug () << "LoopRecordingManager::exportLoopToPlayer Error Saving File: " << newFileLocation;
@@ -440,6 +442,8 @@ void LoopRecordingManager::setRecordingDir() {
 void LoopRecordingManager::startRecording() {
     qDebug() << "LoopRecordingManager startRecording";
 
+    // TODO(carl): make sure the bpm is only set on first layer when recording multiple layers.
+    m_dLoopBPM = getCurrentBPM();
     m_iLoopLength = getLoopLength();
     emit(startWriter(m_iLoopLength));
 

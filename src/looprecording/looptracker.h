@@ -21,7 +21,7 @@ class LoopTracker : public QObject {
     
     void addLoopLayer(QString path, unsigned int length);
     void clear();
-    bool finalizeLoop(QString newPath);
+    bool finalizeLoop(QString newPath, double bpm);
     QString getCurrentPath();
     void play();
     void stop(bool clearDeck);
