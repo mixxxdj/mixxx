@@ -155,7 +155,6 @@ class TrackDAO : public QObject, public virtual DAO {
     static QHash<int, TrackWeakPointer> m_sTracks;
     static QMutex m_sTracksMutex;
     mutable QCache<int,TrackPointer> m_trackCache;
-    static QMutex m_sTrackCacheMutex; // tro
 
     QSqlQuery* m_pQueryTrackLocationInsert;
     QSqlQuery* m_pQueryTrackLocationSelect;

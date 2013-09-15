@@ -160,7 +160,7 @@ void PreviewButtonDelegate::buttonClicked() {
         if (pTrack && pTrack != pOldTrack) {
             MainExecuter::callSync([this, pTrack, group](void){
                 emit(loadTrackToPlayer(pTrack, group, true)); // NOTE: we'll emit it from Main thread
-            });
+            }, __PRETTY_FUNCTION__);
         } else if (pTrack == pOldTrack && !playing) {
             m_pPreviewDeckPlay->slotSet(1.0);
         } else {

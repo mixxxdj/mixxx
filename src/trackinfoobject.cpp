@@ -30,6 +30,7 @@
 #include "controlobject.h"
 #include "waveform/waveform.h"
 #include "track/beatfactory.h"
+#include "library/trackcollection.h"
 
 #include "mixxxutils.cpp"
 
@@ -787,18 +788,16 @@ void TrackInfoObject::setDirty(bool bDirty) {
     lock.unlock();
     // qDebug() << "Track" << m_iId << getInfo() << (change? "changed" : "unchanged")
     //          << "set" << (bDirty ? "dirty" : "clean");
-    if (change) {
-        if (m_bDirty)
-            emit(dirty(this));
-        else
-            emit(clean(this));
-    }
-    // Emit a changed signal regardless if this attempted to set us dirty.
-    if (bDirty) {
-        emit(changed(this));
-    }
-
-    //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(QString::number(m_iId), m_sLocation, m_bDirty ? "dirty" : "clean");
+        if (change) {
+            if (m_bDirty)
+                emit(dirty(this));
+            else
+                emit(clean(this));
+        }
+        // Emit a changed signal regardless if this attempted to set us dirty.
+        if (m_bDirty) {
+            emit(changed(this));
+        }
 }
 
 bool TrackInfoObject::isDirty() {

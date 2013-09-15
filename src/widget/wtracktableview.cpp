@@ -17,8 +17,6 @@
 #include "soundsourceproxy.h"
 #include "playermanager.h"
 
-volatile bool WTrackTableView::m_sReloadingMetadata = false;
-
 WTrackTableView::WTrackTableView(QWidget * parent,
                                  ConfigObject<ConfigValue> * pConfig,
                                  TrackCollection* pTrackCollection, bool sorting)
@@ -307,7 +305,6 @@ void WTrackTableView::createActions() {
     m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
-    m_pReloadMetadataAct->setEnabled( !WTrackTableView::m_sReloadingMetadata );
 
     m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
@@ -1201,21 +1198,19 @@ void WTrackTableView::slotReloadTrackMetadata() {
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
-    // tro's lambda idea. This code calls asynchronously!
+    DBG() << "Start" << trackModel;
     m_pTrackCollection->callAsync(
                 [this, indices, trackModel] (void) {
-        WTrackTableView::m_sReloadingMetadata = true;
-        DBG() << "Start";
         foreach (QModelIndex index, indices) {
+            // tro's lambda idea. This code calls asynchronously!
             TrackPointer pTrack = trackModel->getTrack(index);
             if (pTrack) {
                 DBG()<<"Before pTrack->parse();";
-                    pTrack->parse();
+                pTrack->parse();
                 DBG()<<"After pTrack->parse();";
             }
+            DBG() << "End";
         }
-        DBG() << "End";
-        WTrackTableView::m_sReloadingMetadata = false;
     }, __PRETTY_FUNCTION__);
 }
 

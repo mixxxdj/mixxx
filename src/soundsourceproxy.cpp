@@ -324,7 +324,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
     // Log parsing of header information in developer mode. This is useful for
     // tracking down corrupt files.
     if (CmdlineArgs::Instance().getDeveloper()) {
-	qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
+        qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
     }
 
     SoundSource* sndsrc = initialize(qFilename);

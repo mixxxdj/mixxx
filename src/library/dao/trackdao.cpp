@@ -17,7 +17,6 @@
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
-QMutex TrackDAO::m_sTrackCacheMutex;
 
 enum { UndefinedRecordIndex = -2 };
 
@@ -903,17 +902,20 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             // Listen to dirty and changed signals
             connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
                     this, SLOT(slotTrackDirty(TrackInfoObject*)),
-                    Qt::DirectConnection);
+//                    Qt::DirectConnection);
+                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(clean(TrackInfoObject*)),
                     this, SLOT(slotTrackClean(TrackInfoObject*)),
-                    Qt::DirectConnection);
+//                    Qt::DirectConnection);
+                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
                     this, SLOT(slotTrackChanged(TrackInfoObject*)),
-                    Qt::DirectConnection);
+//                    Qt::DirectConnection);
+                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(save(TrackInfoObject*)),
                     this, SLOT(slotTrackSave(TrackInfoObject*)),
-                    Qt::DirectConnection);
-
+//                    Qt::DirectConnection);
+                    Qt::QueuedConnection); // tro
 
             m_sTracksMutex.lock();
             // Automatic conversion to a weak pointer
@@ -921,9 +923,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             qDebug() << "m_sTracks.count() =" << m_sTracks.count();
             m_sTracksMutex.unlock();
 
-            m_sTrackCacheMutex.lock(); // tro
             m_trackCache.insert(id, new TrackPointer(pTrack));
-            m_sTrackCacheMutex.unlock();
 
             // If the header hasn't been parsed, parse it but only after we set the
             // track clean and hooked it up to the track cache, because this will

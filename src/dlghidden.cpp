@@ -60,7 +60,7 @@ void DlgHidden::onShow() {
     // no buttons can be selected
     MainExecuter::callSync([this](void) {
         slotActivateButtons(false);
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgHidden::onSearch(const QString& text) {

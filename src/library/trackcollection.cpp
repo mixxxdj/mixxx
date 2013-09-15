@@ -293,7 +293,7 @@ void TrackCollection::createAndPopulateDbConnection() {
         qDebug() << errorMsg;
         MainExecuter::callSync([this, errorMsg](void) {
             reportCriticalErrorAndQuit(errorMsg);
-        });
+        }, __PRETTY_FUNCTION__);
     }
 
     m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE", "track_collection_connection"));

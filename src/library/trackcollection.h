@@ -62,7 +62,8 @@ public:
         return instance;
     }
 
-    static void callAsync(func lambda) {
+    static void callAsync(func lambda, QString where = QString()) {
+        DBG() << where;
         if (QThread::currentThread() == qApp->thread()) {
             // We are already on Main thread
             lambda();
@@ -74,7 +75,8 @@ public:
         }
     }
 
-    static void callSync(func lambda) {
+    static void callSync(func lambda, QString where = QString()) {
+        DBG() << where;
         if (QThread::currentThread() == qApp->thread()) {
             // We are already on Main thread
             lambda();

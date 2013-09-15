@@ -107,7 +107,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
             m_pPlaylistTableModel->setTableModel(playlistId);
             MainExecuter::callSync([this](void) {
                 emit(showTrackModel(m_pPlaylistTableModel));
-            });
+            }, __PRETTY_FUNCTION__);
         }
     }, __PRETTY_FUNCTION__);
 }
@@ -138,7 +138,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
                                                 QLineEdit::Normal,
                                                 oldName,
                                                 &ok).trimmed();
-            });
+            }, __PRETTY_FUNCTION__);
             if (!ok || oldName == newName) {
                 return;
             }
@@ -157,7 +157,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
                 } else {
                     validNameGiven = true;
                 }
-            });
+            }, __PRETTY_FUNCTION__);
         }
         m_playlistDao.renamePlaylist(playlistId, newName);
     }, __PRETTY_FUNCTION__);
@@ -188,7 +188,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
                                              //: Appendix to default name when duplicating a playlist
                                              oldName + tr("_copy" , "[noun]"),
                                              &ok).trimmed();
-            });
+            }, __PRETTY_FUNCTION__);
             if (!ok || oldName == name) {
                 return;
             }
@@ -208,7 +208,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
                 } else {
                     validNameGiven = true;
                 }
-            });
+            }, __PRETTY_FUNCTION__);
         }
 
         int newPlaylistId = m_playlistDao.createPlaylist(name);
@@ -218,7 +218,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
             MainExecuter::callSync(
                         [this] (void) {
                 emit(showTrackModel(m_pPlaylistTableModel));
-            });
+            }, __PRETTY_FUNCTION__);
         }
     }, __PRETTY_FUNCTION__);
 }
@@ -257,7 +257,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
                                              QLineEdit::Normal,
                                              tr("New Playlist"),
                                              &ok).trimmed();
-            });
+            }, __PRETTY_FUNCTION__);
             if (!ok) {
                 return;
             }
@@ -275,7 +275,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
                 } else {
                     validNameGiven = true;
                 }
-            });
+            }, __PRETTY_FUNCTION__);
             int playlistId = m_playlistDao.createPlaylist(name);
             MainExecuter::callSync(
                         [this, &playlistId, &name] {
@@ -287,7 +287,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
                                          tr("An unknown error occurred while creating playlist: ")
                                          + name);
                 }
-            });
+            }, __PRETTY_FUNCTION__);
         }
     }, __PRETTY_FUNCTION__);
 }
@@ -313,7 +313,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
             MainExecuter::callSync(
                         [this](void) {
                 activate();
-            });
+            }, __PRETTY_FUNCTION__);
         }
     }, __PRETTY_FUNCTION__);
 }

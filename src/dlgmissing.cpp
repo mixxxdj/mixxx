@@ -55,7 +55,7 @@ void DlgMissing::onShow() {
     // no buttons can be selected
     MainExecuter::callSync([this](void) {
         slotActivateButtons(false);
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgMissing::clicked() {

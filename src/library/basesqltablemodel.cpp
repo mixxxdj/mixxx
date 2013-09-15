@@ -281,7 +281,7 @@ void BaseSqlTableModel::select() {
     // populating query results in UI thread
     MainExecuter::callSync( [this](){
         slotPopulateQueryResult();
-    });
+    }, __PRETTY_FUNCTION__);
 }
 
 // Must be called from Main (GUI) Thread only
