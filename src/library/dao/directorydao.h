@@ -8,7 +8,6 @@ const QString DIRECTORYDAO_DIR = "directory";
 const QString DIRECTORYDAO_TABLE = "directories";
 
 enum ReturnCodes {
-    DIR_NOT_EXISTING,
     SQL_ERROR,
     ALREADY_WATCHING,
     ALL_FINE
@@ -26,6 +25,8 @@ class DirectoryDAO : public DAO {
     int removeDirectory(const QString& dir);
     QSet<int> relocateDirectory(const QString& oldFolder, const QString& newFolder);
     QStringList getDirs();
+
+    bool isChildDir(QString testDir, QString dir);
 
   private:
     QSqlDatabase& m_database;

@@ -1,6 +1,6 @@
 #include <QtSql>
-#include <QtDebug>
 #include <QDir>
+#include <QtDebug>
 #include <QStringBuilder>
 
 #include "library/dao/directorydao.h"
@@ -19,19 +19,25 @@ void DirectoryDAO::initialize() {
 }
 
 int DirectoryDAO::addDirectory(const QString& newDir) {
-    QDir qdir(newDir);
-    if (!qdir.exists()) {
-        return DIR_NOT_EXISTING;
-    }
-
     // Do nothing if the dir to add is a child of a directory that is already in
     // the db.:
     QStringList dirs = getDirs();
+    bool childDir = false;
+    bool parentDir = false;
     foreach (const QString& dir, dirs) {
-        // TODO(rryan): dir needs to end in a slash otherwise we will mis-match.
-        if (qdir.canonicalPath().startsWith(dir)) {
-            return ALREADY_WATCHING;
-        }
+        childDir = isChildDir(newDir, dir);
+        parentDir= isChildDir(dir, newDir);
+    }
+
+    if (childDir) {
+        return ALREADY_WATCHING;
+    }
+
+    if (parentDir) {
+        // da a relocate here so that we from then on watch over the parent dir
+        // TODO(kain88) actually implement this, right now send this so that the
+        // unit test fails
+        return SQL_ERROR;
     }
 
     QSqlQuery query(m_database);
@@ -43,6 +49,33 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
         return SQL_ERROR;
     }
     return ALL_FINE;
+}
+
+bool DirectoryDAO::isChildDir(QString testDir, QString dir){
+    // Qt internally always uses '/' as a seperator so this should also work
+    // fine on windows -- kain88 (sep 2013)
+    QStringList testDirNames = QDir(testDir).absolutePath().split('/');
+    QStringList dirNames = QDir(dir).absolutePath().split('/');
+
+    bool related = false;
+    // testDir could be a child if the path a more items.
+    if (testDirNames.size() > dirNames.size()){
+        // To test if we have a child folder we go through all the folders and check
+        // them for equality. 'related' is set to true at the beginning so we can use
+        // the AND operation that will convert 'related' to false once one folder level
+        // does not match anymore
+        related = true;
+        for (int i=0; i < dirNames.size(); ++i) {
+            related = (testDirNames.at(i) == dirNames.at(i)) && related;
+        }
+    }
+
+    // qDebug() << "--- test related function ---";
+    // qDebug() << "testDir " << testDir;
+    // qDebug() << "dir" << dir;
+    // qDebug() << "related = " << related;
+    // qDebug() << "-----------------------------";
+    return related;
 }
 
 int DirectoryDAO::removeDirectory(const QString& dir) {

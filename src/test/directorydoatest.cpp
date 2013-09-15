@@ -39,7 +39,8 @@ class DirectoryDAOTest : public testing::Test {
 
 TEST_F(DirectoryDAOTest, addDirTest) {
     DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
-    QString testdir = QDir::currentPath().append("/src/test/test_data");
+    // prepend dir with '/' so that QT thinks the dir starts at the root
+    QString testdir = "/TestDir/a";
 
     // check if directory doa adds and thinks everything is ok
     int success = m_DirectoryDao.addDirectory(testdir);
@@ -47,11 +48,15 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 
     // check that we don't add the directory again
     success = m_DirectoryDao.addDirectory(testdir);
+    EXPECT_EQ(success, SQL_ERROR );
+
+    // check that we don't add a child directory
+    success = m_DirectoryDao.addDirectory("/TestDir/a/child");
     EXPECT_EQ(success, ALREADY_WATCHING );
 
-    // check that we only add existing dirs
-    success = m_DirectoryDao.addDirectory("Hello World");
-    EXPECT_EQ(success, DIR_NOT_EXISTING);
+    // check that we add the parent dir
+    success = m_DirectoryDao.addDirectory("/TestDir");
+    EXPECT_EQ(success, ALL_FINE);
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
@@ -95,8 +100,8 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
 
 TEST_F(DirectoryDAOTest, getDirTest) {
     DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
-    QString testdir = "TestDir";
-    QString testdir2 = "TestDir2";
+    QString testdir = "/a/c";
+    QString testdir2 = "b/d";
 
     m_DirectoryDao.addDirectory(testdir);
     m_DirectoryDao.addDirectory(testdir2);
