@@ -4,6 +4,7 @@
 #include <QItemSelectionModel>
 #include <QMessageBox>
 #include <QTranslator>
+#include <QDir>
 
 #include "library/library.h"
 #include "library/library_preferences.h"
@@ -273,8 +274,7 @@ void Library::slotRequestRemoveDir(QString dir) {
     // possible.
     QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
 
-    // TODO(rryan): String equality here is brittle. We should use QDir.
-    if (dir == confDir) {
+    if (QDir(dir) == QDir(confDir)) {
         QStringList dirList = m_pTrackCollection->getDirectoryDAO().getDirs();
         if (!dirList.isEmpty()) {
             m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first());
