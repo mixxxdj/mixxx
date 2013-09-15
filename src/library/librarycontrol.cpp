@@ -93,10 +93,10 @@ LibraryControl::LibraryControl(QObject* pParent)
     connect(m_pSelectTrackKnob, SIGNAL(valueChanged(double)),
             this, SLOT(slotSelectTrackKnob(double)));
 
-    m_pIsBusy = new ControlObject(ConfigKey("[Playlist]", "isBusy")); // binary control with range (0.0f - off, else on).
+    m_pIsBusy = new ControlObject(ConfigKey("[Playlist]", "isBusy")); // binary control with range (0.0 - off, else on).
     connect(m_pIsBusy, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetPlaylistBusy(double)));
-    m_pIsBusy->set(0.0f);
+    m_pIsBusy->set(0.0);
 }
 
 LibraryControl::~LibraryControl() {

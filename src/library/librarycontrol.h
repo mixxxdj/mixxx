@@ -63,7 +63,7 @@ class LibraryControl : public QObject {
     ControlObject* m_pToggleSidebarItem;
     ControlObject* m_pLoadSelectedIntoFirstStopped;
     ControlObject* m_pSelectTrackKnob;
-    ControlObject* m_pIsBusy; // tro
+    ControlObject* m_pIsBusy;
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
     ControlObjectThread m_numDecks;

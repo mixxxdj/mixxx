@@ -440,23 +440,31 @@ void WTrackTableView::slotOpenInFileBrowser() {
 }
 
 void WTrackTableView::slotHide() {
-    QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
-        TrackModel* trackModel = getTrackModel();
-        if (trackModel) {
-            trackModel->hideTracks(indices);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        QModelIndexList indices = selectionModel()->selectedRows();
+        if (indices.size() > 0) {
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel) {
+                trackModel->hideTracks(indices);
+            }
         }
-    }
+    }, __PRETTY_FUNCTION__);
 }
 
 void WTrackTableView::slotUnhide() {
-    QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0) {
-        TrackModel* trackModel = getTrackModel();
-        if (trackModel) {
-            trackModel->unhideTracks(indices);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        QModelIndexList indices = selectionModel()->selectedRows();
+        if (indices.size() > 0) {
+            TrackModel* trackModel = getTrackModel();
+            if (trackModel) {
+                trackModel->unhideTracks(indices);
+            }
         }
-    }
+    }, __PRETTY_FUNCTION__);
 }
 
 void WTrackTableView::slotShowTrackInfo() {
