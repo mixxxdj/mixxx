@@ -34,7 +34,8 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
       m_pCOTPlaylistIsBusy(NULL),
       m_supportedFileExtensionsRegex(
           SoundSourceProxy::supportedFileExtensionsRegex(),
-          Qt::CaseInsensitive) {
+          Qt::CaseInsensitive),
+      m_inCallSync(false) {
     DBG() << "TrackCollection constructor \tfrom thread id="
           << QThread::currentThreadId() << "name="
           << QThread::currentThread()->objectName();
@@ -121,12 +122,14 @@ void TrackCollection::callAsync(func lambda, QString where) {
 }
 
 void TrackCollection::callSync(func lambda, QString where) {
+//    if (m_inCallSync) {
+//        Q_ASSERT(!m_inCallSync);
+//    }
+    m_inCallSync = true;
     QMutex mutex;
-    //SleepableQThread::sleep(5);
     mutex.lock();
     callAsync( [&mutex, &lambda] (void) {
         lambda();
-        //SleepableQThread::sleep(5);
         mutex.unlock();
     }, where);
 
@@ -136,6 +139,7 @@ void TrackCollection::callSync(func lambda, QString where) {
         // animationIsShowed = true;
     }
     mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
+    m_inCallSync = false;
 }
 
 void TrackCollection::addLambdaToQueue(func lambda) {
@@ -203,13 +207,14 @@ QSqlDatabase& TrackCollection::getDatabase() {
     return *m_database;
 }
 
-/** Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
-    @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
-    @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
-*/
+// Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
+//    @param trackDao The track data access object which provides a connection to the database.
+//    We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
+//    @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
+//
 bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
                                       const QStringList& nameFilters,
-                                      volatile bool* cancel) {
+                                      volatile bool* cancel, volatile bool* pause) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
@@ -218,42 +223,43 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
     //get a list of the contents of the directory and go through it.
     QDirIterator it(directory, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     while (it.hasNext()) {
-
         //If a flag was raised telling us to cancel the library scan then stop.
         if (*cancel) {
             return false;
         }
+        this->callSync(
+                    [this, &it, &directory, &trackDao, &nameFilters, &pause ] (void) {
 
-        QString absoluteFilePath = it.next();
+            QString absoluteFilePath = it.next();
 
-        // If the track is in the database, mark it as existing. This code gets exectuted
-        // when other files in the same directory have changed (the directory hash has changed).
-        trackDao.markTrackLocationAsVerified(absoluteFilePath);
+            // If the track is in the database, mark it as existing. This code gets exectuted
+            // when other files in the same directory have changed (the directory hash has changed).
+            trackDao.markTrackLocationAsVerified(absoluteFilePath);
 
-        // If the file already exists in the database, continue and go on to
-        // the next file.
+            // If the file already exists in the database, continue and go on to
+            // the next file.
 
-        // If the file doesn't already exist in the database, then add
-        // it. If it does exist in the database, then it is either in the
-        // user's library OR the user has "removed" the track via
-        // "Right-Click -> Remove". These tracks stay in the library, but
-        // their mixxx_deleted column is 1.
-        if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
-            //qDebug() << "Loading" << it.fileName();
-            emit(progressLoading(it.fileName()));
+            // If the file doesn't already exist in the database, then add
+            // it. If it does exist in the database, then it is either in the
+            // user's library OR the user has "removed" the track via
+            // "Right-Click -> Remove". These tracks stay in the library, but
+            // their mixxx_deleted column is 1.
+            if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
+                //qDebug() << "Loading" << it.fileName();
+                emit(progressLoading(it.fileName()));
 
-            TrackPointer pTrack = TrackPointer(new TrackInfoObject(
-                                                   absoluteFilePath), &QObject::deleteLater);
-
-            if (trackDao.addTracksAdd(pTrack.data(), false)) {
-                // Successful added
-                // signal the main instance of TrackDao, that there is a
-                // new Track in the database
-                m_trackDao->databaseTrackAdded(pTrack);
-            } else {
-                qDebug() << "Track ("+absoluteFilePath+") could not be added";
+                TrackPointer pTrack = TrackPointer(new TrackInfoObject(
+                                                       absoluteFilePath), &QObject::deleteLater);
+                if (trackDao.addTracksAdd(pTrack.data(), false)) {
+                    // Successful added
+                    // signal the main instance of TrackDao, that there is a
+                    // new Track in the database
+                    m_trackDao->databaseTrackAdded(pTrack);
+                } else {
+                    qDebug() << "Track ("+absoluteFilePath+") could not be added";
+                }
             }
-        }
+        }, __PRETTY_FUNCTION__);
     }
     emit(finishedLoading());
     return true;

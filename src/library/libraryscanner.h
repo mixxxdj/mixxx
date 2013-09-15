@@ -40,7 +40,7 @@ class LibraryScanner : public QThread {
     Q_OBJECT
   public:
     LibraryScanner();
-    LibraryScanner(TrackCollection* collection);
+    LibraryScanner(TrackCollection* pTrackCollection);
     virtual ~LibraryScanner();
 
     void run();
@@ -54,7 +54,7 @@ class LibraryScanner : public QThread {
     void scanFinished();
     void progressHashing(QString);
   private:
-    TrackCollection* m_pCollection; // The library trackcollection
+    TrackCollection* m_pTrackCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
                              // since we run in a different thread */
     QString m_qLibraryPath; // The path to the library on disk
@@ -69,6 +69,7 @@ class LibraryScanner : public QThread {
 
     QStringList m_nameFilters;
     volatile bool m_bCancelLibraryScan;
+    volatile bool m_bPauseLibraryScan;
     QStringList m_directoriesBlacklist;
 };
 

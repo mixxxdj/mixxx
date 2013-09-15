@@ -137,7 +137,7 @@ class TrackCollection : public QThread {
 
     // Import the files in a given diretory, without recursing into subdirectories
     bool importDirectory(const QString& directory, TrackDAO& trackDao,
-                         const QStringList& nameFilters, volatile bool* cancel);
+                         const QStringList& nameFilters, volatile bool* cancel, volatile bool* pause);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
@@ -178,6 +178,7 @@ class TrackCollection : public QThread {
     ControlObjectThread* m_pCOTPlaylistIsBusy;
 
     const QRegExp m_supportedFileExtensionsRegex;
+    bool m_inCallSync;
 };
 
 #endif

@@ -22,11 +22,11 @@
 #include "libraryscannerdlg.h"
 
 LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
-   QWidget(parent, f)
-{
-    m_bCancelled = false;
+    QWidget(parent, f),
+    m_bCancelled(false),
+    m_bPaused(false) {
 
-	setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 
@@ -39,19 +39,28 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
             this, SLOT(slotCancel()));
     pLayout->addWidget(pCancel);
 
+    // pause button
+    QPushButton* pPause = new QPushButton(tr("Pause"), this);
+    pPause->setObjectName("pauseBtn");
+    connect(pPause, SIGNAL(clicked()),
+            this, SLOT(slotPause()));
+    pLayout->addWidget(pPause);
+
+
     QLabel* pCurrent = new QLabel(this);
     pCurrent->setMaximumWidth(600);
+    pCurrent->setMinimumHeight( pCurrent->fontMetrics().boundingRect("Gg").height()*2 );
+    pCurrent->setMaximumHeight( pCurrent->fontMetrics().boundingRect("Gg").height() *3 );
     pCurrent->setWordWrap(true);
-    connect(this, SIGNAL(progress(QString)),
-            pCurrent, SLOT(setText(QString)));
+    connect(this, SIGNAL(progress(QString)),    // TODO(xxx) show progress on timer
+            pCurrent, SLOT(setText(QString)));  // TODO(xxx) trim filename like "/home/tro/Music...09. Dope D.O.D. - Slowmotion.mp3"
     pLayout->addWidget(pCurrent);
     setLayout(pLayout);
 
     m_timer.start();
 }
 
-LibraryScannerDlg::~LibraryScannerDlg()
-{
+LibraryScannerDlg::~LibraryScannerDlg() {
     emit(scanCancelled());
 }
 
@@ -67,8 +76,7 @@ void LibraryScannerDlg::slotUpdate(QString path) {
     }
 }
 
-void LibraryScannerDlg::slotCancel()
-{
+void LibraryScannerDlg::slotCancel() {
     qDebug() << "Cancelling library scan...";
     m_bCancelled = true;
 
@@ -79,8 +87,28 @@ void LibraryScannerDlg::slotCancel()
     close();
 }
 
-void LibraryScannerDlg::slotScanFinished()
-{
+void LibraryScannerDlg::slotPause() {
+    QPushButton *pauseBtn = findChild<QPushButton*>("pauseBtn");
+    if (!pauseBtn) {
+        qDebug() << "\t ERROR: pauseBtn == NULL";
+        return;
+    }
+    if (m_bPaused) {
+        // resuming
+        // qDebug() << "\t resuming";
+        m_bPaused = false;
+        pauseBtn->setText(tr("Pause"));
+        emit(scanResumed());
+    } else {
+        // making pause
+        // qDebug() << "\t making pause";
+        pauseBtn->setText(tr("Resume"));
+        m_bPaused = true;
+        emit(scanPaused());
+    }
+}
+
+void LibraryScannerDlg::slotScanFinished() {
     m_bCancelled = true; //Raise this flag to prevent any
                          //latent slotUpdates() from showing the dialog again.
 

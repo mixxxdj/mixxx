@@ -320,6 +320,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
     }
 
     PlaylistDAO::HiddenType type;
+
     m_pTrackCollection->callSync(
                 [this, playlistId, &type] (void) {
         type = m_playlistDao.getHiddenType(playlistId);
@@ -331,7 +332,10 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             // Switch the view to the playlist.
-            m_pPlaylistTableModel->setTableModel(playlistId);
+            m_pTrackCollection->callSync(
+                        [this, playlistId] (void) {
+                m_pPlaylistTableModel->setTableModel(playlistId);
+            }, __PRETTY_FUNCTION__);
             // Update selection
             emit(featureSelect(this, m_lastRightClickedIndex));
         }
