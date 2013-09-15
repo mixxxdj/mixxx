@@ -1141,8 +1141,9 @@ void TrackDAO::markTracksInDirectoriesAsVerified(QStringList& directories) {
 void TrackDAO::markUnverifiedTracksAsDeleted() {
     //qDebug() << "TrackDAO::markUnverifiedTracksAsDeleted" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
-    // TODO(kain88): These are not library ids!
-    query.prepare("SELECT id FROM track_locations WHERE needs_verification=1");
+    query.prepare("SELECT id FROM library INNER JOIN  track_locations ON "
+                  "track_locations.id=library.location WHERE "
+                  "track_locations.needs_verification=1");
     QSet<int> trackIds;
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "Couldn't find unverified tracks";
