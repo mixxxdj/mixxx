@@ -111,7 +111,7 @@ void LoopTracker::setCurrentLength(unsigned int length) {
 }
 
 void LoopTracker::slotLoadToLoopDeck() {
-    //qDebug() << "LoopRecordingManager::loadToLoopDeck m_filesRecorded: " << m_filesRecorded;
+
     QString path = getCurrentPath();
     if (path != "") {
         TrackPointer pTrackToPlay = TrackPointer(new TrackInfoObject(path), &QObject::deleteLater);
@@ -128,7 +128,6 @@ void LoopTracker::slotLoadToLoopDeck() {
 }
 
 void LoopTracker::slotChangeLoopPregain(double v) {
-    qDebug() << "!~!~!~! slotChangeLoopPregain: " << v << " !~!~!~!";
     m_pLoopDeck1Pregain->slotSet(v);
     m_pLoopDeck2Pregain->slotSet(v);
 }

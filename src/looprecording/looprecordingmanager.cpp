@@ -8,14 +8,15 @@
 #include <QMutex>
 #include <sndfile.h>
 
+#include "looprecording/looprecordingmanager.h"
+
 #include "controlpushbutton.h"
 #include "engine/enginemaster.h"
 #include "engine/looprecorder/enginelooprecorder.h"
 #include "engine/looprecorder/loopwriter.h"
-#include "recording/defs_recording.h"
-#include "looprecording/looprecordingmanager.h"
 #include "looprecording/looptracker.h"
 #include "playerinfo.h"
+#include "recording/defs_recording.h"
 #include "trackinfoobject.h"
 
 LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
@@ -123,7 +124,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
     }
     // Start thread for writing files.
     if (pLoopRecorder) {
-        qDebug() << "!~!~!~! LoopRecordingManager starting thread !~!~!~!";
+        //qDebug() << "!~!~!~! LoopRecordingManager starting thread !~!~!~!";
         pLoopRecorder->startThread();
     }
 }
@@ -171,8 +172,8 @@ void LoopRecordingManager::slotClearRecorder() {
 }
 
 void LoopRecordingManager::slotCurrentPlayingDeckChanged(int deck) {
-    qDebug() << "LoopRecordingManager::slotCurrentPlayingDeckChanged Deck: "
-            << deck;
+    //qDebug() << "LoopRecordingManager::slotCurrentPlayingDeckChanged Deck: "
+    //        << deck;
     m_iCurrentPlayingDeck = deck;
 }
 
@@ -295,7 +296,7 @@ void LoopRecordingManager::slotToggleExport(double v) {
 }
 
 void LoopRecordingManager::slotToggleLoopRecording(double v) {
-    qDebug() << "LoopRecordingManager::slotToggleLR";
+    //qDebug() << "LoopRecordingManager::slotToggleLoopRecorder";
 
     // TODO(carl): Handle recorder INPUT_OFF state
     if (v <= 0.) {
@@ -365,8 +366,8 @@ double LoopRecordingManager::getCurrentBPM() {
     if ((m_iCurrentPlayingDeck >= 0) && (m_iCurrentPlayingDeck < m_deckRateControls.size())) {
 
         double rate = m_deckRateControls[m_iCurrentPlayingDeck]->get();
-        qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Base BPM: " << baseTrackBPM
-        << " Rate: " << rate;
+        //qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Base BPM: " << baseTrackBPM
+        //<< " Rate: " << rate;
 
         // TODO(Carl) get scaling working for sample rates other than 44.1 kHz
         // Rate is incorrect for sample rates higher than 44.1.
@@ -374,8 +375,7 @@ double LoopRecordingManager::getCurrentBPM() {
         return baseTrackBPM;
 
     } else {
-
-        qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() 0";
+        //qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() 0";
         return 0;
     }
 }
@@ -392,9 +392,9 @@ unsigned int LoopRecordingManager::getLoopLength() {
     
     unsigned int length = (unsigned int)((loopLength * sampleRate * 2.0 * 60.0)/bpm);
 
-    qDebug() << "!!!!!!!LoopRecordingManager::getloopLength sampleRate: " << sampleRate
-             << " loopLength: " << loopLength << " bpm: " << bpm
-             << " length: " << length;
+    //qDebug() << "!!!!!!!LoopRecordingManager::getloopLength sampleRate: " << sampleRate
+    //         << " loopLength: " << loopLength << " bpm: " << bpm
+    //         << " length: " << length;
 
     return length;
 }
@@ -440,7 +440,7 @@ void LoopRecordingManager::setRecordingDir() {
 }
 
 void LoopRecordingManager::startRecording() {
-    qDebug() << "LoopRecordingManager startRecording";
+    //qDebug() << "LoopRecordingManager startRecording";
 
     // update encoding type
     m_encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
@@ -472,7 +472,7 @@ void LoopRecordingManager::startRecording() {
 
 void LoopRecordingManager::stopRecording() {
     //qDebug() << "LoopRecordingManager::stopRecording NumSamples: " << m_iNumSamplesRecorded;
-    qDebug() << "LoopRecordingManager::stopRecording";
+    //qDebug() << "LoopRecordingManager::stopRecording";
     emit(stopWriter(true));
     m_recordingFile = "";
     m_recordingLocation = "";

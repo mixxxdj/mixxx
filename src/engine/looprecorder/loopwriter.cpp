@@ -73,8 +73,8 @@ void LoopWriter::slotStartRecording(int samples) {
     m_iLoopLength = samples;
     m_iBreakPoint = m_iLoopLength - WORK_BUFFER_SIZE;
 
-    qDebug() << "!~!~!~!~!~! LoopWriter::slotStartRecording Length: " << m_iLoopLength <<
-                "Break: " << m_iBreakPoint << " !~!~!~!~!~!~!";
+    //qDebug() << "!~!~!~!~!~! LoopWriter::slotStartRecording Length: " << m_iLoopLength <<
+    //            "Break: " << m_iBreakPoint << " !~!~!~!~!~!~!";
     m_bRecording = true;
     emit(isRecording(true));
 }
