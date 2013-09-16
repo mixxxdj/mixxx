@@ -34,10 +34,11 @@ class QWidget;
 
 class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
-public: 
+  public: 
     DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefRecord();
-public slots:
+    
+  public slots:
     /** Apply changes to widget */
     void slotApply();
     void slotUpdate();
@@ -48,9 +49,14 @@ public slots:
     void slotChangeSplitSize();
     /** Dialog to browse for recordings directory */
     void slotBrowseRecordingsDir();
-signals:
+    
+  signals:
     void apply(const QString &);
-private:
+    
+  private slots:
+    void slotLoopEncoding();
+
+  private:
     void setRecordingFolder();
     void setMetaData();
     void loadMetaData();
