@@ -216,7 +216,9 @@ void LibraryScanner::run() {
     // this will prepare some querys in TrackDAO, this needs be done because
     // TrackCollection will call TrackDAO::addTracksAdd and this
     // function needs the querys
-    m_trackDao.addTracksPrepare();                                                                                      ////////////////////////////////////
+
+
+//    m_trackDao.addTracksPrepare();                                                                                      ////////////////////////////////////
     QStringList verifiedDirectories;
 
     bool bScanFinishedCleanly = recursiveScan(m_qLibraryPath, verifiedDirectories);                                     ////////////////////////////////////
@@ -228,7 +230,7 @@ void LibraryScanner::run() {
     }
 
     // Runs inside a transaction
-    m_trackDao.addTracksFinish();                                                                                       //////////////////////////////////////
+//    m_trackDao.addTracksFinish();                                                                                       //////////////////////////////////////
 
     //Verify all Tracks inside Library but outside the library path
     m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan, &m_bPauseLibraryScan);
@@ -314,6 +316,12 @@ void LibraryScanner::scan(const QString& libraryPath, QWidget *parent) {
     connect(m_pProgress, SIGNAL(scanCancelled()),
             this, SLOT(cancel()),
             Qt::QueuedConnection);
+    connect(m_pProgress, SIGNAL(scanPaused()),
+            this, SLOT(pause()),
+            Qt::QueuedConnection);
+    connect(m_pProgress, SIGNAL(scanResumed()),
+            this, SLOT(resume()),
+            Qt::QueuedConnection);
     connect(&m_trackDao, SIGNAL(progressVerifyTracksOutside(QString)),
             m_pProgress, SLOT(slotUpdate(QString)),
             Qt::QueuedConnection);
@@ -322,12 +330,20 @@ void LibraryScanner::scan(const QString& libraryPath, QWidget *parent) {
 
 //slot
 void LibraryScanner::cancel() {
-    m_bCancelLibraryScan = 1;
-    m_bPauseLibraryScan = 0;
+    m_bCancelLibraryScan = true;
+    m_bPauseLibraryScan = false;
 }
 
 void LibraryScanner::resetCancel() {
-    m_bCancelLibraryScan = 0;
+    m_bCancelLibraryScan = false;
+}
+
+void LibraryScanner::pause() {
+    m_bPauseLibraryScan = true;
+}
+
+void LibraryScanner::resume() {
+    m_bPauseLibraryScan = false;
 }
 
 void LibraryScanner::scan() {
@@ -374,10 +390,8 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
         }
 
         // Rescan that mofo!
-//        m_pTrackCollection->callSync(
-//                    [this, &bScanFinishedCleanly, &dirPath] (void) {
-            bScanFinishedCleanly = m_pTrackCollection->importDirectory(dirPath, m_trackDao, m_nameFilters, &m_bCancelLibraryScan, &m_bPauseLibraryScan);
-//        }, __PRETTY_FUNCTION__);
+
+        bScanFinishedCleanly = m_pTrackCollection->importDirectory(dirPath, m_trackDao, m_nameFilters, &m_bCancelLibraryScan, &m_bPauseLibraryScan);
     } else { //prevHash == newHash
         // Add the directory to the verifiedDirectories list, so that later they
         // (and the tracks inside them) will be marked as verified

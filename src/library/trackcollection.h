@@ -64,15 +64,10 @@ public:
 
     static void callAsync(func lambda, QString where = QString()) {
         DBG() << where;
-        if (QThread::currentThread() == qApp->thread()) {
-            // We are already on Main thread
-            lambda();
-        } else {
-            MainExecuter& instance = getInstance();
-            instance.m_lambdaMutex.lock();
-            instance.setLambda(lambda);
-            emit(instance.runOnMainThread());
-        }
+        MainExecuter& instance = getInstance();
+        instance.m_lambdaMutex.lock();
+        instance.setLambda(lambda);
+        emit(instance.runOnMainThread());
     }
 
     static void callSync(func lambda, QString where = QString()) {

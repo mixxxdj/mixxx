@@ -50,6 +50,8 @@ class LibraryScanner : public QThread {
   public slots:
     void cancel();
     void resetCancel();
+    void pause();
+    void resume();
   signals:
     void scanFinished();
     void progressHashing(QString);

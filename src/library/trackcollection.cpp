@@ -144,10 +144,8 @@ void TrackCollection::callSync(func lambda, QString where) {
     addLambdaToQueue(lambdaWithMutex);
 
     while (!mutex.tryLock(5)) {
-        if (inMainThread) {
-            qApp->processEvents(QEventLoop::AllEvents);
-        }
-         MainExecuter::getInstance().call();
+        qApp->processEvents(QEventLoop::AllEvents);
+        MainExecuter::getInstance().call();
         // DBG() << "Start animation";
         // animationIsShowed = true;
     }
@@ -266,8 +264,19 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
         if (*cancel) {
             return false;
         }
+        if (*pause) {
+            DBG() << "in Pause";
+            while (*pause && !*cancel)
+                msleep(20);
+        }
+        if (*cancel) {
+            return false;
+        }
+
         this->callSync(
                     [this, &it, &directory, &trackDao, &nameFilters, &pause ] (void) {
+
+            trackDao.addTracksPrepare(); ///////
 
             QString absoluteFilePath = it.next();
 
@@ -298,6 +307,8 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
                     qDebug() << "Track ("+absoluteFilePath+") could not be added";
                 }
             }
+            trackDao.addTracksPrepare(); ///////
+
         }, __PRETTY_FUNCTION__);
     }
     emit(finishedLoading());
