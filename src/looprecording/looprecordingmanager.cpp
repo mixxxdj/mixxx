@@ -12,7 +12,7 @@
 #include "engine/enginemaster.h"
 #include "engine/looprecorder/enginelooprecorder.h"
 #include "engine/looprecorder/loopwriter.h"
-#include "looprecording/defs_looprecording.h"
+#include "recording/defs_recording.h"
 #include "looprecording/looprecordingmanager.h"
 #include "looprecording/looptracker.h"
 #include "playerinfo.h"

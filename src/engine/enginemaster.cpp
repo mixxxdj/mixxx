@@ -36,7 +36,6 @@
 #include "util/timer.h"
 #include "engine/looprecorder/enginelooprecorder.h"
 #include "playermanager.h"
-//#include "looprecording/defs_looprecording.h"
 #include "engine/channelmixer.h"
 
 #ifdef __LADSPA__

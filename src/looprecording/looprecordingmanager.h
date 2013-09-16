@@ -10,7 +10,6 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "controlobjectthreadmain.h"
-#include "looprecording/defs_looprecording.h"
 
 class EngineMaster;
 class ControlPushButton;

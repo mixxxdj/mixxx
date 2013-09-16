@@ -3,8 +3,9 @@
 //
 // TODO: Should this be declared inline in LoopRecordingManager?
 
-#include "looprecording/defs_looprecording.h"
 #include "looprecording/looptracker.h"
+
+#include "recording/defs_recording.h"
 #include "controlobjectthread.h"
 #include "controllogpotmeter.h"
 #include "trackinfoobject.h"

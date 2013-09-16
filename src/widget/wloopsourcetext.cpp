@@ -1,5 +1,4 @@
 #include "widget/wloopsourcetext.h"
-//#include "looprecording/defs_looprecording.h"
 
 WLoopSourceText::WLoopSourceText(QWidget *pParent) : WNumber(pParent) { }
 

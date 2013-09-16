@@ -6,7 +6,6 @@
 
 #include "configobject.h"
 #include "errordialoghandler.h"
-#include "looprecording/defs_looprecording.h"
 #include "engine/looprecorder/loopwriter.h"
 
 EngineLoopRecorder::EngineLoopRecorder()

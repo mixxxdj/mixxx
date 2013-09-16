@@ -120,7 +120,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     horizontalLoopLayout->addWidget(radioLoopAiff);
 
     //Read config and check radio button
-//    QString format = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding"));
+    QString loop_format = config->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY,"Encoding"));
 //    if(format == ENCODING_WAVE)
 //        radioWav->setChecked(true);
 //    else if(format == ENCODING_OGG)
