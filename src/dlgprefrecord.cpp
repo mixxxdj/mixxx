@@ -298,8 +298,7 @@ void DlgPrefRecord::slotUpdate()
 
     if (radioLoopWav && radioLoopWav->isChecked()) {
         config->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
-    }
-    else if(radioLoopAiff && radioLoopAiff->isChecked()){
+    } else if (radioLoopAiff && radioLoopAiff->isChecked()) {
         config->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
     }
     
