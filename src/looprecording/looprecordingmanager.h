@@ -26,7 +26,10 @@ class LoopRecordingManager : public QObject {
 
     // Returns loop source (used in legacy skin parser)
     QString getLoopSource() {
-        return m_sLoopSource;
+        return m_loopSource;
+    }
+    QString getLoopDestination() {
+        return m_loopDestination;
     }
 
   public slots:
@@ -36,6 +39,7 @@ class LoopRecordingManager : public QObject {
 
   signals:
     void clearWriter();
+    void destinationChanged(QString);
     void exportToPlayer(QString, QString);
     void fileOpen(SNDFILE*);
     void sourceChanged(QString);
@@ -68,7 +72,6 @@ class LoopRecordingManager : public QObject {
 
     ConfigObject<ConfigValue>* m_pConfig;
     
-    ControlObject* m_pCOExportDestination;
     ControlObject* m_pCOLoopLength;
     ControlObject* m_pCOLoopPlayReady;
 
@@ -93,7 +96,8 @@ class LoopRecordingManager : public QObject {
 
     QString m_dateTime;
     QString m_encodingType;
-    QString m_sLoopSource;
+    QString m_loopDestination;
+    QString m_loopSource;
     QString m_recordingDir;
 
     //the base file

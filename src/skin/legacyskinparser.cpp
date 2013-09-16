@@ -36,8 +36,7 @@
 #include "widget/wvumeter.h"
 #include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
-#include "widget/wloopexporttext.h"
-#include "widget/wloopsourcetext.h"
+#include "widget/wlooptext.h"
 #include "widget/wtime.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
@@ -341,10 +340,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseNumber(node);
     } else if (nodeName == "Label") {
         return parseLabel(node);
-    } else if (nodeName == "LoopExport") {
-        return parseLoopExport(node);
-    } else if (nodeName == "LoopSource") {
-        return parseLoopSource(node);
+    } else if (nodeName == "LoopRecorderText") {
+        return parseLoopText(node);
     } else if (nodeName == "Knob") {
         return parseKnob(node);
     } else if (nodeName == "TableView") {
@@ -861,23 +858,9 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     return p;
 }
 
-QWidget* LegacySkinParser::parseLoopExport(QDomElement node) {
-    WLoopExportText* p = new WLoopExportText(m_pParent);
-    setupWidget(node, p);
-    p->setup(node);
-    if (p->getComposedWidget()) {
-        setupWidget(node, p->getComposedWidget(), false);
-    }
-    setupConnections(node, p);
-    p->installEventFilter(m_pKeyboard);
-    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
-    return p;
-}
+QWidget* LegacySkinParser::parseLoopText(QDomElement node) {
 
-
-QWidget* LegacySkinParser::parseLoopSource(QDomElement node) {
-
-    WLoopSourceText* p = new WLoopSourceText(m_pParent);
+    WLoopText* p = new WLoopText(m_pParent);
     setupWidget(node, p);
     p->setup(node);
     if (p->getComposedWidget()) {
@@ -896,11 +879,13 @@ QWidget* LegacySkinParser::parseLoopSource(QDomElement node) {
         QString source = m_pLoopRecordingManager->getLoopSource();
         p->slotUpdateLabel(source);
     } else if (loopProperty == "destination") {
-        // TODO(carl): implement loop destination connections.
+        connect(m_pLoopRecordingManager, SIGNAL(destinationChanged(QString)),
+                p, SLOT(slotUpdateLabel(QString)));
+
+        QString destination = m_pLoopRecordingManager->getLoopDestination();
+        p->slotUpdateLabel(destination);
     }
-
     return p;
-
 }
 
 QWidget* LegacySkinParser::parseLabel(QDomElement node) {

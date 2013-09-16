@@ -22,7 +22,8 @@
 LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
                                            EngineMaster* pEngine)
         : m_pConfig(pConfig),
-        m_sLoopSource("Master"),
+        m_loopDestination(""),
+        m_loopSource("Master"),
         m_recordingDir(""),
         m_recording_base_file(""),
         m_recordingFile(""),
@@ -35,8 +36,6 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
         m_iNumDecks(0),
         m_iNumSamplers(0) {
 
-    m_pCOExportDestination = new ControlObject(
-                                    ConfigKey(LOOP_RECORDING_PREF_KEY, "export_destination"));
     m_pCOLoopLength = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_length"));
     m_pCOLoopPlayReady = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "play_status"));
 
@@ -93,10 +92,11 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
                                       ConfigKey(QString("[Channel%1]").arg(i), "rateEngine")));
     }
 
-    // Set default loop export value to Sampler1.
-    m_pCOExportDestination->set(1.0);
-
     m_pCOLoopLength->set(4.0);
+
+    if (m_iNumSamplers > 0) {
+        m_loopDestination = "Sampler1";
+    }
 
     m_dateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
     m_encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
@@ -154,7 +154,6 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pLoopPlayReady;
     delete m_pCOLoopPlayReady;
     delete m_pCOLoopLength;
-    delete m_pCOExportDestination;
 }
 
 LoopTracker* LoopRecordingManager::getLoopTracker() {
@@ -184,21 +183,27 @@ void LoopRecordingManager::slotIsRecording(bool isRecordingActive) {
 // Private Slots
 
 void LoopRecordingManager::slotChangeExportDestination(double v) {
-
     if (v <= 0.) {
         return;
     }
-    float destination = m_pCOExportDestination->get();
 
-    if (destination >= m_iNumSamplers) {
-        m_pCOExportDestination->set(1.0);
-    } else {
-        m_pCOExportDestination->set(destination+1.0);
+    if (m_iNumSamplers <= 0) {
+        m_loopDestination = "";
+        emit destinationChanged(m_loopDestination);
+        return;
     }
+
+    int samplerNum = m_loopDestination.right(1).toInt();
+
+    if (samplerNum >= m_iNumSamplers) {
+        m_loopDestination = "Sampler1";
+    } else {
+        m_loopDestination = QString::QString("Sampler%1").arg(++samplerNum);
+    }
+    emit destinationChanged(m_loopDestination);
 }
 
 void LoopRecordingManager::slotChangeLoopLength(double v) {
-
     if (v <= 0.0) {
         return;
     }
@@ -218,42 +223,40 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
     if (v <= 0.0) {
         return;
     }
-    // TODO(Carl): Figure out a clever way to iterate through available sources.
-    // right now it's incomplete.
 
     // Available sources: None (Loop Recorder is off), Master out, PFL out,
     // microphone, passthrough1, passthrough2,
     // all main decks, all samplers.
-    if (m_sLoopSource == "Master") {
-        m_sLoopSource = "Headphones";
-    } else if (m_sLoopSource == "Headphones") {
-        m_sLoopSource = "Microphone";
-    } else if (m_sLoopSource == "Microphone") {
-        m_sLoopSource = "Channel1";
-    } else if (m_sLoopSource.startsWith("Channel")) {
-        int deckNum = m_sLoopSource.right(1).toInt();
+    if (m_loopSource == "Master") {
+        m_loopSource = "Headphones";
+    } else if (m_loopSource == "Headphones") {
+        m_loopSource = "Microphone";
+    } else if (m_loopSource == "Microphone") {
+        m_loopSource = "Channel1";
+    } else if (m_loopSource.startsWith("Channel")) {
+        int deckNum = m_loopSource.right(1).toInt();
 
         qDebug() << "Channel: " << deckNum;
 
         if (deckNum > 0 && deckNum < m_iNumDecks) {
-            m_sLoopSource = QString::QString("Channel%1").arg(++deckNum);
+            m_loopSource = QString::QString("Channel%1").arg(++deckNum);
         } else if (deckNum >= m_iNumDecks && m_iNumSamplers > 0) {
-            m_sLoopSource = "Sampler1";
+            m_loopSource = "Sampler1";
         } else {
-            m_sLoopSource = "Master";
+            m_loopSource = "Master";
         }
-    } else if (m_sLoopSource.startsWith("Sampler")) {
-        int samplerNum = m_sLoopSource.right(1).toInt();
+    } else if (m_loopSource.startsWith("Sampler")) {
+        int samplerNum = m_loopSource.right(1).toInt();
         if (samplerNum > 0 && samplerNum < m_iNumSamplers) {
-            m_sLoopSource = QString::QString("Sampler%1").arg(++samplerNum);
+            m_loopSource = QString::QString("Sampler%1").arg(++samplerNum);
         } else {
-            m_sLoopSource = "Master";
+            m_loopSource = "Master";
         }
     } else {
-        m_sLoopSource = "Master";
+        m_loopSource = "Master";
     }
     
-    emit(sourceChanged(m_sLoopSource));
+    emit(sourceChanged(m_loopSource));
 }
 
 void LoopRecordingManager::slotNumDecksChanged(double v) {
@@ -291,8 +294,7 @@ void LoopRecordingManager::slotToggleExport(double v) {
     if (v <= 0.) {
         return;
     }
-    QString dest_str = QString::number((int)m_pCOExportDestination->get());
-    exportLoopToPlayer(QString("[Sampler%1]").arg(dest_str));
+    exportLoopToPlayer(QString("[%1]").arg(m_loopDestination));
 }
 
 void LoopRecordingManager::slotToggleLoopRecording(double v) {

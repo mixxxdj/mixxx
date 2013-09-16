@@ -1,13 +1,13 @@
-#ifndef WLOOPSOURCETEXT_H
-#define WLOOPSOURCETEXT_H
+#ifndef WLOOPTEXT_H
+#define WLOOPTEXT_H
 
 #include "widget/wlabel.h"
 
-class WLoopSourceText : public WLabel {
+class WLoopText : public WLabel {
     Q_OBJECT
   public:
-    WLoopSourceText(QWidget *pParent=0);
-    virtual ~WLoopSourceText();
+    WLoopText(QWidget *pParent=0);
+    virtual ~WLoopText();
     void setup(QDomNode node);
     QString getProperty();
 
