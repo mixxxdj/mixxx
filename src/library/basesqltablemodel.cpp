@@ -154,7 +154,7 @@ QString BaseSqlTableModel::orderByClause() const {
     return s;
 }
 
-// can be called from any thread
+// must be called only from from TrackCollection thread (via callSync/callAsync)
 void BaseSqlTableModel::select() {
     if (!m_bInitialized) {
         return;
@@ -365,11 +365,16 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
 }
 
 void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
-    if (sDebug) {
-        qDebug() << this << "search" << searchText;
-    }
-    setSearch(searchText, extraFilter);
-    select();
+    // here callAsync uses
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, searchText, extraFilter] (void) {
+        if (sDebug) {
+            qDebug() << this << "search" << searchText;
+        }
+        setSearch(searchText, extraFilter);
+        select();
+    }, __PRETTY_FUNCTION__);
 }
 
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {

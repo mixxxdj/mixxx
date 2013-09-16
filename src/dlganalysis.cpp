@@ -69,11 +69,7 @@ void DlgAnalysis::onShow() {
 }
 
 void DlgAnalysis::onSearch(const QString& text) {
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, text] (void) {
-        m_pAnalysisLibraryTableModel->search(text);
-    }, __PRETTY_FUNCTION__);
+    m_pAnalysisLibraryTableModel->search(text);
 }
 
 void DlgAnalysis::loadSelectedTrack() {
@@ -158,19 +154,11 @@ void DlgAnalysis::trackAnalysisStarted(int size) {
 }
 
 void DlgAnalysis::showRecentSongs() {
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        m_pAnalysisLibraryTableModel->showRecentSongs();
-    }, __PRETTY_FUNCTION__);
+    m_pAnalysisLibraryTableModel->showRecentSongs();
 }
 
 void DlgAnalysis::showAllSongs() {
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        m_pAnalysisLibraryTableModel->showAllSongs();
-    }, __PRETTY_FUNCTION__);
+    m_pAnalysisLibraryTableModel->showAllSongs();
 }
 
 void DlgAnalysis::installEventFilter(QObject* pFilter) {

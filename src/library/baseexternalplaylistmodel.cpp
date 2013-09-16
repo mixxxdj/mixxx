@@ -131,6 +131,7 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
         return;
     }
 
+    // TODO Move to separate method
     setTable(playlistViewTable, columns[0], columns,
              m_pTrackCollection->getTrackSource(m_trackSource));
     setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);

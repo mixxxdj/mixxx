@@ -190,7 +190,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     m_pTrackCollection->callSync(
                 [this, playlistId, &type] (void) {
         type = m_playlistDao.getHiddenType(playlistId);
-    }, __PRETTY_FUNCTION__);
+    }, __PRETTY_FUNCTION__ + objectName());
 
     if (type == PlaylistDAO::PLHT_NOT_HIDDEN ||
         type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist

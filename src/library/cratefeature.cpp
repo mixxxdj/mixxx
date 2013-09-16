@@ -671,7 +671,7 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
         MainExecuter::callSync([this]() {
             emit(featureSelect(this, m_lastRightClickedIndex));
         });
-    }, __PRETTY_FUNCTION__);
+    }, __PRETTY_FUNCTION__ + objectName());
 }
 
 void CrateFeature::slotCrateTableRenamed(int a_iCrateId,

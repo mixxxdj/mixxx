@@ -53,15 +53,11 @@ void WLibrary::switchToView(const QString& name) {
 }
 
 void WLibrary::search(const QString& name) {
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, name] (void) {
-        QMutexLocker lock(&m_mutex);
-        QWidget* current = currentWidget();
-        LibraryView* view = dynamic_cast<LibraryView*>(current);
-        lock.unlock();
-        view->onSearch(name);
-    }, __PRETTY_FUNCTION__);
+    QMutexLocker lock(&m_mutex);
+    QWidget* current = currentWidget();
+    LibraryView* view = dynamic_cast<LibraryView*>(current);
+    lock.unlock();
+    view->onSearch(name);
 }
 
 LibraryView* WLibrary::getActiveView() const {

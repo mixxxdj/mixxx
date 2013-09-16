@@ -331,11 +331,7 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         clearChildModel();
         constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            // Switch the view to the playlist.
-            m_pTrackCollection->callSync(
-                        [this, playlistId] (void) {
-                m_pPlaylistTableModel->setTableModel(playlistId);
-            }, __PRETTY_FUNCTION__);
+            m_pPlaylistTableModel->setTableModel(playlistId);
             // Update selection
             emit(featureSelect(this, m_lastRightClickedIndex));
         }

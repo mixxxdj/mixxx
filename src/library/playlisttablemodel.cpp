@@ -17,6 +17,7 @@ PlaylistTableModel::~PlaylistTableModel() {
 }
 
 void PlaylistTableModel::setTableModel(int playlistId) {
+    // here uses callSync
     //qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
     if (m_iPlaylistId == playlistId) {
         qDebug() << "Already focused on playlist " << playlistId;
@@ -25,38 +26,43 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     m_iPlaylistId = playlistId;
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    FieldEscaper escaper(m_pTrackCollection->getDatabase());
 
-    QStringList columns;
-    columns << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
+    QStringList columns = QStringList()
+            << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
             << PLAYLISTTRACKSTABLE_POSITION
             << PLAYLISTTRACKSTABLE_DATETIMEADDED
             << "'' as preview";
 
-    // We drop files that have been explicitly deleted from mixxx
-    // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
-    // removed files were not removed from playlists, so some users will have
-    // libraries where this is the case.
-    QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-                                  "SELECT %2 FROM PlaylistTracks "
-                                  "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-                                  "WHERE PlaylistTracks.playlist_id = %3")
-                          .arg(escaper.escapeString(playlistTableName),
-                               columns.join(","),
-                               QString::number(playlistId));
-    if (!m_showAll) {
-        queryString.append(" AND library.mixxx_deleted = 0");
-    }
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+    m_pTrackCollection->callSync(
+                [this, &playlistTableName, &playlistId, &columns](void) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        FieldEscaper escaper(m_pTrackCollection->getDatabase());
+
+
+        // We drop files that have been explicitly deleted from mixxx
+        // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
+        // removed files were not removed from playlists, so some users will have
+        // libraries where this is the case.
+        QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                                      "SELECT %2 FROM PlaylistTracks "
+                                      "INNER JOIN library ON library.id = PlaylistTracks.track_id "
+                                      "WHERE PlaylistTracks.playlist_id = %3")
+                .arg(escaper.escapeString(playlistTableName),
+                     columns.join(","),
+                     QString::number(playlistId));
+        if (!m_showAll) {
+            queryString.append(" AND library.mixxx_deleted = 0");
+        }
+        query.prepare(queryString);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }, __PRETTY_FUNCTION__);
 
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = "preview";
     setTable(playlistTableName, columns[0], columns,
-             m_pTrackCollection->getTrackSource("default"));
+            m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
