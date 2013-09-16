@@ -44,7 +44,8 @@ class EngineMaster : public EngineObject, public AudioSource {
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
-                 bool bEnableSidechain);
+                 bool bEnableSidechain,
+                 bool bRampingGain=true);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -130,14 +131,15 @@ class EngineMaster : public EngineObject, public AudioSource {
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
 
+    bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
     struct OutputBus {
-        CSAMPLE *m_pBuffer;
+        CSAMPLE* m_pBuffer;
         OrientationVolumeGainCalculator m_gain;
         QList<CSAMPLE> m_gainCache;
-    } m_OutputBus[3];
+    } m_outputBus[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
 

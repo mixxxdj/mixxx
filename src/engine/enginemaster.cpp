@@ -43,9 +43,11 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
-                           bool bEnableSidechain)
-        : m_headphoneMasterGainOld(0),
-          m_headphoneVolumeOld(0) {
+                           bool bEnableSidechain,
+                           bool bRampingGain)
+        : m_bRampingGain(bRampingGain),
+          m_headphoneMasterGainOld(0.0),
+          m_headphoneVolumeOld(1.0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
@@ -99,14 +101,14 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
 
     // Setup the output buses
-    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        struct OutputBus* bus = &m_OutputBus[o];
+    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
+        struct OutputBus* bus = &m_outputBus[o];
         bus->m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
         SampleUtil::applyGain(bus->m_pBuffer, 0, MAX_BUFFER_LEN);
         bus->m_gain.setGains(1.0,
-                             1.0*(o == EngineChannel::LEFT),
-                             1.0*(o == EngineChannel::CENTER),
-                             1.0*(o == EngineChannel::RIGHT));
+                             o == EngineChannel::LEFT ? 1.0 : 0.0,
+                             o == EngineChannel::CENTER ? 1.0 : 0.0,
+                             o == EngineChannel::RIGHT ? 1.0 : 0.0);
     }
 
     // Starts a thread for recording and shoutcast
@@ -149,7 +151,7 @@ EngineMaster::~EngineMaster() {
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        SampleUtil::free(m_OutputBus[o].m_pBuffer);
+        SampleUtil::free(m_outputBus[o].m_pBuffer);
     }
 
     delete m_pWorkerScheduler;
@@ -233,16 +235,33 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
 
-    ChannelMixer::mixChannels(m_channels, m_headphoneGain, headphoneOutput,
-                              maxChannels, &m_channelHeadphoneGainCache,
-                              m_pHead, iBufferSize);
+    if (m_bRampingGain) {
+        ChannelMixer::mixChannelsRamping(
+            m_channels, m_headphoneGain, headphoneOutput,
+            maxChannels, &m_channelHeadphoneGainCache,
+            m_pHead, iBufferSize);
+    } else {
+        ChannelMixer::mixChannels(
+            m_channels, m_headphoneGain, headphoneOutput,
+            maxChannels, &m_channelHeadphoneGainCache,
+            m_pHead, iBufferSize);
+    }
 
     // Make the mix for each output bus
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        ChannelMixer::mixChannels(m_channels, m_OutputBus[o].m_gain,
-                                  busChannelConnectionFlags[o], maxChannels,
-                                  &m_OutputBus[o].m_gainCache,
-                                  m_OutputBus[o].m_pBuffer, iBufferSize);
+        if (m_bRampingGain) {
+            ChannelMixer::mixChannelsRamping(
+                m_channels, m_outputBus[o].m_gain,
+                busChannelConnectionFlags[o], maxChannels,
+                &m_outputBus[o].m_gainCache,
+                m_outputBus[o].m_pBuffer, iBufferSize);
+        } else {
+            ChannelMixer::mixChannels(
+                m_channels, m_outputBus[o].m_gain,
+                busChannelConnectionFlags[o], maxChannels,
+                &m_outputBus[o].m_gainCache,
+                m_outputBus[o].m_pBuffer, iBufferSize);
+        }
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
@@ -256,9 +275,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // And mix the 3 buses into the master
     float master_gain = m_pMasterVolume->get();
     SampleUtil::copy3WithGain(m_pMaster,
-                              m_OutputBus[EngineChannel::LEFT].m_pBuffer, c1_gain*master_gain,
-                              m_OutputBus[EngineChannel::CENTER].m_pBuffer, master_gain,
-                              m_OutputBus[EngineChannel::RIGHT].m_pBuffer, c2_gain*master_gain,
+                              m_outputBus[EngineChannel::LEFT].m_pBuffer, c1_gain*master_gain,
+                              m_outputBus[EngineChannel::CENTER].m_pBuffer, master_gain,
+                              m_outputBus[EngineChannel::RIGHT].m_pBuffer, c2_gain*master_gain,
                               iBufferSize);
 
 #ifdef __LADSPA__
@@ -287,20 +306,30 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
     }
 
-    //Submit master samples to the side chain to do shoutcasting, recording,
-    //etc.  (cpu intensive non-realtime tasks)
+    // Submit master samples to the side chain to do shoutcasting, recording,
+    // etc. (cpu intensive non-realtime tasks)
     if (m_pSideChain != NULL) {
         m_pSideChain->writeSamples(m_pMaster, iBufferSize);
     }
 
     // Add master to headphone with appropriate gain
-    SampleUtil::addWithRampingGain(m_pHead, m_pMaster, m_headphoneMasterGainOld,
-                                   cmaster_gain, iBufferSize);
+    if (m_bRampingGain) {
+        SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
+                                       m_headphoneMasterGainOld,
+                                       cmaster_gain, iBufferSize);
+    } else {
+        SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
+    }
     m_headphoneMasterGainOld = cmaster_gain;
 
     // Head volume and clipping
     CSAMPLE headphoneVolume = m_pHeadVolume->get();
-    SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld, headphoneVolume, iBufferSize);
+    if (m_bRampingGain) {
+        SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld,
+                                     headphoneVolume, iBufferSize);
+    } else {
+        SampleUtil::applyGain(m_pHead, headphoneVolume, iBufferSize);
+    }
     m_headphoneVolumeOld = headphoneVolume;
     m_pHeadClipping->process(m_pHead, m_pHead, iBufferSize);
 
@@ -324,7 +353,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
     m_channels.push_back(pChannelInfo);
     m_channelHeadphoneGainCache.push_back(0);
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        m_OutputBus[o].m_gainCache.push_back(0);
+        m_outputBus[o].m_gainCache.push_back(0);
     }
 
     EngineBuffer* pBuffer = pChannelInfo->m_pChannel->getEngineBuffer();
@@ -351,7 +380,7 @@ const CSAMPLE* EngineMaster::getDeckBuffer(unsigned int i) const {
 
 const CSAMPLE* EngineMaster::getOutputBusBuffer(unsigned int i) const {
     if (i <= EngineChannel::RIGHT)
-        return m_OutputBus[i].m_pBuffer;
+        return m_outputBus[i].m_pBuffer;
     return NULL;
 }
 
