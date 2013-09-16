@@ -30,11 +30,11 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
 }
 
 void MixxxLibraryFeature::init() {
-    QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
+    QStringList columns = QStringList()
+            << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
-            //has to be up here otherwise Played and TimesPlayed are not show
+               //has to be up here otherwise Played and TimesPlayed are not show
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
             << "library." + LIBRARYTABLE_ALBUM
@@ -55,17 +55,22 @@ void MixxxLibraryFeature::init() {
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED;
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName, columns.join(","));
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callSync(
+                [this, columns, tableName] (void) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QString queryString = QString(
+                    "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM library "
+                    "INNER JOIN track_locations ON library.location = track_locations.id")
+                .arg(tableName, columns.join(","));
+        query.prepare(queryString);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }, __PRETTY_FUNCTION__);
 
     // Strip out library. and track_locations.
     for (QStringList::iterator it = columns.begin();
@@ -100,7 +105,6 @@ void MixxxLibraryFeature::init() {
     // NOTE(tro) Moved next commented line to c-tor initialization list
     // m_pLibraryTableModel = new LibraryTableModel(this, m_pTrackCollection);
 
-    // NOTE(tro) No need to wrap into callSync, since this method must be executed in callAsync
     m_pLibraryTableModel->init();
 }
 

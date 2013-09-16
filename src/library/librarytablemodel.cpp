@@ -20,23 +20,28 @@ void LibraryTableModel::init() {
     setTableModel();
 }
 
-void LibraryTableModel::setTableModel(int id){
+void LibraryTableModel::setTableModel(int id) {
+    // here callSync calls
     Q_UNUSED(id);
-    QStringList columns;
-    columns << "library."+LIBRARYTABLE_ID << "'' as preview";
+    QStringList columns = QStringList()
+            << "library."+LIBRARYTABLE_ID << "'' as preview";
 
     QString tableName = "library_view";
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS "+tableName+" AS "
-            "SELECT " + columns.join(", ") +
-            " FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+    // TODO(xxx) move this to separate function on accessing DB (create table)
+    m_pTrackCollection->callSync(
+                [this, &columns, &tableName] (void) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS "+tableName+" AS "
+                "SELECT " + columns.join(", ") +
+                " FROM library INNER JOIN track_locations "
+                "ON library.location = track_locations.id "
+                "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+        query.prepare(queryString);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }, __PRETTY_FUNCTION__);
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;

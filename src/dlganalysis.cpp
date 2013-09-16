@@ -34,11 +34,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     box->insertWidget(1, m_pAnalysisLibraryTableView);
 
     m_pAnalysisLibraryTableModel =  new AnalysisLibraryTableModel(this, pTrackCollection);
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        m_pAnalysisLibraryTableModel->init();
-    }, __PRETTY_FUNCTION__);
+    m_pAnalysisLibraryTableModel->init();
 
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 

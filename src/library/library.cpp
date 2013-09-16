@@ -47,11 +47,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
     // method or something -- CreateDefaultLibrary
 
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        m_pMixxxLibraryFeature->init();
-    }, __PRETTY_FUNCTION__);
+    m_pMixxxLibraryFeature->init();
     m_pMixxxLibraryFeature->initUI();
     addFeature(m_pMixxxLibraryFeature);
 
