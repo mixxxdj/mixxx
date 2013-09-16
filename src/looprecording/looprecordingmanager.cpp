@@ -97,10 +97,6 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
     m_pCOLoopLength->set(4.0);
 
-    // Set encoding format for loops to WAV.
-    // TODO(carl) create prefences option to change between WAV and AIFF.
-    m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), QString("WAV"));
-
     m_dateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
     m_encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
 
@@ -327,8 +323,8 @@ void LoopRecordingManager::exportLoopToPlayer(QString group) {
     // TODO(carl) handle multi-layered loops.
     setRecordingDir();
     QString dir = m_recordingDir;
-    QString m_encodingType = m_pConfig->getValueString(
-                                            ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
+//    QString m_encodingType = m_pConfig->getValueString(
+//                                            ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
     //Append file extension
     QString currentDateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
 
@@ -412,8 +408,12 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
     sfInfo.samplerate = samplerate;
     sfInfo.channels = 2;
 
-    sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
-
+    if (m_encodingType == ENCODING_WAVE) {
+        sfInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
+    } else {
+        sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
+    }
+    
     SNDFILE* pSndFile = sf_open(filePath.toLocal8Bit(), SFM_WRITE, &sfInfo);
     if (pSndFile) {
         sf_command(pSndFile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
@@ -441,6 +441,9 @@ void LoopRecordingManager::setRecordingDir() {
 
 void LoopRecordingManager::startRecording() {
     qDebug() << "LoopRecordingManager startRecording";
+
+    // update encoding type
+    m_encodingType = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
 
     // TODO(carl): make sure the bpm is only set on first layer when recording multiple layers.
     m_dLoopBPM = getCurrentBPM();
