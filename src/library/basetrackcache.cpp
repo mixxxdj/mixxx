@@ -269,18 +269,14 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
         qDebug() << this << "updateTracksInIndex update query:" << queryString;
     }
 
-//    // tro's lambda idea. This code calls asynchronously!
-//    m_pTrackCollection->callAsync(
-//                [this, queryString, trackIds] (void) {
-        if (!updateIndexWithQuery(queryString)) {
-            qDebug() << "updateTracksInIndex failed!";
-            return;
-        }
-        //    MainExecuter::callSync(
-        //                [this, &trackIds] (void) {
+    if (!updateIndexWithQuery(queryString)) {
+        qDebug() << "updateTracksInIndex failed!";
+        return;
+    }
+    MainExecuter::callSync(
+                [this, &trackIds] (void) {
         emit(tracksChanged(trackIds));
-        //    });
-//    }, __PRETTY_FUNCTION__);
+    } );
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,

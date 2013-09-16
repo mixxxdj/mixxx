@@ -42,7 +42,6 @@ void WLibrary::switchToView(const QString& name) {
             QWidget* widget = m_viewMap[name];
             if (widget != NULL && currentWidget() != widget) {
                 qDebug() << "WLibrary::setCurrentWidget" << name;
-
                 MainExecuter::callSync([this, &widget](void) {
                     setCurrentWidget(widget);
                 });

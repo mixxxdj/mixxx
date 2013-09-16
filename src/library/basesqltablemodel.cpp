@@ -279,7 +279,7 @@ void BaseSqlTableModel::select() {
     }
 
     // populating query results in UI thread
-    MainExecuter::callSync( [this](){
+    MainExecuter::callSync( [this] (){
         slotPopulateQueryResult();
     }, __PRETTY_FUNCTION__);
 }

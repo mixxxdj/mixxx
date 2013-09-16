@@ -111,7 +111,7 @@ void TrackCollection::run() {
     DBG() << " ### Thread ended ###";
 }
 
-// callAsync calls from GUI thread.
+// callAsync calls from any thread
 void TrackCollection::callAsync(func lambda, QString where) {
     qDebug() << "callAsync from" << where;
     if (lambda == NULL) return;
@@ -122,25 +122,64 @@ void TrackCollection::callAsync(func lambda, QString where) {
 }
 
 void TrackCollection::callSync(func lambda, QString where) {
-//    if (m_inCallSync) {
-//        Q_ASSERT(!m_inCallSync);
-//    }
+    //    if (m_inCallSync) {
+    //        Q_ASSERT(!m_inCallSync);
+    //    }
+    qDebug() << "callSync from" << where;
     m_inCallSync = true;
+    if (lambda == NULL) return;
+
+    const bool inMainThread = QThread::currentThread() == qApp->thread();
+    if (inMainThread) {
+        Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
+        // lock GUI elements by setting [playlist] "isBusy"
+        m_pCOTPlaylistIsBusy->set(1.0);
+    }
     QMutex mutex;
     mutex.lock();
-    callAsync( [&mutex, &lambda] (void) {
+    func lambdaWithMutex =  [&mutex, &lambda] (void) {
         lambda();
         mutex.unlock();
-    }, where);
+    };
+    addLambdaToQueue(lambdaWithMutex);
 
     while (!mutex.tryLock(5)) {
-        MainExecuter::getInstance().call();
+        if (inMainThread) {
+            qApp->processEvents(QEventLoop::AllEvents);
+        }
+         MainExecuter::getInstance().call();
         // DBG() << "Start animation";
         // animationIsShowed = true;
     }
     mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
+    if (inMainThread) {
+        Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
+        // lock GUI elements by setting [playlist] "isBusy"
+        m_pCOTPlaylistIsBusy->set(0.0);
+    }
     m_inCallSync = false;
 }
+
+//void TrackCollection::callSync(func lambda, QString where) {
+////    if (m_inCallSync) {
+////        Q_ASSERT(!m_inCallSync);
+////    }
+//    m_inCallSync = true;
+//    QMutex mutex;
+//    mutex.lock();
+//    callAsync( [&mutex, &lambda] (void) {
+//        lambda();
+//        mutex.unlock();
+//    }, where);
+
+//    while (!mutex.tryLock(5)) {
+//        MainExecuter::getInstance().call();
+//        // DBG() << "Start animation";
+//        // animationIsShowed = true;
+//    }
+//    mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
+//    m_inCallSync = false;
+//}
 
 void TrackCollection::addLambdaToQueue(func lambda) {
     //TODO(tro) check lambda
@@ -297,9 +336,7 @@ void TrackCollection::createAndPopulateDbConnection() {
         QString errorMsg = QString("No QSQLITE driver! Available QtSQL drivers: %1")
                 .arg(avaiableDrivers.join(","));
         qDebug() << errorMsg;
-        MainExecuter::callSync([this, errorMsg](void) {
-            reportCriticalErrorAndQuit(errorMsg);
-        }, __PRETTY_FUNCTION__);
+        exit(-1);
     }
 
     m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE", "track_collection_connection"));
