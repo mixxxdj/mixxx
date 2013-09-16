@@ -14,6 +14,7 @@
 #include "proto/skin.pb.h"
 
 class Library;
+class LoopRecordingManager;
 class MixxxKeyboard;
 class PlayerManager;
 class WAbstractControl;
@@ -23,9 +24,12 @@ class LegacySkinParser : public QObject, public SkinParser {
     Q_OBJECT
   public:
     LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
-                     MixxxKeyboard* pKeyboard, PlayerManager* pPlayerManager,
+                     MixxxKeyboard* pKeyboard,
+                     PlayerManager* pPlayerManager,
                      ControllerManager* pControllerManager,
-                     Library* pLibrary, VinylControlManager* pVCMan);
+                     Library* pLibrary,
+                     LoopRecordingManager* pLoopRecordingManager,
+                     VinylControlManager* pVCMan);
     virtual ~LegacySkinParser();
 
     virtual bool canParse(QString skinPath);
@@ -90,6 +94,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     PlayerManager* m_pPlayerManager;
     ControllerManager* m_pControllerManager;
     Library* m_pLibrary;
+    LoopRecordingManager* m_pLoopRecordingManager;
     VinylControlManager* m_pVCManager;
     QWidget *m_pParent;
     Tooltips m_tooltips;

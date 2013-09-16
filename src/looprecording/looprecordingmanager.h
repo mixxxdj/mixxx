@@ -24,6 +24,11 @@ class LoopRecordingManager : public QObject {
     virtual ~LoopRecordingManager();
     LoopTracker* getLoopTracker();
 
+    // Returns loop source (used in legacy skin parser)
+    QString getLoopSource() {
+        return m_sLoopSource;
+    }
+
   public slots:
     void slotClearRecorder();
     void slotCurrentPlayingDeckChanged(int);

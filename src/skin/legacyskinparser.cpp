@@ -16,6 +16,7 @@
 
 #include "mixxxkeyboard.h"
 #include "playermanager.h"
+#include "looprecording/looprecordingmanager.h"
 #include "basetrackplayer.h"
 #include "library/library.h"
 #include "xmlparse.h"
@@ -90,12 +91,14 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
+                                   LoopRecordingManager* pLoopRecordingManager,
                                    VinylControlManager* pVCMan)
     : m_pConfig(pConfig),
       m_pKeyboard(pKeyboard),
       m_pPlayerManager(pPlayerManager),
       m_pControllerManager(pControllerManager),
       m_pLibrary(pLibrary),
+      m_pLoopRecordingManager(pLoopRecordingManager),
       m_pVCManager(pVCMan),
       m_pParent(NULL) {
 }
@@ -873,6 +876,7 @@ QWidget* LegacySkinParser::parseLoopExport(QDomElement node) {
 
 
 QWidget* LegacySkinParser::parseLoopSource(QDomElement node) {
+
     WLoopSourceText* p = new WLoopSourceText(m_pParent);
     setupWidget(node, p);
     p->setup(node);
@@ -882,7 +886,21 @@ QWidget* LegacySkinParser::parseLoopSource(QDomElement node) {
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+
+    QString loopProperty = p->getProperty();
+
+    if(loopProperty == "source") {
+        connect(m_pLoopRecordingManager, SIGNAL(sourceChanged(QString)),
+                p, SLOT(slotUpdateLabel(QString)));
+
+        QString source = m_pLoopRecordingManager->getLoopSource();
+        p->slotUpdateLabel(source);
+    } else if (loopProperty == "destination") {
+        // TODO(carl): implement loop destination connections.
+    }
+
     return p;
+
 }
 
 QWidget* LegacySkinParser::parseLabel(QDomElement node) {

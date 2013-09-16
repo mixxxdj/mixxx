@@ -1,13 +1,20 @@
 #ifndef WLOOPSOURCETEXT_H
 #define WLOOPSOURCETEXT_H
 
-#include "widget/wnumber.h"
+#include "widget/wlabel.h"
 
-class WLoopSourceText : public WNumber {
+class WLoopSourceText : public WLabel {
     Q_OBJECT
-public:
+  public:
     WLoopSourceText(QWidget *pParent=0);
     virtual ~WLoopSourceText();
-    void setValue(double dValue);
+    void setup(QDomNode node);
+    QString getProperty();
+
+  public slots:
+    void slotUpdateLabel(QString text);
+
+  private:
+    QString m_property;
 };
 #endif

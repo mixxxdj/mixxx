@@ -10,6 +10,7 @@
 #include "skin/legacyskinparser.h"
 #include "controllers/controllermanager.h"
 #include "library/library.h"
+#include "looprecording/looprecordingmanager.h"
 #include "playermanager.h"
 #include "util/debug.h"
 
@@ -63,9 +64,10 @@ QWidget* SkinLoader::loadDefaultSkin(QWidget* pParent,
                                      PlayerManager* pPlayerManager,
                                      ControllerManager* pControllerManager,
                                      Library* pLibrary,
+                                     LoopRecordingManager* pLoopRecordingManager,
                                      VinylControlManager* pVCMan) {
     QString skinPath = getConfiguredSkinPath();
 
-    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pControllerManager, pLibrary, pVCMan);
+    LegacySkinParser legacy(m_pConfig, pKeyboard, pPlayerManager, pControllerManager, pLibrary, pLoopRecordingManager, pVCMan);
     return legacy.parseSkin(skinPath, pParent);
 }
