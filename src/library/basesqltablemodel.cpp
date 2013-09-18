@@ -638,7 +638,15 @@ int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
 }
 
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_trackDAO.getTrack(getTrackId(index));
+    TrackPointer trackPointer;
+
+    // tro's lambda idea. This code calls Synchronously!
+    m_pTrackCollection->callSync(
+                [this, &trackPointer, &index] (void) {
+        trackPointer = m_trackDAO.getTrack(getTrackId(index));
+    }, __PRETTY_FUNCTION__);
+
+    return trackPointer;
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {

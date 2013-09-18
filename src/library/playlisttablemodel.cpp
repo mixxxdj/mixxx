@@ -122,11 +122,12 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
     if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, index] (void) {
-        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-        int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
+                [this, index, positionColumnIndex, position] (void) {
         m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
         select(); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
@@ -288,12 +289,13 @@ void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
     int seed = QDateTime::currentDateTime().toTime_t();
     qsrand(seed);
 
+    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    const int shuffleStartRow = shuffleStartIndex.row();
+
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, shuffleStartIndex, numOfTracks] (void) {
+                [this, positionColumnIndex, shuffleStartRow, numOfTracks] (void) {
         QSqlQuery query(m_pTrackCollection->getDatabase());
-        const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-        int shuffleStartRow = shuffleStartIndex.row();
 
         ScopedTransaction transaction(m_pTrackCollection->getDatabase());
 

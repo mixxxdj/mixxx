@@ -213,12 +213,8 @@ void DlgAutoDJ::shufflePlaylist(double value) {
     if (value <= 0.0) {
         return;
     }
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        int row = m_eState == ADJ_DISABLED ? 0 : 1;
-        m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
-    }, __PRETTY_FUNCTION__);
+    const int row = m_eState == ADJ_DISABLED ? 0 : 1;
+    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
 }
 
 void DlgAutoDJ::skipNextButton(bool) {
@@ -570,8 +566,6 @@ void DlgAutoDJ::player2PositionChanged(double value) {
 }
 
 TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
-    // NOTE(tro) This function can be wrapped into callAsync/callAsync
-
     // Get the track at the top of the playlist...
     TrackPointer nextTrack;
     int tmp = m_backUpTransition;
@@ -582,20 +576,18 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     m_backUpTransition = tmp;
 
     while (true) {
-        nextTrack = m_pAutoDJTableModel->getTrack(
-            m_pAutoDJTableModel->index(0, 0));
-
-        if (nextTrack) {
+        const QModelIndex firstTrackIndex = m_pAutoDJTableModel->index(0, 0);
+        nextTrack = m_pAutoDJTableModel->getTrack( firstTrackIndex );
+         if (nextTrack) {
             if (nextTrack->exists()) {
                 // found a valid Track
                 if (nextTrack->getDuration() < m_backUpTransition)
                     emit(spinBoxTransitionSetValue(nextTrack->getDuration()/2));
-                    m_backUpTransition = tmp;
+                m_backUpTransition = tmp;
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist
-                m_pAutoDJTableModel->removeTrack(
-                    m_pAutoDJTableModel->index(0, 0));
+                m_pAutoDJTableModel->removeTrack(firstTrackIndex);
             }
         } else {
             // we are running out of tracks
