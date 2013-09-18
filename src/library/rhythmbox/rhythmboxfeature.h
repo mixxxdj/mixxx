@@ -40,7 +40,7 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+    virtual BaseSqlTableModel* createPlaylistModelForPlaylist(QString playlist);
 
     BaseExternalTrackModel* m_pRhythmboxTrackModel;
     BaseExternalPlaylistModel* m_pRhythmboxPlaylistModel;

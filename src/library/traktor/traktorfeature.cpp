@@ -111,7 +111,7 @@ TraktorFeature::~TraktorFeature() {
     delete m_pTraktorPlaylistModel;
 }
 
-BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* TraktorFeature::createPlaylistModelForPlaylist(QString playlist) {
     TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection);
     pModel->setPlaylist(playlist);
     return pModel;

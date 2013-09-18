@@ -69,12 +69,13 @@ SetlogFeature::~SetlogFeature() {
     // delete it so we don't end up with tons of empty playlists. This is mostly
     // for developers since they regularly open Mixxx without loading a track.
 
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        if (m_playlistId != -1 &&
-                m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
-            m_playlistDao.deletePlaylist(m_playlistId);
+    int playlistId = m_playlistId;
+    // tro's lambda idea. This code calls Asynchronously!
+    m_pTrackCollection->callAsync( // TODO(tro) REWRITE IT
+                [this, playlistId] (void) {
+        if (playlistId != -1 &&
+                m_playlistDao.tracksInPlaylist(playlistId) == 0) {
+            m_playlistDao.deletePlaylist(playlistId);
         }
     }, __PRETTY_FUNCTION__);
 }

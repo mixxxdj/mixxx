@@ -292,22 +292,18 @@ void CrateFeature::slotDeleteCrate() {
     QString crateName = m_lastRightClickedIndex.data().toString();
     int crateId = 0;
     bool locked = false;
+    bool deleted = false;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &crateId, &locked, &crateName] (void) {
+                [this, &crateId, &locked, &crateName, &deleted] (void) {
         crateId = m_crateDao.getCrateIdByName(crateName);
         locked = m_crateDao.isCrateLocked(crateId);
-    }, __PRETTY_FUNCTION__);
 
-    if (locked) {
-        qDebug() << "Skipping crate deletion because crate" << crateId << "is locked.";
-        return;
-    }
+        if (locked) {
+            qDebug() << "Skipping crate deletion because crate" << crateId << "is locked.";
+            return;
+        }
 
-    bool deleted;
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this, &deleted, &crateId] (void) {
         deleted = m_crateDao.deleteCrate(crateId);
     }, __PRETTY_FUNCTION__);
 

@@ -9,7 +9,11 @@ HiddenTableModel::~HiddenTableModel() {
 }
 
 void HiddenTableModel::init() {
-    setTableModel();
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        setTableModel();
+    }, __PRETTY_FUNCTION__);
 }
 
 void HiddenTableModel::setTableModel(int id){

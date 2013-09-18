@@ -21,11 +21,8 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     box->insertWidget(1, m_pTrackTableView);
 
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
-    // tro's lambda idea, this code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        m_pMissingTableModel->init();
-    }, __PRETTY_FUNCTION__);
+    m_pMissingTableModel->init();
+
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, SIGNAL(clicked()),
@@ -40,7 +37,7 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 
     connect(this, SIGNAL(activateButtons(bool)),
-            this, SLOT(slotActivateButtons(bool)), Qt::BlockingQueuedConnection);
+            this, SLOT(slotActivateButtons(bool)), Qt::QueuedConnection);
 }
 
 DlgMissing::~DlgMissing() {
@@ -51,11 +48,12 @@ DlgMissing::~DlgMissing() {
 }
 
 void DlgMissing::onShow() {
+    emit activateButtons(false);
+//    slotActivateButtons(false);
     m_pMissingTableModel->select();
     // no buttons can be selected
-    MainExecuter::callSync([this](void) {
-        slotActivateButtons(false);
-    }, __PRETTY_FUNCTION__);
+//    MainExecuter::callSync([this](void) {
+//    }, __PRETTY_FUNCTION__);
 }
 
 void DlgMissing::clicked() {

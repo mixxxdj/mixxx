@@ -144,15 +144,16 @@ void TrackCollection::callSync(func lambda, QString where) {
     addLambdaToQueue(lambdaWithMutex);
 
     while (!mutex.tryLock(5)) {
+        if (inMainThread)
+            MainExecuter::getInstance().call();
         qApp->processEvents(QEventLoop::AllEvents);
-        MainExecuter::getInstance().call();
         // DBG() << "Start animation";
         // animationIsShowed = true;
     }
     mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
     if (inMainThread) {
         Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
-        // lock GUI elements by setting [playlist] "isBusy"
+        // lock GUI elements by setting [playlist] "isBusy
         m_pCOTPlaylistIsBusy->set(0.0);
     }
     m_inCallSync = false;

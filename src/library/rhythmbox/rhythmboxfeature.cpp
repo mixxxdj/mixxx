@@ -72,7 +72,7 @@ RhythmboxFeature::~RhythmboxFeature() {
     delete m_pRhythmboxPlaylistModel;
 }
 
-BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* RhythmboxFeature::createPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
                                             this, m_pTrackCollection,
                                             "mixxx.db.model.rhythmbox_playlist",

@@ -273,10 +273,7 @@ void BaseTrackCache::updateTracksInIndex(QSet<int> trackIds) {
         qDebug() << "updateTracksInIndex failed!";
         return;
     }
-    MainExecuter::callSync(
-                [this, &trackIds] (void) {
-        emit(tracksChanged(trackIds));
-    } );
+    emit(tracksChanged(trackIds));
 }
 
 void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,

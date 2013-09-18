@@ -87,7 +87,7 @@ ITunesFeature::~ITunesFeature() {
     delete m_pITunesPlaylistModel;
 }
 
-BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* ITunesFeature::createPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.itunes_playlist",
