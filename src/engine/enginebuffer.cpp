@@ -527,6 +527,7 @@ void EngineBuffer::slotControlPlayRequest(double v)
 
     // set and confirm must be called in any case to update the widget toggle state
     m_playButton->setAndConfirm(v);
+    m_pCueControl->updateCueIndicatorFromPlay(v, m_filepos_play);
 }
 
 void EngineBuffer::slotControlStart(double v)

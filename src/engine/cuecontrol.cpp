@@ -35,6 +35,9 @@ CueControl::CueControl(const char * _group,
 
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
     m_pCueMode = new ControlObject(ConfigKey(_group, "cue_mode"));
+    // 0.0 -> CDJ mode
+    // 1.0 -> Simple mode
+    // 2.0 -> Denon mode
     m_pCuePoint->set(-1);
 
     m_pCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));
@@ -683,7 +686,7 @@ void CueControl::cueCDJ(double v) {
     double cuePoint = m_pCuePoint->get();
 
     if (v) {
-        if (playing) {
+        if (playing || getCurrentSample() >= getTotalSamples()) {
             // Just in case.
             m_bPreviewing = false;
             m_pPlayButton->set(0.0);
@@ -692,21 +695,19 @@ void CueControl::cueCDJ(double v) {
             lock.unlock();
 
             seekAbs(cuePoint);
+        } else if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
+            m_bPreviewing = true;
+            m_pPlayButton->set(1.0);
         } else {
-            if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
-                m_bPreviewing = true;
-                m_pPlayButton->set(1.0);
-            } else {
-                cueSet(v);
-                // Just in case.
-                m_bPreviewing = false;
+            cueSet(v);
+            // Just in case.
+            m_bPreviewing = false;
 
-                // If quantize is enabled, jump to the cue point since it's not
-                // necessarily where we currently are
-                if (m_pQuantizeEnabled->get() > 0.0) {
-                    lock.unlock();  // prevent deadlock.
-                    seekAbs(m_pCuePoint->get());
-                }
+            // If quantize is enabled, jump to the cue point since it's not
+            // necessarily where we currently are
+            if (m_pQuantizeEnabled->get() > 0.0) {
+                lock.unlock();  // prevent deadlock.
+                seekAbs(m_pCuePoint->get());
             }
         }
     } else if (m_bPreviewing) {
@@ -717,10 +718,13 @@ void CueControl::cueCDJ(double v) {
         lock.unlock();
 
         seekAbs(cuePoint);
+    }
+    // indicator may flash because the delayed adoption of seekAbs
+    // Correct the Indicator set via play
+    if (m_pLoadedTrack) {
+        m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
     } else {
-        // Re-trigger the play button value so controllers get the correct one
-        // after playFromCuePreview() changes it.
-        //m_pPlayButton->set(m_pPlayButton->get());
+        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
     }
 }
 
@@ -745,7 +749,23 @@ bool CueControl::isCuePreviewing(bool latchPlay) {
     return false;
 }
 
-
+void CueControl::updateCueIndicatorFromPlay(double play, double filepos_play) {
+    if (m_pLoadedTrack) {
+        if (play == 0.0 &&
+                fabs(filepos_play - m_pCuePoint->get()) >= 1.0f &&
+                filepos_play < getTotalSamples()) {
+            qDebug() << " -------------" << filepos_play << getTotalSamples();
+            if (m_pCueMode->get() == 0.0f) {
+                // in CDJ mode Cue Button is flashing fast if CUE sets a new Cue point
+                m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+            }
+        } else {
+            m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+        }
+    } else {
+        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+    }
+}
 
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference
