@@ -107,8 +107,10 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
     m_pPregain->process(pOut, pOut, iBufferSize);
     // Filter the channel with EQs
     m_pFilter->process(pOut, pOut, iBufferSize);
+
     // Process effects enabled for this channel
     m_pEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
+
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
@@ -162,7 +164,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
         qWarning() << "EnginePassthrough got greater than stereo input. Not currently handled.";
     }
 
-    const int samplesToWrite = nFrames * iChannels;
+    const unsigned int samplesToWrite = nFrames * iChannels;
 
     // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
     unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, samplesToWrite);

@@ -133,7 +133,7 @@ class Bulk(Feature):
         sources = ['controllers/bulk/bulkcontroller.cpp',
                    'controllers/bulk/bulkenumerator.cpp']
         if not int(build.flags['hid']):
-		    sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
+            sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 
@@ -141,14 +141,19 @@ class Mad(Feature):
     def description(self):
         return "MAD MP3 Decoder"
 
+    def default(self, build):
+        return 0 if build.platform_is_osx else 1
+
     def enabled(self, build):
-        build.flags['mad'] = util.get_flags(build.env, 'mad', 1)
+        build.flags['mad'] = util.get_flags(build.env, 'mad',
+                                            self.default(build))
         if int(build.flags['mad']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.', 1)
+        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.',
+                 self.default(build))
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -168,14 +173,18 @@ class CoreAudio(Feature):
     def description(self):
         return "CoreAudio MP3/AAC Decoder"
 
+    def default(self, build):
+        return 1 if build.platform_is_osx else 0
+
     def enabled(self, build):
-        build.flags['coreaudio'] = util.get_flags(build.env, 'coreaudio', 0)
+        build.flags['coreaudio'] = util.get_flags(build.env, 'coreaudio', self.default(build))
         if int(build.flags['coreaudio']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('coreaudio', 'Set to 1 to enable CoreAudio MP3/AAC decoder support.', 0)
+        vars.Add('coreaudio', 'Set to 1 to enable CoreAudio MP3/AAC decoder support.',
+                 self.default(build))
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -1074,3 +1083,24 @@ class PromoTracks(Feature):
                 "library/featuredartistswebview.cpp",
                 ]
 
+class AutoDjCrates(Feature):
+    def description(self):
+        return "Auto-DJ crates (for random tracks)"
+
+    def enabled(self, build):
+        build.flags['autodjcrates'] = \
+            util.get_flags(build.env, 'autodjcrates', 1)
+        if int(build.flags['autodjcrates']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('autodjcrates', 'Set to 1 to enable crates as a source for random Auto-DJ tracks.', 1)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES = '__AUTODJCRATES__')
+
+    def sources(self, build):
+        return ['library/dao/autodjcratesdao.cpp']

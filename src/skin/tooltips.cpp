@@ -435,7 +435,15 @@ void Tooltips::addStandardTooltips() {
             << tr("Flanger LFO Period")
             << tr("Adjusts the wavelength of the flange effect (when active).")
             << QString("%1: %2").arg(rightClick, resetToDefault);
-    
+
+    add("filter")
+            << tr("Filter")
+            << tr("Toggles the filter effect. Use the depth knobs to adjust.");
+
+    add("filterDepth")
+            << tr("Filter Depth")
+            << tr("Adjusts the intensity of the filter effect (when active).");
+
     add("time")
             << tr("Clock")
             << tr("Displays the current time.");

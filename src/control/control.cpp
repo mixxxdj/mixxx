@@ -15,7 +15,8 @@ ControlDoublePrivate::ControlDoublePrivate()
           m_bTrack(false),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_confirmRequired(false) {
     initialize();
 }
 
@@ -27,7 +28,8 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
           m_trackKey("control " + m_key.group + "," + m_key.item),
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
-                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX) {
+                       Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
+          m_confirmRequired(false) {
     initialize();
 }
 
@@ -92,13 +94,25 @@ void ControlDoublePrivate::reset() {
 }
 
 void ControlDoublePrivate::set(double value, QObject* pSender) {
-    if (m_bIgnoreNops && get() == value) {
-        return;
-    }
-
     // If the behavior says to ignore the set, ignore it.
     QSharedPointer<ControlNumericBehavior> pBehavior = m_pBehavior;
     if (!pBehavior.isNull() && !pBehavior->setFilter(&value)) {
+        return;
+    }
+    if(m_confirmRequired) {
+        emit(valueChangeRequest(value));
+    } else {
+        setInner(value, pSender);
+    }
+}
+
+void ControlDoublePrivate::setAndConfirm(double value, QObject* pSender) {
+    setInner(value, pSender);
+}
+
+
+void ControlDoublePrivate::setInner(double value, QObject* pSender) {
+    if (m_bIgnoreNops && get() == value) {
         return;
     }
     m_value.setValue(value);
@@ -152,3 +166,10 @@ double ControlDoublePrivate::getMidiParameter() const {
     return value;
 }
 
+bool ControlDoublePrivate::connectValueChangeRequest(const QObject* receiver,
+        const char* method, Qt::ConnectionType type) {
+    // confirmation is only required if connect was successful
+    m_confirmRequired = connect(this, SIGNAL(valueChangeRequest(double)),
+                receiver, method, type);
+    return m_confirmRequired;
+}

@@ -87,6 +87,18 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     float maxMid[2];
     float maxHigh[2];
 
+    if (m_lowKillControlObject && m_lowKillControlObject->get() == 1.0) {
+        lowGain = 0;
+    }
+
+    if (m_midKillControlObject && m_midKillControlObject->get() == 1.0) {
+        midGain = 0;
+    }
+
+    if (m_highKillControlObject && m_highKillControlObject->get() == 1.0) {
+        highGain = 0;
+    }    
+
     float meanIndex;
 
     if (m_alignment == Qt::AlignCenter) {
