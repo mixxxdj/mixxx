@@ -120,6 +120,7 @@ class BaseTrackCache : public QObject {
     QRegExp m_operatorMatcher;
     QRegExp m_numericFilterMatcher;
     QRegExp m_stringFilterMatcher;
+    QMutex* m_pTrackInfoMutex;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };

@@ -38,7 +38,8 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_pTrackCollection(pTrackCollection),
           m_trackDAO(m_pTrackCollection->getTrackDAO()),
           m_database(m_pTrackCollection->getDatabase()),
-          m_pQueryParser(new SearchQueryParser(m_pTrackCollection->getDatabase())) {
+          m_pQueryParser(new SearchQueryParser(m_pTrackCollection->getDatabase())),
+          m_pTrackInfoMutex(new QMutex()) {
     m_searchColumns << "artist"
                     << "album"
                     << "location"
@@ -97,6 +98,7 @@ void BaseTrackCache::slotDbTrackAdded(TrackPointer pTrack) {
 }
 
 void BaseTrackCache::slotTracksRemoved(QSet<int> trackIds) {
+    QMutexLocker lock(m_pTrackInfoMutex);
     if (sDebug) {
         qDebug() << this << "slotTracksRemoved" << trackIds.size();
     }
@@ -165,14 +167,16 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     int id = pTrack->getId();
 
     if (id > 0) {
-        // m_trackInfo[id] will insert a QVector<QVariant> into the
-        // m_trackInfo HashTable with the key "id"
-        QVector<QVariant>& record = m_trackInfo[id];
-        // prealocate memory for all columns at once
-        record.resize(numColumns);
-
-        for (int i = 0; i < numColumns; ++i) {
-            getTrackValueForColumn(pTrack, i, record[i]);
+        {
+            QMutexLocker lock(m_pTrackInfoMutex);
+            // m_trackInfo[id] will insert a QVector<QVariant> into the
+            // m_trackInfo HashTable with the key "id"
+            QVector<QVariant>& record = m_trackInfo[id];
+            // prealocate memory for all columns at once
+            record.resize(numColumns);
+            for (int i = 0; i < numColumns; ++i) {
+                getTrackValueForColumn(pTrack, i, record[i]);
+            }
         }
     }
     return true;
@@ -203,14 +207,16 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
 
     while (query.next()) {
         int id = query.value(idColumn).toInt();
+        {
+            QMutexLocker lock(m_pTrackInfoMutex);
+            //m_trackInfo[id] will insert a QVector<QVariant> into the
+            //m_trackInfo HashTable with the key "id"
+            QVector<QVariant>& record = m_trackInfo[id];
+            record.resize(numColumns);
 
-        //m_trackInfo[id] will insert a QVector<QVariant> into the
-        //m_trackInfo HashTable with the key "id"
-        QVector<QVariant>& record = m_trackInfo[id];
-        record.resize(numColumns);
-
-        for (int i = 0; i < numColumns; ++i) {
-            record[i] = query.value(i);
+            for (int i = 0; i < numColumns; ++i) {
+                record[i] = query.value(i);
+            }
         }
     }
 
@@ -233,7 +239,10 @@ void BaseTrackCache::buildIndex() {
     // TODO(rryan) for very large tables, it probably makes more sense to NOT
     // clear the table, and keep track of what IDs we see, then delete the ones
     // we don't see.
-    m_trackInfo.clear();
+    {
+        QMutexLocker lock(m_pTrackInfoMutex);
+        m_trackInfo.clear();
+    }
 
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
@@ -355,6 +364,7 @@ QVariant BaseTrackCache::data(int trackId, int column) const {
     // metadata. Currently the upper-levels will not delegate row-specific
     // columns to this method, but there should still be a check here I think.
     if (!result.isValid()) {
+        QMutexLocker lock(m_pTrackInfoMutex);
         QHash<int, QVector<QVariant> >::const_iterator it =
                 m_trackInfo.find(trackId);
         if (it != m_trackInfo.end()) {
