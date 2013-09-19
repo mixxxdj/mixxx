@@ -95,21 +95,22 @@ void BasePlaylistFeature::activate() {
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
-    //qDebug() << "BasePlaylistFeature::activateChild()" << index;
+    qDebug() << "BasePlaylistFeature::activateChild()" << objectName() << index;
 
     // Switch the playlist table model's playlist.
+    QString playlistName = index.data().toString();
+    int playlistId = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, index] (void) {
-        QString playlistName = index.data().toString();
-        int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
-        if (m_pPlaylistTableModel) {
-            m_pPlaylistTableModel->setTableModel(playlistId);
-        }
-        if (m_pPlaylistTableModel) {
-            emit(showTrackModel(m_pPlaylistTableModel));
-        }
+                [this, &playlistName, &playlistId] (void) {
+        playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     }, __PRETTY_FUNCTION__);
+    if (m_pPlaylistTableModel) {
+        m_pPlaylistTableModel->setTableModel(playlistId);
+    }
+    if (m_pPlaylistTableModel) {
+        emit(showTrackModel(m_pPlaylistTableModel));
+    }
 }
 
 void BasePlaylistFeature::slotRenamePlaylist() {

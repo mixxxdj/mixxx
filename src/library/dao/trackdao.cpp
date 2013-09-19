@@ -902,20 +902,20 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             // Listen to dirty and changed signals
             connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
                     this, SLOT(slotTrackDirty(TrackInfoObject*)),
-//                    Qt::DirectConnection);
-                    Qt::QueuedConnection); // tro
+                    Qt::DirectConnection);
+//                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(clean(TrackInfoObject*)),
                     this, SLOT(slotTrackClean(TrackInfoObject*)),
-//                    Qt::DirectConnection);
-                    Qt::QueuedConnection); // tro
+                    Qt::DirectConnection);
+//                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
                     this, SLOT(slotTrackChanged(TrackInfoObject*)),
-//                    Qt::DirectConnection);
-                    Qt::QueuedConnection); // tro
+                    Qt::DirectConnection);
+//                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(save(TrackInfoObject*)),
                     this, SLOT(slotTrackSave(TrackInfoObject*)),
-//                    Qt::DirectConnection);
-                    Qt::QueuedConnection); // tro
+                    Qt::DirectConnection);
+//                    Qt::QueuedConnection); // tro
 
             m_sTracksMutex.lock();
             // Automatic conversion to a weak pointer
@@ -1106,8 +1106,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath) {
     }
 }
 
-void TrackDAO::markTrackLocationAsVerified(const QString& location)
-{
+void TrackDAO::markTrackLocationAsVerified(const QString& location) {
     //qDebug() << "TrackDAO::markTrackLocationAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTrackLocationAsVerified()" << location;
 
@@ -1299,7 +1298,7 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     return false;
 }
 
-void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel, volatile bool* pPause) {
+void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel) {
     // This function is called from the LibraryScanner Thread
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);

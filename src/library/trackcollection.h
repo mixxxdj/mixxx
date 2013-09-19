@@ -179,6 +179,11 @@ class TrackCollection : public QThread {
 
     const QRegExp m_supportedFileExtensionsRegex;
     bool m_inCallSync;
+    QStringList m_tracksListInCnunk;
+
+    void addTrackToChunk(const QString filePath, TrackDAO &trackDao);
+    void addChunkToDatabase(TrackDAO &trackDao);
+
 };
 
 #endif

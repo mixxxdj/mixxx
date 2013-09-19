@@ -233,7 +233,7 @@ void LibraryScanner::run() {
 //    m_trackDao.addTracksFinish();                                                                                       //////////////////////////////////////
 
     //Verify all Tracks inside Library but outside the library path
-    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan, &m_bPauseLibraryScan);
+    m_trackDao.verifyTracksOutside(m_qLibraryPath, &m_bCancelLibraryScan/*, &m_bPauseLibraryScan*/);
 
 
     // tro's lambda idea. This code calls Synchronously!

@@ -187,9 +187,9 @@ bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
     QTime timer;
     timer.start();
 
-    if (sDebug) {
+//    if (sDebug) {
         qDebug() << "updateIndexWithQuery issuing query:" << queryString;
-    }
+//    }
 
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
@@ -246,7 +246,7 @@ void BaseTrackCache::buildIndex() {
 
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
-                [this, queryString] (void) {
+                [this, &queryString] (void) {
         if (!updateIndexWithQuery(queryString)) {
             qDebug() << "buildIndex failed!";
         }

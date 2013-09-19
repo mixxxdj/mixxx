@@ -60,8 +60,8 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     int playlistId = -1;
     bool locked = false;
 
-    // tro's lambda idea. This code calls asynchronously!
-     m_pTrackCollection->callAsync(
+    // tro's lambda idea. This code calls synchronously!
+     m_pTrackCollection->callSync(
                  [this, &playlistName, &playlistId, &locked] (void) {
          playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
          locked = m_playlistDao.isPlaylistLocked(playlistId);
@@ -181,6 +181,7 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
+    // here callSync uses
     if (!m_pPlaylistTableModel) {
         return;
     }
@@ -188,7 +189,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     PlaylistDAO::HiddenType type;
 
     m_pTrackCollection->callSync(
-                [this, playlistId, &type] (void) {
+                [this, &playlistId, &type] (void) {
         type = m_playlistDao.getHiddenType(playlistId);
     }, __PRETTY_FUNCTION__ + objectName());
 

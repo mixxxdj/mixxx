@@ -19,6 +19,7 @@
 #include "configobject.h"
 
 #define MAX_LAMBDA_COUNT 8
+#define MAX_CHUNK_SIZE 10
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig),
@@ -127,9 +128,10 @@ void TrackCollection::callAsync(func lambda, QString where) {
 // callAsync can be called from any thread
 //    @param: lambda function, string (for debug purposes).
 void TrackCollection::callSync(func lambda, QString where) {
-    //    if (m_inCallSync) {
-    //        Q_ASSERT(!m_inCallSync);
-    //    }
+    qDebug() << "callSync BEGIN from"<<where;
+//    if (m_inCallSync) {
+//        Q_ASSERT(!m_inCallSync);
+//    }
     qDebug() << "callSync from" << where;
     m_inCallSync = true;
     if (lambda == NULL) return;
@@ -162,6 +164,7 @@ void TrackCollection::callSync(func lambda, QString where) {
         m_pCOTPlaylistIsBusy->set(0.0);
     }
     m_inCallSync = false;
+    qDebug() << "callSync END from"<<where;
 }
 
 void TrackCollection::addLambdaToQueue(func lambda) {
@@ -261,43 +264,43 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             return false;
         }
 
-        this->callSync(
-                    [this, &it, &directory, &trackDao, &nameFilters, &pause ] (void) {
+//        this->callSync(
+//                    [this, &it, &directory, &trackDao, &nameFilters, &pause ] (void) {
 
-            trackDao.addTracksPrepare(); ///////
+//            trackDao.addTracksPrepare(); ///////
 
-            QString absoluteFilePath = it.next();
+//            QString absoluteFilePath = it.next();
+            addTrackToChunk(it.next(), trackDao);
 
             // If the track is in the database, mark it as existing. This code gets exectuted
             // when other files in the same directory have changed (the directory hash has changed).
-            trackDao.markTrackLocationAsVerified(absoluteFilePath);
+//            trackDao.markTrackLocationAsVerified(absoluteFilePath);
 
-            // If the file already exists in the database, continue and go on to
-            // the next file.
+//            // If the file already exists in the database, continue and go on to
+//            // the next file.
 
-            // If the file doesn't already exist in the database, then add
-            // it. If it does exist in the database, then it is either in the
-            // user's library OR the user has "removed" the track via
-            // "Right-Click -> Remove". These tracks stay in the library, but
-            // their mixxx_deleted column is 1.
-            if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
-                //qDebug() << "Loading" << it.fileName();
-                emit(progressLoading(it.fileName()));
+//            // If the file doesn't already exist in the database, then add
+//            // it. If it does exist in the database, then it is either in the
+//            // user's library OR the user has "removed" the track via
+//            // "Right-Click -> Remove". These tracks stay in the library, but
+//            // their mixxx_deleted column is 1.
+//            if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
+//                //qDebug() << "Loading" << it.fileName();
+//                emit(progressLoading(it.fileName()));
 
-                TrackPointer pTrack = TrackPointer(new TrackInfoObject(
-                                                       absoluteFilePath), &QObject::deleteLater);
-                if (trackDao.addTracksAdd(pTrack.data(), false)) {
-                    // Successful added
-                    // signal the main instance of TrackDao, that there is a
-                    // new Track in the database
-                    m_trackDao->databaseTrackAdded(pTrack);
-                } else {
-                    qDebug() << "Track ("+absoluteFilePath+") could not be added";
-                }
-            }
-            trackDao.addTracksPrepare(); ///////
-
-        }, __PRETTY_FUNCTION__);
+//                TrackPointer pTrack = TrackPointer(new TrackInfoObject(
+//                                                       absoluteFilePath), &QObject::deleteLater);
+//                if (trackDao.addTracksAdd(pTrack.data(), false)) {
+//                    // Successful added
+//                    // signal the main instance of TrackDao, that there is a
+//                    // new Track in the database
+//                    m_trackDao->databaseTrackAdded(pTrack);
+//                } else {
+//                    qDebug() << "Track ("+absoluteFilePath+") could not be added";
+//                }
+//            }
+//            m_trackDao->addTracksFinish();
+//        }, __PRETTY_FUNCTION__);
     }
     emit(finishedLoading());
     return true;
@@ -359,4 +362,49 @@ void TrackCollection::createAndPopulateDbConnection() {
     m_cueDao = new CueDAO(*m_database);
     m_analysisDao = new AnalysisDao(*m_database, m_pConfig);
     m_trackDao = new TrackDAO(*m_database, *m_cueDao, *m_playlistDao, *m_crateDao, *m_analysisDao, m_pConfig);
+}
+
+void TrackCollection::addTrackToChunk(const QString filePath, TrackDAO& trackDao) {
+    if (m_tracksListInCnunk.count() < MAX_CHUNK_SIZE) {
+        m_tracksListInCnunk.append(filePath);
+    } else {
+        callSync( [this, &trackDao] (void) {
+            addChunkToDatabase(trackDao);
+        }, "addTrackToChunk");
+    }
+}
+
+void TrackCollection::addChunkToDatabase(TrackDAO& trackDao) {
+    DBG() << "Adding chunk to DB: " << m_tracksListInCnunk;
+    trackDao.addTracksPrepare();
+    foreach (QString trackPath, m_tracksListInCnunk) {
+        // If the track is in the database, mark it as existing. This code gets exectuted
+        // when other files in the same directory have changed (the directory hash has changed).
+        trackDao.markTrackLocationAsVerified(trackPath);
+
+        // If the file already exists in the database, continue and go on to
+        // the next file.
+
+        // If the file doesn't already exist in the database, then add
+        // it. If it does exist in the database, then it is either in the
+        // user's library OR the user has "removed" the track via
+        // "Right-Click -> Remove". These tracks stay in the library, but
+        // their mixxx_deleted column is 1.
+        if (!trackDao.trackExistsInDatabase(trackPath)) {
+            //qDebug() << "Loading" << it.fileName();
+            emit(progressLoading(trackPath));
+
+            TrackPointer pTrack = TrackPointer(new TrackInfoObject(trackPath), &QObject::deleteLater);
+            if (trackDao.addTracksAdd(pTrack.data(), false)) {
+                // Successful added
+                // signal the main instance of TrackDao, that there is a
+                // new Track in the database
+                m_trackDao->databaseTrackAdded(pTrack);
+            } else {
+                qDebug() << "Track ("+trackPath+") could not be added";
+            }
+        }
+    }
+    trackDao.addTracksFinish();
+    m_tracksListInCnunk.clear();
 }
