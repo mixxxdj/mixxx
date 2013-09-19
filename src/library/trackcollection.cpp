@@ -111,7 +111,10 @@ void TrackCollection::run() {
     DBG() << " ### Thread ended ###";
 }
 
-// callAsync calls from any thread
+// callAsync can be called from any thread. Be careful: callAsync runs asynchonously.
+//    @param: lambda function, string (for debug purposes).
+//    Catched values in lambda must be guarantly alive until end of execution lambda
+//    (if catched by value) or you can catch by value.
 void TrackCollection::callAsync(func lambda, QString where) {
     qDebug() << "callAsync from" << where;
     if (lambda == NULL) return;
@@ -121,6 +124,8 @@ void TrackCollection::callAsync(func lambda, QString where) {
     addLambdaToQueue(lambda);
 }
 
+// callAsync can be called from any thread
+//    @param: lambda function, string (for debug purposes).
 void TrackCollection::callSync(func lambda, QString where) {
     //    if (m_inCallSync) {
     //        Q_ASSERT(!m_inCallSync);
@@ -159,27 +164,6 @@ void TrackCollection::callSync(func lambda, QString where) {
     m_inCallSync = false;
 }
 
-//void TrackCollection::callSync(func lambda, QString where) {
-////    if (m_inCallSync) {
-////        Q_ASSERT(!m_inCallSync);
-////    }
-//    m_inCallSync = true;
-//    QMutex mutex;
-//    mutex.lock();
-//    callAsync( [&mutex, &lambda] (void) {
-//        lambda();
-//        mutex.unlock();
-//    }, where);
-
-//    while (!mutex.tryLock(5)) {
-//        MainExecuter::getInstance().call();
-//        // DBG() << "Start animation";
-//        // animationIsShowed = true;
-//    }
-//    mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
-//    m_inCallSync = false;
-//}
-
 void TrackCollection::addLambdaToQueue(func lambda) {
     //TODO(tro) check lambda
     m_semLambdasFree.acquire(1); // we'll wait here if lambdas count in queue is greater then MAX_LAMBDA_COUNT
@@ -195,49 +179,52 @@ void TrackCollection::stopThread() {
     m_semLambdasReadyToCall.release(1);
 }
 
-
 bool TrackCollection::checkForTables() {
     if (!m_database->open()) {
-        QMessageBox::critical(0, tr("Cannot open database"),
-                              tr("Unable to establish a database connection.\n"
-                                 "Mixxx requires Qt with SQLite support. Please read "
-                                 "the Qt SQL driver documentation for information on how "
-                                 "to build it.\n\n"
-                                 "Click OK to exit."), QMessageBox::Ok);
+        MainExecuter::callSync([this](void) {
+            QMessageBox::critical(0, tr("Cannot open database"),
+                                  tr("Unable to establish a database connection.\n"
+                                     "Mixxx requires Qt with SQLite support. Please read "
+                                     "the Qt SQL driver documentation for information on how "
+                                     "to build it.\n\n"
+                                     "Click OK to exit."), QMessageBox::Ok);
+        });
         return false;
     }
 
-    int requiredSchemaVersion = 20; // TODO(xxx) avoid constant 20
-    QString schemaFilename = m_pConfig->getResourcePath();
-    schemaFilename.append("schema.xml");
-    QString okToExit = tr("Click OK to exit.");
-    QString upgradeFailed = tr("Cannot upgrade database schema");
-    QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
-            .arg(QString::number(requiredSchemaVersion));
-    int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, *m_database, requiredSchemaVersion);
-    if (result < 0) {
-        if (result == -1) {
-            QMessageBox::warning(0, upgradeFailed,
-                                 upgradeToVersionFailed + "\n" +
-                                 tr("Your %1 file may be outdated.").arg(schemaFilename) +
-                                 "\n\n" + okToExit,
-                                 QMessageBox::Ok);
-        } else if (result == -2) {
-            QMessageBox::warning(0, upgradeFailed,
-                                 upgradeToVersionFailed + "\n" +
-                                 tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
-                                 tr("Try renaming it and restarting Mixxx.") +
-                                 "\n\n" + okToExit,
-                                 QMessageBox::Ok);
-        } else { // -3
-            QMessageBox::warning(0, upgradeFailed,
-                                 upgradeToVersionFailed + "\n" +
-                                 tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
-                                 "\n\n" + okToExit,
-                                 QMessageBox::Ok);
+    MainExecuter::callSync([this](void) {
+        int requiredSchemaVersion = 20; // TODO(xxx) avoid constant 20
+        QString schemaFilename = m_pConfig->getResourcePath();
+        schemaFilename.append("schema.xml");
+        QString okToExit = tr("Click OK to exit.");
+        QString upgradeFailed = tr("Cannot upgrade database schema");
+        QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
+                .arg(QString::number(requiredSchemaVersion));
+        int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, *m_database, requiredSchemaVersion);
+        if (result < 0) {
+            if (result == -1) {
+                QMessageBox::warning(0, upgradeFailed,
+                                     upgradeToVersionFailed + "\n" +
+                                     tr("Your %1 file may be outdated.").arg(schemaFilename) +
+                                     "\n\n" + okToExit,
+                                     QMessageBox::Ok);
+            } else if (result == -2) {
+                QMessageBox::warning(0, upgradeFailed,
+                                     upgradeToVersionFailed + "\n" +
+                                     tr("Your mixxxdb.sqlite file may be corrupt.") + "\n" +
+                                     tr("Try renaming it and restarting Mixxx.") +
+                                     "\n\n" + okToExit,
+                                     QMessageBox::Ok);
+            } else { // -3
+                QMessageBox::warning(0, upgradeFailed,
+                                     upgradeToVersionFailed + "\n" +
+                                     tr("Your %1 file may be missing or invalid.").arg(schemaFilename) +
+                                     "\n\n" + okToExit,
+                                     QMessageBox::Ok);
+            }
+            return false;
         }
-        return false;
-    }
+    });
     return true;
 }
 
