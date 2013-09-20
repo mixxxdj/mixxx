@@ -207,6 +207,7 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit(loadTrack(pTrack));
 }
 
+// Must be called from Main thread
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(

@@ -204,11 +204,13 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
 void SetlogFeature::slotJoinWithPrevious() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
     // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        if (m_lastRightClickedIndex.isValid()) {
-            int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
-                                        m_lastRightClickedIndex.data().toString());
+
+    const QString name = m_lastRightClickedIndex.data().toString();
+
+    if (m_lastRightClickedIndex.isValid()) {
+        m_pTrackCollection->callAsync(
+                    [this, name] (void) {
+            int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(name);
 
             if (currentPlaylistId >= 0) {
 
@@ -233,7 +235,7 @@ void SetlogFeature::slotJoinWithPrevious() {
                         for(int i = 0; i < rows; ++i){
                             QModelIndex index = m_pPlaylistTableModel->index(i,0);
                             if (index.isValid()) {
-                                TrackPointer track = m_pPlaylistTableModel->getTrack(index);
+                                TrackPointer track = m_pPlaylistTableModel->getTrack(index);   ///////// avoid
                                 // Do not update the playcount, just set played
                                 // status.
                                 track->setPlayed(true);
@@ -251,8 +253,8 @@ void SetlogFeature::slotJoinWithPrevious() {
                     }
                 }
             }
-        }
-    }, __PRETTY_FUNCTION__);
+        }, __PRETTY_FUNCTION__);
+    }
 }
 
 void SetlogFeature::slotConstructChildModel(int playlistId) {

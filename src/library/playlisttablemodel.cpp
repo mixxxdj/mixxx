@@ -16,6 +16,7 @@ PlaylistTableModel::PlaylistTableModel(QObject* parent,
 PlaylistTableModel::~PlaylistTableModel() {
 }
 
+// Must be called from TrackCollection thread
 void PlaylistTableModel::setTableModel(int playlistId) {
     // here uses callSync
     //qDebug() << "PlaylistTableModel::setPlaylist" << playlistId;
@@ -103,32 +104,30 @@ int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locat
     return tracksAdded;
 }
 
-bool PlaylistTableModel::appendTrack(int trackId) {
+// Must be called from Main
+bool PlaylistTableModel::appendTrack(const int trackId) {
     if (trackId < 0) {
         return false;
     }
-
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
                 [this, trackId] (void) {
         m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
         select(); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
-
     return true;
 }
 
-// Must be called from TrackCollection thread
+// Must be called from Main
 void PlaylistTableModel::removeTrack(const QModelIndex& index) {
-    if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
-        return;
-    }
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     const int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
-
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
                 [this, index, positionColumnIndex, position] (void) {
+        if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
+            return;
+        }
         m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
         select(); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);

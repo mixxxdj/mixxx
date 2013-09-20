@@ -21,7 +21,7 @@ void BaseExternalPlaylistModel::setTableModel(int id){
     Q_UNUSED(id);
 }
 
-// must be called from TrackCollection thread
+// Must be called from Main thread
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(
         index.row(), fieldIndex("artist")).data().toString();
@@ -44,20 +44,29 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     }
 
     TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(location);
-    bool track_already_in_library = track_id >= 0;
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(location, true);
-    }
+    bool track_already_in_library = false;
+    int track_id = -1;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &location, &track_dao, &track_already_in_library, &track_id] (void) {
+        track_id = track_dao.getTrackId(location);
+        track_already_in_library = track_id >= 0;
+        if (track_id < 0) {
+            // Add Track to library
+            track_id = track_dao.addTrack(location, true);
+        }
+    }, __PRETTY_FUNCTION__);
 
     TrackPointer pTrack;
-
     if (track_id < 0) {
         // Add Track to library failed, create a transient TrackInfoObject
         pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
     } else {
-        pTrack = track_dao.getTrack(track_id);
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &track_dao, &track_id, &pTrack] (void) {
+            pTrack = track_dao.getTrack(track_id);
+        });
     }
 
     // If this track was not in the Mixxx library it is now added and will be

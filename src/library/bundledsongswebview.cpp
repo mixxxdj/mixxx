@@ -96,6 +96,7 @@ QString PromoTracksWebView::userAgentForUrl (const QUrl & url) const
     return QCoreApplication::applicationName() + " " + QCoreApplication::applicationVersion();
 } */
 
+// Must be called from Main thread
 void BundledSongsWebView::handleClickedLink(const QUrl& url) {
     //qDebug() << "link clicked!" << url;
 
@@ -106,15 +107,18 @@ void BundledSongsWebView::handleClickedLink(const QUrl& url) {
         location = fileInfo.absoluteFilePath();
 
         // Try to get TrackInfoObject* from library, identified by location.
-        TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-        TrackPointer pTrack = trackDao.getTrack(trackDao.getTrackId(location));
+        TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackDao.getTrackId(location));
         // If not, create a new TrackInfoObject*
         if (pTrack == NULL)
         {
             qDebug () << "Didn't find promo track in the library";
             pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-            //Let's immediately save the track so that the FIXME
-            trackDao.saveTrack(pTrack);
+            // Let's immediately save the track so that the FIXME
+            // tro's lambda idea. This code calls asynchronously!
+            m_pTrackCollection->callAsync(
+                        [this] (void) {
+                m_pTrackCollection->getTrackDAO().saveTrack(pTrack);
+            }, __PRETTY_FUNCTION__);
         }
 
         if (url.scheme() == "deck1")

@@ -587,14 +587,20 @@ void CrateFeature::slotImportPlaylist() {
         delete playlist_parser;
 }
 
+// Must be called from Main thread
 void CrateFeature::slotAnalyzeCrate() {
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_crateDao.getCrateIdByName(
-                m_lastRightClickedIndex.data().toString());
-        if (playlistId >= 0) {
-            QList<int> ids = m_crateDao.getTrackIds(playlistId);
-            emit(analyzeTracks(ids));
-        }
+        const QString name = m_lastRightClickedIndex.data().toString();
+
+        // tro's lambda idea. This code calls asynchronously!
+        m_pTrackCollection->callAsync(
+                    [this, name] (void) {
+            int playlistId = m_crateDao.getCrateIdByName(name);
+            if (playlistId >= 0) {
+                QList<int> ids = m_crateDao.getTrackIds(playlistId);
+                emit(analyzeTracks(ids));
+            }
+        }, __PRETTY_FUNCTION__);
     }
 }
 
@@ -619,8 +625,14 @@ void CrateFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
-    pCrateTableModel->select();
+
+    // TODO(tro) rewrite it, so we can do something w/ that Scoped Pointer inside TrackCollection
+    // tro's lambda idea. This code calls synchronously!
+//    m_pTrackCollection->callSync(
+//                [this, pCrateTableModel] (void) {
+        pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+        pCrateTableModel->select();
+//    }, __PRETTY_FUNCTION__);
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
             ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(), useRelativePath);

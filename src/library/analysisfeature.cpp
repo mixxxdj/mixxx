@@ -105,7 +105,13 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
     }
 
     foreach(int trackId, trackIds) {
-        TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+        TrackPointer pTrack;
+        // tro's lambda idea. This code calls Synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &trackId, &pTrack] (void) {
+            pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+        }, __PRETTY_FUNCTION__);
+
         if (pTrack) {
             //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
             m_pAnalyserQueue->queueAnalyseTrack(pTrack);

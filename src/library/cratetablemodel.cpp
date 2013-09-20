@@ -67,31 +67,32 @@ void CrateTableModel::setTableModel(int crateId) {
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
+// Must be called from Main thread
 bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this playlist.
     QFileInfo fileInfo(location);
-
-    TrackDAO& trackDao = m_pTrackCollection->getTrackDAO();
-
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    int iTrackId = trackDao.addTrack(fileInfo, true);
-
     bool success = false;
-    if (iTrackId >= 0) {
-        success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
-    }
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callSync(
+                [this, &fileInfo, &success] (void) {
+        // Adds track, does not insert duplicates, handles unremoving logic.
+        int iTrackId = m_pTrackCollection->getTrackDAO().addTrack(fileInfo, true);
 
-    if (success) {
-        // TODO(rryan) just add the track dont select
-        select();
-        return true;
-    } else {
-        qDebug() << "CrateTableModel::addTrack could not add track"
-                 << fileInfo.absoluteFilePath() << "to crate" << m_iCrateId;
-        return false;
-    }
+        bool success = false;
+        if (iTrackId >= 0) {
+            success = m_pTrackCollection->getCrateDAO().addTrackToCrate(iTrackId, m_iCrateId);
+        }
+        if (success) {
+            // TODO(rryan) just add the track dont select
+            select();
+        } else {
+            qDebug() << "CrateTableModel::addTrack could not add track"
+                     << fileInfo.absoluteFilePath() << "to crate" << m_iCrateId;
+        }
+    }, __PRETTY_FUNCTION__);
+    return success;
 }
 
 int CrateTableModel::addTracks(const QModelIndex& index,
@@ -119,17 +120,22 @@ int CrateTableModel::addTracks(const QModelIndex& index,
     return tracksAdded;
 }
 
+// Must be called from Main thread
 void CrateTableModel::removeTracks(const QModelIndexList& indices) {
-    bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, indices] (void) {
+        bool locked = m_crateDAO.isCrateLocked(m_iCrateId);
 
-    if (!locked) {
-        QList<int> trackIds;
-        foreach (QModelIndex index, indices) {
-            trackIds.append(getTrackId(index));
+        if (!locked) {
+            QList<int> trackIds;
+            foreach (QModelIndex index, indices) {
+                trackIds.append(getTrackId(index));
+            }
+            m_crateDAO.removeTracksFromCrate(trackIds, m_iCrateId);
+            select();
         }
-        m_crateDAO.removeTracksFromCrate(trackIds, m_iCrateId);
-        select();
-    }
+    }, __PRETTY_FUNCTION__);
 }
 
 bool CrateTableModel::isColumnInternal(int column) {

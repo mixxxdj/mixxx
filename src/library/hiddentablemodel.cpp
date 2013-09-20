@@ -16,6 +16,7 @@ void HiddenTableModel::init() {
     }, __PRETTY_FUNCTION__);
 }
 
+// Must be called from TrackCollection thread
 void HiddenTableModel::setTableModel(int id){
     Q_UNUSED(id);
     QSqlQuery query(m_pTrackCollection->getDatabase());
@@ -45,6 +46,7 @@ void HiddenTableModel::setTableModel(int id){
     setSearch("");
 }
 
+// Must be called from Main thread
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
@@ -53,13 +55,17 @@ void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.purgeTracks(trackIds);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, trackIds] (void) {
+        m_trackDAO.purgeTracks(trackIds);
+        // TODO(rryan) : do not select, instead route event to BTC and notify from
+        // there.
+        select(); //Repopulate the data model.
+    }, __PRETTY_FUNCTION__);
 }
 
+// Must be called from Main thread
 void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
@@ -68,11 +74,14 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.unhideTracks(trackIds);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, trackIds] (void) {
+        m_trackDAO.unhideTracks(trackIds);
+        // TODO(rryan) : do not select, instead route event to BTC and notify from
+        // there.
+        select(); //Repopulate the data model.
+    }, __PRETTY_FUNCTION__);
 }
 
 bool HiddenTableModel::isColumnInternal(int column) {

@@ -125,9 +125,9 @@ void LegacyLibraryImporter::import() {
 
                 // Provide a no-op deleter b/c this Track is on the stack.
                 TrackPointer pTrack(&trackInfo17, &doNothing);
-                // tro's lambda idea. This code calls asynchronously!
-                m_pTrackCollection->callAsync(
-                            [this] (void) {
+                // tro's lambda idea. This code calls synchronously!
+                m_pTrackCollection->callSync(
+                            [this, &pTrack] (void) {
                     m_trackDao.saveTrack(pTrack);
                 }, __PRETTY_FUNCTION__);
 

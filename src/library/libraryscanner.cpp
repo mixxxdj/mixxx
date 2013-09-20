@@ -80,40 +80,44 @@ LibraryScanner::~LibraryScanner() {
         wait(); // Wait for thread to finish
     }
 
-    // Do housekeeping on the LibraryHashes table.
-    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
+    // tro's lambda idea. This code calls Synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        // Do housekeeping on the LibraryHashes table.
+        ScopedTransaction transaction(m_pTrackCollection->getDatabase());
 
-    // Mark the corresponding file locations in the track_locations table as deleted
-    // if we find one or more deleted directories.
-    QStringList deletedDirs;
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    query.prepare("SELECT directory_path FROM LibraryHashes "
-                  "WHERE directory_deleted=1");
-    if (query.exec()) {
-        const int directoryPathColumn = query.record().indexOf("directory_path");
-        while (query.next()) {
-            QString directory = query.value(directoryPathColumn).toString();
-            deletedDirs << directory;
+        // Mark the corresponding file locations in the track_locations table as deleted
+        // if we find one or more deleted directories.
+        QStringList deletedDirs;
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        query.prepare("SELECT directory_path FROM LibraryHashes "
+                      "WHERE directory_deleted=1");
+        if (query.exec()) {
+            const int directoryPathColumn = query.record().indexOf("directory_path");
+            while (query.next()) {
+                QString directory = query.value(directoryPathColumn).toString();
+                deletedDirs << directory;
+            }
+        } else {
+            LOG_FAILED_QUERY(query) << "Couldn't SELECT deleted directories.";
         }
-    } else {
-        LOG_FAILED_QUERY(query) << "Couldn't SELECT deleted directories.";
-    }
 
-    // Delete any directories that have been marked as deleted...
-    query.finish();
-    query.exec("DELETE FROM LibraryHashes "
-               "WHERE directory_deleted=1");
+        // Delete any directories that have been marked as deleted...
+        query.finish();
+        query.exec("DELETE FROM LibraryHashes "
+                   "WHERE directory_deleted=1");
 
-    // Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-        LOG_FAILED_QUERY(query);
-    }
+        // Print out any SQL error, if there was one.
+        if (query.lastError().isValid()) {
+            LOG_FAILED_QUERY(query);
+        }
 
-    QString dir;
-    foreach(dir, deletedDirs) {
-        m_pTrackCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
-    }
-    transaction.commit();
+        QString dir;
+        foreach(dir, deletedDirs) {
+            m_pTrackCollection->getTrackDAO().markTrackLocationsAsDeleted(dir);
+        }
+        transaction.commit();
+    }, __PRETTY_FUNCTION__);
 
     // The above is an ASSERT because there should never be an outstanding
     // transaction when this code is called. If there is, it means we probably
@@ -129,7 +133,6 @@ LibraryScanner::~LibraryScanner() {
         // Close our database connection
         m_database.close();
     }
-
     qDebug() << "LibraryScanner destroyed";
 }
 

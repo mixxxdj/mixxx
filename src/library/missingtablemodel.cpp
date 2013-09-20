@@ -57,7 +57,7 @@ void MissingTableModel::setTableModel(int id) {
 MissingTableModel::~MissingTableModel() {
 }
 
-
+// Must be called from Main thread
 void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
@@ -66,11 +66,14 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.purgeTracks(trackIds);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, trackIds] (void) {
+        m_trackDAO.purgeTracks(trackIds);
+        // TODO(rryan) : do not select, instead route event to BTC and notify from
+        // there.
+        select(); //Repopulate the data model.
+    }, __PRETTY_FUNCTION__);
 }
 
 

@@ -169,7 +169,11 @@ DlgAutoDJ::~DlgAutoDJ() {
 }
 
 void DlgAutoDJ::onShow() {
-    m_pAutoDJTableModel->select();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pAutoDJTableModel->select();
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {
@@ -227,18 +231,14 @@ void DlgAutoDJ::skipNext(double value) {
         return;
     }
 
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        // Load the next song from the queue.
-        if (m_pCOPlay1Fb->get() == 0.0f) {
-            removePlayingTrackFromQueue("[Channel1]");
-            loadNextTrackFromQueue();
-        } else if (m_pCOPlay2Fb->get() == 0.0f) {
-            removePlayingTrackFromQueue("[Channel2]");
-            loadNextTrackFromQueue();
-        }
-    }, __PRETTY_FUNCTION__);
+    // Load the next song from the queue.
+    if (m_pCOPlay1Fb->get() == 0.0f) {
+        removePlayingTrackFromQueue("[Channel1]");
+        loadNextTrackFromQueue();
+    } else if (m_pCOPlay2Fb->get() == 0.0f) {
+        removePlayingTrackFromQueue("[Channel2]");
+        loadNextTrackFromQueue();
+    }
 }
 
 void DlgAutoDJ::fadeNowButton(bool) {
@@ -267,8 +267,8 @@ void DlgAutoDJ::fadeNow(double value) {
     }
 }
 
+// Must be called from Main
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
-// tro's lambda uses here
     bool deck1Playing = m_pCOPlay1Fb->get() == 1.0;
     bool deck2Playing = m_pCOPlay2Fb->get() == 1.0;
 
@@ -283,19 +283,13 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             return;
         }
 
-        TrackPointer nextTrack;
-        // tro's lambda idea. This code calls synchronously!
-        m_pTrackCollection->callSync(
-                    [this, &deck1Playing, &deck2Playing, &nextTrack] (void) {
-            // Never load the same track if it is already playing
-            if (deck1Playing) {
-                removePlayingTrackFromQueue("[Channel1]");
-            }
-            if (deck2Playing) {
-                removePlayingTrackFromQueue("[Channel2]");
-            }
-            nextTrack = getNextTrackFromQueue();
-        }, __PRETTY_FUNCTION__);
+        if (deck1Playing) {
+            removePlayingTrackFromQueue("[Channel1]");
+        }
+        if (deck2Playing) {
+            removePlayingTrackFromQueue("[Channel2]");
+        }
+        TrackPointer nextTrack = getNextTrackFromQueue();
 
         if (!nextTrack) {
             qDebug() << "Queue is empty now";
@@ -337,10 +331,10 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             pushButtonFadeNow->setEnabled(true);
             if (deck1Playing) {
                 // deck 1 is already playing
-                player1PlayChanged(1.0f);
+                player1PlayChanged(1.0);
             } else {
                 // deck 2 is already playing
-                player2PlayChanged(1.0f);
+                player2PlayChanged(1.0);
             }
         }
         // Loads into first deck If stopped else into second else not
@@ -348,8 +342,8 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     } else {  // Disable Auto DJ
         pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
         pushButtonAutoDJ->setText(tr("Enable Auto DJ"));
-        if (m_pCOTEnabledAutoDJ->get() != 0.0f) {
-            m_pCOTEnabledAutoDJ->slotSet(0.0f);
+        if (m_pCOTEnabledAutoDJ->get() != 0.0) {
+            m_pCOTEnabledAutoDJ->slotSet(0.0);
         }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
@@ -565,7 +559,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
     }
 }
 
-// Must be called from TrackCollection thread
+// Must be called from Main
 TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     // Get the track at the top of the playlist...
     TrackPointer nextTrack;
@@ -579,7 +573,7 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     while (true) {
         const QModelIndex firstTrackIndex = m_pAutoDJTableModel->index(0, 0);
         nextTrack = m_pAutoDJTableModel->getTrack( firstTrackIndex );
-         if (nextTrack) {
+        if (nextTrack) {
             if (nextTrack->exists()) {
                 // found a valid Track
                 if (nextTrack->getDuration() < m_backUpTransition)
@@ -599,7 +593,6 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
 }
 
 bool DlgAutoDJ::loadNextTrackFromQueue() {
-    // NOTE(tro) This function can be wrapped into callAsync/callAsync
     TrackPointer nextTrack = getNextTrackFromQueue();
 
     // We ran out of tracks in the queue...
@@ -616,13 +609,12 @@ bool DlgAutoDJ::loadNextTrackFromQueue() {
     return true;
 }
 
-// Must be called from TrackCollection thread
+// Must be called from Main
 bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     TrackPointer nextTrack, loadedTrack;
     int nextId = 0, loadedId = 0;
 
     // Get the track at the top of the playlist...
-
     nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
 
     if (nextTrack) {
@@ -643,7 +635,6 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
         // Do not remove when the user has loaded a track manually
         return false;
     }
-
 
     qDebug() << "in DlgAutoDJ::removePlayingTrackFromQueue(QString group)";
     // TODO(xxx): remove all this dependency

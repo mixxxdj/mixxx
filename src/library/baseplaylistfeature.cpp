@@ -474,6 +474,7 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     }
 }
 
+// Must be called from Main thread
 void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
