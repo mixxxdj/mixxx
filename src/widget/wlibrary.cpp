@@ -33,22 +33,16 @@ bool WLibrary::registerView(QString name, QWidget* view) {
 }
 
 void WLibrary::switchToView(const QString& name) {
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, name] (void) {
-        QMutexLocker lock(&m_mutex);
-        qDebug() << "WLibrary::switchToView" << name;
-        if (m_viewMap.contains(name)) {
-            QWidget* widget = m_viewMap[name];
-            if (widget != NULL && currentWidget() != widget) {
-                qDebug() << "WLibrary::setCurrentWidget" << name;
-                MainExecuter::callSync([this, &widget](void) {
-                    setCurrentWidget(widget);
-                });
-                dynamic_cast<LibraryView*>(widget)->onShow();
-            }
+    QMutexLocker lock(&m_mutex);
+    qDebug() << "WLibrary::switchToView" << name;
+    if (m_viewMap.contains(name)) {
+        QWidget* widget = m_viewMap[name];
+        if (widget != NULL && currentWidget() != widget) {
+            qDebug() << "WLibrary::setCurrentWidget" << name;
+            setCurrentWidget(widget);
+            dynamic_cast<LibraryView*>(widget)->onShow();
         }
-    }, __PRETTY_FUNCTION__);
+    }
 }
 
 void WLibrary::search(const QString& name) {

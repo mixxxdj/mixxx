@@ -53,10 +53,12 @@ void DlgHidden::init() {
 
 void DlgHidden::onShow() {
     // no buttons can be selected
-    MainExecuter::callSync([this](void) {
-        slotActivateButtons(false);
+    slotActivateButtons(false);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pHiddenTableModel->select();
     }, __PRETTY_FUNCTION__);
-    m_pHiddenTableModel->select();
 }
 
 void DlgHidden::onSearch(const QString& text) {
@@ -65,11 +67,7 @@ void DlgHidden::onSearch(const QString& text) {
 
 void DlgHidden::clicked() {
     // all marked tracks are gone now anyway
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        onShow();
-    }, __PRETTY_FUNCTION__);
+    onShow();
 }
 
 void DlgHidden::selectAll() {

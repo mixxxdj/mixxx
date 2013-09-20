@@ -32,9 +32,9 @@ class FeaturedArtistsWebView : public QWebView, public LibraryView
         FeaturedArtistsWebView(QWidget* parent, QString libraryPath,
                                QString remoteURL, SongDownloader* downloader);
         ~FeaturedArtistsWebView();
-        virtual void onSearch(const QString&) {};
-        virtual void onShow() {};
-        virtual QWidget* getWidgetForMIDIControl() { return this; };
+        virtual void onSearch(const QString&) {}
+        virtual void onShow() {}
+        virtual QWidget* getWidgetForMIDIControl() { return this; }
         virtual void keyPressEvent(QKeyEvent* event);
 
     public slots:

@@ -49,10 +49,12 @@ DlgMissing::~DlgMissing() {
 
 void DlgMissing::onShow() {
     // no buttons can be selected
-    MainExecuter::callSync([this](void) {
-        slotActivateButtons(false);
+    slotActivateButtons(false);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pMissingTableModel->select();
     }, __PRETTY_FUNCTION__);
-    m_pMissingTableModel->select();
 }
 
 void DlgMissing::clicked() {

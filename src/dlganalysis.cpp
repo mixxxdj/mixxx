@@ -65,7 +65,11 @@ DlgAnalysis::~DlgAnalysis() {
 void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
-    m_pAnalysisLibraryTableModel->select();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        m_pAnalysisLibraryTableModel->select();
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAnalysis::onSearch(const QString& text) {

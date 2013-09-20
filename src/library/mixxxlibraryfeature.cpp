@@ -155,18 +155,18 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 
 void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
-        m_pLibraryTableModel->select();
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this] (void) {
+            m_pLibraryTableModel->select();
+        }, __PRETTY_FUNCTION__);
     }
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        if (m_pMissingView) {
-            m_pMissingView->onShow();
-        }
-        if (m_pHiddenView) {
-            m_pHiddenView->onShow();
-        }
-    }, __PRETTY_FUNCTION__);
+    if (m_pMissingView) {
+        m_pMissingView->onShow();
+    }
+    if (m_pHiddenView) {
+        m_pHiddenView->onShow();
+    }
 }
 
 void MixxxLibraryFeature::activate() {
