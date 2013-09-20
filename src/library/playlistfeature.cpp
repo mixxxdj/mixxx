@@ -182,6 +182,8 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
     // here callSync uses
+    DBG() << sender();
+
     if (!m_pPlaylistTableModel) {
         return;
     }

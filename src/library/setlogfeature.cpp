@@ -96,7 +96,8 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
             this, SLOT(slotPlayingDeckChanged(int)));
 
     connect(this, SIGNAL(playlistTableChanged(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+            this, SLOT(slotPlaylistTableChanged(int)),
+            Qt::QueuedConnection); // tro
 
     qRegisterMetaType<Qt::Orientation>("Qt::Orientation");
 }

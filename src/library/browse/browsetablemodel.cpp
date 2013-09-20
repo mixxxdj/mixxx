@@ -84,29 +84,28 @@ void BrowseTableModel::setPath(QString absPath) {
     BrowseThread::getInstance()->executePopulation(m_current_path, this);
 }
 
+// Must be called from TrackCollection
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     QString track_location = getTrackLocation(index);
     if (m_pRecordingManager->getRecordingLocation() == track_location) {
-        QMessageBox::critical(
-            0, tr("Mixxx Library"),
-            tr("Could not load the following file because"
-               " it is in use by Mixxx or another application.")
-            + "\n" +track_location);
+        MainExecuter::callSync([this, &track_location](void) {
+            QMessageBox::critical(
+                        0, tr("Mixxx Library"),
+                        tr("Could not load the following file because"
+                           " it is in use by Mixxx or another application.")
+                        + "\n" +track_location);
+        });
         return TrackPointer();
     }
 
     TrackPointer track;
-    // tro's lambda idea. This code calls Synchronously!
-    m_pTrackCollection->callSync(
-                [this, &track_location, &track] (void) {
-        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-        int track_id = track_dao.getTrackId(track_location);
-        if (track_id < 0) {
-            // Add Track to library
-            track_id = track_dao.addTrack(track_location, true);
-        }
-        track = track_dao.getTrack(track_id);
-    }, __PRETTY_FUNCTION__);
+    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+    int track_id = track_dao.getTrackId(track_location);
+    if (track_id < 0) {
+        // Add Track to library
+        track_id = track_dao.addTrack(track_location, true);
+    }
+    track = track_dao.getTrack(track_id);
 
     return track;
 }

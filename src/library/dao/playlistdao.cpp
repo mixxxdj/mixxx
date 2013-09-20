@@ -58,7 +58,9 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     int playlistId = query.lastInsertId().toInt();
     //Commit the transaction
     transaction.commit();
-    emit(added(playlistId));
+    MainExecuter::callAsync([this, &playlistId](void){
+        emit(added(playlistId));
+    });
     return playlistId;
 }
 

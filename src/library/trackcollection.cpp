@@ -19,7 +19,7 @@
 #include "configobject.h"
 
 #define MAX_LAMBDA_COUNT 8
-#define MAX_CHUNK_SIZE 10
+#define MAX_CHUNK_SIZE 100
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig),
@@ -132,7 +132,7 @@ void TrackCollection::callSync(func lambda, QString where) {
 //    if (m_inCallSync) {
 //        Q_ASSERT(!m_inCallSync);
 //    }
-    qDebug() << "callSync from" << where;
+//    qDebug() << "callSync from" << where;
     m_inCallSync = true;
     if (lambda == NULL) return;
 
@@ -153,7 +153,7 @@ void TrackCollection::callSync(func lambda, QString where) {
     while (!mutex.tryLock(5)) {
         if (inMainThread)
             MainExecuter::getInstance().call();
-        qApp->processEvents(QEventLoop::AllEvents);
+//        qApp->processEvents(QEventLoop::AllEvents);
         // DBG() << "Start animation";
         // animationIsShowed = true;
     }

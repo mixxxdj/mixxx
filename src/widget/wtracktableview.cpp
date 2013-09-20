@@ -359,11 +359,15 @@ void WTrackTableView::slotMouseDoubleClicked(const QModelIndex &index) {
         return;
     }
 
-    TrackModel* trackModel = getTrackModel();
-    TrackPointer pTrack;
-    if (trackModel && (pTrack = trackModel->getTrack(index))) {
-        emit(loadTrack(pTrack));
-    }
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, index] (void) {
+        TrackModel* trackModel = getTrackModel();
+        TrackPointer pTrack;
+        if (trackModel && (pTrack = trackModel->getTrack(index))) {
+            emit(loadTrack(pTrack));
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
@@ -379,14 +383,17 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
                 return;
             }
         }
-
-        QModelIndex index = indices.at(0);
-        TrackModel* trackModel = getTrackModel();
-        TrackPointer pTrack;
-        if (trackModel &&
-                (pTrack = trackModel->getTrack(index))) {
-            emit(loadTrackToPlayer(pTrack, group, play));
-        }
+        // tro's lambda idea. This code calls asynchronously!
+        m_pTrackCollection->callAsync(
+                    [this, indices, group, play] (void) {
+            QModelIndex index = indices.at(0);
+            TrackModel* trackModel = getTrackModel();
+            TrackPointer pTrack;
+            if (trackModel &&
+                    (pTrack = trackModel->getTrack(index))) {
+                emit(loadTrackToPlayer(pTrack, group, play));
+            }
+        }, __PRETTY_FUNCTION__);
     }
 }
 
@@ -437,10 +444,10 @@ void WTrackTableView::slotOpenInFileBrowser() {
 }
 
 void WTrackTableView::slotHide() {
+    QModelIndexList indices = selectionModel()->selectedRows();
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this] (void) {
-        QModelIndexList indices = selectionModel()->selectedRows();
+                [this, indices] (void) {
         if (indices.size() > 0) {
             TrackModel* trackModel = getTrackModel();
             if (trackModel) {
@@ -451,10 +458,11 @@ void WTrackTableView::slotHide() {
 }
 
 void WTrackTableView::slotUnhide() {
+    QModelIndexList indices = selectionModel()->selectedRows();
+
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this] (void) {
-        QModelIndexList indices = selectionModel()->selectedRows();
+                [this, indices] (void) {
         if (indices.size() > 0) {
             TrackModel* trackModel = getTrackModel();
             if (trackModel) {
@@ -492,7 +500,13 @@ void WTrackTableView::showTrackInfo(QModelIndex index) {
     if (!trackModel)
         return;
 
-    TrackPointer pTrack = trackModel->getTrack(index);
+    TrackPointer pTrack;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &trackModel, &index, &pTrack] (void) {
+        pTrack = trackModel->getTrack(index);
+    }, __PRETTY_FUNCTION__);
+
     // NULL is fine.
     m_pTrackInfo->loadTrack(pTrack);
     currentTrackInfoIndex = index;
@@ -520,7 +534,13 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
         return;
     }
 
-    TrackPointer pTrack = trackModel->getTrack(index);
+    TrackPointer pTrack;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &trackModel, &index, &pTrack] (void) {
+        pTrack = trackModel->getTrack(index);
+    }, __PRETTY_FUNCTION__);
+
     // NULL is fine
     m_DlgTagFetcher.init(pTrack);
     currentTrackInfoIndex = index;
@@ -613,19 +633,18 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             while (it.hasNext()) {
                 it.next();
                 if (!playlistDao.isHidden(it.value())) {
-                    // No leak because making the menu the parent means they will be
-                    // auto-deleted
+                    // No leak because making the menu the parent means they will be auto-deleted
                     // NOTE(tro) Create pAction in main thread
-                    QAction* pAction;
+                    bool locked = playlistDao.isPlaylistLocked(it.value());
                     MainExecuter::callSync(
-                                [this, &it, &playlistDao, &pAction](void) {
+                                [this, &it, &playlistDao, &locked](void) {
+                        QAction* pAction;
                         pAction = new QAction(it.key(), m_pPlaylistMenu);
-                        bool locked = playlistDao.isPlaylistLocked(it.value());
                         pAction->setEnabled(!locked);
                         m_pPlaylistMenu->addAction(pAction);
                         m_playlistMapper.setMapping(pAction, it.value());
                         connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
-                    });
+                    }, __PRETTY_FUNCTION__);
                 }
             }
         }, __PRETTY_FUNCTION__);
@@ -1126,20 +1145,20 @@ void WTrackTableView::loadSelectedTrackToGroup(QString group, bool play) {
 void WTrackTableView::slotSendToAutoDJ() {
     // append to auto DJ
     // qDebug() << "in WTrackTableView::slotSendToAutoDJ";
-    // tro's lambda idea
-    m_pTrackCollection->callAsync(
-                [this](void) {
+//     tro's lambda idea
+//    m_pTrackCollection->callAsync(
+//                [this](void) {
         sendToAutoDJ(false); // bTop = false
-    }, __PRETTY_FUNCTION__);
+//    }, __PRETTY_FUNCTION__);
 }
 
 void WTrackTableView::slotSendToAutoDJTop() {
     // append to auto DJ
     // qDebug() << "in WTrackTableView::slotSendToAutoDJ";
-    m_pTrackCollection->callAsync(
-                [this] (void) {
+//    m_pTrackCollection->callAsync(
+//                [this] (void) {
         sendToAutoDJ(true); // bTop = true
-    }, __PRETTY_FUNCTION__);
+//    }, __PRETTY_FUNCTION__);
 }
 
 void WTrackTableView::sendToAutoDJ(bool bTop) {
@@ -1148,41 +1167,44 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         return;
     }
 
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    if (iAutoDJPlaylistId == -1) {
-        return;
-    }
-
     QModelIndexList indices = selectionModel()->selectedRows();
-    QList<int> trackIds;
 
-    TrackModel* trackModel = getTrackModel();
-    if (!trackModel) {
-        return;
-    }
+//    PlaylistDAO& playlistDao = /*m_pTrackCollection->getPlaylistDAO()*/;
 
-    foreach (QModelIndex index, indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            int iTrackId = pTrack->getId();
-            if (iTrackId == -1) {
-                continue;
-            }
-            trackIds.append(iTrackId);
+    m_pTrackCollection->callAsync(
+                [this, indices, bTop] (void) {
+        int iAutoDJPlaylistId = m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
+        if (iAutoDJPlaylistId == -1) {
+            return;
         }
-    }
+        TrackModel* trackModel = getTrackModel();
+        if (!trackModel) {
+            return;
+        }
 
-    if (bTop) {
-        // Load track to position two because position one is
-        // already loaded to the player
-        playlistDao.insertTracksIntoPlaylist(trackIds,
-                                            iAutoDJPlaylistId, 2);
-    } else {
-        // TODO(XXX): Care whether the append succeeded.
-        playlistDao.appendTracksToPlaylist(
-            trackIds, iAutoDJPlaylistId);
-    }
+        QList<int> trackIds;
+        foreach (QModelIndex index, indices) {
+            TrackPointer pTrack = trackModel->getTrack(index);
+            if (pTrack) {
+                int iTrackId = pTrack->getId();
+                if (iTrackId == -1) {
+                    continue;
+                }
+                trackIds.append(iTrackId);
+            }
+        }
+
+        if (bTop) {
+            // Load track to position two because position one is
+            // already loaded to the player
+            m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(trackIds,
+                                                                          iAutoDJPlaylistId, 2);
+        } else {
+            // TODO(XXX): Care whether the append succeeded.
+            m_pTrackCollection->getPlaylistDAO().appendTracksToPlaylist(
+                        trackIds, iAutoDJPlaylistId);
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 void WTrackTableView::slotReloadTrackMetadata() {
@@ -1205,11 +1227,8 @@ void WTrackTableView::slotReloadTrackMetadata() {
             // tro's lambda idea. This code calls asynchronously!
             TrackPointer pTrack = trackModel->getTrack(index);
             if (pTrack) {
-                DBG()<<"Before pTrack->parse();";
                 pTrack->parse();
-                DBG()<<"After pTrack->parse();";
             }
-            DBG() << "End";
         }
     }, __PRETTY_FUNCTION__);
 }
@@ -1224,7 +1243,12 @@ void WTrackTableView::slotResetPlayed() {
     }
 
     foreach (QModelIndex index, indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
+        TrackPointer pTrack;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &trackModel, &index, &pTrack] (void) {
+            pTrack = trackModel->getTrack(index);
+        }, __PRETTY_FUNCTION__);
         if (pTrack) {
             pTrack->setTimesPlayed(0);
         }
@@ -1232,9 +1256,11 @@ void WTrackTableView::slotResetPlayed() {
 }
 
 void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
+    QModelIndexList indices = selectionModel()->selectedRows();
+
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, iPlaylistId] (void) {
+                [this, iPlaylistId, indices] (void) {
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         TrackModel* trackModel = getTrackModel();
 
@@ -1242,7 +1268,6 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
             return;
         }
 
-        QModelIndexList indices = selectionModel()->selectedRows();
         QList<int> trackIds;
         foreach (QModelIndex index, indices) {
             TrackPointer pTrack = trackModel->getTrack(index);
@@ -1262,9 +1287,11 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
 }
 
 void WTrackTableView::addSelectionToCrate(int iCrateId) {
+    QModelIndexList indices = selectionModel()->selectedRows();
+
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, iCrateId] (void) {
+                [this, iCrateId, indices] (void) {
         CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
         TrackModel* trackModel = getTrackModel();
 
@@ -1272,7 +1299,6 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
             return;
         }
 
-        QModelIndexList indices = selectionModel()->selectedRows();
         QList<int> trackIds;
         foreach (QModelIndex index, indices) {
             TrackPointer pTrack = trackModel->getTrack(index);
@@ -1381,7 +1407,13 @@ void WTrackTableView::slotScaleBpm(int scale){
     QModelIndexList selectedTrackIndices = selectionModel()->selectedRows();
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
-        TrackPointer track = trackModel->getTrack(index);
+        TrackPointer track;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &trackModel, &index, &track] (void) {
+            track = trackModel->getTrack(index);
+        }, __PRETTY_FUNCTION__);
+
         if (!track->hasBpmLock()) { //bpm is not locked
             BeatsPointer beats = track->getBeats();
             if (beats != NULL) {
@@ -1403,7 +1435,12 @@ void WTrackTableView::lockBpm(bool lock) {
     // TODO: This should be done in a thread for large selections
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
-        TrackPointer track = trackModel->getTrack(index);
+        TrackPointer track;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &trackModel, &index, &track] (void) {
+            track = trackModel->getTrack(index);
+        }, __PRETTY_FUNCTION__);
         track->setBpmLock(lock);
     }
 }
@@ -1418,7 +1455,12 @@ void WTrackTableView::slotClearBeats() {
     // TODO: This should be done in a thread for large selections
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
-        TrackPointer track = trackModel->getTrack(index);
+        TrackPointer track;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &trackModel, &index, &track] (void) {
+            track = trackModel->getTrack(index);
+        }, __PRETTY_FUNCTION__);
         if (!track->hasBpmLock()) {
             track->setBeats(BeatsPointer());
         }

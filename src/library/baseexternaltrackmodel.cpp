@@ -30,6 +30,7 @@ void BaseExternalTrackModel::setTableModel(int id) {
 BaseExternalTrackModel::~BaseExternalTrackModel() {
 }
 
+// must be called from TrackCollection Thread
 TrackPointer BaseExternalTrackModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(index.row(), fieldIndex("artist")).data().toString();
     QString title = index.sibling(index.row(), fieldIndex("title")).data().toString();

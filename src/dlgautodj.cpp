@@ -565,6 +565,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
     }
 }
 
+// Must be called from TrackCollection thread
 TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     // Get the track at the top of the playlist...
     TrackPointer nextTrack;
@@ -615,6 +616,7 @@ bool DlgAutoDJ::loadNextTrackFromQueue() {
     return true;
 }
 
+// Must be called from TrackCollection thread
 bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     TrackPointer nextTrack, loadedTrack;
     int nextId = 0, loadedId = 0;

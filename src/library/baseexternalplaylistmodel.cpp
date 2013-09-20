@@ -21,6 +21,7 @@ void BaseExternalPlaylistModel::setTableModel(int id){
     Q_UNUSED(id);
 }
 
+// must be called from TrackCollection thread
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
     QString artist = index.sibling(
         index.row(), fieldIndex("artist")).data().toString();

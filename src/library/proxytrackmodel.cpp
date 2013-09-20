@@ -30,6 +30,7 @@ const QLinkedList<int> ProxyTrackModel::getTrackRows(int trackId) const {
     return m_pTrackModel->getTrackRows(trackId);
 }
 
+// Must be called from TrackCollection
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel->getTrack(indexSource);

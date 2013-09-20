@@ -63,16 +63,20 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
             this, SLOT(slotAnalyzePlaylist()));
 
     connect(&m_playlistDao, SIGNAL(added(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+            this, SLOT(slotPlaylistTableChanged(int)),
+            Qt::QueuedConnection); // tro
 
     connect(&m_playlistDao, SIGNAL(deleted(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+            this, SLOT(slotPlaylistTableChanged(int)),
+            Qt::QueuedConnection); // tro
 
     connect(&m_playlistDao, SIGNAL(renamed(int,QString)),
-            this, SLOT(slotPlaylistTableRenamed(int,QString)));
+            this, SLOT(slotPlaylistTableRenamed(int,QString)),
+            Qt::QueuedConnection); // tro
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+            this, SLOT(slotPlaylistTableChanged(int)),
+            Qt::QueuedConnection); // tro
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
