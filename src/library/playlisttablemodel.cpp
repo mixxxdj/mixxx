@@ -118,6 +118,7 @@ bool PlaylistTableModel::appendTrack(int trackId) {
     return true;
 }
 
+// Must be called from TrackCollection thread
 void PlaylistTableModel::removeTrack(const QModelIndex& index) {
     if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
         return;

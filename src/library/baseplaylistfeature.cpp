@@ -229,10 +229,8 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
     // tro's lambda idea. This code calls Asynchronously!
     m_pTrackCollection->callAsync(
                 [this, name, oldPlaylistId] (void) {
-        bool copiedPlaylistTracks = false;
-        int newPlaylistId = -1;
-        newPlaylistId = m_playlistDao.createPlaylist(name);
-        copiedPlaylistTracks = m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId);
+        int newPlaylistId = m_playlistDao.createPlaylist(name);
+        bool copiedPlaylistTracks = m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId);
 
         if (newPlaylistId != -1 && copiedPlaylistTracks) {
             emit(showTrackModel(m_pPlaylistTableModel));
@@ -312,17 +310,19 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 }
 
 void BasePlaylistFeature::slotDeletePlaylist() {
-    // tro's lambda idea. This code calls synchronously!
     const int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+    const bool isLastRightClickedIdxValid = m_lastRightClickedIndex.isValid();
+
+    // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &playlistId] (void) {
+                [this, &playlistId, &isLastRightClickedIdxValid] (void) {
         //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
         bool locked = m_playlistDao.isPlaylistLocked(playlistId);
         if (locked) {
             qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
             return;
         }
-        if (m_lastRightClickedIndex.isValid()) {
+        if (isLastRightClickedIdxValid) {
             Q_ASSERT(playlistId >= 0);
             m_playlistDao.deletePlaylist(playlistId);
         }

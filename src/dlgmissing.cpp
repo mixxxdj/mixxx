@@ -48,12 +48,11 @@ DlgMissing::~DlgMissing() {
 }
 
 void DlgMissing::onShow() {
-    emit activateButtons(false);
-//    slotActivateButtons(false);
-    m_pMissingTableModel->select();
     // no buttons can be selected
-//    MainExecuter::callSync([this](void) {
-//    }, __PRETTY_FUNCTION__);
+    MainExecuter::callSync([this](void) {
+        slotActivateButtons(false);
+    }, __PRETTY_FUNCTION__);
+    m_pMissingTableModel->select();
 }
 
 void DlgMissing::clicked() {

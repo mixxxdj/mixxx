@@ -815,7 +815,7 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS = '-Wall')
             build.env.Append(CCFLAGS = '-Wextra')
             build.env.Append(CCFLAGS = '-g')
-            # try to use C++11
+            # add usage of C++11
             build.env.Append(CCFLAGS = '-std=c++11')
 
             # Check that g++ is present (yeah, SCONS is a bit dumb here)

@@ -366,13 +366,14 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
 
 void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
     // here callAsync uses
+    if (sDebug) {
+        qDebug() << this << "search" << searchText;
+    }
+    setSearch(searchText, extraFilter);
+
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, searchText, extraFilter] (void) {
-        if (sDebug) {
-            qDebug() << this << "search" << searchText;
-        }
-        setSearch(searchText, extraFilter);
+                [this] (void) {
         select();
     }, __PRETTY_FUNCTION__);
 }

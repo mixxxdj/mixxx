@@ -12,10 +12,9 @@ namespace {
 const bool sDebug = false;
 
 const QHash<QString, int> buildReverseIndex(const QList<QString> items) {
-    int i = 0;
     QHash<QString, int> index;
-    foreach (const QString item, items) {
-        index[item] = i++;
+    for (int i = 0; i < items.count(); ++i) {
+        index[items.at(i)] = i;
     }
     return index;
 }
@@ -381,9 +380,9 @@ bool BaseTrackCache::trackMatches(const TrackPointer& pTrack,
     // if it matches the search query.
     // To properly AND search queries, concatenate all searchable fields
     QString combined_values;
-    int i = 0;
-    foreach (QString column, m_searchColumns) {  // WTF: why not just for (i=0; m_searchColumns.count()...)?
-        int columnIndex = m_searchColumnIndices[i++];
+
+    for (int i = 0; i < m_searchColumns.count(); ++i) {
+        int columnIndex = m_searchColumnIndices.at(i);
         QVariant value;
         getTrackValueForColumn(pTrack, columnIndex, value);
         if (value.isValid() && qVariantCanConvert<QString>(value)) {

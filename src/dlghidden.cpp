@@ -52,11 +52,11 @@ void DlgHidden::init() {
 }
 
 void DlgHidden::onShow() {
-    m_pHiddenTableModel->select();
     // no buttons can be selected
     MainExecuter::callSync([this](void) {
         slotActivateButtons(false);
     }, __PRETTY_FUNCTION__);
+    m_pHiddenTableModel->select();
 }
 
 void DlgHidden::onSearch(const QString& text) {

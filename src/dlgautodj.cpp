@@ -622,7 +622,9 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     int nextId = 0, loadedId = 0;
 
     // Get the track at the top of the playlist...
+
     nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
+
     if (nextTrack) {
         nextId = nextTrack->getId();
     }

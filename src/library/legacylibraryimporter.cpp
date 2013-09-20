@@ -128,9 +128,8 @@ void LegacyLibraryImporter::import() {
                 // tro's lambda idea. This code calls asynchronously!
                 m_pTrackCollection->callAsync(
                             [this] (void) {
+                    m_trackDao.saveTrack(pTrack);
                 }, __PRETTY_FUNCTION__);
-
-                m_trackDao.saveTrack(pTrack);
 
                 //Check if this track is used in a playlist anywhere. If it is, save the
                 //track location. (The "id" of a track in 1.8 is a database index, so it's totally
