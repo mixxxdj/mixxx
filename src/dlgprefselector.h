@@ -2,6 +2,7 @@
 #define DLGPREFSELECTOR_H
 
 #include <QWidget>
+#include <QHash>
 
 #include "ui_dlgprefselectordlg.h"
 #include "configobject.h"
@@ -31,9 +32,11 @@ class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
     void filterKey4thEnabled(int value);
     void filterKey5thEnabled(int value);
     void filterKeyRelativeEnabled(int value);
-    void setTimbreCoefficient(int value);
-    void setRhythmCoefficient(int value);
-    void setLastFmCoefficient(int value);
+    void setTimbreContribution(int value);
+    void setRhythmContribution(int value);
+    void setLastFmContribution(int value);
+    // sets similarity contribution, adjusts sliders so that they sum to 100
+    void setContribution(QString key, int value);
     void displayTimbreDescription();
     void displayRhythmDescription();
     void displayLastFmDescription();
@@ -49,9 +52,9 @@ class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
     bool m_bFilterKey4th;
     bool m_bFilterKey5th;
     bool m_bFilterKeyRelative;
-    int m_iTimbreCoefficient;
-    int m_iRhythmCoefficient;
-    int m_iLastFmCoefficient;
+    QHash<QString, double> m_similarityContributions;
+    QHash<QString, QSlider*> m_similaritySliders;
+
 };
 
 #endif // DLGPREFSELECTOR_H

@@ -115,6 +115,9 @@
       </item>
       <item row="0" column="2">
        <widget class="QSlider" name="horizontalSliderTimbre">
+        <property name="minimum">
+         <number>1</number>
+        </property>
         <property name="maximum">
          <number>99</number>
         </property>
@@ -131,6 +134,9 @@
       </item>
       <item row="1" column="2">
        <widget class="QSlider" name="horizontalSliderRhythm">
+        <property name="minimum">
+         <number>1</number>
+        </property>
         <property name="maximum">
          <number>99</number>
         </property>
@@ -181,6 +187,9 @@
       </item>
       <item row="2" column="2">
        <widget class="QSlider" name="horizontalSliderLastFm">
+        <property name="minimum">
+         <number>1</number>
+        </property>
         <property name="maximum">
          <number>99</number>
         </property>

@@ -11,6 +11,10 @@ DlgPrefSelector::DlgPrefSelector(QWidget *parent,
       Ui::DlgPrefSelectorDlg(),
       m_pConfig(pConfig) {
     setupUi(this);
+    m_similaritySliders.insert("timbre", horizontalSliderTimbre);
+    m_similaritySliders.insert("rhythm", horizontalSliderRhythm);
+    m_similaritySliders.insert("lastfm", horizontalSliderLastFm);
+
     loadSettings();
 
     connect(checkBoxGenre, SIGNAL(stateChanged(int)),
@@ -29,16 +33,16 @@ DlgPrefSelector::DlgPrefSelector(QWidget *parent,
             this, SLOT(filterKeyRelativeEnabled(int)));
     connect(horizontalSliderTimbre, SIGNAL(sliderPressed()),
             this, SLOT(displayTimbreDescription()));
-    connect(horizontalSliderTimbre, SIGNAL(valueChanged(int)),
-            this, SLOT(setTimbreCoefficient(int)));
+    connect(horizontalSliderTimbre, SIGNAL(sliderMoved(int)),
+            this, SLOT(setTimbreContribution(int)));
     connect(horizontalSliderRhythm, SIGNAL(sliderPressed()),
             this, SLOT(displayRhythmDescription()));
-    connect(horizontalSliderRhythm, SIGNAL(valueChanged(int)),
-            this, SLOT(setRhythmCoefficient(int)));
+    connect(horizontalSliderRhythm, SIGNAL(sliderMoved(int)),
+            this, SLOT(setRhythmContribution(int)));
     connect(horizontalSliderLastFm, SIGNAL(sliderPressed()),
             this, SLOT(displayLastFmDescription()));
-    connect(horizontalSliderLastFm, SIGNAL(valueChanged(int)),
-            this, SLOT(setLastFmCoefficient(int)));
+    connect(horizontalSliderLastFm, SIGNAL(sliderMoved(int)),
+            this, SLOT(setLastFmContribution(int)));
 }
 
 DlgPrefSelector::~DlgPrefSelector() {
@@ -68,13 +72,13 @@ void DlgPrefSelector::slotApply() {
         ConfigValue(m_bFilterKeyRelative ? 1 : 0));
     m_pConfig->set(
         ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT),
-        ConfigValue(m_iTimbreCoefficient));
+        ConfigValue(m_similarityContributions.value("timbre")));
     m_pConfig->set(
         ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT),
-        ConfigValue(m_iRhythmCoefficient));
+        ConfigValue(m_similarityContributions.value("rhythm")));
     m_pConfig->set(
         ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT),
-        ConfigValue(m_iLastFmCoefficient));
+        ConfigValue(m_similarityContributions.value("lastfm")));
     m_pConfig->Save();
 }
 
@@ -86,9 +90,12 @@ void DlgPrefSelector::slotUpdate() {
     checkBoxKey4th->setChecked(m_bFilterKey4th);
     checkBoxKey5th->setChecked(m_bFilterKey5th);
     checkBoxKeyRelative->setChecked(m_bFilterKeyRelative);
-    horizontalSliderTimbre->setValue(m_iTimbreCoefficient);
-    horizontalSliderRhythm->setValue(m_iRhythmCoefficient);
-    horizontalSliderLastFm->setValue(m_iLastFmCoefficient);
+
+    foreach (QString key, m_similarityContributions.keys()) {
+        int value = m_similarityContributions.value(key);
+        QSlider* pSlider = m_similaritySliders.value(key);
+        pSlider->setValue(value);
+    }
     slotApply();
 }
 
@@ -103,9 +110,9 @@ void DlgPrefSelector::setDefaults() {
     m_bFilterKey4th = false;
     m_bFilterKey5th = false;
     m_bFilterKeyRelative = false;
-    m_iTimbreCoefficient = 50;
-    m_iRhythmCoefficient = 50;
-    m_iLastFmCoefficient = 0;
+    m_similarityContributions.insert("timbre", 50);
+    m_similarityContributions.insert("rhythm", 49);
+    m_similarityContributions.insert("lastfm", 1);
 }
 
 void DlgPrefSelector::filterGenreEnabled(int value) {
@@ -136,16 +143,37 @@ void DlgPrefSelector::filterKeyRelativeEnabled(int value) {
     m_bFilterKeyRelative = static_cast<bool>(value);
 }
 
-void DlgPrefSelector::setTimbreCoefficient(int value) {
-    m_iTimbreCoefficient = value;
+void DlgPrefSelector::setTimbreContribution(int value) {
+    setContribution("timbre", value);
 }
 
-void DlgPrefSelector::setRhythmCoefficient(int value) {
-    m_iRhythmCoefficient = value;
+void DlgPrefSelector::setRhythmContribution(int value) {
+    setContribution("rhythm", value);
 }
 
-void DlgPrefSelector::setLastFmCoefficient(int value) {
-    m_iLastFmCoefficient = value;
+void DlgPrefSelector::setLastFmContribution(int value) {
+    setContribution("lastfm", value);
+}
+
+void DlgPrefSelector::setContribution(QString key, int value) {
+    m_similarityContributions.insert(key, value);
+    double scale = 0.0;
+    foreach (int contribution, m_similarityContributions.values()) {
+        scale += contribution;
+    }
+    scale = (100 - value) / (scale - value);
+
+    foreach (QString otherKey, m_similarityContributions.keys()) {
+        if (otherKey != key) {
+            int otherValue = m_similarityContributions.value(otherKey);
+            otherValue = (int) (otherValue * scale);
+            if (otherValue < 1) otherValue = 1;
+            m_similarityContributions.insert(otherKey, otherValue);
+
+            QSlider* pSlider = m_similaritySliders.value(otherKey);
+            pSlider->setValue(otherValue);
+        }
+    }
 }
 
 void DlgPrefSelector::displayTimbreDescription() {
@@ -184,12 +212,12 @@ void DlgPrefSelector::loadSettings() {
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_5TH)).toInt());
     m_bFilterKeyRelative = static_cast<bool>(m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, FILTER_KEY_RELATIVE)).toInt());
-    m_iTimbreCoefficient = m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT)).toInt();
-    m_iRhythmCoefficient = m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT)).toInt();
-    m_iLastFmCoefficient = m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT)).toInt();
+    m_similarityContributions.insert("timbre", m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT)).toInt());
+    m_similarityContributions.insert("rhythm", m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT)).toInt());
+    m_similarityContributions.insert("lastfm", m_pConfig->getValueString(
+        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT)).toInt());
 
     slotUpdate();
 }
