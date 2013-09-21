@@ -185,6 +185,7 @@ void TrackCollection::stopThread() {
     m_semLambdasReadyToCall.release(1);
 }
 
+
 bool TrackCollection::checkForTables() {
     if (!m_pDatabase->open()) {
         MainExecuter::callSync([this](void) {
@@ -229,9 +230,8 @@ bool TrackCollection::checkForTables() {
                                      "\n\n" + okToExit,
                                      QMessageBox::Ok);
             }
-            checkResult = false;
         }
-
+        checkResult = false;
     });
     return checkResult;
 }
@@ -256,6 +256,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
     //get a list of the contents of the directory and go through it.
     QDirIterator it(directory, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     while (it.hasNext()) {
+
         //If a flag was raised telling us to cancel the library scan then stop.
         if (*cancel) {
             return false;
