@@ -374,7 +374,7 @@ double LoopRecordingManager::getCurrentBPM() {
         // TODO(Carl) get scaling working for sample rates other than 44.1 kHz
         // Rate is incorrect for sample rates higher than 44.1.
         //return baseTrackBPM * rate;
-        return baseTrackBPM;
+        return baseTrackBPM * rate;
 
     } else {
         //qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() 0";
