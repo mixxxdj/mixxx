@@ -23,12 +23,12 @@
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig),
-      m_database(NULL),
-      m_playlistDao(NULL),
-      m_crateDao(NULL),
-      m_cueDao(NULL),
-      m_analysisDao(NULL),
-      m_trackDao(NULL),
+      m_pDatabase(NULL),
+      m_pPlaylistDao(NULL),
+      m_pCrateDao(NULL),
+      m_pCueDao(NULL),
+      m_pAnalysisDao(NULL),
+      m_pTrackDao(NULL),
       m_stop(false),
       m_semLambdasReadyToCall(0),
       m_semLambdasFree(MAX_LAMBDA_COUNT),
@@ -44,26 +44,26 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection() {
     DBG() << "~TrackCollection()";
-    m_trackDao->finish();
+    m_pTrackDao->finish();
 
-    if (m_database->isOpen()) {
+    if (m_pDatabase->isOpen()) {
         // There should never be an outstanding transaction when this code is
         // called. If there is, it means we probably aren't committing a
         // transaction somewhere that should be.
-        if (m_database->rollback()) {
+        if (m_pDatabase->rollback()) {
             qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
                      << "There is a logic error somewhere.";
         }
-        m_database->close();
+        m_pDatabase->close();
     } else {
         qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
                  << "There is a logic error somewhere.";
     }
-    delete m_playlistDao;
-    delete m_crateDao;
-    delete m_cueDao;
-    delete m_analysisDao;
-    delete m_trackDao;
+    delete m_pPlaylistDao;
+    delete m_pCrateDao;
+    delete m_pCueDao;
+    delete m_pAnalysisDao;
+    delete m_pTrackDao;
 }
 
 void TrackCollection::run() {
@@ -77,10 +77,10 @@ void TrackCollection::run() {
 
     createAndPopulateDbConnection();
 
-    m_trackDao->initialize();
-    m_playlistDao->initialize();
-    m_crateDao->initialize();
-    m_cueDao->initialize();
+    m_pTrackDao->initialize();
+    m_pPlaylistDao->initialize();
+    m_pCrateDao->initialize();
+    m_pCueDao->initialize();
 
     m_pCOTPlaylistIsBusy = new ControlObjectThread(ConfigKey("[Playlist]", "isBusy"));
     Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
@@ -119,9 +119,13 @@ void TrackCollection::run() {
 void TrackCollection::callAsync(func lambda, QString where) {
     qDebug() << "callAsync from" << where;
     if (lambda == NULL) return;
-    Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
-    // lock GUI elements by setting [playlist] "isBusy"
-    m_pCOTPlaylistIsBusy->set(1.0);
+    const bool inMainThread = QThread::currentThread() == qApp->thread();
+    if (inMainThread) {
+        DBG() << "LOCKING";
+        Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
+        // lock GUI elements by setting [playlist] "isBusy"
+        m_pCOTPlaylistIsBusy->set(1.0);
+    }
     addLambdaToQueue(lambda);
 }
 
@@ -138,6 +142,7 @@ void TrackCollection::callSync(func lambda, QString where) {
 
     const bool inMainThread = QThread::currentThread() == qApp->thread();
     if (inMainThread) {
+        DBG() << "LOCKING";
         Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
         // lock GUI elements by setting [playlist] "isBusy"
         m_pCOTPlaylistIsBusy->set(1.0);
@@ -159,6 +164,7 @@ void TrackCollection::callSync(func lambda, QString where) {
     }
     mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
     if (inMainThread) {
+        DBG() << "UNLOCKING";
         Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
         // lock GUI elements by setting [playlist] "isBusy
         m_pCOTPlaylistIsBusy->set(0.0);
@@ -183,7 +189,7 @@ void TrackCollection::stopThread() {
 }
 
 bool TrackCollection::checkForTables() {
-    if (!m_database->open()) {
+    if (!m_pDatabase->open()) {
         MainExecuter::callSync([this](void) {
             QMessageBox::critical(0, tr("Cannot open database"),
                                   tr("Unable to establish a database connection.\n"
@@ -195,7 +201,8 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    MainExecuter::callSync([this](void) {
+    bool checkResult = true;
+    MainExecuter::callSync([this, &checkResult](void) {
         int requiredSchemaVersion = 20; // TODO(xxx) avoid constant 20
         QString schemaFilename = m_pConfig->getResourcePath();
         schemaFilename.append("schema.xml");
@@ -203,7 +210,7 @@ bool TrackCollection::checkForTables() {
         QString upgradeFailed = tr("Cannot upgrade database schema");
         QString upgradeToVersionFailed = tr("Unable to upgrade your database schema to version %1")
                 .arg(QString::number(requiredSchemaVersion));
-        int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, *m_database, requiredSchemaVersion);
+        int result = SchemaManager::upgradeToSchemaVersion(schemaFilename, *m_pDatabase, requiredSchemaVersion);
         if (result < 0) {
             if (result == -1) {
                 QMessageBox::warning(0, upgradeFailed,
@@ -225,14 +232,15 @@ bool TrackCollection::checkForTables() {
                                      "\n\n" + okToExit,
                                      QMessageBox::Ok);
             }
-            return false;
+            checkResult = false;
         }
+
     });
-    return true;
+    return checkResult;
 }
 
 QSqlDatabase& TrackCollection::getDatabase() {
-    return *m_database;
+    return *m_pDatabase;
 }
 
 // Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
@@ -307,15 +315,15 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
 }
 
 CrateDAO& TrackCollection::getCrateDAO() {
-    return *m_crateDao;
+    return *m_pCrateDao;
 }
 
 TrackDAO& TrackCollection::getTrackDAO() {
-    return *m_trackDao;
+    return *m_pTrackDao;
 }
 
 PlaylistDAO& TrackCollection::getPlaylistDAO() {
-    return *m_playlistDao;
+    return *m_pPlaylistDao;
 }
 
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
@@ -341,15 +349,15 @@ void TrackCollection::createAndPopulateDbConnection() {
         exit(-1);
     }
 
-    m_database = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE", "track_collection_connection"));
-    m_database->setHostName("localhost");
-    m_database->setDatabaseName(m_pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
-    m_database->setUserName("mixxx");
-    m_database->setPassword("mixxx");
-    bool ok = m_database->open();
-    qDebug() << "DB status:" << m_database->databaseName() << "=" << ok;
-    if (m_database->lastError().isValid()) {
-        qDebug() << "Error loading database:" << m_database->lastError();
+    m_pDatabase = new QSqlDatabase(QSqlDatabase::addDatabase("QSQLITE", "track_collection_connection"));
+    m_pDatabase->setHostName("localhost");
+    m_pDatabase->setDatabaseName(m_pConfig->getSettingsPath().append("/mixxxdb.sqlite"));
+    m_pDatabase->setUserName("mixxx");
+    m_pDatabase->setPassword("mixxx");
+    bool ok = m_pDatabase->open();
+    qDebug() << "DB status:" << m_pDatabase->databaseName() << "=" << ok;
+    if (m_pDatabase->lastError().isValid()) {
+        qDebug() << "Error loading database:" << m_pDatabase->lastError();
     }
     // Check for tables and create them if missing
     if (!checkForTables()) {
@@ -357,11 +365,11 @@ void TrackCollection::createAndPopulateDbConnection() {
         exit(-1);
     }
 
-    m_playlistDao = new PlaylistDAO(*m_database);
-    m_crateDao = new CrateDAO(*m_database);
-    m_cueDao = new CueDAO(*m_database);
-    m_analysisDao = new AnalysisDao(*m_database, m_pConfig);
-    m_trackDao = new TrackDAO(*m_database, *m_cueDao, *m_playlistDao, *m_crateDao, *m_analysisDao, m_pConfig);
+    m_pPlaylistDao = new PlaylistDAO(*m_pDatabase);
+    m_pCrateDao = new CrateDAO(*m_pDatabase);
+    m_pCueDao = new CueDAO(*m_pDatabase);
+    m_pAnalysisDao = new AnalysisDao(*m_pDatabase, m_pConfig);
+    m_pTrackDao = new TrackDAO(*m_pDatabase, *m_pCueDao, *m_pPlaylistDao, *m_pCrateDao, *m_pAnalysisDao, m_pConfig);
 }
 
 void TrackCollection::addTrackToChunk(const QString filePath, TrackDAO& trackDao) {
@@ -399,7 +407,7 @@ void TrackCollection::addChunkToDatabase(TrackDAO& trackDao) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
                 // new Track in the database
-                m_trackDao->databaseTrackAdded(pTrack);
+                m_pTrackDao->databaseTrackAdded(pTrack);
             } else {
                 qDebug() << "Track ("+trackPath+") could not be added";
             }

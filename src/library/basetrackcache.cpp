@@ -85,6 +85,7 @@ int BaseTrackCache::fieldIndex(const QString columnName) const {
     return m_columnIndex.value(columnName, -1);
 }
 
+//
 void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksAdded" << trackIds.size();
@@ -142,6 +143,7 @@ void BaseTrackCache::ensureCached(int trackId) {
     updateTrackInIndex(trackId);
 }
 
+//
 void BaseTrackCache::ensureCached(QSet<int> trackIds) {
     updateTracksInIndex(trackIds);
 }
@@ -184,14 +186,14 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     return true;
 }
 
+// Must be called from TrackCollection thread
 bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
-    // this method can be called from TrackCollection
     QTime timer;
     timer.start();
 
-//    if (sDebug) {
+    if (sDebug) {
         qDebug() << "updateIndexWithQuery issuing query:" << queryString;
-//    }
+    }
 
     QSqlQuery query(m_database);
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
@@ -244,17 +246,14 @@ void BaseTrackCache::buildIndex() {
     m_trackInfo.clear();
     m_pTrackInfoMutex->unlock();
 
-//     tro's lambda idea. This code calls Synchronously!
-//    m_pTrackCollection->callSync(
-//                [this, &queryString] (void) {
-        if (!updateIndexWithQuery(queryString)) {
-            qDebug() << "buildIndex failed!";
-        }
-//    }, __PRETTY_FUNCTION__);
+    if (!updateIndexWithQuery(queryString)) {
+        qDebug() << "buildIndex failed!";
+    }
 
     m_bIndexBuilt = true;
 }
 
+//
 void BaseTrackCache::updateTrackInIndex(int trackId) {
     QSet<int> trackIds;
     trackIds.insert(trackId);

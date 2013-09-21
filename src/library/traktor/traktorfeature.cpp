@@ -81,11 +81,7 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection);
 
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        m_pTraktorTableModel->init();
-    }, __PRETTY_FUNCTION__);
+    m_pTraktorTableModel->init();
 
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
 

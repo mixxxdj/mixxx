@@ -138,6 +138,7 @@ void AnalysisFeature::cleanupAnalyser() {
     }
 }
 
+// Must be called from TrackCollection thread
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     Q_UNUSED(pSource);
     QList<QFileInfo> files;

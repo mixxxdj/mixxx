@@ -55,11 +55,7 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         "itunes_library",
         "itunes");
 
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        m_pITunesTrackModel->init();
-    }, __PRETTY_FUNCTION__);
+    m_pITunesTrackModel->init();
 
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,

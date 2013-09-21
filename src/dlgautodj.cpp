@@ -11,7 +11,6 @@
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
 #include "widget/wwidget.h"
-#include "util/sleepableqthread.h"
 
 #define CONFIG_KEY "[Auto DJ]"
 const char* kTransitionPreferenceName = "Transition";

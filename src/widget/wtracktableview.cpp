@@ -1123,6 +1123,7 @@ void WTrackTableView::slotSendToAutoDJTop() {
     sendToAutoDJ(true); // bTop = true
 }
 
+// Must be called from Main thread
 void WTrackTableView::sendToAutoDJ(bool bTop) {
     if (!modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOAUTODJ)) {
         return;
@@ -1130,40 +1131,37 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
 
     QModelIndexList indices = selectionModel()->selectedRows();
 
-//    PlaylistDAO& playlistDao = /*m_pTrackCollection->getPlaylistDAO()*/;
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel) {
+        return;
+    }
+
+    QList<int> trackIds;
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (pTrack) {
+            int iTrackId = pTrack->getId();
+            if (iTrackId == -1) {
+                continue;
+            }
+            trackIds.append(iTrackId);
+        }
+    }
 
     m_pTrackCollection->callAsync(
-                [this, indices, bTop] (void) {
-        int iAutoDJPlaylistId = m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
+                [this, trackIds, bTop] (void) {
+        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+        int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
         if (iAutoDJPlaylistId == -1) {
             return;
         }
-        TrackModel* trackModel = getTrackModel();
-        if (!trackModel) {
-            return;
-        }
-
-        QList<int> trackIds;
-        foreach (QModelIndex index, indices) {
-            TrackPointer pTrack = trackModel->getTrack(index); /////////////////
-            if (pTrack) {
-                int iTrackId = pTrack->getId();
-                if (iTrackId == -1) {
-                    continue;
-                }
-                trackIds.append(iTrackId);
-            }
-        }
-
         if (bTop) {
             // Load track to position two because position one is
             // already loaded to the player
-            m_pTrackCollection->getPlaylistDAO().insertTracksIntoPlaylist(trackIds,
-                                                                          iAutoDJPlaylistId, 2);
+            playlistDao.insertTracksIntoPlaylist(trackIds, iAutoDJPlaylistId, 2);
         } else {
             // TODO(XXX): Care whether the append succeeded.
-            m_pTrackCollection->getPlaylistDAO().appendTracksToPlaylist(
-                        trackIds, iAutoDJPlaylistId);
+            playlistDao.appendTracksToPlaylist(trackIds, iAutoDJPlaylistId);
         }
     }, __PRETTY_FUNCTION__);
 }
@@ -1208,31 +1206,30 @@ void WTrackTableView::slotResetPlayed() {
 
 void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     QModelIndexList indices = selectionModel()->selectedRows();
+    TrackModel* trackModel = getTrackModel();
+
+    if (!trackModel) {
+        return;
+    }
+
+    QList<int> trackIds;
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (!pTrack) {
+            continue;
+        }
+        int iTrackId = pTrack->getId();
+        if (iTrackId != -1) {
+            trackIds.append(iTrackId);
+        }
+    }
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, iPlaylistId, indices] (void) {
-        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-        TrackModel* trackModel = getTrackModel();
-
-        if (!trackModel) {
-            return;
-        }
-
-        QList<int> trackIds;
-        foreach (QModelIndex index, indices) {
-            TrackPointer pTrack = trackModel->getTrack(index);
-            if (!pTrack) {
-                continue;
-            }
-            int iTrackId = pTrack->getId();
-            if (iTrackId != -1) {
-                trackIds.append(iTrackId);
-            }
-        }
+                [this, trackIds, iPlaylistId] (void) {
         if (trackIds.size() > 0) {
             // TODO(XXX): Care whether the append succeeded.
-            playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
+            m_pTrackCollection->getPlaylistDAO().appendTracksToPlaylist(trackIds, iPlaylistId);
         }
     }, __PRETTY_FUNCTION__);
 }

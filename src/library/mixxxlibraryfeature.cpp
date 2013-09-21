@@ -82,6 +82,11 @@ void MixxxLibraryFeature::init() {
         }
     }
 
+    // All database access must be provided thru TrackCollection thread,
+    //    According to it, all signals emitted from TrackDAO will be emitted
+    //    from TrackCollection thread. Would it be better to make next connects
+    //    Qt::DirectConnection?
+
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
         m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     connect(&m_trackDao, SIGNAL(trackDirty(int)),

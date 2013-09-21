@@ -90,6 +90,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
+// Must be called from TrackCollection thread
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                       QWidget *pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.

@@ -162,13 +162,13 @@ class TrackCollection : public QThread {
   private:
     void createAndPopulateDbConnection();
     ConfigObject<ConfigValue>* m_pConfig;
-    QSqlDatabase* m_database;
+    QSqlDatabase* m_pDatabase;
     QHash<QString, QSharedPointer<BaseTrackCache> > m_trackSources;
-    PlaylistDAO* m_playlistDao;
-    CrateDAO* m_crateDao;
-    CueDAO* m_cueDao;
-    AnalysisDao* m_analysisDao;
-    TrackDAO* m_trackDao;
+    PlaylistDAO* m_pPlaylistDao;
+    CrateDAO* m_pCrateDao;
+    CueDAO* m_pCueDao;
+    AnalysisDao* m_pAnalysisDao;
+    TrackDAO* m_pTrackDao;
 
     QQueue<func> m_lambdas;
     volatile bool m_stop;
@@ -183,7 +183,6 @@ class TrackCollection : public QThread {
 
     void addTrackToChunk(const QString filePath, TrackDAO &trackDao);
     void addChunkToDatabase(TrackDAO &trackDao);
-
 };
 
 #endif

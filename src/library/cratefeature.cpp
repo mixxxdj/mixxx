@@ -108,9 +108,9 @@ QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
 }
 
+// Must be called from TrackCollection thread
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QWidget *pSource) {
-    // NOTE(tro) This method will be called in lambda
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     QList<QFileInfo> files;

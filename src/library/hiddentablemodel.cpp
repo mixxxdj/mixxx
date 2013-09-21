@@ -9,32 +9,32 @@ HiddenTableModel::~HiddenTableModel() {
 }
 
 void HiddenTableModel::init() {
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        setTableModel();
-    }, __PRETTY_FUNCTION__);
+    setTableModel();
 }
 
 // Must be called from TrackCollection thread
 void HiddenTableModel::setTableModel(int id){
     Q_UNUSED(id);
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    QString tableName("hidden_songs");
+    const QString tableName("hidden_songs");
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &tableName] (void) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
 
-    QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID;
-    QString filter("mixxx_deleted=1");
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM library "
-                  "INNER JOIN track_locations "
-                  "ON library.location=track_locations.id "
-                  "WHERE " + filter);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+        QStringList columns;
+        columns << "library." + LIBRARYTABLE_ID;
+        QString filter("mixxx_deleted=1");
+        query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
+                      "SELECT "
+                      + columns.join(",") +
+                      " FROM library "
+                      "INNER JOIN track_locations "
+                      "ON library.location=track_locations.id "
+                      "WHERE " + filter);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }, __PRETTY_FUNCTION__);
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
@@ -78,8 +78,7 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
     m_pTrackCollection->callAsync(
                 [this, trackIds] (void) {
         m_trackDAO.unhideTracks(trackIds);
-        // TODO(rryan) : do not select, instead route event to BTC and notify from
-        // there.
+        // TODO(rryan) : do not select, instead route event to BTC and notify from there.
         select(); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
 }

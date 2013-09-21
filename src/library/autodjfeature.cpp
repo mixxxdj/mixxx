@@ -3,8 +3,6 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
-//#define __AUTODJCRATES__ ////////////////////////////////////////////////////////////////////////////////////////////
-
 #ifdef __AUTODJCRATES__
 #include <QMenu>
 #endif // __AUTODJCRATES__
@@ -116,6 +114,7 @@ void AutoDJFeature::activate() {
     emit(restoreSearch(QString())); //Null String disables search box
 }
 
+// Must be called from TrackCollection thread
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();

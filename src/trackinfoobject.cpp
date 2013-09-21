@@ -788,16 +788,16 @@ void TrackInfoObject::setDirty(bool bDirty) {
     lock.unlock();
     // qDebug() << "Track" << m_iId << getInfo() << (change? "changed" : "unchanged")
     //          << "set" << (bDirty ? "dirty" : "clean");
-        if (change) {
-            if (m_bDirty)
-                emit(dirty(this));
-            else
-                emit(clean(this));
-        }
-        // Emit a changed signal regardless if this attempted to set us dirty.
-        if (m_bDirty) {
-            emit(changed(this));
-        }
+    if (change) {
+        if (m_bDirty)
+            emit(dirty(this));
+        else
+            emit(clean(this));
+    }
+    // Emit a changed signal regardless if this attempted to set us dirty.
+    if (m_bDirty) {
+        emit(changed(this));
+    }
 }
 
 bool TrackInfoObject::isDirty() {
