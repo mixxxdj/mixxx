@@ -330,7 +330,7 @@ void BasePlaylistFeature::slotDeletePlaylist() {
     activate();
 }
 
-
+// Must be called from Main thread
 void BasePlaylistFeature::slotImportPlaylist() {
     qDebug() << "slotImportPlaylist() row:" ; //<< m_lastRightClickedIndex.data();
 

@@ -596,34 +596,31 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pPlaylistMenu->clear();
 
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+        QMap<QString,int> playlists;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &playlistDao] (void) {
-            QMap<QString,int> playlists;
+                    [this, &playlistDao, &playlists] (void) {
             int numPlaylists = playlistDao.playlistCount();
             for (int i = 0; i < numPlaylists; ++i) {
                 int iPlaylistId = playlistDao.getPlaylistId(i);
                 playlists.insert(playlistDao.getPlaylistName(iPlaylistId), iPlaylistId);
             }
-            QMapIterator<QString, int> it(playlists);
-            while (it.hasNext()) {
-                it.next();
-                if (!playlistDao.isHidden(it.value())) {
-                    // No leak because making the menu the parent means they will be auto-deleted
-                    // NOTE(tro) Create pAction in main thread
-                    bool locked = playlistDao.isPlaylistLocked(it.value());
-                    MainExecuter::callSync(
-                                [this, &it, &playlistDao, &locked](void) {
-                        QAction* pAction;
-                        pAction = new QAction(it.key(), m_pPlaylistMenu);
-                        pAction->setEnabled(!locked);
-                        m_pPlaylistMenu->addAction(pAction);
-                        m_playlistMapper.setMapping(pAction, it.value());
-                        connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
-                    }, __PRETTY_FUNCTION__);
-                }
-            }
         }, __PRETTY_FUNCTION__);
+
+        QMapIterator<QString, int> it(playlists);
+        while (it.hasNext()) {
+            it.next(); // WRAP IT ACCURATE INTO CALLSYN
+            if (!playlistDao.isHidden(it.value())) {
+                // No leak because making the menu the parent means they will be auto-deleted
+                bool locked = playlistDao.isPlaylistLocked(it.value());
+                QAction* pAction;
+                pAction = new QAction(it.key(), m_pPlaylistMenu);
+                pAction->setEnabled(!locked);
+                m_pPlaylistMenu->addAction(pAction);
+                m_playlistMapper.setMapping(pAction, it.value());
+                connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+            }
+        }
         m_pMenu->addMenu(m_pPlaylistMenu);
     }
 

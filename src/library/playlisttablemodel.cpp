@@ -70,6 +70,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     setSort(defaultSortColumn(), defaultSortOrder());
 }
 
+// Must be called from Main thread
 int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
     const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumn).data().toInt();

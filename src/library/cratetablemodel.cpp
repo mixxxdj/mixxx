@@ -95,6 +95,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
     return success;
 }
 
+// Must be called from Main thread
 int CrateTableModel::addTracks(const QModelIndex& index,
                                const QList<QString> &locations) {
     Q_UNUSED(index);
@@ -105,12 +106,16 @@ int CrateTableModel::addTracks(const QModelIndex& index,
         fileInfoList.append(QFileInfo(fileLocation));
     }
 
-    QList<int> trackIDs = m_trackDAO.addTracks(fileInfoList, true);
-
-    int tracksAdded = m_crateDAO.addTracksToCrate(m_iCrateId, &trackIDs);
-    if (tracksAdded > 0) {
-        select();
-    }
+    int tracksAdded = 0;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &fileInfoList, &tracksAdded] (void) {
+        QList<int> trackIDs = m_trackDAO.addTracks(fileInfoList, true);
+        tracksAdded = m_crateDAO.addTracksToCrate(m_iCrateId, &trackIDs);
+        if (tracksAdded > 0) {
+            select();
+        }
+    }, __PRETTY_FUNCTION__);
 
     if (locations.size() - tracksAdded > 0) {
         qDebug() << "CrateTableModel::addTracks could not add"

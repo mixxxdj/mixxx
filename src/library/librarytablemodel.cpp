@@ -56,16 +56,22 @@ void LibraryTableModel::setTableModel(int id) {
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
-
+// Must be called from Main thread
 int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
     Q_UNUSED(index);
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));
     }
-    QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
-    select();
-    return trackIds.size();
+    int tracksAdded = 0;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &fileInfoList, &tracksAdded] (void) {
+        QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+        select();
+        tracksAdded = trackIds.count();
+    }, __PRETTY_FUNCTION__);
+    return tracksAdded;
 }
 
 bool LibraryTableModel::isColumnInternal(int column) {
