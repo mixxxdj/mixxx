@@ -638,14 +638,14 @@ int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex(m_idColumn)).data().toInt();
 }
 
-// Must be called from TrackCollection thread
+// Must be called from Main thread
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
     TrackPointer trackPointer;
-//     tro's lambda idea. This code calls synchronously!
-//    m_pTrackCollection->callSync(
-//                [this, &index, &trackPointer] (void) {
-    trackPointer = m_trackDAO.getTrack(getTrackId(index));
-//    }, __PRETTY_FUNCTION__);
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &index, &trackPointer] (void) {
+        trackPointer = m_trackDAO.getTrack(getTrackId(index));
+    }, __PRETTY_FUNCTION__);
     return trackPointer;
 }
 
