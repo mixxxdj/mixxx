@@ -84,23 +84,28 @@ void MixxxLibraryFeature::init() {
 
     // All database access must be provided thru TrackCollection thread,
     //    According to it, all signals emitted from TrackDAO will be emitted
-    //    from TrackCollection thread. Would it be better to make next connects
-    //    Qt::DirectConnection?
+    //    from TrackCollection thread. Qt::DirectConnection uses here
 
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
         m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     connect(&m_trackDao, SIGNAL(trackDirty(int)),
-            pBaseTrackCache, SLOT(slotTrackDirty(int)));
+            pBaseTrackCache, SLOT(slotTrackDirty(int)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(trackClean(int)),
-            pBaseTrackCache, SLOT(slotTrackClean(int)));
+            pBaseTrackCache, SLOT(slotTrackClean(int)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(trackChanged(int)),
-            pBaseTrackCache, SLOT(slotTrackChanged(int)));
+            pBaseTrackCache, SLOT(slotTrackChanged(int)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
+            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
+            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
-            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
+            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)),
+            Qt::DirectConnection);
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
     m_pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
