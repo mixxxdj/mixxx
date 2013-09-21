@@ -133,6 +133,9 @@ class TrackCollection : public QThread {
     void stopThread();
     void addLambdaToQueue(func lambda);
 
+    void setupControlObject();
+    void setUiEnabled(const bool enabled);
+
     bool checkForTables();
 
     // Import the files in a given diretory, without recursing into subdirectories

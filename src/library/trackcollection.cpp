@@ -82,17 +82,13 @@ void TrackCollection::run() {
     m_pCrateDao->initialize();
     m_pCueDao->initialize();
 
-    m_pCOTPlaylistIsBusy = new ControlObjectThread(ConfigKey("[Playlist]", "isBusy"));
-    Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
-
     emit(initialized()); // to notify that Daos can be used
 
     func lambda;
     // main TrackCollection's loop
     while (!m_stop) {
         if (!m_semLambdasReadyToCall.tryAcquire(1)) {
-            // no Lambda available, so unlock GUI.
-            m_pCOTPlaylistIsBusy->set(0.0);
+            setUiEnabled(true); // no Lambda available, so unlock GUI.
             m_semLambdasReadyToCall.acquire(1); // Sleep until new Lambdas have arrived
         }
         // got lambda on queue (or needness to stop thread)
@@ -121,10 +117,7 @@ void TrackCollection::callAsync(func lambda, QString where) {
     if (lambda == NULL) return;
     const bool inMainThread = QThread::currentThread() == qApp->thread();
     if (inMainThread) {
-        DBG() << "LOCKING";
-        Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
-        // lock GUI elements by setting [playlist] "isBusy"
-        m_pCOTPlaylistIsBusy->set(1.0);
+        setUiEnabled(false);
     }
     addLambdaToQueue(lambda);
 }
@@ -136,16 +129,13 @@ void TrackCollection::callSync(func lambda, QString where) {
 //    if (m_inCallSync) {
 //        Q_ASSERT(!m_inCallSync);
 //    }
-//    qDebug() << "callSync from" << where;
+    qDebug() << "callSync from" << where;
     m_inCallSync = true;
     if (lambda == NULL) return;
 
     const bool inMainThread = QThread::currentThread() == qApp->thread();
     if (inMainThread) {
-        DBG() << "LOCKING";
-        Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
-        // lock GUI elements by setting [playlist] "isBusy"
-        m_pCOTPlaylistIsBusy->set(1.0);
+        setUiEnabled(false);
     }
     QMutex mutex;
     mutex.lock();
@@ -164,10 +154,7 @@ void TrackCollection::callSync(func lambda, QString where) {
     }
     mutex.unlock(); // QMutexes should be always destroyed in unlocked state.
     if (inMainThread) {
-        DBG() << "UNLOCKING";
-        Q_ASSERT(m_pCOTPlaylistIsBusy!=NULL);
-        // lock GUI elements by setting [playlist] "isBusy
-        m_pCOTPlaylistIsBusy->set(0.0);
+        setUiEnabled(true);
     }
     m_inCallSync = false;
     qDebug() << "callSync END from"<<where;
@@ -180,6 +167,16 @@ void TrackCollection::addLambdaToQueue(func lambda) {
     m_lambdas.enqueue(lambda);
     m_lambdasQueueMutex.unlock();
     m_semLambdasReadyToCall.release(1);
+}
+
+void TrackCollection::setupControlObject() {
+    m_pCOTPlaylistIsBusy = new ControlObjectThread(ConfigKey("[Playlist]", "isBusy"));
+}
+
+void TrackCollection::setUiEnabled(const bool enabled) {
+// lock/unlock GUI elements by setting [playlist] "isBusy
+    if (m_pCOTPlaylistIsBusy)
+        m_pCOTPlaylistIsBusy->set(enabled ? 0.0 : 1.0);
 }
 
 void TrackCollection::stopThread() {

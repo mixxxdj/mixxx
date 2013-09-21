@@ -218,8 +218,6 @@ void LibraryScanner::run() {
     // this will prepare some querys in TrackDAO, this needs be done because
     // TrackCollection will call TrackDAO::addTracksAdd and this
     // function needs the querys
-
-
 //    m_trackDao.addTracksPrepare();                                                                                      ////////////////////////////////////
     QStringList verifiedDirectories;
 

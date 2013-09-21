@@ -157,6 +157,7 @@ void LibraryControl::slotNumPreviewDecksChanged(double v) {
 
 void LibraryControl::slotSetPlaylistBusy(double v) {
     bool enabled (v == 0.0); // true means it is busy, so need to disable
+    Q_ASSERT(1==1);
     qDebug() << " === "<< __PRETTY_FUNCTION__ << enabled;
     if (m_pLibraryWidget!=NULL)
         m_pLibraryWidget->setEnabled(enabled);

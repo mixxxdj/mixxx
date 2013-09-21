@@ -41,6 +41,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
 
+    pTrackCollection->setupControlObject();
+
     m_pSidebarModel = new SidebarModel(m_pTrackCollection, parent);
 
     // TODO(rryan) -- turn this construction / adding of features into a static
@@ -78,7 +80,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
     DBG() << "addFeature(setlogFeature)";
     addFeature(setlogFeature);
 
-   m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
+    m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
     connect(m_pCrateFeature, SIGNAL(analyzeTracks(QList<int>)),

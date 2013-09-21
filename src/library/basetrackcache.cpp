@@ -135,8 +135,11 @@ void BaseTrackCache::slotTrackClean(int trackId) {
     updateTrackInIndex(trackId);
 }
 
-bool BaseTrackCache::isCached(int trackId) const {
-    return m_trackInfo.contains(trackId);
+bool BaseTrackCache::isCached(int trackId) {
+    m_pTrackInfoMutex->lock();
+    bool result = m_trackInfo.contains(trackId);
+    m_pTrackInfoMutex->unlock();
+    return result;
 }
 
 void BaseTrackCache::ensureCached(int trackId) {
@@ -783,8 +786,11 @@ int BaseTrackCache::findSortInsertionPoint(TrackPointer pTrack,
         int mid = min + (max - min) / 2;
         int otherTrackId = trackIds[mid];
 
+        m_pTrackInfoMutex->lock();
+        bool contains = m_trackInfo.contains(otherTrackId);
+        m_pTrackInfoMutex->unlock();
         // This should not happen, but it's a recoverable error so we should only log it.
-        if (!m_trackInfo.contains(otherTrackId)) {
+        if (!contains) {
             qDebug() << "WARNING: track" << otherTrackId << "was not in index";
             //updateTrackInIndex(otherTrackId);
         }
