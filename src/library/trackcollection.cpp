@@ -19,7 +19,7 @@
 #include "configobject.h"
 
 #define MAX_LAMBDA_COUNT 8
-#define MAX_CHUNK_SIZE 100
+#define MAX_CHUNK_SIZE 50
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig),

@@ -28,6 +28,7 @@
 
 LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection) :
     m_pTrackCollection(pTrackCollection),
+    m_database(pTrackCollection->getDatabase()),
     m_pProgress(NULL),
     m_libraryHashDao(m_database),
     m_cueDao(m_database),
@@ -36,8 +37,6 @@ LibraryScanner::LibraryScanner(TrackCollection* pTrackCollection) :
     m_analysisDao(m_database, pTrackCollection->getConfig()),
     m_trackDao(m_database, m_cueDao, m_playlistDao, m_crateDao,
                m_analysisDao, pTrackCollection->getConfig()),
-    // Don't initialize m_database here, we need to do it in run() so the DB
-    // conn is in the right thread.
     m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
     m_bCancelLibraryScan(false),
     m_bPauseLibraryScan(false) {
@@ -122,17 +121,17 @@ LibraryScanner::~LibraryScanner() {
     // The above is an ASSERT because there should never be an outstanding
     // transaction when this code is called. If there is, it means we probably
     // aren't committing a transaction somewhere that should be.
-    if (m_database.isOpen()) {
-        qDebug() << "Closing database" << m_database.connectionName();
+//    if (m_database.isOpen()) {
+//        qDebug() << "Closing database" << m_database.connectionName();
 
-        // Rollback any uncommitted transaction
-        if (m_database.rollback()) {
-            qDebug() << "ERROR: There was a transaction in progress while closing the library scanner connection."
-                     << "There is a logic error somewhere.";
-        }
-        // Close our database connection
-        m_database.close();
-    }
+//        // Rollback any uncommitted transaction
+//        if (m_database.rollback()) {
+//            qDebug() << "ERROR: There was a transaction in progress while closing the library scanner connection."
+//                     << "There is a logic error somewhere.";
+//        }
+//        // Close our database connection
+//        m_database.close();
+//    }
     qDebug() << "LibraryScanner destroyed";
 }
 
@@ -147,17 +146,17 @@ void LibraryScanner::run() {
 
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
-    if (!m_database.isValid()) {
-        m_database = QSqlDatabase::cloneDatabase(m_pTrackCollection->getDatabase(), "LIBRARY_SCANNER");
-    }
+//    if (!m_database.isValid()) {
+//        m_database = QSqlDatabase::cloneDatabase(m_pTrackCollection->getDatabase(), "LIBRARY_SCANNER");
+//    }
 
-    if (!m_database.isOpen()) {
-        // Open the database connection in this thread.
-        if (!m_database.open()) {
-            qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
-            return;
-        }
-    }
+//    if (!m_database.isOpen()) {
+//        // Open the database connection in this thread.
+//        if (!m_database.open()) {
+//            qDebug() << "Failed to open database from library scanner thread." << m_database.lastError();
+//            return;
+//        }
+//    }
 
     m_libraryHashDao.setDatabase(m_database);
     m_cueDao.setDatabase(m_database);
@@ -285,7 +284,7 @@ void LibraryScanner::run() {
         qDebug("Scan took: %d ms", t.elapsed());
 
         //m_pProgress->slotStopTiming();
-        m_database.close();
+//        m_database.close();
 
         // Update BaseTrackCache via the main TrackDao
         m_pTrackCollection->getTrackDAO().databaseTracksMoved(tracksMovedSetOld, tracksMovedSetNew);

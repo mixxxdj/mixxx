@@ -56,10 +56,9 @@ class LibraryScanner : public QThread {
     void scanFinished();
     void progressHashing(QString);
   private:
-
     TrackCollection* m_pTrackCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
-                             // since we run in a different thread */
+                             // since we run in a different thread
     QString m_qLibraryPath; // The path to the library on disk
     LibraryScannerDlg* m_pProgress; // The library scanning window
 
