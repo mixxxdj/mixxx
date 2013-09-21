@@ -169,16 +169,19 @@ void PlaylistFeature::buildPlaylistList() {
     }, __PRETTY_FUNCTION__);
 }
 
+// Must be called from Main thread
 void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, item, playlist_id] (void) {
-        if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-            item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
-        } else {
-            item->setIcon(QIcon());
-        }
+    bool playListIsLocked = false;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &playlist_id, &playListIsLocked] (void) {
+        playListIsLocked = m_playlistDao.isPlaylistLocked(playlist_id);
     }, __PRETTY_FUNCTION__);
+    if (playListIsLocked) {
+        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+    } else {
+        item->setIcon(QIcon());
+    }
 }
 
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {

@@ -228,10 +228,7 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
         } else {
             pTrack = track_dao.getTrack(track_id);
         }
-        MainExecuter::callSync(
-                    [this, &pTrack, &group](void) {
             emit(loadTrackToPlayer(pTrack, group));
-        });
     }, __PRETTY_FUNCTION__);
 }
 

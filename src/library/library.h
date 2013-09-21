@@ -29,8 +29,7 @@ class CrateFeature;
 class LibraryControl;
 class MixxxKeyboard;
 
-class
-        Library : public QObject {
+class Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
