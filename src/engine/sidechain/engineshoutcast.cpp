@@ -207,11 +207,10 @@ void EngineShoutcast::updateFromPreferences() {
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
-    QString title = m_pConfig->getValueString(
+    m_customTitle = m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"));
-    QString artist = m_pConfig->getValueString(
+    m_customArtist = m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
-    m_baCustomSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
 
     int format;
     int protocol;
@@ -570,7 +569,6 @@ void EngineShoutcast::updateMetaData() {
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
-    QByteArray baSong = "";
     /**
      * If track has changed and static metadata is disabled
      * Send new metadata to shoutcast!
@@ -589,17 +587,47 @@ void EngineShoutcast::updateMetaData() {
     //we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_ogg_dynamic_update)) {
         if (m_pMetaData != NULL) {
+
             QString artist = m_pMetaData->getArtist();
             QString title = m_pMetaData->getTitle();
-            QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
-            shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+
+    	    // shoutcast ( / MP3 ?) uses only "song" as field for "artist - title".
+    	    // icecast2 supports separate fields for "artist" and "title".
+        	// "song" is only an alias for title
+        	//
+        	// Note(EinWesen): I do not know, about icecast1 or MP3 on icecast2
+        	//                 so we stick to the old way for those use cases
+        	if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
+                shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
+        	} else {
+                QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
+                shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+        	}
             shout_set_metadata(m_pShout, m_pShoutMetaData);
+
         }
     } else {
         //Otherwise we might use static metadata
         /** If we use static metadata, we only need to call the following line once **/
         if (m_custom_metadata && !m_firstCall) {
-            shout_metadata_add(m_pShoutMetaData, "song",  m_baCustomSong.constData());
+
+        	// see comment above...
+            if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                shout_metadata_add(m_pShoutMetaData,
+                		           "artist",
+                		           encodeString(m_customArtist).constData());
+
+                shout_metadata_add(m_pShoutMetaData,
+                		           "title",
+                		           encodeString(m_customTitle).constData());
+        	} else {
+                QByteArray baCustomSong =
+            	    encodeString(m_customArtist.isEmpty() ? m_customTitle : m_customArtist + " - " + m_customTitle);
+
+                shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
+        	}
+
             shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
         }
