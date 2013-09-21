@@ -110,6 +110,7 @@ TraktorFeature::~TraktorFeature() {
 BaseSqlTableModel* TraktorFeature::createPlaylistModelForPlaylist(QString playlist) {
     TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection);
     pModel->setPlaylist(playlist);
+    pModel->setPlaylistUI();
     return pModel;
 }
 
@@ -168,6 +169,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     if (item->isPlaylist()) {
         qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
+        m_pTraktorPlaylistModel->setPlaylistUI();
         emit(showTrackModel(m_pTraktorPlaylistModel));
     }
 }

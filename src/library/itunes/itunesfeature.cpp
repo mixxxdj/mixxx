@@ -66,19 +66,19 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_isActivated = false;
     m_title = tr("iTunes");
 
-    m_database = QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "ITUNES_SCANNER");
+    m_database = pTrackCollection->getDatabase(); //QSqlDatabase::cloneDatabase( pTrackCollection->getDatabase(), "ITUNES_SCANNER");
 
-    //Open the database connection in this thread.
-    if (!m_database.open()) {
-        qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
-    }
-    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
+//    //Open the database connection in this thread.
+//    if (!m_database.open()) {
+//        qDebug() << "Failed to open database for iTunes scanner." << m_database.lastError();
+//    }
+//    connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
 }
 
 ITunesFeature::~ITunesFeature() {
-    m_database.close();
+//    m_database.close();
     m_cancelImport = true;
-    m_future.waitForFinished();
+//    m_future.waitForFinished();
     delete m_pITunesTrackModel;
     delete m_pITunesPlaylistModel;
 }
@@ -90,7 +90,9 @@ BaseSqlTableModel* ITunesFeature::createPlaylistModelForPlaylist(QString playlis
         "itunes_playlists",
         "itunes_playlist_tracks",
         "itunes");
+
     pModel->setPlaylist(playlist);
+    pModel->setPlaylistUI();
     return pModel;
 }
 
@@ -146,11 +148,14 @@ void ITunesFeature::activate(bool forceReload) {
         // the number to > 1, otherwise importing the music collection
         // takes place when the GUI threads terminates, i.e., on
         // Mixxx shutdown.
-        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
+        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4  //////////////////////////////////////////////////
         // Let a worker thread do the XML parsing
+
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iTunes");
+
+
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
     }
@@ -163,6 +168,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
+    m_pITunesPlaylistModel->setPlaylistUI();
     emit(showTrackModel(m_pITunesPlaylistModel));
 }
 
@@ -294,22 +300,26 @@ void ITunesFeature::guessMusicLibraryMountpoint(QXmlStreamReader &xml) {
 
 // This method is executed in a separate thread
 // via QtConcurrent::run
-TreeItem* ITunesFeature::importLibrary() {
+TreeItem* ITunesFeature::importLibrary() { /////////////////////////////////////////////////////////////////////////
     //Give thread a low priority
-    QThread* thisThread = QThread::currentThread();
-    thisThread->setPriority(QThread::LowestPriority);
+//    QThread* thisThread = QThread::currentThread();
+//    thisThread->setPriority(QThread::LowestPriority);
 
-    //Delete all table entries of iTunes feature
-    ScopedTransaction transaction(m_database);
-    clearTable("itunes_playlist_tracks");
-    clearTable("itunes_library");
-    clearTable("itunes_playlists");
-    transaction.commit();
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        //Delete all table entries of iTunes feature
+        ScopedTransaction transaction(m_database);
+        clearTable("itunes_playlist_tracks");
+        clearTable("itunes_library");
+        clearTable("itunes_playlists");
+        transaction.commit();
+        qDebug() << "ITunesFeature::importLibrary() ";
+    }, __PRETTY_FUNCTION__);
 
-    qDebug() << "ITunesFeature::importLibrary() ";
 
+ScopedTransaction transaction(m_database);
     transaction.transaction();
-
     // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
     // file://localhost/ from the URL. When we load the user's iTunes XML
     // configuration we may replace this with something based on the detected
@@ -324,6 +334,7 @@ TreeItem* ITunesFeature::importLibrary() {
         qDebug() << "Cannot open iTunes music collection";
         return NULL;
     }
+
     QXmlStreamReader xml(&itunes_file);
     TreeItem* playlist_root = NULL;
     while (!xml.atEnd() && !m_cancelImport) {
@@ -360,51 +371,58 @@ TreeItem* ITunesFeature::importLibrary() {
     return playlist_root;
 }
 
+// Must be called from Main thread
 void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
-    QSqlQuery query(m_database);
-    query.prepare("INSERT INTO itunes_library (id, artist, title, album, year, genre, comment, tracknumber,"
-                  "bpm, bitrate,"
-                  "duration, location,"
-                  "rating ) "
-                  "VALUES (:id, :artist, :title, :album, :year, :genre, :comment, :tracknumber,"
-                  ":bpm, :bitrate,"
-                  ":duration, :location," ":rating )");
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &xml] (void) {
+        bool in_container_dictionary = false;
+        bool in_track_dictionary = false;
+        QSqlQuery query(m_database);
+        query.prepare("INSERT INTO itunes_library (id, artist, title, album, year, genre, comment, tracknumber,"
+                      "bpm, bitrate,"
+                      "duration, location,"
+                      "rating ) "
+                      "VALUES (:id, :artist, :title, :album, :year, :genre, :comment, :tracknumber,"
+                      ":bpm, :bitrate,"
+                      ":duration, :location," ":rating )");
 
 
-    bool in_container_dictionary = false;
-    bool in_track_dictionary = false;
 
-    qDebug() << "Parse iTunes music collection";
+        qDebug() << "Parse iTunes music collection";
 
-    //read all sunsequent <dict> until we reach the closing ENTRY tag
-    while (!xml.atEnd() && !m_cancelImport) {
-        xml.readNext();
+        //read all sunsequent <dict> until we reach the closing ENTRY tag
+        while (!xml.atEnd() && !m_cancelImport) {
+            xml.readNext();
 
-        if (xml.isStartElement()) {
-            if (xml.name() == "dict") {
-                if (!in_track_dictionary && !in_container_dictionary) {
-                    in_container_dictionary = true;
-                    continue;
-                } else if (in_container_dictionary && !in_track_dictionary) {
-                    //We are in a <dict> tag that holds track information
-                    in_track_dictionary = true;
-                    //Parse track here
-                    parseTrack(xml, query);
+
+            if (xml.isStartElement()) {
+                if (xml.name() == "dict") {
+                    if (!in_track_dictionary && !in_container_dictionary) {
+                        in_container_dictionary = true;
+                        continue;
+                    } else if (in_container_dictionary && !in_track_dictionary) {
+                        //We are in a <dict> tag that holds track information
+                        in_track_dictionary = true;
+                        //Parse track here
+                        parseTrack(xml, query);
+                    }
                 }
             }
-        }
 
-        if (xml.isEndElement() && xml.name() == "dict") {
-            if (in_track_dictionary && in_container_dictionary) {
-                in_track_dictionary = false;
-                continue;
-            } else if (in_container_dictionary && !in_track_dictionary) {
-                // Done parsing tracks.
-                in_container_dictionary = false;
-                break;
+            if (xml.isEndElement() && xml.name() == "dict") {
+                if (in_track_dictionary && in_container_dictionary) {
+                    in_track_dictionary = false;
+                    continue;
+                } else if (in_container_dictionary && !in_track_dictionary) {
+                    // Done parsing tracks.
+                    in_container_dictionary = false;
+                    break;
+                }
             }
+
         }
-    }
+    }, __PRETTY_FUNCTION__);
 }
 
 void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
@@ -526,7 +544,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     bool success = query.exec();
 
     if (!success) {
-        qDebug() << "SQL Error in itunesfeature.cpp: line" << __LINE__ << " " << query.lastError();
+        LOG_FAILED_QUERY(query);
         return;
     }
 }
@@ -623,7 +641,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                     query_insert_to_playlists.bindValue(":id", playlist_id);
                     query_insert_to_playlists.bindValue(":name", playlistname);
 
-                    bool success = query_insert_to_playlists.exec();
+                    bool success = query_insert_to_playlists.exec();  /////////////////////////////////////////////////////////////////////////////////////////
                     if (!success) {
                         qDebug() << "SQL Error in ITunesTableModel.cpp: line" << __LINE__
                                  << " " << query_insert_to_playlists.lastError();
@@ -647,7 +665,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
                     query_insert_to_playlist_tracks.bindValue(":position", playlist_position++);
 
                     //Insert tracks if we are not in a pre-build playlist
-                    if (!isSystemPlaylist && !query_insert_to_playlist_tracks.exec()) {
+                    if (!isSystemPlaylist && !query_insert_to_playlist_tracks.exec()) {  /////////////////////////////////////////////////////////////////////////////////////////
                         qDebug() << "SQL Error in ITunesFeature.cpp: line" << __LINE__ << " "
                                  << query_insert_to_playlist_tracks.lastError();
                         qDebug() << "trackid" << track_reference;
@@ -666,6 +684,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
     }
 }
 
+// Must be called from TrackCollection thread
 void ITunesFeature::clearTable(QString table_name) {
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);

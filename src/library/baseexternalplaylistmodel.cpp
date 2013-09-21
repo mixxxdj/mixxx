@@ -95,58 +95,74 @@ Qt::ItemFlags BaseExternalPlaylistModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
-void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
-    QSqlQuery finder_query(m_database);
-    finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
-    finder_query.bindValue(":name", playlist_path);
-
-    if (!finder_query.exec()) {
-        LOG_FAILED_QUERY(finder_query) << "Error getting id for playlist:" << playlist_path;
-        return;
-    }
-
-    // TODO(XXX): Why not last-insert id?
-    int playlistId = -1;
-    QSqlRecord finder_query_record = finder_query.record();
-    while (finder_query.next()) {
-        playlistId = finder_query.value(
-            finder_query_record.indexOf("id")).toInt();
-    }
-
-    if (playlistId == -1) {
-        qDebug() << "ERROR: Could not get the playlist ID for playlist:" << playlist_path;
-        return;
-    }
-
-    QString playlistViewTable = QString("%1_%2").arg(m_playlistTracksTable,
-                                                     QString::number(playlistId));
-
+// Must be called from Main thread
+bool BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
+    bool result = false;
+    QString playlistViewTable;
     QStringList columns;
-    columns << "track_id";
-    columns << "position";
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &playlist_path, &playlistViewTable, &columns, &result] (void) {
+        QSqlQuery finder_query(m_database);
+        finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
+        finder_query.bindValue(":name", playlist_path);
 
-    QSqlQuery query(m_database);
-    FieldEscaper f(m_database);
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM %3 WHERE playlist_id = %4")
-            .arg(f.escapeString(playlistViewTable),
-                 columns.join(","),
-                 m_playlistTracksTable,
-                 QString::number(playlistId));
-    query.prepare(queryString);
+        if (!finder_query.exec()) {
+            LOG_FAILED_QUERY(finder_query) << "Error getting id for playlist:" << playlist_path;
+            result = false;
+            return;
+        }
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "Error creating temporary view for playlist.";
-        return;
+        // TODO(XXX): Why not last-insert id?
+        int playlistId = -1;
+        QSqlRecord finder_query_record = finder_query.record();
+        while (finder_query.next()) {
+            playlistId = finder_query.value(
+                        finder_query_record.indexOf("id")).toInt();
+        }
+
+        if (playlistId == -1) {
+            qDebug() << "ERROR: Could not get the playlist ID for playlist:" << playlist_path;
+            result = false;
+            return;
+        }
+
+        playlistViewTable = QString("%1_%2").arg(m_playlistTracksTable,
+                                                         QString::number(playlistId));
+        columns << "track_id";
+        columns << "position";
+
+        QSqlQuery query(m_database);
+        FieldEscaper f(m_database);
+        QString queryString = QString(
+                    "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM %3 WHERE playlist_id = %4")
+                .arg(f.escapeString(playlistViewTable),
+                     columns.join(","),
+                     m_playlistTracksTable,
+                     QString::number(playlistId));
+        query.prepare(queryString);
+
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query) << "Error creating temporary view for playlist.";
+            result = false;
+            return;
+        }
+
+        result = true;
+    }, __PRETTY_FUNCTION__);
+
+    if (result) {
+        setTable(playlistViewTable, columns[0], columns,
+                 m_pTrackCollection->getTrackSource(m_trackSource));
+        setSearch("");
     }
+    return result;
+}
 
-    // TODO Move to separate method
-    setTable(playlistViewTable, columns[0], columns,
-             m_pTrackCollection->getTrackSource(m_trackSource));
+void BaseExternalPlaylistModel::setPlaylistUI() {
     setDefaultSort(fieldIndex("position"), Qt::AscendingOrder);
     initHeaderData();
-    setSearch("");
 }
 
 bool BaseExternalPlaylistModel::isColumnHiddenByDefault(int column) {

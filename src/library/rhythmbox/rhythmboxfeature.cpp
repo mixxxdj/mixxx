@@ -80,6 +80,7 @@ BaseSqlTableModel* RhythmboxFeature::createPlaylistModelForPlaylist(QString play
                                             "rhythmbox_playlist_tracks",
                                             "rhythmbox");
     pModel->setPlaylist(playlist);
+    pModel->setPlaylistUI();
     return pModel;
 }
 
@@ -129,6 +130,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
+    m_pRhythmboxPlaylistModel->setPlaylistUI();
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 
