@@ -131,7 +131,7 @@ void LoopLayerTracker::setCurrentLength(unsigned int length) {
 }
 
 void LoopLayerTracker::slotFileFinished(QString path) {
-    qDebug() << "!~!~!~!~!~!~!~! SlotFileFinished";
+    emit(exportLoop(path));
 }
 
 void LoopLayerTracker::slotLoadToLoopDeck() {
