@@ -108,11 +108,11 @@ QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
 }
 
-// Must be called from TrackCollection thread
+// Must be called from Main thread
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QWidget *pSource) {
-    QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    const QString crateName = index.data().toString();
+
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
         //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
@@ -120,23 +120,31 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
         files.append(url.toLocalFile());
     }
 
-    QList<int> trackIds;
-    if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-    } else {
-        // Adds track, does not insert duplicates, handles unremoving logic.
-        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
-    }
-    qDebug() << "CrateFeature::dropAcceptChild adding tracks"
-             << trackIds.size() << " to crate "<< crateId;
-    // remove tracks that could not be added
-    for (int trackId = 0; trackId < trackIds.size(); trackId++) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    bool result = false;
+    const bool is_pSource = pSource;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &crateName, &files, &is_pSource, &result] (void) {
+        int crateId = m_crateDao.getCrateIdByName(crateName);
+        QList<int> trackIds;
+        if (is_pSource) {
+            trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+        } else {
+            // Adds track, does not insert duplicates, handles unremoving logic.
+            trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
         }
-    }
-    m_crateDao.addTracksToCrate(crateId, &trackIds);
-    return true;
+        qDebug() << "CrateFeature::dropAcceptChild adding tracks"
+                 << trackIds.size() << " to crate "<< crateId;
+        // remove tracks that could not be added
+        for (int trackId = 0; trackId < trackIds.size(); trackId++) {
+            if (trackIds.at(trackId) < 0) {
+                trackIds.removeAt(trackId--);
+            }
+        }
+        int tracksAdded = m_crateDao.addTracksToCrate(crateId, &trackIds);
+        result = tracksAdded > 0;
+    }, __PRETTY_FUNCTION__);
+    return result;
 }
 
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
@@ -676,7 +684,7 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
         // Switch the view to the crate.
         m_crateTableModel.setTableModel(crateId);
         // Update selection
-        MainExecuter::callSync([this]() {
+        MainExecuter::callSync([this]() { // avoid it
             emit(featureSelect(this, m_lastRightClickedIndex));
         });
     }, __PRETTY_FUNCTION__ + objectName());

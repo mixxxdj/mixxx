@@ -257,20 +257,12 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
     bool result = false;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            // tro's lambda idea. This code calls asynchronously!
-            m_pTrackCollection->callSync(
-                        [this, &index, &urls, &pSource, &result] (void) {
-                result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
-            }, __PRETTY_FUNCTION__);
+            result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
-                // tro's lambda idea. This code calls asynchronously!
-                m_pTrackCollection->callSync(
-                            [this, &feature, &index, &urls, &pSource, &result] (void) {
-                    result = feature->dropAcceptChild(index, urls, pSource);
-                }, __PRETTY_FUNCTION__);
+                result = feature->dropAcceptChild(index, urls, pSource);
             }
         }
     }

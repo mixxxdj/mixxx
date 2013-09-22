@@ -383,24 +383,14 @@ void DlgAutoDJ::player1PositionChanged(double value) {
         if (!deck1Playing && !deck2Playing) {
             setCrossfader(-1.0);  // Move crossfader to the left!
             m_pCOPlay1->slotSet(1.0);  // Play the track in player 1
-
-            // tro's lambda idea. This code calls synchronously!
-            m_pTrackCollection->callSync(
-                        [this] (void) {
-                removePlayingTrackFromQueue("[Channel1]");
-            }, __PRETTY_FUNCTION__);
+            removePlayingTrackFromQueue("[Channel1]");
         } else {
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
             if (deck1Playing && !deck2Playing) {
                 // Here we are, if first deck was playing before starting Auto DJ
                 // or if it was started just before
-
-                // tro's lambda idea. This code calls synchronously!
-                m_pTrackCollection->callSync(
-                            [this] (void) {
-                    loadNextTrackFromQueue();
-                }, __PRETTY_FUNCTION__);
+                loadNextTrackFromQueue();
 
                 // if we start the deck from code we don`t get a signal
                 player1PlayChanged(1.0);
@@ -418,11 +408,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
             setCrossfader(-1.0);  // Move crossfader to the left!
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
-            // tro's lambda idea. This code calls synchronously!
-            m_pTrackCollection->callSync(
-                        [this] (void) {
-                loadNextTrackFromQueue();
-            }, __PRETTY_FUNCTION__);
+            loadNextTrackFromQueue();
         }
         return;
     }
@@ -446,11 +432,7 @@ void DlgAutoDJ::player1PositionChanged(double value) {
                     m_pCOPlayPos2->slotSet(m_fadeDuration2);
                 }
             }
-            // tro's lambda idea, this code calls SYNCHRONOUSLY!
-            m_pTrackCollection->callSync(
-                        [this] (void) {
-                removePlayingTrackFromQueue("[Channel2]");
-            }, __PRETTY_FUNCTION__);
+            removePlayingTrackFromQueue("[Channel2]");
             m_eState = ADJ_P1FADING;
             pushButtonFadeNow->setEnabled(false);
         }
@@ -500,11 +482,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
             setCrossfader(1.0);
             m_eState = ADJ_IDLE;
             pushButtonFadeNow->setEnabled(true);
-            // tro's lambda idea. This code calls synchronously!
-            m_pTrackCollection->callSync(
-                        [this] (void) {
-                loadNextTrackFromQueue();
-            }, __PRETTY_FUNCTION__);
+            loadNextTrackFromQueue();
         }
         return;
     }
@@ -527,11 +505,7 @@ void DlgAutoDJ::player2PositionChanged(double value) {
                     m_pCOPlayPos1->slotSet(m_fadeDuration1);
                 }
             }
-            // tro's lambda idea. This code calls synchronously!
-            m_pTrackCollection->callSync(
-                        [this] (void) {
-                removePlayingTrackFromQueue("[Channel1]");
-            }, __PRETTY_FUNCTION__);
+            removePlayingTrackFromQueue("[Channel1]");
             m_eState = ADJ_P2FADING;
             pushButtonFadeNow->setEnabled(false);
         }

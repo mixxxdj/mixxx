@@ -189,6 +189,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     emit(switchToView(itemName));
 }
 
+// Must be called from Main thread
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     if (pSource) {
         return false;
@@ -202,10 +203,15 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
             // case. toString() absolutely does not work when you pass the result to a
             files.append(url.toLocalFile());
         }
-
-        // Adds track, does not insert duplicates, handles unremoving logic.
-        QList<int> trackIds = m_trackDao.addTracks(files, true);
-        return trackIds.size() > 0;
+        bool result = false;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &files, &result] (void) {
+            // Adds track, does not insert duplicates, handles unremoving logic.
+            QList<int> trackIds = m_trackDao.addTracks(files, true);
+            result = trackIds.size() > 0;
+        }, __PRETTY_FUNCTION__);
+        return result;
     }
 }
 

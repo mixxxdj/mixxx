@@ -114,10 +114,9 @@ void AutoDJFeature::activate() {
     emit(restoreSearch(QString())); //Null String disables search box
 }
 
-// Must be called from TrackCollection thread
+// Must be called from Main thread
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
@@ -130,23 +129,30 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
             files.append(file);
         }
     }
-    QList<int> trackIds;
-    if (pSource) {
-        trackIds = trackDao.getTrackIds(files);
-    } else {
-        trackIds = trackDao.addTracks(files, true);
-    }
 
-    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    // remove tracks that could not be added
-    for (int trackId = 0; trackId < trackIds.size(); trackId++) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    bool result = false;
+    const bool is_pSource = pSource;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &files, is_pSource, &result] (void) {
+        TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
+        QList<int> trackIds;
+        if (is_pSource) {
+            trackIds = trackDao.getTrackIds(files);
+        } else {
+            trackIds = trackDao.addTracks(files, true);
         }
-    }
-
-    // Return whether the tracks were appended.
-    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+        int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+        // remove tracks that could not be added
+        for (int trackId = 0; trackId < trackIds.size(); ++trackId) {
+            if (trackIds.at(trackId) < 0) {
+                trackIds.removeAt(trackId--);
+            }
+        }
+        // Return whether the tracks were appended.
+        result = m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+    }, __PRETTY_FUNCTION__);
+    return result;
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {

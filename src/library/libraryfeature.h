@@ -30,14 +30,14 @@ class LibraryFeature : public QObject {
     virtual QVariant title() = 0;
     virtual QIcon getIcon() = 0;
 
-    // Must be called from TrackCollection thread
+    // Must be called from Main thread
     virtual bool dropAccept(QList<QUrl> urls, QWidget *pSource) {
         Q_UNUSED(urls);
         Q_UNUSED(pSource);
         return false;
     }
 
-    // Must be called from TrackCollection thread
+    // Must be called from Main thread
     virtual bool dropAcceptChild(const QModelIndex& index,
                                  QList<QUrl> urls, QWidget *pSource) {
         Q_UNUSED(index);

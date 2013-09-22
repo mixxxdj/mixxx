@@ -146,9 +146,10 @@ void TrackCollection::callSync(func lambda, QString where) {
     addLambdaToQueue(lambdaWithMutex);
 
     while (!mutex.tryLock(5)) {
-        if (inMainThread)
+        if (inMainThread) {
             MainExecuter::getInstance().call();
-        qApp->processEvents(QEventLoop::AllEvents);
+            qApp->processEvents(QEventLoop::AllEvents);
+        }
         // DBG() << "Start animation";
         // animationIsShowed = true;
     }

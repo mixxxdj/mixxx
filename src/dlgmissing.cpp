@@ -59,11 +59,7 @@ void DlgMissing::onShow() {
 
 void DlgMissing::clicked() {
     // all marked tracks are gone now anyway
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this] (void) {
-        onShow();
-    }, __PRETTY_FUNCTION__);
+    onShow();
 }
 
 void DlgMissing::onSearch(const QString& text) {
