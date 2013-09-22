@@ -48,6 +48,10 @@ void LoopFileMixer::slotProcess() {
     sfInfo1.format = 0;
     sfInfo2.format = 0;
 
+    // TODO: don't hardcode samplerate
+    sfOutInfo.samplerate = 44100;
+    sfOutInfo.channels = 2;
+
     if (m_encoding == ENCODING_WAVE) {
         sfOutInfo.format = SF_FORMAT_WAV | SF_FORMAT_PCM_16;
     } else {
