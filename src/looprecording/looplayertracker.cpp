@@ -75,7 +75,7 @@ void LoopLayerTracker::finalizeLoop(QString newPath, double bpm) {
             if (file.copy(newPath)) {
                 emit(exportLoop(newPath));
             } else {
-                // Export failed do something here...
+                // Export failed, do something here...
             }
             return;
         }
