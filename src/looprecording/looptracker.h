@@ -21,7 +21,7 @@ class LoopTracker : public QObject {
     
     void addLoopLayer(QString path, unsigned int length);
     void clear();
-    bool finalizeLoop(QString newPath, double bpm);
+    void finalizeLoop(QString newPath, double bpm);
     QString getCurrentPath();
     void play();
     void stop(bool clearDeck);
@@ -31,6 +31,8 @@ class LoopTracker : public QObject {
     void slotLoadToLoopDeck();
 
   signals:
+    void exportLoop(QString);
+    // Connected directly to PlayerManager
     void loadToLoopDeck(TrackPointer, QString, bool);
 
   private slots:

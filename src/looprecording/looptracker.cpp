@@ -68,18 +68,23 @@ void LoopTracker::clear() {
     m_iCurrentLayer = -1;
 }
 
-bool LoopTracker::finalizeLoop(QString newPath, double bpm) {
+void LoopTracker::finalizeLoop(QString newPath, double bpm) {
     // TODO: implement multiple layer mixing.
-    if (m_iCurrentLayer > -1) {
-
+    if (m_iCurrentLayer == 0) {
         QString oldFileLocation = m_layers.at(m_iCurrentLayer)->path;
         QFile file(oldFileLocation);
 
         if (file.exists()) {
-            return file.copy(newPath);
+            if (file.copy(newPath)) {
+                emit(exportLoop(newPath));
+            } else {
+                // Export failed do something here...
+            }
+            return;
         }
+    } else if (m_iCurrentLayer > 0) {
+
     }
-    return false;
 }
 
 void LoopTracker::play() {

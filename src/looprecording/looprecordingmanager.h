@@ -35,6 +35,7 @@ class LoopRecordingManager : public QObject {
   public slots:
     void slotClearRecorder();
     void slotCurrentPlayingDeckChanged(int);
+    void slotExportLoopToPlayer(QString);
     void slotIsRecording(bool);
 
   signals:
@@ -59,7 +60,7 @@ class LoopRecordingManager : public QObject {
 
   private:
     void clearLoopDeck();
-    void exportLoopToPlayer(QString group);
+    void exportLoop();
     QString formatDateTimeForFilename(QDateTime dateTime) const;
     double getCurrentBPM();
     unsigned int getLoopLength();

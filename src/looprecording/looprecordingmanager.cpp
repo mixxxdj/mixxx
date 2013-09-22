@@ -104,6 +104,9 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
     setRecordingDir();
 
     m_pLoopTracker = new LoopTracker();
+    if (m_pLoopTracker) {
+        connect(m_pLoopTracker, SIGNAL(exportLoop(QString)), this, SLOT(slotExportLoopToPlayer(QString)));
+    }
 
     // Connect with EngineLoopRecorder and Loop Writer
     // TODO(carl): disable loop recording if fails.
@@ -174,6 +177,12 @@ void LoopRecordingManager::slotCurrentPlayingDeckChanged(int deck) {
     //qDebug() << "LoopRecordingManager::slotCurrentPlayingDeckChanged Deck: "
     //        << deck;
     m_iCurrentPlayingDeck = deck;
+}
+
+void LoopRecordingManager::slotExportLoopToPlayer(QString filePath) {
+    QString group = QString("[%1]").arg(m_loopDestination);
+    emit(exportToPlayer(filePath, group));
+    slotClearRecorder();
 }
 
 void LoopRecordingManager::slotIsRecording(bool isRecordingActive) {
@@ -294,7 +303,7 @@ void LoopRecordingManager::slotToggleExport(double v) {
     if (v <= 0.) {
         return;
     }
-    exportLoopToPlayer(QString("[%1]").arg(m_loopDestination));
+    exportLoop();
 }
 
 void LoopRecordingManager::slotToggleLoopRecording(double v) {
@@ -320,28 +329,18 @@ void LoopRecordingManager::slotTogglePlayback(double v) {
     }
 }
 
-void LoopRecordingManager::exportLoopToPlayer(QString group) {
-    //qDebug() << "LoopRecordingManager::exportLoopToPlayer m_filesRecorded: " << m_filesRecorded;
+void LoopRecordingManager::exportLoop() {
 
-    // TODO(carl) handle multi-layered loops.
     setRecordingDir();
     QString dir = m_recordingDir;
-//    QString m_encodingType = m_pConfig->getValueString(
-//                                            ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
-    //Append file extension
+
     QString currentDateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
 
     // TODO(Carl) better file naming.
-
     QString newFileLocation = QString("%1%2_%3.%4")
         .arg(dir, "loop", currentDateTime, m_encodingType.toLower());
 
-    if(m_pLoopTracker->finalizeLoop(newFileLocation, m_dLoopBPM)) {
-        emit(exportToPlayer(newFileLocation, group));
-    } else {
-        qDebug () << "LoopRecordingManager::exportLoopToPlayer Error Saving File: " << newFileLocation;
-    }
-    slotClearRecorder();
+    m_pLoopTracker->finalizeLoop(newFileLocation, m_dLoopBPM);
 }
 
 QString LoopRecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
