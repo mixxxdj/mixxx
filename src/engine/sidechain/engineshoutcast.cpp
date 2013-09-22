@@ -173,44 +173,45 @@ void EngineShoutcast::updateFromPreferences() {
 
     // Host, server type, port, mountpoint, login, password should be latin1.
     QByteArray baHost = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "host")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "host")).toLatin1();
     QByteArray baServerType = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "servertype")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "servertype")).toLatin1();
     QByteArray baPort = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "port")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "port")).toLatin1();
     QByteArray baMountPoint = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint")).toLatin1();
     QByteArray baLogin = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "login")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "login")).toLatin1();
     QByteArray baPassword = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "password")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "password")).toLatin1();
     QByteArray baFormat = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "format")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "format")).toLatin1();
     QByteArray baBitrate = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "bitrate")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "bitrate")).toLatin1();
 
     // Encode metadata like stream name, website, desc, genre, title/author with
     // the chosen TextCodec.
     QByteArray baStreamName = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_name")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_name")));
     QByteArray baStreamWebsite = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_website")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_website")));
     QByteArray baStreamDesc = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc")));
     QByteArray baStreamGenre = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
     QByteArray baStreamPublic = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")));
 
     // Dynamic Ogg metadata update
-    m_ogg_dynamic_update = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+    m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
+	        ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
+            ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
     m_customTitle = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"));
+            ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"));
     m_customArtist = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
+            ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
 
     int format;
     int protocol;
@@ -619,10 +620,10 @@ void EngineShoutcast::updateMetaData() {
             // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
                 shout_metadata_add(
-                    m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
+                        m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
 
                 shout_metadata_add(
-                    m_pShoutMetaData,"title",encodeString(m_customTitle).constData());
+                        m_pShoutMetaData,"title",encodeString(m_customTitle).constData());
             } else {
                 QByteArray baCustomSong = encodeString(m_customArtist.isEmpty() ? m_customTitle : m_customArtist + " - " + m_customTitle);
                 shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
