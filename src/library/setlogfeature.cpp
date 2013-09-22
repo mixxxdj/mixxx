@@ -98,8 +98,6 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
     connect(this, SIGNAL(playlistTableChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)),
             Qt::QueuedConnection); // tro
-
-//    qRegisterMetaType<Qt::Orientation>("Qt::Orientation");
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
