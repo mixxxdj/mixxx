@@ -25,6 +25,9 @@ LoopFileMixer::LoopFileMixer(QString file1, QString file2, QString dest, QString
     m_pWorkBufferIn1 = SampleUtil::alloc(WORK_BUFFER_SIZE);
     m_pWorkBufferIn2 = SampleUtil::alloc(WORK_BUFFER_SIZE);
     m_pWorkBufferOut = SampleUtil::alloc(WORK_BUFFER_SIZE);
+
+    qDebug() << "Mix file.  File 1: " << m_filePath1 << " file2: " << m_filePath2 << " dest: " << dest
+            << " Encoding " << encoding;
 }
 
 LoopFileMixer::~LoopFileMixer() {
@@ -68,6 +71,8 @@ void LoopFileMixer::slotProcess() {
     }
 
     while (int samples1 = sf_read_float(pSndfile1, m_pWorkBufferIn1, WORK_BUFFER_SIZE)) {
+        qDebug() << "Reading samples...";
+
         int samples2 = sf_read_float(pSndfile2, m_pWorkBufferIn2, WORK_BUFFER_SIZE);
 
         SampleUtil::applyGain(m_pWorkBufferOut, 0.0, WORK_BUFFER_SIZE);
