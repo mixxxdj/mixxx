@@ -11,8 +11,9 @@
 #include "controllogpotmeter.h"
 #include "trackinfoobject.h"
 
-LoopLayerTracker::LoopLayerTracker()
-        : m_iCurrentLayer(-1),
+LoopLayerTracker::LoopLayerTracker(ConfigObject<ConfigValue>* pConfig)
+        : m_pConfig(pConfig),
+        m_iCurrentLayer(-1),
         m_bIsUndoAvailable(false),
         m_bIsRedoAvailable(false) {
 
@@ -86,7 +87,8 @@ void LoopLayerTracker::finalizeLoop(QString newPath, double bpm) {
         QThread* pMixerThread = new QThread();
         pMixerThread->setObjectName("LoopLayerMixer");
 
-        LoopFileMixer* pMixerWorker = new LoopFileMixer(m_layers[0]->path, m_layers[1]->path, newPath);
+        LoopFileMixer* pMixerWorker = new LoopFileMixer(m_pConfig, m_layers[0]->path,
+                                                        m_layers[1]->path, newPath);
 
         connect(pMixerThread, SIGNAL(started()), pMixerWorker, SLOT(slotProcess()));
         connect(pMixerWorker, SIGNAL(fileFinished(QString)), this, SLOT(slotFileFinished(QString)));

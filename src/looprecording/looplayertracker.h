@@ -8,6 +8,7 @@
 
 #include <QtCore>
 
+#include "configobject.h"
 #include "trackinfoobject.h"
 
 class ControlObjectThread;
@@ -16,7 +17,7 @@ class ControlLogpotmeter;
 class LoopLayerTracker : public QObject {
     Q_OBJECT
   public:
-    LoopLayerTracker();
+    LoopLayerTracker(ConfigObject<ConfigValue>* pConfig);
     virtual ~LoopLayerTracker();
     
     void addLoopLayer(QString path, unsigned int length);
@@ -44,6 +45,8 @@ class LoopLayerTracker : public QObject {
         QString path;
         unsigned int length;
     };
+
+    ConfigObject<ConfigValue>* m_pConfig;
     QList<LayerInfo*> m_layers;
     int m_iCurrentLayer;
     bool m_bIsUndoAvailable;

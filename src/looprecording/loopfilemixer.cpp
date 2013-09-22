@@ -13,8 +13,9 @@
 
 #include "sampleutil.h"
 
-LoopFileMixer::LoopFileMixer(QString file1, QString file2, QString dest)
-        : m_filePath1(file1),
+LoopFileMixer::LoopFileMixer(ConfigObject<ConfigValue>* pConfig, QString file1, QString file2, QString dest)
+        : m_pConfig(pConfig),
+        m_filePath1(file1),
         m_filePath2(file2),
         m_dest(dest) {
 

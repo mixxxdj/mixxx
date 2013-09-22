@@ -103,7 +103,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
     setRecordingDir();
 
-    m_pLoopLayerTracker = new LoopLayerTracker();
+    m_pLoopLayerTracker = new LoopLayerTracker(m_pConfig);
     if (m_pLoopLayerTracker) {
         connect(m_pLoopLayerTracker, SIGNAL(exportLoop(QString)), this, SLOT(slotExportLoopToPlayer(QString)));
     }
