@@ -1,8 +1,11 @@
 // looplayerracker.cpp
 // Created by Carl Pillot on 8/23/13.
 
-#include "looprecording/LoopLayerTracker.h"
+#include <QThread>
 
+#include "looprecording/looplayertracker.h"
+
+#include "looprecording/loopfilemixer.h"
 #include "recording/defs_recording.h"
 #include "controlobjectthread.h"
 #include "controllogpotmeter.h"
@@ -80,7 +83,19 @@ void LoopLayerTracker::finalizeLoop(QString newPath, double bpm) {
             return;
         }
     } else if (m_iCurrentLayer > 0) {
-        
+        QThread* pMixerThread = new QThread();
+        pMixerThread->setObjectName("LoopLayerMixer");
+
+        LoopFileMixer* pMixerWorker = new LoopFileMixer(m_layers[0]->path, m_layers[1]->path, newPath);
+
+        connect(pMixerThread, SIGNAL(started()), pMixerWorker, SLOT(slotProcess()));
+        connect(pMixerWorker, SIGNAL(fileFinished(QString)), this, SLOT(slotFileFinished(QString)));
+        connect(pMixerWorker, SIGNAL(finished()), pMixerThread, SLOT(quit()));
+        connect(pMixerWorker, SIGNAL(finished()), pMixerWorker, SLOT(deleteLater()));
+        connect(pMixerThread, SIGNAL(finished()), pMixerThread, SLOT(deleteLater()));
+
+        pMixerWorker->moveToThread(pMixerThread);
+        pMixerThread->start();
     }
 }
 
@@ -110,6 +125,10 @@ QString LoopLayerTracker::getCurrentPath() {
 
 void LoopLayerTracker::setCurrentLength(unsigned int length) {
 
+}
+
+void LoopLayerTracker::slotFileFinished(QString path) {
+    qDebug() << "!~!~!~!~!~!~!~! SlotFileFinished";
 }
 
 void LoopLayerTracker::slotLoadToLoopDeck() {

@@ -28,6 +28,7 @@ class LoopLayerTracker : public QObject {
     void setCurrentLength(unsigned int length);
 
   public slots:
+    void slotFileFinished(QString);
     void slotLoadToLoopDeck();
 
   signals:
