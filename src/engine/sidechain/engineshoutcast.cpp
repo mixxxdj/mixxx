@@ -583,50 +583,50 @@ void EngineShoutcast::updateMetaData() {
      */
 
 
-    //If we use either MP3 streaming or OGG streaming with dynamic update of metadata being enabled,
-    //we want dynamic metadata changes
+    // If we use either MP3 streaming or OGG streaming with dynamic update of
+    // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_ogg_dynamic_update)) {
         if (m_pMetaData != NULL) {
 
             QString artist = m_pMetaData->getArtist();
             QString title = m_pMetaData->getTitle();
 
-    	    // shoutcast ( / MP3 ?) uses only "song" as field for "artist - title".
-    	    // icecast2 supports separate fields for "artist" and "title".
-        	// "song" is only an alias for title
-        	//
-        	// Note(EinWesen): I do not know, about icecast1 or MP3 on icecast2
-        	//                 so we stick to the old way for those use cases
-        	if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+            // shoutcast uses only "song" as field for "artist - title".
+            // icecast2 supports separate fields for "artist" and "title", 
+            // which will get displayed accordingly if the streamingformat and
+            // player supports it. ("song" is treated as an alias for "title")
+            // 
+            // Note (EinWesen): 
+            // Currently that seems to be OGG only, although it is no problem 
+            // setting both fields for MP3, tested players do not show anything different.
+            // Also I do not know about icecast1. To be safe, i stick to the
+            // old way for those use cases.
+            if (!m_format_is_mp3 && m_protocol_is_icecast2) {
                 shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
                 shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
-        	} else {
+            } else {
                 QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
                 shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
-        	}
+            }
             shout_set_metadata(m_pShout, m_pShoutMetaData);
 
         }
     } else {
-        //Otherwise we might use static metadata
-        /** If we use static metadata, we only need to call the following line once **/
+        // Otherwise we might use static metadata
+        // If we use static metadata, we only need to call the following line once
         if (m_custom_metadata && !m_firstCall) {
 
-        	// see comment above...
+            // see comment above...
             if (!m_format_is_mp3 && m_protocol_is_icecast2) {
-                shout_metadata_add(m_pShoutMetaData,
-                		           "artist",
-                		           encodeString(m_customArtist).constData());
+                shout_metadata_add(
+                    m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
 
-                shout_metadata_add(m_pShoutMetaData,
-                		           "title",
-                		           encodeString(m_customTitle).constData());
-        	} else {
-                QByteArray baCustomSong =
-            	    encodeString(m_customArtist.isEmpty() ? m_customTitle : m_customArtist + " - " + m_customTitle);
-
+                shout_metadata_add(
+                    m_pShoutMetaData,"title",encodeString(m_customTitle).constData());
+            } else {
+                QByteArray baCustomSong = encodeString(m_customArtist.isEmpty() ? m_customTitle : m_customArtist + " - " + m_customTitle);
                 shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
-        	}
+            }
 
             shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
