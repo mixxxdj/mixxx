@@ -7,12 +7,12 @@
 #include <QObject>
 #include <sndfile.h>
 
-#include "configobject.h"
+#include "defs.h"
 
 class LoopFileMixer : public QObject {
     Q_OBJECT
   public:
-    LoopFileMixer(ConfigObject<ConfigValue>* pConfig, QString file1, QString file2, QString dest);
+    LoopFileMixer(QString file1, QString file2, QString dest, QString encoding);
     virtual ~LoopFileMixer();
 
   public slots:
@@ -23,9 +23,13 @@ class LoopFileMixer : public QObject {
     void finished();
 
   private:
-    ConfigObject<ConfigValue>* m_pConfig;
     QString m_filePath1;
     QString m_filePath2;
     QString m_dest;
+    QString m_encoding;
+
+    CSAMPLE* m_pWorkBufferIn1;
+    CSAMPLE* m_pWorkBufferIn2;
+    CSAMPLE* m_pWorkBufferOut;
 };
 #endif
