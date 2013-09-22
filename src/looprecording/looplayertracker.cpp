@@ -1,16 +1,14 @@
-//  looptracker.cpp
-//  Created by Carl Pillot on 8/23/13.
-//
-// TODO: Should this be declared inline in LoopRecordingManager?
+// looplayerracker.cpp
+// Created by Carl Pillot on 8/23/13.
 
-#include "looprecording/looptracker.h"
+#include "looprecording/LoopLayerTracker.h"
 
 #include "recording/defs_recording.h"
 #include "controlobjectthread.h"
 #include "controllogpotmeter.h"
 #include "trackinfoobject.h"
 
-LoopTracker::LoopTracker()
+LoopLayerTracker::LoopLayerTracker()
         : m_iCurrentLayer(-1),
         m_bIsUndoAvailable(false),
         m_bIsRedoAvailable(false) {
@@ -31,7 +29,7 @@ LoopTracker::LoopTracker()
             this, SLOT(slotChangeLoopPregain(double)));
 }
 
-LoopTracker::~LoopTracker() {
+LoopLayerTracker::~LoopLayerTracker() {
     clear();
 
     delete m_pLoopPregain;
@@ -46,7 +44,7 @@ LoopTracker::~LoopTracker() {
     delete m_pLoopDeck1Play;
 }
 
-void LoopTracker::addLoopLayer(QString path, unsigned int length) {
+void LoopLayerTracker::addLoopLayer(QString path, unsigned int length) {
     LayerInfo* layer = new LayerInfo();
     layer->path = path;
     layer->length = length;
@@ -54,10 +52,10 @@ void LoopTracker::addLoopLayer(QString path, unsigned int length) {
     m_iCurrentLayer++;
 }
 
-void LoopTracker::clear() {
+void LoopLayerTracker::clear() {
     while (!m_layers.empty()) {
         LayerInfo* pFile = m_layers.takeLast();
-        qDebug() << "!~!~!~! LoopTracker::clearLayers deleteing: " << pFile->path;
+        qDebug() << "!~!~!~! LoopLayerTracker::clearLayers deleteing: " << pFile->path;
         QFile file(pFile->path);
 
         if (file.exists()) {
@@ -68,8 +66,7 @@ void LoopTracker::clear() {
     m_iCurrentLayer = -1;
 }
 
-void LoopTracker::finalizeLoop(QString newPath, double bpm) {
-    // TODO: implement multiple layer mixing.
+void LoopLayerTracker::finalizeLoop(QString newPath, double bpm) {
     if (m_iCurrentLayer == 0) {
         QString oldFileLocation = m_layers.at(m_iCurrentLayer)->path;
         QFile file(oldFileLocation);
@@ -83,16 +80,16 @@ void LoopTracker::finalizeLoop(QString newPath, double bpm) {
             return;
         }
     } else if (m_iCurrentLayer > 0) {
-
+        
     }
 }
 
-void LoopTracker::play() {
+void LoopLayerTracker::play() {
     m_pLoopDeck1Play->slotSet(1.0);
     m_pLoopDeck2Play->slotSet(1.0);
 }
 
-void LoopTracker::stop(bool clearDeck) {
+void LoopLayerTracker::stop(bool clearDeck) {
     m_pLoopDeck1Play->slotSet(0.0);
     m_pLoopDeck2Play->slotSet(0.0);
     if(clearDeck) {
@@ -103,7 +100,7 @@ void LoopTracker::stop(bool clearDeck) {
     }
 }
 
-QString LoopTracker::getCurrentPath() {
+QString LoopLayerTracker::getCurrentPath() {
     if (m_layers.empty()) {
         return QString::QString("");
     } else {
@@ -111,11 +108,11 @@ QString LoopTracker::getCurrentPath() {
     }
 }
 
-void LoopTracker::setCurrentLength(unsigned int length) {
+void LoopLayerTracker::setCurrentLength(unsigned int length) {
 
 }
 
-void LoopTracker::slotLoadToLoopDeck() {
+void LoopLayerTracker::slotLoadToLoopDeck() {
 
     QString path = getCurrentPath();
     if (path != "") {
@@ -132,7 +129,7 @@ void LoopTracker::slotLoadToLoopDeck() {
     }
 }
 
-void LoopTracker::slotChangeLoopPregain(double v) {
+void LoopLayerTracker::slotChangeLoopPregain(double v) {
     m_pLoopDeck1Pregain->slotSet(v);
     m_pLoopDeck2Pregain->slotSet(v);
 }

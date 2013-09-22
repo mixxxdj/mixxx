@@ -1,4 +1,4 @@
-// looptracker.h
+// looplayertracker.h
 // Created by Carl Pillot on 8/23/13.
 // Responsible for tracking the playback status of loop layers and mixing them into
 // final loops.
@@ -13,11 +13,11 @@
 class ControlObjectThread;
 class ControlLogpotmeter;
 
-class LoopTracker : public QObject {
+class LoopLayerTracker : public QObject {
     Q_OBJECT
   public:
-    LoopTracker();
-    virtual ~LoopTracker();
+    LoopLayerTracker();
+    virtual ~LoopLayerTracker();
     
     void addLoopLayer(QString path, unsigned int length);
     void clear();

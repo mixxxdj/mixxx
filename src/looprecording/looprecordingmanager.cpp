@@ -14,7 +14,7 @@
 #include "engine/enginemaster.h"
 #include "engine/looprecorder/enginelooprecorder.h"
 #include "engine/looprecorder/loopwriter.h"
-#include "looprecording/looptracker.h"
+#include "looprecording/looplayertracker.h"
 #include "playerinfo.h"
 #include "recording/defs_recording.h"
 #include "trackinfoobject.h"
@@ -103,9 +103,9 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
 
     setRecordingDir();
 
-    m_pLoopTracker = new LoopTracker();
-    if (m_pLoopTracker) {
-        connect(m_pLoopTracker, SIGNAL(exportLoop(QString)), this, SLOT(slotExportLoopToPlayer(QString)));
+    m_pLoopLayerTracker = new LoopLayerTracker();
+    if (m_pLoopLayerTracker) {
+        connect(m_pLoopLayerTracker, SIGNAL(exportLoop(QString)), this, SLOT(slotExportLoopToPlayer(QString)));
     }
 
     // Connect with EngineLoopRecorder and Loop Writer
@@ -119,7 +119,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
     if (pLoopWriter) {
         connect(pLoopWriter, SIGNAL(isRecording(bool)), this, SLOT(slotIsRecording(bool)));
         connect(pLoopWriter, SIGNAL(clearRecorder()), this, SLOT(slotClearRecorder()));
-        connect(pLoopWriter, SIGNAL(loadAudio()), m_pLoopTracker, SLOT(slotLoadToLoopDeck()));
+        connect(pLoopWriter, SIGNAL(loadAudio()), m_pLoopLayerTracker, SLOT(slotLoadToLoopDeck()));
         connect(this, SIGNAL(clearWriter()), pLoopWriter, SLOT(slotClearWriter()));
         connect(this, SIGNAL(startWriter(int)), pLoopWriter, SLOT(slotStartRecording(int)));
         connect(this, SIGNAL(stopWriter(bool)), pLoopWriter, SLOT(slotStopRecording(bool)));
@@ -159,18 +159,14 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pCOLoopLength;
 }
 
-LoopTracker* LoopRecordingManager::getLoopTracker() {
-    return m_pLoopTracker;
-}
-
 // Public Slots
 
 // Connected to EngineLoopRecorder.
 void LoopRecordingManager::slotClearRecorder() {
 
     m_pTogglePlayback->set(0.0);
-    m_pLoopTracker->stop(true);
-    m_pLoopTracker->clear();
+    m_pLoopLayerTracker->stop(true);
+    m_pLoopLayerTracker->clear();
 }
 
 void LoopRecordingManager::slotCurrentPlayingDeckChanged(int deck) {
@@ -323,9 +319,9 @@ void LoopRecordingManager::slotToggleLoopRecording(double v) {
 void LoopRecordingManager::slotTogglePlayback(double v) {
     qDebug() << "Toggle Playback: " << v;
     if (v > 0.0) {
-        m_pLoopTracker->play();
+        m_pLoopLayerTracker->play();
     } else {
-        m_pLoopTracker->stop(false);
+        m_pLoopLayerTracker->stop(false);
     }
 }
 
@@ -340,7 +336,7 @@ void LoopRecordingManager::exportLoop() {
     QString newFileLocation = QString("%1%2_%3.%4")
         .arg(dir, "loop", currentDateTime, m_encodingType.toLower());
 
-    m_pLoopTracker->finalizeLoop(newFileLocation, m_dLoopBPM);
+    m_pLoopLayerTracker->finalizeLoop(newFileLocation, m_dLoopBPM);
 }
 
 QString LoopRecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
@@ -465,7 +461,7 @@ void LoopRecordingManager::startRecording() {
         emit fileOpen(pSndFile);
         // add to loop tracker
 
-        m_pLoopTracker->addLoopLayer(m_recordingLocation, m_iLoopLength);
+        m_pLoopLayerTracker->addLoopLayer(m_recordingLocation, m_iLoopLength);
     } else {
         // TODO: error message and stop recording.
     }

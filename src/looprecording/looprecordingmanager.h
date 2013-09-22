@@ -15,15 +15,17 @@ class EngineMaster;
 class ControlPushButton;
 class ControlObject;
 class ControlObjectThread;
-class LoopTracker;
+class LoopLayerTracker;
 
 class LoopRecordingManager : public QObject {
     Q_OBJECT
   public:
     LoopRecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMaster* pEngine);
     virtual ~LoopRecordingManager();
-    LoopTracker* getLoopTracker();
 
+    LoopLayerTracker* getLoopLayerTracker() {
+        return m_pLoopLayerTracker;
+    }
     // Returns loop source (used in legacy skin parser)
     QString getLoopSource() {
         return m_loopSource;
@@ -93,7 +95,7 @@ class LoopRecordingManager : public QObject {
     QList<ControlObjectThread*> m_deckRateControls;
 
     // Tracks all loop layers recorded.
-    LoopTracker* m_pLoopTracker;
+    LoopLayerTracker* m_pLoopLayerTracker;
 
     QString m_dateTime;
     QString m_encodingType;
