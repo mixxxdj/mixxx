@@ -66,6 +66,7 @@ void LoopFileMixer::slotProcess() {
 
     } else {
         // error...
+        qDebug() << "sf_open error";
         emit finished();
         return;
     }
@@ -75,13 +76,16 @@ void LoopFileMixer::slotProcess() {
 
         int samples2 = sf_read_float(pSndfile2, m_pWorkBufferIn2, WORK_BUFFER_SIZE);
 
+        qDebug() << "Reading samples... Samples 1: " << samples1 << " Samples 2: " << samples2;
+
         SampleUtil::applyGain(m_pWorkBufferOut, 0.0, WORK_BUFFER_SIZE);
         SampleUtil::addWithGain(m_pWorkBufferOut, m_pWorkBufferIn1, 1.0, samples1);
 
         if (samples2 > 0) {
             SampleUtil::addWithGain(m_pWorkBufferOut, m_pWorkBufferIn2, 1.0, samples2);
         }
-        sf_write_float(pSndfileOut, m_pWorkBufferOut, samples1);
+        int written = sf_write_float(pSndfileOut, m_pWorkBufferOut, samples1);
+        qDebug() << written << " Samples written";
     }
 
     sf_close(pSndfile1);
