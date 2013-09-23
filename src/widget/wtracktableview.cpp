@@ -1234,32 +1234,30 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
     }, __PRETTY_FUNCTION__);
 }
 
+// Must be called from Main thread
 void WTrackTableView::addSelectionToCrate(int iCrateId) {
     QModelIndexList indices = selectionModel()->selectedRows();
-
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, iCrateId, indices] (void) {
-        CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
-        TrackModel* trackModel = getTrackModel();
-
-        if (!trackModel) {
-            return;
+    TrackModel* trackModel = getTrackModel();
+    if (!trackModel) {
+        return;
+    }
+    QList<int> trackIds;
+    foreach (QModelIndex index, indices) {
+        TrackPointer pTrack = trackModel->getTrack(index);
+        if (!pTrack) {
+            continue;
         }
-
-        QList<int> trackIds;
-        foreach (QModelIndex index, indices) {
-            TrackPointer pTrack = trackModel->getTrack(index);
-            if (!pTrack) {
-                continue;
-            }
-            int iTrackId = pTrack->getId();
-            if (iTrackId != -1) {
-                trackIds.append(iTrackId);
-            }
+        int iTrackId = pTrack->getId();
+        if (iTrackId != -1) {
+            trackIds.append(iTrackId);
         }
+    }
 
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &trackIds, &iCrateId] (void) {
         if (trackIds.size() > 0) {
+            CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
             crateDao.addTracksToCrate(iCrateId, &trackIds);
         }
     }, __PRETTY_FUNCTION__);

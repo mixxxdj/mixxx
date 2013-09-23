@@ -36,7 +36,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
       m_supportedFileExtensionsRegex(
           SoundSourceProxy::supportedFileExtensionsRegex(),
           Qt::CaseInsensitive),
-      m_inCallSync(false) {
+      m_inCallSyncCount(0) {
     DBG() << "TrackCollection constructor \tfrom thread id="
           << QThread::currentThreadId() << "name="
           << QThread::currentThread()->objectName();
@@ -44,6 +44,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection() {
     DBG() << "~TrackCollection()";
+    delete m_pCOTPlaylistIsBusy;
 }
 
 void TrackCollection::run() {
@@ -73,28 +74,31 @@ void TrackCollection::run() {
         }
         // got lambda on queue (or needness to stop thread)
         if (m_stop) {
+            // m_stop == true
             DBG() << "Need to stop thread";
+            while (!m_lambdas.isEmpty()) {
+                // There are remaining lambdas in queue. Must execute them all.
+                m_lambdasQueueMutex.lock();
+                lambda = m_lambdas.dequeue();
+                m_lambdasQueueMutex.unlock();
+                lambda();
+                m_semLambdasFree.release(1);
+            }
             break;
-        }
-        if (!m_lambdas.isEmpty()) {
-            m_lambdasQueueMutex.lock();
-            lambda = m_lambdas.dequeue();
-            m_lambdasQueueMutex.unlock();
-            lambda();
-            m_semLambdasFree.release(1);
+        } else {
+            if (!m_lambdas.isEmpty()) {
+                m_lambdasQueueMutex.lock();
+                lambda = m_lambdas.dequeue();
+                m_lambdasQueueMutex.unlock();
+                lambda();
+                m_semLambdasFree.release(1);
+            }
         }
     }
-
-    // m_stop == true
-    while (!m_lambdas.isEmpty()) {
-        // There are remaining lambdas in queue. Must execute them all.
-        m_lambdasQueueMutex.lock();
-        lambda = m_lambdas.dequeue();
-        m_lambdasQueueMutex.unlock();
-        lambda();
-        m_semLambdasFree.release(1);
-    }
-
+    delete m_pPlaylistDao;
+    delete m_pCrateDao;
+    delete m_pCueDao;
+    delete m_pAnalysisDao;
     DBG() << " ### Thread ended ###";
 }
 
@@ -116,11 +120,12 @@ void TrackCollection::callAsync(func lambda, QString where) {
 //    @param: lambda function, string (for debug purposes).
 void TrackCollection::callSync(func lambda, QString where) {
     qDebug() << "callSync BEGIN from"<<where;
-//    if (m_inCallSync) {
+//    if (m_inCallSyncCount>0) {
 //        Q_ASSERT(!m_inCallSync);
 //    }
     qDebug() << "callSync from" << where;
-    m_inCallSync = true;
+    ++m_inCallSyncCount;
+
     if (lambda == NULL || m_stop) return;
 
     const bool inMainThread = QThread::currentThread() == qApp->thread();
@@ -138,7 +143,9 @@ void TrackCollection::callSync(func lambda, QString where) {
     while (!mutex.tryLock(5)) {
         if (inMainThread) {
             MainExecuter::getInstance().call();
-            qApp->processEvents(QEventLoop::AllEvents);
+            if (m_inCallSyncCount == 0) {
+                qApp->processEvents(QEventLoop::AllEvents);
+            }
         }
         // DBG() << "Start animation";
         // animationIsShowed = true;
@@ -147,12 +154,12 @@ void TrackCollection::callSync(func lambda, QString where) {
     if (inMainThread) {
         setUiEnabled(true);
     }
-    m_inCallSync = false;
+
+    --m_inCallSyncCount;
     qDebug() << "callSync END from"<<where;
 }
 
 void TrackCollection::addLambdaToQueue(func lambda) {
-    //TODO(tro) check lambda
     m_semLambdasFree.acquire(1); // we'll wait here if lambdas count in queue is greater then MAX_LAMBDA_COUNT
     m_lambdasQueueMutex.lock();
     m_lambdas.enqueue(lambda);
@@ -173,16 +180,14 @@ void TrackCollection::setUiEnabled(const bool enabled) {
 void TrackCollection::stopThread() {
     DBG() << "Stopping thread";
 
-    delete m_pPlaylistDao;
-    delete m_pCrateDao;
-    delete m_pCueDao;
-    delete m_pAnalysisDao;
-
     callSync([this](void) {
         DBG() << "Closing database connection";
         m_pTrackDao->finish();
-        delete m_pTrackDao;
+        delete m_pTrackDao; // do it here becouse it uses DB connection
+    }, "TrackCollection::stopThread, delete m_pTrackDao");
 
+    callSync([this](void) {
+        DBG() << "Closing database connection";
         if (m_pDatabase->isOpen()) {
             // There should never be an outstanding transaction when this code is
             // called. If there is, it means we probably aren't committing a
@@ -196,12 +201,11 @@ void TrackCollection::stopThread() {
             qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
                      << "There is a logic error somewhere.";
         }
-    }, __PRETTY_FUNCTION__);
+    }, "TrackCollection::stopThread, closing DB connection");
+
 
     m_semLambdasReadyToCall.release(1);
-
     m_stop = true;
-    wait();
 }
 
 

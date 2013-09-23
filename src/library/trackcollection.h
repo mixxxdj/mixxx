@@ -181,7 +181,7 @@ class TrackCollection : public QThread {
     ControlObjectThread* m_pCOTPlaylistIsBusy;
 
     const QRegExp m_supportedFileExtensionsRegex;
-    bool m_inCallSync;
+    int m_inCallSyncCount;
     QStringList m_tracksListInCnunk;
 
     void addTrackToChunk(const QString filePath, TrackDAO &trackDao);

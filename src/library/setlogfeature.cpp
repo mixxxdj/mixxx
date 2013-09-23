@@ -64,20 +64,22 @@ void SetlogFeature::createChildModel() {
     BasePlaylistFeature::constructChildModel(-1);
 }
 
-SetlogFeature::~SetlogFeature() {
+void SetlogFeature::freeSetlogFeature() {
     // If the history playlist we created doesn't have any tracks in it then
     // delete it so we don't end up with tons of empty playlists. This is mostly
     // for developers since they regularly open Mixxx without loading a track.
 
-    int playlistId = m_playlistId;
-    // tro's lambda idea. This code calls Asynchronously!
-    m_pTrackCollection->callAsync( // TODO(tro) REWRITE IT
-                [this, playlistId] (void) {
-        if (playlistId != -1 &&
-                m_playlistDao.tracksInPlaylist(playlistId) == 0) {
-            m_playlistDao.deletePlaylist(playlistId);
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        if (m_playlistId != -1 &&
+                m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
+            m_playlistDao.deletePlaylist(m_playlistId);
         }
     }, __PRETTY_FUNCTION__);
+}
+
+SetlogFeature::~SetlogFeature() {
 }
 
 QVariant SetlogFeature::title() {

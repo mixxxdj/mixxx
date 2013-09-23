@@ -73,12 +73,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
-    SetlogFeature* setlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
-
-    DBG() << "setlogFeature->init();";
-    setlogFeature->init();
-    DBG() << "addFeature(setlogFeature)";
-    addFeature(setlogFeature);
+    m_pSetlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
+    m_pSetlogFeature->init();
+    addFeature(m_pSetlogFeature);
 
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
@@ -115,6 +112,8 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
 Library::~Library() {
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
+
+    m_pSetlogFeature->freeSetlogFeature();
 
     QMutableListIterator<LibraryFeature*> features_it(m_features);
     while(features_it.hasNext()) {

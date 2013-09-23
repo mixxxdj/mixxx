@@ -28,6 +28,7 @@ class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class MixxxKeyboard;
+class SetlogFeature;
 
 class Library : public QObject {
     Q_OBJECT
@@ -89,6 +90,7 @@ public:
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
+    SetlogFeature* m_pSetlogFeature;
 #ifdef __PROMO__
     class PromoTracksFeature;
     PromoTracksFeature* m_pPromoTracksFeature;
