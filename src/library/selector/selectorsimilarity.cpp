@@ -24,7 +24,7 @@ SelectorSimilarity::SelectorSimilarity(QObject* parent,
                     m_selectorFilters(selectorFilters) {
     m_similarityFunctions.insert("timbre", &timbreSimilarity);
     m_similarityFunctions.insert("rhythm", &rhythmSimilarity);
-    m_similarityFunctions.insert("tags", &tagSimilarity);
+    m_similarityFunctions.insert("lastfm", &tagSimilarity);
 }
 
 SelectorSimilarity::~SelectorSimilarity() {
@@ -57,6 +57,24 @@ QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
 
     qDebug() << "calculateSimilarities:" << timer.elapsed() << "ms";
     return scores;
+}
+
+QHash<QString, double> SelectorSimilarity::compareTracks(TrackPointer pTrack1,
+                                                         TrackPointer pTrack2) {
+    QHash<QString, double> scores;
+    foreach (QString key, m_similarityFunctions.keys()) {
+        SimilarityFunc simFunc = m_similarityFunctions[key];
+        scores.insert(key, simFunc(pTrack1, pTrack2));
+    }
+    return scores;
+}
+
+QStringList SelectorSimilarity::getSimilarityTypes() {
+    QStringList similarityTypes;
+    foreach (QString similarityType, m_similarityFunctions.keys()) {
+        similarityTypes << similarityType;
+    }
+    return similarityTypes;
 }
 
 // Return up to n followup tracks for a given seed track, filtered and ranked

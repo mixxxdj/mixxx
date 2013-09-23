@@ -161,35 +161,44 @@ void SelectorLibraryTableModel::calculateSimilarity() {
 
 void SelectorLibraryTableModel::calculateAllSimilarities(
         const QString& filename) {
+    QTime timer;
+    timer.start();
+
     QFile file(filename);
     file.open(QIODevice::WriteOnly | QIODevice::Text);
     QTextStream out(&file);
 
+    QStringList similarityTypes = m_selectorSimilarity.getSimilarityTypes();
+
+    // output csv header
+    out << "filename1,filename2," % similarityTypes.join(",") % "\n";
+
     for (int i = 0; i < rowCount(); i++) {
         TrackPointer pTrack_i = getTrack(index(i, fieldIndex(LIBRARYTABLE_ID)));
-        TimbrePointer pTimbre_i = pTrack_i->getTimbre();
         QString sTrack_i = pTrack_i->getFilename();
         for (int j = i + 1; j < rowCount(); j++) {
             TrackPointer pTrack_j = getTrack(index(j, fieldIndex(LIBRARYTABLE_ID)));
-            TimbrePointer pTimbre_j = pTrack_j->getTimbre();
             QString sTrack_j = pTrack_j->getFilename();
-            double timbreScore =
-                    TimbreUtils::symmetricKlDivergence(pTimbre_i, pTimbre_j);
-            double rhythmScore =
-                    TimbreUtils::modelDistanceBeats(pTimbre_i, pTimbre_j);
-            double score = 0.5 * (timbreScore + rhythmScore);
+            QHash<QString, double> comparison =
+                    m_selectorSimilarity.compareTracks(pTrack_i, pTrack_j);
+
+            QStringList scores;
+            foreach (QString similarityType, similarityTypes) {
+                scores << QString::number(comparison[similarityType]);
+            }
+
             out << sTrack_i % "," % sTrack_j % "," %
-                   QString::number(timbreScore) % "," %
-                   QString::number(rhythmScore) % "," %
-                   QString::number(score) % "\n";
+                   scores.join(",") % "\n";
             if (i % 100 == 0 && j % 100 == 0) {
                 qDebug() << QString::number(i*j) << "/" <<
-                            QString::number(rowCount()*rowCount()) << "processed";
+                            QString::number(rowCount()*rowCount()) <<
+                            "processed";
             }
         }
     }
 
     file.close();
+    qDebug() << "calculateAllSimilarities:" << timer.elapsed() << "ms";
 }
 
 SelectorFilters& SelectorLibraryTableModel::getFilters() {

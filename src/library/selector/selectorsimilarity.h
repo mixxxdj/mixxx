@@ -22,6 +22,12 @@ class SelectorSimilarity : public QObject {
     QList<ScorePair> calculateSimilarities(int iSeedTrackId,
                                            QList<int> trackIds);
 
+    // compare two tracks using every similarity function; used
+    // for similarity diagnostics
+    QHash<QString, double> compareTracks(TrackPointer pTrack1,
+                                         TrackPointer pTrack2);
+
+    QStringList getSimilarityTypes();
 
   public slots:
     // Return up to n followup tracks for a given seed track, filtered and ranked
@@ -32,7 +38,6 @@ class SelectorSimilarity : public QObject {
             const QHash<QString, double>& contributions);
 
   private:
-
     void loadStoredSimilarityContributions();
     QHash<QString, double> normalizeContributions(TrackPointer pSeedTrack);
     QHash<QString, double> m_similarityContributions;
