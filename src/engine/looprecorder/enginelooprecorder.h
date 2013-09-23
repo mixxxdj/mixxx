@@ -17,7 +17,6 @@ class EngineLoopRecorder : public QObject {
     EngineLoopRecorder();
     virtual ~EngineLoopRecorder();
 
-    // Should this be process instead?
     // Passes buffers to the LoopWriter object
     void writeSamples(const CSAMPLE* pBuffer, const int iBufferSize);
 

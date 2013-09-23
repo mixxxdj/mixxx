@@ -1,10 +1,6 @@
 // loopfilemixer.cpp
-// Create by Carl Pillot on 8/22/13
+// Create by Carl Pillot on 9/21/13
 
-//#include <QDebug>
-//#include <QDir>
-//#include <QFile>
-//#include <QMutex>
 #include <QObject>
 #include <QDebug>
 #include <sndfile.h>
@@ -17,10 +13,10 @@
 #define WORK_BUFFER_SIZE 16384
 
 LoopFileMixer::LoopFileMixer(QString file1, QString file2, QString dest, QString encoding)
-        : m_filePath1(file1),
-        m_filePath2(file2),
-        m_dest(dest),
-        m_encoding(encoding) {
+        : m_dest(dest),
+        m_encoding(encoding),
+        m_filePath1(file1),
+        m_filePath2(file2) {
 
     m_pWorkBufferIn1 = SampleUtil::alloc(WORK_BUFFER_SIZE);
     m_pWorkBufferIn2 = SampleUtil::alloc(WORK_BUFFER_SIZE);
@@ -48,7 +44,7 @@ void LoopFileMixer::slotProcess() {
     sfInfo1.format = 0;
     sfInfo2.format = 0;
 
-    // TODO: don't hardcode samplerate
+    // TODO(carl): don't hardcode samplerate
     sfOutInfo.samplerate = 44100;
     sfOutInfo.channels = 2;
 

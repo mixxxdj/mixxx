@@ -1,5 +1,5 @@
-// LoopFileMixer.h
-// Create by Carl Pillot on 8/22/13
+// loopfilemixer.h
+// Create by Carl Pillot on 9/21/13
 
 #ifndef LOOPFILEMIXER_H
 #define LOOPFILEMIXER_H
@@ -23,10 +23,10 @@ class LoopFileMixer : public QObject {
     void finished();
 
   private:
-    QString m_filePath1;
-    QString m_filePath2;
     QString m_dest;
     QString m_encoding;
+    QString m_filePath1;
+    QString m_filePath2;
 
     CSAMPLE* m_pWorkBufferIn1;
     CSAMPLE* m_pWorkBufferIn2;

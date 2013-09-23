@@ -304,7 +304,6 @@ void LoopRecordingManager::slotToggleExport(double v) {
 void LoopRecordingManager::slotToggleLoopRecording(double v) {
     //qDebug() << "LoopRecordingManager::slotToggleLoopRecorder";
 
-    // TODO(carl): Handle recorder INPUT_OFF state
     if (v <= 0.) {
         return;
     }
@@ -362,9 +361,9 @@ double LoopRecordingManager::getCurrentBPM() {
         //qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Base BPM: " << baseTrackBPM
         //<< " Rate: " << rate;
 
-        // TODO(Carl) get scaling working for sample rates other than 44.1 kHz
+        // TODO(Carl): scaling only works for 44.1 kHz sample rate
         // Rate is incorrect for sample rates higher than 44.1.
-        //return baseTrackBPM * rate;
+        // This will be fixed for free by master_sync
         return baseTrackBPM * rate;
 
     } else {
@@ -414,7 +413,6 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
     return pSndFile;
 }
 
-// TODO(carl): Update recording dir when
 void LoopRecordingManager::setRecordingDir() {
 
     QString recordDirConfig = m_pConfig->getValueString(ConfigKey("[Recording]", "Directory"));
@@ -461,7 +459,7 @@ void LoopRecordingManager::startRecording() {
         // add to loop tracker
         m_pLoopLayerTracker->addLoopLayer(m_recordingLocation, m_iLoopLength);
     } else {
-        // TODO: error message and stop recording.
+        // TODO(carl): error message and stop recording.
     }
 }
 
