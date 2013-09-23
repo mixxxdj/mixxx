@@ -102,15 +102,14 @@ class LoopRecordingManager : public QObject {
     QString m_loopDestination;
     QString m_loopSource;
     QString m_recordingDir;
+    QString m_recordingTempDir;
 
     //the base file
-    QString m_recording_base_file;
-    //filename without path
-    QString m_recordingFile;
+    //QString m_recording_base_file;
     //Absolute file
     QString m_recordingLocation;
     
-    bool m_isRecording;
+    bool m_bRecording;
 
     int m_iCurrentPlayingDeck;
     double m_dLoopBPM;

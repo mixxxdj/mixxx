@@ -5,7 +5,7 @@
 #include <QDebug>
 #include <QDir>
 #include <QFile>
-#include <QMutex>
+//#include <QMutex>
 #include <sndfile.h>
 
 #include "looprecording/looprecordingmanager.h"
@@ -25,10 +25,9 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
         m_loopDestination(""),
         m_loopSource("Master"),
         m_recordingDir(""),
-        m_recording_base_file(""),
-        m_recordingFile(""),
+        m_recordingTempDir(""),
         m_recordingLocation(""),
-        m_isRecording(false),
+        m_bRecording(false),
         m_iCurrentPlayingDeck(0),
         m_dLoopBPM(0.0),
         m_iLoopLength(0),
@@ -182,7 +181,7 @@ void LoopRecordingManager::slotExportLoopToPlayer(QString filePath) {
 }
 
 void LoopRecordingManager::slotIsRecording(bool isRecordingActive) {
-    m_isRecording = isRecordingActive;
+    m_bRecording = isRecordingActive;
 }
 
 // Private Slots
@@ -309,7 +308,7 @@ void LoopRecordingManager::slotToggleLoopRecording(double v) {
     if (v <= 0.) {
         return;
     }
-    if (m_isRecording) {
+    if (m_bRecording) {
         stopRecording();
     } else {
         startRecording();
@@ -328,15 +327,12 @@ void LoopRecordingManager::slotTogglePlayback(double v) {
 void LoopRecordingManager::exportLoop() {
 
     setRecordingDir();
-    QString dir = m_recordingDir;
-
     QString currentDateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
 
-    // TODO(Carl) better file naming.
-    QString newFileLocation = QString("%1%2_%3.%4")
-        .arg(dir, "loop", currentDateTime, m_encodingType.toLower());
+    QString newFilePath = QString("%1/%2_%3.%4")
+        .arg(m_recordingDir, "loop", currentDateTime, m_encodingType.toLower());
 
-    m_pLoopLayerTracker->finalizeLoop(newFileLocation, m_dLoopBPM);
+    m_pLoopLayerTracker->finalizeLoop(newFilePath, m_dLoopBPM);
 }
 
 QString LoopRecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
@@ -418,22 +414,29 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
     return pSndFile;
 }
 
+// TODO(carl): Update recording dir when
 void LoopRecordingManager::setRecordingDir() {
-    QDir recordDir(m_pConfig->getValueString(
-                    ConfigKey("[Recording]", "Directory")).append(LOOP_RECORDING_DIR));
+
+    QString recordDirConfig = m_pConfig->getValueString(ConfigKey("[Recording]", "Directory"));
+
+    QDir recordDir(recordDirConfig);
+    QDir loopTempDir(recordDirConfig.append(LOOP_TEMP_DIR));
     // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord
     
-    if (!recordDir.exists()) {
-        if (recordDir.mkpath(recordDir.absolutePath())) {
-            qDebug() << "Created folder" << recordDir.absolutePath() << "for recordings";
+    if (!loopTempDir.exists()) {
+        if (loopTempDir.mkpath(recordDir.absolutePath())) {
+            qDebug() << "Created folder" << loopTempDir.absolutePath() << "for loop recording";
         } else {
-            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recordings";
+            qDebug() << "Failed to create folder" << loopTempDir.absolutePath() << "for recording";
+            m_recordingDir = "";
+            m_recordingTempDir = "";
             return;
-            // TODO: prevent recording from happening at all?
+            // TODO(carl): prevent recording from happening at all?
         }
     }
     m_recordingDir = recordDir.absolutePath();
-    qDebug() << "Loop Recordings folder set to" << m_recordingDir;
+    m_recordingTempDir = loopTempDir.absolutePath();
+    qDebug() << "Loop recording temp directory set to" << m_recordingTempDir;
 }
 
 void LoopRecordingManager::startRecording() {
@@ -447,20 +450,15 @@ void LoopRecordingManager::startRecording() {
     m_iLoopLength = getLoopLength();
     emit(startWriter(m_iLoopLength));
 
-    QString number_str = QString::number(m_iLoopNumber++);
+    QString numberStr = QString::number(m_iLoopNumber++);
 
-    // Storing the absolutePath of the recording file without file extension
-    m_recording_base_file = QString("%1/%2_%3_%4").arg(
-                                    m_recordingDir, "loop", number_str, m_dateTime);
-    //m_recording_base_file.append("/loop_" + m_iLoopNumber + "_" + m_dateTime);
-    // appending file extension to get the filelocation
-    m_recordingLocation = m_recording_base_file + "."+ m_encodingType.toLower();
+    m_recordingLocation = QString("%1/%2-%3_%4.%5").arg(
+            m_recordingTempDir, "loop", numberStr, m_dateTime, m_encodingType.toLower());
 
     SNDFILE* pSndFile = openSndFile(m_recordingLocation);
     if (pSndFile != NULL) {
         emit fileOpen(pSndFile);
         // add to loop tracker
-
         m_pLoopLayerTracker->addLoopLayer(m_recordingLocation, m_iLoopLength);
     } else {
         // TODO: error message and stop recording.
@@ -471,6 +469,5 @@ void LoopRecordingManager::stopRecording() {
     //qDebug() << "LoopRecordingManager::stopRecording NumSamples: " << m_iNumSamplesRecorded;
     //qDebug() << "LoopRecordingManager::stopRecording";
     emit(stopWriter(true));
-    m_recordingFile = "";
     m_recordingLocation = "";
 }

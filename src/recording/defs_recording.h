@@ -29,6 +29,6 @@
 #define SIZE_2GB    Q_UINT64_C(2000000000)
 #define SIZE_4GB    Q_UINT64_C(4000000000)
 
-#define LOOP_RECORDING_DIR "/temp"
+#define LOOP_TEMP_DIR "/temp"
 
 #endif
