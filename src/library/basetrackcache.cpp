@@ -70,7 +70,7 @@ BaseTrackCache::~BaseTrackCache() {
     delete m_pQueryParser;
 
     m_pTrackInfoMutex->unlock();
-    delete m_pTrackCollection;
+    delete m_pTrackInfoMutex;
 }
 
 const QStringList BaseTrackCache::columns() const {

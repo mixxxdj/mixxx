@@ -44,26 +44,6 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
 
 TrackCollection::~TrackCollection() {
     DBG() << "~TrackCollection()";
-    m_pTrackDao->finish();
-
-    if (m_pDatabase->isOpen()) {
-        // There should never be an outstanding transaction when this code is
-        // called. If there is, it means we probably aren't committing a
-        // transaction somewhere that should be.
-        if (m_pDatabase->rollback()) {
-            qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
-                     << "There is a logic error somewhere.";
-        }
-        m_pDatabase->close();
-    } else {
-        qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
-                 << "There is a logic error somewhere.";
-    }
-    delete m_pPlaylistDao;
-    delete m_pCrateDao;
-    delete m_pCueDao;
-    delete m_pAnalysisDao;
-    delete m_pTrackDao;
 }
 
 void TrackCollection::run() {
@@ -104,7 +84,17 @@ void TrackCollection::run() {
             m_semLambdasFree.release(1);
         }
     }
-    deleteLater();
+
+    // m_stop == true
+    while (!m_lambdas.isEmpty()) {
+        // There are remaining lambdas in queue. Must execute them all.
+        m_lambdasQueueMutex.lock();
+        lambda = m_lambdas.dequeue();
+        m_lambdasQueueMutex.unlock();
+        lambda();
+        m_semLambdasFree.release(1);
+    }
+
     DBG() << " ### Thread ended ###";
 }
 
@@ -114,7 +104,7 @@ void TrackCollection::run() {
 //    (if catched by value) or you can catch by value.
 void TrackCollection::callAsync(func lambda, QString where) {
     qDebug() << "callAsync from" << where;
-    if (lambda == NULL) return;
+    if (lambda == NULL || m_stop) return;
     const bool inMainThread = QThread::currentThread() == qApp->thread();
     if (inMainThread) {
         setUiEnabled(false);
@@ -131,7 +121,7 @@ void TrackCollection::callSync(func lambda, QString where) {
 //    }
     qDebug() << "callSync from" << where;
     m_inCallSync = true;
-    if (lambda == NULL) return;
+    if (lambda == NULL || m_stop) return;
 
     const bool inMainThread = QThread::currentThread() == qApp->thread();
     if (inMainThread) {
@@ -182,8 +172,36 @@ void TrackCollection::setUiEnabled(const bool enabled) {
 
 void TrackCollection::stopThread() {
     DBG() << "Stopping thread";
-    m_stop = true;
+
+    delete m_pPlaylistDao;
+    delete m_pCrateDao;
+    delete m_pCueDao;
+    delete m_pAnalysisDao;
+
+    callSync([this](void) {
+        DBG() << "Closing database connection";
+        m_pTrackDao->finish();
+        delete m_pTrackDao;
+
+        if (m_pDatabase->isOpen()) {
+            // There should never be an outstanding transaction when this code is
+            // called. If there is, it means we probably aren't committing a
+            // transaction somewhere that should be.
+            if (m_pDatabase->rollback()) {
+                qDebug() << "ERROR: There was a transaction in progress on the main database connection while shutting down."
+                         << "There is a logic error somewhere.";
+            }
+            m_pDatabase->close();
+        } else {
+            qDebug() << "ERROR: The main database connection was closed before TrackCollection closed it."
+                     << "There is a logic error somewhere.";
+        }
+    }, __PRETTY_FUNCTION__);
+
     m_semLambdasReadyToCall.release(1);
+
+    m_stop = true;
+    wait();
 }
 
 
