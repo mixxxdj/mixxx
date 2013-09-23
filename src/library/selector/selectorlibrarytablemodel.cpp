@@ -183,7 +183,7 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
                    QString::number(rhythmScore) % "," %
                    QString::number(score) % "\n";
             if (i % 100 == 0 && j % 100 == 0) {
-                qDebug() << QString::number(i*j) << " comparisons of " << 
+                qDebug() << QString::number(i*j) << " comparisons of " <<
                             QString::number(rowCount()*rowCount())"  processed";
             }
         }
