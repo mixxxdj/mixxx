@@ -7,10 +7,8 @@
 
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
+#include "library/selector/scorepair.h"
 #include "library/selector/selectorfilters.h"
-
-// type to store track ID(int) and similarity score(double) from 0 to 1
-typedef QPair<int, double> ScorePair;
 
 class SelectorSimilarity : public QObject {
     Q_OBJECT

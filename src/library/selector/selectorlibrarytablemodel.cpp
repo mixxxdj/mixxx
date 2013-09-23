@@ -142,8 +142,8 @@ void SelectorLibraryTableModel::calculateSimilarity() {
         QVariantList queryTrackIds;
         QVariantList queryScores;
         foreach (ScorePair pair, results) {
-            queryTrackIds << pair.first;
-            queryScores << pair.second;
+            queryTrackIds << pair.id;
+            queryScores << pair.score;
         }
 
         QSqlQuery query(m_pTrackCollection->getDatabase());
@@ -183,8 +183,8 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
                    QString::number(rhythmScore) % "," %
                    QString::number(score) % "\n";
             if (i % 100 == 0 && j % 100 == 0) {
-                qDebug() << QString::number(i*j) << " comparisons of " <<
-                            QString::number(rowCount()*rowCount())"  processed";
+                qDebug() << QString::number(i*j) << "/" <<
+                            QString::number(rowCount()*rowCount()) << "processed";
             }
         }
     }

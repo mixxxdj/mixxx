@@ -94,7 +94,7 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
     qSort(ranks.begin(), ranks.end(), similaritySort);
 
     for (int i = 0; i < n; i++) {
-        results << ranks.at(i).first; // track id
+        results << ranks.at(i).id;
     }
     return results;
 }
@@ -156,7 +156,7 @@ QHash<QString, double> SelectorSimilarity::normalizeContributions(
 
 bool SelectorSimilarity::similaritySort(const ScorePair s1,
                                         const ScorePair s2) {
-    return s1.second >= s2.second;
+    return s1.score >= s2.score;
 }
 
 double SelectorSimilarity::timbreSimilarity(TrackPointer pTrack1,

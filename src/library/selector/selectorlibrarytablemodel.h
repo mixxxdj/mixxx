@@ -10,6 +10,7 @@
 #include "library/librarytablemodel.h"
 #include "track/timbre.h"
 #include "track/tagutils.h"
+#include "library/selector/scorepair.h"
 #include "library/selector/selectorfilters.h"
 #include "library/selector/selectorsimilarity.h"
 
