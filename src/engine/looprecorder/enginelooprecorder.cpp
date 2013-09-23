@@ -44,7 +44,7 @@ void EngineLoopRecorder::startThread() {
 
 void EngineLoopRecorder::slotSourceChanged(QString source) {
     m_loopSource = source;
-    qDebug() << "!~!~!~! EngineLoopRecorder::slotSourceChanged: " << m_loopSource << " !~!~!~!";
+    //qDebug() << "!~!~!~! EngineLoopRecorder::slotSourceChanged: " << m_loopSource << " !~!~!~!";
 }
 
 void EngineLoopRecorder::slotThreadStarted() {
