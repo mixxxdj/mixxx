@@ -338,7 +338,7 @@ void LoopRecordingManager::exportLoop() {
 QString LoopRecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
     // Use a format based on ISO 8601. Windows does not support colons in
     // filenames so we can't use them anywhere.
-    QString formatted = dateTime.toString("yyyy-MM-dd_hh'h'mm'm'ss's'");
+    QString formatted = dateTime.toString("yyMMdd_hhmmss");
     return formatted;
 }
 
