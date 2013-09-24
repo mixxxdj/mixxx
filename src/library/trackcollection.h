@@ -138,11 +138,6 @@ class TrackCollection : public QThread {
 
     bool checkForTables();
 
-    // Import the files in a given diretory, without recursing into subdirectories
-    bool importDirectory(const QString& directory, TrackDAO& trackDao,
-                         const QStringList& nameFilters, volatile bool* cancel, volatile bool* pause);
-
-    void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
 
     CrateDAO& getCrateDAO();
@@ -150,16 +145,12 @@ class TrackCollection : public QThread {
     PlaylistDAO& getPlaylistDAO();
     QSharedPointer<BaseTrackCache> getTrackSource(const QString& name);
     void addTrackSource(const QString& name, QSharedPointer<BaseTrackCache> trackSource);
-    void cancelLibraryScan();
 
     ConfigObject<ConfigValue>* getConfig() {
         return m_pConfig;
     }
 
   signals:
-    void startedLoading();
-    void progressLoading(QString path);
-    void finishedLoading();
     void initialized();
 
   private:
@@ -182,10 +173,6 @@ class TrackCollection : public QThread {
 
     const QRegExp m_supportedFileExtensionsRegex;
     int m_inCallSyncCount;
-    QStringList m_tracksListInCnunk;
-
-    void addTrackToChunk(const QString filePath, TrackDAO &trackDao);
-    void addChunkToDatabase(TrackDAO &trackDao);
 };
 
 #endif

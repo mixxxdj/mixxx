@@ -1547,19 +1547,17 @@ void MixxxApp::closeEvent(QCloseEvent *event) {
     }
 }
 
-void MixxxApp::slotScanLibrary()
-{
+void MixxxApp::slotScanLibrary() {
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(
         m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
 }
 
-void MixxxApp::slotEnableRescanLibraryAction()
-{
+void MixxxApp::slotEnableRescanLibraryAction() {
     m_pLibraryRescan->setEnabled(true);
 }
 
-void MixxxApp::slotOptionsMenuShow(){
+void MixxxApp::slotOptionsMenuShow() {
     // Check recording if it is active.
     m_pOptionsRecord->setChecked(m_pRecordingManager->isRecordingActive());
 #ifdef __SHOUTCAST__

@@ -19,7 +19,6 @@
 #include "configobject.h"
 
 #define MAX_LAMBDA_COUNT 8
-#define MAX_CHUNK_SIZE 50
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     : m_pConfig(pConfig),
@@ -263,78 +262,6 @@ QSqlDatabase& TrackCollection::getDatabase() {
     return *m_pDatabase;
 }
 
-// Do a non-recursive import of all the songs in a directory. Does NOT decend into subdirectories.
-//    @param trackDao The track data access object which provides a connection to the database.
-//    We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
-//    @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
-//
-bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
-                                      const QStringList& nameFilters,
-                                      volatile bool* cancel, volatile bool* pause) {
-    //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
-
-    emit(startedLoading());
-    // QFileInfoList files;
-
-    //get a list of the contents of the directory and go through it.
-    QDirIterator it(directory, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
-    while (it.hasNext()) {
-
-        //If a flag was raised telling us to cancel the library scan then stop.
-        if (*cancel) {
-            return false;
-        }
-        if (*pause) {
-            DBG() << "in Pause";
-            while (*pause && !*cancel)
-                msleep(20);
-        }
-        if (*cancel) {
-            return false;
-        }
-
-//        this->callSync(
-//                    [this, &it, &directory, &trackDao, &nameFilters, &pause ] (void) {
-
-//            trackDao.addTracksPrepare(); ///////
-
-//            QString absoluteFilePath = it.next();
-            addTrackToChunk(it.next(), trackDao);
-
-            // If the track is in the database, mark it as existing. This code gets exectuted
-            // when other files in the same directory have changed (the directory hash has changed).
-//            trackDao.markTrackLocationAsVerified(absoluteFilePath);
-
-//            // If the file already exists in the database, continue and go on to
-//            // the next file.
-
-//            // If the file doesn't already exist in the database, then add
-//            // it. If it does exist in the database, then it is either in the
-//            // user's library OR the user has "removed" the track via
-//            // "Right-Click -> Remove". These tracks stay in the library, but
-//            // their mixxx_deleted column is 1.
-//            if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
-//                //qDebug() << "Loading" << it.fileName();
-//                emit(progressLoading(it.fileName()));
-
-//                TrackPointer pTrack = TrackPointer(new TrackInfoObject(
-//                                                       absoluteFilePath), &QObject::deleteLater);
-//                if (trackDao.addTracksAdd(pTrack.data(), false)) {
-//                    // Successful added
-//                    // signal the main instance of TrackDao, that there is a
-//                    // new Track in the database
-//                    m_trackDao->databaseTrackAdded(pTrack);
-//                } else {
-//                    qDebug() << "Track ("+absoluteFilePath+") could not be added";
-//                }
-//            }
-//            m_trackDao->addTracksFinish();
-//        }, __PRETTY_FUNCTION__);
-    }
-    emit(finishedLoading());
-    return true;
-}
-
 CrateDAO& TrackCollection::getCrateDAO() {
     return *m_pCrateDao;
 }
@@ -391,49 +318,4 @@ void TrackCollection::createAndPopulateDbConnection() {
     m_pCueDao = new CueDAO(*m_pDatabase);
     m_pAnalysisDao = new AnalysisDao(*m_pDatabase, m_pConfig);
     m_pTrackDao = new TrackDAO(*m_pDatabase, *m_pCueDao, *m_pPlaylistDao, *m_pCrateDao, *m_pAnalysisDao, m_pConfig);
-}
-
-void TrackCollection::addTrackToChunk(const QString filePath, TrackDAO& trackDao) {
-    if (m_tracksListInCnunk.count() < MAX_CHUNK_SIZE) {
-        m_tracksListInCnunk.append(filePath);
-    } else {
-        callSync( [this, &trackDao] (void) {
-            addChunkToDatabase(trackDao);
-        }, "addTrackToChunk");
-    }
-}
-
-void TrackCollection::addChunkToDatabase(TrackDAO& trackDao) {
-    DBG() << "Adding chunk to DB: " << m_tracksListInCnunk;
-    trackDao.addTracksPrepare();
-    foreach (QString trackPath, m_tracksListInCnunk) {
-        // If the track is in the database, mark it as existing. This code gets exectuted
-        // when other files in the same directory have changed (the directory hash has changed).
-        trackDao.markTrackLocationAsVerified(trackPath);
-
-        // If the file already exists in the database, continue and go on to
-        // the next file.
-
-        // If the file doesn't already exist in the database, then add
-        // it. If it does exist in the database, then it is either in the
-        // user's library OR the user has "removed" the track via
-        // "Right-Click -> Remove". These tracks stay in the library, but
-        // their mixxx_deleted column is 1.
-        if (!trackDao.trackExistsInDatabase(trackPath)) {
-            //qDebug() << "Loading" << it.fileName();
-            emit(progressLoading(trackPath));
-
-            TrackPointer pTrack = TrackPointer(new TrackInfoObject(trackPath), &QObject::deleteLater);
-            if (trackDao.addTracksAdd(pTrack.data(), false)) {
-                // Successful added
-                // signal the main instance of TrackDao, that there is a
-                // new Track in the database
-                m_pTrackDao->databaseTrackAdded(pTrack);
-            } else {
-                qDebug() << "Track ("+trackPath+") could not be added";
-            }
-        }
-    }
-    trackDao.addTracksFinish();
-    m_tracksListInCnunk.clear();
 }
