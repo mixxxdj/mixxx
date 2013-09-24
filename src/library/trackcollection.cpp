@@ -53,10 +53,9 @@ void TrackCollection::run() {
 
     qRegisterMetaType<QSet<int> >("QSet<int>");
 
-    DBG() << "Initializing DAOs inside TrackCollection's thread";
-
     createAndPopulateDbConnection();
 
+    DBG() << "Initializing DAOs inside TrackCollection's thread";
     m_pTrackDao->initialize();
     m_pPlaylistDao->initialize();
     m_pCrateDao->initialize();
@@ -119,8 +118,8 @@ void TrackCollection::callAsync(func lambda, QString where) {
 //    @param: lambda function, string (for debug purposes).
 void TrackCollection::callSync(func lambda, QString where) {
     qDebug() << "callSync BEGIN from"<<where;
-//    if (m_inCallSyncCount>0) {
-//        Q_ASSERT(!m_inCallSync);
+//    if (m_inCallSyncCount > 0) { // callSync inside callSync is workable, but we must avoid it
+//        Q_ASSERT(0==1); // just stop here in debug
 //    }
     qDebug() << "callSync from" << where;
     ++m_inCallSyncCount;
@@ -142,7 +141,7 @@ void TrackCollection::callSync(func lambda, QString where) {
     while (!mutex.tryLock(5)) {
         if (inMainThread) {
             MainExecuter::getInstance().call();
-            if (m_inCallSyncCount == 0) {
+            if (m_inCallSyncCount == 1) {
                 qApp->processEvents(QEventLoop::AllEvents);
             }
         }
@@ -201,7 +200,6 @@ void TrackCollection::stopThread() {
                      << "There is a logic error somewhere.";
         }
     }, "TrackCollection::stopThread, closing DB connection");
-
 
     m_semLambdasReadyToCall.release(1);
     m_stop = true;

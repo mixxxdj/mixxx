@@ -22,7 +22,6 @@ public:
     virtual ~SetlogFeature();
     void init();
     void createChildModel();
-    void freeSetlogFeature();
 
     QVariant title();
     QIcon getIcon();

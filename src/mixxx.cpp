@@ -198,10 +198,6 @@ void MixxxApp::initializeTrackCollection() {
     loop.exec();
 }
 
-void MixxxApp::freeTrackCollection() {
-
-}
-
 void MixxxApp::initializeKeyboard() {
     QString resourcePath = m_pConfig->getResourcePath();
 
@@ -583,8 +579,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     }
 }
 
-MixxxApp::~MixxxApp()
-{
+MixxxApp::~MixxxApp() {
     // TODO(rryan): Get rid of QTime here.
     QTime qTime;
     qTime.start();
@@ -592,6 +587,10 @@ MixxxApp::~MixxxApp()
     t.start();
 
     qDebug() << "Destroying MixxxApp";
+
+    // Stop redrawing waveforms to avoid crashes when doing processEvents
+    // from one of destructors going next (which use callSync)
+    WaveformWidgetFactory::instance()->stop();
 
     qDebug() << "save config " << qTime.elapsed();
     m_pConfig->Save();
@@ -626,6 +625,7 @@ MixxxApp::~MixxxApp()
     // LibraryScanner depends on Library
     qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
+
 
     // Delete the library after the view so there are no dangling pointers to
     // Depends on RecordingManager

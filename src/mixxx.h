@@ -134,7 +134,6 @@ class MixxxApp : public QMainWindow {
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
     void initializeTrackCollection();
-    void freeTrackCollection();
     void checkDirectRendering();
     bool confirmExit();
 

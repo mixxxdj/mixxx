@@ -110,10 +110,9 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
 }
 
 Library::~Library() {
+    qDebug() << "~Library";
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
-
-    m_pSetlogFeature->freeSetlogFeature();
 
     QMutableListIterator<LibraryFeature*> features_it(m_features);
     while(features_it.hasNext()) {
@@ -220,7 +219,9 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
         } else {
             pTrack = track_dao.getTrack(track_id);
         }
+        MainExecuter::callSync([this, &pTrack, &group](void){
             emit(loadTrackToPlayer(pTrack, group));
+        });
     }, __PRETTY_FUNCTION__);
 }
 
