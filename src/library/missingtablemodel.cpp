@@ -23,6 +23,7 @@ void MissingTableModel::init() {
     }, __PRETTY_FUNCTION__);
 }
 
+// Must be called from m_pTrackCollection thread
 void MissingTableModel::setTableModel(int id) {
     Q_UNUSED(id);
     QSqlQuery query(m_pTrackCollection->getDatabase());

@@ -103,7 +103,7 @@ bool BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
                 [this, &playlist_path, &playlistViewTable, &columns, &result] (void) {
-        QSqlQuery finder_query(m_database);
+        QSqlQuery finder_query(m_pTrackCollection->getDatabase());
         finder_query.prepare(QString("SELECT id from %1 where name=:name").arg(m_playlistsTable));
         finder_query.bindValue(":name", playlist_path);
 
@@ -132,8 +132,8 @@ bool BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
         columns << "track_id";
         columns << "position";
 
-        QSqlQuery query(m_database);
-        FieldEscaper f(m_database);
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        FieldEscaper f(m_pTrackCollection->getDatabase());
         QString queryString = QString(
                     "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
                     "SELECT %2 FROM %3 WHERE playlist_id = %4")
