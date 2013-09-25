@@ -29,7 +29,6 @@ class BaseExternalPlaylistModel : public BaseSqlTableModel {
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private:
-    QSqlDatabase m_database;
     QString m_playlistsTable;
     QString m_playlistTracksTable;
     QString m_trackSource;

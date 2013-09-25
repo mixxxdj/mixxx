@@ -28,10 +28,11 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_pAutoDJView(NULL)
 #ifdef __AUTODJCRATES__
-          , m_autoDjCratesDao (pTrackCollection->getDatabase(),
-                             pTrackCollection->getTrackDAO(),
-                             pTrackCollection->getCrateDAO(),
-                             pTrackCollection->getPlaylistDAO(), pConfig)
+          , m_autoDjCratesDao(pTrackCollection->getDatabase(),
+                              pTrackCollection->getTrackDAO(),
+                              pTrackCollection->getCrateDAO(),
+                              pTrackCollection->getPlaylistDAO(),
+                              pConfig)
 #endif // __AUTODJCRATES__
 {
 #ifdef __AUTODJCRATES__
