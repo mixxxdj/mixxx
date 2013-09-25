@@ -23,6 +23,9 @@ CrateTableModel::~CrateTableModel() {
 
 // Must be called from Main thread
 void CrateTableModel::setTableModel(int crateId) {
+
+    Q_ASSERT_X(QThread::currentThread()==qApp->thread(),__FILE__+__LINE__,__PRETTY_FUNCTION__);
+
     //qDebug() << "CrateTableModel::setCrate()" << crateId;
     if (crateId == m_iCrateId) {
         qDebug() << "Already focused on crate " << crateId;

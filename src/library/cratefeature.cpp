@@ -178,17 +178,20 @@ void CrateFeature::activate() {
     emit(restoreSearch(QString())); //disable search on crate home
 }
 
+// Must be called from Main thread
 void CrateFeature::activateChild(const QModelIndex& index) {
     if (!index.isValid())
         return;
-    QString crateName = index.data().toString();
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, crateName] (void) {
-        int crateId = m_crateDao.getCrateIdByName(crateName);
-        m_crateTableModel.setTableModel(crateId);
-        emit(showTrackModel(&m_crateTableModel));
+    const QString crateName = index.data().toString();
+    int crateId;
+    // tro's lambda idea. This code calls Synchronously!
+    m_pTrackCollection->callSync(
+                [this, &crateName, &crateId] (void) {
+        crateId = m_crateDao.getCrateIdByName(crateName);
     }, __PRETTY_FUNCTION__);
+
+    m_crateTableModel.setTableModel(crateId);
+    emit(showTrackModel(&m_crateTableModel));
 }
 
 void CrateFeature::onRightClick(const QPoint& globalPos) {
@@ -617,6 +620,7 @@ void CrateFeature::slotAnalyzeCrate() {
     }
 }
 
+// Must be called from Main thread
 void CrateFeature::slotExportPlaylist() {
     qDebug() << "Export crate" << m_lastRightClickedIndex.data();
     QString file_location = QFileDialog::getSaveFileName(
@@ -677,6 +681,7 @@ void CrateFeature::slotExportPlaylist() {
     }
 }
 
+// Must be called from Main thread
 void CrateFeature::slotCrateTableChanged(int crateId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
@@ -684,15 +689,15 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     m_lastRightClickedIndex = constructChildModel(crateId);
 
     // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
-                [this, crateId] (void) {
+//    m_pTrackCollection->callAsync(
+//                [this, crateId] (void) {
         // Switch the view to the crate.
         m_crateTableModel.setTableModel(crateId);
         // Update selection
-        MainExecuter::callSync([this]() { // avoid it
+//        MainExecuter::callSync([this]() { // avoid it
             emit(featureSelect(this, m_lastRightClickedIndex));
-        });
-    }, __PRETTY_FUNCTION__ + objectName());
+//        });
+//    }, __PRETTY_FUNCTION__ + objectName());
 }
 
 void CrateFeature::slotCrateTableRenamed(int a_iCrateId,
