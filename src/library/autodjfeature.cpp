@@ -43,8 +43,8 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
     root->appendChild(m_pCratesTreeItem);
 
-    // tro's lambda idea. This code calls asynchronously!
-    m_pTrackCollection->callAsync(
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
                 [this] (void) {
         // Create tree-items under "Crates".
         constructCrateChildModel();
@@ -316,7 +316,7 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
 }
 #ifdef __AUTODJCRATES__
 
-// Must be called from Main thread
+// Must be called from TrackCollection thread
 void AutoDJFeature::constructCrateChildModel() {
     // Create a crate table-model with a list of crates that have been added
     // to the auto-DJ queue (and are visible).
