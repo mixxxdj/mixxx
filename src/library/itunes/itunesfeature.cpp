@@ -116,11 +116,20 @@ void ITunesFeature::activate() {
     activate(false);
 }
 
+// Must be called from Main thread
 void ITunesFeature::activate(bool forceReload) {
     //qDebug("ITunesFeature::activate()");
     if (!m_isActivated || forceReload) {
         SettingsDAO settings(m_pTrackCollection->getDatabase());
-        QString dbSetting(settings.getValue(ITDB_PATH_KEY));
+
+        QString pathKey;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &settings, &pathKey] (void) {
+            pathKey = settings.getValue(ITDB_PATH_KEY);
+        }, __PRETTY_FUNCTION__);
+
+        QString dbSetting(pathKey);
         // if a path exists in the database, use it
         if (!dbSetting.isEmpty() && QFile::exists(dbSetting)) {
             m_dbfile = dbSetting;
@@ -137,7 +146,12 @@ void ITunesFeature::activate(bool forceReload) {
                 emit(showTrackModel(m_pITunesTrackModel));
                 return;
             }
-            settings.setValue(ITDB_PATH_KEY, m_dbfile);
+
+            // tro's lambda idea. This code calls synchronously!
+            m_pTrackCollection->callSync(
+                        [this, &settings] (void) {
+                settings.setValue(ITDB_PATH_KEY, m_dbfile);
+            }, __PRETTY_FUNCTION__);
         }
         m_isActivated =  true;
         // Ususally the maximum number of threads

@@ -103,13 +103,18 @@ class TrackModel {
     virtual TrackModel::CapabilitiesFlags getCapabilities() const {
         return TRACKMODELCAPS_NONE;
     }
+
+    // Must be called from TrackCollection thread
     virtual QString getModelSetting(QString name) {
+        Q_ASSERT_X(QThread::currentThread()!=qApp->thread(),__FILE__+__LINE__,__PRETTY_FUNCTION__);
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.getValue(key);
     }
 
+    // Must be called from TrackCollection thread
     virtual bool setModelSetting(QString name, QVariant value) {
+        Q_ASSERT_X(QThread::currentThread()!=qApp->thread(),__FILE__+__LINE__,__PRETTY_FUNCTION__);
         SettingsDAO settings(m_db);
         QString key = m_settingsNamespace + "." + name;
         return settings.setValue(key, value);

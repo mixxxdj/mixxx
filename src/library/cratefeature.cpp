@@ -509,8 +509,13 @@ void CrateFeature::buildCrateList() {
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
 */
+// Must be called from Main thread
 QModelIndex CrateFeature::constructChildModel(int selected_id) {
-    buildCrateList();
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        buildCrateList();
+    }, __PRETTY_FUNCTION__);
     QList<TreeItem*> data_list;
     int selected_row = -1;
     // Access the invisible root item
@@ -634,13 +639,13 @@ void CrateFeature::slotExportPlaylist() {
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
 
-    // TODO(tro) rewrite it, so we can do something w/ that Scoped Pointer inside TrackCollection
-    // tro's lambda idea. This code calls synchronously!
-//    m_pTrackCollection->callSync(
-//                [this, pCrateTableModel] (void) {
         pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
-        pCrateTableModel->select();
-//    }, __PRETTY_FUNCTION__);
+
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &pCrateTableModel] (void) {
+            pCrateTableModel->select();
+        }, __PRETTY_FUNCTION__);
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
             ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(), useRelativePath);

@@ -42,8 +42,12 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
     root->appendChild(m_pCratesTreeItem);
 
-    // Create tree-items under "Crates".
-    constructCrateChildModel();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this] (void) {
+        // Create tree-items under "Crates".
+        constructCrateChildModel();
+    }, __PRETTY_FUNCTION__);
 
     // Be notified when the status of crates changes.
     connect(&m_crateDao, SIGNAL(added(int)),
@@ -283,6 +287,7 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 #endif // __AUTODJCRATES__
 }
 
+// Must be called from Main thread
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
     bool needToDoSelect = false;
@@ -308,10 +313,10 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
     }
 #endif // __AUTODJCRATES__
 }
-
 #ifdef __AUTODJCRATES__
 
-void AutoDJFeature::constructCrateChildModel() { // TODO(tro) WRAP
+// Must be called from Main thread
+void AutoDJFeature::constructCrateChildModel() {
     // Create a crate table-model with a list of crates that have been added
     // to the auto-DJ queue (and are visible).
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
@@ -336,13 +341,16 @@ void AutoDJFeature::constructCrateChildModel() { // TODO(tro) WRAP
             crateListTableModel.index(row, nameColumn)).toString();
         m_crateList.append(qMakePair(id, name));
 
-        // Create the TreeItem for this crate.
-        TreeItem* item = new TreeItem(name, name, this, m_pCratesTreeItem);
-        m_pCratesTreeItem->appendChild(item);
+        MainExecuter::callSync([this, name](void) {
+            // Create the TreeItem for this crate.
+            TreeItem* item = new TreeItem(name, name, this, m_pCratesTreeItem);
+            m_pCratesTreeItem->appendChild(item);
+        });
     }
 }
 
-void AutoDJFeature::onRightClickChild(const QPoint& globalPos, // TODO(tro) WRAP
+// Must be called from Main thread
+void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
@@ -361,8 +369,12 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos, // TODO(tro) WRAP
         QMenu menu(NULL);
         QMenu crateMenu(NULL);
         crateMenu.setTitle(tr("Add Crate as Track Source"));
+        // tro's lambda idea. This code calls synchronously!
         QMap<QString,int> crateMap;
-        m_crateDao.getAutoDjCrates(false, &crateMap);
+        m_pTrackCollection->callSync(
+                    [this, &crateMap] (void) {
+            m_crateDao.getAutoDjCrates(false, &crateMap);
+        }, __PRETTY_FUNCTION__);
         QMapIterator<QString,int> it(crateMap);
         while (it.hasNext()) {
             it.next();

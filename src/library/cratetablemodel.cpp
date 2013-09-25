@@ -21,41 +21,47 @@ CrateTableModel::CrateTableModel(QObject* pParent,
 CrateTableModel::~CrateTableModel() {
 }
 
+// Must be called from Main thread
 void CrateTableModel::setTableModel(int crateId) {
     //qDebug() << "CrateTableModel::setCrate()" << crateId;
     if (crateId == m_iCrateId) {
         qDebug() << "Already focused on crate " << crateId;
         return;
     }
-    m_iCrateId = crateId;
 
-    QString tableName = QString("crate_%1").arg(m_iCrateId);
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    FieldEscaper escaper(m_pTrackCollection->getDatabase());
-    QString filter = "library.mixxx_deleted = 0";
+    m_iCrateId = crateId;
     QStringList columns;
     columns << "crate_tracks."+CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
             << "'' as preview";
+    QString tableName = QString("crate_%1").arg(m_iCrateId);
 
-    // We drop files that have been explicitly deleted from mixxx
-    // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
-    // removed files were not removed from crates, so some users will have
-    // libraries where this is the case.
-    QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-                                  "SELECT %2 FROM %3 "
-                                  "INNER JOIN library ON library.id = %3.%4 "
-                                  "WHERE %3.%5 = %6 AND %7")
-                          .arg(escaper.escapeString(tableName),
-                               columns.join(","),
-                               CRATE_TRACKS_TABLE,
-                               CRATETRACKSTABLE_TRACKID,
-                               CRATETRACKSTABLE_CRATEID,
-                               QString::number(crateId),
-                               filter);
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &columns, &tableName] (void) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        FieldEscaper escaper(m_pTrackCollection->getDatabase());
+        QString filter = "library.mixxx_deleted = 0";
+
+        // We drop files that have been explicitly deleted from mixxx
+        // (mixxx_deleted=0) from the view. There was a bug in <= 1.9.0 where
+        // removed files were not removed from crates, so some users will have
+        // libraries where this is the case.
+        QString queryString = QString("CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                                      "SELECT %2 FROM %3 "
+                                      "INNER JOIN library ON library.id = %3.%4 "
+                                      "WHERE %3.%5 = %6 AND %7")
+                .arg(escaper.escapeString(tableName),
+                     columns.join(","),
+                     CRATE_TRACKS_TABLE,
+                     CRATETRACKSTABLE_TRACKID,
+                     CRATETRACKSTABLE_CRATEID,
+                     QString::number(m_iCrateId),
+                     filter);
+        query.prepare(queryString);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }, __PRETTY_FUNCTION__);
 
     columns[0] = LIBRARYTABLE_ID;
     columns[1] = "preview";
