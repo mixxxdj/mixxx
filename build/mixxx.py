@@ -330,6 +330,8 @@ class MixxxBuild(object):
             # nothing to do 
             return
 
+        print "branch has changed", sconsign_branch, "->", branch_name
+
         if sconsign_branch:
             old_branch_build_dir = os.path.join(cache_dir, sconsign_branch)
             old_virtual_build_dir = os.path.join(old_branch_build_dir, self.build_dir)
@@ -341,18 +343,22 @@ class MixxxBuild(object):
                                     'build virtualization cannot continue. Please '
                                     'move or delete it.' % old_virtual_build_dir)       
                 print "shutil.move", self.build_dir, old_virtual_build_dir
-                #move build dir from last build to chache, named with the old branch name 
+                # move build dir from last build to chache, named with the old branch name 
                 shutil.move(self.build_dir, old_virtual_build_dir)
 
             if os.path.isfile(sconsign_file):
                 print "shutil.move", sconsign_file, old_virtual_sconsign_file
-                #move sconsdign-dblite as well
+                # move sconsdign-dblite as well
                 shutil.move(sconsign_file, old_virtual_sconsign_file)
 
             if os.path.isfile(custom_file):
                 print "shutil.move", custom_file, old_virtual_custom_file
-                #and move custom.py
+                # and move custom.py
                 shutil.move(custom_file, old_virtual_custom_file)
+            
+            # all files are saved now so remove .sconsign.branch file 
+            # to avoid a new copy after an exception below          
+            os.remove(sconsign_branch_file)
 
         # Now there should be no folder self.build_dir or file sconsign_file.
         if os.path.isdir(branch_build_dir):
