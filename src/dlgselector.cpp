@@ -18,7 +18,10 @@ DlgSelector::DlgSelector(QWidget* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_pTrackTableView(
-              new WTrackTableView(this, pConfig, m_pTrackCollection, true)) {
+              new WTrackTableView(this, pConfig, m_pTrackCollection, true)),
+          m_pSelectorLibraryTableModel(
+              new SelectorLibraryTableModel(this, pConfig, pTrackCollection)),
+          m_pSelectorFilters(&(m_pSelectorLibraryTableModel->getFilters())) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -33,11 +36,7 @@ DlgSelector::DlgSelector(QWidget* parent,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(2, m_pTrackTableView);
 
-    m_pSelectorLibraryTableModel =
-            new SelectorLibraryTableModel(this, pConfig, pTrackCollection);
     m_pTrackTableView->loadTrackModel(m_pSelectorLibraryTableModel);
-
-    m_pSelectorFilters = &(m_pSelectorLibraryTableModel->getFilters());
 
     connect(checkBoxGenre, SIGNAL(clicked(bool)),
             this, SLOT(filterByGenre(bool)));

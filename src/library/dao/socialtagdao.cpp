@@ -59,10 +59,8 @@ bool SocialTagDao::setTagsForTrack(int trackId, TagCounts tags) {
     QList<QVariant> tagIds;
     QList<QVariant> counts;
 
-    for (TagCounts::const_iterator it = tags.constBegin();
-         it != tags.constEnd();
-         ++it) {
-        tagQuery.bindValue(":name", it.key());
+    foreach (QString tag , tags.keys()) {
+        tagQuery.bindValue(":name", tag);
 
         //TODO(chrisjr): allow for multiple sources, rather than hard-coding
         tagQuery.bindValue(":source", "last.fm");
@@ -72,7 +70,7 @@ bool SocialTagDao::setTagsForTrack(int trackId, TagCounts tags) {
         }
         trackIds << trackId;
         tagIds << tagQuery.lastInsertId();
-        counts << it.value();
+        counts << tags[tag];
     }
 
     QSqlQuery query(m_db);

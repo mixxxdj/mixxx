@@ -48,7 +48,6 @@ void LastFmClient::start(int id, const QString& artist, const QString& title) {
     url.setQueryItems(parameters);
     QNetworkRequest req(url);
 
-//    qDebug() << url;
     qDebug() << "sending request for " << artist << "-" << title;
 
     QNetworkReply* reply = m_network.get(req);
@@ -61,34 +60,33 @@ void LastFmClient::start(int id, const QString& artist, const QString& title) {
 
 void LastFmClient::requestFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
-    if (!reply)
-        return;
+    if (reply) {
+        reply->deleteLater();
+        if (!m_requests.contains(reply))
+            return;
+        int id = m_requests.take(reply);
 
-    reply->deleteLater();
-    if (!m_requests.contains(reply))
-        return;
-    int id = m_requests.take(reply);
+        TagCounts ret;
+        if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
+                != 200) {
+            emit finished(id, ret);
+            return;
+        }
 
-    TagCounts ret;
-    if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt()
-            != 200) {
-        emit finished(id, ret);
-        return;
-    }
-
-    QXmlStreamReader reader(reply);
-    while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement) {
-            if (reader.name() == "toptags") {
-                ret = parseTopTags(reader);
-            } else if (reader.name() == "similarartists") {
-                QXmlStreamAttributes attributes = reader.attributes();
-                QString origArtist = attributes.value("artist").toString();
-                ret = parseSimilarArtists(origArtist, reader);
+        QXmlStreamReader reader(reply);
+        while (!reader.atEnd()) {
+            if (reader.readNext() == QXmlStreamReader::StartElement) {
+                if (reader.name() == "toptags") {
+                    ret = parseTopTags(reader);
+                } else if (reader.name() == "similarartists") {
+                    QXmlStreamAttributes attributes = reader.attributes();
+                    QString origArtist = attributes.value("artist").toString();
+                    ret = parseSimilarArtists(origArtist, reader);
+                }
             }
         }
+        emit finished(id, ret);
     }
-    emit finished(id, ret);
 }
 
 

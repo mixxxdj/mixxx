@@ -44,7 +44,7 @@ bool AnalyserTimbre::initialise(TrackPointer tio, int sampleRate, int totalSampl
     m_bShouldAnalyze = !checkStoredTimbre(tio);
 
     if (!m_bShouldAnalyze) {
-        qDebug() << "Timbre model calculation will not start.";
+        qDebug() << "Timbre already analyzed.";
         return false;
     }
 
@@ -70,16 +70,6 @@ void AnalyserTimbre::process(const CSAMPLE *pIn, const int iLen) {
     }
 }
 bool AnalyserTimbre::loadStored(TrackPointer tio) const {
-    QString library = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_TIMBRE_LIBRARY));
-    QString pluginID = m_pConfig->getValueString(
-        ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_TIMBRE_PLUGIN_ID));
-    if (library.isEmpty() || library.isNull())
-        library = "libmixxxminimal";
-
-    if (pluginID.isEmpty() || pluginID.isNull())
-        pluginID = VAMP_ANALYSER_TIMBRE_DEFAULT_PLUGIN_ID;
-
     return checkStoredTimbre(tio);
 }
 
