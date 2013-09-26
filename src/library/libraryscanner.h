@@ -47,12 +47,16 @@ class LibraryScanner : public QThread {
     void scan(const QString &libraryPath, QWidget *parent);
     void scan();
     bool recursiveScan(const QString &dirPath, QStringList& verifiedDirectories);
+
   public slots:
     void cancel();
     void resetCancel();
+    void makePause();
+    void resumePause();
   signals:
     void scanFinished();
     void progressHashing(QString);
+    void pauseInProgress(bool pause);
   private:
     TrackCollection* m_pCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection

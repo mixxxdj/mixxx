@@ -12,6 +12,8 @@
 #include "trackinfoobject.h"
 #include "xmlparse.h"
 
+#include "util/sleepableqthread.h"
+
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
           m_db(QSqlDatabase::addDatabase("QSQLITE")), // defaultConnection
@@ -35,6 +37,7 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
     if (m_db.lastError().isValid()) {
         qDebug() << "Error loading database:" << m_db.lastError();
     }
+
     // Check for tables and create them if missing
     if (!checkForTables()) {
         // TODO(XXX) something a little more elegant
@@ -137,6 +140,13 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
             return false;
         }
 
+        if ( !DAO::tryAcquirePause() ) {
+            trackDao.addTracksFinish();
+            DAO::releaseTransaction();
+            DAO::enterLockState("TrackCollection");
+            trackDao.addTracksPrepare();
+        }
+
         QString absoluteFilePath = it.next();
 
         // If the track is in the database, mark it as existing. This code gets exectuted
@@ -152,12 +162,11 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
         // "Right-Click -> Remove". These tracks stay in the library, but
         // their mixxx_deleted column is 1.
         if (!trackDao.trackExistsInDatabase(absoluteFilePath)) {
-            //qDebug() << "Loading" << it.fileName();
+            // qDebug() << "Loading" << it.fileName();
             emit(progressLoading(it.fileName()));
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
-
             if (trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
@@ -167,6 +176,7 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
                 qDebug() << "Track ("+absoluteFilePath+") could not be added";
             }
         }
+        DAO::releasePause();
     }
     emit(finishedLoading());
     return true;
@@ -193,4 +203,17 @@ void TrackCollection::addTrackSource(
     const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
+}
+
+void TrackCollection::waitWhilePaused(volatile bool* pause) {
+    const int waitInterval = 50;
+    int waitingCycles = 0;
+    emit (pauseInProgress(true));
+    while (*pause) {
+        SleepableQThread::msleep(waitInterval);
+        ++waitingCycles;
+    }
+    emit (pauseInProgress(false));
+    qDebug() << "TrackCollection::waitWhilePaused() waited "
+             << waitingCycles << "cycles = " << waitingCycles*waitInterval << "ms";
 }

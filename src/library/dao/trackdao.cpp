@@ -1,6 +1,7 @@
 #include <QtDebug>
 #include <QtCore>
 #include <QtSql>
+#include <QScopedPointer>
 
 #include "library/dao/trackdao.h"
 
@@ -14,6 +15,9 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "util/sleepableqthread.h" // tr0
+
+
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
@@ -46,10 +50,39 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_pQueryLibraryUpdate(NULL),
           m_pQueryLibrarySelect(NULL),
           m_pTransaction(NULL),
+          m_isForLibrary(false),
           m_trackLocationIdColumn(UndefinedRecordIndex),
           m_queryLibraryIdColumn(UndefinedRecordIndex),
           m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
 }
+
+
+TrackDAO::TrackDAO(QSqlDatabase& database,
+                   CueDAO& cueDao,
+                   PlaylistDAO& playlistDao,
+                   CrateDAO& crateDao,
+                   AnalysisDao& analysisDao,
+                   ConfigObject<ConfigValue> * pConfig,
+                   const bool isForLibrary)
+        : m_database(database),
+          m_cueDao(cueDao),
+          m_playlistDao(playlistDao),
+          m_crateDao(crateDao),
+          m_analysisDao(analysisDao),
+          m_pConfig(pConfig),
+          m_trackCache(TRACK_CACHE_SIZE),
+          m_pQueryTrackLocationInsert(NULL),
+          m_pQueryTrackLocationSelect(NULL),
+          m_pQueryLibraryInsert(NULL),
+          m_pQueryLibraryUpdate(NULL),
+          m_pQueryLibrarySelect(NULL),
+          m_pTransaction(NULL),
+          m_isForLibrary(isForLibrary),
+          m_trackLocationIdColumn(UndefinedRecordIndex),
+          m_queryLibraryIdColumn(UndefinedRecordIndex),
+          m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
+}
+
 
 TrackDAO::~TrackDAO() {
     qDebug() << "~TrackDAO()";
@@ -351,7 +384,9 @@ void TrackDAO::addTracksPrepare() {
         addTracksFinish();
     }
     // Start the transaction
-    m_pTransaction = new ScopedTransaction(m_database);
+    m_pTransaction = m_isForLibrary
+            ? new ScopedTransactionLibrary(m_database)
+            : new ScopedTransaction(m_database);
 
     m_pQueryTrackLocationInsert = new QSqlQuery(m_database);
     m_pQueryTrackLocationSelect = new QSqlQuery(m_database);
@@ -682,7 +717,10 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     }
     QString idListJoined = idList.join(",");
 
-    ScopedTransaction transaction(m_database);
+    // Start the transaction
+    QScopedPointer<ScopedTransactionLibrary> transaction
+            ( (m_isForLibrary ? new ScopedTransactionLibrary(m_database)
+                              : new ScopedTransaction(m_database)) );
 
     QSqlQuery query(m_database);
     query.prepare(QString("SELECT track_locations.location, track_locations.directory FROM "
@@ -743,7 +781,7 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     if (query.lastError().isValid()) {
         return;
     }
-    transaction.commit();
+    transaction->commit();
 
     // also need to clean playlists, crates, cues and track_analyses
 
@@ -989,7 +1027,9 @@ TrackPointer TrackDAO::getTrack(const int id, const bool cacheOnly) const {
 
 // Saves a track's info back to the database
 void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
-    ScopedTransaction transaction(m_database);
+    QScopedPointer<ScopedTransactionLibrary> transaction
+            ( m_isForLibrary ? new ScopedTransactionLibrary(m_database)
+                             : new ScopedTransaction(m_database) );
     QTime time;
     time.start();
     Q_ASSERT(pTrack);
@@ -1074,7 +1114,7 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     time.start();
     m_analysisDao.saveTrackAnalyses(pTrack);
     m_cueDao.saveTrackCues(trackId, pTrack);
-    transaction.commit();
+    transaction->commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed() << "ms";
     time.start();
@@ -1295,9 +1335,12 @@ bool TrackDAO::isTrackFormatSupported(TrackInfoObject* pTrack) const {
     return false;
 }
 
-void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel) {
+void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel/*,
+                                   QSemaphore& semPause*/) {
     // This function is called from the LibraryScanner Thread
-    ScopedTransaction transaction(m_database);
+    QScopedPointer<ScopedTransactionLibrary> transaction
+            ( m_isForLibrary ? new ScopedTransactionLibrary(m_database)
+                             : new ScopedTransaction(m_database) );
     QSqlQuery query(m_database);
     QSqlQuery query2(m_database);
     QString trackLocation;
@@ -1329,8 +1372,9 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pC
         if (*pCancel) {
             break;
         }
+
         emit(progressVerifyTracksOutside(trackLocation));
     }
-    transaction.commit();
+    transaction->commit();
     qDebug() << "verifyTracksOutside finished";
 }

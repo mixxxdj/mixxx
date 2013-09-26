@@ -54,7 +54,7 @@ int nearestSuperiorPowerOfTwo(int v);
 #else
 // for isnan() everywhere else
 #include <cmath>
-using std::isnan;
+//using std::isnan;
 #endif
 
 

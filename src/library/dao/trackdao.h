@@ -15,6 +15,7 @@
 #include "library/dao/dao.h"
 #include "trackinfoobject.h"
 #include "util.h"
+#include "library/queryutil.h"
 
 #define LIBRARY_TABLE "library"
 
@@ -61,6 +62,8 @@ class AnalysisDao;
 class CueDAO;
 class CrateDAO;
 
+class QSemaphore;
+
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
   public:
@@ -70,10 +73,16 @@ class TrackDAO : public QObject, public virtual DAO {
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
              AnalysisDao& analysisDao,
              ConfigObject<ConfigValue>* pConfig);
+    TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
+             PlaylistDAO& playlistDao, CrateDAO& crateDao,
+             AnalysisDao& analysisDao,
+             ConfigObject<ConfigValue>* pConfig,
+             const bool isForLibrary);
+
     virtual ~TrackDAO();
 
     void finish();
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    void setDatabase(QSqlDatabase& database) { m_database = database; }
 
     void initialize();
     int getTrackId(const QString& absoluteFilePath);
@@ -111,6 +120,7 @@ class TrackDAO : public QObject, public virtual DAO {
     void tracksRemoved(QSet<int> trackIds);
     void dbTrackAdded(TrackPointer pTrack);
     void progressVerifyTracksOutside(QString path);
+    void pauseInProgress(bool pause);
 
   public slots:
     // The public interface to the TrackDAO requires a TrackPointer so that we
@@ -161,7 +171,10 @@ class TrackDAO : public QObject, public virtual DAO {
     QSqlQuery* m_pQueryLibraryInsert;
     QSqlQuery* m_pQueryLibraryUpdate;
     QSqlQuery* m_pQueryLibrarySelect;
-    ScopedTransaction* m_pTransaction;
+
+    ScopedTransactionLibrary* m_pTransaction;
+    bool m_isForLibrary;
+
     int m_trackLocationIdColumn;
     int m_queryLibraryIdColumn;
     int m_queryLibraryMixxxDeletedColumn;

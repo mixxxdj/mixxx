@@ -25,6 +25,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
    QWidget(parent, f)
 {
     m_bCancelled = false;
+    m_bPaused = false;
 
 	setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
@@ -39,8 +40,17 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
             this, SLOT(slotCancel()));
     pLayout->addWidget(pCancel);
 
+    // pause button
+    QPushButton* pPause = new QPushButton(tr("Pause"), this);
+    pPause->setObjectName("pauseBtn");
+    connect(pPause, SIGNAL(clicked()),
+            this, SLOT(slotPause()));
+    pLayout->addWidget(pPause);
+
     QLabel* pCurrent = new QLabel(this);
     pCurrent->setMaximumWidth(600);
+    pCurrent->setMinimumHeight( pCurrent->fontMetrics().boundingRect("Gg").height()*2 );
+    pCurrent->setMaximumHeight( pCurrent->fontMetrics().boundingRect("Gg").height() *3 );
     pCurrent->setWordWrap(true);
     connect(this, SIGNAL(progress(QString)),
             pCurrent, SLOT(setText(QString)));
@@ -57,6 +67,7 @@ LibraryScannerDlg::~LibraryScannerDlg()
 
 void LibraryScannerDlg::slotUpdate(QString path) {
     //qDebug() << "LibraryScannerDlg slotUpdate" << m_timer.elapsed() << path;
+
     if (!m_bCancelled && m_timer.elapsed() > 2000) {
        setVisible(true);
     }
@@ -77,6 +88,28 @@ void LibraryScannerDlg::slotCancel()
     // Need to use close() or else if you close the Mixxx window and then hit
     // Cancel, Mixxx will not shutdown.
     close();
+}
+
+void LibraryScannerDlg::slotPause() {
+    QPushButton *pauseBtn = findChild<QPushButton*>("pauseBtn");
+    if (!pauseBtn) {
+        qDebug() << "\t ERROR: pauseBtn == NULL";
+        return;
+    }
+    if (m_bPaused) {
+        // resuming
+        // qDebug() << "\t resuming";
+        // TODO(tr0) make disabled while in transaction
+        m_bPaused = false;
+        pauseBtn->setText(tr("Pause"));
+        emit(scanResumed());
+    } else {
+        // making pause
+        // qDebug() << "\t making pause";
+        pauseBtn->setText(tr("Resume"));
+        m_bPaused = true;
+        emit(scanPaused());
+    }
 }
 
 void LibraryScannerDlg::slotScanFinished()

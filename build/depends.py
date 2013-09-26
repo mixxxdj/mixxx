@@ -601,6 +601,8 @@ class MixxxCore(Feature):
                    "library/browse/browsethread.cpp",
                    "library/browse/browsefeature.cpp",
                    "library/browse/foldertreemodel.cpp",
+                   
+                   "library/dao/dao.cpp",
 
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
@@ -814,6 +816,8 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS = '-Wall')
             build.env.Append(CCFLAGS = '-Wextra')
             build.env.Append(CCFLAGS = '-g')
+            # try to use C++11
+            build.env.Append(CCFLAGS = '-std=c++11')
 
             # Check that g++ is present (yeah, SCONS is a bit dumb here)
             if os.system("which g++ > /dev/null"): #Checks for non-zero return code

@@ -22,7 +22,7 @@ void LibraryHashDAO::initialize() {
 }
 
 int LibraryHashDAO::getDirectoryHash(const QString& dirPath) {
-    //qDebug() << "LibraryHashDAO::getDirectoryHash" << QThread::currentThread() << m_database.connectionName();
+    qDebug() << "LibraryHashDAO::getDirectoryHash" << QThread::currentThread() << m_database.connectionName();
     int hash = -1;
 
     QSqlQuery query(m_database);
@@ -51,7 +51,7 @@ void LibraryHashDAO::saveDirectoryHash(const QString& dirPath, const int hash) {
                     "VALUES (:directory_path, :hash, :directory_deleted)");
     query.bindValue(":directory_path", dirPath);
     query.bindValue(":hash", hash);
-    query.bindValue(":directory_deleted", 0);
+    query.bindValue(":directory_deleted", 0); // avoid "0"
 
 
     if (!query.exec()) {
