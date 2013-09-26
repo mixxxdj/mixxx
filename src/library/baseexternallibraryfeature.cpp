@@ -52,6 +52,7 @@ void BaseExternalLibraryFeature::slotAddToAutoDJTop() {
     addToAutoDJ(true);
 }
 
+// Must be called from Main thread
 void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
      qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
@@ -61,43 +62,47 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
 
     const QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
 
+    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
+    // use the dataPath because models with nested playlists need to use the
+    // full path/name of the playlist.
+    QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(createPlaylistModelForPlaylist(playlist));
+
+    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
+        qDebug() << "BaseExternalLibraryFeature::addToAutoDJ could not initialize a playlist model for playlist:" << playlist;
+        return;
+    }
+
+//    PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
+    int autoDJId = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &playlist, &bTop] (void) {
-        // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
-        // use the dataPath because models with nested playlists need to use the
-        // full path/name of the playlist.
-        QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(createPlaylistModelForPlaylist(playlist));
-
-        if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-            qDebug() << "BaseExternalLibraryFeature::addToAutoDJ could not initialize a playlist model for playlist:" << playlist;
-            return;
-        }
+                [this, &pPlaylistModelToAdd, &autoDJId] (void) {
         pPlaylistModelToAdd->select();
-        PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
-        int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+        autoDJId = m_pTrackCollection->getPlaylistDAO().getPlaylistIdFromName(AUTODJ_TABLE);
+    }, __PRETTY_FUNCTION__);
 
-        int rows = pPlaylistModelToAdd->rowCount();
-        for (int i = 0; i < rows; ++i) {
-            QModelIndex index = pPlaylistModelToAdd->index(i, 0);
-            if (!index.isValid()) {
-                continue;
-            }
-            TrackPointer track = pPlaylistModelToAdd->getTrack(index); /////////// avoid getTrack
+    int rows = pPlaylistModelToAdd->rowCount();
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = pPlaylistModelToAdd->index(i, 0);
+        if (!index.isValid()) {
+            continue;
+        }
+        TrackPointer track = pPlaylistModelToAdd->getTrack(index);
 
-            if (!track || track->getId() == -1) {
-                continue;
-            }
-
+        if (!track || track->getId() == -1) {
+            continue;
+        }
+        m_pTrackCollection->callSync(
+                    [this, &bTop, &track, &i, &autoDJId] (void) {
             if (bTop) {
                 // Start at position 2 because position 1 was already loaded to the deck
-                playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
+                m_pTrackCollection->getPlaylistDAO().insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
             } else {
                 // TODO(XXX): Care whether the append succeeded.
-                playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
+                m_pTrackCollection->getPlaylistDAO().appendTrackToPlaylist(track->getId(), autoDJId);
             }
-        }
-    }, __PRETTY_FUNCTION__);
+        }, __PRETTY_FUNCTION__);
+    }
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
