@@ -374,8 +374,7 @@ void SidebarModel::slotModelReset() {
  * While the rhythmbox music collection is parsed
  * the title becomes '(loading) Rhythmbox'
  */
-void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature)
-{
+void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature) {
     featureRenamed(feature);
     slotFeatureSelect(feature);
 }
@@ -383,12 +382,12 @@ void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature)
 /* Tobias: This slot is somewhat redundant but I decided
  * to leave it for code readability reasons
  */
-void SidebarModel::slotFeatureLoadingFinished(LibraryFeature * feature){
+void SidebarModel::slotFeatureLoadingFinished(LibraryFeature * feature) {
     featureRenamed(feature);
     slotFeatureSelect(feature);
 }
 
-void SidebarModel::featureRenamed(LibraryFeature* pFeature){
+void SidebarModel::featureRenamed(LibraryFeature* pFeature) {
     for (int i=0; i < m_sFeatures.size(); ++i) {
         if (m_sFeatures[i] == pFeature) {
             QModelIndex ind = index(i, 0);

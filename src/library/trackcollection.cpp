@@ -138,9 +138,10 @@ void TrackCollection::callSync(func lambda, QString where) {
     };
     addLambdaToQueue(lambdaWithMutex);
 
-    while (!mutex.tryLock(5)) {
+    while (!mutex.tryLock(1)) {
+        MainExecuter::getInstance().call();
         if (inMainThread) {
-            MainExecuter::getInstance().call();
+            // Check if we are NOT in nested callSync
             if (m_inCallSyncCount == 1) {
                 qApp->processEvents(QEventLoop::AllEvents);
             }

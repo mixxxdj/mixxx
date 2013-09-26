@@ -483,28 +483,34 @@ void CrateFeature::slotAutoDjTrackSourceChanged() {
 #endif // __AUTODJCRATES__
 }
 
+// Must be called from Main thread
 void CrateFeature::buildCrateList() {
     m_crateList.clear();
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
-    crateListTableModel.setTable("crates");
-    crateListTableModel.setSort(crateListTableModel.fieldIndex("name"),
-                                Qt::AscendingOrder);
-    crateListTableModel.setFilter("show = 1");
-    crateListTableModel.select();
-    while (crateListTableModel.canFetchMore()) {
-        crateListTableModel.fetchMore();
-    }
-    QSqlRecord record = crateListTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
 
-    for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
-        int id = crateListTableModel.data(
-            crateListTableModel.index(row, idColumn)).toInt();
-        QString name = crateListTableModel.data(
-            crateListTableModel.index(row, nameColumn)).toString();
-        m_crateList.append(qMakePair(id, name));
-    }
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &crateListTableModel] (void) {
+        crateListTableModel.setTable("crates");
+        crateListTableModel.setSort(crateListTableModel.fieldIndex("name"),
+                                    Qt::AscendingOrder);
+        crateListTableModel.setFilter("show = 1");
+        crateListTableModel.select();
+        while (crateListTableModel.canFetchMore()) {
+            crateListTableModel.fetchMore();
+        }
+        QSqlRecord record = crateListTableModel.record();
+        int nameColumn = record.indexOf("name");
+        int idColumn = record.indexOf("id");
+
+        for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
+            int id = crateListTableModel.data(
+                        crateListTableModel.index(row, idColumn)).toInt();
+            QString name = crateListTableModel.data(
+                        crateListTableModel.index(row, nameColumn)).toString();
+            m_crateList.append(qMakePair(id, name));
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 /**
@@ -514,11 +520,7 @@ void CrateFeature::buildCrateList() {
 */
 // Must be called from Main thread
 QModelIndex CrateFeature::constructChildModel(int selected_id) {
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        buildCrateList();
-    }, __PRETTY_FUNCTION__);
+    buildCrateList();
     QList<TreeItem*> data_list;
     int selected_row = -1;
     // Access the invisible root item

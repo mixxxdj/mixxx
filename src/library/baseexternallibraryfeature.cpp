@@ -1,5 +1,4 @@
 #include "library/baseexternallibraryfeature.h"
-
 #include "library/basesqltablemodel.h"
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,

@@ -43,12 +43,7 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
     root->appendChild(m_pCratesTreeItem);
 
-    // tro's lambda idea. This code calls synchronously!
-    m_pTrackCollection->callSync(
-                [this] (void) {
-        // Create tree-items under "Crates".
-        constructCrateChildModel();
-    }, __PRETTY_FUNCTION__);
+    constructCrateChildModel();
 
     // Be notified when the status of crates changes.
     connect(&m_crateDao, SIGNAL(added(int)),
@@ -316,38 +311,45 @@ void AutoDJFeature::slotAddRandomTrack(bool) {
 }
 #ifdef __AUTODJCRATES__
 
-// Must be called from TrackCollection thread
+// Must be called from Main thread
 void AutoDJFeature::constructCrateChildModel() {
     // Create a crate table-model with a list of crates that have been added
     // to the auto-DJ queue (and are visible).
+
+    DBG() << "In constructCrateChildModel";
+    // tro's lambda idea. This code calls synchronously!
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
-    crateListTableModel.setTable(CRATE_TABLE);
-    crateListTableModel.setSort(crateListTableModel.fieldIndex(CRATETABLE_NAME),
-                                Qt::AscendingOrder);
-    crateListTableModel.setFilter(CRATETABLE_AUTODJ_SOURCE + " = 1 AND " + CRATETABLE_SHOW + " = 1");
-    crateListTableModel.select();
-    while (crateListTableModel.canFetchMore()) {
-        crateListTableModel.fetchMore();
-    }
+    m_pTrackCollection->callSync(
+                [this, &crateListTableModel] (void) {
+        crateListTableModel.setTable(CRATE_TABLE);
+        crateListTableModel.setSort(crateListTableModel.fieldIndex(CRATETABLE_NAME),
+                                    Qt::AscendingOrder);
+        crateListTableModel.setFilter(CRATETABLE_AUTODJ_SOURCE + " = 1 AND " + CRATETABLE_SHOW + " = 1");
+        crateListTableModel.select();
+        while (crateListTableModel.canFetchMore()) {
+            crateListTableModel.fetchMore();
+        }
 
-    QSqlRecord tableModelRecord = crateListTableModel.record();
-    int nameColumn = tableModelRecord.indexOf(CRATETABLE_NAME);
-    int idColumn = tableModelRecord.indexOf(CRATETABLE_ID);
+        QSqlRecord tableModelRecord = crateListTableModel.record();
+        int nameColumn = tableModelRecord.indexOf(CRATETABLE_NAME);
+        int idColumn = tableModelRecord.indexOf(CRATETABLE_ID);
 
-    // Create a tree-item for each auto-DJ crate.
-    for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
-        int id = crateListTableModel.data(
-            crateListTableModel.index(row, idColumn)).toInt();
-        QString name = crateListTableModel.data(
-            crateListTableModel.index(row, nameColumn)).toString();
-        m_crateList.append(qMakePair(id, name));
+        // Create a tree-item for each auto-DJ crate.
+        for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
+            int id = crateListTableModel.data(
+                        crateListTableModel.index(row, idColumn)).toInt();
+            QString name = crateListTableModel.data(
+                        crateListTableModel.index(row, nameColumn)).toString();
+            m_crateList.append(qMakePair(id, name));
 
-        MainExecuter::callSync([this, name](void) {
-            // Create the TreeItem for this crate.
-            TreeItem* item = new TreeItem(name, name, this, m_pCratesTreeItem);
-            m_pCratesTreeItem->appendChild(item);
-        });
-    }
+            MainExecuter::callSync([this, name](void) {
+                // Create the TreeItem for this crate.
+                DBG() << "In MainExecuter::callSync";
+                TreeItem* item = new TreeItem(name, name, this, m_pCratesTreeItem);
+                m_pCratesTreeItem->appendChild(item);
+            }, "#################constructCrateChildModel");
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 // Must be called from Main thread

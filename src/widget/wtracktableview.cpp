@@ -1265,6 +1265,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
     }, __PRETTY_FUNCTION__);
 }
 
+// Must be called from Main thread
 void WTrackTableView::doSortByColumn(int headerSection) {
     TrackModel* trackModel = getTrackModel();
     QAbstractItemModel* itemModel = model();
@@ -1280,7 +1281,9 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         trackIds.insert(trackId);
     }
 
-    sortByColumn(headerSection);
+    m_pTrackCollection->callSync([this, &headerSection] (void) {
+        sortByColumn(headerSection);
+    }, __PRETTY_FUNCTION__);
 
     QItemSelectionModel* currentSelection = selectionModel();
 
