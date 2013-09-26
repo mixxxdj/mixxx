@@ -294,7 +294,10 @@ class MixxxBuild(object):
 
         branch_name = util.get_branch_name()
         if not branch_name:
+            # happens in case of tarball builds, detached HEADs have
+            # branch_name = '(no branch)'
             return
+
         # TODO(rryan) what other branch name characters aren't allowed in
         # filenames?
         branch_name = re.sub('[/<>|"]', '_', branch_name).lower()
