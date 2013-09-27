@@ -40,7 +40,7 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
     void process(const CSAMPLE* pBuffer, const int iBufferSize);
     void shutdown() {}
 
-    /** writes (un)compressed audio to file **/
+    // writes compressed audio to file 
     void write(unsigned char *header, unsigned char *body, int headerLen, int bodyLen);
     // creates or opens an audio file
     bool openFile();
@@ -66,31 +66,31 @@ class EngineRecord : public QObject, public EncoderCallback, public SideChainWor
 
     void writeCueLine();
 
-    ConfigObject<ConfigValue>* m_config;
-    Encoder* m_encoder;
+    ConfigObject<ConfigValue>* m_pConfig;
+    Encoder* m_pEncoder;
     QByteArray m_OGGquality;
     QByteArray m_MP3quality;
-    QByteArray m_Encoding;
-    QString m_filename;
+    QByteArray m_encoding;
+    QString m_fileName;
     QByteArray m_baTitle;
     QByteArray m_baAuthor;
     QByteArray m_baAlbum;
 
     QFile m_file;
-    QFile m_cuefile;
-    QDataStream m_datastream;
-    SNDFILE *m_sndfile;
+    QFile m_cueFile;
+    QDataStream m_dataStream;
+    SNDFILE* m_pSndfile;
     SF_INFO m_sfInfo;
 
-    ControlObjectThread* m_recReady;
-    ControlObjectThread* m_samplerate;
+    ControlObjectThread* m_pRecReady;
+    ControlObjectThread* m_pSamplerate;
 
     int m_iMetaDataLife;
     TrackPointer m_pCurrentTrack;
 
-    QByteArray m_cuefilename;
-    quint64 m_cuesamplepos;
-    quint64 m_cuetrack;
+    QByteArray m_cueFileName;
+    quint64 m_cueSamplePos;
+    quint64 m_cueTrack;
     bool m_bCueIsEnabled;
 };
 

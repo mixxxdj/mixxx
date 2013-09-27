@@ -18,7 +18,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
           m_recording_base_file(""),
           m_recordingFile(""),
           m_recordingLocation(""),
-          m_isRecording(false),
+          m_bRecording(false),
           m_iNumberOfBytesRecored(0),
           m_split_size(0),
           m_iNumberSplits(0) {
@@ -163,12 +163,12 @@ void RecordingManager::slotIsRecording(bool isRecordingActive)
     //qDebug() << "SlotIsRecording " << isRecording;
 
     //Notify the GUI controls, see dlgrecording.cpp
-    m_isRecording = isRecordingActive;
+    m_bRecording = isRecordingActive;
     emit(isRecording(isRecordingActive));
 }
 
 bool RecordingManager::isRecordingActive() {
-    return m_isRecording;
+    return m_bRecording;
 }
 
 QString& RecordingManager::getRecordingFile() {

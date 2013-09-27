@@ -81,7 +81,7 @@ class RecordingManager : public QObject
     // Absolute file
     QString m_recordingLocation;
 
-    bool m_isRecording;
+    bool m_bRecording;
     // will be a very large number
     quint64 m_iNumberOfBytesRecored;
     quint64 m_split_size;
