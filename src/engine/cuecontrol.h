@@ -90,6 +90,7 @@ class CueControl : public EngineControl {
     virtual void hintReader(QVector<Hint>* pHintList);
     bool isCuePreviewing(bool latchPlay);
     void updateCueIndicatorFromPlay(double play, double filepos_play);
+    virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
 
   public slots:
     void trackLoaded(TrackPointer pTrack);

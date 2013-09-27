@@ -13,6 +13,10 @@
 #include "cachingreader.h"
 #include "mathstuff.h"
 
+static const double CUE_MODE_CDJ = 0.0;
+static const double CUE_MODE_SIMPLE = 1.0;
+static const double CUE_MODE_DENON = 2.0;
+
 CueControl::CueControl(const char * _group,
                        ConfigObject<ConfigValue> * _config) :
         EngineControl(_group, _config),
@@ -38,7 +42,7 @@ CueControl::CueControl(const char * _group,
     // 0.0 -> CDJ mode
     // 1.0 -> Simple mode
     // 2.0 -> Denon mode
-    m_pCuePoint->set(-1);
+    m_pCuePoint->set(-1.0);
 
     m_pCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));
     connect(m_pCueSet, SIGNAL(valueChanged(double)),
@@ -199,9 +203,9 @@ void CueControl::trackLoaded(TrackPointer pTrack) {
     if (loadCue != NULL) {
         m_pCuePoint->set(loadCue->getPosition());
     } else {
-        m_pCuePoint->set(0.0f);
+        m_pCuePoint->set(0.0);
     }
-    if (m_pCueMode->get() == 0.0f) {
+    if (m_pCueMode->get() == 0.0) {
         // in CDJ mode Cue Button is lit if a cue point is set
         m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
     }
@@ -229,7 +233,7 @@ void CueControl::trackUnloaded(TrackPointer pTrack) {
     // Store the cue point in a load cue.
     double cuePoint = m_pCuePoint->get();
 
-    if (cuePoint != -1 && cuePoint != 0.0f) {
+    if (cuePoint != -1 && cuePoint != 0.0) {
         Cue* loadCue = NULL;
         const QList<Cue*>& cuePoints = pTrack->getCuePoints();
         QListIterator<Cue*> it(cuePoints);
@@ -247,7 +251,7 @@ void CueControl::trackUnloaded(TrackPointer pTrack) {
         }
         loadCue->setPosition(cuePoint);
     }
-    if (m_pCueMode->get() == 0.0f) {
+    if (m_pCueMode->get() == CUE_MODE_CDJ) {
         // in CDJ mode Cue Button is off if no track loaded
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
     }
@@ -769,11 +773,22 @@ void CueControl::updateCueIndicatorFromPlay(double play, double filepos_play) {
 
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference
-    if (m_pCueMode->get() == 0.0f) {
+    if (m_pCueMode->get() == CUE_MODE_CDJ) {
         cueCDJ(v);
     } else {
         cueSimple(v);
     }
+}
+
+void CueControl::setCurrentSample(
+        const double dCurrentSample, const double dTotalSamples) {
+    if (!m_bPreviewing) {
+        bool playing = m_pPlayButton->get() > 0;
+        if (!playing && fabs(dCurrentSample - m_pCuePoint->get()) >= 1.0f) {
+            m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+        }
+    }
+    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }
 
 ConfigKey HotcueControl::keyForControl(int hotcue, QString name) {
