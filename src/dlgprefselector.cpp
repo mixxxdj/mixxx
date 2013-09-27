@@ -177,16 +177,23 @@ void DlgPrefSelector::setContribution(QString key, int value) {
 }
 
 void DlgPrefSelector::displayTimbreDescription() {
-    labelDescriptionText->setText(tr("Compare track timbres."));
+    labelDescriptionText->setText(tr("Timbre: "
+                                     "Do the tracks use similar instruments? "
+                                     "How similar do the tracks sound?"));
 }
 
 void DlgPrefSelector::displayRhythmDescription() {
-    labelDescriptionText->setText(tr("Compare track rhythms "
-                               "(cosine distance between beat spectra)."));
+    labelDescriptionText->setText(tr("Rhythm: "
+                                     "How similar are the rhythms "
+                                     "of each track? "
+                                     "Would the beats match well?"));
 }
 
 void DlgPrefSelector::displayLastFmDescription() {
-    labelDescriptionText->setText(tr("Compare tracks using Last.fm tags."));
+    labelDescriptionText->setText(tr("Tags: "
+                                     "Have people tagged these tracks in a "
+                                     "similar way? Are they likely to be in "
+                                     "the same genre?"));
 }
 
 void DlgPrefSelector::loadSettings() {
