@@ -47,7 +47,7 @@ EngineRecord::~EngineRecord() {
 
 void EngineRecord::updateFromPreferences() {
     m_encoding = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding")).toLatin1();
-    //returns a number from 1 .. 10
+    // returns a number from 1 .. 10
     m_OGGquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"OGG_Quality")).toLatin1();
     m_MP3quality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"MP3_Quality")).toLatin1();
     m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path"));
