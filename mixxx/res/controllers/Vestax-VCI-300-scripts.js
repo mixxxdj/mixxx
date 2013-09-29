@@ -3,7 +3,7 @@
  * Author: Uwe Klotz
  *
  * All controls should work as expected.
- * 
+ *
  * Quick Reference
  * ---------------
  * -          Cue          = cue_default
@@ -110,6 +110,13 @@
  *            - Scroll + Auto Loop: reset number of beats to 4 if beatloop not
  *              active (re-mapped from Shift + Auto Loop)
  *            - Documentation updates
+ * 2013-05-30 - Ignore jog wheel movements unless the jog wheel surface is
+ *              touched. Exception from this rule: Nudging when playing in
+ *              scratch mode is still possible without touching the sensor
+ *              plate!
+ *            - Different jog sensitivity parameters for cueing and nudging
+ *              (tempo)
+ *            - Increased jog sensitivity for both cueing and nudging
  * ...to be continued...
  *****************************************************************************/
 
@@ -118,10 +125,12 @@ function VestaxVCI300() {}
 
 VestaxVCI300.group = "[Master]";
 
-VestaxVCI300.jogResolution = 1664; // steps per revolution
-VestaxVCI300.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0
-VestaxVCI300.jogDeltaScale = 12.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
-VestaxVCI300.jogSensitivity = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
+VestaxVCI300.jogResolution = 1664; // Steps per revolution
+VestaxVCI300.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0 // Mixxx constant
+VestaxVCI300.jogCueSensitivityScale = 64.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
+VestaxVCI300.jogCueSensitivityPow = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
+VestaxVCI300.jogTempoSensitivityScale = 24.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
+VestaxVCI300.jogTempoSensitivityPow = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
 
 VestaxVCI300.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3 /*TUNABLE PARAM*/
 VestaxVCI300.scratchAlpha = 1.0 / 8.0; /*TUNABLE PARAM*/
@@ -155,7 +164,7 @@ VestaxVCI300.vuMeterYellowThreshold = 0.9;
 VestaxVCI300.cueInNumbers = [ 1, 2, 3 ];
 
 VestaxVCI300.decksByGroup = {};
-	
+
 VestaxVCI300.allLEDs = [];
 
 VestaxVCI300.updatePitchValue = function (group, pitchHigh, pitchLow) {
@@ -360,19 +369,32 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 				jogScrollDeltaRound);
 			VestaxVCI300.jogScrollBias = jogScrollDelta - jogScrollDeltaRound;
 		} else {
-			if (engine.isScratching(this.number)) {
+			if (this.jogTouchState && engine.isScratching(this.number)) {
 				// scratching
 				engine.scratchTick(this.number, this.jogDelta);
 			} else {
-				// jog movement
-				var jogDeltaSign;
-				if (0 > this.jogDelta) {
-					jogDeltaSign = -1;
-				} else {
-					jogDeltaSign = 1;
+				if (this.jogTouchState || engine.isScratching(this.number)) {
+					// jog movement
+					if (this.jogTouchState) {
+						var jogSensitivityScale
+						var jogSensitivityPow
+						if (engine.getValue(this.group,"play")) {
+							jogSensitivityScale = VestaxVCI300.jogTempoSensitivityScale
+							jogSensitivityPow = VestaxVCI300.jogTempoSensitivityPow
+						} else {
+							jogSensitivityScale = VestaxVCI300.jogCueSensitivityScale
+							jogSensitivityPow = VestaxVCI300.jogCueSensitivityPow
+						}
+						var jogDeltaSign;
+						if (0 > this.jogDelta) {
+							jogDeltaSign = -1;
+						} else {
+							jogDeltaSign = 1;
+						}
+						var normalizedAbsJogDelta =  Math.pow(Math.abs(this.jogDelta) * jogSensitivityScale, jogSensitivityPow);
+						engine.setValue(this.group, "jog", jogDeltaSign * normalizedAbsJogDelta * VestaxVCI300.jogOutputRange);
+					}
 				}
-				var normalizedAbsJogDelta =  Math.pow(Math.abs(this.jogDelta) * VestaxVCI300.jogDeltaScale, VestaxVCI300.jogSensitivity);
-				engine.setValue(this.group, "jog", jogDeltaSign * normalizedAbsJogDelta * VestaxVCI300.jogOutputRange);
 			}
 		}
 	}
@@ -537,7 +559,7 @@ VestaxVCI300.Deck.prototype.updateAutoLoopState = function () {
 
 //
 // Application callback functions
-// 
+//
 
 VestaxVCI300.init = function (id, debug) {
 	VestaxVCI300.id = id;
@@ -703,7 +725,7 @@ VestaxVCI300.shutdown = function () {
 
 //
 // Controller callback functions (see also: Vestax-VCI-300-midi.xml)
-// 
+//
 
 VestaxVCI300.onCueInButton = function (group, index, value) {
 	var deck = VestaxVCI300.decksByGroup[group];
@@ -1099,7 +1121,7 @@ VestaxVCI300.onNavigationTabButton = function (channel, control, value, status, 
 
 //
 // Engine callback functions for connected controls
-// 
+//
 
 VestaxVCI300.leftDeck.onRateRangeValueCB = function (value) {
 	VestaxVCI300.leftDeck.updateRateRange(value);
