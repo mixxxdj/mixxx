@@ -89,7 +89,7 @@ class CueControl : public EngineControl {
 
     virtual void hintReader(QVector<Hint>* pHintList);
     double updateIndicatorsAndModifyPlay(double play, bool playPossible);
-    virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    void updateIndicators();
     bool isTrackAtCue();
     bool getPlayFlashingAtPause();
 

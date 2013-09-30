@@ -856,14 +856,12 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
     return play;
 }
 
-void CueControl::setCurrentSample(
-        const double dCurrentSample, const double dTotalSamples) {
+void CueControl::updateIndicators() {
     if (m_pCueMode->get() == CUE_MODE_CDJ) {
         if (!m_bPreviewing) {
             bool playing = m_pPlayButton->get() > 0;
             if (!playing) {
-                if (fabs(dCurrentSample - m_pCuePoint->get()) >= 1.0f &&
-                        getCurrentSample() < getTotalSamples()) {
+                if (!isTrackAtCue() && getCurrentSample() < getTotalSamples()) {
                     // Flash cue button if a next pess would move the cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
                 } else if (m_pCuePoint->get() != -1) {
@@ -874,7 +872,7 @@ void CueControl::setCurrentSample(
         }
     } else if (m_pCueMode->get() == CUE_MODE_DENON) {
         // Cue button is only lit at cue point
-        if (fabs(dCurrentSample - m_pCuePoint->get()) < 1.0f) {
+        if (isTrackAtCue()) {
             // at cue point
             bool playing = m_pPlayButton->get() > 0;
             if (!playing) {
@@ -887,8 +885,7 @@ void CueControl::setCurrentSample(
     } else {
         bool playing = m_pPlayButton->get() > 0;
         if (!playing) {
-            if (fabs(dCurrentSample - m_pCuePoint->get()) >= 1.0f &&
-                    getCurrentSample() < getTotalSamples()) {
+            if (!isTrackAtCue() && getCurrentSample() < getTotalSamples()) {
                 // Flash cue button if a next pess would move the cue point
                 m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
             } else {
@@ -896,8 +893,6 @@ void CueControl::setCurrentSample(
             }
         }
     }
-
-    EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
 }
 
 bool CueControl::isTrackAtCue() {

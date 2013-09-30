@@ -850,14 +850,16 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.  (e.g. playposSlider,
     // rateEngine)
-    if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
+    if (m_iSamplesCalculated > (m_pSampleRate->get() / kiPlaypositionUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
+        m_pCueControl->updateIndicators();
 
-        if(rate != m_rateEngine->get())
+        if (rate != m_rateEngine->get()) {
             m_rateEngine->set(rate);
+        }
 
-        //Update the BPM even more slowly
-        m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
+        // Update the BPM even more slowly
+        m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateCnt;
         if (m_iUiSlowTick == 0) {
             m_visualBpm->set(m_pBpmControl->getBpm());
         }
