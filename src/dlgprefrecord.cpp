@@ -26,13 +26,13 @@
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
         : QWidget(parent),
-        m_pConfig(pConfig),
-        m_bConfirmOverwrite(false),
-        m_pRadioOgg(NULL),
-        m_pRadioMp3(NULL),
-        m_pRadioAiff(NULL),
-        m_pRadioFlac(NULL),
-        m_pRadioWav(NULL) {
+          m_pConfig(pConfig),
+          m_bConfirmOverwrite(false),
+          m_pRadioOgg(NULL),
+          m_pRadioMp3(NULL),
+          m_pRadioAiff(NULL),
+          m_pRadioFlac(NULL),
+          m_pRadioWav(NULL) {
 
     setupUi(this);
 
