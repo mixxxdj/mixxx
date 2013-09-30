@@ -43,11 +43,11 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
     m_pRadioMp3 = new QRadioButton(ENCODING_MP3);
 
     // Setting recordings path
-    QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory"));
+    QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     if (recordingsPath == "") {
         // Initialize recordings path in config to old default path.
         // Do it here so we show current value in UI correctly.
-        QString musicDir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
+        QString musicDir = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
         if (musicDir.isEmpty()) {
             musicDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
         }
@@ -59,7 +59,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
     connect(PushButtonBrowseRecordings, SIGNAL(clicked()), this, SLOT(slotBrowseRecordingsDir()));
     connect(LineEditRecordings, SIGNAL(returnPressed()), this, SLOT(slotApply()));
 
-    connect(m_pRadioOgg,SIGNAL(clicked()),
+    connect(m_pRadioOgg, SIGNAL(clicked()),
             this, SLOT(slotApply()));
     connect(m_pRadioMp3, SIGNAL(clicked()),
             this, SLOT(slotApply()));
@@ -77,12 +77,12 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
 
 #ifdef SF_FORMAT_FLAC
     m_pRadioFlac = new QRadioButton(ENCODING_FLAC);
-    connect(m_pRadioFlac,SIGNAL(clicked()), this, SLOT(slotApply()));
+    connect(m_pRadioFlac, SIGNAL(clicked()), this, SLOT(slotApply()));
     horizontalLayout->addWidget(m_pRadioFlac);
 #endif
 
     //Read config and check radio button
-    QString format = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding"));
+    QString format = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
     if (format == ENCODING_WAVE) {
         m_pRadioWav->setChecked(true);
     } else if (format == ENCODING_OGG) {
@@ -120,7 +120,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
     comboBoxSplitting->addItem(SPLIT_2048MB);
     comboBoxSplitting->addItem(SPLIT_4096MB);
 
-    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"FileSize"));
+    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
     if (index > 0) {
         //set file split size
@@ -130,7 +130,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
 
     //Read CUEfile info
     CheckBoxRecordCueFile->setChecked(
-            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"CueEnabled")).toInt());
+            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
 
 }
 
@@ -216,7 +216,7 @@ void DlgPrefRecord::slotRecordPathChange() {
 //This function updates/refreshes the contents of this dialog
 void DlgPrefRecord::slotUpdate() {
     
-    QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory"));
+    QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     LineEditRecordings->setText(recordingsPath);
 
     if (m_pRadioWav && m_pRadioWav->isChecked()) {
@@ -236,7 +236,7 @@ void DlgPrefRecord::slotUpdate() {
 void DlgPrefRecord::slotBrowseRecordingsDir() {
     QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings directory"),
                                             m_pConfig->getValueString(
-                                                        ConfigKey(RECORDING_PREF_KEY,"Directory")));
+                                                        ConfigKey(RECORDING_PREF_KEY, "Directory")));
     if (fd != "") {
         LineEditRecordings->setText(fd);
     }
@@ -253,9 +253,9 @@ void DlgPrefRecord::setRecordingFolder() {
         qDebug() << "Recordings path was empty in dialog";
         return;
     }
-    if (LineEditRecordings->text() != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory"))) {
+    if (LineEditRecordings->text() != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
         qDebug() << "Saved recordings path" << LineEditRecordings->text();
-        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY,"Directory"), LineEditRecordings->text());
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), LineEditRecordings->text());
     }
 }
 
