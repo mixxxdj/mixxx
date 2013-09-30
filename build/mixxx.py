@@ -152,8 +152,8 @@ class MixxxBuild(object):
             toolpath.append('#/build/osx/')
         if self.platform_is_windows and self.toolchain == 'msvs':
             toolpath.append('msvs')
-            extra_arguments['VCINSTALLDIR'] = os.getenv('VCInstallDir') # TODO(XXX) Why?
-            extra_arguments['QT_LIB'] = '' # TODO(XXX) Why?
+            extra_arguments['VCINSTALLDIR'] = os.getenv('VCInstallDir')  # TODO(XXX) Why?
+            extra_arguments['QT_LIB'] = ''  # TODO(XXX) Why?
 
         # Setup the appropriate toolchains for cross-compiling
         if self.crosscompile:
@@ -318,8 +318,8 @@ class MixxxBuild(object):
             os.unlink(self.build_dir)
 
         sconsign_file = '.sconsign.dblite'
-        sconsign_branch_file = '.sconsign.branch' # contains the branch name of last build
-        custom_file = 'cache/custom.py' # contains custom build flags
+        sconsign_branch_file = '.sconsign.branch'  # contains the branch name of last build
+        custom_file = 'cache/custom.py'  # contains custom build flags
         sconsign_branch = ''
         is_branch_different = True
         if os.path.isfile(sconsign_branch_file):
