@@ -46,18 +46,18 @@ EngineRecord::~EngineRecord() {
 }
 
 void EngineRecord::updateFromPreferences() {
-    m_encoding = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding")).toLatin1();
+    m_encoding = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding")).toLatin1();
     // returns a number from 1 .. 10
-    m_OGGquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"OGG_Quality")).toLatin1();
-    m_MP3quality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"MP3_Quality")).toLatin1();
-    m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"Path"));
+    m_OGGquality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toLatin1();
+    m_MP3quality = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toLatin1();
+    m_fileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Path"));
     m_baTitle = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")).toLatin1();
     m_baAuthor = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")).toLatin1();
     m_baAlbum = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")).toLatin1();
     m_cueFileName = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CuePath")).toLatin1();
     m_bCueIsEnabled = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt();
 
-    // delete m_pEncoder if it has been initalized (with maybe) different bitrate
+    // Delete m_pEncoder if it has been initalized (with maybe) different bitrate.
     if (m_pEncoder) {
         delete m_pEncoder;
         m_pEncoder = NULL;
@@ -65,7 +65,7 @@ void EngineRecord::updateFromPreferences() {
 
     if (m_encoding == ENCODING_MP3) {
         m_pEncoder = new EncoderMp3(this);
-        m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
+        m_pEncoder->updateMetaData(m_baAuthor.data(), m_baTitle.data(), m_baAlbum.data());
 
         if(m_pEncoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
                                   m_pSamplerate->get()) < 0) {
@@ -75,7 +75,7 @@ void EngineRecord::updateFromPreferences() {
         }
     } else if (m_encoding == ENCODING_OGG) {
         m_pEncoder = new EncoderVorbis(this);
-        m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
+        m_pEncoder->updateMetaData(m_baAuthor.data(), m_baTitle.data(), m_baAlbum.data());
 
         if (m_pEncoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
                                    m_pSamplerate->get()) < 0) {
@@ -84,7 +84,7 @@ void EngineRecord::updateFromPreferences() {
             qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
         }
     }
-    // If we use WAVE OR AIFF the encoder will be NULL at all times
+    // If we use WAVE OR AIFF the encoder will be NULL at all times.
 }
 
 bool EngineRecord::metaDataHasChanged()
@@ -119,21 +119,20 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
 
     float recordingStatus = m_pRecReady->get();
 
-    // if recording is disabled
     if (recordingStatus == RECORD_OFF) {
         //qDebug("Setting record flag to: OFF");
         if (fileOpen()) {
-            closeFile();    //close file and free encoder
+            closeFile();  // Close file and free encoder.
             emit(isRecording(false));
         }
     } else if (recordingStatus == RECORD_READY) {
-        // if we are ready for recording, i.e, the output file has been selected, we
-        // open a new file
-        updateFromPreferences();	//update file location from pref
+        // If we are ready for recording, i.e, the output file has been selected, we
+        // open a new file.
+        updateFromPreferences();  // Update file location from preferences.
         if (openFile()) {
             qDebug("Setting record flag to: ON");
             m_pRecReady->slotSet(RECORD_ON);
-            emit(isRecording(true)); //will notify the RecordingManager
+            emit(isRecording(true));  // will notify the RecordingManager
 
             // Since we just started recording, timeout and clear the metadata.
             m_iMetaDataLife = kMetaDataLifeTimeout;
@@ -144,7 +143,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
                 m_cueSamplePos = 0;
                 m_cueTrack = 0;
             }
-        } else { // Maybe the encoder could not be initialized
+        } else {  // Maybe the encoder could not be initialized
             qDebug("Setting record flag to: OFF");
             m_pRecReady->slotSet(RECORD_OFF);
             emit(isRecording(false));
@@ -230,7 +229,7 @@ void EngineRecord::write(unsigned char *header, unsigned char *body,
 }
 
 bool EngineRecord::fileOpen() {
-    // Both encoder and file must be initalized
+    // Both encoder and file must be initalized.
     if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF) {
         return (m_pSndfile != NULL);
     } else {
@@ -239,7 +238,7 @@ bool EngineRecord::fileOpen() {
 }
 
 bool EngineRecord::openFile() {
-    // Unfortunately, we cannot use QFile for writing WAV and AIFF audio
+    // Unfortunately, we cannot use QFile for writing WAV and AIFF audio.
     if (m_encoding == ENCODING_WAVE || m_encoding == ENCODING_AIFF){
         unsigned long samplerate = m_pSamplerate->get();
         // set sfInfo
@@ -251,7 +250,7 @@ bool EngineRecord::openFile() {
         else
             m_sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
 
-        // Creates a new WAVE or AIFF file and write header information
+        // Creates a new WAVE or AIFF file and writes header information.
         m_pSndfile = sf_open(m_fileName.toLocal8Bit(), SFM_WRITE, &m_sfInfo);
         if (m_pSndfile) {
             sf_command(m_pSndfile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
@@ -272,7 +271,7 @@ bool EngineRecord::openFile() {
 
         }
     } else {
-        // We can use a QFile to write compressed audio
+        // We can use a QFile to write compressed audio.
         if (m_pEncoder) {
             m_file.setFileName(m_fileName);
             m_file.open(QIODevice::WriteOnly);
@@ -284,7 +283,7 @@ bool EngineRecord::openFile() {
         }
     }
 
-    // Check if file is really open
+    // Check if file is really open.
     if (!fileOpen()) {
         ErrorDialogProperties* props = ErrorDialogHandler::instance()->newDialogProperties();
         props->setType(DLG_WARNING);
@@ -331,7 +330,7 @@ void EngineRecord::closeFile() {
             m_pSndfile = NULL;
         }
     } else if (m_file.handle() != -1) {
-        // Close QFile and encoder, if open
+        // Close QFile and encoder, if open.
         if (m_pEncoder) {
             m_pEncoder->flush();
             delete m_pEncoder;
