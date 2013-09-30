@@ -88,9 +88,10 @@ class CueControl : public EngineControl {
     virtual ~CueControl();
 
     virtual void hintReader(QVector<Hint>* pHintList);
-    bool isCuePreviewing(bool latchPlay);
-    void updateCueIndicatorFromPlay(double play, double filepos_play);
+    double updateIndicatorsAndModifyPlay(double play, bool playPossible);
     virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
+    bool isTrackAtCue();
+    bool getPlayFlashingAtPause();
 
   public slots:
     void trackLoaded(TrackPointer pTrack);
@@ -145,6 +146,7 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
     ControlIndicator* m_pCueIndicator;
+    ControlIndicator* m_pPlayIndicator;
     ControlPushButton* m_pCueGoto;
     ControlPushButton* m_pCueGotoAndPlay;
     ControlPushButton* m_pCueGotoAndStop;

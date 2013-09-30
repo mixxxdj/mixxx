@@ -38,11 +38,12 @@ CueControl::CueControl(const char * _group,
     m_pClosestBeat = ControlObject::getControl(ConfigKey(_group, "beat_closest"));
 
     m_pCuePoint = new ControlObject(ConfigKey(_group, "cue_point"));
+    m_pCuePoint->set(-1.0);
+    
     m_pCueMode = new ControlObject(ConfigKey(_group, "cue_mode"));
     // 0.0 -> CDJ mode
     // 1.0 -> Simple mode
     // 2.0 -> Denon mode
-    m_pCuePoint->set(-1.0);
 
     m_pCueSet = new ControlPushButton(ConfigKey(_group, "cue_set"));
     connect(m_pCueSet, SIGNAL(valueChanged(double)),
@@ -87,6 +88,7 @@ CueControl::CueControl(const char * _group,
             Qt::DirectConnection);
 
     m_pCueIndicator = new ControlIndicator(ConfigKey(_group, "cue_indicator"));
+    m_pPlayIndicator = new ControlIndicator(ConfigKey(_group, "play_indicator"));
 }
 
 CueControl::~CueControl() {
@@ -101,6 +103,7 @@ CueControl::~CueControl() {
     delete m_pCueCDJ;
     delete m_pCueDefault;
     delete m_pCueIndicator;
+    delete m_pPlayIndicator;
     while (m_hotcueControl.size() > 0) {
         HotcueControl* pControl = m_hotcueControl.takeLast();
         delete pControl;
@@ -255,6 +258,7 @@ void CueControl::trackUnloaded(TrackPointer pTrack) {
         // in CDJ mode Cue Button is off if no track loaded
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
     }
+    m_pCuePoint->set(-1.0);
     m_pLoadedTrack.clear();
 }
 
@@ -354,8 +358,9 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     Cue* pCue = pControl->getCue();
 
@@ -397,8 +402,9 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     Cue* pCue = pControl->getCue();
 
@@ -419,8 +425,9 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
 
     QMutexLocker lock(&m_mutex);
 
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     Cue* pCue = pControl->getCue();
 
@@ -460,8 +467,9 @@ void CueControl::hotcueActivate(HotcueControl* pControl, double v) {
 
 void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
     Cue* pCue = pControl->getCue();
 
     if (v) {
@@ -515,8 +523,9 @@ void CueControl::hotcueClear(HotcueControl* pControl, double v) {
         return;
 
     QMutexLocker lock(&m_mutex);
-    if (!m_pLoadedTrack)
+    if (!m_pLoadedTrack) {
         return;
+    }
 
     Cue* pCue = pControl->getCue();
     if (pCue) {
@@ -688,7 +697,9 @@ void CueControl::cueCDJ(double v) {
     bool playing = (m_pPlayButton->get() == 1.0);
 
     if (v) {
-        if (playing) {
+        if (playing || getCurrentSample() >= getTotalSamples()) {
+            // Jump to cue when playing or when at end position
+
             // Just in case.
             m_bPreviewing = false;
             m_pPlayButton->set(0.0);
@@ -697,12 +708,12 @@ void CueControl::cueCDJ(double v) {
             lock.unlock();
 
             seekAbs(m_pCuePoint->get());
-        } else if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
+        } else if (isTrackAtCue()) {
             // pause at cue point
             m_bPreviewing = true;
             m_pPlayButton->set(1.0);
         } else {
-            // Pause not at cue point
+            // Pause not at cue point and not at end position
             cueSet(v);
             // Just in case.
             m_bPreviewing = false;
@@ -742,7 +753,7 @@ void CueControl::cueDenon(double v) {
     bool playing = (m_pPlayButton->get() == 1.0);
 
     if (v) {
-        if (!playing && fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
+        if (!playing && isTrackAtCue()) {
             // pause at cue point
             m_bPreviewing = true;
             m_pPlayButton->set(1.0);
@@ -765,64 +776,11 @@ void CueControl::cueDenon(double v) {
 
         seekAbs(m_pCuePoint->get());
     }
-    // indicator may flash because the delayed adoption of seekAbs
-    // Correct the Indicator set via play
-    if (m_pLoadedTrack) {
-        m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
-    } else {
-        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
-    }
-}
-
-
-bool CueControl::isCuePreviewing(bool latchPlay) {
-    QMutexLocker lock(&m_mutex);
-
-    if (m_bPreviewing) {
-        // we're previewing? Then stop previewing and go into normal play mode.
-        if (latchPlay) {
-            m_bPreviewing = false;
-        }
-        return true;
-    }
-
-    if (m_bPreviewingHotcue) {
-        if (latchPlay) {
-            m_bHotcueCancel = true;
-        }
-        return true;
-    }
-
-    if (m_pCueMode->get() == CUE_MODE_DENON && !latchPlay) {
-        // in DENON mode each play from pause moves the cue point
-        // if not previewing
-        cueSet(1.0);
-    }
-
-    return false;
-}
-
-void CueControl::updateCueIndicatorFromPlay(double play, double filepos_play) {
-    if (m_pLoadedTrack) {
-        if (play == 0.0 &&
-                fabs(filepos_play - m_pCuePoint->get()) >= 1.0 &&
-                filepos_play < getTotalSamples()) {
-            qDebug() << " -------------" << filepos_play << getTotalSamples();
-            if (m_pCueMode->get() == CUE_MODE_CDJ) {
-                // in CDJ mode Cue Button is flashing fast if CUE sets a new Cue point
-                m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
-            }
-        } else {
-            m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
-        }
-    } else {
-        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
-    }
 }
 
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference
-    if (m_pCueMode->get() == CUE_MODE_SIMPLE) {    
+    if (m_pCueMode->get() == CUE_MODE_SIMPLE) {
         cueSimple(v);
     } else if (m_pCueMode->get() == CUE_MODE_DENON) {
         cueDenon(v);
@@ -832,16 +790,103 @@ void CueControl::cueDefault(double v) {
     }
 }
 
-void CueControl::setCurrentSample(
-        const double dCurrentSample, const double dTotalSamples) {
-    if (!m_bPreviewing && m_pCueMode->get() == CUE_MODE_CDJ) {
-        bool playing = m_pPlayButton->get() > 0;
-        if (!playing && fabs(dCurrentSample - m_pCuePoint->get()) >= 1.0f) {
-            // Flash cue button if a next pess would move the cue point
-            m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible) {
+    QMutexLocker lock(&m_mutex);
+
+    if (m_pCueMode->get() == CUE_MODE_DENON && play > 0.0 && playPossible) {
+        // in DENON mode each play from pause moves the cue point
+        // if not previewing
+        cueSet(1.0);
+    }
+
+    // when previewing, "play" was set by cue button, a following toggle request
+    // (play = 0.0) is used for latching play.
+    bool previewing = false;
+    if (m_bPreviewing || m_bPreviewingHotcue) {
+        if (play == 0.0) {
+            // play latch request: stop previewing and go into normal play mode.
+            m_bPreviewing = false;
+            m_bHotcueCancel = true;
+            play = 1.0;
+        } else {
+            previewing = true;
         }
     }
+
+    if (!playPossible) {
+        // play not possible
+        play = 0.0;
+        m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+    } else if (play && !previewing) {
+        // Play: Indicates a latched Play
+        m_pPlayIndicator->setBlinkValue(ControlIndicator::ON);
+    } else {
+        // Pause:
+        if (m_pCueMode->get() == CUE_MODE_DENON) {
+            if (isTrackAtCue()) {
+                m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+            } else {
+                // Flashing indicates that a following play would move cue point
+                m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+            }
+        } else {
+            // Flashing indicates that play is possible
+            m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+        }
+    }
+
+    if (m_pCueMode->get() == CUE_MODE_CDJ) {
+        if (m_pLoadedTrack) {
+            if (play == 0.0 && !isTrackAtCue() &&
+                    getCurrentSample() < getTotalSamples()) {
+                // in CDJ mode Cue Button is flashing fast if CUE sets a new Cue point
+                m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+            } else {
+                m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+            }
+        } else {
+            m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+        }
+    }
+
+    return play;
+}
+
+void CueControl::setCurrentSample(
+        const double dCurrentSample, const double dTotalSamples) {
+    if (m_pCueMode->get() == CUE_MODE_CDJ) {
+        if (!m_bPreviewing) {
+            bool playing = m_pPlayButton->get() > 0;
+            if (!playing) {
+                if (fabs(dCurrentSample - m_pCuePoint->get()) >= 1.0f &&
+                        getCurrentSample() < getTotalSamples()) {
+                    // Flash cue button if a next pess would move the cue point
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+                } else if (m_pCuePoint->get() != -1) {
+                    // Flash cue button if a next pess would move the cue point
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+                }
+            }
+        }
+    } else if (m_pCueMode->get() == CUE_MODE_DENON) {
+        // Cue button is only lit at cue point
+        if (fabs(dCurrentSample - m_pCuePoint->get()) < 1.0f) {
+            // at cue point
+            bool playing = m_pPlayButton->get() > 0;
+            if (!playing) {
+                m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+                m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+            }
+        } else {
+            m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+        }
+    }
+
     EngineControl::setCurrentSample(dCurrentSample, dTotalSamples);
+}
+
+bool CueControl::isTrackAtCue() {
+    return (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f);
 }
 
 ConfigKey HotcueControl::keyForControl(int hotcue, QString name) {

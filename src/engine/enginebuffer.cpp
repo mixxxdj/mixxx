@@ -115,8 +115,6 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
             this, SLOT(slotControlPlayRequest(double)),
             Qt::DirectConnection);
 
-    m_playIndicator = new ControlIndicator(ConfigKey(m_group, "play_indicator"));
-
     //Play from Start Button (for sampler)
     m_playStartButton = new ControlPushButton(ConfigKey(m_group, "start_play"));
     connect(m_playStartButton, SIGNAL(valueChanged(double)),
@@ -260,7 +258,6 @@ EngineBuffer::~EngineBuffer()
     delete m_pReader;
 
     delete m_playButton;
-    delete m_playIndicator;
     delete m_playStartButton;
     delete m_stopStartButton;
 
@@ -497,37 +494,21 @@ void EngineBuffer::slotControlSeekAbs(double abs)
     slotControlSeek(abs / m_file_length_old);
 }
 
-void EngineBuffer::slotControlPlayRequest(double v)
-{
-    // if "play" is set by cue button, a toggle request (play = 0.0) is
-    // used for latching play.
-    bool previewing = m_pCueControl->isCuePreviewing(v == 0.0);
-    if (v == 0.0 && previewing) {
-        // play remains in play state when latching
-        v = 1.0;
-        previewing = false;
-    }
-
+void EngineBuffer::slotControlPlayRequest(double v) {
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
+    bool playPossible = true;
     if ((!m_pCurrentTrack && m_iTrackLoading == 0) ||
             (m_pCurrentTrack && m_filepos_play >= m_file_length_old )) {
-        v = 0.0;
-        m_playIndicator->setBlinkValue(ControlIndicator::OFF);
-    } else {
-        if (v && !previewing) {
-            // Indicates a latched Play
-            m_playIndicator->setBlinkValue(ControlIndicator::ON);
-        } else {
-            // Indicates Play is possible
-            m_playIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
-        }
+        // play not possible
+        playPossible = false;
     }
+
+    v = m_pCueControl->updateIndicatorsAndModifyPlay(v, playPossible);
 
     // set and confirm must be called in any case to update the widget toggle state
     m_playButton->setAndConfirm(v);
-    m_pCueControl->updateCueIndicatorFromPlay(v, m_filepos_play);
 }
 
 void EngineBuffer::slotControlStart(double v)

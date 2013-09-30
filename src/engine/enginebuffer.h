@@ -103,13 +103,13 @@ public:
     double getBpm();
     // Returns the BPM of the loaded track (not thread-safe)
     double getFileBpm();
-    /** Sets pointer to other engine buffer/channel */
+    // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
     void queueNewPlaypos(double newpos);
 
-    /** Reset buffer playpos and set file playpos. This must only be called
-      * while holding the pause mutex */
+    // Reset buffer playpos and set file playpos. This must only be called
+    // while holding the pause mutex
     void setNewPlaypos(double playpos);
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
@@ -196,18 +196,18 @@ private:
     // List of hints to provide to the CachingReader
     QVector<Hint> m_hintList;
 
-    /** The current sample to play in the file. */
+    // The current sample to play in the file.
     double m_filepos_play;
-    /** Copy of rate_exchange, used to check if rate needs to be updated */
+    // Copy of rate_exchange, used to check if rate needs to be updated
     double m_rate_old;
-    /** Copy of length of file */
+    // Copy of length of file
     long int m_file_length_old;
-    /** Copy of file sample rate*/
+    // Copy of file sample rate*/
     int m_file_srate_old;
-    /** Mutex controlling weather the process function is in pause mode. This happens
-      * during seek and loading of a new track */
+    // Mutex controlling weather the process function is in pause mode. This happens
+    // during seek and loading of a new track
     QMutex m_pause;
-    /** Used in update of playpos slider */
+    // Used in update of playpos slider
     int m_iSamplesCalculated;
     int m_iUiSlowTick;
 
@@ -222,7 +222,6 @@ private:
     ControlObject* m_pTrackSampleRate;
 
     ControlPushButton* m_playButton;
-    ControlIndicator* m_playIndicator;
     ControlPushButton* m_playStartButton;
     ControlPushButton* m_stopStartButton;
     ControlPushButton* m_stopButton;
