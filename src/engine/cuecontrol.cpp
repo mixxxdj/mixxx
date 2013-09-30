@@ -254,10 +254,8 @@ void CueControl::trackUnloaded(TrackPointer pTrack) {
         }
         loadCue->setPosition(cuePoint);
     }
-    if (m_pCueMode->get() == CUE_MODE_CDJ) {
-        // in CDJ mode Cue Button is off if no track loaded
-        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
-    }
+
+    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
     m_pCuePoint->set(-1.0);
     m_pLoadedTrack.clear();
 }
@@ -674,7 +672,7 @@ void CueControl::cueSimple(double v) {
     QMutexLocker lock(&m_mutex);
     // Simple cueing is if the player is not playing, set the cue point --
     // otherwise seek to the cue point.
-    if (m_pPlayButton->get() == 0.0f) {
+    if (m_pPlayButton->get() == 0.0f && getCurrentSample() < getTotalSamples()) {
         return cueSet(v);
     }
 
@@ -829,20 +827,26 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
                 // Flashing indicates that a following play would move cue point
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
             }
-        } else {
+        } else if (m_pCueMode->get() == CUE_MODE_CDJ) {
             // Flashing indicates that play is possible
             m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+        } else {
+            m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
         }
     }
 
-    if (m_pCueMode->get() == CUE_MODE_CDJ) {
-        if (m_pLoadedTrack) {
+    if (m_pCueMode->get() != CUE_MODE_DENON) {
+        if (m_pCuePoint->get() != -1) {
             if (play == 0.0 && !isTrackAtCue() &&
                     getCurrentSample() < getTotalSamples()) {
                 // in CDJ mode Cue Button is flashing fast if CUE sets a new Cue point
                 m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
             } else {
-                m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+                if (m_pCueMode->get() != CUE_MODE_CDJ) {
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+                } else {
+                    m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+                }
             }
         } else {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
@@ -863,7 +867,7 @@ void CueControl::setCurrentSample(
                     // Flash cue button if a next pess would move the cue point
                     m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
                 } else if (m_pCuePoint->get() != -1) {
-                    // Flash cue button if a next pess would move the cue point
+                    // Next Press is preview
                     m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
                 }
             }
@@ -879,6 +883,17 @@ void CueControl::setCurrentSample(
             }
         } else {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+        }
+    } else {
+        bool playing = m_pPlayButton->get() > 0;
+        if (!playing) {
+            if (fabs(dCurrentSample - m_pCuePoint->get()) >= 1.0f &&
+                    getCurrentSample() < getTotalSamples()) {
+                // Flash cue button if a next pess would move the cue point
+                m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+            } else {
+                m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+            }
         }
     }
 
