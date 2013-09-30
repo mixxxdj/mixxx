@@ -327,7 +327,7 @@ class MixxxBuild(object):
                 sconsign_branch = f.readline()
                 sconsign_branch = sconsign_branch.strip()
 
-        # check if there was a checkout of a different branch since the last build
+        # Check if there was a checkout of a different branch since the last build.
         is_branch_different = sconsign_branch != branch_name
         if not is_branch_different:
             # nothing to do 
