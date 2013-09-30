@@ -179,7 +179,7 @@ QString& RecordingManager::getRecordingLocation() {
 
 long RecordingManager::getFileSplitSize()
 {
-     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"FileSize"));
+     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
      if(fileSizeStr == SPLIT_650MB)
          return SIZE_650MB;
      else if(fileSizeStr == SPLIT_700MB)
