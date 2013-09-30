@@ -18,9 +18,11 @@
 #ifndef DLGPREFRECORD_H
 #define DLGPREFRECORD_H
 
+#include <QRadioButton>
+
 #include "ui_dlgprefrecorddlg.h"
 #include "configobject.h"
-#include <QRadioButton>
+
 
 class ControlObject;
 class ControlObjectThreadMain;
@@ -64,18 +66,18 @@ class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
     void updateTextQuality();
 
     /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
-    ControlObjectThreadMain* recordControl;
-    bool confirmOverwrite;
+    ConfigObject<ConfigValue>* m_pConfig;
+    ControlObjectThreadMain* m_pRecordControl;
+    bool m_bConfirmOverwrite;
     QString fileTypeExtension;
-    QRadioButton *radioOgg;
-    QRadioButton *radioMp3;
-    QRadioButton *radioAiff;
-    QRadioButton *radioFlac;
-    QRadioButton *radioWav;
 
-    QRadioButton *radioLoopAiff;
-    QRadioButton *radioLoopWav;
+    QRadioButton* m_pRadioOgg;
+    QRadioButton* m_pRadioMp3;
+    QRadioButton* m_pRadioAiff;
+    QRadioButton* m_pRadioFlac;
+    QRadioButton* m_pRadioWav;
+    QRadioButton* m_pRadioLoopAiff;
+    QRadioButton* m_pRadioLoopWav;
 };
 
 #endif
