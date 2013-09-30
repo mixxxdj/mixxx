@@ -13,9 +13,9 @@
 
 LoopLayerTracker::LoopLayerTracker(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
-        m_iCurrentLayer(-1),
-        m_bIsUndoAvailable(false),
-        m_bIsRedoAvailable(false) {
+          m_iCurrentLayer(-1),
+          m_bIsUndoAvailable(false),
+          m_bIsRedoAvailable(false) {
 
     m_pLoopDeck1Play = new ControlObjectThread("[LoopRecorderDeck1]","play");
     m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");

@@ -13,14 +13,14 @@
 
 LoopWriter::LoopWriter()
         : m_sampleFifo(LOOP_BUFFER_SIZE),
-        m_pWorkBuffer(SampleUtil::alloc(WORK_BUFFER_SIZE)),
-        m_bFileAvailable(false),
-        m_bRecording(false),
-        m_iBreakPoint(0),
-        m_iLoopLength(0),
+          m_pWorkBuffer(SampleUtil::alloc(WORK_BUFFER_SIZE)),
+          m_bFileAvailable(false),
+          m_bRecording(false),
+          m_iBreakPoint(0),
+          m_iLoopLength(0),
         //m_iLoopRemainder(0),
-        m_iSamplesRecorded(0),
-        m_pSndfile(NULL) {
+          m_iSamplesRecorded(0),
+          m_pSndfile(NULL) {
     connect(this, SIGNAL(samplesAvailable()), this, SLOT(slotProcessSamples()));
 }
 

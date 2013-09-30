@@ -14,9 +14,9 @@
 
 LoopFileMixer::LoopFileMixer(QString file1, QString file2, QString dest, QString encoding)
         : m_dest(dest),
-        m_encoding(encoding),
-        m_filePath1(file1),
-        m_filePath2(file2) {
+          m_encoding(encoding),
+          m_filePath1(file1),
+          m_filePath2(file2) {
 
     m_pWorkBufferIn1 = SampleUtil::alloc(WORK_BUFFER_SIZE);
     m_pWorkBufferIn2 = SampleUtil::alloc(WORK_BUFFER_SIZE);

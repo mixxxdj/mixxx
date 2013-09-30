@@ -22,18 +22,18 @@
 LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
                                            EngineMaster* pEngine)
         : m_pConfig(pConfig),
-        m_loopDestination(""),
-        m_loopSource("Master"),
-        m_recordingDir(""),
-        m_recordingTempDir(""),
-        m_recordingLocation(""),
-        m_bRecording(false),
-        m_iCurrentPlayingDeck(0),
-        m_dLoopBPM(0.0),
-        m_iLoopLength(0),
-        m_iLoopNumber(0),
-        m_iNumDecks(0),
-        m_iNumSamplers(0) {
+          m_loopDestination(""),
+          m_loopSource("Master"),
+          m_recordingDir(""),
+          m_recordingTempDir(""),
+          m_recordingLocation(""),
+          m_bRecording(false),
+          m_iCurrentPlayingDeck(0),
+          m_dLoopBPM(0.0),
+          m_iLoopLength(0),
+          m_iLoopNumber(0),
+          m_iNumDecks(0),
+          m_iNumSamplers(0) {
 
     m_pCOLoopLength = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_length"));
     m_pCOLoopPlayReady = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "play_status"));

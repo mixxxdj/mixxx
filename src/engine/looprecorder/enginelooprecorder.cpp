@@ -10,7 +10,7 @@
 
 EngineLoopRecorder::EngineLoopRecorder()
         : m_loopSource(""),
-        m_bThreadReady(false) {
+          m_bThreadReady(false) {
 
     m_pLoopWriter = new LoopWriter();
 
