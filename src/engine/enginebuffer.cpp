@@ -471,7 +471,7 @@ void EngineBuffer::ejectTrack() {
 // WARNING: This method runs in both the GUI thread and the Engine Thread
 void EngineBuffer::slotControlSeek(double change)
 {
-    if(isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
+    if (isnan(change) || change > kMaxPlayposRange || change < kMinPlayposRange) {
         // This seek is ridiculous.
         return;
     }

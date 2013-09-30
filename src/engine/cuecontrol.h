@@ -115,6 +115,7 @@ class CueControl : public EngineControl {
     void cueSimple(double v);
     void cuePreview(double v);
     void cueCDJ(double v);
+    void cueDenon(double v);
     void cueDefault(double v);
 
   private:

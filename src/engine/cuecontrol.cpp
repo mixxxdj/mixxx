@@ -678,19 +678,17 @@ void CueControl::cueSimple(double v) {
 }
 
 void CueControl::cueCDJ(double v) {
-    /* This is how CDJ cue buttons work:
-     * If pressed while playing, stop playback and go to cue.
-     * If pressed while stopped and at cue, play while pressed.
-     * If pressed while stopped and not at cue, set new cue point.
-     * If play is pressed while holding cue, the deck is now playing. (Handled in playFromCuePreview().)
-     */
+    // This is how CDJ cue buttons work:
+    // If pressed while playing, stop playback and go to cue.
+    // If pressed while stopped and at cue, play while pressed.
+    // If pressed while stopped and not at cue, set new cue point.
+    // If play is pressed while holding cue, the deck is now playing. (Handled in playFromCuePreview().)
 
     QMutexLocker lock(&m_mutex);
     bool playing = (m_pPlayButton->get() == 1.0);
-    double cuePoint = m_pCuePoint->get();
 
     if (v) {
-        if (playing || getCurrentSample() >= getTotalSamples()) {
+        if (playing) {
             // Just in case.
             m_bPreviewing = false;
             m_pPlayButton->set(0.0);
@@ -698,11 +696,13 @@ void CueControl::cueCDJ(double v) {
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-            seekAbs(cuePoint);
+            seekAbs(m_pCuePoint->get());
         } else if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
+            // pause at cue point
             m_bPreviewing = true;
             m_pPlayButton->set(1.0);
         } else {
+            // Pause not at cue point
             cueSet(v);
             // Just in case.
             m_bPreviewing = false;
@@ -721,7 +721,7 @@ void CueControl::cueCDJ(double v) {
         // Need to unlock before emitting any signals to prevent deadlock.
         lock.unlock();
 
-        seekAbs(cuePoint);
+        seekAbs(m_pCuePoint->get());
     }
     // indicator may flash because the delayed adoption of seekAbs
     // Correct the Indicator set via play
@@ -731,6 +731,49 @@ void CueControl::cueCDJ(double v) {
         m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
     }
 }
+
+void CueControl::cueDenon(double v) {
+    // This is how Denon DN-S 3700 cue buttons work:
+    // If pressed go to cue and stop.
+    // If pressed while stopped and at cue, play while pressed.
+    // Cue Point is moved by play from pause
+
+    QMutexLocker lock(&m_mutex);
+    bool playing = (m_pPlayButton->get() == 1.0);
+
+    if (v) {
+        if (!playing && fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
+            // pause at cue point
+            m_bPreviewing = true;
+            m_pPlayButton->set(1.0);
+        } else {
+            // Just in case.
+            m_bPreviewing = false;
+            m_pPlayButton->set(0.0);
+
+            // Need to unlock before emitting any signals to prevent deadlock.
+            lock.unlock();
+
+            seekAbs(m_pCuePoint->get());
+        }
+    } else if (m_bPreviewing) {
+        m_bPreviewing = false;
+        m_pPlayButton->set(0.0);
+
+        // Need to unlock before emitting any signals to prevent deadlock.
+        lock.unlock();
+
+        seekAbs(m_pCuePoint->get());
+    }
+    // indicator may flash because the delayed adoption of seekAbs
+    // Correct the Indicator set via play
+    if (m_pLoadedTrack) {
+        m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
+    } else {
+        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+    }
+}
+
 
 bool CueControl::isCuePreviewing(bool latchPlay) {
     QMutexLocker lock(&m_mutex);
@@ -750,16 +793,22 @@ bool CueControl::isCuePreviewing(bool latchPlay) {
         return true;
     }
 
+    if (m_pCueMode->get() == CUE_MODE_DENON && !latchPlay) {
+        // in DENON mode each play from pause moves the cue point
+        // if not previewing
+        cueSet(1.0);
+    }
+
     return false;
 }
 
 void CueControl::updateCueIndicatorFromPlay(double play, double filepos_play) {
     if (m_pLoadedTrack) {
         if (play == 0.0 &&
-                fabs(filepos_play - m_pCuePoint->get()) >= 1.0f &&
+                fabs(filepos_play - m_pCuePoint->get()) >= 1.0 &&
                 filepos_play < getTotalSamples()) {
             qDebug() << " -------------" << filepos_play << getTotalSamples();
-            if (m_pCueMode->get() == 0.0f) {
+            if (m_pCueMode->get() == CUE_MODE_CDJ) {
                 // in CDJ mode Cue Button is flashing fast if CUE sets a new Cue point
                 m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
             }
@@ -773,18 +822,22 @@ void CueControl::updateCueIndicatorFromPlay(double play, double filepos_play) {
 
 void CueControl::cueDefault(double v) {
     // Decide which cue implementation to call based on the user preference
-    if (m_pCueMode->get() == CUE_MODE_CDJ) {
-        cueCDJ(v);
-    } else {
+    if (m_pCueMode->get() == CUE_MODE_SIMPLE) {    
         cueSimple(v);
+    } else if (m_pCueMode->get() == CUE_MODE_DENON) {
+        cueDenon(v);
+    } else {
+        // if (m_pCueMode->get() == CUE_MODE_CDJ) {
+        cueCDJ(v);
     }
 }
 
 void CueControl::setCurrentSample(
         const double dCurrentSample, const double dTotalSamples) {
-    if (!m_bPreviewing) {
+    if (!m_bPreviewing && m_pCueMode->get() == CUE_MODE_CDJ) {
         bool playing = m_pPlayButton->get() > 0;
         if (!playing && fabs(dCurrentSample - m_pCuePoint->get()) >= 1.0f) {
+            // Flash cue button if a next pess would move the cue point
             m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
         }
     }
