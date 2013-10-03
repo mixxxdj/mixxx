@@ -27,9 +27,7 @@
 // Static member variable definition
 QString WWidget::m_qPath;
 
-WWidget::WWidget(QWidget * parent, Qt::WFlags flags) : QWidget(parent, flags)
-{
-
+WWidget::WWidget(QWidget* parent, Qt::WFlags flags) : QWidget(parent, flags) {
     m_fValue = 0.;
     m_bOff = false;
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));

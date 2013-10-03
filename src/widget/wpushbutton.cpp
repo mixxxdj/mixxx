@@ -24,6 +24,7 @@
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
+#include <QTouchEvent>
 #include <QPaintEvent>
 #include <QApplication>
 
@@ -36,6 +37,7 @@ WPushButton::WPushButton(QWidget * parent) :
         m_leftButtonMode(ControlPushButton::PUSH),
         m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
+    setAttribute(Qt::WA_AcceptTouchEvents);
     //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
 }
 
@@ -166,6 +168,59 @@ void WPushButton::setValue(double v) {
         }
     }
     update();
+}
+
+bool WPushButton::event(QEvent *e) {
+    switch (e->type()) {
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchEnd:
+    {
+        QTouchEvent *touchEvent = static_cast<QTouchEvent*>(e);
+        qDebug() << this << "Touch event" << e->type()
+                << "count" << touchEvent->touchPoints().count()
+                << "deviceType" << touchEvent->deviceType()
+                << "modifiers" << touchEvent->modifiers();
+
+        return true;
+
+        /*
+         *         QTouchEvent *touchEvent = static_cast<QTouchEvent *>(event);
+        const QTouchEvent::TouchPoint &touchPoint = touchEvent->touchPoints().first();
+        if (touchPoint.isPrimary() || touchEvent->deviceType() == QTouchEvent::TouchPad)
+            break;
+
+        // fake a mouse event!
+        QEvent::Type eventType = QEvent::None;
+        switch (touchEvent->type()) {
+        case QEvent::TouchBegin:
+            eventType = QEvent::MouseButtonPress;
+            break;
+        case QEvent::TouchUpdate:
+            eventType = QEvent::MouseMove;
+            break;
+        case QEvent::TouchEnd:
+            eventType = QEvent::MouseButtonRelease;
+            break;
+        default:
+            Q_ASSERT(!true);
+            break;
+        }
+        if (eventType == QEvent::None)
+            break;
+
+        QMouseEvent mouseEvent(eventType,
+                               touchPoint.pos().toPoint(),
+                               touchPoint.screenPos().toPoint(),
+                               Qt::LeftButton,
+                               Qt::LeftButton,
+                               touchEvent->modifiers());
+        (void) QApplication::sendEvent(this, &mouseEvent);
+         */
+    }
+    default:
+        return QWidget::event(e);
+    }
 }
 
 void WPushButton::paintEvent(QPaintEvent *) {

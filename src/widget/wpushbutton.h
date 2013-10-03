@@ -55,9 +55,10 @@ class WPushButton : public WWidget
     void setValue(double);
 
   protected:
-    virtual void paintEvent(QPaintEvent *);
-    virtual void mousePressEvent(QMouseEvent *e);
-    virtual void mouseReleaseEvent(QMouseEvent *e);
+    virtual bool event(QEvent* e);
+    virtual void paintEvent(QPaintEvent*);
+    virtual void mousePressEvent(QMouseEvent* e);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
     virtual void focusOutEvent(QFocusEvent* e);
 
     // True, if the button is currently pressed
