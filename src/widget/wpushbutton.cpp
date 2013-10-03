@@ -73,9 +73,9 @@ void WPushButton::setup(QDomNode node) {
     m_bLeftClickForcePush = selectNodeQString(node, "LeftClickIsPushButton")
             .contains("true", Qt::CaseInsensitive);
 
-    m_bRightClickForcePush = selectNodeQString(node, "RightClickIsPushButton")
-            .contains("true", Qt::CaseInsensitive);
-
+    if (!selectNodeQString(node, "RightClickIsPushButton").isEmpty()) {
+        qDebug() << "using <RightClickIsPushButton> in skins is obsolete.";
+    }
 
     QDomNode con = selectNode(node, "Connection");
     while (!con.isNull()) {
@@ -179,10 +179,6 @@ bool WPushButton::event(QEvent* e) {
         case QEvent::TouchEnd:
         {
             QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
-            qDebug() << this << "Touch event" << e->type()
-                    << "count" << touchEvent->touchPoints().count()
-                    << "deviceType" << touchEvent->deviceType()
-                    << "modifiers" << touchEvent->modifiers();
             if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
                 break;
             }
@@ -224,8 +220,11 @@ bool WPushButton::event(QEvent* e) {
 }
 
 void WPushButton::paintEvent(QPaintEvent *) {
-    if (m_iNoStates>0)     {
-        int idx = (((int)m_fValue % m_iNoStates) * 2) + m_leftPressed;
+    if (m_iNoStates > 0)     {
+        int idx = ((int)m_fValue % m_iNoStates) * 2;
+        if (m_leftPressed || m_rightPressed) {
+            ++idx;
+        }
         if (m_pPixmaps[idx]) {
             QPainter p(this);
             if(m_pPixmapBack) {
@@ -251,24 +250,20 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             m_leftPressed = true;
             emit(valueChangedLeftDown(1.0f));
             update();
+        } else if (rightClick) {
+            // Latching in power window mode
+            m_leftPressed = false;
         }
         return;
     }
 
     if (rightClick) {
-        // This is the secondary button function, it does not change m_fValue
-        // due the leak of visual feedback we do not allow a toggle function
-        if (m_bRightClickForcePush) {
-            m_leftPressed = true;
-            emit(valueChangedRightDown(1.0f));
-            update();
-        } else if (m_iNoStates == 1) {
-            // This is a Pushbutton
-            m_fValue = 1.0f;
-            m_leftPressed = true;
-            emit(valueChangedRightDown(1.0f));
-            update();
-        }
+        // This is the secondary button function, it does not change m_value
+        // Due the leak of visual feedback the right button is always a
+        // pushbutton so "RightClickIsPushButton" is obsolete
+        m_rightPressed = true;
+        emit(valueChangedRightDown(1.0f));
+        update();
 
         // Do not allow right-clicks to change button state other than when
         // forced to be a push button. This is how Mixxx <1.8.0 worked so
@@ -306,8 +301,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
-            const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
-            if (m_leftPressed && !m_clickTimer.isActive() && !rightButtonDown) {
+            if (m_leftPressed && !m_rightPressed && !m_clickTimer.isActive()) {
                 // Release Button after Timer, but not if right button is clicked
                 m_fValue = 0.0f;
                 emit(valueChangedLeftUp(0.0f));
@@ -322,17 +316,12 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function, it does not change
-        // m_fValue due the leak of visual feedback we do not allow a toggle
-        // function
-        if (m_bRightClickForcePush) {
-            m_leftPressed = false;
-            emit(valueChangedRightDown(0.0f));
-            update();
-        } else if (m_iNoStates == 1) {
-            m_leftPressed = false;
-            emit(valueChangedRightDown(0.0f));
-            update();
-        }
+        // m_value due the leak of visual feedback we do not allow a toggle
+        // function. It is always a pushbutton, so "RightClickIsPushButton"
+        // is obsolete
+        m_rightPressed = false;
+        emit(valueChangedRightUp(0.0f));
+        update();
         return;
     }
 
