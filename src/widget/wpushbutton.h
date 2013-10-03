@@ -62,7 +62,9 @@ class WPushButton : public WWidget
     virtual void focusOutEvent(QFocusEvent* e);
 
     // True, if the button is currently pressed
-    bool m_bPressed;
+    // left button is the primary button which is reflected in the GUI
+    bool m_leftPressed;
+    bool m_rightPressed;
 
   private:
     bool m_bLeftClickForcePush, m_bRightClickForcePush;

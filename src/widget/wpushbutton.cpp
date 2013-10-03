@@ -30,15 +30,14 @@
 
 const int PB_SHORTKLICKTIME = 200;
 
-WPushButton::WPushButton(QWidget * parent) :
-        WWidget(parent),
-        m_pPixmaps(NULL),
-        m_pPixmapBack(NULL),
-        m_leftButtonMode(ControlPushButton::PUSH),
-        m_rightButtonMode(ControlPushButton::PUSH) {
+WPushButton::WPushButton(QWidget * parent)
+        : WWidget(parent),
+          m_pPixmaps(NULL),
+          m_pPixmapBack(NULL),
+          m_leftButtonMode(ControlPushButton::PUSH),
+          m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
     setAttribute(Qt::WA_AcceptTouchEvents);
-    //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
 }
 
 WPushButton::~WPushButton() {
@@ -122,7 +121,8 @@ void WPushButton::setup(QDomNode node) {
 void WPushButton::setStates(int iStates) {
     m_iNoStates = iStates;
     m_fValue = 0.;
-    m_bPressed = false;
+    m_leftPressed = false;
+    m_rightPressed = false;
 
     // If pixmap array is already allocated, delete it
     delete [] m_pPixmaps;
@@ -160,72 +160,72 @@ void WPushButton::setPixmapBackground(const QString &filename) {
 void WPushButton::setValue(double v) {
     m_fValue = v;
 
-    if (m_iNoStates==1) {
-        if (m_fValue==1.) {
-            m_bPressed = true;
+    if (m_iNoStates == 1) {
+        if (v == 0.0) {
+            m_leftPressed = false;
         } else {
-            m_bPressed = false;
+            m_leftPressed = true;
         }
     }
     update();
 }
 
-bool WPushButton::event(QEvent *e) {
-    switch (e->type()) {
-    case QEvent::TouchBegin:
-    case QEvent::TouchUpdate:
-    case QEvent::TouchEnd:
-    {
-        QTouchEvent *touchEvent = static_cast<QTouchEvent*>(e);
-        qDebug() << this << "Touch event" << e->type()
-                << "count" << touchEvent->touchPoints().count()
-                << "deviceType" << touchEvent->deviceType()
-                << "modifiers" << touchEvent->modifiers();
-
-        return true;
-
-        /*
-         *         QTouchEvent *touchEvent = static_cast<QTouchEvent *>(event);
-        const QTouchEvent::TouchPoint &touchPoint = touchEvent->touchPoints().first();
-        if (touchPoint.isPrimary() || touchEvent->deviceType() == QTouchEvent::TouchPad)
-            break;
-
-        // fake a mouse event!
-        QEvent::Type eventType = QEvent::None;
-        switch (touchEvent->type()) {
+bool WPushButton::event(QEvent* e) {
+    // control events when disabled
+    if (isEnabled()) {
+        switch(e->type()) {
         case QEvent::TouchBegin:
-            eventType = QEvent::MouseButtonPress;
-            break;
         case QEvent::TouchUpdate:
-            eventType = QEvent::MouseMove;
-            break;
         case QEvent::TouchEnd:
-            eventType = QEvent::MouseButtonRelease;
-            break;
+        {
+            QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
+            qDebug() << this << "Touch event" << e->type()
+                    << "count" << touchEvent->touchPoints().count()
+                    << "deviceType" << touchEvent->deviceType()
+                    << "modifiers" << touchEvent->modifiers();
+            if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
+                break;
+            }
+
+            // fake a mouse event!
+            QEvent::Type eventType = QEvent::None;
+            switch (touchEvent->type()) {
+            case QEvent::TouchBegin:
+                eventType = QEvent::MouseButtonPress;
+                break;
+            case QEvent::TouchUpdate:
+                eventType = QEvent::MouseMove;
+                break;
+            case QEvent::TouchEnd:
+                eventType = QEvent::MouseButtonRelease;
+                break;
+            default:
+                Q_ASSERT(!true);
+                break;
+            }
+
+            const QTouchEvent::TouchPoint &touchPoint =
+                    touchEvent->touchPoints().first();
+            QMouseEvent mouseEvent(eventType,
+                    touchPoint.pos().toPoint(),
+                    touchPoint.screenPos().toPoint(),
+                    Qt::LeftButton, // Button that causes the event
+                    Qt::NoButton, // Not used, so no need to fake a proper value.
+                    touchEvent->modifiers());
+
+            return QWidget::event(&mouseEvent);
+        }
         default:
-            Q_ASSERT(!true);
             break;
         }
-        if (eventType == QEvent::None)
-            break;
+    }
 
-        QMouseEvent mouseEvent(eventType,
-                               touchPoint.pos().toPoint(),
-                               touchPoint.screenPos().toPoint(),
-                               Qt::LeftButton,
-                               Qt::LeftButton,
-                               touchEvent->modifiers());
-        (void) QApplication::sendEvent(this, &mouseEvent);
-         */
-    }
-    default:
-        return QWidget::event(e);
-    }
+    return QWidget::event(e);
 }
 
 void WPushButton::paintEvent(QPaintEvent *) {
     if (m_iNoStates>0)     {
-        int idx = (((int)m_fValue % m_iNoStates) * 2) + m_bPressed;
+        int idx = (((int)m_fValue % m_iNoStates) * 2) + m_leftPressed;
         if (m_pPixmaps[idx]) {
             QPainter p(this);
             if(m_pPixmapBack) {
@@ -248,7 +248,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
                 m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             }
             m_fValue = 1.0f;
-            m_bPressed = true;
+            m_leftPressed = true;
             emit(valueChangedLeftDown(1.0f));
             update();
         }
@@ -259,13 +259,13 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         // This is the secondary button function, it does not change m_fValue
         // due the leak of visual feedback we do not allow a toggle function
         if (m_bRightClickForcePush) {
-            m_bPressed = true;
+            m_leftPressed = true;
             emit(valueChangedRightDown(1.0f));
             update();
         } else if (m_iNoStates == 1) {
             // This is a Pushbutton
             m_fValue = 1.0f;
-            m_bPressed = true;
+            m_leftPressed = true;
             emit(valueChangedRightDown(1.0f));
             update();
         }
@@ -293,16 +293,10 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             // Toggle thru the states
             m_fValue = emitValue = (int)(m_fValue+1.)%m_iNoStates;
         }
-        m_bPressed = true;
+        m_leftPressed = true;
         emit(valueChangedLeftDown(emitValue));
         update();
     }
-}
-
-void WPushButton::focusOutEvent(QFocusEvent* e) {
-    Q_UNUSED(e);
-    m_bPressed = false;
-    update();
 }
 
 void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
@@ -313,14 +307,14 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
-            if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
+            if (m_leftPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release Button after Timer, but not if right button is clicked
                 m_fValue = 0.0f;
                 emit(valueChangedLeftUp(0.0f));
             }
-            m_bPressed = false;
+            m_leftPressed = false;
         } else if (rightClick) {
-            m_bPressed = false;
+            m_leftPressed = false;
         }
         update();
         return;
@@ -331,11 +325,11 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         // m_fValue due the leak of visual feedback we do not allow a toggle
         // function
         if (m_bRightClickForcePush) {
-            m_bPressed = false;
+            m_leftPressed = false;
             emit(valueChangedRightDown(0.0f));
             update();
         } else if (m_iNoStates == 1) {
-            m_bPressed = false;
+            m_leftPressed = false;
             emit(valueChangedRightDown(0.0f));
             update();
         }
@@ -354,8 +348,15 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         } else {
             // Nothing special happens when releasing a toggle button
         }
-        m_bPressed = false;
+        m_leftPressed = false;
         emit(valueChangedLeftDown(emitValue));
         update();
     }
+}
+
+void WPushButton::focusOutEvent(QFocusEvent* e) {
+    Q_UNUSED(e);
+    m_leftPressed = false;
+    m_rightPressed = false;
+    update();
 }
