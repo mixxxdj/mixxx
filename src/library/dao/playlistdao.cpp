@@ -648,8 +648,11 @@ void PlaylistDAO::removeTrackFromPlaylists(const int trackId) {
 void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
     QStringList trackIdList;
     foreach (int id, trackIds) {
-        if (trackIdList.count() >= 255) { // TODO(xxx) test the real limit
-            // Avoid SQL Queries with unlimited length
+        if (trackIdList.count() >= 255) { 
+            // Avoid that the resulting SQL query to exceed the maximum length
+            // The maximum number of bytes in the text of an SQL statement is 
+            // limited to SQLITE_MAX_SQL_LENGTH which defaults to 1000000 
+            // (from http://www.sqlite.org/limits.html)
             removeTracksFromPlaylistsInner(trackIdList);
             trackIdList.clear();
         }
@@ -668,10 +671,10 @@ void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList)
         return;
     }
 
-    QList<int> plIds;
+    QList<int> playlistIds;
     const int playlistIDColoumn = query.record().indexOf("playlist_id");
     while (query.next()) {
-        plIds.append(query.value(playlistIDColoumn).toInt());
+        playlistIds.append(query.value(playlistIDColoumn).toInt());
     }
 
     query.prepare(QString("DELETE FROM PlaylistTracks WHERE track_id in (%1)")
@@ -681,8 +684,8 @@ void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList)
         return;
     }
 
-    foreach (int plId, plIds) {
-        emit(changed(plId));
+    foreach (int playlistId, playlistIds) {
+        emit(changed(playlistId));
     }
 }
 
