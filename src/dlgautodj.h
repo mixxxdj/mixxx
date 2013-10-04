@@ -30,20 +30,20 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     void moveSelection(int delta);
 
   public slots:
-    void shufflePlaylistButton(bool buttonChecked); // done
-    void skipNextButton(bool buttonChecked); // done
-    void fadeNowButton(bool buttonChecked); // no need
-    void toggleAutoDJButton(bool enable); // done
-    void enableAutoDJCo(double value); // done
-    void shufflePlaylist(double value); // done
-    void skipNext(double value); // done
-    void fadeNow(double value); // done
-    void player1PositionChanged(double value); //done
-    void player2PositionChanged(double value); // done
-    void player1PlayChanged(double value); // no need
-    void player2PlayChanged(double value); // no need
-    void transitionValueChanged(int value); // no need
-    void enableRandomButton(bool enabled); // no need
+    void shufflePlaylistButton(bool buttonChecked);
+    void skipNextButton(bool buttonChecked);
+    void fadeNowButton(bool buttonChecked);
+    void toggleAutoDJButton(bool enable);
+    void enableAutoDJCo(double value);
+    void shufflePlaylist(double value);
+    void skipNext(double value);
+    void fadeNow(double value);
+    void player1PositionChanged(double value);
+    void player2PositionChanged(double value);
+    void player1PlayChanged(double value);
+    void player2PlayChanged(double value);
+    void transitionValueChanged(int value);
+    void enableRandomButton(bool enabled);
     void slotSpinBoxTransitionSetValue(int value);
     void slotPushButtonAutoDJSetChecked(bool checked);
 

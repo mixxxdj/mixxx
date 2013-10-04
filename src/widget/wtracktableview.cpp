@@ -611,10 +611,16 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
         QMapIterator<QString, int> it(playlists);
         while (it.hasNext()) {
-            it.next(); // WRAP IT ACCURATE INTO CALLSYN
+            it.next();
             if (!playlistDao.isHidden(it.value())) {
                 // No leak because making the menu the parent means they will be auto-deleted
-                bool locked = playlistDao.isPlaylistLocked(it.value());
+                bool locked = false;
+                // tro's lambda idea. This code calls synchronously!
+                m_pTrackCollection->callSync(
+                            [this, &playlistDao, &it, &locked] (void) {
+                    locked = playlistDao.isPlaylistLocked(it.value());
+                }, __PRETTY_FUNCTION__);
+
                 QAction* pAction;
                 pAction = new QAction(it.key(), m_pPlaylistMenu);
                 pAction->setEnabled(!locked);

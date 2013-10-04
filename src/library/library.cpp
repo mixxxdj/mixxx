@@ -188,7 +188,7 @@ void Library::slotShowTrackModel(QAbstractItemModel* model) {
     Q_ASSERT(trackModel);
     emit(showTrackModel(model));
     emit(switchToView(m_sTrackViewName));
-    emit(restoreSearch(trackModel->currentSearch())); // #TRO#
+    emit(restoreSearch(trackModel->currentSearch()));
 }
 
 void Library::slotSwitchToView(const QString& view) {
