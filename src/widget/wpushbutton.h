@@ -55,7 +55,6 @@ class WPushButton : public WWidget
     void setValue(double);
 
   protected:
-    virtual bool event(QEvent* e);
     virtual void paintEvent(QPaintEvent*);
     virtual void mousePressEvent(QMouseEvent* e);
     virtual void mouseReleaseEvent(QMouseEvent* e);
@@ -65,7 +64,6 @@ class WPushButton : public WWidget
     // left button is the primary button which is reflected in the GUI
     bool m_leftPressed;
     bool m_rightPressed;
-    enum Qt::MouseButton m_activeTouchButton;
 
   private:
     bool m_bLeftClickForcePush, m_bRightClickForcePush;

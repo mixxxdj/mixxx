@@ -38,7 +38,6 @@ WPushButton::WPushButton(QWidget * parent)
           m_leftButtonMode(ControlPushButton::PUSH),
           m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
-    setAttribute(Qt::WA_AcceptTouchEvents);
 }
 
 WPushButton::~WPushButton() {
@@ -168,61 +167,6 @@ void WPushButton::setValue(double v) {
         }
     }
     update();
-}
-
-bool WPushButton::event(QEvent* e) {
-    // control events when disabled
-    if (isEnabled()) {
-        switch(e->type()) {
-        case QEvent::TouchBegin:
-        case QEvent::TouchUpdate:
-        case QEvent::TouchEnd:
-        {
-            QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
-            if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
-                break;
-            }
-
-            // fake a mouse event!
-            QEvent::Type eventType = QEvent::None;
-            switch (touchEvent->type()) {
-            case QEvent::TouchBegin:
-                eventType = QEvent::MouseButtonPress;
-                if (touchIsRightButton()) {
-                    // touch is right click
-                    m_activeTouchButton = Qt::RightButton;
-                } else {
-                    m_activeTouchButton = Qt::LeftButton;
-                }
-                break;
-            case QEvent::TouchUpdate:
-                eventType = QEvent::MouseMove;
-                break;
-            case QEvent::TouchEnd:
-                eventType = QEvent::MouseButtonRelease;
-                break;
-            default:
-                Q_ASSERT(!true);
-                break;
-            }
-
-            const QTouchEvent::TouchPoint &touchPoint =
-                    touchEvent->touchPoints().first();
-            QMouseEvent mouseEvent(eventType,
-                    touchPoint.pos().toPoint(),
-                    touchPoint.screenPos().toPoint(),
-                    m_activeTouchButton, // Button that causes the event
-                    Qt::NoButton, // Not used, so no need to fake a proper value.
-                    touchEvent->modifiers());
-
-            return QWidget::event(&mouseEvent);
-        }
-        default:
-            break;
-        }
-    }
-
-    return QWidget::event(e);
 }
 
 void WPushButton::paintEvent(QPaintEvent *) {

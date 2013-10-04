@@ -74,11 +74,14 @@ public:
 
   protected:
     bool touchIsRightButton();
+    virtual bool event(QEvent* e);
 
     /** Value/state of widget */
     double m_fValue;
     /** Is true if widget is off */
     bool m_bOff;
+
+    enum Qt::MouseButton m_activeTouchButton;
 
   private:
     /** Variable containing the path to the pixmaps */

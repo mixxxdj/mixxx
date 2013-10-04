@@ -16,7 +16,7 @@
 #include "wabstractcontrol.h"
 
 WAbstractControl::WAbstractControl(QWidget *parent)
-    : WWidget(parent) {
+        : WWidget(parent) {
     m_bRightButtonPressed = false;
 }
 

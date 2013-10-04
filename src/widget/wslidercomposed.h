@@ -30,21 +30,26 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class WSliderComposed : public WAbstractControl  {
+class WSliderComposed : public WAbstractControl {
     Q_OBJECT
-public:
-    WSliderComposed(QWidget *parent=0);
+  public:
+    WSliderComposed(QWidget* parent = 0);
     ~WSliderComposed();
     void setup(QDomNode node);
     void setPixmaps(bool bHorizontal, const QString &filenameSlider, const QString &filenameHandle);
-    void mouseMoveEvent(QMouseEvent *e);
-    void mouseReleaseEvent(QMouseEvent *e);
-    void mousePressEvent(QMouseEvent *e);
-    void paintEvent(QPaintEvent *);
-    void wheelEvent(QWheelEvent *e);
     inline bool isHorizontal() const { return m_bHorizontal; };
-public slots:
+
+  public slots:
     void setValue(double);
+
+  protected:
+    virtual void mouseMoveEvent(QMouseEvent* e);
+    virtual void mouseReleaseEvent(QMouseEvent* e);
+    virtual void mousePressEvent(QMouseEvent* e);
+    virtual void paintEvent(QPaintEvent*);
+    virtual void wheelEvent(QWheelEvent* e);
+
+
 private:
     void unsetPixmaps();
 
@@ -61,9 +66,9 @@ private:
     /** True if slider is dragged. Only used when m_bEventWhileDrag is false */
     bool m_bDrag;
     /** Pointer to pixmap of the slider */
-    QPixmap *m_pSlider;
+    QPixmap* m_pSlider;
     /** Pointer to pixmap of the handle */
-    QPixmap *m_pHandle;
+    QPixmap* m_pHandle;
 };
 
 #endif
