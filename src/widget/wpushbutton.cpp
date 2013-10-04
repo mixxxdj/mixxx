@@ -18,6 +18,7 @@
 #include "wpushbutton.h"
 #include "wpixmapstore.h"
 #include "controlobject.h"
+#include "controlobjectthread.h"
 #include "controlpushbutton.h"
 #include "control/controlbehavior.h"
 //Added by qt3to4:
@@ -38,16 +39,17 @@ WPushButton::WPushButton(QWidget * parent)
           m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
     setAttribute(Qt::WA_AcceptTouchEvents);
+    m_pTouchShift = new ControlObjectThread("[Controls]", "touch_shift");
 }
 
 WPushButton::~WPushButton() {
     for (int i = 0; i < 2*m_iNoStates; i++) {
         WPixmapStore::deletePixmap(m_pPixmaps[i]);
     }
-
     delete [] m_pPixmaps;
-
     WPixmapStore::deletePixmap(m_pPixmapBack);
+
+    delete m_pTouchShift;
 }
 
 void WPushButton::setup(QDomNode node) {
@@ -123,6 +125,7 @@ void WPushButton::setStates(int iStates) {
     m_fValue = 0.;
     m_leftPressed = false;
     m_rightPressed = false;
+    m_activeTouchButton = Qt::NoButton;
 
     // If pixmap array is already allocated, delete it
     delete [] m_pPixmaps;
@@ -188,6 +191,12 @@ bool WPushButton::event(QEvent* e) {
             switch (touchEvent->type()) {
             case QEvent::TouchBegin:
                 eventType = QEvent::MouseButtonPress;
+                if (m_pTouchShift->get() != 0.0) {
+                    // touch is right click
+                    m_activeTouchButton = Qt::RightButton;
+                } else {
+                    m_activeTouchButton = Qt::LeftButton;
+                }
                 break;
             case QEvent::TouchUpdate:
                 eventType = QEvent::MouseMove;
@@ -205,7 +214,7 @@ bool WPushButton::event(QEvent* e) {
             QMouseEvent mouseEvent(eventType,
                     touchPoint.pos().toPoint(),
                     touchPoint.screenPos().toPoint(),
-                    Qt::LeftButton, // Button that causes the event
+                    m_activeTouchButton, // Button that causes the event
                     Qt::NoButton, // Not used, so no need to fake a proper value.
                     touchEvent->modifiers());
 
@@ -308,6 +317,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             }
             m_leftPressed = false;
         } else if (rightClick) {
+            // right click is latching
             m_leftPressed = false;
         }
         update();

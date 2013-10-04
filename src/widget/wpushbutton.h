@@ -28,6 +28,8 @@
 #include "widget/wwidget.h"
 #include "controlpushbutton.h"
 
+class ControlObjectThread;
+
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -65,18 +67,22 @@ class WPushButton : public WWidget
     // left button is the primary button which is reflected in the GUI
     bool m_leftPressed;
     bool m_rightPressed;
+    enum Qt::MouseButton m_activeTouchButton;
 
   private:
     bool m_bLeftClickForcePush, m_bRightClickForcePush;
     // Number of states associated with this button
     int m_iNoStates;
     // Array of associated pixmaps
-    QPixmap **m_pPixmaps;
+    QPixmap** m_pPixmaps;
     // Associated background pixmap
-    QPixmap *m_pPixmapBack;
+    QPixmap* m_pPixmapBack;
     /** short click toggle button long click push button **/
     ControlPushButton::ButtonMode m_leftButtonMode, m_rightButtonMode;
     QTimer m_clickTimer;
+
+    ControlObjectThread* m_pTouchShift;
+
 };
 
 #endif

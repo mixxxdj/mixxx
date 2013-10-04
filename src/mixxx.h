@@ -41,6 +41,7 @@ class VinylControlManager;
 
 class DlgPreferences;
 class SoundManager;
+class ControlObject;
 
 #include "configobject.h"
 #include "util/cmdlineargs.h"
@@ -231,6 +232,8 @@ class MixxxApp : public QMainWindow {
     Timer m_runtime_timer;
 
     const CmdlineArgs& m_cmdLineArgs;
+
+    ControlObject* m_pTouchShift;
 };
 
 #endif

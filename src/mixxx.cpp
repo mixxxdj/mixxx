@@ -57,6 +57,7 @@
 #include "util/statsmanager.h"
 #include "util/timer.h"
 #include "util/version.h"
+#include "controlobject.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -272,6 +273,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pConfig->set(ConfigKey("[Config]", "Path"), ConfigValue(resourcePath));
 
     initializeKeyboard();
+
+    m_pTouchShift = new ControlObject(ConfigKey("[Controls]", "touch_shift"));
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
@@ -639,6 +642,8 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete config " << qTime.elapsed();
     delete m_pConfig;
+
+    delete m_pTouchShift;
 
     // Check for leaked ControlObjects and give warnings.
     QList<ControlObject*> leakedControls;
