@@ -28,8 +28,6 @@
 #include "widget/wwidget.h"
 #include "controlpushbutton.h"
 
-class ControlObjectThread;
-
 /**
   *@author Tue & Ken Haste Andersen
   */
@@ -80,9 +78,6 @@ class WPushButton : public WWidget
     /** short click toggle button long click push button **/
     ControlPushButton::ButtonMode m_leftButtonMode, m_rightButtonMode;
     QTimer m_clickTimer;
-
-    ControlObjectThread* m_pTouchShift;
-
 };
 
 #endif

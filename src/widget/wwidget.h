@@ -22,6 +22,8 @@
 
 #include "configobject.h"
 
+class ControlObjectThread;
+
 /**
   * Abstract class used in widgets connected to ControlObjects. Derived
   * widgets can implement the signal and slot for manipulating the widgets
@@ -71,6 +73,8 @@ public:
     void valueChangedRightUp(double);
 
   protected:
+    bool touchIsRightButton();
+
     /** Value/state of widget */
     double m_fValue;
     /** Is true if widget is off */
@@ -81,6 +85,8 @@ public:
     static QString m_qPath;
     /** Property used when connecting to ControlObject */
     bool m_bEmitOnDownPress;
+
+    ControlObjectThread* m_pTouchShift;
 };
 
 #endif

@@ -21,15 +21,18 @@
 
 #include "wwidget.h"
 #include "controlobject.h"
+#include "controlobjectthread.h"
 #include "controlobjectthreadwidget.h"
 
 
 // Static member variable definition
 QString WWidget::m_qPath;
 
-WWidget::WWidget(QWidget* parent, Qt::WFlags flags) : QWidget(parent, flags) {
-    m_fValue = 0.;
-    m_bOff = false;
+WWidget::WWidget(QWidget* parent, Qt::WFlags flags)
+        : QWidget(parent, flags),
+          m_fValue(0.0),
+          m_bOff(false) {
+    m_pTouchShift = new ControlObjectThread("[Controls]", "touch_shift");
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
     connect(this, SIGNAL(valueChangedRightDown(double)), this, SLOT(slotReEmitValueDown(double)));
     connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
@@ -40,18 +43,16 @@ WWidget::WWidget(QWidget* parent, Qt::WFlags flags) : QWidget(parent, flags) {
     //setBackgroundMode(Qt::NoBackground); //this is deprecated, and commenting it out doesn't seem to change anything -kousu 2009/03
 }
 
-WWidget::~WWidget()
-{
+WWidget::~WWidget() {
+    delete m_pTouchShift;
 }
 
-void WWidget::setValue(double fValue)
-{
+void WWidget::setValue(double fValue) {
     m_fValue = fValue;
     update();
 }
 
-void WWidget::setOnOff(double d)
-{
+void WWidget::setOnOff(double d) {
     if (d==0.)
         m_bOff = false;
     else
@@ -60,18 +61,15 @@ void WWidget::setOnOff(double d)
     repaint();
 }
 
-void WWidget::slotReEmitValueDown(double fValue)
-{
+void WWidget::slotReEmitValueDown(double fValue) {
     emit(valueChangedDown(fValue));
 }
 
-void WWidget::slotReEmitValueUp(double fValue)
-{
+void WWidget::slotReEmitValueUp(double fValue) {
     emit(valueChangedUp(fValue));
 }
 
-int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode)
-{
+int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode) {
     QString text = selectNode(nodeHeader, sNode).toElement().text();
     bool ok;
     int conv = text.toInt(&ok, 0);
@@ -82,13 +80,11 @@ int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode)
     }
 }
 
-float WWidget::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode)
-{
+float WWidget::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode) {
     return selectNode(nodeHeader, sNode).toElement().text().toFloat();
 }
 
-QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNode)
-{
+QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNode) {
     QString ret;
     QDomNode node = selectNode(nodeHeader, sNode);
     if (!node.isNull())
@@ -98,8 +94,7 @@ QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNo
     return ret;
 }
 
-QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode)
-{
+QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode) {
     QDomNode node = nodeHeader.firstChild();
     while (!node.isNull())
     {
@@ -110,14 +105,12 @@ QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode)
     return node;
 }
 
-const QString WWidget::getPath(QString location)
-{
+const QString WWidget::getPath(QString location) {
     QString l(location);
     return l.prepend(m_qPath);
 }
 
-void WWidget::setPixmapPath(QString qPath)
-{
+void WWidget::setPixmapPath(QString qPath) {
     m_qPath = qPath;
 }
 
@@ -125,9 +118,12 @@ double WWidget::getValue() {
    return m_fValue;
 }
 
-void WWidget::updateValue(double fValue)
-{
+void WWidget::updateValue(double fValue) {
     setValue(fValue);
     emit(valueChangedUp(fValue));
     emit(valueChangedDown(fValue));
+}
+
+bool WWidget::touchIsRightButton() {
+    return (m_pTouchShift->get() != 0.0);
 }

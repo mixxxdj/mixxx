@@ -39,7 +39,6 @@ WPushButton::WPushButton(QWidget * parent)
           m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
     setAttribute(Qt::WA_AcceptTouchEvents);
-    m_pTouchShift = new ControlObjectThread("[Controls]", "touch_shift");
 }
 
 WPushButton::~WPushButton() {
@@ -48,8 +47,6 @@ WPushButton::~WPushButton() {
     }
     delete [] m_pPixmaps;
     WPixmapStore::deletePixmap(m_pPixmapBack);
-
-    delete m_pTouchShift;
 }
 
 void WPushButton::setup(QDomNode node) {
@@ -191,7 +188,7 @@ bool WPushButton::event(QEvent* e) {
             switch (touchEvent->type()) {
             case QEvent::TouchBegin:
                 eventType = QEvent::MouseButtonPress;
-                if (m_pTouchShift->get() != 0.0) {
+                if (touchIsRightButton()) {
                     // touch is right click
                     m_activeTouchButton = Qt::RightButton;
                 } else {
