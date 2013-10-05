@@ -56,7 +56,6 @@
  * - TODO: Implement soft-takeover for "rate"
  * - TODO: Crates/Files/Browse buttons are connected but currently unused
  * - TODO: Line fader curve knob is connected but currently unused
- * - TODO: Use Shift + Pitch Shift to change pitch range (rateRange)?
  *
  * Technical details
  * -----------------
@@ -124,6 +123,13 @@
  * 2013-10-05 Bugfix
  *            - Fix non-working backspin (regression introduced with
  *              version 2013-05-30)
+ * 2013-10-05.1 Bugfix
+ *            - Fix behavior of stutter play using the latest position
+ *              where playing started. The previous implementation was
+ *              completely different from that found in Serato DJ.
+ *            - Some minor changes to reflect the values that would
+ *              need to be reset on track load. Unfortunately there's
+ *              no appropriate callback in Mixx to invoke this function.
  * ...to be continued...
  *****************************************************************************/
 
@@ -464,10 +470,6 @@ VestaxVCI300.Deck.prototype.updateBeatSyncState = function () {
 };
 
 VestaxVCI300.Deck.prototype.initValues = function () {
-	this.shiftState = false;
-	this.scratchState = false;
-	this.jogTouchState = false;
-	this.autoLoopBeatsIndex = VestaxVCI300.defaultAutoLoopBeatsIndex;
 	this.greenVUMeterOffset = VestaxVCI300.vuMeterOffThreshold;
 	this.greenVUMeterScale = (VestaxVCI300.vuMeterYellowThreshold - this.greenVUMeterOffset) / this.greenVUMeterLEDs.length;
 	this.redVUMeterOffset = VestaxVCI300.vuMeterYellowThreshold;
@@ -482,6 +484,21 @@ VestaxVCI300.Deck.prototype.initValues = function () {
 	engine.setValue(this.group, "rate", 0.0);
 	engine.softTakeover(this.group, "rate", true); // TODO: does not seem to work
 	engine.setValue(this.group, "keylock", true);
+	this.resetTrackValues();
+};
+
+VestaxVCI300.Deck.prototype.resetTrackValues = function () {
+	// the following values should be reset whenever
+	// a new track is loaded onto the deck
+	this.shiftState = false;
+	this.scratchState = false;
+	this.jogTouchState = false;
+	this.stutterPlayPosition = undefined;
+	this.jogHighValue = undefined;
+	this.jogValue = undefined;
+	this.jogDelta = undefined;
+	this.resetScratchingTimer();
+	this.autoLoopBeatsIndex = VestaxVCI300.defaultAutoLoopBeatsIndex;
 };
 
 VestaxVCI300.Deck.prototype.restoreValues = function () {
@@ -797,23 +814,20 @@ VestaxVCI300.onCueButton = function (channel, control, value, status, group) {
 VestaxVCI300.onPlayButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	if (VestaxVCI300.getButtonPressed(value)) {
+		if (!engine.getValue(group, "play")) {
+			// (re-)set stutter play position
+			deck.stutterPlayPosition = engine.getValue(group, "playposition");
+		}
 		if (deck.shiftState) {
-			// enable stutter play
-			deck.stutterPlayPosition = engine.getValue(group, "playposition")
-			engine.setValue(group, "play", true);
+			// stutter play
+			if (engine.getValue(group, "play")) {
+				// jump back to stutter play position and continue playing
+				engine.setValue(group, "playposition", deck.stutterPlayPosition);
+			}
 		} else {
 			// toggle play
-			deck.stutterPlayPosition = undefined;
 			VestaxVCI300.onToggleButton(group, "play", value);
 		}
-	} else {
-		if (deck.shiftState && (undefined != deck.stutterPlayPosition)) {
-			// reset stutter play
-			engine.setValue(group, "play", false);
-			engine.setValue(group, "playposition", deck.stutterPlayPosition);
-		}
-		// disable stutter play
-		deck.stutterPlayPosition = undefined;
 	}
 	engine.trigger(group, "play");
 };
