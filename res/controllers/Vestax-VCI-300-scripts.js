@@ -117,6 +117,10 @@
  *            - Different jog sensitivity parameters for cueing and nudging
  *              (tempo)
  *            - Increased jog sensitivity for both cueing and nudging
+ * 2013-10-04 Borrow some ideas from Serato DJ (with slight variations)
+ *            - Stutter play (Shift + Play)
+ *            - Pitch bend (Pitch Shift)
+ *            - Pitch fine-tune (Shift + Pitch Shift)
  * ...to be continued...
  *****************************************************************************/
 
@@ -440,7 +444,7 @@ VestaxVCI300.Deck.prototype.updateOutLoopState = function (index) {
 };
 
 VestaxVCI300.Deck.prototype.updateRateRange = function () {
-	this.rateRangePercent100 = Math.round(10000.0 * engine.getValue(this.group, "rateRange")); // example: +/-6% = 0.06
+	this.rateRangePercent100 = Math.round(10000.0 * engine.getValue(this.group, "rateRange"));
 	// Workaround: Explicitly (re-)set "rate" after changing "rateRange"!
 	// Otherwise the first button press on one of the pitch shift buttons
 	// is ignored.
@@ -791,14 +795,24 @@ VestaxVCI300.onCueButton = function (channel, control, value, status, group) {
 
 VestaxVCI300.onPlayButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	if (deck.shiftState) {
-		if (VestaxVCI300.getButtonPressed(value)) {
-			// toggle repeat
-			VestaxVCI300.toggleBinaryValue(group, "repeat");
-			deck.playLED.trigger(true);
+	if (VestaxVCI300.getButtonPressed(value)) {
+		if (deck.shiftState) {
+			// enable stutter play
+			deck.stutterPlayPosition = engine.getValue(group, "playposition")
+			engine.setValue(group, "play", true);
+		} else {
+			// toggle play
+			deck.stutterPlayPosition = null;
+			VestaxVCI300.onToggleButton(group, "play", value);
 		}
 	} else {
-		VestaxVCI300.onToggleButton(group, "play", value);
+		if (deck.shiftState && (null != deck.stutterPlayPosition)) {
+			// reset stutter play
+			engine.setValue(group, "play", false);
+			engine.setValue(group, "playposition", deck.stutterPlayPosition);
+		}
+		// disable stutter play
+		deck.stutterPlayPosition = null;
 	}
 	engine.trigger(group, "play");
 };
@@ -978,24 +992,34 @@ VestaxVCI300.adjustRate = function(deck, rateDeltaPercent100) {
 
 VestaxVCI300.onPitchShiftDownButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	if (deck.shiftState) {
-		// TODO
-	} else {
-		if (VestaxVCI300.getButtonPressed(value)) {
+	if (VestaxVCI300.getButtonPressed(value)) {
+		if (deck.shiftState) {
+			// pitch fine-tune
 			VestaxVCI300.adjustRate(deck, -VestaxVCI300.pitchFineTuneStepPercent100);
+		} else {
+			// enable pitch bend
+			engine.setValue(deck.group, "rate_temp_down", true);
 		}
+	} else {
+		// disable pitch bend
+		engine.setValue(deck.group, "rate_temp_down", false);
 	}
 	deck.pitchShiftDownLED.trigger(VestaxVCI300.getButtonPressed(value));
 };
 
 VestaxVCI300.onPitchShiftUpButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	if (deck.shiftState) {
-		// TODO
-	} else {
-		if (VestaxVCI300.getButtonPressed(value)) {
+	if (VestaxVCI300.getButtonPressed(value)) {
+		if (deck.shiftState) {
+			// pitch fine-tune
 			VestaxVCI300.adjustRate(deck, VestaxVCI300.pitchFineTuneStepPercent100);
+		} else {
+			// enable pitch bend
+			engine.setValue(deck.group, "rate_temp_up", true);
 		}
+	} else {
+		// disable pitch bend
+		engine.setValue(deck.group, "rate_temp_up", false);
 	}
 	deck.pitchShiftUpLED.trigger(VestaxVCI300.getButtonPressed(value));
 };
