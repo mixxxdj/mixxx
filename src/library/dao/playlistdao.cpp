@@ -671,10 +671,11 @@ void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList)
         return;
     }
 
-    QList<int> playlistIds;
+    // Collect all ids of the playlists that contains the tracks to remove
+    QList<int> removedTracksPlaylistIds;
     const int playlistIDColoumn = query.record().indexOf("playlist_id");
     while (query.next()) {
-        playlistIds.append(query.value(playlistIDColoumn).toInt());
+        removedTracksPlaylistIds.append(query.value(playlistIDColoumn).toInt());
     }
 
     query.prepare(QString("DELETE FROM PlaylistTracks WHERE track_id in (%1)")
@@ -684,7 +685,7 @@ void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList)
         return;
     }
 
-    foreach (int playlistId, playlistIds) {
+    foreach (int playlistId, removedTracksPlaylistIds) {
         emit(changed(playlistId));
     }
 }

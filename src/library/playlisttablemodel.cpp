@@ -165,10 +165,11 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
     const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int excludePos = -1;
     if (exclude.row() > -1) {
+        // this is uses to exclude the already loaded track at pos #1 if used from running Auto-DJ
         excludePos = exclude.sibling(exclude.row(), positionColumn).data().toInt();
     }
     if (shuffle.count() > 1) {
-        // Only shuffle if there are at least two selected rows
+        // if there is more then one track selected, shuffle selection only
         foreach(QModelIndex shuffleIndex, shuffle) {
             int oldPosition = shuffleIndex.sibling(shuffleIndex.row(), positionColumn).data().toInt();
             if (oldPosition != excludePos) {
@@ -176,7 +177,7 @@ void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QMo
             }
         }
     } else {
-        // Shuffle all tracks
+        // if there is only on track selected, shuffle all tracks
         int numOfTracks = rowCount();
         for (int i = 0; i < numOfTracks; i++) {
             int oldPosition = index(i, positionColumn).data().toInt();

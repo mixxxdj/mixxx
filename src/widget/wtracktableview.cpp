@@ -892,7 +892,7 @@ void WTrackTableView::dropEvent(QDropEvent * event){
         return;
     }
 
-    if (!event->mimeData()->hasUrls() || trackModel->isLocked() ) {
+    if (!event->mimeData()->hasUrls() || trackModel->isLocked()) {
         event->ignore();
         return;
     }
@@ -903,11 +903,11 @@ void WTrackTableView::dropEvent(QDropEvent * event){
     // Filter out invalid URLs (eg. files that aren't supported audio filetypes, etc.)
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(),
                     Qt::CaseInsensitive);
-    for (int i=0; i<urls.size(); i++) {
+    for (int i = 0; i < urls.size(); ++i) {
         if (fileRx.indexIn(urls.at(i).path()) == -1) {
             // remove invalid urls and decrease i because the size of
             // urls has changed.
-            urls.removeAt(i--);
+            urls.removeAt(--i);
         }
     }
 
@@ -930,8 +930,7 @@ void WTrackTableView::dropEvent(QDropEvent * event){
     //qDebug() << "destIndex.row() is" << destIndex.row();
 
     // Drag and drop within this widget (track reordering)
-    if (event->source() == this)
-    {
+    if (event->source() == this) {
         // For an invalid destination (eg. dropping a track beyond
         // the end of the playlist), place the track(s) at the end
         // of the playlist.
@@ -954,8 +953,7 @@ void WTrackTableView::dropEvent(QDropEvent * event){
 
         QList<int> selectedRows;
         QModelIndex idx;
-        foreach (idx, indices)
-        {
+        foreach (idx, indices) {
             selectedRows.append(idx.row());
         }
 
@@ -984,8 +982,8 @@ void WTrackTableView::dropEvent(QDropEvent * event){
             int selectedRowCount = selectedRows.count();
             int firstRowToSelect = destIndex.row();
 
-            //If you drag a contiguous selection of multiple tracks and drop
-            //them somewhere inside that same selection, do nothing.
+            // If you drag a contiguous selection of multiple tracks and drop
+            // them somewhere inside that same selection, do nothing.
             if (destIndex.row() >= minRow && destIndex.row() <= maxRow) {
                 return;
             }
@@ -997,20 +995,20 @@ void WTrackTableView::dropEvent(QDropEvent * event){
             }
 
             if (destIndex.row() > maxRow) {
-                // // If we're moving the tracks _down_,
-                // Shuffle the row we're going to start making a new selection at:
+                // If we're moving the tracks _down_,
+                // Move the row we're going to start making a new selection at:
                 firstRowToSelect = firstRowToSelect - selectedRowCount;
             }
 
-            //For each row that needs to be moved...
+            // For each row that needs to be moved...
             while (!selectedRows.isEmpty()) {
                 int movedRow = selectedRows.takeFirst(); //Remember it's row index
-                //Move it
+                // Move it
                 trackModel->moveTrack(model()->index(movedRow, 0), destIndex);
 
-                //Shuffle the row indices for rows that got bumped up
-                //into the void we left, or down because of the new spot
-                //we're taking.
+                // Move the row indices for rows that got bumped up
+                // into the void we left, or down because of the new spot
+                // we're taking.
                 for (int i = 0; i < selectedRows.count(); i++) {
                     if ((selectedRows[i] > movedRow) &&
                         (destIndex.row() > selectedRows[i])) {
@@ -1022,20 +1020,20 @@ void WTrackTableView::dropEvent(QDropEvent * event){
                 }
             }
 
-            //Highlight the moved rows again (restoring the selection)
+            // Highlight the moved rows again (restoring the selection)
             //QModelIndex newSelectedIndex = destIndex;
             for (int i = 0; i < selectedRowCount; i++) {
                 this->selectionModel()->select(model()->index(firstRowToSelect + i, 0),
                                                 QItemSelectionModel::Select | QItemSelectionModel::Rows);
             }
         }
-    } else {//Drag and drop inside Mixxx is only for few rows, bulks happen here
-        //Reset the selected tracks (if you had any tracks highlighted, it
-        //clears them)
+    } else { // Drag and drop inside Mixxx is only for few rows, bulks happen here
+        // Reset the selected tracks (if you had any tracks highlighted, it
+        // clears them)
         this->selectionModel()->clear();
 
-        //Drag-and-drop from an external application
-        //eg. dragging a track from Windows Explorer onto the track table.
+        // Drag-and-drop from an external application
+        // eg. dragging a track from Windows Explorer onto the track table.
         int numNewRows = urls.count();
 
         // Have to do this here because the index is invalid after
