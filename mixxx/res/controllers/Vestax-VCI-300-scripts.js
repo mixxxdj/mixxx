@@ -121,6 +121,9 @@
  *            - Stutter play (Shift + Play)
  *            - Pitch bend (Pitch Shift)
  *            - Pitch fine-tune (Shift + Pitch Shift)
+ * 2013-10-05 Bugfix
+ *            - Fix non-working backspin (regression introduced with
+ *              version 2013-05-30)
  * ...to be continued...
  *****************************************************************************/
 
@@ -373,31 +376,29 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 				jogScrollDeltaRound);
 			VestaxVCI300.jogScrollBias = jogScrollDelta - jogScrollDeltaRound;
 		} else {
-			if (this.jogTouchState && engine.isScratching(this.number)) {
+			if (engine.isScratching(this.number)) {
 				// scratching
 				engine.scratchTick(this.number, this.jogDelta);
 			} else {
-				if (this.jogTouchState || engine.isScratching(this.number)) {
+				if (this.jogTouchState || this.scratchState) {
 					// jog movement
-					if (this.jogTouchState) {
-						var jogSensitivityScale
-						var jogSensitivityPow
-						if (engine.getValue(this.group,"play")) {
-							jogSensitivityScale = VestaxVCI300.jogTempoSensitivityScale
-							jogSensitivityPow = VestaxVCI300.jogTempoSensitivityPow
-						} else {
-							jogSensitivityScale = VestaxVCI300.jogCueSensitivityScale
-							jogSensitivityPow = VestaxVCI300.jogCueSensitivityPow
-						}
-						var jogDeltaSign;
-						if (0 > this.jogDelta) {
-							jogDeltaSign = -1;
-						} else {
-							jogDeltaSign = 1;
-						}
-						var normalizedAbsJogDelta =  Math.pow(Math.abs(this.jogDelta) * jogSensitivityScale, jogSensitivityPow);
-						engine.setValue(this.group, "jog", jogDeltaSign * normalizedAbsJogDelta * VestaxVCI300.jogOutputRange);
+					var jogSensitivityScale
+					var jogSensitivityPow
+					if (engine.getValue(this.group,"play")) {
+						jogSensitivityScale = VestaxVCI300.jogTempoSensitivityScale
+						jogSensitivityPow = VestaxVCI300.jogTempoSensitivityPow
+					} else {
+						jogSensitivityScale = VestaxVCI300.jogCueSensitivityScale
+						jogSensitivityPow = VestaxVCI300.jogCueSensitivityPow
 					}
+					var jogDeltaSign;
+					if (0 > this.jogDelta) {
+						jogDeltaSign = -1;
+					} else {
+						jogDeltaSign = 1;
+					}
+					var normalizedAbsJogDelta =  Math.pow(Math.abs(this.jogDelta) * jogSensitivityScale, jogSensitivityPow);
+					engine.setValue(this.group, "jog", jogDeltaSign * normalizedAbsJogDelta * VestaxVCI300.jogOutputRange);
 				}
 			}
 		}
@@ -802,17 +803,17 @@ VestaxVCI300.onPlayButton = function (channel, control, value, status, group) {
 			engine.setValue(group, "play", true);
 		} else {
 			// toggle play
-			deck.stutterPlayPosition = null;
+			deck.stutterPlayPosition = undefined;
 			VestaxVCI300.onToggleButton(group, "play", value);
 		}
 	} else {
-		if (deck.shiftState && (null != deck.stutterPlayPosition)) {
+		if (deck.shiftState && (undefined != deck.stutterPlayPosition)) {
 			// reset stutter play
 			engine.setValue(group, "play", false);
 			engine.setValue(group, "playposition", deck.stutterPlayPosition);
 		}
 		// disable stutter play
-		deck.stutterPlayPosition = null;
+		deck.stutterPlayPosition = undefined;
 	}
 	engine.trigger(group, "play");
 };
