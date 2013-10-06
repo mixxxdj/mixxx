@@ -145,7 +145,8 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
     bool first = true;
     int columns = pPlaylistTableModel->columnCount();
     for (int i = 0; i < columns; ++i) {
-        if (pPlaylistTableModel->isColumnInternal(i)) {
+        if (pPlaylistTableModel->isColumnInternal(i) ||
+                (pPlaylistTableModel->fieldIndex("preview") == i)) {
             continue;
         }
         if (!first){
@@ -166,7 +167,8 @@ bool ParserCsv::writeCSVFile(const QString &file_str, BaseSqlTableModel* pPlayli
         // writing fields section
         first = true;
         for(int i = 0; i < columns; ++i){
-            if (pPlaylistTableModel->isColumnInternal(i)) {
+            if (pPlaylistTableModel->isColumnInternal(i) ||
+                    (pPlaylistTableModel->fieldIndex("preview") == i)) {
                 continue;
             }
             if (!first){
