@@ -41,7 +41,7 @@ class VinylControlManager;
 
 class DlgPreferences;
 class SoundManager;
-class ControlObject;
+class ControlPushButton;
 
 #include "configobject.h"
 #include "util/cmdlineargs.h"
@@ -233,7 +233,7 @@ class MixxxApp : public QMainWindow {
 
     const CmdlineArgs& m_cmdLineArgs;
 
-    ControlObject* m_pTouchShift;
+    ControlPushButton* m_pTouchShift;
 };
 
 #endif

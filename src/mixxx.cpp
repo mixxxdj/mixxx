@@ -57,7 +57,7 @@
 #include "util/statsmanager.h"
 #include "util/timer.h"
 #include "util/version.h"
-#include "controlobject.h"
+#include "controlpushbutton.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -274,7 +274,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     initializeKeyboard();
 
-    m_pTouchShift = new ControlObject(ConfigKey("[Controls]", "touch_shift"));
+    m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
