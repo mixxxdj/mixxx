@@ -639,12 +639,6 @@ int PlaylistDAO::getMaxPosition(const int playlistId) const {
     return position;
 }
 
-void PlaylistDAO::removeTrackFromPlaylists(const int trackId) {
-    QStringList idList;
-    idList << QString::number(trackId);
-    removeTracksFromPlaylistsInner(idList);
-}
-
 void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
     QStringList trackIdList;
     foreach (int id, trackIds) {
