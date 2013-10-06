@@ -872,15 +872,18 @@ void CueControl::updateIndicators() {
         }
     } else if (m_pCueMode->get() == CUE_MODE_DENON) {
         // Cue button is only lit at cue point
+        bool playing = m_pPlayButton->get() > 0;
         if (isTrackAtCue()) {
             // at cue point
-            bool playing = m_pPlayButton->get() > 0;
             if (!playing) {
                 m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
             }
         } else {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+            if (!playing) {
+                m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+            }
         }
     } else {
         bool playing = m_pPlayButton->get() > 0;
