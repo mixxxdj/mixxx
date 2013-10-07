@@ -136,6 +136,9 @@
  *              of hotcues into account.
  *            - Update documentation
  *            - Internal refactoring and minor fixes
+ * 2013-10-07 Improve stutter play implementation
+ *            - Adjust the stutter play position when setting a new cue
+ *              point on the fly by pressing Shift + Cue while playing.
  * ...to be continued...
  *****************************************************************************/
 
@@ -765,6 +768,7 @@ VestaxVCI300.onCueInButton = function (group, index, value) {
 	} else {
 		engine.setValue(group, hotcuePrefix + "_activate", VestaxVCI300.getButtonPressed(value));
 		if (VestaxVCI300.getButtonPressed(value)) {
+			// adjust stutter play position
 			var hotcueSamples =  engine.getValue(group, hotcuePrefix + "_position");
 			if (0 <= hotcueSamples) {
 				deck.stutterPlayPosition = hotcueSamples / engine.getValue(group, "track_samples");
@@ -813,16 +817,22 @@ VestaxVCI300.onCueButton = function (channel, control, value, status, group) {
 	if (deck.shiftState) {
 		if (VestaxVCI300.getButtonPressed(value)) {
 			if (engine.getValue(group, "play")) {
-				// set
+				// set cue point
 				engine.setValue(group, "cue_set", true);
+				// adjust stutter play position
+				var cuePointSamples = engine.getValue(group, "cue_point");
+				if (0 <= cuePointSamples) {
+					deck.stutterPlayPosition = cuePointSamples / engine.getValue(group, "track_samples");
+				}
 			} else {
-				// clear
+				// clear cue point
 				engine.setValue(group, "cue_point", 0.0);
 			}
 		}
 	} else {
 		engine.setValue(group, "cue_default", VestaxVCI300.getButtonPressed(value));
 		if (VestaxVCI300.getButtonPressed(value)) {
+			// adjust stutter play position
 			var cuePointSamples = engine.getValue(group, "cue_point");
 			if (0 <= cuePointSamples) {
 				deck.stutterPlayPosition = cuePointSamples / engine.getValue(group, "track_samples");
@@ -836,12 +846,14 @@ VestaxVCI300.onPlayButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
 	if (VestaxVCI300.getButtonPressed(value)) {
 		if (!engine.getValue(group, "play")) {
-			// (re-)set stutter play position
+			// adjust stutter play position
+			// Remark: It's safe to read the value of "playposition"
+			// here, because the deck is currently stopped/paused!
 			deck.stutterPlayPosition = engine.getValue(group, "playposition");
 		}
-		if (deck.shiftState) {
+		if (deck.shiftState && engine.getValue(group, "play")) {
 			// stutter play
-			if (engine.getValue(group, "play")) {
+			if (undefined != deck.stutterPlayPosition) {
 				// jump back to stutter play position and continue playing
 				engine.setValue(group, "playposition", deck.stutterPlayPosition);
 			}
