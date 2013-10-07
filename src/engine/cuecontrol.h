@@ -118,6 +118,8 @@ class CueControl : public EngineControl {
     void cueCDJ(double v);
     void cueDenon(double v);
     void cueDefault(double v);
+    void pause(double v);
+    void playStutter(double v);
 
   private:
     // These methods are not thread safe, only call them when the lock is held.
@@ -145,6 +147,8 @@ class CueControl : public EngineControl {
     ControlPushButton* m_pCueSimple;
     ControlPushButton* m_pCueCDJ;
     ControlPushButton* m_pCueDefault;
+    ControlPushButton* m_pPause;
+    ControlPushButton* m_pPlayStutter;
     ControlIndicator* m_pCueIndicator;
     ControlIndicator* m_pPlayIndicator;
     ControlPushButton* m_pCueGoto;

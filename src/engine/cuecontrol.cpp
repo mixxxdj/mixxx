@@ -87,6 +87,17 @@ CueControl::CueControl(const char * _group,
             this, SLOT(cueDefault(double)),
             Qt::DirectConnection);
 
+    m_pPause = new ControlPushButton(ConfigKey(_group, "pause"));
+    // m_playButton->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pPause, SIGNAL(valueChanged(double)),
+            this, SLOT(pause(double)),
+            Qt::DirectConnection);
+
+    m_pPlayStutter = new ControlPushButton(ConfigKey(_group, "play_stutter"));
+    connect(m_pPlayStutter, SIGNAL(valueChanged(double)),
+            this, SLOT(playStutter(double)),
+            Qt::DirectConnection);
+
     m_pCueIndicator = new ControlIndicator(ConfigKey(_group, "cue_indicator"));
     m_pPlayIndicator = new ControlIndicator(ConfigKey(_group, "play_indicator"));
 }
@@ -102,6 +113,8 @@ CueControl::~CueControl() {
     delete m_pCuePreview;
     delete m_pCueCDJ;
     delete m_pCueDefault;
+    delete m_pPause;
+    delete m_pPlayStutter;
     delete m_pCueIndicator;
     delete m_pPlayIndicator;
     while (m_hotcueControl.size() > 0) {
@@ -788,10 +801,33 @@ void CueControl::cueDefault(double v) {
     }
 }
 
+void CueControl::pause(double v) {
+    QMutexLocker lock(&m_mutex);
+    qDebug() << "CueControl::pause()" << v;
+    if (v != 0.0) {
+        m_pPlayButton->set(0.0);
+    }
+}
+
+void CueControl::playStutter(double v) {
+    QMutexLocker lock(&m_mutex);
+    qDebug() << "playStutter" << v;
+    if (v != 0.0) {
+        if (m_pPlayButton->get() != 0.0) {
+            cueGoto(1.0);
+        } else {
+            m_pPlayButton->set(1.0);
+        }
+    }
+}
+
 double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible) {
     QMutexLocker lock(&m_mutex);
 
-    if (m_pCueMode->get() == CUE_MODE_DENON && play > 0.0 && playPossible) {
+    if (m_pCueMode->get() == CUE_MODE_DENON &&
+            play > 0.0 &&
+            playPossible &&
+            m_pPlayButton->get() == 0.0) {
         // in DENON mode each play from pause moves the cue point
         // if not previewing
         cueSet(1.0);
@@ -815,11 +851,14 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
         // play not possible
         play = 0.0;
         m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+        m_pPause->set(0.0);
     } else if (play && !previewing) {
         // Play: Indicates a latched Play
         m_pPlayIndicator->setBlinkValue(ControlIndicator::ON);
+        m_pPause->set(0.0);
     } else {
         // Pause:
+        m_pPause->set(1.0);
         if (m_pCueMode->get() == CUE_MODE_DENON) {
             if (isTrackAtCue()) {
                 m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
@@ -852,6 +891,7 @@ double CueControl::updateIndicatorsAndModifyPlay(double play, bool playPossible)
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
         }
     }
+    m_pPlayStutter->set(play);
 
     return play;
 }
