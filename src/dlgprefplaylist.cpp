@@ -21,16 +21,13 @@
 
 #include "dlgprefplaylist.h"
 #include "soundsourceproxy.h"
-#ifdef __PROMO__
-#include "library/promotracksfeature.h"
-#endif
 //#include "plugindownloader.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 
 DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config)
-            : QWidget(parent), 
+            : QWidget(parent),
               m_pconfig(config) {
     setupUi(this);
     slotUpdate();
@@ -55,14 +52,6 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
     //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
     connect(pushButtonExtraPlugins, SIGNAL(clicked()),
             this, SLOT(slotExtraPlugins()));
-
-    bool enablePromoGroupbox = false;
-#ifdef __PROMO__
-    enablePromoGroupbox = PromoTracksFeature::isSupported(config);
-#endif
-    if (!enablePromoGroupbox) {
-        groupBoxBundledSongs->hide();
-    }
 
     // plugins are loaded in src/main.cpp way early in boot so this is safe
     // here, doesn't need done at every slotUpdate
@@ -146,8 +135,6 @@ void DlgPrefPlaylist::slotUpdate() {
     LineEditSongfiles->setText(m_pconfig->getValueString(
                                ConfigKey("[Playlist]","Directory")));
     //Bundled songs stat tracking
-    checkBoxPromoStats->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Promo]","StatTracking")).toInt());
     checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(
@@ -172,8 +159,6 @@ void DlgPrefPlaylist::slotBrowseDir() {
 }
 
 void DlgPrefPlaylist::slotApply() {
-    m_pconfig->set(ConfigKey("[Promo]","StatTracking"),
-                ConfigValue((int)checkBoxPromoStats->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),

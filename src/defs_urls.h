@@ -23,6 +23,5 @@
 #define MIXXX_TRANSLATION_URL   "https://translations.launchpad.net/mixxx"
 #define MIXXX_MANUAL_URL        "http://mixxx.org/manual/1.11"
 #define MIXXX_MANUAL_FILENAME   "Mixxx-Manual.pdf"
-#define MIXXX_PROMO_URL         "http://promo.mixxx.org/"
 
 #endif

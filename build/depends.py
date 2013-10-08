@@ -178,9 +178,6 @@ class Qt(Dependence):
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
 
-        # Promo tracks is the only thing that uses webkit currently.
-        use_qtwebkit = int(util.get_flags(build.env, 'promo', 0)) > 0
-
         # TODO(XXX) what is with the slightly differing modules used for each
         # platform here? Document the differences and make them all
         # programmatically driven from one list instead of hard-coded multiple
