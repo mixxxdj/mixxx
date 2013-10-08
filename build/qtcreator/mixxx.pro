@@ -155,7 +155,6 @@ $$BASE_DIR/src/controlttrotary.h \
 $$BASE_DIR/src/controlvaluedelegate.h \
 $$BASE_DIR/src/defs_audiofiles.h \
 $$BASE_DIR/src/defs.h \
-$$BASE_DIR/src/defs_promo.h \
 $$BASE_DIR/src/defs_urls.h \
 $$BASE_DIR/src/defs_version.h \
 $$BASE_DIR/src/dlgabout.h \
