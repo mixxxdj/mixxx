@@ -5,9 +5,11 @@
 #include <QString>
 #include <QStringBuilder>
 #include <QDir>
+#include <QFileInfo>
 
 #include "configobject.h"
 #include "library/dao/directorydao.h"
+#include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
 
 namespace {
@@ -26,7 +28,8 @@ class DirectoryDAOTest : public testing::Test {
     virtual void TearDown() {
         // make sure we clean up the db
         QSqlQuery query(m_pTrackCollection->getDatabase());
-        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
+        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE % "," % LIBRARY_TABLE
+                      % ", track_locations");
         query.exec();
 
         delete m_pTrackCollection;
@@ -112,6 +115,27 @@ TEST_F(DirectoryDAOTest, getDirTest) {
     if (dirs.size() == 2) {
         EXPECT_TRUE(dirs.at(0) == testdir);
         EXPECT_TRUE(dirs.at(1) == testdir2);
+    }
+}
+
+TEST_F(DirectoryDAOTest, relocateDirTest) {
+    DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
+
+    directoryDao.addDirectory("/Test");
+    TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
+    // ok now lets create some tracks here
+    trackDAO.addTracksPrepare();
+    trackDAO.addTracksAdd(new TrackInfoObject("/Test/a", false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject("/Test/b", false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject("/Test2/c", false), false);
+    trackDAO.addTracksAdd(new TrackInfoObject("/Test2/d", false), false);
+    trackDAO.addTracksFinish(false);
+
+    directoryDao.relocateDirectory("/Test", "/new");
+
+    QStringList dirs = directoryDao.getDirs();
+    for (int i = 0; i<dirs.size(); ++i) {
+        qDebug() << dirs.at(i);
     }
 }
 
