@@ -199,8 +199,12 @@ void DlgAutoDJ::shufflePlaylist(double value) {
     if (value <= 0.0) {
         return;
     }
-    int row = m_eState == ADJ_DISABLED ? 0 : 1;
-    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
+    QModelIndexList IndexList = m_pTrackTableView->selectionModel()->selectedRows();
+    QModelIndex exclude;
+    if (m_eState != ADJ_DISABLED) {
+        exclude = m_pAutoDJTableModel->index(0, 0);
+    }
+    m_pAutoDJTableModel->shuffleTracks(IndexList, exclude);
 }
 
 void DlgAutoDJ::skipNextButton(bool) {

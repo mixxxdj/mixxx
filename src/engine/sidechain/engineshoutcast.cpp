@@ -368,6 +368,11 @@ bool EngineShoutcast::serverConnect() {
     // set to a high number to automatically update the metadata
     // on the first change
     m_iMetaDataLife = 31337;
+    // clear metadata, to make sure the first track is not skipped
+    // because it was sent via an previous connection (see metaDataHasChanged)
+    if(m_pMetaData) {
+        m_pMetaData.clear();
+    }
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
@@ -495,7 +500,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (isConnected()) {
             // We are conneced but shoutcast is disabled. Disconnect.
             serverDisconnect();
-            infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully disconnected from the shoutcast server"), "");
         }
         return;
     }
