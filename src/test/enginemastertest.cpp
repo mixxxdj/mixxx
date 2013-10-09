@@ -32,7 +32,7 @@ class EngineMasterTest : public testing::Test {
   protected:
     virtual void SetUp() {
         m_pConfig = new ConfigObject<ConfigValue>("");
-        m_pMaster = new EngineMaster(m_pConfig, "[Master]", false);
+        m_pMaster = new EngineMaster(m_pConfig, "[Master]", false, false);
     }
 
     virtual void TearDown() {

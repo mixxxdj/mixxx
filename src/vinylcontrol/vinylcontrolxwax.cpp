@@ -27,6 +27,7 @@
 #include "util/timer.h"
 #include "controlobjectthread.h"
 #include "controlobject.h"
+#include "sampleutil.h"
 
 /****** TODO *******
    Stuff to maybe implement here
@@ -100,10 +101,24 @@ VinylControlXwax::VinylControlXwax(ConfigObject<ConfigValue> * pConfig, QString 
     }
 
     double speed = 1.0f;
-    if (strVinylSpeed == MIXXX_VINYL_SPEED_45)
+    double rpm = 100.0 / 3.0;
+    if (strVinylSpeed == MIXXX_VINYL_SPEED_45) {
+        rpm = 45.0;
         speed = 1.35f;
+    }
 
-    //qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
+    double latency = ControlObject::getControl(
+            ConfigKey("[Master]", "latency"))->get();
+    if (latency == 0) {
+        qDebug() << "Failed to get master latency, assuming 20 as a reasonable value";
+        latency = 20;
+    }
+    // Set pitch ring size to 1/4 of one revolution -- a full revolution adds too much stickiness
+    // to the pitch.
+    iPitchRingSize = static_cast<int>(60000 / (rpm * latency * 4));
+    m_pPitchRing = new double[iPitchRingSize];
+
+    qDebug() << "Xwax Vinyl control starting with a sample rate of:" << iSampleRate;
     qDebug() << "Building timecode lookup tables for" << strVinylType << "with speed" << strVinylSpeed;
 
 
@@ -139,6 +154,7 @@ VinylControlXwax::~VinylControlXwax()
 {
     delete m_pSteadySubtle;
     delete m_pSteadyGross;
+    delete [] m_pPitchRing;
 
     //Cleanup xwax nicely
     timecoder_monitor_clear(&timecoder);
@@ -516,10 +532,11 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
                 togglePlayButton(checkSteadyPitch(dVinylPitch, filePosition) > 0.5);
             }
 
-            //Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
-            //(This is caused by the manufacturing process of the vinyl.)
-            if (fabs(dDriftAmt) > 0.1 && fabs(dDriftAmt) < 5.0) {
-                dDriftControl = dDriftAmt;
+            // Calculate how much the vinyl's position has drifted from it's timecode and compensate for it.
+            // (This is caused by the manufacturing process of the vinyl.)
+            if (iVCMode == MIXXX_VCMODE_ABSOLUTE &&
+                    fabs(dDriftAmt) > 0.1 && fabs(dDriftAmt) < 5.0) {
+                dDriftControl = dDriftAmt * .01;
             } else {
                 dDriftControl = 0.0;
             }
@@ -562,54 +579,38 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
         //playbutton status may have changed
         reportedPlayButton = playButton->get();
 
-        if (reportedPlayButton)
-        {
-            //only add to the ring if pitch is stable
-            dPitchRing[ringPos] = dVinylPitch;
-            if(ringFilled < RING_SIZE)
+        if (reportedPlayButton) {
+            // Only add to the ring if pitch is stable
+            m_pPitchRing[ringPos] = dVinylPitch;
+            if (ringFilled < iPitchRingSize) {
                 ringFilled++;
-            ringPos = (ringPos + 1) % RING_SIZE;
-        }
-        else
-        {
-            //reset ring if pitch isn't steady
+            }
+            ringPos = (ringPos + 1) % iPitchRingSize;
+        } else {
+            // Reset ring if pitch isn't steady
             ringPos = 0;
             ringFilled = 0;
         }
 
         //only smooth when we have good position (no smoothing for scratching)
         double averagePitch = 0.0f;
-        if (iPosition != -1 && reportedPlayButton)
-        {
-            for (int i=0; i<ringFilled; i++)
-            {
-                averagePitch += dPitchRing[i];
+        if (iPosition != -1 && reportedPlayButton) {
+            for (int i = 0; i < ringFilled; ++i) {
+                averagePitch += m_pPitchRing[i];
             }
             averagePitch /= ringFilled;
-            //round out some of the noise
-            averagePitch = (double)(int)(averagePitch * 10000.0f);
+            // Round out some of the noise
+            averagePitch = round(averagePitch * 10000.0f);
             averagePitch /= 10000.0f;
-        }
-        else
+        } else {
             averagePitch = dVinylPitch;
-
-        if (iVCMode == MIXXX_VCMODE_ABSOLUTE)
-        {
-            controlScratch->slotSet(dVinylPitch + dDriftControl);
-            if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
-            {
-                rateSlider->slotSet(rateDir->get() * (fabs(dVinylPitch + dDriftControl) - 1.0f) / fRateRange);
-                dUiUpdateTime = filePosition;
-            }
         }
-        else if (iVCMode == MIXXX_VCMODE_RELATIVE)
-        {
-            controlScratch->slotSet(averagePitch);
-            if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition))
-            {
-                rateSlider->slotSet(rateDir->get() * (fabs(averagePitch) - 1.0f) / fRateRange);
-                dUiUpdateTime = filePosition;
-            }
+
+        controlScratch->slotSet(averagePitch + dDriftControl);
+        if (iPosition != -1 && reportedPlayButton && uiUpdateTime(filePosition)) {
+            rateSlider->slotSet(rateDir->get() *
+                                (fabs(averagePitch + dDriftControl) - 1.0f) / fRateRange);
+            dUiUpdateTime = filePosition;
         }
 
         dOldFilePos = filePosition;
