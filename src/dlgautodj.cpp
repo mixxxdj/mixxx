@@ -135,8 +135,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     }
     m_backUpTransition = spinBoxTransition->value();
 
-    connect(this, SIGNAL(spinBoxTransitionSetValue(int)),
-            this, SLOT(slotSpinBoxTransitionSetValue(int)));
     connect(this, SIGNAL(pushButtonAutoDJSetChecked(bool)),
             this, SLOT(slotPushButtonAutoDJSetChecked(bool)));
 }
@@ -540,7 +538,7 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     // This will also signal valueChanged and by that change m_backUpTransition
     // so we need to copy to orignal value back
 
-    emit(spinBoxTransitionSetValue(m_backUpTransition));
+    slotSpinBoxTransitionSetValue(m_backUpTransition);
     m_backUpTransition = tmp;
 
     while (true) {
@@ -550,7 +548,7 @@ TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
             if (nextTrack->exists()) {
                 // found a valid Track
                 if (nextTrack->getDuration() < m_backUpTransition)
-                    emit(spinBoxTransitionSetValue(nextTrack->getDuration()/2));
+                    slotSpinBoxTransitionSetValue(nextTrack->getDuration()/2);
                 m_backUpTransition = tmp;
                 return nextTrack;
             } else {
