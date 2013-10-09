@@ -258,8 +258,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
-    bool bFirstRun = upgrader.isFirstRun();
-    bool bUpgraded = upgrader.isUpgraded();
 
     QString resourcePath = m_pConfig->getResourcePath();
 
@@ -380,7 +378,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #endif
 
     m_pLibrary = new Library(this, m_pConfig,
-                             bFirstRun || bUpgraded,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
@@ -458,18 +455,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
         }
     }
-
-#ifdef __PROMO__
-    //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun || bUpgraded) {
-        QList<TrackPointer> tracksToAutoLoad =
-            m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-                && i < tracksToAutoLoad.count(); i++) {
-            m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
-        }
-    }
-#endif
 
     initActions();
     initMenuBar();
