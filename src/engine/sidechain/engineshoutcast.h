@@ -94,11 +94,12 @@ class EngineShoutcast : public QObject, public EncoderCallback, public SideChain
     ControlObject* m_pShoutcastNeedUpdateFromPrefs;
     ControlObjectThread* m_pUpdateShoutcastFromPrefs;
     ControlObjectThread* m_pMasterSamplerate;
-    ControlObjectThread* m_pShoutcastStatus;
+    ControlObject* m_pShoutcastStatus;
     volatile bool m_bQuit;
     // static metadata according to prefereneces
     bool m_custom_metadata;
-    QByteArray m_baCustomSong;
+    QString m_customArtist;
+    QString m_customTitle;
 
     // when static metadata is used, we only need calling shout_set_metedata
     // once

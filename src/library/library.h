@@ -20,6 +20,7 @@ class TrackModel;
 class TrackCollection;
 class SidebarModel;
 class LibraryFeature;
+class LibraryTableModel;
 class WLibrarySidebar;
 class WLibrary;
 class WSearchLineEdit;
@@ -36,7 +37,7 @@ public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
             TrackCollection* pTrackCollection,
-            bool firstRun, RecordingManager* pRecordingManager);
+            RecordingManager* pRecordingManager);
     virtual ~Library();
 
     void bindWidget(WLibrary* libraryWidget,
@@ -90,11 +91,6 @@ public:
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
-    SetlogFeature* m_pSetlogFeature;
-#ifdef __PROMO__
-    class PromoTracksFeature;
-    PromoTracksFeature* m_pPromoTracksFeature;
-#endif
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;

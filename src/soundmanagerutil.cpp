@@ -15,6 +15,7 @@
 
 #include <QtCore>
 #include "soundmanagerutil.h"
+#include "engine/enginechannel.h"
 
 /**
  * Constructs a ChannelGroup.
@@ -136,11 +137,7 @@ bool AudioPath::channelsClash(const AudioPath &other) const {
  * Returns a string describing the AudioPath for user benefit.
  */
 QString AudioPath::getString() const {
-    if (isIndexed(getType())) {
-        return QString("%1 %2").arg(getTrStringFromType(getType()),
-                                    QString::number(m_index + 1));
-    }
-    return getTrStringFromType(getType());
+    return getTrStringFromType(m_type, m_index);
 }
 
 /**
@@ -158,6 +155,8 @@ QString AudioPath::getStringFromType(AudioPathType type) {
         return QString::fromAscii("Master");
     case HEADPHONES:
         return QString::fromAscii("Headphones");
+    case BUS:
+        return QString::fromAscii("Bus");
     case DECK:
         return QString::fromAscii("Deck");
     case VINYLCONTROL:
@@ -174,7 +173,7 @@ QString AudioPath::getStringFromType(AudioPathType type) {
  * Returns a translated string given an AudioPathType.
  * @note This method is static.
  */
-QString AudioPath::getTrStringFromType(AudioPathType type) {
+QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) {
     switch (type) {
     case INVALID:
         // this shouldn't happen but g++ complains if I don't
@@ -184,8 +183,20 @@ QString AudioPath::getTrStringFromType(AudioPathType type) {
         return QString(QObject::tr("Master"));
     case HEADPHONES:
         return QString(QObject::tr("Headphones"));
+    case BUS:
+        switch (index) {
+        case EngineChannel::LEFT:
+            return QString(QObject::tr("Left bus"));
+        case EngineChannel::CENTER:
+            return QString(QObject::tr("Center bus"));
+        case EngineChannel::RIGHT:
+            return QString(QObject::tr("Right bus"));
+        default:
+            return QObject::tr("Invalid Bus");
+        }
     case DECK:
-        return QString(QObject::tr("Deck"));
+        return QString("%1 %2").arg(QObject::tr("Deck"),
+                                    QString::number(index + 1));
     case VINYLCONTROL:
         return QString(QObject::tr("Vinyl Control"));
     case MICROPHONE:
@@ -206,6 +217,8 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
         return AudioPath::MASTER;
     } else if (string == AudioPath::getStringFromType(AudioPath::HEADPHONES).toLower()) {
         return AudioPath::HEADPHONES;
+    } else if (string == AudioPath::getStringFromType(AudioPath::BUS).toLower()) {
+        return AudioPath::BUS;
     } else if (string == AudioPath::getStringFromType(AudioPath::DECK).toLower()) {
         return AudioPath::DECK;
     } else if (string == AudioPath::getStringFromType(AudioPath::VINYLCONTROL).toLower()) {
@@ -225,6 +238,7 @@ AudioPathType AudioPath::getTypeFromString(QString string) {
  */
 bool AudioPath::isIndexed(AudioPathType type) {
     switch (type) {
+    case BUS:
     case DECK:
     case VINYLCONTROL:
     case EXTPASSTHROUGH:
@@ -312,6 +326,7 @@ QList<AudioPathType> AudioOutput::getSupportedTypes() {
     QList<AudioPathType> types;
     types.append(MASTER);
     types.append(HEADPHONES);
+    types.append(BUS);
     types.append(DECK);
     return types;
 }

@@ -394,7 +394,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     m_pLibrary = new Library(this, m_pConfig,
                              m_pTrackCollection,
-                             bFirstRun || bUpgraded,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
@@ -472,18 +471,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
         }
     }
-
-#ifdef __PROMO__
-    //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun || bUpgraded) {
-        QList<TrackPointer> tracksToAutoLoad =
-            m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-                && i < tracksToAutoLoad.count(); i++) {
-            m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
-        }
-    }
-#endif
 
     initActions();
     initMenuBar();
@@ -565,7 +552,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Scan the library directory. Initialize this after the skinloader has
     // loaded a skin, see Bug #1047435
-    m_pLibraryScanner = new LibraryScanner( m_pLibrary->getTrackCollection() );
+    m_pLibraryScanner = new LibraryScanner(m_pLibrary->getTrackCollection());
     connect(m_pLibraryScanner, SIGNAL(scanFinished()),
             this, SLOT(slotEnableRescanLibraryAction()));
 
@@ -625,7 +612,6 @@ MixxxApp::~MixxxApp() {
     // LibraryScanner depends on Library
     qDebug() << "delete library scanner " <<  qTime.elapsed();
     delete m_pLibraryScanner;
-
 
     // Delete the library after the view so there are no dangling pointers to
     // Depends on RecordingManager

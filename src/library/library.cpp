@@ -53,23 +53,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
     m_pMixxxLibraryFeature->initUI();
     addFeature(m_pMixxxLibraryFeature);
 
-#ifdef __PROMO__
-    if (PromoTracksFeature::isSupported(m_pConfig)) {
-        m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
-                                                       m_pTrackCollection,
-                                                       firstRun);
-        addFeature(m_pPromoTracksFeature);
-    } else {
-        m_pPromoTracksFeature = NULL;
-    }
-#endif
-
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
-
     addFeature(m_pPlaylistFeature);
     m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
-
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
@@ -97,15 +84,6 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackColle
     if (TraktorFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
-    }
-
-    //Show the promo tracks view on first run, otherwise show the library
-    if (firstRun) {
-        //qDebug() << "First Run, switching to PROMO view!";
-        //This doesn't trigger onShow()... argh
-        //m_pSidebarModel->setDefaultSelection(1);
-        //slotSwitchToView(tr("Bundled Songs"));
-        //Note the promo tracks item has index=1... hardcoded hack. :/
     }
 }
 
@@ -183,7 +161,7 @@ void Library::addFeature(LibraryFeature* feature) {
 }
 
 void Library::slotShowTrackModel(QAbstractItemModel* model) {
-    qDebug() << "Library::slotShowTrackModel" << model;
+    //qDebug() << "Library::slotShowTrackModel" << model;
     TrackModel* trackModel = dynamic_cast<TrackModel*>(model);
     Q_ASSERT(trackModel);
     emit(showTrackModel(model));

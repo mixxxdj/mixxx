@@ -45,12 +45,15 @@ VinylControlControl::VinylControlControl(const char* pGroup, ConfigObject<Config
 }
 
 VinylControlControl::~VinylControlControl() {
-    delete m_pControlVinylSeek;
-    delete m_pControlVinylStatus;
-    delete m_pControlVinylSpeedType;
-    delete m_pControlVinylEnabled;
-    delete m_pControlVinylMode;
+    delete m_pControlVinylSignalEnabled;
     delete m_pControlVinylCueing;
+    delete m_pControlVinylMode;
+    delete m_pControlVinylWantEnabled;
+    delete m_pControlVinylEnabled;
+    delete m_pControlVinylScratching;
+    delete m_pControlVinylSeek;
+    delete m_pControlVinylSpeedType;
+    delete m_pControlVinylStatus;
 }
 
 void VinylControlControl::trackLoaded(TrackPointer pTrack) {

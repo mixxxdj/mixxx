@@ -103,6 +103,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("vinylcontrol_enabled", tr("Toggle vinyl-control (ON/OFF)"), vinylControlMenu);
     addDeckControl("vinylcontrol_cueing", tr("Toggle vinyl-control cueing mode (OFF/ONE/HOT)"), vinylControlMenu);
     addDeckControl("vinylcontrol_mode", tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
+    addDeckControl("passthrough", tr("Pass through external audio into the internal mixer"), vinylControlMenu);
     addControl(VINYL_PREF_KEY, "Toggle", tr("Single deck mode - Toggle vinyl control to next deck"), vinylControlMenu);
 
     // Cues
@@ -182,14 +183,16 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped deck"),
                libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack", tr("Load selected track"), libraryMenu);
-    addDeckAndSamplerControl("LoadSelectedTrackAndPlay", tr("Load selected track and play"), libraryMenu);
+    addDeckAndSamplerAndPreviewDeckControl("LoadSelectedTrackAndPlay", tr("Load selected track and play"), libraryMenu);
 
-    // Flanger Controls
+    // Effect Controls
     QMenu* effectsMenu = addSubmenu(tr("Effects"));
     addDeckControl("flanger", tr("Toggle flange effect"), effectsMenu);
     addControl("[Flanger]", "lfoPeriod", tr("Flange effect: Wavelength/period"), effectsMenu, true);
     addControl("[Flanger]", "lfoDepth", tr("Flange effect: Intensity"), effectsMenu, true);
     addControl("[Flanger]", "lfoDelay", tr("Flange effect: Phase delay"), effectsMenu, true);
+    addDeckControl("filter", tr("Toggle filter effect"), effectsMenu);
+    addDeckControl("filterDepth", tr("Filter effect: Intensity"), effectsMenu, true);
 
     // Microphone Controls
     QMenu* microphoneMenu = addSubmenu(tr("Microphone"));

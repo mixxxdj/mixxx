@@ -160,33 +160,6 @@ bool TrackInfoObject::isValid() const {
     return m_bIsValid;
 }
 
-/*
-    Writes information about the track to the xml file:
- */
-void TrackInfoObject::writeToXML( QDomDocument &doc, QDomElement &header ) {
-    QMutexLocker lock(&m_qMutex);
-
-    QString create_date;
-    XmlParse::addElement( doc, header, "Filename", m_sFilename );
-    //XmlParse::addElement( doc, header, "Filepath", m_sFilepath );
-    XmlParse::addElement( doc, header, "Title", m_sTitle );
-    XmlParse::addElement( doc, header, "Artist", m_sArtist );
-    XmlParse::addElement( doc, header, "Type", m_sType );
-    XmlParse::addElement( doc, header, "Comment", m_sComment);
-    XmlParse::addElement( doc, header, "Duration", QString("%1").arg(m_iDuration));
-    XmlParse::addElement( doc, header, "SampleRate", QString("%1").arg(m_iSampleRate));
-    XmlParse::addElement( doc, header, "Channels", QString("%1").arg(m_iChannels));
-    XmlParse::addElement( doc, header, "Bitrate", QString("%1").arg(m_iBitrate));
-    XmlParse::addElement( doc, header, "Length", QString("%1").arg(m_iLength) );
-    XmlParse::addElement( doc, header, "TimesPlayed", QString("%1").arg(m_iTimesPlayed) );
-    XmlParse::addElement( doc, header, "replaygain", QString("%1").arg(m_fReplayGain) );
-    XmlParse::addElement( doc, header, "Id", QString("%1").arg(m_iId) );
-    XmlParse::addElement( doc, header, "CuePoint", QString::number(m_fCuePoint) );
-    XmlParse::addElement( doc, header, "CreateDate", m_dCreateDate.toString() );
-    //if (m_pWave) {
-    //XmlParse::addHexElement(doc, header, "WaveSummaryHex", m_pWave);
-    //}
-}
 
 int TrackInfoObject::parse() {
     // Add basic information derived from the filename:
@@ -782,6 +755,7 @@ void TrackInfoObject::setCuePoints(QList<Cue*> cuePoints) {
 }
 
 void TrackInfoObject::setDirty(bool bDirty) {
+
     QMutexLocker lock(&m_qMutex);
     bool change = m_bDirty != bDirty;
     m_bDirty = bDirty;
@@ -798,6 +772,8 @@ void TrackInfoObject::setDirty(bool bDirty) {
     if (m_bDirty) {
         emit(changed(this));
     }
+
+    //qDebug() << QString("TrackInfoObject %1 %2 set to %3").arg(QString::number(m_iId), m_sLocation, m_bDirty ? "dirty" : "clean");
 }
 
 bool TrackInfoObject::isDirty() {

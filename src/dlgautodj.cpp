@@ -58,7 +58,6 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
         }
     }, __PRETTY_FUNCTION__);
     m_pAutoDJTableModel->setTableModel(playlistId);
-
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     // Override some playlist-view properties:
@@ -214,8 +213,12 @@ void DlgAutoDJ::shufflePlaylist(double value) {
     if (value <= 0.0) {
         return;
     }
-    const int row = m_eState == ADJ_DISABLED ? 0 : 1;
-    m_pAutoDJTableModel->shuffleTracks(m_pAutoDJTableModel->index(row, 0));
+    QModelIndexList IndexList = m_pTrackTableView->selectionModel()->selectedRows();
+    QModelIndex exclude;
+    if (m_eState != ADJ_DISABLED) {
+        exclude = m_pAutoDJTableModel->index(0, 0);
+    }
+    m_pAutoDJTableModel->shuffleTracks(IndexList, exclude);
 }
 
 void DlgAutoDJ::skipNextButton(bool) {
@@ -227,7 +230,6 @@ void DlgAutoDJ::skipNext(double value) {
     if (value <= 0.0 || m_eState == ADJ_DISABLED) {
         return;
     }
-
     // Load the next song from the queue.
     if (m_pCOPlay1Fb->get() == 0.0f) {
         removePlayingTrackFromQueue("[Channel1]");
@@ -280,14 +282,15 @@ void DlgAutoDJ::toggleAutoDJButton(bool enable) {
             return;
         }
 
+        // Never load the same track if it is already playing
         if (deck1Playing) {
             removePlayingTrackFromQueue("[Channel1]");
         }
         if (deck2Playing) {
             removePlayingTrackFromQueue("[Channel2]");
         }
-        TrackPointer nextTrack = getNextTrackFromQueue();
 
+        TrackPointer nextTrack = getNextTrackFromQueue();
         if (!nextTrack) {
             qDebug() << "Queue is empty now";
             pushButtonAutoDJ->setChecked(false);
@@ -389,7 +392,6 @@ void DlgAutoDJ::player1PositionChanged(double value) {
                 // Here we are, if first deck was playing before starting Auto DJ
                 // or if it was started just before
                 loadNextTrackFromQueue();
-
                 // if we start the deck from code we don`t get a signal
                 player1PlayChanged(1.0);
                 // call function manually
@@ -606,9 +608,6 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
         // Do not remove when the user has loaded a track manually
         return false;
     }
-
-    qDebug() << "in DlgAutoDJ::removePlayingTrackFromQueue(QString group)";
-    // TODO(xxx): remove all this dependency
 
     // remove the top track
     m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
