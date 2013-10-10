@@ -139,9 +139,10 @@ void EngineFilterBlock::setFilters(bool forceSetting)
         }
         else
         {
-            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, (int)s_loEqFreq->get());
-            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, (int)s_loEqFreq->get(), (int)s_hiEqFreq->get());
-            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, (int)s_hiEqFreq->get());
+            low = new EngineFilterButterworth8Low(44100, (int)s_loEqFreq->get());
+            band = new EngineFilterButterworth8Band(44100,
+                    (int)s_loEqFreq->get(), (int)s_hiEqFreq->get());
+            high = new EngineFilterButterworth8High(44100, (int)s_hiEqFreq->get());
         }
 
     }

@@ -153,10 +153,26 @@ void ControlObject::set(double value) {
     }
 }
 
+void ControlObject::setAndConfirm(double value) {
+    if (m_pControl) {
+        m_pControl->setAndConfirm(value, this);
+    }
+}
+
 // static
 void ControlObject::set(const ConfigKey& key, const double& value) {
     ControlDoublePrivate* pCop = ControlDoublePrivate::getControl(key, false);
     if (pCop) {
         pCop->set(value, NULL);
     }
+}
+
+bool ControlObject::connectValueChangeRequest(const QObject* receiver,
+                                              const char* method,
+                                              Qt::ConnectionType type) {
+    bool ret = false;
+    if (m_pControl) {
+        ret = m_pControl->connectValueChangeRequest(receiver, method, type);
+    }
+    return ret;
 }
