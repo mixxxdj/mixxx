@@ -643,7 +643,11 @@ MixxxApp::~MixxxApp()
            // delete just to satisfy valgrind:
            // check if the pointer is still valid, the control object may have bin already
            // deleted by its parent in this loop
-           delete ControlObject::getControl(key);
+           ControlObject* pCo = ControlObject::getControl(key, false);
+           if (pCo) {
+               // it might happens that a control is deleted as child from an other control
+               delete pCo;
+           }
        }
    }
    qDebug() << "~MixxxApp: All leaking controls deleted.";
