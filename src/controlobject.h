@@ -45,9 +45,6 @@ class ControlObject : public QObject {
         return getControl(key);
     }
 
-    // Adds all ControlObjects that currently exist to pControlList
-    static void getControls(QList<ControlObject*>* pControlsList);
-
     // Return the key of the object
     inline ConfigKey getKey() const { return m_key; }
     // Returns the value of the ControlObject
@@ -90,7 +87,7 @@ class ControlObject : public QObject {
   protected:
     // Key of the object
     ConfigKey m_key;
-    ControlDoublePrivate* m_pControl;
+    QSharedPointer<ControlDoublePrivate> m_pControl;
 
   private slots:
     void privateValueChanged(double value, QObject* pSetter);
@@ -100,11 +97,6 @@ class ControlObject : public QObject {
     inline bool ignoreNops() const {
         return m_pControl ? m_pControl->ignoreNops() : true;
     }
-
-    // Hash of ControlObject instantiations
-    static QHash<ConfigKey,ControlObject*> m_sqCOHash;
-    // Mutex guarding access to the ControlObject hash
-    static QMutex m_sqCOHashMutex;
 };
 
 #endif
