@@ -31,8 +31,8 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key, ControlObject* pCreato
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                        Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_pCreatorCO(pCreatorCO),
-          m_confirmRequired(false) {
+          m_confirmRequired(false),
+          m_pCreatorCO(pCreatorCO) {
     initialize();
 }
 
@@ -62,7 +62,11 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     QSharedPointer<ControlDoublePrivate> pControl;
     QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {
-        pControl = it.value();
+        if (pCreatorCO) {
+            qDebug() << "ControlObject" << key.group << key.item << "already created";
+        } else {
+            pControl = it.value();
+        }
     }
     locker.unlock();
 

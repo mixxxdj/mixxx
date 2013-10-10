@@ -83,7 +83,7 @@ double ControlObject::get() const {
 
 // static
 double ControlObject::get(const ConfigKey& key) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key, NULL);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
     return pCop ? pCop->get() : 0.0;
 }
 
@@ -107,7 +107,7 @@ void ControlObject::setAndConfirm(double value) {
 
 // static
 void ControlObject::set(const ConfigKey& key, const double& value) {
-    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key, NULL);
+    QSharedPointer<ControlDoublePrivate> pCop = ControlDoublePrivate::getControl(key);
     if (pCop) {
         pCop->set(value, NULL);
     }

@@ -26,10 +26,10 @@ class EngineFilterEffect : public EngineObject {
     EngineFilterButterworth8Band* m_pBandpassFilter;
     EngineFilterButterworth8High* m_pHighFilter;
 
-    ControlObject* potmeterDepth;
-    ControlPushButton* filterEnable;
+    ControlObject* m_pPotmeterDepth;
+    ControlPushButton* m_pFilterEnable;
 
-    float old_depth;
+    float m_old_depth;
 };
 
 #endif // ENGINEFILTEREFFECT_H
