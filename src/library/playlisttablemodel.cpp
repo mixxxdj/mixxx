@@ -27,8 +27,8 @@ void PlaylistTableModel::setTableModel(int playlistId) {
 
     m_iPlaylistId = playlistId;
     QString playlistTableName = "playlist_" + QString::number(m_iPlaylistId);
-    QSqlQuery query(m_database);
-    FieldEscaper escaper(m_database);
+    QSqlQuery query(m_pTrackCollection->getDatabase());
+    FieldEscaper escaper(m_pTrackCollection->getDatabase());
 
     QStringList columns = QStringList()
             << PLAYLISTTRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
@@ -164,9 +164,10 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
             int trackPosition = index.sibling(index.row(), positionColumnIndex).data().toInt();
             trackPositions.append(trackPosition);
         }
-
-    m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
+        m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
+    });
 }
+
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
                                    const QModelIndex& destIndex) {
@@ -176,7 +177,7 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
     // this->record(destIndex.row()).value(PLAYLISTTRACKSTABLE_POSITION).toInt();
     int newPosition = destIndex.sibling(destIndex.row(), playlistPositionColumn).data().toInt();
     // this->record(sourceIndex.row()).value(PLAYLISTTRACKSTABLE_POSITION).toInt();
-    int oldPosition = sourceIndex.sibling(sourceIndex.row(), playlistPositionColumn).data().toInt();
+    const int oldPosition = sourceIndex.sibling(sourceIndex.row(), playlistPositionColumn).data().toInt();
 
     if (newPosition > oldPosition) {
         // new position moves up due to closing the gap of the old position
@@ -192,8 +193,10 @@ void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
         //Dragged out of bounds, which is past the end of the rows...
         newPosition = rowCount();
     }
-	// TODO WRAP
-    m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);
+    m_pTrackCollection->callSync(
+                [this, &oldPosition, &newPosition](void) {
+        m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);
+    }, __PRETTY_FUNCTION__);
 }
 
 bool PlaylistTableModel::isLocked() {

@@ -94,6 +94,7 @@ public:
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
+    SetlogFeature* m_pSetlogFeature;
 };
 
 #endif /* LIBRARY_H */

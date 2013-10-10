@@ -34,7 +34,7 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection, bool firstRun,
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pTrackCollection(pTrackCollection),

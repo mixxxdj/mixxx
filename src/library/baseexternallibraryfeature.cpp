@@ -72,7 +72,6 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
         return;
     }
 
-//    PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
     int autoDJId = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
@@ -152,7 +151,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
                 QModelIndex index = pPlaylistModelToAdd->index(i,0);
                 if (index.isValid()) {
                     qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
-                    TrackPointer track = pPlaylistModelToAdd->getTrack(index);   ////////////////// avoid getTrack
+                    TrackPointer track = pPlaylistModelToAdd->getTrack(index); // TODO(tro) rewrite to avoid nested callSyncs
                     // TODO(XXX): Care whether the append succeeded.
                     playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
                 }

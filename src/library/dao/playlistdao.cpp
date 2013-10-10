@@ -299,7 +299,7 @@ PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) const {
     return PLHT_UNKNOWN;
 }
 
-bool PlaylistDAO::isHidden(const int playlistId) {
+bool PlaylistDAO::isHidden(const int playlistId) const {
     // qDebug() << "PlaylistDAO::isHidden"
     //          << QThread::currentThread() << m_database.connectionName();
 
@@ -544,7 +544,7 @@ void PlaylistDAO::addToAutoDJQueue(const int playlistId, const bool bTop) {
     }
 }
 
-int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) {
+int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const {
     // Find out the highest position existing in the playlist so we know what
     // position this track should have.
     QSqlQuery query(m_database);
@@ -665,7 +665,6 @@ void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList)
         LOG_FAILED_QUERY(query);
         return;
     }
-}
 
     // Collect all ids of the playlists that contains the tracks to remove
     QList<int> removedTracksPlaylistIds;
