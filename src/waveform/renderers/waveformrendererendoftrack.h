@@ -8,7 +8,7 @@
 #include "waveformrendererabstract.h"
 
 class ControlObject;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 
 class WaveformRendererEndOfTrack : public WaveformRendererAbstract {
 public:
@@ -23,12 +23,12 @@ public:
     virtual void draw(QPainter* painter, QPaintEvent* event);
 
 private:
-    ControlObjectThreadMain*  m_endOfTrackControl;
+    ControlObjectThread*  m_pEndOfTrackControl;
     bool m_endOfTrackEnabled;
 
-    ControlObjectThreadMain* m_trackSampleRate;
-    ControlObjectThreadMain* m_playControl;
-    ControlObjectThreadMain* m_loopControl;
+    ControlObjectThread* m_pTrackSampleRate;
+    ControlObjectThread* m_pPlayControl;
+    ControlObjectThread* m_pLoopControl;
 
     QColor m_color;
     QTime m_timer;

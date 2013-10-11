@@ -22,7 +22,7 @@
 #include "configobject.h"
 
 class QWidget;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
@@ -94,10 +94,10 @@ private:
     ConfigObject<ConfigValue> *m_pConfig;
     int m_timer;
     ControlObject* m_pControlPositionDisplay;
-    QList<ControlObjectThreadMain*> m_cueControls;
-    QList<ControlObjectThreadMain*> m_rateControls;
-    QList<ControlObjectThreadMain*> m_rateDirControls;
-    QList<ControlObjectThreadMain*> m_rateRangeControls;
+    QList<ControlObjectThread*> m_cueControls;
+    QList<ControlObjectThread*> m_rateControls;
+    QList<ControlObjectThread*> m_rateDirControls;
+    QList<ControlObjectThread*> m_rateRangeControls;
     PlayerManager* m_pPlayerManager;
     MixxxApp *m_mixxx;
     SkinLoader* m_pSkinLoader;
