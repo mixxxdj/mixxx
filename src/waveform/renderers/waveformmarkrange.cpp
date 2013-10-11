@@ -23,16 +23,24 @@ bool WaveformMarkRange::active() {
 
 bool WaveformMarkRange::enabled() {
     // Default to enabled if there is no enabled control.
-    return !m_markEnabledControl->valid() ||
+    return !m_markEnabledControl || !m_markEnabledControl->valid() ||
             m_markEnabledControl->get() > 0.0;
 }
 
 double WaveformMarkRange::start() {
-    return m_markStartPointControl->valid() ? m_markStartPointControl->get() : -1.0;
+    double start = -1.0;
+    if (m_markStartPointControl && m_markStartPointControl->valid()) {
+        start = m_markStartPointControl->get();
+    }
+    return start;
 }
 
 double WaveformMarkRange::end() {
-    return m_markEndPointControl->valid() ? m_markEndPointControl->get() : -1.0;
+    double end = -1.0;
+    if (m_markEndPointControl && m_markEndPointControl->valid()) {
+        end = m_markEndPointControl->get();
+    }
+    return end;
 }
 
 void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
