@@ -258,8 +258,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
-    bool bFirstRun = upgrader.isFirstRun();
-    bool bUpgraded = upgrader.isUpgraded();
 
     QString resourcePath = m_pConfig->getResourcePath();
 
@@ -380,7 +378,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #endif
 
     m_pLibrary = new Library(this, m_pConfig,
-                             bFirstRun || bUpgraded,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
@@ -458,18 +455,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
         }
     }
-
-#ifdef __PROMO__
-    //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun || bUpgraded) {
-        QList<TrackPointer> tracksToAutoLoad =
-            m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-                && i < tracksToAutoLoad.count(); i++) {
-            m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
-        }
-    }
-#endif
 
     initActions();
     initMenuBar();
@@ -641,16 +626,16 @@ MixxxApp::~MixxxApp()
     delete m_pConfig;
 
     // Check for leaked ControlObjects and give warnings.
-    QList<ControlObject*> leakedControls;
+    QList<ControlDoublePrivate*> leakedControls;
     QList<ConfigKey> leakedConfigKeys;
 
-    ControlObject::getControls(&leakedControls);
+    ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
         qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
-        foreach (ControlObject* pControl, leakedControls) {
-            ConfigKey key = pControl->getKey();
-            qDebug() << key.group << key.item;
+        foreach (ControlDoublePrivate* pCOP, leakedControls) {
+            ConfigKey key = pCOP->getKey();
+            qDebug() << key.group << key.item << pCOP->getCreatorCO();
             leakedConfigKeys.append(key);
         }
 
@@ -663,15 +648,15 @@ MixxxApp::~MixxxApp()
    }
    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
-   delete m_pKeyboard;
-   delete m_pKbdConfig;
-   delete m_pKbdConfigEmpty;
+    delete m_pKeyboard;
+    delete m_pKbdConfig;
+    delete m_pKbdConfigEmpty;
 
-   WaveformWidgetFactory::destroy();
-   t.elapsed(true);
-   // Report the total time we have been running.
-   m_runtime_timer.elapsed(true);
-   StatsManager::destroy();
+    WaveformWidgetFactory::destroy();
+    t.elapsed(true);
+    // Report the total time we have been running.
+    m_runtime_timer.elapsed(true);
+    StatsManager::destroy();
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {

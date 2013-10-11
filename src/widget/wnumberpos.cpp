@@ -23,6 +23,15 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
             this, SLOT(slotSetRemain(double)));
     slotSetRemain(m_pShowTrackTimeRemaining->get());
 
+    // We cannot use the parameter from the skin because this would be a connection
+    // to a ControlObjectThreadWidget and would be normalized to midi values
+    // -0.14 .. 1.14.  Instead we use the engine's playposition value
+    // which is normalized from 0 to 1.  As a result, the
+    // <Connection> parameter is no longer necessary in skin definitions, but
+    // leaving it in is harmless.
+    m_pVisualPlaypos = new ControlObjectThreadMain(group, "playposition");
+    connect(m_pVisualPlaypos, SIGNAL(valueChanged(double)), this, SLOT(slotSetValue(double)));
+
     m_pTrackSamples = new ControlObjectThreadWidget(
             group, "track_samples");
     connect(m_pTrackSamples, SIGNAL(valueChanged(double)),
@@ -57,23 +66,27 @@ void WNumberPos::mousePressEvent(QMouseEvent* pEvent) {
 
 void WNumberPos::slotSetTrackSamples(double dSamples) {
     m_dTrackSamples = dSamples;
-    setValue(m_dOldValue);
+    slotSetValue(m_dOldValue);
 }
 
 void WNumberPos::slotSetTrackSampleRate(double dSampleRate) {
     m_dTrackSampleRate = dSampleRate;
-    setValue(m_dOldValue);
+    slotSetValue(m_dOldValue);
 }
 
 void WNumberPos::setValue(double dValue) {
+    // Ignore midi-scaled signals from the skin connection.
+    Q_UNUSED(dValue);
+}
+
+void WNumberPos::slotSetValue(double dValue) {
     m_dOldValue = dValue;
 
     double valueMillis = 0.0f;
     double durationMillis = 0.0f;
     if (m_dTrackSamples > 0 && m_dTrackSampleRate > 0) {
-        //map midi value taking in to account 14 = 0 and 114 = 1
         double dDuration = m_dTrackSamples / m_dTrackSampleRate / 2.0;
-        valueMillis = (dValue - 14) * 1000.0f * m_dTrackSamples / 2.0f / 100.0f / m_dTrackSampleRate;
+        valueMillis = dValue * 500.0f * m_dTrackSamples / m_dTrackSampleRate;
         durationMillis = dDuration * 1000.0f;
         if (m_bRemain)
             valueMillis = math_max(durationMillis - valueMillis, 0.0f);
@@ -110,11 +123,5 @@ void WNumberPos::setRemain(bool bRemain)
         m_qsText = "";
 
     // Have the widget redraw itself with its current value.
-    setValue(m_dOldValue);
+    slotSetValue(m_dOldValue);
 }
-
-
-
-
-
-

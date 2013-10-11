@@ -77,10 +77,6 @@ CueControl::CueControl(const char * _group,
     connect(m_pCueDefault, SIGNAL(valueChanged(double)),
             this, SLOT(cueDefault(double)),
             Qt::DirectConnection);
-
-    connect(m_pPlayButton, SIGNAL(valueChanged(double)),
-            this, SLOT(playFromCuePreview(double)),
-            Qt::DirectConnection);
 }
 
 CueControl::~CueControl() {
@@ -632,8 +628,8 @@ void CueControl::cuePreview(double v)
         m_pPlayButton->set(1.0);
         m_bPreviewing = true;
     } else if (!v && m_bPreviewing) {
-        m_pPlayButton->set(0.0);
         m_bPreviewing = false;
+        m_pPlayButton->set(0.0);
     }
 
     double cuePoint = m_pCuePoint->get();
@@ -677,10 +673,9 @@ void CueControl::cueCDJ(double v) {
 
     if (v) {
         if (playing) {
-            m_pPlayButton->set(0.0);
-
             // Just in case.
             m_bPreviewing = false;
+            m_pPlayButton->set(0.0);
 
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
@@ -704,8 +699,8 @@ void CueControl::cueCDJ(double v) {
             }
         }
     } else if (m_bPreviewing) {
-        m_pPlayButton->set(0.0);
         m_bPreviewing = false;
+        m_pPlayButton->set(0.0);
 
         // Need to unlock before emitting any signals to prevent deadlock.
         lock.unlock();
@@ -719,23 +714,21 @@ void CueControl::cueCDJ(double v) {
     }
 }
 
-void CueControl::playFromCuePreview(double v) {
-    Q_UNUSED(v);
-
+bool CueControl::isCuePreviewing() {
     QMutexLocker lock(&m_mutex);
 
     if (m_bPreviewing) {
-    // we're previewing? Then stop previewing and go into normal play mode.
-        m_pPlayButton->set(1.0);
+        // we're previewing? Then stop previewing and go into normal play mode.
         m_bPreviewing = false;
+        return true;
     }
 
     if (m_bPreviewingHotcue) {
-        m_pPlayButton->set(1.0);
         m_bHotcueCancel = true;
+        return true;
     }
 
-    lock.unlock();
+    return false;
 }
 
 void CueControl::cueDefault(double v) {
