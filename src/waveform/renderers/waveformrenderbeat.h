@@ -6,7 +6,7 @@
 #include "waveform/renderers/waveformrendererabstract.h"
 #include "util.h"
 
-class ControlObjectThreadMain;
+class ControlObjectThread;
 
 class WaveformRenderBeat : public WaveformRendererAbstract {
   public:
@@ -19,7 +19,7 @@ class WaveformRenderBeat : public WaveformRendererAbstract {
 
   private:
     QColor m_beatColor;
-    ControlObjectThreadMain* m_beatActive;
+    ControlObjectThread* m_pBeatActive;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRenderBeat);
 };

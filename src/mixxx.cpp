@@ -826,7 +826,7 @@ QString buildWhatsThis(const QString& title, const QString& text) {
     return QString("%1\n\n%2").arg(preparedTitle.replace("&", ""), text);
 }
 
-/** initializes all QActions of the application */
+// initializes all QActions of the application
 void MixxxApp::initActions()
 {
     QString loadTrackText = tr("Load Track to Deck %1");
@@ -985,7 +985,7 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl->setWhatsThis(buildWhatsThis(vinylControlTitle1, vinylControlText));
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl(bool)));
-    ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
+    ControlObjectThread* enabled1 = new ControlObjectThread(
             "[Channel1]", "vinylcontrol_enabled", this);
     connect(enabled1, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl(double)));
@@ -1000,7 +1000,7 @@ void MixxxApp::initActions()
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl2(bool)));
 
-    ControlObjectThreadMain* enabled2 = new ControlObjectThreadMain(
+    ControlObjectThread* enabled2 = new ControlObjectThread(
             "[Channel2]", "vinylcontrol_enabled", this);
     connect(enabled2, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl2(double)));
