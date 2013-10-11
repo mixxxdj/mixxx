@@ -134,12 +134,12 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0);
-    if (m_lowFilterControlObject &&
-            m_midFilterControlObject &&
-            m_highFilterControlObject) {
-        lowGain = m_lowFilterControlObject->get();
-        midGain = m_midFilterControlObject->get();
-        highGain = m_highFilterControlObject->get();
+    if (m_pLowFilterControlObject &&
+            m_pMidFilterControlObject &&
+            m_pHighFilterControlObject) {
+        lowGain = m_pLowFilterControlObject->get();
+        midGain = m_pMidFilterControlObject->get();
+        highGain = m_pHighFilterControlObject->get();
     }
 
     //apply separate visual gain
@@ -312,7 +312,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     int numberOfPoints = buildPolygon();
 
-    if (m_lowKillControlObject && m_lowKillControlObject->get() > 0.1) {
+    if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_lowKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {
@@ -321,7 +321,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     }
     painter->drawPolygon(&m_polygon[0][0],numberOfPoints);
 
-    if (m_midKillControlObject && m_midKillControlObject->get() > 0.1) {
+    if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_midKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {
@@ -330,7 +330,7 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     }
     painter->drawPolygon(&m_polygon[1][0],numberOfPoints);
 
-    if (m_highKillControlObject && m_highKillControlObject->get() > 0.1) {
+    if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_highKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {

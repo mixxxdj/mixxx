@@ -5,7 +5,7 @@
 #include <QImage>
 #include <QColor>
 
-class ControlObjectThreadMain;
+class ControlObjectThread;
 class QDomNode;
 class WaveformSignalColors;
 
@@ -16,7 +16,7 @@ class WaveformMark {
             const WaveformSignalColors& signalColors);
 
   private:
-    ControlObjectThreadMain* m_pointControl;
+    ControlObjectThread* m_pointControl;
 
     QColor m_color;
     QColor m_textColor;
