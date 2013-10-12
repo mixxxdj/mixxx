@@ -393,6 +393,18 @@ unsigned int LoopRecordingManager::getLoopLength() {
 
 SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
     qDebug() << "LoopRecordingManager::openSndFile path: " << filePath;
+
+    // TODO(carl) create file path here?
+//    QDir recordDir(filePath);
+//    if (!recordDir.exists()) {
+//        if (recordDir.mkpath(recordDir.absolutePath())) {
+//            qDebug() << "Created folder" << recordDir.absolutePath() << "for loop file";
+//        } else {
+//            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recording";
+//            return NULL;
+//        }
+//    }
+
     unsigned long samplerate = m_pSampleRate->get();
 
     // set sfInfo
@@ -415,14 +427,15 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
 
 void LoopRecordingManager::setRecordingDir() {
 
-    QString recordDirConfig = m_pConfig->getValueString(ConfigKey("[Recording]", "Directory"));
+    m_recordingDir = m_pConfig->getValueString(ConfigKey("[Recording]", "Directory"));
+    m_recordingTempDir = m_recordingDir.append(LOOP_TEMP_DIR);
 
-    QDir recordDir(recordDirConfig);
-    QDir loopTempDir(recordDirConfig.append(LOOP_TEMP_DIR));
+    //QDir recordDir(recordDirConfig);
+    QDir loopTempDir(m_recordingTempDir);
     // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord
     
     if (!loopTempDir.exists()) {
-        if (loopTempDir.mkpath(recordDir.absolutePath())) {
+        if (loopTempDir.mkpath(loopTempDir.absolutePath())) {
             qDebug() << "Created folder" << loopTempDir.absolutePath() << "for loop recording";
         } else {
             qDebug() << "Failed to create folder" << loopTempDir.absolutePath() << "for recording";
@@ -432,8 +445,8 @@ void LoopRecordingManager::setRecordingDir() {
             // TODO(carl): prevent recording from happening at all?
         }
     }
-    m_recordingDir = recordDir.absolutePath();
-    m_recordingTempDir = loopTempDir.absolutePath();
+    //m_recordingDir = recordDir.absolutePath();
+    //m_recordingTempDir = loopTempDir.absolutePath();
     qDebug() << "Loop recording temp directory set to" << m_recordingTempDir;
 }
 
