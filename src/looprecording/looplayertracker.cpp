@@ -21,6 +21,9 @@ LoopLayerTracker::LoopLayerTracker(ConfigObject<ConfigValue>* pConfig)
     m_pLoopDeck1Stop = new ControlObjectThread("[LoopRecorderDeck1]","stop");
     m_pLoopDeck1Eject = new ControlObjectThread("[LoopRecorderDeck1]","eject");
     m_pLoopDeck1Pregain = new ControlObjectThread("[LoopRecorderDeck1]","pregain");
+    m_pLoopDeck1LoopIn = new ControlObjectThread("[LoopRecorderDeck1]","loop_start_position");
+    m_pLoopDeck1LoopOut = new ControlObjectThread("[LoopRecorderDeck1]","loop_end_position");
+    m_pLoopDeck1LoopEnabled = new ControlObjectThread("[LoopRecorderDeck1]","loop_enabled");
     m_pLoopDeck2Play = new ControlObjectThread("[LoopRecorderDeck2]","play");
     m_pLoopDeck2Stop = new ControlObjectThread("[LoopRecorderDeck2]","stop");
     m_pLoopDeck2Eject = new ControlObjectThread("[LoopRecorderDeck2]","eject");
@@ -31,6 +34,8 @@ LoopLayerTracker::LoopLayerTracker(ConfigObject<ConfigValue>* pConfig)
 
     connect(m_pLoopPregain, SIGNAL(valueChanged(double)),
             this, SLOT(slotChangeLoopPregain(double)));
+
+    m_pLoopDeck1LoopIn->slotSet(0.0);
 }
 
 LoopLayerTracker::~LoopLayerTracker() {
@@ -42,6 +47,9 @@ LoopLayerTracker::~LoopLayerTracker() {
     delete m_pLoopDeck2Eject;
     delete m_pLoopDeck2Stop;
     delete m_pLoopDeck2Play;
+    delete m_pLoopDeck1LoopEnabled;
+    delete m_pLoopDeck1LoopOut;
+    delete m_pLoopDeck1LoopIn;
     delete m_pLoopDeck1Pregain;
     delete m_pLoopDeck1Eject;
     delete m_pLoopDeck1Stop;
@@ -126,6 +134,14 @@ QString LoopLayerTracker::getCurrentPath() {
     }
 }
 
+unsigned int LoopLayerTracker::getCurrentLength() {
+    if (m_layers.empty()) {
+        return 0;
+    } else {
+        return m_layers.at(m_iCurrentLayer)->length;
+    }
+}
+
 void LoopLayerTracker::setCurrentLength(unsigned int length) {
 
 }
@@ -137,13 +153,16 @@ void LoopLayerTracker::slotFileFinished(QString path) {
 void LoopLayerTracker::slotLoadToLoopDeck() {
 
     QString path = getCurrentPath();
+    unsigned int length = getCurrentLength();
     if (path != "") {
         TrackPointer pTrackToPlay = TrackPointer(new TrackInfoObject(path), &QObject::deleteLater);
 
         // Signal to Player manager to load and play track.
         if (m_iCurrentLayer == 0) {
             emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
-
+             m_pLoopDeck1LoopIn->slotSet(0.0);
+            m_pLoopDeck1LoopOut->slotSet(length);
+            m_pLoopDeck1LoopEnabled->slotSet(1.0);
         } else if (m_iCurrentLayer == 1) {
             emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck2]"), true));
         }

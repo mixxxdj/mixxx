@@ -10,7 +10,7 @@ LoopRecorderDeck::LoopRecorderDeck(QObject* pParent,
                 group, true, false) {
 
     m_pRepeat = new ControlObjectThread(group,"repeat");
-    m_pRepeat->slotSet(1.0);
+    //m_pRepeat->slotSet(1.0);
 }
 
 LoopRecorderDeck::~LoopRecorderDeck() {

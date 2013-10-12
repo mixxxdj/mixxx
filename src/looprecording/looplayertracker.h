@@ -46,6 +46,8 @@ class LoopLayerTracker : public QObject {
         unsigned int length;
     };
 
+    unsigned int getCurrentLength();
+
     ConfigObject<ConfigValue>* m_pConfig;
     QList<LayerInfo*> m_layers;
     int m_iCurrentLayer;
@@ -56,6 +58,9 @@ class LoopLayerTracker : public QObject {
     ControlObjectThread* m_pLoopDeck1Stop;
     ControlObjectThread* m_pLoopDeck1Eject;
     ControlObjectThread* m_pLoopDeck1Pregain;
+    ControlObjectThread* m_pLoopDeck1LoopIn;
+    ControlObjectThread* m_pLoopDeck1LoopOut;
+    ControlObjectThread* m_pLoopDeck1LoopEnabled;
     ControlObjectThread* m_pLoopDeck2Play;
     ControlObjectThread* m_pLoopDeck2Stop;
     ControlObjectThread* m_pLoopDeck2Eject;
