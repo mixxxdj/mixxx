@@ -234,7 +234,9 @@ void MixxxApp::initializeKeyboard() {
 
 MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         : m_runtime_timer("MixxxApp::runtime"),
-          m_cmdLineArgs(args) {
+          m_cmdLineArgs(args),
+          m_pVinylcontrol1Enabled(NULL),
+          m_pVinylcontrol2Enabled(NULL) {
     logBuildDetails();
     ScopedTimer t("MixxxApp::MixxxApp");
     m_runtime_timer.start();
@@ -585,6 +587,8 @@ MixxxApp::~MixxxApp()
     // (vinylcontrol_enabled in VinylControlControl)
     qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
     delete m_pVCManager;
+    delete m_pVinylcontrol1Enabled;
+    delete m_pVinylcontrol2Enabled;
 #endif
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
@@ -985,9 +989,9 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl->setWhatsThis(buildWhatsThis(vinylControlTitle1, vinylControlText));
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl(bool)));
-    ControlObjectThread* enabled1 = new ControlObjectThread(
-            "[Channel1]", "vinylcontrol_enabled", this);
-    connect(enabled1, SIGNAL(valueChanged(double)), this,
+    ControlObjectThread* m_pVinylcontrol1Enabled = new ControlObjectThread(
+            "[Channel1]", "vinylcontrol_enabled");
+    connect(m_pVinylcontrol1Enabled, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2 = new QAction(vinylControlTitle2, this);
@@ -1000,9 +1004,9 @@ void MixxxApp::initActions()
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl2(bool)));
 
-    ControlObjectThread* enabled2 = new ControlObjectThread(
-            "[Channel2]", "vinylcontrol_enabled", this);
-    connect(enabled2, SIGNAL(valueChanged(double)), this,
+    ControlObjectThread* m_pVinylcontrol2Enabled = new ControlObjectThread(
+            "[Channel2]", "vinylcontrol_enabled");
+    connect(m_pVinylcontrol2Enabled, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl2(double)));
 #endif
 
