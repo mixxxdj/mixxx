@@ -120,7 +120,7 @@ void LoopLayerTracker::stop(bool clearDeck) {
 
 QString LoopLayerTracker::getCurrentPath() {
     if (m_layers.empty()) {
-        return QString::QString("");
+        return QString("");
     } else {
         return m_layers.at(m_iCurrentLayer)->path;
     }

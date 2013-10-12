@@ -202,7 +202,7 @@ void LoopRecordingManager::slotChangeExportDestination(double v) {
     if (samplerNum >= m_iNumSamplers) {
         m_loopDestination = "Sampler1";
     } else {
-        m_loopDestination = QString::QString("Sampler%1").arg(++samplerNum);
+        m_loopDestination = QString("Sampler%1").arg(++samplerNum);
     }
     emit destinationChanged(m_loopDestination);
 }
@@ -243,7 +243,7 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
         qDebug() << "Channel: " << deckNum;
 
         if (deckNum > 0 && deckNum < m_iNumDecks) {
-            m_loopSource = QString::QString("Channel%1").arg(++deckNum);
+            m_loopSource = QString("Channel%1").arg(++deckNum);
         } else if (deckNum >= m_iNumDecks && m_iNumSamplers > 0) {
             m_loopSource = "Sampler1";
         } else {
@@ -252,7 +252,7 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
     } else if (m_loopSource.startsWith("Sampler")) {
         int samplerNum = m_loopSource.right(1).toInt();
         if (samplerNum > 0 && samplerNum < m_iNumSamplers) {
-            m_loopSource = QString::QString("Sampler%1").arg(++samplerNum);
+            m_loopSource = QString("Sampler%1").arg(++samplerNum);
         } else {
             m_loopSource = "Master";
         }
