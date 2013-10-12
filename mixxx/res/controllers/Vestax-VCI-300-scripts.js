@@ -6,7 +6,7 @@
  *
  * Technical details
  * -----------------
- * - High-res jog wheels (1664 steps per revolution) for scratching and
+ * - High-res jog wheels (1600 steps per revolution) for scratching and
  *   pitch bending
  * - High-res pitch sliders (9-bit = 512 steps)
  * - VU meters display left/right channel volume (incl. peak indicator)
@@ -64,6 +64,7 @@
  * - TODO: Implement soft-takeover for "rate"
  * - TODO: Crates/Files/Browse buttons are connected but currently unused
  * - TODO: Line fader curve knob is connected but currently unused
+ * - TODO: Clicking on the spinny button does not enable/disable scratch mode
  *
  * Revision history
  * ----------------
@@ -139,6 +140,14 @@
  * 2013-10-07 Improve stutter play implementation
  *            - Adjust the stutter play position when setting a new cue
  *              point on the fly by pressing Shift + Cue while playing.
+ * 2013-10-12 Adjust and fine-tune parameters
+ *            - Exactly measured the and adjusted jog resolution
+ *              parameters. It's only 1600 instead of 1664 steps per
+ *              revolution!! This was wrong since the initial version :(
+ *            - Synchronized jog feedback between scratching and cueing
+ *              by using a linear characteristic
+ *            - Slightly increased sensitivity for jog scrolling
+ *            - Some code cleanup and simplification
  * ...to be continued...
  *****************************************************************************/
 
@@ -147,10 +156,18 @@ function VestaxVCI300() {}
 
 VestaxVCI300.group = "[Master]";
 
-VestaxVCI300.jogResolution = 1664; // Steps per revolution
+VestaxVCI300.jogResolution = 1600; // Steps per revolution: (0x0C << 7) + 0x40 = 1536 + 64 = 1600
 VestaxVCI300.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0 // Mixxx constant
-VestaxVCI300.jogCueSensitivityScale = 64.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
-VestaxVCI300.jogCueSensitivityPow = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
+
+// At jogCueSensitivityScale = 63.0 and jogCueSensitivityPow the
+// virtual platter in scratch mode is almost synchronized wit the
+// jog wheel of the VCI-300 when spinning the rim without actually
+// touching the platter surface (-> same behaviour as in cue mode)
+VestaxVCI300.jogCueSensitivityScale = 63.0 / VestaxVCI300.jogResolution; // best match(?)
+VestaxVCI300.jogCueSensitivityPow = 1.0; // 1.0 = linear (like scratching)
+
+// You might adjust the jog sensitivity for pitch bending according to
+// your personal preferences.
 VestaxVCI300.jogTempoSensitivityScale = 24.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
 VestaxVCI300.jogTempoSensitivityPow = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
 
@@ -159,13 +176,13 @@ VestaxVCI300.scratchAlpha = 1.0 / 8.0; /*TUNABLE PARAM*/
 VestaxVCI300.scratchBeta = VestaxVCI300.scratchAlpha / 32.0; /*TUNABLE PARAM*/
 VestaxVCI300.disableScratchingJogDeltaThreshold = 1; /*TUNABLE PARAM*/
 VestaxVCI300.disableScratchingPlayNegJogDeltaThreshold = 4; /*TUNABLE PARAM*/
-VestaxVCI300.disableScratchingPlayPosJogDeltaThreshold = 7; /*TUNABLE PARAM*/
+VestaxVCI300.disableScratchingPlayPosJogDeltaThreshold = 16; /*TUNABLE PARAM*/
 VestaxVCI300.disableScratchingTimeoutMillisec = 20; // Mixxx minimum timeout = 20 ms
 
 VestaxVCI300.jogScrollBias = 0.0; // Initialize jog scroll
-VestaxVCI300.jogScrollDeltaStepsPerTrack = 13; // 1664 / 13 = 128 tracks per revolution /*TUNABLE PARAM*/
+VestaxVCI300.jogScrollDeltaStepsPerTrack = 8; // 1600 / 8 = 200 tracks per revolution /*TUNABLE PARAM*/
 
-VestaxVCI300.pitchFineTuneStepPercent100 = 1; // 1/100 %
+VestaxVCI300.pitchFineTuneStepPercent100 = 1; // = 1/100 %
 
 VestaxVCI300.autoLoopBeatsArray = [
 	"0.0625",
@@ -192,15 +209,16 @@ VestaxVCI300.allLEDs = [];
 VestaxVCI300.updatePitchValue = function (group, pitchHigh, pitchLow) {
 	// 0x00 <= pitchHigh <= 0x7F
 	// pitchLow = 0x00/0x20/0x40/0x60 -> 2 out of 7 bits
-	var pitchValue = (pitchHigh << 7) | pitchLow;
+	var pitchValue = (pitchHigh << 2) | (pitchLow >> 5);
 	// pitchValueMin    = 0
-	// pitchValueCenter = 8192 = 0x2000
-	// pitchValueMax    = 16352
-	if (pitchValue <= 8192) {
-		engine.setValue(group, "rate", (8192 - pitchValue) / 8192.0);
+	// pitchValueCenter = 256
+	// pitchValueMax    = 511
+	if (pitchValue <= 256) {
+		// negative range (incl. center): 256 steps
+		engine.setValue(group, "rate", (256 - pitchValue) / 256.0);
 	} else {
-		// 8160 = 16352 - 8192
-		engine.setValue(group, "rate", (8192 - pitchValue) / 8160.0);
+		// positive range: 511 - 256 = 255 steps
+		engine.setValue(group, "rate", (256 - pitchValue) / 255.0);
 	}
 };
 
@@ -358,7 +376,6 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 	// 0x00 <= jogHigh/jogLow <= 0x7F
 	var jogValue = (jogHigh << 7) | jogLow;
 	// 0x0000 <= jogValue <= 0x3FFF (14-bit, cyclic)
-	// 1 revolution = 0x0D00 = 1664 steps
 	if (undefined != this.jogValue) {
 		this.jogDelta = jogValue - this.jogValue;
 		if (this.jogDelta >= 0x2000) {
@@ -901,25 +918,19 @@ VestaxVCI300.onAutoTempoButton = function (channel, control, value, status, grou
 	if (VestaxVCI300.scrollState) {
 		// tap bpm
 		engine.setValue(group, "bpm_tap", VestaxVCI300.getButtonPressed(value));
-		if (VestaxVCI300.getButtonPressed(value)) {
-			deck.beatSyncLED.trigger(true);
-		} else {
-			engine.trigger(group, "beatsync");
-		}
-	} else if (deck.shiftState) {
-		// quantize
-		engine.setValue(group, "bpm_tap", false);
-		if (VestaxVCI300.getButtonPressed(value)) {
-			VestaxVCI300.toggleBinaryValue(group, "quantize");
-			deck.beatSyncLED.trigger(true);
-		} else {
-			engine.trigger(group, "beatsync");
-		}
 	} else {
-		// beatsync
 		engine.setValue(group, "bpm_tap", false);
-		engine.setValue(group, "beatsync", VestaxVCI300.getButtonPressed(value));
+		if (deck.shiftState) {
+			// quantize
+			if (VestaxVCI300.getButtonPressed(value)) {
+				VestaxVCI300.toggleBinaryValue(group, "quantize");
+			}
+		} else {
+			// beatsync
+			engine.setValue(group, "beatsync", VestaxVCI300.getButtonPressed(value));
+		}
 	}
+	deck.beatSyncLED.trigger(VestaxVCI300.getButtonPressed(value));
 };
 
 VestaxVCI300.onPFLButton = function (channel, control, value, status, group) {
