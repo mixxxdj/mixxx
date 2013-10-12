@@ -450,6 +450,8 @@ void LoopRecordingManager::startRecording() {
 
     QString numberStr = QString::number(m_iLoopNumber++);
 
+    setRecordingDir();
+
     m_recordingLocation = QString("%1/%2-%3_%4.%5").arg(
             m_recordingTempDir, "loop", numberStr, m_dateTime, m_encodingType.toLower());
 
