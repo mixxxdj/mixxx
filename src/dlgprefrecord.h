@@ -23,25 +23,18 @@
 #include "ui_dlgprefrecorddlg.h"
 #include "configobject.h"
 
-
 class ControlObject;
-class ControlObjectThreadMain;
-
-
+class ControlObjectThread;
 
 class QWidget;
-/**
-  *@author John Sully
-  */
 
 class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
   public: 
     DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config);
     ~DlgPrefRecord();
-    
   public slots:
-    /** Apply changes to widget */
+    // Apply changes to widget
     void slotApply();
     void slotUpdate();
     void slotEncoding();
@@ -49,7 +42,7 @@ class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
     void slotRecordPathChange();
     void slotEnableCueFile(int);
     void slotChangeSplitSize();
-    /** Dialog to browse for recordings directory */
+    // Dialog to browse for recordings directory
     void slotBrowseRecordingsDir();
     
   signals:
@@ -65,9 +58,9 @@ class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
     int getSliderQualityVal();
     void updateTextQuality();
 
-    /** Pointer to config object */
+    // Pointer to config object
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObjectThreadMain* m_pRecordControl;
+    ControlObjectThread* m_pRecordControl;
     bool m_bConfirmOverwrite;
     QString fileTypeExtension;
 

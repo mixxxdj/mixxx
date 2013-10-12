@@ -638,16 +638,16 @@ MixxxApp::~MixxxApp()
     delete m_pConfig;
 
     // Check for leaked ControlObjects and give warnings.
-    QList<ControlObject*> leakedControls;
+    QList<ControlDoublePrivate*> leakedControls;
     QList<ConfigKey> leakedConfigKeys;
 
-    ControlObject::getControls(&leakedControls);
+    ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
         qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
-        foreach (ControlObject* pControl, leakedControls) {
-            ConfigKey key = pControl->getKey();
-            qDebug() << key.group << key.item;
+        foreach (ControlDoublePrivate* pCOP, leakedControls) {
+            ConfigKey key = pCOP->getKey();
+            qDebug() << key.group << key.item << pCOP->getCreatorCO();
             leakedConfigKeys.append(key);
         }
 
@@ -660,15 +660,15 @@ MixxxApp::~MixxxApp()
    }
    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
-   delete m_pKeyboard;
-   delete m_pKbdConfig;
-   delete m_pKbdConfigEmpty;
+    delete m_pKeyboard;
+    delete m_pKbdConfig;
+    delete m_pKbdConfigEmpty;
 
-   WaveformWidgetFactory::destroy();
-   t.elapsed(true);
-   // Report the total time we have been running.
-   m_runtime_timer.elapsed(true);
-   StatsManager::destroy();
+    WaveformWidgetFactory::destroy();
+    t.elapsed(true);
+    // Report the total time we have been running.
+    m_runtime_timer.elapsed(true);
+    StatsManager::destroy();
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
@@ -834,7 +834,7 @@ QString buildWhatsThis(const QString& title, const QString& text) {
     return QString("%1\n\n%2").arg(preparedTitle.replace("&", ""), text);
 }
 
-/** initializes all QActions of the application */
+// initializes all QActions of the application
 void MixxxApp::initActions()
 {
     QString loadTrackText = tr("Load Track to Deck %1");
@@ -993,7 +993,7 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl->setWhatsThis(buildWhatsThis(vinylControlTitle1, vinylControlText));
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl(bool)));
-    ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
+    ControlObjectThread* enabled1 = new ControlObjectThread(
             "[Channel1]", "vinylcontrol_enabled", this);
     connect(enabled1, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl(double)));
@@ -1008,7 +1008,7 @@ void MixxxApp::initActions()
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl2(bool)));
 
-    ControlObjectThreadMain* enabled2 = new ControlObjectThreadMain(
+    ControlObjectThread* enabled2 = new ControlObjectThread(
             "[Channel2]", "vinylcontrol_enabled", this);
     connect(enabled2, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl2(double)));

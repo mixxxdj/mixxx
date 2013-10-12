@@ -11,17 +11,17 @@
 const int WaveformWidgetRenderer::s_waveformMinZoom = 1;
 const int WaveformWidgetRenderer::s_waveformMaxZoom = 6;
 
-WaveformWidgetRenderer::WaveformWidgetRenderer() {
-    m_playPosControlObject = NULL;
-    m_rateControlObject = NULL;
-    m_rateRangeControlObject = NULL;
-    m_rateDirControlObject = NULL;
-    m_gainControlObject = NULL;
-    m_trackSamplesControlObject = NULL;
-
+WaveformWidgetRenderer::WaveformWidgetRenderer()
+    : m_pPlayPosControlObject(NULL),
+      m_pRateControlObject(NULL),
+      m_pRateRangeControlObject(NULL),
+      m_pRateDirControlObject(NULL),
+      m_pGainControlObject(NULL),
+      m_pTrackSamplesControlObject(NULL)
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
-    m_timer = NULL;
+      , m_timer(NULL)
 #endif
+{
 }
 
 WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
@@ -42,17 +42,17 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group) :
     m_audioSamplePerPixel = 1.0;
 
     // Really create some to manage those
-    m_playPosControlObject = NULL;
+    m_pPlayPosControlObject = NULL;
     m_playPos = 0.0;
-    m_rateControlObject = NULL;
+    m_pRateControlObject = NULL;
     m_rate = 0.0;
-    m_rateRangeControlObject = NULL;
+    m_pRateRangeControlObject = NULL;
     m_rateRange = 0.0;
-    m_rateDirControlObject = NULL;
+    m_pRateDirControlObject = NULL;
     m_rateDir = 0.0;
-    m_gainControlObject = NULL;
+    m_pGainControlObject = NULL;
     m_gain = 1.0;
-    m_trackSamplesControlObject = NULL;
+    m_pTrackSamplesControlObject = NULL;
     m_trackSamples = -1.0;
 
 
@@ -74,12 +74,12 @@ WaveformWidgetRenderer::~WaveformWidgetRenderer() {
     for( int i = 0; i < m_rendererStack.size(); ++i)
         delete m_rendererStack[i];
 
-    delete m_playPosControlObject;
-    delete m_rateControlObject;
-    delete m_rateRangeControlObject;
-    delete m_rateDirControlObject;
-    delete m_gainControlObject;
-    delete m_trackSamplesControlObject;
+    delete m_pPlayPosControlObject;
+    delete m_pRateControlObject;
+    delete m_pRateRangeControlObject;
+    delete m_pRateDirControlObject;
+    delete m_pGainControlObject;
+    delete m_pTrackSamplesControlObject;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
     delete m_timer;
@@ -90,17 +90,17 @@ bool WaveformWidgetRenderer::init() {
 
     //qDebug() << "WaveformWidgetRenderer::init";
 
-    m_playPosControlObject = new ControlObjectThreadMain(
+    m_pPlayPosControlObject = new ControlObjectThread(
             m_group, "visual_playposition");
-    m_rateControlObject = new ControlObjectThreadMain(
+    m_pRateControlObject = new ControlObjectThread(
             m_group, "rate");
-    m_rateRangeControlObject = new ControlObjectThreadMain(
+    m_pRateRangeControlObject = new ControlObjectThread(
             m_group, "rateRange");
-    m_rateDirControlObject = new ControlObjectThreadMain(
+    m_pRateDirControlObject = new ControlObjectThread(
             m_group, "rate_dir");
-    m_gainControlObject = new ControlObjectThreadMain(
+    m_pGainControlObject = new ControlObjectThread(
             m_group, "total_gain");
-    m_trackSamplesControlObject = new ControlObjectThreadMain(
+    m_pTrackSamplesControlObject = new ControlObjectThread(
             m_group, "track_samples");
 
     for (int i = 0; i < m_rendererStack.size(); ++i) {
@@ -113,18 +113,18 @@ bool WaveformWidgetRenderer::init() {
 
 void WaveformWidgetRenderer::onPreRender() {
     // For a valid track to render we need
-    m_trackSamples = m_trackSamplesControlObject->get();
+    m_trackSamples = m_pTrackSamplesControlObject->get();
     if (m_trackSamples <= 0.0) {
         return;
     }
 
     //Fetch parameters before rendering in order the display all sub-renderers with the same values
-    m_rate = m_rateControlObject->get();
-    m_rateDir = m_rateDirControlObject->get();
-    m_rateRange = m_rateRangeControlObject->get();
+    m_rate = m_pRateControlObject->get();
+    m_rateDir = m_pRateDirControlObject->get();
+    m_rateRange = m_pRateRangeControlObject->get();
     // This gain adjustment compensates for an arbitrary /2 gain chop in
     // EnginePregain. See the comment there.
-    m_gain = m_gainControlObject->get() * 2;
+    m_gain = m_pGainControlObject->get() * 2;
 
     //Legacy stuff (Ryan it that OK?) -> Limit our rate adjustment to < 99%, "Bad Things" might happen otherwise.
     m_rateAdjust = m_rateDir * math_min(0.99, m_rate * m_rateRange);
@@ -141,7 +141,7 @@ void WaveformWidgetRenderer::onPreRender() {
         m_audioSamplePerPixel = 0.0;
     }
 
-    m_playPos = m_playPosControlObject->get();
+    m_playPos = m_pPlayPosControlObject->get();
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
     if (m_audioSamplePerPixel && m_playPos != -1) {
@@ -153,7 +153,7 @@ void WaveformWidgetRenderer::onPreRender() {
         double displayedLengthHalf = static_cast<double>(m_width) / trackPixel / 2.0;
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
-        m_playPos = round(m_playPosControlObject->get() * trackPixel) / trackPixel;
+        m_playPos = round(m_pPlayPosControlObject->get() * trackPixel) / trackPixel;
         m_firstDisplayedPosition = m_playPos - displayedLengthHalf;
         m_lastDisplayedPosition = m_playPos + displayedLengthHalf;
         m_rendererTransformationOffset = - m_firstDisplayedPosition;

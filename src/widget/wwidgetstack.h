@@ -26,7 +26,7 @@ class WidgetStackControlListener : public QObject {
     void slotValueChanged(double v);
 
   private:
-    ControlObjectThreadMain m_control;
+    ControlObjectThread m_control;
     const int m_index;
 };
 
@@ -46,8 +46,8 @@ class WWidgetStack : public QStackedWidget {
 
   private:
     QSignalMapper m_mapper;
-    ControlObjectThreadMain m_nextControl;
-    ControlObjectThreadMain m_prevControl;
+    ControlObjectThread m_nextControl;
+    ControlObjectThread m_prevControl;
 };
 
 #endif /* WWIDGETSTACK_H */

@@ -7,14 +7,9 @@
 #include "controlpotmeter.h"
 
 EngineFilterEffect::EngineFilterEffect(const char* group) {
-    potmeterDepth = ControlObject::getControl(ConfigKey(group, "filterDepth"));
-    if (potmeterDepth == NULL) {
-        potmeterDepth = new ControlPotmeter(ConfigKey(group, "filterDepth"),
-                                            -1., 1.);
-    }
-
-    filterEnable = new ControlPushButton(ConfigKey(group, "filter"));
-    filterEnable->setButtonMode(ControlPushButton::TOGGLE);
+    m_pPotmeterDepth = new ControlPotmeter(ConfigKey(group, "filterDepth"), -1., 1.);
+    m_pFilterEnable = new ControlPushButton(ConfigKey(group, "filter"));
+    m_pFilterEnable->setButtonMode(ControlPushButton::TOGGLE);
 
     // TODO(XXX) 44100 should be changed to real sample rate
     // https://bugs.launchpad.net/mixxx/+bug/1208816
@@ -25,7 +20,7 @@ EngineFilterEffect::EngineFilterEffect(const char* group) {
     m_pCrossfade_buffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pBandpass_buffer = SampleUtil::alloc(MAX_BUFFER_LEN);
 
-    old_depth = 0.0f;
+    m_old_depth = 0.0f;
 }
 
 EngineFilterEffect::~EngineFilterEffect() {
@@ -33,8 +28,8 @@ EngineFilterEffect::~EngineFilterEffect() {
     delete m_pBandpassFilter;
     delete m_pHighFilter;
 
-    delete potmeterDepth;
-    delete filterEnable;
+    delete m_pPotmeterDepth;
+    delete m_pFilterEnable;
 
     SampleUtil::free(m_pCrossfade_buffer);
     SampleUtil::free(m_pBandpass_buffer);
@@ -59,9 +54,9 @@ void EngineFilterEffect::applyFilters(const CSAMPLE* pIn, CSAMPLE* pOut,
 void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
                                  const int iBufferSize) {
     CSAMPLE* pOutput = (CSAMPLE*)pOut;
-    float depth = potmeterDepth->get();
+    float depth = m_pPotmeterDepth->get();
 
-    if (filterEnable->get() == 0.0f) {
+    if (m_pFilterEnable->get() == 0.0f) {
         depth = 0.0;
     }
 
@@ -69,13 +64,13 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
     // Length of bandpass filter
     float bandpass_size = 0.01f;
 
-    if (depth != old_depth) {
-        if (old_depth == 0.0f) {
+    if (depth != m_old_depth) {
+        if (m_old_depth == 0.0f) {
             SampleUtil::copyWithGain(m_pCrossfade_buffer, pIn, 1.0f, iBufferSize);
-        } else if (old_depth == -1.0f || old_depth == 1.0f) {
+        } else if (m_old_depth == -1.0f || m_old_depth == 1.0f) {
             SampleUtil::copyWithGain(m_pCrossfade_buffer, pIn, 0.0f, iBufferSize);
         } else {
-            applyFilters(pIn, m_pCrossfade_buffer, iBufferSize, old_depth);
+            applyFilters(pIn, m_pCrossfade_buffer, iBufferSize, m_old_depth);
         }
         if (depth < 0.0f) {
             // Lowpass + bandpass
@@ -101,11 +96,11 @@ void EngineFilterEffect::process(const CSAMPLE* pIn, const CSAMPLE* pOut,
         applyFilters(pIn, pOutput, iBufferSize, depth);
     }
 
-    if (depth != old_depth) {
+    if (depth != m_old_depth) {
         SampleUtil::linearCrossfadeBuffers(pOutput, m_pCrossfade_buffer,
                                            pOutput, iBufferSize);
     }
 
-    old_depth = depth;
+    m_old_depth = depth;
 }
 

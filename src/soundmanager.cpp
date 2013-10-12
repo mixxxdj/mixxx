@@ -54,7 +54,6 @@ SoundManager::SoundManager(ConfigObject<ConfigValue> *pConfig,
     m_pControlObjectSoundStatusCO = new ControlObject(ConfigKey("[SoundManager]", "status"));
     m_pControlObjectSoundStatusCO->set(SOUNDMANAGER_DISCONNECTED);
     m_pControlObjectVinylControlGainCO = new ControlObject(ConfigKey(VINYL_PREF_KEY, "gain"));
-    m_pControlObjectVinylControlGain = new ControlObjectThreadMain(m_pControlObjectVinylControlGainCO->getKey());
 
     //Hack because PortAudio samplerate enumeration is slow as hell on Linux (ALSA dmix sucks, so we can't blame PortAudio)
     m_samplerates.push_back(44100);
@@ -85,7 +84,6 @@ SoundManager::~SoundManager() {
     // by clearDeviceList -- bkgood
 
     delete m_pControlObjectSoundStatusCO;
-    delete m_pControlObjectVinylControlGain;
     delete m_pControlObjectVinylControlGainCO;
 }
 

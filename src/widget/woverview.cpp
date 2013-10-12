@@ -47,12 +47,12 @@ WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWi
         m_b(0.0),
         m_analyserProgress(-1),
         m_trackLoaded(false) {
-    m_endOfTrackControl = new ControlObjectThreadMain(
+    m_endOfTrackControl = new ControlObjectThread(
             m_group, "end_of_track");
     connect(m_endOfTrackControl, SIGNAL(valueChanged(double)),
              this, SLOT(onEndOfTrackChange(double)));
-    m_trackSamplesControl = new ControlObjectThreadMain(m_group, "track_samples");
-    m_playControl = new ControlObjectThreadMain(m_group, "play");
+    m_trackSamplesControl = new ControlObjectThread(m_group, "track_samples");
+    m_playControl = new ControlObjectThread(m_group, "play");
     setAcceptDrops(true);
 }
 
