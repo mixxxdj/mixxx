@@ -26,8 +26,7 @@
 static const int kPlayingDeckUpdateIntervalMillis = 2000;
 
 PlayerInfo::PlayerInfo()
-        : m_COxfader("[Master]","crossfader"),
-          m_currentlyPlayingDeck(-1) {
+        : m_currentlyPlayingDeck(-1) {
     startTimer(kPlayingDeckUpdateIntervalMillis);
 }
 
@@ -102,24 +101,25 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     for (unsigned int i = 0; i < PlayerManager::numDecks(); ++i) {
         QString group = PlayerManager::groupForDeck(i);
 
-        if (ControlObject::get(ConfigKey(group, "play")) == 0.0) {
+        if (getControlObjectThread(group, "play")->get() == 0.0) {
             continue;
         }
 
-        if (ControlObject::get(ConfigKey(group, "pregain")) <= 0.5) {
+        if (getControlObjectThread(group, "pregain")->get() <= 0.5) {
             continue;
         }
 
-        double fvol = ControlObject::get(ConfigKey(group, "volume"));
+        double fvol = getControlObjectThread(group, "volume")->get();
         if (fvol == 0.0) {
             continue;
         }
 
         double xfl, xfr;
-        EngineXfader::getXfadeGains(m_COxfader.get(), 1.0, 0.0, false, false,
-                                    &xfl, &xfr);
+        EngineXfader::getXfadeGains(
+                getControlObjectThread("[Master]", "crossfader")->get(),
+                1.0, 0.0, false, false, &xfl, &xfr);
 
-        int orient = ControlObject::get(ConfigKey(group, "orientation"));
+        int orient = getControlObjectThread(group, "orientation")->get();
         double xfvol;
         if (orient == EngineChannel::LEFT) {
             xfvol = xfl;
@@ -154,4 +154,29 @@ TrackPointer PlayerInfo::getCurrentPlayingTrack() {
         return getTrackInfo(PlayerManager::groupForDeck(deck));
     }
     return TrackPointer();
+}
+
+ControlObjectThread* PlayerInfo::getControlObjectThread(QString group, QString name) {
+    ConfigKey key = ConfigKey(group, name);
+    ControlObjectThread* cot = m_controlCache.value(key, NULL);
+    if (cot == NULL) {
+        // create COT
+        cot = new ControlObjectThread(key, this);
+        if (cot->valid()) {
+            m_controlCache.insert(key, cot);
+        } else {
+            delete cot;
+            cot = NULL;
+        }
+    }
+    return cot;
+}
+
+void PlayerInfo::clearControlCache() {
+    QMutexLocker locker(&m_mutex);
+    for (QHash<ConfigKey, ControlObjectThread*>::const_iterator it = m_controlCache.begin();
+            it != m_controlCache.end(); ++it) {
+            delete it.value();
+    }
+    m_controlCache.clear();
 }

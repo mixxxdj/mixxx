@@ -35,6 +35,7 @@ class PlayerInfo : public QObject {
     QMap<QString, TrackPointer> getLoadedTracks();
     bool isTrackLoaded(const TrackPointer& pTrack) const;
     bool isFileLoaded(const QString& track_location) const;
+    void clearControlCache();
 
 
   signals:
@@ -46,14 +47,15 @@ class PlayerInfo : public QObject {
     void timerEvent(QTimerEvent* pTimerEvent);
     void updateCurrentPlayingDeck();
     int getCurrentPlayingDeck();
+    ControlObjectThread* getControlObjectThread(QString group, QString name);
 
     PlayerInfo();
     virtual ~PlayerInfo();
 
     mutable QMutex m_mutex;
-    ControlObjectThread m_COxfader;
     QMap<QString, TrackPointer> m_loadedTrackMap;
     int m_currentlyPlayingDeck;
+    QHash<ConfigKey, ControlObjectThread*> m_controlCache;
 };
 
 #endif /* _PLAYERINFO_H_ */

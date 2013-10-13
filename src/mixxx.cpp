@@ -57,6 +57,7 @@
 #include "util/statsmanager.h"
 #include "util/timer.h"
 #include "util/version.h"
+#include "playerinfo.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -628,6 +629,8 @@ MixxxApp::~MixxxApp()
 
     qDebug() << "delete config " << qTime.elapsed();
     delete m_pConfig;
+
+    PlayerInfo::Instance().clearControlCache();
 
     // Check for leaked ControlObjects and give warnings.
     QList<ControlDoublePrivate*> leakedControls;
