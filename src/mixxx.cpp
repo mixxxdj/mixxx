@@ -989,7 +989,7 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl->setWhatsThis(buildWhatsThis(vinylControlTitle1, vinylControlText));
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl(bool)));
-    ControlObjectThread* m_pVinylcontrol1Enabled = new ControlObjectThread(
+    m_pVinylcontrol1Enabled = new ControlObjectThread(
             "[Channel1]", "vinylcontrol_enabled");
     connect(m_pVinylcontrol1Enabled, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl(double)));
@@ -1004,7 +1004,7 @@ void MixxxApp::initActions()
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl2(bool)));
 
-    ControlObjectThread* m_pVinylcontrol2Enabled = new ControlObjectThread(
+    m_pVinylcontrol2Enabled = new ControlObjectThread(
             "[Channel2]", "vinylcontrol_enabled");
     connect(m_pVinylcontrol2Enabled, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl2(double)));
@@ -1310,8 +1310,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::set(ConfigKey(
                     "[Channel1]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
-            ControlObject::set(ConfigKey(
-                    "[Channel1]", "vinylcontrol_enabled"), (double)0);
+            m_pVinylcontrol1Enabled->set(0.0);
         }
     }
 #endif
@@ -1320,7 +1319,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
 void MixxxApp::slotCheckboxVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_enabled"), (double)toggle);
+    m_pVinylcontrol1Enabled->set((double)toggle);
 #endif
 }
 
@@ -1341,8 +1340,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::set(ConfigKey(
                     "[Channel2]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
-            ControlObject::set(ConfigKey(
-                    "[Channel2]", "vinylcontrol_enabled"), (double)0);
+            m_pVinylcontrol2Enabled->set(0.0);
           }
     }
 #endif
@@ -1351,7 +1349,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_enabled"), (double)toggle);
+    m_pVinylcontrol2Enabled->set((double)toggle);
 #endif
 }
 
