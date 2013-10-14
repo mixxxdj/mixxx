@@ -45,8 +45,10 @@
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
                            bool bEnableSidechain,
-                           bool bRampingGain)
+                           bool bRampingGain,
+                           bool bEnableLoopRecord)
         : m_bRampingGain(bRampingGain),
+          m_bLoopRecordEnabled(bEnableLoopRecord),
           m_headphoneMasterGainOld(0.0),
           m_headphoneVolumeOld(1.0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
@@ -224,11 +226,6 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
             continue;
         }
 
-//        if (pChannel->getGroup().contains("LoopRecorder")) {
-//            // TODO(carl): Don't mix loop recorder playback channels right
-//            // away.
-//        }
-
         bool needsProcessing = false;
         if (pChannel->isMaster()) {
             busChannelConnectionFlags[pChannel->getOrientation()] |= (1 << channel_number);
@@ -243,7 +240,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
 
         // Copy audio from input to loop recorder buffer.
-        if (pChannel->getGroup().contains(loopSource)) {
+        if (m_bLoopRecordEnabled && pChannel->getGroup().contains(loopSource)) {
             SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
             bLoopCopied = true;
         }
@@ -330,15 +327,17 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
 
     // Loop Recorder: Send master/headphone mix to loop recorder if selected.
-    if (loopSource == "Master") {
-        SampleUtil::copyWithGain(m_pLoop, m_pMaster, 1.0, iBufferSize);
-        bLoopCopied = true;
-    } else if (loopSource == "Headphones") {
-        SampleUtil::copyWithGain(m_pLoop, m_pHead, 1.0, iBufferSize);
-        bLoopCopied = true;
-    }
-    if (bLoopCopied) {
-        m_pLoopRecorder->writeSamples(m_pLoop, iBufferSize);
+    if(m_bLoopRecordEnabled) {
+        if (loopSource == "Master") {
+            SampleUtil::copyWithGain(m_pLoop, m_pMaster, 1.0, iBufferSize);
+            bLoopCopied = true;
+        } else if (loopSource == "Headphones") {
+            SampleUtil::copyWithGain(m_pLoop, m_pHead, 1.0, iBufferSize);
+            bLoopCopied = true;
+        }
+        if (bLoopCopied) {
+            m_pLoopRecorder->writeSamples(m_pLoop, iBufferSize);
+        }
     }
     
     // Submit master samples to the side chain to do shoutcasting, recording,

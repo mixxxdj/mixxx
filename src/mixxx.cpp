@@ -254,6 +254,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #ifdef __SHOUTCAST__
     m_pShoutcastManager = NULL;
 #endif
+
+    bool bLoopRecordEnabled = m_cmdLineArgs.getLoopRecorder();
     m_pLoopRecordingManager = NULL;
               
     // Check to see if this is the first time this version of Mixxx is run
@@ -274,7 +276,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     initializeKeyboard();
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", true, true, bLoopRecordEnabled);
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
 #ifdef __SHOUTCAST__

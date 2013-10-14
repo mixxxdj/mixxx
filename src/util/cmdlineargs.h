@@ -39,6 +39,8 @@ class CmdlineArgs {
                 m_midiDebug = true;
             } else if (QString::fromLocal8Bit(argv[i]).contains("--developer", Qt::CaseInsensitive)) {
                 m_developer = true;
+            } else if (QString::fromLocal8Bit(argv[i]).contains("--loopRecorder", Qt::CaseInsensitive)) {
+                m_loopRecorder = true;
             } else {
                 m_musicFiles += QString::fromLocal8Bit(argv[i]);
             }
@@ -49,6 +51,7 @@ class CmdlineArgs {
     bool getStartInFullscreen() const { return m_startInFullscreen; }
     bool getMidiDebug() const { return m_midiDebug; }
     bool getDeveloper() const { return m_developer; }
+    bool getLoopRecorder() const { return m_loopRecorder; }
     const QString& getLocale() const { return m_locale; }
     const QString& getSettingsPath() const { return m_settingsPath; }
     const QString& getResourcePath() const { return m_resourcePath; }
@@ -59,6 +62,7 @@ class CmdlineArgs {
         m_startInFullscreen(false), //Initialize vars
         m_midiDebug(false),
         m_developer(false),
+        m_loopRecorder(false),
         m_settingsPath(QDir::homePath().append("/").append(SETTINGS_PATH)) {
     }
     ~CmdlineArgs() { };
@@ -67,6 +71,7 @@ class CmdlineArgs {
     bool m_startInFullscreen;       /* Start in fullscreen mode */
     bool m_midiDebug;
     bool m_developer; // Developer Mode
+    bool m_loopRecorder;
     QString m_locale;
     QString m_settingsPath;
     QString m_resourcePath;

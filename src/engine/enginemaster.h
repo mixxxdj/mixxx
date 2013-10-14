@@ -46,7 +46,8 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
                  bool bEnableSidechain,
-                 bool bRampingGain=true);
+                 bool bRampingGain=true,
+                 bool bEnableLoopRecord=false);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -137,6 +138,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     };
 
     bool m_bRampingGain;
+    bool m_bLoopRecordEnabled;
     QList<ChannelInfo*> m_channels;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
