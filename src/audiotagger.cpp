@@ -21,19 +21,8 @@
 #include <taglib/wavfile.h>
 #include <taglib/textidentificationframe.h>
 
-AudioTagger::AudioTagger (QString file) {
-    m_artist = "";
-    m_title = "";
-    m_genre = "";
-    m_composer = "";
-    m_album = "";
-    m_year = "";
-    m_comment = "";
-    m_key = "";
-    m_bpm = "";
-    m_tracknumber = "";
-
-    m_file = file;
+AudioTagger::AudioTagger (QString file)
+	: m_file( file ) {
 }
 
 AudioTagger::~AudioTagger ( ) {

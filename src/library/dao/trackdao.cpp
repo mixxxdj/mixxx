@@ -1281,6 +1281,8 @@ void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
         tagger.setComment(pTrack->getComment());
         tagger.setTracknumber(pTrack->getTrackNumber());
         tagger.setBpm(pTrack->getBpmStr());
+        tagger.setKey(pTrack->getKey());
+        tagger.setComposer(pTrack->getComposer());
 
         tagger.save();
     }
