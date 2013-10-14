@@ -74,10 +74,9 @@ extern "C" void crashDlg()
 }
 
 
-bool loadTranslations(const QLocale& systemLocale, const QString& userLocale,
+bool loadTranslations(const QLocale& systemLocale, QString userLocale,
                       const QString& translation, const QString& prefix,
                       const QString& translationPath, QTranslator* pTranslator) {
-
     if (userLocale.size() == 0) {
 #if QT_VERSION >= 0x040800
         QStringList uiLanguages = systemLocale.uiLanguages();
