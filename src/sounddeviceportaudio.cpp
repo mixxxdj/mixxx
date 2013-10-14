@@ -116,7 +116,7 @@ int SoundDevicePortAudio::open() {
     // paFramesPerBufferUnspecified in non-blocking mode because the latency
     // comes from the JACK daemon. (PA should give an error or something though,
     // but it doesn't.)
-    if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
+    if (m_deviceInfo->hostApi == paJACK) {
         m_framesPerBuffer = paFramesPerBufferUnspecified;
     }
 
