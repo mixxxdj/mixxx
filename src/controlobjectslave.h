@@ -12,8 +12,8 @@
 
 class ControlDoublePrivate;
 
-// This class is the successor of ControlObjectThread it should be used for new
-// code. I it is better named and may save some CPU time because it is connected
+// This class is the successor of ControlObjectThread. It should be used for new
+// code. It is better named and may save some CPU time because it is connected
 // only on demand. There are many ControlObjectThread instances where the changed
 // signal is not needed. This change will save the set() caller for doing
 // unnecessary checks for possible connections.
@@ -52,7 +52,7 @@ class ControlObjectSlave : public QObject {
 
   signals:
     // This signal must not connected by connect()
-    // Use connectValueChanged() instead, It will connect
+    // Use connectValueChanged() instead. It will connect
     // to the base ControlDoublePrivate as well
     void valueChanged(double);
 
