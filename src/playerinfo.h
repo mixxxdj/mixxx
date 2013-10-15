@@ -44,18 +44,35 @@ class PlayerInfo : public QObject {
     void trackUnloaded(QString group, TrackPointer pTrack);
 
   private:
+    class DeckControls {
+        public:
+            DeckControls(QString& group)
+                    : m_play(group, "play"),
+                      m_pregain(group, "pregain"),
+                      m_volume(group, "volume"),
+                      m_orientation(group, "m_orientation") {
+            }
+
+            ControlObjectThread m_play;
+            ControlObjectThread m_pregain;
+            ControlObjectThread m_volume;
+            ControlObjectThread m_orientation;
+    };
+
+
     void timerEvent(QTimerEvent* pTimerEvent);
     void updateCurrentPlayingDeck();
     int getCurrentPlayingDeck();
-    ControlObjectThread* getControlObjectThread(QString group, QString name);
+    DeckControls* getDeckControls(int i);
 
     PlayerInfo();
     virtual ~PlayerInfo();
 
     mutable QMutex m_mutex;
+    ControlObjectThread* m_pCOxfader;
     QMap<QString, TrackPointer> m_loadedTrackMap;
     int m_currentlyPlayingDeck;
-    QHash<ConfigKey, ControlObjectThread*> m_controlCache;
+    QList<DeckControls*> m_deckControlList;
 };
 
 #endif /* _PLAYERINFO_H_ */
