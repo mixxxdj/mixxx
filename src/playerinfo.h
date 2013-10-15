@@ -70,6 +70,7 @@ class PlayerInfo : public QObject {
 
     mutable QMutex m_mutex;
     ControlObjectThread* m_pCOxfader;
+    // QMap is faster than QHash for small count of elements < 50
     QMap<QString, TrackPointer> m_loadedTrackMap;
     int m_currentlyPlayingDeck;
     QList<DeckControls*> m_deckControlList;
