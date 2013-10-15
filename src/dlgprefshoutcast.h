@@ -46,7 +46,7 @@ signals:
 private:
     /** Pointer to config object */
     ConfigObject<ConfigValue> *m_pConfig;
-    ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs; //If set to 1, EngineShoutcast will update it's settings.
+    ControlObjectThread* m_pUpdateShoutcastFromPrefs; //If set to 1, EngineShoutcast will update it's settings.
 
 };
 

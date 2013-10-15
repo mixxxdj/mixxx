@@ -68,8 +68,8 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(&m_playlistDao, SIGNAL(deleted(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
 
-    connect(&m_playlistDao, SIGNAL(renamed(int)),
-            this, SLOT(slotPlaylistTableChanged(int)));
+    connect(&m_playlistDao, SIGNAL(renamed(int,QString)),
+            this, SLOT(slotPlaylistTableRenamed(int,QString)));
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)));
@@ -149,6 +149,11 @@ void BasePlaylistFeature::slotRenamePlaylist() {
     }
 
     m_playlistDao.renamePlaylist(playlistId, newName);
+}
+
+void BasePlaylistFeature::slotPlaylistTableRenamed(int playlistId,
+                                                   QString /* a_strName */) {
+    slotPlaylistTableChanged(playlistId);
 }
 
 void BasePlaylistFeature::slotDuplicatePlaylist() {

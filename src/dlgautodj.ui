@@ -54,6 +54,13 @@
       </widget>
      </item>
      <item>
+      <widget class="QPushButton" name="pushButtonAddRandom">
+       <property name="text">
+        <string>Add random</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QPushButton" name="pushButtonSkipNext">
        <property name="toolTip">
         <string>Skip the next track in the Auto DJ playlist.</string>

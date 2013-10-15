@@ -25,7 +25,7 @@ ControlObjectSlave::ControlObjectSlave(const ConfigKey& key, QObject* pParent)
 }
 
 void ControlObjectSlave::initialize(const ConfigKey& key) {
-    m_pControl = ControlDoublePrivate::getControl(key, false);
+    m_pControl = ControlDoublePrivate::getControl(key);
 }
 
 ControlObjectSlave::~ControlObjectSlave() {
@@ -39,7 +39,7 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
                 receiver, method, type);
         if (ret) {
             // connect to ControlObjectPrivate only if required
-            ret = connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+            ret = connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                     this, SLOT(slotValueChanged(double, QObject*)),
                     Qt::DirectConnection);
         }

@@ -15,7 +15,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column)
           m_pButton(NULL),
           m_isOneCellInEditMode(false),
           m_column(column) {
-    m_pPreviewDeckPlay = new ControlObjectThreadMain(
+    m_pPreviewDeckPlay = new ControlObjectThread(
             PlayerManager::groupForPreviewDeck(0), "play");
     connect(m_pPreviewDeckPlay, SIGNAL(valueChanged(double)),
             this, SLOT(previewDeckPlayChanged(double)));

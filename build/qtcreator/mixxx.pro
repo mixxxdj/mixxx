@@ -1,4 +1,4 @@
-CONFIG += debug link_pkgconfig portmidi script vinylcontrol m4a
+CONFIG += debug link_pkgconfig portmidi script vinylcontrol m4a autodjcrates
 # ladspa
 DEFINES += QMAKE \ # define QMAKE for not-SCons specific ifdefs like ui_scriptstudio.h
     __PORTAUDIO__ \
@@ -155,7 +155,6 @@ $$BASE_DIR/src/controlttrotary.h \
 $$BASE_DIR/src/controlvaluedelegate.h \
 $$BASE_DIR/src/defs_audiofiles.h \
 $$BASE_DIR/src/defs.h \
-$$BASE_DIR/src/defs_promo.h \
 $$BASE_DIR/src/defs_urls.h \
 $$BASE_DIR/src/defs_version.h \
 $$BASE_DIR/src/dlgabout.h \
@@ -742,15 +741,15 @@ SOURCES += $$BASE_DIR/src/vamp/vampanalyser.cpp \
     $$BASE_DIR/src/analyservamptest.cpp \
     $$BASE_DIR/src/analyservampkeytest.cpp \
     $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginBufferingAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginLoader.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-hostsdk/RealTime.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-sdk/PluginAdapter.cpp \
-	$$BASE_DIR/lib/vamp/src/vamp-sdk/RealTime.cpp
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginChannelAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginHostAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginInputDomainAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginLoader.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginSummarisingAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/PluginWrapper.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-hostsdk/RealTime.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-sdk/PluginAdapter.cpp \
+    $$BASE_DIR/lib/vamp/src/vamp-sdk/RealTime.cpp
 }
 
 CONFIG(tonal) {
@@ -854,6 +853,14 @@ CONFIG(ffmpeg) {
         -lvorbis \
         -lm \
         -logg
+}
+
+CONFIG(autodjcrates) {
+    DEFINES += __AUTODJCRATES__
+    HEADERS +=
+        $$BASE_DIR/src/library/dao/autodjcratesdao.h
+    SOURCES +=
+        $$BASE_DIR/src/library/dao/autodjcratesdao.cpp
 }
 
 # Copy Windows dependencies to DESTDIR.

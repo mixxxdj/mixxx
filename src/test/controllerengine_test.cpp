@@ -19,9 +19,12 @@ class ControllerEngineTest : public MixxxTest {
     virtual void SetUp() {
         qDebug() << "SetUp";
         static int argc = 1;
-        static char* argv[2] = { "test", NULL };
+        static char* argv[1] = { "test"};
         QThread::currentThread()->setObjectName("Main");
-        app = new QApplication(argc, argv);
+        // start the app without the GUI so that we can generate and
+        // destroy it several times in one thread, see
+        // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
+        app = new QApplication(argc, argv, false);
         new ControlPotmeter(ConfigKey("[Test]", "potmeter"),-1.,1.);
         Controller* pController = NULL;
         cEngine = new ControllerEngine(pController);

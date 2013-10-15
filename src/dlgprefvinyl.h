@@ -59,9 +59,9 @@ private:
     //PlayerProxy *player;
     VinylControlManager* m_pVCManager;
     /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
-    ControlObjectThreadMain m_COSpeed1;
-    ControlObjectThreadMain m_COSpeed2;
+    ConfigObject<ConfigValue>* config;
+    ControlObjectThread m_COSpeed1;
+    ControlObjectThread m_COSpeed2;
 };
 
 #endif

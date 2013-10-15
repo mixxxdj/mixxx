@@ -53,25 +53,25 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_rateControls.push_back(new ControlObjectThreadMain(
+        m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlObjectThreadMain(
+        m_rateRangeControls.push_back(new ControlObjectThread(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlObjectThreadMain(
+        m_rateDirControls.push_back(new ControlObjectThread(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlObjectThreadMain(
+        m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
     }
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         QString group = PlayerManager::groupForSampler(i);
-        m_rateControls.push_back(new ControlObjectThreadMain(
+        m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlObjectThreadMain(
+        m_rateRangeControls.push_back(new ControlObjectThread(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlObjectThreadMain(
+        m_rateDirControls.push_back(new ControlObjectThread(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlObjectThreadMain(
+        m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
     }
 
@@ -212,6 +212,45 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
     connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
 
+#ifdef __AUTODJCRATES__
+
+    // The minimum available for randomly-selected tracks
+    autoDjMinimumAvailableSpinBox->setValue(
+            m_pConfig->getValueString(
+                    ConfigKey("[Auto DJ]", "MinimumAvailable"), "20").toInt());
+    connect(autoDjMinimumAvailableSpinBox, SIGNAL(valueChanged(int)), this,
+            SLOT(slotSetAutoDjMinimumAvailable(int)));
+
+    // The auto-DJ replay-age for randomly-selected tracks
+    autoDjIgnoreTimeCheckBox->setChecked(
+            (bool) m_pConfig->getValueString(
+                    ConfigKey("[Auto DJ]", "UseIgnoreTime"), "0").toInt());
+    connect(autoDjIgnoreTimeCheckBox, SIGNAL(stateChanged(int)), this,
+            SLOT(slotSetAutoDjUseIgnoreTime(int)));
+    autoDjIgnoreTimeEdit->setTime(
+            QTime::fromString(
+                    m_pConfig->getValueString(
+                            ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"),
+                    autoDjIgnoreTimeEdit->displayFormat()));
+    autoDjIgnoreTimeEdit->setEnabled(
+            autoDjIgnoreTimeCheckBox->checkState() == Qt::Checked);
+    connect(autoDjIgnoreTimeEdit, SIGNAL(timeChanged(const QTime &)), this,
+            SLOT(slotSetAutoDjIgnoreTime(const QTime &)));
+
+#else // __AUTODJCRATES__
+
+    // Remove the preferences.
+    autoDjMinimumAvailableLabel->setVisible(false);
+    GridLayout1->removeWidget(autoDjMinimumAvailableLabel);
+    autoDjMinimumAvailableSpinBox->setVisible(false);
+    GridLayout1->removeWidget(autoDjMinimumAvailableSpinBox);
+    autoDjIgnoreTimeCheckBox->setVisible(false);
+    GridLayout1->removeWidget(autoDjIgnoreTimeCheckBox);
+    autoDjIgnoreTimeEdit->setVisible(false);
+    GridLayout1->removeWidget(autoDjIgnoreTimeEdit);
+
+#endif // __AUTODJCRATES__
+
     //
     // Skin configurations
     //
@@ -287,16 +326,18 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
 DlgPrefControls::~DlgPrefControls()
 {
-    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+    delete m_pControlPositionDisplay;
+
+    foreach (ControlObjectThread* pControl, m_rateControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+    foreach (ControlObjectThread* pControl, m_rateDirControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+    foreach (ControlObjectThread* pControl, m_cueControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+    foreach (ControlObjectThread* pControl, m_rateRangeControls) {
         delete pControl;
     }
 }
@@ -376,12 +417,12 @@ void DlgPrefControls::slotSetRateRange(int pos)
         range = 0.08f;
 
     // Set rate range for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+    foreach (ControlObjectThread* pControl, m_rateRangeControls) {
         pControl->slotSet(range);
     }
 
     // Reset rate for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+    foreach (ControlObjectThread* pControl, m_rateControls) {
         pControl->slotSet(0);
     }
 }
@@ -393,7 +434,7 @@ void DlgPrefControls::slotSetRateDir(int index)
         dir = -1.;
 
     // Set rate direction for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+    foreach (ControlObjectThread* pControl, m_rateDirControls) {
         pControl->slotSet(dir);
     }
 }
@@ -409,7 +450,7 @@ void DlgPrefControls::slotSetCueDefault(int)
     m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(cueIndex));
 
     // Set cue behavior for every group
-    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+    foreach (ControlObjectThread* pControl, m_cueControls) {
         pControl->slotSet(cueIndex);
     }
 }
@@ -424,8 +465,31 @@ void DlgPrefControls::slotSetAutoDjRequeue(int)
     m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"), ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
 }
 
-void DlgPrefControls::slotSetTooltips(int)
-{
+void DlgPrefControls::slotSetAutoDjMinimumAvailable(int a_iValue) {
+#ifdef __AUTODJCRATES__
+    QString str;
+    str.setNum(a_iValue);
+    m_pConfig->set(ConfigKey("[Auto DJ]","MinimumAvailable"),str);
+#endif // __AUTODJCRATES__
+}
+
+void DlgPrefControls::slotSetAutoDjUseIgnoreTime(int a_iState) {
+#ifdef __AUTODJCRATES__
+    bool bChecked = (a_iState == Qt::Checked);
+    QString strChecked = (bChecked) ? "1" : "0";
+    m_pConfig->set(ConfigKey("[Auto DJ]", "UseIgnoreTime"), strChecked);
+    autoDjIgnoreTimeEdit->setEnabled(bChecked);
+#endif // __AUTODJCRATES__
+}
+
+void DlgPrefControls::slotSetAutoDjIgnoreTime(const QTime &a_rTime) {
+#ifdef __AUTODJCRATES__
+    QString str = a_rTime.toString(autoDjIgnoreTimeEdit->displayFormat());
+    m_pConfig->set(ConfigKey("[Auto DJ]", "IgnoreTime"),str);
+#endif // __AUTODJCRATES__
+}
+
+void DlgPrefControls::slotSetTooltips(int) {
     int configValue = (ComboBoxTooltips->currentIndex() + 1) % 3;
     m_mixxx->setToolTipsCfg(configValue);
 }

@@ -6,13 +6,17 @@
 #include <qmutex.h>
 #include <qwaitcondition.h>
 #include <QQueue>
+#include <QSharedPointer>
 
 #include "configobject.h"
 
 class ControlDoublePrivate;
 
-// This class is the successor of ControlObjectThread it should be used for new code.
-// it is better named and may save some CPU time because it is connected only on demand
+// This class is the successor of ControlObjectThread it should be used for new
+// code. I it is better named and may save some CPU time because it is connected
+// only on demand. There are many ControlObjectThread instances where the changed
+// signal is not needed. This change will save the set() caller for doing
+// unnecessary checks for possible connections.
 class ControlObjectSlave : public QObject {
     Q_OBJECT
   public:
@@ -59,7 +63,7 @@ class ControlObjectSlave : public QObject {
 
   protected:
     // Pointer to connected control.
-    ControlDoublePrivate* m_pControl;
+    QSharedPointer<ControlDoublePrivate> m_pControl;
 };
 
 #endif // CONTROLOBJECTSLAVE_H
