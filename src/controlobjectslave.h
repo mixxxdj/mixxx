@@ -11,13 +11,15 @@
 
 class ControlDoublePrivate;
 
+// This class is the successor of ControlObjectThread it should be used for new code.
+// it is better named and may save some CPU time because it is connected only on demand
 class ControlObjectSlave : public QObject {
     Q_OBJECT
   public:
-    ControlObjectSlave(QObject* pParent=NULL);
-    ControlObjectSlave(const QString& g, const QString& i, QObject* pParent=NULL);
-    ControlObjectSlave(const char* g, const char* i, QObject* pParent=NULL);
-    ControlObjectSlave(const ConfigKey& key, QObject* pParent=NULL);
+    ControlObjectSlave(QObject* pParent = NULL);
+    ControlObjectSlave(const QString& g, const QString& i, QObject* pParent = NULL);
+    ControlObjectSlave(const char* g, const char* i, QObject* pParent = NULL);
+    ControlObjectSlave(const ConfigKey& key, QObject* pParent = NULL);
     virtual ~ControlObjectSlave();
 
     void initialize(const ConfigKey& key);
@@ -28,7 +30,7 @@ class ControlObjectSlave : public QObject {
             const char* method, Qt::ConnectionType type = Qt::AutoConnection );
 
 
-    /** Called from update(); */
+    // Called from update();
     void emitValueChanged();
 
     inline bool valid() const { return m_pControl != NULL; }
@@ -45,6 +47,9 @@ class ControlObjectSlave : public QObject {
     virtual void reset();
 
   signals:
+    // This signal must not connected by connect()
+    // Use connectValueChanged() instead, It will connect
+    // to the base ControlDoublePrivate as well
     void valueChanged(double);
 
   protected slots:
