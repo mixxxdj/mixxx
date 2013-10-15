@@ -49,6 +49,17 @@ void ControlObjectThread::initialize(const ConfigKey& key) {
 ControlObjectThread::~ControlObjectThread() {
 }
 
+bool ControlObjectThread::connectValueChanged(const QObject* receiver,
+        const char* method, Qt::ConnectionType type) {
+    return connect((QObject*)this, SIGNAL(valueChanged(double)), receiver, method, type);
+}
+
+bool ControlObjectThread::connectValueChanged(
+        const char* method, Qt::ConnectionType type) {
+    return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(), method, type);
+}
+
+
 double ControlObjectThread::get() {
     return m_pControl ? m_pControl->get() : 0.0;
 }
