@@ -10,6 +10,7 @@ class WaveformSignalColors;
 class WaveformMarkRange {
   public:
     WaveformMarkRange();
+    ~WaveformMarkRange();
 
     // If a mark range is active it has valid start/end points so it should be
     // drawn on waveforms.

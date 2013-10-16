@@ -143,8 +143,8 @@ void DlgPrefVinyl::slotUpdate()
     //set vinyl control gain
     VinylGain->setValue( config->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 
-    m_signalWidget1.setVinylActive(m_pVCManager->vinylInputEnabled(0));
-    m_signalWidget2.setVinylActive(m_pVCManager->vinylInputEnabled(1));
+    m_signalWidget1.setVinylActive(m_pVCManager->vinylInputEnabled(1));
+    m_signalWidget2.setVinylActive(m_pVCManager->vinylInputEnabled(2));
 }
 
 // Update the config object with parameters from dialog

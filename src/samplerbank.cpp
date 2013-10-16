@@ -48,7 +48,7 @@ void SamplerBank::slotSaveSamplerBank(double v) {
 
         samplerNode.setAttribute("group", pSampler->getGroup());
 
-        TrackPointer pTrack = PlayerInfo::Instance().getTrackInfo(pSampler->getGroup());
+        TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(pSampler->getGroup());
         if (pTrack) {
             QString samplerLocation = pTrack->getLocation();
             samplerNode.setAttribute("location", samplerLocation);

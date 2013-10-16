@@ -57,6 +57,7 @@
 #include "util/statsmanager.h"
 #include "util/timer.h"
 #include "util/version.h"
+#include "playerinfo.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -233,7 +234,9 @@ void MixxxApp::initializeKeyboard() {
 
 MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         : m_runtime_timer("MixxxApp::runtime"),
-          m_cmdLineArgs(args) {
+          m_cmdLineArgs(args),
+          m_pVinylcontrol1Enabled(NULL),
+          m_pVinylcontrol2Enabled(NULL) {
     logBuildDetails();
     ScopedTimer t("MixxxApp::MixxxApp");
     m_runtime_timer.start();
@@ -584,6 +587,8 @@ MixxxApp::~MixxxApp()
     // (vinylcontrol_enabled in VinylControlControl)
     qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
     delete m_pVCManager;
+    delete m_pVinylcontrol1Enabled;
+    delete m_pVinylcontrol2Enabled;
 #endif
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
@@ -624,6 +629,8 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete config " << qTime.elapsed();
     delete m_pConfig;
 
+    PlayerInfo::destroy();
+
     // Check for leaked ControlObjects and give warnings.
     QList<ControlDoublePrivate*> leakedControls;
     QList<ConfigKey> leakedConfigKeys;
@@ -642,7 +649,11 @@ MixxxApp::~MixxxApp()
            // delete just to satisfy valgrind:
            // check if the pointer is still valid, the control object may have bin already
            // deleted by its parent in this loop
-           delete ControlObject::getControl(key);
+           ControlObject* pCo = ControlObject::getControl(key, false);
+           if (pCo) {
+               // it might happens that a control is deleted as child from an other control
+               delete pCo;
+           }
        }
    }
    qDebug() << "~MixxxApp: All leaking controls deleted.";
@@ -980,9 +991,9 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl->setWhatsThis(buildWhatsThis(vinylControlTitle1, vinylControlText));
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl(bool)));
-    ControlObjectThread* enabled1 = new ControlObjectThread(
-            "[Channel1]", "vinylcontrol_enabled", this);
-    connect(enabled1, SIGNAL(valueChanged(double)), this,
+    m_pVinylcontrol1Enabled = new ControlObjectThread(
+            "[Channel1]", "vinylcontrol_enabled");
+    connect(m_pVinylcontrol1Enabled, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2 = new QAction(vinylControlTitle2, this);
@@ -995,9 +1006,9 @@ void MixxxApp::initActions()
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl2(bool)));
 
-    ControlObjectThread* enabled2 = new ControlObjectThread(
-            "[Channel2]", "vinylcontrol_enabled", this);
-    connect(enabled2, SIGNAL(valueChanged(double)), this,
+    m_pVinylcontrol2Enabled = new ControlObjectThread(
+            "[Channel2]", "vinylcontrol_enabled");
+    connect(m_pVinylcontrol2Enabled, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl2(double)));
 #endif
 
@@ -1301,8 +1312,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::set(ConfigKey(
                     "[Channel1]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
-            ControlObject::set(ConfigKey(
-                    "[Channel1]", "vinylcontrol_enabled"), (double)0);
+            m_pVinylcontrol1Enabled->set(0.0);
         }
     }
 #endif
@@ -1311,7 +1321,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
 void MixxxApp::slotCheckboxVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_enabled"), (double)toggle);
+    m_pVinylcontrol1Enabled->set((double)toggle);
 #endif
 }
 
@@ -1332,8 +1342,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::set(ConfigKey(
                     "[Channel2]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
-            ControlObject::set(ConfigKey(
-                    "[Channel2]", "vinylcontrol_enabled"), (double)0);
+            m_pVinylcontrol2Enabled->set(0.0);
           }
     }
 #endif
@@ -1342,7 +1351,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_enabled"), (double)toggle);
+    m_pVinylcontrol2Enabled->set((double)toggle);
 #endif
 }
 
