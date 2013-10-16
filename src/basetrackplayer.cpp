@@ -187,7 +187,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
-    PlayerInfo::Instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 }
 
 void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
@@ -205,7 +205,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
-    PlayerInfo::Instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 
     // Reset the loop points.
     m_pLoopInPoint->slotSet(-1);

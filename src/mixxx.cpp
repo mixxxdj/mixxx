@@ -630,7 +630,7 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete config " << qTime.elapsed();
     delete m_pConfig;
 
-    PlayerInfo::Instance().clearControlCache();
+    PlayerInfo::destroy();
 
     // Check for leaked ControlObjects and give warnings.
     QList<ControlDoublePrivate*> leakedControls;

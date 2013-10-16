@@ -24,6 +24,7 @@
 #include "playermanager.h"
 
 static const int kPlayingDeckUpdateIntervalMillis = 2000;
+static PlayerInfo* m_pPlayerInfo = NULL;
 
 PlayerInfo::PlayerInfo()
         : m_pCOxfader(new ControlObjectThread("[Master]","crossfader")),
@@ -33,11 +34,21 @@ PlayerInfo::PlayerInfo()
 
 PlayerInfo::~PlayerInfo() {
     m_loadedTrackMap.clear();
+    clearControlCache();
+    delete m_pCOxfader;
 }
 
-PlayerInfo &PlayerInfo::Instance() {
-    static PlayerInfo playerInfo;
-    return playerInfo;
+// static
+PlayerInfo& PlayerInfo::instance() {
+    if (!m_pPlayerInfo) {
+        m_pPlayerInfo = new PlayerInfo();
+    }
+    return *m_pPlayerInfo;
+}
+
+// static
+void PlayerInfo::destroy() {
+    delete m_pPlayerInfo;
 }
 
 TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
@@ -165,7 +176,6 @@ PlayerInfo::DeckControls* PlayerInfo::getDeckControls(int i) {
 }
 
 void PlayerInfo::clearControlCache() {
-    delete m_pCOxfader;
     for (int i = 0; i < m_deckControlList.count(); ++i) {
         delete m_deckControlList[i];
     }

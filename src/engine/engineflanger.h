@@ -40,7 +40,7 @@ class EngineFlanger : public EngineObject {
     int m_average_delay_length;
     int m_time;
     int m_delay_pos;
-    QSharedPointer<EngineFlangerControls> m_pCots;
+    QSharedPointer<EngineFlangerControls> m_pControls;
 };
 
 #endif

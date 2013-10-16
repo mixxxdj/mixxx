@@ -28,15 +28,14 @@
 class PlayerInfo : public QObject {
     Q_OBJECT
   public:
-    static PlayerInfo &Instance();
+    static PlayerInfo& instance();
+    static void destroy();
     TrackPointer getTrackInfo(const QString& group);
     void setTrackInfo(const QString& group, const TrackPointer& trackInfoObj);
     TrackPointer getCurrentPlayingTrack();
     QMap<QString, TrackPointer> getLoadedTracks();
     bool isTrackLoaded(const TrackPointer& pTrack) const;
     bool isFileLoaded(const QString& track_location) const;
-    void clearControlCache();
-
 
   signals:
     void currentPlayingDeckChanged(int deck);
@@ -59,7 +58,7 @@ class PlayerInfo : public QObject {
             ControlObjectThread m_orientation;
     };
 
-
+    void clearControlCache();
     void timerEvent(QTimerEvent* pTimerEvent);
     void updateCurrentPlayingDeck();
     int getCurrentPlayingDeck();
@@ -74,6 +73,8 @@ class PlayerInfo : public QObject {
     QMap<QString, TrackPointer> m_loadedTrackMap;
     int m_currentlyPlayingDeck;
     QList<DeckControls*> m_deckControlList;
+
+    static PlayerInfo* m_pPlayerinfo;
 };
 
 #endif /* _PLAYERINFO_H_ */

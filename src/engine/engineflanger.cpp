@@ -78,7 +78,7 @@ EngineFlanger::EngineFlanger(const char * group) {
     // hack that hard-coded the two channels, and while pulling it apart, I have
     // to keep these global [Flanger]-group controls, except there is one
     // EngineFlanger per deck
-    m_pCots = EngineFlangerControls::instance();
+    m_pControls = EngineFlangerControls::instance();
 
     // Create an enable key on a per-deck basis.
     m_pFlangerEnable = new ControlPushButton(ConfigKey(group, "flanger"));
@@ -125,12 +125,12 @@ void EngineFlanger::process(const CSAMPLE * pIn,
 
         // Update the LFO to find the current delay:
         m_time++;
-        if (m_time == m_pCots->m_pPotmeterLFOperiod->get()) {
+        if (m_time == m_pControls->m_pPotmeterLFOperiod->get()) {
             m_time = 0;
         }
         FLOAT_TYPE delay = m_average_delay_length + m_LFOamplitude *
                 sin(two_pi * ((FLOAT_TYPE)m_time) /
-                        ((FLOAT_TYPE)m_pCots->m_pPotmeterLFOperiod->get()));
+                        ((FLOAT_TYPE)m_pControls->m_pPotmeterLFOperiod->get()));
 
         // Make a linear interpolation to find the delayed sample:
         prev = m_pDelay_buffer[(m_delay_pos-(int)delay + max_delay - 1) % max_delay];
@@ -139,6 +139,6 @@ void EngineFlanger::process(const CSAMPLE * pIn,
         delayed_sample = prev + frac * (next - prev);
 
         // Take the sample from the delay buffer and mix it with the source buffer:
-        pOutput[i] = pIn[i] + m_pCots->m_pPotmeterDepth->get() * delayed_sample;
+        pOutput[i] = pIn[i] + m_pControls->m_pPotmeterDepth->get() * delayed_sample;
     }
 }
