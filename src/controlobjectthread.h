@@ -38,6 +38,12 @@ class ControlObjectThread : public QObject {
 
     void initialize(const ConfigKey& key);
 
+    bool connectValueChanged(const QObject* receiver,
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectValueChanged(
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection );
+
+
     /** Called from update(); */
     void emitValueChanged();
 

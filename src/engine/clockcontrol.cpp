@@ -4,12 +4,13 @@
 #include "configobject.h"
 #include "cachingreader.h"
 #include "engine/enginecontrol.h"
+#include "controlobjectslave.h"
 
 ClockControl::ClockControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig)
         : EngineControl(pGroup, pConfig) {
     m_pCOBeatActive = new ControlObject(ConfigKey(pGroup, "beat_active"));
     m_pCOBeatActive->set(0.0f);
-    m_pCOSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    m_pCOSampleRate = new ControlObjectSlave("[Master]","samplerate");
 }
 
 ClockControl::~ClockControl() {

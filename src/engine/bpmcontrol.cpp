@@ -10,6 +10,7 @@
 #include "engine/bpmcontrol.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
+#include "controlobjectslave.h"
 
 const int minBpm = 30;
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
@@ -19,14 +20,9 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_tapFilter(this, filterLength, maxInterval) {
-    m_pPlayButton = ControlObject::getControl(_group, "play");
-    m_pRateSlider = ControlObject::getControl(_group, "rate");
-    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm()),
-            Qt::DirectConnection);
-    connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotAdjustBpm()),
-            Qt::DirectConnection);
+    m_pPlayButton = new ControlObjectSlave(_group, "play", this);
+    m_pRateSlider = new ControlObjectSlave(_group, "rate", this);
+    m_pRateSlider->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
 
     m_pRateRange = ControlObject::getControl(_group, "rateRange");
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
