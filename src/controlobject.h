@@ -34,15 +34,15 @@ class ControlObject : public QObject {
                   bool bIgnoreNops=true, bool bTrack=false);
     virtual ~ControlObject();
 
-    /** Returns a pointer to the ControlObject matching the given ConfigKey */
-    static ControlObject* getControl(const ConfigKey& key);
-    static inline ControlObject* getControl(const QString& group, const QString& item) {
+    // Returns a pointer to the ControlObject matching the given ConfigKey
+    static ControlObject* getControl(const ConfigKey& key, bool warn = true);
+    static inline ControlObject* getControl(const QString& group, const QString& item, bool warn = true) {
         ConfigKey key(group, item);
-        return getControl(key);
+        return getControl(key, warn);
     }
-    static inline ControlObject* getControl(const char* group, const char* item) {
+    static inline ControlObject* getControl(const char* group, const char* item, bool warn = true) {
         ConfigKey key(group, item);
-        return getControl(key);
+        return getControl(key, warn);
     }
 
     // Return the key of the object

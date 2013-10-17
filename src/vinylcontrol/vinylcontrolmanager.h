@@ -17,6 +17,7 @@ class VinylControlProcessor;
 class VinylControl;
 class SoundManager;
 class ControlPushButton;
+class ControlObjectThread;
 
 // VinylControlManager is the main-thread interface that other parts of Mixxx
 // use to interact with the vinyl control subsystem (other than controls exposed
@@ -28,7 +29,7 @@ class ControlPushButton;
 class VinylControlManager : public QObject {
     Q_OBJECT;
   public:
-    VinylControlManager(QObject *pParent, ConfigObject<ConfigValue> *pConfig,
+    VinylControlManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig,
                         SoundManager* pSoundManager);
     virtual ~VinylControlManager();
 
@@ -52,6 +53,8 @@ class VinylControlManager : public QObject {
     QSet<VinylSignalQualityListener*> m_listeners;
     VinylControlProcessor* m_pProcessor;
     int m_iTimerId;
+    ControlObjectThread* m_pVcEnabled1;
+    ControlObjectThread* m_pVcEnabled2;
 };
 
 #endif // VINYLCONTROLMANAGER_H

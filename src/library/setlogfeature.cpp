@@ -75,7 +75,7 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
     BasePlaylistFeature::bindWidget(libraryWidget,
                                     keyboard);
-    connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
+    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotPlayingDeckChanged(int)));
 }
 
@@ -216,7 +216,7 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
     if (deck > -1) {
         QString chan = PlayerManager::groupForDeck(deck);
         TrackPointer currentPlayingTrack =
-                PlayerInfo::Instance().getTrackInfo(chan);
+                PlayerInfo::instance().getTrackInfo(chan);
         if (!currentPlayingTrack) {
             return;
         }

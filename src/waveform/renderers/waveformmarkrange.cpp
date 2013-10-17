@@ -15,6 +15,12 @@ WaveformMarkRange::WaveformMarkRange()
           m_markEnabledControl(NULL) {
 }
 
+WaveformMarkRange::~WaveformMarkRange() {
+    delete m_markStartPointControl;
+    delete m_markEndPointControl;
+    delete m_markEnabledControl;
+}
+
 bool WaveformMarkRange::active() {
     const double startValue = start();
     const double endValue = end();
