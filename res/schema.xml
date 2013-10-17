@@ -355,4 +355,13 @@ METADATA
       ALTER TABLE crates ADD COLUMN autodj_source integer DEFAULT 0;
     </sql>
   </revision>
+  <revision version="21" min_compatible="3">
+    <description>
+      Add grouping and album_artist column to library table.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN grouping TEXT DEFAULT "";
+      ALTER TABLE Library ADD COLUMN album_artist TEXT DEFAULT "";
+    </sql>
+  </revision>
 </schema>

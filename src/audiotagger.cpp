@@ -40,12 +40,20 @@ void AudioTagger::setAlbum (QString album ) {
     m_album = album;
 }
 
+void AudioTagger::setAlbumArtist (QString albumArtist ) {
+    m_albumArtist = albumArtist;
+}
+
 void AudioTagger::setGenre (QString genre ) {
     m_genre = genre;
 }
 
 void AudioTagger::setComposer (QString composer ) {
     m_composer = composer;
+}
+
+void AudioTagger::setGrouping (QString grouping ) {
+    m_grouping = grouping;
 }
 
 void AudioTagger::setYear (QString year ) {
@@ -151,6 +159,18 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
     if (!id3v2)
         return;
 
+    TagLib::ID3v2::FrameList albumArtistFrame = id3v2->frameListMap()["TPE2"];
+    if (!albumArtistFrame.isEmpty()) {
+    	albumArtistFrame.front()->setText(m_albumArtist.toStdString());
+    } else {
+        //add new frame
+        TagLib::ID3v2::TextIdentificationFrame* newFrame =
+                new TagLib::ID3v2::TextIdentificationFrame(
+                    "TPE2", TagLib::String::Latin1);
+        newFrame->setText(m_albumArtist.toStdString());
+        id3v2->addFrame(newFrame);
+    }
+
     TagLib::ID3v2::FrameList bpmFrame = id3v2->frameListMap()["TBPM"];
     if (!bpmFrame.isEmpty()) {
         bpmFrame.front()->setText(m_bpm.toStdString());
@@ -188,6 +208,18 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
         newFrame->setText(m_composer.toStdString());
         id3v2->addFrame(newFrame);
     }
+
+    TagLib::ID3v2::FrameList groupingFrame = id3v2->frameListMap()["TIT1"];
+    if (!groupingFrame.isEmpty()) {
+    	groupingFrame.front()->setText(m_grouping.toStdString());
+    } else {
+        //add new frame
+        TagLib::ID3v2::TextIdentificationFrame* newFrame =
+                new TagLib::ID3v2::TextIdentificationFrame(
+                    "TIT1", TagLib::String::Latin1);
+        newFrame->setText(m_grouping.toStdString());
+        id3v2->addFrame(newFrame);
+    }
 }
 
 void AudioTagger::addAPETag(TagLib::APE::Tag* ape) {
@@ -196,21 +228,25 @@ void AudioTagger::addAPETag(TagLib::APE::Tag* ape) {
     // Adds to the item specified by key the data value.
     // If replace is true, then all of the other values on the same key will be removed first.
     ape->addValue("BPM",m_bpm.toStdString(), true);
-    ape->addValue("BPM",m_bpm.toStdString(), true);
+    ape->addValue("Album Artist",m_albumArtist.toStdString(), true);
     ape->addValue("Composer",m_composer.toStdString(), true);
+    ape->addValue("Grouping",m_grouping.toStdString(), true);
 
 }
+
 void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph) {
     if (!xiph)
         return;
 
-    // Some tools use "BPM" so check for that.
-
     // Taglib does not support the update of Vorbis comments.
     // thus, we have to reomve the old comment and add the new one
+
+    xiph->removeField("ALBUMARTIST");
+    xiph->addField("ALBUMARTIST", m_albumArtist.toStdString());
+
+    // Some tools use "BPM" so write that.
     xiph->removeField("BPM");
     xiph->addField("BPM", m_bpm.toStdString());
-
     xiph->removeField("TEMPO");
     xiph->addField("TEMPO", m_bpm.toStdString());
 
@@ -220,11 +256,17 @@ void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph) {
     xiph->addField("KEY", m_key.toStdString());
 
     xiph->removeField("COMPOSER");
-    xiph->addField("COMPOSER", m_key.toStdString());
+    xiph->addField("COMPOSER", m_composer.toStdString());
+
+    xiph->removeField("GROUPING");
+    xiph->addField("GROUPING", m_grouping.toStdString());
 }
+
 void AudioTagger::processMP4Tag(TagLib::MP4::Tag* mp4) {
-    Q_UNUSED(mp4);
-    //TODO
+	mp4->itemListMap()["aART"] = TagLib::StringList(m_albumArtist.toStdString());
+	mp4->itemListMap()["tmpo"] = TagLib::StringList(m_bpm.toStdString());
+	mp4->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(m_bpm.toStdString());
+	mp4->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(m_key.toStdString());
+	mp4->itemListMap()["\251wrt"] = TagLib::StringList(m_composer.toStdString());
+	mp4->itemListMap()["\251grp"] = TagLib::StringList(m_grouping.toStdString());
 }
-
-

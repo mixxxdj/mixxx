@@ -40,6 +40,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     header_data.insert(COLUMN_TYPE, tr("Type"));
     header_data.insert(COLUMN_BITRATE, tr("Bitrate"));
     header_data.insert(COLUMN_LOCATION, tr("Location"));
+    header_data.insert(COLUMN_ALBUMARTIST, tr("Album Artist"));
+    header_data.insert(COLUMN_GROUPING, tr("Grouping"));
 
     addSearchColumn(COLUMN_FILENAME);
     addSearchColumn(COLUMN_ARTIST);
@@ -49,6 +51,8 @@ BrowseTableModel::BrowseTableModel(QObject* parent,
     addSearchColumn(COLUMN_COMPOSER);
     addSearchColumn(COLUMN_KEY);
     addSearchColumn(COLUMN_COMMENT);
+    addSearchColumn(COLUMN_ALBUMARTIST);
+    addSearchColumn(COLUMN_GROUPING);
 
     setHorizontalHeaderLabels(header_data);
     // register the QList<T> as a metatype since we use QueuedConnection below
@@ -331,6 +335,8 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
     tagger.setYear(this->index(row, COLUMN_YEAR).data().toString());
     tagger.setGenre(this->index(row, COLUMN_GENRE).data().toString());
     tagger.setComposer(this->index(row, COLUMN_COMPOSER).data().toString());
+    tagger.setAlbumArtist(this->index(row, COLUMN_ALBUMARTIST).data().toString());
+    tagger.setGrouping(this->index(row, COLUMN_GROUPING).data().toString());
 
     // check if one the item were edited
     if (col == COLUMN_ARTIST) {
@@ -353,6 +359,10 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
         tagger.setComposer(value.toString());
     } else if (col == COLUMN_YEAR) {
         tagger.setYear(value.toString());
+    } else if (col == COLUMN_ALBUMARTIST) {
+        tagger.setAlbumArtist(value.toString());
+    } else if (col == COLUMN_GROUPING) {
+        tagger.setGrouping(value.toString());
     }
 
 
