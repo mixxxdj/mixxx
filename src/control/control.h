@@ -11,25 +11,22 @@
 #include "control/controlvalue.h"
 #include "configobject.h"
 
+class ControlObject;
+
 class ControlDoublePrivate : public QObject {
     Q_OBJECT
   public:
-    ControlDoublePrivate();
-    ControlDoublePrivate(ConfigKey key, bool bIgnoreNops, bool bTrack);
     virtual ~ControlDoublePrivate();
 
     // Gets the ControlDoublePrivate matching the given ConfigKey. If bCreate
     // is true, allocates a new ControlDoublePrivate for the ConfigKey if one
     // does not exist.
-    static ControlDoublePrivate* getControl(
-        const ConfigKey& key,
-        bool bCreate, bool bIgnoreNops=true, bool bTrack=false);
-    static inline ControlDoublePrivate* getControl(
-        const QString& group, const QString& item,
-        bool bCreate, bool bIgnoreNops=true, bool bTrack=false) {
-        ConfigKey key(group, item);
-        return getControl(key, bCreate, bIgnoreNops, bTrack);
-    }
+    static QSharedPointer<ControlDoublePrivate> getControl(
+            const ConfigKey& key, bool warn = true,
+            ControlObject* pCreatorCO = NULL, bool bIgnoreNops = true, bool bTrack = false);
+
+    // Adds all ControlDoublePrivate that currently exist to pControlList
+    static void getControls(QList<ControlDoublePrivate*>* pControlsList);
 
     // Sets the control value.
     void set(double value, QObject* pSender);
@@ -60,9 +57,22 @@ class ControlDoublePrivate : public QObject {
     inline void setDefaultValue(double dValue) {
         m_defaultValue.setValue(dValue);
     }
+
     inline double defaultValue() const {
         double default_value = m_defaultValue.getValue();
         return m_pBehavior ? m_pBehavior->defaultValue(default_value) : default_value;
+    }
+
+    inline ControlObject* getCreatorCO() const {
+        return m_pCreatorCO;
+    }
+
+    inline void removeCreatorCO() {
+        m_pCreatorCO = NULL;
+    }
+
+    inline ConfigKey getKey() {
+        return m_key;
     }
 
     // Connects a slot to the ValueChange request for CO validation. All change
@@ -81,6 +91,7 @@ class ControlDoublePrivate : public QObject {
     void valueChangeRequest(double value);
 
   private:
+    ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO, bool bIgnoreNops, bool bTrack);
     void initialize();
     void setInner(double value, QObject* pSender);
 
@@ -102,8 +113,10 @@ class ControlDoublePrivate : public QObject {
 
     QSharedPointer<ControlNumericBehavior> m_pBehavior;
 
+    ControlObject* m_pCreatorCO;
+
     // Hash of ControlDoublePrivate instantiations.
-    static QHash<ConfigKey,ControlDoublePrivate*> m_sqCOHash;
+    static QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > m_sqCOHash;
     // Mutex guarding access to the ControlDoublePrivate hash.
     static QMutex m_sqCOHashMutex;
 };

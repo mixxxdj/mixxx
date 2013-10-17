@@ -28,8 +28,11 @@ class PlaylistTableModel : public BaseSqlTableModel {
     void moveTrack(const QModelIndex& sourceIndex,
                    const QModelIndex& destIndex);
     bool isLocked();
-    void shuffleTracks(const QModelIndex& shuffleStartIndex);
+    void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
     TrackModel::CapabilitiesFlags getCapabilities() const;
+
+  private slots:
+    void playlistChanged(int playlistId);
 
   private:
     PlaylistDAO& m_playlistDao;

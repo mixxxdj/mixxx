@@ -47,6 +47,8 @@ class ControlPushButton;
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
+class ControlObjectThread;
+
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
 // For the main view, an instance of class MixxxView is
@@ -234,7 +236,8 @@ class MixxxApp : public QMainWindow {
     const CmdlineArgs& m_cmdLineArgs;
 
     ControlPushButton* m_pTouchShift;
+    ControlObjectThread* m_pVinylcontrol1Enabled;
+    ControlObjectThread* m_pVinylcontrol2Enabled;
 };
 
 #endif
-

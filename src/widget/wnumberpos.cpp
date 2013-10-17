@@ -17,7 +17,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
           m_bRemain(false) {
     m_qsText = "";
 
-    m_pShowTrackTimeRemaining = new ControlObjectThreadMain(
+    m_pShowTrackTimeRemaining = new ControlObjectThread(
             "[Controls]", "ShowDurationRemaining");
     connect(m_pShowTrackTimeRemaining, SIGNAL(valueChanged(double)),
             this, SLOT(slotSetRemain(double)));
@@ -52,6 +52,7 @@ WNumberPos::WNumberPos(const char* group, QWidget* parent)
 WNumberPos::~WNumberPos() {
     delete m_pTrackSampleRate;
     delete m_pTrackSamples;
+    delete m_pVisualPlaypos;
     delete m_pShowTrackTimeRemaining;
 }
 

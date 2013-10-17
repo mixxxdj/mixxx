@@ -10,8 +10,10 @@ class WaveformMarkSet
 {
 public:
     WaveformMarkSet();
+    ~WaveformMarkSet();
     void setup(const QString& group, const QDomNode& node,
             const WaveformSignalColors& signalColors);
+    void clear();
 
     int size() const { return m_marks.size();}
     WaveformMark& operator[] (int i) { return m_marks[i];}

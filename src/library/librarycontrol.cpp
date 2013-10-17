@@ -48,9 +48,9 @@ LibraryControl::LibraryControl(QObject* pParent)
         : QObject(pParent),
           m_pLibraryWidget(NULL),
           m_pSidebarWidget(NULL),
-          m_numDecks(ConfigKey("[Master]", "num_decks")),
-          m_numSamplers(ConfigKey("[Master]", "num_samplers")),
-          m_numPreviewDecks(ConfigKey("[Master]", "num_preview_decks")) {
+          m_numDecks("[Master]", "num_decks"),
+          m_numSamplers("[Master]", "num_samplers"),
+          m_numPreviewDecks("[Master]", "num_preview_decks") {
 
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());

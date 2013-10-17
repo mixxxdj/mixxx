@@ -9,17 +9,16 @@
 #include "xmlparse.h"
 #include "widget/wskincolor.h"
 
-ControlObjectThreadMain* maybeMakeControl(ControlObject* pControl) {
-    if (pControl) {
-        return new ControlObjectThreadMain(pControl->getKey());
-    }
-    return NULL;
-}
-
 WaveformMarkRange::WaveformMarkRange()
         : m_markStartPointControl(NULL),
           m_markEndPointControl(NULL),
           m_markEnabledControl(NULL) {
+}
+
+WaveformMarkRange::~WaveformMarkRange() {
+    delete m_markStartPointControl;
+    delete m_markEndPointControl;
+    delete m_markEnabledControl;
 }
 
 bool WaveformMarkRange::active() {
@@ -30,16 +29,24 @@ bool WaveformMarkRange::active() {
 
 bool WaveformMarkRange::enabled() {
     // Default to enabled if there is no enabled control.
-    return m_markEnabledControl == NULL ||
+    return !m_markEnabledControl || !m_markEnabledControl->valid() ||
             m_markEnabledControl->get() > 0.0;
 }
 
 double WaveformMarkRange::start() {
-    return m_markStartPointControl ? m_markStartPointControl->get() : -1.0;
+    double start = -1.0;
+    if (m_markStartPointControl && m_markStartPointControl->valid()) {
+        start = m_markStartPointControl->get();
+    }
+    return start;
 }
 
 double WaveformMarkRange::end() {
-    return m_markEndPointControl ? m_markEndPointControl->get() : -1.0;
+    double end = -1.0;
+    if (m_markEndPointControl && m_markEndPointControl->valid()) {
+        end = m_markEndPointControl->get();
+    }
+    return end;
 }
 
 void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
@@ -62,12 +69,12 @@ void WaveformMarkRange::setup(const QString& group, const QDomNode& node,
         qDebug() << "Didn't get mark TextColor, using parent's <SignalColor>:" << m_disabledColor;
     }
 
-    m_markStartPointControl = maybeMakeControl(ControlObject::getControl(
-        ConfigKey(group, XmlParse::selectNodeQString(node, "StartControl"))));
-    m_markEndPointControl = maybeMakeControl(ControlObject::getControl(
-        ConfigKey(group, XmlParse::selectNodeQString(node, "EndControl"))));
-    m_markEnabledControl = maybeMakeControl(ControlObject::getControl(
-        ConfigKey(group, XmlParse::selectNodeQString(node, "EnabledControl"))));
+    m_markStartPointControl = new ControlObjectThread(
+            group, XmlParse::selectNodeQString(node, "StartControl"));
+    m_markEndPointControl = new ControlObjectThread(
+            group, XmlParse::selectNodeQString(node, "EndControl"));
+    m_markEnabledControl = new ControlObjectThread(
+            group, XmlParse::selectNodeQString(node, "EnabledControl"));
 }
 
 void WaveformMarkRange::generateImage(int weidth, int height) {

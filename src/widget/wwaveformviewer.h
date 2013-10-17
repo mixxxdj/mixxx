@@ -12,7 +12,7 @@
 #include "trackinfoobject.h"
 #include "widget/wwidget.h"
 
-class ControlObjectThreadMain;
+class ControlObjectThread;
 class WaveformWidgetAbstract;
 class ControlPotmeter;
 
@@ -64,9 +64,9 @@ private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
-    ControlObjectThreadMain* m_pZoom;
-    ControlObjectThreadMain* m_pScratchPositionEnable;
-    ControlObjectThreadMain* m_pScratchPosition;
+    ControlObjectThread* m_pZoom;
+    ControlObjectThread* m_pScratchPositionEnable;
+    ControlObjectThread* m_pScratchPosition;
     bool m_bScratching;
     bool m_bBending;
     QPoint m_mouseAnchor;

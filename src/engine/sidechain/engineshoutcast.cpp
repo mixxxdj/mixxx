@@ -51,7 +51,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_pShoutcastNeedUpdateFromPrefs(NULL),
           m_pUpdateShoutcastFromPrefs(NULL),
           m_pMasterSamplerate(new ControlObjectThread("[Master]", "samplerate")),
-          m_pShoutcastStatus(new ControlObjectThread(SHOUTCAST_PREF_KEY, "status")),
+          m_pShoutcastStatus(new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"))),
           m_bQuit(false),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -68,7 +68,7 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     signal(SIGPIPE, SIG_IGN);
 #endif
 
-    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
             ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
     m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
@@ -120,7 +120,7 @@ bool EngineShoutcast::serverDisconnect() {
         m_encoder = NULL;
     }
 
-    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
 
     if (m_pShout) {
         shout_close(m_pShout);
@@ -362,12 +362,17 @@ bool EngineShoutcast::serverConnect() {
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
-    m_pShoutcastStatus->slotSet(SHOUTCAST_CONNECTING);
+    m_pShoutcastStatus->set(SHOUTCAST_CONNECTING);
     // reset the number of failures to zero
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
     // on the first change
     m_iMetaDataLife = 31337;
+    // clear metadata, to make sure the first track is not skipped
+    // because it was sent via an previous connection (see metaDataHasChanged)
+    if(m_pMetaData) {
+        m_pMetaData.clear();
+    }
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
@@ -378,7 +383,7 @@ bool EngineShoutcast::serverConnect() {
      */
     if(m_encoder == NULL){
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
     const int iMaxTries = 3;
@@ -403,13 +408,13 @@ bool EngineShoutcast::serverConnect() {
         if (m_pShout)
             shout_close(m_pShout);
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
     if (m_bQuit) {
         if (m_pShout)
             shout_close(m_pShout);
-        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
 
@@ -423,7 +428,7 @@ bool EngineShoutcast::serverConnect() {
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         qDebug() << "***********Connected to Shoutcast server...";
-        m_pShoutcastStatus->slotSet(SHOUTCAST_CONNECTED);
+        m_pShoutcastStatus->set(SHOUTCAST_CONNECTED);
         return true;
     }
     //otherwise disable shoutcast in preferences
@@ -432,7 +437,7 @@ bool EngineShoutcast::serverConnect() {
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
-    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
     return false;
 }
 
@@ -495,7 +500,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (isConnected()) {
             // We are conneced but shoutcast is disabled. Disconnect.
             serverDisconnect();
-            infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully disconnected from the shoutcast server"), "");
         }
         return;
     }
@@ -548,7 +553,7 @@ bool EngineShoutcast::metaDataHasChanged() {
 
     m_iMetaDataLife = 0;
 
-    pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     if (!pTrack)
         return false;
 
