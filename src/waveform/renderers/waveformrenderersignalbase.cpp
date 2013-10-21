@@ -12,14 +12,14 @@
 
 WaveformRendererSignalBase::WaveformRendererSignalBase(
         WaveformWidgetRenderer* waveformWidgetRenderer)
-    : WaveformRendererAbstract(waveformWidgetRenderer) {
-    m_lowFilterControlObject = NULL;
-    m_midFilterControlObject = NULL;
-    m_highFilterControlObject = NULL;
-    m_lowKillControlObject = NULL;
-    m_midKillControlObject = NULL;
-    m_highKillControlObject = NULL;
-    m_alignment = Qt::AlignCenter;
+    : WaveformRendererAbstract(waveformWidgetRenderer),
+      m_pLowFilterControlObject(NULL),
+      m_pMidFilterControlObject(NULL),
+      m_pHighFilterControlObject(NULL),
+      m_pLowKillControlObject(NULL),
+      m_pMidKillControlObject(NULL),
+      m_pHighKillControlObject(NULL),
+      m_alignment(Qt::AlignCenter) {
 }
 
 WaveformRendererSignalBase::~WaveformRendererSignalBase() {
@@ -27,35 +27,35 @@ WaveformRendererSignalBase::~WaveformRendererSignalBase() {
 }
 
 void WaveformRendererSignalBase::deleteControls() {
-    if(m_lowFilterControlObject)
-        delete m_lowFilterControlObject;
-    if(m_midFilterControlObject)
-        delete m_midFilterControlObject;
-    if(m_highFilterControlObject)
-        delete m_highFilterControlObject;
-    if(m_lowKillControlObject)
-        delete m_lowKillControlObject;
-    if(m_midKillControlObject)
-        delete m_midKillControlObject;
-    if(m_highKillControlObject)
-        delete m_highKillControlObject;
+    if(m_pLowFilterControlObject)
+        delete m_pLowFilterControlObject;
+    if(m_pMidFilterControlObject)
+        delete m_pMidFilterControlObject;
+    if(m_pHighFilterControlObject)
+        delete m_pHighFilterControlObject;
+    if(m_pLowKillControlObject)
+        delete m_pLowKillControlObject;
+    if(m_pMidKillControlObject)
+        delete m_pMidKillControlObject;
+    if(m_pHighKillControlObject)
+        delete m_pHighKillControlObject;
 }
 
 bool WaveformRendererSignalBase::init() {
     deleteControls();
 
     //create controls
-    m_lowFilterControlObject = new ControlObjectThreadMain(
+    m_pLowFilterControlObject = new ControlObjectThread(
             m_waveformRenderer->getGroup(),"filterLow");
-    m_midFilterControlObject = new ControlObjectThreadMain(
+    m_pMidFilterControlObject = new ControlObjectThread(
             m_waveformRenderer->getGroup(),"filterMid");
-    m_highFilterControlObject = new ControlObjectThreadMain(
+    m_pHighFilterControlObject = new ControlObjectThread(
             m_waveformRenderer->getGroup(),"filterHigh");
-    m_lowKillControlObject = new ControlObjectThreadMain(
+    m_pLowKillControlObject = new ControlObjectThread(
             m_waveformRenderer->getGroup(),"filterLowKill");
-    m_midKillControlObject = new ControlObjectThreadMain(
+    m_pMidKillControlObject = new ControlObjectThread(
             m_waveformRenderer->getGroup(),"filterMidKill");
-    m_highKillControlObject = new ControlObjectThreadMain(
+    m_pHighKillControlObject = new ControlObjectThread(
             m_waveformRenderer->getGroup(),"filterHighKill");
 
     return onInit();

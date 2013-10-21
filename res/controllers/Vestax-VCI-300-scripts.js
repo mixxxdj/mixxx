@@ -3,14 +3,21 @@
  * Author: Uwe Klotz
  *
  * All controls should work as expected.
- * 
+ *
+ * Technical details
+ * -----------------
+ * - High-res jog wheels (1664 steps per revolution) for scratching and
+ *   pitch bending
+ * - High-res pitch sliders (9-bit = 512 steps)
+ * - VU meters display left/right channel volume (incl. peak indicator)
+ *
  * Quick Reference
  * ---------------
  * -          Cue          = cue_default
  * - Shift  + Cue          = set the cue point (while playing)
  * -   "       "           = clear the cue point (while not playing)
  * -          Play         = play
- * - Shift  + Play         = toggle repeat
+ * - Shift  + Play         = stutter play
  * -          Cue [1-3]/In = hotcue
  * -          Out 1/Loop   = loop in (Shift = clear)
  * -          Out 2/Loop   = loop out (Shift = clear)
@@ -18,7 +25,8 @@
  * -          Auto Loop    = enter/exit beatloop (default: 4 beats)
  * - Shift  + Auto Loop    = enter/exit beatlooproll (default: 4 beats)
  * - Scroll + Auto Loop    = reset number of beats to 4 if beatloop not active
- * -          Pitch Shift  = fine tune the pitch +/-0.01
+ * -          Pitch Shift  = pitch bend
+ * - Shift  + Pitch Shift  = fine tune the pitch +/-0.01
  * -          Half         = halve loop length
  * - Shift  + Half         = jump to start of track (while not playing)
  * - Scroll + Half         = seek backward (while not playing)
@@ -48,22 +56,14 @@
  * Open issues / TODOs
  * -------------------
  * - Manipulating the crossfader curve does not seem to work as expected
- * - Keylock is turned off when starting to scratch to avoid unnatural noise.
- *   It remains turned off even when scratching is disabled, because otherwise
- *   the engine produces audible glitches.
+ * - Keylock is turned off when starting to scratch to avoid unnatural
+ *   noise. It remains turned off even when scratching is disabled,
+ *   because otherwise the engine produces audible glitches.
  * - ITCH-like looping seems impossible with Mixxx 1.x controls(?)
  * - TODO: Blinking LEDs during reverse playback, ...
  * - TODO: Implement soft-takeover for "rate"
  * - TODO: Crates/Files/Browse buttons are connected but currently unused
  * - TODO: Line fader curve knob is connected but currently unused
- * - TODO: Use Shift + Pitch Shift to change pitch range (rateRange)?
- *
- * Technical details
- * -----------------
- * - High-res jog wheels (1664 steps per revolution) for scratching and pitch
- *   bending
- * - High-res pitch sliders (9-bit = 512 steps)
- * - VU meters display left/right channel volume (incl. peak indicator)
  *
  * Revision history
  * ----------------
@@ -110,6 +110,35 @@
  *            - Scroll + Auto Loop: reset number of beats to 4 if beatloop not
  *              active (re-mapped from Shift + Auto Loop)
  *            - Documentation updates
+ * 2013-05-30 - Ignore jog wheel movements unless the jog wheel surface is
+ *              touched. Exception from this rule: Nudging when playing in
+ *              scratch mode is still possible without touching the sensor
+ *              plate!
+ *            - Different jog sensitivity parameters for cueing and nudging
+ *              (tempo)
+ *            - Increased jog sensitivity for both cueing and nudging
+ * 2013-10-04 Borrow some ideas from Serato DJ (with slight variations)
+ *            - Stutter play (Shift + Play)
+ *            - Pitch bend (Pitch Shift)
+ *            - Pitch fine-tune (Shift + Pitch Shift)
+ * 2013-10-05 Bugfix
+ *            - Fix non-working backspin (regression introduced with
+ *              version 2013-05-30)
+ * 2013-10-05.1 Bugfix
+ *            - Fix behavior of stutter play using the latest position
+ *              where playing started. The previous implementation was
+ *              completely different from that found in Serato DJ.
+ *            - Some minor changes to reflect the values that would
+ *              need to be reset on track load. Unfortunately there's
+ *              no appropriate callback in Mixxx to invoke this function.
+ * 2013-10-06 Full-featured stutter play implementation
+ *            - Stutter play now takes the cue point and also triggering
+ *              of hotcues into account.
+ *            - Update documentation
+ *            - Internal refactoring and minor fixes
+ * 2013-10-07 Improve stutter play implementation
+ *            - Adjust the stutter play position when setting a new cue
+ *              point on the fly by pressing Shift + Cue while playing.
  * ...to be continued...
  *****************************************************************************/
 
@@ -118,10 +147,12 @@ function VestaxVCI300() {}
 
 VestaxVCI300.group = "[Master]";
 
-VestaxVCI300.jogResolution = 1664; // steps per revolution
-VestaxVCI300.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0
-VestaxVCI300.jogDeltaScale = 12.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
-VestaxVCI300.jogSensitivity = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
+VestaxVCI300.jogResolution = 1664; // Steps per revolution
+VestaxVCI300.jogOutputRange = 3.0; // -3.0 <= "jog" <= 3.0 // Mixxx constant
+VestaxVCI300.jogCueSensitivityScale = 64.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
+VestaxVCI300.jogCueSensitivityPow = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
+VestaxVCI300.jogTempoSensitivityScale = 24.0 / VestaxVCI300.jogResolution; /*TUNABLE PARAM*/
+VestaxVCI300.jogTempoSensitivityPow = 0.6; // 1.0 = linear /*TUNABLE PARAM*/
 
 VestaxVCI300.scratchRPM = 33.0 + (1.0 / 3.0); // 33 1/3 /*TUNABLE PARAM*/
 VestaxVCI300.scratchAlpha = 1.0 / 8.0; /*TUNABLE PARAM*/
@@ -155,7 +186,7 @@ VestaxVCI300.vuMeterYellowThreshold = 0.9;
 VestaxVCI300.cueInNumbers = [ 1, 2, 3 ];
 
 VestaxVCI300.decksByGroup = {};
-	
+
 VestaxVCI300.allLEDs = [];
 
 VestaxVCI300.updatePitchValue = function (group, pitchHigh, pitchLow) {
@@ -206,9 +237,9 @@ VestaxVCI300.updateScrollState = function () {
 };
 
 
-//
-// Buttons
-//
+////////////////////////////////////////////////////////////////////////
+// Button utilities                                                   //
+////////////////////////////////////////////////////////////////////////
 
 VestaxVCI300.getButtonPressed = function (value) {
 	switch (value) {
@@ -232,9 +263,9 @@ VestaxVCI300.onToggleButton = function (group, control, value) {
 };
 
 
-//
-// LEDs
-//
+////////////////////////////////////////////////////////////////////////
+// LED utilities                                                      //
+////////////////////////////////////////////////////////////////////////
 
 VestaxVCI300.LED = function (control) {
 	this.control = control;
@@ -256,9 +287,9 @@ VestaxVCI300.turnOffAllLEDs = function () {
 };
 
 
-//
-// Decks
-//
+////////////////////////////////////////////////////////////////////////
+// Decks                                                              //
+////////////////////////////////////////////////////////////////////////
 
 VestaxVCI300.Deck = function (number) {
 	this.number = number;
@@ -331,15 +362,15 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 	if (undefined != this.jogValue) {
 		this.jogDelta = jogValue - this.jogValue;
 		if (this.jogDelta >= 0x2000) {
-			// cyclic overflow
+			// cyclic carry-over
 			this.jogDelta -= 0x4000;
 		} else if (this.jogDelta < -0x2000) {
-			// cyclic overflow
+			// cyclic carry-over
 			this.jogDelta += 0x4000;
 		}
 		this.jogMoveLED.trigger(0 != this.jogDelta);
-		// Reset jog scrolling
-		jogScrollBias = VestaxVCI300.jogScrollBias;
+		// reset jog scroll bias with every jog movement
+		var jogScrollBias = VestaxVCI300.jogScrollBias;
 		VestaxVCI300.jogScrollBias = 0.0;
 		if (this.shiftState && !engine.getValue(this.group,"play")) {
 			// fast track search
@@ -358,21 +389,33 @@ VestaxVCI300.Deck.prototype.updateJogValue = function (jogHigh, jogLow) {
 				"[Playlist]",
 				"SelectTrackKnob",
 				jogScrollDeltaRound);
+			// store the remainder it take it into account next time
 			VestaxVCI300.jogScrollBias = jogScrollDelta - jogScrollDeltaRound;
 		} else {
 			if (engine.isScratching(this.number)) {
 				// scratching
 				engine.scratchTick(this.number, this.jogDelta);
 			} else {
-				// jog movement
-				var jogDeltaSign;
-				if (0 > this.jogDelta) {
-					jogDeltaSign = -1;
-				} else {
-					jogDeltaSign = 1;
+				if (this.jogTouchState || this.scratchState) {
+					// jog movement
+					var jogSensitivityScale
+					var jogSensitivityPow
+					if (engine.getValue(this.group,"play")) {
+						jogSensitivityScale = VestaxVCI300.jogTempoSensitivityScale
+						jogSensitivityPow = VestaxVCI300.jogTempoSensitivityPow
+					} else {
+						jogSensitivityScale = VestaxVCI300.jogCueSensitivityScale
+						jogSensitivityPow = VestaxVCI300.jogCueSensitivityPow
+					}
+					var jogDeltaSign;
+					if (0 > this.jogDelta) {
+						jogDeltaSign = -1;
+					} else {
+						jogDeltaSign = 1;
+					}
+					var normalizedAbsJogDelta =  Math.pow(Math.abs(this.jogDelta) * jogSensitivityScale, jogSensitivityPow);
+					engine.setValue(this.group, "jog", jogDeltaSign * normalizedAbsJogDelta * VestaxVCI300.jogOutputRange);
 				}
-				var normalizedAbsJogDelta =  Math.pow(Math.abs(this.jogDelta) * VestaxVCI300.jogDeltaScale, VestaxVCI300.jogSensitivity);
-				engine.setValue(this.group, "jog", jogDeltaSign * normalizedAbsJogDelta * VestaxVCI300.jogOutputRange);
 			}
 		}
 	}
@@ -418,7 +461,7 @@ VestaxVCI300.Deck.prototype.updateOutLoopState = function (index) {
 };
 
 VestaxVCI300.Deck.prototype.updateRateRange = function () {
-	this.rateRangePercent100 = Math.round(10000.0 * engine.getValue(this.group, "rateRange")); // example: +/-6% = 0.06
+	this.rateRangePercent100 = Math.round(10000.0 * engine.getValue(this.group, "rateRange"));
 	// Workaround: Explicitly (re-)set "rate" after changing "rateRange"!
 	// Otherwise the first button press on one of the pitch shift buttons
 	// is ignored.
@@ -440,7 +483,7 @@ VestaxVCI300.Deck.prototype.initValues = function () {
 	this.shiftState = false;
 	this.scratchState = false;
 	this.jogTouchState = false;
-	this.autoLoopBeatsIndex = VestaxVCI300.defaultAutoLoopBeatsIndex;
+	this.disableScratchingTimer = undefined;
 	this.greenVUMeterOffset = VestaxVCI300.vuMeterOffThreshold;
 	this.greenVUMeterScale = (VestaxVCI300.vuMeterYellowThreshold - this.greenVUMeterOffset) / this.greenVUMeterLEDs.length;
 	this.redVUMeterOffset = VestaxVCI300.vuMeterYellowThreshold;
@@ -455,6 +498,18 @@ VestaxVCI300.Deck.prototype.initValues = function () {
 	engine.setValue(this.group, "rate", 0.0);
 	engine.softTakeover(this.group, "rate", true); // TODO: does not seem to work
 	engine.setValue(this.group, "keylock", true);
+	this.onTrackUnload();
+};
+
+VestaxVCI300.Deck.prototype.onTrackUnload = function () {
+	// Perform some cleanup and reset values whenever
+	// a track is unloaded from this deck.
+	this.stutterPlayPosition = undefined;
+	this.jogHighValue = undefined;
+	this.jogValue = undefined;
+	this.jogDelta = undefined;
+	this.disableScratching();
+	this.autoLoopBeatsIndex = VestaxVCI300.defaultAutoLoopBeatsIndex;
 };
 
 VestaxVCI300.Deck.prototype.restoreValues = function () {
@@ -535,9 +590,9 @@ VestaxVCI300.Deck.prototype.updateAutoLoopState = function () {
 };
 
 
-//
-// Application callback functions
-// 
+////////////////////////////////////////////////////////////////////////
+// Mixxx callback functions                                           //
+////////////////////////////////////////////////////////////////////////
 
 VestaxVCI300.init = function (id, debug) {
 	VestaxVCI300.id = id;
@@ -701,16 +756,24 @@ VestaxVCI300.shutdown = function () {
 };
 
 
-//
-// Controller callback functions (see also: Vestax-VCI-300-midi.xml)
-// 
+////////////////////////////////////////////////////////////////////////
+// Controller callback functions (see also: Vestax-VCI-300-midi.xml)  //
+////////////////////////////////////////////////////////////////////////
 
 VestaxVCI300.onCueInButton = function (group, index, value) {
 	var deck = VestaxVCI300.decksByGroup[group];
+	var hotcuePrefix = "hotcue_" + VestaxVCI300.cueInNumbers[index];
 	if (deck.shiftState) {
-		engine.setValue(group, "hotcue_" + VestaxVCI300.cueInNumbers[index] + "_clear", VestaxVCI300.getButtonPressed(value));
+		engine.setValue(group, hotcuePrefix + "_clear", VestaxVCI300.getButtonPressed(value));
 	} else {
-		engine.setValue(group, "hotcue_" + VestaxVCI300.cueInNumbers[index] + "_activate", VestaxVCI300.getButtonPressed(value));
+		engine.setValue(group, hotcuePrefix + "_activate", VestaxVCI300.getButtonPressed(value));
+		if (VestaxVCI300.getButtonPressed(value)) {
+			// adjust stutter play position
+			var hotcueSamples =  engine.getValue(group, hotcuePrefix + "_position");
+			if (0 <= hotcueSamples) {
+				deck.stutterPlayPosition = hotcueSamples / engine.getValue(group, "track_samples");
+			}
+		}
 	}
 };
 
@@ -754,29 +817,50 @@ VestaxVCI300.onCueButton = function (channel, control, value, status, group) {
 	if (deck.shiftState) {
 		if (VestaxVCI300.getButtonPressed(value)) {
 			if (engine.getValue(group, "play")) {
-				// set
+				// set cue point
 				engine.setValue(group, "cue_set", true);
+				// adjust stutter play position
+				var cuePointSamples = engine.getValue(group, "cue_point");
+				if (0 <= cuePointSamples) {
+					deck.stutterPlayPosition = cuePointSamples / engine.getValue(group, "track_samples");
+				}
 			} else {
-				// clear
+				// clear cue point
 				engine.setValue(group, "cue_point", 0.0);
 			}
 		}
 	} else {
 		engine.setValue(group, "cue_default", VestaxVCI300.getButtonPressed(value));
+		if (VestaxVCI300.getButtonPressed(value)) {
+			// adjust stutter play position
+			var cuePointSamples = engine.getValue(group, "cue_point");
+			if (0 <= cuePointSamples) {
+				deck.stutterPlayPosition = cuePointSamples / engine.getValue(group, "track_samples");
+			}
+		}
 	}
 	engine.trigger(group, "cue_default");
 };
 
 VestaxVCI300.onPlayButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	if (deck.shiftState) {
-		if (VestaxVCI300.getButtonPressed(value)) {
-			// toggle repeat
-			VestaxVCI300.toggleBinaryValue(group, "repeat");
-			deck.playLED.trigger(true);
+	if (VestaxVCI300.getButtonPressed(value)) {
+		if (!engine.getValue(group, "play")) {
+			// adjust stutter play position
+			// Remark: It's safe to read the value of "playposition"
+			// here, because the deck is currently stopped/paused!
+			deck.stutterPlayPosition = engine.getValue(group, "playposition");
 		}
-	} else {
-		VestaxVCI300.onToggleButton(group, "play", value);
+		if (deck.shiftState && engine.getValue(group, "play")) {
+			// stutter play
+			if (undefined != deck.stutterPlayPosition) {
+				// jump back to stutter play position and continue playing
+				engine.setValue(group, "playposition", deck.stutterPlayPosition);
+			}
+		} else {
+			// toggle play
+			VestaxVCI300.onToggleButton(group, "play", value);
+		}
 	}
 	engine.trigger(group, "play");
 };
@@ -956,24 +1040,34 @@ VestaxVCI300.adjustRate = function(deck, rateDeltaPercent100) {
 
 VestaxVCI300.onPitchShiftDownButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	if (deck.shiftState) {
-		// TODO
-	} else {
-		if (VestaxVCI300.getButtonPressed(value)) {
+	if (VestaxVCI300.getButtonPressed(value)) {
+		if (deck.shiftState) {
+			// pitch fine-tune
 			VestaxVCI300.adjustRate(deck, -VestaxVCI300.pitchFineTuneStepPercent100);
+		} else {
+			// enable pitch bend
+			engine.setValue(deck.group, "rate_temp_down", true);
 		}
+	} else {
+		// disable pitch bend
+		engine.setValue(deck.group, "rate_temp_down", false);
 	}
 	deck.pitchShiftDownLED.trigger(VestaxVCI300.getButtonPressed(value));
 };
 
 VestaxVCI300.onPitchShiftUpButton = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	if (deck.shiftState) {
-		// TODO
-	} else {
-		if (VestaxVCI300.getButtonPressed(value)) {
+	if (VestaxVCI300.getButtonPressed(value)) {
+		if (deck.shiftState) {
+			// pitch fine-tune
 			VestaxVCI300.adjustRate(deck, VestaxVCI300.pitchFineTuneStepPercent100);
+		} else {
+			// enable pitch bend
+			engine.setValue(deck.group, "rate_temp_up", true);
 		}
+	} else {
+		// disable pitch bend
+		engine.setValue(deck.group, "rate_temp_up", false);
 	}
 	deck.pitchShiftUpLED.trigger(VestaxVCI300.getButtonPressed(value));
 };
@@ -1001,7 +1095,11 @@ VestaxVCI300.onJogHighValue = function (channel, control, value, status, group) 
 
 VestaxVCI300.onJogLowValue = function (channel, control, value, status, group) {
 	var deck = VestaxVCI300.decksByGroup[group];
-	deck.updateJogValue(deck.jogHighValue, value);
+	if (undefined != deck.jogHighValue) {
+		deck.updateJogValue(deck.jogHighValue, value);
+		// ensure that jogHighValue could never be read twice
+		deck.jogHighValue = undefined;
+	}
 };
 
 VestaxVCI300.onCue1InButton = function (channel, control, value, status, group) {
@@ -1097,9 +1195,9 @@ VestaxVCI300.onNavigationTabButton = function (channel, control, value, status, 
 };
 
 
-//
-// Engine callback functions for connected controls
-// 
+////////////////////////////////////////////////////////////////////////
+// Engine callback functions for connected controls                   //
+////////////////////////////////////////////////////////////////////////
 
 VestaxVCI300.leftDeck.onRateRangeValueCB = function (value) {
 	VestaxVCI300.leftDeck.updateRateRange(value);

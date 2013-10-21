@@ -100,6 +100,27 @@ int SoundDevicePortAudio::open() {
         }
     }
 
+    // Workaround for Bug #900364. The PortAudio ALSA hostapi opens the minimum
+    // number of device channels supported by the device regardless of our
+    // channel request. It has no way of notifying us when it does this. The
+    // typical case this happens is when we are opening a device in mono when it
+    // supports a minimum of stereo. To work around this, simply open the device
+    // in stereo and only take the first channel.
+    // TODO(rryan): Remove once PortAudio has a solution built in (and
+    // released).
+    if (m_deviceInfo->hostApi == paALSA) {
+        // Only engage workaround if the device has enough input and output
+        // channels.
+        if (m_deviceInfo->maxInputChannels >= 2 &&
+                m_inputParams.channelCount == 1) {
+            m_inputParams.channelCount = 2;
+        }
+        if (m_deviceInfo->maxOutputChannels >= 2 &&
+                m_outputParams.channelCount == 1) {
+            m_outputParams.channelCount = 2;
+        }
+    }
+
     // Sample rate
     if (m_dSampleRate <= 0) {
         m_dSampleRate = 44100.0f;
@@ -117,7 +138,7 @@ int SoundDevicePortAudio::open() {
     // paFramesPerBufferUnspecified in non-blocking mode because the latency
     // comes from the JACK daemon. (PA should give an error or something though,
     // but it doesn't.)
-    if (m_hostAPI == MIXXX_PORTAUDIO_JACK_STRING) {
+    if (m_deviceInfo->hostApi == paJACK) {
         m_framesPerBuffer = paFramesPerBufferUnspecified;
     }
 
@@ -191,24 +212,9 @@ int SoundDevicePortAudio::open() {
 
     // Update the samplerate and latency ControlObjects, which allow the
     // waveform view to properly correct for the latency.
-
-    ControlObjectThreadMain* pControlObjectSampleRate =
-            new ControlObjectThreadMain("[Master]","samplerate");
-    ControlObjectThreadMain* pControlObjectLatency =
-            new ControlObjectThreadMain("[Master]","latency");
-    ControlObjectThreadMain* pControlObjectAudioBufferSize =
-            new ControlObjectThreadMain("[Master]","audio_buffer_size");
-
-    pControlObjectLatency->slotSet(currentLatencyMSec);
-    pControlObjectSampleRate->slotSet(m_dSampleRate);
-    pControlObjectAudioBufferSize->slotSet(bufferMSec);
-
-    //qDebug() << "SampleRate" << pControlObjectSampleRate->get();
-    //qDebug() << "Latency" << pControlObjectLatency->get();
-
-    delete pControlObjectLatency;
-    delete pControlObjectSampleRate;
-    delete pControlObjectAudioBufferSize;
+    ControlObject::set(ConfigKey("[Master]", "latency"), currentLatencyMSec);
+    ControlObject::set(ConfigKey("[Master]", "samplerate"), m_dSampleRate);
+    ControlObject::set(ConfigKey("[Master]", "audio_buffer_size"), bufferMSec);
 
     if (m_pMasterUnderflowCount) {
         m_pMasterUnderflowCount->set(0);

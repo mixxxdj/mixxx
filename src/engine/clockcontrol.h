@@ -7,6 +7,8 @@
 #include "trackinfoobject.h"
 #include "track/beats.h"
 
+class ControlObjectSlave;
+
 class ClockControl: public EngineControl {
     Q_OBJECT
   public:
@@ -25,7 +27,7 @@ class ClockControl: public EngineControl {
 
   private:
     ControlObject* m_pCOBeatActive;
-    ControlObject* m_pCOSampleRate;
+    ControlObjectSlave* m_pCOSampleRate;
     TrackPointer m_pTrack;
     BeatsPointer m_pBeats;
 };

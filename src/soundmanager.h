@@ -128,7 +128,6 @@ class SoundManager : public QObject {
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
-    ControlObjectThreadMain* m_pControlObjectVinylControlGain;
     ControlObject* m_pControlObjectVinylControlGainCO;
 };
 

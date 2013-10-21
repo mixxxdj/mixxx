@@ -61,7 +61,6 @@ public:
     /** Returns true if the object contains valid information */
     bool isValid() const;
     int parse();
-    void writeToXML( QDomDocument &, QDomElement & );
 
     /** Returns the duration in seconds */
     int getDuration() const;

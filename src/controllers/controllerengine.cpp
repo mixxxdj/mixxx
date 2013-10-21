@@ -600,7 +600,7 @@ ControlObjectThread* ControllerEngine::getControlObjectThread(QString group, QSt
     ControlObjectThread* cot = m_controlCache.value(key, NULL);
     if (cot == NULL) {
         // create COT
-        cot = new ControlObjectThread(key);
+        cot = new ControlObjectThread(key, this);
         if (cot->valid()) {
             m_controlCache.insert(key, cot);
         } else {
