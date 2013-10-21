@@ -19,14 +19,14 @@ class LoopLayerTracker : public QObject {
   public:
     LoopLayerTracker(ConfigObject<ConfigValue>* pConfig);
     virtual ~LoopLayerTracker();
-    
-    void addLoopLayer(QString path, unsigned int length);
+
+    void addLoopLayer(QString path, double length);
     void clear();
     void finalizeLoop(QString newPath, double bpm);
     QString getCurrentPath();
     void play();
     void stop(bool clearDeck);
-    void setCurrentLength(unsigned int length);
+    void setCurrentLength(double length);
 
   public slots:
     void slotFileFinished(QString);
@@ -43,7 +43,7 @@ class LoopLayerTracker : public QObject {
   private:
     struct LayerInfo {
         QString path;
-        unsigned int length;
+        double length;
     };
 
     ConfigObject<ConfigValue>* m_pConfig;

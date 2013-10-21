@@ -122,7 +122,7 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
         connect(pPreviewDeck, SIGNAL(newTrackLoaded(TrackPointer)),
                 m_pAnalyserQueue, SLOT(slotAnalyseTrack(TrackPointer)));
     }
-    
+
     // No need to analyse loop recorder tracks, because they are only temporary.
 //    foreach(LoopRecorderDeck* pLoopDeck, m_loop_decks) {
 //        connect(pLoopDeck, SIGNAL(newTrackLoaded(TrackPointer)),
@@ -131,9 +131,9 @@ void PlayerManager::bindToLibrary(Library* pLibrary) {
 }
 
 void PlayerManager::bindToLoopRecorder(LoopRecordingManager* pLoopRecordingManager) {
-    
+
     QMutexLocker locker(&m_mutex);
-    
+
     connect(pLoopRecordingManager, SIGNAL(exportToPlayer(QString, QString)),
             this, SLOT(slotLoadToPlayer(QString, QString)));
     connect(pLoopRecordingManager->getLoopLayerTracker(), SIGNAL(loadToLoopDeck(TrackPointer, QString, bool)),
@@ -258,7 +258,7 @@ void PlayerManager::slotNumLoopDecksControlChanged(double v) {
         qDebug() << "Ignoring request to reduce the number of preview decks to" << num;
         return;
     }
-    
+
     while (m_loop_decks.size() < num) {
         addLoopRecorderDeckInner();
     }
@@ -358,14 +358,14 @@ void PlayerManager::addLoopRecorderDeck() {
 void PlayerManager::addLoopRecorderDeckInner() {
     // Do not lock m_mutex here.
     QString group = groupForLoopDeck(m_loop_decks.count());
-    
+
     // All loop decks are in the center
     EngineChannel::ChannelOrientation orientation = EngineChannel::CENTER;
-    
+
     LoopRecorderDeck* pLoopRecorderDeck = new LoopRecorderDeck(this, m_pConfig, m_pEngine,
                                                                orientation, group);
     // Note: No need to analyse loop track because it is only temporary and will be deleted.
-    
+
     Q_ASSERT(!m_players.contains(group));
     m_players[group] = pLoopRecorderDeck;
     m_loop_decks.append(pLoopRecorderDeck);
