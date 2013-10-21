@@ -68,12 +68,12 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0), allGain(1.0);
-    if (m_lowFilterControlObject &&
-            m_midFilterControlObject &&
-            m_highFilterControlObject) {
-        lowGain = m_lowFilterControlObject->get();
-        midGain = m_midFilterControlObject->get();
-        highGain = m_highFilterControlObject->get();
+    if (m_pLowFilterControlObject &&
+            m_pMidFilterControlObject &&
+            m_pHighFilterControlObject) {
+        lowGain = m_pLowFilterControlObject->get();
+        midGain = m_pMidFilterControlObject->get();
+        highGain = m_pHighFilterControlObject->get();
     }
     allGain = m_waveformRenderer->getGain();
 
@@ -226,11 +226,17 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
     }
 
     painter->setPen(QPen(QBrush(m_pColors->getLowColor()), 1));
-    painter->drawLines(&m_lowLines[0], actualLowLineNumber);
+    if (m_pLowKillControlObject && m_pLowKillControlObject->get() == 0.0) {
+       painter->drawLines(&m_lowLines[0], actualLowLineNumber);
+    }
     painter->setPen(QPen(QBrush(m_pColors->getMidColor()), 1));
-    painter->drawLines(&m_midLines[0], actualMidLineNumber);
+    if (m_pMidKillControlObject && m_pMidKillControlObject->get() == 0.0) {
+        painter->drawLines(&m_midLines[0], actualMidLineNumber);
+    }
     painter->setPen(QPen(QBrush(m_pColors->getHighColor()), 1));
-    painter->drawLines(&m_highLines[0], actualHighLineNumber);
+    if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 0.0) {
+        painter->drawLines(&m_highLines[0], actualHighLineNumber);
+    }
 
     painter->restore();
 }

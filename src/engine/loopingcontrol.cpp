@@ -224,11 +224,10 @@ double LoopingControl::process(const double dRate,
     bool reverse = dRate < 0;
 
     double retval = kNoTrigger;
-    if(m_bLoopingEnabled &&
-       m_iLoopStartSample != kNoTrigger &&
-       m_iLoopEndSample != kNoTrigger) {
+    if (m_bLoopingEnabled && m_iLoopStartSample != kNoTrigger &&
+            m_iLoopEndSample != kNoTrigger) {
         bool outsideLoop = currentSample >= m_iLoopEndSample ||
-                currentSample <= m_iLoopStartSample;
+                           currentSample <= m_iLoopStartSample;
         if (outsideLoop) {
             retval = reverse ? m_iLoopEndSample : m_iLoopStartSample;
         }
@@ -246,7 +245,7 @@ double LoopingControl::nextTrigger(const double dRate,
     Q_UNUSED(iBufferSize);
     bool bReverse = dRate < 0;
 
-    if(m_bLoopingEnabled) {
+    if (m_bLoopingEnabled) {
         if (bReverse)
             return m_iLoopStartSample;
         else
@@ -264,7 +263,7 @@ double LoopingControl::getTrigger(const double dRate,
     Q_UNUSED(iBufferSize);
     bool bReverse = dRate < 0;
 
-    if(m_bLoopingEnabled) {
+    if (m_bLoopingEnabled) {
         if (bReverse)
             return m_iLoopEndSample;
         else
@@ -643,7 +642,7 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
                     floorf(m_pBeats->findPrevBeat(cur_pos));
 
             if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
-                if( beats >= 1.0f ) {
+                if (beats >= 1.0) {
                     loop_in = prevBeat;
                 } else {
                     // In case of beat length less then 1 beat:

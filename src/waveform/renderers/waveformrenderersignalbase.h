@@ -5,7 +5,7 @@
 #include "waveformsignalcolors.h"
 
 class ControlObject;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 
 class WaveformRendererSignalBase : public WaveformRendererAbstract {
 public:
@@ -22,13 +22,13 @@ protected:
     void deleteControls();
 
 protected:
-    ControlObjectThreadMain* m_lowFilterControlObject;
-    ControlObjectThreadMain* m_midFilterControlObject;
-    ControlObjectThreadMain* m_highFilterControlObject;
+    ControlObjectThread* m_pLowFilterControlObject;
+    ControlObjectThread* m_pMidFilterControlObject;
+    ControlObjectThread* m_pHighFilterControlObject;
 
-    ControlObjectThreadMain* m_lowKillControlObject;
-    ControlObjectThreadMain* m_midKillControlObject;
-    ControlObjectThreadMain* m_highKillControlObject;
+    ControlObjectThread* m_pLowKillControlObject;
+    ControlObjectThread* m_pMidKillControlObject;
+    ControlObjectThread* m_pHighKillControlObject;
 
     const WaveformSignalColors* m_pColors;
     QColor m_axesColor;

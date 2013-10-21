@@ -17,9 +17,6 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
-#ifdef __PROMO__
-#include "library/promotracksfeature.h"
-#endif
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
@@ -34,7 +31,7 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
@@ -46,17 +43,6 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
-
-#ifdef __PROMO__
-    if (PromoTracksFeature::isSupported(m_pConfig)) {
-        m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
-                                                       m_pTrackCollection,
-                                                       firstRun);
-        addFeature(m_pPromoTracksFeature);
-    } else {
-        m_pPromoTracksFeature = NULL;
-    }
-#endif
 
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
@@ -86,15 +72,6 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     if (TraktorFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
-    }
-
-    //Show the promo tracks view on first run, otherwise show the library
-    if (firstRun) {
-        //qDebug() << "First Run, switching to PROMO view!";
-        //This doesn't trigger onShow()... argh
-        //m_pSidebarModel->setDefaultSelection(1);
-        //slotSwitchToView(tr("Bundled Songs"));
-        //Note the promo tracks item has index=1... hardcoded hack. :/
     }
 }
 
@@ -236,12 +213,4 @@ void Library::slotCreateCrate() {
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.
     m_pSidebarModel->activateDefaultSelection();
-}
-
-QList<TrackPointer> Library::getTracksToAutoLoad() {
-#ifdef __PROMO__
-    if (m_pPromoTracksFeature)
-        return m_pPromoTracksFeature->getTracksToAutoLoad();
-#endif
-    return QList<TrackPointer>();
 }
