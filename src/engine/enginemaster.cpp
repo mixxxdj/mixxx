@@ -183,7 +183,7 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
     return m_pHead;
 }
 
-void EngineMaster::processChannels(unsigned int[]* busChannelConnectionFlags,
+void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                                    unsigned int* headphoneOutput,
                                    int iBufferSize) {
     ScopedTimer timer("EngineMaster::processChannels");
@@ -286,7 +286,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     unsigned int headphoneOutput = 0;
 
     // Prepare each channel for output
-    processChannels(&busChannelConnectionFlags, &headphoneOutput, iBufferSize);
+    Timer timer("EngineMaster::process channels");
+    processChannels(busChannelConnectionFlags, &headphoneOutput, iBufferSize);
 
     // Compute headphone mix
     // Head phone left/right mix
@@ -296,11 +297,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // qDebug() << "head val " << cf_val << ", head " << chead_gain
     //          << ", master " << cmaster_gain;
 
-    Timer timer("EngineMaster::process channels");
-    QList<ChannelInfo*>::iterator it = m_channels.begin();
-  
     timer.elapsed(true);
-    
+
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
 

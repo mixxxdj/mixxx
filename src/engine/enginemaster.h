@@ -138,7 +138,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     // first and all others are processed after. Sets the i'th bit of
     // masterOutput and headphoneOutput if the i'th channel is enabled for the
     // master output or headphone output, respectively.
-    void processChannels(unsigned int[]* busChannelConnectionFlags,
+    void processChannels(unsigned int* busChannelConnectionFlags,
                          unsigned int* headphoneOutput,
                          int iBufferSize);
 
