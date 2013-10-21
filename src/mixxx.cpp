@@ -57,6 +57,7 @@
 #include "util/statsmanager.h"
 #include "util/timer.h"
 #include "util/version.h"
+#include "playerinfo.h"
 
 #ifdef __VINYLCONTROL__
 #include "vinylcontrol/defs_vinylcontrol.h"
@@ -74,10 +75,9 @@ extern "C" void crashDlg()
 }
 
 
-bool loadTranslations(const QLocale& systemLocale, const QString& userLocale,
+bool loadTranslations(const QLocale& systemLocale, QString userLocale,
                       const QString& translation, const QString& prefix,
                       const QString& translationPath, QTranslator* pTranslator) {
-
     if (userLocale.size() == 0) {
 #if QT_VERSION >= 0x040800
         QStringList uiLanguages = systemLocale.uiLanguages();
@@ -234,7 +234,9 @@ void MixxxApp::initializeKeyboard() {
 
 MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
         : m_runtime_timer("MixxxApp::runtime"),
-          m_cmdLineArgs(args) {
+          m_cmdLineArgs(args),
+          m_pVinylcontrol1Enabled(NULL),
+          m_pVinylcontrol2Enabled(NULL) {
     logBuildDetails();
     ScopedTimer t("MixxxApp::MixxxApp");
     m_runtime_timer.start();
@@ -258,8 +260,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
     m_pConfig = upgrader.versionUpgrade(args.getSettingsPath());
-    bool bFirstRun = upgrader.isFirstRun();
-    bool bUpgraded = upgrader.isUpgraded();
 
     QString resourcePath = m_pConfig->getResourcePath();
 
@@ -382,7 +382,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #endif
 
     m_pLibrary = new Library(this, m_pConfig,
-                             bFirstRun || bUpgraded,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
@@ -460,18 +459,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pPlayerManager->slotLoadToDeck(args.getMusicFiles().at(i), i+1);
         }
     }
-
-#ifdef __PROMO__
-    //Automatically load specially marked promotional tracks on first run
-    if (bFirstRun || bUpgraded) {
-        QList<TrackPointer> tracksToAutoLoad =
-            m_pLibrary->getTracksToAutoLoad();
-        for (int i = 0; i < (int)m_pPlayerManager->numDecks()
-                && i < tracksToAutoLoad.count(); i++) {
-            m_pPlayerManager->slotLoadToDeck(tracksToAutoLoad.at(i)->getLocation(), i+1);
-        }
-    }
-#endif
 
     initActions();
     initMenuBar();
@@ -602,6 +589,8 @@ MixxxApp::~MixxxApp()
     // (vinylcontrol_enabled in VinylControlControl)
     qDebug() << "delete vinylcontrolmanager " << qTime.elapsed();
     delete m_pVCManager;
+    delete m_pVinylcontrol1Enabled;
+    delete m_pVinylcontrol2Enabled;
 #endif
     // PlayerManager depends on Engine, SoundManager, VinylControlManager, and Config
     qDebug() << "delete playerManager " << qTime.elapsed();
@@ -642,17 +631,19 @@ MixxxApp::~MixxxApp()
     qDebug() << "delete config " << qTime.elapsed();
     delete m_pConfig;
 
+    PlayerInfo::destroy();
+
     // Check for leaked ControlObjects and give warnings.
-    QList<ControlObject*> leakedControls;
+    QList<ControlDoublePrivate*> leakedControls;
     QList<ConfigKey> leakedConfigKeys;
 
-    ControlObject::getControls(&leakedControls);
+    ControlDoublePrivate::getControls(&leakedControls);
 
     if (leakedControls.size() > 0) {
         qDebug() << "WARNING: The following" << leakedControls.size() << "controls were leaked:";
-        foreach (ControlObject* pControl, leakedControls) {
-            ConfigKey key = pControl->getKey();
-            qDebug() << key.group << key.item;
+        foreach (ControlDoublePrivate* pCOP, leakedControls) {
+            ConfigKey key = pCOP->getKey();
+            qDebug() << key.group << key.item << pCOP->getCreatorCO();
             leakedConfigKeys.append(key);
         }
 
@@ -660,20 +651,24 @@ MixxxApp::~MixxxApp()
            // delete just to satisfy valgrind:
            // check if the pointer is still valid, the control object may have bin already
            // deleted by its parent in this loop
-           delete ControlObject::getControl(key);
+           ControlObject* pCo = ControlObject::getControl(key, false);
+           if (pCo) {
+               // it might happens that a control is deleted as child from an other control
+               delete pCo;
+           }
        }
    }
    qDebug() << "~MixxxApp: All leaking controls deleted.";
 
-   delete m_pKeyboard;
-   delete m_pKbdConfig;
-   delete m_pKbdConfigEmpty;
+    delete m_pKeyboard;
+    delete m_pKbdConfig;
+    delete m_pKbdConfigEmpty;
 
-   WaveformWidgetFactory::destroy();
-   t.elapsed(true);
-   // Report the total time we have been running.
-   m_runtime_timer.elapsed(true);
-   StatsManager::destroy();
+    WaveformWidgetFactory::destroy();
+    t.elapsed(true);
+    // Report the total time we have been running.
+    m_runtime_timer.elapsed(true);
+    StatsManager::destroy();
 }
 
 void toggleVisibility(ConfigKey key, bool enable) {
@@ -839,7 +834,7 @@ QString buildWhatsThis(const QString& title, const QString& text) {
     return QString("%1\n\n%2").arg(preparedTitle.replace("&", ""), text);
 }
 
-/** initializes all QActions of the application */
+// initializes all QActions of the application
 void MixxxApp::initActions()
 {
     QString loadTrackText = tr("Load Track to Deck %1");
@@ -848,7 +843,10 @@ void MixxxApp::initActions()
 
     QString player1LoadStatusText = loadTrackStatusText.arg(QString::number(1));
     m_pFileLoadSongPlayer1 = new QAction(loadTrackText.arg(QString::number(1)), this);
-    m_pFileLoadSongPlayer1->setShortcut(QKeySequence(tr("Ctrl+O")));
+    m_pFileLoadSongPlayer1->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "FileMenu_LoadDeck1"),
+                                                  tr("Ctrl+o"))));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileLoadSongPlayer1->setStatusTip(player1LoadStatusText);
     m_pFileLoadSongPlayer1->setWhatsThis(
@@ -858,7 +856,10 @@ void MixxxApp::initActions()
 
     QString player2LoadStatusText = loadTrackStatusText.arg(QString::number(2));
     m_pFileLoadSongPlayer2 = new QAction(loadTrackText.arg(QString::number(2)), this);
-    m_pFileLoadSongPlayer2->setShortcut(QKeySequence(tr("Ctrl+Shift+O")));
+    m_pFileLoadSongPlayer2->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "FileMenu_LoadDeck2"),
+                                                  tr("Ctrl+Shift+O"))));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileLoadSongPlayer2->setStatusTip(player2LoadStatusText);
     m_pFileLoadSongPlayer2->setWhatsThis(
@@ -869,7 +870,9 @@ void MixxxApp::initActions()
     QString quitTitle = tr("&Exit");
     QString quitText = tr("Quits Mixxx");
     m_pFileQuit = new QAction(quitTitle, this);
-    m_pFileQuit->setShortcut(QKeySequence(tr("Ctrl+Q")));
+    m_pFileQuit->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]", "FileMenu_Quit"),
+                                                  tr("Ctrl+q"))));
     m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileQuit->setStatusTip(quitText);
     m_pFileQuit->setWhatsThis(buildWhatsThis(quitTitle, quitText));
@@ -887,7 +890,10 @@ void MixxxApp::initActions()
     QString createPlaylistTitle = tr("Add &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
-    m_pPlaylistsNew->setShortcut(QKeySequence(tr("Ctrl+N")));
+    m_pPlaylistsNew->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "LibraryMenu_NewPlaylist"),
+                                                  tr("Ctrl+n"))));
     m_pPlaylistsNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pPlaylistsNew->setStatusTip(createPlaylistText);
     m_pPlaylistsNew->setWhatsThis(buildWhatsThis(createPlaylistTitle, createPlaylistText));
@@ -897,7 +903,10 @@ void MixxxApp::initActions()
     QString createCrateTitle = tr("Add New &Crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
-    m_pCratesNew->setShortcut(QKeySequence(tr("Ctrl+Shift+N")));
+    m_pCratesNew->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "LibraryMenu_NewCrate"),
+                                                  tr("Ctrl+Shift+N"))));
     m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pCratesNew->setStatusTip(createCrateText);
     m_pCratesNew->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
@@ -908,10 +917,14 @@ void MixxxApp::initActions()
     QString fullScreenText = tr("Display Mixxx using the full screen");
     m_pViewFullScreen = new QAction(fullScreenTitle, this);
 #ifdef __APPLE__
-    m_pViewFullScreen->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
+    QString fullscreen_key = tr("Ctrl+Shift+F");
 #else
-    m_pViewFullScreen->setShortcut(QKeySequence(tr("F11")));
+    QString fullscreen_key = tr("F11");
 #endif
+    m_pViewFullScreen->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_Fullscreen"),
+                                                  fullscreen_key)));
     m_pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
     // connect(shortcut, SIGNAL(triggered()), this, SLOT(slotQuitFullScreen()));
@@ -927,7 +940,10 @@ void MixxxApp::initActions()
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
     m_pOptionsKeyboard = new QAction(keyboardShortcutTitle, this);
-    m_pOptionsKeyboard->setShortcut(tr("Ctrl+`"));
+    m_pOptionsKeyboard->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_EnableShortcuts"),
+                                                  tr("Ctrl+`"))));
     m_pOptionsKeyboard->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsKeyboard->setCheckable(true);
     m_pOptionsKeyboard->setChecked(keyboardShortcutsEnabled);
@@ -939,7 +955,10 @@ void MixxxApp::initActions()
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
     m_pOptionsPreferences = new QAction(preferencesTitle, this);
-    m_pOptionsPreferences->setShortcut(QKeySequence(tr("Ctrl+P")));
+    m_pOptionsPreferences->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_Preferences"),
+                                                  tr("Ctrl+P"))));
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsPreferences->setStatusTip(preferencesText);
     m_pOptionsPreferences->setWhatsThis(buildWhatsThis(preferencesTitle, preferencesText));
@@ -988,7 +1007,10 @@ void MixxxApp::initActions()
     QString vinylControlTitle2 = tr("Enable Vinyl Control &2");
 
     m_pOptionsVinylControl = new QAction(vinylControlTitle1, this);
-    m_pOptionsVinylControl->setShortcut(QKeySequence(tr("Ctrl+Y")));
+    m_pOptionsVinylControl->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_EnableVinyl1"),
+                                                  tr("Ctrl+y"))));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
@@ -998,13 +1020,16 @@ void MixxxApp::initActions()
     m_pOptionsVinylControl->setWhatsThis(buildWhatsThis(vinylControlTitle1, vinylControlText));
     connect(m_pOptionsVinylControl, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl(bool)));
-    ControlObjectThreadMain* enabled1 = new ControlObjectThreadMain(
-            "[Channel1]", "vinylcontrol_enabled", this);
-    connect(enabled1, SIGNAL(valueChanged(double)), this,
+    m_pVinylcontrol1Enabled = new ControlObjectThread(
+            "[Channel1]", "vinylcontrol_enabled");
+    connect(m_pVinylcontrol1Enabled, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2 = new QAction(vinylControlTitle2, this);
-    m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
+    m_pOptionsVinylControl2->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_EnableVinyl2"),
+                                                  tr("Ctrl+U"))));
     m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsVinylControl2->setCheckable(true);
     m_pOptionsVinylControl2->setChecked(false);
@@ -1013,9 +1038,9 @@ void MixxxApp::initActions()
     connect(m_pOptionsVinylControl2, SIGNAL(toggled(bool)), this,
             SLOT(slotCheckboxVinylControl2(bool)));
 
-    ControlObjectThreadMain* enabled2 = new ControlObjectThreadMain(
-            "[Channel2]", "vinylcontrol_enabled", this);
-    connect(enabled2, SIGNAL(valueChanged(double)), this,
+    m_pVinylcontrol2Enabled = new ControlObjectThread(
+            "[Channel2]", "vinylcontrol_enabled");
+    connect(m_pVinylcontrol2Enabled, SIGNAL(valueChanged(double)), this,
             SLOT(slotControlVinylControl2(double)));
 #endif
 
@@ -1023,7 +1048,10 @@ void MixxxApp::initActions()
     QString shoutcastTitle = tr("Enable Live &Broadcasting");
     QString shoutcastText = tr("Stream your mixes to a shoutcast or icecast server");
     m_pOptionsShoutcast = new QAction(shoutcastTitle, this);
-    m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
+    m_pOptionsShoutcast->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_EnableLiveBroadcasting"),
+                                                  tr("Ctrl+L"))));
     m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsShoutcast->setCheckable(true);
     m_pOptionsShoutcast->setChecked(m_pShoutcastManager->isEnabled());
@@ -1040,7 +1068,10 @@ void MixxxApp::initActions()
             " " + mayNotBeSupported;
     m_pViewShowSamplers = new QAction(showSamplersTitle, this);
     m_pViewShowSamplers->setCheckable(true);
-    m_pViewShowSamplers->setShortcut(tr("Ctrl+1", "Menubar|View|Show Samplers"));
+    m_pViewShowSamplers->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowSamplers"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Samplers"))));
     m_pViewShowSamplers->setStatusTip(showSamplersText);
     m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
     connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
@@ -1051,7 +1082,10 @@ void MixxxApp::initActions()
             " " + mayNotBeSupported;
     m_pViewVinylControl = new QAction(showVinylControlTitle, this);
     m_pViewVinylControl->setCheckable(true);
-    m_pViewVinylControl->setShortcut(tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"));
+    m_pViewVinylControl->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVinylControl"),
+            tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
     m_pViewVinylControl->setStatusTip(showVinylControlText);
     m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
     connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
@@ -1062,7 +1096,10 @@ void MixxxApp::initActions()
             " " + mayNotBeSupported;
     m_pViewShowMicrophone = new QAction(showMicrophoneTitle, this);
     m_pViewShowMicrophone->setCheckable(true);
-    m_pViewShowMicrophone->setShortcut(tr("Ctrl+2", "Menubar|View|Show Microphone Section"));
+    m_pViewShowMicrophone->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowMicrophone"),
+            tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
     m_pViewShowMicrophone->setStatusTip(showMicrophoneText);
     m_pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
     connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
@@ -1073,7 +1110,10 @@ void MixxxApp::initActions()
     " " + mayNotBeSupported;
     m_pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
     m_pViewShowPreviewDeck->setCheckable(true);
-    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+4", "Menubar|View|Show Preview Deck"));
+    m_pViewShowPreviewDeck->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowPreviewDeck"),
+                                                  tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
     m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
@@ -1083,7 +1123,10 @@ void MixxxApp::initActions()
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
-    m_pOptionsRecord->setShortcut(tr("Ctrl+R"));
+    m_pOptionsRecord->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_RecordMix"),
+                                                  tr("Ctrl+R"))));
     m_pOptionsRecord->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsRecord->setCheckable(true);
     m_pOptionsRecord->setStatusTip(recordText);
@@ -1094,7 +1137,10 @@ void MixxxApp::initActions()
     QString reloadSkinTitle = tr("&Reload Skin");
     QString reloadSkinText = tr("Reload the skin");
     m_pDeveloperReloadSkin = new QAction(reloadSkinTitle, this);
-    m_pDeveloperReloadSkin->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
+    m_pDeveloperReloadSkin->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_ReloadSkin"),
+                                                  tr("Ctrl+Shift+R"))));
     m_pDeveloperReloadSkin->setShortcutContext(Qt::ApplicationShortcut);
     m_pDeveloperReloadSkin->setCheckable(true);
     m_pDeveloperReloadSkin->setChecked(false);
@@ -1319,8 +1365,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::set(ConfigKey(
                     "[Channel1]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
-            ControlObject::set(ConfigKey(
-                    "[Channel1]", "vinylcontrol_enabled"), (double)0);
+            m_pVinylcontrol1Enabled->set(0.0);
         }
     }
 #endif
@@ -1329,7 +1374,7 @@ void MixxxApp::slotControlVinylControl(double toggle)
 void MixxxApp::slotCheckboxVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_enabled"), (double)toggle);
+    m_pVinylcontrol1Enabled->set((double)toggle);
 #endif
 }
 
@@ -1350,8 +1395,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
             m_pPrefDlg->showSoundHardwarePage();
             ControlObject::set(ConfigKey(
                     "[Channel2]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
-            ControlObject::set(ConfigKey(
-                    "[Channel2]", "vinylcontrol_enabled"), (double)0);
+            m_pVinylcontrol2Enabled->set(0.0);
           }
     }
 #endif
@@ -1360,7 +1404,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 void MixxxApp::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
-    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_enabled"), (double)toggle);
+    m_pVinylcontrol2Enabled->set((double)toggle);
 #endif
 }
 

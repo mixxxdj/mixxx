@@ -29,19 +29,13 @@ class ControlObject;
 class ControlObjectThreadMain;
 class VinylControlManager;
 
-/**
-  *@author Stefan Langhammer
-  *@author Albert Santoni
-  */
-
 class DlgPrefVinyl : public QWidget, Ui::DlgPrefVinylDlg  {
     Q_OBJECT
-public:
-    DlgPrefVinyl(QWidget *pParent, VinylControlManager *m_pVCMan, ConfigObject<ConfigValue> *_config);
+  public:
+    DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan, ConfigObject<ConfigValue>* _config);
     ~DlgPrefVinyl();
 
-public slots:
-    /** Update widget */
+  public slots:
     void slotUpdate();
     void slotApply();
     void VinylTypeSlotApply();
@@ -49,19 +43,16 @@ public slots:
     void slotClose();
     void slotShow();
 
-signals:
-private:
+  signals:
+
+  private:
     VinylControlSignalWidget m_signalWidget1;
     VinylControlSignalWidget m_signalWidget2;
 
-
-    /** Pointer to player device */
-    //PlayerProxy *player;
     VinylControlManager* m_pVCManager;
-    /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
-    ControlObjectThreadMain m_COSpeed1;
-    ControlObjectThreadMain m_COSpeed2;
+    ConfigObject<ConfigValue>* config;
+    ControlObjectThread m_COSpeed1;
+    ControlObjectThread m_COSpeed2;
 };
 
 #endif

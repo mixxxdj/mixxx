@@ -28,7 +28,8 @@
 class PlayerInfo : public QObject {
     Q_OBJECT
   public:
-    static PlayerInfo &Instance();
+    static PlayerInfo& instance();
+    static void destroy();
     TrackPointer getTrackInfo(const QString& group);
     void setTrackInfo(const QString& group, const TrackPointer& trackInfoObj);
     TrackPointer getCurrentPlayingTrack();
@@ -36,24 +37,44 @@ class PlayerInfo : public QObject {
     bool isTrackLoaded(const TrackPointer& pTrack) const;
     bool isFileLoaded(const QString& track_location) const;
 
-
   signals:
     void currentPlayingDeckChanged(int deck);
     void trackLoaded(QString group, TrackPointer pTrack);
     void trackUnloaded(QString group, TrackPointer pTrack);
 
   private:
+    class DeckControls {
+        public:
+            DeckControls(QString& group)
+                    : m_play(group, "play"),
+                      m_pregain(group, "pregain"),
+                      m_volume(group, "volume"),
+                      m_orientation(group, "orientation") {
+            }
+
+            ControlObjectThread m_play;
+            ControlObjectThread m_pregain;
+            ControlObjectThread m_volume;
+            ControlObjectThread m_orientation;
+    };
+
+    void clearControlCache();
     void timerEvent(QTimerEvent* pTimerEvent);
     void updateCurrentPlayingDeck();
     int getCurrentPlayingDeck();
+    DeckControls* getDeckControls(int i);
 
     PlayerInfo();
     virtual ~PlayerInfo();
 
     mutable QMutex m_mutex;
-    ControlObjectThread m_COxfader;
+    ControlObjectThread* m_pCOxfader;
+    // QMap is faster than QHash for small count of elements < 50
     QMap<QString, TrackPointer> m_loadedTrackMap;
     int m_currentlyPlayingDeck;
+    QList<DeckControls*> m_deckControlList;
+
+    static PlayerInfo* m_pPlayerinfo;
 };
 
 #endif /* _PLAYERINFO_H_ */

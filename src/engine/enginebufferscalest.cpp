@@ -65,10 +65,11 @@ void EngineBufferScaleST::setPitchIndpTimeStretch(bool b)
 {
     m_bPitchIndpTimeStretch = b;
     m_qMutex.lock();
-    if (m_bPitchIndpTimeStretch)
+    if (m_bPitchIndpTimeStretch) {
         m_pSoundTouch->setRate(1.);
-    else
+    } else {
         m_pSoundTouch->setTempo(1.);
+    }
     m_qMutex.unlock();
 }
 

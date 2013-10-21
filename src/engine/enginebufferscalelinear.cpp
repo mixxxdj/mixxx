@@ -112,8 +112,9 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
     m_samplesRead = 0;
 
     // Guard against buf_size == 0
-    if ((int)buf_size == 0)
+    if (static_cast<int>(buf_size) == 0) {
         return m_buffer;
+    }
 
     if (rate_add_new * rate_add_old < 0) {
         //calculate half buffer going one way, and half buffer going
@@ -169,8 +170,8 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
 CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         unsigned long buf_size, int* samples_read) {
     float rate_add_new = m_dBaseRate;
-    float rate_add_old = m_fOldBaseRate; //Smoothly interpolate to new playback rate
-    float rate_add = rate_add_new;
+    // Smoothly interpolate to new playback rate
+    float rate_add_old = m_fOldBaseRate;
     float rate_add_diff = rate_add_new - rate_add_old;
 
     //Update the old base rate because we only need to
@@ -183,8 +184,9 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     int iRateLerpLength = static_cast<int>(buf_size);
 
     // Guard against buf_size == 0
-    if (iRateLerpLength == 0)
+    if (iRateLerpLength == 0) {
         return buf;
+    }
 
     // We check for scratch condition in the public function, so this shouldn't
     // happen
@@ -194,13 +196,14 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     // Special case -- no scaling needed!
     if (rate_add_old == 1.0 && rate_add_new == 1.0) {
-        int samples_needed = buf_size;
+        int samples_needed = iRateLerpLength;
         CSAMPLE* write_buf = buf;
 
         // Use up what's left of the internal buffer.
         int iNextSample = static_cast<int>(ceil(m_dNextSampleIndex)) * 2;
         if (iNextSample + 1 < buffer_int_size) {
-            for (int i = iNextSample; samples_needed > 2 && i < buffer_int_size; i+=2) {
+            for (int i = iNextSample;
+                 samples_needed > 2 && i < buffer_int_size; i += 2) {
                 *write_buf = buffer_int[i]; write_buf++;
                 *write_buf = buffer_int[i+1]; write_buf++;
                 samples_needed -= 2;
@@ -216,7 +219,8 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // to call getNextSamples until you receive the number of samples you
         // wanted.
         while (samples_needed > 0) {
-            int read_size = m_pReadAheadManager->getNextSamples(1.0, write_buf, samples_needed);
+            int read_size = m_pReadAheadManager->getNextSamples(
+                    1.0, write_buf, samples_needed);
             samples_needed -= read_size;
             write_buf += read_size;
 
@@ -231,7 +235,7 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
         // Instead of counting how many samples we got from the internal buffer
         // and the RAMAN calls, just measure the difference between what we
         // requested and what we still need.
-        int read_samples = buf_size - samples_needed;
+        int read_samples = iRateLerpLength - samples_needed;
 
         // Even though this code should not trigger for the special case in
         // getScaled for when the rate changes directions, the convention in the
@@ -255,20 +259,17 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     double samples = 0;
 
     for (int j = 0; j < iRateLerpLength; j += 2) {
-        rate_add = (rate_add_diff) / (float)iRateLerpLength * (float)j + rate_add_old;
-        samples += fabs(rate_add);
+        samples += fabs((rate_add_diff * static_cast<float>(j)) /
+                        static_cast<float>(iRateLerpLength) + rate_add_old);
     }
 
-    rate_add = rate_add_new;
-    double rate_add_abs = fabs(rate_add);
-
-    //we're calculating mono samples, so divide remaining buffer by 2;
-    samples += (rate_add_abs * ((float)(buf_size - iRateLerpLength)/2));
+    // We're calculating mono samples, so divide remaining buffer by 2;
     long unscaled_samples_needed = floor(samples);
 
-    //if the current position fraction plus the future position fraction
-    //loops over 1.0, we need to round up
-    if (m_dNextSampleIndex - floor(m_dNextSampleIndex) + samples - floor(samples) > 1.0) {
+    // If the current position fraction plus the future position fraction
+    // loops over 1.0, we need to round up
+    if (m_dNextSampleIndex - floor(m_dNextSampleIndex) +
+        samples - floor(samples) > 1.0) {
         unscaled_samples_needed++;
     }
 
@@ -276,8 +277,8 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
     // number of samples.
     unscaled_samples_needed *= 2;
 
-    //0 is never the right answer
-    unscaled_samples_needed = math_max(2,unscaled_samples_needed);
+    // 0 is never the right answer
+    unscaled_samples_needed = math_max(2, unscaled_samples_needed);
 
     bool last_read_failed = false;
     CSAMPLE prev_sample[2];
@@ -290,39 +291,40 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
 
     int i = 0;
     int screwups = 0;
-    while (i < buf_size) {
+    while (i < iRateLerpLength) {
         //shift indicies
         m_dCurSampleIndex = m_dNextSampleIndex;
 
-        //we're going to be interpolating between two samples, a lower (prev)
-        //and upper (cur) sample.  If the lower sample is off the end of the buffer,
-        //load it from the saved globals
+        // Because our index is a float value, we're going to be interpolating
+        // between two samples, a lower (prev) and upper (cur) sample.
+        // If the lower sample is off the end of the buffer (values between
+        // -.999 and 0), load it from the saved globals.
 
-        if ((int)floor(m_dCurSampleIndex)*2+1 < buffer_int_size && m_dCurSampleIndex >= 0.0) {
-            m_fPrevSample[0] = prev_sample[0] = buffer_int[(int)floor(m_dCurSampleIndex)*2];
-            m_fPrevSample[1] = prev_sample[1] = buffer_int[(int)floor(m_dCurSampleIndex)*2+1];
+        // The first bounds check (< buffer_int_size) is probably not needed.
+
+        if (static_cast<int>(floor(m_dCurSampleIndex)) * 2 + 1 < buffer_int_size
+            && m_dCurSampleIndex >= 0.0) {
+            prev_sample[0] = buffer_int[static_cast<int>(
+                    floor(m_dCurSampleIndex)) * 2];
+            prev_sample[1] = buffer_int[static_cast<int>(
+                    floor(m_dCurSampleIndex)) * 2 + 1];
         } else {
             prev_sample[0] = m_fPrevSample[0];
             prev_sample[1] = m_fPrevSample[1];
         }
 
-        //Smooth any changes in the playback rate over iRateLerpLength
-        //samples. This prevents the change from being discontinuous and helps
-        //improve sound quality.
-        if (i < iRateLerpLength) {
-            rate_add = (float)i * (rate_add_diff) / (float)iRateLerpLength + rate_add_old;
-            //rate_add = sigmoid_zero((float)i,(float)iRateLerpLength) * rate_add_diff + rate_add_old;
-        } else {
-            rate_add = rate_add_new;
-        }
+        // Smooth any changes in the playback rate over iRateLerpLength
+        // samples. This prevents the change from being discontinuous and helps
+        // improve sound quality.
+        float rate_add = static_cast<float>(i) * (rate_add_diff) /
+                         static_cast<float>(iRateLerpLength) + rate_add_old;
 
         // if we don't have enough samples, load some more
-        while ((int)ceil(m_dCurSampleIndex)*2+1 >= buffer_int_size) {
+        while (static_cast<int>(ceil(m_dCurSampleIndex)) * 2 + 1 >=
+               buffer_int_size) {
             int old_bufsize = buffer_int_size;
-            //qDebug() << "buffer" << buffer_count << rate_add_old << rate_add_new << rate_add << i << m_dCurSampleIndex << buffer_int_size << unscaled_samples_needed;
             //Q_ASSERT(unscaled_samples_needed > 0);
             if (unscaled_samples_needed == 0) {
-                //qDebug() << "screwup" << m_dCurSampleIndex << (int)ceil(m_dCurSampleIndex)*2+1 << buffer_int_size;
                 unscaled_samples_needed = 2;
                 screwups++;
             }
@@ -343,60 +345,48 @@ CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
             unscaled_samples_needed -= buffer_int_size;
             //shift the index by the size of the old buffer
             m_dCurSampleIndex -= old_bufsize / 2;
-            //fractions below 0 is ok, the ceil will bring it up to 0
-            //this happens sometimes, somehow?
-            //Q_ASSERT(m_dCurSampleIndex > -1.0);
-
-            //not sure this actually does anything, but it seems to help
-            if ((int)floor(m_dCurSampleIndex)*2 >= 0.0) {
-                m_fPrevSample[0] = prev_sample[0] = buffer_int[(int)floor(m_dCurSampleIndex)*2];
-                m_fPrevSample[1] = prev_sample[1] = buffer_int[(int)floor(m_dCurSampleIndex)*2+1];
-            }
         }
+
+        // Now that the buffer is up to date, we can get the value of the sample
+        // at the floor of our position.
+        if (static_cast<int>(floor(m_dCurSampleIndex)) * 2 >= 0.0) {
+            prev_sample[0] = buffer_int[static_cast<int>(
+                    floor(m_dCurSampleIndex)) * 2];
+            prev_sample[1] = buffer_int[static_cast<int>(
+                    floor(m_dCurSampleIndex)) * 2 + 1];
+        }
+
         //I guess?
-        if (last_read_failed)
+        if (last_read_failed) {
             break;
+        }
 
-        cur_sample[0] = buffer_int[(int)ceil(m_dCurSampleIndex)*2];
-        cur_sample[1] = buffer_int[(int)ceil(m_dCurSampleIndex)*2+1];
+        cur_sample[0] = buffer_int[static_cast<int>(
+                ceil(m_dCurSampleIndex)) * 2];
+        cur_sample[1] = buffer_int[static_cast<int>(
+                ceil(m_dCurSampleIndex)) * 2 + 1];
 
-        //rate_add was here
-
-        //for the current index, what percentage is it between the previous and the next?
+        // For the current index, what percentage is it
+        // between the previous and the next?
         CSAMPLE frac = m_dCurSampleIndex - floor(m_dCurSampleIndex);
 
         //Perform linear interpolation
-        buf[i] = (float)prev_sample[0] + frac * ((float)cur_sample[0] - (float)prev_sample[0]);
-        buf[i+1] = (float)prev_sample[1] + frac * ((float)cur_sample[1] - (float)prev_sample[1]);
-
-        //at extremely low speeds, dampen the gain to hide pops and clicks
-        //this does cause odd-looking linear waveforms that go to zero and back
-
-        /*writer << QString("%1,%2,%3,%4\n").arg(buffer_count)
-                                         .arg(buffer[i])
-                                           .arg(prev_sample[0])
-                                           .arg(cur_sample[0]);
-        buffer_count++;*/
+        buf[i] = static_cast<float>(prev_sample[0]) +
+                 frac * (static_cast<float>(cur_sample[0]) -
+                 static_cast<float>(prev_sample[0]));
+        buf[i+1] = static_cast<float>(prev_sample[1]) +
+                   frac * (static_cast<float>(cur_sample[1]) -
+                   static_cast<float>(prev_sample[1]));
+        m_fPrevSample[0] = prev_sample[0];
+        m_fPrevSample[1] = prev_sample[1];
 
         //increment the index for the next loop
         m_dNextSampleIndex = m_dCurSampleIndex +
-                (i < iRateLerpLength ? fabs(rate_add) : rate_add_abs);
-        i+=2;
+                (i < iRateLerpLength ? fabs(rate_add) : fabs(rate_add_new));
+        i +=2 ;
     }
 
-    // If we broke out of the loop, zero the remaining samples
-    // TODO(XXX) memset
-    //for (; i < buf_size; i += 2) {
-    //    buf[i] = 0.0f;
-    //    buf[i+1] = 0.0f;
-    //}
-
-    //Q_ASSERT(i>=buf_size);
-    SampleUtil::applyGain(&buf[i], 0.0f, buf_size-i);
-
-    // It's possible that we will exit this function without having satisfied
-    // this requirement. We may be trying to read past the end of the file.
-    //Q_ASSERT(unscaled_samples_needed == 0);
+    SampleUtil::applyGain(&buf[i], 0.0f, buf_size - i);
 
     return buf;
 }

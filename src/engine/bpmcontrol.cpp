@@ -10,6 +10,7 @@
 #include "engine/bpmcontrol.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
+#include "controlobjectslave.h"
 
 const int minBpm = 30;
 const int maxInterval = (int)(1000.*(60./(CSAMPLE)minBpm));
@@ -26,22 +27,12 @@ BpmControl::BpmControl(const char* _group,
         m_iSyncState(SYNC_NONE),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
+
+    m_pPlayButton = new ControlObjectSlave(_group, "play", this);
+    m_pRateSlider = new ControlObjectSlave(_group, "rate", this);
+    m_pRateSlider->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
     m_pNumDecks = ControlObject::getControl("[Master]", "num_decks");
-
-    m_pPlayButton = ControlObject::getControl(_group, "play");
-    connect(m_pPlayButton, SIGNAL(valueChanged(double)),
-            this, SLOT(slotControlPlay(double)),
-            Qt::DirectConnection);
-
     m_pQuantize = ControlObject::getControl(_group, "quantize");
-
-    m_pRateSlider = ControlObject::getControl(_group, "rate");
-    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm()),
-            Qt::DirectConnection);
-    connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotAdjustBpm()),
-            Qt::DirectConnection);
 
     m_pRateRange = ControlObject::getControl(_group, "rateRange");
     connect(m_pRateRange, SIGNAL(valueChanged(double)),

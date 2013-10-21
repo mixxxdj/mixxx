@@ -12,6 +12,7 @@
 class ControlObject;
 class ControlPushButton;
 class EngineBuffer;
+class ControlObjectSlave;
 
 class BpmControl : public EngineControl {
     Q_OBJECT
@@ -66,9 +67,9 @@ class BpmControl : public EngineControl {
     ControlObject* m_pNumDecks;
 
     // ControlObjects that come from EngineBuffer
-    ControlObject* m_pPlayButton;
+    ControlObjectSlave* m_pPlayButton;
+    ControlObjectSlave* m_pRateSlider;
     ControlObject* m_pQuantize;
-    ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
 

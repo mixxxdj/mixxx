@@ -45,7 +45,8 @@ class EngineMaster : public EngineObject, public AudioSource {
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
-                 bool bEnableSidechain);
+                 bool bEnableSidechain,
+                 bool bRampingGain=true);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -76,6 +77,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     // These are really only exposed for tests to use.
     const CSAMPLE* getMasterBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
+    const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
     const CSAMPLE* getChannelBuffer(QString name) const;
 
@@ -136,14 +138,20 @@ class EngineMaster : public EngineObject, public AudioSource {
     // first and all others are processed after. Sets the i'th bit of
     // masterOutput and headphoneOutput if the i'th channel is enabled for the
     // master output or headphone output, respectively.
-    void processChannels(unsigned int* masterOutput,
+    void processChannels(unsigned int[]* busChannelConnectionFlags,
                          unsigned int* headphoneOutput,
                          int iBufferSize);
 
+    bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
     QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
+    struct OutputBus {
+        CSAMPLE* m_pBuffer;
+        OrientationVolumeGainCalculator m_gain;
+        QList<CSAMPLE> m_gainCache;
+    } m_outputBus[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
 

@@ -178,9 +178,6 @@ class Qt(Dependence):
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
 
-        # Promo tracks is the only thing that uses webkit currently.
-        use_qtwebkit = int(util.get_flags(build.env, 'promo', 0)) > 0
-
         # TODO(XXX) what is with the slightly differing modules used for each
         # platform here? Document the differences and make them all
         # programmatically driven from one list instead of hard-coded multiple
@@ -192,8 +189,6 @@ class Qt(Dependence):
             #'QtUiTools', #'QtDesigner',
         ]
 
-        if use_qtwebkit:
-            qt_modules.append('QtWebKit')
 
         # Enable Qt include paths
         if build.platform_is_linux:
@@ -228,8 +223,6 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtXml')
             build.env.Append(LIBS = 'QtNetwork')
             build.env.Append(LIBS = 'QtScript')
-            if use_qtwebkit:
-                build.env.Append(LIBS = 'QtWebKit')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
             # Since we use WebKit, that's only available dynamically
@@ -241,8 +234,6 @@ class Qt(Dependence):
                        'QtXmlPatterns4',
                        'QtSql4',
                        'QtScript4',]
-            if use_qtwebkit:
-                qt_libs.append('QtWebKit4')
 
             # Use the debug versions of the libs if we are building in debug mode.
             if build.msvcdebug:
@@ -280,8 +271,6 @@ class Qt(Dependence):
                              '$QTDIR/include/QtSql',
                              '$QTDIR/include/QtScript',
                              '$QTDIR/include/Qt']
-            if use_qtwebkit:
-                include_paths.append('$QTDIR/include/QtWebKit')
             build.env.Append(CPPPATH=include_paths)
 
         # Set the rpath for linux/bsd/osx.
@@ -433,6 +422,7 @@ class MixxxCore(Feature):
                    "configobject.cpp",
                    "control/control.cpp",
                    "control/controlbehavior.cpp",
+                   "controlobjectslave.cpp",
                    "controlobjectthread.cpp",
                    "controlobjectthreadwidget.cpp",
                    "controlobjectthreadmain.cpp",
