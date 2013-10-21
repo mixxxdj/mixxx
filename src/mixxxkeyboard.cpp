@@ -60,9 +60,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
         {
             // Check if a shortcut is defined
             ConfigKey * pConfigKey = m_pKbdConfigObject->get(ConfigValueKbd(ks));
-
-            if (pConfigKey)
-            {
+            if (pConfigKey && pConfigKey->group != "[KeyboardShortcuts]") {
                 ControlObject* control = ControlObject::getControl(*pConfigKey);
                 if (control) {
                     control->setValueFromMidi(MIDI_NOTE_ON, 1);

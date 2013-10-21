@@ -855,7 +855,10 @@ void MixxxApp::initActions()
 
     QString player1LoadStatusText = loadTrackStatusText.arg(QString::number(1));
     m_pFileLoadSongPlayer1 = new QAction(loadTrackText.arg(QString::number(1)), this);
-    m_pFileLoadSongPlayer1->setShortcut(QKeySequence(tr("Ctrl+O")));
+    m_pFileLoadSongPlayer1->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "FileMenu_LoadDeck1"),
+                                                  tr("Ctrl+o"))));
     m_pFileLoadSongPlayer1->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileLoadSongPlayer1->setStatusTip(player1LoadStatusText);
     m_pFileLoadSongPlayer1->setWhatsThis(
@@ -865,7 +868,10 @@ void MixxxApp::initActions()
 
     QString player2LoadStatusText = loadTrackStatusText.arg(QString::number(2));
     m_pFileLoadSongPlayer2 = new QAction(loadTrackText.arg(QString::number(2)), this);
-    m_pFileLoadSongPlayer2->setShortcut(QKeySequence(tr("Ctrl+Shift+O")));
+    m_pFileLoadSongPlayer2->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "FileMenu_LoadDeck2"),
+                                                  tr("Ctrl+Shift+O"))));
     m_pFileLoadSongPlayer2->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileLoadSongPlayer2->setStatusTip(player2LoadStatusText);
     m_pFileLoadSongPlayer2->setWhatsThis(
@@ -876,7 +882,9 @@ void MixxxApp::initActions()
     QString quitTitle = tr("&Exit");
     QString quitText = tr("Quits Mixxx");
     m_pFileQuit = new QAction(quitTitle, this);
-    m_pFileQuit->setShortcut(QKeySequence(tr("Ctrl+Q")));
+    m_pFileQuit->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]", "FileMenu_Quit"),
+                                                  tr("Ctrl+q"))));
     m_pFileQuit->setShortcutContext(Qt::ApplicationShortcut);
     m_pFileQuit->setStatusTip(quitText);
     m_pFileQuit->setWhatsThis(buildWhatsThis(quitTitle, quitText));
@@ -894,7 +902,10 @@ void MixxxApp::initActions()
     QString createPlaylistTitle = tr("Add &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
-    m_pPlaylistsNew->setShortcut(QKeySequence(tr("Ctrl+N")));
+    m_pPlaylistsNew->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "LibraryMenu_NewPlaylist"),
+                                                  tr("Ctrl+n"))));
     m_pPlaylistsNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pPlaylistsNew->setStatusTip(createPlaylistText);
     m_pPlaylistsNew->setWhatsThis(buildWhatsThis(createPlaylistTitle, createPlaylistText));
@@ -904,7 +915,10 @@ void MixxxApp::initActions()
     QString createCrateTitle = tr("Add New &Crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
-    m_pCratesNew->setShortcut(QKeySequence(tr("Ctrl+Shift+N")));
+    m_pCratesNew->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "LibraryMenu_NewCrate"),
+                                                  tr("Ctrl+Shift+N"))));
     m_pCratesNew->setShortcutContext(Qt::ApplicationShortcut);
     m_pCratesNew->setStatusTip(createCrateText);
     m_pCratesNew->setWhatsThis(buildWhatsThis(createCrateTitle, createCrateText));
@@ -915,10 +929,14 @@ void MixxxApp::initActions()
     QString fullScreenText = tr("Display Mixxx using the full screen");
     m_pViewFullScreen = new QAction(fullScreenTitle, this);
 #ifdef __APPLE__
-    m_pViewFullScreen->setShortcut(QKeySequence(tr("Ctrl+Shift+F")));
+    QString fullscreen_key = tr("Ctrl+Shift+F");
 #else
-    m_pViewFullScreen->setShortcut(QKeySequence(tr("F11")));
+    QString fullscreen_key = tr("F11");
 #endif
+    m_pViewFullScreen->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_Fullscreen"),
+                                                  fullscreen_key)));
     m_pViewFullScreen->setShortcutContext(Qt::ApplicationShortcut);
     // QShortcut * shortcut = new QShortcut(QKeySequence(tr("Esc")),  this);
     // connect(shortcut, SIGNAL(triggered()), this, SLOT(slotQuitFullScreen()));
@@ -934,7 +952,10 @@ void MixxxApp::initActions()
     bool keyboardShortcutsEnabled = m_pConfig->getValueString(
         ConfigKey("[Keyboard]", "Enabled")) == "1";
     m_pOptionsKeyboard = new QAction(keyboardShortcutTitle, this);
-    m_pOptionsKeyboard->setShortcut(tr("Ctrl+`"));
+    m_pOptionsKeyboard->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_EnableShortcuts"),
+                                                  tr("Ctrl+`"))));
     m_pOptionsKeyboard->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsKeyboard->setCheckable(true);
     m_pOptionsKeyboard->setChecked(keyboardShortcutsEnabled);
@@ -946,7 +967,10 @@ void MixxxApp::initActions()
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
     m_pOptionsPreferences = new QAction(preferencesTitle, this);
-    m_pOptionsPreferences->setShortcut(QKeySequence(tr("Ctrl+P")));
+    m_pOptionsPreferences->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_Preferences"),
+                                                  tr("Ctrl+P"))));
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsPreferences->setStatusTip(preferencesText);
     m_pOptionsPreferences->setWhatsThis(buildWhatsThis(preferencesTitle, preferencesText));
@@ -995,7 +1019,10 @@ void MixxxApp::initActions()
     QString vinylControlTitle2 = tr("Enable Vinyl Control &2");
 
     m_pOptionsVinylControl = new QAction(vinylControlTitle1, this);
-    m_pOptionsVinylControl->setShortcut(QKeySequence(tr("Ctrl+Y")));
+    m_pOptionsVinylControl->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_EnableVinyl1"),
+                                                  tr("Ctrl+y"))));
     m_pOptionsVinylControl->setShortcutContext(Qt::ApplicationShortcut);
     // Either check or uncheck the vinyl control menu item depending on what
     // it was saved as.
@@ -1011,7 +1038,10 @@ void MixxxApp::initActions()
             SLOT(slotControlVinylControl(double)));
 
     m_pOptionsVinylControl2 = new QAction(vinylControlTitle2, this);
-    m_pOptionsVinylControl2->setShortcut(tr("Ctrl+U"));
+    m_pOptionsVinylControl2->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_EnableVinyl2"),
+                                                  tr("Ctrl+U"))));
     m_pOptionsVinylControl2->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsVinylControl2->setCheckable(true);
     m_pOptionsVinylControl2->setChecked(false);
@@ -1030,7 +1060,10 @@ void MixxxApp::initActions()
     QString shoutcastTitle = tr("Enable Live &Broadcasting");
     QString shoutcastText = tr("Stream your mixes to a shoutcast or icecast server");
     m_pOptionsShoutcast = new QAction(shoutcastTitle, this);
-    m_pOptionsShoutcast->setShortcut(tr("Ctrl+L"));
+    m_pOptionsShoutcast->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_EnableLiveBroadcasting"),
+                                                  tr("Ctrl+L"))));
     m_pOptionsShoutcast->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsShoutcast->setCheckable(true);
     m_pOptionsShoutcast->setChecked(m_pShoutcastManager->isEnabled());
@@ -1047,7 +1080,10 @@ void MixxxApp::initActions()
             " " + mayNotBeSupported;
     m_pViewShowSamplers = new QAction(showSamplersTitle, this);
     m_pViewShowSamplers->setCheckable(true);
-    m_pViewShowSamplers->setShortcut(tr("Ctrl+1", "Menubar|View|Show Samplers"));
+    m_pViewShowSamplers->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowSamplers"),
+                                                  tr("Ctrl+1", "Menubar|View|Show Samplers"))));
     m_pViewShowSamplers->setStatusTip(showSamplersText);
     m_pViewShowSamplers->setWhatsThis(buildWhatsThis(showSamplersTitle, showSamplersText));
     connect(m_pViewShowSamplers, SIGNAL(toggled(bool)),
@@ -1058,7 +1094,10 @@ void MixxxApp::initActions()
             " " + mayNotBeSupported;
     m_pViewVinylControl = new QAction(showVinylControlTitle, this);
     m_pViewVinylControl->setCheckable(true);
-    m_pViewVinylControl->setShortcut(tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"));
+    m_pViewVinylControl->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowVinylControl"),
+            tr("Ctrl+3", "Menubar|View|Show Vinyl Control Section"))));
     m_pViewVinylControl->setStatusTip(showVinylControlText);
     m_pViewVinylControl->setWhatsThis(buildWhatsThis(showVinylControlTitle, showVinylControlText));
     connect(m_pViewVinylControl, SIGNAL(toggled(bool)),
@@ -1069,7 +1108,10 @@ void MixxxApp::initActions()
             " " + mayNotBeSupported;
     m_pViewShowMicrophone = new QAction(showMicrophoneTitle, this);
     m_pViewShowMicrophone->setCheckable(true);
-    m_pViewShowMicrophone->setShortcut(tr("Ctrl+2", "Menubar|View|Show Microphone Section"));
+    m_pViewShowMicrophone->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(
+            ConfigKey("[KeyboardShortcuts]", "ViewMenu_ShowMicrophone"),
+            tr("Ctrl+2", "Menubar|View|Show Microphone Section"))));
     m_pViewShowMicrophone->setStatusTip(showMicrophoneText);
     m_pViewShowMicrophone->setWhatsThis(buildWhatsThis(showMicrophoneTitle, showMicrophoneText));
     connect(m_pViewShowMicrophone, SIGNAL(toggled(bool)),
@@ -1080,7 +1122,10 @@ void MixxxApp::initActions()
     " " + mayNotBeSupported;
     m_pViewShowPreviewDeck = new QAction(showPreviewDeckTitle, this);
     m_pViewShowPreviewDeck->setCheckable(true);
-    m_pViewShowPreviewDeck->setShortcut(tr("Ctrl+4", "Menubar|View|Show Preview Deck"));
+    m_pViewShowPreviewDeck->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "ViewMenu_ShowPreviewDeck"),
+                                                  tr("Ctrl+4", "Menubar|View|Show Preview Deck"))));
     m_pViewShowPreviewDeck->setStatusTip(showPreviewDeckText);
     m_pViewShowPreviewDeck->setWhatsThis(buildWhatsThis(showPreviewDeckTitle, showPreviewDeckText));
     connect(m_pViewShowPreviewDeck, SIGNAL(toggled(bool)),
@@ -1090,7 +1135,10 @@ void MixxxApp::initActions()
     QString recordTitle = tr("&Record Mix");
     QString recordText = tr("Record your mix to a file");
     m_pOptionsRecord = new QAction(recordTitle, this);
-    m_pOptionsRecord->setShortcut(tr("Ctrl+R"));
+    m_pOptionsRecord->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_RecordMix"),
+                                                  tr("Ctrl+R"))));
     m_pOptionsRecord->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsRecord->setCheckable(true);
     m_pOptionsRecord->setStatusTip(recordText);
@@ -1101,7 +1149,10 @@ void MixxxApp::initActions()
     QString reloadSkinTitle = tr("&Reload Skin");
     QString reloadSkinText = tr("Reload the skin");
     m_pDeveloperReloadSkin = new QAction(reloadSkinTitle, this);
-    m_pDeveloperReloadSkin->setShortcut(QKeySequence(tr("Ctrl+Shift+R")));
+    m_pDeveloperReloadSkin->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_ReloadSkin"),
+                                                  tr("Ctrl+Shift+R"))));
     m_pDeveloperReloadSkin->setShortcutContext(Qt::ApplicationShortcut);
     m_pDeveloperReloadSkin->setCheckable(true);
     m_pDeveloperReloadSkin->setChecked(false);

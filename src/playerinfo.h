@@ -49,7 +49,7 @@ class PlayerInfo : public QObject {
                     : m_play(group, "play"),
                       m_pregain(group, "pregain"),
                       m_volume(group, "volume"),
-                      m_orientation(group, "m_orientation") {
+                      m_orientation(group, "orientation") {
             }
 
             ControlObjectThread m_play;
