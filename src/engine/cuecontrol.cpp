@@ -901,9 +901,13 @@ void CueControl::updateIndicators() {
         if (!m_bPreviewing) {
             bool playing = m_pPlayButton->get() > 0;
             if (!playing) {
-                if (!isTrackAtCue() && getCurrentSample() < getTotalSamples()) {
-                    // Flash cue button if a next pess would move the cue point
-                    m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+                if (!isTrackAtCue()) {
+                    if (getCurrentSample() < getTotalSamples()) {
+                        // Flash cue button if a next press would move the cue point
+                        m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
+                    } else {
+                        m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
+                    }
                 } else if (m_pCuePoint->get() != -1) {
                     // Next Press is preview
                     m_pCueIndicator->setBlinkValue(ControlIndicator::ON);
@@ -922,14 +926,18 @@ void CueControl::updateIndicators() {
         } else {
             m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
             if (!playing) {
-                m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+                if (getCurrentSample() < getTotalSamples()) {
+                    m_pPlayIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_500MS);
+                } else {
+                    m_pPlayIndicator->setBlinkValue(ControlIndicator::OFF);
+                }
             }
         }
-    } else {
+    } else { // Simple mode
         bool playing = m_pPlayButton->get() > 0;
         if (!playing) {
             if (!isTrackAtCue() && getCurrentSample() < getTotalSamples()) {
-                // Flash cue button if a next pess would move the cue point
+                // Flash cue button if a next press would move the cue point
                 m_pCueIndicator->setBlinkValue(ControlIndicator::RATIO1TO1_250MS);
             } else {
                 m_pCueIndicator->setBlinkValue(ControlIndicator::OFF);
