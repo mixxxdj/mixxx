@@ -31,13 +31,15 @@ static const char* kMasterSyncGroup = "[Master]";
 SyncChannel::SyncChannel(EngineChannel* pChannel)
         : m_pChannel(pChannel),
           m_group(pChannel->getGroup()) {
-    m_pChannelSyncState = new ControlObject(ConfigKey(m_group, "sync_state"));
-    connect(m_pChannelSyncState, SIGNAL(valueChanged(double)),
-            this, SLOT(slotChannelSyncStateChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pChannelSyncState, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotChannelSyncStateChanged(double)),
-            Qt::DirectConnection);
+    m_pChannelSyncState = ControlObject::getControl(ConfigKey(m_group, "sync_state"));
+    if (m_pChannelSyncState) {
+        connect(m_pChannelSyncState, SIGNAL(valueChanged(double)),
+                this, SLOT(slotChannelSyncStateChanged(double)),
+                Qt::DirectConnection);
+        connect(m_pChannelSyncState, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotChannelSyncStateChanged(double)),
+                Qt::DirectConnection);
+    }
 
     m_pFileBpm = ControlObject::getControl(ConfigKey(m_group, "file_bpm"));
     m_pRateEngine = ControlObject::getControl(ConfigKey(m_group, "rateEngine"));
@@ -45,9 +47,11 @@ SyncChannel::SyncChannel(EngineChannel* pChannel)
     m_pRateRange = ControlObject::getControl(m_group, "rateRange");
     m_pRateDir = ControlObject::getControl(m_group, "rate_dir");
     m_pRateSlider = ControlObject::getControl(ConfigKey(m_group, "rate"));
-    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotChannelRateSliderChanged(double)),
-            Qt::DirectConnection);
+    if (m_pRateSlider) {
+        connect(m_pRateSlider, SIGNAL(valueChanged(double)),
+                this, SLOT(slotChannelRateSliderChanged(double)),
+                Qt::DirectConnection);
+    }
 }
 
 SyncChannel::~SyncChannel() {
