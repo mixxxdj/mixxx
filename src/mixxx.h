@@ -50,9 +50,9 @@ class ControlPushButton;
 class ControlObjectThread;
 
 // This Class is the base class for Mixxx. It sets up the main
-// window and providing a menubar.
-// For the main view, an instance of class MixxxView is
-// created which creates your view.
+// window and providing a menu bar.
+// For the main view, an instance of class QWidget is
+// created which holds the view.
 class MixxxMainWindow : public QMainWindow {
     Q_OBJECT
 
