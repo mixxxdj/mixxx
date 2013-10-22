@@ -274,6 +274,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     initializeKeyboard();
 
+    setAttribute(Qt::WA_AcceptTouchEvents);
     m_pTouchShift = new ControlPushButton(ConfigKey("[Controls]", "touch_shift"));
 
     // Starting the master (mixing of the channels and effects):
@@ -503,7 +504,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     //Install an event filter to catch certain QT events, such as tooltips.
     //This allows us to turn off tooltips.
     pApp->installEventFilter(this); // The eventfilter is located in this
-                                      // Mixxx class as a callback.
+                                    // Mixxx class as a callback.
 
     // If we were told to start in fullscreen mode on the command-line,
     // then turn on fullscreen mode.
@@ -1493,7 +1494,7 @@ void MixxxApp::rebootMixxxView() {
   * to disable tooltips if the user specifies in the preferences that they
   * want them off. This is a callback function.
   */
-bool MixxxApp::eventFilter(QObject *obj, QEvent *event)
+bool MixxxApp::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::ToolTip) {
         // return true for no tool tips
