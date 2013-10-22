@@ -26,7 +26,7 @@ class ControlObjectThread;
 class ControlPotmeter;
 class SkinLoader;
 class PlayerManager;
-class MixxxApp;
+class MixxxMainWindow;
 class ControlObject;
 
 /**
@@ -36,7 +36,7 @@ class ControlObject;
 class DlgPrefControls : public QWidget, public Ui::DlgPrefControlsDlg  {
     Q_OBJECT
 public:
-    DlgPrefControls(QWidget *parent, MixxxApp *mixxx,
+    DlgPrefControls(QWidget *parent, MixxxMainWindow *mixxx,
                     SkinLoader* pSkinLoader, PlayerManager* pPlayerManager,
                     ConfigObject<ConfigValue> *pConfig);
     ~DlgPrefControls();
@@ -99,7 +99,7 @@ private:
     QList<ControlObjectThread*> m_rateDirControls;
     QList<ControlObjectThread*> m_rateRangeControls;
     PlayerManager* m_pPlayerManager;
-    MixxxApp *m_mixxx;
+    MixxxMainWindow *m_mixxx;
     SkinLoader* m_pSkinLoader;
 };
 

@@ -26,7 +26,7 @@
 #include "configobject.h"
 #include "controlpushbutton.h"
 
-class MixxxApp;
+class MixxxMainWindow;
 class SoundManager;
 class DlgPrefSound;
 class DlgPrefController;
@@ -56,7 +56,7 @@ class DlgPrefModplug;
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
-    DlgPreferences(MixxxApp* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
+    DlgPreferences(MixxxMainWindow* mixxx, SkinLoader* pSkinLoader, SoundManager* soundman,
                    PlayerManager* pPlayerManager, ControllerManager* controllers,
                    VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config);
     virtual ~DlgPreferences();

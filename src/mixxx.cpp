@@ -69,13 +69,13 @@
 #include "dlgprefmodplug.h"
 #endif
 
-MixxxApp::MixxxApp(QApplication* pApp, const CmdlineArgs& args)
-        : m_runtime_timer("MixxxApp::runtime"),
+MixxxMainWindow::MixxxMainWindow(QApplication* pApp, const CmdlineArgs& args)
+        : m_runtime_timer("MixxxMainWindow::runtime"),
           m_cmdLineArgs(args),
           m_pVinylcontrol1Enabled(NULL),
           m_pVinylcontrol2Enabled(NULL) {
     logBuildDetails();
-    ScopedTimer t("MixxxApp::MixxxApp");
+    ScopedTimer t("MixxxMainWindow::MixxxMainWindow");
     m_runtime_timer.start();
     initializeWindow();
 
@@ -392,15 +392,15 @@ MixxxApp::MixxxApp(QApplication* pApp, const CmdlineArgs& args)
     }
 }
 
-MixxxApp::~MixxxApp()
+MixxxMainWindow::~MixxxMainWindow()
 {
     // TODO(rryan): Get rid of QTime here.
     QTime qTime;
     qTime.start();
-    Timer t("MixxxApp::~MixxxApp");
+    Timer t("MixxxMainWindow::~MixxxMainWindow");
     t.start();
 
-    qDebug() << "Destroying MixxxApp";
+    qDebug() << "Destroying MixxxMainWindow";
 
     qDebug() << "save config " << qTime.elapsed();
     m_pConfig->Save();
@@ -498,7 +498,7 @@ MixxxApp::~MixxxApp()
            }
        }
    }
-   qDebug() << "~MixxxApp: All leaking controls deleted.";
+   qDebug() << "~MixxxMainWindow: All leaking controls deleted.";
 
     delete m_pKeyboard;
     delete m_pKbdConfig;
@@ -533,7 +533,7 @@ bool loadTranslations(const QLocale& systemLocale, QString userLocale,
     return pTranslator->load(translation + prefix + userLocale, translationPath);
 }
 
-void MixxxApp::logBuildDetails() {
+void MixxxMainWindow::logBuildDetails() {
     QString version = Version::version();
     QString buildBranch = Version::developmentBranch();
     QString buildRevision = Version::developmentRevision();
@@ -558,7 +558,7 @@ void MixxxApp::logBuildDetails() {
     qDebug() << "Qt version is:" << qVersion();
 }
 
-void MixxxApp::initializeWindow() {
+void MixxxMainWindow::initializeWindow() {
     QString version = Version::version();
 #ifdef __APPLE__
     setWindowTitle(tr("Mixxx")); //App Store
@@ -572,7 +572,7 @@ void MixxxApp::initializeWindow() {
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 }
 
-void MixxxApp::initializeTranslations(QApplication* pApp) {
+void MixxxMainWindow::initializeTranslations(QApplication* pApp) {
     QString resourcePath = m_pConfig->getResourcePath();
     QString translationsFolder = resourcePath + "translations/";
 
@@ -623,7 +623,7 @@ void MixxxApp::initializeTranslations(QApplication* pApp) {
     }
 }
 
-void MixxxApp::initializeKeyboard() {
+void MixxxMainWindow::initializeKeyboard() {
     QString resourcePath = m_pConfig->getResourcePath();
 
     // Set the default value in settings file
@@ -673,19 +673,19 @@ void toggleVisibility(ConfigKey key, bool enable) {
     ControlObject::set(key, enable ? 1.0 : 0.0);
 }
 
-void MixxxApp::slotViewShowSamplers(bool enable) {
+void MixxxMainWindow::slotViewShowSamplers(bool enable) {
     toggleVisibility(ConfigKey("[Samplers]", "show_samplers"), enable);
 }
 
-void MixxxApp::slotViewShowVinylControl(bool enable) {
+void MixxxMainWindow::slotViewShowVinylControl(bool enable) {
     toggleVisibility(ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"), enable);
 }
 
-void MixxxApp::slotViewShowMicrophone(bool enable) {
+void MixxxMainWindow::slotViewShowMicrophone(bool enable) {
     toggleVisibility(ConfigKey("[Microphone]", "show_microphone"), enable);
 }
 
-void MixxxApp::slotViewShowPreviewDeck(bool enable) {
+void MixxxMainWindow::slotViewShowPreviewDeck(bool enable) {
     toggleVisibility(ConfigKey("[PreviewDeck]", "show_previewdeck"), enable);
 }
 
@@ -695,7 +695,7 @@ void setVisibilityOptionState(QAction* pAction, ConfigKey key) {
     pAction->setChecked(pVisibilityControl != NULL ? pVisibilityControl->get() > 0.0 : false);
 }
 
-void MixxxApp::onNewSkinLoaded() {
+void MixxxMainWindow::onNewSkinLoaded() {
     setVisibilityOptionState(m_pViewVinylControl,
                              ConfigKey(VINYL_PREF_KEY, "show_vinylcontrol"));
     setVisibilityOptionState(m_pViewShowSamplers,
@@ -706,7 +706,7 @@ void MixxxApp::onNewSkinLoaded() {
                              ConfigKey("[PreviewDeck]", "show_previewdeck"));
 }
 
-int MixxxApp::noSoundDlg(void)
+int MixxxMainWindow::noSoundDlg(void)
 {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -775,7 +775,7 @@ int MixxxApp::noSoundDlg(void)
     }
 }
 
-int MixxxApp::noOutputDlg(bool *continueClicked)
+int MixxxMainWindow::noOutputDlg(bool *continueClicked)
 {
     QMessageBox msgBox;
     msgBox.setIcon(QMessageBox::Warning);
@@ -832,7 +832,7 @@ QString buildWhatsThis(const QString& title, const QString& text) {
 }
 
 // initializes all QActions of the application
-void MixxxApp::initActions()
+void MixxxMainWindow::initActions()
 {
     QString loadTrackText = tr("Load Track to Deck %1");
     QString loadTrackStatusText = tr("Loads a track in deck %1");
@@ -1096,7 +1096,7 @@ void MixxxApp::initActions()
             this, SLOT(slotDeveloperReloadSkin(bool)));
 }
 
-void MixxxApp::initMenuBar()
+void MixxxMainWindow::initMenuBar()
 {
     // MENUBAR
     m_pFileMenu = new QMenu(tr("&File"), menuBar());
@@ -1171,7 +1171,7 @@ void MixxxApp::initMenuBar()
     menuBar()->addMenu(m_pHelpMenu);
 }
 
-void MixxxApp::slotFileLoadSongPlayer(int deck) {
+void MixxxMainWindow::slotFileLoadSongPlayer(int deck) {
     QString group = m_pPlayerManager->groupForDeck(deck-1);
 
     QString loadTrackText = tr("Load track to Deck %1").arg(QString::number(deck));
@@ -1202,15 +1202,15 @@ void MixxxApp::slotFileLoadSongPlayer(int deck) {
     }
 }
 
-void MixxxApp::slotFileLoadSongPlayer1() {
+void MixxxMainWindow::slotFileLoadSongPlayer1() {
     slotFileLoadSongPlayer(1);
 }
 
-void MixxxApp::slotFileLoadSongPlayer2() {
+void MixxxMainWindow::slotFileLoadSongPlayer2() {
     slotFileLoadSongPlayer(2);
 }
 
-void MixxxApp::slotFileQuit()
+void MixxxMainWindow::slotFileQuit()
 {
     if (!confirmExit()) {
         return;
@@ -1219,7 +1219,7 @@ void MixxxApp::slotFileQuit()
     qApp->quit();
 }
 
-void MixxxApp::slotOptionsKeyboard(bool toggle) {
+void MixxxMainWindow::slotOptionsKeyboard(bool toggle) {
     if (toggle) {
         //qDebug() << "Enable keyboard shortcuts/mappings";
         m_pKeyboard->setKeyboardConfig(m_pKbdConfig);
@@ -1231,12 +1231,12 @@ void MixxxApp::slotOptionsKeyboard(bool toggle) {
     }
 }
 
-void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
+void MixxxMainWindow::slotDeveloperReloadSkin(bool toggle) {
     Q_UNUSED(toggle);
     rebootMixxxView();
 }
 
-void MixxxApp::slotViewFullScreen(bool toggle)
+void MixxxMainWindow::slotViewFullScreen(bool toggle)
 {
     if (m_pViewFullScreen)
         m_pViewFullScreen->setChecked(toggle);
@@ -1288,13 +1288,13 @@ void MixxxApp::slotViewFullScreen(bool toggle)
     }
 }
 
-void MixxxApp::slotOptionsPreferences()
+void MixxxMainWindow::slotOptionsPreferences()
 {
     m_pPrefDlg->setHidden(false);
     m_pPrefDlg->activateWindow();
 }
 
-void MixxxApp::slotControlVinylControl(double toggle)
+void MixxxMainWindow::slotControlVinylControl(double toggle)
 {
 #ifdef __VINYLCONTROL__
     if (m_pPlayerManager->hasVinylInput(0)) {
@@ -1317,14 +1317,14 @@ void MixxxApp::slotControlVinylControl(double toggle)
 #endif
 }
 
-void MixxxApp::slotCheckboxVinylControl(bool toggle)
+void MixxxMainWindow::slotCheckboxVinylControl(bool toggle)
 {
 #ifdef __VINYLCONTROL__
     m_pVinylcontrol1Enabled->set((double)toggle);
 #endif
 }
 
-void MixxxApp::slotControlVinylControl2(double toggle)
+void MixxxMainWindow::slotControlVinylControl2(double toggle)
 {
 #ifdef __VINYLCONTROL__
     if (m_pPlayerManager->hasVinylInput(1)) {
@@ -1347,37 +1347,37 @@ void MixxxApp::slotControlVinylControl2(double toggle)
 #endif
 }
 
-void MixxxApp::slotCheckboxVinylControl2(bool toggle)
+void MixxxMainWindow::slotCheckboxVinylControl2(bool toggle)
 {
 #ifdef __VINYLCONTROL__
     m_pVinylcontrol2Enabled->set((double)toggle);
 #endif
 }
 
-void MixxxApp::slotHelpAbout() {
+void MixxxMainWindow::slotHelpAbout() {
     DlgAbout *about = new DlgAbout(this);
     about->show();
 }
 
-void MixxxApp::slotHelpSupport() {
+void MixxxMainWindow::slotHelpSupport() {
     QUrl qSupportURL;
     qSupportURL.setUrl(MIXXX_SUPPORT_URL);
     QDesktopServices::openUrl(qSupportURL);
 }
 
-void MixxxApp::slotHelpFeedback() {
+void MixxxMainWindow::slotHelpFeedback() {
     QUrl qFeedbackUrl;
     qFeedbackUrl.setUrl(MIXXX_FEEDBACK_URL);
     QDesktopServices::openUrl(qFeedbackUrl);
 }
 
-void MixxxApp::slotHelpTranslation() {
+void MixxxMainWindow::slotHelpTranslation() {
     QUrl qTranslationUrl;
     qTranslationUrl.setUrl(MIXXX_TRANSLATION_URL);
     QDesktopServices::openUrl(qTranslationUrl);
 }
 
-void MixxxApp::slotHelpManual() {
+void MixxxMainWindow::slotHelpManual() {
     QDir resourceDir(m_pConfig->getResourcePath());
     // Default to the mixxx.org hosted version of the manual.
     QUrl qManualUrl(MIXXX_MANUAL_URL);
@@ -1403,13 +1403,13 @@ void MixxxApp::slotHelpManual() {
     QDesktopServices::openUrl(qManualUrl);
 }
 
-void MixxxApp::setToolTipsCfg(int tt) {
+void MixxxMainWindow::setToolTipsCfg(int tt) {
     m_pConfig->set(ConfigKey("[Controls]","Tooltips"),
                    ConfigValue(tt));
     m_toolTipsCfg = tt;
 }
 
-void MixxxApp::rebootMixxxView() {
+void MixxxMainWindow::rebootMixxxView() {
 
     if (!m_pWidgetParent || !m_pView)
         return;
@@ -1487,7 +1487,7 @@ void MixxxApp::rebootMixxxView() {
   * to disable tooltips if the user specifies in the preferences that they
   * want them off. This is a callback function.
   */
-bool MixxxApp::eventFilter(QObject* obj, QEvent* event)
+bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event)
 {
     if (event->type() == QEvent::ToolTip) {
         // return true for no tool tips
@@ -1511,25 +1511,25 @@ bool MixxxApp::eventFilter(QObject* obj, QEvent* event)
     }
 }
 
-void MixxxApp::closeEvent(QCloseEvent *event) {
+void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     if (!confirmExit()) {
         event->ignore();
     }
 }
 
-void MixxxApp::slotScanLibrary()
+void MixxxMainWindow::slotScanLibrary()
 {
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(
         m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
 }
 
-void MixxxApp::slotEnableRescanLibraryAction()
+void MixxxMainWindow::slotEnableRescanLibraryAction()
 {
     m_pLibraryRescan->setEnabled(true);
 }
 
-void MixxxApp::slotOptionsMenuShow(){
+void MixxxMainWindow::slotOptionsMenuShow(){
     // Check recording if it is active.
     m_pOptionsRecord->setChecked(m_pRecordingManager->isRecordingActive());
 #ifdef __SHOUTCAST__
@@ -1537,7 +1537,7 @@ void MixxxApp::slotOptionsMenuShow(){
 #endif
 }
 
-void MixxxApp::slotToCenterOfPrimaryScreen() {
+void MixxxMainWindow::slotToCenterOfPrimaryScreen() {
     if (!m_pView)
         return;
 
@@ -1549,7 +1549,7 @@ void MixxxApp::slotToCenterOfPrimaryScreen() {
          primaryScreenRect.top() + (primaryScreenRect.height() - m_pView->height()) / 2);
 }
 
-void MixxxApp::checkDirectRendering() {
+void MixxxMainWindow::checkDirectRendering() {
     // IF
     //  * A waveform viewer exists
     // AND
@@ -1580,7 +1580,7 @@ void MixxxApp::checkDirectRendering() {
     }
 }
 
-bool MixxxApp::confirmExit() {
+bool MixxxMainWindow::confirmExit() {
     bool playing(false);
     bool playingSampler(false);
     unsigned int deckCount = m_pPlayerManager->numDecks();

@@ -12,7 +12,7 @@
 
 #include <QtGui>
 
-class MixxxApp;
+class MixxxMainWindow;
 class LADSPAView;
 
 class DlgLADSPA : public QDialog
