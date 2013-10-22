@@ -69,12 +69,6 @@
 #include "dlgprefmodplug.h"
 #endif
 
-extern "C" void crashDlg()
-{
-    QMessageBox::critical(0, "Mixxx",
-        "Mixxx has encountered a serious error and needs to close.");
-}
-
 MixxxApp::MixxxApp(QApplication* pApp, const CmdlineArgs& args)
         : m_runtime_timer("MixxxApp::runtime"),
           m_cmdLineArgs(args),
