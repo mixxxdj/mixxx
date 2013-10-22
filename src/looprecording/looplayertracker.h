@@ -46,7 +46,7 @@ class LoopLayerTracker : public QObject {
         double length;
     };
 
-    unsigned int getCurrentLength();
+    double getCurrentLength();
 
     ConfigObject<ConfigValue>* m_pConfig;
     QList<LayerInfo*> m_layers;

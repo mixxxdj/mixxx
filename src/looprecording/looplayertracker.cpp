@@ -134,7 +134,7 @@ QString LoopLayerTracker::getCurrentPath() {
     }
 }
 
-unsigned int LoopLayerTracker::getCurrentLength() {
+double LoopLayerTracker::getCurrentLength() {
     if (m_layers.empty()) {
         return 0;
     } else {
