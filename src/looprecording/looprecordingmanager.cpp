@@ -30,7 +30,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
           m_bRecording(false),
           m_iCurrentPlayingDeck(0),
           m_dLoopBPM(0.0),
-          m_iLoopLength(0),
+          m_dLoopLength(0),
           m_iLoopNumber(0),
           m_iNumDecks(0),
           m_iNumSamplers(0) {
@@ -59,7 +59,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
                                     ConfigKey(LOOP_RECORDING_PREF_KEY, "toggle_playback"));
     m_pToggleLoopRecording = new ControlPushButton(
                                     ConfigKey(LOOP_RECORDING_PREF_KEY, "toggle_loop_recording"));
-    
+
     connect(m_pToggleLoopRecording, SIGNAL(valueChanged(double)),
             this, SLOT(slotToggleLoopRecording(double)));
     connect(m_pTogglePlayback, SIGNAL(valueChanged(double)),
@@ -259,7 +259,7 @@ void LoopRecordingManager::slotChangeLoopSource(double v) {
     } else {
         m_loopSource = "Master";
     }
-    
+
     emit(sourceChanged(m_loopSource));
 }
 
@@ -372,7 +372,7 @@ double LoopRecordingManager::getCurrentBPM() {
     }
 }
 
-unsigned int LoopRecordingManager::getLoopLength() {
+double LoopRecordingManager::getLoopLength() {
     double bpm = getCurrentBPM();
     if (bpm == 0.) {
         return 0;
@@ -381,14 +381,14 @@ unsigned int LoopRecordingManager::getLoopLength() {
     // loop length in samples = x beats * y sample rate * 2 channels * 60 sec/min / z bpm
     double loopLength = m_pCOLoopLength->get();
     double sampleRate = m_pSampleRate->get();
-    
-    unsigned int length = (unsigned int)((loopLength * sampleRate * 2.0 * 60.0)/bpm);
+
+    double precise_length = (loopLength * sampleRate * 2.0 * 60.0) / bpm;
 
     //qDebug() << "!!!!!!!LoopRecordingManager::getloopLength sampleRate: " << sampleRate
     //         << " loopLength: " << loopLength << " bpm: " << bpm
     //         << " length: " << length;
 
-    return length;
+    return precise_length;
 }
 
 SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
@@ -417,7 +417,7 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
     } else {
         sfInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
     }
-    
+
     SNDFILE* pSndFile = sf_open(filePath.toLocal8Bit(), SFM_WRITE, &sfInfo);
     if (pSndFile) {
         sf_command(pSndFile, SFC_SET_NORM_FLOAT, NULL, SF_FALSE) ;
@@ -433,7 +433,7 @@ void LoopRecordingManager::setRecordingDir() {
     //QDir recordDir(recordDirConfig);
     QDir loopTempDir(m_recordingTempDir);
     // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord
-    
+
     if (!loopTempDir.exists()) {
         if (loopTempDir.mkpath(loopTempDir.absolutePath())) {
             qDebug() << "Created folder" << loopTempDir.absolutePath() << "for loop recording";
@@ -458,8 +458,9 @@ void LoopRecordingManager::startRecording() {
 
     // TODO(carl): make sure the bpm is only set on first layer when recording multiple layers.
     m_dLoopBPM = getCurrentBPM();
-    m_iLoopLength = getLoopLength();
-    emit(startWriter(m_iLoopLength));
+    m_dLoopLength = getLoopLength();
+    int iLoopLength = ceil(m_dLoopLength);
+    emit(startWriter(iLoopLength));
 
     QString numberStr = QString::number(m_iLoopNumber++);
 
@@ -472,7 +473,7 @@ void LoopRecordingManager::startRecording() {
     if (pSndFile != NULL) {
         emit fileOpen(pSndFile);
         // add to loop tracker
-        m_pLoopLayerTracker->addLoopLayer(m_recordingLocation, m_iLoopLength);
+        m_pLoopLayerTracker->addLoopLayer(m_recordingLocation, m_dLoopLength);
     } else {
         // TODO(carl): error message and stop recording.
     }

@@ -118,7 +118,7 @@ void LoopWriter::closeFile() {
     if(m_pSndfile == NULL) {
         return;
     }
-    
+
     m_bFileAvailable = false;
     sf_close(m_pSndfile);
     // is this NULL assignment necessary?
@@ -126,7 +126,7 @@ void LoopWriter::closeFile() {
 }
 
 void LoopWriter::writeBuffer(const CSAMPLE* pBuffer, const int iBufferSize) {
-    
+
     if (!m_bFileAvailable) {
         // TODO(carl) write to temporary buffer.
         qDebug() << "!~!~!~!~!~! LoopWriter::writeBuffer Buffer dropped !~!~!~!~!~!~!";
