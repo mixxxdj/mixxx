@@ -78,7 +78,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
             this, SLOT(slotNumDecksChanged(double)));
     connect(m_pNumSamplers, SIGNAL(valueChanged(double)),
             this, SLOT(slotNumSamplersChanged(double)));
-    connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
+    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotCurrentPlayingDeckChanged(int)));
 
     // Get the current number of decks and samplers.
@@ -346,7 +346,7 @@ double LoopRecordingManager::getCurrentBPM() {
     // When master_sync is merged this will become trivial, because we can get the
     // bpm from the sync_bpm control object.
 
-    TrackPointer pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
 
     if (pTrack == NULL) {
         qDebug() << "!~!~!~!~! LoopRecordingManager::getCurrentBPM() Current Track NULL";
