@@ -433,8 +433,11 @@ void LoopingControl::slotReloopExit(double val) {
 
 void LoopingControl::slotLoopStartPos(double pos) {
     if (!m_pTrack) {
+        qDebug() << "!~!~!~!~! StartPos No track" << pos << " !~!~!~!";
         return;
     }
+
+    qDebug() << "!~!~!~!~! StartPos Pos:" << pos << " !~!~!~!";
 
     int newpos = pos;
     if (newpos != -1 && !even(newpos)) {
@@ -466,8 +469,11 @@ void LoopingControl::slotLoopStartPos(double pos) {
 
 void LoopingControl::slotLoopEndPos(double pos) {
     if (!m_pTrack) {
+        qDebug() << "!~!~!~!~! EndPos No track" << pos << " !~!~!~!";
         return;
     }
+
+    qDebug() << "!~!~!~!~! EndPos Pos:" << pos << " !~!~!~!";
 
     int newpos = pos;
     if (newpos != -1 && !even(newpos)) {

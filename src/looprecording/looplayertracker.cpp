@@ -160,7 +160,7 @@ void LoopLayerTracker::slotLoadToLoopDeck() {
         // Signal to Player manager to load and play track.
         if (m_iCurrentLayer == 0) {
             emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
-             m_pLoopDeck1LoopIn->slotSet(0.0);
+            m_pLoopDeck1LoopIn->slotSet(0.0);
             m_pLoopDeck1LoopOut->slotSet(length);
             m_pLoopDeck1LoopEnabled->slotSet(1.0);
         } else if (m_iCurrentLayer == 1) {
