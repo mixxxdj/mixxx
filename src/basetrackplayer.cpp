@@ -23,10 +23,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  EngineChannel::ChannelOrientation defaultOrientation,
                                  QString group,
                                  bool defaultMaster,
-                                 bool defaultHeadphones) :
-        BasePlayer(pParent, group),
-        m_pConfig(pConfig),
-        m_pLoadedTrack() {
+                                 bool defaultHeadphones)
+        : BasePlayer(pParent, group),
+          m_pConfig(pConfig),
+          m_pLoadedTrack() {
 
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
@@ -90,13 +90,14 @@ BaseTrackPlayer::~BaseTrackPlayer()
         m_pLoadedTrack.clear();
     }
 
+    delete m_pDuration;
     delete m_pWaveformZoom;
     delete m_pEndOfTrack;
     delete m_pLoopInPoint;
     delete m_pLoopOutPoint;
     delete m_pBPM;
     delete m_pReplayGain;
-    delete m_pDuration;
+    delete m_pPlay;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -186,7 +187,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
-    PlayerInfo::Instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 }
 
 void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
@@ -204,7 +205,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
-    PlayerInfo::Instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 
     // Reset the loop points.
     m_pLoopInPoint->slotSet(-1);

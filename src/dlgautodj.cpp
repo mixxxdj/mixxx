@@ -577,7 +577,7 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     }
 
     // Get loaded track
-    loadedTrack = PlayerInfo::Instance().getTrackInfo(group);
+    loadedTrack = PlayerInfo::instance().getTrackInfo(group);
     if (loadedTrack) {
         loadedId = loadedTrack->getId();
     }
@@ -605,7 +605,7 @@ void DlgAutoDJ::player1PlayChanged(double value) {
     //qDebug() << "player1PlayChanged(" << value << ")";
     if (value == 1.0f && m_eState == ADJ_IDLE) {
         TrackPointer loadedTrack =
-                PlayerInfo::Instance().getTrackInfo("[Channel1]");
+                PlayerInfo::instance().getTrackInfo("[Channel1]");
         if (loadedTrack) {
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;
@@ -637,7 +637,7 @@ void DlgAutoDJ::player2PlayChanged(double value) {
     //qDebug() << "player2PlayChanged(" << value << ")";
     if (value == 1.0f && m_eState == ADJ_IDLE) {
         TrackPointer loadedTrack =
-                PlayerInfo::Instance().getTrackInfo("[Channel2]");
+                PlayerInfo::instance().getTrackInfo("[Channel2]");
         if (loadedTrack) {
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;

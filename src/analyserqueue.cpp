@@ -43,7 +43,7 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
 bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer tio) {
     QMutexLocker queueLocker(&m_qm);
 
-    const PlayerInfo& info = PlayerInfo::Instance();
+    const PlayerInfo& info = PlayerInfo::instance();
     TrackPointer pTrack;
     bool trackWaiting = false;
     QMutableListIterator<TrackPointer> it(m_tioq);
@@ -97,7 +97,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
         }
     }
 
-    const PlayerInfo& info = PlayerInfo::Instance();
+    const PlayerInfo& info = PlayerInfo::instance();
     TrackPointer pLoadTrack;
     QMutableListIterator<TrackPointer> it(m_tioq);
     while (it.hasNext()) {

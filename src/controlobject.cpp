@@ -41,7 +41,7 @@ ControlObject::~ControlObject() {
 
 void ControlObject::initialize(ConfigKey key, bool bIgnoreNops, bool bTrack) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(m_key, this, bIgnoreNops, bTrack);
+    m_pControl = ControlDoublePrivate::getControl(m_key, true, this, bIgnoreNops, bTrack);
     connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
             this, SLOT(privateValueChanged(double, QObject*)),
             Qt::DirectConnection);
@@ -58,9 +58,9 @@ void ControlObject::privateValueChanged(double dValue, QObject* pSender) {
 }
 
 // static
-ControlObject* ControlObject::getControl(const ConfigKey& key) {
+ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
     //qDebug() << "ControlObject::getControl for (" << key.group << "," << key.item << ")";
-    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key);
+    QSharedPointer<ControlDoublePrivate> pCDP = ControlDoublePrivate::getControl(key, warn);
     if (pCDP) {
         return pCDP->getCreatorCO();
     }

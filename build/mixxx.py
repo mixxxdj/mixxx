@@ -43,14 +43,14 @@ class MixxxBuild(object):
         if target not in ['windows', 'osx', 'linux', 'bsd']:
             raise Exception("invalid target platform")
 
-        if machine not in ['x86_64', 'x86', 'i686', 'i586',
-                           'alpha', 'hppa', 'mips', 'mipsel', 's390',
-                           'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
-                           'sh3', 'sh4',
-                           'kfreebsd-amd64', 'kfreebsd-i386',
-                           'i486', 'i386', 'powerpc', 'powerpc64',
-                           'powerpcspe', 's390x',
-                           'amd64', 'AMD64', 'EM64T', 'INTEL64']:
+        if machine.lower() not in ['x86_64', 'x86', 'i686', 'i586',
+                                   'alpha', 'hppa', 'mips', 'mipsel', 's390',
+                                   'sparc', 'ia64', 'armel', 'armhf', 'hurd-i386',
+                                   'sh3', 'sh4',
+                                   'kfreebsd-amd64', 'kfreebsd-i386',
+                                   'i486', 'i386', 'powerpc', 'powerpc64',
+                                   'powerpcspe', 's390x',
+                                   'amd64', 'amd64', 'em64t', 'intel64']:
             raise Exception("invalid machine type")
 
         if toolchain not in ['gnu', 'msvs']:
@@ -93,9 +93,9 @@ class MixxxBuild(object):
                 self.machine = 'powerpc64'
             else:
                 self.machine = 'x86_64'
-        self.machine_is_64bit = self.machine in ['x86_64', 'powerpc64', 'AMD64', 'EM64T', 'INTEL64']
+        self.machine_is_64bit = self.machine.lower() in ['x86_64', 'powerpc64', 'amd64', 'em64t', 'intel64']
         self.bitwidth = 64 if self.machine_is_64bit else 32
-        self.architecture_is_x86 = self.machine.lower() in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'EM64T', 'INTEL64']
+        self.architecture_is_x86 = self.machine.lower() in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t', 'intel64']
         self.architecture_is_powerpc = self.machine.lower() in ['powerpc', 'powerpc64']
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
@@ -330,7 +330,7 @@ class MixxxBuild(object):
         # Check if there was a checkout of a different branch since the last build.
         is_branch_different = sconsign_branch != branch_name
         if not is_branch_different:
-            # nothing to do 
+            # nothing to do
             return
 
         print "branch has changed", sconsign_branch, "->", branch_name
@@ -344,7 +344,7 @@ class MixxxBuild(object):
                 if os.path.isdir(old_virtual_build_dir):
                     raise Exception('%s already exists. '
                                     'build virtualization cannot continue. Please '
-                                    'move or delete it.' % old_virtual_build_dir)       
+                                    'move or delete it.' % old_virtual_build_dir)
                 print "shutil.move", self.build_dir, old_virtual_build_dir
                 # move build dir from last build to cache, named with the old branch name
                 shutil.move(self.build_dir, old_virtual_build_dir)
@@ -358,15 +358,15 @@ class MixxxBuild(object):
                 print "shutil.move", custom_file, old_virtual_custom_file
                 # and move custom.py
                 shutil.move(custom_file, old_virtual_custom_file)
-            
-            # all files are saved now so remove .sconsign.branch file 
-            # to avoid a new copy after an exception below          
+
+            # all files are saved now so remove .sconsign.branch file
+            # to avoid a new copy after an exception below
             os.remove(sconsign_branch_file)
 
         # Now there should be no folder self.build_dir or file sconsign_file.
         if os.path.isdir(branch_build_dir):
             if os.path.isdir(virtual_build_dir):
-                # found a build_dir in cache from a previous build 
+                # found a build_dir in cache from a previous build
                 if os.path.isdir(self.build_dir):
                     raise Exception('%s exists without a .sconsign.branch file so '
                                     'build virtualization cannot continue. Please '
@@ -388,10 +388,10 @@ class MixxxBuild(object):
                 print "shutil.move", virtual_custom_file, custom_file
                 shutil.move(virtual_custom_file, custom_file)
         else:
-            # no cached build dir found, assume this is a branch from the old branch 
+            # no cached build dir found, assume this is a branch from the old branch
             # if not, no problem because scons will rebuild all changed files in any case
             # copy the old_virtual_dir back
-            if sconsign_branch: 
+            if sconsign_branch:
                 if os.path.isdir(old_virtual_build_dir):
                     if os.path.isdir(self.build_dir):
                         raise Exception('%s exists without a .sconsign.branch file so '
@@ -413,8 +413,8 @@ class MixxxBuild(object):
                                         'move or delete it.' % custom_file)
                     print "shutil.copy", virtual_custom_file, custom_file
                     shutil.copy(old_virtual_custom_file, custom_file)
-      
-            # create build dir in cache folder for later move       
+
+            # create build dir in cache folder for later move
             print "os.makedirs", branch_build_dir
             os.makedirs(branch_build_dir)
 
@@ -464,4 +464,3 @@ class Feature(Dependence):
 
     def add_options(self, build, vars):
         pass
-

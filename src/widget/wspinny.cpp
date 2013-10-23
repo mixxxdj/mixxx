@@ -62,6 +62,8 @@ WSpinny::~WSpinny() {
         delete m_pScratch;
         delete m_pScratchToggle;
         delete m_pScratchPos;
+        delete m_pSlipEnabled;
+        delete m_pSlipPosition;
     #ifdef __VINYLCONTROL__
         delete m_pVinylControlSpeedType;
         delete m_pVinylControlEnabled;

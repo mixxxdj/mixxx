@@ -495,15 +495,16 @@ void SoundManager::pushBuffer(const QList<AudioInputBuffer>& inputs, short* inpu
     // but this meant we couldn't free all the receiver buffer pointers, because some
     // of them might potentially be owned by portaudio. Not freeing them means we leak
     // memory in certain cases -- bkgood
-    // TODO(rryan): If we have two mono channels we still have to deinterleave.
-    // TODO(XXX): Is it worth hard-coding the iFrameSize == 1 case for microphones?
-    if (iFrameSize == 2) {
-        for (QList<AudioInputBuffer>::const_iterator i = inputs.begin(),
-                     e = inputs.end(); i != e; ++i) {
-            const AudioInputBuffer& in = *i;
-            memcpy(in.getBuffer(), inputBuffer,
-                   sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
-        }
+    if (iFrameSize == 1 && inputs.size() == 1 &&
+            inputs[0].getChannelGroup().getChannelCount() == 1) {
+        const AudioInputBuffer& in = inputs[0];
+        memcpy(in.getBuffer(), inputBuffer,
+               sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
+    } else if (iFrameSize == 2 && inputs.size() == 1 &&
+            inputs[0].getChannelGroup().getChannelCount() == 2) {
+        const AudioInputBuffer& in = inputs[0];
+        memcpy(in.getBuffer(), inputBuffer,
+               sizeof(*inputBuffer) * iFrameSize * iFramesPerBuffer);
     } else { //More than two channels of input (iFrameSize > 2)
         // Do crazy deinterleaving of the audio into the correct m_inputBuffers.
 

@@ -51,7 +51,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     setupUi(this);
 
-    for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
+    for (unsigned int i = 0; i < PlayerManager::numDecks(); ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
