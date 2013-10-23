@@ -24,6 +24,7 @@ LoopLayerTracker::LoopLayerTracker(ConfigObject<ConfigValue>* pConfig)
     m_pLoopDeck1LoopIn = new ControlObjectThread("[LoopRecorderDeck1]","loop_start_position");
     m_pLoopDeck1LoopOut = new ControlObjectThread("[LoopRecorderDeck1]","loop_end_position");
     m_pLoopDeck1Reloop = new ControlObjectThread("[LoopRecorderDeck1]","reloop_exit");
+    m_pLoopDeck1LoopEnabled = new ControlObjectThread("[LoopRecorderDeck1]","loop_enabled");
     m_pLoopDeck2Play = new ControlObjectThread("[LoopRecorderDeck2]","play");
     m_pLoopDeck2Stop = new ControlObjectThread("[LoopRecorderDeck2]","stop");
     m_pLoopDeck2Eject = new ControlObjectThread("[LoopRecorderDeck2]","eject");
@@ -47,6 +48,7 @@ LoopLayerTracker::~LoopLayerTracker() {
     delete m_pLoopDeck2Eject;
     delete m_pLoopDeck2Stop;
     delete m_pLoopDeck2Play;
+    delete m_pLoopDeck1LoopEnabled;
     delete m_pLoopDeck1Reloop;
     delete m_pLoopDeck1LoopOut;
     delete m_pLoopDeck1LoopIn;
@@ -172,6 +174,8 @@ void LoopLayerTracker::slotLoop1Loaded(TrackPointer pTrack) {
     m_pLoopDeck1LoopOut->slotSet(getCurrentLength());
     m_pLoopDeck1Reloop->slotSet(1.0);
     m_pLoopDeck1Reloop->slotSet(0.0);
+
+    qDebug() << "slotLoop1Loaded Loop Enabled" << m_pLoopDeck1LoopEnabled->get();
 
 }
 

@@ -62,6 +62,7 @@ class LoopLayerTracker : public QObject {
     ControlObjectThread* m_pLoopDeck1LoopIn;
     ControlObjectThread* m_pLoopDeck1LoopOut;
     ControlObjectThread* m_pLoopDeck1Reloop;
+    ControlObjectThread* m_pLoopDeck1LoopEnabled;
     ControlObjectThread* m_pLoopDeck2Play;
     ControlObjectThread* m_pLoopDeck2Stop;
     ControlObjectThread* m_pLoopDeck2Eject;
