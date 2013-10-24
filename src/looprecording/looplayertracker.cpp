@@ -120,7 +120,14 @@ void LoopLayerTracker::play() {
 void LoopLayerTracker::stop(bool clearDeck) {
     m_pLoopDeck1Play->slotSet(0.0);
     m_pLoopDeck2Play->slotSet(0.0);
+
     if(clearDeck) {
+        // Turn off looping
+        if (m_pLoopDeck1LoopEnabled->get()) {
+            m_pLoopDeck1Reloop->slotSet(1.0);
+            m_pLoopDeck1Reloop->slotSet(0.0);
+        }
+
         m_pLoopDeck1Eject->slotSet(1.0);
         m_pLoopDeck2Eject->slotSet(1.0);
         m_pLoopDeck1Eject->slotSet(0.0);
