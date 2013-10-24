@@ -35,7 +35,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
           m_iNumDecks(0),
           m_iNumSamplers(0) {
 
-    m_pCOLoopLength = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_length"));
+    m_pCOLoopBeats = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "loop_length"));
     m_pCOLoopPlayReady = new ControlObject(ConfigKey(LOOP_RECORDING_PREF_KEY, "play_status"));
 
 
@@ -91,7 +91,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
                                       ConfigKey(QString("[Channel%1]").arg(i), "rateEngine")));
     }
 
-    m_pCOLoopLength->set(4.0);
+    m_pCOLoopBeats->set(4.0);
 
     if (m_iNumSamplers > 0) {
         m_loopDestination = "Sampler1";
@@ -155,7 +155,7 @@ LoopRecordingManager::~LoopRecordingManager() {
     delete m_pNumDecks;
     delete m_pLoopPlayReady;
     delete m_pCOLoopPlayReady;
-    delete m_pCOLoopLength;
+    delete m_pCOLoopBeats;
 }
 
 // Public Slots
@@ -212,14 +212,14 @@ void LoopRecordingManager::slotChangeLoopLength(double v) {
         return;
     }
 
-    float loopLength = m_pCOLoopLength->get();
+    float loopLength = m_pCOLoopBeats->get();
 
     if (loopLength == 0.0f) {
-        m_pCOLoopLength->set(2.0f);
+        m_pCOLoopBeats->set(2.0f);
     } else if (loopLength == 16.0f) {
-        m_pCOLoopLength->set(0.0f);
+        m_pCOLoopBeats->set(0.0f);
     } else {
-        m_pCOLoopLength->set(loopLength * 2.0f);
+        m_pCOLoopBeats->set(loopLength * 2.0f);
     }
 }
 
@@ -379,10 +379,14 @@ int LoopRecordingManager::getLoopLength() {
     }
 
     // loop length in samples = x beats * y sample rate * 2 channels * 60 sec/min / z bpm
-    double loopLength = m_pCOLoopLength->get();
+    double loopBeats = m_pCOLoopBeats->get();
     double sampleRate = m_pSampleRate->get();
     
-    int length = (int)((loopLength * sampleRate * 2.0 * 60.0)/bpm);
+    int length = (int)((loopBeats * sampleRate * 2.0 * 60.0)/bpm);
+
+    if (!even(length)) {
+        length--;
+    }
 
     //qDebug() << "!!!!!!!LoopRecordingManager::getloopLength sampleRate: " << sampleRate
     //         << " loopLength: " << loopLength << " bpm: " << bpm

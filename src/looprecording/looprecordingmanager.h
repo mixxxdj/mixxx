@@ -75,7 +75,7 @@ class LoopRecordingManager : public QObject {
 
     ConfigObject<ConfigValue>* m_pConfig;
 
-    ControlObject* m_pCOLoopLength;
+    ControlObject* m_pCOLoopBeats;
     ControlObject* m_pCOLoopPlayReady;
 
     ControlObjectThread* m_pLoopPlayReady;
