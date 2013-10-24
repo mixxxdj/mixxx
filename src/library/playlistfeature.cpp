@@ -97,8 +97,15 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         // system path is QUrl::toLocalFile(). This is the second time we have
         // flip-flopped on this, but I think toLocalFile() should work in any
         // case. toString() absolutely does not work when you pass the result to a
-        if (url.toString().endsWith(".m3u")) {
-            ParserM3u *playlist_parser = new ParserM3u();
+        if (url.toString().endsWith(".m3u") || url.toString().endsWith(".m3u8")) {
+            QScopedPointer<ParserM3u> playlist_parser(new ParserM3u());
+            QList<QString> track_list = playlist_parser->parse(url.toLocalFile());
+            for (int i = 0; i < track_list.size(); i++) {
+                files.append(track_list.at(i));
+            }
+        }
+        else if (url.toString().endsWith(".pls")) {
+            QScopedPointer<ParserPls> playlist_parser(new ParserPls());
             QList<QString> track_list = playlist_parser->parse(url.toLocalFile());
             for (int i = 0; i < track_list.size(); i++) {
                 files.append(track_list.at(i));
@@ -140,7 +147,8 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
 
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
-            file.fileName().endsWith(".m3u");
+            file.fileName().endsWith(".m3u") || file.fileName().endsWith(".m3u8") ||
+            file.fileName().endsWith(".pls");
     return !locked && formatSupported;
 }
 
