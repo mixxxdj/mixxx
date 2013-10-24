@@ -103,15 +103,13 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
             for (int i = 0; i < track_list.size(); i++) {
                 files.append(track_list.at(i));
             }
-        }
-        else if (url.toString().endsWith(".pls")) {
+        } else if (url.toString().endsWith(".pls")) {
             QScopedPointer<ParserPls> playlist_parser(new ParserPls());
             QList<QString> track_list = playlist_parser->parse(url.toLocalFile());
             for (int i = 0; i < track_list.size(); i++) {
                 files.append(track_list.at(i));
             }
-        }
-        else {
+        } else {
             files.append(url.toLocalFile());
         }
     }
