@@ -133,27 +133,16 @@ void LoopWriter::writeBuffer(const CSAMPLE* pBuffer, const int iBufferSize) {
         return;
     }
 
-    // TODO(carl) check for buffers to flush
-    if ((m_iLoopLength > 0) && (m_iSamplesRecorded >= m_iBreakPoint)) {
-        //qDebug () << "Passed breakpoint.";
-        if ((m_iSamplesRecorded + iBufferSize) >= m_iLoopLength) {
-            // Trim loop to exact length specified.
-            unsigned int iRemainder = m_iLoopLength - m_iSamplesRecorded;
-            //qDebug() << "!~!~!~!~!~! Trimming Loop. Remainder: " << iRemainder
-            //        << " Samples Rec: " << m_iSamplesRecorded << " !~!~!~!~!~!~!";
-            sf_write_float(m_pSndfile, pBuffer, iRemainder);
-            m_iSamplesRecorded += iRemainder;
-            //qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded
-            //        << "Remainder: " << iRemainder << " !~!~!~!~!~!~!";
-            slotStopRecording(true);
-        } else {
-            sf_write_float(m_pSndfile, pBuffer, iBufferSize);
-            m_iSamplesRecorded += iBufferSize;
-            //qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded <<  " !~!~!~!~!~!~!";
-        }
+    unsigned int iNewSize = m_iSamplesRecorded + iBufferSize;
+
+    // TODO(carl) maybe add empty padding at end of file?
+    if ((m_iLoopLength > 0) && (iNewSize >= m_iLoopLength)) {
+        // We trim the loop to the correct length by setting loop points in the loop recorder deck.
+        sf_write_float(m_pSndfile, pBuffer, iBufferSize);
+        m_iSamplesRecorded = iNewSize;
+        slotStopRecording(true);
     } else {
         sf_write_float(m_pSndfile, pBuffer, iBufferSize);
-        m_iSamplesRecorded += iBufferSize;
-        //qDebug() << "!~!~!~!~!~! Samples Recorded: " << m_iSamplesRecorded <<  " !~!~!~!~!~!~!";
+        m_iSamplesRecorded = iNewSize;
     }
 }
