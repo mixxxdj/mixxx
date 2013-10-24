@@ -30,7 +30,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
           m_bRecording(false),
           m_iCurrentPlayingDeck(0),
           m_dLoopBPM(0.0),
-          m_dLoopLength(0),
+          m_iLoopLength(0),
           m_iLoopNumber(0),
           m_iNumDecks(0),
           m_iNumSamplers(0) {
@@ -372,7 +372,7 @@ double LoopRecordingManager::getCurrentBPM() {
     }
 }
 
-double LoopRecordingManager::getLoopLength() {
+int LoopRecordingManager::getLoopLength() {
     double bpm = getCurrentBPM();
     if (bpm == 0.) {
         return 0;
@@ -381,14 +381,14 @@ double LoopRecordingManager::getLoopLength() {
     // loop length in samples = x beats * y sample rate * 2 channels * 60 sec/min / z bpm
     double loopLength = m_pCOLoopLength->get();
     double sampleRate = m_pSampleRate->get();
-
-    double precise_length = (loopLength * sampleRate * 2.0 * 60.0) / bpm;
+    
+    int length = (int)((loopLength * sampleRate * 2.0 * 60.0)/bpm);
 
     //qDebug() << "!!!!!!!LoopRecordingManager::getloopLength sampleRate: " << sampleRate
     //         << " loopLength: " << loopLength << " bpm: " << bpm
     //         << " length: " << length;
 
-    return precise_length;
+    return length;
 }
 
 SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
@@ -458,9 +458,8 @@ void LoopRecordingManager::startRecording() {
 
     // TODO(carl): make sure the bpm is only set on first layer when recording multiple layers.
     m_dLoopBPM = getCurrentBPM();
-    m_dLoopLength = getLoopLength();
-    int iLoopLength = ceil(m_dLoopLength);
-    emit(startWriter(iLoopLength));
+    m_iLoopLength = getLoopLength();
+    emit(startWriter(m_iLoopLength));
 
     QString numberStr = QString::number(m_iLoopNumber++);
 
@@ -473,7 +472,7 @@ void LoopRecordingManager::startRecording() {
     if (pSndFile != NULL) {
         emit fileOpen(pSndFile);
         // add to loop tracker
-        m_pLoopLayerTracker->addLoopLayer(m_recordingLocation, m_dLoopLength);
+        m_pLoopLayerTracker->addLoopLayer(m_recordingLocation, m_iLoopLength);
     } else {
         // TODO(carl): error message and stop recording.
     }

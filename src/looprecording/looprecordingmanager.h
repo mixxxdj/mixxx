@@ -65,10 +65,7 @@ class LoopRecordingManager : public QObject {
     void exportLoop();
     QString formatDateTimeForFilename(QDateTime dateTime) const;
     double getCurrentBPM();
-    // To maintain perfect sync, we need to know exactly how long the loop should be, and this will
-    // almost never be an exact number of samples.  The engine will take care of the fractional
-    // samples for us.
-    double getLoopLength();
+    int getLoopLength();
     SNDFILE* openSndFile(QString);
     void playLoopDeck();
     void setRecordingDir();
@@ -116,7 +113,7 @@ class LoopRecordingManager : public QObject {
 
     int m_iCurrentPlayingDeck;
     double m_dLoopBPM;
-    double m_dLoopLength;
+    int m_iLoopLength;
     unsigned int m_iLoopNumber;
     int m_iNumDecks;
     int m_iNumSamplers;

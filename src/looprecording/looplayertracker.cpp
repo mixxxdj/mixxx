@@ -58,7 +58,7 @@ LoopLayerTracker::~LoopLayerTracker() {
     delete m_pLoopDeck1Play;
 }
 
-void LoopLayerTracker::addLoopLayer(QString path, double length) {
+void LoopLayerTracker::addLoopLayer(QString path, int length) {
     LayerInfo* layer = new LayerInfo();
     layer->path = path;
     layer->length = length;
@@ -136,7 +136,7 @@ QString LoopLayerTracker::getCurrentPath() {
     }
 }
 
-double LoopLayerTracker::getCurrentLength() {
+int LoopLayerTracker::getCurrentLength() {
     if (m_layers.empty()) {
         return 0;
     } else {
@@ -144,7 +144,7 @@ double LoopLayerTracker::getCurrentLength() {
     }
 }
 
-void LoopLayerTracker::setCurrentLength(double length) {
+void LoopLayerTracker::setCurrentLength(int length) {
 
 }
 
