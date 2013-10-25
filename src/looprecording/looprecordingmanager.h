@@ -62,7 +62,6 @@ class LoopRecordingManager : public QObject {
 
   private:
     void clearLoopDeck();
-    void exportLoop();
     QString formatDateTimeForFilename(QDateTime dateTime) const;
     double getCurrentBPM();
     int getLoopLength();

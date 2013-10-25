@@ -297,7 +297,14 @@ void LoopRecordingManager::slotToggleExport(double v) {
     if (v <= 0.) {
         return;
     }
-    exportLoop();
+
+    setRecordingDir();
+    QString currentDateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
+
+    QString newFilePath = QString("%1/%2_%3.%4")
+    .arg(m_recordingDir, "loop", currentDateTime, m_encodingType.toLower());
+
+    m_pLoopLayerTracker->finalizeLoop(newFilePath, m_dLoopBPM);
 }
 
 void LoopRecordingManager::slotToggleLoopRecording(double v) {
@@ -320,17 +327,6 @@ void LoopRecordingManager::slotTogglePlayback(double v) {
     } else {
         m_pLoopLayerTracker->stop(false);
     }
-}
-
-void LoopRecordingManager::exportLoop() {
-
-    setRecordingDir();
-    QString currentDateTime = formatDateTimeForFilename(QDateTime::currentDateTime());
-
-    QString newFilePath = QString("%1/%2_%3.%4")
-        .arg(m_recordingDir, "loop", currentDateTime, m_encodingType.toLower());
-
-    m_pLoopLayerTracker->finalizeLoop(newFilePath, m_dLoopBPM);
 }
 
 QString LoopRecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
@@ -431,7 +427,8 @@ SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
 void LoopRecordingManager::setRecordingDir() {
 
     m_recordingDir = m_pConfig->getValueString(ConfigKey("[Recording]", "Directory"));
-    m_recordingTempDir = m_recordingDir.append(LOOP_TEMP_DIR);
+    m_recordingTempDir = m_recordingDir;
+    m_recordingTempDir.append(LOOP_TEMP_DIR);
 
     //QDir recordDir(recordDirConfig);
     QDir loopTempDir(m_recordingTempDir);
