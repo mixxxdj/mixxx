@@ -138,7 +138,6 @@ class EngineMaster : public EngineObject, public AudioSource {
     };
 
     bool m_bRampingGain;
-    bool m_bLoopRecordEnabled;
     QList<ChannelInfo*> m_channels;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 

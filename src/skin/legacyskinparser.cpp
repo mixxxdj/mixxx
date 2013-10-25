@@ -872,7 +872,9 @@ QWidget* LegacySkinParser::parseLoopText(QDomElement node) {
 
     QString loopProperty = p->getProperty();
 
-    if(loopProperty == "source") {
+    if (m_pLoopRecordingManager == NULL) {
+        p->slotUpdateLabel("Loop Rec Disabled");
+    } else if(loopProperty == "source") {
         connect(m_pLoopRecordingManager, SIGNAL(sourceChanged(QString)),
                 p, SLOT(slotUpdateLabel(QString)));
 

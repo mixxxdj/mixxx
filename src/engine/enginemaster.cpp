@@ -48,7 +48,6 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            bool bRampingGain,
                            bool bEnableLoopRecord)
         : m_bRampingGain(bRampingGain),
-          m_bLoopRecordEnabled(bEnableLoopRecord),
           m_headphoneMasterGainOld(0.0),
           m_headphoneVolumeOld(1.0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
@@ -119,7 +118,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Starts a thread for recording and shoutcast
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
 
-    m_pLoopRecorder = new EngineLoopRecorder();
+    m_pLoopRecorder = bEnableLoopRecord ? new EngineLoopRecorder() : NULL;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPotmeter(
@@ -203,7 +202,11 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     unsigned int busChannelConnectionFlags[3] = { 0, 0, 0 };
     unsigned int headphoneOutput = 0;
 
-    QString loopSource = m_pLoopRecorder->getLoopSource();
+    QString loopSource = "";
+
+    if (m_pLoopRecorder != NULL) {
+         loopSource = m_pLoopRecorder->getLoopSource();
+    }
     bool bLoopCopied = false;
     SampleUtil::applyGain(m_pLoop, 0.0f, iBufferSize);
     
@@ -240,7 +243,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         }
 
         // Copy audio from input to loop recorder buffer.
-        if (m_bLoopRecordEnabled && pChannel->getGroup().contains(loopSource)) {
+        if (m_pLoopRecorder != NULL && pChannel->getGroup().contains(loopSource)) {
             SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
             bLoopCopied = true;
         }
@@ -327,7 +330,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
 
     // Loop Recorder: Send master/headphone mix to loop recorder if selected.
-    if(m_bLoopRecordEnabled) {
+    if(m_pLoopRecorder != NULL) {
         if (loopSource == "Master") {
             SampleUtil::copyWithGain(m_pLoop, m_pMaster, 1.0, iBufferSize);
             bLoopCopied = true;

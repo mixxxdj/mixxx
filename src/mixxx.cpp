@@ -256,10 +256,11 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #ifdef __SHOUTCAST__
     m_pShoutcastManager = NULL;
 #endif
-
-    bool bLoopRecordEnabled = m_cmdLineArgs.getLoopRecorder();
     m_pLoopRecordingManager = NULL;
-              
+    bool bLoopRecordEnabled = m_cmdLineArgs.getLoopRecorder();
+
+    qDebug() << "!~!~!~!~!~!~!~!~! Loop Recorder Command Line Arg: " << bLoopRecordEnabled;
+
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
     Upgrade upgrader;
@@ -384,14 +385,16 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     pModplugPrefs->applySettings();
     delete pModplugPrefs; // not needed anymore
 #endif
-              
-    // Initialize loop recording manager.
-    m_pLoopRecordingManager = new LoopRecordingManager(m_pConfig, m_pEngine);
 
     m_pLibrary = new Library(this, m_pConfig,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
-    m_pPlayerManager->bindToLoopRecorder(m_pLoopRecordingManager);
+
+    // Initialize loop recording manager.
+    if (bLoopRecordEnabled) {
+        m_pLoopRecordingManager = new LoopRecordingManager(m_pConfig, m_pEngine);
+        m_pPlayerManager->bindToLoopRecorder(m_pLoopRecordingManager);
+    }
 
     // Call inits to invoke all other construction parts
 
