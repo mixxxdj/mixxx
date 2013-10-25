@@ -30,8 +30,7 @@ class LoopWriter : public QObject {
     void finished();
     void isRecording(bool);
     void samplesAvailable();
-    void samplesRecorded(int);
-    void loadAudio();
+    void loadAudio(int);
 
   private slots:
     void slotProcessSamples();

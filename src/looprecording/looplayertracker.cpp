@@ -152,14 +152,23 @@ int LoopLayerTracker::getCurrentLength() {
 }
 
 void LoopLayerTracker::setCurrentLength(int length) {
-
+    if (m_layers.empty()) {
+        return;
+    }
+    m_layers.at(m_iCurrentLayer)->length = length;
 }
 
 void LoopLayerTracker::slotFileFinished(QString path) {
     emit(exportLoop(path));
 }
 
-void LoopLayerTracker::slotLoadToLoopDeck() {
+void LoopLayerTracker::slotLoadToLoopDeck(int totalSamplesRecorded) {
+
+    // If we're recording a loop without a specified length, we need to set it here.
+    if (getCurrentLength() == 0) {
+        // We have to subtract some samples so that it doesn't end at the end of a file.
+        setCurrentLength(totalSamplesRecorded-10);
+    }
 
     QString path = getCurrentPath();
     if (path != "") {

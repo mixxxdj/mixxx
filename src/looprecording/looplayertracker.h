@@ -30,7 +30,7 @@ class LoopLayerTracker : public QObject {
 
   public slots:
     void slotFileFinished(QString);
-    void slotLoadToLoopDeck();
+    void slotLoadToLoopDeck(int);
     void slotLoop1Loaded(TrackPointer);
 
   signals:

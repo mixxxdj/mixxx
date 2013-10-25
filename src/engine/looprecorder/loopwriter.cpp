@@ -81,6 +81,8 @@ void LoopWriter::slotStartRecording(int samples) {
 void LoopWriter::slotStopRecording(bool playLoop) {
     qDebug() << "!~!~!~!~!~! LoopWriter::slotStopRecording Samples Recorded: " << m_iSamplesRecorded << " !~!~!~!~!~!~!";
 
+    int iTotalSamples = m_iSamplesRecorded;
+
     m_bRecording = false;
     emit(isRecording(false));
     // TODO(carl) check if temp buffers are open and clear them.
@@ -95,7 +97,7 @@ void LoopWriter::slotStopRecording(bool playLoop) {
     }
 
     if (playLoop) {
-        emit(loadAudio());
+        emit(loadAudio(iTotalSamples));
     }
 }
 

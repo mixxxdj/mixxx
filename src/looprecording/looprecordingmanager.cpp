@@ -117,7 +117,7 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
     if (pLoopWriter) {
         connect(pLoopWriter, SIGNAL(isRecording(bool)), this, SLOT(slotIsRecording(bool)));
         connect(pLoopWriter, SIGNAL(clearRecorder()), this, SLOT(slotClearRecorder()));
-        connect(pLoopWriter, SIGNAL(loadAudio()), m_pLoopLayerTracker, SLOT(slotLoadToLoopDeck()));
+        connect(pLoopWriter, SIGNAL(loadAudio(int)), m_pLoopLayerTracker, SLOT(slotLoadToLoopDeck(int)));
         connect(this, SIGNAL(clearWriter()), pLoopWriter, SLOT(slotClearWriter()));
         connect(this, SIGNAL(startWriter(int)), pLoopWriter, SLOT(slotStartRecording(int)));
         connect(this, SIGNAL(stopWriter(bool)), pLoopWriter, SLOT(slotStopRecording(bool)));
@@ -213,12 +213,12 @@ void LoopRecordingManager::slotChangeLoopLength(double v) {
 
     float loopLength = m_pCOLoopBeats->get();
 
-    if (loopLength == 0.0f) {
-        m_pCOLoopBeats->set(2.0f);
-    } else if (loopLength == 16.0f) {
-        m_pCOLoopBeats->set(0.0f);
+    if (loopLength == 0) {
+        m_pCOLoopBeats->set(2);
+    } else if (loopLength == 16) {
+        m_pCOLoopBeats->set(0);
     } else {
-        m_pCOLoopBeats->set(loopLength * 2.0f);
+        m_pCOLoopBeats->set(loopLength * 2);
     }
 }
 
