@@ -94,12 +94,8 @@ void LoopLayerTracker::finalizeLoop(QString newPath, double bpm) {
     QString encoding = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
     LoopFileMixer* pMixerWorker = NULL;
 
-    if (m_iCurrentLayer == 1) {
-        pMixerWorker = new LoopFileMixer(m_layers[0]->path, m_layers[1]->path, getCurrentLength(),
-                                        newPath, encoding);
-    } else {
-        pMixerWorker = new LoopFileMixer(m_layers[0]->path, getCurrentLength(), newPath, encoding);
-    }
+    pMixerWorker = new LoopFileMixer(m_layers[0]->path, getCurrentLength(), newPath, encoding);
+
     connect(pMixerThread, SIGNAL(started()), pMixerWorker, SLOT(slotProcess()));
     connect(pMixerWorker, SIGNAL(fileFinished(QString)), this, SLOT(slotFileFinished(QString)));
     connect(pMixerWorker, SIGNAL(finished()), pMixerThread, SLOT(quit()));
