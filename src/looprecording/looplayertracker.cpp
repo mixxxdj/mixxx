@@ -81,35 +81,33 @@ void LoopLayerTracker::clear() {
 }
 
 void LoopLayerTracker::finalizeLoop(QString newPath, double bpm) {
-    if (m_iCurrentLayer == 0) {
-        QString oldFileLocation = m_layers.at(m_iCurrentLayer)->path;
-        QFile file(oldFileLocation);
 
-        if (file.exists()) {
-            if (file.copy(newPath)) {
-                emit(exportLoop(newPath));
-            } else {
-                // Export failed, do something here...
-            }
-            return;
-        }
-    } else if (m_iCurrentLayer > 0) {
-        QThread* pMixerThread = new QThread();
-        pMixerThread->setObjectName("LoopLayerMixer");
-
-        QString encoding = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
-        LoopFileMixer* pMixerWorker = new LoopFileMixer(m_layers[0]->path, m_layers[1]->path,
-                                                        newPath, encoding);
-
-        connect(pMixerThread, SIGNAL(started()), pMixerWorker, SLOT(slotProcess()));
-        connect(pMixerWorker, SIGNAL(fileFinished(QString)), this, SLOT(slotFileFinished(QString)));
-        connect(pMixerWorker, SIGNAL(finished()), pMixerThread, SLOT(quit()));
-        connect(pMixerWorker, SIGNAL(finished()), pMixerWorker, SLOT(deleteLater()));
-        connect(pMixerThread, SIGNAL(finished()), pMixerThread, SLOT(deleteLater()));
-
-        pMixerWorker->moveToThread(pMixerThread);
-        pMixerThread->start();
+    if (m_iCurrentLayer < 0) {
+        return;
     }
+
+    qDebug() << "Finalize Loop: " << m_iCurrentLayer << " Layers Size" << m_layers.size();
+
+    QThread* pMixerThread = new QThread();
+    pMixerThread->setObjectName("LoopLayerMixer");
+
+    QString encoding = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
+    LoopFileMixer* pMixerWorker = NULL;
+
+    if (m_iCurrentLayer == 1) {
+        pMixerWorker = new LoopFileMixer(m_layers[0]->path, m_layers[1]->path, getCurrentLength(),
+                                        newPath, encoding);
+    } else {
+        pMixerWorker = new LoopFileMixer(m_layers[0]->path, getCurrentLength(), newPath, encoding);
+    }
+    connect(pMixerThread, SIGNAL(started()), pMixerWorker, SLOT(slotProcess()));
+    connect(pMixerWorker, SIGNAL(fileFinished(QString)), this, SLOT(slotFileFinished(QString)));
+    connect(pMixerWorker, SIGNAL(finished()), pMixerThread, SLOT(quit()));
+    connect(pMixerWorker, SIGNAL(finished()), pMixerWorker, SLOT(deleteLater()));
+    connect(pMixerThread, SIGNAL(finished()), pMixerThread, SLOT(deleteLater()));
+
+    pMixerWorker->moveToThread(pMixerThread);
+    pMixerThread->start();
 }
 
 void LoopLayerTracker::play() {
