@@ -30,14 +30,14 @@ class LoopLayerTracker : public QObject {
     void setCurrentLength(int length);
 
   public slots:
-    void slotFileFinished(QString);
+    void slotFileFinished(TrackPointer);
     void slotLoadToLoopDeck(int);
     void slotLoop1Loaded(TrackPointer);
 
   signals:
     void exportLoop(QString);
     // Connected directly to PlayerManager
-    void loadToLoopDeck(TrackPointer, QString, bool);
+    void loadToDeck(TrackPointer, QString, bool);
 
   private slots:
     void slotChangeLoopPregain(double);

@@ -1,4 +1,4 @@
-// looplayerracker.cpp
+// looplayertracker.cpp
 // Created by Carl Pillot on 8/23/13.
 
 #include <QThread>
@@ -9,7 +9,6 @@
 #include "recording/defs_recording.h"
 #include "controlobjectthread.h"
 #include "controllogpotmeter.h"
-#include "trackinfoobject.h"
 
 LoopLayerTracker::LoopLayerTracker(ConfigObject<ConfigValue>* pConfig)
         : m_pConfig(pConfig),
@@ -95,10 +94,10 @@ void LoopLayerTracker::finalizeLoop(QString newPath, double bpm) {
     QString encoding = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
     LoopFileMixer* pMixerWorker = NULL;
 
-    pMixerWorker = new LoopFileMixer(*m_layers[0], newPath, encoding);
+    pMixerWorker = new LoopFileMixer(*m_layers[0], newPath, encoding, bpm);
 
     connect(pMixerThread, SIGNAL(started()), pMixerWorker, SLOT(slotProcess()));
-    connect(pMixerWorker, SIGNAL(fileFinished(QString)), this, SLOT(slotFileFinished(QString)));
+    connect(pMixerWorker, SIGNAL(fileFinished(TrackPointer)), this, SLOT(slotFileFinished(TrackPointer)));
     connect(pMixerWorker, SIGNAL(finished()), pMixerThread, SLOT(quit()));
     connect(pMixerWorker, SIGNAL(finished()), pMixerWorker, SLOT(deleteLater()));
     connect(pMixerThread, SIGNAL(finished()), pMixerThread, SLOT(deleteLater()));
@@ -153,8 +152,9 @@ void LoopLayerTracker::setCurrentLength(int length) {
     m_layers.at(m_iCurrentLayer)->length = length;
 }
 
-void LoopLayerTracker::slotFileFinished(QString path) {
-    emit(exportLoop(path));
+void LoopLayerTracker::slotFileFinished(TrackPointer pTrack) {
+    emit loadToDeck(pTrack, "[Sampler1]", false);
+    emit(exportLoop(""));
 }
 
 void LoopLayerTracker::slotLoadToLoopDeck(int totalSamplesRecorded) {
@@ -171,10 +171,10 @@ void LoopLayerTracker::slotLoadToLoopDeck(int totalSamplesRecorded) {
 
         // Signal to Player manager to load and play track.
         if (m_iCurrentLayer == 0) {
-            emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
+            emit(loadToDeck(pTrackToPlay, QString("[LoopRecorderDeck1]"), true));
 
         } else if (m_iCurrentLayer == 1) {
-            emit(loadToLoopDeck(pTrackToPlay, QString("[LoopRecorderDeck2]"), true));
+            emit(loadToDeck(pTrackToPlay, QString("[LoopRecorderDeck2]"), true));
         }
         m_pTogglePlayback->set(1.0);
     }

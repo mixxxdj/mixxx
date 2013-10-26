@@ -136,7 +136,7 @@ void PlayerManager::bindToLoopRecorder(LoopRecordingManager* pLoopRecordingManag
 
     connect(pLoopRecordingManager, SIGNAL(exportToPlayer(QString, QString)),
             this, SLOT(slotLoadToPlayer(QString, QString)));
-    connect(pLoopRecordingManager->getLoopLayerTracker(), SIGNAL(loadToLoopDeck(TrackPointer, QString, bool)),
+    connect(pLoopRecordingManager->getLoopLayerTracker(), SIGNAL(loadToDeck(TrackPointer, QString, bool)),
             this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     if (!m_loop_decks.empty()) {
         connect(m_loop_decks[0], SIGNAL(newTrackLoaded(TrackPointer)),

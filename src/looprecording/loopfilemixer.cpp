@@ -12,11 +12,12 @@
 
 #define WORK_BUFFER_SIZE 16384
 
-LoopFileMixer::LoopFileMixer(LayerInfo file1, QString dest, QString encoding)
+LoopFileMixer::LoopFileMixer(LayerInfo file1, QString dest, QString encoding, double bpm)
         : m_dest(dest),
           m_encoding(encoding),
           m_file1(file1),
-          m_iNumFiles(1) {
+          m_iNumFiles(1),
+          m_dBpm(bpm) {
 
     m_iLength = file1.length;
 
@@ -96,6 +97,10 @@ void LoopFileMixer::slotProcess() {
     sf_close(pSndfile1);
     sf_close(pSndfileOut);
 
-    emit fileFinished(m_dest);
+    TrackPointer pTrack = TrackPointer(new TrackInfoObject(m_dest), &QObject::deleteLater);
+
+    pTrack->setBpm(m_dBpm);
+
+    emit fileFinished(pTrack);
     emit finished();
 }

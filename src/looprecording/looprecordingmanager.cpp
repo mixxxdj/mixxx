@@ -173,8 +173,11 @@ void LoopRecordingManager::slotCurrentPlayingDeckChanged(int deck) {
 }
 
 void LoopRecordingManager::slotExportLoopToPlayer(QString filePath) {
-    QString group = QString("[%1]").arg(m_loopDestination);
-    emit(exportToPlayer(filePath, group));
+    //TODO: rename this so it makes sense.  Right now I'm sending the loop to the player in
+    // LoopLayerTracker.
+
+    //QString group = QString("[%1]").arg(m_loopDestination);
+    //emit(exportToPlayer(filePath, group));
     slotClearRecorder();
 }
 

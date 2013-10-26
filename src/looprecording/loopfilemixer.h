@@ -11,19 +11,19 @@
 
 #include "defs.h"
 #include "looprecording/layerinfo.h"
-
+#include "trackinfoobject.h"
 
 class LoopFileMixer : public QObject {
     Q_OBJECT
   public:
-    LoopFileMixer(LayerInfo file1, QString dest, QString encoding);
+    LoopFileMixer(LayerInfo file1, QString dest, QString encoding, double bpm);
     virtual ~LoopFileMixer();
 
   public slots:
     void slotProcess();
 
   signals:
-    void fileFinished(QString);
+    void fileFinished(TrackPointer);
     void finished();
 
   private:
@@ -33,6 +33,8 @@ class LoopFileMixer : public QObject {
 
     int m_iNumFiles;
     int m_iLength;
+
+    double m_dBpm;
 
     CSAMPLE* m_pWorkBufferIn1;
     CSAMPLE* m_pWorkBufferOut;
