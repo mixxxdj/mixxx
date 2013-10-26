@@ -14,11 +14,8 @@
 LoopWriter::LoopWriter()
         : m_sampleFifo(LOOP_BUFFER_SIZE),
           m_pWorkBuffer(SampleUtil::alloc(WORK_BUFFER_SIZE)),
-          m_bFileAvailable(false),
           m_bRecording(false),
-          m_iBreakPoint(0),
           m_iLoopLength(0),
-        //m_iLoopRemainder(0),
           m_iSamplesRecorded(0),
           m_pSndfile(NULL) {
     connect(this, SIGNAL(samplesAvailable()), this, SLOT(slotProcessSamples()));
@@ -26,16 +23,16 @@ LoopWriter::LoopWriter()
 
 LoopWriter::~LoopWriter() {
     qDebug() << "!~!~!~!~!~! Loop writer deleted !~!~!~!~!~!~!";
+
     if(m_bRecording) {
         slotStopRecording(false);
     }
+
     SampleUtil::free(m_pWorkBuffer);
-    //emit(finished());
 }
 
 void LoopWriter::process(const CSAMPLE* pBuffer, const int iBufferSize) {
     //qDebug() << "!~!~!~!~!~! LoopWriter::process !~!~!~!~!~!~!";
-    //ScopedTimer t("EngineLoopRecorder::writeSamples");
     int samples_written = m_sampleFifo.write(pBuffer, iBufferSize);
 
     if (samples_written != iBufferSize) {
@@ -55,25 +52,10 @@ void LoopWriter::slotClearWriter() {
     emit(clearRecorder());
 }
 
-void LoopWriter::slotSetFile(SNDFILE* pFile) {
-    qDebug() << "!~!~!~!~!~! LoopWriter::slotSetFile";
-
-    if (!m_bFileAvailable) {
-        if (pFile != NULL) {
-            m_pSndfile = pFile;
-            m_bFileAvailable = true;
-        }
-    }
-}
-
-void LoopWriter::slotStartRecording(int samples) {
+void LoopWriter::slotStartRecording(int samples, SNDFILE* pSndfile) {
     m_iSamplesRecorded = 0;
-
     m_iLoopLength = samples;
-    m_iBreakPoint = m_iLoopLength - WORK_BUFFER_SIZE;
-
-    //qDebug() << "!~!~!~!~!~! LoopWriter::slotStartRecording Length: " << m_iLoopLength <<
-    //    "Break: " << m_iBreakPoint << " !~!~!~!~!~!~!";
+    m_pSndfile = pSndfile;
     m_bRecording = true;
     emit(isRecording(true));
 }
@@ -87,14 +69,10 @@ void LoopWriter::slotStopRecording(bool playLoop) {
     emit(isRecording(false));
     // TODO(carl) check if temp buffers are open and clear them.
 
-    m_iBreakPoint = 0;
     m_iLoopLength = 0;
-    //m_iLoopRemainder = 0;
     m_iSamplesRecorded = 0;
 
-    if (m_bFileAvailable) {
-        closeFile();
-    }
+    closeFile();
 
     if (playLoop) {
         emit(loadAudio(iTotalSamples));
@@ -121,15 +99,13 @@ void LoopWriter::closeFile() {
         return;
     }
 
-    m_bFileAvailable = false;
     sf_close(m_pSndfile);
-    // is this NULL assignment necessary?
     m_pSndfile = NULL;
 }
 
 void LoopWriter::writeBuffer(const CSAMPLE* pBuffer, const int iBufferSize) {
 
-    if (!m_bFileAvailable) {
+    if (m_pSndfile == NULL) {
         // TODO(carl) write to temporary buffer.
         qDebug() << "!~!~!~!~!~! LoopWriter::writeBuffer Buffer dropped !~!~!~!~!~!~!";
         return;

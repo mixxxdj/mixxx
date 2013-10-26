@@ -44,9 +44,9 @@ class LoopRecordingManager : public QObject {
     void clearWriter();
     void destinationChanged(QString);
     void exportToPlayer(QString, QString);
-    void fileOpen(SNDFILE*);
+    //void fileOpen(SNDFILE*);
     void sourceChanged(QString);
-    void startWriter(int);
+    void startWriter(int, SNDFILE*);
     void stopWriter(bool);
 
   private slots:
@@ -102,11 +102,6 @@ class LoopRecordingManager : public QObject {
     QString m_loopSource;
     QString m_recordingDir;
     QString m_recordingTempDir;
-
-    //the base file
-    //QString m_recording_base_file;
-    //Absolute file
-    QString m_recordingLocation;
 
     bool m_bRecording;
 

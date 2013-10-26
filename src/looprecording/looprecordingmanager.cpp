@@ -26,7 +26,6 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
           m_loopSource("Master"),
           m_recordingDir(""),
           m_recordingTempDir(""),
-          m_recordingLocation(""),
           m_bRecording(false),
           m_iCurrentPlayingDeck(0),
           m_dLoopBPM(0.0),
@@ -119,9 +118,9 @@ LoopRecordingManager::LoopRecordingManager(ConfigObject<ConfigValue>* pConfig,
         connect(pLoopWriter, SIGNAL(clearRecorder()), this, SLOT(slotClearRecorder()));
         connect(pLoopWriter, SIGNAL(loadAudio(int)), m_pLoopLayerTracker, SLOT(slotLoadToLoopDeck(int)));
         connect(this, SIGNAL(clearWriter()), pLoopWriter, SLOT(slotClearWriter()));
-        connect(this, SIGNAL(startWriter(int)), pLoopWriter, SLOT(slotStartRecording(int)));
+        connect(this, SIGNAL(startWriter(int, SNDFILE*)), pLoopWriter, SLOT(slotStartRecording(int, SNDFILE*)));
         connect(this, SIGNAL(stopWriter(bool)), pLoopWriter, SLOT(slotStopRecording(bool)));
-        connect(this, SIGNAL(fileOpen(SNDFILE*)), pLoopWriter, SLOT(slotSetFile(SNDFILE*)));
+        //connect(this, SIGNAL(fileOpen(SNDFILE*)), pLoopWriter, SLOT(slotSetFile(SNDFILE*)));
     }
     // Start thread for writing files.
     if (pLoopRecorder) {
@@ -459,28 +458,24 @@ void LoopRecordingManager::startRecording() {
     // TODO(carl): make sure the bpm is only set on first layer when recording multiple layers.
     m_dLoopBPM = getCurrentBPM();
     m_iLoopLength = getLoopLength();
-    emit(startWriter(m_iLoopLength));
 
     QString numberStr = QString::number(m_iLoopNumber++);
-
     setRecordingDir();
-
-    m_recordingLocation = QString("%1/%2-%3_%4.%5").arg(
+    QString recordingLocation = QString("%1/%2-%3_%4.%5").arg(
             m_recordingTempDir, "loop", numberStr, m_dateTime, m_encodingType.toLower());
 
-    SNDFILE* pSndFile = openSndFile(m_recordingLocation);
+    SNDFILE* pSndFile = openSndFile(recordingLocation);
     if (pSndFile != NULL) {
-        emit fileOpen(pSndFile);
+        emit(startWriter(m_iLoopLength, pSndFile));
+        //emit fileOpen(pSndFile);
         // add to loop tracker
-        m_pLoopLayerTracker->addLoopLayer(m_recordingLocation, m_iLoopLength);
+        m_pLoopLayerTracker->addLoopLayer(recordingLocation, m_iLoopLength);
     } else {
         // TODO(carl): error message and stop recording.
     }
 }
 
 void LoopRecordingManager::stopRecording() {
-    //qDebug() << "LoopRecordingManager::stopRecording NumSamples: " << m_iNumSamplesRecorded;
     //qDebug() << "LoopRecordingManager::stopRecording";
     emit(stopWriter(true));
-    m_recordingLocation = "";
 }
