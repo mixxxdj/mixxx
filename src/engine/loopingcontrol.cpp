@@ -413,32 +413,28 @@ void LoopingControl::slotLoopExit(double val) {
 
 void LoopingControl::slotReloopExit(double val) {
     if (!m_pTrack) {
-        qDebug() << "!~!~!~!~! slotReloopExit No track !~!~!~!";
         return;
     }
     if (val) {
         // If we're looping, stop looping
         if (m_bLoopingEnabled) {
             setLoopingEnabled(false);
-            qDebug() << "reloop_exit looping off";
+            //qDebug() << "reloop_exit looping off";
         } else {
             // If we're not looping, jump to the loop-in point and start looping
             if (m_iLoopStartSample != -1 && m_iLoopEndSample != -1 &&
                 m_iLoopStartSample <= m_iLoopEndSample) {
                 setLoopingEnabled(true);
             }
-            qDebug() << "reloop_exit looping on";
+            //qDebug() << "reloop_exit looping on";
         }
     }
 }
 
 void LoopingControl::slotLoopStartPos(double pos) {
     if (!m_pTrack) {
-        qDebug() << "!~!~!~!~! StartPos No track" << pos << " !~!~!~!";
         return;
     }
-
-    qDebug() << "!~!~!~!~! StartPos Pos:" << pos << " !~!~!~!";
 
     int newpos = pos;
     if (newpos != -1 && !even(newpos)) {
@@ -470,11 +466,8 @@ void LoopingControl::slotLoopStartPos(double pos) {
 
 void LoopingControl::slotLoopEndPos(double pos) {
     if (!m_pTrack) {
-        qDebug() << "!~!~!~!~! EndPos No track" << pos << " !~!~!~!";
         return;
     }
-
-    qDebug() << "!~!~!~!~! EndPos Pos:" << pos << " !~!~!~!";
 
     int newpos = pos;
     if (newpos != -1 && !even(newpos)) {
@@ -512,7 +505,6 @@ void LoopingControl::notifySeek(double dNewPlaypos) {
 }
 
 void LoopingControl::setLoopingEnabled(bool enabled) {
-    qDebug() << "setLoopingEnabled: " << enabled;
     m_bLoopingEnabled = enabled;
     m_pCOLoopEnabled->set(enabled);
     if (m_pActiveBeatLoop != NULL) {
