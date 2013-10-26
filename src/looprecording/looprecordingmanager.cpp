@@ -389,25 +389,12 @@ int LoopRecordingManager::getLoopLength() {
     return length;
 }
 
-SNDFILE* LoopRecordingManager::openSndFile(QString filePath) {
+SNDFILE* LoopRecordingManager::openSndFile(QString filePath, int iSampleRate) {
     qDebug() << "LoopRecordingManager::openSndFile path: " << filePath;
-
-    // TODO(carl) create file path here?
-//    QDir recordDir(filePath);
-//    if (!recordDir.exists()) {
-//        if (recordDir.mkpath(recordDir.absolutePath())) {
-//            qDebug() << "Created folder" << recordDir.absolutePath() << "for loop file";
-//        } else {
-//            qDebug() << "Failed to create folder" << recordDir.absolutePath() << "for recording";
-//            return NULL;
-//        }
-//    }
-
-    unsigned long samplerate = m_pSampleRate->get();
 
     // set sfInfo
     SF_INFO sfInfo;
-    sfInfo.samplerate = samplerate;
+    sfInfo.samplerate = iSampleRate;
     sfInfo.channels = 2;
 
     if (m_encodingType == ENCODING_WAVE) {
@@ -458,18 +445,20 @@ void LoopRecordingManager::startRecording() {
     // TODO(carl): make sure the bpm is only set on first layer when recording multiple layers.
     m_dLoopBPM = getCurrentBPM();
     m_iLoopLength = getLoopLength();
+    int iSampleRate = m_pSampleRate->get();
+
 
     QString numberStr = QString::number(m_iLoopNumber++);
     setRecordingDir();
     QString recordingLocation = QString("%1/%2-%3_%4.%5").arg(
             m_recordingTempDir, "loop", numberStr, m_dateTime, m_encodingType.toLower());
 
-    SNDFILE* pSndFile = openSndFile(recordingLocation);
+    SNDFILE* pSndFile = openSndFile(recordingLocation, iSampleRate);
     if (pSndFile != NULL) {
         emit(startWriter(m_iLoopLength, pSndFile));
         //emit fileOpen(pSndFile);
         // add to loop tracker
-        m_pLoopLayerTracker->addLoopLayer(recordingLocation, m_iLoopLength);
+        m_pLoopLayerTracker->addLoopLayer(recordingLocation, m_iLoopLength, iSampleRate);
     } else {
         // TODO(carl): error message and stop recording.
     }

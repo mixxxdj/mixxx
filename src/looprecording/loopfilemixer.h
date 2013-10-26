@@ -10,11 +10,13 @@
 #include <sndfile.h>
 
 #include "defs.h"
+#include "looprecording/layerinfo.h"
+
 
 class LoopFileMixer : public QObject {
     Q_OBJECT
   public:
-    LoopFileMixer(QString file1, int length, QString dest, QString encoding);
+    LoopFileMixer(LayerInfo file1, QString dest, QString encoding);
     virtual ~LoopFileMixer();
 
   public slots:
@@ -27,10 +29,10 @@ class LoopFileMixer : public QObject {
   private:
     QString m_dest;
     QString m_encoding;
-    QString m_filePath1;
+    LayerInfo m_file1;
 
-    int m_iLength;
     int m_iNumFiles;
+    int m_iLength;
 
     CSAMPLE* m_pWorkBufferIn1;
     CSAMPLE* m_pWorkBufferOut;

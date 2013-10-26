@@ -58,10 +58,11 @@ LoopLayerTracker::~LoopLayerTracker() {
     delete m_pLoopDeck1Play;
 }
 
-void LoopLayerTracker::addLoopLayer(QString path, int length) {
+void LoopLayerTracker::addLoopLayer(QString path, int length, int iSampleRate) {
     LayerInfo* layer = new LayerInfo();
     layer->path = path;
     layer->length = length;
+    layer->sampleRate = iSampleRate;
     m_layers.append(layer);
     m_iCurrentLayer++;
 }
@@ -94,7 +95,7 @@ void LoopLayerTracker::finalizeLoop(QString newPath, double bpm) {
     QString encoding = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"));
     LoopFileMixer* pMixerWorker = NULL;
 
-    pMixerWorker = new LoopFileMixer(m_layers[0]->path, getCurrentLength(), newPath, encoding);
+    pMixerWorker = new LoopFileMixer(*m_layers[0], newPath, encoding);
 
     connect(pMixerThread, SIGNAL(started()), pMixerWorker, SLOT(slotProcess()));
     connect(pMixerWorker, SIGNAL(fileFinished(QString)), this, SLOT(slotFileFinished(QString)));

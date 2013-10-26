@@ -65,7 +65,7 @@ class LoopRecordingManager : public QObject {
     QString formatDateTimeForFilename(QDateTime dateTime) const;
     double getCurrentBPM();
     int getLoopLength();
-    SNDFILE* openSndFile(QString);
+    SNDFILE* openSndFile(QString filePath, int iSampleRate);
     void playLoopDeck();
     void setRecordingDir();
     void startRecording();

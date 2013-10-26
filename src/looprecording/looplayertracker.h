@@ -10,6 +10,7 @@
 
 #include "configobject.h"
 #include "trackinfoobject.h"
+#include "looprecording/layerinfo.h"
 
 class ControlObjectThread;
 class ControlLogpotmeter;
@@ -20,7 +21,7 @@ class LoopLayerTracker : public QObject {
     LoopLayerTracker(ConfigObject<ConfigValue>* pConfig);
     virtual ~LoopLayerTracker();
 
-    void addLoopLayer(QString path, int length);
+    void addLoopLayer(QString path, int length, int iSampleRate);
     void clear();
     void finalizeLoop(QString newPath, double bpm);
     QString getCurrentPath();
@@ -42,11 +43,6 @@ class LoopLayerTracker : public QObject {
     void slotChangeLoopPregain(double);
 
   private:
-    struct LayerInfo {
-        QString path;
-        int length;
-    };
-
     int getCurrentLength();
 
     ConfigObject<ConfigValue>* m_pConfig;

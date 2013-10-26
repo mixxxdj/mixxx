@@ -12,17 +12,18 @@
 
 #define WORK_BUFFER_SIZE 16384
 
-LoopFileMixer::LoopFileMixer(QString file1, int length, QString dest, QString encoding)
+LoopFileMixer::LoopFileMixer(LayerInfo file1, QString dest, QString encoding)
         : m_dest(dest),
           m_encoding(encoding),
-          m_filePath1(file1),
-          m_iLength(length),
+          m_file1(file1),
           m_iNumFiles(1) {
+
+    m_iLength = file1.length;
 
     m_pWorkBufferIn1 = SampleUtil::alloc(WORK_BUFFER_SIZE);
     m_pWorkBufferOut = SampleUtil::alloc(WORK_BUFFER_SIZE);
 
-    qDebug() << "LoopFileMixer:  File: " << m_filePath1 << " dest: " << dest
+    qDebug() << "LoopFileMixer --- File: " << m_file1.path << " dest: " << dest
     << " Encoding " << encoding;
 }
 
@@ -33,16 +34,14 @@ LoopFileMixer::~LoopFileMixer() {
 }
 
 void LoopFileMixer::slotProcess() {
-
-    qDebug() << "!~!~! LoopFileMixer::slotProcess() !~!~!~!";
+    //qDebug() << "!~!~! LoopFileMixer::slotProcess() !~!~!~!";
 
     SF_INFO sfInfo1;
     SF_INFO sfOutInfo;
 
     sfInfo1.format = 0;
 
-    // TODO(carl): don't hardcode samplerate
-    sfOutInfo.samplerate = 44100;
+    sfOutInfo.samplerate = m_file1.sampleRate;
     sfOutInfo.channels = 2;
 
     if (m_encoding == ENCODING_WAVE) {
@@ -51,7 +50,7 @@ void LoopFileMixer::slotProcess() {
         sfOutInfo.format = SF_FORMAT_AIFF | SF_FORMAT_PCM_16;
     }
 
-    SNDFILE* pSndfile1 = sf_open(m_filePath1.toLocal8Bit(), SFM_READ, &sfInfo1);
+    SNDFILE* pSndfile1 = sf_open(m_file1.path.toLocal8Bit(), SFM_READ, &sfInfo1);
     SNDFILE* pSndfileOut = sf_open(m_dest.toLocal8Bit(), SFM_WRITE, &sfOutInfo);
 
     if (pSndfile1 == NULL || pSndfileOut == NULL) {
