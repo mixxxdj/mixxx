@@ -138,7 +138,6 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
 
-    // TODO: get this from configuration
     m_pMasterBpm->set(m_dMasterBpm);  // This will initialize all our values
     updateSamplesPerBeat();
 }
@@ -404,7 +403,10 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
 
     // In the following logic, m_sSyncSource acts like "previous sync source".
     if (state == SYNC_MASTER) {
-        // TODO: don't allow setting of master if not playing
+        // TODO(owilliams): should we reject requests to be master from
+        // non-playing decks?  If so, then that creates a weird situation on
+        // startup where the user can't turn on Master.
+
         // If setting this channel as master fails, pick a new master.
         if (!setChannelMaster(pSyncChannel)) {
             setMaster(chooseNewMaster(group));
