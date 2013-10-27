@@ -144,6 +144,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
 }
 
 EngineSync::~EngineSync() {
+    // We use the slider value because that is never set to 0.0.
     m_pConfig->set(ConfigKey("[Master]", "sync_bpm"), ConfigValue(m_pSyncRateSlider->get()));
     while (!m_channels.isEmpty()) {
         delete m_channels.takeLast();
