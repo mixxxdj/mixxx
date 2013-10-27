@@ -49,6 +49,9 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
 }
 
 WSpinny::~WSpinny() {
+#ifdef __VINYLCONTROL__
+    m_pVCManager->removeSignalQualityListener(this);
+#endif
     // No need to delete anything if m_group is empty because setup() was not called.
     if (!m_group.isEmpty()) {
         WImageStore::deleteImage(m_pBgImage);
