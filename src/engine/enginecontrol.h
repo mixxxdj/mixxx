@@ -87,9 +87,10 @@ class EngineControl : public QObject {
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
 
-  private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
+
+  private:
     ControlValueAtomic<double> m_dCurrentSample;
     double m_dTotalSamples;
     EngineMaster* m_pEngineMaster;

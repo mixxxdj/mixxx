@@ -144,6 +144,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
 }
 
 EngineSync::~EngineSync() {
+    m_pConfig->set(ConfigKey("[Master]", "sync_bpm"), ConfigValue(m_pSyncRateSlider->get()));
     while (!m_channels.isEmpty()) {
         delete m_channels.takeLast();
     }
@@ -334,7 +335,10 @@ void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
 }
 
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
-    m_pSyncRateSlider->set(new_bpm);
+    if (new_bpm != 0) {
+        m_pSyncRateSlider->set(new_bpm);
+    }
+
     if (new_bpm != m_dMasterBpm) {
         if (m_sSyncSource != kMasterSyncGroup) {
             // XXX(Owen):
