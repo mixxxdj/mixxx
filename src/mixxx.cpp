@@ -1511,6 +1511,26 @@ bool MixxxMainWindow::eventFilter(QObject* obj, QEvent* event)
     }
 }
 
+bool MixxxMainWindow::event(QEvent* e) {
+    switch(e->type()) {
+    case QEvent::TouchBegin:
+    case QEvent::TouchUpdate:
+    case QEvent::TouchEnd:
+    {
+        // If the touch event falls trough to the main Widget, we ignore it this
+        // way it is resends as mouse event
+        QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
+        touchEvent->accept();
+        qDebug() << "%" << e->type();
+        qDebug() << "%" << ((QTouchEvent*)e)->widget() << this;
+        return true;
+    }
+    default:
+        break;
+    }
+    return QWidget::event(e);
+}
+
 void MixxxMainWindow::closeEvent(QCloseEvent *event) {
     if (!confirmExit()) {
         event->ignore();

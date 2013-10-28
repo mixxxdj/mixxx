@@ -18,7 +18,6 @@
 #include <QThread>
 #include <QDir>
 #include <QtDebug>
-#include <qapplication.h>
 #include <qfont.h>
 #include <qstring.h>
 #include <qtextcodec.h>
@@ -30,6 +29,7 @@
 #include <stdio.h>
 #include <math.h>
 #include "mixxx.h"
+#include "mixxxapplication.h"
 #include "soundsourceproxy.h"
 #include "qpixmap.h"
 #include "qsplashscreen.h"
@@ -213,7 +213,7 @@ int main(int argc, char * argv[])
     //  so if you change it here, change it also in:
     //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
-    QApplication a(argc, argv);
+    MixxxApplication a(argc, argv);
 
     //Support utf-8 for all translation strings
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
