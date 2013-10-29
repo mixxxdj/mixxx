@@ -1517,12 +1517,12 @@ bool MixxxMainWindow::event(QEvent* e) {
     case QEvent::TouchUpdate:
     case QEvent::TouchEnd:
     {
-        // If the touch event falls trough to the main Widget, we ignore it this
-        // way it is resends as mouse event
+        // If the touch event falls trough to the main Widget, no touch widget
+        // was touched, so we resent it as a mouse events.
+        // We have to accept it here, so QApplication will continue to deliver
+        // the following events of this touch point as well.
         QTouchEvent* touchEvent = static_cast<QTouchEvent*>(e);
         touchEvent->accept();
-        qDebug() << "%" << e->type();
-        qDebug() << "%" << ((QTouchEvent*)e)->widget() << this;
         return true;
     }
     default:
