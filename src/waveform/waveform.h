@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "util.h"
+#include "util/compatibility.h"
 
 union WaveformData {
     struct {
@@ -63,14 +64,14 @@ class Waveform {
 
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
-    int getCompletion() const { return m_completion; }
+    int getCompletion() const { return deref(m_completion); }
     int getTextureStride() const { return m_textureStride; }
     int getTextureSize() const { return m_data.size(); }
 
     // Atomically get the number of data elements in this Waveform. You do not
     // need to lock the Waveform's mutex before calling this method.
-    int getDataSize() const { return m_dataSize; }
-    int getNumChannels() const { return m_numChannels; }
+    int getDataSize() const { return deref(m_dataSize); }
+    int getNumChannels() const { return deref(m_numChannels); }
 
     const std::vector<WaveformData>& getConstData() const { return m_data;}
 

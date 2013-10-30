@@ -41,6 +41,7 @@
 #include "engine/clockcontrol.h"
 #include "util/timer.h"
 #include "controlobjectslave.h"
+#include "util/compatibility.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
@@ -500,7 +501,8 @@ void EngineBuffer::slotControlPlayRequest(double v)
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
-    if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
+
+    if (v > 0.0 && !m_pCurrentTrack && deref(m_iTrackLoading) == 0) {
         v = 0.0;
     }
 
@@ -587,7 +589,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     bool bCurBufferPaused = false;
     double rate = 0;
 
-    bool bTrackLoading = m_iTrackLoading != 0;
+    bool bTrackLoading = deref(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         ScopedTimer t("EngineBuffer::process_pauselock");
         float sr = m_pSampleRate->get();
