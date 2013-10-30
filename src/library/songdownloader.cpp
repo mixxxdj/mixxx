@@ -37,7 +37,6 @@ bool SongDownloader::downloadSongFromURL(QUrl& url) {
     return true;
 }
 
-
 bool SongDownloader::downloadFromQueue() {
     QUrl downloadUrl = m_downloadQueue.dequeue();
     //Extract the filename from the URL path
@@ -126,13 +125,3 @@ void SongDownloader::slotDownloadFinished() {
     //Emit this signal when all the files have been downloaded.
     emit(downloadFinished());
 }
-
-/*
-void SongDownloader::finishedSlot(QNetworkReply* reply) {
-    if (reply->error() == QNetworkReply::NoError)
-    {
-        qDebug() << "SongDownloader: finishedSlot, no error";
-    }
-    else
-        qDebug() << "SongDownloader: NAM error :-/";
-}*/
