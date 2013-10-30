@@ -85,7 +85,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 }
 
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                      QWidget *pSource){
+                                      QObject* pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);

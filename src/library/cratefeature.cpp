@@ -109,7 +109,7 @@ QIcon CrateFeature::getIcon() {
 }
 
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                   QWidget *pSource) {
+                                   QObject* pSource) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     QList<QFileInfo> files;
