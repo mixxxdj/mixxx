@@ -1,10 +1,13 @@
 #ifndef SONGDOWNLOADER_H
 #define SONGDOWNLOADER_H
 
-#include <QtCore>
-#include <QtNetwork>
+#include <QFile>
 #include <QNetworkAccessManager>
+#include <QNetworkReply>
+#include <QNetworkRequest>
+#include <QObject>
 #include <QQueue>
+#include <QUrl>
 
 class SongDownloader : public QObject
 {

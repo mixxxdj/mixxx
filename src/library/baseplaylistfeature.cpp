@@ -1,5 +1,8 @@
 #include "library/baseplaylistfeature.h"
 
+#include <QInputDialog>
+#include <QFileDialog>
+
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"

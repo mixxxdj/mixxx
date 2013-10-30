@@ -3,6 +3,7 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
+#include <QMenu>
 
 #include "library/autodjfeature.h"
 #include "library/playlisttablemodel.h"

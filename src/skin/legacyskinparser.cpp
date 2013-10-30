@@ -1,14 +1,17 @@
 // legacyskinparser.cpp
 // Created 9/19/2010 by RJ Ryan (rryan@mit.edu)
 
-#include <QtGlobal>
-#include <QtDebug>
+#include "skin/legacyskinparser.h"
+
 #include <QDir>
+#include <QGridLayout>
+#include <QLabel>
+#include <QMutexLocker>
+#include <QSplitter>
 #include <QStackedWidget>
 #include <QVBoxLayout>
-#include <QLabel>
-#include <QGridLayout>
-#include <QMutexLocker>
+#include <QtDebug>
+#include <QtGlobal>
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"

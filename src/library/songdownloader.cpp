@@ -1,7 +1,9 @@
-#include <QtCore>
-#include <QtGui>
-
 #include "library/songdownloader.h"
+
+#include <QApplication>
+#include <QFileInfo>
+#include <QString>
+#include <QtDebug>
 
 #include "util/version.h"
 

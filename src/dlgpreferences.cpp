@@ -21,6 +21,7 @@
 #include <QtGui>
 #include <QEvent>
 #include <QScrollArea>
+#include <QDesktopWidget>
 
 #ifdef __VINYLCONTROL__
 #include "dlgprefvinyl.h"

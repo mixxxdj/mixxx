@@ -5,6 +5,7 @@
 #include <QtDebug>
 #include <QStyle>
 #include <QFont>
+#include <QShortcut>
 
 WSearchLineEdit::WSearchLineEdit(ConfigObject<ConfigValue>* pConfig,
                                  QWidget* pParent) : QLineEdit(pParent) {

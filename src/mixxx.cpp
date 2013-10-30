@@ -19,6 +19,10 @@
 #include <QtCore>
 #include <QtGui>
 #include <QTranslator>
+#include <QMenu>
+#include <QMenuBar>
+#include <QFileDialog>
+#include <QDesktopWidget>
 
 #include "mixxx.h"
 
