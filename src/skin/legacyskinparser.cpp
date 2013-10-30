@@ -25,7 +25,6 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 
-#include "skin/legacyskinparser.h"
 #include "skin/colorschemeparser.h"
 #include "skin/propertybinder.h"
 
@@ -1485,4 +1484,3 @@ void LegacySkinParser::addShortcutToToolTip(QWidget* pWidget, const QString& sho
     tooltip += nativeShortcut;
     pWidget->setToolTip(tooltip);
 }
-
