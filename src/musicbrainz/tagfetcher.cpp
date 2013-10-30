@@ -6,9 +6,12 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #include <QFuture>
 #include <QUrl>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QtConcurrent>
+#endif
 #include <QtConcurrentMap>
 
 #include "musicbrainz/tagfetcher.h"
