@@ -582,8 +582,7 @@ MixxxApp::~MixxxApp()
     delete m_pSkinLoader;
 
     // ControllerManager depends on Config
-    qDebug() << "shutdown & delete ControllerManager " << qTime.elapsed();
-    m_pControllerManager->shutdown();
+    qDebug() << "delete ControllerManager " << qTime.elapsed();
     delete m_pControllerManager;
 
 #ifdef __VINYLCONTROL__

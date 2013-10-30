@@ -112,6 +112,7 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
 }
 
 ControllerManager::~ControllerManager() {
+    emit(requestShutdown());
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
