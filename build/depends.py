@@ -184,7 +184,7 @@ class Qt(Dependence):
 
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
+            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
         ]
 
         if qt5:

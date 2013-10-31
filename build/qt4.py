@@ -388,9 +388,9 @@ def enable_modules(self, modules, debug=False) :
 		'QtDBUS',
 		'QtScript',
 		'QtWebKit',
-		'QtXmlPatterns'
-                'QtWidgets',
-                'QtConcurrent',
+		'QtXmlPatterns',
+		'QtWidgets',
+		'QtConcurrent',
 		]
 	pclessModules = [
 		'QtUiTools',
