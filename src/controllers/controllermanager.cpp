@@ -112,6 +112,7 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
 }
 
 ControllerManager::~ControllerManager() {
+    emit(requestShutdown());
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
@@ -130,7 +131,7 @@ void ControllerManager::slotShutdown() {
     QMutexLocker locker(&m_mutex);
     QList<ControllerEnumerator*> enumerators = m_enumerators;
     m_enumerators.clear();
-    m_mutex.unlock();
+    locker.unlock();
 
     // Delete enumerators and they'll delete their Devices
     foreach (ControllerEnumerator* pEnumerator, enumerators) {

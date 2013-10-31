@@ -21,6 +21,7 @@
 #include <QDoubleSpinBox>
 #include <QWidget>
 #include <QLocale>
+#include <QDesktopWidget>
 
 #include "dlgprefcontrols.h"
 #include "qcombobox.h"

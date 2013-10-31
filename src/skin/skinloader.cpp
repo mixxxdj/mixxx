@@ -1,12 +1,15 @@
 // skinloader.cpp
 // Created 6/21/2010 by RJ Ryan (rryan@mit.edu)
 
-#include <QString>
+#include "skin/skinloader.h"
+
+#include <QApplication>
+#include <QDesktopWidget>
 #include <QDir>
+#include <QString>
 #include <QtDebug>
 
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "skin/skinloader.h"
 #include "skin/legacyskinparser.h"
 #include "controllers/controllermanager.h"
 #include "library/library.h"

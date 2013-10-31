@@ -30,8 +30,10 @@
 #include "controlobject.h"
 #include "waveform/waveform.h"
 #include "track/beatfactory.h"
+#include "util/compatibility.h"
 
 #include "mixxxutils.cpp"
+
 
 TrackInfoObject::TrackInfoObject(const QString sLocation, bool parseHeader)
         : m_qMutex(QMutex::Recursive),
@@ -724,7 +726,7 @@ void TrackInfoObject::waveformSummaryNew() {
 
 void TrackInfoObject::setAnalyserProgress(int progress) {
     // progress in 0 .. 1000. QAtomicInt so no need for lock.
-    if (progress != m_analyserProgress) {
+    if (progress != deref(m_analyserProgress)) {
         m_analyserProgress = progress;
         emit(analyserProgress(progress));
     }
@@ -732,7 +734,7 @@ void TrackInfoObject::setAnalyserProgress(int progress) {
 
 int TrackInfoObject::getAnalyserProgress() const {
     // QAtomicInt so no need for lock.
-    return m_analyserProgress;
+    return deref(m_analyserProgress);
 }
 
 void TrackInfoObject::setCuePoint(float cue)

@@ -389,6 +389,8 @@ def enable_modules(self, modules, debug=False) :
 		'QtScript',
 		'QtWebKit',
 		'QtXmlPatterns'
+                'QtWidgets',
+                'QtConcurrent',
 		]
 	pclessModules = [
 		'QtUiTools',
@@ -457,6 +459,3 @@ def enable_modules(self, modules, debug=False) :
 
 def exists(env):
 	return _detect(env)
-
-
-

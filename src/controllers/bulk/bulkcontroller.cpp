@@ -11,6 +11,7 @@
 #include "controllers/bulk/bulkcontroller.h"
 #include "controllers/bulk/bulksupported.h"
 #include "controllers/defs_controllers.h"
+#include "util/compatibility.h"
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
         : QThread(),
@@ -30,7 +31,7 @@ void BulkReader::run() {
     m_stop = 0;
     unsigned char data[255];
 
-    while (m_stop == 0) {
+    while (deref(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data

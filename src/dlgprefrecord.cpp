@@ -17,6 +17,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QFileDialog>
 
 #include "dlgprefrecord.h"
 #include "recording/defs_recording.h"
@@ -256,7 +257,7 @@ void DlgPrefRecord::slotRecordPathChange() {
 
 // This function updates/refreshes the contents of this dialog.
 void DlgPrefRecord::slotUpdate() {
-    
+
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     LineEditRecordings->setText(recordingsPath);
 

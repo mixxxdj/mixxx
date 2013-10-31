@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include <QtDebug>
+#include <QApplication>
 
 #include "mathstuff.h"
 #include "wimagestore.h"

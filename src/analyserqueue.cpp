@@ -12,6 +12,7 @@
 #include "analyserrg.h"
 #include "analyserbeats.h"
 #include "vamp/vampanalyser.h"
+#include "util/compatibility.h"
 
 #include <typeinfo>
 
@@ -212,7 +213,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         //QThread::usleep(10);
 
         //has something new entered the queue?
-        if (m_aiCheckPriorities) {
+        if (deref(m_aiCheckPriorities)) {
             m_aiCheckPriorities = false;
             if (isLoadedTrackWaiting(tio)) {
                 qDebug() << "Interrupting analysis to give preference to a loaded track.";
@@ -338,7 +339,7 @@ void AnalyserQueue::run() {
 
 // This is called from the AnalyserQueue thread
 void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
-    if (!m_exit) {    
+    if (!m_exit) {
         // First tryAcqire will have always success because sema is initialized with on
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue

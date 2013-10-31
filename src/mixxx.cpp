@@ -19,6 +19,10 @@
 #include <QtCore>
 #include <QtGui>
 #include <QTranslator>
+#include <QMenu>
+#include <QMenuBar>
+#include <QFileDialog>
+#include <QDesktopWidget>
 
 #include "mixxx.h"
 
@@ -58,6 +62,7 @@
 #include "util/statsmanager.h"
 #include "util/timer.h"
 #include "util/version.h"
+#include "util/compatibility.h"
 #include "playerinfo.h"
 
 #ifdef __VINYLCONTROL__
@@ -206,8 +211,8 @@ void MixxxApp::initializeKeyboard() {
         qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
         m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
     } else {
-        // Use the default config for local keyboard
-        QLocale locale = QApplication::keyboardInputLocale();
+        // Default to the locale for the main input method (e.g. keyboard).
+        QLocale locale = inputLocale();
 
         // check if a default keyboard exists
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
@@ -591,8 +596,7 @@ MixxxApp::~MixxxApp()
     delete m_pSkinLoader;
 
     // ControllerManager depends on Config
-    qDebug() << "shutdown & delete ControllerManager " << qTime.elapsed();
-    m_pControllerManager->shutdown();
+    qDebug() << "delete ControllerManager " << qTime.elapsed();
     delete m_pControllerManager;
 
 #ifdef __VINYLCONTROL__
