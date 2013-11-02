@@ -123,8 +123,10 @@ class MixxxBuild(object):
         tools = ['default']
         toolpath = ['#build/']
         extra_arguments = {}
-        tools.append('qt4')
-        tools.append('qt5')
+        if int(Script.ARGUMENTS.get('qt5', 0)):
+            tools.append('qt5')
+        else:
+            tools.append('qt4')
         tools.append('protoc')
 
         # Ugly hack to check the qtdir argument
