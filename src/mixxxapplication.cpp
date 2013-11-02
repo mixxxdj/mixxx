@@ -1,12 +1,15 @@
 
+
 #include <QtDebug>
 #include <QTouchEvent>
-
 
 #include "mixxxapplication.h"
 #include "controlobjectthread.h"
 #include "mixxx.h"
 
+extern void qt_translateRawTouchEvent(QWidget *window,
+        QTouchEvent::DeviceType deviceType,
+        const QList<QTouchEvent::TouchPoint> &touchPoints);
 
 MixxxApplication::MixxxApplication(int& argc, char** argv)
         : QApplication(argc, argv),
@@ -33,10 +36,6 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         QWidget* fakeMouseWidget = NULL;
 
         qDebug() << "&" << touchEvent->type() << target;
-
-       // return QApplication::notify(target, event);
-
-
 
         if (touchEvent->deviceType() !=  QTouchEvent::TouchScreen) {
             break;
@@ -98,8 +97,6 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
 
                   qDebug() << "#" << mouseEvent.type() << mouseEvent.button() << mouseEvent.buttons() << mouseEvent.pos() << mouseEvent.globalPos();
 
-                  // touch event was not accepted by any widget in the Main window
-                  // send as the previously prepared faked Mouse event now.
                   //if (m_fakeMouseWidget->focusPolicy() & Qt::ClickFocus) {
                   //    fakeMouseWidget->setFocus();
                   //}
@@ -111,19 +108,26 @@ bool MixxxApplication::notify(QObject* target, QEvent* event) {
         return false;
         break;
     }
-    case QEvent::MouseButtonPress:
-    case QEvent::MouseMove:
-        qDebug() << "+" << event->type() << target;
-        break;
     case QEvent::MouseButtonRelease:
-        qDebug() << "+" << event->type() << target;
-        QApplication::notify(target, event);
+    {
+        bool ret = QApplication::notify(target, event);
         if (m_fakeMouseWidget) {
-            QApplication::notify(m_fakeMouseWidget, event);
-            m_fakeMouseWidget->setAttribute(Qt::WA_WState_AcceptedTouchBeginEvent, false);
-            m_fakeMouseWidget = NULL;
+            // It may happen the faked mouse event was grabbed by a non touch window.
+            // eg.: if we have started to drag by touch.
+            // In this case X11 generates a MouseButtonRelease instead of a TouchPointReleased Event.
+            // QApplication still tracks the Touch point and prevent touch to other widgets
+            // So we need to fake the Touch release event as well to clean up
+            // QApplicationPrivate::widgetForTouchPointId and QApplicationPrivate::appCurrentTouchPoints;
+            m_fakeMouseWidget = NULL; // Disable MouseButtonRelease fake
+            QList<QTouchEvent::TouchPoint> touchPoints;
+            QTouchEvent::TouchPoint tp;
+            tp.setId(m_fakeMouseSourcePointId);
+            tp.setState(Qt::TouchPointReleased);
+            touchPoints.append(tp);
+            qt_translateRawTouchEvent(NULL, QTouchEvent::TouchScreen, touchPoints);
         }
-        return true;
+        return ret;
+    }
     default:
         break;
     }
@@ -137,3 +141,4 @@ bool MixxxApplication::touchIsRightButton() {
     }
     return (m_pTouchShift->get() != 0.0);
 }
+

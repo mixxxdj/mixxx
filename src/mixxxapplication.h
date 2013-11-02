@@ -11,7 +11,6 @@ class MixxxApplication : public QApplication {
   public:
     MixxxApplication(int& argc, char** argv);
     virtual ~MixxxApplication();
-
     virtual bool notify(QObject*, QEvent*);
 
   private:
