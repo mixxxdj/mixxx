@@ -712,11 +712,15 @@ class MixxxCore(Feature):
                    "util/performancetimer.cpp",
                    "util/version.cpp",
                    "util/rlimit.cpp",
-
-                   # Add the QRC file which compiles in some extra resources
-                   # (prefs icons, etc.)
-                   build.env.Qrc('#res/mixxx.qrc')
                    ]
+
+        qt5 = Qt.qt5_enabled(build)
+        # Add the QRC file which compiles in some extra resources
+        # (prefs icons, etc.)
+        if qt5:
+            sources.append(build.env.Qrc5('#res/mixxx.qrc'))
+        else:
+            sources.append(build.env.Qrc4('#res/mixxx.qrc'))
 
         proto_args = {
             'PROTOCPROTOPATH': ['src'],
