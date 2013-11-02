@@ -4,6 +4,7 @@ import os
 import util
 from mixxx import Feature
 import SCons.Script as SCons
+import depends
 
 class HSS1394(Feature):
     def description(self):
@@ -499,7 +500,7 @@ class ModPlug(Feature):
             raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
-        build.env.Uic4('dlgprefmodplugdlg.ui')
+        depends.Qt.uic(build)('dlgprefmodplugdlg.ui')
         return ['soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
 
 
@@ -790,7 +791,7 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        build.env.Uic4('dlgprefshoutcastdlg.ui')
+        depends.Qt.uic(build)('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
                 'shoutcast/shoutcastmanager.cpp',
                 'engine/sidechain/engineshoutcast.cpp']
