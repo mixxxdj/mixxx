@@ -741,36 +741,38 @@ class MixxxCore(Feature):
                         for proto_source in proto_sources]
         sources.extend(proto_objects)
 
-
         # Uic these guys (they're moc'd automatically after this) - Generates
         # the code for the QT UI forms
-        build.env.Uic4('dlgpreferencesdlg.ui')
-        build.env.Uic4('dlgprefsounddlg.ui')
 
-        build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
-        build.env.Uic4('controllers/dlgprefmappablecontrollerdlg.ui')
-        build.env.Uic4('controllers/dlgcontrollerlearning.ui')
-        build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
 
-        build.env.Uic4('dlgprefplaylistdlg.ui')
-        build.env.Uic4('dlgprefcontrolsdlg.ui')
-        build.env.Uic4('dlgprefeqdlg.ui')
-        build.env.Uic4('dlgprefcrossfaderdlg.ui')
-        build.env.Uic4('dlgprefreplaygaindlg.ui')
-        build.env.Uic4('dlgprefbeatsdlg.ui')
-        # build.env.Uic4('dlgbpmtapdlg.ui')
-        build.env.Uic4('dlgprefvinyldlg.ui')
-        build.env.Uic4('dlgprefnovinyldlg.ui')
-        build.env.Uic4('dlgprefrecorddlg.ui')
-        build.env.Uic4('dlgaboutdlg.ui')
-        build.env.Uic4('dlgtagfetcher.ui')
-        build.env.Uic4('dlgtrackinfo.ui')
-        build.env.Uic4('dlganalysis.ui')
-        build.env.Uic4('dlgautodj.ui')
-        build.env.Uic4('dlgprefsounditem.ui')
-        build.env.Uic4('dlgrecording.ui')
-        build.env.Uic4('dlghidden.ui')
-        build.env.Uic4('dlgmissing.ui')
+        uic = Qt.uic(build)
+        ui_files = [
+            'controllers/dlgcontrollerlearning.ui',
+            'controllers/dlgprefcontrollerdlg.ui',
+            'controllers/dlgprefmappablecontrollerdlg.ui',
+            'controllers/dlgprefnocontrollersdlg.ui',
+            'dlgaboutdlg.ui',
+            'dlganalysis.ui',
+            'dlgautodj.ui',
+            'dlghidden.ui',
+            'dlgmissing.ui',
+            'dlgprefbeatsdlg.ui',
+            'dlgprefcontrolsdlg.ui',
+            'dlgprefcrossfaderdlg.ui',
+            'dlgprefeqdlg.ui',
+            'dlgpreferencesdlg.ui',
+            'dlgprefnovinyldlg.ui',
+            'dlgprefplaylistdlg.ui',
+            'dlgprefrecorddlg.ui',
+            'dlgprefreplaygaindlg.ui',
+            'dlgprefsounddlg.ui',
+            'dlgprefsounditem.ui',
+            'dlgprefvinyldlg.ui',
+            'dlgrecording.ui',
+            'dlgtagfetcher.ui',
+            'dlgtrackinfo.ui',
+        ]
+        sources.extend(uic(ui_file) for ui_file in ui_files)
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
