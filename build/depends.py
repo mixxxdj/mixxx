@@ -199,7 +199,9 @@ class Qt(Dependence):
 
         # Enable Qt include paths
         if build.platform_is_linux:
-            if not conf.CheckForPKG('QtCore', '4.6'):
+            if qt5 and not conf.CheckForPKG('Qt5Core', '5.0'):
+                raise Exception('Qt >= 5.0 not found')
+            elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
 
             #(This hopefully respects our qtdir=blah flag while linking now.)
