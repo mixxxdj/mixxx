@@ -124,6 +124,7 @@ class MixxxBuild(object):
         toolpath = ['#build/']
         extra_arguments = {}
         tools.append('qt4')
+        tools.append('qt5')
         tools.append('protoc')
 
         # Ugly hack to check the qtdir argument
