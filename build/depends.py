@@ -167,6 +167,11 @@ class Qt(Dependence):
         return int(util.get_flags(build.env, 'qt5', 0))
 
     @staticmethod
+    def uic(build):
+        qt5 = Qt.qt5_enabled(build)
+        return build.env.Uic5 if qt5 else build.env.Uic4
+
+    @staticmethod
     def find_framework_path(qtdir):
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d,'QtCore.framework')
