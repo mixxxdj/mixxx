@@ -163,6 +163,10 @@ class Qt(Dependence):
                       'windows': 'C:\\qt\\4.6.0'}
 
     @staticmethod
+    def qt5_enabled(build):
+        return int(util.get_flags(build.env, 'qt5', 0))
+
+    @staticmethod
     def find_framework_path(qtdir):
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d,'QtCore.framework')
@@ -174,7 +178,7 @@ class Qt(Dependence):
         pass
 
     def configure(self, build, conf):
-        qt5 = int(util.get_flags(build.env, 'qt5', 0))
+        qt5 = Qt.qt5_enabled(build)
         # Emit various Qt defines
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
