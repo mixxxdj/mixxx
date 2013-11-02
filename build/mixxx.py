@@ -147,10 +147,10 @@ class MixxxBuild(object):
         # -- rryan 6/8/2011
         extra_arguments['QTDIR'] = qtdir
 
-        if self.platform == 'osx':
+        if self.platform_is_osx:
             tools.append('OSConsX')
             toolpath.append('#/build/osx/')
-        if self.platform_is_windows and self.toolchain == 'msvs':
+        if self.platform_is_windows and self.toolchain_is_msvs:
             toolpath.append('msvs')
             extra_arguments['VCINSTALLDIR'] = os.getenv('VCInstallDir')  # TODO(XXX) Why?
             extra_arguments['QT_LIB'] = ''  # TODO(XXX) Why?
@@ -159,7 +159,7 @@ class MixxxBuild(object):
         if self.crosscompile:
             if self.platform_is_windows:
                 tools.append('crossmingw')
-            if self.platform == 'osx':
+            if self.platform_is_osx:
                 tools.append('crossosx')
 
         self.env = Script.Environment(tools=tools, toolpath=toolpath, ENV=os.environ,
@@ -173,8 +173,8 @@ class MixxxBuild(object):
             elif flags_force64:
                 self.env.Append(CCFLAGS = '-m64')
 
-        if self.platform == 'osx':
-            if self.machine == 'powerpc':
+        if self.platform_is_osx:
+            if self.architecture_is_powerpc:
                 self.env.Append(CCFLAGS = '-arch ppc')
                 self.env.Append(LINKFLAGS = '-arch ppc')
             else:
