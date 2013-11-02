@@ -15,6 +15,8 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <QVBoxLayout>
+
 #include "widget/wlabel.h"
 #include "widget/wskincolor.h"
 

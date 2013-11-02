@@ -687,7 +687,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
     }
 
     if (m_pEngine == NULL) {
-        return QScriptValue(FALSE);
+        return QScriptValue(false);
     }
 
     if (callback.isString()) {
@@ -697,13 +697,13 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
 
         if (disconnect) {
             disconnectControl(cb);
-            return QScriptValue(TRUE);
+            return QScriptValue(true);
         }
 
         function = m_pEngine->evaluate(callback.toString());
         if (checkException() || !function.isFunction()) {
             qWarning() << "Could not evaluate callback function:" << callback.toString();
-            return QScriptValue(FALSE);
+            return QScriptValue(false);
         } else if (m_connectedControls.contains(key, cb)) {
             // Do not allow multiple connections to named functions
 
@@ -734,7 +734,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
     }
     else {
         qWarning() << "Invalid callback";
-        return QScriptValue(FALSE);
+        return QScriptValue(false);
     }
 
     if (function.isFunction()) {
@@ -775,7 +775,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
             QScriptEngine::ScriptOwnership);
     }
 
-    return QScriptValue(FALSE);
+    return QScriptValue(false);
 }
 
 /* -------- ------------------------------------------------------

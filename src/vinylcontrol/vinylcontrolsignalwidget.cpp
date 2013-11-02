@@ -15,12 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-/**
-    TODO(XXX): Feb 2011 - asantoni
-        * This class probably doesn't need the locking anymore.
-
-*/
-
 #include <QtCore>
 #include <QtGui>
 
@@ -34,7 +28,7 @@ VinylControlSignalWidget::VinylControlSignalWidget()
       m_imageData(NULL),
       m_iAngle(0),
       m_fSignalQuality(0.0f),
-      m_bVinylActive(FALSE) {
+      m_bVinylActive(false) {
 }
 
 void VinylControlSignalWidget::setSize(int size) {

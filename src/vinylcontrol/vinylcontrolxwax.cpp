@@ -380,7 +380,7 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
                     {
                         qDebug() << "position greater than safe, select mode" << iPosition << m_uiSafeZone;
                         bTrackSelectMode = true;
-                        togglePlayButton(FALSE);
+                        togglePlayButton(false);
                         resetSteadyPitch(0.0f, 0.0f);
                         controlScratch->slotSet(0.0f);
                     }
@@ -636,7 +636,7 @@ void VinylControlXwax::analyzeSamples(const short *samples, size_t nFrames)
            filePosition == dOldFilePos)
         {
             //We are not playing any more
-            togglePlayButton(FALSE);
+            togglePlayButton(false);
             resetSteadyPitch(0.0f, 0.0f);
             controlScratch->slotSet(0.0f);
             //resetSteadyPitch(dVinylPitch, filePosition);

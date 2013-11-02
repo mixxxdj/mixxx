@@ -1,14 +1,16 @@
-#include <QDebug>
-#include <QModelIndexList>
-#include <QModelIndex>
+#include "library/librarycontrol.h"
+
+#include <QApplication>
 #include <QItemSelectionModel>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QtDebug>
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-#include "library/librarycontrol.h"
 #include "library/libraryview.h"
 #include "util/container.h"
 

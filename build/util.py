@@ -157,7 +157,7 @@ def write_build_header(path):
         branch_name = get_branch_name()
         modified = len(get_modified()) > 0
         # Do not emit BUILD_BRANCH on release branches.
-        if not branch_name.startswith('release'):
+        if branch_name and not branch_name.startswith('release'):
             f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
         f.write('#define BUILD_REV "%s%s"\n' % (get_revision(),
                                                 '+' if modified else ''))
