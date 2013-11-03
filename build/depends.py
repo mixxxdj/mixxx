@@ -187,20 +187,15 @@ class Qt(Dependence):
         # Emit various Qt defines
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
-        qt_modules = []
+        qt_modules = [
+            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
+            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
+        ]
+
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES = 'QT_DISABLE_DEPRECATED_BEFORE')
-            qt_modules.extend([
-                'Qt5Core', 'Qt5Gui', 'Qt5OpenGL', 'Qt5Xml', 'Qt5Svg',
-                'Qt5Sql', 'Qt5Script', 'Qt5XmlPatterns', 'Qt5Network',
-                'Qt5Widgets', 'Qt5Concurrent'
-            ])
-        else:
-            qt_modules.extend([
-                'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-                'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
-            ])
+            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
 
         # Enable Qt include paths
         if build.platform_is_linux:
@@ -209,10 +204,16 @@ class Qt(Dependence):
             elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
 
-            #(This hopefully respects our qtdir=blah flag while linking now.)
-            build.env.EnableQt4Modules(qt_modules, debug=False)
+            # This automatically converts QtXXX to Qt5XXX where appropriate.
+            if qt5:
+                build.env.EnableQt5Modules(qt_modules, debug=False)
+            else:
+                build.env.EnableQt4Modules(qt_modules, debug=False)
         elif build.platform_is_bsd:
             build.env.Append(LIBS=qt_modules)
+            include_paths = ['$QTDIR/include/%s' % module
+                             for module in qt_modules]
+            build.env.Append(CPPPATH=include_paths)
         elif build.platform_is_osx:
             qtdir = build.env['QTDIR']
             build.env.Append(
@@ -230,11 +231,12 @@ class Qt(Dependence):
             build.env.Append(CCFLAGS = ['-F%s' % os.path.join(framework_path)])
             build.env.Append(LINKFLAGS = ['-F%s' % os.path.join(framework_path)])
         elif build.platform_is_windows:
-            build.env.Append(LIBPATH=['$QTDIR/lib'])
-            # Use the debug versions of the libs if we are building in debug
-            # mode.
-            build.env.Append(LIBS=[module + 'd4' if build.msvcdebug else '4'
-                                   for module in qt_modules])
+            # This automatically converts QtCore to QtCore[45][d] where
+            # appropriate.
+            if qt5:
+                build.env.EnableQt5Modules(qt_modules, debug=build.msvcdebug)
+            else:
+                build.env.EnableQt4Modules(qt_modules, debug=build.msvcdebug)
 
             # if build.static_dependencies:
                 # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
@@ -256,13 +258,6 @@ class Qt(Dependence):
                 # # QtOpenGL
                 # build.env.Append(LIBS = 'glu32')
                 # build.env.Append(LIBS = 'opengl32')
-
-        # Set Qt include paths for non-OSX
-        if not build.platform_is_osx:
-            include_paths = ['$QTDIR/include/%s' % module
-                             for module in qt_modules]
-            include_paths.append('$QTDIR/include/Qt')
-            build.env.Append(CPPPATH=include_paths)
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
