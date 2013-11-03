@@ -178,17 +178,20 @@ class Qt(Dependence):
         # Emit various Qt defines
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
+        qt_modules = []
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES = 'QT_DISABLE_DEPRECATED_BEFORE')
-
-        qt_modules = [
-            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
-        ]
-
-        if qt5:
-            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
+            qt_modules.extend([
+                'Qt5Core', 'Qt5Gui', 'Qt5OpenGL', 'Qt5Xml', 'Qt5Svg',
+                'Qt5Sql', 'Qt5Script', 'Qt5XmlPatterns', 'Qt5Network',
+                'Qt5Widgets', 'Qt5Concurrent'
+            ])
+        else:
+            qt_modules.extend([
+                'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
+                'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
+            ])
 
         # Enable Qt include paths
         if build.platform_is_linux:
