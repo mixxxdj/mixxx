@@ -549,14 +549,14 @@ __qm_builder = SCons.Builder.Builder(
         src_suffix = '.ts',
         suffix = '.qm')
 __qrc_builder = SCons.Builder.Builder(
-        action = SCons.Action.CommandGeneratorAction(__qrc_generator, {}),
+        action = SCons.Action.CommandGeneratorAction(__qrc_generator, {'cmdstr':'$QT5_QRCCOMSTR'}),
         source_scanner = __qrcscanner,
         src_suffix = '$QT5_QRCSUFFIX',
         suffix = '$QT5_QRCCXXSUFFIX',
         prefix = '$QT5_QRCCXXPREFIX',
         single_source = 1)
 __ex_moc_builder = SCons.Builder.Builder(
-        action = SCons.Action.CommandGeneratorAction(__moc_generator_from_h, {}))
+        action = SCons.Action.CommandGeneratorAction(__moc_generator_from_h, {'cmdstr':'$QT5_MOCCOMSTR'}))
 __ex_uic_builder = SCons.Builder.Builder(
         action = SCons.Action.Action('$QT5_UICCOM', '$QT5_UICCOMSTR'),
         src_suffix = '.ui')
@@ -789,12 +789,12 @@ def generate(env):
     # Metaobject builder
     mocBld = Builder(action={}, prefix={}, suffix={})
     for h in header_extensions:
-        act = SCons.Action.CommandGeneratorAction(__moc_generator_from_h, {})    
+        act = SCons.Action.CommandGeneratorAction(__moc_generator_from_h, {'cmdstr':'$QT5_MOCCOMSTR'})    
         mocBld.add_action(h, act)
         mocBld.prefix[h] = '$QT5_MOCHPREFIX'
         mocBld.suffix[h] = '$QT5_MOCHSUFFIX'
     for cxx in cxx_suffixes:
-        act = SCons.Action.CommandGeneratorAction(__moc_generator_from_cxx, {})    
+        act = SCons.Action.CommandGeneratorAction(__moc_generator_from_cxx, {'cmdstr':'$QT5_MOCCOMSTR'})    
         mocBld.add_action(cxx, act)
         mocBld.prefix[cxx] = '$QT5_MOCCXXPREFIX'
         mocBld.suffix[cxx] = '$QT5_MOCCXXSUFFIX'
@@ -804,12 +804,12 @@ def generate(env):
     # (Strategy #1 for qtsolutions)
     xMocBld = Builder(action={}, prefix={}, suffix={})
     for h in header_extensions:
-        act = SCons.Action.CommandGeneratorAction(__mocx_generator_from_h, {})
+        act = SCons.Action.CommandGeneratorAction(__mocx_generator_from_h, {'cmdstr':'$QT5_MOCCOMSTR'})
         xMocBld.add_action(h, act)
         xMocBld.prefix[h] = '$QT5_XMOCHPREFIX'
         xMocBld.suffix[h] = '$QT5_XMOCHSUFFIX'
     for cxx in cxx_suffixes:
-        act = SCons.Action.CommandGeneratorAction(__mocx_generator_from_cxx, {})    
+        act = SCons.Action.CommandGeneratorAction(__mocx_generator_from_cxx, {'cmdstr':'$QT5_MOCCOMSTR'})    
         xMocBld.add_action(cxx, act)
         xMocBld.prefix[cxx] = '$QT5_XMOCCXXPREFIX'
         xMocBld.suffix[cxx] = '$QT5_XMOCCXXSUFFIX'
@@ -818,7 +818,7 @@ def generate(env):
     # Add the Qrc5 action to the CXX file builder (registers the
     # *.qrc extension with the Environment)     
     cfile_builder, cxxfile_builder = SCons.Tool.createCFileBuilders(env)
-    qrc_act = SCons.Action.CommandGeneratorAction(__qrc_generator, {})
+    qrc_act = SCons.Action.CommandGeneratorAction(__qrc_generator, {'cmdstr':'$QT5_QRCCOMSTR'})
     cxxfile_builder.add_action('$QT5_QRCSUFFIX', qrc_act)    
     cxxfile_builder.add_emitter('$QT5_QRCSUFFIX', __qrc_emitter)    
 
