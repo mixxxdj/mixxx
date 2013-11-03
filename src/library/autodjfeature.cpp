@@ -115,7 +115,7 @@ void AutoDJFeature::activate() {
 }
 
 // Must be called from Main thread
-bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,

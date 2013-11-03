@@ -252,7 +252,7 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
 }
 
 bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
-                              QWidget* pSource) {
+                              QObject* pSource) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     bool result = false;
     if (index.isValid()) {

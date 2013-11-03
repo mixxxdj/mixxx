@@ -18,29 +18,29 @@
 #define ENGINEFLANGER_H
 
 #include <QMap>
+#include <QSharedPointer>
 
 #include "engineobject.h"
 
 class ControlPotmeter;
 class ControlPushButton;
+class EngineFlangerControls;
 
 const int max_delay = 5000;
 
-class EngineFlanger : public EngineObject
-{
-public:
+class EngineFlanger : public EngineObject {
+  public:
     EngineFlanger(const char *group);
     ~EngineFlanger();
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
-private:
-    ControlObject *potmeterDepth, *potmeterDelay, *potmeterLFOperiod;
-    ControlPushButton* flangerEnable;
-    CSAMPLE *delay_buffer;
-    int  LFOamplitude;
-    int average_delay_length;
-    int time;
-    FLOAT_TYPE delay;
-    int delay_pos;
+  private:
+    ControlPushButton* m_pFlangerEnable;
+    CSAMPLE *m_pDelay_buffer;
+    int  m_LFOamplitude;
+    int m_average_delay_length;
+    int m_time;
+    int m_delay_pos;
+    QSharedPointer<EngineFlangerControls> m_pControls;
 };
 
 #endif

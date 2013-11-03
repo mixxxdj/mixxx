@@ -553,7 +553,7 @@ bool EngineShoutcast::metaDataHasChanged() {
 
     m_iMetaDataLife = 0;
 
-    pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     if (!pTrack)
         return false;
 

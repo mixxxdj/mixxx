@@ -21,6 +21,7 @@
 #include <QDoubleSpinBox>
 #include <QWidget>
 #include <QLocale>
+#include <QDesktopWidget>
 
 #include "dlgprefcontrols.h"
 #include "qcombobox.h"
@@ -51,27 +52,27 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
     setupUi(this);
 
-    for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
+    for (unsigned int i = 0; i < PlayerManager::numDecks(); ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_rateControls.push_back(new ControlObjectThreadMain(
+        m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlObjectThreadMain(
+        m_rateRangeControls.push_back(new ControlObjectThread(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlObjectThreadMain(
+        m_rateDirControls.push_back(new ControlObjectThread(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlObjectThreadMain(
+        m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
     }
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         QString group = PlayerManager::groupForSampler(i);
-        m_rateControls.push_back(new ControlObjectThreadMain(
+        m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlObjectThreadMain(
+        m_rateRangeControls.push_back(new ControlObjectThread(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlObjectThreadMain(
+        m_rateDirControls.push_back(new ControlObjectThread(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlObjectThreadMain(
+        m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
     }
 
@@ -327,17 +328,17 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 DlgPrefControls::~DlgPrefControls()
 {
     delete m_pControlPositionDisplay;
-    
-    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+
+    foreach (ControlObjectThread* pControl, m_rateControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+    foreach (ControlObjectThread* pControl, m_rateDirControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+    foreach (ControlObjectThread* pControl, m_cueControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+    foreach (ControlObjectThread* pControl, m_rateRangeControls) {
         delete pControl;
     }
 }
@@ -417,12 +418,12 @@ void DlgPrefControls::slotSetRateRange(int pos)
         range = 0.08f;
 
     // Set rate range for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+    foreach (ControlObjectThread* pControl, m_rateRangeControls) {
         pControl->slotSet(range);
     }
 
     // Reset rate for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+    foreach (ControlObjectThread* pControl, m_rateControls) {
         pControl->slotSet(0);
     }
 }
@@ -434,7 +435,7 @@ void DlgPrefControls::slotSetRateDir(int index)
         dir = -1.;
 
     // Set rate direction for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+    foreach (ControlObjectThread* pControl, m_rateDirControls) {
         pControl->slotSet(dir);
     }
 }
@@ -450,7 +451,7 @@ void DlgPrefControls::slotSetCueDefault(int)
     m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(cueIndex));
 
     // Set cue behavior for every group
-    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+    foreach (ControlObjectThread* pControl, m_cueControls) {
         pControl->slotSet(cueIndex);
     }
 }

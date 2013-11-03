@@ -139,7 +139,7 @@ void AnalysisFeature::cleanupAnalyser() {
 }
 
 // Must be called from Main thread
-bool AnalysisFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {

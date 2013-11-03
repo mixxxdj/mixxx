@@ -190,7 +190,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
 }
 
 // Must be called from Main thread
-bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
     } else {

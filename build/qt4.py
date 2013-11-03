@@ -388,7 +388,18 @@ def enable_modules(self, modules, debug=False) :
 		'QtDBUS',
 		'QtScript',
 		'QtWebKit',
-		'QtXmlPatterns'
+		'QtXmlPatterns',
+		'Qt5Core',
+		'Qt5Gui',
+		'Qt5OpenGL',
+		'Qt5Xml',
+		'Qt5Svg',
+		'Qt5Sql',
+		'Qt5Script',
+		'Qt5XmlPatterns',
+		'Qt5Network',
+		'Qt5Widgets',
+		'Qt5Concurrent'
 		]
 	pclessModules = [
 		'QtUiTools',
@@ -457,6 +468,3 @@ def enable_modules(self, modules, debug=False) :
 
 def exists(env):
 	return _detect(env)
-
-
-

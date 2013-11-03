@@ -1,14 +1,16 @@
-#include <QDebug>
-#include <QModelIndexList>
-#include <QModelIndex>
+#include "library/librarycontrol.h"
+
+#include <QApplication>
 #include <QItemSelectionModel>
+#include <QModelIndex>
+#include <QModelIndexList>
+#include <QtDebug>
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "playermanager.h"
 #include "widget/wlibrary.h"
 #include "widget/wlibrarysidebar.h"
-#include "library/librarycontrol.h"
 #include "library/libraryview.h"
 #include "util/container.h"
 
@@ -48,9 +50,9 @@ LibraryControl::LibraryControl(QObject* pParent)
         : QObject(pParent),
           m_pLibraryWidget(NULL),
           m_pSidebarWidget(NULL),
-          m_numDecks(ConfigKey("[Master]", "num_decks")),
-          m_numSamplers(ConfigKey("[Master]", "num_samplers")),
-          m_numPreviewDecks(ConfigKey("[Master]", "num_preview_decks")) {
+          m_numDecks("[Master]", "num_decks"),
+          m_numSamplers("[Master]", "num_samplers"),
+          m_numPreviewDecks("[Master]", "num_preview_decks") {
 
     slotNumDecksChanged(m_numDecks.get());
     slotNumSamplersChanged(m_numSamplers.get());

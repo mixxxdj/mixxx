@@ -92,7 +92,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
 // Must be called from Main thread
 bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                      QWidget *pSource){
+                                      QObject* pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     const QString playlistName = index.data().toString();
     //m_playlistDao.appendTrackToPlaylist(url.toLocalFile(), playlistId);
@@ -103,7 +103,21 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         // system path is QUrl::toLocalFile(). This is the second time we have
         // flip-flopped on this, but I think toLocalFile() should work in any
         // case. toString() absolutely does not work when you pass the result to a
-        files.append(url.toLocalFile());
+        if (url.toString().endsWith(".m3u") || url.toString().endsWith(".m3u8")) {
+            QScopedPointer<ParserM3u> playlist_parser(new ParserM3u());
+            QList<QString> track_list = playlist_parser->parse(url.toLocalFile());
+            for (int i = 0; i < track_list.size(); i++) {
+                files.append(track_list.at(i));
+            }
+        } else if (url.toString().endsWith(".pls")) {
+            QScopedPointer<ParserPls> playlist_parser(new ParserPls());
+            QList<QString> track_list = playlist_parser->parse(url.toLocalFile());
+            for (int i = 0; i < track_list.size(); i++) {
+                files.append(track_list.at(i));
+            }
+        } else {
+            files.append(url.toLocalFile());
+        }
     }
 
     bool result = false;
@@ -144,7 +158,9 @@ bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     bool locked = m_playlistDao.isPlaylistLocked(playlistId);
 
     QFileInfo file(url.toLocalFile());
-    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
+    bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName()) ||
+            file.fileName().endsWith(".m3u") || file.fileName().endsWith(".m3u8") ||
+            file.fileName().endsWith(".pls");
     return !locked && formatSupported;
 }
 

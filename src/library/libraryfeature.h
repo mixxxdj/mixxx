@@ -31,7 +31,7 @@ class LibraryFeature : public QObject {
     virtual QIcon getIcon() = 0;
 
     // Must be called from Main thread
-    virtual bool dropAccept(QList<QUrl> urls, QWidget *pSource) {
+    virtual bool dropAccept(QList<QUrl> urls, QObject* pSource) {
         Q_UNUSED(urls);
         Q_UNUSED(pSource);
         return false;
@@ -39,7 +39,7 @@ class LibraryFeature : public QObject {
 
     // Must be called from Main thread
     virtual bool dropAcceptChild(const QModelIndex& index,
-                                 QList<QUrl> urls, QWidget *pSource) {
+                                 QList<QUrl> urls, QObject* pSource) {
         Q_UNUSED(index);
         Q_UNUSED(urls);
         Q_UNUSED(pSource);
@@ -89,9 +89,9 @@ class LibraryFeature : public QObject {
     void restoreSearch(const QString&);
     // emit this signal before you parse a large music collection, e.g., iTunes, Traktor.
     void featureIsLoading(LibraryFeature*);
-    // emit this signal if the foreign music collection has been imported/parsed. 
+    // emit this signal if the foreign music collection has been imported/parsed.
     void featureLoadingFinished(LibraryFeature*s);
-    // emit this signal to select pFeature 
+    // emit this signal to select pFeature
     void featureSelect(LibraryFeature* pFeature, const QModelIndex& index);
 
 };

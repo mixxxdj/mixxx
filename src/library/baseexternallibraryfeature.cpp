@@ -1,4 +1,7 @@
 #include "library/baseexternallibraryfeature.h"
+
+#include <QMenu>
+
 #include "library/basesqltablemodel.h"
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
@@ -166,5 +169,4 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         }
     }, __PRETTY_FUNCTION__);
 }
-
 

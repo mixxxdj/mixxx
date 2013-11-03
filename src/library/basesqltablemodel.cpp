@@ -34,9 +34,9 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
     m_bDirty = true;
     m_iSortColumn = 0;
     m_eSortOrder = Qt::AscendingOrder;
-    connect(&PlayerInfo::Instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
+    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
             this, SLOT(trackLoaded(QString, TrackPointer)));
-    trackLoaded(m_previewDeckGroup, PlayerInfo::Instance().getTrackInfo(m_previewDeckGroup));
+    trackLoaded(m_previewDeckGroup, PlayerInfo::instance().getTrackInfo(m_previewDeckGroup));
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {

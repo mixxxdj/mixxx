@@ -70,7 +70,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pCOShufflePlaylist = new ControlPushButton(
             ConfigKey("[AutoDJ]", "shuffle_playlist"));
-    m_pCOTShufflePlaylist = new ControlObjectThreadMain(m_pCOShufflePlaylist->getKey());
+    m_pCOTShufflePlaylist = new ControlObjectThread(m_pCOShufflePlaylist->getKey());
     connect(m_pCOTShufflePlaylist, SIGNAL(valueChanged(double)),
             this, SLOT(shufflePlaylist(double)));
     connect(pushButtonShuffle, SIGNAL(clicked(bool)),
@@ -78,7 +78,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pCOSkipNext = new ControlPushButton(
             ConfigKey("[AutoDJ]", "skip_next"));
-    m_pCOTSkipNext = new ControlObjectThreadMain(m_pCOSkipNext->getKey());
+    m_pCOTSkipNext = new ControlObjectThread(m_pCOSkipNext->getKey());
     connect(m_pCOTSkipNext, SIGNAL(valueChanged(double)),
             this, SLOT(skipNext(double)));
     connect(pushButtonSkipNext, SIGNAL(clicked(bool)),
@@ -94,7 +94,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 
     m_pCOFadeNow = new ControlPushButton(
             ConfigKey("[AutoDJ]", "fade_now"));
-    m_pCOTFadeNow = new ControlObjectThreadMain(m_pCOFadeNow->getKey());
+    m_pCOTFadeNow = new ControlObjectThread(m_pCOFadeNow->getKey());
     connect(m_pCOTFadeNow, SIGNAL(valueChanged(double)),
             this, SLOT(fadeNow(double)));
     connect(pushButtonFadeNow, SIGNAL(clicked(bool)),
@@ -109,21 +109,21 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pCOEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));
     m_pCOEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
-    m_pCOTEnabledAutoDJ = new ControlObjectThreadMain(m_pCOEnabledAutoDJ->getKey());
+    m_pCOTEnabledAutoDJ = new ControlObjectThread(m_pCOEnabledAutoDJ->getKey());
     connect(m_pCOTEnabledAutoDJ, SIGNAL(valueChanged(double)),
             this, SLOT(enableAutoDJCo(double)));
 
     // playposition is from -0.14 to + 1.14
-    m_pCOPlayPos1 = new ControlObjectThreadMain("[Channel1]", "playposition");
-    m_pCOPlayPos2 = new ControlObjectThreadMain("[Channel2]", "playposition");
-    m_pCOPlay1 = new ControlObjectThreadMain("[Channel1]", "play");
-    m_pCOPlay2 = new ControlObjectThreadMain("[Channel2]", "play");
-    m_pCOPlay1Fb = new ControlObjectThreadMain("[Channel1]", "play");
-    m_pCOPlay2Fb = new ControlObjectThreadMain("[Channel2]", "play");
-    m_pCORepeat1 = new ControlObjectThreadMain("[Channel1]", "repeat");
-    m_pCORepeat2 = new ControlObjectThreadMain("[Channel2]", "repeat");
-    m_pCOCrossfader = new ControlObjectThreadMain("[Master]", "crossfader");
-    m_pCOCrossfaderReverse = new ControlObjectThreadMain("[Mixer Profile]", "xFaderReverse");
+    m_pCOPlayPos1 = new ControlObjectThread("[Channel1]", "playposition");
+    m_pCOPlayPos2 = new ControlObjectThread("[Channel2]", "playposition");
+    m_pCOPlay1 = new ControlObjectThread("[Channel1]", "play");
+    m_pCOPlay2 = new ControlObjectThread("[Channel2]", "play");
+    m_pCOPlay1Fb = new ControlObjectThread("[Channel1]", "play");
+    m_pCOPlay2Fb = new ControlObjectThread("[Channel2]", "play");
+    m_pCORepeat1 = new ControlObjectThread("[Channel1]", "repeat");
+    m_pCORepeat2 = new ControlObjectThread("[Channel2]", "repeat");
+    m_pCOCrossfader = new ControlObjectThread("[Master]", "crossfader");
+    m_pCOCrossfaderReverse = new ControlObjectThread("[Mixer Profile]", "xFaderReverse");
 
     QString str_autoDjTransition = m_pConfig->getValueString(
         ConfigKey(CONFIG_KEY, kTransitionPreferenceName));
@@ -595,7 +595,7 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     }
 
     // Get loaded track
-    loadedTrack = PlayerInfo::Instance().getTrackInfo(group);
+    loadedTrack = PlayerInfo::instance().getTrackInfo(group);
     if (loadedTrack) {
         loadedId = loadedTrack->getId();
     }
@@ -623,7 +623,7 @@ void DlgAutoDJ::player1PlayChanged(double value) {
     //qDebug() << "player1PlayChanged(" << value << ")";
     if (value == 1.0 && m_eState == ADJ_IDLE) {
         TrackPointer loadedTrack =
-                PlayerInfo::Instance().getTrackInfo("[Channel1]");
+                PlayerInfo::instance().getTrackInfo("[Channel1]");
         if (loadedTrack) {
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;
@@ -655,7 +655,7 @@ void DlgAutoDJ::player2PlayChanged(double value) {
     //qDebug() << "player2PlayChanged(" << value << ")";
     if (value == 1.0f && m_eState == ADJ_IDLE) {
         TrackPointer loadedTrack =
-                PlayerInfo::Instance().getTrackInfo("[Channel2]");
+                PlayerInfo::instance().getTrackInfo("[Channel2]");
         if (loadedTrack) {
             int TrackDuration = loadedTrack->getDuration();
             qDebug() << "TrackDuration = " << TrackDuration;

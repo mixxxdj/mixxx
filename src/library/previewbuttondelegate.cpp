@@ -17,7 +17,7 @@ PreviewButtonDelegate::PreviewButtonDelegate(TrackCollection *pTrackCollection, 
           m_pButton(NULL),
           m_isOneCellInEditMode(false),
           m_column(column) {
-    m_pPreviewDeckPlay = new ControlObjectThreadMain(
+    m_pPreviewDeckPlay = new ControlObjectThread(
             PlayerManager::groupForPreviewDeck(0), "play");
     connect(m_pPreviewDeckPlay, SIGNAL(valueChanged(double)),
             this, SLOT(previewDeckPlayChanged(double)));
@@ -152,7 +152,7 @@ void PreviewButtonDelegate::buttonClicked() {
     }
 
     QString group = PlayerManager::groupForPreviewDeck(0);
-    TrackPointer pOldTrack = PlayerInfo::Instance().getTrackInfo(group);
+    TrackPointer pOldTrack = PlayerInfo::instance().getTrackInfo(group);
     bool playing = m_pPreviewDeckPlay->get() > 0.0;
 
     TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
@@ -175,7 +175,7 @@ void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
         }
 
         QString group = PlayerManager::groupForPreviewDeck(0);
-        TrackPointer pPreviewTrack = PlayerInfo::Instance().getTrackInfo(group);
+        TrackPointer pPreviewTrack = PlayerInfo::instance().getTrackInfo(group);
         TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);
         if (pTrack && pTrack == pPreviewTrack) {
             emit(buttonSetChecked(v > 0.0));

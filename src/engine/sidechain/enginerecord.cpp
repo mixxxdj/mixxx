@@ -95,7 +95,7 @@ bool EngineRecord::metaDataHasChanged()
     }
     m_iMetaDataLife = 0;
 
-    TrackPointer pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    TrackPointer pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     if ( !pTrack )
         return false;
 

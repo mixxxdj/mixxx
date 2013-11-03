@@ -17,8 +17,8 @@ class TrackCollection;
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent, 
-                 TrackCollection* pTrackCollection, 
+    CrateFeature(QObject* parent,
+                 TrackCollection* pTrackCollection,
                  ConfigObject<ConfigValue>* pConfig);
     virtual ~CrateFeature();
 
@@ -27,7 +27,7 @@ class CrateFeature : public LibraryFeature {
 
     // Must be called from TrackCollection thread
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                         QWidget *pSource);
+                         QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrary* libraryWidget,

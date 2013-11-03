@@ -15,6 +15,7 @@ class WTrackTableView;
 class AnalyserQueue;
 class QSqlTableModel;
 class ControlObjectThreadMain;
+class ControlObjectThread;
 
 class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     Q_OBJECT
@@ -92,20 +93,20 @@ class DlgAutoDJ : public QWidget, public Ui::DlgAutoDJ, public LibraryView {
     float m_fadeDuration1;
     float m_fadeDuration2;
     int m_backUpTransition;
-    ControlObjectThreadMain* m_pCOPlayPos1;
-    ControlObjectThreadMain* m_pCOPlayPos2;
-    ControlObjectThreadMain* m_pCOPlay1;
-    ControlObjectThreadMain* m_pCOPlay2;
-    ControlObjectThreadMain* m_pCOPlay1Fb;
-    ControlObjectThreadMain* m_pCOPlay2Fb;
-    ControlObjectThreadMain* m_pCORepeat1;
-    ControlObjectThreadMain* m_pCORepeat2;
-    ControlObjectThreadMain* m_pCOCrossfader;
-    ControlObjectThreadMain* m_pCOCrossfaderReverse;
-    ControlObjectThreadMain* m_pCOTSkipNext;
-    ControlObjectThreadMain* m_pCOTFadeNow;
-    ControlObjectThreadMain* m_pCOTShufflePlaylist;
-    ControlObjectThreadMain* m_pCOTEnabledAutoDJ;
+    ControlObjectThread* m_pCOPlayPos1;
+    ControlObjectThread* m_pCOPlayPos2;
+    ControlObjectThread* m_pCOPlay1;
+    ControlObjectThread* m_pCOPlay2;
+    ControlObjectThread* m_pCOPlay1Fb;
+    ControlObjectThread* m_pCOPlay2Fb;
+    ControlObjectThread* m_pCORepeat1;
+    ControlObjectThread* m_pCORepeat2;
+    ControlObjectThread* m_pCOCrossfader;
+    ControlObjectThread* m_pCOCrossfaderReverse;
+    ControlObjectThread* m_pCOTSkipNext;
+    ControlObjectThread* m_pCOTFadeNow;
+    ControlObjectThread* m_pCOTShufflePlaylist;
+    ControlObjectThread* m_pCOTEnabledAutoDJ;
     ControlPushButton* m_pCOSkipNext;
     ControlPushButton* m_pCOFadeNow;
     ControlPushButton* m_pCOShufflePlaylist;

@@ -310,7 +310,7 @@ Qt::ItemFlags BrowseTableModel::flags(const QModelIndex &index) const {
 }
 
 bool BrowseTableModel::isTrackInUse(const QString& track_location) const {
-    if (PlayerInfo::Instance().isFileLoaded(track_location)) {
+    if (PlayerInfo::instance().isFileLoaded(track_location)) {
         return true;
     }
 

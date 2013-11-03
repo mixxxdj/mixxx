@@ -1,5 +1,6 @@
 #include <QtCore>
 #include <QtGui>
+#include <QHeaderView>
 
 #include "library/sidebarmodel.h"
 #include "widget/wlibrarysidebar.h"

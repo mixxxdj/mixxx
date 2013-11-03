@@ -40,6 +40,8 @@
 #include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
 #include "util/timer.h"
+#include "controlobjectslave.h"
+#include "util/compatibility.h"
 
 #ifdef __VINYLCONTROL__
 #include "engine/vinylcontrolcontrol.h"
@@ -176,7 +178,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pRepeat->setButtonMode(ControlPushButton::TOGGLE);
 
     // Sample rate
-    m_pSampleRate = ControlObject::getControl(ConfigKey("[Master]","samplerate"));
+    m_pSampleRate = new ControlObjectSlave("[Master]", "samplerate", this);
 
     m_pTrackSamples = new ControlObject(ConfigKey(m_group, "track_samples"));
     m_pTrackSampleRate = new ControlObject(ConfigKey(m_group, "track_samplerate"));
@@ -499,7 +501,8 @@ void EngineBuffer::slotControlPlayRequest(double v)
     // If no track is currently loaded, turn play off. If a track is loading
     // allow the set since it might apply to a track we are loading due to the
     // asynchrony.
-    if (v > 0.0 && !m_pCurrentTrack && m_iTrackLoading == 0) {
+
+    if (v > 0.0 && !m_pCurrentTrack && deref(m_iTrackLoading) == 0) {
         v = 0.0;
     }
 
@@ -586,7 +589,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     bool bCurBufferPaused = false;
     double rate = 0;
 
-    bool bTrackLoading = m_iTrackLoading != 0;
+    bool bTrackLoading = deref(m_iTrackLoading) != 0;
     if (!bTrackLoading && m_pause.tryLock()) {
         ScopedTimer t("EngineBuffer::process_pauselock");
         float sr = m_pSampleRate->get();
@@ -598,7 +601,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         bool paused = m_playButton->get() != 0.0f ? false : true;
 
-        bool is_scratching;
+        bool is_scratching = false;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
 

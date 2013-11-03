@@ -9,7 +9,7 @@
 #include "configobject.h"
 
 class ControlObject;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 
 class PropertyBinder : public QObject {
     Q_OBJECT
@@ -22,7 +22,7 @@ class PropertyBinder : public QObject {
   private:
     QString m_propertyName;
     QWidget* m_pWidget;
-    ControlObjectThreadMain* m_pControlThreadMain;
+    ControlObjectThread* m_pControlThread;
     ConfigObject<ConfigValue>* m_pConfig;
 };
 

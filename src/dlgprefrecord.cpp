@@ -17,6 +17,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QFileDialog>
 
 #include "dlgprefrecord.h"
 #include "recording/defs_recording.h"
@@ -37,7 +38,8 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
     setupUi(this);
 
     // See RECORD_* #defines in defs_recording.h
-    m_pRecordControl = new ControlObjectThreadMain(RECORDING_PREF_KEY, "status");
+    m_pRecordControl = new ControlObjectThread(
+            RECORDING_PREF_KEY, "status");
 
     m_pRadioOgg = new QRadioButton("Ogg Vorbis");
     m_pRadioMp3 = new QRadioButton(ENCODING_MP3);
@@ -215,7 +217,7 @@ void DlgPrefRecord::slotRecordPathChange() {
 
 // This function updates/refreshes the contents of this dialog.
 void DlgPrefRecord::slotUpdate() {
-    
+
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     LineEditRecordings->setText(recordingsPath);
 
