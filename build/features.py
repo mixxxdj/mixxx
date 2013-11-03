@@ -662,17 +662,16 @@ class Verbose(Feature):
 
             build.env['QT4_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
             build.env['QT4_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
-            build.env['QT4_RCCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT4_QRCCOMSTR'] = '[QRC] $SOURCE'
             build.env['QT4_UICCOMSTR'] = '[UIC4] $SOURCE'
             build.env['QT4_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
             build.env['QT4_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
 
             build.env['QT5_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
             build.env['QT5_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
-            build.env['QT5_RCCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT5_QRCCOMSTR'] = '[QRC] $SOURCE'
             build.env['QT5_UICCOMSTR'] = '[UIC5] $SOURCE'
-            build.env['QT5_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
-            build.env['QT5_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
+            build.env['QT5_MOCCOMSTR'] = '[MOC] $SOURCE'
 
 class MSVSHacks(Feature):
     """Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable
