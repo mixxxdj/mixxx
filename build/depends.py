@@ -163,6 +163,15 @@ class Qt(Dependence):
                       'windows': 'C:\\qt\\4.6.0'}
 
     @staticmethod
+    def qt5_enabled(build):
+        return int(util.get_flags(build.env, 'qt5', 0))
+
+    @staticmethod
+    def uic(build):
+        qt5 = Qt.qt5_enabled(build)
+        return build.env.Uic5 if qt5 else build.env.Uic4
+
+    @staticmethod
     def find_framework_path(qtdir):
         for d in (os.path.join(qtdir, x) for x in ['', 'Frameworks', 'lib']):
             core = os.path.join(d,'QtCore.framework')
@@ -174,34 +183,37 @@ class Qt(Dependence):
         pass
 
     def configure(self, build, conf):
-        qt5 = int(util.get_flags(build.env, 'qt5', 0))
+        qt5 = Qt.qt5_enabled(build)
         # Emit various Qt defines
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
-        qt_modules = []
+        qt_modules = [
+            'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
+            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
+        ]
+
         if qt5:
             # Enable qt4 support.
             build.env.Append(CPPDEFINES = 'QT_DISABLE_DEPRECATED_BEFORE')
-            qt_modules.extend([
-                'Qt5Core', 'Qt5Gui', 'Qt5OpenGL', 'Qt5Xml', 'Qt5Svg',
-                'Qt5Sql', 'Qt5Script', 'Qt5XmlPatterns', 'Qt5Network',
-                'Qt5Widgets', 'Qt5Concurrent'
-            ])
-        else:
-            qt_modules.extend([
-                'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-                'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
-            ])
+            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
 
         # Enable Qt include paths
         if build.platform_is_linux:
-            if not conf.CheckForPKG('QtCore', '4.6'):
+            if qt5 and not conf.CheckForPKG('Qt5Core', '5.0'):
+                raise Exception('Qt >= 5.0 not found')
+            elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
 
-            #(This hopefully respects our qtdir=blah flag while linking now.)
-            build.env.EnableQt4Modules(qt_modules, debug=False)
+            # This automatically converts QtXXX to Qt5XXX where appropriate.
+            if qt5:
+                build.env.EnableQt5Modules(qt_modules, debug=False)
+            else:
+                build.env.EnableQt4Modules(qt_modules, debug=False)
         elif build.platform_is_bsd:
             build.env.Append(LIBS=qt_modules)
+            include_paths = ['$QTDIR/include/%s' % module
+                             for module in qt_modules]
+            build.env.Append(CPPPATH=include_paths)
         elif build.platform_is_osx:
             qtdir = build.env['QTDIR']
             build.env.Append(
@@ -219,11 +231,12 @@ class Qt(Dependence):
             build.env.Append(CCFLAGS = ['-F%s' % os.path.join(framework_path)])
             build.env.Append(LINKFLAGS = ['-F%s' % os.path.join(framework_path)])
         elif build.platform_is_windows:
-            build.env.Append(LIBPATH=['$QTDIR/lib'])
-            # Use the debug versions of the libs if we are building in debug
-            # mode.
-            build.env.Append(LIBS=[module + 'd4' if build.msvcdebug else '4'
-                                   for module in qt_modules])
+            # This automatically converts QtCore to QtCore[45][d] where
+            # appropriate.
+            if qt5:
+                build.env.EnableQt5Modules(qt_modules, debug=build.msvcdebug)
+            else:
+                build.env.EnableQt4Modules(qt_modules, debug=build.msvcdebug)
 
             # if build.static_dependencies:
                 # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
@@ -245,13 +258,6 @@ class Qt(Dependence):
                 # # QtOpenGL
                 # build.env.Append(LIBS = 'glu32')
                 # build.env.Append(LIBS = 'opengl32')
-
-        # Set Qt include paths for non-OSX
-        if not build.platform_is_osx:
-            include_paths = ['$QTDIR/include/%s' % module
-                             for module in qt_modules]
-            include_paths.append('$QTDIR/include/Qt')
-            build.env.Append(CPPPATH=include_paths)
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
@@ -716,9 +722,7 @@ class MixxxCore(Feature):
                    "util/version.cpp",
                    "util/rlimit.cpp",
 
-                   # Add the QRC file which compiles in some extra resources
-                   # (prefs icons, etc.)
-                   build.env.Qrc('#res/mixxx.qrc')
+                   '#res/mixxx.qrc'
                    ]
 
         proto_args = {
@@ -733,36 +737,35 @@ class MixxxCore(Feature):
                         for proto_source in proto_sources]
         sources.extend(proto_objects)
 
-
         # Uic these guys (they're moc'd automatically after this) - Generates
-        # the code for the QT UI forms
-        build.env.Uic4('dlgpreferencesdlg.ui')
-        build.env.Uic4('dlgprefsounddlg.ui')
-
-        build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
-        build.env.Uic4('controllers/dlgprefmappablecontrollerdlg.ui')
-        build.env.Uic4('controllers/dlgcontrollerlearning.ui')
-        build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
-
-        build.env.Uic4('dlgprefplaylistdlg.ui')
-        build.env.Uic4('dlgprefcontrolsdlg.ui')
-        build.env.Uic4('dlgprefeqdlg.ui')
-        build.env.Uic4('dlgprefcrossfaderdlg.ui')
-        build.env.Uic4('dlgprefreplaygaindlg.ui')
-        build.env.Uic4('dlgprefbeatsdlg.ui')
-        # build.env.Uic4('dlgbpmtapdlg.ui')
-        build.env.Uic4('dlgprefvinyldlg.ui')
-        build.env.Uic4('dlgprefnovinyldlg.ui')
-        build.env.Uic4('dlgprefrecorddlg.ui')
-        build.env.Uic4('dlgaboutdlg.ui')
-        build.env.Uic4('dlgtagfetcher.ui')
-        build.env.Uic4('dlgtrackinfo.ui')
-        build.env.Uic4('dlganalysis.ui')
-        build.env.Uic4('dlgautodj.ui')
-        build.env.Uic4('dlgprefsounditem.ui')
-        build.env.Uic4('dlgrecording.ui')
-        build.env.Uic4('dlghidden.ui')
-        build.env.Uic4('dlgmissing.ui')
+        # the code for the QT UI forms.
+        ui_files = [
+            'controllers/dlgcontrollerlearning.ui',
+            'controllers/dlgprefcontrollerdlg.ui',
+            'controllers/dlgprefmappablecontrollerdlg.ui',
+            'controllers/dlgprefnocontrollersdlg.ui',
+            'dlgaboutdlg.ui',
+            'dlganalysis.ui',
+            'dlgautodj.ui',
+            'dlghidden.ui',
+            'dlgmissing.ui',
+            'dlgprefbeatsdlg.ui',
+            'dlgprefcontrolsdlg.ui',
+            'dlgprefcrossfaderdlg.ui',
+            'dlgprefeqdlg.ui',
+            'dlgpreferencesdlg.ui',
+            'dlgprefnovinyldlg.ui',
+            'dlgprefplaylistdlg.ui',
+            'dlgprefrecorddlg.ui',
+            'dlgprefreplaygaindlg.ui',
+            'dlgprefsounddlg.ui',
+            'dlgprefsounditem.ui',
+            'dlgprefvinyldlg.ui',
+            'dlgrecording.ui',
+            'dlgtagfetcher.ui',
+            'dlgtrackinfo.ui',
+        ]
+        map(Qt.uic(build), ui_files)
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such

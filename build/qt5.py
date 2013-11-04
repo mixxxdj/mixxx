@@ -1,7 +1,7 @@
 
-"""SCons.Tool.qt4
+"""SCons.Tool.qt5
 
-Tool-specific initialization for Qt4.
+Tool-specific initialization for Qt5.
 
 There normally shouldn't be any need to import this module directly.
 It will usually be imported through the generic SCons.Tool.Tool()
@@ -10,7 +10,7 @@ selection method.
 """
 
 #
-# Copyright (c) 2001-7,2010 The SCons Foundation
+# Copyright (c) 2001-7,2010,2011,2012 The SCons Foundation
 #
 # Permission is hereby granted, free of charge, to any person obtaining
 # a copy of this software and associated documentation files (the
@@ -42,16 +42,16 @@ import SCons.Scanner
 import SCons.Tool
 import SCons.Util
 
-class ToolQt4Warning(SCons.Warnings.Warning):
+class ToolQt5Warning(SCons.Warnings.Warning):
     pass
 
-class GeneratedMocFileNotIncluded(ToolQt4Warning):
+class GeneratedMocFileNotIncluded(ToolQt5Warning):
     pass
 
-class QtdirNotFound(ToolQt4Warning):
+class QtdirNotFound(ToolQt5Warning):
     pass
 
-SCons.Warnings.enableWarningClass(ToolQt4Warning)
+SCons.Warnings.enableWarningClass(ToolQt5Warning)
 
 try:
     sorted
@@ -142,29 +142,29 @@ class _Automoc:
                        'auto_cpppath' : True,
                        'cpppaths' : []}
         try:
-            if int(env.subst('$QT4_AUTOSCAN')) == 0:
+            if int(env.subst('$QT5_AUTOSCAN')) == 0:
                 moc_options['auto_scan'] = False
         except ValueError:
             pass
         try:
-            moc_options['auto_scan_strategy'] = int(env.subst('$QT4_AUTOSCAN_STRATEGY'))
+            moc_options['auto_scan_strategy'] = int(env.subst('$QT5_AUTOSCAN_STRATEGY'))
         except ValueError:
             pass
         try:
-            moc_options['gobble_comments'] = int(env.subst('$QT4_GOBBLECOMMENTS'))
+            moc_options['gobble_comments'] = int(env.subst('$QT5_GOBBLECOMMENTS'))
         except ValueError:
             pass
         try:
-            moc_options['debug'] = int(env.subst('$QT4_DEBUG'))
+            moc_options['debug'] = int(env.subst('$QT5_DEBUG'))
         except ValueError:
             pass
         try:
-            if int(env.subst('$QT4_AUTOMOC_SCANCPPPATH')) == 0:
+            if int(env.subst('$QT5_AUTOMOC_SCANCPPPATH')) == 0:
                 moc_options['auto_cpppath'] = False
         except ValueError:
             pass
         if moc_options['auto_cpppath']:
-            paths = env.get('QT4_AUTOMOC_CPPPATH', [])
+            paths = env.get('QT5_AUTOMOC_CPPPATH', [])
             if not paths:
                 paths = env.get('CPPPATH', [])
             moc_options['cpppaths'].extend(paths)
@@ -189,7 +189,7 @@ class _Automoc:
             h = find_file(hname, [cpp.get_dir()]+moc_options['cpppaths'], env.File)
             if h:
                 if moc_options['debug']:
-                    print "scons: qt4: Scanning '%s' (header of '%s')" % (str(h), str(cpp))
+                    print "scons: qt5: Scanning '%s' (header of '%s')" % (str(h), str(cpp))
                 h_contents = h.get_contents()
                 if moc_options['gobble_comments']:
                     h_contents = self.ccomment.sub('', h_contents)
@@ -197,32 +197,32 @@ class _Automoc:
                 h_contents = self.literal_qobject.sub('""', h_contents)
                 break
         if not h and moc_options['debug']:
-            print "scons: qt4: no header for '%s'." % (str(cpp))
+            print "scons: qt5: no header for '%s'." % (str(cpp))
         if h and self.qo_search.search(h_contents):
             # h file with the Q_OBJECT macro found -> add moc_cpp
-            moc_cpp = env.Moc4(h)
+            moc_cpp = env.Moc5(h)
             if moc_options['debug']:
-                print "scons: qt4: found Q_OBJECT macro in '%s', moc'ing to '%s'" % (str(h), str(moc_cpp))
+                print "scons: qt5: found Q_OBJECT macro in '%s', moc'ing to '%s'" % (str(h), str(moc_cpp))
             
             # Now, check whether the corresponding CPP file
             # includes the moc'ed output directly...
             inc_moc_cpp = r'^\s*#\s*include\s+"%s"' % str(moc_cpp[0])
             if cpp and re.search(inc_moc_cpp, cpp_contents, re.M):
                 if moc_options['debug']:
-                    print "scons: qt4: CXX file '%s' directly includes the moc'ed output '%s', no compiling required" % (str(cpp), str(moc_cpp))
+                    print "scons: qt5: CXX file '%s' directly includes the moc'ed output '%s', no compiling required" % (str(cpp), str(moc_cpp))
                 env.Depends(cpp, moc_cpp)
             else:
                 moc_o = self.objBuilder(moc_cpp)
                 if moc_options['debug']:
-                    print "scons: qt4: compiling '%s' to '%s'" % (str(cpp), str(moc_o))
+                    print "scons: qt5: compiling '%s' to '%s'" % (str(cpp), str(moc_o))
                 out_sources.extend(moc_o)
         if cpp and self.qo_search.search(cpp_contents):
             # cpp file with Q_OBJECT macro found -> add moc
             # (to be included in cpp)
-            moc = env.Moc4(cpp)
+            moc = env.Moc5(cpp)
             env.Ignore(moc, moc)
             if moc_options['debug']:
-                print "scons: qt4: found Q_OBJECT macro in '%s', moc'ing to '%s'" % (str(cpp), str(moc))
+                print "scons: qt5: found Q_OBJECT macro in '%s', moc'ing to '%s'" % (str(cpp), str(moc))
 
     def __automoc_strategy_include_driven(self, env, moc_options,
                                           cpp, cpp_contents, out_sources):
@@ -234,12 +234,12 @@ class _Automoc:
         """
         if self.splitext(str(cpp))[1] in cxx_suffixes:
             added = False
-            h_moc = "%s%s%s" % (env.subst('$QT4_XMOCHPREFIX'),
+            h_moc = "%s%s%s" % (env.subst('$QT5_XMOCHPREFIX'),
                                 self.splitext(cpp.name)[0],
-                                env.subst('$QT4_XMOCHSUFFIX'))
-            cxx_moc = "%s%s%s" % (env.subst('$QT4_XMOCCXXPREFIX'),
+                                env.subst('$QT5_XMOCHSUFFIX'))
+            cxx_moc = "%s%s%s" % (env.subst('$QT5_XMOCCXXPREFIX'),
                                   self.splitext(cpp.name)[0],
-                                  env.subst('$QT4_XMOCCXXSUFFIX'))
+                                  env.subst('$QT5_XMOCCXXSUFFIX'))
             inc_h_moc = r'#include\s+"%s"' % h_moc
             inc_cxx_moc = r'#include\s+"%s"' % cxx_moc
             
@@ -257,7 +257,7 @@ class _Automoc:
                     h = find_file(hname, [cpp.get_dir()]+moc_options['cpppaths'], env.File)
                     if h:
                         if moc_options['debug']:
-                            print "scons: qt4: Scanning '%s' (header of '%s')" % (str(h), str(cpp))
+                            print "scons: qt5: Scanning '%s' (header of '%s')" % (str(h), str(cpp))
                         h_contents = h.get_contents()
                         if moc_options['gobble_comments']:
                             h_contents = self.ccomment.sub('', h_contents)
@@ -265,10 +265,10 @@ class _Automoc:
                         h_contents = self.literal_qobject.sub('""', h_contents)
                         break
                 if not h and moc_options['debug']:
-                    print "scons: qt4: no header for '%s'." % (str(cpp))
+                    print "scons: qt5: no header for '%s'." % (str(cpp))
                 if h and self.qo_search.search(h_contents):
                     # h file with the Q_OBJECT macro found -> add moc_cpp
-                    moc_cpp = env.XMoc4(h)
+                    moc_cpp = env.XMoc5(h)
                     env.Ignore(moc_cpp, moc_cpp)
                     added = True
                     # Removing file from list of sources, because it is not to be
@@ -279,22 +279,22 @@ class _Automoc:
                                 out_sources.pop(idx)
                                 break
                     if moc_options['debug']:
-                        print "scons: qt4: found Q_OBJECT macro in '%s', moc'ing to '%s'" % (str(h), str(h_moc))
+                        print "scons: qt5: found Q_OBJECT macro in '%s', moc'ing to '%s'" % (str(h), str(h_moc))
                 else:
                     if moc_options['debug']:
-                        print "scons: qt4: found no Q_OBJECT macro in '%s', but a moc'ed version '%s' gets included in '%s'" % (str(h), inc_h_moc, cpp.name)
+                        print "scons: qt5: found no Q_OBJECT macro in '%s', but a moc'ed version '%s' gets included in '%s'" % (str(h), inc_h_moc, cpp.name)
 
             if cpp and re.search(inc_cxx_moc, cpp_contents):
                 # cpp file with #include directive for a MOCed cxx file found -> add moc
                 if self.qo_search.search(cpp_contents):
-                    moc = env.XMoc4(target=cxx_moc, source=cpp)
+                    moc = env.XMoc5(target=cxx_moc, source=cpp)
                     env.Ignore(moc, moc)
                     added = True
                     if moc_options['debug']:
-                        print "scons: qt4: found Q_OBJECT macro in '%s', moc'ing to '%s'" % (str(cpp), str(moc))
+                        print "scons: qt5: found Q_OBJECT macro in '%s', moc'ing to '%s'" % (str(cpp), str(moc))
                 else:
                     if moc_options['debug']:
-                        print "scons: qt4: found no Q_OBJECT macro in '%s', although a moc'ed version '%s' of itself gets included" % (cpp.name, inc_cxx_moc)
+                        print "scons: qt5: found no Q_OBJECT macro in '%s', although a moc'ed version '%s' of itself gets included" % (cpp.name, inc_cxx_moc)
 
             if not added:
                 # Fallback to default Automoc strategy (Q_OBJECT driven)
@@ -304,7 +304,7 @@ class _Automoc:
     def __call__(self, target, source, env):
         """
         Smart autoscan function. Gets the list of objects for the Program
-        or Lib. Adds objects and builders for the special qt4 files.
+        or Lib. Adds objects and builders for the special qt5 files.
         """
         moc_options = self.create_automoc_options(env)
         
@@ -315,10 +315,10 @@ class _Automoc:
         # The following is kind of hacky to get builders working properly (FIXME)
         objBuilderEnv = self.objBuilder.env
         self.objBuilder.env = env
-        mocBuilderEnv = env.Moc4.env
-        env.Moc4.env = env
-        xMocBuilderEnv = env.XMoc4.env
-        env.XMoc4.env = env
+        mocBuilderEnv = env.Moc5.env
+        env.Moc5.env = env
+        xMocBuilderEnv = env.XMoc5.env
+        env.XMoc5.env = env
         
         # make a deep copy for the result; MocH objects will be appended
         out_sources = source[:]
@@ -327,17 +327,17 @@ class _Automoc:
             if not moc_options['auto_scan']:
                 break
             if isinstance(obj,basestring):  # big kludge!
-                print "scons: qt4: '%s' MAYBE USING AN OLD SCONS VERSION AND NOT CONVERTED TO 'File'. Discarded." % str(obj)
+                print "scons: qt5: '%s' MAYBE USING AN OLD SCONS VERSION AND NOT CONVERTED TO 'File'. Discarded." % str(obj)
                 continue
             if not obj.has_builder():
                 # binary obj file provided
                 if moc_options['debug']:
-                    print "scons: qt4: '%s' seems to be a binary. Discarded." % str(obj)
+                    print "scons: qt5: '%s' seems to be a binary. Discarded." % str(obj)
                 continue
             cpp = obj.sources[0]
             if not self.splitext(str(cpp))[1] in cxx_suffixes:
                 if moc_options['debug']:
-                    print "scons: qt4: '%s' is no cxx file. Discarded." % str(cpp) 
+                    print "scons: qt5: '%s' is no cxx file. Discarded." % str(cpp) 
                 # c or fortran source
                 continue
             try:
@@ -359,8 +359,8 @@ class _Automoc:
 
         # restore the original env attributes (FIXME)
         self.objBuilder.env = objBuilderEnv
-        env.Moc4.env = mocBuilderEnv
-        env.XMoc4.env = xMocBuilderEnv
+        env.Moc5.env = mocBuilderEnv
+        env.XMoc5.env = xMocBuilderEnv
 
         # We return the set of source entries as sorted sequence, else
         # the order might accidentally change from one build to another
@@ -373,31 +373,31 @@ AutomocShared = _Automoc('SharedObject')
 AutomocStatic = _Automoc('StaticObject')
 
 def _detect(env):
-    """Not really safe, but fast method to detect the Qt4 library"""
-    # TODO: check output of "moc -v" for correct version >= 4.0.0
-    try: return env['QT4DIR']
+    """Not really safe, but fast method to detect the Qt5 library"""
+    # TODO: check output of "moc -v" for correct version >= 5.0.0
+    try: return env['QT5DIR']
     except KeyError: pass
 
     try: return env['QTDIR']
     except KeyError: pass
 
-    try: return os.environ['QT4DIR']
+    try: return os.environ['QT5DIR']
     except KeyError: pass
 
     try: return os.environ['QTDIR']
     except KeyError: pass
 
-    moc = env.WhereIs('moc-qt4') or env.WhereIs('moc4') or env.WhereIs('moc')
+    moc = env.WhereIs('moc-qt5') or env.WhereIs('moc5') or env.WhereIs('moc')
     if moc:
-        QT4DIR = os.path.dirname(os.path.dirname(moc))
+        QT5DIR = os.path.dirname(os.path.dirname(moc))
         SCons.Warnings.warn(
             QtdirNotFound,
-            "QT4DIR variable is not defined, using moc executable as a hint (QT4DIR=%s)" % QT4DIR)
-        return QT4DIR
+            "QT5DIR variable is not defined, using moc executable as a hint (QT5DIR=%s)" % QT5DIR)
+        return QT5DIR
 
     raise SCons.Errors.StopError(
         QtdirNotFound,
-        "Could not detect Qt 4 installation")
+        "Could not detect Qt 5 installation")
     return None
 
 
@@ -450,8 +450,8 @@ def __qrc_emitter(target, source, env):
     if sourceBase:
         sHead, sTail = os.path.split(sourceBase)
 
-    t = __qrc_path(sHead, env.subst('$QT4_QRCCXXPREFIX'),
-                   sTail, env.subst('$QT4_QRCCXXSUFFIX'))
+    t = __qrc_path(sHead, env.subst('$QT5_QRCCXXPREFIX'),
+                   sTail, env.subst('$QT5_QRCCXXSUFFIX'))
 
     return t, source
 
@@ -461,115 +461,113 @@ def __qrc_emitter(target, source, env):
 def __moc_generator_from_h(source, target, env, for_signature):
     pass_defines = False
     try:
-        if int(env.subst('$QT4_CPPDEFINES_PASSTOMOC')) == 1:
+        if int(env.subst('$QT5_CPPDEFINES_PASSTOMOC')) == 1:
             pass_defines = True
     except ValueError:
         pass
     
     if pass_defines:
-        return '$QT4_MOC $QT4_MOCDEFINES $QT4_MOCFROMHFLAGS $QT4_MOCINCFLAGS -o $TARGET $SOURCE'
+        return '$QT5_MOC $QT5_MOCDEFINES $QT5_MOCFROMHFLAGS $QT5_MOCINCFLAGS -o $TARGET $SOURCE'
     else:
-        return '$QT4_MOC $QT4_MOCFROMHFLAGS $QT4_MOCINCFLAGS -o $TARGET $SOURCE'
+        return '$QT5_MOC $QT5_MOCFROMHFLAGS $QT5_MOCINCFLAGS -o $TARGET $SOURCE'
 
 def __moc_generator_from_cxx(source, target, env, for_signature):
     pass_defines = False
     try:
-        if int(env.subst('$QT4_CPPDEFINES_PASSTOMOC')) == 1:
+        if int(env.subst('$QT5_CPPDEFINES_PASSTOMOC')) == 1:
             pass_defines = True
     except ValueError:
         pass
     
     if pass_defines:
-        return ['$QT4_MOC $QT4_MOCDEFINES $QT4_MOCFROMCXXFLAGS $QT4_MOCINCFLAGS -o $TARGET $SOURCE',
+        return ['$QT5_MOC $QT5_MOCDEFINES $QT5_MOCFROMCXXFLAGS $QT5_MOCINCFLAGS -o $TARGET $SOURCE',
                 SCons.Action.Action(checkMocIncluded,None)]
     else:
-        return ['$QT4_MOC $QT4_MOCFROMCXXFLAGS $QT4_MOCINCFLAGS -o $TARGET $SOURCE',
+        return ['$QT5_MOC $QT5_MOCFROMCXXFLAGS $QT5_MOCINCFLAGS -o $TARGET $SOURCE',
                 SCons.Action.Action(checkMocIncluded,None)]
 
 def __mocx_generator_from_h(source, target, env, for_signature):
     pass_defines = False
     try:
-        if int(env.subst('$QT4_CPPDEFINES_PASSTOMOC')) == 1:
+        if int(env.subst('$QT5_CPPDEFINES_PASSTOMOC')) == 1:
             pass_defines = True
     except ValueError:
         pass
     
     if pass_defines:
-        return '$QT4_MOC $QT4_MOCDEFINES $QT4_MOCFROMHFLAGS $QT4_MOCINCFLAGS -o $TARGET $SOURCE'
+        return '$QT5_MOC $QT5_MOCDEFINES $QT5_MOCFROMHFLAGS $QT5_MOCINCFLAGS -o $TARGET $SOURCE'
     else:
-        return '$QT4_MOC $QT4_MOCFROMHFLAGS $QT4_MOCINCFLAGS -o $TARGET $SOURCE'
+        return '$QT5_MOC $QT5_MOCFROMHFLAGS $QT5_MOCINCFLAGS -o $TARGET $SOURCE'
 
 def __mocx_generator_from_cxx(source, target, env, for_signature):
     pass_defines = False
     try:
-        if int(env.subst('$QT4_CPPDEFINES_PASSTOMOC')) == 1:
+        if int(env.subst('$QT5_CPPDEFINES_PASSTOMOC')) == 1:
             pass_defines = True
     except ValueError:
         pass
     
     if pass_defines:
-        return ['$QT4_MOC $QT4_MOCDEFINES $QT4_MOCFROMCXXFLAGS $QT4_MOCINCFLAGS -o $TARGET $SOURCE',
+        return ['$QT5_MOC $QT5_MOCDEFINES $QT5_MOCFROMCXXFLAGS $QT5_MOCINCFLAGS -o $TARGET $SOURCE',
                 SCons.Action.Action(checkMocIncluded,None)]
     else:
-        return ['$QT4_MOC $QT4_MOCFROMCXXFLAGS $QT4_MOCINCFLAGS -o $TARGET $SOURCE',
+        return ['$QT5_MOC $QT5_MOCFROMCXXFLAGS $QT5_MOCINCFLAGS -o $TARGET $SOURCE',
                 SCons.Action.Action(checkMocIncluded,None)]
 
 def __qrc_generator(source, target, env, for_signature):
     name_defined = False
     try:
-        if env.subst('$QT4_QRCFLAGS').find('-name') >= 0:
+        if env.subst('$QT5_QRCFLAGS').find('-name') >= 0:
             name_defined = True
     except ValueError:
         pass
     
     if name_defined:
-        return '$QT4_RCC $QT4_QRCFLAGS $SOURCE -o $TARGET'
+        return '$QT5_RCC $QT5_QRCFLAGS $SOURCE -o $TARGET'
     else:
-        qrc_suffix = env.subst('$QT4_QRCSUFFIX')
+        qrc_suffix = env.subst('$QT5_QRCSUFFIX')
         src = str(source[0])
         head, tail = os.path.split(src)
         if tail:
             src = tail
-        qrc_suffix = env.subst('$QT4_QRCSUFFIX')
+        qrc_suffix = env.subst('$QT5_QRCSUFFIX')
         if src.endswith(qrc_suffix):
             qrc_stem = src[:-len(qrc_suffix)]
         else:
             qrc_stem = src
-        return '$QT4_RCC $QT4_QRCFLAGS -name %s $SOURCE -o $TARGET' % qrc_stem
+        return '$QT5_RCC $QT5_QRCFLAGS -name %s $SOURCE -o $TARGET' % qrc_stem
 
 #
 # Builders
 #
 __ts_builder = SCons.Builder.Builder(        
-        action = SCons.Action.Action('$QT4_LUPDATECOM','$QT4_LUPDATECOMSTR'),
+        action = SCons.Action.Action('$QT5_LUPDATECOM','$QT5_LUPDATECOMSTR'),
         suffix = '.ts',
         source_factory = SCons.Node.FS.Entry)
 __qm_builder = SCons.Builder.Builder(
-        action = SCons.Action.Action('$QT4_LRELEASECOM','$QT4_LRELEASECOMSTR'),
+        action = SCons.Action.Action('$QT5_LRELEASECOM','$QT5_LRELEASECOMSTR'),
         src_suffix = '.ts',
         suffix = '.qm')
 __qrc_builder = SCons.Builder.Builder(
-        action = SCons.Action.CommandGeneratorAction(__qrc_generator,
-                                                    {"cmdstr":"$QT4_QRCCOMSTR"}),
+        action = SCons.Action.CommandGeneratorAction(__qrc_generator, {'cmdstr':'$QT5_QRCCOMSTR'}),
         source_scanner = __qrcscanner,
-        src_suffix = '$QT4_QRCSUFFIX',
-        suffix = '$QT4_QRCCXXSUFFIX',
-        prefix = '$QT4_QRCCXXPREFIX',
+        src_suffix = '$QT5_QRCSUFFIX',
+        suffix = '$QT5_QRCCXXSUFFIX',
+        prefix = '$QT5_QRCCXXPREFIX',
         single_source = 1)
 __ex_moc_builder = SCons.Builder.Builder(
-        action = SCons.Action.CommandGeneratorAction(__moc_generator_from_h,
-                                                  {"cmdstr":"$QT4_MOCFROMHCOMSTR"}))
+        action = SCons.Action.CommandGeneratorAction(__moc_generator_from_h, {'cmdstr':'$QT5_MOCCOMSTR'}))
 __ex_uic_builder = SCons.Builder.Builder(
-        action = SCons.Action.Action('$QT4_UICCOM', '$QT4_UICCOMSTR'),
+        action = SCons.Action.Action('$QT5_UICCOM', '$QT5_UICCOMSTR'),
         src_suffix = '.ui')
 
 
 #
 # Wrappers (pseudo-Builders)
 #
-def Ts4(env, target, source=None, *args, **kw):
+def Ts5(env, target, source=None, *args, **kw):
     """
-    A pseudo-Builder wrapper around the LUPDATE executable of Qt4.
+    A pseudo-Builder wrapper around the LUPDATE executable of Qt5.
         lupdate [options] [source-file|path]... -ts ts-files
     """
     if not SCons.Util.is_List(target):
@@ -579,10 +577,10 @@ def Ts4(env, target, source=None, *args, **kw):
     if not SCons.Util.is_List(source):
         source = [source]
 
-    # Check QT4_CLEAN_TS and use NoClean() function
+    # Check QT5_CLEAN_TS and use NoClean() function
     clean_ts = False
     try:
-        if int(env.subst('$QT4_CLEAN_TS')) == 1:
+        if int(env.subst('$QT5_CLEAN_TS')) == 1:
             clean_ts = True
     except ValueError:
         pass
@@ -601,9 +599,9 @@ def Ts4(env, target, source=None, *args, **kw):
 
     return result
 
-def Qm4(env, target, source=None, *args, **kw):
+def Qm5(env, target, source=None, *args, **kw):
     """
-    A pseudo-Builder wrapper around the LRELEASE executable of Qt4.
+    A pseudo-Builder wrapper around the LRELEASE executable of Qt5.
         lrelease [options] ts-files [-qm qm-file]
     """
     if not SCons.Util.is_List(target):
@@ -619,9 +617,9 @@ def Qm4(env, target, source=None, *args, **kw):
 
     return result
 
-def Qrc4(env, target, source=None, *args, **kw):
+def Qrc5(env, target, source=None, *args, **kw):
     """
-    A pseudo-Builder wrapper around the RCC executable of Qt4.
+    A pseudo-Builder wrapper around the RCC executable of Qt5.
         rcc [options] qrc-files -o out-file
     """
     if not SCons.Util.is_List(target):
@@ -637,9 +635,9 @@ def Qrc4(env, target, source=None, *args, **kw):
 
     return result
 
-def ExplicitMoc4(env, target, source, *args, **kw):
+def ExplicitMoc5(env, target, source, *args, **kw):
     """
-    A pseudo-Builder wrapper around the MOC executable of Qt4.
+    A pseudo-Builder wrapper around the MOC executable of Qt5.
         moc [options] <header-file>
     """
     if not SCons.Util.is_List(target):
@@ -654,9 +652,9 @@ def ExplicitMoc4(env, target, source, *args, **kw):
 
     return result
 
-def ExplicitUic4(env, target, source, *args, **kw):
+def ExplicitUic5(env, target, source, *args, **kw):
     """
-    A pseudo-Builder wrapper around the UIC executable of Qt4.
+    A pseudo-Builder wrapper around the UIC executable of Qt5.
         uic [options] <uifile>
     """
     if not SCons.Util.is_List(target):
@@ -671,17 +669,19 @@ def ExplicitUic4(env, target, source, *args, **kw):
     return result
 
 def generate(env):
-    """Add Builders and construction variables for qt4 to an Environment."""
+    """Add Builders and construction variables for qt5 to an Environment."""
 
-    def locateQt4Command(env, command, qtdir) :
-        suffixes = [
-            '-qt4',
-            '-qt4.exe',
-            '4',
-            '4.exe',
-            '',
-            '.exe',
-        ]
+    suffixes = [
+        '-qt5',
+        '-qt5.exe',
+        '5',
+        '5.exe',
+        '',
+        '.exe',
+    ]
+    command_suffixes = ['-qt5', '5', '']
+        
+    def locateQt5Command(env, command, qtdir) :
         triedPaths = []
         for suffix in suffixes :
             fullpath = os.path.join(qtdir,'bin',command + suffix)
@@ -689,144 +689,138 @@ def generate(env):
                 return fullpath
             triedPaths.append(fullpath)
 
-        fullpath = env.Detect([command+'-qt4', command+'4', command])
+        fullpath = env.Detect([command+s for s in command_suffixes])
         if not (fullpath is None) : return fullpath
 
-        raise Exception("Qt4 command '" + command + "' not found. Tried: " + ', '.join(triedPaths))
+        raise Exception("Qt5 command '" + command + "' not found. Tried: " + ', '.join(triedPaths))
 
     CLVar = SCons.Util.CLVar
     Action = SCons.Action.Action
     Builder = SCons.Builder.Builder
 
-    env['QT4DIR']  = _detect(env)
+    env['QT5DIR']  = _detect(env)
     # TODO: 'Replace' should be 'SetDefault'
 #    env.SetDefault(
     env.Replace(
-        QT4DIR  = _detect(env),
-        QT4_BINPATH = os.path.join('$QT4DIR', 'bin'),
-        # TODO: This is not reliable to QT4DIR value changes but needed in order to support '-qt4' variants
-        QT4_MOC = locateQt4Command(env,'moc', env['QT4DIR']),
-        QT4_UIC = locateQt4Command(env,'uic', env['QT4DIR']),
-        QT4_RCC = locateQt4Command(env,'rcc', env['QT4DIR']),
-        QT4_LUPDATE = locateQt4Command(env,'lupdate', env['QT4DIR']),
-        QT4_LRELEASE = locateQt4Command(env,'lrelease', env['QT4DIR']),
+        QT5DIR  = _detect(env),
+        QT5_BINPATH = os.path.join('$QT5DIR', 'bin'),
+        # TODO: This is not reliable to QT5DIR value changes but needed in order to support '-qt5' variants
+        QT5_MOC = locateQt5Command(env,'moc', env['QT5DIR']),
+        QT5_UIC = locateQt5Command(env,'uic', env['QT5DIR']),
+        QT5_RCC = locateQt5Command(env,'rcc', env['QT5DIR']),
+        QT5_LUPDATE = locateQt5Command(env,'lupdate', env['QT5DIR']),
+        QT5_LRELEASE = locateQt5Command(env,'lrelease', env['QT5DIR']),
 
-        QT4_AUTOSCAN = 1, # Should the qt4 tool try to figure out, which sources are to be moc'ed?
-        QT4_AUTOSCAN_STRATEGY = 0, # While scanning for files to moc, should we search for includes in qtsolutions style?
-        QT4_GOBBLECOMMENTS = 0, # If set to 1, comments are removed before scanning cxx/h files.
-        QT4_CPPDEFINES_PASSTOMOC = 1, # If set to 1, all CPPDEFINES get passed to the moc executable.
-        QT4_CLEAN_TS = 0, # If set to 1, translation files (.ts) get cleaned on 'scons -c'
-        QT4_AUTOMOC_SCANCPPPATH = 1, # If set to 1, the CPPPATHs (or QT4_AUTOMOC_CPPPATH) get scanned for moc'able files
-        QT4_AUTOMOC_CPPPATH = [], # Alternative paths that get scanned for moc files
+        QT5_AUTOSCAN = 1, # Should the qt5 tool try to figure out, which sources are to be moc'ed?
+        QT5_AUTOSCAN_STRATEGY = 0, # While scanning for files to moc, should we search for includes in qtsolutions style?
+        QT5_GOBBLECOMMENTS = 0, # If set to 1, comments are removed before scanning cxx/h files.
+        QT5_CPPDEFINES_PASSTOMOC = 1, # If set to 1, all CPPDEFINES get passed to the moc executable.
+        QT5_CLEAN_TS = 0, # If set to 1, translation files (.ts) get cleaned on 'scons -c'
+        QT5_AUTOMOC_SCANCPPPATH = 1, # If set to 1, the CPPPATHs (or QT5_AUTOMOC_CPPPATH) get scanned for moc'able files
+        QT5_AUTOMOC_CPPPATH = [], # Alternative paths that get scanned for moc files
 
-        # Some Qt4 specific flags. I don't expect someone wants to
+        # Some Qt5 specific flags. I don't expect someone wants to
         # manipulate those ...
-        QT4_UICFLAGS = CLVar(''),
-        QT4_MOCFROMHFLAGS = CLVar(''),
-        QT4_MOCFROMCXXFLAGS = CLVar('-i'),
-        QT4_QRCFLAGS = '',
-        QT4_LUPDATEFLAGS = '',
-        QT4_LRELEASEFLAGS = '',
+        QT5_UICFLAGS = CLVar(''),
+        QT5_MOCFROMHFLAGS = CLVar(''),
+        QT5_MOCFROMCXXFLAGS = CLVar('-i'),
+        QT5_QRCFLAGS = '',
+        QT5_LUPDATEFLAGS = '',
+        QT5_LRELEASEFLAGS = '',
 
         # suffixes/prefixes for the headers / sources to generate
-        QT4_UISUFFIX = '.ui',
-        QT4_UICDECLPREFIX = 'ui_',
-        QT4_UICDECLSUFFIX = '.h',
-        QT4_MOCINCPREFIX = '-I',
-        QT4_MOCHPREFIX = 'moc_',
-        QT4_MOCHSUFFIX = '$CXXFILESUFFIX',
-        QT4_MOCCXXPREFIX = '',
-        QT4_MOCCXXSUFFIX = '.moc',
-        QT4_QRCSUFFIX = '.qrc',
-        QT4_QRCCXXSUFFIX = '$CXXFILESUFFIX',
-        QT4_QRCCXXPREFIX = 'qrc_',
-        QT4_MOCDEFPREFIX = '-D',
-        QT4_MOCDEFSUFFIX = '',
-        QT4_MOCDEFINES = '${_defines(QT4_MOCDEFPREFIX, CPPDEFINES, QT4_MOCDEFSUFFIX, __env__)}',
-        QT4_MOCCPPPATH = [],
-        QT4_MOCINCFLAGS = '$( ${_concat(QT4_MOCINCPREFIX, QT4_MOCCPPPATH, INCSUFFIX, __env__, RDirs)} $)',
+        QT5_UISUFFIX = '.ui',
+        QT5_UICDECLPREFIX = 'ui_',
+        QT5_UICDECLSUFFIX = '.h',
+        QT5_MOCINCPREFIX = '-I',
+        QT5_MOCHPREFIX = 'moc_',
+        QT5_MOCHSUFFIX = '$CXXFILESUFFIX',
+        QT5_MOCCXXPREFIX = '',
+        QT5_MOCCXXSUFFIX = '.moc',
+        QT5_QRCSUFFIX = '.qrc',
+        QT5_QRCCXXSUFFIX = '$CXXFILESUFFIX',
+        QT5_QRCCXXPREFIX = 'qrc_',
+        QT5_MOCDEFPREFIX = '-D',
+        QT5_MOCDEFSUFFIX = '',
+        QT5_MOCDEFINES = '${_defines(QT5_MOCDEFPREFIX, CPPDEFINES, QT5_MOCDEFSUFFIX, __env__)}',
+        QT5_MOCCPPPATH = [],
+        QT5_MOCINCFLAGS = '$( ${_concat(QT5_MOCINCPREFIX, QT5_MOCCPPPATH, INCSUFFIX, __env__, RDirs)} $)',
 
-        # Commands for the qt4 support ...
-        QT4_UICCOM = '$QT4_UIC $QT4_UICFLAGS -o $TARGET $SOURCE',
-        QT4_LUPDATECOM = '$QT4_LUPDATE $QT4_LUPDATEFLAGS $SOURCES -ts $TARGET',
-        QT4_LRELEASECOM = '$QT4_LRELEASE $QT4_LRELEASEFLAGS -qm $TARGET $SOURCES',
+        # Commands for the qt5 support ...
+        QT5_UICCOM = '$QT5_UIC $QT5_UICFLAGS -o $TARGET $SOURCE',
+        QT5_LUPDATECOM = '$QT5_LUPDATE $QT5_LUPDATEFLAGS $SOURCES -ts $TARGET',
+        QT5_LRELEASECOM = '$QT5_LRELEASE $QT5_LRELEASEFLAGS -qm $TARGET $SOURCES',
         
         # Specialized variables for the Extended Automoc support
         # (Strategy #1 for qtsolutions)
-        QT4_XMOCHPREFIX = 'moc_',
-        QT4_XMOCHSUFFIX = '.cpp',
-        QT4_XMOCCXXPREFIX = '',
-        QT4_XMOCCXXSUFFIX = '.moc',
+        QT5_XMOCHPREFIX = 'moc_',
+        QT5_XMOCHSUFFIX = '.cpp',
+        QT5_XMOCCXXPREFIX = '',
+        QT5_XMOCCXXSUFFIX = '.moc',
                 
         )
 
     try:
-        env.AddMethod(Ts4, "Ts4")
-        env.AddMethod(Qm4, "Qm4")
-        env.AddMethod(Qrc4, "Qrc4")
-        env.AddMethod(ExplicitMoc4, "ExplicitMoc4")
-        env.AddMethod(ExplicitUic4, "ExplicitUic4")
+        env.AddMethod(Ts5, "Ts5")
+        env.AddMethod(Qm5, "Qm5")
+        env.AddMethod(Qrc5, "Qrc5")
+        env.AddMethod(ExplicitMoc5, "ExplicitMoc5")
+        env.AddMethod(ExplicitUic5, "ExplicitUic5")
     except AttributeError:
         # Looks like we use a pre-0.98 version of SCons...
         from SCons.Script.SConscript import SConsEnvironment
-        SConsEnvironment.Ts4 = Ts4
-        SConsEnvironment.Qm4 = Qm4
-        SConsEnvironment.Qrc4 = Qrc4
-        SConsEnvironment.ExplicitMoc4 = ExplicitMoc4
-        SConsEnvironment.ExplicitUic4 = ExplicitUic4
+        SConsEnvironment.Ts5 = Ts5
+        SConsEnvironment.Qm5 = Qm5
+        SConsEnvironment.Qrc5 = Qrc5
+        SConsEnvironment.ExplicitMoc5 = ExplicitMoc5
+        SConsEnvironment.ExplicitUic5 = ExplicitUic5
 
     # Interface builder
-    uic4builder = Builder(
-        action = SCons.Action.Action('$QT4_UICCOM', '$QT4_UICCOMSTR'),
-        src_suffix='$QT4_UISUFFIX',
-        suffix='$QT4_UICDECLSUFFIX',
-        prefix='$QT4_UICDECLPREFIX',
+    uic5builder = Builder(
+        action = SCons.Action.Action('$QT5_UICCOM', '$QT5_UICCOMSTR'),
+        src_suffix='$QT5_UISUFFIX',
+        suffix='$QT5_UICDECLSUFFIX',
+        prefix='$QT5_UICDECLPREFIX',
         single_source = True
         #TODO: Consider the uiscanner on new scons version
         )
-    env['BUILDERS']['Uic4'] = uic4builder
+    env['BUILDERS']['Uic5'] = uic5builder
 
     # Metaobject builder
     mocBld = Builder(action={}, prefix={}, suffix={})
     for h in header_extensions:
-        act = SCons.Action.CommandGeneratorAction(__moc_generator_from_h,
-                                                  {"cmdstr":"$QT4_MOCFROMHCOMSTR"})
+        act = SCons.Action.CommandGeneratorAction(__moc_generator_from_h, {'cmdstr':'$QT5_MOCCOMSTR'})    
         mocBld.add_action(h, act)
-        mocBld.prefix[h] = '$QT4_MOCHPREFIX'
-        mocBld.suffix[h] = '$QT4_MOCHSUFFIX'
+        mocBld.prefix[h] = '$QT5_MOCHPREFIX'
+        mocBld.suffix[h] = '$QT5_MOCHSUFFIX'
     for cxx in cxx_suffixes:
-        act = SCons.Action.CommandGeneratorAction(__moc_generator_from_cxx,
-                                                  {"cmdstr":"$QT4_MOCFROMCXXCOMSTR"})
+        act = SCons.Action.CommandGeneratorAction(__moc_generator_from_cxx, {'cmdstr':'$QT5_MOCCOMSTR'})    
         mocBld.add_action(cxx, act)
-        mocBld.prefix[cxx] = '$QT4_MOCCXXPREFIX'
-        mocBld.suffix[cxx] = '$QT4_MOCCXXSUFFIX'
-    env['BUILDERS']['Moc4'] = mocBld
+        mocBld.prefix[cxx] = '$QT5_MOCCXXPREFIX'
+        mocBld.suffix[cxx] = '$QT5_MOCCXXSUFFIX'
+    env['BUILDERS']['Moc5'] = mocBld
 
     # Metaobject builder for the extended auto scan feature 
     # (Strategy #1 for qtsolutions)
     xMocBld = Builder(action={}, prefix={}, suffix={})
     for h in header_extensions:
-        act = SCons.Action.CommandGeneratorAction(__mocx_generator_from_h,
-                                                  {"cmdstr":"$QT4_MOCXFROMHCOMSTR"})
+        act = SCons.Action.CommandGeneratorAction(__mocx_generator_from_h, {'cmdstr':'$QT5_MOCCOMSTR'})
         xMocBld.add_action(h, act)
-        xMocBld.prefix[h] = '$QT4_XMOCHPREFIX'
-        xMocBld.suffix[h] = '$QT4_XMOCHSUFFIX'
+        xMocBld.prefix[h] = '$QT5_XMOCHPREFIX'
+        xMocBld.suffix[h] = '$QT5_XMOCHSUFFIX'
     for cxx in cxx_suffixes:
-        act = SCons.Action.CommandGeneratorAction(__mocx_generator_from_cxx,
-                                                  {"cmdstr":"$QT4_MOCXFROMCXXCOMSTR"})
+        act = SCons.Action.CommandGeneratorAction(__mocx_generator_from_cxx, {'cmdstr':'$QT5_MOCCOMSTR'})    
         xMocBld.add_action(cxx, act)
-        xMocBld.prefix[cxx] = '$QT4_XMOCCXXPREFIX'
-        xMocBld.suffix[cxx] = '$QT4_XMOCCXXSUFFIX'
-    env['BUILDERS']['XMoc4'] = xMocBld
+        xMocBld.prefix[cxx] = '$QT5_XMOCCXXPREFIX'
+        xMocBld.suffix[cxx] = '$QT5_XMOCCXXSUFFIX'
+    env['BUILDERS']['XMoc5'] = xMocBld
 
-    # Add the Qrc4 action to the CXX file builder (registers the
+    # Add the Qrc5 action to the CXX file builder (registers the
     # *.qrc extension with the Environment)     
     cfile_builder, cxxfile_builder = SCons.Tool.createCFileBuilders(env)
-    qrc_act = SCons.Action.CommandGeneratorAction(__qrc_generator,
-                                                  {"cmdstr":"$QT4_QRCCOMSTR"})
-    cxxfile_builder.add_action('$QT4_QRCSUFFIX', qrc_act)    
-    cxxfile_builder.add_emitter('$QT4_QRCSUFFIX', __qrc_emitter)    
-    env.Append(SCANNERS=__qrcscanner)
+    qrc_act = SCons.Action.CommandGeneratorAction(__qrc_generator, {'cmdstr':'$QT5_QRCCOMSTR'})
+    cxxfile_builder.add_action('$QT5_QRCSUFFIX', qrc_act)    
+    cxxfile_builder.add_emitter('$QT5_QRCSUFFIX', __qrc_emitter)    
 
     # We use the emitters of Program / StaticLibrary / SharedLibrary
     # to scan for moc'able files
@@ -840,61 +834,70 @@ def generate(env):
 
     # TODO: Does dbusxml2cpp need an adapter
     try:
-        env.AddMethod(enable_modules, "EnableQt4Modules")
+        env.AddMethod(enable_modules, "EnableQt5Modules")
     except AttributeError:
         # Looks like we use a pre-0.98 version of SCons...
         from SCons.Script.SConscript import SConsEnvironment
-        SConsEnvironment.EnableQt4Modules = enable_modules
+        SConsEnvironment.EnableQt5Modules = enable_modules
 
 def enable_modules(self, modules, debug=False, crosscompiling=False) :
     import sys
 
     validModules = [
+        # Qt Essentials
         'QtCore',
         'QtGui',
-        'QtOpenGL',
-        'Qt3Support',
-        'QtAssistant', # deprecated
-        'QtAssistantClient',
-        'QtScript',
-        'QtDBus',
-        'QtSql',
-        'QtSvg',
-        # The next modules have not been tested yet so, please
-        # maybe they require additional work on non Linux platforms
+        'QtMultimedia',
+        'QtMultimediaQuick_p',
+        'QtMultimediaWidgets',
         'QtNetwork',
+        'QtPlatformSupport',
+        'QtQml',
+        'QtQmlDevTools',
+        'QtQuick',
+        'QtQuickParticles',
+        'QtSql',
+        'QtQuickTest',
         'QtTest',
-        'QtXml',
-        'QtXmlPatterns',
-        'QtUiTools',
-        'QtDesigner',
-        'QtDesignerComponents',
         'QtWebKit',
-        'QtHelp',
+        'QtWebKitWidgets',
+        'QtWidgets',
+        # Qt Add-Ons
+        'QtConcurrent',
+        'QtDBus',
+        'QtOpenGL',
+        'QtPrintSupport',
+        'QtDeclarative',
         'QtScript',
         'QtScriptTools',
-        'QtMultimedia',
+        'QtSvg',
+        'QtUiTools',
+        'QtXml',
+        'QtXmlPatterns',
+        # Qt Tools
+        'QtHelp',
+        'QtDesigner',
+        'QtDesignerComponents',
+        # Other
+        'QtCLucene',
+        'QtConcurrent',
+        'QtV8'
         ]
     pclessModules = [
-# in qt <= 4.3 designer and designerComponents are pcless, on qt4.4 they are not, so removed.    
-#        'QtDesigner',
-#        'QtDesignerComponents',
     ]
     staticModules = [
-        'QtUiTools',
     ]
     invalidModules=[]
     for module in modules:
         if module not in validModules :
             invalidModules.append(module)
     if invalidModules :
-        raise Exception("Modules %s are not Qt4 modules. Valid Qt4 modules are: %s"% (
+        raise Exception("Modules %s are not Qt5 modules. Valid Qt5 modules are: %s"% (
             str(invalidModules),str(validModules)))
 
     moduleDefines = {
         'QtScript'   : ['QT_SCRIPT_LIB'],
         'QtSvg'      : ['QT_SVG_LIB'],
-        'Qt3Support' : ['QT_QT3SUPPORT_LIB','QT3_SUPPORT'],
         'QtSql'      : ['QT_SQL_LIB'],
         'QtXml'      : ['QT_XML_LIB'],
         'QtOpenGL'   : ['QT_OPENGL_LIB'],
@@ -910,78 +913,79 @@ def enable_modules(self, modules, debug=False, crosscompiling=False) :
         if debug : debugSuffix = '_debug'
         for module in modules :
             if module not in pclessModules : continue
-            self.AppendUnique(LIBS=[module+debugSuffix])
-            self.AppendUnique(LIBPATH=[os.path.join("$QT4DIR","lib")])
-            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include","qt4")])
-            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include","qt4",module)])
-        pcmodules = [module+debugSuffix for module in modules if module not in pclessModules ]
-        if 'QtDBus' in pcmodules:
-            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include","qt4","QtDBus")])
-        if "QtAssistant" in pcmodules:
-            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include","qt4","QtAssistant")])
-            pcmodules.remove("QtAssistant")
-            pcmodules.append("QtAssistantClient")
+            self.AppendUnique(LIBS=[module.replace('Qt','Qt5')+debugSuffix])
+            self.AppendUnique(LIBPATH=[os.path.join("$QT5DIR","lib")])
+            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include")])
+            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include",module)])
+        pcmodules = [module.replace('Qt','Qt5')+debugSuffix for module in modules if module not in pclessModules ]
+        if 'Qt5DBus' in pcmodules:
+            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include","Qt5DBus")])
+        if "Qt5Assistant" in pcmodules:
+            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include","Qt5Assistant")])
+            pcmodules.remove("Qt5Assistant")
+            pcmodules.append("Qt5AssistantClient")
+        self.AppendUnique(RPATH=[os.path.join("$QT5DIR","lib")])
         self.ParseConfig('pkg-config %s --libs --cflags'% ' '.join(pcmodules))
-        self["QT4_MOCCPPPATH"] = self["CPPPATH"]
+        self["QT5_MOCCPPPATH"] = self["CPPPATH"]
         return
     if sys.platform == "win32" or crosscompiling :
         if crosscompiling:
-            transformedQtdir = transformToWinePath(self['QT4DIR'])
-            self['QT4_MOC'] = "QT4DIR=%s %s"%( transformedQtdir, self['QT4_MOC'])
-        self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include")])
+            transformedQtdir = transformToWinePath(self['QT5DIR'])
+            self['QT5_MOC'] = "QT5DIR=%s %s"%( transformedQtdir, self['QT5_MOC'])
+        self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include")])
         try: modules.remove("QtDBus")
         except: pass
         if debug : debugSuffix = 'd'
         if "QtAssistant" in modules:
-            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include","QtAssistant")])
+            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include","QtAssistant")])
             modules.remove("QtAssistant")
             modules.append("QtAssistantClient")
         self.AppendUnique(LIBS=['qtmain'+debugSuffix])
-        self.AppendUnique(LIBS=[lib+debugSuffix+'4' for lib in modules if lib not in staticModules])
+        self.AppendUnique(LIBS=[lib.replace("Qt","Qt5")+debugSuffix for lib in modules if lib not in staticModules])
         self.PrependUnique(LIBS=[lib+debugSuffix for lib in modules if lib in staticModules])
         if 'QtOpenGL' in modules:
             self.AppendUnique(LIBS=['opengl32'])
-        self.AppendUnique(CPPPATH=[ '$QT4DIR/include/'])
-        self.AppendUnique(CPPPATH=[ '$QT4DIR/include/'+module for module in modules])
+        self.AppendUnique(CPPPATH=[ '$QT5DIR/include/'])
+        self.AppendUnique(CPPPATH=[ '$QT5DIR/include/'+module for module in modules])
         if crosscompiling :
-            self["QT4_MOCCPPPATH"] = [
-                path.replace('$QT4DIR', transformedQtdir)
+            self["QT5_MOCCPPPATH"] = [
+                path.replace('$QT5DIR', transformedQtdir)
                     for path in self['CPPPATH'] ]
         else :
-            self["QT4_MOCCPPPATH"] = self["CPPPATH"]
-        self.AppendUnique(LIBPATH=[os.path.join('$QT4DIR','lib')])
+            self["QT5_MOCCPPPATH"] = self["CPPPATH"]
+        self.AppendUnique(LIBPATH=[os.path.join('$QT5DIR','lib')])
         return
+        
     """
     if sys.platform=="darwin" :
         # TODO: Test debug version on Mac
-        self.AppendUnique(LIBPATH=[os.path.join('$QT4DIR','lib')])
-        self.AppendUnique(LINKFLAGS="-F$QT4DIR/lib")
-        self.AppendUnique(LINKFLAGS="-L$QT4DIR/lib") #TODO clean!
+        self.AppendUnique(LIBPATH=[os.path.join('$QT5DIR','lib')])
+        self.AppendUnique(LINKFLAGS="-F$QT5DIR/lib")
+        self.AppendUnique(LINKFLAGS="-L$QT5DIR/lib") #TODO clean!
         if debug : debugSuffix = 'd'
         for module in modules :
-#            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include")])
-#            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include",module)])
-# port qt4-mac:
-            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include", "qt4")])
-            self.AppendUnique(CPPPATH=[os.path.join("$QT4DIR","include", "qt4", module)])
+#            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include")])
+#            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include",module)])
+# port qt5-mac:
+            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include", "qt5")])
+            self.AppendUnique(CPPPATH=[os.path.join("$QT5DIR","include", "qt5", module)])
             if module in staticModules :
                 self.AppendUnique(LIBS=[module+debugSuffix]) # TODO: Add the debug suffix
-                self.AppendUnique(LIBPATH=[os.path.join("$QT4DIR","lib")])
+                self.AppendUnique(LIBPATH=[os.path.join("$QT5DIR","lib")])
             else :
 #                self.Append(LINKFLAGS=['-framework', module])
-# port qt4-mac:
+# port qt5-mac:
                 self.Append(LIBS=module)
         if 'QtOpenGL' in modules:
             self.AppendUnique(LINKFLAGS="-F/System/Library/Frameworks")
             self.Append(LINKFLAGS=['-framework', 'AGL']) #TODO ughly kludge to avoid quotes
             self.Append(LINKFLAGS=['-framework', 'OpenGL'])
-        self["QT4_MOCCPPPATH"] = self["CPPPATH"]
+        self["QT5_MOCCPPPATH"] = self["CPPPATH"]
         return
 # This should work for mac but doesn't
-#    env.AppendUnique(FRAMEWORKPATH=[os.path.join(env['QT4DIR'],'lib')])
+#    env.AppendUnique(FRAMEWORKPATH=[os.path.join(env['QT5DIR'],'lib')])
 #    env.AppendUnique(FRAMEWORKS=['QtCore','QtGui','QtOpenGL', 'AGL'])
     """
-
-
+        
 def exists(env):
     return _detect(env)
