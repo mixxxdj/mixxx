@@ -731,10 +731,7 @@ class MixxxCore(Feature):
         sources.extend(proto_objects)
 
         # Uic these guys (they're moc'd automatically after this) - Generates
-        # the code for the QT UI forms
-
-
-        uic = Qt.uic(build)
+        # the code for the QT UI forms.
         ui_files = [
             'controllers/dlgcontrollerlearning.ui',
             'controllers/dlgprefcontrollerdlg.ui',
@@ -761,7 +758,7 @@ class MixxxCore(Feature):
             'dlgtagfetcher.ui',
             'dlgtrackinfo.ui',
         ]
-        sources.extend(uic(ui_file) for ui_file in ui_files)
+        map(Qt.uic(build), ui_files)
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
