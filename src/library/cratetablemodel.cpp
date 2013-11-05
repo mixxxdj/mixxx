@@ -31,7 +31,6 @@ void CrateTableModel::setTableModel(int crateId) {
         qDebug() << "Already focused on crate " << crateId;
         return;
     }
-
     m_iCrateId = crateId;
     QStringList columns;
     columns << "crate_tracks."+CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID

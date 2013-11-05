@@ -125,7 +125,7 @@ WTrackTableView::~WTrackTableView() {
 
 // slot
 void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
-//    qDebug() << "WTrackTableView::loadTrackModel()" << model;
+    //qDebug() << "WTrackTableView::loadTrackModel()" << model;
 
     TrackModel* track_model = dynamic_cast<TrackModel*>(model);
 
@@ -596,12 +596,11 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_ADDTOPLAYLIST)) {
         m_pPlaylistMenu->clear();
-
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         QMap<QString,int> playlists;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &playlistDao, &playlists] (void) {
+                [this, &playlistDao, &playlists] (void) {
             int numPlaylists = playlistDao.playlistCount();
             for (int i = 0; i < numPlaylists; ++i) {
                 int iPlaylistId = playlistDao.getPlaylistId(i);
@@ -617,7 +616,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 bool locked = false;
                 // tro's lambda idea. This code calls synchronously!
                 m_pTrackCollection->callSync(
-                            [this, &playlistDao, &it, &locked] (void) {
+                        [this, &playlistDao, &it, &locked] (void) {
                     locked = playlistDao.isPlaylistLocked(it.value());
                 }, __PRETTY_FUNCTION__);
 
@@ -1165,7 +1164,7 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
     }
 
     m_pTrackCollection->callAsync(
-                [this, trackIds, bTop] (void) {
+            [this, trackIds, bTop] (void) {
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
         if (iAutoDJPlaylistId == -1) {
@@ -1242,7 +1241,7 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, trackIds, iPlaylistId] (void) {
+            [this, trackIds, iPlaylistId] (void) {
         if (trackIds.size() > 0) {
             // TODO(XXX): Care whether the append succeeded.
             m_pTrackCollection->getPlaylistDAO().appendTracksToPlaylist(trackIds, iPlaylistId);
@@ -1271,7 +1270,7 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &trackIds, &iCrateId] (void) {
+            [this, &trackIds, &iCrateId] (void) {
         if (trackIds.size() > 0) {
             CrateDAO& crateDao = m_pTrackCollection->getCrateDAO();
             crateDao.addTracksToCrate(iCrateId, &trackIds);
@@ -1295,7 +1294,8 @@ void WTrackTableView::doSortByColumn(int headerSection) {
         trackIds.insert(trackId);
     }
 
-    m_pTrackCollection->callSync([this, &headerSection] (void) {
+    m_pTrackCollection->callSync(
+            [this, &headerSection] (void) {
         sortByColumn(headerSection);
     }, __PRETTY_FUNCTION__);
 
@@ -1373,7 +1373,6 @@ void WTrackTableView::slotScaleBpm(int scale){
     for (int i = 0; i < selectedTrackIndices.size(); ++i) {
         QModelIndex index = selectedTrackIndices.at(i);
         TrackPointer track = trackModel->getTrack(index);
-
         if (!track->hasBpmLock()) { //bpm is not locked
             BeatsPointer beats = track->getBeats();
             if (beats != NULL) {

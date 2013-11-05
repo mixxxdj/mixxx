@@ -49,7 +49,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     int playlistId = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &playlistId] (void) {
+            [this, &playlistId] (void) {
         PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
         playlistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
         if (playlistId < 0) {
@@ -167,7 +167,7 @@ DlgAutoDJ::~DlgAutoDJ() {
 void DlgAutoDJ::onShow() {
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this] (void) {
+            [this] (void) {
         m_pAutoDJTableModel->select();
     }, __PRETTY_FUNCTION__);
 }
@@ -589,7 +589,6 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
 
     // Get the track at the top of the playlist...
     nextTrack = m_pAutoDJTableModel->getTrack(m_pAutoDJTableModel->index(0, 0));
-
     if (nextTrack) {
         nextId = nextTrack->getId();
     }

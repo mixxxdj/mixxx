@@ -52,7 +52,7 @@ void DlgMissing::onShow() {
     slotActivateButtons(false);
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this] (void) {
+            [this] (void) {
         m_pMissingTableModel->select();
     }, __PRETTY_FUNCTION__);
 }

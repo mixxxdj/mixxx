@@ -17,9 +17,6 @@
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
-#ifdef __PROMO__
-#include "library/promotracksfeature.h"
-#endif
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"

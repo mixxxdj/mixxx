@@ -320,7 +320,7 @@ void AutoDJFeature::constructCrateChildModel() {
     // tro's lambda idea. This code calls synchronously!
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
     m_pTrackCollection->callSync(
-                [this, &crateListTableModel] (void) {
+            [this, &crateListTableModel] (void) {
         crateListTableModel.setTable(CRATE_TABLE);
         crateListTableModel.setSort(crateListTableModel.fieldIndex(CRATETABLE_NAME),
                                     Qt::AscendingOrder);
@@ -375,7 +375,7 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         // tro's lambda idea. This code calls synchronously!
         QMap<QString,int> crateMap;
         m_pTrackCollection->callSync(
-                    [this, &crateMap] (void) {
+                [this, &crateMap] (void) {
             m_crateDao.getAutoDjCrates(false, &crateMap);
         }, __PRETTY_FUNCTION__);
         QMapIterator<QString,int> it(crateMap);

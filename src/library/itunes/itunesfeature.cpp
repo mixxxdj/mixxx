@@ -90,7 +90,6 @@ BaseSqlTableModel* ITunesFeature::createPlaylistModelForPlaylist(QString playlis
         "itunes_playlists",
         "itunes_playlist_tracks",
         "itunes");
-
     pModel->setPlaylist(playlist);
     pModel->setPlaylistUI();
     return pModel;
@@ -125,7 +124,7 @@ void ITunesFeature::activate(bool forceReload) {
         QString pathKey;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &settings, &pathKey] (void) {
+                [this, &settings, &pathKey] (void) {
             pathKey = settings.getValue(ITDB_PATH_KEY);
         }, __PRETTY_FUNCTION__);
 
@@ -149,7 +148,7 @@ void ITunesFeature::activate(bool forceReload) {
 
             // tro's lambda idea. This code calls synchronously!
             m_pTrackCollection->callSync(
-                        [this, &settings] (void) {
+                    [this, &settings] (void) {
                 settings.setValue(ITDB_PATH_KEY, m_dbfile);
             }, __PRETTY_FUNCTION__);
         }
@@ -164,12 +163,9 @@ void ITunesFeature::activate(bool forceReload) {
         // Mixxx shutdown.
         QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
         // Let a worker thread do the XML parsing
-
         m_future = QtConcurrent::run(this, &ITunesFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iTunes");
-
-
         // calls a slot in the sidebar model such that 'iTunes (isLoading)' is displayed.
         emit (featureIsLoading(this));
     }
@@ -325,10 +321,11 @@ TreeItem* ITunesFeature::importLibrary() {
     clearTable("itunes_library");
     clearTable("itunes_playlists");
     transaction.commit();
+
     qDebug() << "ITunesFeature::importLibrary() ";
 
-
     transaction.transaction();
+
     // By default set m_mixxxItunesRoot and m_dbItunesRoot to strip out
     // file://localhost/ from the URL. When we load the user's iTunes XML
     // configuration we may replace this with something based on the detected
@@ -399,7 +396,6 @@ void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
     while (!xml.atEnd() && !m_cancelImport) {
         xml.readNext();
 
-
         if (xml.isStartElement()) {
             if (xml.name() == "dict") {
                 if (!in_track_dictionary && !in_container_dictionary) {
@@ -424,7 +420,6 @@ void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
                 break;
             }
         }
-
     }
 }
 

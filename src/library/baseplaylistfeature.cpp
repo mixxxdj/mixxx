@@ -18,13 +18,13 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                                          ConfigObject<ConfigValue>* pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
-    : LibraryFeature(parent),
-      m_pConfig(pConfig),
-      m_pTrackCollection(pTrackCollection),
-      m_playlistDao(pTrackCollection->getPlaylistDAO()),
-      m_trackDao(pTrackCollection->getTrackDAO()),
-      m_pPlaylistTableModel(NULL),
-      m_rootViewName(rootViewName) {
+        : LibraryFeature(parent),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection),
+          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+          m_trackDao(pTrackCollection->getTrackDAO()),
+          m_pPlaylistTableModel(NULL),
+          m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
@@ -109,7 +109,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     int playlistId = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &playlistName, &playlistId] (void) {
+            [this, &playlistName, &playlistId] (void) {
         playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     }, __PRETTY_FUNCTION__);
     if (m_pPlaylistTableModel) {
@@ -128,7 +128,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &oldName, &playlistId, &locked] (void) {
+            [this, &oldName, &playlistId, &locked] (void) {
         playlistId = m_playlistDao.getPlaylistIdFromName(oldName);
         locked = m_playlistDao.isPlaylistLocked(playlistId);
     }, __PRETTY_FUNCTION__);
@@ -212,7 +212,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
         int existingId = -1;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &name, &existingId] (void) {
+                [this, &name, &existingId] (void) {
             existingId = m_playlistDao.getPlaylistIdFromName(name);
         }, __PRETTY_FUNCTION__);
 
@@ -231,7 +231,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
     // tro's lambda idea. This code calls Asynchronously!
     m_pTrackCollection->callAsync(
-                [this, name, oldPlaylistId] (void) {
+            [this, name, oldPlaylistId] (void) {
         int newPlaylistId = m_playlistDao.createPlaylist(name);
         bool copiedPlaylistTracks = m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId);
 
@@ -255,7 +255,6 @@ void BasePlaylistFeature::slotTogglePlaylistLock() {
     }, __PRETTY_FUNCTION__);
 }
 
-
 void BasePlaylistFeature::slotCreatePlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
@@ -278,7 +277,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
         int existingId = -1;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &name, &existingId] (void) {
+                [this, &name, &existingId] (void) {
              existingId = m_playlistDao.getPlaylistIdFromName(name);
         }, __PRETTY_FUNCTION__);
 
@@ -342,10 +341,10 @@ void BasePlaylistFeature::slotImportPlaylist() {
     }
 
     QString playlist_file = QFileDialog::getOpenFileName(
-                NULL,
-                tr("Import Playlist"),
-                QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-                tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+            NULL,
+            tr("Import Playlist"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+            tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty()) {
         return;
@@ -372,7 +371,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this, entries] (void) {
+            [this, entries] (void) {
         // Iterate over the List that holds URLs of playlist entires
         m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
     }, __PRETTY_FUNCTION__);
@@ -389,24 +388,24 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QString playlist_filename = m_lastRightClickedIndex.data().toString();
     QString music_directory = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
     QString file_location = QFileDialog::getSaveFileName(
-                NULL,
-                tr("Export Playlist"),
-                music_directory.append("/").append(playlist_filename),
-                tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
-                   "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+            NULL,
+            tr("Export Playlist"),
+            music_directory.append("/").append(playlist_filename),
+            tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
+            "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
     }
 
     m_pTrackCollection->callAsync(
-                [this, file_location](void) {
+            [this, file_location](void) {
         QString fileLocation(file_location);
         // Create a new table model since the main one might have an active search.
         // This will only export songs that we think exist on default
         QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
-                    new PlaylistTableModel(this, m_pTrackCollection,
-                                           "mixxx.db.model.playlist_export"));
+                new PlaylistTableModel(this, m_pTrackCollection,
+                        "mixxx.db.model.playlist_export"));
 
         pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
         pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
@@ -481,11 +480,11 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
 void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
-                    m_lastRightClickedIndex.data().toString());
+                m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
             // tro's lambda idea. This code calls Asynchronously!
             m_pTrackCollection->callAsync(
-                        [this, playlistId] (void) {
+                    [this, playlistId] (void) {
                 QList<int> ids;
                 ids = m_playlistDao.getTrackIds(playlistId);
                 emit(analyzeTracks(ids));
@@ -505,7 +504,7 @@ void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
     connect(edit, SIGNAL(anchorClicked(const QUrl)),
-            this, SLOT(htmlLinkClicked(const QUrl)) );
+            this, SLOT(htmlLinkClicked(const QUrl)));
     libraryWidget->registerView(m_rootViewName, edit);
 }
 

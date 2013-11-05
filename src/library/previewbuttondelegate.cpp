@@ -173,7 +173,6 @@ void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
         if (!pTrackModel) {
             return;
         }
-
         QString group = PlayerManager::groupForPreviewDeck(0);
         TrackPointer pPreviewTrack = PlayerInfo::instance().getTrackInfo(group);
         TrackPointer pTrack = pTrackModel->getTrack(m_currentEditedCellIndex);

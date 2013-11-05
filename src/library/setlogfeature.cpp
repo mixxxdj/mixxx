@@ -111,7 +111,6 @@ void SetlogFeature::onRightClick(const QPoint& globalPos) {
 
 void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
-
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
     int playlistId = -1;

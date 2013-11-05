@@ -89,10 +89,10 @@ TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     QString track_location = getTrackLocation(index);
     if (m_pRecordingManager->getRecordingLocation() == track_location) {
         QMessageBox::critical(
-                    0, tr("Mixxx Library"),
-                    tr("Could not load the following file because"
-                       " it is in use by Mixxx or another application.")
-                    + "\n" +track_location);
+                0, tr("Mixxx Library"),
+                tr("Could not load the following file because"
+                " it is in use by Mixxx or another application.")
+                + "\n" +track_location);
         return TrackPointer();
     }
     TrackPointer track;
@@ -204,7 +204,7 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
 
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &track_location, &track_dao, &deleted_ids] (void) {
+                [this, &track_location, &track_dao, &deleted_ids] (void) {
             deleted_ids.append(track_dao.getTrackId(track_location));
         }, __PRETTY_FUNCTION__);
     }
@@ -214,7 +214,7 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         qDebug() << "BrowseFeature: Purge affected track from database";
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &track_dao, &deleted_ids] (void) {
+                [this, &track_dao, &deleted_ids] (void) {
             track_dao.purgeTracks(deleted_ids);
         }, __PRETTY_FUNCTION__);
     }

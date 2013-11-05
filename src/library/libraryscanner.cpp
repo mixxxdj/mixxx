@@ -451,9 +451,12 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     while (dirIt.hasNext() && bScanFinishedCleanly) {
         QString nextPath = dirIt.next();
         //qDebug() << "nextPath: " << nextPath;
-        // Skip the iTunes Album Art Folder since it is probably a waste of time.
-        if (m_directoriesBlacklist.contains(nextPath))
+
+        // Skip the iTunes Album Art Folder since it is probably a waste of
+        // time.
+        if (m_directoriesBlacklist.contains(nextPath)) {
             continue;
+        }
         if (!recursiveScan(nextPath, verifiedDirectories)) {
             bScanFinishedCleanly = false;
         }

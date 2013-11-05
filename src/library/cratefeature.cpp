@@ -125,7 +125,7 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     const bool is_pSource = pSource;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &crateName, &files, &is_pSource, &result] (void) {
+            [this, &crateName, &files, &is_pSource, &result] (void) {
         int crateId = m_crateDao.getCrateIdByName(crateName);
         QList<int> trackIds;
         if (is_pSource) {
@@ -187,7 +187,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
     int crateId;
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
-                [this, &crateName, &crateId] (void) {
+            [this, &crateName, &crateId] (void) {
         crateId = m_crateDao.getCrateIdByName(crateName);
     }, __PRETTY_FUNCTION__);
 
@@ -210,7 +210,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     bool locked = false;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &crateId, &locked, &crateName] (void) {
+            [this, &crateId, &locked, &crateName] (void) {
         crateId = m_crateDao.getCrateIdByName(crateName);
         locked = m_crateDao.isCrateLocked(crateId);
     }, __PRETTY_FUNCTION__);
@@ -222,7 +222,7 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     bool bAutoDj;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &bAutoDj, &crateId] (void) {
+            [this, &bAutoDj, &crateId] (void) {
         bAutoDj = m_crateDao.isCrateInAutoDj(crateId);
     }, __PRETTY_FUNCTION__);
     m_pAutoDjTrackSource->setChecked(bAutoDj);
@@ -265,7 +265,7 @@ void CrateFeature::slotCreateCrate() {
         int existingId;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &existingId, &name] (void) {
+                [this, &existingId, &name] (void) {
             existingId = m_crateDao.getCrateIdByName(name);
         }, __PRETTY_FUNCTION__);
 
@@ -285,7 +285,7 @@ void CrateFeature::slotCreateCrate() {
     int crateId;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &crateId, &name] (void) {
+            [this, &crateId, &name] (void) {
         crateId = m_crateDao.createCrate(name);
     }, __PRETTY_FUNCTION__);
 

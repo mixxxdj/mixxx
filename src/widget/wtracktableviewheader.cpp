@@ -123,7 +123,7 @@ void WTrackTableViewHeader::saveHeaderState() {
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &headerState, track_model] (void) {
+            [this, &headerState, track_model] (void) {
         track_model->setModelSetting("header_state", headerState);
     }, __PRETTY_FUNCTION__);
     //qDebug() << "Saving old header state:" << result << headerState;
@@ -139,7 +139,7 @@ void WTrackTableViewHeader::restoreHeaderState() {
     QString headerStateString;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, track_model,&headerStateString] (void) {
+            [this, track_model, &headerStateString] (void) {
         headerStateString = track_model->getModelSetting("header_state");
     }, __PRETTY_FUNCTION__);
 
@@ -162,7 +162,7 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
     QString headerStateString;
     // tro's lambda idea. This code calls Synchronously!
     m_pTrackCollection->callSync(
-                [this, track_model, &headerStateString] (void) {
+            [this, track_model, &headerStateString] (void) {
         headerStateString = track_model->getModelSetting("header_state");
     }, __PRETTY_FUNCTION__);
 

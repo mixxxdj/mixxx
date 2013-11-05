@@ -30,7 +30,7 @@ void LibraryTableModel::setTableModel(int id) {
 
     // TODO(xxx) move this to separate function on accessing DB (create table)
     m_pTrackCollection->callSync(
-                [this, &columns, &tableName] (void) {
+            [this, &columns, &tableName] (void) {
         QSqlQuery query(m_pTrackCollection->getDatabase());
         QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS "+tableName+" AS "
                 "SELECT " + columns.join(", ") +

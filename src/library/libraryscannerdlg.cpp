@@ -23,10 +23,10 @@
 
 #include "library/libraryscannerdlg.h"
 
-LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
-    QWidget(parent, f),
-    m_bCancelled(false),
-    m_bPaused(false) {
+LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) 
+        : QWidget(parent, f),
+          m_bCancelled(false),
+          m_bPaused(false) {
 
     setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 

@@ -346,9 +346,9 @@ const QString BaseSqlTableModel::currentSearch() const {
 }
 
 void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extraFilter) {
-//    if (sDebug) {
-    DBG() << this << "setSearch" << searchText;
-//    }
+    if (sDebug) {
+        qDebug() << this << "setSearch" << searchText;
+    }
 
     bool searchIsDifferent = m_currentSearch.isNull() || m_currentSearch != searchText;
     bool filterDisabled = (m_currentSearchFilter.isNull() && extraFilter.isNull());
@@ -373,7 +373,7 @@ void BaseSqlTableModel::search(const QString& searchText, const QString& extraFi
 
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this] (void) {
+             [this] (void) {
         select();
     }, __PRETTY_FUNCTION__);
 }
@@ -644,8 +644,8 @@ TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
     TrackPointer trackPointer;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &trackId, &trackPointer] (void) {
-        trackPointer = m_trackDAO.getTrack( trackId );
+            [this, &trackId, &trackPointer] (void) {
+        trackPointer = m_trackDAO.getTrack(trackId);
     }, __PRETTY_FUNCTION__);
     return trackPointer;
 }

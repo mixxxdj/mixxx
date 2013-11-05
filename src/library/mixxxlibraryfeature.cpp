@@ -136,7 +136,6 @@ MixxxLibraryFeature::~MixxxLibraryFeature() {
     delete m_pLibraryTableModel;
 }
 
-
 void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
                     MixxxKeyboard* pKeyboard) {
     m_pHiddenView = new DlgHidden(pLibrary,
@@ -167,7 +166,7 @@ void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this] (void) {
+                [this] (void) {
             m_pLibraryTableModel->select();
         }, __PRETTY_FUNCTION__);
     }
@@ -206,7 +205,7 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         bool result = false;
         // tro's lambda idea. This code calls synchronously!
         m_pTrackCollection->callSync(
-                    [this, &files, &result] (void) {
+                [this, &files, &result] (void) {
             // Adds track, does not insert duplicates, handles unremoving logic.
             QList<int> trackIds = m_trackDao.addTracks(files, true);
             result = trackIds.size() > 0;

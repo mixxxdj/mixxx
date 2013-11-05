@@ -16,8 +16,6 @@
 #include "library/baseexternalplaylistmodel.h"
 #include "library/treeitemmodel.h"
 
-//class LibraryTableModel;
-//class MissingTableModel;
 class TrackCollection;
 class BaseExternalPlaylistModel;
 

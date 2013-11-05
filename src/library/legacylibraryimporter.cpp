@@ -127,7 +127,7 @@ void LegacyLibraryImporter::import() {
                 TrackPointer pTrack(&trackInfo17, &doNothing);
                 // tro's lambda idea. This code calls synchronously!
                 m_pTrackCollection->callSync(
-                            [this, &pTrack] (void) {
+                        [this, &pTrack] (void) {
                     m_trackDao.saveTrack(pTrack);
                 }, __PRETTY_FUNCTION__);
 

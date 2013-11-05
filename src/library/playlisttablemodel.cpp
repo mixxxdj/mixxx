@@ -168,7 +168,6 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     });
 }
 
-
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
                                    const QModelIndex& destIndex) {
 

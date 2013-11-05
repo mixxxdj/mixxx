@@ -21,21 +21,21 @@
 #define MAX_LAMBDA_COUNT 8
 
 TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
-    : m_pConfig(pConfig),
-      m_pDatabase(NULL),
-      m_pPlaylistDao(NULL),
-      m_pCrateDao(NULL),
-      m_pCueDao(NULL),
-      m_pAnalysisDao(NULL),
-      m_pTrackDao(NULL),
-      m_stop(false),
-      m_semLambdasReadyToCall(0),
-      m_semLambdasFree(MAX_LAMBDA_COUNT),
-      m_pCOTPlaylistIsBusy(NULL),
-      m_supportedFileExtensionsRegex(
-          SoundSourceProxy::supportedFileExtensionsRegex(),
-          Qt::CaseInsensitive),
-      m_inCallSyncCount(0) {
+        : m_pConfig(pConfig),
+          m_pDatabase(NULL),
+          m_pPlaylistDao(NULL),
+          m_pCrateDao(NULL),
+          m_pCueDao(NULL),
+          m_pAnalysisDao(NULL),
+          m_pTrackDao(NULL),
+          m_stop(false),
+          m_semLambdasReadyToCall(0),
+          m_semLambdasFree(MAX_LAMBDA_COUNT),
+          m_pCOTPlaylistIsBusy(NULL),
+          m_supportedFileExtensionsRegex(
+                  SoundSourceProxy::supportedFileExtensionsRegex(),
+                  Qt::CaseInsensitive),
+          m_inCallSyncCount(0) {
     DBG() << "TrackCollection constructor \tfrom thread id="
           << QThread::currentThreadId() << "name="
           << QThread::currentThread()->objectName();

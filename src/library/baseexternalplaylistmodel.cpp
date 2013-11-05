@@ -48,7 +48,7 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     int track_id = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &location, &track_dao, &track_already_in_library, &track_id] (void) {
+            [this, &location, &track_dao, &track_already_in_library, &track_id] (void) {
         track_id = track_dao.getTrackId(location);
         track_already_in_library = track_id >= 0;
         if (track_id < 0) {

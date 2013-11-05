@@ -903,26 +903,21 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
                     this, SLOT(slotTrackDirty(TrackInfoObject*)),
                     Qt::DirectConnection);
-//                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(clean(TrackInfoObject*)),
                     this, SLOT(slotTrackClean(TrackInfoObject*)),
                     Qt::DirectConnection);
-//                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(changed(TrackInfoObject*)),
                     this, SLOT(slotTrackChanged(TrackInfoObject*)),
                     Qt::DirectConnection);
-//                    Qt::QueuedConnection); // tro
             connect(pTrack.data(), SIGNAL(save(TrackInfoObject*)),
                     this, SLOT(slotTrackSave(TrackInfoObject*)),
                     Qt::DirectConnection);
-//                    Qt::QueuedConnection); // tro
 
             m_sTracksMutex.lock();
             // Automatic conversion to a weak pointer
             m_sTracks[id] = pTrack;
             qDebug() << "m_sTracks.count() =" << m_sTracks.count();
             m_sTracksMutex.unlock();
-
             m_trackCache.insert(id, new TrackPointer(pTrack));
 
             // If the header hasn't been parsed, parse it but only after we set the

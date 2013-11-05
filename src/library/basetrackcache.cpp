@@ -85,7 +85,6 @@ int BaseTrackCache::fieldIndex(const QString columnName) const {
     return m_columnIndex.value(columnName, -1);
 }
 
-//
 void BaseTrackCache::slotTracksAdded(QSet<int> trackIds) {
     if (sDebug) {
         qDebug() << this << "slotTracksAdded" << trackIds.size();
@@ -146,7 +145,6 @@ void BaseTrackCache::ensureCached(int trackId) {
     updateTrackInIndex(trackId);
 }
 
-//
 void BaseTrackCache::ensureCached(QSet<int> trackIds) {
     updateTracksInIndex(trackIds);
 }
@@ -256,7 +254,6 @@ void BaseTrackCache::buildIndex() {
     m_bIndexBuilt = true;
 }
 
-//
 void BaseTrackCache::updateTrackInIndex(int trackId) {
     QSet<int> trackIds;
     trackIds.insert(trackId);

@@ -56,7 +56,7 @@ void DlgHidden::onShow() {
     slotActivateButtons(false);
     // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
-                [this] (void) {
+            [this] (void) {
         m_pHiddenTableModel->select();
     }, __PRETTY_FUNCTION__);
 }

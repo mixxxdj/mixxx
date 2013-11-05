@@ -341,7 +341,7 @@ void DlgPreferences::showSoundHardwarePage()
     contentsTreeWidget->setCurrentItem(m_pSoundButton);
 }
 
-bool DlgPreferences::eventFilter(QObject * o, QEvent * e) {
+bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     // Send a close signal if dialog is closing
     if (e->type() == QEvent::Hide) {
         onHide();

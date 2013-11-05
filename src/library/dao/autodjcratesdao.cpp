@@ -530,9 +530,9 @@ void AutoDJCratesDAO::slotTrackDirty(int trackId) {
     // UPDATE temp_autodj_crates SET timesplayed = :newplayed WHERE track_id = :track_id AND timesplayed = :oldplayed;
     QSqlQuery oQuery(m_rDatabase);
     oQuery.prepare("UPDATE " AUTODJCRATES_TABLE " SET "
-                   AUTODJCRATESTABLE_TIMESPLAYED " = :newplayed WHERE "
-                   AUTODJCRATESTABLE_TRACKID " = :track_id AND "
-                   AUTODJCRATESTABLE_TIMESPLAYED " = :oldplayed");
+            AUTODJCRATESTABLE_TIMESPLAYED " = :newplayed WHERE "
+            AUTODJCRATESTABLE_TRACKID " = :track_id AND "
+            AUTODJCRATESTABLE_TIMESPLAYED " = :oldplayed");
     oQuery.bindValue(":track_id", trackId);
     oQuery.bindValue(":oldplayed", iPlayed - 1);
     oQuery.bindValue(":newplayed", iPlayed);

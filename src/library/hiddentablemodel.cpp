@@ -18,7 +18,7 @@ void HiddenTableModel::setTableModel(int id){
     const QString tableName("hidden_songs");
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &tableName] (void) {
+            [this, &tableName] (void) {
         QSqlQuery query(m_pTrackCollection->getDatabase());
 
         QStringList columns;
@@ -78,7 +78,8 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
     m_pTrackCollection->callAsync(
                 [this, trackIds] (void) {
         m_trackDAO.unhideTracks(trackIds);
-        // TODO(rryan) : do not select, instead route event to BTC and notify from there.
+        // TODO(rryan) : do not select, instead route event to BTC and notify from 
+        // there.
         select(); //Repopulate the data model.
     }, __PRETTY_FUNCTION__);
 }

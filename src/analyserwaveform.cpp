@@ -10,7 +10,6 @@
 #include "engine/engineobject.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilteriir.h"
-//#include "library/trackcollection.h"
 #include "library/dao/analysisdao.h"
 #include "trackinfoobject.h"
 #include "waveform/waveformfactory.h"

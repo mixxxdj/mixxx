@@ -448,7 +448,7 @@ void TrackInfoObject::setAlbum(QString s) {
         setDirty(true);
 }
 
-QString TrackInfoObject::getYear()  const {
+QString TrackInfoObject::getYear() const {
     QMutexLocker lock(&m_qMutex);
     return m_sYear;
 }

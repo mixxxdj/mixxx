@@ -52,19 +52,19 @@ class LibraryScanner : public QThread {
     void addChunkToDatabase();
 
     QMutex m_pauseMutex;
-public slots:
+  public slots:
     void cancel();
     void resetCancel();
     void pause();
     void resume();
     void updateProgress();
-signals:
+  signals:
     void startedLoading();
     void progressLoading(QString path);
     void finishedLoading();
     void scanFinished();
     void progressHashing(QString);
-private:
+  private:
     TrackCollection* m_pTrackCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
                              // since we run in a different thread
