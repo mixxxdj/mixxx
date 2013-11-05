@@ -18,14 +18,14 @@ void PlaylistDAO::initialize() {
 }
 
 int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
-    // qDebug() << "PlaylistDAO::createPlaylist"
-    //          << QThread::currentThread()
-    //          << m_database.connectionName();
-    //Start the transaction
+    //qDebug() << "PlaylistDAO::createPlaylist"
+    //         << QThread::currentThread()
+    //         << m_database.connectionName();
+    // Start the transaction
     ScopedTransaction transaction(m_database);
 
-    //Find out the highest position for the existing playlists so we know what
-    //position this playlist should have.
+    // Find out the highest position for the existing playlists so we know what
+    // position this playlist should have.
     QSqlQuery query(m_database);
     query.prepare("SELECT max(position) as posmax FROM Playlists");
 
@@ -38,7 +38,7 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     int position = 0;
     if (query.next()) {
         position = query.value(query.record().indexOf("posmax")).toInt();
-        position++; //Append after the last playlist.
+        position++; // Append after the last playlist.
     }
 
     //qDebug() << "Inserting playlist" << name << "at position" << position;
@@ -55,14 +55,14 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     }
 
     int playlistId = query.lastInsertId().toInt();
-    //Commit the transaction
+    // Commit the transaction
     transaction.commit();
     emit(added(playlistId));
     return playlistId;
 }
 
-QString PlaylistDAO::getPlaylistName(const int playlistId) {
-    // qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
+QString PlaylistDAO::getPlaylistName(const int playlistId) const {
+    //qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT name FROM Playlists "
@@ -83,9 +83,9 @@ QString PlaylistDAO::getPlaylistName(const int playlistId) {
     return name;
 }
 
-QList<int> PlaylistDAO::getTrackIds(const int playlistId) {
+QList<int> PlaylistDAO::getTrackIds(const int playlistId) const {
     QSqlQuery query(m_database);
-    query.prepare("SELECT DISTINCT track_id from PlaylistTracks "
+    query.prepare("SELECT DISTINCT track_id FROM PlaylistTracks "
                   "WHERE playlist_id = :id");
     query.bindValue(":id", playlistId);
 
@@ -102,8 +102,8 @@ QList<int> PlaylistDAO::getTrackIds(const int playlistId) {
     return ids;
 }
 
-int PlaylistDAO::getPlaylistIdFromName(const QString& name) {
-    // qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
+int PlaylistDAO::getPlaylistIdFromName(const QString& name) const {
+    //qDebug() << "PlaylistDAO::getPlaylistIdFromName" << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT id FROM Playlists WHERE name = :name");
@@ -118,15 +118,14 @@ int PlaylistDAO::getPlaylistIdFromName(const QString& name) {
     return -1;
 }
 
-void PlaylistDAO::deletePlaylist(const int playlistId)
-{
-    // qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
+void PlaylistDAO::deletePlaylist(const int playlistId) {
+    //qDebug() << "PlaylistDAO::deletePlaylist" << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
 
-    //Get the playlist id for this
+    // Get the playlist id for this
     QSqlQuery query(m_database);
 
-    //Delete the row in the Playlists table.
+    // Delete the row in the Playlists table.
     query.prepare("DELETE FROM Playlists "
                   "WHERE id= :id");
     query.bindValue(":id", playlistId);
@@ -135,7 +134,7 @@ void PlaylistDAO::deletePlaylist(const int playlistId)
         return;
     }
 
-    //Delete the tracks in this playlist from the PlaylistTracks table.
+    // Delete the tracks in this playlist from the PlaylistTracks table.
     query.prepare("DELETE FROM PlaylistTracks "
                   "WHERE playlist_id = :id");
     query.bindValue(":id", playlistId);
@@ -178,7 +177,7 @@ bool PlaylistDAO::setPlaylistLocked(const int playlistId, const bool locked) {
     return true;
 }
 
-bool PlaylistDAO::isPlaylistLocked(const int playlistId) {
+bool PlaylistDAO::isPlaylistLocked(const int playlistId) const {
     QSqlQuery query(m_database);
     query.prepare("SELECT locked FROM Playlists WHERE id = :id");
     query.bindValue(":id", playlistId);
@@ -242,8 +241,7 @@ bool PlaylistDAO::appendTrackToPlaylist(const int trackId, const int playlistId)
 }
 
 /** Find out how many playlists exist. */
-unsigned int PlaylistDAO::playlistCount()
-{
+unsigned int PlaylistDAO::playlistCount() const {
     // qDebug() << "PlaylistDAO::playlistCount" << QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
     query.prepare("SELECT count(*) as count FROM Playlists");
@@ -258,10 +256,9 @@ unsigned int PlaylistDAO::playlistCount()
     return numRecords;
 }
 
-int PlaylistDAO::getPlaylistId(const int index)
-{
-    // qDebug() << "PlaylistDAO::getPlaylistId"
-    //          << QThread::currentThread() << m_database.connectionName();
+int PlaylistDAO::getPlaylistId(const int index) const {
+    //qDebug() << "PlaylistDAO::getPlaylistId"
+    //         << QThread::currentThread() << m_database.connectionName();
 
     QSqlQuery query(m_database);
     query.prepare("SELECT id FROM Playlists");
@@ -281,7 +278,7 @@ int PlaylistDAO::getPlaylistId(const int index)
     return -1;
 }
 
-PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) {
+PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) const {
     // qDebug() << "PlaylistDAO::getHiddenType"
     //          << QThread::currentThread() << m_database.connectionName();
 
@@ -301,7 +298,7 @@ PlaylistDAO::HiddenType PlaylistDAO::getHiddenType(const int playlistId) {
     return PLHT_UNKNOWN;
 }
 
-bool PlaylistDAO::isHidden(const int playlistId) {
+bool PlaylistDAO::isHidden(const int playlistId) const {
     // qDebug() << "PlaylistDAO::isHidden"
     //          << QThread::currentThread() << m_database.connectionName();
 
@@ -365,8 +362,8 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
     // get positions in reversed order
     qSort(positions.begin(), positions.end(), qGreater<int>());
 
-    // qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
-    //          << QThread::currentThread() << m_database.connectionName();
+    //qDebug() << "PlaylistDAO::removeTrackFromPlaylist"
+    //         << QThread::currentThread() << m_database.connectionName();
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     foreach (int position , positions) {
@@ -387,7 +384,7 @@ void PlaylistDAO::removeTracksFromPlaylist(const int playlistId, QList<int>& pos
         }
         int trackId = query.value(query.record().indexOf("track_id")).toInt();
 
-        //Delete the track from the playlist.
+        // Delete the track from the playlist.
         query.prepare("DELETE FROM PlaylistTracks "
                     "WHERE playlist_id=:id AND position= :position");
         query.bindValue(":id", playlistId);
@@ -546,7 +543,7 @@ void PlaylistDAO::addToAutoDJQueue(const int playlistId, const bool bTop) {
     }
 }
 
-int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) {
+int PlaylistDAO::getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const {
     // Find out the highest position existing in the playlist so we know what
     // position this track should have.
     QSqlQuery query(m_database);
@@ -623,9 +620,9 @@ bool PlaylistDAO::copyPlaylistTracks(const int sourcePlaylistID, const int targe
     return true;
 }
 
-int PlaylistDAO::getMaxPosition(const int playlistId) {
-    //Find out the highest position existing in the playlist so we know what
-    //position this track should have.
+int PlaylistDAO::getMaxPosition(const int playlistId) const {
+    // Find out the highest position existing in the playlist so we know what
+    // position this track should have.
     QSqlQuery query(m_database);
     query.prepare("SELECT max(position) as position FROM PlaylistTracks "
                   "WHERE playlist_id = :id");
@@ -642,30 +639,52 @@ int PlaylistDAO::getMaxPosition(const int playlistId) {
     return position;
 }
 
-void PlaylistDAO::removeTrackFromPlaylists(const int trackId) {
-    QSqlQuery query(m_database);
-    query.prepare("DELETE FROM PlaylistTracks WHERE "
-                  "track_id=:=id");
-    query.bindValue(":id", trackId);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
+void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
+    QStringList trackIdList;
+    foreach (int id, trackIds) {
+        if (trackIdList.count() >= 255) { 
+            // Avoid that the resulting SQL query to exceed the maximum length
+            // The maximum number of bytes in the text of an SQL statement is 
+            // limited to SQLITE_MAX_SQL_LENGTH which defaults to 1000000 
+            // (from http://www.sqlite.org/limits.html)
+            removeTracksFromPlaylistsInner(trackIdList);
+            trackIdList.clear();
+        }
+        trackIdList << QString::number(id);
     }
+    removeTracksFromPlaylistsInner(trackIdList);
 }
 
-void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& ids) {
-    QStringList idList;
-    foreach (int id, ids) {
-        idList << QString::number(id);
-    }
+void PlaylistDAO::removeTracksFromPlaylistsInner(const QStringList& trackIdList) {
     QSqlQuery query(m_database);
+    query.prepare(QString("SELECT DISTINCT playlist_id FROM PlaylistTracks WHERE track_id in (%1)")
+                  .arg(trackIdList.join(",")));
+
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    // Collect all ids of the playlists that contains the tracks to remove
+    QList<int> removedTracksPlaylistIds;
+    const int playlistIDColoumn = query.record().indexOf("playlist_id");
+    while (query.next()) {
+        removedTracksPlaylistIds.append(query.value(playlistIDColoumn).toInt());
+    }
+
     query.prepare(QString("DELETE FROM PlaylistTracks WHERE track_id in (%1)")
-                  .arg(idList.join(",")));
+                  .arg(trackIdList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    foreach (int playlistId, removedTracksPlaylistIds) {
+        emit(changed(playlistId));
     }
 }
 
-int PlaylistDAO::tracksInPlaylist(const int playlistId) {
+int PlaylistDAO::tracksInPlaylist(const int playlistId) const {
     QSqlQuery query(m_database);
     query.prepare("SELECT COUNT(id) AS count FROM PlaylistTracks "
                   "WHERE playlist_id = :playlist_id");
@@ -682,3 +701,91 @@ int PlaylistDAO::tracksInPlaylist(const int playlistId) {
     }
     return count;
 }
+
+void PlaylistDAO::moveTrack(const int playlistId, const int oldPosition, const int newPosition) {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+
+    // Algorithm for code below
+    // Case 1: destination < source (newPositon < oldPosition)
+    //    1) Set position = -1 where pos=source -- Gives that track a dummy index to keep stuff simple.
+    //    2) Decrement position where pos >= dest AND pos < source
+    //    3) Set position = dest where pos=-1 -- Move track from dummy pos to final destination.
+
+     // Case 2: destination > source (newPos > oldPos)
+     //   1) Set position=-1 where pos=source -- Give track a dummy index again.
+     //   2) Decrement position where pos > source AND pos <= dest
+     //   3) Set postion=dest where pos=-1 -- Move that track from dummy pos to final destination
+
+    QString queryString;
+
+    // Move moved track to  dummy position -1
+    queryString = QString("UPDATE PlaylistTracks SET position=-1 "
+                          "WHERE position=%1 AND "
+                          "playlist_id=%2").arg(QString::number(oldPosition),
+                                                QString::number(playlistId));
+    query.exec(queryString);
+
+    if (newPosition < oldPosition) {
+        queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
+                              "WHERE position >= %1 AND position < %2 AND "
+                              "playlist_id=%3").arg(QString::number(newPosition),
+                                                    QString::number(oldPosition),
+                                                    QString::number(playlistId));
+    } else {
+        queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
+                              "WHERE position>%1 AND position<=%2 AND "
+                              "playlist_id=%3").arg(QString::number(oldPosition),
+                                                    QString::number(newPosition),
+                                                    QString::number(playlistId));
+    }
+    query.exec(queryString);
+
+    queryString = QString("UPDATE PlaylistTracks SET position = %1 "
+                          "WHERE position=-1 AND "
+                          "playlist_id=%2").arg(QString::number(newPosition),
+                                                QString::number(playlistId));
+    query.exec(queryString);
+
+    transaction.commit();
+
+    // Print out any SQL error, if there was one.
+    if (query.lastError().isValid()) {
+        qDebug() << query.lastError();
+    }
+
+    emit(changed(playlistId));
+}
+
+void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& positions) {
+    ScopedTransaction transaction(m_database);
+    QSqlQuery query(m_database);
+
+    int seed = QDateTime::currentDateTime().toTime_t();
+    qsrand(seed);
+
+    // This is a simple Fisher-Yates shuffling algorithm
+    foreach (int oldPosition, positions) {
+        int random = (int)(qrand() / (RAND_MAX + 1.0) * (positions.count()));
+        int newPosition = positions.at(random);
+        qDebug() << "Swapping tracks " << oldPosition << " and " << newPosition;
+        QString swapQuery = "UPDATE PlaylistTracks SET position=%1 "
+                "WHERE position=%2 AND playlist_id=%3";
+        query.exec(swapQuery.arg(QString::number(-1),
+                                 QString::number(oldPosition),
+                                 QString::number(playlistId)));
+        query.exec(swapQuery.arg(QString::number(oldPosition),
+                                 QString::number(newPosition),
+                                 QString::number(playlistId)));
+        query.exec(swapQuery.arg(QString::number(newPosition),
+                                 QString::number(-1),
+                                 QString::number(playlistId)));
+
+        if (query.lastError().isValid())
+            qDebug() << query.lastError();
+    }
+
+    transaction.commit();
+    emit(changed(playlistId));
+}
+

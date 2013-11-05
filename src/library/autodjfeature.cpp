@@ -3,6 +3,7 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
+#include <QMenu>
 
 #include "library/autodjfeature.h"
 #include "library/playlisttablemodel.h"
@@ -114,7 +115,7 @@ void AutoDJFeature::activate() {
     emit(restoreSearch(QString())); //Null String disables search box
 }
 
-bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 

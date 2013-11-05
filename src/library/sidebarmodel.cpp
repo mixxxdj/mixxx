@@ -250,7 +250,7 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
 }
 
 bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
-                              QWidget* pSource) {
+                              QObject* pSource) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
@@ -259,7 +259,7 @@ bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
-                return feature->dropAcceptChild(index, urls,pSource);
+                return feature->dropAcceptChild(index, urls, pSource);
             }
         }
     }

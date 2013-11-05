@@ -57,6 +57,10 @@ PlayerManager::PlayerManager(ConfigObject<ConfigValue>* pConfig,
             m_pEngine);
     m_pSoundManager->registerOutput(AudioOutput(AudioOutput::HEADPHONES),
             m_pEngine);
+    for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
+      m_pSoundManager->registerOutput(AudioOutput(AudioOutput::BUS, 0, o),
+                                      m_pEngine);
+    }
 }
 
 PlayerManager::~PlayerManager() {

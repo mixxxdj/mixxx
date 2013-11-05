@@ -26,7 +26,7 @@ class PlayerManager;
 class ControlObject;
 class SoundDevice;
 class DlgPrefSoundItem;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 
 /*
  * TODO(bkgood) (n-decks) establish a signal/slot connection with a signal
@@ -65,8 +65,8 @@ private:
     SoundManager *m_pSoundManager;
     PlayerManager *m_pPlayerManager;
     ConfigObject<ConfigValue> *m_pConfig;
-    ControlObjectThreadMain* m_pMasterUnderflowCount;
-    ControlObjectThreadMain* m_pMasterLatency;
+    ControlObjectThread* m_pMasterUnderflowCount;
+    ControlObjectThread* m_pMasterLatency;
     QList<SoundDevice*> m_inputDevices;
     QList<SoundDevice*> m_outputDevices;
     bool m_settingsModified;

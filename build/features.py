@@ -4,6 +4,7 @@ import os
 import util
 from mixxx import Feature
 import SCons.Script as SCons
+import depends
 
 class HSS1394(Feature):
     def description(self):
@@ -499,7 +500,7 @@ class ModPlug(Feature):
             raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
-        build.env.Uic4('dlgprefmodplugdlg.ui')
+        depends.Qt.uic(build)('dlgprefmodplugdlg.ui')
         return ['soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
 
 
@@ -661,10 +662,16 @@ class Verbose(Feature):
 
             build.env['QT4_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
             build.env['QT4_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
-            build.env['QT4_RCCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT4_QRCCOMSTR'] = '[QRC] $SOURCE'
             build.env['QT4_UICCOMSTR'] = '[UIC4] $SOURCE'
             build.env['QT4_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
             build.env['QT4_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
+
+            build.env['QT5_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
+            build.env['QT5_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
+            build.env['QT5_QRCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT5_UICCOMSTR'] = '[UIC5] $SOURCE'
+            build.env['QT5_MOCCOMSTR'] = '[MOC] $SOURCE'
 
 class MSVSHacks(Feature):
     """Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable
@@ -790,7 +797,7 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        build.env.Uic4('dlgprefshoutcastdlg.ui')
+        depends.Qt.uic(build)('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
                 'shoutcast/shoutcastmanager.cpp',
                 'engine/sidechain/engineshoutcast.cpp']
@@ -1140,30 +1147,6 @@ class Tuned(Feature):
                     build.env.Append(CCFLAGS = '/favor:' + build.machine)
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"
-
-class PromoTracks(Feature):
-    def description(self):
-        return "Promotional tracks feature."
-
-    def enabled(self, build):
-        build.flags['promo'] = util.get_flags(build.env, 'promo', 0)
-        if int(build.flags['promo']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('promo', 'Set to 1 to include promo tracks feature (deprecated, unused).', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-        build.env.Append(CPPDEFINES = '__PROMO__')
-
-    def sources(self, build):
-        return ['library/promotracksfeature.cpp',
-                'library/bundledsongswebview.cpp',
-                "library/featuredartistswebview.cpp",
-                ]
 
 class AutoDjCrates(Feature):
     def description(self):

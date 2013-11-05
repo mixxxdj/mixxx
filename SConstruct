@@ -54,7 +54,6 @@ available_features = [features.HifiEq,
                       features.MSVCDebug,
                       features.MSVSHacks,
                       features.Vamp,
-                      features.PromoTracks,
                       features.AutoDjCrates,
 
                       # "Features" of dubious quality

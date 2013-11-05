@@ -32,7 +32,7 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     QString tmp_string;
     setupUi(this);
 
-    m_pUpdateShoutcastFromPrefs = new ControlObjectThreadMain(
+    m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
             SHOUTCAST_PREF_KEY, "update_from_prefs");
 
     // Enable live broadcasting checkbox

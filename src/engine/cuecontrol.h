@@ -87,6 +87,7 @@ class CueControl : public EngineControl {
     virtual ~CueControl();
 
     virtual void hintReader(QVector<Hint>* pHintList);
+    bool isCuePreviewing();
 
   public slots:
     void trackLoaded(TrackPointer pTrack);
@@ -112,7 +113,6 @@ class CueControl : public EngineControl {
     void cuePreview(double v);
     void cueCDJ(double v);
     void cueDefault(double v);
-    void playFromCuePreview(double v);
 
   private:
     // These methods are not thread safe, only call them when the lock is held.

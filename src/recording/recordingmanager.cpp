@@ -1,6 +1,5 @@
-/*
- * Created 03/26/2011 by Tobias Rafreider
- */
+// Created 03/26/2011 by Tobias Rafreider
+
 #include <QMutex>
 #include <QDir>
 #include <QDebug>
@@ -18,7 +17,7 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
           m_recording_base_file(""),
           m_recordingFile(""),
           m_recordingLocation(""),
-          m_isRecording(false),
+          m_bRecording(false),
           m_iNumberOfBytesRecored(0),
           m_split_size(0),
           m_iNumberSplits(0) {
@@ -46,8 +45,10 @@ RecordingManager::RecordingManager(ConfigObject<ConfigValue>* pConfig, EngineMas
 RecordingManager::~RecordingManager()
 {
     qDebug() << "Delete RecordingManager";
-    delete m_recReadyCO;
+    
     delete m_recReady;
+    delete m_recReadyCO;
+    delete m_pToggleRecording;
 }
 
 QString RecordingManager::formatDateTimeForFilename(QDateTime dateTime) const {
@@ -84,20 +85,20 @@ void RecordingManager::startRecording(bool generateFileName) {
 
     if(generateFileName) {
         m_iNumberSplits = 1;
-        //Append file extension
+        // Append file extension.
         QString date_time_str = formatDateTimeForFilename(QDateTime::currentDateTime());
         m_recordingFile = QString("%1.%2")
                 .arg(date_time_str, encodingType.toLower());
 
-        // Storing the absolutePath of the recording file without file extension
+        // Storing the absolutePath of the recording file without file extension.
         m_recording_base_file = getRecordingDir();
         m_recording_base_file.append("/").append(date_time_str);
-        //appending file extension to get the filelocation
+        // Appending file extension to get the filelocation.
         m_recordingLocation = m_recording_base_file + "."+ encodingType.toLower();
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Path"), m_recordingLocation);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CuePath"), m_recording_base_file +".cue");
     } else {
-        //This is only executed if filesplit occurs
+        // This is only executed if filesplit occurs.
         ++m_iNumberSplits;
         QString new_base_filename = m_recording_base_file +"part"+QString::number(m_iNumberSplits);
         m_recordingLocation = new_base_filename + "." +encodingType.toLower();
@@ -121,7 +122,7 @@ void RecordingManager::stopRecording()
 void RecordingManager::setRecordingDir() {
     QDir recordDir(m_pConfig->getValueString(
         ConfigKey(RECORDING_PREF_KEY, "Directory")));
-    // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord
+    // Note: the default ConfigKey for recordDir is set in DlgPrefRecord::DlgPrefRecord.
 
     if (!recordDir.exists()) {
         if (recordDir.mkpath(recordDir.absolutePath())) {
@@ -135,22 +136,21 @@ void RecordingManager::setRecordingDir() {
 }
 
 QString& RecordingManager::getRecordingDir() {
-    // Update current recording dir from preferences
+    // Update current recording dir from preferences.
     setRecordingDir();
     return m_recordingDir;
 }
 
-//Only called when recording is active
+// Only called when recording is active.
 void RecordingManager::slotBytesRecorded(int bytes)
 {
-    //auto conversion to long
+    // auto conversion to long
     m_iNumberOfBytesRecored += bytes;
     if(m_iNumberOfBytesRecored >= m_split_size)
     {
-        //stop and start recording
         stopRecording();
-        //Dont generate a new filename
-        //This will reuse the previous filename but appends a suffix
+        // Dont generate a new filename.
+        // This will reuse the previous filename but append a suffix.
         startRecording(false);
     }
     emit(bytesRecorded(m_iNumberOfBytesRecored));
@@ -160,13 +160,13 @@ void RecordingManager::slotIsRecording(bool isRecordingActive)
 {
     //qDebug() << "SlotIsRecording " << isRecording;
 
-    //Notify the GUI controls, see dlgrecording.cpp
-    m_isRecording = isRecordingActive;
+    // Notify the GUI controls, see dlgrecording.cpp.
+    m_bRecording = isRecordingActive;
     emit(isRecording(isRecordingActive));
 }
 
 bool RecordingManager::isRecordingActive() {
-    return m_isRecording;
+    return m_bRecording;
 }
 
 QString& RecordingManager::getRecordingFile() {
@@ -179,7 +179,7 @@ QString& RecordingManager::getRecordingLocation() {
 
 long RecordingManager::getFileSplitSize()
 {
-     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY,"FileSize"));
+     QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
      if(fileSizeStr == SPLIT_650MB)
          return SIZE_650MB;
      else if(fileSizeStr == SPLIT_700MB)

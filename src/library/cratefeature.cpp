@@ -1,9 +1,10 @@
 // cratefeature.cpp
 // Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QFileDialog>
 #include <QInputDialog>
-#include <QMenu>
 #include <QLineEdit>
+#include <QMenu>
 
 #include "library/cratefeature.h"
 #include "library/parser.h"
@@ -108,7 +109,7 @@ QIcon CrateFeature::getIcon() {
 }
 
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                   QWidget *pSource) {
+                                   QObject* pSource) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     QList<QFileInfo> files;
