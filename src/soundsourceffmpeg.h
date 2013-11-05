@@ -45,6 +45,8 @@ extern "C" {
 #include <libavutil/opt.h>
 
 }
+#define SOUNDSOURCEFFMPEGDEBUG
+
 class TrackInfoObject;
 
 
@@ -83,8 +85,10 @@ private:
 
     EncoderFfmpegResample *m_pResample;
 
-    unsigned int m_iOffset;
+    int64_t m_iOffset;
+    int64_t m_iSeekOffset;    
     int64_t m_iCurrentMixxTs;
+    int64_t m_iLastFirstFfmpegByteOffset;
     int64_t m_iNextMixxxPCMPoint;
     bool m_bIsSeeked;
     int64_t m_iReadedBytes;
