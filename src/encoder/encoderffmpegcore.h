@@ -52,7 +52,7 @@ class EncoderCallback;
 
 class EncoderFfmpegCore : public Encoder {
 public:
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
     EncoderFfmpegCore(EncoderCallback* pCallback=NULL,
                       AVCodecID codec = AV_CODEC_ID_MP2);
 #else
@@ -75,7 +75,7 @@ private:
     int writeAudioFrame(AVFormatContext *oc, AVStream *st);
     void closeAudio(AVStream *st);
     void openAudio(AVCodec *codec, AVStream *st);
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
     AVStream *addStream(AVFormatContext *oc, AVCodec **codec,
                         enum AVCodecID codec_id);
 #else
@@ -113,7 +113,7 @@ private:
     uint64_t m_lRecorededBytes;
     uint64_t m_lDts;
     uint64_t m_lPts;
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
     enum AVCodecID m_SCcodecId;
 #else
     enum CodecID m_SCcodecId;

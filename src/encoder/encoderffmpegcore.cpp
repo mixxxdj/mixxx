@@ -40,7 +40,7 @@
 //
 
 // Constructor
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
 EncoderFfmpegCore::EncoderFfmpegCore(EncoderCallback* pCallback,
                                      AVCodecID codec)
 #else
@@ -237,7 +237,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
     m_lBitrate = bitrate * 1000;
     m_lSampleRate = samplerate;
 
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
     if (m_SCcodecId == AV_CODEC_ID_MP3) {
 #else
     if (m_SCcodecId == CODEC_ID_MP3) {
@@ -249,7 +249,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
         m_pEncoderFormat = av_guess_format(NULL, "output.mp3", NULL);
 #endif
 
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
     } else if (m_SCcodecId == AV_CODEC_ID_AAC) {
 #else
     } else if (m_SCcodecId == CODEC_ID_AAC) {
@@ -268,7 +268,7 @@ int EncoderFfmpegCore::initEncoder(int bitrate, int samplerate) {
         m_pEncodeFormatCtx->oformat->audio_codec=AV_CODEC_ID_VORBIS;
 #else
         m_pEncoderFormat = av_guess_format(NULL, "output.ogg", NULL);
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
         m_pEncoderFormat->audio_codec=AV_CODEC_ID_VORBIS;
 #else
         m_pEncoderFormat->audio_codec=CODEC_ID_VORBIS;
@@ -350,7 +350,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
         reSample(l_SFrame);
         // After we have turned our samples to destination
         // Format we must re-alloc l_SFrame.. it easier like this..
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
         avcodec_free_frame(&l_SFrame);
 #else
         av_free(l_SFrame);
@@ -479,7 +479,7 @@ void EncoderFfmpegCore::openAudio(AVCodec *codec, AVStream *stream) {
 }
 
 // Add an output stream.
-#ifndef __FFMPEGOLDAPI__
+#if LIBAVCODEC_VERSION_INT > 3544932
 AVStream *EncoderFfmpegCore::addStream(AVFormatContext *formatctx,
                                        AVCodec **codec, enum AVCodecID codec_id) {
 #else

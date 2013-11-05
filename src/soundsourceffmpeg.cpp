@@ -157,10 +157,9 @@ int SoundSourceFFmpeg::open() {
     m_pFormatCtx = avformat_alloc_context();
 
  // Enable this to use old slow MP3 Xing TOC
-#ifndef CODEC_ID_MP3
-    if ( LIBAVFORMAT_VERSION_INT > 3540580 ){
-        av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
-    }
+#if LIBAVCODEC_VERSION_INT > 3544932
+    qDebug() << "Using MP3 Xing TOC if needed";
+    av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
 #endif
 
     // Open file and make m_pFormatCtx
@@ -171,10 +170,8 @@ int SoundSourceFFmpeg::open() {
     }
     
     
-#ifndef CODEC_ID_MP3
-    if ( LIBAVFORMAT_VERSION_INT > 3540580 && l_iFormatOpts != NULL ){
+#if LIBAVCODEC_VERSION_INT > 3544932
        av_dict_free(&l_iFormatOpts);
-    }
 #endif
 
     m_pFormatCtx->max_analyze_duration = 999999999;
@@ -574,7 +571,9 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
                     }
 
                     //av_free_packet(&l_SPacket);
+#if LIBAVCODEC_VERSION_INT > 3544932
                     av_free( l_SPacket.data );
+#endif
                     l_SPacket.data = NULL;
                     l_SPacket.size = 0;
                     avcodec_get_frame_defaults(l_pFrame);
