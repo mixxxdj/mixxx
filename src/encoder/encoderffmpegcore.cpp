@@ -406,8 +406,6 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     l_SPacket.dts = m_lDts;
     l_SPacket.pts = m_lDts;
 
-    // qDebug() << "!!::" << l_SPacket.size << "index" << l_SPacket.stream_index;
-
     // Some times den is zero.. so 0 dived by 0 is
     // Something?
     if (m_pEncoderAudioStream->pts.den == 0) {
@@ -423,7 +421,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
         return -1;
     }
 
-    // qDebug() << "!!PP";
+
     av_free_packet(&l_SPacket);
     av_destruct_packet(&l_SPacket);
     av_free(l_SFrame);

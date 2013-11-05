@@ -19,7 +19,7 @@
 #include "encoder/encoderffmpegvorbis.h"
 
 // Constructor
-#ifdef AV_CODEC_ID_NONE
+#ifndef CODEC_ID_VORBIS
 EncoderFfmpegVorbis::EncoderFfmpegVorbis(EncoderCallback* pCallback) : EncoderFfmpegCore( pCallback, AV_CODEC_ID_VORBIS )
 #else
 EncoderFfmpegVorbis::EncoderFfmpegVorbis(EncoderCallback* pCallback) : EncoderFfmpegCore( pCallback, CODEC_ID_VORBIS )

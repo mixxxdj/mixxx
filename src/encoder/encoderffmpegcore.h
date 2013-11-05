@@ -37,7 +37,6 @@ extern "C" {
 // Compability
 #include <libavutil/mathematics.h>
 #include <libavutil/opt.h>
-
 }
 
 #include <QByteArray>

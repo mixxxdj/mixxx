@@ -51,8 +51,9 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
     m_pOutSampleFmt = outSampleFmt;
     m_pInSampleFmt = inSampleFmt;
 
-    qDebug() << m_pCodecCtx->sample_rate << "!" << m_pCodecCtx->channel_layout <<
-             ":" << m_pCodecCtx->channels;
+    //qDebug() << m_pCodecCtx->sample_rate << 
+    //           "!" << m_pCodecCtx->channel_layout <<
+    //         ":" << m_pCodecCtx->channels;
 
     // Some MP3/WAV don't tell this so make assumtion that
     // They are stereo not 5.1
