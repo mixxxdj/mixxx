@@ -70,36 +70,36 @@ void EngineRecord::updateFromPreferences() {
         m_pEncoder = NULL;
     }
 
-    if (m_Encoding == ENCODING_MP3) {
+    if (m_encoding == ENCODING_MP3) {
 #ifdef __FFMPEGFILE__
-        m_encoder = new EncoderFfmpegMp3(this);
+        m_pEncoder = new EncoderFfmpegMp3(this);
 #else
-        m_encoder = new EncoderMp3(this);
+        m_pEncoder = new EncoderMp3(this);
 #endif
-        m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
+        m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
-        if(m_encoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
-                                  m_samplerate->get()) < 0) {
-            delete m_encoder;
-            m_encoder = NULL;
+        if(m_pEncoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
+                                  m_pSamplerate->get()) < 0) {
+            delete m_pEncoder;
+            m_pEncoder = NULL;
 #ifdef __FFMPEGFILE__
             qDebug() << "MP3 recording is not supported. FFMPEG mp3 could not be initialized";
 #else
             qDebug() << "MP3 recording is not supported. Lame could not be initialized";
 #endif
         }
-    } else if (m_Encoding == ENCODING_OGG) {
+    } else if (m_encoding == ENCODING_OGG) {
 #ifdef __FFMPEGFILE__
-        m_encoder = new EncoderFfmpegVorbis(this);
+        m_pEncoder = new EncoderFfmpegVorbis(this);
 #else
-        m_encoder = new EncoderVorbis(this);
+        m_pEncoder = new EncoderVorbis(this);
 #endif
-        m_encoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
+        m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
-        if (m_encoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
-                                   m_samplerate->get()) < 0) {
-            delete m_encoder;
-            m_encoder = NULL;
+        if (m_pEncoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
+                                   m_pSamplerate->get()) < 0) {
+            delete m_pEncoder;
+            m_pEncoder = NULL;
 #ifdef __FFMPEGFILE__
             qDebug() << "OGG recording is not supported. FFMPEG OGG/Vorbis could not be initialized";
 #else
