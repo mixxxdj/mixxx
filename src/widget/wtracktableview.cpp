@@ -379,7 +379,6 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
                 return;
             }
         }
-
         QModelIndex index = indices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
@@ -390,8 +389,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
     }
 }
 
-void WTrackTableView::slotRemove()
-{
+void WTrackTableView::slotRemove() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
@@ -401,7 +399,7 @@ void WTrackTableView::slotRemove()
     }
 }
 
-void WTrackTableView::slotPurge(){
+void WTrackTableView::slotPurge() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
@@ -437,11 +435,9 @@ void WTrackTableView::slotOpenInFileBrowser() {
     }
 }
 
-void WTrackTableView::slotHide()
-{
+void WTrackTableView::slotHide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->hideTracks(indices);
@@ -449,11 +445,10 @@ void WTrackTableView::slotHide()
     }
 }
 
-void WTrackTableView::slotUnhide()
-{
+void WTrackTableView::slotUnhide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->unhideTracks(indices);
@@ -524,7 +519,7 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
     m_DlgTagFetcher.show();
 }
 
-void WTrackTableView::slotShowDlgTagFetcher(){
+void WTrackTableView::slotShowDlgTagFetcher() {
     QModelIndexList indices = selectionModel()->selectedRows();
 
     if (indices.size() > 0) {
@@ -827,9 +822,8 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     drag->exec(Qt::CopyAction);
 }
 
-/** Drag enter event, happens when a dragged item hovers over the track table view*/
-void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
-{
+// Drag enter event, happens when a dragged item hovers over the track table view
+void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
@@ -883,7 +877,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
-void WTrackTableView::dropEvent(QDropEvent * event){
+void WTrackTableView::dropEvent(QDropEvent * event) {
     TrackModel* trackModel = getTrackModel();
 
     // We only do things to the TrackModel in this method so if we don't have
@@ -1162,11 +1156,11 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         // Load track to position two because position one is
         // already loaded to the player
         playlistDao.insertTracksIntoPlaylist(trackIds,
-                                            iAutoDJPlaylistId, 2);
+                                             iAutoDJPlaylistId, 2);
     } else {
         // TODO(XXX): Care whether the append succeeded.
         playlistDao.appendTracksToPlaylist(
-            trackIds, iAutoDJPlaylistId);
+                trackIds, iAutoDJPlaylistId);
     }
 }
 

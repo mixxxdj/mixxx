@@ -341,8 +341,7 @@ void DlgPreferences::showSoundHardwarePage()
     contentsTreeWidget->setCurrentItem(m_pSoundButton);
 }
 
-bool DlgPreferences::eventFilter(QObject * o, QEvent * e)
-{
+bool DlgPreferences::eventFilter(QObject* o, QEvent* e) {
     // Send a close signal if dialog is closing
     if (e->type() == QEvent::Hide) {
         onHide();
@@ -395,15 +394,14 @@ void DlgPreferences::onShow() {
     emit(showDlg());
 }
 
-void DlgPreferences::rescanControllers()
-{
+void DlgPreferences::rescanControllers() {
     destroyControllerWidgets();
     setupControllerWidgets();
 }
 
-void DlgPreferences::destroyControllerWidgets()
-{
-    //XXX this, and the corresponding code over in onShow(), is pretty bad and messy; it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
+void DlgPreferences::destroyControllerWidgets() {
+    //XXX this, and the corresponding code over in onShow(), is pretty bad and messy;
+    // it should be wrapped up in a class so that constructors and destructors can handle this setup/teardown
 
     m_controllerWindowLinks.clear();
 

@@ -116,7 +116,7 @@ void WTrackTableViewHeader::saveHeaderState() {
         return;
     }
     // Convert the QByteArray to a Base64 string and save it.
-    QString headerState = QString(saveState().toBase64());
+    const QString headerState = QString(saveState().toBase64());
     //bool result =
     track_model->setModelSetting("header_state", headerState);
     //qDebug() << "Saving old header state:" << result << headerState;
@@ -149,8 +149,8 @@ bool WTrackTableViewHeader::hasPersistedHeaderState() {
 
     if (!headerStateString.isNull()) return true;
     return false;
-
 }
+
 void WTrackTableViewHeader::clearActions() {
     // The QActions are parented to the menu, so clearing deletes them. Since
     // they are deleted we don't have to disconnect their signals from the

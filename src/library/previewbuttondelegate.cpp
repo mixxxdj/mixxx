@@ -177,5 +177,3 @@ void PreviewButtonDelegate::previewDeckPlayChanged(double v) {
         }
     }
 }
-
-

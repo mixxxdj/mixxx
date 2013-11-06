@@ -39,7 +39,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     virtual ~PlaylistDAO();
 
     void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    void setDatabase(QSqlDatabase& database) { m_database = database; }
     // Create a playlist
     int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist

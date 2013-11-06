@@ -20,8 +20,8 @@ AnalysisLibraryTableModel::~AnalysisLibraryTableModel() {
 
 
 void AnalysisLibraryTableModel::showRecentSongs() {
-   m_bShowRecentSongs = true;
-   search(currentSearch());
+    m_bShowRecentSongs = true;
+    search(currentSearch());
 }
 
 void AnalysisLibraryTableModel::showAllSongs() {
