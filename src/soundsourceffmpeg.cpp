@@ -60,14 +60,20 @@ SoundSourceFFmpeg::SoundSourceFFmpeg(QString filename)
     m_pResample = NULL;
     m_fMixxBytePosition = 0;
     m_iLastFirstFfmpegByteOffset = 0;
+    m_iCurrentMixxTs = 0;
 
     this->setType(filename.section(".",-1).toLower());
 }
 
 SoundSourceFFmpeg::~SoundSourceFFmpeg() {
     if (m_pCodecCtx != NULL) {
+        // Enable If needed in future
+        //lock();
         avcodec_close(m_pCodecCtx);
+        //unlock();
+        //lock();
         avformat_close_input(&m_pFormatCtx);
+        //unlock();
     }
 
     if (m_pResample != NULL) {
@@ -162,26 +168,27 @@ int SoundSourceFFmpeg::open() {
     av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
 #endif
 
+    m_pFormatCtx->max_analyze_duration = 999999999;
+    // lock();
     // Open file and make m_pFormatCtx
     if (avformat_open_input(&m_pFormatCtx, qBAFilename.constData(), NULL,
                             &l_iFormatOpts)!=0) {
         qDebug() << "av_open_input_file: cannot open" << qBAFilename;
         return ERR;
     }
-    
-    
+    // unlock();
+
 #if LIBAVCODEC_VERSION_INT > 3544932
        av_dict_free(&l_iFormatOpts);
 #endif
 
-    m_pFormatCtx->max_analyze_duration = 999999999;
-
-
+    // lock();
     // Retrieve stream information
     if (avformat_find_stream_info(m_pFormatCtx, NULL)<0) {
         qDebug() << "av_find_stream_info: cannot open" << qBAFilename;
         return ERR;
     }
+    // unlock();
 
     //debug only (Enable if needed)
     //av_dump_format(m_pFormatCtx, 0, qBAFilename.constData(), false);
@@ -390,6 +397,12 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
 
     readBuffer.open(QIODevice::ReadWrite);
 
+    // Dirty hack to get Analyzer happy
+    if( m_bIsSeeked == FALSE && m_iCurrentMixxTs == 0 ){
+      seek(0);
+      m_bIsSeeked = FALSE;
+    }
+    //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep
     // place in mind..
     if (m_bIsSeeked == FALSE) {
@@ -428,9 +441,6 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
         av_init_packet(&l_SPacket);
     //}
 
-    if( m_bIsSeeked == FALSE && m_iCurrentMixxTs == 0 ){
-       seek(m_iNextMixxxPCMPoint);
-    }
 
     //while (readByteArray.size() < needed)
     while (!m_bReadLoop) {
@@ -665,13 +675,13 @@ int SoundSourceFFmpeg::parseHeader() {
         av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
     }
 #endif
-
+    lock();
     //qDebug() << "ffmpeg: parsing file:" << qBAFilename.constData();
     if (avformat_open_input(&FmtCtx, qBAFilename.constData(), NULL, &l_iFormatOpts) !=0) {
         qDebug() << "av_open_input_file: cannot open" << qBAFilename.constData();
         return ERR;
     }
-    
+
 #ifndef CODEC_ID_MP3
     if ( LIBAVFORMAT_VERSION_INT > 3540580 && l_iFormatOpts != NULL ){
        av_dict_free(&l_iFormatOpts);
@@ -679,13 +689,14 @@ int SoundSourceFFmpeg::parseHeader() {
 #endif
 
     FmtCtx->max_analyze_duration = 999999999;
-    
+
     // Retrieve stream information
     if (avformat_find_stream_info(FmtCtx, NULL)<0) {
         qDebug() << "av_find_stream_info: Can't find metadata" <<
                  qBAFilename.constData();
         return ERR;
     }
+    unlock();
     for (i=0; i<FmtCtx->nb_streams; i++)
         if (FmtCtx->streams[i]->codec->codec_type==AVMEDIA_TYPE_AUDIO) {
             m_iAudioStream=i;
@@ -751,7 +762,9 @@ int SoundSourceFFmpeg::parseHeader() {
     this->setBitrate((int)(CodecCtx->bit_rate / 1000));
     this->setSampleRate(CodecCtx->sample_rate);
     this->setChannels(CodecCtx->channels);
+    lock();
     avformat_close_input(&FmtCtx);
+    unlock();
     return OK;
 }
 
