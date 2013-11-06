@@ -336,7 +336,7 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
     if (l_iRet != 0) {
 #ifdef av_make_error_string
         qDebug() << "Can't fill FFMPEG frame: error " << l_iRet << "String '" <<
-                 av_make_error_string(l_strErrorBuff, 256, l_iRet) << "'" <<  
+                 av_make_error_string(l_strErrorBuff, 256, l_iRet) << "'" <<
                  m_iFltAudioCpyLen;
 #endif
         qDebug() << "Can't refill 1st FFMPEG frame!";
@@ -373,12 +373,12 @@ int EncoderFfmpegCore::writeAudioFrame(AVFormatContext *formatctx,
 #ifdef av_make_error_string
             qDebug() << "Can't refill FFMPEG frame: error " << l_iRet << "String '" <<
                      av_make_error_string(l_strErrorBuff, 256,
-                                          l_iRet) << "'" <<  m_iAudioCpyLen << 
-                                          " " <<  av_samples_get_buffer_size(
-                                          NULL, 2,
-                                          m_iAudioInputFrameSize,
-                                          m_pEncoderAudioStream->codec->sample_fmt,
-                                          1) << " " << m_pOutSize;
+                                          l_iRet) << "'" <<  m_iAudioCpyLen <<
+                     " " <<  av_samples_get_buffer_size(
+                         NULL, 2,
+                         m_iAudioInputFrameSize,
+                         m_pEncoderAudioStream->codec->sample_fmt,
+                         1) << " " << m_pOutSize;
 #endif
             qDebug() << "Can't refill 2nd FFMPEG frame!";
             return -1;

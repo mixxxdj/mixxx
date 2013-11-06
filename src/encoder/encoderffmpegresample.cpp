@@ -51,7 +51,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
     m_pOutSampleFmt = outSampleFmt;
     m_pInSampleFmt = inSampleFmt;
 
-    //qDebug() << m_pCodecCtx->sample_rate << 
+    //qDebug() << m_pCodecCtx->sample_rate <<
     //           "!" << m_pCodecCtx->channel_layout <<
     //         ":" << m_pCodecCtx->channels;
 
@@ -67,10 +67,10 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
     }
 
 
-    // They make big change in FFPEG 1.1 before that every format just passed 
-    // s16 back to application from FFMPEG 1.1 up MP3 pass s16p (Planar stereo 
-    // 16 bit) MP4/AAC FLTP (Planar 32 bit float) and OGG also FLTP 
-    // (WMA same thing) If sample type aint' S16 (Stero 16) example FFMPEG 1.1 
+    // They make big change in FFPEG 1.1 before that every format just passed
+    // s16 back to application from FFMPEG 1.1 up MP3 pass s16p (Planar stereo
+    // 16 bit) MP4/AAC FLTP (Planar 32 bit float) and OGG also FLTP
+    // (WMA same thing) If sample type aint' S16 (Stero 16) example FFMPEG 1.1
     // mp3 is s16p that ain't and mp4 FLTP (32 bit float)
     // NOT Going to work because MIXXX works with pure s16 that is not planar
     // GOOD thing is now this can handle allmost everything..
@@ -80,7 +80,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
         if (m_pSwrCtx != NULL) {
             qDebug() << "Freeing Resample context";
 
-// __FFMPEGOLDAPI__ Is what is used in FFMPEG < 0.10 and libav < 0.8.3. NO 
+// __FFMPEGOLDAPI__ Is what is used in FFMPEG < 0.10 and libav < 0.8.3. NO
 // libresample available..
 #ifndef __FFMPEGOLDAPI__
 
@@ -143,10 +143,10 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
         if (swr_init(m_pSwrCtx) < 0) {
 #endif
             m_pSwrCtx = NULL;
-            qDebug() << "ERROR!! Conventor not created: " <<  
-                      m_pCodecCtx->sample_rate <<
+            qDebug() << "ERROR!! Conventor not created: " <<
+                     m_pCodecCtx->sample_rate <<
                      "Hz " << av_get_sample_fmt_name(inSampleFmt) << " " <<
-                     (int)m_pCodecCtx->channels << "(layout:" << 
+                     (int)m_pCodecCtx->channels << "(layout:" <<
                      m_pCodecCtx->channel_layout <<
                      ") channels";
             qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" <<
@@ -156,15 +156,15 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
 #endif
 
         qDebug() << "Created sample rate converter for conversion of" <<
-                 m_pCodecCtx->sample_rate << "Hz format:" << 
-                 av_get_sample_fmt_name(inSampleFmt) 
+                 m_pCodecCtx->sample_rate << "Hz format:" <<
+                 av_get_sample_fmt_name(inSampleFmt)
                  << "with:" <<  (int)m_pCodecCtx->channels << "(layout:" <<
-                 m_pCodecCtx->channel_layout << ") channels (BPS" 
+                 m_pCodecCtx->channel_layout << ") channels (BPS"
                  << av_get_bytes_per_sample(
                      m_pCodecCtx->sample_fmt) << ")";
         qDebug() << "To " << m_pCodecCtx->sample_rate << " HZ format:" <<
                  av_get_sample_fmt_name(outSampleFmt) << "with 2 (layout:" <<
-                 m_pCodecCtx->channel_layout << ") channels (BPS " << 
+                 m_pCodecCtx->channel_layout << ") channels (BPS " <<
                  av_get_bytes_per_sample(outSampleFmt) << ")";
     }
 
@@ -218,7 +218,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
 
 #if __LIBAVRESAMPLE__
         int l_iOutSamples = av_rescale_rnd(avresample_get_delay(m_pSwrCtx) +
-                                           inframe->nb_samples, 
+                                           inframe->nb_samples,
                                            m_pCodecCtx->sample_rate,
                                            m_pCodecCtx->sample_rate,
                                            AV_ROUND_UP);

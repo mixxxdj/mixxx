@@ -115,7 +115,7 @@ double SoundSourceFFmpeg::convertByteOffsetToPts(double byteoffset,
 }
 
 int64_t SoundSourceFFmpeg::convertPtsToByteOffsetOld(int64_t pts,
-                                        const AVRational &ffmpegbase) {
+        const AVRational &ffmpegbase) {
     int64_t l_lReturnValue = 0;
 
     l_lReturnValue = round(convertPtsToByteOffset(pts, ffmpegbase));
@@ -128,7 +128,7 @@ int64_t SoundSourceFFmpeg::convertPtsToByteOffsetOld(int64_t pts,
 }
 
 int64_t SoundSourceFFmpeg::convertByteOffsetToPtsOld(int64_t byteoffset,
-                                        const AVRational &ffmpegtime) {
+        const AVRational &ffmpegtime) {
     int64_t l_lReturnValue = 0;
     l_lReturnValue = round(convertByteOffsetToPts(byteoffset, ffmpegtime));
     return l_lReturnValue + (l_lReturnValue % 2);
@@ -162,7 +162,7 @@ int SoundSourceFFmpeg::open() {
 
     m_pFormatCtx = avformat_alloc_context();
 
- // Enable this to use old slow MP3 Xing TOC
+// Enable this to use old slow MP3 Xing TOC
 #if LIBAVCODEC_VERSION_INT > 3544932
     qDebug() << "Using MP3 Xing TOC if needed";
     av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
@@ -179,7 +179,7 @@ int SoundSourceFFmpeg::open() {
     // unlock();
 
 #if LIBAVCODEC_VERSION_INT > 3544932
-       av_dict_free(&l_iFormatOpts);
+    av_dict_free(&l_iFormatOpts);
 #endif
 
     // lock();
@@ -202,8 +202,8 @@ int SoundSourceFFmpeg::open() {
             break;
         }
     if (m_iAudioStream==-1) {
-        qDebug() << "ffmpeg: cannot find an audio stream: cannot open" 
-        << qBAFilename;
+        qDebug() << "ffmpeg: cannot find an audio stream: cannot open"
+                 << qBAFilename;
         return ERR;
     }
 
@@ -324,11 +324,11 @@ long SoundSourceFFmpeg::seek(long filepos) {
     //if( m_iLastFirstFfmpegByteOffset != 0 ){
     //		m_iSeekOffset = (int64_t) round((double)l_lSeekPos/4608);
     //		m_iSeekOffset *= 4608;
-    //		// qDebug() << "--" << m_iSeekOffset - (m_iLastFirstFfmpegByteOffset - l_lSeekPos) << "!!"; 
+    //		// qDebug() << "--" << m_iSeekOffset - (m_iLastFirstFfmpegByteOffset - l_lSeekPos) << "!!";
     //	}
-    //	
-    //	m_iLastFirstFfmpegByteOffset = l_lSeekPos; 
-    //	
+    //
+    //	m_iLastFirstFfmpegByteOffset = l_lSeekPos;
+    //
     //
     // m_iSeekOffset = m_iOffset = convertPtsToByteOffsetOld(fspos -
     //                             m_pFormatCtx->streams[m_iAudioStream]->cur_dts,
@@ -398,9 +398,9 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
     readBuffer.open(QIODevice::ReadWrite);
 
     // Dirty hack to get Analyzer happy
-    if( m_bIsSeeked == FALSE && m_iCurrentMixxTs == 0 ){
-      seek(0);
-      m_bIsSeeked = FALSE;
+    if ( m_bIsSeeked == FALSE && m_iCurrentMixxTs == 0 ) {
+        seek(0);
+        m_bIsSeeked = FALSE;
     }
     //  As this is also Hack
     // If we don't seek like we don't on analyzer.. keep
@@ -428,7 +428,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
         currentFFMPEGPosSec = currentBufferPosSec + fromMixxPosSec;
     }
 
-    // qDebug() << "ffmpeg: FROM Mixxx t: " << fromMixxPosSec << " (B: " 
+    // qDebug() << "ffmpeg: FROM Mixxx t: " << fromMixxPosSec << " (B: "
     // << m_iCurrentMixxTs << ")";
     // qDebug() << "ffmpeg: TO   Mixxx t: " << toMixxPosSec << " (B: "
     // << (m_iCurrentMixxTs + size) << ")";
@@ -436,9 +436,9 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
     // If packet is done then INIT..
     // Make sure we don't have any grab after seek to make us suffer!
     //if ( m_bIsSeeked == TRUE || (l_SPacket.data == NULL && l_SPacket.size == 0)) {
-        l_SPacket.data = NULL;
-        l_SPacket.size = 0;
-        av_init_packet(&l_SPacket);
+    l_SPacket.data = NULL;
+    l_SPacket.size = 0;
+    av_init_packet(&l_SPacket);
     //}
 
 
@@ -451,7 +451,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
                 ret = avcodec_decode_audio4(m_pCodecCtx,l_pFrame,&frameFinished,&l_SPacket);
 
                 if (ret <= 0) {
-                    // An error or EOF occured,index break out and return what 
+                    // An error or EOF occured,index break out and return what
                     // we have so far.
                     qDebug() << "EOF!";
                     break;
@@ -461,91 +461,91 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
                 if (frameFinished) {
                     m_pResample->reSample(l_pFrame);
                     readBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
-                                                    l_pFrame->nb_samples,
-                                                    m_pCodecCtx->sample_fmt, 1);
+                                                           l_pFrame->nb_samples,
+                                                           m_pCodecCtx->sample_fmt, 1);
 
                     m_iReadedBytes += (readBytes / 2);
 
                     currentFFMPEGPosSec = l_SPacket.pts * av_q2d(
-                              m_pFormatCtx->streams[m_iAudioStream]->time_base);
+                                              m_pFormatCtx->streams[m_iAudioStream]->time_base);
                     l_fCurrentFFMPEGPosByte = convertPtsToByteOffset(l_SPacket.pts,
-                              m_pFormatCtx->streams[m_iAudioStream]->time_base);
+                                              m_pFormatCtx->streams[m_iAudioStream]->time_base);
                     currentFFMPEGPosByte = round(l_fCurrentFFMPEGPosByte);
                     currentFFMPEGPosByte2 = (currentFFMPEGPosSec * (44100 * 2));
 
-                    if( currentFFMPEGPosByte % 4 != 0 ){
-                       qDebug() << "Ain't dividable 4" <<
-                       currentFFMPEGPosByte % 4 << "by 2" <<
-                       currentFFMPEGPosByte % 2;
+                    if ( currentFFMPEGPosByte % 4 != 0 ) {
+                        qDebug() << "Ain't dividable 4" <<
+                                 currentFFMPEGPosByte % 4 << "by 2" <<
+                                 currentFFMPEGPosByte % 2;
                     }
 
-                     if(currentFFMPEGPosByte < 0 ||
-                        (currentFFMPEGPosByte + (readBytes / 2)) < m_iCurrentMixxTs){
-                        continue; 
-                     }
+                    if (currentFFMPEGPosByte < 0 ||
+                            (currentFFMPEGPosByte + (readBytes / 2)) < m_iCurrentMixxTs) {
+                        continue;
+                    }
 
                     // Now we really really know where we are.. so
                     // Calculate diffrence in stream (Ogg Vorbis..
                     // CBR works without)
-                    if (isFirstPacket == TRUE && m_bIsSeeked == TRUE && 
-                        l_SPacket.pts >= 0) {
+                    if (isFirstPacket == TRUE && m_bIsSeeked == TRUE &&
+                            l_SPacket.pts >= 0) {
 
 
                         if (m_iCurrentMixxTs > currentFFMPEGPosByte) {
-                        m_iOffset = m_iCurrentMixxTs - currentFFMPEGPosByte;
-                        // qDebug() << "Calc offset" <<
-                        //              m_iOffset <<
-                        //              "from" <<
-                        //               currentFFMPEGPosByte <<
-                        //               "to" <<
-                        //               m_iCurrentMixxTs <<
-                        //               "=" <<
-                        //               m_iCurrentMixxTs-currentFFMPEGPosByte;
-                        m_iOffset *= 2;
+                            m_iOffset = m_iCurrentMixxTs - currentFFMPEGPosByte;
+                            // qDebug() << "Calc offset" <<
+                            //              m_iOffset <<
+                            //              "from" <<
+                            //               currentFFMPEGPosByte <<
+                            //               "to" <<
+                            //               m_iCurrentMixxTs <<
+                            //               "=" <<
+                            //               m_iCurrentMixxTs-currentFFMPEGPosByte;
+                            m_iOffset *= 2;
                         }
 
 
                         needed = (size * this->getChannels()) + m_iOffset;
 
                         if (((int64_t) round(convertByteOffsetToPts(
-                        l_fCurrentFFMPEGPosByte,
-                        m_pFormatCtx->streams[m_iAudioStream]->time_base))) -
-                        l_SPacket.pts != 0) {
-                            int64_t l_iWarning1 = (int64_t) 
-                            round(convertByteOffsetToPts(
-                            l_fCurrentFFMPEGPosByte, 
-                            m_pFormatCtx->streams[m_iAudioStream]->time_base));
+                                                 l_fCurrentFFMPEGPosByte,
+                                                 m_pFormatCtx->streams[m_iAudioStream]->time_base))) -
+                                l_SPacket.pts != 0) {
+                            int64_t l_iWarning1 = (int64_t)
+                                                  round(convertByteOffsetToPts(
+                                                            l_fCurrentFFMPEGPosByte,
+                                                            m_pFormatCtx->streams[m_iAudioStream]->time_base));
 
-                            qDebug() << "ffmpeg: Warning: Diff sec: " << 
-                                fromMixxPosSec -currentFFMPEGPosSec << 
-                                " diff B: " << 
-                                (m_iCurrentMixxTs - currentFFMPEGPosByte)
-                                * 2 << " ! " << 
-                                (int64_t) round(
-                                convertByteOffsetToPts(l_fCurrentFFMPEGPosByte,
-                                m_pFormatCtx->streams[m_iAudioStream]->time_base));
+                            qDebug() << "ffmpeg: Warning: Diff sec: " <<
+                                     fromMixxPosSec -currentFFMPEGPosSec <<
+                                     " diff B: " <<
+                                     (m_iCurrentMixxTs - currentFFMPEGPosByte)
+                                     * 2 << " ! " <<
+                                     (int64_t) round(
+                                         convertByteOffsetToPts(l_fCurrentFFMPEGPosByte,
+                                                                m_pFormatCtx->streams[m_iAudioStream]->time_base));
 
-                            qDebug() << "ffmpeg: Warning: **** Packet PTS/DTS" 
-                                << l_SPacket.pts<<
-                                "/" <<
-                                l_SPacket.dts <<
-                                " Time: " <<
-                                currentFFMPEGPosSec <<
-                                "/(" <<
-                                currentFFMPEGPosByte << 
-                                "|" << currentFFMPEGPosByte2 << 
-                                " wrong calculation: " <<
-                                l_iWarning1 << 
-                                " != " <<
-                                l_iWarning1 - l_SPacket.pts;
+                            qDebug() << "ffmpeg: Warning: **** Packet PTS/DTS"
+                                     << l_SPacket.pts<<
+                                     "/" <<
+                                     l_SPacket.dts <<
+                                     " Time: " <<
+                                     currentFFMPEGPosSec <<
+                                     "/(" <<
+                                     currentFFMPEGPosByte <<
+                                     "|" << currentFFMPEGPosByte2 <<
+                                     " wrong calculation: " <<
+                                     l_iWarning1 <<
+                                     " != " <<
+                                     l_iWarning1 - l_SPacket.pts;
                         }
 
                     }
 
                     if ( (((int64_t) round(convertByteOffsetToPts(
-                           l_fCurrentFFMPEGPosByte,
-                           m_pFormatCtx->streams[m_iAudioStream]->time_base))) - 
-                           l_SPacket.pts) != 0) {
+                                               l_fCurrentFFMPEGPosByte,
+                                               m_pFormatCtx->streams[m_iAudioStream]->time_base))) -
+                            l_SPacket.pts) != 0) {
                         qDebug() << "ffmpeg: Warning: PTS Calculation error!";
                     }
 
@@ -559,7 +559,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
                     // "ffmpegsec" <<
                     // currentFFMPEGPosSec <<
                     // "Needed:" <<
-                    // m_iReadedBytes << 
+                    // m_iReadedBytes <<
                     // "Got:" <<
                     // (readByteArray.size() + readBytes)  <<
                     // "Now readed:" <<
@@ -626,7 +626,7 @@ unsigned int SoundSourceFFmpeg::read(unsigned long size,
         m_strBuffer = readByteArray.right(readByteArray.size() -
                                           (m_iOffset + copysize));
     } else {
-        qDebug() << "ffmpeg: Too less bytes " << 
+        qDebug() << "ffmpeg: Too less bytes " <<
                  readByteArray.size() << "needed" <<
                  (m_iOffset + copysize);
     }
@@ -651,7 +651,7 @@ int SoundSourceFFmpeg::parseHeader() {
     // If you try this conversion, f.isValid() will return false in many cases
     // and processTaglibFile() will fail
     //
-    // The method toLocal8Bit() returns the local 8-bit representation of 
+    // The method toLocal8Bit() returns the local 8-bit representation of
     // the string as a QByteArray. The returned byte array is undefined if the
     // string contains characters not supported
     // by the local 8-bit encoding.
@@ -671,7 +671,7 @@ int SoundSourceFFmpeg::parseHeader() {
 
     // Enable this to use old slow MP3 Xing TOC
 #ifndef CODEC_ID_MP3
-    if ( LIBAVFORMAT_VERSION_INT > 3540580 ){
+    if ( LIBAVFORMAT_VERSION_INT > 3540580 ) {
         av_dict_set(&l_iFormatOpts, "usetoc", "0", 0);
     }
 #endif
@@ -683,8 +683,8 @@ int SoundSourceFFmpeg::parseHeader() {
     }
 
 #ifndef CODEC_ID_MP3
-    if ( LIBAVFORMAT_VERSION_INT > 3540580 && l_iFormatOpts != NULL ){
-       av_dict_free(&l_iFormatOpts);
+    if ( LIBAVFORMAT_VERSION_INT > 3540580 && l_iFormatOpts != NULL ) {
+        av_dict_free(&l_iFormatOpts);
     }
 #endif
 

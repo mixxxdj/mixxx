@@ -86,7 +86,7 @@ private:
     EncoderFfmpegResample *m_pResample;
 
     int64_t m_iOffset;
-    int64_t m_iSeekOffset;    
+    int64_t m_iSeekOffset;
     int64_t m_iCurrentMixxTs;
     int64_t m_iLastFirstFfmpegByteOffset;
     int64_t m_iNextMixxxPCMPoint;
