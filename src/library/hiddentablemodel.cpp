@@ -1,8 +1,8 @@
 #include "library/hiddentablemodel.h"
 
 HiddenTableModel::HiddenTableModel(QObject* parent,
-                                     TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(parent,pTrackCollection,"mixxx.db.model.missing") {
+                                   TrackCollection* pTrackCollection)
+        : BaseSqlTableModel(parent, pTrackCollection, "mixxx.db.model.missing") {
     setTableModel();
 }
 
@@ -12,7 +12,7 @@ HiddenTableModel::~HiddenTableModel() {
 void HiddenTableModel::setTableModel(int id){
     Q_UNUSED(id);
     QSqlQuery query;
-    QString tableName("hidden_songs");
+    const QString tableName("hidden_songs");
 
     QStringList columns;
     columns << "library." + LIBRARYTABLE_ID;
@@ -41,7 +41,6 @@ void HiddenTableModel::setTableModel(int id){
     initHeaderData();
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
-
 }
 
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {

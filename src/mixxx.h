@@ -68,7 +68,7 @@ class MixxxApp : public QMainWindow {
     void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
 
     void setToolTipsCfg(int tt);
-    inline int getToolTipsCgf() { return m_toolTipsCfg; };
+    inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
 
   public slots:

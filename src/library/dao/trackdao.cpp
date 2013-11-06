@@ -913,7 +913,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
                     this, SLOT(slotTrackSave(TrackInfoObject*)),
                     Qt::DirectConnection);
 
-
             m_sTracksMutex.lock();
             // Automatic conversion to a weak pointer
             m_sTracks[id] = pTrack;
@@ -1102,8 +1101,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath) {
     }
 }
 
-void TrackDAO::markTrackLocationAsVerified(const QString& location)
-{
+void TrackDAO::markTrackLocationAsVerified(const QString& location) {
     //qDebug() << "TrackDAO::markTrackLocationAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTrackLocationAsVerified()" << location;
 

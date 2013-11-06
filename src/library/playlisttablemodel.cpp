@@ -56,7 +56,7 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = "preview";
     setTable(playlistTableName, columns[0], columns,
-             m_pTrackCollection->getTrackSource("default"));
+            m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);

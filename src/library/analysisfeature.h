@@ -12,7 +12,6 @@
 #include "dlganalysis.h"
 
 class AnalyserQueue;
-class LibraryTableModel;
 class TrackCollection;
 
 class AnalysisFeature : public LibraryFeature {

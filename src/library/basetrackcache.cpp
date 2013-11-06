@@ -168,7 +168,6 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
         QVector<QVariant>& record = m_trackInfo[id];
         // prealocate memory for all columns at once
         record.resize(numColumns);
-
         for (int i = 0; i < numColumns; ++i) {
             getTrackValueForColumn(pTrack, i, record[i]);
         }
@@ -176,7 +175,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     return true;
 }
 
-bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
+bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
     QTime timer;
     timer.start();
 

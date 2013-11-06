@@ -646,7 +646,7 @@ void AutoDJCratesDAO::slotCrateAutoDjChanged(int crateId, bool added) {
 
         // Remove all tracks that no longer have crate references.
         //DELETE FROM temp_autodj_crates WHERE craterefs = 0;
-        oQuery.prepare("DELETE FROM "AUTODJCRATES_TABLE " WHERE "
+        oQuery.prepare("DELETE FROM " AUTODJCRATES_TABLE " WHERE "
             AUTODJCRATESTABLE_CRATEREFS " = 0");
         if (!oQuery.exec()) {
             LOG_FAILED_QUERY(oQuery);
@@ -746,7 +746,7 @@ void AutoDJCratesDAO::slotCrateTrackRemoved(int crateId, int trackId) {
 
     // Remove the track if it no longer has a crate reference.
     //DELETE FROM temp_autodj_crates WHERE track_id = :track_id AND craterefs = 0;
-    oQuery.prepare("DELETE FROM "AUTODJCRATES_TABLE " WHERE "
+    oQuery.prepare("DELETE FROM " AUTODJCRATES_TABLE " WHERE "
         AUTODJCRATESTABLE_TRACKID " = :track_id AND "
         AUTODJCRATESTABLE_CRATEREFS " = 0");
     oQuery.bindValue(":track_id", trackId);
