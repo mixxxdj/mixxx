@@ -23,12 +23,11 @@
 
 #include "library/libraryscannerdlg.h"
 
-LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
-   QWidget(parent, f)
-{
-    m_bCancelled = false;
+LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f)
+        : QWidget(parent, f),
+          m_bCancelled(false) {
 
-	setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
+    setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
 
     QVBoxLayout* pLayout = new QVBoxLayout(this);
 
@@ -52,8 +51,7 @@ LibraryScannerDlg::LibraryScannerDlg(QWidget * parent, Qt::WindowFlags f) :
     m_timer.start();
 }
 
-LibraryScannerDlg::~LibraryScannerDlg()
-{
+LibraryScannerDlg::~LibraryScannerDlg() {
     emit(scanCancelled());
 }
 
@@ -69,8 +67,7 @@ void LibraryScannerDlg::slotUpdate(QString path) {
     }
 }
 
-void LibraryScannerDlg::slotCancel()
-{
+void LibraryScannerDlg::slotCancel() {
     qDebug() << "Cancelling library scan...";
     m_bCancelled = true;
 
@@ -81,8 +78,7 @@ void LibraryScannerDlg::slotCancel()
     close();
 }
 
-void LibraryScannerDlg::slotScanFinished()
-{
+void LibraryScannerDlg::slotScanFinished() {
     m_bCancelled = true; //Raise this flag to prevent any
                          //latent slotUpdates() from showing the dialog again.
 

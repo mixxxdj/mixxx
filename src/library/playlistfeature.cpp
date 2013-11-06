@@ -66,7 +66,6 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
 
     m_pLockPlaylistAction->setText(locked ? tr("Unlock") : tr("Lock"));
 
-
     //Create the right-click menu
     QMenu menu(NULL);
     menu.addAction(m_pCreatePlaylistAction);

@@ -321,6 +321,7 @@ TreeItem* ITunesFeature::importLibrary() {
         qDebug() << "Cannot open iTunes music collection";
         return NULL;
     }
+
     QXmlStreamReader xml(&itunes_file);
     TreeItem* playlist_root = NULL;
     while (!xml.atEnd() && !m_cancelImport) {
@@ -358,6 +359,8 @@ TreeItem* ITunesFeature::importLibrary() {
 }
 
 void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
+    bool in_container_dictionary = false;
+    bool in_track_dictionary = false;
     QSqlQuery query(m_database);
     query.prepare("INSERT INTO itunes_library (id, artist, title, album, year, genre, comment, tracknumber,"
                   "bpm, bitrate,"
@@ -366,10 +369,6 @@ void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
                   "VALUES (:id, :artist, :title, :album, :year, :genre, :comment, :tracknumber,"
                   ":bpm, :bitrate,"
                   ":duration, :location," ":rating )");
-
-
-    bool in_container_dictionary = false;
-    bool in_track_dictionary = false;
 
     qDebug() << "Parse iTunes music collection";
 
@@ -523,7 +522,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     bool success = query.exec();
 
     if (!success) {
-        qDebug() << "SQL Error in itunesfeature.cpp: line" << __LINE__ << " " << query.lastError();
+        LOG_FAILED_QUERY(query);
         return;
     }
 }
