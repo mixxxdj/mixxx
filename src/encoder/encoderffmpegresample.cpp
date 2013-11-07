@@ -33,11 +33,11 @@ EncoderFfmpegResample::~EncoderFfmpegResample() {
         avresample_close(m_pSwrCtx);
 #else
         swr_free(&m_pSwrCtx);
-#endif
+#endif // __LIBAVRESAMPLE__
 
 #else
         audio_resample_close(m_pSwrCtx);
-#endif
+#endif // __FFMPEGOLDAPI__
     }
 }
 
@@ -50,10 +50,6 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
                                 enum AVSampleFormat outSampleFmt) {
     m_pOutSampleFmt = outSampleFmt;
     m_pInSampleFmt = inSampleFmt;
-
-    //qDebug() << m_pCodecCtx->sample_rate <<
-    //           "!" << m_pCodecCtx->channel_layout <<
-    //         ":" << m_pCodecCtx->channels;
 
     // Some MP3/WAV don't tell this so make assumtion that
     // They are stereo not 5.1
@@ -88,11 +84,11 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
             avresample_close(m_pSwrCtx);
 #else
             swr_free(&m_pSwrCtx);
-#endif
+#endif // __LIBAVRESAMPLE__
 
 #else
             audio_resample_close(m_pSwrCtx);
-#endif
+#endif // __FFMPEGOLDAPI__
             m_pSwrCtx = NULL;
         }
 
@@ -106,7 +102,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
 #else
         qDebug() << "ffmpeg: NEW FFMPEG API using libswresample";
         m_pSwrCtx = swr_alloc();
-#endif
+#endif // __LIBAVRESAMPLE__
 
         av_opt_set_int(m_pSwrCtx,"in_channel_layout", m_pCodecCtx->channel_layout, 0);
         av_opt_set_int(m_pSwrCtx,"in_sample_fmt", inSampleFmt, 0);
@@ -128,7 +124,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
                                            0,
                                            0.8);
 
-#endif
+#endif // __FFMPEGOLDAPI__
         if (!m_pSwrCtx) {
             qDebug() << "Can't init convertor!";
             return -1;
@@ -141,7 +137,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
         if (avresample_open(m_pSwrCtx) < 0) {
 #else
         if (swr_init(m_pSwrCtx) < 0) {
-#endif
+#endif // __LIBAVRESAMPLE__
             m_pSwrCtx = NULL;
             qDebug() << "ERROR!! Conventor not created: " <<
                      m_pCodecCtx->sample_rate <<
@@ -153,7 +149,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
                      av_get_sample_fmt_name(outSampleFmt) << " with 2 channels";
             return -1;
         }
-#endif
+#endif // __FFMPEGOLDAPI__
 
         qDebug() << "Created sample rate converter for conversion of" <<
                  m_pCodecCtx->sample_rate << "Hz format:" <<
@@ -176,7 +172,7 @@ int EncoderFfmpegResample::open(enum AVSampleFormat inSampleFmt,
 uint8_t *EncoderFfmpegResample::getBuffer()
 #else
 short *EncoderFfmpegResample::getBuffer()
-#endif
+#endif // __FFMPEGOLDAPI__
 {
     return m_pOut;
 }
@@ -200,10 +196,10 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
         void **l_pIn = (void **)inframe->extended_data;
 #else
         uint8_t **l_pIn = (uint8_t **)inframe->extended_data;
-#endif
+#endif // LIBAVRESAMPLE_VERSION_MAJOR == 0
 #else
         uint8_t **l_pIn = (uint8_t **)inframe->extended_data;
-#endif
+#endif // __LIBAVRESAMPLE__
 
 // Left here for reason!
 // Sometime in time we will need this!
@@ -211,7 +207,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
         int64_t l_lInReadBytes = av_samples_get_buffer_size(NULL, m_pCodecCtx->channels,
                                  inframe->nb_samples,
                                  m_pCodecCtx->sample_fmt, 1);
-#endif
+#endif // __FFMPEGOLDAPI__
 
 #ifndef __FFMPEGOLDAPI__
         int l_iOutBytes = 0;
@@ -229,7 +225,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
                                            m_pCodecCtx->sample_rate,
                                            m_pCodecCtx->sample_rate,
                                            AV_ROUND_UP);
-#endif
+#endif // __LIBAVRESAMPLE__
         int l_iOutSamplesLines = 0;
 
         // Alloc too much.. if not enough we are in trouble!
@@ -247,7 +243,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
 
 
         m_pOut = (short *)malloc(l_iOutBytes * 2);
-#endif
+#endif // __FFMPEGOLDAPI__
 
         int l_iLen = 0;
 #ifndef __FFMPEGOLDAPI__
@@ -264,13 +260,13 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
         //AVResample NEW
         l_iLen = avresample_convert(m_pSwrCtx, (uint8_t **)&m_pOut, 0, l_iOutSamples,
                                     (uint8_t **)l_pIn, 0, inframe->nb_samples);
-#endif
+#endif // LIBAVRESAMPLE_VERSION_INT <= 3
 
 #else
         // SWResample
         l_iLen = swr_convert(m_pSwrCtx, (uint8_t **)&m_pOut, l_iOutSamples,
                              (const uint8_t **)l_pIn, inframe->nb_samples);
-#endif
+#endif // __LIBAVRESAMPLE__
 
         l_iOutBytes = av_samples_get_buffer_size(NULL, 2, l_iLen, m_pOutSampleFmt, 1);
 
@@ -279,7 +275,7 @@ unsigned int EncoderFfmpegResample::reSample(AVFrame *inframe) {
                                 (short *)m_pOut, (short *)inframe->data[0],
                                 inframe->nb_samples);
 
-#endif
+#endif // __FFMPEGOLDAPI__
         if (l_iLen < 0) {
             qDebug() << "Sample format conversion failed!";
             return -1;
