@@ -36,6 +36,13 @@
 #include "errordialoghandler.h"
 #include "util/version.h"
 
+#ifdef __FFMPEGFILE__
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+#endif
+
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
 #endif
@@ -240,6 +247,14 @@ int main(int argc, char * argv[])
 
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
+
+#ifdef __FFMPEGFILE__
+     av_register_all();
+     avcodec_register_all();
+#endif
+
+
+
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif

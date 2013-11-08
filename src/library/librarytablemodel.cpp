@@ -20,8 +20,8 @@ void LibraryTableModel::init() {
     setTableModel();
 }
 
+// Must be called from Main thread
 void LibraryTableModel::setTableModel(int id) {
-    // here callSync calls
     Q_UNUSED(id);
     QStringList columns = QStringList()
             << "library."+LIBRARYTABLE_ID << "'' as preview";

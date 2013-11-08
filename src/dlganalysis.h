@@ -24,8 +24,8 @@ class DlgAnalysis : public QWidget, public Ui::DlgAnalysis, public virtual Libra
     virtual void loadSelectedTrack();
     virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);
-    inline const QString currentSearch() { 
-        return m_pAnalysisLibraryTableModel->currentSearch(); 
+    inline const QString currentSearch() {
+        return m_pAnalysisLibraryTableModel->currentSearch();
     }
 
   public slots:

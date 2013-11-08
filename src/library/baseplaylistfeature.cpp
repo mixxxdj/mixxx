@@ -67,19 +67,19 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
 
     connect(&m_playlistDao, SIGNAL(added(int)),
             this, SLOT(slotPlaylistTableChanged(int)),
-            Qt::QueuedConnection); // tro
+            Qt::QueuedConnection);
 
     connect(&m_playlistDao, SIGNAL(deleted(int)),
             this, SLOT(slotPlaylistTableChanged(int)),
-            Qt::QueuedConnection); // tro
+            Qt::QueuedConnection);
 
     connect(&m_playlistDao, SIGNAL(renamed(int,QString)),
             this, SLOT(slotPlaylistTableRenamed(int,QString)),
-            Qt::QueuedConnection); // tro
+            Qt::QueuedConnection);
 
     connect(&m_playlistDao, SIGNAL(lockChanged(int)),
             this, SLOT(slotPlaylistTableChanged(int)),
-            Qt::QueuedConnection); // tro
+            Qt::QueuedConnection);
 }
 
 BasePlaylistFeature::~BasePlaylistFeature() {
@@ -102,7 +102,7 @@ void BasePlaylistFeature::activate() {
 }
 
 void BasePlaylistFeature::activateChild(const QModelIndex& index) {
-    qDebug() << "BasePlaylistFeature::activateChild()" << objectName() << index;
+    //qDebug() << "BasePlaylistFeature::activateChild()" << index;
 
     // Switch the playlist table model's playlist.
     QString playlistName = index.data().toString();
@@ -162,12 +162,12 @@ void BasePlaylistFeature::slotRenamePlaylist() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
-                                 tr("Renaming Playlist Failed"),
-                                 tr("A playlist by that name already exists."));
+                                tr("Renaming Playlist Failed"),
+                                tr("A playlist by that name already exists."));
         } else if (newName.isEmpty()) {
             QMessageBox::warning(NULL,
-                                 tr("Renaming Playlist Failed"),
-                                 tr("A playlist cannot have a blank name."));
+                                tr("Renaming Playlist Failed"),
+                                tr("A playlist cannot have a blank name."));
         } else {
             validNameGiven = true;
         }
@@ -299,7 +299,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     m_pTrackCollection->callSync(
                 [this, &name, &playlistId] (void) {
         playlistId = m_playlistDao.createPlaylist(name);
-    });
+    }, __PRETTY_FUNCTION__);
 
     if (playlistId != -1) {
         emit(showTrackModel(m_pPlaylistTableModel));
