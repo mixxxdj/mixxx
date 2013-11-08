@@ -28,8 +28,11 @@ class DirectoryDAOTest : public testing::Test {
     virtual void TearDown() {
         // make sure we clean up the db
         QSqlQuery query(m_pTrackCollection->getDatabase());
-        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE % "," % LIBRARY_TABLE
-                      % ", track_locations");
+        query.prepare("DELETE FROM " % DIRECTORYDAO_TABLE);
+        query.exec();
+        query.prepare("DELETE FROM library");
+        query.exec();
+        query.prepare("DELETE FROM track_locations");
         query.exec();
 
         delete m_pTrackCollection;
@@ -131,7 +134,8 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     trackDAO.addTracksAdd(new TrackInfoObject("/Test2/d", false), false);
     trackDAO.addTracksFinish(false);
 
-    directoryDao.relocateDirectory("/Test", "/new");
+    QSet<int> ids = directoryDao.relocateDirectory("/Test", "/new");
+    qDebug() << ids.size();
 
     QStringList dirs = directoryDao.getDirs();
     for (int i = 0; i<dirs.size(); ++i) {
