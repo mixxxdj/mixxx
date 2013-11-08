@@ -21,8 +21,15 @@
 #include "controlobject.h"
 #include "controlobjectthread.h"
 #include "encoder/encoder.h"
+
+#ifdef __FFMPEGFILE__
+#include "encoder/encoderffmpegmp3.h"
+#include "encoder/encoderffmpegvorbis.h"
+#else
 #include "encoder/encodermp3.h"
 #include "encoder/encodervorbis.h"
+#endif
+
 #include "errordialoghandler.h"
 #include "playerinfo.h"
 #include "recording/defs_recording.h"
@@ -64,24 +71,40 @@ void EngineRecord::updateFromPreferences() {
     }
 
     if (m_encoding == ENCODING_MP3) {
+#ifdef __FFMPEGFILE__
+        m_pEncoder = new EncoderFfmpegMp3(this);
+#else
         m_pEncoder = new EncoderMp3(this);
-        m_pEncoder->updateMetaData(m_baAuthor.data(), m_baTitle.data(), m_baAlbum.data());
+#endif
+        m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if(m_pEncoder->initEncoder(Encoder::convertToBitrate(m_MP3quality.toInt()),
                                   m_pSamplerate->get()) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
+#ifdef __FFMPEGFILE__
+            qDebug() << "MP3 recording is not supported. FFMPEG mp3 could not be initialized";
+#else
             qDebug() << "MP3 recording is not supported. Lame could not be initialized";
+#endif
         }
     } else if (m_encoding == ENCODING_OGG) {
+#ifdef __FFMPEGFILE__
+        m_pEncoder = new EncoderFfmpegVorbis(this);
+#else
         m_pEncoder = new EncoderVorbis(this);
-        m_pEncoder->updateMetaData(m_baAuthor.data(), m_baTitle.data(), m_baAlbum.data());
+#endif
+        m_pEncoder->updateMetaData(m_baAuthor.data(),m_baTitle.data(),m_baAlbum.data());
 
         if (m_pEncoder->initEncoder(Encoder::convertToBitrate(m_OGGquality.toInt()),
                                    m_pSamplerate->get()) < 0) {
             delete m_pEncoder;
             m_pEncoder = NULL;
+#ifdef __FFMPEGFILE__
+            qDebug() << "OGG recording is not supported. FFMPEG OGG/Vorbis could not be initialized";
+#else
             qDebug() << "OGG recording is not supported. OGG/Vorbis library could not be initialized";
+#endif
         }
     }
     // If we use WAVE OR AIFF the encoder will be NULL at all times.
