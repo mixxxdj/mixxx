@@ -22,7 +22,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()),
+          m_trackDao(pTrackCollection->getTrackDAO()), // TODO(tro) avoid m_trackDao
           m_pPlaylistTableModel(NULL),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
@@ -312,13 +312,14 @@ void BasePlaylistFeature::slotCreatePlaylist() {
 }
 
 void BasePlaylistFeature::slotDeletePlaylist() {
-    const int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
+    const QString lastClicked = m_lastRightClickedIndex.data().toString();
     const bool isLastRightClickedIdxValid = m_lastRightClickedIndex.isValid();
 
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
-                [this, &playlistId, &isLastRightClickedIdxValid] (void) {
+                [this, &lastClicked, &isLastRightClickedIdxValid] (void) {
         //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
+        const int playlistId = m_playlistDao.getPlaylistIdFromName(lastClicked);
         bool locked = m_playlistDao.isPlaylistLocked(playlistId);
         if (locked) {
             qDebug() << "Skipping playlist deletion because playlist" << playlistId << "is locked.";
@@ -479,18 +480,18 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
 // Must be called from Main thread
 void BasePlaylistFeature::slotAnalyzePlaylist() {
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_playlistDao.getPlaylistIdFromName(
-                m_lastRightClickedIndex.data().toString());
-        if (playlistId >= 0) {
-            // tro's lambda idea. This code calls Asynchronously!
-            m_pTrackCollection->callAsync(
-                    [this, playlistId] (void) {
+        const QString lastClicked = m_lastRightClickedIndex.data().toString();
+        // tro's lambda idea. This code calls Asynchronously!
+        m_pTrackCollection->callAsync(
+                    [this, lastClicked] (void) {
+            int playlistId = m_playlistDao.getPlaylistIdFromName(lastClicked);
+            if (playlistId >= 0) {
                 QList<int> ids;
                 ids = m_playlistDao.getTrackIds(playlistId);
                 emit(analyzeTracks(ids));
+            }
             }, __PRETTY_FUNCTION__);
         }
-    }
 }
 
 TreeItemModel* BasePlaylistFeature::getChildModel() {
