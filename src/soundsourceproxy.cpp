@@ -373,6 +373,9 @@ QStringList SoundSourceProxy::supportedFileExtensions()
 {
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
+#ifdef __FFMPEGFILE__
+    supportedFileExtensions.append(SoundSourceFFmpeg::supportedFileExtensions());
+#endif
 #ifdef __MAD__
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
 #endif
