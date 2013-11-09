@@ -293,9 +293,11 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":artist", pTrack->getArtist());
     m_pQueryLibraryInsert->bindValue(":title", pTrack->getTitle());
     m_pQueryLibraryInsert->bindValue(":album", pTrack->getAlbum());
+    m_pQueryLibraryInsert->bindValue(":album_artist", pTrack->getAlbumArtist());
     m_pQueryLibraryInsert->bindValue(":year", pTrack->getYear());
     m_pQueryLibraryInsert->bindValue(":genre", pTrack->getGenre());
     m_pQueryLibraryInsert->bindValue(":composer", pTrack->getComposer());
+    m_pQueryLibraryInsert->bindValue(":grouping", pTrack->getGrouping());
     m_pQueryLibraryInsert->bindValue(":tracknumber", pTrack->getTrackNumber());
     m_pQueryLibraryInsert->bindValue(":filetype", pTrack->getType());
     m_pQueryLibraryInsert->bindValue(":location", trackLocationId);
@@ -367,13 +369,13 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
-            "(artist, title, album, year, genre, tracknumber, "
-            "filetype, location, comment, url, duration, rating, key, "
+            "(artist, title, album, album_artist, year, genre, tracknumber, composer, "
+            "grouping, filetype, location, comment, url, duration, rating, key, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, "
             "channels, mixxx_deleted, header_parsed, beats_version, beats_sub_version, beats, bpm_lock) "
             "VALUES ("
-            ":artist, :title, :album, :year, :genre, :tracknumber, "
+            ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
             ":timesplayed, "
@@ -782,8 +784,8 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     QSqlQuery query(m_database);
 
     query.prepare(
-        "SELECT library.id, artist, title, album, year, genre, composer, tracknumber, "
-        "filetype, rating, key, track_locations.location as location, "
+        "SELECT library.id, artist, title, album, album_artist, year, genre, composer, "
+        "grouping, tracknumber, filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
         "header_parsed, timesplayed, played, beats_version, beats_sub_version, beats, datetime_added, bpm_lock "
@@ -798,9 +800,11 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int artistColumn = queryRecord.indexOf("artist");
         const int titleColumn = queryRecord.indexOf("title");
         const int albumColumn = queryRecord.indexOf("album");
+        const int albumArtistColumn = queryRecord.indexOf("album_artist");
         const int yearColumn = queryRecord.indexOf("year");
         const int genreColumn = queryRecord.indexOf("genre");
         const int composerColumn = queryRecord.indexOf("composer");
+        const int groupingColumn = queryRecord.indexOf("grouping");
         const int trackNumberColumn = queryRecord.indexOf("tracknumber");
         const int commentColumn = queryRecord.indexOf("comment");
         const int urlColumn = queryRecord.indexOf("url");
@@ -829,9 +833,11 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QString artist = query.value(artistColumn).toString();
             QString title = query.value(titleColumn).toString();
             QString album = query.value(albumColumn).toString();
+            QString albumArtist = query.value(albumArtistColumn).toString();
             QString year = query.value(yearColumn).toString();
             QString genre = query.value(genreColumn).toString();
             QString composer = query.value(composerColumn).toString();
+            QString grouping = query.value(groupingColumn).toString();
             QString tracknumber = query.value(trackNumberColumn).toString();
             QString comment = query.value(commentColumn).toString();
             QString url = query.value(urlColumn).toString();
@@ -862,9 +868,11 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setArtist(artist);
             pTrack->setTitle(title);
             pTrack->setAlbum(album);
+            pTrack->setAlbumArtist(albumArtist);
             pTrack->setYear(year);
             pTrack->setGenre(genre);
             pTrack->setComposer(composer);
+            pTrack->setGrouping(grouping);
             pTrack->setTrackNumber(tracknumber);
             pTrack->setRating(rating);
             pTrack->setKey(key);
@@ -1004,8 +1012,8 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
-                  "title=:title, album=:album, year=:year, genre=:genre, "
-                  "composer=:composer, filetype=:filetype, tracknumber=:tracknumber, "
+                  "title=:title, album=:album, album_artist=:album_artist, year=:year, genre=:genre, "
+                  "composer=:composer, grouping=:grouping, filetype=:filetype, tracknumber=:tracknumber, "
                   "comment=:comment, url=:url, duration=:duration, rating=:rating, key=:key, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, replaygain=:replaygain, "
@@ -1017,9 +1025,11 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
+    query.bindValue(":album_artist", pTrack->getAlbumArtist());
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":composer", pTrack->getComposer());
+    query.bindValue(":grouping", pTrack->getGrouping());
     query.bindValue(":filetype", pTrack->getType());
     query.bindValue(":tracknumber", pTrack->getTrackNumber());
     query.bindValue(":comment", pTrack->getComment());
@@ -1277,10 +1287,15 @@ void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
         tagger.setTitle(pTrack->getTitle());
         tagger.setGenre(pTrack->getGenre());
         tagger.setComposer(pTrack->getComposer());
+        tagger.setGrouping(pTrack->getGrouping());
         tagger.setAlbum(pTrack->getAlbum());
+        tagger.setAlbumArtist(pTrack->getAlbumArtist());
         tagger.setComment(pTrack->getComment());
         tagger.setTracknumber(pTrack->getTrackNumber());
         tagger.setBpm(pTrack->getBpmStr());
+        tagger.setKey(pTrack->getKey());
+        tagger.setComposer(pTrack->getComposer());
+        tagger.setGrouping(pTrack->getGrouping());
 
         tagger.save();
     }
