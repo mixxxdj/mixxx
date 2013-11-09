@@ -178,7 +178,7 @@ void AutoDJFeature::slotRemoveCrateFromAutoDj() {
 
     // tro's lambda idea. This code calls asynchronously!
      m_pTrackCollection->callAsync(
-                 [this, &crateName] (void) {
+                 [this, crateName] (void) {
          // Get the ID of that crate.
          int crateId = m_crateDao.getCrateIdByName(crateName);
 

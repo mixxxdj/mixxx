@@ -5,9 +5,9 @@
 #include "library/basesqltablemodel.h"
 
 BaseExternalLibraryFeature::BaseExternalLibraryFeature(QObject* pParent,
-                                                       TrackCollection* pCollection)
+                                                       TrackCollection* pTrackCollection)
         : LibraryFeature(pParent),
-          m_pTrackCollection(pCollection) {
+          m_pTrackCollection(pTrackCollection) {
     m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ Queue (bottom)"), this);
     connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
             this, SLOT(slotAddToAutoDJ()));

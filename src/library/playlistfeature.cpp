@@ -150,6 +150,7 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
     return result;
 }
 
+// Must be called from TrackCollection
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
 
@@ -207,8 +208,8 @@ void PlaylistFeature::decorateChild(TreeItem* item, int playlist_id) {
     }
 }
 
+// Must be called from Main thread
 void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
-    // here callSync uses
     DBG() << sender();
 
     if (!m_pPlaylistTableModel) {

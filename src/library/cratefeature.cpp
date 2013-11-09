@@ -113,7 +113,6 @@ QIcon CrateFeature::getIcon() {
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
         //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
@@ -148,9 +147,11 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
     return result;
 }
 
+// Must be called from TrackCollection
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString crateName = index.data().toString();
+
     int crateId = m_crateDao.getCrateIdByName(crateName);
     bool locked = m_crateDao.isCrateLocked(crateId);
     QFileInfo file(url.toLocalFile());
@@ -392,7 +393,6 @@ void CrateFeature::slotRenameCrate() {
 
 void CrateFeature::slotDuplicateCrate() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-
     int oldCrateId = -1;
     // tro's lambda idea. This code calls synchronously!
     m_pTrackCollection->callSync(
@@ -690,17 +690,10 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     clearChildModel();
 
     m_lastRightClickedIndex = constructChildModel(crateId);
-
-    // tro's lambda idea. This code calls asynchronously!
-//    m_pTrackCollection->callAsync(
-//                [this, crateId] (void) {
-        // Switch the view to the crate.
-        m_crateTableModel.setTableModel(crateId);
-        // Update selection
-//        MainExecuter::callSync([this]() { // avoid it
-            emit(featureSelect(this, m_lastRightClickedIndex));
-//        });
-//    }, __PRETTY_FUNCTION__ + objectName());
+    // Switch the view to the crate.
+    m_crateTableModel.setTableModel(crateId);
+    // Update selection
+    emit(featureSelect(this, m_lastRightClickedIndex));
 }
 
 void CrateFeature::slotCrateTableRenamed(int a_iCrateId,

@@ -16,7 +16,7 @@ class TrackCollection;
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
   public:
-    explicit SidebarModel(TrackCollection* tc, QObject* parent = 0);
+    explicit SidebarModel(TrackCollection* pTrackCollection, QObject* parent = 0);
     virtual ~SidebarModel();
 
     void addLibraryFeature(LibraryFeature* feature);

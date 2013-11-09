@@ -22,7 +22,6 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()), // TODO(tro) avoid m_trackDao
           m_pPlaylistTableModel(NULL),
           m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
@@ -242,8 +241,8 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 }
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
-    // tro's lambda idea. This code calls asynchronously!
     const QString playlistName = m_lastRightClickedIndex.data().toString();
+    // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
                 [this, playlistName] (void) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
@@ -399,6 +398,7 @@ void BasePlaylistFeature::slotExportPlaylist() {
         return;
     }
 
+    // tro's lambda idea. This code calls asynchronously!
     m_pTrackCollection->callAsync(
             [this, file_location](void) {
         QString fileLocation(file_location);

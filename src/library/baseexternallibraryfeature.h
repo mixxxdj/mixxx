@@ -12,7 +12,7 @@ class TrackCollection;
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pCollection);
+    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pTrackCollection);
     virtual ~BaseExternalLibraryFeature();
 
   public slots:

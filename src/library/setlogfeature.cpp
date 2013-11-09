@@ -198,11 +198,11 @@ void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
 
 void SetlogFeature::slotJoinWithPrevious() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
-    // tro's lambda idea
 
     const QString name = m_lastRightClickedIndex.data().toString();
 
     if (m_lastRightClickedIndex.isValid()) {
+        // tro's lambda idea
         m_pTrackCollection->callAsync(
                     [this, name] (void) {
             int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(name);
@@ -253,10 +253,8 @@ void SetlogFeature::slotJoinWithPrevious() {
 }
 
 void SetlogFeature::slotConstructChildModel(int playlistId) {
-    DBG() << "begin";
     clearChildModel();
     m_lastRightClickedIndex = BasePlaylistFeature::constructChildModel(playlistId);
-    DBG() << "end";
 }
 
 void SetlogFeature::slotPlayingDeckChanged(int deck) {

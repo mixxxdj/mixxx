@@ -14,8 +14,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
   Q_OBJECT
 
   public:
-// TODO(tro) rewrite parameters
-    explicit PreviewButtonDelegate(TrackCollection* pTrackCollection, QObject* parent = NULL, int column = 0);
+    explicit PreviewButtonDelegate(QObject* parent = NULL, int column = 0, TrackCollection* pTrackCollection = NULL);
     virtual ~PreviewButtonDelegate();
 
     QWidget* createEditor(QWidget *parent,

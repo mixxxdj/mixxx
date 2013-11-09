@@ -10,7 +10,7 @@
 #include "controlobjectthreadmain.h"
 #include "controlobject.h"
 
-PreviewButtonDelegate::PreviewButtonDelegate(TrackCollection *pTrackCollection, QObject *parent, int column)
+PreviewButtonDelegate::PreviewButtonDelegate(QObject *parent, int column, TrackCollection *pTrackCollection)
         : QStyledItemDelegate(parent),
           m_pTrackCollection(pTrackCollection),
           m_pTableView(NULL),
