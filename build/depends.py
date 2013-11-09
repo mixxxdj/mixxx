@@ -157,10 +157,18 @@ class FLAC(Dependence):
         return ['soundsourceflac.cpp',]
 
 class Qt(Dependence):
-    DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
+    DEFAULT_QT4DIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
                       'osx': '/Library/Frameworks',
                       'windows': 'C:\\qt\\4.6.0'}
+
+    DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
+                        'osx': '/Library/Frameworks',
+                        'windows': 'C:\\qt\\5.0.1'}
+
+    DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
+                        'osx': '/Library/Frameworks',
+                        'windows': 'C:\\qt\\5.0.1'}
 
     @staticmethod
     def qt5_enabled(build):
