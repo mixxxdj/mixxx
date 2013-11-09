@@ -421,51 +421,43 @@ void DlgPreferences::destroyControllerWidgets() {
     }
 }
 
-void DlgPreferences::setupControllerWidgets()
-{
+void DlgPreferences::setupControllerWidgets() {
     //For each controller, create a dialog and put a little link to it in the treepane on the left
     QList<Controller*> controllerList = m_pControllerManager->getControllerList(false, true);
-    qSort(
-        controllerList.begin(),
-        controllerList.end(),
-        controllerCompare
-    );
+    qSort(controllerList.begin(), controllerList.end(), controllerCompare);
+
     QListIterator<Controller*> ctrlr(controllerList);
-    while (ctrlr.hasNext())
-    {
-        Controller* currentDevice = ctrlr.next();
-        QString curDeviceName = currentDevice->getName();
-        //qDebug() << "curDeviceName: " << curDeviceName;
-        if (currentDevice->isMappable()) {
-            DlgPrefMappableController* controllerDlg =
-                new DlgPrefMappableController(this, currentDevice,
-                                              m_pControllerManager, m_pConfig);
+    while (ctrlr.hasNext()) {
+        Controller* pController = ctrlr.next();
+
+        DlgPrefController* controllerDlg = NULL;
+        if (pController->isMappable()) {
+            controllerDlg = new DlgPrefMappableController(
+                    this, pController, m_pControllerManager, m_pConfig);
             connect(controllerDlg, SIGNAL(mappingStarted()),
                     this, SLOT(hide()));
             connect(controllerDlg, SIGNAL(mappingEnded()),
                     this, SLOT(show()));
-            m_controllerWindows.append(controllerDlg);
-            addPageWidget(controllerDlg);
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
-            connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
-            connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)), this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
         } else {
-            DlgPrefController* controllerDlg =
-                new DlgPrefController(this, currentDevice, m_pControllerManager,
-                                      m_pConfig);
-            m_controllerWindows.append(controllerDlg);
-            addPageWidget(controllerDlg);
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(enumeratePresets()));
-            connect(this, SIGNAL(showDlg()), controllerDlg, SLOT(slotUpdate()));
-            connect(buttonBox, SIGNAL(accepted()), controllerDlg, SLOT(slotApply()));
-            connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*,bool)),
-                    this, SLOT(slotHighlightDevice(DlgPrefController*,bool)));
+            controllerDlg = new DlgPrefController(
+                    this, pController, m_pControllerManager, m_pConfig);
         }
 
+        m_controllerWindows.append(controllerDlg);
+        addPageWidget(controllerDlg);
+
+        connect(this, SIGNAL(showDlg()),
+                controllerDlg, SLOT(enumeratePresets()));
+        connect(this, SIGNAL(showDlg()),
+                controllerDlg, SLOT(slotUpdate()));
+        connect(buttonBox, SIGNAL(accepted()),
+                controllerDlg, SLOT(slotApply()));
+        connect(controllerDlg, SIGNAL(deviceStateChanged(DlgPrefController*, bool)),
+                this, SLOT(slotHighlightDevice(DlgPrefController*, bool)));
+
         QTreeWidgetItem * controllerWindowLink = new QTreeWidgetItem(QTreeWidgetItem::Type);
-        //qDebug() << curDeviceName << " QTreeWidgetItem point is " << controllerWindowLink;
         controllerWindowLink->setIcon(0, QIcon(":/images/preferences/ic_preferences_controllers.png"));
+        QString curDeviceName = pController->getName();
         controllerWindowLink->setText(0, curDeviceName);
         controllerWindowLink->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
         controllerWindowLink->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -474,7 +466,7 @@ void DlgPreferences::setupControllerWidgets()
 
         // Set the font correctly
         QFont temp = controllerWindowLink->font(0);
-        if (currentDevice->isOpen()) temp.setBold(true);
+        if (pController->isOpen()) temp.setBold(true);
         else temp.setBold(false);
         controllerWindowLink->setFont(0,temp);
     }
