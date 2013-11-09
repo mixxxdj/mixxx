@@ -123,15 +123,19 @@ class MixxxBuild(object):
         tools = ['default']
         toolpath = ['#build/']
         extra_arguments = {}
+        import depends
         if int(Script.ARGUMENTS.get('qt5', 0)):
             tools.append('qt5')
+            if self.machine_is_64bit:
+                default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(self.platform, '')
+            else:
+                default_qtdir = depends.Qt.DEFAULT_QT5DIRS32.get(self.platform, '')
         else:
             tools.append('qt4')
+            default_qtdir = depends.Qt.DEFAULT_QT4DIRS.get(self.platform, '')
         tools.append('protoc')
 
         # Ugly hack to check the qtdir argument
-        import depends
-        default_qtdir = depends.Qt.DEFAULT_QTDIRS.get(self.platform, '')
         qtdir = Script.ARGUMENTS.get('qtdir',
                                     os.environ.get('QTDIR', default_qtdir))
 
