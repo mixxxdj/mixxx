@@ -318,7 +318,7 @@ void DlgPreferences::onShow() {
     emit(showDlg());
 }
 
-int DlgPreferences::addPageWidget(QWidget* pWidget) {
+void DlgPreferences::addPageWidget(DlgPreferencePage* pWidget) {
     connect(this, SIGNAL(showDlg()),
             pWidget, SLOT(slotShow()));
     connect(this, SIGNAL(closeDlg()),
@@ -332,19 +332,18 @@ int DlgPreferences::addPageWidget(QWidget* pWidget) {
     sa->setWidgetResizable(true);
 
     sa->setWidget(pWidget);
-    int iret = pagesWidget->addWidget(sa);
+    pagesWidget->addWidget(sa);
 
     int iframe = 2 * sa->frameWidth();
     m_pageSizeHint = m_pageSizeHint.expandedTo(
             pWidget->sizeHint()+QSize(iframe, iframe));
 
-    return iret;
 }
 
-void DlgPreferences::removePageWidget(QWidget* pWidget) {
+void DlgPreferences::removePageWidget(DlgPreferencePage* pWidget) {
     pagesWidget->removeWidget(pWidget->parentWidget()->parentWidget());
 }
 
-void DlgPreferences::switchToPage(QWidget* pWidget) {
+void DlgPreferences::switchToPage(DlgPreferencePage* pWidget) {
     pagesWidget->setCurrentWidget(pWidget->parentWidget()->parentWidget());
 }

@@ -25,6 +25,7 @@
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
 #include "controlpushbutton.h"
+#include "preferences/dlgpreferencepage.h"
 
 class MixxxApp;
 class SoundManager;
@@ -57,9 +58,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
                    VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config);
     virtual ~DlgPreferences();
 
-    int addPageWidget(QWidget* pWidget);
-    void removePageWidget(QWidget* pWidget);
-    void switchToPage(QWidget* pWidget);
+    void addPageWidget(DlgPreferencePage* pWidget);
+    void removePageWidget(DlgPreferencePage* pWidget);
+    void switchToPage(DlgPreferencePage* pWidget);
 
   public slots:
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
