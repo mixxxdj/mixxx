@@ -23,6 +23,7 @@ class TraktorTrackModel : public BaseExternalTrackModel {
   public:
     TraktorTrackModel(QObject* parent,
                       TrackCollection* pTrackCollection);
+    void init();
     virtual bool isColumnHiddenByDefault(int column);
 };
 
@@ -52,7 +53,7 @@ class TraktorFeature : public BaseExternalLibraryFeature {
     void onTrackCollectionLoaded();
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
+    virtual BaseSqlTableModel* createPlaylistModelForPlaylist(QString playlist);
     TreeItem* importLibrary(QString file);
     // parses a track in the music collection
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);

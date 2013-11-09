@@ -8,12 +8,13 @@
 #include "trackinfoobject.h"
 
 class ControlObjectThread;
+class TrackCollection;
 
 class PreviewButtonDelegate : public QStyledItemDelegate {
   Q_OBJECT
 
   public:
-    explicit PreviewButtonDelegate(QObject* parent = NULL, int column = 0);
+    explicit PreviewButtonDelegate(QObject* parent = NULL, int column = 0, TrackCollection* pTrackCollection = NULL);
     virtual ~PreviewButtonDelegate();
 
     QWidget* createEditor(QWidget *parent,
@@ -40,6 +41,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
     void previewDeckPlayChanged(double v);
 
   private:
+    TrackCollection* m_pTrackCollection;
     QTableView* m_pTableView;
     ControlObjectThread* m_pPreviewDeckPlay;
     QPushButton* m_pButton;

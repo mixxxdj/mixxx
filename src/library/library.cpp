@@ -31,17 +31,23 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
-        m_pSidebarModel(new SidebarModel(parent)),
-        m_pTrackCollection(new TrackCollection(pConfig)),
+        m_pTrackCollection(pTrackCollection),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
 
+    pTrackCollection->setupControlObject();
+
+    m_pSidebarModel = new SidebarModel(m_pTrackCollection, parent);
+
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
+
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection, m_pConfig);
+    m_pMixxxLibraryFeature->init();
+    m_pMixxxLibraryFeature->initUI();
     addFeature(m_pMixxxLibraryFeature);
 
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
@@ -51,7 +57,10 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
-    addFeature(new SetlogFeature(this, pConfig, m_pTrackCollection));
+    m_pSetlogFeature = new SetlogFeature(this, pConfig, m_pTrackCollection);
+    m_pSetlogFeature->init();
+    addFeature(m_pSetlogFeature);
+
     m_pAnalysisFeature = new AnalysisFeature(this, pConfig, m_pTrackCollection);
     connect(m_pPlaylistFeature, SIGNAL(analyzeTracks(QList<int>)),
             m_pAnalysisFeature, SLOT(analyzeTracks(QList<int>)));
@@ -76,6 +85,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
 }
 
 Library::~Library() {
+    qDebug() << "~Library";
     // Delete the sidebar model first since it depends on the LibraryFeatures.
     delete m_pSidebarModel;
 
@@ -87,12 +97,6 @@ Library::~Library() {
     }
 
     delete m_pLibraryControl;
-    //IMPORTANT: m_pTrackCollection gets destroyed via the QObject hierarchy somehow.
-    //           Qt does it for us due to the way RJ wrote all this stuff.
-    //Update:  - OR NOT! As of Dec 8, 2009, this pointer must be destroyed manually otherwise
-    // we never see the TrackCollection's destructor being called... - Albert
-    // Has to be deleted at last because the features holds references of it.
-    delete m_pTrackCollection;
 }
 
 void Library::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
@@ -171,22 +175,29 @@ void Library::slotLoadTrack(TrackPointer pTrack) {
     emit(loadTrack(pTrack));
 }
 
+// Must be called from Main thread
 void Library::slotLoadLocationToPlayer(QString location, QString group) {
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(location);
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(location, true);
-    }
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, location, group] (void) {
+        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+        int track_id = track_dao.getTrackId(location);
+        if (track_id < 0) {
+            // Add Track to library
+            track_id = track_dao.addTrack(location, true);
+        }
 
-    TrackPointer pTrack;
-    if (track_id < 0) {
-        // Add Track to library failed, create a transient TrackInfoObject
-        pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    } else {
-        pTrack = track_dao.getTrack(track_id);
-    }
-    emit(loadTrackToPlayer(pTrack, group));
+        TrackPointer pTrack;
+        if (track_id < 0) {
+            // Add Track to library failed, create a transient TrackInfoObject
+            pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
+        } else {
+            pTrack = track_dao.getTrack(track_id);
+        }
+        MainExecuter::callSync([this, &pTrack, &group](void){
+            emit(loadTrackToPlayer(pTrack, group));
+        });
+    }, __PRETTY_FUNCTION__);
 }
 
 void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
@@ -213,4 +224,16 @@ void Library::slotCreateCrate() {
 void Library::onSkinLoadFinished() {
     // Enable the default selection when a new skin is loaded.
     m_pSidebarModel->activateDefaultSelection();
+}
+
+void Library::setUiEnabled(const bool enabled) {
+    qDebug() << "Library::setUiEnabled" << enabled;
+}
+
+QList<TrackPointer> Library::getTracksToAutoLoad() {
+#ifdef __PROMO__
+    if (m_pPromoTracksFeature)
+        return m_pPromoTracksFeature->getTracksToAutoLoad();
+#endif
+    return QList<TrackPointer>();
 }

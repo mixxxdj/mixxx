@@ -30,6 +30,7 @@ const QLinkedList<int> ProxyTrackModel::getTrackRows(int trackId) const {
     return m_pTrackModel->getTrackRows(trackId);
 }
 
+// Must be called from Main thread
 TrackPointer ProxyTrackModel::getTrack(const QModelIndex& index) const {
     QModelIndex indexSource = mapToSource(index);
     return m_pTrackModel->getTrack(indexSource);
@@ -116,14 +117,27 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
     return rowMatches;
 }
 
+// Must be called from Main thread
 QString ProxyTrackModel::getModelSetting(QString name) {
     if (!m_pTrackModel)
         return QString();
-    return m_pTrackModel->getModelSetting(name);
+    QString modelSettings;
+    // tro's lambda idea. This code calls synchronously!
+//    m_pTrackCollection->callSync(
+//                [this, &modelSettings] (void) {
+        modelSettings = m_pTrackModel->getModelSetting(name);
+//    }, __PRETTY_FUNCTION__);
+    return modelSettings;
 }
 
+// Must be called from Main thread
 bool ProxyTrackModel::setModelSetting(QString name, QVariant value) {
     if (!m_pTrackModel)
         return false;
-    return m_pTrackModel->setModelSetting(name, value);
+    bool result = false;
+//    m_pTrackCollection->callSync(
+//                [this, &result] (void) {
+        result = m_pTrackModel->setModelSetting(name, value);
+//    }, __PRETTY_FUNCTION__);
+    return result;
 }

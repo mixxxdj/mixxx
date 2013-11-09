@@ -61,7 +61,6 @@ class BasePlaylistFeature : public LibraryFeature {
     ConfigObject<ConfigValue>* m_pConfig;
     TrackCollection* m_pTrackCollection;
     PlaylistDAO &m_playlistDao;
-    TrackDAO &m_trackDao;
     PlaylistTableModel* m_pPlaylistTableModel;
     QAction *m_pCreatePlaylistAction;
     QAction *m_pDeletePlaylistAction;

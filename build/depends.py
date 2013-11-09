@@ -547,6 +547,7 @@ class MixxxCore(Feature):
                    "musicbrainz/chromaprinter.cpp",
                    "musicbrainz/musicbrainzclient.cpp",
 
+
                    "rotary.cpp",
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
@@ -788,6 +789,8 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS = '-Wall')
             build.env.Append(CCFLAGS = '-Wextra')
             build.env.Append(CCFLAGS = '-g')
+            # add usage of C++11
+            build.env.Append(CCFLAGS = '-std=c++11')
 
             # Check that g++ is present (yeah, SCONS is a bit dumb here)
             if os.system("which g++ > /dev/null"): #Checks for non-zero return code

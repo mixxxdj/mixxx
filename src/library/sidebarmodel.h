@@ -4,17 +4,19 @@
 #ifndef SIDEBARMODEL_H
 #define SIDEBARMODEL_H
 
+
 #include <QAbstractItemModel>
 #include <QList>
 #include <QModelIndex>
 #include <QVariant>
 
 class LibraryFeature;
+class TrackCollection;
 
 class SidebarModel : public QAbstractItemModel {
     Q_OBJECT
   public:
-    explicit SidebarModel(QObject* parent = 0);
+    explicit SidebarModel(TrackCollection* pTrackCollection, QObject* parent = 0);
     virtual ~SidebarModel();
 
     void addLibraryFeature(LibraryFeature* feature);
@@ -67,6 +69,7 @@ class SidebarModel : public QAbstractItemModel {
     void featureRenamed(LibraryFeature*);
     QList<LibraryFeature*> m_sFeatures;
     unsigned int m_iDefaultSelectedIndex; /** Index of the item in the sidebar model to select at startup. */
+    TrackCollection* m_pTrackCollection;
 };
 
 #endif /* SIDEBARMODEL_H */

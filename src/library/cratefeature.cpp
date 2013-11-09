@@ -11,6 +11,7 @@
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
 #include "library/parsercsv.h"
+#include "library/queryutil.h"
 
 #include "library/cratetablemodel.h"
 #include "library/trackcollection.h"
@@ -108,10 +109,10 @@ QIcon CrateFeature::getIcon() {
     return QIcon(":/images/library/ic_library_crates.png");
 }
 
+// Must be called from Main thread
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
                                    QObject* pSource) {
     QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
         //XXX: See the comment in PlaylistFeature::dropAcceptChild() about
@@ -119,28 +120,38 @@ bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
         files.append(url.toLocalFile());
     }
 
-    QList<int> trackIds;
-    if (pSource) {
-        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
-    } else {
-        // Adds track, does not insert duplicates, handles unremoving logic.
-        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
-    }
-    qDebug() << "CrateFeature::dropAcceptChild adding tracks"
-            << trackIds.size() << " to crate "<< crateId;
-    // remove tracks that could not be added
-    for (int trackId =0; trackId<trackIds.size() ; trackId++) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    bool result = false;
+    const bool is_pSource = pSource;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &crateName, &files, &is_pSource, &result] (void) {
+        int crateId = m_crateDao.getCrateIdByName(crateName);
+        QList<int> trackIds;
+        if (is_pSource) {
+            trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+        } else {
+            // Adds track, does not insert duplicates, handles unremoving logic.
+            trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
         }
-    }
-    m_crateDao.addTracksToCrate(crateId, &trackIds);
-    return true;
+        qDebug() << "CrateFeature::dropAcceptChild adding tracks"
+                 << trackIds.size() << " to crate "<< crateId;
+        // remove tracks that could not be added
+        for (int trackId = 0; trackId < trackIds.size(); trackId++) {
+            if (trackIds.at(trackId) < 0) {
+                trackIds.removeAt(trackId--);
+            }
+        }
+        int tracksAdded = m_crateDao.addTracksToCrate(crateId, &trackIds);
+        result = tracksAdded > 0;
+    }, __PRETTY_FUNCTION__);
+    return result;
 }
 
+// Must be called from TrackCollection
 bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString crateName = index.data().toString();
+
     int crateId = m_crateDao.getCrateIdByName(crateName);
     bool locked = m_crateDao.isCrateLocked(crateId);
     QFileInfo file(url.toLocalFile());
@@ -169,11 +180,18 @@ void CrateFeature::activate() {
     emit(restoreSearch(QString())); //disable search on crate home
 }
 
+// Must be called from Main thread
 void CrateFeature::activateChild(const QModelIndex& index) {
     if (!index.isValid())
         return;
-    QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    const QString crateName = index.data().toString();
+    int crateId;
+    // tro's lambda idea. This code calls Synchronously!
+    m_pTrackCollection->callSync(
+            [this, &crateName, &crateId] (void) {
+        crateId = m_crateDao.getCrateIdByName(crateName);
+    }, __PRETTY_FUNCTION__);
+
     m_crateTableModel.setTableModel(crateId);
     emit(showTrackModel(&m_crateTableModel));
 }
@@ -189,15 +207,25 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString crateName = index.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
-
-    bool locked = m_crateDao.isCrateLocked(crateId);
+    int crateId = -1;
+    bool locked = false;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &crateId, &locked, &crateName] (void) {
+        crateId = m_crateDao.getCrateIdByName(crateName);
+        locked = m_crateDao.isCrateLocked(crateId);
+    }, __PRETTY_FUNCTION__);
 
     m_pDeleteCrateAction->setEnabled(!locked);
     m_pRenameCrateAction->setEnabled(!locked);
 
 #ifdef __AUTODJCRATES__
-    bool bAutoDj = m_crateDao.isCrateInAutoDj(crateId);
+    bool bAutoDj;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &bAutoDj, &crateId] (void) {
+        bAutoDj = m_crateDao.isCrateInAutoDj(crateId);
+    }, __PRETTY_FUNCTION__);
     m_pAutoDjTrackSource->setChecked(bAutoDj);
 #endif // __AUTODJCRATES__
 
@@ -235,7 +263,12 @@ void CrateFeature::slotCreateCrate() {
         if (!ok)
             return;
 
-        int existingId = m_crateDao.getCrateIdByName(name);
+        int existingId;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                [this, &existingId, &name] (void) {
+            existingId = m_crateDao.getCrateIdByName(name);
+        }, __PRETTY_FUNCTION__);
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
@@ -250,7 +283,12 @@ void CrateFeature::slotCreateCrate() {
         }
     }
 
-    int crateId = m_crateDao.createCrate(name);
+    int crateId;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &crateId, &name] (void) {
+        crateId = m_crateDao.createCrate(name);
+    }, __PRETTY_FUNCTION__);
 
     if (crateId != -1) {
         emit(showTrackModel(&m_crateTableModel));
@@ -265,15 +303,22 @@ void CrateFeature::slotCreateCrate() {
 
 void CrateFeature::slotDeleteCrate() {
     QString crateName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
-    bool locked = m_crateDao.isCrateLocked(crateId);
+    int crateId = 0;
+    bool locked = false;
+    bool deleted = false;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &crateId, &locked, &crateName, &deleted] (void) {
+        crateId = m_crateDao.getCrateIdByName(crateName);
+        locked = m_crateDao.isCrateLocked(crateId);
 
-    if (locked) {
-        qDebug() << "Skipping crate deletion because crate" << crateId << "is locked.";
-        return;
-    }
+        if (locked) {
+            qDebug() << "Skipping crate deletion because crate" << crateId << "is locked.";
+            return;
+        }
 
-    bool deleted = m_crateDao.deleteCrate(crateId);
+        deleted = m_crateDao.deleteCrate(crateId);
+    }, __PRETTY_FUNCTION__);
 
     if (deleted) {
         activate();
@@ -284,8 +329,14 @@ void CrateFeature::slotDeleteCrate() {
 
 void CrateFeature::slotRenameCrate() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(oldName);
-    bool locked = m_crateDao.isCrateLocked(crateId);
+    int crateId = -1;
+    bool locked = false;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &crateId, &locked, &oldName] (void) {
+        crateId = m_crateDao.getCrateIdByName(oldName);
+        locked = m_crateDao.isCrateLocked(crateId);
+    }, __PRETTY_FUNCTION__);
 
     if (locked) {
         qDebug() << "Skipping crate rename because crate" << crateId << "is locked.";
@@ -308,7 +359,12 @@ void CrateFeature::slotRenameCrate() {
             return;
         }
 
-        int existingId = m_crateDao.getCrateIdByName(newName);
+        int existingId = -1;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &existingId, &newName] (void) {
+            existingId = m_crateDao.getCrateIdByName(newName);
+        }, __PRETTY_FUNCTION__);
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
@@ -323,14 +379,26 @@ void CrateFeature::slotRenameCrate() {
         }
     }
 
-    if (!m_crateDao.renameCrate(crateId, newName)) {
+    bool renameResult = false;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &renameResult, &crateId, &newName] (void) {
+        renameResult = m_crateDao.renameCrate(crateId, newName);
+    }, __PRETTY_FUNCTION__);
+
+    if (!renameResult) {
         qDebug() << "Failed to rename crateId" << crateId;
     }
 }
 
 void CrateFeature::slotDuplicateCrate() {
     QString oldName = m_lastRightClickedIndex.data().toString();
-    int oldCrateId = m_crateDao.getCrateIdByName(oldName);
+    int oldCrateId = -1;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &oldCrateId, &oldName] (void) {
+        oldCrateId = m_crateDao.getCrateIdByName(oldName);
+    }, __PRETTY_FUNCTION__);
 
     QString name;
     bool validNameGiven = false;
@@ -349,7 +417,12 @@ void CrateFeature::slotDuplicateCrate() {
             return;
         }
 
-        int existingId = m_crateDao.getCrateIdByName(name);
+        int existingId = -1;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &existingId, &name] (void) {
+            existingId = m_crateDao.getCrateIdByName(name);
+        }, __PRETTY_FUNCTION__);
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
@@ -364,8 +437,13 @@ void CrateFeature::slotDuplicateCrate() {
         }
     }
 
-    int newCrateId = m_crateDao.createCrate(name);
-    m_crateDao.copyCrateTracks(oldCrateId, newCrateId);
+    int newCrateId = -1;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &newCrateId, &oldCrateId, &name] (void) {
+        newCrateId = m_crateDao.createCrate(name);
+        m_crateDao.copyCrateTracks(oldCrateId, newCrateId);
+    }, __PRETTY_FUNCTION__);
 
     if (newCrateId != -1) {
         emit(showTrackModel(&m_crateTableModel));
@@ -380,46 +458,60 @@ void CrateFeature::slotDuplicateCrate() {
 
 void CrateFeature::slotToggleCrateLock() {
     QString crateName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
-    bool locked = !m_crateDao.isCrateLocked(crateId);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, crateName] (void) {
+        int crateId = m_crateDao.getCrateIdByName(crateName);
+        bool locked = !m_crateDao.isCrateLocked(crateId);
 
-    if (!m_crateDao.setCrateLocked(crateId, locked)) {
-        qDebug() << "Failed to toggle lock of crateId " << crateId;
-    }
+        if (!m_crateDao.setCrateLocked(crateId, locked)) {
+            qDebug() << "Failed to toggle lock of crateId " << crateId;
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 void CrateFeature::slotAutoDjTrackSourceChanged() {
 #ifdef __AUTODJCRATES__
     QString crateName = m_lastRightClickedIndex.data().toString();
-    int crateId = m_crateDao.getCrateIdByName(crateName);
-    if (crateId != -1) {
-        m_crateDao.setCrateInAutoDj(crateId, m_pAutoDjTrackSource->isChecked());
-    }
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, crateName] (void) {
+        int crateId = m_crateDao.getCrateIdByName(crateName);
+        if (crateId != -1) {
+            m_crateDao.setCrateInAutoDj(crateId, m_pAutoDjTrackSource->isChecked());
+        }
+    });
 #endif // __AUTODJCRATES__
 }
 
+// Must be called from Main thread
 void CrateFeature::buildCrateList() {
     m_crateList.clear();
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
-    crateListTableModel.setTable("crates");
-    crateListTableModel.setSort(crateListTableModel.fieldIndex("name"),
-                                Qt::AscendingOrder);
-    crateListTableModel.setFilter("show = 1");
-    crateListTableModel.select();
-    while (crateListTableModel.canFetchMore()) {
-        crateListTableModel.fetchMore();
-    }
-    QSqlRecord record = crateListTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
 
-    for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
-        int id = crateListTableModel.data(
-            crateListTableModel.index(row, idColumn)).toInt();
-        QString name = crateListTableModel.data(
-            crateListTableModel.index(row, nameColumn)).toString();
-        m_crateList.append(qMakePair(id, name));
-    }
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &crateListTableModel] (void) {
+        crateListTableModel.setTable("crates");
+        crateListTableModel.setSort(crateListTableModel.fieldIndex("name"),
+                                    Qt::AscendingOrder);
+        crateListTableModel.setFilter("show = 1");
+        crateListTableModel.select();
+        while (crateListTableModel.canFetchMore()) {
+            crateListTableModel.fetchMore();
+        }
+        QSqlRecord record = crateListTableModel.record();
+        int nameColumn = record.indexOf("name");
+        int idColumn = record.indexOf("id");
+
+        for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
+            int id = crateListTableModel.data(
+                        crateListTableModel.index(row, idColumn)).toInt();
+            QString name = crateListTableModel.data(
+                        crateListTableModel.index(row, nameColumn)).toString();
+            m_crateList.append(qMakePair(id, name));
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 /**
@@ -427,6 +519,7 @@ void CrateFeature::buildCrateList() {
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
 */
+// Must be called from Main thread
 QModelIndex CrateFeature::constructChildModel(int selected_id) {
     buildCrateList();
     QList<TreeItem*> data_list;
@@ -448,7 +541,14 @@ QModelIndex CrateFeature::constructChildModel(int selected_id) {
 
         // Create the TreeItem whose parent is the invisible root item
         TreeItem* item = new TreeItem(crate_name, crate_name, this, root);
-        bool locked = m_crateDao.isCrateLocked(crate_id);
+
+        bool locked = false;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &locked, crate_id] (void) {
+            locked = m_crateDao.isCrateLocked(crate_id);
+        }, __PRETTY_FUNCTION__);
+
         item->setIcon(locked ? QIcon(":/images/library/ic_library_locked.png") : QIcon());
         data_list.append(item);
     }
@@ -506,17 +606,24 @@ void CrateFeature::slotImportPlaylist() {
         delete playlist_parser;
 }
 
+// Must be called from Main thread
 void CrateFeature::slotAnalyzeCrate() {
     if (m_lastRightClickedIndex.isValid()) {
-        int playlistId = m_crateDao.getCrateIdByName(
-                m_lastRightClickedIndex.data().toString());
-        if (playlistId >= 0) {
-            QList<int> ids = m_crateDao.getTrackIds(playlistId);
-            emit(analyzeTracks(ids));
-        }
+        const QString name = m_lastRightClickedIndex.data().toString();
+
+        // tro's lambda idea. This code calls asynchronously!
+        m_pTrackCollection->callAsync(
+                    [this, name] (void) {
+            int playlistId = m_crateDao.getCrateIdByName(name);
+            if (playlistId >= 0) {
+                QList<int> ids = m_crateDao.getTrackIds(playlistId);
+                emit(analyzeTracks(ids));
+            }
+        }, __PRETTY_FUNCTION__);
     }
 }
 
+// Must be called from Main thread
 void CrateFeature::slotExportPlaylist() {
     qDebug() << "Export crate" << m_lastRightClickedIndex.data();
     QString file_location = QFileDialog::getSaveFileName(
@@ -538,8 +645,14 @@ void CrateFeature::slotExportPlaylist() {
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
-    pCrateTableModel->select();
+
+        pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
+
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &pCrateTableModel] (void) {
+            pCrateTableModel->select();
+        }, __PRETTY_FUNCTION__);
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
             ParserCsv::writeCSVFile(file_location, pCrateTableModel.data(), useRelativePath);
@@ -571,9 +684,11 @@ void CrateFeature::slotExportPlaylist() {
     }
 }
 
+// Must be called from Main thread
 void CrateFeature::slotCrateTableChanged(int crateId) {
     //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
     clearChildModel();
+
     m_lastRightClickedIndex = constructChildModel(crateId);
     // Switch the view to the crate.
     m_crateTableModel.setTableModel(crateId);

@@ -34,10 +34,13 @@ class LibraryScannerDlg : public QWidget {
   public slots:
     void slotUpdate(QString path);
     void slotCancel();
+    void slotPause();
     void slotScanFinished();
 
   signals:
     void scanCancelled();
+    void scanPaused();
+    void scanResumed();
     void progress(QString);
 
   private:
@@ -45,6 +48,7 @@ class LibraryScannerDlg : public QWidget {
     QString m_qLibraryPath;
     QTime m_timer;
     bool m_bCancelled;
+    bool m_bPaused;
 };
 
 #endif

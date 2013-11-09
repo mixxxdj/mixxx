@@ -8,6 +8,7 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
          : QWidget(parent),
            Ui::DlgHidden(),
+           m_pTrackCollection(pTrackCollection),
            m_pTrackTableView(
                new WTrackTableView(this, pConfig, pTrackCollection, false)) {
     setupUi(this);
@@ -19,8 +20,19 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
+}
 
-    m_pHiddenTableModel = new HiddenTableModel(this, pTrackCollection);
+DlgHidden::~DlgHidden() {
+    // Delete m_pTrackTableView before the table model. This is because the
+    // table view saves the header state using the model.
+    delete m_pTrackTableView;
+    delete m_pHiddenTableModel;
+}
+
+void DlgHidden::init() {
+    m_pHiddenTableModel = new HiddenTableModel(this, m_pTrackCollection);
+    m_pHiddenTableModel->init();
+
     m_pTrackTableView->loadTrackModel(m_pHiddenTableModel);
 
     connect(btnUnhide, SIGNAL(clicked()),
@@ -39,17 +51,14 @@ DlgHidden::DlgHidden(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
 }
 
-DlgHidden::~DlgHidden() {
-    // Delete m_pTrackTableView before the table model. This is because the
-    // table view saves the header state using the model.
-    delete m_pTrackTableView;
-    delete m_pHiddenTableModel;
-}
-
 void DlgHidden::onShow() {
-    m_pHiddenTableModel->select();
     // no buttons can be selected
-    activateButtons(false);
+    slotActivateButtons(false);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+            [this] (void) {
+        m_pHiddenTableModel->select();
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgHidden::onSearch(const QString& text) {
@@ -65,7 +74,7 @@ void DlgHidden::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
-void DlgHidden::activateButtons(bool enable) {
+void DlgHidden::slotActivateButtons(bool enable) {
     btnPurge->setEnabled(enable);
     btnUnhide->setEnabled(enable);
 }
@@ -73,5 +82,5 @@ void DlgHidden::activateButtons(bool enable) {
 void DlgHidden::selectionChanged(const QItemSelection &selected,
                                  const QItemSelection &deselected) {
     Q_UNUSED(deselected);
-    activateButtons(!selected.indexes().isEmpty());
+    slotActivateButtons(!selected.indexes().isEmpty());
 }

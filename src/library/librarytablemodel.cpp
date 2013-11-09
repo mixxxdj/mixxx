@@ -11,29 +11,37 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection,
                                      QString settingsNamespace)
         : BaseSqlTableModel(parent, pTrackCollection, settingsNamespace){
-    setTableModel();
 }
 
 LibraryTableModel::~LibraryTableModel() {
 }
 
+void LibraryTableModel::init() {
+    setTableModel();
+}
+
+// Must be called from Main thread
 void LibraryTableModel::setTableModel(int id) {
     Q_UNUSED(id);
-    QStringList columns;
-    columns << "library."+LIBRARYTABLE_ID << "'' as preview";
+    QStringList columns = QStringList()
+            << "library."+LIBRARYTABLE_ID << "'' as preview";
 
     QString tableName = "library_view";
 
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS "+tableName+" AS "
-            "SELECT " + columns.join(", ") +
-            " FROM library INNER JOIN track_locations "
-            "ON library.location = track_locations.id "
-            "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+    // TODO(xxx) move this to separate function on accessing DB (create table)
+    m_pTrackCollection->callSync(
+            [this, &columns, &tableName] (void) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS "+tableName+" AS "
+                "SELECT " + columns.join(", ") +
+                " FROM library INNER JOIN track_locations "
+                "ON library.location = track_locations.id "
+                "WHERE (" + LibraryTableModel::DEFAULT_LIBRARYFILTER + ")";
+        query.prepare(queryString);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }, __PRETTY_FUNCTION__);
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
@@ -48,16 +56,22 @@ void LibraryTableModel::setTableModel(int id) {
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
 }
 
-
+// Must be called from Main thread
 int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
     Q_UNUSED(index);
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
         fileInfoList.append(QFileInfo(fileLocation));
     }
-    QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
-    select();
-    return trackIds.size();
+    int tracksAdded = 0;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &fileInfoList, &tracksAdded] (void) {
+        QList<int> trackIds = m_trackDAO.addTracks(fileInfoList, true);
+        select();
+        tracksAdded = trackIds.count();
+    }, __PRETTY_FUNCTION__);
+    return tracksAdded;
 }
 
 bool LibraryTableModel::isColumnInternal(int column) {

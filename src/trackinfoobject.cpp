@@ -30,6 +30,7 @@
 #include "controlobject.h"
 #include "waveform/waveform.h"
 #include "track/beatfactory.h"
+#include "library/trackcollection.h"
 #include "util/compatibility.h"
 
 #include "mixxxutils.cpp"
@@ -770,7 +771,7 @@ void TrackInfoObject::setDirty(bool bDirty) {
             emit(clean(this));
     }
     // Emit a changed signal regardless if this attempted to set us dirty.
-    if (bDirty) {
+    if (m_bDirty) {
         emit(changed(this));
     }
 

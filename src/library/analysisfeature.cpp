@@ -105,7 +105,13 @@ void AnalysisFeature::analyzeTracks(QList<int> trackIds) {
     }
 
     foreach(int trackId, trackIds) {
-        TrackPointer pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+        TrackPointer pTrack;
+        // tro's lambda idea. This code calls Synchronously!
+        m_pTrackCollection->callSync(
+                [this, &trackId, &pTrack] (void) {
+            pTrack = m_pTrackCollection->getTrackDAO().getTrack(trackId);
+        }, __PRETTY_FUNCTION__);
+
         if (pTrack) {
             //qDebug() << this << "Queueing track for analysis" << pTrack->getLocation();
             m_pAnalyserQueue->queueAnalyseTrack(pTrack);
@@ -132,6 +138,7 @@ void AnalysisFeature::cleanupAnalyser() {
     }
 }
 
+// Must be called from Main thread
 bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     Q_UNUSED(pSource);
     QList<QFileInfo> files;
@@ -143,8 +150,15 @@ bool AnalysisFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
         // case. toString() absolutely does not work when you pass the result to a
         files.append(url.toLocalFile());
     }
+
+    QList<int> trackIds;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &files, &trackIds] (void) {
+        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    }, __PRETTY_FUNCTION__);
     // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<int> trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+
     analyzeTracks(trackIds);
     return trackIds.size() > 0;
 }

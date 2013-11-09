@@ -12,7 +12,7 @@ class TrackCollection;
 class BaseExternalLibraryFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pCollection);
+    BaseExternalLibraryFeature(QObject* pParent, TrackCollection* pTrackCollection);
     virtual ~BaseExternalLibraryFeature();
 
   public slots:
@@ -20,7 +20,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
   protected:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) = 0;
+    virtual BaseSqlTableModel* createPlaylistModelForPlaylist(QString playlist) = 0;
 
   private slots:
     void slotAddToAutoDJ();

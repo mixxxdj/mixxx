@@ -17,7 +17,7 @@ CrateDAO::~CrateDAO() {
 }
 
 void CrateDAO::initialize() {
-    qDebug() << "CrateDAO::initialize()";
+    qDebug() << "CrateDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 unsigned int CrateDAO::crateCount() {

@@ -1,37 +1,40 @@
 #include "library/hiddentablemodel.h"
+#include "library/queryutil.h"
 
-HiddenTableModel::HiddenTableModel(QObject* parent,
-                                   TrackCollection* pTrackCollection)
-        : BaseSqlTableModel(parent, pTrackCollection, "mixxx.db.model.missing") {
-    setTableModel();
+HiddenTableModel::HiddenTableModel(QObject* parent, TrackCollection* pTrackCollection)
+        : BaseSqlTableModel(parent, pTrackCollection, "mixxx.db.model.missing") {  // WTF!? COPYPASTE
 }
 
 HiddenTableModel::~HiddenTableModel() {
 }
 
+void HiddenTableModel::init() {
+    setTableModel();
+}
+
+// Must be called from TrackCollection thread
 void HiddenTableModel::setTableModel(int id){
     Q_UNUSED(id);
-    QSqlQuery query;
     const QString tableName("hidden_songs");
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &tableName] (void) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
 
-    QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID;
-    QString filter("mixxx_deleted=1");
-    query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
-                  "SELECT "
-                  + columns.join(",") +
-                  " FROM library "
-                  "INNER JOIN track_locations "
-                  "ON library.location=track_locations.id "
-                  "WHERE " + filter);
-    if (!query.exec()) {
-        qDebug() << query.executedQuery() << query.lastError();
-    }
-
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-        qDebug() << __FILE__ << __LINE__ << query.lastError();
-    }
+        QStringList columns;
+        columns << "library." + LIBRARYTABLE_ID;
+        QString filter("mixxx_deleted=1");
+        query.prepare("CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
+                      "SELECT "
+                      + columns.join(",") +
+                      " FROM library "
+                      "INNER JOIN track_locations "
+                      "ON library.location=track_locations.id "
+                      "WHERE " + filter);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }, __PRETTY_FUNCTION__);
 
     QStringList tableColumns;
     tableColumns << LIBRARYTABLE_ID;
@@ -43,6 +46,7 @@ void HiddenTableModel::setTableModel(int id){
     setSearch("");
 }
 
+// Must be called from Main thread
 void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
@@ -51,13 +55,17 @@ void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.purgeTracks(trackIds);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, trackIds] (void) {
+        m_trackDAO.purgeTracks(trackIds);
+        // TODO(rryan) : do not select, instead route event to BTC and notify from
+        // there.
+        select(); //Repopulate the data model.
+    }, __PRETTY_FUNCTION__);
 }
 
+// Must be called from Main thread
 void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
@@ -66,11 +74,14 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.unhideTracks(trackIds);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, trackIds] (void) {
+        m_trackDAO.unhideTracks(trackIds);
+        // TODO(rryan) : do not select, instead route event to BTC and notify from 
+        // there.
+        select(); //Repopulate the data model.
+    }, __PRETTY_FUNCTION__);
 }
 
 bool HiddenTableModel::isColumnInternal(int column) {

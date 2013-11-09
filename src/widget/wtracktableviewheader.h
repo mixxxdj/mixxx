@@ -13,11 +13,12 @@
 #include <QContextMenuEvent>
 
 class TrackModel;
+class TrackCollection;
 
 class WTrackTableViewHeader : public QHeaderView {
     Q_OBJECT
   public:
-    WTrackTableViewHeader(Qt::Orientation orientation, QWidget* parent = 0);
+    WTrackTableViewHeader(Qt::Orientation orientation, TrackCollection* pTrackCollection, QWidget* parent = 0);
     virtual ~WTrackTableViewHeader();
 
     void contextMenuEvent(QContextMenuEvent* event);
@@ -35,6 +36,7 @@ class WTrackTableViewHeader : public QHeaderView {
     int hiddenCount();
     void clearActions();
     TrackModel* getTrackModel();
+    TrackCollection* m_pTrackCollection;
 
     QMenu m_menu;
     QMap<int, QAction*> m_columnActions;

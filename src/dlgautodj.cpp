@@ -6,6 +6,7 @@
 #include "controlobjectthreadmain.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/dao/playlistdao.h"
 #include "playerinfo.h"
 #include "widget/wskincolor.h"
 #include "widget/wtracktableview.h"
@@ -15,6 +16,7 @@
 const char* kTransitionPreferenceName = "Transition";
 const int kTransitionPreferenceDefault = 10;
 
+// TODO(xxx) Move initialization to separate method
 DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection,
                      MixxxKeyboard* pKeyboard)
@@ -23,7 +25,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
           m_pTrackTableView(
-              new WTrackTableView(this, pConfig, m_pTrackCollection, false)), // no sorting
+              new WTrackTableView(this, pConfig, pTrackCollection, false)), // no sorting
           m_bFadeNow(false),
           m_eState(ADJ_DISABLED),
           m_posThreshold1(1.0f),
@@ -42,14 +44,19 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pTrackTableView);
 
-    m_pAutoDJTableModel = new PlaylistTableModel(this, pTrackCollection,
+    m_pAutoDJTableModel = new PlaylistTableModel(this, m_pTrackCollection,
                                                  "mixxx.db.model.autodj");
-    PlaylistDAO& playlistDao = pTrackCollection->getPlaylistDAO();
-    int playlistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    if (playlistId < 0) {
-        playlistId = playlistDao.createPlaylist(AUTODJ_TABLE,
-                                                PlaylistDAO::PLHT_AUTO_DJ);
-    }
+    int playlistId = -1;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &playlistId] (void) {
+        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+        playlistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+        if (playlistId < 0) {
+            playlistId = playlistDao.createPlaylist(AUTODJ_TABLE,
+                                                    PlaylistDAO::PLHT_AUTO_DJ);
+        }
+    }, __PRETTY_FUNCTION__);
     m_pAutoDJTableModel->setTableModel(playlistId);
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
@@ -126,6 +133,9 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
         spinBoxTransition->setValue(str_autoDjTransition.toInt());
     }
     m_backUpTransition = spinBoxTransition->value();
+
+    connect(this, SIGNAL(pushButtonAutoDJSetChecked(bool)),
+            this, SLOT(slotPushButtonAutoDJSetChecked(bool)));
 }
 
 DlgAutoDJ::~DlgAutoDJ() {
@@ -155,7 +165,11 @@ DlgAutoDJ::~DlgAutoDJ() {
 }
 
 void DlgAutoDJ::onShow() {
-    m_pAutoDJTableModel->select();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+            [this] (void) {
+        m_pAutoDJTableModel->select();
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAutoDJ::onSearch(const QString& text) {
@@ -252,6 +266,7 @@ void DlgAutoDJ::fadeNow(double value) {
     }
 }
 
+// Must be called from Main
 void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     bool deck1Playing = m_pCOPlay1Fb->get() == 1.0;
     bool deck2Playing = m_pCOPlay2Fb->get() == 1.0;
@@ -517,30 +532,30 @@ void DlgAutoDJ::player2PositionChanged(double value) {
     }
 }
 
+// Must be called from Main
 TrackPointer DlgAutoDJ::getNextTrackFromQueue() {
     // Get the track at the top of the playlist...
     TrackPointer nextTrack;
     int tmp = m_backUpTransition;
     // This will also signal valueChanged and by that change m_backUpTransition
     // so we need to copy to orignal value back
-    spinBoxTransition->setValue(m_backUpTransition);
+
+    slotSpinBoxTransitionSetValue(m_backUpTransition);
     m_backUpTransition = tmp;
 
     while (true) {
-        nextTrack = m_pAutoDJTableModel->getTrack(
-            m_pAutoDJTableModel->index(0, 0));
-
+        const QModelIndex firstTrackIndex = m_pAutoDJTableModel->index(0, 0);
+        nextTrack = m_pAutoDJTableModel->getTrack( firstTrackIndex );
         if (nextTrack) {
             if (nextTrack->exists()) {
                 // found a valid Track
                 if (nextTrack->getDuration() < m_backUpTransition)
-                    spinBoxTransition->setValue(nextTrack->getDuration()/2);
-                    m_backUpTransition = tmp;
+                    slotSpinBoxTransitionSetValue(nextTrack->getDuration()/2);
+                m_backUpTransition = tmp;
                 return nextTrack;
             } else {
                 // Remove missing song from auto DJ playlist
-                m_pAutoDJTableModel->removeTrack(
-                    m_pAutoDJTableModel->index(0, 0));
+                m_pAutoDJTableModel->removeTrack(firstTrackIndex);
             }
         } else {
             // we are running out of tracks
@@ -556,7 +571,8 @@ bool DlgAutoDJ::loadNextTrackFromQueue() {
     // We ran out of tracks in the queue...
     if (!nextTrack) {
         // Disable auto DJ and return...
-        pushButtonAutoDJ->setChecked(false);
+        // pushButtonAutoDJ->setChecked(false);
+        emit(pushButtonAutoDJSetChecked(false));
         // And eject track as "End of auto DJ warning"
         emit(loadTrack(nextTrack));
         return false;
@@ -566,6 +582,7 @@ bool DlgAutoDJ::loadNextTrackFromQueue() {
     return true;
 }
 
+// Must be called from Main
 bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     TrackPointer nextTrack, loadedTrack;
     int nextId = 0, loadedId = 0;
@@ -612,7 +629,7 @@ void DlgAutoDJ::player1PlayChanged(double value) {
 
             // The track might be shorter than the transition period. Use a
             // sensibile cap.
-            int autoDjTransition = math_min(spinBoxTransition->value(),
+            int autoDjTransition = math_min(spinBoxTransition->value(), // # UI
                                             TrackDuration/2);
 
             if (TrackDuration > autoDjTransition) {
@@ -683,4 +700,12 @@ void DlgAutoDJ::enableRandomButton(bool enabled) {
 #ifdef __AUTODJCRATES__
     pushButtonAddRandom->setEnabled(enabled);
 #endif // __AUTODJCRATES__
+}
+
+void DlgAutoDJ::slotSpinBoxTransitionSetValue(int value) {
+    spinBoxTransition->setValue(value);
+}
+
+void DlgAutoDJ::slotPushButtonAutoDJSetChecked(bool checked) {
+    pushButtonAutoDJ->setChecked(checked);
 }

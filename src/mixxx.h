@@ -42,6 +42,8 @@ class VinylControlManager;
 class DlgPreferences;
 class SoundManager;
 
+class TrackCollection;
+
 #include "configobject.h"
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
@@ -133,6 +135,7 @@ class MixxxApp : public QMainWindow {
     void initializeWindow();
     void initializeKeyboard();
     void initializeTranslations(QApplication* pApp);
+    void initializeTrackCollection();
     void checkDirectRendering();
     bool confirmExit();
 
@@ -234,6 +237,7 @@ class MixxxApp : public QMainWindow {
 
     const CmdlineArgs& m_cmdLineArgs;
 
+    TrackCollection* m_pTrackCollection;
     ControlObjectThread* m_pVinylcontrol1Enabled;
     ControlObjectThread* m_pVinylcontrol2Enabled;
 };

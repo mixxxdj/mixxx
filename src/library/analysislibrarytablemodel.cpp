@@ -10,12 +10,15 @@ AnalysisLibraryTableModel::AnalysisLibraryTableModel(QObject* parent,
         : LibraryTableModel(parent, pTrackCollection,
                             "mixxx.db.model.prepare") {
     m_bShowRecentSongs = true;
-    setSearch("", RECENT_FILTER);
-
 }
 
 
 AnalysisLibraryTableModel::~AnalysisLibraryTableModel() {
+}
+
+void AnalysisLibraryTableModel::init() {
+    LibraryTableModel::init();
+    setSearch("", RECENT_FILTER);
 }
 
 

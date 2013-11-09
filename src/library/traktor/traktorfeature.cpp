@@ -24,6 +24,10 @@ TraktorTrackModel::TraktorTrackModel(QObject* parent,
                                  "traktor") {
 }
 
+void TraktorTrackModel::init() {
+    BaseExternalTrackModel::init();
+}
+
 bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
     if (column == fieldIndex(LIBRARYTABLE_KEY) ||
         column == fieldIndex(LIBRARYTABLE_BITRATE)) {
@@ -76,6 +80,9 @@ TraktorFeature::TraktorFeature(QObject* parent, TrackCollection* pTrackCollectio
 
     m_isActivated = false;
     m_pTraktorTableModel = new TraktorTrackModel(this, m_pTrackCollection);
+
+    m_pTraktorTableModel->init();
+
     m_pTraktorPlaylistModel = new TraktorPlaylistModel(this, m_pTrackCollection);
 
     m_title = tr("Traktor");
@@ -100,9 +107,10 @@ TraktorFeature::~TraktorFeature() {
     delete m_pTraktorPlaylistModel;
 }
 
-BaseSqlTableModel* TraktorFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* TraktorFeature::createPlaylistModelForPlaylist(QString playlist) {
     TraktorPlaylistModel* pModel = new TraktorPlaylistModel(this, m_pTrackCollection);
     pModel->setPlaylist(playlist);
+    pModel->setPlaylistUI();
     return pModel;
 }
 
@@ -161,6 +169,7 @@ void TraktorFeature::activateChild(const QModelIndex& index) {
     if (item->isPlaylist()) {
         qDebug() << "Activate Traktor Playlist: " << item->dataPath().toString();
         m_pTraktorPlaylistModel->setPlaylist(item->dataPath().toString());
+        m_pTraktorPlaylistModel->setPlaylistUI();
         emit(showTrackModel(m_pTraktorPlaylistModel));
     }
 }

@@ -27,7 +27,7 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     //  Functions that have to/can be reimplemented
     ///////////////////////////////////////////////////////////////////////////
     //  This class also has protected variables that should be used in childs
-    //  m_database, m_pTrackCollection, m_trackDAO
+    //  m_pTrackCollection, m_trackDAO
 
     virtual void setTableModel(int id=-1) = 0;
     virtual bool isColumnInternal(int column) = 0;
@@ -87,12 +87,18 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
     TrackCollection* m_pTrackCollection;
+
     TrackDAO& m_trackDAO;
-    QSqlDatabase m_database;
+
+  public slots:
+    void slotPopulateQueryResult();
 
   private slots:
     void tracksChanged(QSet<int> trackIds);
     void trackLoaded(QString group, TrackPointer pTrack);
+
+ signals:
+    void queryExecuted();
 
   private:
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
@@ -101,7 +107,6 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // names in the table provided to setTable. Must be called after setTable is
     // called.
     QString orderByClause() const;
-    QSqlDatabase database() const;
 
     struct RowInfo {
         int trackId;
@@ -118,7 +123,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
             return order < other.order;
         }
     };
-    QVector<RowInfo> m_rowInfo;
+    QVector<RowInfo>* m_pRowInfo;
+    QVector<RowInfo>* m_pNewRowInfo;
 
     QString m_tableName;
     QString m_idColumn;

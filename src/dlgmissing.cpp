@@ -7,6 +7,7 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                      TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard)
          : QWidget(parent),
            Ui::DlgMissing(),
+           m_pTrackCollection(pTrackCollection),
            m_pTrackTableView(
                new WTrackTableView(this,pConfig,pTrackCollection, false)) {
     setupUi(this);
@@ -20,6 +21,8 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     box->insertWidget(1, m_pTrackTableView);
 
     m_pMissingTableModel = new MissingTableModel(this, pTrackCollection);
+    m_pMissingTableModel->init();
+
     m_pTrackTableView->loadTrackModel(m_pMissingTableModel);
 
     connect(btnPurge, SIGNAL(clicked()),
@@ -32,6 +35,9 @@ DlgMissing::DlgMissing(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             SIGNAL(selectionChanged(const QItemSelection&, const QItemSelection&)),
             this,
             SLOT(selectionChanged(const QItemSelection&, const QItemSelection&)));
+
+    connect(this, SIGNAL(activateButtons(bool)),
+            this, SLOT(slotActivateButtons(bool)), Qt::QueuedConnection);
 }
 
 DlgMissing::~DlgMissing() {
@@ -42,8 +48,13 @@ DlgMissing::~DlgMissing() {
 }
 
 void DlgMissing::onShow() {
-    m_pMissingTableModel->select();
-    activateButtons(false);
+    // no buttons can be selected
+    slotActivateButtons(false);
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+            [this] (void) {
+        m_pMissingTableModel->select();
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgMissing::clicked() {
@@ -59,12 +70,12 @@ void DlgMissing::selectAll() {
     m_pTrackTableView->selectAll();
 }
 
-void DlgMissing::activateButtons(bool enable) {
+void DlgMissing::slotActivateButtons(bool enable) {
     btnPurge->setEnabled(enable);
 }
 
 void DlgMissing::selectionChanged(const QItemSelection &selected,
                                   const QItemSelection &deselected) {
     Q_UNUSED(deselected);
-    activateButtons(!selected.indexes().isEmpty());
+    slotActivateButtons(!selected.indexes().isEmpty());
 }

@@ -54,6 +54,9 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
         "mixxx.db.model.itunes",
         "itunes_library",
         "itunes");
+
+    m_pITunesTrackModel->init();
+
     m_pITunesPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.itunes_playlist",
@@ -80,7 +83,7 @@ ITunesFeature::~ITunesFeature() {
     delete m_pITunesPlaylistModel;
 }
 
-BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* ITunesFeature::createPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.itunes_playlist",
@@ -88,6 +91,7 @@ BaseSqlTableModel* ITunesFeature::getPlaylistModelForPlaylist(QString playlist) 
         "itunes_playlist_tracks",
         "itunes");
     pModel->setPlaylist(playlist);
+    pModel->setPlaylistUI();
     return pModel;
 }
 
@@ -111,11 +115,20 @@ void ITunesFeature::activate() {
     activate(false);
 }
 
+// Must be called from Main thread
 void ITunesFeature::activate(bool forceReload) {
     //qDebug("ITunesFeature::activate()");
     if (!m_isActivated || forceReload) {
         SettingsDAO settings(m_pTrackCollection->getDatabase());
-        QString dbSetting(settings.getValue(ITDB_PATH_KEY));
+
+        QString pathKey;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                [this, &settings, &pathKey] (void) {
+            pathKey = settings.getValue(ITDB_PATH_KEY);
+        }, __PRETTY_FUNCTION__);
+
+        QString dbSetting(pathKey);
         // if a path exists in the database, use it
         if (!dbSetting.isEmpty() && QFile::exists(dbSetting)) {
             m_dbfile = dbSetting;
@@ -132,7 +145,12 @@ void ITunesFeature::activate(bool forceReload) {
                 emit(showTrackModel(m_pITunesTrackModel));
                 return;
             }
-            settings.setValue(ITDB_PATH_KEY, m_dbfile);
+
+            // tro's lambda idea. This code calls synchronously!
+            m_pTrackCollection->callSync(
+                    [this, &settings] (void) {
+                settings.setValue(ITDB_PATH_KEY, m_dbfile);
+            }, __PRETTY_FUNCTION__);
         }
         m_isActivated =  true;
         // Ususally the maximum number of threads
@@ -160,6 +178,7 @@ void ITunesFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pITunesPlaylistModel->setPlaylist(playlist);
+    m_pITunesPlaylistModel->setPlaylistUI();
     emit(showTrackModel(m_pITunesPlaylistModel));
 }
 
@@ -358,6 +377,7 @@ TreeItem* ITunesFeature::importLibrary() {
     return playlist_root;
 }
 
+// Must be called from Main thread
 void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
     bool in_container_dictionary = false;
     bool in_track_dictionary = false;
@@ -662,6 +682,7 @@ void ITunesFeature::parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query_insert
     }
 }
 
+// Must be called from TrackCollection thread
 void ITunesFeature::clearTable(QString table_name) {
     QSqlQuery query(m_database);
     query.prepare("delete from "+table_name);

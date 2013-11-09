@@ -19,6 +19,7 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
                            QString trackTable,
                            QString trackSource);
     virtual ~BaseExternalTrackModel();
+    virtual void init();
 
     void setTableModel(int id=-1);
     TrackModel::CapabilitiesFlags getCapabilities() const;

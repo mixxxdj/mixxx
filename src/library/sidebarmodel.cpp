@@ -5,10 +5,12 @@
 #include "library/libraryfeature.h"
 #include "library/sidebarmodel.h"
 #include "library/treeitem.h"
+#include "library/trackcollection.h"
 
-SidebarModel::SidebarModel(QObject* parent)
+SidebarModel::SidebarModel(TrackCollection* pTrackCollection, QObject* parent)
         : QAbstractItemModel(parent),
-          m_iDefaultSelectedIndex(0) {
+          m_iDefaultSelectedIndex(0),
+          m_pTrackCollection(pTrackCollection) {
 }
 
 SidebarModel::~SidebarModel() {
@@ -273,12 +275,18 @@ bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
 
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            result = m_sFeatures[index.row()]->dragMoveAccept(url);
+            m_pTrackCollection->callSync(
+                        [this, &index, &url, &result] (void) {
+                result = m_sFeatures[index.row()]->dragMoveAccept(url);
+            });
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
-                result = feature->dragMoveAcceptChild(index, url);
+                m_pTrackCollection->callSync(
+                            [this, &feature, &index, &url, &result] (void) {
+                    result = feature->dragMoveAcceptChild(index, url);
+                });
             }
         }
     }

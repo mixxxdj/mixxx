@@ -52,7 +52,7 @@ class BaseTrackCache : public QObject {
                                QString query, QString extraFilter,
                                int sortColumn, Qt::SortOrder sortOrder,
                                QHash<int, int>* trackToIndex);
-    virtual bool isCached(int trackId) const;
+    virtual bool isCached(int trackId) /*const*/;
     virtual void ensureCached(int trackId);
     virtual void ensureCached(QSet<int> trackIds);
 
@@ -120,6 +120,7 @@ class BaseTrackCache : public QObject {
     QRegExp m_operatorMatcher;
     QRegExp m_numericFilterMatcher;
     QRegExp m_stringFilterMatcher;
+    QMutex* m_pTrackInfoMutex;
 
     DISALLOW_COPY_AND_ASSIGN(BaseTrackCache);
 };

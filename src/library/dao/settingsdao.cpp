@@ -14,6 +14,7 @@ SettingsDAO::~SettingsDAO() {
 void SettingsDAO::initialize() {
 }
 
+// Must be called from TrackCollection thread
 QString SettingsDAO::getValue(const QString& name, QString defaultValue) {
     QSqlQuery query(m_db);
 

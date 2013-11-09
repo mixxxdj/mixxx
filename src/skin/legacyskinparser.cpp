@@ -85,7 +85,7 @@ ControlObject* controlFromConfigKey(ConfigKey configKey, bool* created) {
     return controlButton;
 }
 
-LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
+LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig, TrackCollection *pTrackCollection,
                                    MixxxKeyboard* pKeyboard,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
@@ -97,7 +97,8 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
       m_pControllerManager(pControllerManager),
       m_pLibrary(pLibrary),
       m_pVCManager(pVCMan),
-      m_pParent(NULL) {
+      m_pParent(NULL),
+      m_pTrackCollection(pTrackCollection) {
 }
 
 LegacySkinParser::~LegacySkinParser() {
@@ -943,7 +944,7 @@ QWidget* LegacySkinParser::parseSearchBox(QDomElement node) {
 }
 
 QWidget* LegacySkinParser::parseLibrary(QDomElement node) {
-    WLibrary* pLibraryWidget = new WLibrary(m_pParent);
+    WLibrary* pLibraryWidget = new WLibrary(m_pParent, m_pTrackCollection);
     pLibraryWidget->installEventFilter(m_pKeyboard);
     pLibraryWidget->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
 

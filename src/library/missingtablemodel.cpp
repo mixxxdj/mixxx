@@ -5,6 +5,7 @@
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
 #include "mixxxutils.cpp"
+#include "queryutil.h"
 
 const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted=1";
 
@@ -12,12 +13,20 @@ MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent, pTrackCollection,
                             "mixxx.db.model.missing") {
-    setTableModel();
 }
 
+void MissingTableModel::init() {
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        setTableModel();
+    }, __PRETTY_FUNCTION__);
+}
+
+// Must be called from m_pTrackCollection thread
 void MissingTableModel::setTableModel(int id) {
     Q_UNUSED(id);
-    QSqlQuery query(m_database);
+    QSqlQuery query(m_pTrackCollection->getDatabase());
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
     QString tableName("missing_songs");
@@ -33,12 +42,7 @@ void MissingTableModel::setTableModel(int id) {
                   "ON library.location=track_locations.id "
                   "WHERE " + MissingTableModel::MISSINGFILTER);
     if (!query.exec()) {
-        qDebug() << query.executedQuery() << query.lastError();
-    }
-
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        LOG_FAILED_QUERY(query);
     }
 
     QStringList tableColumns;
@@ -49,13 +53,12 @@ void MissingTableModel::setTableModel(int id) {
     initHeaderData();
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
-
 }
 
 MissingTableModel::~MissingTableModel() {
 }
 
-
+// Must be called from Main thread
 void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
 
@@ -64,11 +67,14 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.purgeTracks(trackIds);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, trackIds] (void) {
+        m_trackDAO.purgeTracks(trackIds);
+        // TODO(rryan) : do not select, instead route event to BTC and notify from
+        // there.
+        select(); //Repopulate the data model.
+    }, __PRETTY_FUNCTION__);
 }
 
 

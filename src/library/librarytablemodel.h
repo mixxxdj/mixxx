@@ -9,6 +9,7 @@ class LibraryTableModel : public BaseSqlTableModel {
     LibraryTableModel(QObject* parent, TrackCollection* pTrackCollection,
                       QString settingsNamespace="mixxx.db.model.library");
     virtual ~LibraryTableModel();
+    virtual void init();
     void setTableModel(int id =-1);
     bool isColumnInternal(int column);
     bool isColumnHiddenByDefault(int column);

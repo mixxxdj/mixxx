@@ -3,13 +3,13 @@
 #include <QTime>
 #include <QMutexLocker>
 #include <QDebug>
+#include <QtSql/QSqlError>
 #include <time.h>
 
 #include "analyserwaveform.h"
 #include "engine/engineobject.h"
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilteriir.h"
-#include "library/trackcollection.h"
 #include "library/dao/analysisdao.h"
 #include "trackinfoobject.h"
 #include "waveform/waveformfactory.h"

@@ -3,6 +3,7 @@
 #include <QtAlgorithms>
 #include <QtDebug>
 #include <QTime>
+#include <QVector>
 
 #include "library/basesqltablemodel.h"
 
@@ -24,7 +25,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
            TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_database(pTrackCollection->getDatabase()),
+           m_pRowInfo(new QVector<RowInfo>),
+           m_pNewRowInfo(new QVector<RowInfo>),
            m_currentSearch(""),
            m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
            m_iPreviewDeckTrackId(-1) {
@@ -38,6 +40,8 @@ BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
+    delete m_pRowInfo;
+    delete m_pNewRowInfo;
 }
 
 void BaseSqlTableModel::initHeaderData() {
@@ -86,10 +90,6 @@ void BaseSqlTableModel::initHeaderData() {
 
     setHeaderData(fieldIndex("preview"),
                   Qt::Horizontal, tr("Preview"));
-}
-
-QSqlDatabase BaseSqlTableModel::database() const {
-    return m_database;
 }
 
 bool BaseSqlTableModel::setHeaderData(int section, Qt::Orientation orientation,
@@ -154,6 +154,7 @@ QString BaseSqlTableModel::orderByClause() const {
     return s;
 }
 
+// must be called only from from TrackCollection thread (via callSync/callAsync)
 void BaseSqlTableModel::select() {
     if (!m_bInitialized) {
         return;
@@ -169,44 +170,26 @@ void BaseSqlTableModel::select() {
     //     return;
     // }
 
-    if (sDebug) {
-        qDebug() << this << "select()";
-    }
-
-    QTime time;
-    time.start();
+    DBG() << "BaseSqlTableModel::select() start by" << this;
+ //   Q_ASSERT(QThread::currentThread() != m_pTrackCollection->thread());
 
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
-            .arg(columns, m_tableName, orderBy);
+                          .arg(columns, m_tableName, orderBy);
 
-    if (sDebug) {
-        qDebug() << this << "select() executing:" << queryString;
-    }
-
-    QSqlQuery query(m_database);
+    QSqlQuery selectQuery(m_pTrackCollection->getDatabase());
     // This causes a memory savings since QSqlCachedResult (what QtSQLite uses)
     // won't allocate a giant in-memory table that we won't use at all.
-    query.setForwardOnly(true);
-    query.prepare(queryString);
+    selectQuery.setForwardOnly(true);
+    selectQuery.prepare(queryString);
 
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
+    if (!selectQuery.exec()) {
+        LOG_FAILED_QUERY(selectQuery);
         return;
     }
 
-    // Remove all the rows from the table. We wait to do this until after the
-    // table query has succeeded. See Bug #1090888.
-    // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
-        m_rowInfo.clear();
-        m_trackIdToRows.clear();
-        endRemoveRows();
-    }
-
-    QSqlRecord record = query.record();
+    QSqlRecord record = selectQuery.record();
     int idColumn = record.indexOf(m_idColumn);
 
     QLinkedList<int> tableColumnIndices;
@@ -220,27 +203,30 @@ void BaseSqlTableModel::select() {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
     //}
 
-    QVector<RowInfo> rowInfo;
+    if (m_pNewRowInfo->count()>0) {
+        m_pNewRowInfo->clear();
+    }
+
     QSet<int> trackIds;
-    while (query.next()) {
-        int id = query.value(idColumn).toInt();
+    while (selectQuery.next()) {
+        int id = selectQuery.value(idColumn).toInt();
         trackIds.insert(id);
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located
+        thisRowInfo.order = m_pRowInfo->size(); // save rows where this currently track id is located
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
         foreach (int tableColumnIndex, tableColumnIndices) {
             thisRowInfo.metadata[tableColumnIndex] =
-                    query.value(tableColumnIndex);
+                    selectQuery.value(tableColumnIndex);
         }
-        rowInfo.push_back(thisRowInfo);
+        m_pNewRowInfo->push_back(thisRowInfo);
     }
 
     if (sDebug) {
-        qDebug() << "Rows actually received:" << rowInfo.size();
+        qDebug() << "Rows actually received:" << m_pNewRowInfo->size();
     }
 
     // Adjust sort column to remove table columns and add 1 to add an id column.
@@ -260,8 +246,8 @@ void BaseSqlTableModel::select() {
 
     // Re-sort the track IDs since filterAndSort can change their order or mark
     // them for removal (by setting their row to -1).
-    for (QVector<RowInfo>::iterator it = rowInfo.begin();
-         it != rowInfo.end(); ++it) {
+    for (QVector<RowInfo>::iterator it = m_pNewRowInfo->begin();
+         it != m_pNewRowInfo->end(); ++it) {
         // If the sort column is not a track column then we will sort only to
         // separate removed tracks (order == -1) from present tracks (order ==
         // 0). Otherwise we sort by the order that filterAndSort returned to us.
@@ -276,30 +262,52 @@ void BaseSqlTableModel::select() {
     // end so we can easily slice off rows that are no longer present. Stable
     // sort is necessary because the tracks may be in pre-sorted order so we
     // should not disturb that if we are only removing tracks.
-    qStableSort(rowInfo.begin(), rowInfo.end());
+    qStableSort(m_pNewRowInfo->begin(), m_pNewRowInfo->end());
 
     m_trackIdToRows.clear();
-    for (int i = 0; i < rowInfo.size(); ++i) {
-        const RowInfo& row = rowInfo[i];
+    for (int i = 0; i < m_pNewRowInfo->size(); ++i) {
+        const RowInfo& row = m_pNewRowInfo->at(i);
 
         if (row.order == -1) {
             // We've reached the end of valid rows. Resize rowInfo to cut off
             // this and all further elements.
-            rowInfo.resize(i);
+            m_pNewRowInfo->resize(i);
             break;
         }
         QLinkedList<int>& rows = m_trackIdToRows[row.trackId];
         rows.push_back(i);
     }
 
+    // populating query results in UI thread
+    MainExecuter::callSync( [this] (){
+        slotPopulateQueryResult();
+    }, __PRETTY_FUNCTION__);
+}
+
+// Must be called from Main (GUI) Thread only
+void BaseSqlTableModel::slotPopulateQueryResult() {
+    DBG();
+    Q_ASSERT(m_pRowInfo);
+    // Remove all the rows from the table. We wait to do this until after the
+    // table query has succeeded. See Bug #1090888.
+    // TODO(rryan) we could edit the table in place instead of clearing it?
+    if (m_pRowInfo->size() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_pRowInfo->size()-1);
+        m_pRowInfo->clear();
+        m_trackIdToRows.clear();
+        endRemoveRows();
+    }
+
     // We're done! Issue the update signals and replace the master maps.
-    beginInsertRows(QModelIndex(), 0, rowInfo.size()-1);
-    m_rowInfo = rowInfo;
+    beginInsertRows(QModelIndex(), 0, m_pNewRowInfo->size()-1);
+
+    QVector<RowInfo>* pOldRowInfo = m_pRowInfo;
+    m_pRowInfo = m_pNewRowInfo;
+    m_pNewRowInfo = pOldRowInfo;
+
     m_bDirty = false;
     endInsertRows();
-
-    int elapsed = time.elapsed();
-    qDebug() << this << "select() took" << elapsed << "ms";
+    DBG() << "BaseSqlTableModel::select() end";
 }
 
 void BaseSqlTableModel::setTable(const QString& tableName,
@@ -357,11 +365,17 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString& extr
 }
 
 void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
+    // here callAsync uses
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
     setSearch(searchText, extraFilter);
-    select();
+
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+             [this] (void) {
+        select();
+    }, __PRETTY_FUNCTION__);
 }
 
 void BaseSqlTableModel::setSort(int column, Qt::SortOrder order) {
@@ -394,7 +408,8 @@ void BaseSqlTableModel::sort(int column, Qt::SortOrder order) {
 }
 
 int BaseSqlTableModel::rowCount(const QModelIndex& parent) const {
-    int count = parent.isValid() ? 0 : m_rowInfo.size();
+    Q_ASSERT(m_pRowInfo!=NULL);
+    int count = parent.isValid() ? 0 : m_pRowInfo->size();
     //qDebug() << "rowCount()" << parent << count;
     return count;
 }
@@ -527,11 +542,11 @@ bool BaseSqlTableModel::setData(
         return false;
     }
 
-    if (row < 0 || row >= m_rowInfo.size()) {
+    if (row < 0 || row >= m_pRowInfo->size()) {
         return false;
     }
 
-    const RowInfo& rowInfo = m_rowInfo[row];
+    const RowInfo& rowInfo = m_pRowInfo->at(row);
     int trackId = rowInfo.trackId;
 
     // You can't set something in the table columns because we have no way of
@@ -623,8 +638,16 @@ int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex(m_idColumn)).data().toInt();
 }
 
+// Must be called from Main thread
 TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
-    return m_trackDAO.getTrack(getTrackId(index));
+    const int trackId = getTrackId(index);
+    TrackPointer trackPointer;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &trackId, &trackPointer] (void) {
+        trackPointer = m_trackDAO.getTrack(trackId);
+    }, __PRETTY_FUNCTION__);
+    return trackPointer;
 }
 
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -725,13 +748,13 @@ QVariant BaseSqlTableModel::getBaseValue(
     int row = index.row();
     int column = index.column();
 
-    if (row < 0 || row >= m_rowInfo.size()) {
+    if (row < 0 || row >= m_pRowInfo->size()) {
         return QVariant();
     }
 
     // TODO(rryan) check range on column
 
-    const RowInfo& rowInfo = m_rowInfo[row];
+    const RowInfo& rowInfo = m_pRowInfo->at(row);
     int trackId = rowInfo.trackId;
 
     // If the row info has the row-specific column, return that.
@@ -805,11 +828,12 @@ QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject
     } else if (i == fieldIndex(LIBRARYTABLE_BPM)) {
         return new BPMDelegate(pParent, i, fieldIndex(LIBRARYTABLE_BPM_LOCK));
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
-        return new PreviewButtonDelegate(pParent, i);
+        return new PreviewButtonDelegate(pParent, i, m_pTrackCollection);
     }
     return NULL;
 }
 
+// Must be called from Main thread
 void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
     foreach (QModelIndex index, indices) {
@@ -817,9 +841,11 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDAO.hideTracks(trackIds);
-
-    // TODO(rryan) : do not select, instead route event to BTC and notify from
-    // there.
-    select(); //Repopulate the data model.
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+                [this, trackIds] (void) {
+        m_trackDAO.hideTracks(trackIds);
+        // TODO(rryan) : do not select, instead route event to BTC and notify from there.
+        select(); //Repopulate the data model.
+    }, __PRETTY_FUNCTION__);
 }

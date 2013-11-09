@@ -15,6 +15,7 @@ PlaylistDAO::~PlaylistDAO() {
 }
 
 void PlaylistDAO::initialize() {
+    qDebug() << "PlaylistDAO::initialize" << QThread::currentThread() << m_database.connectionName();
 }
 
 int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {

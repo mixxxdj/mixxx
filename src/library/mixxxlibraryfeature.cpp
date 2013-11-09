@@ -21,16 +21,20 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         : LibraryFeature(parent),
           kMissingTitle(tr("Missing Tracks")),
           kHiddenTitle(tr("Hidden Tracks")),
+          m_pLibraryTableModel(new LibraryTableModel(this, pTrackCollection)),
           m_pMissingView(NULL),
           m_pHiddenView(NULL),
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection) {
-    QStringList columns;
-    columns << "library." + LIBRARYTABLE_ID
+}
+
+void MixxxLibraryFeature::init() {
+    QStringList columns = QStringList()
+            << "library." + LIBRARYTABLE_ID
             << "library." + LIBRARYTABLE_PLAYED
             << "library." + LIBRARYTABLE_TIMESPLAYED
-            //has to be up here otherwise Played and TimesPlayed are not show
+               //has to be up here otherwise Played and TimesPlayed are not show
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
             << "library." + LIBRARYTABLE_ALBUM
@@ -51,17 +55,22 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_COMMENT
             << "library." + LIBRARYTABLE_MIXXXDELETED;
 
-    QSqlQuery query(pTrackCollection->getDatabase());
     QString tableName = "library_cache_view";
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM library "
-        "INNER JOIN track_locations ON library.location = track_locations.id")
-            .arg(tableName, columns.join(","));
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
+
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callSync(
+                [this, columns, tableName] (void) {
+        QSqlQuery query(m_pTrackCollection->getDatabase());
+        QString queryString = QString(
+                    "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
+                    "SELECT %2 FROM library "
+                    "INNER JOIN track_locations ON library.location = track_locations.id")
+                .arg(tableName, columns.join(","));
+        query.prepare(queryString);
+        if (!query.exec()) {
+            LOG_FAILED_QUERY(query);
+        }
+    }, __PRETTY_FUNCTION__);
 
     // Strip out library. and track_locations.
     for (QStringList::iterator it = columns.begin();
@@ -73,27 +82,45 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
         }
     }
 
+    // All database access must be provided thru TrackCollection thread,
+    //    According to it, all signals emitted from TrackDAO will be emitted
+    //    from TrackCollection thread. Qt::DirectConnection uses here
+
     BaseTrackCache* pBaseTrackCache = new BaseTrackCache(
-        pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
+        m_pTrackCollection, tableName, LIBRARYTABLE_ID, columns, true);
     connect(&m_trackDao, SIGNAL(trackDirty(int)),
-            pBaseTrackCache, SLOT(slotTrackDirty(int)));
+            pBaseTrackCache, SLOT(slotTrackDirty(int)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(trackClean(int)),
-            pBaseTrackCache, SLOT(slotTrackClean(int)));
+            pBaseTrackCache, SLOT(slotTrackClean(int)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(trackChanged(int)),
-            pBaseTrackCache, SLOT(slotTrackChanged(int)));
+            pBaseTrackCache, SLOT(slotTrackChanged(int)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(tracksAdded(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)));
+            pBaseTrackCache, SLOT(slotTracksAdded(QSet<int>)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(tracksRemoved(QSet<int>)),
-            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)));
+            pBaseTrackCache, SLOT(slotTracksRemoved(QSet<int>)),
+            Qt::DirectConnection);
     connect(&m_trackDao, SIGNAL(dbTrackAdded(TrackPointer)),
-            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)));
+            pBaseTrackCache, SLOT(slotDbTrackAdded(TrackPointer)),
+            Qt::DirectConnection);
 
     m_pBaseTrackCache = QSharedPointer<BaseTrackCache>(pBaseTrackCache);
-    pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
+    m_pTrackCollection->addTrackSource(QString("default"), m_pBaseTrackCache);
 
     // These rely on the 'default' track source being present.
-    m_pLibraryTableModel = new LibraryTableModel(this, pTrackCollection);
 
+    // NOTE(tro) Moved next commented line to c-tor initialization list
+    // m_pLibraryTableModel = new LibraryTableModel(this, m_pTrackCollection);
+
+    m_pLibraryTableModel->init();
+}
+
+// NOTE(tro) Moved to separate method, since we cannot create children for
+//           a parent that is in a different thread
+void MixxxLibraryFeature::initUI() {
     TreeItem* pRootItem = new TreeItem();
     TreeItem* pmissingChildItem = new TreeItem(kMissingTitle, kMissingTitle,
                                        this, pRootItem);
@@ -114,6 +141,8 @@ void MixxxLibraryFeature::bindWidget(WLibrary* pLibrary,
     m_pHiddenView = new DlgHidden(pLibrary,
                                   m_pConfig, m_pTrackCollection,
                                   pKeyboard);
+    m_pHiddenView->init();
+
     pLibrary->registerView(kHiddenTitle, m_pHiddenView);
     m_pMissingView = new DlgMissing(pLibrary,
                                   m_pConfig, m_pTrackCollection,
@@ -135,7 +164,11 @@ TreeItemModel* MixxxLibraryFeature::getChildModel() {
 
 void MixxxLibraryFeature::refreshLibraryModels() {
     if (m_pLibraryTableModel) {
-        m_pLibraryTableModel->select();
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                [this] (void) {
+            m_pLibraryTableModel->select();
+        }, __PRETTY_FUNCTION__);
     }
     if (m_pMissingView) {
         m_pMissingView->onShow();
@@ -155,6 +188,7 @@ void MixxxLibraryFeature::activateChild(const QModelIndex& index) {
     emit(switchToView(itemName));
 }
 
+// Must be called from Main thread
 bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     if (pSource) {
         return false;
@@ -168,10 +202,15 @@ bool MixxxLibraryFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
             // case. toString() absolutely does not work when you pass the result to a
             files.append(url.toLocalFile());
         }
-
-        // Adds track, does not insert duplicates, handles unremoving logic.
-        QList<int> trackIds = m_trackDao.addTracks(files, true);
-        return trackIds.size() > 0;
+        bool result = false;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                [this, &files, &result] (void) {
+            // Adds track, does not insert duplicates, handles unremoving logic.
+            QList<int> trackIds = m_trackDao.addTracks(files, true);
+            result = trackIds.size() > 0;
+        }, __PRETTY_FUNCTION__);
+        return result;
     }
 }
 

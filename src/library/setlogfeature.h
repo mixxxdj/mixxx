@@ -20,6 +20,8 @@ public:
     SetlogFeature(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                   TrackCollection* pTrackCollection);
     virtual ~SetlogFeature();
+    void init();
+    void createChildModel();
 
     QVariant title();
     QIcon getIcon();
@@ -31,6 +33,7 @@ public:
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
     void slotJoinWithPrevious();
+    void slotConstructChildModel(int playlistId);
 
   protected:
     void buildPlaylistList();
@@ -46,6 +49,10 @@ public:
     QLinkedList<int> m_recentTracks;
     QAction *m_pJoinWithPreviousAction;
     int m_playlistId;
+
+  signals:
+    void playlistTableChanged(int);
+    void constructChildModelBlocking(int);
 };
 
 #endif /* SETLOGFEATURE_H */

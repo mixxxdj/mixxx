@@ -12,11 +12,12 @@
 #include "library/libraryview.h"
 
 class MixxxKeyboard;
+class TrackCollection;
 
 class WLibrary : public QStackedWidget {
     Q_OBJECT
   public:
-    WLibrary(QWidget* parent);
+    WLibrary(QWidget* parent, TrackCollection* pTrackCollection);
     virtual ~WLibrary();
 
     // registerView is used to add a view to the LibraryWidget which the widget
@@ -39,6 +40,7 @@ class WLibrary : public QStackedWidget {
   private:
     QMutex m_mutex;
     QMap<QString, QWidget*> m_viewMap;
+    TrackCollection* m_pTrackCollection;
 };
 
 #endif /* WLIBRARY_H */

@@ -38,6 +38,8 @@ RhythmboxFeature::RhythmboxFeature(QObject* parent, TrackCollection* pTrackColle
         "mixxx.db.model.rhythmbox",
         "rhythmbox_library",
         "rhythmbox");
+
+    m_pRhythmboxTrackModel->init();
     m_pRhythmboxPlaylistModel = new BaseExternalPlaylistModel(
         this, m_pTrackCollection,
         "mixxx.db.model.rhythmbox_playlist",
@@ -70,7 +72,7 @@ RhythmboxFeature::~RhythmboxFeature() {
     delete m_pRhythmboxPlaylistModel;
 }
 
-BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlist) {
+BaseSqlTableModel* RhythmboxFeature::createPlaylistModelForPlaylist(QString playlist) {
     BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
                                             this, m_pTrackCollection,
                                             "mixxx.db.model.rhythmbox_playlist",
@@ -78,6 +80,7 @@ BaseSqlTableModel* RhythmboxFeature::getPlaylistModelForPlaylist(QString playlis
                                             "rhythmbox_playlist_tracks",
                                             "rhythmbox");
     pModel->setPlaylist(playlist);
+    pModel->setPlaylistUI();
     return pModel;
 }
 
@@ -127,6 +130,7 @@ void RhythmboxFeature::activateChild(const QModelIndex& index) {
     QString playlist = index.data().toString();
     qDebug() << "Activating " << playlist;
     m_pRhythmboxPlaylistModel->setPlaylist(playlist);
+    m_pRhythmboxPlaylistModel->setPlaylistUI();
     emit(showTrackModel(m_pRhythmboxPlaylistModel));
 }
 

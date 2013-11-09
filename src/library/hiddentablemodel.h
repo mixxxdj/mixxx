@@ -8,6 +8,7 @@ class HiddenTableModel : public BaseSqlTableModel {
   public:
     HiddenTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~HiddenTableModel();
+    void init();
 
     void setTableModel(int id = -1);
     bool isColumnInternal(int column);

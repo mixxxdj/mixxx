@@ -34,6 +34,8 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     box->insertWidget(1, m_pAnalysisLibraryTableView);
 
     m_pAnalysisLibraryTableModel =  new AnalysisLibraryTableModel(this, pTrackCollection);
+    m_pAnalysisLibraryTableModel->init();
+
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),
@@ -63,7 +65,11 @@ DlgAnalysis::~DlgAnalysis() {
 void DlgAnalysis::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
-    m_pAnalysisLibraryTableModel->select();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callAsync(
+            [this] (void) {
+        m_pAnalysisLibraryTableModel->select();
+    }, __PRETTY_FUNCTION__);
 }
 
 void DlgAnalysis::onSearch(const QString& text) {

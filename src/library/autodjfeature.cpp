@@ -43,7 +43,6 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
     m_pCratesTreeItem->setIcon(QIcon(":/images/library/ic_library_crates.png"));
     root->appendChild(m_pCratesTreeItem);
 
-    // Create tree-items under "Crates".
     constructCrateChildModel();
 
     // Be notified when the status of crates changes.
@@ -115,9 +114,9 @@ void AutoDJFeature::activate() {
     emit(restoreSearch(QString())); //Null String disables search box
 }
 
+// Must be called from Main thread
 bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
-    TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 
     //If a track is dropped onto a playlist's name, but the track isn't in the library,
     //then add the track to the library before adding it to the playlist.
@@ -130,23 +129,30 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
             files.append(file);
         }
     }
-    QList<int> trackIds;
-    if (pSource) {
-        trackIds = trackDao.getTrackIds(files);
-    } else {
-        trackIds = trackDao.addTracks(files, true);
-    }
 
-    int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    // remove tracks that could not be added
-    for (int trackId = 0; trackId < trackIds.size(); trackId++) {
-        if (trackIds.at(trackId) < 0) {
-            trackIds.removeAt(trackId--);
+    bool result = false;
+    const bool is_pSource = pSource;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &files, is_pSource, &result] (void) {
+        TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
+        QList<int> trackIds;
+        if (is_pSource) {
+            trackIds = trackDao.getTrackIds(files);
+        } else {
+            trackIds = trackDao.addTracks(files, true);
         }
-    }
-
-    // Return whether the tracks were appended.
-    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+        int playlistId = m_playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+        // remove tracks that could not be added
+        for (int trackId = 0; trackId < trackIds.size(); ++trackId) {
+            if (trackIds.at(trackId) < 0) {
+                trackIds.removeAt(trackId--);
+            }
+        }
+        // Return whether the tracks were appended.
+        result = m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
+    }, __PRETTY_FUNCTION__);
+    return result;
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
@@ -157,7 +163,11 @@ bool AutoDJFeature::dragMoveAccept(QUrl url) {
 // Add a crate to the auto-DJ queue.
 void AutoDJFeature::slotAddCrateToAutoDj(int crateId) {
 #ifdef __AUTODJCRATES__
-    m_crateDao.setCrateInAutoDj(crateId, true);
+    // tro's lambda idea. This code calls asynchronously!
+     m_pTrackCollection->callAsync(
+                 [this, crateId] (void) {
+         m_crateDao.setCrateInAutoDj(crateId, true);
+     }, __PRETTY_FUNCTION__);
 #endif // __AUTODJCRATES__
 }
 
@@ -166,20 +176,32 @@ void AutoDJFeature::slotRemoveCrateFromAutoDj() {
     // Get the crate that was right-clicked on.
     QString crateName = m_lastRightClickedIndex.data().toString();
 
-    // Get the ID of that crate.
-    int crateId = m_crateDao.getCrateIdByName(crateName);
+    // tro's lambda idea. This code calls asynchronously!
+     m_pTrackCollection->callAsync(
+                 [this, crateName] (void) {
+         // Get the ID of that crate.
+         int crateId = m_crateDao.getCrateIdByName(crateName);
 
-    // Clear its auto-DJ status.
-    m_crateDao.setCrateInAutoDj(crateId, false);
+         // Clear its auto-DJ status.
+         m_crateDao.setCrateInAutoDj(crateId, false);
+     }, __PRETTY_FUNCTION__);
 #endif // __AUTODJCRATES__
 }
 
 void AutoDJFeature::slotCrateAdded(int crateId) {
 #ifdef __AUTODJCRATES__
     // If this newly-added crate is in the auto-DJ queue, add it to the list.
-    if (m_crateDao.isCrateInAutoDj(crateId)) {
-        slotCrateAutoDjChanged(crateId, true);
-    }
+
+    bool isCrateInAutoDj = false;
+    // tro's lambda idea. This code calls synchronously!
+     m_pTrackCollection->callSync(
+                 [this, &isCrateInAutoDj, crateId] (void) {
+         isCrateInAutoDj = m_crateDao.isCrateInAutoDj(crateId);
+     }, __PRETTY_FUNCTION__);
+
+     if (isCrateInAutoDj) {
+         slotCrateAutoDjChanged(crateId, true);
+     }
 #endif // __AUTODJCRATES__
 }
 
@@ -216,7 +238,12 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 #ifdef __AUTODJCRATES__
     if (added) {
         // Get the name of the crate being added to the auto-DJ list.
-        QString strName = m_crateDao.crateName(crateId);
+        QString strName;
+        // tro's lambda idea. This code calls Synchronously!
+         m_pTrackCollection->callSync(
+                     [this, &strName, crateId] (void) {
+             strName = m_crateDao.crateName(crateId);
+         }, __PRETTY_FUNCTION__);
 
         // Get the index of the row where this crate will be inserted into the
         // tree.
@@ -256,58 +283,76 @@ void AutoDJFeature::slotCrateAutoDjChanged(int crateId, bool added) {
 #endif // __AUTODJCRATES__
 }
 
+// Must be called from Main thread
 void AutoDJFeature::slotAddRandomTrack(bool) {
 #ifdef __AUTODJCRATES__
-    // Get access to the auto-DJ playlist.
-    PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
-    int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-    if (iAutoDJPlaylistId >= 0) {
-        // Get the ID of a randomly-selected track.
-        int iTrackId = m_autoDjCratesDao.getRandomTrackId();
-        if (iTrackId != -1) {
-            // Add this randomly-selected track to the auto-DJ playlist.
-            playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
-
-            // Display the newly-added track.
-            m_pAutoDJView->onShow();
+    bool needToDoSelect = false;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &needToDoSelect] (void) {
+        // Get access to the auto-DJ playlist.
+        PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
+        int iAutoDJPlaylistId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+        if (iAutoDJPlaylistId >= 0) {
+            // Get the ID of a randomly-selected track.
+            int iTrackId = m_autoDjCratesDao.getRandomTrackId();
+            if (iTrackId != -1) {
+                // Add this randomly-selected track to the auto-DJ playlist.
+                playlistDao.appendTrackToPlaylist(iTrackId, iAutoDJPlaylistId);
+                needToDoSelect = true;
+            }
         }
+    }, __PRETTY_FUNCTION__);
+    if (needToDoSelect) {
+        // Display the newly-added track.
+        m_pAutoDJView->onShow();
     }
 #endif // __AUTODJCRATES__
 }
-
 #ifdef __AUTODJCRATES__
 
+// Must be called from Main thread
 void AutoDJFeature::constructCrateChildModel() {
     // Create a crate table-model with a list of crates that have been added
     // to the auto-DJ queue (and are visible).
+
+    DBG() << "In constructCrateChildModel";
+    // tro's lambda idea. This code calls synchronously!
     QSqlTableModel crateListTableModel(this, m_pTrackCollection->getDatabase());
-    crateListTableModel.setTable(CRATE_TABLE);
-    crateListTableModel.setSort(crateListTableModel.fieldIndex(CRATETABLE_NAME),
-                                Qt::AscendingOrder);
-    crateListTableModel.setFilter(CRATETABLE_AUTODJ_SOURCE + " = 1 AND " + CRATETABLE_SHOW + " = 1");
-    crateListTableModel.select();
-    while (crateListTableModel.canFetchMore()) {
-        crateListTableModel.fetchMore();
-    }
+    m_pTrackCollection->callSync(
+            [this, &crateListTableModel] (void) {
+        crateListTableModel.setTable(CRATE_TABLE);
+        crateListTableModel.setSort(crateListTableModel.fieldIndex(CRATETABLE_NAME),
+                                    Qt::AscendingOrder);
+        crateListTableModel.setFilter(CRATETABLE_AUTODJ_SOURCE + " = 1 AND " + CRATETABLE_SHOW + " = 1");
+        crateListTableModel.select();
+        while (crateListTableModel.canFetchMore()) {
+            crateListTableModel.fetchMore();
+        }
 
-    QSqlRecord tableModelRecord = crateListTableModel.record();
-    int nameColumn = tableModelRecord.indexOf(CRATETABLE_NAME);
-    int idColumn = tableModelRecord.indexOf(CRATETABLE_ID);
+        QSqlRecord tableModelRecord = crateListTableModel.record();
+        int nameColumn = tableModelRecord.indexOf(CRATETABLE_NAME);
+        int idColumn = tableModelRecord.indexOf(CRATETABLE_ID);
 
-    // Create a tree-item for each auto-DJ crate.
-    for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
-        int id = crateListTableModel.data(
-            crateListTableModel.index(row, idColumn)).toInt();
-        QString name = crateListTableModel.data(
-            crateListTableModel.index(row, nameColumn)).toString();
-        m_crateList.append(qMakePair(id, name));
+        // Create a tree-item for each auto-DJ crate.
+        for (int row = 0; row < crateListTableModel.rowCount(); ++row) {
+            int id = crateListTableModel.data(
+                        crateListTableModel.index(row, idColumn)).toInt();
+            QString name = crateListTableModel.data(
+                        crateListTableModel.index(row, nameColumn)).toString();
+            m_crateList.append(qMakePair(id, name));
 
-        // Create the TreeItem for this crate.
-        TreeItem* item = new TreeItem(name, name, this, m_pCratesTreeItem);
-        m_pCratesTreeItem->appendChild(item);
-    }
+            MainExecuter::callSync([this, name](void) {
+                // Create the TreeItem for this crate.
+                DBG() << "In MainExecuter::callSync";
+                TreeItem* item = new TreeItem(name, name, this, m_pCratesTreeItem);
+                m_pCratesTreeItem->appendChild(item);
+            }, "#################constructCrateChildModel");
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
+// Must be called from Main thread
 void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
                                       QModelIndex index) {
     //Save the model index so we can get it in the action slots...
@@ -327,8 +372,12 @@ void AutoDJFeature::onRightClickChild(const QPoint& globalPos,
         QMenu menu(NULL);
         QMenu crateMenu(NULL);
         crateMenu.setTitle(tr("Add Crate as Track Source"));
+        // tro's lambda idea. This code calls synchronously!
         QMap<QString,int> crateMap;
-        m_crateDao.getAutoDjCrates(false, &crateMap);
+        m_pTrackCollection->callSync(
+                [this, &crateMap] (void) {
+            m_crateDao.getAutoDjCrates(false, &crateMap);
+        }, __PRETTY_FUNCTION__);
         QMapIterator<QString,int> it(crateMap);
         while (it.hasNext()) {
             it.next();

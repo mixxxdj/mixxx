@@ -29,12 +29,14 @@ class PlaylistFeature;
 class CrateFeature;
 class LibraryControl;
 class MixxxKeyboard;
+class SetlogFeature;
 
 class Library : public QObject {
     Q_OBJECT
 public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
+            TrackCollection* pTrackCollection,
             RecordingManager* pRecordingManager);
     virtual ~Library();
 
@@ -43,6 +45,7 @@ public:
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
+    QList<TrackPointer> getTracksToAutoLoad();
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
@@ -65,6 +68,8 @@ public:
     void slotCreatePlaylist();
     void slotCreateCrate();
     void onSkinLoadFinished();
+
+    void setUiEnabled(const bool enabled);
 
   signals:
     void showTrackModel(QAbstractItemModel* model);
@@ -89,6 +94,7 @@ public:
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;
+    SetlogFeature* m_pSetlogFeature;
 };
 
 #endif /* LIBRARY_H */

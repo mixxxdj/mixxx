@@ -38,6 +38,7 @@ void AutoDJCratesDAO::initialize() {
 // Create the temporary auto-DJ-crates table.
 // Done the first time it's used, since the user might not even make
 // use of this feature.
+// Must be called from TrackCollection thread
 void AutoDJCratesDAO::createAutoDjCratesDatabase() {
     // If the use of tracks that haven't been played in a while has changed,
     // then the active-tracks view must be recreated.
@@ -417,6 +418,7 @@ bool AutoDJCratesDAO::updateLastPlayedDateTimeForTrack(int trackId) {
 
 // Get the ID, i.e. one that references library.id, of a random track.
 // Returns -1 if there was an error.
+// Must be called from TrackCollection thread
 int AutoDJCratesDAO::getRandomTrackId(void) {
     // If necessary, create the temporary auto-DJ-crates database.
     createAutoDjCratesDatabase();

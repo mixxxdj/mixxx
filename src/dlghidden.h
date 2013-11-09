@@ -17,6 +17,7 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     DlgHidden(QWidget *parent, ConfigObject<ConfigValue>* pConfig,
               TrackCollection* pTrackCollection, MixxxKeyboard* pKeyboard);
     virtual ~DlgHidden();
+    void init();
 
     void onShow();
     void onSearch(const QString& text);
@@ -26,8 +27,10 @@ class DlgHidden : public QWidget, public Ui::DlgHidden, public LibraryView {
     void selectAll();
     void selectionChanged(const QItemSelection&, const QItemSelection&);
 
+  private slots:
+    void slotActivateButtons(bool enable);
+
   private:
-    void activateButtons(bool enable);
     TrackCollection* m_pTrackCollection;
     WTrackTableView* m_pTrackTableView;
     HiddenTableModel* m_pHiddenTableModel;

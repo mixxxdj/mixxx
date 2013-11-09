@@ -10,6 +10,7 @@
 #include "controlobject.h"
 #include "library/playlisttablemodel.h"
 #include "library/trackcollection.h"
+#include "library/queryutil.h"
 #include "library/treeitem.h"
 #include "playerinfo.h"
 #include "playermanager.h"
@@ -25,42 +26,56 @@ SetlogFeature::SetlogFeature(QObject* parent,
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
 
-    //create a new playlist for today
-    QString set_log_name_format;
-    QString set_log_name;
+//    connect(this, SIGNAL(constructChildModelBlocking(int)),
+//            this, SLOT(slotConstructChildModel(int)), Qt::BlockingQueuedConnection);
+}
 
-    set_log_name = QDate::currentDate().toString(Qt::ISODate);
-    set_log_name_format = set_log_name + " (%1)";
-    int i = 1;
+void SetlogFeature::init() {
+    createChildModel();
+    // tro's lambda idea. This code calls asynchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        QString set_log_name_format;
+        QString set_log_name;
 
-    // calculate name of the todays setlog
-    while (m_playlistDao.getPlaylistIdFromName(set_log_name) != -1) {
-        set_log_name = set_log_name_format.arg(++i);
-    }
+        set_log_name = QDate::currentDate().toString(Qt::ISODate);
+        set_log_name_format = set_log_name + " (%1)";
+        int i = 1;
 
-    qDebug() << "Creating session history playlist name:" << set_log_name;
-    m_playlistId = m_playlistDao.createPlaylist(set_log_name,
-                                                PlaylistDAO::PLHT_SET_LOG);
+        // calculate name of the todays setlog
+        while (m_playlistDao.getPlaylistIdFromName(set_log_name) != -1) {
+            set_log_name = set_log_name_format.arg(++i);
+        }
 
-    if (m_playlistId == -1) {
-        qDebug() << "Setlog playlist Creation Failed";
-        qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
-    }
+        qDebug() << "Creating session history playlist name:" << set_log_name;
+        m_playlistId = m_playlistDao.createPlaylist(set_log_name,
+                                                    PlaylistDAO::PLHT_SET_LOG);
 
-    //construct child model
+        if (m_playlistId == -1) {
+            qDebug() << "Setlog playlist Creation Failed";
+            qDebug() << "An unknown error occurred while creating playlist: " << set_log_name;
+        }
+    }, __PRETTY_FUNCTION__);
+}
+
+void SetlogFeature::createChildModel() {
     TreeItem *rootItem = new TreeItem();
     m_childModel.setRootItem(rootItem);
-    constructChildModel(-1);
+    BasePlaylistFeature::constructChildModel(-1);
 }
 
 SetlogFeature::~SetlogFeature() {
-    // If the history playlist we created doesn't have any tracks in it then
-    // delete it so we don't end up with tons of empty playlists. This is mostly
-    // for developers since they regularly open Mixxx without loading a track.
-    if (m_playlistId != -1 &&
-        m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
-        m_playlistDao.deletePlaylist(m_playlistId);
-    }
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this] (void) {
+        // If the history playlist we created doesn't have any tracks in it then
+        // delete it so we don't end up with tons of empty playlists. This is mostly
+        // for developers since they regularly open Mixxx without loading a track.
+        if (m_playlistId != -1 &&
+                m_playlistDao.tracksInPlaylist(m_playlistId) == 0) {
+            m_playlistDao.deletePlaylist(m_playlistId);
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 QVariant SetlogFeature::title() {
@@ -77,6 +92,10 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                     keyboard);
     connect(&PlayerInfo::instance(), SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotPlayingDeckChanged(int)));
+
+    connect(this, SIGNAL(playlistTableChanged(int)),
+            this, SLOT(slotPlaylistTableChanged(int)),
+            Qt::QueuedConnection); // tro
 }
 
 void SetlogFeature::onRightClick(const QPoint& globalPos) {
@@ -94,10 +113,15 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
     QString playlistName = index.data().toString();
-    int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+    int playlistId = -1;
+    bool locked = false;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &playlistId, &locked, &playlistName] (void) {
+        playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
+        locked = m_playlistDao.isPlaylistLocked(playlistId);
+    }, __PRETTY_FUNCTION__);
 
-
-    bool locked = m_playlistDao.isPlaylistLocked(playlistId);
     m_pDeletePlaylistAction->setEnabled(!locked);
     m_pRenamePlaylistAction->setEnabled(!locked);
 
@@ -127,89 +151,110 @@ void SetlogFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
 
 
 void SetlogFeature::buildPlaylistList() {
-    m_playlistList.clear();
-    // Setup the sidebar playlist model
     QSqlTableModel playlistTableModel(this, m_pTrackCollection->getDatabase());
-    playlistTableModel.setTable("Playlists");
-    playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
-    playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
-                               Qt::AscendingOrder);
-    playlistTableModel.select();
-    while (playlistTableModel.canFetchMore()) {
-        playlistTableModel.fetchMore();
-    }
-    QSqlRecord record = playlistTableModel.record();
-    int nameColumn = record.indexOf("name");
-    int idColumn = record.indexOf("id");
+    m_pTrackCollection->callSync(
+                [this, &playlistTableModel] (void) {
+        m_playlistList.clear();
+        // Setup the sidebar playlist model
+        playlistTableModel.setTable("Playlists");
+        playlistTableModel.setFilter("hidden=2"); // PLHT_SET_LOG
+        playlistTableModel.setSort(playlistTableModel.fieldIndex("id"),
+                                   Qt::AscendingOrder);
+        playlistTableModel.select();
+        while (playlistTableModel.canFetchMore()) {
+            playlistTableModel.fetchMore();
+        }
+        QSqlRecord record = playlistTableModel.record();
+        int nameColumn = record.indexOf("name");
+        int idColumn = record.indexOf("id");
 
-    for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
-        int id = playlistTableModel.data(
-            playlistTableModel.index(row, idColumn)).toInt();
-        QString name = playlistTableModel.data(
-            playlistTableModel.index(row, nameColumn)).toString();
-        m_playlistList.append(qMakePair(id, name));
-    }
+        for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
+            int id = playlistTableModel.data(
+                playlistTableModel.index(row, idColumn)).toInt();
+            QString name = playlistTableModel.data(
+                playlistTableModel.index(row, nameColumn)).toString();
+            m_playlistList.append(qMakePair(id, name));
+        }
+    }, __PRETTY_FUNCTION__);
 }
 
 void SetlogFeature::decorateChild(TreeItem* item, int playlist_id) {
     if (playlist_id == m_playlistId) {
         item->setIcon(QIcon(":/images/library/ic_library_history_current.png"));
-    } else if (m_playlistDao.isPlaylistLocked(playlist_id)) {
-        item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
-    } else {
-        item->setIcon(QIcon());
+    } else  {
+        bool locked = false;
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &locked, &playlist_id] (void) {
+            locked = m_pTrackCollection->getPlaylistDAO().isPlaylistLocked(playlist_id);
+        }, __PRETTY_FUNCTION__ + QString(", playlist_id=%1").arg(playlist_id));
+        if (locked) {
+            item->setIcon(QIcon(":/images/library/ic_library_locked.png"));
+        } else {
+            item->setIcon(QIcon());
+        }
     }
 }
 
 void SetlogFeature::slotJoinWithPrevious() {
     //qDebug() << "slotJoinWithPrevious() row:" << m_lastRightClickedIndex.data();
 
+    const QString name = m_lastRightClickedIndex.data().toString();
+
     if (m_lastRightClickedIndex.isValid()) {
-        int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(
-            m_lastRightClickedIndex.data().toString());
+        // tro's lambda idea
+        m_pTrackCollection->callAsync(
+                    [this, name] (void) {
+            int currentPlaylistId = m_playlistDao.getPlaylistIdFromName(name);
 
-        if (currentPlaylistId >= 0) {
+            if (currentPlaylistId >= 0) {
 
-            bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
+                bool locked = m_playlistDao.isPlaylistLocked(currentPlaylistId);
 
-            if (locked) {
-                qDebug() << "Skipping playlist deletion because playlist" << currentPlaylistId << "is locked.";
-                return;
-            }
+                if (locked) {
+                    qDebug() << "Skipping playlist deletion because playlist" << currentPlaylistId << "is locked.";
+                    return;
+                }
 
-            // Add every track from right klicked playlist to that with the next smaller ID
-            int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
-            if (previousPlaylistId >= 0) {
+                // Add every track from right klicked playlist to that with the next smaller ID
+                int previousPlaylistId = m_playlistDao.getPreviousPlaylist(currentPlaylistId, PlaylistDAO::PLHT_SET_LOG);
+                if (previousPlaylistId >= 0) {
 
-                m_pPlaylistTableModel->setTableModel(previousPlaylistId);
+                    m_pPlaylistTableModel->setTableModel(previousPlaylistId);
 
-                if (currentPlaylistId == m_playlistId) {
-                    // mark all the Tracks in the previous Playlist as played
+                    if (currentPlaylistId == m_playlistId) {
+                        // mark all the Tracks in the previous Playlist as played
 
-                    m_pPlaylistTableModel->select();
-                    int rows = m_pPlaylistTableModel->rowCount();
-                    for(int i = 0; i < rows; ++i){
-                        QModelIndex index = m_pPlaylistTableModel->index(i,0);
-                        if (index.isValid()) {
-                            TrackPointer track = m_pPlaylistTableModel->getTrack(index);
-                            // Do not update the playcount, just set played
-                            // status.
-                            track->setPlayed(true);
+                        m_pPlaylistTableModel->select();
+                        int rows = m_pPlaylistTableModel->rowCount();
+                        for(int i = 0; i < rows; ++i){
+                            QModelIndex index = m_pPlaylistTableModel->index(i,0);
+                            if (index.isValid()) {
+                                TrackPointer track = m_pPlaylistTableModel->getTrack(index);   ///////// avoid
+                                // Do not update the playcount, just set played
+                                // status.
+                                track->setPlayed(true);
+                            }
                         }
-                    }
 
-                    // Change current setlog
-                    m_playlistId = previousPlaylistId;
-                }
-                qDebug() << "slotJoinWithPrevious() current:" << currentPlaylistId << " previous:" << previousPlaylistId;
-                if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
-                    m_playlistDao.deletePlaylist(currentPlaylistId);
-                    slotPlaylistTableChanged(previousPlaylistId); // For moving selection
-                    emit(showTrackModel(m_pPlaylistTableModel));
+                        // Change current setlog
+                        m_playlistId = previousPlaylistId;
+                    }
+                    qDebug() << "slotJoinWithPrevious() current:" << currentPlaylistId << " previous:" << previousPlaylistId;
+                    if (m_playlistDao.copyPlaylistTracks(currentPlaylistId, previousPlaylistId)) {
+                        m_playlistDao.deletePlaylist(currentPlaylistId);
+                        emit(playlistTableChanged(previousPlaylistId)); // For moving selection
+                        emit(showTrackModel(m_pPlaylistTableModel));
+                    }
                 }
             }
-        }
+        }, __PRETTY_FUNCTION__);
     }
+}
+
+void SetlogFeature::slotConstructChildModel(int playlistId) {
+    clearChildModel();
+    m_lastRightClickedIndex = BasePlaylistFeature::constructChildModel(playlistId);
 }
 
 void SetlogFeature::slotPlayingDeckChanged(int deck) {
@@ -251,15 +296,18 @@ void SetlogFeature::slotPlayingDeckChanged(int deck) {
         if (currentPlayingTrackId < 0) {
             return;
         }
-
-        if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
-            // View needs a refresh
-            m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
-        } else {
-            // TODO(XXX): Care whether the append succeeded.
-            m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
-                                                m_playlistId);
-        }
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                    [this, &currentPlayingTrackId] (void) {
+            if (m_pPlaylistTableModel->getPlaylist() == m_playlistId) {
+                // View needs a refresh
+                m_pPlaylistTableModel->appendTrack(currentPlayingTrackId);
+            } else {
+                // TODO(XXX): Care whether the append succeeded.
+                m_playlistDao.appendTrackToPlaylist(currentPlayingTrackId,
+                                                    m_playlistId);
+            }
+        }, __PRETTY_FUNCTION__);
     }
 }
 
@@ -268,15 +316,18 @@ void SetlogFeature::slotPlaylistTableChanged(int playlistId) {
         return;
     }
 
-    //qDebug() << "slotPlaylistTableChanged() playlistId:" << playlistId;
-    PlaylistDAO::HiddenType type = m_playlistDao.getHiddenType(playlistId);
-    if (type == PlaylistDAO::PLHT_SET_LOG ||
-        type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
-        clearChildModel();
-        m_lastRightClickedIndex = constructChildModel(playlistId);
+    PlaylistDAO::HiddenType type;
 
+    m_pTrackCollection->callSync(
+                [this, playlistId, &type] (void) {
+        type = m_playlistDao.getHiddenType(playlistId);
+    }, __PRETTY_FUNCTION__);
+
+    if (type == PlaylistDAO::PLHT_SET_LOG ||
+            type == PlaylistDAO::PLHT_UNKNOWN) { // In case of a deleted Playlist
+        clearChildModel();
+        constructChildModel(playlistId);
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
-            // Switch the view to the playlist.
             m_pPlaylistTableModel->setTableModel(playlistId);
             // Update selection
             emit(featureSelect(this, m_lastRightClickedIndex));

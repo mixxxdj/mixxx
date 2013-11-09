@@ -84,25 +84,31 @@ void BrowseTableModel::setPath(QString absPath) {
     BrowseThread::getInstance()->executePopulation(m_current_path, this);
 }
 
+// Must be called from Main thread
 TrackPointer BrowseTableModel::getTrack(const QModelIndex& index) const {
     QString track_location = getTrackLocation(index);
     if (m_pRecordingManager->getRecordingLocation() == track_location) {
         QMessageBox::critical(
-            0, tr("Mixxx Library"),
-            tr("Could not load the following file because"
-               " it is in use by Mixxx or another application.")
-            + "\n" +track_location);
+                0, tr("Mixxx Library"),
+                tr("Could not load the following file because"
+                " it is in use by Mixxx or another application.")
+                + "\n" +track_location);
         return TrackPointer();
     }
+    TrackPointer track;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+                [this, &track_location, &track] (void) {
+        TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
+        int track_id = track_dao.getTrackId(track_location);
+        if (track_id < 0) {
+            // Add Track to library
+            track_id = track_dao.addTrack(track_location, true);
+        }
+        track = track_dao.getTrack(track_id);
+    }, __PRETTY_FUNCTION__);
 
-    TrackDAO& track_dao = m_pTrackCollection->getTrackDAO();
-    int track_id = track_dao.getTrackId(track_location);
-    if (track_id < 0) {
-        // Add Track to library
-        track_id = track_dao.addTrack(track_location, true);
-    }
-
-    return track_dao.getTrack(track_id);
+    return track;
 }
 
 QString BrowseTableModel::getTrackLocation(const QModelIndex& index) const {
@@ -164,6 +170,7 @@ void BrowseTableModel::removeTracks(const QModelIndexList& indices) {
     removeTracks(trackLocations);
 }
 
+// Must be called from Main
 void BrowseTableModel::removeTracks(QStringList trackLocations) {
     if (trackLocations.size() == 0)
         return;
@@ -195,13 +202,21 @@ void BrowseTableModel::removeTracks(QStringList trackLocations) {
         qDebug() << "BrowseFeature: User deleted track " << track_location;
         any_deleted = true;
 
-        deleted_ids.append(track_dao.getTrackId(track_location));
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                [this, &track_location, &track_dao, &deleted_ids] (void) {
+            deleted_ids.append(track_dao.getTrackId(track_location));
+        }, __PRETTY_FUNCTION__);
     }
 
     // If the tracks are contained in the Mixxx library, delete them
     if (!deleted_ids.isEmpty()) {
         qDebug() << "BrowseFeature: Purge affected track from database";
-        track_dao.purgeTracks(deleted_ids);
+        // tro's lambda idea. This code calls synchronously!
+        m_pTrackCollection->callSync(
+                [this, &track_dao, &deleted_ids] (void) {
+            track_dao.purgeTracks(deleted_ids);
+        }, __PRETTY_FUNCTION__);
     }
 
     // Repopulate model if any tracks were actually deleted

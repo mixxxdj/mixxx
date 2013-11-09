@@ -5,12 +5,14 @@
 
 #include "widget/wtracktableviewheader.h"
 #include "library/trackmodel.h"
+#include "library/trackcollection.h"
 
 #define WTTVH_MINIMUM_SECTION_SIZE 20
 
-WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation,
+WTrackTableViewHeader::WTrackTableViewHeader(Qt::Orientation orientation, TrackCollection *pTrackCollection,
                                              QWidget* parent)
         : QHeaderView(orientation, parent),
+          m_pTrackCollection(pTrackCollection),
           m_menu(tr("Show or hide columns."), this),
           m_signalMapper(this) {
     connect(&m_signalMapper, SIGNAL(mapped(int)),
@@ -110,6 +112,7 @@ void WTrackTableViewHeader::setModel(QAbstractItemModel* model) {
     }
 }
 
+// Must be called from Main thread
 void WTrackTableViewHeader::saveHeaderState() {
     TrackModel* track_model = getTrackModel();
     if (!track_model) {
@@ -117,8 +120,12 @@ void WTrackTableViewHeader::saveHeaderState() {
     }
     // Convert the QByteArray to a Base64 string and save it.
     const QString headerState = QString(saveState().toBase64());
-    //bool result =
-    track_model->setModelSetting("header_state", headerState);
+
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, &headerState, track_model] (void) {
+        track_model->setModelSetting("header_state", headerState);
+    }, __PRETTY_FUNCTION__);
     //qDebug() << "Saving old header state:" << result << headerState;
 }
 
@@ -129,7 +136,13 @@ void WTrackTableViewHeader::restoreHeaderState() {
         return;
     }
 
-    QString headerStateString = track_model->getModelSetting("header_state");
+    QString headerStateString;
+    // tro's lambda idea. This code calls synchronously!
+    m_pTrackCollection->callSync(
+            [this, track_model, &headerStateString] (void) {
+        headerStateString = track_model->getModelSetting("header_state");
+    }, __PRETTY_FUNCTION__);
+
     if (!headerStateString.isNull()) {
         // Load the previous header state (stored as a Base 64 string). Decode
         // it and restore it.
@@ -140,12 +153,18 @@ void WTrackTableViewHeader::restoreHeaderState() {
     }
 }
 
+// Must be called from Main thread
 bool WTrackTableViewHeader::hasPersistedHeaderState() {
     TrackModel* track_model = getTrackModel();
     if (!track_model) {
         return false;
     }
-    QString headerStateString = track_model->getModelSetting("header_state");
+    QString headerStateString;
+    // tro's lambda idea. This code calls Synchronously!
+    m_pTrackCollection->callSync(
+            [this, track_model, &headerStateString] (void) {
+        headerStateString = track_model->getModelSetting("header_state");
+    }, __PRETTY_FUNCTION__);
 
     if (!headerStateString.isNull()) return true;
     return false;
