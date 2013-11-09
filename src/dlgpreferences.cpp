@@ -35,7 +35,7 @@
 #include "dlgprefbeats.h"
 
 #ifdef __MODPLUG__
-    #include "dlgprefmodplug.h"
+#include "dlgprefmodplug.h"
 #endif
 
 #include "dlgpreferences.h"
@@ -112,6 +112,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 
     // Install event handler to generate closeDlg signal
     installEventFilter(this);
+
+    // If we don't call this explicitly, then we default to showing the sound
+    // hardware page but the tree item is not selected.
+    showSoundHardwarePage();
 }
 
 DlgPreferences::~DlgPreferences() {
