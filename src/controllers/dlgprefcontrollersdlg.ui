@@ -17,7 +17,7 @@
        <enum>Qt::AlignTop</enum>
      </property>
   <item>
-    <widget class="QLabel" name="TextLabel3_2" >
+    <widget class="QLabel" name="noControllersAvailable" >
      <property name="enabled" >
       <bool>true</bool>
      </property>

@@ -118,6 +118,10 @@ void DlgPrefControllers::setupControllerWidgets() {
         temp.setBold(pController->isOpen());
         controllerWindowLink->setFont(0, temp);
     }
+
+    // If no controllers are available, show the "No controllers available"
+    // message.
+    noControllersAvailable->setVisible(controllerList.empty());
 }
 
 void DlgPrefControllers::slotHighlightDevice(DlgPrefController* dialog, bool enabled) {
