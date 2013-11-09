@@ -209,6 +209,12 @@ class Qt(Dependence):
                 build.env.EnableQt5Modules(qt_modules, debug=False)
             else:
                 build.env.EnableQt4Modules(qt_modules, debug=False)
+
+            if qt5:
+                # Note that -reduce-relocations is enabled by default in Qt5.
+                # So we must build the code with position independent code               
+                build.env.Append(CCFLAGS = '-fPIE')
+
         elif build.platform_is_bsd:
             build.env.Append(LIBS=qt_modules)
             include_paths = ['$QTDIR/include/%s' % module
