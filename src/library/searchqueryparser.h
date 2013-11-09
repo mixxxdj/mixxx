@@ -42,7 +42,7 @@ class SearchQueryParser {
     QStringList m_numericFilters;
     QStringList m_specialFilters;
     QStringList m_allFilters;
-    QHash<QString, QString> m_fieldToSqlColumn;
+    QHash<QString, QStringList> m_fieldToSqlColumns;
 
     QRegExp m_operatorMatcher;
     QRegExp m_fuzzyMatcher;

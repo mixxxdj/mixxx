@@ -345,10 +345,12 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         }
         p->setTitle(title);
         p->setAlbum(sndsrc->getAlbum());
+        p->setAlbumArtist(sndsrc->getAlbumArtist());
         p->setType(sndsrc->getType());
         p->setYear(sndsrc->getYear());
         p->setGenre(sndsrc->getGenre());
         p->setComposer(sndsrc->getComposer());
+        p->setGrouping(sndsrc->getGrouping());
         p->setComment(sndsrc->getComment());
         p->setTrackNumber(sndsrc->getTrackNumber());
         p->setReplayGain(sndsrc->getReplayGain());
