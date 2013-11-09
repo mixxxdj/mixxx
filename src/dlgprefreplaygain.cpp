@@ -17,11 +17,10 @@
 
 
 DlgPrefReplayGain::DlgPrefReplayGain(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        :  QWidget(parent),
-          m_COTInitialBoost(CONFIG_KEY, "InitialReplayGainBoost"),
-          m_COTEnabled(CONFIG_KEY, "ReplayGainEnabled") {
-    config = _config;
-
+        :  DlgPreferencePage(parent),
+           config(_config),
+           m_COTInitialBoost(CONFIG_KEY, "InitialReplayGainBoost"),
+           m_COTEnabled(CONFIG_KEY, "ReplayGainEnabled") {
     setupUi(this);
 
     //Connections
@@ -115,4 +114,3 @@ void DlgPrefReplayGain::slotApply() {
     if (EnableGain->isChecked()) iRGenabled = 1;
     m_COTEnabled.slotSet(iRGenabled);
 }
-

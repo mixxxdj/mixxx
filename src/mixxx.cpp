@@ -1397,7 +1397,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
             ControlObject::set(ConfigKey(
                     "[Channel2]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
             m_pVinylcontrol2Enabled->set(0.0);
-          }
+        }
     }
 #endif
 }
