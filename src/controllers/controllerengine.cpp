@@ -1385,7 +1385,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
         cot->slotSet(activate ? 1 : 0);
     }
 
-    // used in scratchProcess for the different timer behaviour we need
+    // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
 
     if (activate) {

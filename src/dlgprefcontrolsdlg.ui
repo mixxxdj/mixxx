@@ -211,7 +211,7 @@
      <item row="9" column="0">
       <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
        <property name="text">
-        <string>Track load behaviour</string>
+        <string>Track load behavior</string>
        </property>
        <property name="buddy">
         <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
@@ -224,7 +224,7 @@
      <item row="8" column="0">
       <widget class="QLabel" name="labelCueBehaviour">
        <property name="text">
-        <string>Cue behaviour</string>
+        <string>Cue behavior</string>
        </property>
        <property name="buddy">
         <cstring>ComboBoxCueDefault</cstring>

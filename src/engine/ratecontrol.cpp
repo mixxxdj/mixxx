@@ -478,8 +478,8 @@ double RateControl::process(const double rate,
     /*
      * Code to handle temporary rate change buttons.
      *
-     * We support two behaviours, the standard ramped pitch bending
-     * and pitch shift stepping, which is the old behaviour.
+     * We support two behaviors, the standard ramped pitch bending
+     * and pitch shift stepping, which is the old behavior.
      */
 
     /*
@@ -499,7 +499,7 @@ double RateControl::process(const double rate,
 
         if ( m_eRateRampMode == RATERAMP_STEP )
         {
-            // old temporary pitch shift behaviour
+            // old temporary pitch shift behavior
             double range = m_pRateRange->get();
 
             // Avoid Division by Zero

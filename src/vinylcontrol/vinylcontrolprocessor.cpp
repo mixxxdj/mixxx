@@ -243,7 +243,7 @@ void VinylControlProcessor::toggleDeck(double value) {
      * For case 1, we'll just enable vinyl control on the first deck. Case 2
      * is the most common one, we'll just turn off the vinyl control on the
      * deck currently using it and turn it on on the next one (sequentially,
-     * wrapping as needed). Behaviour in case 3 is totally non-obvious and
+     * wrapping as needed). Behavior in case 3 is totally non-obvious and
      * will be ignored.
      */
 
