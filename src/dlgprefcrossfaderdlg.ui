@@ -196,11 +196,12 @@
          </sizepolicy>
         </property>
         <property name="text">
-         <string>Reverse crossfader (hamster style)</string>
+         <string>Reverse crossfader (Hamster Style)</string>
         </property>
        </widget>
       </item>
      </layout>
+     <zorder>checkBoxReverse</zorder>
      <zorder>radioButtonConstantPower</zorder>
      <zorder>radioButtonAdditive</zorder>
     </widget>
@@ -245,6 +246,14 @@
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>radioButtonAdditive</tabstop>
+  <tabstop>radioButtonConstantPower</tabstop>
+  <tabstop>SliderXFader</tabstop>
+  <tabstop>checkBoxReverse</tabstop>
+  <tabstop>graphicsViewXfader</tabstop>
+  <tabstop>PushButtonReset</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
