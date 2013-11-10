@@ -49,13 +49,13 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(m_pLockPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotTogglePlaylistLock()));
 
+    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
+    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotDuplicatePlaylist()));
+
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
-
-    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate Playlist"), this);
-    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotDuplicatePlaylist()));
 
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),

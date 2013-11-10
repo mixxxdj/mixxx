@@ -47,11 +47,12 @@ CrateFeature::CrateFeature(QObject* parent,
     m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+
     m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
-    m_pDuplicateCrateAction = new QAction(tr("Duplicate Crate"),this);
+    m_pDuplicateCrateAction = new QAction(tr("Duplicate"),this);
     connect(m_pDuplicateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDuplicateCrate()));
 
