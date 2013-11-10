@@ -25,7 +25,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(NULL),
           m_rootViewName(rootViewName) {
-    m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
+    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
 

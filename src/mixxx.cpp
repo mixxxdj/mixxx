@@ -888,7 +888,7 @@ void MixxxApp::initActions()
     connect(m_pLibraryRescan, SIGNAL(triggered()),
             this, SLOT(slotScanLibrary()));
 
-    QString createPlaylistTitle = tr("Add &New Playlist");
+    QString createPlaylistTitle = tr("Create &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
     m_pPlaylistsNew->setShortcut(
@@ -901,7 +901,7 @@ void MixxxApp::initActions()
     connect(m_pPlaylistsNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreatePlaylist()));
 
-    QString createCrateTitle = tr("Add New &Crate");
+    QString createCrateTitle = tr("Create New &Crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
     m_pCratesNew->setShortcut(

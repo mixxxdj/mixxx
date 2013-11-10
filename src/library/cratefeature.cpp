@@ -28,7 +28,7 @@ CrateFeature::CrateFeature(QObject* parent,
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
     Q_UNUSED(parent);
-    m_pCreateCrateAction = new QAction(tr("New Crate"),this);
+    m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
