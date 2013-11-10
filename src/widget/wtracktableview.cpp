@@ -1242,8 +1242,8 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
        do {
            bool ok = false;
            name = QInputDialog::getText(NULL,
-                                        tr("New Playlist"),
-                                        tr("Playlist name:"),
+                                        tr("Create New Playlist"),
+                                        tr("Enter name for new playlist:"),
                                         QLineEdit::Normal,
                                         tr("New Playlist"),
                                         &ok).trimmed();
@@ -1302,8 +1302,8 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
         do {
             bool ok = false;
             name = QInputDialog::getText(NULL,
-                                         tr("New Crate"),
-                                         tr("Crate name:"),
+                                         tr("Create New Crate"),
+                                         tr("Enter name for new crate:"),
                                          QLineEdit::Normal, tr("New Crate"),
                                          &ok).trimmed();
             if (!ok)

@@ -230,8 +230,8 @@ void CrateFeature::slotCreateCrate() {
     while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
-                                     tr("New Crate"),
-                                     tr("Crate name:"),
+                                     tr("Create New Crate"),
+                                     tr("Enter name for new crate:"),
                                      QLineEdit::Normal, tr("New Crate"),
                                      &ok).trimmed();
 
@@ -302,7 +302,7 @@ void CrateFeature::slotRenameCrate() {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Crate"),
-                                        tr("New crate name:"),
+                                        tr("Enter new name for crate:"),
                                         QLineEdit::Normal,
                                         oldName,
                                         &ok).trimmed();
@@ -342,7 +342,7 @@ void CrateFeature::slotDuplicateCrate() {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                         tr("Duplicate Crate"),
-                                        tr("New crate name:"),
+                                        tr("Enter name for new crate:"),
                                         QLineEdit::Normal,
                                         //: Appendix to default name when duplicating a crate
                                         oldName + tr("_copy" , "[noun]"),

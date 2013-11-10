@@ -126,7 +126,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Playlist"),
-                                        tr("New playlist name:"),
+                                        tr("Enter new name for playlist:"),
                                         QLineEdit::Normal,
                                         oldName,
                                         &ok).trimmed();
@@ -169,7 +169,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                      tr("Duplicate Playlist"),
-                                     tr("Playlist name:"),
+                                     tr("Enter name for new playlist:"),
                                      QLineEdit::Normal,
                                      //: Appendix to default name when duplicating a playlist
                                      oldName + tr("_copy" , "[noun]"),
@@ -222,8 +222,8 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
-                                     tr("New Playlist"),
-                                     tr("Playlist name:"),
+                                     tr("Create New Playlist"),
+                                     tr("Enter name for new playlist:"),
                                      QLineEdit::Normal,
                                      tr("New Playlist"),
                                      &ok).trimmed();
