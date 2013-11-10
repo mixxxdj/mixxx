@@ -26,7 +26,7 @@
          <string>Apply volume normalization to loaded tracks.</string>
         </property>
         <property name="text">
-         <string>Enable Replay Gain</string>
+         <string>Enable ReplayGain</string>
         </property>
        </widget>
       </item>
@@ -46,7 +46,7 @@
          <string>Calculate ReplayGain normalization for tracks which are missing ReplayGain metadata.</string>
         </property>
         <property name="text">
-         <string>Enable Replay Gain Analysis</string>
+         <string>Enable ReplayGain Analysis</string>
         </property>
        </widget>
       </item>
@@ -202,7 +202,7 @@
       <item row="4" column="0">
        <widget class="QLabel" name="label_26">
         <property name="text">
-         <string>It may take a few seconds after track analysis is finished for a newly calculated replaygain to be applied. To avoid abrupt volume changes Mixxx does not change the replaygain of playing tracks.</string>
+         <string>It may take a few seconds after track analysis is finished for a newly calculated ReplayGain to be applied. To avoid abrupt volume changes, Mixxx does not change the ReplayGain of playing tracks.</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
