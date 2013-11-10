@@ -325,7 +325,7 @@ p, li { white-space: pre-wrap; }
    <item row="0" column="0" colspan="2">
     <widget class="QCheckBox" name="enableLiveBroadcasting">
      <property name="text">
-      <string>Enable live broadcasting</string>
+      <string>Enable Live Broadcasting</string>
      </property>
      <property name="checked">
       <bool>true</bool>
