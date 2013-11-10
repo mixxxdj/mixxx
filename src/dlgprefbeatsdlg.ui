@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>500</width>
+    <width>537</width>
     <height>400</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
    <item row="2" column="0">
     <widget class="QGroupBox" name="groupBox">
      <property name="title">
-      <string>Choose Analyser</string>
+      <string>Choose Analyzer</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -49,7 +49,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </size>
         </property>
         <property name="text">
-         <string>Beat Analyser:</string>
+         <string>Beat Analyzer:</string>
         </property>
        </widget>
       </item>
@@ -81,7 +81,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
    <item row="3" column="0">
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
-      <string>Analyser Settings</string>
+      <string>Analyzer Settings</string>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout">
       <item>
@@ -99,7 +99,7 @@ This can speed up beat detection on slower computers but may result in lower qua
       <item>
        <widget class="QCheckBox" name="bfixedtempo">
         <property name="toolTip">
-         <string>Converts beats detected by the analyser into a fixed-tempo beatgrid. 
+         <string>Converts beats detected by the analyzer into a fixed-tempo beatgrid. 
 Use this setting if your tracks have a constant tempo (e.g. most electronic music). 
 Often results in higher quality beatgrids, but will not do well on tracks that have tempo shifts.</string>
         </property>
@@ -123,10 +123,10 @@ by analyzing the beats to discard outliers.</string>
        <widget class="QCheckBox" name="bReanalyse">
         <property name="toolTip">
          <string>e.g. from 3rd-party programs or Mixxx versions before 1.11.
-(Not checked: Analyse only, if no beats exist.)</string>
+(Not checked: Analyze only, if no beats exist.)</string>
         </property>
         <property name="text">
-         <string>Re-analyse beats when settings change or beat detection data is outdated</string>
+         <string>Re-analyze beats when settings change or beat detection data is outdated</string>
         </property>
        </widget>
       </item>
