@@ -601,7 +601,7 @@ QString CrateFeature::getRootViewHtml() const {
     QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
 
     QString html;
-    QString createCrateLink = tr("Create new crate");
+    QString createCrateLink = tr("Create New Crate");
     html.append(QString("<h2>%1</h2>").arg(cratesTitle));
     html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(cratesSummary));
