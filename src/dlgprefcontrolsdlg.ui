@@ -57,7 +57,7 @@
         <font/>
        </property>
        <property name="text">
-        <string>Scheme</string>
+        <string>Color Scheme</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
