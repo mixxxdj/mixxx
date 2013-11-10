@@ -211,11 +211,13 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pDuplicateCrateAction);
     menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
+    menu.addSeparator();
 #ifdef __AUTODJCRATES__
     menu.addAction(m_pAutoDjTrackSource);
-#endif // __AUTODJCRATES__
     menu.addSeparator();
+#endif // __AUTODJCRATES__
     menu.addAction(m_pAnalyzeCrateAction);
+    menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
