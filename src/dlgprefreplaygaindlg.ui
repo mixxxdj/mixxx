@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>BPM Detection Settings</string>
+   <string>Normalization Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>

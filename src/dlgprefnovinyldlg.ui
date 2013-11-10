@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form1</string>
+   <string extracomment="Using a version with the Vinyl Control feature disabled, an alternative preferences window is displayed.">Vinyl Control (Disabled) Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0" colspan="3">

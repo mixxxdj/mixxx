@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form3</string>
+   <string>Live Broadcasting Preferences</string>
   </property>
   <layout class="QGridLayout">
    <item row="0" column="0" colspan="2">
@@ -173,11 +173,11 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
-        <property name="text">
-         <string>Dynamically update Ogg Vorbis metadata.</string>
-        </property>
         <property name="toolTip">
          <string>Due to flaws in some streaming clients, updating Ogg Vorbis metadata dynamically can cause listener glitches and disconnections. Check this box to update the metadata anyway.</string>
+        </property>
+        <property name="text">
+         <string>Dynamically update Ogg Vorbis metadata.</string>
         </property>
        </widget>
       </item>
