@@ -2925,7 +2925,7 @@ Apply settings and continue?</source>
     </message>
     <message>
         <location filename="../../src/dlgprefshoutcast.cpp" line="89"/>
-        <source>This stream is on line for testing purposes!</source>
+        <source>This stream is online for testing purposes!</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -3384,68 +3384,63 @@ Apply settings and continue?</source>
 <context>
     <name>DlgPreferences</name>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="66"/>
-        <source>Preferences</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgpreferences.cpp" line="132"/>
+        <location filename="../../src/dlgpreferences.cpp" line="131"/>
         <source>Sound Hardware</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="138"/>
+        <location filename="../../src/dlgpreferences.cpp" line="137"/>
         <source>Controllers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="144"/>
+        <location filename="../../src/dlgpreferences.cpp" line="143"/>
         <source>Library</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="150"/>
+        <location filename="../../src/dlgpreferences.cpp" line="149"/>
         <source>Interface</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="156"/>
+        <location filename="../../src/dlgpreferences.cpp" line="155"/>
         <source>Equalizers</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="162"/>
+        <location filename="../../src/dlgpreferences.cpp" line="161"/>
         <source>Crossfader</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="168"/>
+        <location filename="../../src/dlgpreferences.cpp" line="167"/>
         <source>Recording</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="175"/>
+        <location filename="../../src/dlgpreferences.cpp" line="174"/>
         <source>Beat Detection</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="180"/>
+        <location filename="../../src/dlgpreferences.cpp" line="179"/>
         <source>Normalization</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="189"/>
-        <location filename="../../src/dlgpreferences.cpp" line="197"/>
+        <location filename="../../src/dlgpreferences.cpp" line="188"/>
+        <location filename="../../src/dlgpreferences.cpp" line="196"/>
         <source>Vinyl Control</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="205"/>
+        <location filename="../../src/dlgpreferences.cpp" line="204"/>
         <source>Live Broadcasting</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
-        <location filename="../../src/dlgpreferences.cpp" line="213"/>
+        <location filename="../../src/dlgpreferences.cpp" line="212"/>
         <source>Modplug Decoder</source>
         <translation type="unfinished"></translation>
     </message>

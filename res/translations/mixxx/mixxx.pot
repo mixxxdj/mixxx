@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-11-10 22:03+0200\n"
+"POT-Creation-Date: 2013-11-10 23:29+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2422,7 +2422,7 @@ msgid "Icecast 1"
 msgstr ""
 
 #: DlgPrefShoutcast#4
-msgid "This stream is on line for testing purposes!"
+msgid "This stream is online for testing purposes!"
 msgstr ""
 
 #: DlgPrefShoutcast#5
@@ -2823,65 +2823,59 @@ msgid "Select sound devices for Vinyl Control in the Sound Hardware pane."
 msgstr ""
 
 #: DlgPreferences#1
-msgctxt "DlgPreferences#1"
-msgid "Preferences"
-msgstr ""
-
-#: DlgPreferences#2
 msgid "Sound Hardware"
 msgstr ""
 
-#: DlgPreferences#3
+#: DlgPreferences#2
 msgid "Controllers"
 msgstr ""
 
-#: DlgPreferences#4
-msgctxt "DlgPreferences#4"
+#: DlgPreferences#3
+msgctxt "DlgPreferences#3"
 msgid "Library"
 msgstr ""
 
-#: DlgPreferences#5
+#: DlgPreferences#4
 msgid "Interface"
+msgstr ""
+
+#: DlgPreferences#5
+msgctxt "DlgPreferences#5"
+msgid "Equalizers"
 msgstr ""
 
 #: DlgPreferences#6
 msgctxt "DlgPreferences#6"
-msgid "Equalizers"
+msgid "Crossfader"
 msgstr ""
 
 #: DlgPreferences#7
 msgctxt "DlgPreferences#7"
-msgid "Crossfader"
-msgstr ""
-
-#: DlgPreferences#8
-msgctxt "DlgPreferences#8"
 msgid "Recording"
 msgstr ""
 
-#: DlgPreferences#9
+#: DlgPreferences#8
 msgid "Beat Detection"
 msgstr ""
 
-#: DlgPreferences#10
+#: DlgPreferences#9
 msgid "Normalization"
 msgstr ""
 
-#: DlgPreferences#11
-msgctxt "DlgPreferences#11"
+#: DlgPreferences#10
+msgctxt "DlgPreferences#10"
 msgid "Vinyl Control"
 msgstr ""
 
-#: DlgPreferences#12
+#: DlgPreferences#11
 msgid "Live Broadcasting"
 msgstr ""
 
-#: DlgPreferences#13
+#: DlgPreferences#12
 msgid "Modplug Decoder"
 msgstr ""
 
 #: DlgPreferencesDlg#1
-msgctxt "DlgPreferencesDlg#1"
 msgid "Preferences"
 msgstr ""
 
