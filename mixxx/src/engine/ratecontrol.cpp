@@ -34,8 +34,7 @@ RateControl::RateControl(const char* _group,
       m_dTempRateChange(0.0),
       m_dRateTemp(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
-      m_dRateTempRampbackChange(0.0),
-      m_dOldRate(0.0f) {
+      m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -258,28 +257,33 @@ void RateControl::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get())
-        m_pRateSlider->sub(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() -
+                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get())
-        m_pRateSlider->sub(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() -
+                           m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
-    if (buttonRatePermUp->get())
-        m_pRateSlider->add(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+    if (buttonRatePermUp->get()) {
+        m_pRateSlider->set(m_pRateSlider->get() +
+                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+    }
 }
 
 void RateControl::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get())
-        m_pRateSlider->add(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() +
+                           m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRateTempDown(double)

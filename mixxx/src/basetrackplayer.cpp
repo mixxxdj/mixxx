@@ -35,10 +35,11 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
-                                          pConfig, defaultOrientation);
-    EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
-    pMixingEngine->addChannel(pChannel);
+    m_pChannel = new EngineDeck(pSafeGroupName,
+                                pConfig, defaultOrientation);
+
+    EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
+    pMixingEngine->addChannel(m_pChannel);
 
     // Set the routing option defaults for the master and headphone mixes.
     {
@@ -266,4 +267,8 @@ void BaseTrackPlayer::slotSetReplayGain(double replayGain) {
     if (m_pPlay->get() == 0.0) {
         m_pReplayGain->slotSet(replayGain);
     }
+}
+
+EngineDeck* BaseTrackPlayer::getEngineDeck() const {
+    return m_pChannel;
 }

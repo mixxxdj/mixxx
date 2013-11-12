@@ -50,7 +50,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
         playlistId = playlistDao.createPlaylist(AUTODJ_TABLE,
                                                 PlaylistDAO::PLHT_AUTO_DJ);
     }
-    m_pAutoDJTableModel->setPlaylist(playlistId);
+    m_pAutoDJTableModel->setTableModel(playlistId);
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     // Override some playlist-view properties:
@@ -89,7 +89,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
             this, SLOT(transitionValueChanged(int)));
 
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleAutoDJButton(bool))); _blah;
+            this, SLOT(toggleAutoDJButton(bool))); _blah;
 
     m_pCOEnabledAutoDJ = new ControlPushButton(
             ConfigKey("[AutoDJ]", "enabled"));

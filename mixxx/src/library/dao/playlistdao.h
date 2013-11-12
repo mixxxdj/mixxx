@@ -44,9 +44,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Find out the state of a playlist lock
     bool isPlaylistLocked(int playlistId);
     // Append a list of tracks to a playlist
-    void appendTracksToPlaylist(QList<int> trackIds, int playlistId);
+    bool appendTracksToPlaylist(QList<int> trackIds, int playlistId);
     // Append a track to a playlist
-    void appendTrackToPlaylist(int trackId, int playlistId);
+    bool appendTrackToPlaylist(int trackId, int playlistId);
     // Find out how many playlists exist.
     unsigned int playlistCount();
     // Find out the name of the playlist at the given Id
@@ -79,7 +79,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // hidden. Returns -1 if no such playlist exists.
     int getPreviousPlaylist(int currentPlaylistId, HiddenType hidden);
     // Append all the tracks in the source playlist to the target playlist.
-    void copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistId);
+    bool copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
     int tracksInPlaylist(int playlistId);
   signals:

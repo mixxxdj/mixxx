@@ -34,9 +34,9 @@ void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
             WaveformMark& mark = m_marks.back();
             mark.setup(group, child, signalColors);
 
-            if (mark.m_pointControl && mark.m_pointControl->getControlObject()) {
+            if (mark.m_pointControl) {
                 // guarantee uniqueness even if there is a misdesigned skin
-                QString item = mark.m_pointControl->getControlObject()->getKey().item;
+                QString item = mark.m_pointControl->getKey().item;
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
                     m_marks.removeAt(m_marks.size() - 1);

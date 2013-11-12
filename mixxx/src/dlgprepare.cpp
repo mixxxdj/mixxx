@@ -34,7 +34,8 @@ DlgPrepare::DlgPrepare(QWidget* parent,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pPrepareLibraryTableView);
 
-    m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this, pTrackCollection);
+    m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this,
+                                    pTrackCollection);
     m_pPrepareLibraryTableView->loadTrackModel(m_pPrepareLibraryTableModel);
 
 /*

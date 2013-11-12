@@ -8,18 +8,17 @@ BaseExternalPlaylistModel::BaseExternalPlaylistModel(
     QString settingsNamespace, QString playlistsTable,
     QString playlistTracksTable, QString trackSource)
         : BaseSqlTableModel(parent, pTrackCollection,
-                            pTrackCollection->getDatabase(),
                             settingsNamespace),
           m_playlistsTable(playlistsTable),
           m_playlistTracksTable(playlistTracksTable),
-          m_trackSource(trackSource),
-          m_pTrackCollection(pTrackCollection),
-          m_database(m_pTrackCollection->getDatabase()) {
-    connect(this, SIGNAL(doSearch(const QString&)),
-            this, SLOT(slotSearch(const QString&)));
+          m_trackSource(trackSource) {
 }
 
 BaseExternalPlaylistModel::~BaseExternalPlaylistModel() {
+}
+
+void BaseExternalPlaylistModel::setTableModel(int id){
+    Q_UNUSED(id);
 }
 
 TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const {
@@ -72,16 +71,6 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
         pTrack->setBpm(bpm);
     }
     return pTrack;
-}
-
-void BaseExternalPlaylistModel::search(const QString& searchText) {
-    // qDebug() << "BaseExternalPlaylistModel::search()" << searchText
-    //          << QThread::currentThread();
-    emit(doSearch(searchText));
-}
-
-void BaseExternalPlaylistModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText);
 }
 
 bool BaseExternalPlaylistModel::isColumnInternal(int column) {

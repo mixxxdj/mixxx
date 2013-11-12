@@ -165,6 +165,58 @@ void MidiController::destroyOutputHandlers() {
     }
 }
 
+QString formatMidiMessage(unsigned char status, unsigned char control, unsigned char value,
+                          unsigned char channel, unsigned char opCode) {
+    switch (opCode) {
+        case MIDI_PITCH_BEND:
+            return QString("MIDI status 0x%1: pitch bend ch %2, value 0x%3")
+                    .arg(QString::number(status, 16).toUpper(),
+                         QString::number(channel+1, 10),
+                         QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
+        case MIDI_SONG_POS:
+            return QString("MIDI status 0x%1: song position 0x%2")
+                    .arg(QString::number(status, 16).toUpper(),
+                         QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
+        case MIDI_PROGRAM_CH:
+        case MIDI_CH_AFTERTOUCH:
+            return QString("MIDI status 0x%1 (ch %2, opcode 0x%3), value 0x%4")
+                    .arg(QString::number(status, 16).toUpper(),
+                         QString::number(channel+1, 10),
+                         QString::number((status & 255)>>4, 16).toUpper(),
+                         QString::number(control, 16).toUpper().rightJustified(2,'0'));
+        case MIDI_SONG:
+            return QString("MIDI status 0x%1: select song #%2")
+                    .arg(QString::number(status, 16).toUpper(),
+                         QString::number(control+1, 10));
+        case MIDI_NOTE_OFF:
+        case MIDI_NOTE_ON:
+        case MIDI_AFTERTOUCH:
+        case MIDI_CC:
+            return QString("MIDI status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
+                    .arg(QString::number(status, 16).toUpper(),
+                         QString::number(channel+1, 10),
+                         QString::number((status & 255)>>4, 16).toUpper(),
+                         QString::number(control, 16).toUpper().rightJustified(2,'0'),
+                         QString::number(value, 16).toUpper().rightJustified(2,'0'));
+        default:
+            return QString("MIDI status 0x%1")
+                    .arg(QString::number(status, 16).toUpper());
+    }
+}
+
+bool isMessageTwoBytes(unsigned char opCode) {
+    switch (opCode) {
+        case MIDI_SONG:
+        case MIDI_NOTE_OFF:
+        case MIDI_NOTE_ON:
+        case MIDI_AFTERTOUCH:
+        case MIDI_CC:
+            return true;
+        default:
+            return false;
+    }
+}
+
 void MidiController::receive(unsigned char status, unsigned char control,
                              unsigned char value) {
     unsigned char channel = status & 0x0F;
@@ -173,57 +225,10 @@ void MidiController::receive(unsigned char status, unsigned char control,
         opCode = status;
     }
 
-    QString message;
-    bool twoBytes = true;
-
-    switch (opCode) {
-        case MIDI_PITCH_BEND:
-            twoBytes = false;
-            message = QString("MIDI status 0x%1: pitch bend ch %2, value 0x%3")
-                 .arg(QString::number(status, 16).toUpper(),
-                      QString::number(channel+1, 10),
-                      QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
-            break;
-        case MIDI_SONG_POS:
-            twoBytes = false;
-            message = QString("MIDI status 0x%1: song position 0x%2")
-                 .arg(QString::number(status, 16).toUpper(),
-                      QString::number((value << 7) | control, 16).toUpper().rightJustified(4,'0'));
-            break;
-        case MIDI_PROGRAM_CH:
-        case MIDI_CH_AFTERTOUCH:
-            twoBytes = false;
-            message = QString("MIDI status 0x%1 (ch %2, opcode 0x%3), value 0x%4")
-                 .arg(QString::number(status, 16).toUpper(),
-                      QString::number(channel+1, 10),
-                      QString::number((status & 255)>>4, 16).toUpper(),
-                      QString::number(control, 16).toUpper().rightJustified(2,'0'));
-            break;
-        case MIDI_SONG:
-            message = QString("MIDI status 0x%1: select song #%2")
-                 .arg(QString::number(status, 16).toUpper(),
-                      QString::number(control+1, 10));
-            break;
-        case MIDI_NOTE_OFF:
-        case MIDI_NOTE_ON:
-        case MIDI_AFTERTOUCH:
-        case MIDI_CC:
-            message = QString("MIDI status 0x%1 (ch %2, opcode 0x%3), ctrl 0x%4, val 0x%5")
-                 .arg(QString::number(status, 16).toUpper(),
-                      QString::number(channel+1, 10),
-                      QString::number((status & 255)>>4, 16).toUpper(),
-                      QString::number(control, 16).toUpper().rightJustified(2,'0'),
-                      QString::number(value, 16).toUpper().rightJustified(2,'0'));
-            break;
-        default:
-            twoBytes = false;
-            message = QString("MIDI status 0x%1")
-                 .arg(QString::number(status, 16).toUpper());
-            break;
-    }
+    bool twoBytes = isMessageTwoBytes(opCode);
 
     if (debugging()) {
-        qDebug() << message;
+        qDebug() << formatMidiMessage(status, control, value, channel, opCode);
     }
 
     //if (m_bReceiveInhibit) return;
@@ -265,17 +270,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
             //Reset the saved control.
             setControlToLearn(MixxxControl());
 
-            QString message = "error";
-            if (twoBytes) {
-                message = QString("0x%1 0x%2")
-                            .arg(QString::number(mappingKey.status, 16).toUpper(),
-                                QString::number(mappingKey.control, 16).toUpper()
-                                    .rightJustified(2,'0'));
-            }
-            else {
-                message = QString("0x%1")
-                            .arg(QString::number(mappingKey.status, 16).toUpper());
-            }
+            QString message = twoBytes ? QString("0x%1 0x%2")
+                    .arg(QString::number(mappingKey.status, 16).toUpper(),
+                         QString::number(mappingKey.control, 16).toUpper()
+                         .rightJustified(2,'0')) :
+                    QString("0x%1")
+                    .arg(QString::number(mappingKey.status, 16).toUpper());
             emit(learnedMessage(message));
         }
     }
@@ -312,8 +312,6 @@ void MidiController::receive(unsigned char status, unsigned char control,
         return;
     }
 
-    double currMixxxControlValue = p->GetMidiValue();
-
     double newValue = value;
 
     //qDebug() << "MIDI Options" << QString::number(options.all, 2).rightJustified(16,'0');
@@ -323,14 +321,11 @@ void MidiController::receive(unsigned char status, unsigned char control,
         int ivalue;
         ivalue = (value << 7) | control;
 
-        currMixxxControlValue = p->get();
-
         // Range is 0x0000..0x3FFF center @ 0x2000, i.e. 0..16383 center @ 8192
         if (options.invert) {
             newValue = 0x2000-ivalue;
             if (newValue < 0) newValue--;
-        }
-        else {
+        } else {
             newValue = ivalue-0x2000;
             if (newValue > 0) newValue++;
         }
@@ -339,6 +334,7 @@ void MidiController::receive(unsigned char status, unsigned char control,
 
         // computeValue not (yet) done on pitch messages because it all assumes 7-bit numbers
     } else {
+        double currMixxxControlValue = p->getValueToMidi();
         newValue = computeValue(options, currMixxxControlValue, value);
     }
 
@@ -360,22 +356,15 @@ void MidiController::receive(unsigned char status, unsigned char control,
                 return;
             }
         }
-        p->queueFromThread(newValue);
-    }
-    else {
+        p->setValueFromThread(newValue, NULL);
+    } else {
         if (options.soft_takeover) {
             if (m_st.ignore(p, newValue, true)) {
                 return;
             }
         }
-        p->queueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
+        p->setValueFromMidi(static_cast<MidiOpCode>(opCode), newValue);
     }
-
-    // If we got here then we queued a message for the control system. In the
-    // interest of quickly processing this, we request a sync. Since we are
-    // running in the controller thread, we broadcast the signal which is
-    // proxied to the main thread and handled there.
-    emit(syncControlSystem());
 }
 
 double MidiController::computeValue(MidiOptions options, double _prevmidivalue, double _newmidivalue) {
@@ -468,17 +457,20 @@ double MidiController::computeValue(MidiOptions options, double _prevmidivalue, 
     return _newmidivalue;
 }
 
-void MidiController::receive(QByteArray data) {
-    int length = data.size();
-    QString message = QString("%1: %2 bytes: [").arg(getName()).arg(length);
-    for (int i = 0; i < length; ++i) {
+QString formatSysexMessage(QString controllerName, const QByteArray& data) {
+    QString message = QString("%1: %2 bytes: [").arg(controllerName).arg(data.size());
+    for (int i = 0; i < data.size(); ++i) {
         message += QString("%1%2").arg(
             QString("%1").arg((unsigned char)(data.at(i)), 2, 16, QChar('0')).toUpper(),
-            QString("%1").arg((i < (length-1)) ? ' ' : ']'));
+            QString("%1").arg((i < (data.size()-1)) ? ' ' : ']'));
     }
+    return message;
+}
 
-    if (debugging())
-        qDebug() << message;
+void MidiController::receive(QByteArray data) {
+    if (debugging()) {
+        qDebug() << formatSysexMessage(getName(), data);
+    }
 
     //if (m_bReceiveInhibit) return;
 
@@ -506,7 +498,7 @@ void MidiController::receive(QByteArray data) {
             setControlToLearn(MixxxControl());
 
             QString message = QString("0x%1")
-                        .arg(QString::number(mappingKey.status, 16).toUpper());
+                    .arg(QString::number(mappingKey.status, 16).toUpper());
             emit(learnedMessage(message));
         }
         // Don't process MIDI messages when learning
@@ -535,7 +527,8 @@ void MidiController::receive(QByteArray data) {
         }
         return;
     }
-    qWarning() << "MidiController: No script function specified for" << message;
+    qWarning() << "MidiController: No script function specified for"
+               << formatSysexMessage(getName(), data);
 }
 
 void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {

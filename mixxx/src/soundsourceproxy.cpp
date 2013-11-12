@@ -279,8 +279,9 @@ int SoundSourceProxy::open()
     //      duration.)
     // SSMP3 will set duration to -1 on VBR files,
     //  so we must look for that here too
-    if (m_pTrack->getDuration() <= 0)
+    if (m_pTrack && m_pTrack->getDuration() <= 0) {
         m_pTrack->setDuration(m_pSoundSource->getDuration());
+    }
 
     return retVal;
 }

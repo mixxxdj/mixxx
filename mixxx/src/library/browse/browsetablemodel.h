@@ -38,22 +38,23 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     void setPath(QString absPath);
     //reimplemented from TrackModel class
     virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual QString getTrackLocation(const QModelIndex& index) const;
-    virtual int getTrackId(const QModelIndex& index) const;
-    TrackModel::CapabilitiesFlags getCapabilities() const;
-    virtual const QLinkedList<int> getTrackRows(int trackId) const;
-    virtual void search(const QString& searchText);
-    virtual void removeTrack(const QModelIndex& index);
-    virtual void removeTracks(const QModelIndexList& indices);
-    virtual bool addTrack(const QModelIndex& index, QString location);
-    virtual QMimeData* mimeData(const QModelIndexList &indexes) const;
-    virtual const QString currentSearch() const;
-    virtual bool isColumnInternal(int);
-    virtual void moveTrack(const QModelIndex&, const QModelIndex&);
-    virtual bool isColumnHiddenByDefault(int column);
-    virtual const QList<int>& searchColumns() const;
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
-    virtual bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
+    virtual TrackModel::CapabilitiesFlags getCapabilities() const;
+
+    QString getTrackLocation(const QModelIndex& index) const;
+    int getTrackId(const QModelIndex& index) const;
+    const QLinkedList<int> getTrackRows(int trackId) const;
+    void search(const QString& searchText,const QString& extraFilter=QString());
+    void removeTrack(const QModelIndex& index);
+    void removeTracks(const QModelIndexList& indices);
+    bool addTrack(const QModelIndex& index, QString location);
+    QMimeData* mimeData(const QModelIndexList &indexes) const;
+    const QString currentSearch() const;
+    bool isColumnInternal(int);
+    void moveTrack(const QModelIndex&, const QModelIndex&);
+    bool isColumnHiddenByDefault(int column);
+    const QList<int>& searchColumns() const;
+    Qt::ItemFlags flags(const QModelIndex &index) const;
+    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
     QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
 
   public slots:

@@ -35,6 +35,7 @@ class ControllerManager;
 class MixxxKeyboard;
 class PlayerManager;
 class RecordingManager;
+class ShoutcastManager;
 class SkinLoader;
 class VinylControlManager;
 
@@ -65,7 +66,8 @@ class MixxxApp : public QMainWindow {
 
     void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
 
-    void setToolTips(int tt);
+    void setToolTipsCfg(int tt);
+    inline int getToolTipsCgf() { return m_toolTipsCfg; };
     void rebootMixxxView();
 
   public slots:
@@ -84,8 +86,6 @@ class MixxxApp : public QMainWindow {
     void slotCheckboxVinylControl(bool toggle);
     void slotControlVinylControl2(double toggle);
     void slotCheckboxVinylControl2(bool toggle);
-    /** toggle recording - Don't #ifdef this because MOC is dumb**/
-    void slotOptionsRecord(bool toggle);
     /** toogle keyboard on-off */
     void slotOptionsKeyboard(bool toggle);
     /** Preference dialog */
@@ -100,14 +100,12 @@ class MixxxApp : public QMainWindow {
     void slotHelpManual();
     // Visits translation interface on launchpad.net
     void slotHelpTranslation();
-    /** Scan or rescan the music library directory */
+    // Scan or rescan the music library directory
     void slotScanLibrary();
-    /** Enables the "Rescan Library" menu item. This gets disabled when a scan is running.*/
+    // Enables the "Rescan Library" menu item. This gets disabled when a scan is running.
     void slotEnableRescanLibraryAction();
-    /**Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available **/
+    //Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available
     void slotOptionsMenuShow();
-    /** toggles Livebroadcasting **/
-    void slotOptionsShoutcast(bool value);
     /** toogle on-screen widget visibility */
     void slotViewShowSamplers(bool);
     void slotViewShowVinylControl(bool);
@@ -121,7 +119,6 @@ class MixxxApp : public QMainWindow {
     void slotToCenterOfPrimaryScreen();
 
     void onNewSkinLoaded();
-    void slotSyncControlSystem();
 
   signals:
     void newSkinLoaded();
@@ -132,6 +129,10 @@ class MixxxApp : public QMainWindow {
     void closeEvent(QCloseEvent *event);
 
   private:
+    void logBuildDetails();
+    void initializeWindow();
+    void initializeKeyboard();
+    void initializeTranslations(QApplication* pApp);
     void checkDirectRendering();
     bool confirmExit();
 
@@ -152,6 +153,9 @@ class MixxxApp : public QMainWindow {
     PlayerManager* m_pPlayerManager;
     // RecordingManager
     RecordingManager* m_pRecordingManager;
+#ifdef __SHOUTCAST__
+    ShoutcastManager* m_pShoutcastManager;
+#endif
     ControllerManager *m_pControllerManager;
 
     ConfigObject<ConfigValue> *m_pConfig;
@@ -159,7 +163,7 @@ class MixxxApp : public QMainWindow {
     VinylControlManager *m_pVCManager;
 
     MixxxKeyboard* m_pKeyboard;
-    /** Library scanner object */
+    // Library scanner object
     LibraryScanner* m_pLibraryScanner;
     // The library management object
     Library* m_pLibrary;
@@ -224,7 +228,7 @@ class MixxxApp : public QMainWindow {
     ConfigObject<ConfigValueKbd>* m_pKbdConfig;
     ConfigObject<ConfigValueKbd>* m_pKbdConfigEmpty;
 
-    int m_tooltips; //0=OFF, 1=ON, 2=ON (only in Library)
+    int m_toolTipsCfg; //0=OFF, 1=ON, 2=ON (only in Library)
     // Timer that tracks how long Mixxx has been running.
     Timer m_runtime_timer;
 

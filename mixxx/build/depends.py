@@ -113,6 +113,14 @@ class OggVorbis(Dependence):
         if not conf.CheckLib(libs):
             raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers')
 
+        # libvorbisenc only exists on Linux, OSX and mingw32 on Windows. On
+        # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
+        # libogg are included from build.py so don't add here.
+        if not build.platform_is_windows or build.toolchain_is_gnu:
+            vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
+            if not vorbisenc_found:
+                raise Exception('Did not find libvorbisenc.a, libvorbisenc.lib, or the libvorbisenc development headers.')
+
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
 
@@ -392,6 +400,17 @@ class TagLib(Dependence):
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES = 'TAGLIB_STATIC')
 
+class Chromaprint(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['chromaprint', 'libchromaprint', 'chromaprint_p', 'libchromaprint_p']):
+            raise Exception("Could not find libchromaprint or its development headers.")
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'CHROMAPRINT_NODLL')
+
+            # On Windows, we link chromaprint with FFTW3.
+            if not conf.CheckLib(['fftw', 'libfftw', 'fftw3', 'libfftw3']):
+                raise Exception("Could not find fftw3 or its development headers.")
+
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
         libs = ['libprotobuf-lite', 'protobuf-lite', 'libprotobuf', 'protobuf']
@@ -412,18 +431,18 @@ class MixxxCore(Feature):
         sources = ["mixxxkeyboard.cpp",
 
                    "configobject.cpp",
+                   "control/control.cpp",
+                   "control/controlbehavior.cpp",
                    "controlobjectthread.cpp",
                    "controlobjectthreadwidget.cpp",
                    "controlobjectthreadmain.cpp",
                    "controlevent.cpp",
                    "controllogpotmeter.cpp",
                    "controlobject.cpp",
-                   "controlnull.cpp",
                    "controlpotmeter.cpp",
                    "controllinpotmeter.cpp",
                    "controlpushbutton.cpp",
                    "controlttrotary.cpp",
-                   "controlbeat.cpp",
 
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
@@ -434,13 +453,12 @@ class MixxxCore(Feature):
                    "controllers/dlgprefnocontrollers.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",
-                   "dlgprefbpm.cpp",
                    "dlgprefreplaygain.cpp",
                    "dlgprefnovinyl.cpp",
-                   "dlgbpmscheme.cpp",
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
                    "dlgprefcrossfader.cpp",
+                   "dlgtagfetcher.cpp",
                    "dlgtrackinfo.cpp",
                    "dlgprepare.cpp",
                    "dlgautodj.cpp",
@@ -449,7 +467,6 @@ class MixxxCore(Feature):
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
-                   "engine/syncworker.cpp",
                    "engine/enginebuffer.cpp",
                    "engine/enginebufferscale.cpp",
                    "engine/enginebufferscaledummy.cpp",
@@ -466,7 +483,7 @@ class MixxxCore(Feature):
                    "engine/engineflanger.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",
-                   "engine/enginesidechain.cpp",
+                   "engine/sidechain/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
@@ -486,7 +503,6 @@ class MixxxCore(Feature):
 
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
-                   "analyserbpm.cpp",
                    "analyserwaveform.cpp",
 
                    "controllers/controller.cpp",
@@ -541,6 +557,14 @@ class MixxxCore(Feature):
 
                    "mathstuff.cpp",
 
+                   "network.cpp",
+                   "musicbrainz/tagfetcher.cpp",
+                   "musicbrainz/gzip.cpp",
+                   "musicbrainz/crc.c",
+                   "musicbrainz/acoustidclient.cpp",
+                   "musicbrainz/chromaprinter.cpp",
+                   "musicbrainz/musicbrainzclient.cpp",
+
                    "rotary.cpp",
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
@@ -578,6 +602,7 @@ class MixxxCore(Feature):
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
+                   "engine/sidechain/enginerecord.cpp",
 
                    # External Library Features
                    "library/baseexternallibraryfeature.cpp",
@@ -593,7 +618,6 @@ class MixxxCore(Feature):
                    "library/libraryscannerdlg.cpp",
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
-                   "library/searchthread.cpp",
 
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",
@@ -611,6 +635,8 @@ class MixxxCore(Feature):
                    "library/starrating.cpp",
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
+                   "library/bpmdelegate.cpp",
+                   "library/bpmeditor.cpp",
                    "library/previewbuttondelegate.cpp",
                    "audiotagger.cpp",
 
@@ -701,8 +727,9 @@ class MixxxCore(Feature):
                    "playerinfo.cpp",
                    "visualplayposition.cpp",
 
-                   "recording/enginerecord.cpp",
-                   "recording/encoder.cpp",
+                   "encoder/encoder.cpp",
+                   "encoder/encodermp3.cpp",
+                   "encoder/encodervorbis.cpp",
 
                    "segmentation.cpp",
                    "tapfilter.cpp",
@@ -746,15 +773,14 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefcontrolsdlg.ui')
         build.env.Uic4('dlgprefeqdlg.ui')
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
-        build.env.Uic4('dlgprefbpmdlg.ui')
         build.env.Uic4('dlgprefreplaygaindlg.ui')
         build.env.Uic4('dlgprefbeatsdlg.ui')
-        build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
         build.env.Uic4('dlgprefnovinyldlg.ui')
         build.env.Uic4('dlgprefrecorddlg.ui')
         build.env.Uic4('dlgaboutdlg.ui')
+        build.env.Uic4('dlgtagfetcher.ui')
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
@@ -909,7 +935,8 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
+                Chromaprint]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

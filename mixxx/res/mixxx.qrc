@@ -12,6 +12,7 @@
         <file>images/preferences/ic_preferences_equalizers.png</file>
         <file>images/preferences/ic_preferences_interface.png</file>
         <file>images/preferences/ic_preferences_library.png</file>
+        <file>images/preferences/ic_preferences_modplug.png</file>
         <file>images/preferences/ic_preferences_recording.png</file>
         <file>images/preferences/ic_preferences_replaygain.png</file>
         <file>images/preferences/ic_preferences_sampler.png</file>
@@ -36,6 +37,8 @@
         <file>images/library/ic_library_traktor.png</file>
         <file>images/library/ic_library_preview_play.png</file>
         <file>images/library/ic_library_preview_pause.png</file>
+        <file>images/library/ic_library_checked.png</file>
+        <file>images/library/ic_library_unchecked.png</file>
         <file>shaders/computemaxsignal.frag</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>

@@ -4,6 +4,7 @@ import platform
 import sys
 import os
 import re
+import shutil
 
 import SCons
 from SCons import Script
@@ -194,6 +195,7 @@ class MixxxBuild(object):
             self.env.Append(LIBPATH=os.path.join(crosscompile_root, 'bin'))
 
         self.install_options()
+        self.virtualize_build_dir()
 
     def detect_platform(self):
         if os.name == 'nt' or sys.platform == 'win32':
@@ -233,22 +235,17 @@ class MixxxBuild(object):
         self.env['LIBS'] = []
         self.env['LIBPATH'] = []
 
-    def install_options(self):
+    def get_cache_dir(self):
         # Global cache directory Put all project files in it so a rm -rf cache
         # will clean up the config
         if not self.env.has_key('CACHEDIR'):
             self.env['CACHEDIR'] = str(Script.Dir('#cache/'))
         if not os.path.isdir(self.env['CACHEDIR']):
             os.mkdir(self.env['CACHEDIR'])
+        return str(self.env['CACHEDIR'])
 
-        cachefile = os.path.join(str(self.env['CACHEDIR']), 'custom.py')
-
-        ## Avoid spreading .sconsign files everywhere
-        #env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
-        ## WARNING - We found that the above line causes SCons to randomly not find
-        ##           dependencies for some reason. It might not happen right away, but
-        ##           a good number of users found that it caused weird problems - Albert (May 15/08)
-
+    def install_options(self):
+        cachefile = os.path.join(self.get_cache_dir(), 'custom.py')
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
@@ -275,8 +272,81 @@ class MixxxBuild(object):
         #Save the options to cache
         vars.Save(cachefile, self.env)
 
+    def virtualize_build_dir(self):
+        # Symlinks don't work on Windows.
+        if self.host_platform == 'windows':
+            return
+
+        should_virtualize = int(Script.ARGUMENTS.get('virtualize', 1))
+        if not should_virtualize:
+            return
+
+        branch_name = util.get_branch_name()
+        if not branch_name:
+            return
+        # TODO(rryan) what other branch name characters aren't allowed in
+        # filenames?
+        branch_name = re.sub('[/<>|"]', '_', branch_name).lower()
+
+        branch_build_dir = os.path.join(self.get_cache_dir(), branch_name)
+
+        # Write sconsign.dblite files to branch_build_dir so that the file
+        # signatures are kept separate across branches.
+        sconsign_file = os.path.join(branch_build_dir, 'sconsign.dblite')
+        self.env.SConsignFile(sconsign_file)
+
+        try:
+            print "os.makedirs", branch_build_dir
+            os.makedirs(branch_build_dir)
+        except:
+            # os.makedirs throws an exception if branch_build_dir already
+            # exists.
+            pass
+        virtual_build_dir = os.path.join(branch_build_dir, self.build_dir)
+
+        # If build_dir is a symlink, check that it points to virtual_build_dir.
+        if os.path.islink(self.build_dir):
+            # Make sure virtual_build_dir exists. This happens if we are
+            # building for a new branch.
+            try:
+                print "os.makedirs", virtual_build_dir
+                os.makedirs(virtual_build_dir)
+            except:
+                # os.makedirs throws an exception if branch_build_dir already
+                # exists.
+                pass
+
+            # Get the path build_dir points to.
+            build_dir_path = os.readlink(self.build_dir)
+
+            # If it does not point to virtual_build_dir then unlink and link it
+            # to virtual_build_dir.
+            if os.path.abspath(build_dir_path) != os.path.abspath(virtual_build_dir):
+                print "os.unlink", self.build_dir
+                os.unlink(self.build_dir)
+                print "os.symlink", virtual_build_dir, self.build_dir
+                os.symlink(virtual_build_dir, self.build_dir)
+        elif os.path.isdir(self.build_dir):
+            # If build_dir is a directory, move it to virtual_build_dir.
+            print "shutil.move", self.build_dir, branch_build_dir
+            shutil.move(self.build_dir, branch_build_dir)
+            print "os.symlink", virtual_build_dir, self.build_dir
+            os.symlink(virtual_build_dir, self.build_dir)
+        else:
+            # Make sure virtual_build_dir exists. This happens if we are
+            # building for a new branch.
+            try:
+                print "os.makedirs", virtual_build_dir
+                os.makedirs(virtual_build_dir)
+            except:
+                # os.makedirs throws an exception if branch_build_dir already
+                # exists.
+                pass
+            print "os.symlink", virtual_build_dir, self.build_dir
+            os.symlink(virtual_build_dir, self.build_dir)
+
     def get_features(self):
-        return self.available_features\
+        return self.available_features
 
 class Dependence(object):
 

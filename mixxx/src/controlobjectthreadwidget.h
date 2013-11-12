@@ -22,10 +22,9 @@ class ControlObject;
 @author Tue Haste Andersen
 */
 
-class ControlObjectThreadWidget : public ControlObjectThreadMain
-{
+class ControlObjectThreadWidget : public ControlObjectThreadMain {
     Q_OBJECT
-public:
+  public:
 
     enum EmitOption {
         EMIT_NEVER                = 0x00,
@@ -42,13 +41,11 @@ public:
                    EmitOption emitOption=EMIT_ON_PRESS, Qt::MouseButton state=Qt::NoButton);
     /** Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
     void setWidgetOnOff(QWidget *widget);
-    bool setExtern(double v);
 
-  private slots:
-    void slotReset();
+    virtual double get();
 
-  private:
-    virtual void updateControlObject(double v);
+  public slots:
+    virtual void set(double v);
 };
 
 #endif

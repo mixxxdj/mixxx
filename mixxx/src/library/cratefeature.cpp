@@ -20,7 +20,8 @@
 #include "soundsourceproxy.h"
 
 CrateFeature::CrateFeature(QObject* parent,
-                           TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig)
+                           TrackCollection* pTrackCollection,
+                           ConfigObject<ConfigValue>* pConfig)
         : m_pTrackCollection(pTrackCollection),
           m_crateDao(pTrackCollection->getCrateDAO()),
           m_crateTableModel(this, pTrackCollection),
@@ -156,7 +157,7 @@ void CrateFeature::activateChild(const QModelIndex& index) {
         return;
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
-    m_crateTableModel.setCrate(crateId);
+    m_crateTableModel.setTableModel(crateId);
     emit(showTrackModel(&m_crateTableModel));
 }
 
@@ -504,7 +505,7 @@ void CrateFeature::slotExportPlaylist(){
     // Create a new table model since the main one might have an active search.
     QScopedPointer<CrateTableModel> pCrateTableModel(
         new CrateTableModel(this, m_pTrackCollection));
-    pCrateTableModel->setCrate(m_crateTableModel.getCrate());
+    pCrateTableModel->setTableModel(m_crateTableModel.getCrate());
     pCrateTableModel->select();
 
     if (file_location.endsWith(".csv", Qt::CaseInsensitive)) {
@@ -542,7 +543,7 @@ void CrateFeature::slotCrateTableChanged(int crateId) {
     clearChildModel();
     m_lastRightClickedIndex = constructChildModel(crateId);
     // Switch the view to the crate.
-    m_crateTableModel.setCrate(crateId);
+    m_crateTableModel.setTableModel(crateId);
     // Update selection
     emit(featureSelect(this, m_lastRightClickedIndex));
 }

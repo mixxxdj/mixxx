@@ -40,7 +40,7 @@ bool WaveformRendererEndOfTrack::init() {
 
     m_endOfTrackControl = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "end_of_track")));
-    m_endOfTrackControl->setExtern(0.);
+    m_endOfTrackControl->slotSet(0.);
     m_endOfTrackEnabled = false;
 
     m_trackSampleRate = new ControlObjectThreadMain(

@@ -35,7 +35,6 @@ class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
-class DlgPrefBpm;
 class DlgPrefBeats;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
@@ -90,7 +89,6 @@ private:
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
-    DlgPrefBpm* m_wbpm;
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;

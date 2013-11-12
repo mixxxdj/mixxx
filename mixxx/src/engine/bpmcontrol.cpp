@@ -146,7 +146,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     double averageBpm = 60.0 * 1000.0 / averageLength;
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pFileBpm->set(averageBpm / dRate);
-    slotAdjustBpm(); 
+    slotAdjustBpm();
 }
 
 void BpmControl::slotControlBeatSyncPhase(double v) {
@@ -427,7 +427,7 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
         }
     }
 
-    emit(seekAbs(dNewPlaypos));
+    seekAbs(dNewPlaypos);
     return true;
 }
 

@@ -11,12 +11,12 @@ const QString MissingTableModel::MISSINGFILTER = "mixxx_deleted=0 AND fs_deleted
 MissingTableModel::MissingTableModel(QObject* parent,
                                      TrackCollection* pTrackCollection)
         : BaseSqlTableModel(parent, pTrackCollection,
-                            pTrackCollection->getDatabase(),
-                            "mixxx.db.model.missing"),
-          m_pTrackCollection(pTrackCollection),
-          m_trackDao(m_pTrackCollection->getTrackDAO()) {
+                            "mixxx.db.model.missing") {
+    setTableModel();
+}
 
-    QSqlQuery query(pTrackCollection->getDatabase());
+void MissingTableModel::setTableModel(int id) {
+    QSqlQuery query(m_database);
     //query.prepare("DROP VIEW " + playlistTableName);
     //query.exec();
     QString tableName("missing_songs");
@@ -49,27 +49,11 @@ MissingTableModel::MissingTableModel(QObject* parent,
     setDefaultSort(fieldIndex("artist"), Qt::AscendingOrder);
     setSearch("");
 
-    connect(this, SIGNAL(doSearch(const QString&)),
-            this, SLOT(slotSearch(const QString&)));
 }
 
 MissingTableModel::~MissingTableModel() {
 }
 
-bool MissingTableModel::addTrack(const QModelIndex& index, QString location) {
-    Q_UNUSED(index);
-    Q_UNUSED(location);
-    return false;
-}
-
-TrackPointer MissingTableModel::getTrack(const QModelIndex& index) const {
-    //FIXME: use position instead of location for playlist tracks?
-
-    //const int locationColumnIndex = this->fieldIndex(LIBRARYTABLE_LOCATION);
-    //QString location = index.sibling(index.row(), locationColumnIndex).data().toString();
-    int trackId = getTrackId(index);
-    return m_trackDao.getTrack(trackId);
-}
 
 void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
     QList<int> trackIds;
@@ -79,23 +63,13 @@ void MissingTableModel::purgeTracks(const QModelIndexList& indices) {
         trackIds.append(trackId);
     }
 
-    m_trackDao.purgeTracks(trackIds);
+    m_trackDAO.purgeTracks(trackIds);
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
     select(); //Repopulate the data model.
 }
 
-
-void MissingTableModel::search(const QString& searchText) {
-    // qDebug() << "MissingTableModel::search()" << searchText
-    //          << QThread::currentThread();
-    emit(doSearch(searchText));
-}
-
-void MissingTableModel::slotSearch(const QString& searchText) {
-    BaseSqlTableModel::search(searchText);
-}
 
 bool MissingTableModel::isColumnInternal(int column) {
     if (column == fieldIndex(LIBRARYTABLE_ID) ||
@@ -114,12 +88,11 @@ bool MissingTableModel::isColumnHiddenByDefault(int column) {
     return false;
 }
 
-/** Override flags from BaseSqlModel since we don't want edit this model */
+// Override flags from BaseSqlModel since we don't want edit this model
 Qt::ItemFlags MissingTableModel::flags(const QModelIndex &index) const {
     return readOnlyFlags(index);
 }
 
 TrackModel::CapabilitiesFlags MissingTableModel::getCapabilities() const {
-    return TRACKMODELCAPS_NONE
-            | TRACKMODELCAPS_PURGE;
+    return TRACKMODELCAPS_NONE | TRACKMODELCAPS_PURGE;
 }

@@ -15,8 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "dlgprefeq.h"
-#include "engine/enginefilteriir.h"
 #include <qlineedit.h>
 #include <qwidget.h>
 #include <qslider.h>
@@ -27,6 +25,10 @@
 #include <qgraphicsscene.h>
 
 #include <assert.h>
+
+#include "dlgprefeq.h"
+#include "engine/enginefilteriir.h"
+#include "controlobject.h"
 
 #define CONFIG_KEY "[Mixer Profile]"
 

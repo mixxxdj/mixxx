@@ -19,6 +19,7 @@
 #include "wpixmapstore.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
+#include "control/controlbehavior.h"
 //Added by qt3to4:
 #include <QPixmap>
 #include <QtDebug>
@@ -189,7 +190,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
         if (leftClick) {
             if (m_fValue == 0.0f) {
                 m_clickTimer.setSingleShot(true);
-                m_clickTimer.start(ControlPushButton::kPowerWindowTimeMillis);
+                m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             }
             m_fValue = 1.0f;
             m_bPressed = true;

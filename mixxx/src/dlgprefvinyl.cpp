@@ -21,12 +21,13 @@
 #include <QtCore>
 #include <QtDebug>
 #include <QtGui>
+
 #include "dlgprefvinyl.h"
+
 #include "controlobject.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
-#include "vinylcontrol/vinylcontrol.h" //For vinyl type string constants
+#include "vinylcontrol/defs_vinylcontrol.h"
 #include "controlobjectthreadmain.h"
-#include "dlgprefvinyl.h"
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            ConfigObject<ConfigValue> * _config)
@@ -43,6 +44,8 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
     vinylControlMode.addButton(AbsoluteMode);
     vinylControlMode.addButton(RelativeMode);
 
+    m_signalWidget1.setVinylInput(0);
+    m_signalWidget2.setVinylInput(1);
     m_signalWidget1.setSize(MIXXX_VINYL_SCOPE_SIZE);
     m_signalWidget2.setSize(MIXXX_VINYL_SCOPE_SIZE);
 
@@ -83,28 +86,24 @@ DlgPrefVinyl::~DlgPrefVinyl()
 }
 
 /** @brief Performs any necessary actions that need to happen when the prefs dialog is opened */
-void DlgPrefVinyl::slotShow()
-{
-    QList<VinylControlProxy*> VCProxiesList = m_pVCManager->vinylControlProxies();
-    if (VCProxiesList.value(0) != NULL)
-        m_signalWidget1.setVinylControlProxy(VCProxiesList.value(0));
-    if (VCProxiesList.value(1) != NULL)
-        m_signalWidget2.setVinylControlProxy(VCProxiesList.value(1));
+void DlgPrefVinyl::slotShow() {
+    if (m_pVCManager) {
+        m_pVCManager->addSignalQualityListener(&m_signalWidget1);
+        m_pVCManager->addSignalQualityListener(&m_signalWidget2);
+    }
 
     //(Re)Initialize the signal quality indicators
     m_signalWidget1.resetWidget();
-    m_signalWidget1.startDrawing();
     m_signalWidget2.resetWidget();
-    m_signalWidget2.startDrawing();
 
 }
 
 /** @brief Performs any necessary actions that need to happen when the prefs dialog is closed */
-void DlgPrefVinyl::slotClose()
-{
-    //Stop updating the vinyl control signal indicators when the prefs dialog is closed.
-    m_signalWidget1.stopDrawing();
-    m_signalWidget2.stopDrawing();
+void DlgPrefVinyl::slotClose() {
+    if (m_pVCManager) {
+        m_pVCManager->removeSignalQualityListener(&m_signalWidget1);
+        m_pVCManager->removeSignalQualityListener(&m_signalWidget2);
+    }
 }
 
 void DlgPrefVinyl::slotUpdate()
@@ -127,33 +126,25 @@ void DlgPrefVinyl::slotUpdate()
         ComboBoxVinylSpeed2->setCurrentIndex(combo_index);
 
     // set lead-in time
-    LeadinTime->setText (config->getValueString(ConfigKey("[VinylControl]","lead_in_time")) );
+    LeadinTime->setText (config->getValueString(ConfigKey(VINYL_PREF_KEY,"lead_in_time")) );
 
     // set Relative mode
-    int iMode = config->getValueString(ConfigKey("[VinylControl]","mode")).toInt();
+    int iMode = config->getValueString(ConfigKey(VINYL_PREF_KEY,"mode")).toInt();
     if (iMode == MIXXX_VCMODE_ABSOLUTE)
         AbsoluteMode->setChecked(true);
     else if (iMode == MIXXX_VCMODE_RELATIVE)
         RelativeMode->setChecked(true);
 
     // Honour the Needle Skip Prevention setting.
-    NeedleSkipEnable->setChecked( (bool)config->getValueString( ConfigKey("[VinylControl]", "needle_skip_prevention") ).toInt() );
+    NeedleSkipEnable->setChecked( (bool)config->getValueString( ConfigKey(VINYL_PREF_KEY, "needle_skip_prevention") ).toInt() );
 
-    SignalQualityEnable->setChecked((bool)config->getValueString(ConfigKey("[VinylControl]", "show_signal_quality") ).toInt() );
+    SignalQualityEnable->setChecked((bool)config->getValueString(ConfigKey(VINYL_PREF_KEY, "show_signal_quality") ).toInt() );
 
     //set vinyl control gain
-    VinylGain->setValue( config->getValueString(ConfigKey("[VinylControl]","gain")).toInt());
+    VinylGain->setValue( config->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 
-    QList<VinylControlProxy*> VCProxiesList = m_pVCManager->vinylControlProxies();
-    if (VCProxiesList.value(0) != NULL) {
-        m_signalWidget1.setVinylControlProxy(VCProxiesList.value(0));
-    }
-    if (VCProxiesList.value(1) != NULL) {
-        m_signalWidget2.setVinylControlProxy(VCProxiesList.value(1));
-    }
-
-    m_signalWidget1.setVinylActive(m_pVCManager->vinylInputEnabled(1));
-    m_signalWidget2.setVinylActive(m_pVCManager->vinylInputEnabled(2));
+    m_signalWidget1.setVinylActive(m_pVCManager->vinylInputEnabled(0));
+    m_signalWidget2.setVinylActive(m_pVCManager->vinylInputEnabled(1));
 }
 
 // Update the config object with parameters from dialog
@@ -166,9 +157,9 @@ void DlgPrefVinyl::slotApply()
     bool isInteger;
     strLeadIn.toInt(&isInteger);
     if (isInteger)
-        config->set(ConfigKey("[VinylControl]","lead_in_time"), strLeadIn);
+        config->set(ConfigKey(VINYL_PREF_KEY,"lead_in_time"), strLeadIn);
     else
-        config->set(ConfigKey("[VinylControl]","lead_in_time"), MIXXX_VC_DEFAULT_LEADINTIME);
+        config->set(ConfigKey(VINYL_PREF_KEY,"lead_in_time"), MIXXX_VC_DEFAULT_LEADINTIME);
 
     //Apply updates for everything else...
     VinylTypeSlotApply();
@@ -180,11 +171,11 @@ void DlgPrefVinyl::slotApply()
     if (RelativeMode->isChecked())
         iMode = MIXXX_VCMODE_RELATIVE;
 
-    config->set(ConfigKey("[VinylControl]","mode"), ConfigValue(iMode));
-    config->set(ConfigKey("[VinylControl]","needle_skip_prevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
-    config->set(ConfigKey("[VinylControl]","show_signal_quality" ), ConfigValue( (int)(SignalQualityEnable->isChecked( )) ) );
+    config->set(ConfigKey(VINYL_PREF_KEY,"mode"), ConfigValue(iMode));
+    config->set(ConfigKey(VINYL_PREF_KEY,"needle_skip_prevention" ), ConfigValue( (int)(NeedleSkipEnable->isChecked( )) ) );
+    config->set(ConfigKey(VINYL_PREF_KEY,"show_signal_quality" ), ConfigValue( (int)(SignalQualityEnable->isChecked( )) ) );
 
-    m_pVCManager->reloadConfig();
+    m_pVCManager->requestReloadConfig();
     slotUpdate();
 }
 
@@ -213,9 +204,9 @@ void DlgPrefVinyl::VinylGainSlotApply()
 {
     qDebug() << "in VinylGainSlotApply()" << "with gain:" << VinylGain->value();
     //Update the config key...
-    config->set(ConfigKey("[VinylControl]","gain"), ConfigValue(VinylGain->value()));
+    config->set(ConfigKey(VINYL_PREF_KEY,"gain"), ConfigValue(VinylGain->value()));
 
     //Update the ControlObject...
-    ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey("[VinylControl]", "gain"));
+    ControlObject* pControlObjectVinylControlGain = ControlObject::getControl(ConfigKey(VINYL_PREF_KEY, "gain"));
     pControlObjectVinylControlGain->set(VinylGain->value());
 }

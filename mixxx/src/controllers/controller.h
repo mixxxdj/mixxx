@@ -72,8 +72,6 @@ class Controller : public QObject, ControllerPresetVisitor {
     // Emitted when a new preset is loaded. pPreset is a /clone/ of the loaded
     // preset, not a pointer to the preset itself.
     void presetLoaded(ControllerPresetPointer pPreset);
-    // Emitted when the MIDI controller requests that the control system sync.
-    void syncControlSystem();
 
   // Making these slots protected/private ensures that other parts of Mixxx can
   // only signal them which allows us to use no locks.

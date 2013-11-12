@@ -252,20 +252,15 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //
     // Tooltip configuration
     //
-    // Set default value in config file, if not present
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(1));
-
-    ComboBoxTooltips->addItem(tr("On"));
-    ComboBoxTooltips->addItem(tr("On (only in Library)"));
-    ComboBoxTooltips->addItem(tr("Off"));
+    ComboBoxTooltips->addItem(tr("On")); // 1
+    ComboBoxTooltips->addItem(tr("On (only in Library)")); // 2
+    ComboBoxTooltips->addItem(tr("Off")); // 0
 
     // Update combo box
-    int configTooltips = m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt();
+    int configTooltips = m_mixxx->getToolTipsCgf();
     // Add two mod-3 makes the on-disk order match up with the combo-box
     // order.
     ComboBoxTooltips->setCurrentIndex((configTooltips + 2) % 3);
-
     connect(ComboBoxTooltips, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetTooltips(int)));
 
     //
@@ -431,9 +426,7 @@ void DlgPrefControls::slotSetAutoDjRequeue(int)
 void DlgPrefControls::slotSetTooltips(int)
 {
     int configValue = (ComboBoxTooltips->currentIndex() + 1) % 3;
-    m_pConfig->set(ConfigKey("[Controls]","Tooltips"),
-                   ConfigValue(configValue));
-    m_mixxx->setToolTips(configValue);
+    m_mixxx->setToolTipsCfg(configValue);
 }
 
 void DlgPrefControls::notifyRebootNecessary() {
