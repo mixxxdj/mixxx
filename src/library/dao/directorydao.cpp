@@ -22,22 +22,25 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     // Do nothing if the dir to add is a child of a directory that is already in
     // the db.:
     QStringList dirs = getDirs();
-    bool childDir = false;
-    bool parentDir = false;
+    QString childDir("");
+    QString parentDir("");
     foreach (const QString& dir, dirs) {
-        childDir = isChildDir(newDir, dir);
-        parentDir= isChildDir(dir, newDir);
+        if (isChildDir(newDir, dir)) {
+            childDir = dir;
+        }
+        if (isChildDir(dir, newDir)) {
+            parentDir = dir;
+        }
     }
 
-    if (childDir) {
+    if (!childDir.isEmpty()) {
         return ALREADY_WATCHING;
     }
 
-    if (parentDir) {
-        // da a relocate here so that we from then on watch over the parent dir
-        // TODO(kain88) actually implement this, right now send this so that the
-        // unit test fails
-        return SQL_ERROR;
+    if (!parentDir.isEmpty()) {
+        // removeing the old directory won't harm because we are adding the
+        // parent later in this function
+        removeDirectory(parentDir);
     }
 
     QSqlQuery query(m_database);

@@ -77,7 +77,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     // the test db should be always empty when tests are started.
     EXPECT_TRUE(dirs.size() == 1);
     if ( dirs.size() > 0) {
-        EXPECT_TRUE(dirs.at(0) == testdir);
+        EXPECT_TRUE(dirs.at(0) == "/TestDir");
     }
 }
 
