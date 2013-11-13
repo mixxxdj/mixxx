@@ -523,10 +523,11 @@ class FAAD(Feature):
 
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
         have_mp4v2 = conf.CheckLib(['mp4v2','libmp4v2'], autoadd=False)
+        have_mp4_h = conf.CheckHeader('mp4.h')
         have_mp4 = conf.CheckLib('mp4', autoadd=False)
 
         # Either mp4 or mp4v2 works
-        have_mp4 = (have_mp4v2_h and have_mp4v2) or have_mp4
+        have_mp4 = (have_mp4v2_h or have_mp4_h) and (have_mp4v2 or have_mp4)
 
         if not have_mp4:
             raise Exception('Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')

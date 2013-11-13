@@ -157,10 +157,18 @@ class FLAC(Dependence):
         return ['soundsourceflac.cpp',]
 
 class Qt(Dependence):
-    DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
+    DEFAULT_QT4DIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
                       'osx': '/Library/Frameworks',
                       'windows': 'C:\\qt\\4.6.0'}
+
+    DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
+                        'osx': '/Library/Frameworks',
+                        'windows': 'C:\\qt\\5.0.1'}
+
+    DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
+                        'osx': '/Library/Frameworks',
+                        'windows': 'C:\\qt\\5.0.1'}
 
     @staticmethod
     def qt5_enabled(build):
@@ -209,6 +217,12 @@ class Qt(Dependence):
                 build.env.EnableQt5Modules(qt_modules, debug=False)
             else:
                 build.env.EnableQt4Modules(qt_modules, debug=False)
+
+            if qt5:
+                # Note that -reduce-relocations is enabled by default in Qt5.
+                # So we must build the code with position independent code               
+                build.env.Append(CCFLAGS = '-fPIE')
+
         elif build.platform_is_bsd:
             build.env.Append(LIBS=qt_modules)
             include_paths = ['$QTDIR/include/%s' % module
@@ -420,13 +434,14 @@ class MixxxCore(Feature):
                    "controlpushbutton.cpp",
                    "controlttrotary.cpp",
 
+                   "preferences/dlgpreferencepage.cpp",
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
                    "controllers/dlgprefcontroller.cpp",
                    "controllers/dlgprefmappablecontroller.cpp",
                    "controllers/dlgcontrollerlearning.cpp",
-                   "controllers/dlgprefnocontrollers.cpp",
+                   "controllers/dlgprefcontrollers.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefreplaygain.cpp",
@@ -743,7 +758,7 @@ class MixxxCore(Feature):
             'controllers/dlgcontrollerlearning.ui',
             'controllers/dlgprefcontrollerdlg.ui',
             'controllers/dlgprefmappablecontrollerdlg.ui',
-            'controllers/dlgprefnocontrollersdlg.ui',
+            'controllers/dlgprefcontrollersdlg.ui',
             'dlgaboutdlg.ui',
             'dlganalysis.ui',
             'dlgautodj.ui',

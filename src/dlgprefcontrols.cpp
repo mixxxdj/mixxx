@@ -43,13 +43,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
                                  ConfigObject<ConfigValue> * pConfig)
-        :  QWidget(parent) {
-    m_pConfig = pConfig;
-    m_timer = -1;
-    m_mixxx = mixxx;
-    m_pSkinLoader = pSkinLoader;
-    m_pPlayerManager = pPlayerManager;
-
+        :  DlgPreferencePage(parent),
+           m_pConfig(pConfig),
+           m_timer(-1),
+           m_mixxx(mixxx),
+           m_pSkinLoader(pSkinLoader),
+           m_pPlayerManager(pPlayerManager) {
     setupUi(this);
 
     for (unsigned int i = 0; i < PlayerManager::numDecks(); ++i) {
@@ -660,11 +659,11 @@ void DlgPrefControls::slotSetNormalizeOverview( bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
 }
 
-void DlgPrefControls::onShow() {
+void DlgPrefControls::slotShow() {
     m_timer = startTimer(100); //refresh actual frame rate every 100 ms
 }
 
-void DlgPrefControls::onHide() {
+void DlgPrefControls::slotHide() {
     if (m_timer != -1) {
         killTimer(m_timer);
     }

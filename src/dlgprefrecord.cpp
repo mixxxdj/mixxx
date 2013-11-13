@@ -26,7 +26,7 @@
 #include "encoder/encoder.h"
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_bConfirmOverwrite(false),
           m_pRadioOgg(NULL),
@@ -36,7 +36,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
           m_pRadioWav(NULL),
           m_pRadioLoopAiff(NULL),
           m_pRadioLoopWav(NULL) {
-
     setupUi(this);
 
     // See RECORD_* #defines in defs_recording.h

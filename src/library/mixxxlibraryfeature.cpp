@@ -34,11 +34,13 @@ MixxxLibraryFeature::MixxxLibraryFeature(QObject* parent,
             << "library." + LIBRARYTABLE_ARTIST
             << "library." + LIBRARYTABLE_TITLE
             << "library." + LIBRARYTABLE_ALBUM
+            << "library." + LIBRARYTABLE_ALBUMARTIST
             << "library." + LIBRARYTABLE_YEAR
             << "library." + LIBRARYTABLE_DURATION
             << "library." + LIBRARYTABLE_RATING
             << "library." + LIBRARYTABLE_GENRE
             << "library." + LIBRARYTABLE_COMPOSER
+            << "library." + LIBRARYTABLE_GROUPING
             << "library." + LIBRARYTABLE_FILETYPE
             << "library." + LIBRARYTABLE_TRACKNUMBER
             << "library." + LIBRARYTABLE_KEY

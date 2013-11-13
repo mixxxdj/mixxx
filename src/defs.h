@@ -86,13 +86,13 @@ inline double zap_denormal(double x)
 #endif
 
 // MSVC 2005/2008 needs these
-#ifndef fmax
-#define fmax math_max
-#endif
+//#ifndef fmax
+//#define fmax math_max
+//#endif
 
-#ifndef fmin
-#define fmin math_min
-#endif
+//#ifndef fmin
+//#define fmin math_min
+//#endif
 
 #endif
 

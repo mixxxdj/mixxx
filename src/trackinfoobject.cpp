@@ -138,6 +138,8 @@ void TrackInfoObject::initialize(bool parseHeader) {
     m_Rating = 0;
     m_key = "";
     m_bBpmLock = false;
+    m_sGrouping = "";
+    m_sAlbumArtist = "";
 
     // parse() parses the metadata from file. This is not a quick operation!
     if (parseHeader) {
@@ -447,7 +449,21 @@ void TrackInfoObject::setAlbum(QString s) {
         setDirty(true);
 }
 
-QString TrackInfoObject::getYear() const {
+QString TrackInfoObject::getAlbumArtist()  const {
+    QMutexLocker lock(&m_qMutex);
+    return m_sAlbumArtist;
+}
+
+void TrackInfoObject::setAlbumArtist(QString s) {
+    QMutexLocker lock(&m_qMutex);
+    s = s.trimmed();
+    bool dirty = m_sAlbumArtist != s;
+    m_sAlbumArtist = s;
+    if (dirty)
+        setDirty(true);
+}
+
+QString TrackInfoObject::getYear()  const {
     QMutexLocker lock(&m_qMutex);
     return m_sYear;
 }
@@ -489,7 +505,21 @@ void TrackInfoObject::setComposer(QString s) {
         setDirty(true);
 }
 
-QString TrackInfoObject::getTrackNumber() const {
+QString TrackInfoObject::getGrouping()  const {
+    QMutexLocker lock(&m_qMutex);
+    return m_sGrouping;
+}
+
+void TrackInfoObject::setGrouping(QString s) {
+    QMutexLocker lock(&m_qMutex);
+    s = s.trimmed();
+    bool dirty = m_sGrouping != s;
+    m_sGrouping = s;
+    if (dirty)
+        setDirty(true);
+}
+
+QString TrackInfoObject::getTrackNumber()  const {
     QMutexLocker lock(&m_qMutex);
     return m_sTrackNumber;
 }

@@ -19,20 +19,21 @@
 #define DLGPREFRECORD_H
 
 #include <QRadioButton>
+#include <QWidget>
 
 #include "ui_dlgprefrecorddlg.h"
 #include "configobject.h"
+#include "preferences/dlgpreferencepage.h"
 
 class ControlObject;
 class ControlObjectThread;
 
-class QWidget;
-
-class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
+class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
-  public: 
+  public:
     DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefRecord();
+    virtual ~DlgPrefRecord();
+
   public slots:
     // Apply changes to widget
     void slotApply();
@@ -44,10 +45,10 @@ class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
     void slotChangeSplitSize();
     // Dialog to browse for recordings directory
     void slotBrowseRecordingsDir();
-    
+
   signals:
     void apply(const QString &);
-    
+
   private slots:
     void slotLoopEncoding();
 

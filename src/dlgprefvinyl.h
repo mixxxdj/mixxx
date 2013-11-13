@@ -18,32 +18,29 @@
 #ifndef DLGPREFVINYL_H
 #define DLGPREFVINYL_H
 
+#include <QWidget>
+
 #include "ui_dlgprefvinyldlg.h"
 #include "configobject.h"
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 #include "controlobjectthreadmain.h"
+#include "preferences/dlgpreferencepage.h"
 
-class QWidget;
-class PlayerProxy;
-class ControlObject;
-class ControlObjectThreadMain;
 class VinylControlManager;
 
-class DlgPrefVinyl : public QWidget, Ui::DlgPrefVinylDlg  {
+class DlgPrefVinyl : public DlgPreferencePage, Ui::DlgPrefVinylDlg  {
     Q_OBJECT
   public:
     DlgPrefVinyl(QWidget* pParent, VinylControlManager* m_pVCMan, ConfigObject<ConfigValue>* _config);
-    ~DlgPrefVinyl();
+    virtual ~DlgPrefVinyl();
 
   public slots:
     void slotUpdate();
     void slotApply();
+    void slotHide();
+    void slotShow();
     void VinylTypeSlotApply();
     void VinylGainSlotApply();
-    void slotClose();
-    void slotShow();
-
-  signals:
 
   private:
     VinylControlSignalWidget m_signalWidget1;
