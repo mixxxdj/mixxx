@@ -15,11 +15,11 @@ const PaStreamCallbackTimeInfo* VisualPlayPosition::m_timeInfo;
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 
 VisualPlayPosition::VisualPlayPosition()
-    : m_playPosOld(0),
+    : //m_playPosOld(0),
       m_deltatime(0),
       m_outputBufferDacTime(0),
       m_valid(false) {
-    m_audioBufferSize = new ControlObjectThread("[Master]","audio_buffer_size");
+    m_audioBufferSize = new ControlObjectSlave("[Master]", "audio_buffer_size");
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
@@ -56,9 +56,11 @@ double VisualPlayPosition::getAt(VSyncThread* vsyncThread) {
         int usRefToVSync = vsyncThread->usFromTimerToNextSync(&data.m_referenceTime);
         int offset = usRefToVSync - data.m_timeDac;
         double playPos = data.m_playPos;  // load playPos for the first sample in Buffer
+        // add the offset for the position of the sample that will be transfered to the DAC
+        // When the next display frame is displayed
         playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferSize->get() / 1000;
         //qDebug() << "delta Pos" << playPos - m_playPosOld << offset;
-        m_playPosOld = playPos;
+        //m_playPosOld = playPos;
         return playPos;
     }
     return -1;
@@ -100,10 +102,11 @@ VisualPlayPosition* VisualPlayPosition::getVisualPlayPosition(QString group) {
     return vpp;
 }
 
+// This is called just after enter the PA-Callback
 //static
 void VisualPlayPosition::setTimeInfo(const PaStreamCallbackTimeInfo *timeInfo) {
-    m_timeInfo = timeInfo;
     m_timeInfoTime.start();
+    m_timeInfo = timeInfo;
     //qDebug() << "TimeInfo" << (timeInfo->currentTime - floor(timeInfo->currentTime)) << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));
     //m_timeInfo.currentTime = timeInfo->currentTime;
     //m_timeInfo.inputBufferAdcTime = timeInfo->inputBufferAdcTime;

@@ -10,7 +10,7 @@
 #include <QMap>
 #include <QAtomicPointer>
 
-class ControlObjectThread;
+class ControlObjectSlave;
 class VSyncThread;
 
 class VisualPlayPositionData {
