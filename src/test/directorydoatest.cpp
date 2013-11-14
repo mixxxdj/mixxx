@@ -125,6 +125,7 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     DirectoryDAO &directoryDao = m_pTrackCollection->getDirectoryDAO();
 
     directoryDao.addDirectory("/Test");
+    directoryDao.addDirectory("/Test2");
     TrackDAO &trackDAO = m_pTrackCollection->getTrackDAO();
     // ok now lets create some tracks here
     trackDAO.addTracksPrepare();
@@ -134,10 +135,17 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     trackDAO.addTracksAdd(new TrackInfoObject("/Test2/d", false), false);
     trackDAO.addTracksFinish(false);
 
+    QStringList dirs = directoryDao.getDirs();
+    qDebug() << "give me this";
+    qDebug() << dirs.size();
+    for (int i = 0; i<dirs.size(); ++i) {
+        qDebug() << dirs.at(i);
+    }
+
     QSet<int> ids = directoryDao.relocateDirectory("/Test", "/new");
     qDebug() << ids.size();
 
-    QStringList dirs = directoryDao.getDirs();
+    dirs = directoryDao.getDirs();
     for (int i = 0; i<dirs.size(); ++i) {
         qDebug() << dirs.at(i);
     }
