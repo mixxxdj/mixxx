@@ -24,8 +24,7 @@ WaveformWidgetRenderer::WaveformWidgetRenderer( const char* group)
 
       m_firstDisplayedPosition(0.0),
       m_lastDisplayedPosition(0.0),
-      m_rendererTransformationOffset(0.0),
-      m_rendererTransformationGain(0.0),
+      m_trackPixelCount(0.0),
 
       m_zoomFactor(1.0),
       m_rateAdjust(0.0),
@@ -137,22 +136,18 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
 
     if (m_audioSamplePerPixel && m_playPos != -1) {
         // Track length in pixels.
-        double trackPixel = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
+        m_trackPixelCount = static_cast<double>(m_trackSamples) / 2.0 / m_audioSamplePerPixel;
 
         // Ratio of half the width of the renderer to the track length in
         // pixels. Percent of the track shown in half the waveform widget.
-        double displayedLengthHalf = static_cast<double>(m_width) / trackPixel / 2.0;
+        double displayedLengthHalf = static_cast<double>(m_width) / m_trackPixelCount / 2.0;
         // Avoid pixel jitter in play position by rounding to the nearest track
         // pixel.
-        m_playPos = round(m_playPos * trackPixel)/(double)trackPixel; // Avoid pixel jitter in play position
+        m_playPos = round(m_playPos * m_trackPixelCount) / m_trackPixelCount; // Avoid pixel jitter in play position
         m_playPosVSample = m_playPos * m_trackInfoObject->getWaveform()->getDataSize();
 
         m_firstDisplayedPosition = m_playPos - displayedLengthHalf;
         m_lastDisplayedPosition = m_playPos + displayedLengthHalf;
-        m_rendererTransformationOffset = - m_firstDisplayedPosition;
-        // This expression just reduces to trackPixel
-        //m_rendererTransformationGain = m_width / (m_lastDisplayedPosition - m_firstDisplayedPosition);
-        m_rendererTransformationGain = trackPixel;
     } else {
         m_playPos = -1; // disable renderers
     }
@@ -174,11 +169,11 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     m_lastSystemFrameTime = m_timer->restart();
 #endif
 
-//    PerformanceTimer timer;
-//    timer.start();
+    //PerformanceTimer timer;
+    //timer.start();
 
-    //not ready to display need to wait until track initialization is done
-    //draw only first is stack (background)
+    // not ready to display need to wait until track initialization is done
+    // draw only first is stack (background)
     int stackSize = m_rendererStack.size();
     if (m_trackSamples <= 0.0 || m_playPos == -1) {
         if (stackSize) {
@@ -187,9 +182,9 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
         return;
     } else {
         for (int i = 0; i < stackSize; i++) {
- //           qDebug() << i << " a  " << timer.restart();
+            // qDebug() << i << " a  " << timer.restart();
             m_rendererStack.at(i)->draw(painter, event);
- //           qDebug() << i << " e " << timer.restart();
+            // qDebug() << i << " e " << timer.restart();
         }
 
         painter->setPen(m_colors.getPlayPosColor());
@@ -233,7 +228,7 @@ void WaveformWidgetRenderer::draw( QPainter* painter, QPaintEvent* event) {
     m_lastFramesTime[currentFrame] = m_lastFrameTime;
 #endif
 
- //   qDebug() << "draw() ende" << timer.restart();
+    //qDebug() << "draw() ende" << timer.restart();
 }
 
 void WaveformWidgetRenderer::resize( int width, int height) {
@@ -258,20 +253,13 @@ void WaveformWidgetRenderer::setZoom(int zoom) {
     m_zoomFactor = math_max( s_waveformMinZoom, math_min( m_zoomFactor, s_waveformMaxZoom));
 }
 
-void WaveformWidgetRenderer::regulateVisualSample( int& sampleIndex) const {
-    if( m_visualSamplePerPixel < 1.0)
-        return;
-
-    sampleIndex -= sampleIndex%(2*int(m_visualSamplePerPixel));
-}
-
-double WaveformWidgetRenderer::transformSampleIndexInRendererWorld( int sampleIndex) const {
+double WaveformWidgetRenderer::transformSampleIndexInRendererWorld(int sampleIndex) const {
     const double relativePosition = (double)sampleIndex / (double)m_trackSamples;
     return transformPositionInRendererWorld(relativePosition);
 }
 
-double WaveformWidgetRenderer::transformPositionInRendererWorld( double position) const {
-    return m_rendererTransformationGain * ( position + m_rendererTransformationOffset);
+double WaveformWidgetRenderer::transformPositionInRendererWorld(double position) const {
+    return m_trackPixelCount * (position - m_firstDisplayedPosition);
 }
 
 void WaveformWidgetRenderer::setTrack(TrackPointer track) {

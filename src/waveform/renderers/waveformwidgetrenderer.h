@@ -19,7 +19,7 @@ class VisualPlayPosition;
 class VSyncThread;
 
 class WaveformWidgetRenderer {
- public:
+  public:
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
 
@@ -88,8 +88,7 @@ class WaveformWidgetRenderer {
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
-    double m_rendererTransformationOffset;
-    double m_rendererTransformationGain;
+    double m_trackPixelCount;
 
     double m_zoomFactor;
     double m_rateAdjust;

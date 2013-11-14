@@ -35,7 +35,6 @@ void WaveformRendererPreroll::draw(QPainter* painter, QPaintEvent* event) {
     // TODO (vRince) not really accurate since waveform size une visual reasampling and
     // have two mores samples to hold the complete visual data
     int currentPosition = m_waveformRenderer->getPlayPosVSample();
-    // m_waveformRenderer->regulateVisualSample(currentPosition);
 
     // Some of the pre-roll is on screen. Draw little triangles to indicate
     // where the pre-roll is located.

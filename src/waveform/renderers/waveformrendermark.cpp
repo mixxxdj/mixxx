@@ -49,7 +49,6 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
 
         int samplePosition = mark.m_pointControl->get();
         if (samplePosition > 0.0) {
-            //m_waveformRenderer->regulateVisualSample(samplePosition);
             double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 
             // NOTE: vRince I guess image width is odd to display the center on the exact line !

@@ -3,7 +3,7 @@
 
 #include <QColor>
 #include <QTime>
-#include <QLinearGradient>
+//#include <QLinearGradient>
 
 #include "util.h"
 #include "waveformrendererabstract.h"
@@ -38,7 +38,7 @@ private:
 
     QVector<QRect> m_backRects;
     QPen m_pen;
-    QLinearGradient m_gradient;
+    //QLinearGradient m_gradient;
 
     DISALLOW_COPY_AND_ASSIGN(WaveformRendererEndOfTrack);
 };

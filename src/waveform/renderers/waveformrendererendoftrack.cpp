@@ -67,16 +67,15 @@ void WaveformRendererEndOfTrack::onResize() {
     for (int i = 0; i < 4; i++) {
         m_backRects[i].setTop(0);
         m_backRects[i].setBottom(m_waveformRenderer->getHeight());
-        m_backRects[i].setLeft(m_waveformRenderer->getWidth()/2 +
+        m_backRects[i].setLeft(m_waveformRenderer->getWidth() / 2 +
                 i*m_waveformRenderer->getWidth()/8);
         m_backRects[i].setRight(m_waveformRenderer->getWidth());
     }
-    /*
-    m_gradient.setStart(m_waveformRenderer->getWidth()/2, 0);
-    m_gradient.setFinalStop(m_waveformRenderer->getWidth(), 0);
-    m_gradient.setColorAt(0, Qt::transparent);
-    m_gradient.setColorAt(1, m_color);
-    */
+    // This is significant slower
+    //m_gradient.setStart(m_waveformRenderer->getWidth() / 2, 0);
+    //m_gradient.setFinalStop(m_waveformRenderer->getWidth(), 0);
+    //m_gradient.setColorAt(0, Qt::transparent);
+    //m_gradient.setColorAt(1, m_color);
 }
 
 void WaveformRendererEndOfTrack::draw(QPainter* painter,
@@ -129,7 +128,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
         //qDebug() << "EndOfTrack ON";
     }
 
-    ScopedTimer t("WaveformRendererEndOfTrack::draw");
+    //ScopedTimer t("WaveformRendererEndOfTrack::draw");
 
     const int elapsed = m_timer.elapsed() % m_blinkingPeriodMillis;
 
@@ -149,6 +148,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
     painter->setPen(QPen(Qt::transparent));
     painter->setBrush(m_color);
     painter->drawRects(m_backRects);
+    // This is significant slower
     //painter->setOpacity(0.5 * criticalIntensity * blickIntensity);
     //painter->fillRect(m_waveformRenderer->getWidth()/2, 1,
     //        m_waveformRenderer->getWidth() - 2, m_waveformRenderer->getHeight() - 2,

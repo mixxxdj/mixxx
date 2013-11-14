@@ -87,7 +87,7 @@ class WSpinny : public QGLWidget, public VinylSignalQualityListener {
     int m_iFullRotations;
     double m_dPrevTheta;
     double m_dTheta;
-    /** Speed of the vinyl rotation. */
+    // Speed of the vinyl rotation.
     double m_dRotationsPerSecond;
     bool m_bClampFailedWarning;
 };
