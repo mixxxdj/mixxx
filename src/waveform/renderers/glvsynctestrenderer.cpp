@@ -1,13 +1,11 @@
-#include "glvsynctestrenderer.h"
-
-#include "waveformwidgetrenderer.h"
-#include "waveform/waveform.h"
-
-#include "waveform/waveformwidgetfactory.h"
-
-#include "util/performancetimer.h"
-
 #include <qgl.h>
+
+#include "waveform/renderers/glvsynctestrenderer.h"
+
+#include "waveform/renderers/waveformwidgetrenderer.h"
+#include "waveform/waveform.h"
+#include "waveform/waveformwidgetfactory.h"
+#include "util/performancetimer.h"
 
 GLVSyncTestRenderer::GLVSyncTestRenderer(
         WaveformWidgetRenderer* waveformWidgetRenderer)
@@ -74,14 +72,7 @@ void GLVSyncTestRenderer::draw(QPainter* painter, QPaintEvent* /*event*/) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const QColor& color = m_pColors->getSignalColor();
-
     //t7 = timer.restart(); // 5,770
-
-    WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
-    const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);
-
-    float maxAll[2];
 
     glMatrixMode(GL_PROJECTION);
     glPushMatrix();
