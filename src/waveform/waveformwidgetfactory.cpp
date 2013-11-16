@@ -406,8 +406,8 @@ void WaveformWidgetFactory::notifyZoomChange(WWaveformViewer* viewer) {
     }
 }
 
-void WaveformWidgetFactory::refresh() {
-    ScopedTimer t(QString("WaveformWidgetFactory::refresh() %1waveforms")
+void WaveformWidgetFactory::render() {
+    ScopedTimer t(QString("WaveformWidgetFactory::render() %1waveforms")
             .arg(m_waveformWidgetHolders.size()));    
 
     //int paintersSetupTime0 = 0;
@@ -450,23 +450,23 @@ void WaveformWidgetFactory::refresh() {
     m_vsyncThread->vsyncSlotFinished();
 }
 
-void WaveformWidgetFactory::postRefresh() {
+void WaveformWidgetFactory::swap() {
     // Do this in an extra slot to be sure to hit the desired interval
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform
-            // Show rendered buffer from last refresh() run
-            //qDebug() << "postRefresh start" << m_vsyncThread->elapsed();
+            // Show rendered buffer from last render() run
+            //qDebug() << "swap() start" << m_vsyncThread->elapsed();
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
                 QGLWidget* glw = dynamic_cast<QGLWidget*>(
                         m_waveformWidgetHolders[i].m_waveformWidget->getWidget());
                 if (glw) {
-                    m_vsyncThread->postRender(glw, i);
+                    m_vsyncThread->swapGl(glw, i);
                 }
-                //qDebug() << "postRefresh x" << m_vsyncThread->elapsed();
+                //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
         }
     }
-    //qDebug() << "postRefresh end" << m_vsyncThread->elapsed();
+    //qDebug() << "swap end" << m_vsyncThread->elapsed();
     m_vsyncThread->vsyncSlotFinished();
 }
 
@@ -643,17 +643,17 @@ int WaveformWidgetFactory::findIndexOf(WWaveformViewer* viewer) const {
 
 void WaveformWidgetFactory::startVSync(QWidget *parent) {
     if (m_vsyncThread) {
-        disconnect(m_vsyncThread, SIGNAL(vsync1()), this, SLOT(refresh()));
-        disconnect(m_vsyncThread, SIGNAL(vsync2()), this, SLOT(postRefresh()));
+        disconnect(m_vsyncThread, SIGNAL(vsyncRender()), this, SLOT(render()));
+        disconnect(m_vsyncThread, SIGNAL(vsyncSwap()), this, SLOT(swap()));
         delete m_vsyncThread;
     }
     m_vsyncThread = new VSyncThread(parent);
     m_vsyncThread->start();
 
-    connect(m_vsyncThread, SIGNAL(vsync1()),
-            this, SLOT(refresh()));
-    connect(m_vsyncThread, SIGNAL(vsync2()),
-            this, SLOT(postRefresh()));
+    connect(m_vsyncThread, SIGNAL(vsyncRender()),
+            this, SLOT(render()));
+    connect(m_vsyncThread, SIGNAL(vsyncSwap()),
+            this, SLOT(swap()));
 
 }
 

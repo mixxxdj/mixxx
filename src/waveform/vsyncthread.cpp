@@ -56,9 +56,9 @@ void VSyncThread::run() {
     while (doRendering) {
         if (m_vSyncMode == ST_FREE) {
             // for benchmark only!
-            emit(vsync1()); // renders the waveform, Possible delayed due to anti tearing
+            emit(vsyncRender()); // renders the waveform, Possible delayed due to anti tearing
             m_sema.acquire();
-            emit(vsync2()); // swaps the new waveform to front
+            emit(vsyncSwap()); // swaps the new waveform to front
             m_sema.acquire();
             m_timer.restart();
             m_usWait = 1000;
@@ -70,7 +70,7 @@ void VSyncThread::run() {
                 usleep(usRest);
             }
 
-            emit(vsync2()); // swaps the new waveform to front in case of gl-wf
+            emit(vsyncSwap()); // swaps the new waveform to front in case of gl-wf
             m_sema.acquire(); // wait until swap was scheduled. It might be delayed due to driver vSync settings  
             // <- Assume we are VSynced here ->
             usLast = (int)m_timer.restart() / 1000;
@@ -82,7 +82,7 @@ void VSyncThread::run() {
             // try to stay in right intervals
             usRest = m_usWait - usLast;
             m_usWait = m_usSyncTime + (usRest % m_usSyncTime);
-            emit(vsync1()); // renders the new waveform.
+            emit(vsyncRender()); // renders the new waveform.
             m_sema.acquire(); // wait until rendreing was scheduled. It might be delayed due a pending swap (depends one driver vSync settings) 
  			// qDebug() << "ST_TIMER                      " << usLast << usRest;
         }
@@ -90,7 +90,7 @@ void VSyncThread::run() {
 }
 
 
-void VSyncThread::postRender(QGLWidget* glw, int index) {
+void VSyncThread::swapGl(QGLWidget* glw, int index) {
     Q_UNUSED(index);
     // No need for glw->makeCurrent() here.
     //qDebug() << "postRender" << m_timer.elapsed();

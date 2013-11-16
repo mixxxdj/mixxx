@@ -111,8 +111,8 @@ class WaveformWidgetFactory : public QObject, public Singleton<WaveformWidgetFac
     friend class Singleton<WaveformWidgetFactory>;
 
   private slots:
-    void refresh();
-    void postRefresh();
+    void render();
+    void swap();
 
   private:
     WaveformWidgetType::Type autoChooseWidgetType() const;

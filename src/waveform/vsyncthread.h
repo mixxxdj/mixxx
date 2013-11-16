@@ -57,12 +57,12 @@ class VSyncThread : public QThread {
     void vsyncSlotFinished();
     void getAvailableVSyncTypes(QList<QPair<int, QString > >* list);
     void setupSync(QGLWidget* glw, int index);
-    void postRender(QGLWidget* glw, int index);
+    void swapGl(QGLWidget* glw, int index);
     void waitUntilSwap(QGLWidget* glw);
 
   signals:
-    void vsync1();
-    void vsync2();
+    void vsyncRender();
+    void vsyncSwap();
         
   private:
     bool doRendering;
