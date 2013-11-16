@@ -119,6 +119,7 @@ public:
     TrackPointer getLoadedTrack() const;
 
     double getVisualPlayPos();
+    double getTrackSamples();
 
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
