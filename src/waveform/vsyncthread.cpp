@@ -64,7 +64,7 @@ void VSyncThread::run() {
             m_usWait = 1000;
             usleep(1000);
         } else { // if (m_vSyncMode == ST_TIMER) {
-            usRest = m_usWait - m_timer.elapsed() / 1000;
+            usRest = m_usWait - (int)m_timer.elapsed() / 1000;
             // waiting for interval by sleep
             if (usRest > 100) {
                 usleep(usRest);
@@ -73,7 +73,7 @@ void VSyncThread::run() {
             emit(vsync2()); // swaps the new waveform to front in case of gl-wf
             m_sema.acquire(); // wait until swap was scheduled. It might be delayed due to driver vSync settings  
             // <- Assume we are VSynced here ->
-            usLast = m_timer.restart() / 1000;
+            usLast = (int)m_timer.restart() / 1000;
             if (usRest < 0) {
                 // Our swapping call was already delayed
                 // The real swap might happens on the following VSync, depending on driver settings 
@@ -105,7 +105,7 @@ void VSyncThread::postRender(QGLWidget* glw, int index) {
 }
 
 int VSyncThread::elapsed() {
-    return m_timer.elapsed() / 1000;
+    return (int)m_timer.elapsed() / 1000;
 }
 
 void VSyncThread::setUsSyncTime(int syncTime) {
@@ -123,7 +123,8 @@ void VSyncThread::setVSyncType(int type) {
 }
 
 int VSyncThread::usToNextSync() {
-    int usRest = m_usWait - m_timer.elapsed() / 1000;
+    int usRest = m_usWait - ((int)m_timer.elapsed() / 1000);
+    // int math is fine here, because we do not expect times > 4.2 s
     if (usRest < 0) {
         usRest %= m_usSyncTime;
         usRest += m_usSyncTime;
@@ -132,8 +133,9 @@ int VSyncThread::usToNextSync() {
 }
 
 int VSyncThread::usFromTimerToNextSync(PerformanceTimer* timer) {
-    int difference = m_timer.difference(timer) / 1000;
-    return difference + m_usWait;
+    int usDifference = (int)m_timer.difference(timer) / 1000;
+    // int math is fine here, because we do not expect times > 4.2 s
+    return usDifference + m_usWait;
 }
 
 int VSyncThread::rtErrorCnt() {
