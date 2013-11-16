@@ -259,7 +259,7 @@ void WaveformWidgetFactory::setFrameRate(int frameRate) {
     if (m_config) {
         m_config->set(ConfigKey("[Waveform]","FrameRate"), ConfigValue(m_frameRate));
     }
-    m_vsyncThread->setUsSyncTime(1000000/m_frameRate);
+    m_vsyncThread->setUsSyncIntervalTime(1000000/m_frameRate);
 }
 
 
