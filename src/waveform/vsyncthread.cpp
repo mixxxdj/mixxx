@@ -19,8 +19,8 @@
 #endif
 
 VSyncThread::VSyncThread(QWidget* parent)
-        : QThread(),
-          m_firstRun(false),
+        : QThread(parent),
+          m_vSyncTypeChanged(false),
           m_usSyncTime(33333),
           m_vSyncMode(ST_TIMER),
           m_syncOk(false),
@@ -91,8 +91,9 @@ void VSyncThread::run() {
 
 
 void VSyncThread::postRender(QGLWidget* glw, int index) {
+    Q_UNUSED(index);
     // No need for glw->makeCurrent() here.
-//    qDebug() << "postRender" << m_timer.elapsed();
+    //qDebug() << "postRender" << m_timer.elapsed();
 #if defined(__APPLE__)
     glw->swapBuffers();
 #elif defined(__WINDOWS__)
@@ -109,7 +110,6 @@ int VSyncThread::elapsed() {
 
 void VSyncThread::setUsSyncTime(int syncTime) {
     m_usSyncTime = syncTime;
-    double frameRate = 60.0;
     m_interval = round(m_displayFrameRate * m_usSyncTime / 1000);
 }
 
@@ -119,7 +119,7 @@ void VSyncThread::setVSyncType(int type) {
     }
     m_vSyncMode = (enum VSyncMode)type;
     m_rtErrorCnt = 0;
-    m_firstRun = true;
+    m_vSyncTypeChanged = true;
 }
 
 int VSyncThread::usToNextSync() {
@@ -145,8 +145,6 @@ void VSyncThread::vsyncSlotFinished() {
 }
 
 void VSyncThread::getAvailableVSyncTypes(QList<QPair<int, QString > >* pList) {
-    QPair<int, QString > pair;
-
     for (int i = (int)VSyncThread::ST_TIMER; i < (int)VSyncThread::ST_COUNT; i++) {
         //if (isAvailable(type))  // TODO
         {

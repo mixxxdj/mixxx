@@ -6,7 +6,14 @@
 #include <QSemaphore>
 #include <QPair>
 
-#include <qx11info_x11.h>
+#if defined(__APPLE__)
+
+#elif defined(__WINDOWS__)
+
+#else
+   #include <qx11info_x11.h>
+#endif
+
 #include "util/performancetimer.h"
 
 
@@ -92,7 +99,7 @@ class VSyncThread : public QThread {
 
 #endif
 
-    bool m_firstRun;
+    bool m_vSyncTypeChanged;
     int m_usSyncTime;
     int m_usWait;
     enum VSyncMode m_vSyncMode;
