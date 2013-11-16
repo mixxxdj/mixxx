@@ -94,10 +94,10 @@ double VisualPlayPosition::getEnginePlayPos() {
 
 //static
 VisualPlayPosition* VisualPlayPosition::getVisualPlayPosition(QString group) {
-    VisualPlayPosition* vpp = m_listVisualPlayPosition[group];
+    VisualPlayPosition* vpp = m_listVisualPlayPosition.value(group);
     if (!vpp) {
         vpp = new VisualPlayPosition();
-        m_listVisualPlayPosition[group] = vpp;
+        m_listVisualPlayPosition.insert(group, vpp);
     }
     return vpp;
 }
