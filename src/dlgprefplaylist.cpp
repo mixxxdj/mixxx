@@ -16,10 +16,10 @@
 ***************************************************************************/
 
 #include <QDesktopServices>
+#include <QDir>
 #include <QFileDialog>
 #include <QStringList>
 #include <QUrl>
-#include <QDir>
 
 #include "dlgprefplaylist.h"
 #include "soundsourceproxy.h"
@@ -27,8 +27,8 @@
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config,
-                                 Library *pLibrary)
+DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent,
+        ConfigObject<ConfigValue> * config, Library *pLibrary)
         :DlgPreferencePage(parent),
         m_dirListModel(),
         m_pconfig(config),
@@ -39,8 +39,8 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
 
     connect(this, SIGNAL(requestAddDir(QString)),
             m_pLibrary, SLOT(slotRequestAddDir(QString)));
-    connect(this, SIGNAL(requestRemoveDir(QString)),
-            m_pLibrary, SLOT(slotRequestRemoveDir(QString)));
+    connect(this, SIGNAL(requestRemoveDir(QString, bool)),
+            m_pLibrary, SLOT(slotRequestRemoveDir(QString, bool)));
     connect(this, SIGNAL(requestRelocateDir(QString,QString)),
             m_pLibrary, SLOT(slotRequestRelocateDir(QString,QString)));
     connect(PushButtonAddDir, SIGNAL(clicked()),
@@ -119,8 +119,24 @@ void DlgPrefPlaylist::slotAddDir() {
 void DlgPrefPlaylist::slotRemoveDir() {
     QModelIndex index = dirList->currentIndex();
     QString fd = index.data().toString();
-    emit(requestRemoveDir(fd));
-    slotUpdate();
+    QMessageBox removeMsgBox;
+    removeMsgBox.setText(tr("Mixxx will hide any information about tracks in "
+                            "this directory. Once you re-add the directory all "
+                            "metadata will be restored"));
+    removeMsgBox.setInformativeText(tr("Do you want to remove this directory ?"));
+    removeMsgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
+    QPushButton *removeAllButton = removeMsgBox.addButton(tr("remove metadata"),
+            QMessageBox::YesRole);
+    removeMsgBox.setDefaultButton(QMessageBox::Cancel);
+
+    int ret = removeMsgBox.exec();
+    bool removeAll = removeMsgBox.clickedButton() == removeAllButton;
+
+    if (ret == QMessageBox::Yes || removeAll) {
+        emit(requestRemoveDir(fd, removeAll));
+        slotUpdate();
+    }
+
 }
 
 void DlgPrefPlaylist::slotRelocateDir() {

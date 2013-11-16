@@ -231,7 +231,7 @@ void Library::slotRequestAddDir(QString dir) {
     }
 }
 
-void Library::slotRequestRemoveDir(QString dir) {
+void Library::slotRequestRemoveDir(QString dir, bool removeMetadata) {
     // Mark all tracks in this directory as deleted (but don't purge them in
     // case the user re-adds them manually).
     m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);

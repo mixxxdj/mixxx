@@ -52,7 +52,7 @@ class DlgPrefPlaylist : public DlgPreferencePage, public Ui::DlgPrefPlaylistDlg 
   signals:
     void apply();
     void requestAddDir(QString);
-    void requestRemoveDir(QString);
+    void requestRemoveDir(QString, bool);
     void requestRelocateDir(QString,QString);
 
   private:

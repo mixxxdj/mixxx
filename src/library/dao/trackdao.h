@@ -87,10 +87,11 @@ class TrackDAO : public QObject, public virtual DAO {
     int addTrack(const QFileInfo& fileInfo, bool unremove);
     void addTracksPrepare();
     bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
-    void addTracksFinish(bool rollback);
+    void addTracksFinish(bool rollback=false);
     QList<int> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
     void hideTracks(const QList<int>& ids);
     void purgeTracks(const QList<int>& ids);
+    void purgeTracks(const QString& dir);
     void unhideTracks(const QList<int>& ids);
     TrackPointer getTrack(const int id, const bool cacheOnly=false) const;
     bool isDirty(int trackId);

@@ -66,7 +66,7 @@ public:
     void slotCreatePlaylist();
     void slotCreateCrate();
     void slotRequestAddDir(QString);
-    void slotRequestRemoveDir(QString);
+    void slotRequestRemoveDir(QString, bool);
     void slotRequestRelocateDir(QString,QString);
     void onSkinLoadFinished();
 
