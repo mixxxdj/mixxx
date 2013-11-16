@@ -19,41 +19,33 @@
 #define DLGPREFPLAYLIST_H
 
 #include <QStandardItemModel>
+#include <QWidget>
 
 #include "ui_dlgprefplaylistdlg.h"
 #include "configobject.h"
 #include "library/library.h"
-
-class QWidget;
+#include "preferences/dlgpreferencepage.h"
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
+class DlgPrefPlaylist : public DlgPreferencePage, public Ui::DlgPrefPlaylistDlg  {
     Q_OBJECT
   public:
     DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *config,
                     Library *pLibrary);
-    ~DlgPrefPlaylist();
+    virtual ~DlgPrefPlaylist();
+
   public slots:
-    // Update widget 
+    // Update widget
     void slotUpdate();
-    // Dialog to browse for music file directory 
+    // Dialog to browse for music file directory
     void slotAddDir();
     void slotRemoveDir();
     void slotRelocateDir();
-    // Apply changes to widget 
+    // Apply changes to widget
     void slotApply();
-    // Starts up the PluginDownloader if the plugin isn't present
-    //void slotM4ACheck();
-    // Set the label and enabled state on the M4A button
-    // depending on whether the M4A plugin is installed.
-    //void setupM4AButton(bool forceInstalled=false);
-    // Display UI indication of plugin download progress.
-    //void slotM4ADownloadProgress(qint64, qint64);
-    // M4A plugin download is finished...
-    //void slotM4ADownloadFinished();
 
     void slotExtraPlugins();
 
@@ -66,10 +58,8 @@ class DlgPrefPlaylist : public QWidget, public Ui::DlgPrefPlaylistDlg  {
   private:
     void initialiseDirList();
     QStandardItemModel m_dirListModel;
-    ConfigObject<ConfigValue> *m_pconfig;
+    ConfigObject<ConfigValue>* m_pconfig;
     Library *m_pLibrary;
-    // SoundSource Plugin Downloader
-    //PluginDownloader* m_pPluginDownloader;
 };
 
 #endif

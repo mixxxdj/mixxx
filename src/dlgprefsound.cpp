@@ -27,16 +27,15 @@
  * Construct a new sound preferences pane. Initializes and populates all the
  * all the controls to the values obtained from SoundManager.
  */
-DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
-                           PlayerManager* pPlayerManager, ConfigObject<ConfigValue> *pConfig)
-        : QWidget(pParent)
-        , m_pSoundManager(pSoundManager)
-        , m_pPlayerManager(pPlayerManager)
-        , m_pConfig(pConfig)
-        , m_settingsModified(false)
-        , m_loading(false)
-        , m_forceApply(false)
-{
+DlgPrefSound::DlgPrefSound(QWidget* pParent, SoundManager* pSoundManager,
+                           PlayerManager* pPlayerManager, ConfigObject<ConfigValue>* pConfig)
+        : DlgPreferencePage(pParent),
+          m_pSoundManager(pSoundManager),
+          m_pPlayerManager(pPlayerManager),
+          m_pConfig(pConfig),
+          m_settingsModified(false),
+          m_loading(false),
+          m_forceApply(false) {
     setupUi(this);
 
     connect(m_pSoundManager, SIGNAL(devicesUpdated()),
@@ -93,19 +92,19 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
             this, SLOT(loadSettings()));
 
     m_pMasterUnderflowCount =
-                    new ControlObjectThreadMain("[Master]", "underflow_count");
+                    new ControlObjectThread("[Master]", "underflow_count");
     connect(m_pMasterUnderflowCount, SIGNAL(valueChanged(double)),
             this, SLOT(bufferUnderflow(double)));
 
     m_pMasterLatency =
-                    new ControlObjectThreadMain("[Master]", "latency");
+                    new ControlObjectThread("[Master]", "latency");
     connect(m_pMasterLatency, SIGNAL(valueChanged(double)),
             this, SLOT(masterLatencyChanged(double)));
 
 #ifdef __LINUX__
     qDebug() << "RLimit Cur " << RLimit::getCurRtPrio();
     qDebug() << "RLimit Max " << RLimit::getMaxRtPrio();
-    
+
     if (RLimit::isRtPrioAllowed()) {
         limitsHint->hide();
     }
@@ -398,7 +397,7 @@ void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     // no div-by-0 in the next line because we don't allow srates of 0 in our
     // srate list when we construct it in the ctor -- bkgood
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
-    }    
+    }
     audioBufferComboBox->clear();
     for (unsigned int i = 0; i < SoundManagerConfig::kMaxAudioBufferSizeIndex; ++i) {
         float latency = framesPerBuffer / sampleRate * 1000;
@@ -474,4 +473,3 @@ void DlgPrefSound::masterLatencyChanged(double latency) {
     currentLatency->setText(QString("%1 ms").arg(latency));
     update();
 }
-

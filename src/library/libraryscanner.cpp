@@ -40,7 +40,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection)
                 // Don't initialize m_database here, we need to do it in run() so the DB
                 // conn is in the right thread.
                 m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
-                m_bCancelLibraryScan(0) {
+    m_bCancelLibraryScan(false) {
 
     qDebug() << "Constructed LibraryScanner";
 
@@ -320,11 +320,11 @@ void LibraryScanner::scan(QWidget* parent) {
 }
 
 void LibraryScanner::cancel() {
-    m_bCancelLibraryScan = 1;
+    m_bCancelLibraryScan = true;
 }
 
 void LibraryScanner::resetCancel() {
-    m_bCancelLibraryScan = 0;
+    m_bCancelLibraryScan = false;
 }
 
 // Recursively scan a music library. Doesn't import tracks for any directories that
@@ -334,17 +334,14 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     QDirIterator fileIt(dirPath, m_nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     bool bScanFinishedCleanly = true;
-
     //qDebug() << "Scanning dir:" << dirPath;
-
     QString newHashStr;
     bool prevHashExists = false;
     int newHash = -1;
     int prevHash = -1;
     // Note: A hash of "0" is a real hash if the directory contains no files!
 
-    while (fileIt.hasNext())
-    {
+    while (fileIt.hasNext()) {
         currentFile = fileIt.next();
         //qDebug() << currentFile;
         newHashStr += currentFile;
@@ -385,7 +382,6 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     if (m_bCancelLibraryScan) {
         return false;
     }
-
     // Look at all the subdirectories and scan them recursively...
     QDirIterator dirIt(dirPath, QDir::Dirs | QDir::NoDotAndDotDot);
     while (dirIt.hasNext() && bScanFinishedCleanly) {
@@ -394,14 +390,13 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
 
         // Skip the iTunes Album Art Folder since it is probably a waste of
         // time.
-        if (m_directoriesBlacklist.contains(nextPath))
+        if (m_directoriesBlacklist.contains(nextPath)) {
             continue;
-
+        }
         if (!recursiveScan(nextPath, verifiedDirectories)) {
             bScanFinishedCleanly = false;
         }
     }
-
     return bScanFinishedCleanly;
 }
 

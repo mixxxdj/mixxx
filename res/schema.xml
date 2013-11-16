@@ -357,6 +357,24 @@ METADATA
   </revision>
   <revision version="21" min_compatible="3">
     <description>
+      Add grouping and album_artist column to library table.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN grouping TEXT DEFAULT "";
+      ALTER TABLE Library ADD COLUMN album_artist TEXT DEFAULT "";
+    </sql>
+  </revision>
+  <revision version="22" min_compatible="3">
+    <description>
+      Add grouping and album_artist column to itunes_library table.
+    </description>
+    <sql>
+      ALTER TABLE itunes_library ADD COLUMN grouping TEXT DEFAULT "";
+      ALTER TABLE itunes_library ADD COLUMN album_artist TEXT DEFAULT "";
+    </sql>
+  </revision>
+  <revision version="23" min_compatible="3">
+    <description>
       Add directories table
     </description>
     <sql>
@@ -366,3 +384,5 @@ METADATA
     </sql>
   </revision>
 </schema>
+
+

@@ -43,9 +43,11 @@
 
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
-                           bool bEnableSidechain)
-        : m_headphoneMasterGainOld(0),
-          m_headphoneVolumeOld(0) {
+                           bool bEnableSidechain,
+                           bool bRampingGain)
+        : m_bRampingGain(bRampingGain),
+          m_headphoneMasterGainOld(0.0),
+          m_headphoneVolumeOld(1.0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
@@ -67,7 +69,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 #endif
 
     // Crossfader
-    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
+    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
 
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);
@@ -233,16 +235,33 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     // Mix all the enabled headphone channels together.
     m_headphoneGain.setGain(chead_gain);
 
-    ChannelMixer::mixChannels(m_channels, m_headphoneGain, headphoneOutput,
-                              maxChannels, &m_channelHeadphoneGainCache,
-                              m_pHead, iBufferSize);
+    if (m_bRampingGain) {
+        ChannelMixer::mixChannelsRamping(
+            m_channels, m_headphoneGain, headphoneOutput,
+            maxChannels, &m_channelHeadphoneGainCache,
+            m_pHead, iBufferSize);
+    } else {
+        ChannelMixer::mixChannels(
+            m_channels, m_headphoneGain, headphoneOutput,
+            maxChannels, &m_channelHeadphoneGainCache,
+            m_pHead, iBufferSize);
+    }
 
     // Make the mix for each output bus
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
-        ChannelMixer::mixChannels(m_channels, m_outputBus[o].m_gain,
-                                  busChannelConnectionFlags[o], maxChannels,
-                                  &m_outputBus[o].m_gainCache,
-                                  m_outputBus[o].m_pBuffer, iBufferSize);
+        if (m_bRampingGain) {
+            ChannelMixer::mixChannelsRamping(
+                m_channels, m_outputBus[o].m_gain,
+                busChannelConnectionFlags[o], maxChannels,
+                &m_outputBus[o].m_gainCache,
+                m_outputBus[o].m_pBuffer, iBufferSize);
+        } else {
+            ChannelMixer::mixChannels(
+                m_channels, m_outputBus[o].m_gain,
+                busChannelConnectionFlags[o], maxChannels,
+                &m_outputBus[o].m_gainCache,
+                m_outputBus[o].m_pBuffer, iBufferSize);
+        }
     }
 
     // Calculate the crossfader gains for left and right side of the crossfader
@@ -287,20 +306,30 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
     }
 
-    //Submit master samples to the side chain to do shoutcasting, recording,
-    //etc.  (cpu intensive non-realtime tasks)
+    // Submit master samples to the side chain to do shoutcasting, recording,
+    // etc. (cpu intensive non-realtime tasks)
     if (m_pSideChain != NULL) {
         m_pSideChain->writeSamples(m_pMaster, iBufferSize);
     }
 
     // Add master to headphone with appropriate gain
-    SampleUtil::addWithRampingGain(m_pHead, m_pMaster, m_headphoneMasterGainOld,
-                                   cmaster_gain, iBufferSize);
+    if (m_bRampingGain) {
+        SampleUtil::addWithRampingGain(m_pHead, m_pMaster,
+                                       m_headphoneMasterGainOld,
+                                       cmaster_gain, iBufferSize);
+    } else {
+        SampleUtil::addWithGain(m_pHead, m_pMaster, cmaster_gain, iBufferSize);
+    }
     m_headphoneMasterGainOld = cmaster_gain;
 
     // Head volume and clipping
     CSAMPLE headphoneVolume = m_pHeadVolume->get();
-    SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld, headphoneVolume, iBufferSize);
+    if (m_bRampingGain) {
+        SampleUtil::applyRampingGain(m_pHead, m_headphoneVolumeOld,
+                                     headphoneVolume, iBufferSize);
+    } else {
+        SampleUtil::applyGain(m_pHead, headphoneVolume, iBufferSize);
+    }
     m_headphoneVolumeOld = headphoneVolume;
     m_pHeadClipping->process(m_pHead, m_pHead, iBufferSize);
 

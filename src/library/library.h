@@ -35,7 +35,7 @@ class Library : public QObject {
 public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
-            bool firstRun, RecordingManager* pRecordingManager);
+            RecordingManager* pRecordingManager);
     virtual ~Library();
 
     void bindWidget(WLibrary* libraryWidget,
@@ -43,7 +43,6 @@ public:
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
-    QList<TrackPointer> getTracksToAutoLoad();
     QStringList getDirs();
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
@@ -91,10 +90,6 @@ public:
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
-#ifdef __PROMO__
-    class PromoTracksFeature;
-    PromoTracksFeature* m_pPromoTracksFeature;
-#endif
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;
     RecordingManager* m_pRecordingManager;

@@ -20,34 +20,37 @@
 #ifndef DLGPREFSHOUTCAST_H
 #define DLGPREFSHOUTCAST_H
 
+#include <QWidget>
+
 #include "ui_dlgprefshoutcastdlg.h"
 #include "controlobject.h"
 #include "configobject.h"
 #include "controlobjectthreadmain.h"
 #include "shoutcast/defs_shoutcast.h"
+#include "preferences/dlgpreferencepage.h"
 
-class QWidget;
 /**
   *@author John Sully
   */
 
-class DlgPrefShoutcast : public QWidget, public Ui::DlgPrefShoutcastDlg  {
+class DlgPrefShoutcast : public DlgPreferencePage, public Ui::DlgPrefShoutcastDlg  {
     Q_OBJECT
-public:
+  public:
     DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefShoutcast();
-public slots:
+    virtual ~DlgPrefShoutcast();
+
+  public slots:
     /** Apply changes to widget */
     void slotApply();
-    void slotUpdate(); //Does nothing but keep convention (and DlgPreferences happy)
+    void slotUpdate();
 
-signals:
+  signals:
     void apply(const QString &);
-private:
-    /** Pointer to config object */
-    ConfigObject<ConfigValue> *m_pConfig;
-    ControlObjectThreadMain* m_pUpdateShoutcastFromPrefs; //If set to 1, EngineShoutcast will update it's settings.
 
+  private:
+    ConfigObject<ConfigValue>* m_pConfig;
+    // If set to 1, EngineShoutcast will update it's settings.
+    ControlObjectThread* m_pUpdateShoutcastFromPrefs;
 };
 
 #endif

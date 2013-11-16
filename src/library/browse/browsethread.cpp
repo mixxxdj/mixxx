@@ -143,6 +143,10 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_ALBUM, item);
 
+        item = new QStandardItem(tio.getAlbumArtist());
+        item->setToolTip(item->text());
+        row_data.insert(COLUMN_ALBUMARTIST, item);
+
         item = new QStandardItem(tio.getTrackNumber());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_TRACK_NUMBER, item);
@@ -158,6 +162,10 @@ void BrowseThread::populateModel() {
         item = new QStandardItem(tio.getComposer());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_COMPOSER, item);
+
+        item = new QStandardItem(tio.getGrouping());
+        item->setToolTip(item->text());
+        row_data.insert(COLUMN_GROUPING, item);
 
         item = new QStandardItem(tio.getComment());
         item->setToolTip(item->text());

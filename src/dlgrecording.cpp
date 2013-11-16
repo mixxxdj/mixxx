@@ -10,8 +10,6 @@
 
 #include "dlgrecording.h"
 
-
-
 DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                            TrackCollection* pTrackCollection,
                            RecordingManager* pRecordingManager, MixxxKeyboard* pKeyboard)
@@ -55,7 +53,6 @@ DlgRecording::DlgRecording(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
 }
 
 DlgRecording::~DlgRecording() {
-
 }
 
 void DlgRecording::onShow() {

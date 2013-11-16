@@ -17,7 +17,7 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 LibraryTableModel::~LibraryTableModel() {
 }
 
-void LibraryTableModel::setTableModel(int id){
+void LibraryTableModel::setTableModel(int id) {
     Q_UNUSED(id);
     QStringList columns;
     columns << "library."+LIBRARYTABLE_ID << "'' as preview";
