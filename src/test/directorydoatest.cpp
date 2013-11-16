@@ -135,19 +135,14 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     trackDAO.addTracksAdd(new TrackInfoObject("/Test2/d", false), false);
     trackDAO.addTracksFinish(false);
 
-    QStringList dirs = directoryDao.getDirs();
-    qDebug() << "give me this";
-    qDebug() << dirs.size();
-    for (int i = 0; i<dirs.size(); ++i) {
-        qDebug() << dirs.at(i);
-    }
-
     QSet<int> ids = directoryDao.relocateDirectory("/Test", "/new");
-    qDebug() << ids.size();
+    EXPECT_EQ(ids.size(), 2);
 
-    dirs = directoryDao.getDirs();
-    for (int i = 0; i<dirs.size(); ++i) {
-        qDebug() << dirs.at(i);
+    QStringList dirs = directoryDao.getDirs();
+    EXPECT_TRUE(dirs.size() == 2);
+    if (dirs.size() == 2) {
+        EXPECT_TRUE(dirs.at(0) == "/new");
+        EXPECT_TRUE(dirs.at(1) == "/Test2");
     }
 }
 
