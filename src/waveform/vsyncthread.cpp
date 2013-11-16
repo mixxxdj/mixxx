@@ -64,6 +64,9 @@ void VSyncThread::run() {
             m_usWait = 1000;
             usleep(1000);
         } else { // if (m_vSyncMode == ST_TIMER) {
+            emit(vsyncRender()); // renders the new waveform.
+            m_sema.acquire(); // wait until rendreing was scheduled. It might be delayed due a pending swap (depends one driver vSync settings)
+            // qDebug() << "ST_TIMER                      " << usLast << usRest;
             usRest = m_usWait - (int)m_timer.elapsed() / 1000;
             // waiting for interval by sleep
             if (usRest > 100) {
@@ -82,9 +85,6 @@ void VSyncThread::run() {
             // try to stay in right intervals
             usRest = m_usWait - usLast;
             m_usWait = m_usSyncTime + (usRest % m_usSyncTime);
-            emit(vsyncRender()); // renders the new waveform.
-            m_sema.acquire(); // wait until rendreing was scheduled. It might be delayed due a pending swap (depends one driver vSync settings) 
- 			// qDebug() << "ST_TIMER                      " << usLast << usRest;
         }
     }
 }
