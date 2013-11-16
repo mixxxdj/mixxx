@@ -31,7 +31,6 @@ class WaveformWidgetAbstract : public WaveformWidgetRenderer {
 
     virtual void preRender(VSyncThread* vsyncThread);
     virtual int render();
-    virtual void postRender() {};
 
     virtual void resize( int width, int height);
 

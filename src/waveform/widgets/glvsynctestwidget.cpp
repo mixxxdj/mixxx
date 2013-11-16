@@ -70,6 +70,3 @@ int GLVSyncTestWidget::render() {
     return t1 / 1000; // return timer for painter setup
 }
 
-void GLVSyncTestWidget::postRender() {
-    QGLWidget::swapBuffers();
-}

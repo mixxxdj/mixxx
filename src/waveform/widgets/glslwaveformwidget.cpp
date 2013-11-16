@@ -84,6 +84,3 @@ void GLSLWaveformWidget::mouseDoubleClickEvent(QMouseEvent *event) {
     }
 }
 
-void GLSLWaveformWidget::postRender() {
-    swapBuffers();
-}

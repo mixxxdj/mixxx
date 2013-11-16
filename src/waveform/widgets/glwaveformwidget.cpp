@@ -69,6 +69,3 @@ int GLWaveformWidget::render() {
     return t1 / 1000; // return timer for painter setup
 }
 
-void GLWaveformWidget::postRender() {
-    QGLWidget::swapBuffers();
-}

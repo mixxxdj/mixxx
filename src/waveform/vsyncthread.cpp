@@ -93,7 +93,7 @@ void VSyncThread::run() {
 void VSyncThread::swapGl(QGLWidget* glw, int index) {
     Q_UNUSED(index);
     // No need for glw->makeCurrent() here.
-    //qDebug() << "postRender" << m_timer.elapsed();
+    //qDebug() << "swapGl" << m_timer.elapsed();
 #if defined(__APPLE__)
     glw->swapBuffers();
 #elif defined(__WINDOWS__)
