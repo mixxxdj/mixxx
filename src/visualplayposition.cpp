@@ -92,6 +92,8 @@ double VisualPlayPosition::getEnginePlayPos() {
     }
 }
 
+// Warning: This function is not thread save.
+// It must not be called from other threads then the GUI thread
 //static
 VisualPlayPosition* VisualPlayPosition::getVisualPlayPosition(QString group) {
     VisualPlayPosition* vpp = m_listVisualPlayPosition.value(group);
