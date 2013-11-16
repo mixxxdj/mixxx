@@ -410,8 +410,8 @@ void WaveformWidgetFactory::refresh() {
     ScopedTimer t(QString("WaveformWidgetFactory::refresh() %1waveforms")
             .arg(m_waveformWidgetHolders.size()));    
 
-    int paintersSetupTime0 = 0;
-    int paintersSetupTime1 = 0;
+    //int paintersSetupTime0 = 0;
+    //int paintersSetupTime1 = 0;
 
     if (!m_skipRender) {
         if (m_type) {   // no regular updates for an empty waveform

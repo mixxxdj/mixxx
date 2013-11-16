@@ -2,7 +2,7 @@
 #include <qdebug.h>
 
 #include "visualplayposition.h"
-#include "controlobjectthreadmain.h"
+#include "controlobjectslave.h"
 #include "controlobject.h"
 #include "waveform/waveformwidgetfactory.h"
 #include "mathstuff.h"
@@ -104,7 +104,8 @@ VisualPlayPosition* VisualPlayPosition::getVisualPlayPosition(QString group) {
 
 // This is called just after enter the PA-Callback
 //static
-void VisualPlayPosition::setTimeInfo(const PaStreamCallbackTimeInfo *timeInfo) {
+void VisualPlayPosition::setTimeInfo(const PaStreamCallbackTimeInfo* timeInfo) {
+    // the timeInfo is valid only just NOW, so measure the time from NOW for later correction
     m_timeInfoTime.start();
     m_timeInfo = timeInfo;
     //qDebug() << "TimeInfo" << (timeInfo->currentTime - floor(timeInfo->currentTime)) << (timeInfo->outputBufferDacTime - floor(timeInfo->outputBufferDacTime));

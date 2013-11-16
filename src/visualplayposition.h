@@ -43,7 +43,7 @@ class VisualPlayPosition
     ControlValueAtomic<VisualPlayPositionData> m_data;
     double m_playPosOld;
     int m_deltatime;
-    ControlObjectThread* m_audioBufferSize;
+    ControlObjectSlave* m_audioBufferSize;
     PaTime m_outputBufferDacTime;
     bool m_valid;
 
