@@ -13,6 +13,7 @@
 .sconsign.branch
 .sconsign.dblite
 *.sqlite
+*.cfg
 cache
 lib/*/*.a
 lib/*/lib/*.a

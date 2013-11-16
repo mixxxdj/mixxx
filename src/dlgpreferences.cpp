@@ -55,7 +55,7 @@
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
-                               ConfigObject<ConfigValue> * pconfig, Library *pLibrary) 
+                               ConfigObject<ConfigValue> * pConfig, Library *pLibrary) 
         : m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated")) {
     setupUi(this);
@@ -75,38 +75,38 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #ifdef __VINYLCONTROL__
     // It's important for this to be before the connect for wsound.
     // TODO(rryan) determine why/if this is still true
-    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, pconfig);
+    m_wvinylcontrol = new DlgPrefVinyl(this, pVCManager, pConfig);
     addPageWidget(m_wvinylcontrol);
 #else
-    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, pconfig);
+    m_wnovinylcontrol = new DlgPrefNoVinyl(this, soundman, pConfig);
     addPageWidget(m_wnovinylcontrol);
 #endif
-    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, pconfig);
+    m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, pConfig);
     addPageWidget(m_wsound);
-    m_wplaylist = new DlgPrefPlaylist(this, pconfig, pLibrary);
+    m_wplaylist = new DlgPrefPlaylist(this, pConfig, pLibrary);
     addPageWidget(m_wplaylist);
-    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, pconfig);
+    m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, pConfig);
     addPageWidget(m_wcontrols);
-    m_weq = new DlgPrefEQ(this, pconfig);
+    m_weq = new DlgPrefEQ(this, pConfig);
     addPageWidget(m_weq);
-    m_wcrossfader = new DlgPrefCrossfader(this, pconfig);
+    m_wcrossfader = new DlgPrefCrossfader(this, pConfig);
     addPageWidget(m_wcrossfader);
 
-    m_wbeats = new DlgPrefBeats(this, pconfig);
+    m_wbeats = new DlgPrefBeats(this, pConfig);
     addPageWidget (m_wbeats);
-    m_wreplaygain = new DlgPrefReplayGain(this, pconfig);
+    m_wreplaygain = new DlgPrefReplayGain(this, pConfig);
     addPageWidget(m_wreplaygain);
-    m_wrecord = new DlgPrefRecord(this, pconfig);
+    m_wrecord = new DlgPrefRecord(this, pConfig);
     addPageWidget(m_wrecord);
 #ifdef __SHOUTCAST__
-    m_wshoutcast = new DlgPrefShoutcast(this, pconfig);
+    m_wshoutcast = new DlgPrefShoutcast(this, pConfig);
     addPageWidget(m_wshoutcast);
 #endif
 #ifdef __MODPLUG__
-    m_wmodplug = new DlgPrefModplug(this, pconfig);
+    m_wmodplug = new DlgPrefModplug(this, pConfig);
     addPageWidget(m_wmodplug);
 #endif
-    m_wcontrollers = new DlgPrefControllers(this, pconfig, controllers,
+    m_wcontrollers = new DlgPrefControllers(this, pConfig, controllers,
                                             m_pControllerTreeItem);
     addPageWidget(m_wcontrollers);
 

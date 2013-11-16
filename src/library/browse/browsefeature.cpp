@@ -11,7 +11,6 @@
 #include <QMenu>
 
 #include "trackinfoobject.h"
-#include "library/library_preferences.h"
 #include "library/treeitem.h"
 #include "library/browse/browsefeature.h"
 #include "library/trackcollection.h"

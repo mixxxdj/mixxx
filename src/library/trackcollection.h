@@ -51,9 +51,8 @@ class TrackCollection : public QObject
     bool checkForTables();
 
     /** Import the files in a given diretory, without recursing into subdirectories */
-    bool importDirectory(const QString& directory, TrackDAO &trackDao,
-                         const QStringList & nameFilters,
-                         volatile bool* cancel);
+    bool importDirectory(const QString& directory, TrackDAO& trackDao,
+                         const QStringList& nameFilters, volatile bool* cancel);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
@@ -62,8 +61,8 @@ class TrackCollection : public QObject
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
     DirectoryDAO& getDirectoryDAO();
-    QSharedPointer<BaseTrackCache> getTrackSource(const QString name);
-    void addTrackSource(const QString name, QSharedPointer<BaseTrackCache> trackSource);
+    QSharedPointer<BaseTrackCache> getTrackSource(const QString& name);
+    void addTrackSource(const QString& name, QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();
 
     ConfigObject<ConfigValue>* getConfig() {

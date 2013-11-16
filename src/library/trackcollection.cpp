@@ -190,12 +190,12 @@ DirectoryDAO& TrackCollection::getDirectoryDAO() {
 }
 
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
-                               const QString name) {
+        const QString name) {
     return m_trackSources.value(name, QSharedPointer<BaseTrackCache>());
 }
 
-void TrackCollection::addTrackSource(const QString name,
-                                     QSharedPointer<BaseTrackCache> trackSource) {
+void TrackCollection::addTrackSource(
+        const QString name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
 }
