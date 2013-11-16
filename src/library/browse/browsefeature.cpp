@@ -324,32 +324,38 @@ QString BrowseFeature::extractNameFromPath(QString spath) {
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     //Default configuration
-    QString mixxx_music_dir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
-    QString os_music_folder_dir = QDesktopServices::storageLocation(
+    QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
+    QString osMusicDir = QDesktopServices::storageLocation(
         QDesktopServices::MusicLocation);
-    QString os_documents_folder_dir = QDesktopServices::storageLocation(
+    QString osDocumentsDir = QDesktopServices::storageLocation(
         QDesktopServices::DocumentsLocation);
-    QString os_home_folder_dir = QDesktopServices::storageLocation(
+    QString osHomeDir = QDesktopServices::storageLocation(
         QDesktopServices::HomeLocation);
-    QString os_desktop_folder_dir = QDesktopServices::storageLocation(
+    QString osDesktopDir = QDesktopServices::storageLocation(
         QDesktopServices::DesktopLocation);
     QStringList result;
 
-    result << mixxx_music_dir+"/";
+    bool osMusicDirIncluded = false;
+    foreach (QString dir, mixxxMusicDirs) {
+        result << dir + "/";
+        if (dir == osMusicDir) {
+            osMusicDirIncluded = true;
+        }
+    }
 
-    if (mixxx_music_dir != os_music_folder_dir) {
-        result << os_music_folder_dir + "/";
+    if (osMusicDirIncluded) {
+        result << osMusicDir + "/";
     }
 
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it
     // but the translator may not realize we want the usual name of the
     // downloads folder.
-    QDir downloads(os_home_folder_dir);
+    QDir downloads(osHomeDir);
     if (downloads.cd("Downloads")) {
         result << downloads.absolutePath() + "/";
     }
-    result << os_desktop_folder_dir + "/";
-    result << os_documents_folder_dir + "/";
+    result << osDesktopDir + "/";
+    result << osDocumentsDir + "/";
 
     qDebug() << "Default quick links:" << result;
 
