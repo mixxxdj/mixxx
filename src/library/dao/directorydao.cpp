@@ -141,8 +141,6 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
                         "WHERE id = :id");
     for (int i = 0; i < loc_ids.size(); ++i) {
         QString newloc = old_locs.at(i);
-        // replace first string between slahes with new folder
-        // newloc.replace(QRegExp("^/(?:\\.|[^/\\])*/"), newFolder);
         newloc.replace(0, oldFolder.size(), newFolder);
         query.prepare(replacement);
         query.bindValue("newloc", newloc);
