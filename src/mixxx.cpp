@@ -19,6 +19,10 @@
 #include <QtCore>
 #include <QtGui>
 #include <QTranslator>
+#include <QMenu>
+#include <QMenuBar>
+#include <QFileDialog>
+#include <QDesktopWidget>
 
 #include "mixxx.h"
 
@@ -57,6 +61,7 @@
 #include "util/statsmanager.h"
 #include "util/timer.h"
 #include "util/version.h"
+#include "util/compatibility.h"
 #include "playerinfo.h"
 
 #ifdef __VINYLCONTROL__
@@ -205,8 +210,8 @@ void MixxxApp::initializeKeyboard() {
         qDebug() << "Found and will use custom keyboard preset" << userKeyboard;
         m_pKbdConfig = new ConfigObject<ConfigValueKbd>(userKeyboard);
     } else {
-        // Use the default config for local keyboard
-        QLocale locale = QApplication::keyboardInputLocale();
+        // Default to the locale for the main input method (e.g. keyboard).
+        QLocale locale = inputLocale();
 
         // check if a default keyboard exists
         QString defaultKeyboard = QString(resourcePath).append("keyboard/");
@@ -550,8 +555,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     }
 }
 
-MixxxApp::~MixxxApp()
-{
+MixxxApp::~MixxxApp() {
     // TODO(rryan): Get rid of QTime here.
     QTime qTime;
     qTime.start();
@@ -576,8 +580,7 @@ MixxxApp::~MixxxApp()
     delete m_pSkinLoader;
 
     // ControllerManager depends on Config
-    qDebug() << "shutdown & delete ControllerManager " << qTime.elapsed();
-    m_pControllerManager->shutdown();
+    qDebug() << "delete ControllerManager " << qTime.elapsed();
     delete m_pControllerManager;
 
 #ifdef __VINYLCONTROL__
@@ -1392,7 +1395,7 @@ void MixxxApp::slotControlVinylControl2(double toggle)
             ControlObject::set(ConfigKey(
                     "[Channel2]", "vinylcontrol_status"), (double)VINYL_STATUS_DISABLED);
             m_pVinylcontrol2Enabled->set(0.0);
-          }
+        }
     }
 #endif
 }
@@ -1567,19 +1570,17 @@ void MixxxApp::closeEvent(QCloseEvent *event) {
     }
 }
 
-void MixxxApp::slotScanLibrary()
-{
+void MixxxApp::slotScanLibrary() {
     m_pLibraryRescan->setEnabled(false);
     m_pLibraryScanner->scan(
         m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
 }
 
-void MixxxApp::slotEnableRescanLibraryAction()
-{
+void MixxxApp::slotEnableRescanLibraryAction() {
     m_pLibraryRescan->setEnabled(true);
 }
 
-void MixxxApp::slotOptionsMenuShow(){
+void MixxxApp::slotOptionsMenuShow() {
     // Check recording if it is active.
     m_pOptionsRecord->setChecked(m_pRecordingManager->isRecordingActive());
 #ifdef __SHOUTCAST__

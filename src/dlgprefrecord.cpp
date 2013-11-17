@@ -17,6 +17,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QFileDialog>
 
 #include "dlgprefrecord.h"
 #include "recording/defs_recording.h"
@@ -25,7 +26,7 @@
 #include "encoder/encoder.h"
 
 DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
           m_pConfig(pConfig),
           m_bConfirmOverwrite(false),
           m_pRadioOgg(NULL),
@@ -33,7 +34,6 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
           m_pRadioAiff(NULL),
           m_pRadioFlac(NULL),
           m_pRadioWav(NULL) {
-
     setupUi(this);
 
     // See RECORD_* #defines in defs_recording.h
@@ -216,7 +216,7 @@ void DlgPrefRecord::slotRecordPathChange() {
 
 // This function updates/refreshes the contents of this dialog.
 void DlgPrefRecord::slotUpdate() {
-    
+
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     LineEditRecordings->setText(recordingsPath);
 

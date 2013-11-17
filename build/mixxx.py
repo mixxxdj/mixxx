@@ -123,12 +123,19 @@ class MixxxBuild(object):
         tools = ['default']
         toolpath = ['#build/']
         extra_arguments = {}
-        tools.append('qt4')
+        import depends
+        if int(Script.ARGUMENTS.get('qt5', 0)):
+            tools.append('qt5')
+            if self.machine_is_64bit:
+                default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(self.platform, '')
+            else:
+                default_qtdir = depends.Qt.DEFAULT_QT5DIRS32.get(self.platform, '')
+        else:
+            tools.append('qt4')
+            default_qtdir = depends.Qt.DEFAULT_QT4DIRS.get(self.platform, '')
         tools.append('protoc')
 
         # Ugly hack to check the qtdir argument
-        import depends
-        default_qtdir = depends.Qt.DEFAULT_QTDIRS.get(self.platform, '')
         qtdir = Script.ARGUMENTS.get('qtdir',
                                     os.environ.get('QTDIR', default_qtdir))
 
@@ -147,10 +154,10 @@ class MixxxBuild(object):
         # -- rryan 6/8/2011
         extra_arguments['QTDIR'] = qtdir
 
-        if self.platform == 'osx':
+        if self.platform_is_osx:
             tools.append('OSConsX')
             toolpath.append('#/build/osx/')
-        if self.platform_is_windows and self.toolchain == 'msvs':
+        if self.platform_is_windows and self.toolchain_is_msvs:
             toolpath.append('msvs')
             extra_arguments['VCINSTALLDIR'] = os.getenv('VCInstallDir')  # TODO(XXX) Why?
             extra_arguments['QT_LIB'] = ''  # TODO(XXX) Why?
@@ -159,7 +166,7 @@ class MixxxBuild(object):
         if self.crosscompile:
             if self.platform_is_windows:
                 tools.append('crossmingw')
-            if self.platform == 'osx':
+            if self.platform_is_osx:
                 tools.append('crossosx')
 
         self.env = Script.Environment(tools=tools, toolpath=toolpath, ENV=os.environ,
@@ -173,8 +180,8 @@ class MixxxBuild(object):
             elif flags_force64:
                 self.env.Append(CCFLAGS = '-m64')
 
-        if self.platform == 'osx':
-            if self.machine == 'powerpc':
+        if self.platform_is_osx:
+            if self.architecture_is_powerpc:
                 self.env.Append(CCFLAGS = '-arch ppc')
                 self.env.Append(LINKFLAGS = '-arch ppc')
             else:

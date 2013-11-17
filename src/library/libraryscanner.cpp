@@ -39,8 +39,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
     // Don't initialize m_database here, we need to do it in run() so the DB
     // conn is in the right thread.
     m_nameFilters(SoundSourceProxy::supportedFileExtensionsString().split(" ")),
-    m_bCancelLibraryScan(0)
-{
+    m_bCancelLibraryScan(false) {
 
     qDebug() << "Constructed LibraryScanner";
 
@@ -69,8 +68,7 @@ LibraryScanner::LibraryScanner(TrackCollection* collection) :
 #endif
 }
 
-LibraryScanner::~LibraryScanner()
-{
+LibraryScanner::~LibraryScanner() {
     // IMPORTANT NOTE: This code runs in the GUI thread, so it should _NOT_ use
     //                the m_trackDao that lives inside this class. It should use
     //                the DAOs that live in m_pTrackCollection.
@@ -134,8 +132,7 @@ LibraryScanner::~LibraryScanner()
     qDebug() << "LibraryScanner destroyed";
 }
 
-void LibraryScanner::run()
-{
+void LibraryScanner::run() {
     unsigned static id = 0; // the id of this thread, for debugging purposes
             //XXX copypasta (should factor this out somehow), -kousu 2/2009
     QThread::currentThread()->setObjectName(QString("LibraryScanner %1").arg(++id));
@@ -286,8 +283,7 @@ void LibraryScanner::run()
     emit(scanFinished());
 }
 
-void LibraryScanner::scan(const QString& libraryPath, QWidget *parent)
-{
+void LibraryScanner::scan(const QString& libraryPath, QWidget *parent) {
     m_qLibraryPath = libraryPath;
     m_pProgress = new LibraryScannerDlg(parent);
     m_pProgress->setAttribute(Qt::WA_DeleteOnClose);
@@ -315,18 +311,15 @@ void LibraryScanner::scan(const QString& libraryPath, QWidget *parent)
 }
 
 //slot
-void LibraryScanner::cancel()
-{
-    m_bCancelLibraryScan = 1;
+void LibraryScanner::cancel() {
+    m_bCancelLibraryScan = true;
 }
 
-void LibraryScanner::resetCancel()
-{
-    m_bCancelLibraryScan = 0;
+void LibraryScanner::resetCancel() {
+    m_bCancelLibraryScan = false;
 }
 
-void LibraryScanner::scan()
-{
+void LibraryScanner::scan() {
     start(); // Starts the thread by calling run()
 }
 
@@ -337,17 +330,14 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     QDirIterator fileIt(dirPath, m_nameFilters, QDir::Files | QDir::NoDotAndDotDot);
     QString currentFile;
     bool bScanFinishedCleanly = true;
-
     //qDebug() << "Scanning dir:" << dirPath;
-
     QString newHashStr;
     bool prevHashExists = false;
     int newHash = -1;
     int prevHash = -1;
     // Note: A hash of "0" is a real hash if the directory contains no files!
 
-    while (fileIt.hasNext())
-    {
+    while (fileIt.hasNext()) {
         currentFile = fileIt.next();
         //qDebug() << currentFile;
         newHashStr += currentFile;
@@ -386,7 +376,6 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
     if (m_bCancelLibraryScan) {
         return false;
     }
-
     // Look at all the subdirectories and scan them recursively...
     QDirIterator dirIt(dirPath, QDir::Dirs | QDir::NoDotAndDotDot);
     while (dirIt.hasNext() && bScanFinishedCleanly) {
@@ -395,14 +384,13 @@ bool LibraryScanner::recursiveScan(const QString& dirPath, QStringList& verified
 
         // Skip the iTunes Album Art Folder since it is probably a waste of
         // time.
-        if (m_directoriesBlacklist.contains(nextPath))
+        if (m_directoriesBlacklist.contains(nextPath)) {
             continue;
-
+        }
         if (!recursiveScan(nextPath, verifiedDirectories)) {
             bScanFinishedCleanly = false;
         }
     }
-
     return bScanFinishedCleanly;
 }
 

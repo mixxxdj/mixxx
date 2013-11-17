@@ -3,9 +3,11 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QtDebug>
+#ifdef __AUTODJCRATES__
+#include <QMenu>
+#endif // __AUTODJCRATES__
 
 #include "library/autodjfeature.h"
-#include "library/playlisttablemodel.h"
 
 #include "library/trackcollection.h"
 #include "dlgautodj.h"
@@ -26,10 +28,11 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
           m_playlistDao(pTrackCollection->getPlaylistDAO()),
           m_pAutoDJView(NULL)
 #ifdef __AUTODJCRATES__
-          , m_autoDjCratesDao (pTrackCollection->getDatabase(),
-                             pTrackCollection->getTrackDAO(),
-                             pTrackCollection->getCrateDAO(),
-                             pTrackCollection->getPlaylistDAO(), pConfig)
+          , m_autoDjCratesDao(pTrackCollection->getDatabase(),
+                              pTrackCollection->getTrackDAO(),
+                              pTrackCollection->getCrateDAO(),
+                              pTrackCollection->getPlaylistDAO(),
+                              pConfig)
 #endif // __AUTODJCRATES__
 {
 #ifdef __AUTODJCRATES__
@@ -91,7 +94,6 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
 #ifdef __AUTODJCRATES__
-
     // Be informed when the user wants to add another random track.
     connect(m_pAutoDJView, SIGNAL(addRandomButton(bool)),
             this, SLOT(slotAddRandomTrack(bool)));
@@ -100,7 +102,6 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
 
     // Let subscribers know whether it's possible to add a random track.
     emit(enableAddRandom(m_crateList.length() > 0));
-
 #endif // __AUTODJCRATES__
 }
 
@@ -114,7 +115,7 @@ void AutoDJFeature::activate() {
     emit(restoreSearch(QString())); //Null String disables search box
 }
 
-bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
+bool AutoDJFeature::dropAccept(QList<QUrl> urls, QObject* pSource) {
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
 

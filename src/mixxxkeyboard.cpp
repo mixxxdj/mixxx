@@ -15,6 +15,7 @@
 *                                                                         *
 ***************************************************************************/
 
+#include <qglobal.h>
 #include <QList>
 #include <QtDebug>
 #include <QKeyEvent>

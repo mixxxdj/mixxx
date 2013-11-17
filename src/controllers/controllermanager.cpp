@@ -14,15 +14,15 @@
 
 #include "controllers/midi/portmidienumerator.h"
 #ifdef __HSS1394__
-    #include "controllers/midi/hss1394enumerator.h"
+#include "controllers/midi/hss1394enumerator.h"
 #endif
 
 #ifdef __HID__
-    #include "controllers/hid/hidenumerator.h"
+#include "controllers/hid/hidenumerator.h"
 #endif
 
 #ifdef __BULK__
-#    include "controllers/bulk/bulkenumerator.h"
+#include "controllers/bulk/bulkenumerator.h"
 #endif
 
 // http://developer.qt.nokia.com/wiki/Threads_Events_QObjects
@@ -112,6 +112,7 @@ ControllerManager::ControllerManager(ConfigObject<ConfigValue>* pConfig)
 }
 
 ControllerManager::~ControllerManager() {
+    emit(requestShutdown());
     m_pThread->wait();
     delete m_pThread;
     delete m_pControllerLearningEventFilter;
@@ -130,7 +131,7 @@ void ControllerManager::slotShutdown() {
     QMutexLocker locker(&m_mutex);
     QList<ControllerEnumerator*> enumerators = m_enumerators;
     m_enumerators.clear();
-    m_mutex.unlock();
+    locker.unlock();
 
     // Delete enumerators and they'll delete their Devices
     foreach (ControllerEnumerator* pEnumerator, enumerators) {

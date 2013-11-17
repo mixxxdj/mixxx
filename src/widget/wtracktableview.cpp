@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <QtXml>
 #include <QModelIndex>
+#include <QInputDialog>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
@@ -379,7 +380,6 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
                 return;
             }
         }
-
         QModelIndex index = indices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
@@ -390,8 +390,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
     }
 }
 
-void WTrackTableView::slotRemove()
-{
+void WTrackTableView::slotRemove() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
@@ -401,7 +400,7 @@ void WTrackTableView::slotRemove()
     }
 }
 
-void WTrackTableView::slotPurge(){
+void WTrackTableView::slotPurge() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
@@ -437,11 +436,9 @@ void WTrackTableView::slotOpenInFileBrowser() {
     }
 }
 
-void WTrackTableView::slotHide()
-{
+void WTrackTableView::slotHide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->hideTracks(indices);
@@ -449,11 +446,10 @@ void WTrackTableView::slotHide()
     }
 }
 
-void WTrackTableView::slotUnhide()
-{
+void WTrackTableView::slotUnhide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->unhideTracks(indices);
@@ -524,7 +520,7 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
     m_DlgTagFetcher.show();
 }
 
-void WTrackTableView::slotShowDlgTagFetcher(){
+void WTrackTableView::slotShowDlgTagFetcher() {
     QModelIndexList indices = selectionModel()->selectedRows();
 
     if (indices.size() > 0) {
@@ -616,6 +612,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
             }
         }
+        m_pPlaylistMenu->addSeparator();
+        QAction *newPlaylistAction = new QAction( tr("Create New Playlist"), m_pPlaylistMenu);
+        m_pPlaylistMenu->addAction(newPlaylistAction);
+        m_playlistMapper.setMapping(newPlaylistAction, -1);// -1 to signify new playlist
+        connect(newPlaylistAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+
         m_pMenu->addMenu(m_pPlaylistMenu);
     }
 
@@ -640,6 +642,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             m_crateMapper.setMapping(pAction, it.value());
             connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
         }
+        m_pCrateMenu->addSeparator();
+        QAction *newCrateAction = new QAction( tr("Create New Crate"), m_pCrateMenu);
+        m_pCrateMenu->addAction(newCrateAction);
+        m_crateMapper.setMapping(newCrateAction, -1);// -1 to signify new playlist
+        connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+
         m_pMenu->addMenu(m_pCrateMenu);
     }
     m_pMenu->addSeparator();
@@ -827,9 +835,8 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     drag->exec(Qt::CopyAction);
 }
 
-/** Drag enter event, happens when a dragged item hovers over the track table view*/
-void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
-{
+// Drag enter event, happens when a dragged item hovers over the track table view
+void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
@@ -883,7 +890,7 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
-void WTrackTableView::dropEvent(QDropEvent * event){
+void WTrackTableView::dropEvent(QDropEvent * event) {
     TrackModel* trackModel = getTrackModel();
 
     // We only do things to the TrackModel in this method so if we don't have
@@ -1162,11 +1169,11 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         // Load track to position two because position one is
         // already loaded to the player
         playlistDao.insertTracksIntoPlaylist(trackIds,
-                                            iAutoDJPlaylistId, 2);
+                                             iAutoDJPlaylistId, 2);
     } else {
         // TODO(XXX): Care whether the append succeeded.
         playlistDao.appendTracksToPlaylist(
-            trackIds, iAutoDJPlaylistId);
+                trackIds, iAutoDJPlaylistId);
     }
 }
 
@@ -1228,6 +1235,41 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
             trackIds.append(iTrackId);
         }
     }
+   if (iPlaylistId==-1){//i.e. a new playlist is suppose to be created
+       QString name;
+       bool validNameGiven = false;
+
+       do {
+           bool ok = false;
+           name = QInputDialog::getText(NULL,
+                                        tr("New Playlist"),
+                                        tr("Playlist name:"),
+                                        QLineEdit::Normal,
+                                        tr("New Playlist"),
+                                        &ok).trimmed();
+           if (!ok)
+               return;
+           if (playlistDao.getPlaylistIdFromName(name) != -1) {
+               QMessageBox::warning(NULL,
+                                    tr("Playlist Creation Failed"),
+                                    tr("A playlist by that name already exists."));
+           } else if (name.isEmpty()) {
+               QMessageBox::warning(NULL,
+                                    tr("Playlist Creation Failed"),
+                                    tr("A playlist cannot have a blank name."));
+           } else {
+               validNameGiven = true;
+           }
+       } while (!validNameGiven);
+       iPlaylistId = playlistDao.createPlaylist(name);//-1 is changed to the new playlist ID return from the DAO
+       if (iPlaylistId == -1) {
+           QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("An unknown error occurred while creating playlist: ")
+                                 +name);
+           return;
+       }
+   }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
@@ -1254,7 +1296,43 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
             trackIds.append(iTrackId);
         }
     }
-
+    if (iCrateId == -1){//i.e. a new crate is suppose to be created
+        QString name;
+        bool validNameGiven = false;
+        do {
+            bool ok = false;
+            name = QInputDialog::getText(NULL,
+                                         tr("New Crate"),
+                                         tr("Crate name:"),
+                                         QLineEdit::Normal, tr("New Crate"),
+                                         &ok).trimmed();
+            if (!ok)
+                return;
+            int existingId = crateDao.getCrateIdByName(name);
+            if (existingId != -1) {
+                QMessageBox::warning(NULL,
+                                     tr("Creating Crate Failed"),
+                                     tr("A crate by that name already exists."));
+            }
+            else if (name.isEmpty()) {
+                QMessageBox::warning(NULL,
+                                     tr("Creating Crate Failed"),
+                                     tr("A crate cannot have a blank name."));
+            }
+            else {
+                validNameGiven = true;
+            }
+        } while (!validNameGiven);
+        iCrateId = crateDao.createCrate(name);// -1 is changed to the new crate ID returned by the DAO
+        if (iCrateId == -1) {
+            qDebug() << "Error creating crate with name " << name;
+            QMessageBox::warning(NULL,
+                                 tr("Creating Crate Failed"),
+                                 tr("An unknown error occurred while creating crate: ")
+                                 + name);
+            return;
+        }
+    }
     if (trackIds.size() > 0) {
         crateDao.addTracksToCrate(iCrateId, &trackIds);
     }

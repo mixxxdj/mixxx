@@ -51,10 +51,14 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Title"));
     setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
                   Qt::Horizontal, tr("Album"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUMARTIST),
+                  Qt::Horizontal, tr("Album Artist"));
     setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMPOSER),
                   Qt::Horizontal, tr("Composer"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_GROUPING),
+                  Qt::Horizontal, tr("Grouping"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
     setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
@@ -158,7 +162,6 @@ void BaseSqlTableModel::select() {
     if (!m_bInitialized) {
         return;
     }
-
     // We should be able to detect when a select() would be a no-op. The DAO's
     // do not currently broadcast signals for when common things happen. In the
     // future, we can turn this check on and avoid a lot of needless
@@ -680,12 +683,16 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setTitle(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_ALBUM) == column) {
         pTrack->setAlbum(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_ALBUMARTIST) == column) {
+        pTrack->setAlbumArtist(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         pTrack->setYear(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         pTrack->setGenre(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_COMPOSER) == column) {
         pTrack->setComposer(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_GROUPING) == column) {
+        pTrack->setGrouping(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
         pTrack->setType(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {

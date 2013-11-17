@@ -16,8 +16,6 @@
 #include "library/baseexternalplaylistmodel.h"
 #include "library/treeitemmodel.h"
 
-class LibraryTableModel;
-class MissingTableModel;
 class TrackCollection;
 class BaseExternalPlaylistModel;
 
@@ -56,11 +54,11 @@ class TraktorFeature : public BaseExternalLibraryFeature {
   private:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     TreeItem* importLibrary(QString file);
-    // parses a track in the music collection 
+    // parses a track in the music collection
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
-    // Iterates over all playliost and folders and constructs the childmodel 
+    // Iterates over all playliost and folders and constructs the childmodel
     TreeItem* parsePlaylists(QXmlStreamReader &xml);
-    // processes a particular playlist 
+    // processes a particular playlist
     void parsePlaylistEntries(QXmlStreamReader &xml, QString playlist_path,
     QSqlQuery query_insert_into_playlist, QSqlQuery query_insert_into_playlisttracks);
     void clearTable(QString table_name);

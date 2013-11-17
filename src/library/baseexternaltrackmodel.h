@@ -3,7 +3,6 @@
 
 #include <QModelIndex>
 #include <QObject>
-#include <QSqlDatabase>
 #include <QString>
 
 #include "library/trackmodel.h"

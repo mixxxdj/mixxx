@@ -1,9 +1,10 @@
 // cratefeature.cpp
 // Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QFileDialog>
 #include <QInputDialog>
-#include <QMenu>
 #include <QLineEdit>
+#include <QMenu>
 
 #include "library/cratefeature.h"
 #include "library/parser.h"
@@ -108,7 +109,7 @@ QIcon CrateFeature::getIcon() {
 }
 
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                   QWidget *pSource) {
+                                   QObject* pSource) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     QList<QFileInfo> files;
@@ -142,7 +143,6 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     bool locked = m_crateDao.isCrateLocked(crateId);
-
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
     return !locked && formatSupported;
@@ -154,8 +154,8 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit,SIGNAL(anchorClicked(const QUrl)),
-        this,SLOT(htmlLinkClicked(const QUrl))
+    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+        this, SLOT(htmlLinkClicked(const QUrl))
     );
     libraryWidget->registerView("CRATEHOME", edit);
 }
@@ -188,7 +188,6 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
 void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
-
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
 
@@ -222,7 +221,6 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
 }
 
 void CrateFeature::slotCreateCrate() {
-
     QString name;
     bool validNameGiven = false;
 
@@ -262,7 +260,6 @@ void CrateFeature::slotCreateCrate() {
                              tr("Creating Crate Failed"),
                              tr("An unknown error occurred while creating crate: ")
                              + name);
-
     }
 }
 
@@ -278,7 +275,7 @@ void CrateFeature::slotDeleteCrate() {
 
     bool deleted = m_crateDao.deleteCrate(crateId);
 
-    if (deleted) {;
+    if (deleted) {
         activate();
     } else {
         qDebug() << "Failed to delete crateId" << crateId;

@@ -113,7 +113,6 @@ bool ProxyTrackModel::filterAcceptsRow(int sourceRow,
                 rowMatches = true;
         }
     }
-
     return rowMatches;
 }
 
