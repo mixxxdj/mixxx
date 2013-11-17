@@ -47,7 +47,7 @@ void VSyncThread::stop()
 void VSyncThread::run() {
     QThread::currentThread()->setObjectName("VSyncThread");
 
-    int usRest;
+    int usRemainingForSwap;
     int usLastSwapTime;
 
     m_usWaitToSwap = m_usSyncIntervalTime;
@@ -67,24 +67,24 @@ void VSyncThread::run() {
             emit(vsyncRender()); // renders the new waveform.
             m_semaVsyncSlot.acquire(); // wait until rendering was scheduled. It might be delayed due a pending swap (depends one driver vSync settings)
             // qDebug() << "ST_TIMER                      " << usLast << usRest;
-            usRest = m_usWaitToSwap - (int)m_timer.elapsed() / 1000;
+            usRemainingForSwap = m_usWaitToSwap - (int)m_timer.elapsed() / 1000;
             // waiting for interval by sleep
-            if (usRest > 100) {
-                usleep(usRest);
+            if (usRemainingForSwap > 100) {
+                usleep(usRemainingForSwap);
             }
 
             emit(vsyncSwap()); // swaps the new waveform to front in case of gl-wf
             m_semaVsyncSlot.acquire(); // wait until swap was scheduled. It might be delayed due to driver vSync settings  
             // <- Assume we are VSynced here ->
             usLastSwapTime = (int)m_timer.restart() / 1000;
-            if (usRest < 0) {
+            if (usRemainingForSwap < 0) {
                 // Our swapping call was already delayed
                 // The real swap might happens on the following VSync, depending on driver settings 
                 m_rtErrorCnt++; // Count as Real Time Error
             }
             // try to stay in right intervals
-            usRest = m_usWaitToSwap - usLastSwapTime;
-            m_usWaitToSwap = m_usSyncIntervalTime + (usRest % m_usSyncIntervalTime);
+            usRemainingForSwap = m_usWaitToSwap - usLastSwapTime;
+            m_usWaitToSwap = m_usSyncIntervalTime + (usRemainingForSwap % m_usSyncIntervalTime);
         }
     }
 }
