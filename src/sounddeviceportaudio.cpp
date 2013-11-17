@@ -291,7 +291,10 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         m_bSetThreadPriority = true;
     }
 
-    VisualPlayPosition::setTimeInfo(timeInfo);
+    if (m_pSoundManager->isDeviceClkRef(this)) {
+        VisualPlayPosition::setTimeInfo(timeInfo);
+    }
+
     if (!m_undeflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {
             if (m_pMasterUnderflowCount) {

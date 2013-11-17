@@ -596,3 +596,7 @@ void SoundManager::setJACKName() const {
 #endif
 #endif
 }
+
+bool SoundManager::isDeviceClkRef(SoundDevice* device) {
+    return (device == m_pClkRefDevice);
+}
