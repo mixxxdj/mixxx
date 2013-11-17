@@ -198,11 +198,13 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
         return QString("%1 %2").arg(QObject::tr("Deck"),
                                     QString::number(index + 1));
     case VINYLCONTROL:
-        return QString(QObject::tr("Vinyl Control"));
+        return QString("%1 %2").arg(QObject::tr("Vinyl Control"),
+                                    QString::number(index + 1));
     case MICROPHONE:
         return QString(QObject::tr("Microphone"));
     case EXTPASSTHROUGH:
-        return QString(QObject::tr("Passthrough"));
+        return QString("%1 %2").arg(QObject::tr("Passthrough"),
+                                    QString::number(index + 1));
     }
     return QString(QObject::tr("Unknown path type %1")).arg(type);
 }
