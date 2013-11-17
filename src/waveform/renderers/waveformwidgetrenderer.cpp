@@ -131,7 +131,7 @@ void WaveformWidgetRenderer::onPreRender(VSyncThread* vsyncThread) {
         m_audioSamplePerPixel = 0.0;
     }
 
-    m_playPos = m_visualPlayPosition->getAt(vsyncThread);
+    m_playPos = m_visualPlayPosition->getAtNextVSync(vsyncThread);
     // m_playPos = -1 happens, when a new track is in buffer but m_visualPlayPosition was not updated
 
     if (m_audioSamplePerPixel && m_playPos != -1) {

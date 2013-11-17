@@ -35,8 +35,8 @@ void VisualPlayPosition::set(double playPos, double rate,
 
     data.m_referenceTime = m_timeInfoTime;
     // Time from reference time to Buffer at DAC in µs
-    data.m_timeDac = (m_timeInfo->outputBufferDacTime - m_timeInfo->currentTime) * 1000000;
-    data.m_playPos = playPos;
+    data.m_callbackEntrytoDac = (m_timeInfo->outputBufferDacTime - m_timeInfo->currentTime) * 1000000;
+    data.m_enginePlayPos = playPos;
     data.m_rate = rate;
     data.m_positionStep = positionStep;
     data.m_pSlipPosition = pSlipPosition;
@@ -46,7 +46,7 @@ void VisualPlayPosition::set(double playPos, double rate,
     m_valid = true;
 }
 
-double VisualPlayPosition::getAt(VSyncThread* vsyncThread) {
+double VisualPlayPosition::getAtNextVSync(VSyncThread* vsyncThread) {
     //static double testPos = 0;
     //testPos += 0.000017759; //0.000016608; //  1.46257e-05;
     //return testPos;
@@ -54,8 +54,8 @@ double VisualPlayPosition::getAt(VSyncThread* vsyncThread) {
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
         int usRefToVSync = vsyncThread->usFromTimerToNextSync(&data.m_referenceTime);
-        int offset = usRefToVSync - data.m_timeDac;
-        double playPos = data.m_playPos;  // load playPos for the first sample in Buffer
+        int offset = usRefToVSync - data.m_callbackEntrytoDac;
+        double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         // add the offset for the position of the sample that will be transfered to the DAC
         // When the next display frame is displayed
         playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferSize->get() / 1000;
@@ -74,9 +74,9 @@ void VisualPlayPosition::getPlaySlipAt(int usFromNow, double* playPosition, doub
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
         int usElapsed = data.m_referenceTime.elapsed() / 1000;
-        int dacFromNow = usElapsed - data.m_timeDac;
+        int dacFromNow = usElapsed - data.m_callbackEntrytoDac;
         int offset = dacFromNow - usFromNow;
-        double playPos = data.m_playPos;  // load playPos for the first sample in Buffer
+        double playPos = data.m_enginePlayPos;  // load playPos for the first sample in Buffer
         playPos += data.m_positionStep * offset * data.m_rate / m_audioBufferSize->get() / 1000;
         *playPosition = playPos;
         *slipPosition = data.m_pSlipPosition;
@@ -86,7 +86,7 @@ void VisualPlayPosition::getPlaySlipAt(int usFromNow, double* playPosition, doub
 double VisualPlayPosition::getEnginePlayPos() {
     if (m_valid) {
         VisualPlayPositionData data = m_data.getValue();
-        return data.m_playPos;
+        return data.m_enginePlayPos;
     } else {
         return -1;
     }
