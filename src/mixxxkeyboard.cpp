@@ -90,14 +90,12 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
 
         //qDebug() << "KeyRelease event =" << ke->key() << "AutoRepeat =" << autoRepeat << "KeyId =" << keyId;
 
-        bool modifierWorkaround = false;
         int clearModifiers = 0;
 #ifdef __APPLE__
         // OS X apparently doesn't deliver KeyRelease events when you are
         // holding Ctrl. So release all key-presses that were triggered with
         // Ctrl.
         if (ke->key() == Qt::Key_Control) {
-            modifierWorkaround = true;
             clearModifiers = Qt::ControlModifier;
         }
 #endif
@@ -108,7 +106,7 @@ bool MixxxKeyboard::eventFilter(QObject*, QEvent* e) {
             const KeyDownInformation& keyDownInfo = m_qActiveKeyList[i];
             ConfigKey* pConfigKey = keyDownInfo.pConfigKey;
             if (keyDownInfo.keyId == keyId ||
-                    (modifierWorkaround && keyDownInfo.modifiers == clearModifiers)) {
+                    (clearModifiers > 0 && keyDownInfo.modifiers == clearModifiers)) {
                 if (!autoRepeat) {
                     //qDebug() << pConfigKey->group << pConfigKey->item << "MIDI_NOTE_OFF" << 0;
                     ControlObject::getControl(*pConfigKey)->setValueFromMidi(MIDI_NOTE_OFF, 0);
