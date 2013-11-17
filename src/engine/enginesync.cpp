@@ -432,9 +432,11 @@ void EngineSync::slotChannelRateSliderChanged(SyncChannel* pSyncChannel, double 
     // A deck's rate slider was twiddled -- if it's a slave, we should affect
     // master bpm anyway.
 
-    if (pSyncChannel->getState() == SYNC_SLAVE and new_bpm != 0) {
-        m_pChannelMaster->setBpm(new_bpm);
-    }
+    // DISABLED: this causes circular problems when the user uses position scratch on the master.
+    // The slave rate changes get returned back to the master and the waveform gets stuch in FF.
+    //if (pSyncChannel->getState() == SYNC_SLAVE and new_bpm != 0) {
+    //    m_pChannelMaster->setBpm(new_bpm);
+    //}
 }
 
 double EngineSync::getInternalBeatDistance() const {
