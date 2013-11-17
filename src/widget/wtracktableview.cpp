@@ -246,7 +246,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         }
     }
 
-    // Set up drag and drop behaviour according to whether or not the track
+    // Set up drag and drop behavior according to whether or not the track
     // model says it supports it.
 
     // Defaults
@@ -968,7 +968,7 @@ void WTrackTableView::dropEvent(QDropEvent * event) {
         // is that as soon as we've moved ANY track, all of our QModelIndexes probably
         // get screwed up. The starting point for the logic below is to say screw it to
         // the QModelIndexes, and just keep a list of row numbers to work from. That
-        // ends up making the logic simpler and the behaviour totally predictable,
+        // ends up making the logic simpler and the behavior totally predictable,
         // which lets us do nice things like "restore" the selection model.
 
         if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
@@ -1242,8 +1242,8 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
        do {
            bool ok = false;
            name = QInputDialog::getText(NULL,
-                                        tr("New Playlist"),
-                                        tr("Playlist name:"),
+                                        tr("Create New Playlist"),
+                                        tr("Enter name for new playlist:"),
                                         QLineEdit::Normal,
                                         tr("New Playlist"),
                                         &ok).trimmed();
@@ -1302,8 +1302,8 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
         do {
             bool ok = false;
             name = QInputDialog::getText(NULL,
-                                         tr("New Crate"),
-                                         tr("Crate name:"),
+                                         tr("Create New Crate"),
+                                         tr("Enter name for new crate:"),
                                          QLineEdit::Normal, tr("New Crate"),
                                          &ok).trimmed();
             if (!ok)
