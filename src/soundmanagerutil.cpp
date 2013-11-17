@@ -186,11 +186,11 @@ QString AudioPath::getTrStringFromType(AudioPathType type, unsigned char index) 
     case BUS:
         switch (index) {
         case EngineChannel::LEFT:
-            return QString(QObject::tr("Left bus"));
+            return QString(QObject::tr("Left Bus"));
         case EngineChannel::CENTER:
-            return QString(QObject::tr("Center bus"));
+            return QString(QObject::tr("Center Bus"));
         case EngineChannel::RIGHT:
-            return QString(QObject::tr("Right bus"));
+            return QString(QObject::tr("Right Bus"));
         default:
             return QObject::tr("Invalid Bus");
         }
