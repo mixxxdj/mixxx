@@ -41,14 +41,14 @@ class VisualPlayPositionData {
 class VisualPlayPosition
 {
   public:
-    VisualPlayPosition();
+    VisualPlayPosition(const QString& m_key);
     ~VisualPlayPosition();
 
     void set(double playPos, double rate, double positionStep, double pSlipPosition);
     double getAtNextVSync(VSyncThread* vsyncThread);
     void getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition);
     double getEnginePlayPos();
-    static VisualPlayPosition* getVisualPlayPosition(QString group);
+    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(QString group);
     static void setTimeInfo(const PaStreamCallbackTimeInfo *timeInfo);
     void setInvalid() { m_valid = false; };
 
@@ -60,8 +60,9 @@ class VisualPlayPosition
     ControlObjectSlave* m_audioBufferSize;
     PaTime m_outputBufferDacTime;
     bool m_valid;
+    QString m_key;
 
-    static QMap<QString, VisualPlayPosition*> m_listVisualPlayPosition;
+    static QMap<QString, QWeakPointer<VisualPlayPosition> > m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called
     static const PaStreamCallbackTimeInfo* m_timeInfo;
     // Time stamp for m_timeInfo in main CPU time

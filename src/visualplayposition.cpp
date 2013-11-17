@@ -10,21 +10,21 @@
 
 
 //static
-QMap<QString, VisualPlayPosition*> VisualPlayPosition::m_listVisualPlayPosition;
+QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
 const PaStreamCallbackTimeInfo* VisualPlayPosition::m_timeInfo;
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 
-VisualPlayPosition::VisualPlayPosition()
+VisualPlayPosition::VisualPlayPosition(const QString& key)
     : //m_playPosOld(0),
       m_deltatime(0),
       m_outputBufferDacTime(0),
-      m_valid(false) {
+      m_valid(false),
+      m_key(key) {
     m_audioBufferSize = new ControlObjectSlave("[Master]", "audio_buffer_size");
 }
 
 VisualPlayPosition::~VisualPlayPosition() {
-    QString key = m_listVisualPlayPosition.key(this);
-    m_listVisualPlayPosition.remove(key);
+    m_listVisualPlayPosition.remove(m_key);
     delete m_audioBufferSize;
 }
 
@@ -95,10 +95,10 @@ double VisualPlayPosition::getEnginePlayPos() {
 // Warning: This function is not thread save.
 // It must not be called from other threads then the GUI thread
 //static
-VisualPlayPosition* VisualPlayPosition::getVisualPlayPosition(QString group) {
-    VisualPlayPosition* vpp = m_listVisualPlayPosition.value(group);
-    if (!vpp) {
-        vpp = new VisualPlayPosition();
+QSharedPointer<VisualPlayPosition> VisualPlayPosition::getVisualPlayPosition(QString group) {
+    QSharedPointer<VisualPlayPosition> vpp = m_listVisualPlayPosition.value(group);
+    if (vpp.isNull()) {
+        vpp = QSharedPointer<VisualPlayPosition>(new VisualPlayPosition(group));
         m_listVisualPlayPosition.insert(group, vpp);
     }
     return vpp;

@@ -53,7 +53,7 @@ class WSpinny : public QGLWidget, public VinylSignalQualityListener {
     QImage* m_pGhostImage;
     ControlObjectThread* m_pPlay;
     ControlObjectThread* m_pPlayPos;
-    VisualPlayPosition* m_pVisualPlayPos;
+    QSharedPointer<VisualPlayPosition> m_pVisualPlayPos;
     ControlObjectThread* m_pTrackSamples;
     ControlObjectThread* m_pTrackSampleRate;
     ControlObjectThread* m_pScratch;

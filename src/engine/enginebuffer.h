@@ -294,7 +294,7 @@ private:
     int m_iCrossFadeSamples;
     int m_iLastBufferSize;
 
-    VisualPlayPosition* m_visualPlayPos;
+    QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };
 
 #endif

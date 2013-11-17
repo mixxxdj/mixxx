@@ -97,7 +97,7 @@ class WaveformWidgetRenderer {
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection
-    VisualPlayPosition* m_visualPlayPosition;
+    QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
     int m_playPosVSample;
     ControlObjectThread* m_pRateControlObject;
