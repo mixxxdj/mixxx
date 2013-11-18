@@ -14,11 +14,9 @@
 QtWaveformRendererFilteredSignal::QtWaveformRendererFilteredSignal(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererSignalBase(waveformWidgetRenderer) {
-    qDebug() << "QtWaveformRendererFilteredSignal()";
 }
 
 QtWaveformRendererFilteredSignal::~QtWaveformRendererFilteredSignal() {
-    qDebug() << "~QtWaveformRendererFilteredSignal()";
 }
 
 void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {

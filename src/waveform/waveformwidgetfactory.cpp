@@ -460,11 +460,14 @@ void WaveformWidgetFactory::swap() {
             // Show rendered buffer from last render() run
             //qDebug() << "swap() start" << m_vsyncThread->elapsed();
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
-                QGLWidget* glw = dynamic_cast<QGLWidget*>(
-                        m_waveformWidgetHolders[i].m_waveformWidget->getWidget());
-                if (glw) {
-                    m_vsyncThread->swapGl(glw, i);
+                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
+                if (pWaveformWidget->getWidth() > 0) {
+                    QGLWidget* glw = dynamic_cast<QGLWidget*>(pWaveformWidget->getWidget());
+                    if (glw) {
+                        m_vsyncThread->swapGl(glw, i);
+                    }
                 }
+
                 //qDebug() << "swap x" << m_vsyncThread->elapsed();
             }
         }
