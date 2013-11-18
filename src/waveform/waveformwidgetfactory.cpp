@@ -241,7 +241,7 @@ bool WaveformWidgetFactory::setWaveformWidget(WWaveformViewer* viewer, const QDo
     // create new holder
     if (index == -1) {
         m_waveformWidgetHolders.push_back(WaveformWidgetHolder(waveformWidget, viewer, node));
-        index = m_waveformWidgetHolders.size()-1;
+        index = m_waveformWidgetHolders.size() - 1;
     } else { //update holder
         m_waveformWidgetHolders[index] = WaveformWidgetHolder(waveformWidget, viewer, node);
     }
@@ -426,7 +426,10 @@ void WaveformWidgetFactory::render() {
             // anti tearing driver settings
             // all render commands are delayed until the swap from the previous run is executed
             for (int i = 0; i < m_waveformWidgetHolders.size(); i++) {
-                (void)m_waveformWidgetHolders[i].m_waveformWidget->render();
+                WaveformWidgetAbstract* pWaveformWidget = m_waveformWidgetHolders[i].m_waveformWidget;
+                if (pWaveformWidget->getWidth() > 0) {
+                    (void)pWaveformWidget->render();
+                }
                 // qDebug() << "render" << i << m_vsyncThread->elapsed();
             }
         }

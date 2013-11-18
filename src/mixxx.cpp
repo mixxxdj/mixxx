@@ -1518,7 +1518,7 @@ void MixxxApp::rebootMixxxView() {
         //qDebug() << "view size" << m_pView->size() << size();
     }
 
-    if( wasFullScreen) {
+    if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
         move(initPosition.x() + (initSize.width() - m_pView->width()) / 2,
