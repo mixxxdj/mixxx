@@ -25,80 +25,82 @@
 #include "engine/enginechannel.h"
 #include "engine/enginecontrol.h"
 #include "engine/enginesync.h"
+#include "engine/ratecontrol.h"
 
 static const char* kMasterSyncGroup = "[Master]";
 
-SyncChannel::SyncChannel(EngineChannel* pChannel)
-        : m_pChannel(pChannel),
-          m_group(pChannel->getGroup()) {
-    m_pChannelSyncState = ControlObject::getControl(ConfigKey(m_group, "sync_state"));
-    if (m_pChannelSyncState) {
-        connect(m_pChannelSyncState, SIGNAL(valueChanged(double)),
-                this, SLOT(slotChannelSyncStateChanged(double)),
-                Qt::DirectConnection);
-        connect(m_pChannelSyncState, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotChannelSyncStateChanged(double)),
-                Qt::DirectConnection);
-    }
-
-    m_pFileBpm = ControlObject::getControl(ConfigKey(m_group, "file_bpm"));
-    m_pRateEngine = ControlObject::getControl(ConfigKey(m_group, "rateEngine"));
-    m_pBeatDistance = ControlObject::getControl(ConfigKey(m_group, "beat_distance"));
-    m_pRateRange = ControlObject::getControl(m_group, "rateRange");
-    m_pRateDir = ControlObject::getControl(m_group, "rate_dir");
-    m_pRateSlider = ControlObject::getControl(ConfigKey(m_group, "rate"));
-    if (m_pRateSlider) {
-        connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-                this, SLOT(slotChannelRateSliderChanged(double)),
-                Qt::DirectConnection);
-    }
-}
-
-SyncChannel::~SyncChannel() {
-    delete m_pChannelSyncState;
-}
-
-EngineChannel* SyncChannel::getChannel() {
-    return m_pChannel;
-}
-
-double SyncChannel::getFileBpm() const {
-    return m_pFileBpm ? m_pFileBpm->get() : 0.0;
-}
-
-double SyncChannel::getState() const {
-    return m_pChannelSyncState->get();
-}
-
-void SyncChannel::setState(double state) {
-    m_pChannelSyncState->set(state);
-}
-
-void SyncChannel::setBpm(double bpm) {
-    const double new_rate = ((bpm / m_pFileBpm->get()) - 1.0) /
-                            m_pRateDir->get() / m_pRateRange->get();
-    m_pRateSlider->set(new_rate);
-}
-
-void SyncChannel::slotChannelSyncStateChanged(double v) {
-    emit(channelSyncStateChanged(this, v));
-}
-
-void SyncChannel::slotChannelRateSliderChanged(double v) {
-    const double new_bpm = getFileBpm() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
-    emit(channelRateSliderChanged(this, new_bpm));
-}
-
-ControlObject* SyncChannel::getRateEngineControl() {
-    return m_pRateEngine;
-}
-
-ControlObject* SyncChannel::getBeatDistanceControl() {
-    return m_pBeatDistance;
-}
+//RateControl::RateControl(EngineChannel* pChannel)
+//        : m_pChannel(pChannel),
+//          m_group(pChannel->getGroup()) {
+//    m_pChannelSyncState = ControlObject::getControl(ConfigKey(m_group, "sync_state"));
+//    if (m_pChannelSyncState) {
+//        connect(m_pChannelSyncState, SIGNAL(valueChanged(double)),
+//                this, SLOT(slotChannelSyncStateChanged(double)),
+//                Qt::DirectConnection);
+//        connect(m_pChannelSyncState, SIGNAL(valueChangedFromEngine(double)),
+//                this, SLOT(slotChannelSyncStateChanged(double)),
+//                Qt::DirectConnection);
+//    }
+//
+//    m_pFileBpm = ControlObject::getControl(ConfigKey(m_group, "file_bpm"));
+//    m_pRateEngine = ControlObject::getControl(ConfigKey(m_group, "rateEngine"));
+//    m_pBeatDistance = ControlObject::getControl(ConfigKey(m_group, "beat_distance"));
+//    m_pRateRange = ControlObject::getControl(m_group, "rateRange");
+//    m_pRateDir = ControlObject::getControl(m_group, "rate_dir");
+//    m_pRateSlider = ControlObject::getControl(ConfigKey(m_group, "rate"));
+//    if (m_pRateSlider) {
+//        connect(m_pRateSlider, SIGNAL(valueChanged(double)),
+//                this, SLOT(slotChannelRateSliderChanged(double)),
+//                Qt::DirectConnection);
+//    }
+//}
+//
+//RateControl::~RateControl() {
+//    delete m_pChannelSyncState;
+//}
+//
+//EngineChannel* RateControl::getChannel() {
+//    return m_pChannel;
+//}
+//
+//double RateControl::getFileBpm() const {
+//    return m_pFileBpm ? m_pFileBpm->get() : 0.0;
+//}
+//
+//double RateControl::getState() const {
+//    return m_pChannelSyncState->get();
+//}
+//
+//void RateControl::setState(double state) {
+//    m_pChannelSyncState->set(state);
+//}
+//
+//void RateControl::setBpm(double bpm) {
+//    const double new_rate = ((bpm / m_pFileBpm->get()) - 1.0) /
+//                            m_pRateDir->get() / m_pRateRange->get();
+//    m_pRateSlider->set(new_rate);
+//}
+//
+//void RateControl::slotChannelSyncStateChanged(double v) {
+//    emit(channelSyncStateChanged(this, v));
+//}
+//
+//void RateControl::slotChannelRateSliderChanged(double v) {
+//    const double new_bpm = getFileBpm() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
+//    emit(channelRateSliderChanged(this, new_bpm));
+//}
+//
+//ControlObject* RateControl::getRateEngineControl() {
+//    return m_pRateEngine;
+//}
+//
+//ControlObject* RateControl::getBeatDistanceControl() {
+//    return m_pBeatDistance;
+//}
 
 EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
         : EngineControl(kMasterSyncGroup, _config),
+          m_pConfig(_config),
           m_pChannelMaster(NULL),
           m_sSyncSource(kMasterSyncGroup),
           m_dSourceRate(0.0f),  // Has to be zero so that master bpm gets set correctly on startup
@@ -153,26 +155,26 @@ EngineSync::~EngineSync() {
     delete m_pSyncRateSlider;
 }
 
-void EngineSync::addChannel(EngineChannel* pChannel) {
-    const QString& group = pChannel->getGroup();
-    foreach (const SyncChannel* pChannel, m_channels) {
-        if (pChannel->getGroup() == group) {
+void EngineSync::addDeck(const char* group) {
+    foreach (const RateControl* pRate, m_channels) {
+        if (pRate->getGroup() == group) {
             qDebug() << "EngineSync: already has channel for" << group;
             return;
         }
     }
-    SyncChannel* pSyncChannel = new SyncChannel(pChannel);
-    connect(pSyncChannel, SIGNAL(channelSyncStateChanged(SyncChannel*, double)),
-            this, SLOT(slotChannelSyncStateChanged(SyncChannel*, double)),
+    // EngineControls want a c_str, but EngineChannels use QString, so we have to convert.
+    RateControl* pRateControl = new RateControl(group.toUtf8().constData(), m_pConfig);
+    connect(pRateControl, SIGNAL(channelSyncStateChanged(RateControl*, double)),
+            this, SLOT(slotChannelSyncStateChanged(RateControl*, double)),
             Qt::DirectConnection);
-    connect(pSyncChannel, SIGNAL(channelRateSliderChanged(SyncChannel*, double)),
-            this, SLOT(slotChannelRateSliderChanged(SyncChannel*, double)),
+    connect(pRateControl, SIGNAL(channelRateSliderChanged(RateControl*, double)),
+            this, SLOT(slotChannelRateSliderChanged(RateControl*, double)),
             Qt::DirectConnection);
-    m_channels.append(pSyncChannel);
+    m_channels.append(pRateControl);
 }
 
 void EngineSync::disableChannelMaster(const QString& channel) {
-    SyncChannel* pOldChannelMaster = m_pChannelMaster;
+    RateControl* pOldChannelMaster = m_pChannelMaster;
     if (pOldChannelMaster) {
         ControlObject* pSourceRate = pOldChannelMaster->getRateEngineControl();
         if (pSourceRate) {
@@ -188,7 +190,7 @@ void EngineSync::disableChannelMaster(const QString& channel) {
     m_pChannelMaster = NULL;
 
     bool channelIsEmpty = channel.isEmpty();
-    foreach (SyncChannel* pChannel, m_channels) {
+    foreach (RateControl* pChannel, m_channels) {
         // If channel is empty, unset master on *all* other channels -- sometimes we
         // end up with two masters for some reason.
         if (channelIsEmpty || pChannel->getGroup() == channel) {
@@ -205,8 +207,8 @@ void EngineSync::setMaster(const QString& group) {
     if (group == kMasterSyncGroup) {
         setInternalMaster();
     } else {
-        SyncChannel* pSyncChannel = getSyncChannelForGroup(group);
-        if (!setChannelMaster(pSyncChannel)) {
+        RateControl* pRateControl = getRateControlForGroup(group);
+        if (!setChannelMaster(pRateControl)) {
             qDebug() << "WARNING: failed to set selected master" << group << ", going with Internal instead";
             setInternalMaster();
         }
@@ -228,16 +230,16 @@ void EngineSync::setInternalMaster() {
     m_pSyncInternalEnabled->set(TRUE);
 }
 
-bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
+bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     // If a channel is master, disable it.
     disableChannelMaster(m_sSyncSource);
 
-    if (!pSyncChannel) {
+    if (!pRateControl) {
         return false;
     }
 
     // Only accept channels with an EngineBuffer.
-    EngineChannel* pChannel = pSyncChannel->getChannel();
+    EngineChannel* pChannel = pRateControl->getChannel();
     if (!pChannel || !pChannel->getEngineBuffer()) {
         return false;
     }
@@ -246,11 +248,11 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
 
     // Only consider channels that have a track loaded and are in the master
     // mix.
-    m_pChannelMaster = pSyncChannel;
+    m_pChannelMaster = pRateControl;
     m_sSyncSource = group;
 
 
-    ControlObject* pSourceRate = pSyncChannel->getRateEngineControl();
+    ControlObject* pSourceRate = pRateControl->getRateEngineControl();
     if (!pSourceRate) {
         return false;
     }
@@ -258,7 +260,7 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
             this, SLOT(slotSourceRateChanged(double)),
             Qt::DirectConnection);
 
-    ControlObject* pSourceBeatDistance = pSyncChannel->getBeatDistanceControl();
+    ControlObject* pSourceBeatDistance = pRateControl->getBeatDistanceControl();
     if (!pSourceBeatDistance) {
         return false;
     }
@@ -281,13 +283,13 @@ bool EngineSync::setChannelMaster(SyncChannel* pSyncChannel) {
 
 QString EngineSync::chooseNewMaster(const QString& dontpick) {
     QString fallback = kMasterSyncGroup;
-    foreach (SyncChannel* pSyncChannel, m_channels) {
-        const QString& group = pSyncChannel->getGroup();
+    foreach (RateControl* pRateControl, m_channels) {
+        const QString& group = pRateControl->getGroup();
         if (group == dontpick) {
             continue;
         }
 
-        double sync_state = pSyncChannel->getState();
+        double sync_state = pRateControl->getState();
         if (sync_state == SYNC_MASTER) {
             qDebug() << "already have a new master" << group;
             return group;
@@ -295,7 +297,7 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
             continue;
         }
 
-        EngineChannel* pChannel = pSyncChannel->getChannel();
+        EngineChannel* pChannel = pRateControl->getChannel();
         if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
             EngineBuffer* pBuffer = pChannel->getEngineBuffer();
             if (pBuffer && pBuffer->getBpm() > 0) {
@@ -393,11 +395,11 @@ void EngineSync::slotInternalMasterChanged(double state) {
     }
 }
 
-void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double state) {
-    if (!pSyncChannel) {
+void EngineSync::slotChannelSyncStateChanged(RateControl* pRateControl, double state) {
+    if (!pRateControl) {
         return;
     }
-    const QString& group = pSyncChannel->getGroup();
+    const QString& group = pRateControl->getGroup();
 
     const bool channelIsMaster = m_sSyncSource == group;
 
@@ -408,7 +410,7 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
         // startup where the user can't turn on Master.
 
         // If setting this channel as master fails, pick a new master.
-        if (!setChannelMaster(pSyncChannel)) {
+        if (!setChannelMaster(pRateControl)) {
             setMaster(chooseNewMaster(group));
         }
     } else if (state == SYNC_SLAVE) {
@@ -416,7 +418,7 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
         if (channelIsMaster) {
             // TODO(rryan) isn't this redundant? Is this because of MIDI light
             // breakage?
-            pSyncChannel->setState(SYNC_SLAVE);
+            pRateControl->setState(SYNC_SLAVE);
             // Choose a new master, but don't pick the current one!
             setMaster(chooseNewMaster(group));
         }
@@ -428,13 +430,13 @@ void EngineSync::slotChannelSyncStateChanged(SyncChannel* pSyncChannel, double s
     }
 }
 
-void EngineSync::slotChannelRateSliderChanged(SyncChannel* pSyncChannel, double new_bpm) {
+void EngineSync::slotChannelRateSliderChanged(RateControl* pRateControl, double new_bpm) {
     // A deck's rate slider was twiddled -- if it's a slave, we should affect
     // master bpm anyway.
 
     // DISABLED: this causes circular problems when the user uses position scratch on the master.
     // The slave rate changes get returned back to the master and the waveform gets stuch in FF.
-    //if (pSyncChannel->getState() == SYNC_SLAVE and new_bpm != 0) {
+    //if (pRateControl->getState() == SYNC_SLAVE and new_bpm != 0) {
     //    m_pChannelMaster->setBpm(new_bpm);
     //}
 }
@@ -511,8 +513,8 @@ EngineChannel* EngineSync::getMaster() const {
     return m_pChannelMaster ? m_pChannelMaster->getChannel() : NULL;
 }
 
-SyncChannel* EngineSync::getSyncChannelForGroup(const QString& group) {
-    foreach (SyncChannel* pChannel, m_channels) {
+RateControl* EngineSync::getRateControlForGroup(const QString& group) {
+    foreach (RateControl* pChannel, m_channels) {
         if (pChannel->getGroup() == group) {
             return pChannel;
         }

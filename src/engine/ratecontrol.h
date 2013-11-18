@@ -21,6 +21,7 @@ class ControlTTRotary;
 class ControlObject;
 class ControlPotmeter;
 class ControlPushButton;
+class EngineChannel;
 class PositionScratchController;
 
 // RateControl is an EngineControl that is in charge of managing the rate of
@@ -29,7 +30,7 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    RateControl(const char* _group, ConfigObject<ConfigValue>* _config, EngineChannel *pChannel);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
@@ -42,6 +43,13 @@ public:
     // Returns the current engine rate.
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate() const;
+    ControlObject* getRateEngineControl();
+    ControlObject* getBeatDistanceControl();
+    double getState() const;
+    void setState(double state);
+    double getFileBpm() const { return m_dFileBpm; }
+    EngineChannel* getChannel() { return m_pChannel; }
+
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -93,11 +101,13 @@ public:
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
 
     QString m_sGroup;
+    EngineChannel* m_pChannel;
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
         *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
         *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlObject *m_pRateDir, *m_pRateRange;
+    ControlObject *m_pRateDir, *m_pRateRange, *m_pRateEngine;
+    ControlObject* m_pBeatDistance;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
     ControlPushButton* m_pReverseButton;

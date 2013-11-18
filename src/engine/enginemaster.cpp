@@ -432,7 +432,7 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
         pBuffer->setEngineMaster(this);
     }
 
-    m_pMasterSync->addChannel(pChannel);
+    //m_pMasterSync->addChannel(pChannel);
 }
 
 EngineChannel* EngineMaster::getChannel(QString group) {

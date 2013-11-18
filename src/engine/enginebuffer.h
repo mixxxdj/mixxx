@@ -52,6 +52,7 @@ class EngineBufferScale;
 class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
+class EngineSync;
 class EngineWorkerScheduler;
 class EngineMaster;
 
@@ -88,7 +89,8 @@ class EngineBuffer : public EngineObject
 {
      Q_OBJECT
 public:
-    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
+    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config,
+                 EngineMaster* pMixingEngine);
     ~EngineBuffer();
     bool getPitchIndpTimeStretch(void);
 
@@ -172,6 +174,9 @@ private:
 
     // Pointer to the loop control object
     LoopingControl* m_pLoopingControl;
+
+    // Pointer to the master sync object
+    EngineSync* m_pEngineSync;
 
     // Pointer to the rate control object
     RateControl* m_pRateControl;

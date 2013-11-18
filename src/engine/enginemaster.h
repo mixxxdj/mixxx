@@ -74,6 +74,11 @@ class EngineMaster : public EngineObject, public AudioSource {
         }
     }
 
+    // Provide access to the master sync so enginebuffers can know what their rate controller is.
+    EngineSync* getEngineSync() const{
+        return m_pMasterSync;
+    }
+
     // These are really only exposed for tests to use.
     const CSAMPLE* getMasterBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;

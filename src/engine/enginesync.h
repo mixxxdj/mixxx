@@ -25,6 +25,7 @@ class EngineChannel;
 class ControlObject;
 class ControlPushButton;
 class ControlPotmeter;
+class RateControl;
 
 enum SYNC_STATE {
     SYNC_NONE = 0,
@@ -32,11 +33,11 @@ enum SYNC_STATE {
     SYNC_MASTER = 2
 };
 
-class SyncChannel : public QObject {
+/*class RateControl : public QObject {
     Q_OBJECT
   public:
-    SyncChannel(EngineChannel* pChannel);
-    virtual ~SyncChannel();
+    RateControl(EngineChannel* pChannel);
+    virtual ~RateControl();
 
     const QString& getGroup() const {
         return m_group;
@@ -52,8 +53,8 @@ class SyncChannel : public QObject {
     ControlObject* getBeatDistanceControl();
 
   signals:
-    void channelSyncStateChanged(SyncChannel*, double);
-    void channelRateSliderChanged(SyncChannel*, double);
+    void channelSyncStateChanged(RateControl*, double);
+    void channelRateSliderChanged(RateControl*, double);
 
   private slots:
     void slotChannelSyncStateChanged(double);
@@ -69,7 +70,7 @@ class SyncChannel : public QObject {
     ControlObject* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
-};
+};*/
 
 class EngineSync : public EngineControl {
     Q_OBJECT
@@ -81,6 +82,7 @@ class EngineSync : public EngineControl {
     void addChannel(EngineChannel* pChannel);
     EngineChannel* getMaster() const;
     void onCallbackStart(int bufferSize);
+    RateControl* getRateControlForGroup(const QString& group);
 
   private slots:
     void slotMasterBpmChanged(double);
@@ -89,12 +91,12 @@ class EngineSync : public EngineControl {
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
     void slotInternalMasterChanged(double);
-    void slotChannelSyncStateChanged(SyncChannel*, double);
-    void slotChannelRateSliderChanged(SyncChannel*, double);
+    void slotChannelSyncStateChanged(RateControl*, double);
+    void slotChannelRateSliderChanged(RateControl*, double);
 
   private:
     void setMaster(const QString& group);
-    bool setChannelMaster(SyncChannel* pSyncChannel);
+    bool setChannelMaster(RateControl* pRateControl);
     void setInternalMaster();
     QString chooseNewMaster(const QString& dontpick);
     void disableChannelMaster(const QString& deck);
@@ -102,9 +104,10 @@ class EngineSync : public EngineControl {
     void setPseudoPosition(double percent);
     void resetInternalBeatDistance();
     double getInternalBeatDistance() const;
-    SyncChannel* getSyncChannelForGroup(const QString& group);
 
-    SyncChannel* m_pChannelMaster;
+    ConfigObject<ConfigValue>* m_pConfig;
+
+    RateControl* m_pChannelMaster;
 
     ControlObject* m_pMasterBpm;
     ControlObject* m_pMasterBeatDistance;
@@ -112,7 +115,7 @@ class EngineSync : public EngineControl {
     ControlPushButton* m_pSyncInternalEnabled;
     ControlPotmeter* m_pSyncRateSlider;
 
-    QList<SyncChannel*> m_channels;
+    QList<RateControl*> m_channels;
     QString m_sSyncSource;
     int m_iSampleRate;
     double m_dSourceRate;

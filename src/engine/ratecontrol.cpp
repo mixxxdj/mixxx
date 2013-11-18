@@ -25,9 +25,11 @@ int RateControl::m_iRateRampSensitivity = 250;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
 RateControl::RateControl(const char* _group,
-                         ConfigObject<ConfigValue>* _config)
+                         ConfigObject<ConfigValue>* _config,
+                         EngineChannel* pChannel)
     : EngineControl(_group, _config),
       m_sGroup(_group),
+      m_pChannel(pChannel),
       m_pBpmControl(NULL),
       m_iSyncState(SYNC_NONE),
       m_ePbCurrent(0),
@@ -42,6 +44,8 @@ RateControl::RateControl(const char* _group,
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
+    m_pRateEngine = ControlObject::getControl(ConfigKey(_group, "rateEngine"));
+    m_pBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
 
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate
@@ -173,6 +177,7 @@ RateControl::~RateControl() {
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
+    delete m_pBeatDistance;
 
     delete m_pRateSearch;
 
@@ -395,6 +400,22 @@ double RateControl::getJogFactor() const {
     }
 
     return jogFactor;
+}
+
+ControlObject* RateControl::getRateEngineControl() {
+    return m_pRateEngine;
+}
+
+ControlObject* RateControl::getBeatDistanceControl() {
+    return m_pBeatDistance;
+}
+
+double RateControl::getState() const {
+    return m_pSyncState->get();
+}
+
+void RateControl::setState(double state) {
+    m_pSyncState->set(state);
 }
 
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,

@@ -30,6 +30,7 @@
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
+#include "engine/enginesync.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
@@ -39,6 +40,7 @@
 #include "engine/quantizecontrol.h"
 #include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
+#include "engine/enginemaster.h"
 #include "util/timer.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
@@ -52,7 +54,8 @@
 const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
 
-EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
+EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config,
+                           EngineMaster* pMixingEngine) :
     m_engineLock(QMutex::Recursive),
     m_group(_group),
     m_pConfig(_config),
@@ -200,7 +203,7 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 #endif
 
     // Create the Rate Controller
-    m_pRateControl = new RateControl(_group, _config);
+    m_pRateControl = pMixingEngine->getEngineSync()->addDeck(_group);
     addControl(m_pRateControl);
 
     m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
