@@ -76,7 +76,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 #endif
 
     // Crossfader
-    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"),-1.,1.);
+    m_pCrossfader = new ControlPotmeter(ConfigKey(group, "crossfader"), -1., 1.);
 
     // Balance
     m_pBalance = new ControlPotmeter(ConfigKey(group, "balance"), -1., 1.);

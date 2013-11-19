@@ -250,38 +250,39 @@ void SidebarModel::rightClicked(const QPoint& globalPos, const QModelIndex& inde
 }
 
 bool SidebarModel::dropAccept(const QModelIndex& index, QList<QUrl> urls,
-                              QWidget* pSource) {
+                              QObject* pSource) {
     //qDebug() << "SidebarModel::dropAccept() index=" << index << url;
+    bool result = false;
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            return m_sFeatures[index.row()]->dropAccept(urls, pSource);
+            result = m_sFeatures[index.row()]->dropAccept(urls, pSource);
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
-                return feature->dropAcceptChild(index, urls,pSource);
+                result = feature->dropAcceptChild(index, urls, pSource);
             }
         }
     }
-
-    return false;
+    return result;
 }
 
-bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url)
-{
+bool SidebarModel::dragMoveAccept(const QModelIndex& index, QUrl url) {
     //qDebug() << "SidebarModel::dragMoveAccept() index=" << index << url;
+    bool result = false;
+
     if (index.isValid()) {
         if (index.internalPointer() == this) {
-            return m_sFeatures[index.row()]->dragMoveAccept(url);
+            result = m_sFeatures[index.row()]->dragMoveAccept(url);
         } else {
             TreeItem* tree_item = (TreeItem*)index.internalPointer();
             if (tree_item) {
                 LibraryFeature* feature = tree_item->getFeature();
-                return feature->dragMoveAcceptChild(index, url);
+                result = feature->dragMoveAcceptChild(index, url);
             }
         }
     }
-    return false;
+    return result;
 }
 
 // Translates an index from the child models to an index of the sidebar models
@@ -365,8 +366,7 @@ void SidebarModel::slotModelReset() {
  * While the rhythmbox music collection is parsed
  * the title becomes '(loading) Rhythmbox'
  */
-void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature)
-{
+void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature) {
     featureRenamed(feature);
     slotFeatureSelect(feature);
 }
@@ -374,12 +374,12 @@ void SidebarModel::slotFeatureIsLoading(LibraryFeature * feature)
 /* Tobias: This slot is somewhat redundant but I decided
  * to leave it for code readability reasons
  */
-void SidebarModel::slotFeatureLoadingFinished(LibraryFeature * feature){
+void SidebarModel::slotFeatureLoadingFinished(LibraryFeature * feature) {
     featureRenamed(feature);
     slotFeatureSelect(feature);
 }
 
-void SidebarModel::featureRenamed(LibraryFeature* pFeature){
+void SidebarModel::featureRenamed(LibraryFeature* pFeature) {
     for (int i=0; i < m_sFeatures.size(); ++i) {
         if (m_sFeatures[i] == pFeature) {
             QModelIndex ind = index(i, 0);

@@ -18,27 +18,24 @@
 #ifndef DLGPREFRECORD_H
 #define DLGPREFRECORD_H
 
+#include <QRadioButton>
+#include <QWidget>
+
 #include "ui_dlgprefrecorddlg.h"
 #include "configobject.h"
-#include <QRadioButton>
+#include "preferences/dlgpreferencepage.h"
 
 class ControlObject;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 
-
-
-class QWidget;
-/**
-  *@author John Sully
-  */
-
-class DlgPrefRecord : public QWidget, public Ui::DlgPrefRecordDlg  {
+class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     Q_OBJECT
-public: 
+  public:
     DlgPrefRecord(QWidget *parent, ConfigObject<ConfigValue> *_config);
-    ~DlgPrefRecord();
-public slots:
-    /** Apply changes to widget */
+    virtual ~DlgPrefRecord();
+
+  public slots:
+    // Apply changes to widget
     void slotApply();
     void slotUpdate();
     void slotEncoding();
@@ -46,27 +43,29 @@ public slots:
     void slotRecordPathChange();
     void slotEnableCueFile(int);
     void slotChangeSplitSize();
-    /** Dialog to browse for recordings directory */
+    // Dialog to browse for recordings directory
     void slotBrowseRecordingsDir();
-signals:
+
+  signals:
     void apply(const QString &);
-private:
+
+  private:
     void setRecordingFolder();
     void setMetaData();
     void loadMetaData();
     int getSliderQualityVal();
     void updateTextQuality();
 
-    /** Pointer to config object */
-    ConfigObject<ConfigValue> *config;
-    ControlObjectThreadMain* recordControl;
-    bool confirmOverwrite;
+    // Pointer to config object
+    ConfigObject<ConfigValue>* m_pConfig;
+    ControlObjectThread* m_pRecordControl;
+    bool m_bConfirmOverwrite;
     QString fileTypeExtension;
-    QRadioButton *radioOgg;
-    QRadioButton *radioMp3;
-    QRadioButton *radioAiff;
-    QRadioButton *radioFlac;
-    QRadioButton *radioWav;
+    QRadioButton* m_pRadioOgg;
+    QRadioButton* m_pRadioMp3;
+    QRadioButton* m_pRadioAiff;
+    QRadioButton* m_pRadioFlac;
+    QRadioButton* m_pRadioWav;
 };
 
 #endif

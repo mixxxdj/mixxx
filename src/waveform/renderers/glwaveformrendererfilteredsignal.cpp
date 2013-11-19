@@ -69,12 +69,12 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0);
-    if (m_lowFilterControlObject &&
-            m_midFilterControlObject &&
-            m_highFilterControlObject) {
-        lowGain = m_lowFilterControlObject->get();
-        midGain = m_midFilterControlObject->get();
-        highGain = m_highFilterControlObject->get();
+    if (m_pLowFilterControlObject &&
+            m_pMidFilterControlObject &&
+            m_pHighFilterControlObject) {
+        lowGain = m_pLowFilterControlObject->get();
+        midGain = m_pMidFilterControlObject->get();
+        highGain = m_pHighFilterControlObject->get();
     }
 
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
@@ -87,15 +87,15 @@ void GLWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
     float maxMid[2];
     float maxHigh[2];
 
-    if (m_lowKillControlObject && m_lowKillControlObject->get() == 1.0) {
+    if (m_pLowKillControlObject && m_pLowKillControlObject->get() == 1.0) {
         lowGain = 0;
     }
 
-    if (m_midKillControlObject && m_midKillControlObject->get() == 1.0) {
+    if (m_pMidKillControlObject && m_pMidKillControlObject->get() == 1.0) {
         midGain = 0;
     }
 
-    if (m_highKillControlObject && m_highKillControlObject->get() == 1.0) {
+    if (m_pHighKillControlObject && m_pHighKillControlObject->get() == 1.0) {
         highGain = 0;
     }    
 

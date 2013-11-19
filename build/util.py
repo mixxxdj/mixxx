@@ -75,13 +75,11 @@ def get_git_modified():
     return "\n".join(modified_files)
 
 def get_git_branch_name():
-    branch_matcher = re.compile("\* (?P<branch>.*?)$")
-    for line in os.popen("git branch").read().splitlines():
-        match = branch_matcher.match(line)
-        if match:
-            match = match.groupdict()
-            return match['branch'].strip()
-    return None
+    # this returns the branch name or 'HEAD' in case of detached HEAD
+    branch_name = os.popen("git rev-parse --abbrev-ref HEAD").readline().strip()
+    if branch_name == 'HEAD':
+        branch_name = '(no branch)'
+    return branch_name
 
 def export_git(source, dest):
     os.mkdir(dest)
@@ -159,7 +157,7 @@ def write_build_header(path):
         branch_name = get_branch_name()
         modified = len(get_modified()) > 0
         # Do not emit BUILD_BRANCH on release branches.
-        if not branch_name.startswith('release'):
+        if branch_name and not branch_name.startswith('release'):
             f.write('#define BUILD_BRANCH "%s"\n' % branch_name)
         f.write('#define BUILD_REV "%s%s"\n' % (get_revision(),
                                                 '+' if modified else ''))

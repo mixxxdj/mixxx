@@ -7,9 +7,10 @@
 #include "util/timer.h"
 
 // Static member variable definition
-QHash<ConfigKey, ControlDoublePrivate*> ControlDoublePrivate::m_sqCOHash;
+QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> > ControlDoublePrivate::m_sqCOHash;
 QMutex ControlDoublePrivate::m_sqCOHashMutex;
 
+/*
 ControlDoublePrivate::ControlDoublePrivate()
         : m_bIgnoreNops(true),
           m_bTrack(false),
@@ -19,8 +20,9 @@ ControlDoublePrivate::ControlDoublePrivate()
           m_confirmRequired(false) {
     initialize();
 }
+*/
 
-ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
+ControlDoublePrivate::ControlDoublePrivate(ConfigKey key, ControlObject* pCreatorCO,
                                            bool bIgnoreNops, bool bTrack)
         : m_key(key),
           m_bIgnoreNops(bIgnoreNops),
@@ -29,17 +31,14 @@ ControlDoublePrivate::ControlDoublePrivate(ConfigKey key,
           m_trackType(Stat::UNSPECIFIED),
           m_trackFlags(Stat::COUNT | Stat::SUM | Stat::AVERAGE |
                        Stat::SAMPLE_VARIANCE | Stat::MIN | Stat::MAX),
-          m_confirmRequired(false) {
+          m_confirmRequired(false),
+          m_pCreatorCO(pCreatorCO) {
     initialize();
 }
 
 void ControlDoublePrivate::initialize() {
     m_defaultValue.setValue(0);
     m_value.setValue(0);
-
-    m_sqCOHashMutex.lock();
-    m_sqCOHash.insert(m_key, this);
-    m_sqCOHashMutex.unlock();
 
     if (m_bTrack) {
         // TODO(rryan): Make configurable.
@@ -51,34 +50,52 @@ void ControlDoublePrivate::initialize() {
 
 ControlDoublePrivate::~ControlDoublePrivate() {
     m_sqCOHashMutex.lock();
+    //qDebug() << "ControlDoublePrivate::m_sqCOHash.remove(" << m_key.group << "," << m_key.item << ")";
     m_sqCOHash.remove(m_key);
     m_sqCOHashMutex.unlock();
 }
 
 // static
-ControlDoublePrivate* ControlDoublePrivate::getControl(
-        const ConfigKey& key, bool bCreate, bool bIgnoreNops, bool bTrack) {
+QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
+        const ConfigKey& key, bool warn, ControlObject* pCreatorCO, bool bIgnoreNops, bool bTrack) {
     QMutexLocker locker(&m_sqCOHashMutex);
-    QHash<ConfigKey, ControlDoublePrivate*>::const_iterator it = m_sqCOHash.find(key);
+    QSharedPointer<ControlDoublePrivate> pControl;
+    QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {
-        return it.value();
+        if (pCreatorCO) {
+            if (warn) {
+                qDebug() << "ControlObject" << key.group << key.item << "already created";
+            }
+        } else {
+            pControl = it.value();
+        }
     }
     locker.unlock();
 
-    ControlDoublePrivate* pControl = NULL;
-    if (bCreate) {
-        pControl = new ControlDoublePrivate(key, bIgnoreNops, bTrack);
-        locker.relock();
-        m_sqCOHash.insert(key, pControl);
-        locker.unlock();
-    }
-
     if (pControl == NULL) {
-        qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
-                   << key.group << "," << key.item << ")";
+        if (pCreatorCO) {
+            pControl = QSharedPointer<ControlDoublePrivate>(
+                    new ControlDoublePrivate(key, pCreatorCO, bIgnoreNops, bTrack));
+            locker.relock();
+            //qDebug() << "ControlDoublePrivate::m_sqCOHash.insert(" << key.group << "," << key.item << ")";
+            m_sqCOHash.insert(key, pControl);
+            locker.unlock();
+        } else if (warn) {
+            qWarning() << "ControlDoublePrivate::getControl returning NULL for ("
+                       << key.group << "," << key.item << ")";
+        }
     }
-
     return pControl;
+}
+
+// static
+void ControlDoublePrivate::getControls(QList<ControlDoublePrivate*>* pControlList) {
+    m_sqCOHashMutex.lock();
+    for (QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.begin();
+         it != m_sqCOHash.end(); ++it) {
+        pControlList->push_back(it.value().data());
+    }
+    m_sqCOHashMutex.unlock();
 }
 
 double ControlDoublePrivate::get() const {
@@ -125,7 +142,7 @@ void ControlDoublePrivate::setInner(double value, QObject* pSender) {
 }
 
 void ControlDoublePrivate::setBehavior(ControlNumericBehavior* pBehavior) {
-    // This marks the old mpBehaviour for deletion. It is deleted once it is not
+    // This marks the old mpBehavior for deletion. It is deleted once it is not
     // used in any other function
     m_pBehavior = QSharedPointer<ControlNumericBehavior>(pBehavior);
 }

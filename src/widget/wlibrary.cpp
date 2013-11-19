@@ -14,7 +14,6 @@ WLibrary::WLibrary(QWidget* parent)
 }
 
 WLibrary::~WLibrary() {
-
 }
 
 bool WLibrary::registerView(QString name, QWidget* view) {

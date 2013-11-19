@@ -1,9 +1,10 @@
 // cratefeature.cpp
 // Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
 
+#include <QFileDialog>
 #include <QInputDialog>
-#include <QMenu>
 #include <QLineEdit>
+#include <QMenu>
 
 #include "library/cratefeature.h"
 #include "library/parser.h"
@@ -27,7 +28,7 @@ CrateFeature::CrateFeature(QObject* parent,
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
     Q_UNUSED(parent);
-    m_pCreateCrateAction = new QAction(tr("New Crate"),this);
+    m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
@@ -46,11 +47,12 @@ CrateFeature::CrateFeature(QObject* parent,
     m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+
     m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
-    m_pDuplicateCrateAction = new QAction(tr("Duplicate Crate"),this);
+    m_pDuplicateCrateAction = new QAction(tr("Duplicate"),this);
     connect(m_pDuplicateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDuplicateCrate()));
 
@@ -108,7 +110,7 @@ QIcon CrateFeature::getIcon() {
 }
 
 bool CrateFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                                   QWidget *pSource) {
+                                   QObject* pSource) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     QList<QFileInfo> files;
@@ -142,7 +144,6 @@ bool CrateFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
     bool locked = m_crateDao.isCrateLocked(crateId);
-
     QFileInfo file(url.toLocalFile());
     bool formatSupported = SoundSourceProxy::isFilenameSupported(file.fileName());
     return !locked && formatSupported;
@@ -154,8 +155,8 @@ void CrateFeature::bindWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit,SIGNAL(anchorClicked(const QUrl)),
-        this,SLOT(htmlLinkClicked(const QUrl))
+    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+        this, SLOT(htmlLinkClicked(const QUrl))
     );
     libraryWidget->registerView("CRATEHOME", edit);
 }
@@ -188,7 +189,6 @@ void CrateFeature::onRightClick(const QPoint& globalPos) {
 void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
     //Save the model index so we can get it in the action slots...
     m_lastRightClickedIndex = index;
-
     QString crateName = index.data().toString();
     int crateId = m_crateDao.getCrateIdByName(crateName);
 
@@ -211,26 +211,27 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pDuplicateCrateAction);
     menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
+    menu.addSeparator();
 #ifdef __AUTODJCRATES__
     menu.addAction(m_pAutoDjTrackSource);
-#endif // __AUTODJCRATES__
     menu.addSeparator();
+#endif // __AUTODJCRATES__
     menu.addAction(m_pAnalyzeCrateAction);
+    menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
 }
 
 void CrateFeature::slotCreateCrate() {
-
     QString name;
     bool validNameGiven = false;
 
     while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
-                                     tr("New Crate"),
-                                     tr("Crate name:"),
+                                     tr("Create New Crate"),
+                                     tr("Enter name for new crate:"),
                                      QLineEdit::Normal, tr("New Crate"),
                                      &ok).trimmed();
 
@@ -262,7 +263,6 @@ void CrateFeature::slotCreateCrate() {
                              tr("Creating Crate Failed"),
                              tr("An unknown error occurred while creating crate: ")
                              + name);
-
     }
 }
 
@@ -278,7 +278,7 @@ void CrateFeature::slotDeleteCrate() {
 
     bool deleted = m_crateDao.deleteCrate(crateId);
 
-    if (deleted) {;
+    if (deleted) {
         activate();
     } else {
         qDebug() << "Failed to delete crateId" << crateId;
@@ -302,7 +302,7 @@ void CrateFeature::slotRenameCrate() {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Crate"),
-                                        tr("New crate name:"),
+                                        tr("Enter new name for crate:"),
                                         QLineEdit::Normal,
                                         oldName,
                                         &ok).trimmed();
@@ -342,7 +342,7 @@ void CrateFeature::slotDuplicateCrate() {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                         tr("Duplicate Crate"),
-                                        tr("New crate name:"),
+                                        tr("Enter name for new crate:"),
                                         QLineEdit::Normal,
                                         //: Appendix to default name when duplicating a crate
                                         oldName + tr("_copy" , "[noun]"),
@@ -604,7 +604,7 @@ QString CrateFeature::getRootViewHtml() const {
     QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
 
     QString html;
-    QString createCrateLink = tr("Create new crate");
+    QString createCrateLink = tr("Create New Crate");
     html.append(QString("<h2>%1</h2>").arg(cratesTitle));
     html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(cratesSummary));

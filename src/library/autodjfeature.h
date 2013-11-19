@@ -16,7 +16,6 @@
 #include "library/dao/autodjcratesdao.h"
 #endif // __AUTODJCRATES__
 
-class PlaylistTableModel;
 class TrackCollection;
 
 class AutoDJFeature : public LibraryFeature {
@@ -30,7 +29,7 @@ class AutoDJFeature : public LibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QList<QUrl> urls,QWidget *pSource);
+    bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
 
     void bindWidget(WLibrary* libraryWidget,

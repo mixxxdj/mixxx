@@ -18,19 +18,20 @@
 #ifndef DLGPREFERENCES_H
 #define DLGPREFERENCES_H
 
- #include <QDialog>
-
-#include <qevent.h>
+#include <QDialog>
+#include <QEvent>
 #include <QtGui>
+
 #include "ui_dlgpreferencesdlg.h"
 #include "configobject.h"
 #include "controlpushbutton.h"
+#include "preferences/dlgpreferencepage.h"
 
 class MixxxApp;
 class SoundManager;
 class DlgPrefSound;
 class DlgPrefController;
-class DlgPrefNoControllers;
+class DlgPrefControllers;
 class DlgPrefPlaylist;
 class DlgPrefControls;
 class DlgPrefEQ;
@@ -49,10 +50,6 @@ class VinylControlManager;
 class DlgPrefModplug;
 #endif
 
-/**
-  *@author Tue & Ken Haste Andersen
-  */
-
 class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     Q_OBJECT
   public:
@@ -61,14 +58,13 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
                    VinylControlManager* pVCManager, ConfigObject<ConfigValue>* config);
     virtual ~DlgPreferences();
 
-    void createIcons();
+    void addPageWidget(DlgPreferencePage* pWidget);
+    void removePageWidget(DlgPreferencePage* pWidget);
+    void switchToPage(DlgPreferencePage* pWidget);
 
   public slots:
-    void rescanControllers();
-    void slotApply();
     void changePage(QTreeWidgetItem* current, QTreeWidgetItem* previous);
     void showSoundHardwarePage();
-    void slotHighlightDevice(DlgPrefController* dialog, bool enabled);
 
   signals:
     void closeDlg();
@@ -78,17 +74,13 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     bool eventFilter(QObject*, QEvent*);
 
   private:
-    void destroyControllerWidgets();
-    void setupControllerWidgets();
-    int addPageWidget(QWidget* w);
+    void createIcons();
     void onShow();
     void onHide();
 
-    QList<DlgPrefController*> m_controllerWindows;
-    
     DlgPrefSound* m_wsound;
     DlgPrefPlaylist* m_wplaylist;
-    DlgPrefNoControllers *m_wNoControllers;
+    DlgPrefControllers *m_wcontrollers;
     DlgPrefControls* m_wcontrols;
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
@@ -101,21 +93,6 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
 #ifdef __MODPLUG__
     DlgPrefModplug* m_wmodplug;
 #endif
-
-    /*
-    QScrollArea* m_sasound;
-    QScrollArea* m_saplaylist;
-//     QScrollArea* m_saNoMidi;
-    QScrollArea* m_sacontrols;
-    QScrollArea* m_saeq;
-    QScrollArea* m_sacrossfader;
-    QScrollArea* m_sarecord;
-    QScrollArea* m_sabpm;
-    QScrollArea* m_savinylcontrol;
-    QScrollArea* m_sanovinylcontrol;
-    QScrollArea* m_sashoutcast;
-    QScrollArea* m_sareplaygain;
-	*/
 
     QTreeWidgetItem* m_pSoundButton;
     QTreeWidgetItem* m_pPlaylistButton;
@@ -132,12 +109,9 @@ class DlgPreferences : public QDialog, public Ui::DlgPreferencesDlg {
     QTreeWidgetItem* m_pModplugButton;
 #endif
     QTreeWidgetItem* m_pControllerTreeItem;
-    QList<QTreeWidgetItem*> m_controllerWindowLinks;
 
     QSize m_pageSizeHint;
 
-    ConfigObject<ConfigValue>* m_pConfig;
-    ControllerManager* m_pControllerManager;
     ControlPushButton m_preferencesUpdated;
 };
 

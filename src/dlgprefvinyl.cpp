@@ -31,15 +31,14 @@
 
 DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
                            ConfigObject<ConfigValue> * _config)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
+          m_pVCManager(pVCMan),
+          config(_config),
           m_COSpeed1("[Channel1]", "vinylcontrol_speed_type"),
           m_COSpeed2("[Channel2]", "vinylcontrol_speed_type") {
-    m_pVCManager = pVCMan;
-    config = _config;
-
     setupUi(this);
 
-    //Set up a button group for the vinyl control behaviour options
+    //Set up a button group for the vinyl control behavior options
     QButtonGroup vinylControlMode;
     vinylControlMode.addButton(AbsoluteMode);
     vinylControlMode.addButton(RelativeMode);
@@ -95,11 +94,10 @@ void DlgPrefVinyl::slotShow() {
     //(Re)Initialize the signal quality indicators
     m_signalWidget1.resetWidget();
     m_signalWidget2.resetWidget();
-
 }
 
 /** @brief Performs any necessary actions that need to happen when the prefs dialog is closed */
-void DlgPrefVinyl::slotClose() {
+void DlgPrefVinyl::slotHide() {
     if (m_pVCManager) {
         m_pVCManager->removeSignalQualityListener(&m_signalWidget1);
         m_pVCManager->removeSignalQualityListener(&m_signalWidget2);
@@ -143,8 +141,8 @@ void DlgPrefVinyl::slotUpdate()
     //set vinyl control gain
     VinylGain->setValue( config->getValueString(ConfigKey(VINYL_PREF_KEY,"gain")).toInt());
 
-    m_signalWidget1.setVinylActive(m_pVCManager->vinylInputEnabled(0));
-    m_signalWidget2.setVinylActive(m_pVCManager->vinylInputEnabled(1));
+    m_signalWidget1.setVinylActive(m_pVCManager->vinylInputEnabled(1));
+    m_signalWidget2.setVinylActive(m_pVCManager->vinylInputEnabled(2));
 }
 
 // Update the config object with parameters from dialog

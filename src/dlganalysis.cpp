@@ -33,8 +33,7 @@ DlgAnalysis::DlgAnalysis(QWidget* parent,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pAnalysisLibraryTableView);
 
-    m_pAnalysisLibraryTableModel =  new AnalysisLibraryTableModel(this,
-                                    pTrackCollection);
+    m_pAnalysisLibraryTableModel =  new AnalysisLibraryTableModel(this, pTrackCollection);
     m_pAnalysisLibraryTableView->loadTrackModel(m_pAnalysisLibraryTableModel);
 
     connect(radioButtonRecentlyAdded, SIGNAL(clicked()),

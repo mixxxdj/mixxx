@@ -38,9 +38,9 @@ ControlObjectThread::ControlObjectThread(const ConfigKey& key, QObject* pParent)
 
 void ControlObjectThread::initialize(const ConfigKey& key) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(m_key, false);
+    m_pControl = ControlDoublePrivate::getControl(key);
     if (m_pControl) {
-        connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                 this, SLOT(slotValueChanged(double, QObject*)),
                 Qt::DirectConnection);
     }
@@ -48,6 +48,17 @@ void ControlObjectThread::initialize(const ConfigKey& key) {
 
 ControlObjectThread::~ControlObjectThread() {
 }
+
+bool ControlObjectThread::connectValueChanged(const QObject* receiver,
+        const char* method, Qt::ConnectionType type) {
+    return connect((QObject*)this, SIGNAL(valueChanged(double)), receiver, method, type);
+}
+
+bool ControlObjectThread::connectValueChanged(
+        const char* method, Qt::ConnectionType type) {
+    return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(), method, type);
+}
+
 
 double ControlObjectThread::get() {
     return m_pControl ? m_pControl->get() : 0.0;
