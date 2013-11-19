@@ -16,21 +16,23 @@ WLibrarySidebar::WLibrarySidebar(QWidget* parent) : QTreeView(parent) {
     setDropIndicatorShown(true);
     setAcceptDrops(true);
     setAutoScroll(true);
+    header()->setStretchLastSection(false);
+    header()->setResizeMode(QHeaderView::ResizeToContents);
+    header()->setHorizontalScrollMode(QAbstractItemView::ScrollPerPixel);
 }
 
 WLibrarySidebar::~WLibrarySidebar() {
 }
 
 
-void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event)
-{
+void WLibrarySidebar::contextMenuEvent(QContextMenuEvent *event) {
     //if (event->state() & Qt::RightButton) { //Dis shiz don werk on windowze
     QModelIndex clickedItem = indexAt(event->pos());
     emit(rightClicked(event->globalPos(), clickedItem));
     //}
 }
 
-/** Drag enter event, happens when a dragged item enters the track sources view*/
+// Drag enter event, happens when a dragged item enters the track sources view
 void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
 {
     qDebug() << "WLibrarySidebar::dragEnterEvent" << event->mimeData()->formats();
@@ -40,8 +42,7 @@ void WLibrarySidebar::dragEnterEvent(QDragEnterEvent * event)
     //QTreeView::dragEnterEvent(event);
 }
 
-/** Drag move event, happens when a dragged item hovers over the track sources view...
- */
+// Drag move event, happens when a dragged item hovers over the track sources view...
 void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
 {
     //qDebug() << "dragMoveEvent" << event->mimeData()->formats();
@@ -58,10 +59,11 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
     QTreeView::dragMoveEvent(event);
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
-        //Drag and drop within this widget
-        if (event->source() == this && event->possibleActions() & Qt::MoveAction) {
-            //Do nothing.
-             event->ignore();
+        // Drag and drop within this widget
+        if ((event->source() == this)
+                && (event->possibleActions() & Qt::MoveAction)) {
+            // Do nothing.
+            event->ignore();
         } else {
             SidebarModel* sidebarModel = dynamic_cast<SidebarModel*>(model());
             bool accepted = true;
@@ -77,13 +79,15 @@ void WLibrarySidebar::dragMoveEvent(QDragMoveEvent * event)
                     }
                 }
             }
-            if (accepted)
+            if (accepted) {
                 event->acceptProposedAction();
-            else
+            } else {
                 event->ignore();
+            }
         }
-    } else
+    } else {
         event->ignore();
+    }
 }
 
 void WLibrarySidebar::timerEvent(QTimerEvent *event) {
@@ -105,8 +109,10 @@ void WLibrarySidebar::timerEvent(QTimerEvent *event) {
 void WLibrarySidebar::dropEvent(QDropEvent * event) {
     if (event->mimeData()->hasUrls()) {
         QList<QUrl> urls(event->mimeData()->urls());
-        //Drag and drop within this widget
-        if (event->source() == this && event->possibleActions() & Qt::MoveAction) {
+        // Drag and drop within this widget
+        if ((event->source() == this)
+                && (event->possibleActions() & Qt::MoveAction)) {
+            // Do nothing.
             event->ignore();
         } else {
             //Reset the selected items (if you had anything highlighted, it clears it)

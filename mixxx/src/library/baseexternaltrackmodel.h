@@ -21,22 +21,16 @@ class BaseExternalTrackModel : public BaseSqlTableModel {
                            QString trackSource);
     virtual ~BaseExternalTrackModel();
 
+    void setTableModel(int id=-1);
     TrackModel::CapabilitiesFlags getCapabilities() const;
-    virtual TrackPointer getTrack(const QModelIndex& index) const;
-    virtual void search(const QString& searchText);
-    virtual bool isColumnInternal(int column);
-    virtual bool isColumnHiddenByDefault(int column);
-    virtual Qt::ItemFlags flags(const QModelIndex &index) const;
-
-  private slots:
-    void slotSearch(const QString& searchText);
-
-  signals:
-    void doSearch(const QString& searchText);
+    TrackPointer getTrack(const QModelIndex& index) const;
+    bool isColumnInternal(int column);
+    bool isColumnHiddenByDefault(int column);
+    Qt::ItemFlags flags(const QModelIndex &index) const;
 
   private:
-    TrackCollection* m_pTrackCollection;
-    QSqlDatabase& m_database;
+    QString m_trackTable;
+    QString m_trackSource;
 };
 
 #endif /* BASEEXTERNALTRACKMODEL_H */

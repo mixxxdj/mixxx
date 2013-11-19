@@ -11,15 +11,13 @@
 #include <QStandardItem>
 #include <QList>
 
-/*
- * This class is a singleton and represents a thread
- * that is used to read ID3 metadata
- * from a particular folder.
- *
- * The BroseTableModel uses this class.
- * Note: Don't call getInstance() from places
- * other than the GUI thread.
- */
+// This class is a singleton and represents a thread
+// that is used to read ID3 metadata
+// from a particular folder.
+//
+// The BroseTableModel uses this class.
+// Note: Don't call getInstance() from places
+// other than the GUI thread.
 class BrowseTableModel;
 
 class BrowseThread : public QThread {

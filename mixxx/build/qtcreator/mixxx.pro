@@ -98,15 +98,14 @@ CONFIG(debug) { # gdbmacros is required for inspecting Qt datatypes using gdb wi
 }
 
 HEADERS += $$UI_DIR/ui_dlgaboutdlg.h \
-    $$UI_DIR/ui_dlgbpmschemedlg.h \
     $$UI_DIR/ui_dlgmidilearning.h \
-    $$UI_DIR/ui_dlgprefbpmdlg.h \
     $$UI_DIR/ui_dlgprefcontrolsdlg.h \
     $$UI_DIR/ui_dlgprefcrossfaderdlg.h \
     $$UI_DIR/ui_dlgprefeqdlg.h \
     $$UI_DIR/ui_dlgpreferencesdlg.h \
     $$UI_DIR/ui_dlgprefmidibindingsdlg.h \
     $$UI_DIR/ui_dlgprefplaylistdlg.h \
+    $$UI_DIR/ui_dlgtagfetcher.h \
     $$UI_DIR/ui_dlgprefrecorddlg.h \
     $$UI_DIR/ui_dlgprefsounddlg.h \
     $$UI_DIR/ui_dlgprefvinyldlg.h \
@@ -131,7 +130,6 @@ INCLUDEPATH += src \
 # done
 
 HEADERS += \
-$$BASE_DIR/src/analyserbpm.h \
 $$BASE_DIR/src/analyser.h \
 $$BASE_DIR/src/analyserqueue.h \
 $$BASE_DIR/src/analyserwaveform.h \
@@ -162,10 +160,8 @@ $$BASE_DIR/src/defs_urls.h \
 $$BASE_DIR/src/defs_version.h \
 $$BASE_DIR/src/dlgabout.h \
 $$BASE_DIR/src/dlgautodj.h \
-$$BASE_DIR/src/dlgbpmscheme.h \
 $$BASE_DIR/src/dlgladspa.h \
 $$BASE_DIR/src/dlgmidilearning.h \
-$$BASE_DIR/src/dlgprefbpm.h \
 $$BASE_DIR/src/dlgprefcontrols.h \
 $$BASE_DIR/src/dlgprefcrossfader.h \
 $$BASE_DIR/src/dlgprefeq.h \
@@ -373,7 +369,6 @@ $$BASE_DIR/src/xmlparse.h
 
 
 SOURCES += \
-$$BASE_DIR/src/analyserbpm.cpp \
 $$BASE_DIR/src/analyserqueue.cpp \
 $$BASE_DIR/src/analyserwaveform.cpp \
 $$BASE_DIR/src/analyserwavesummary.cpp \
@@ -396,10 +391,8 @@ $$BASE_DIR/src/controlttrotary.cpp \
 $$BASE_DIR/src/controlvaluedelegate.cpp \
 $$BASE_DIR/src/dlgabout.cpp \
 $$BASE_DIR/src/dlgautodj.cpp \
-$$BASE_DIR/src/dlgbpmscheme.cpp \
 $$BASE_DIR/src/dlgladspa.cpp \
 $$BASE_DIR/src/dlgmidilearning.cpp \
-$$BASE_DIR/src/dlgprefbpm.cpp \
 $$BASE_DIR/src/dlgprefcontrols.cpp \
 $$BASE_DIR/src/dlgprefcrossfader.cpp \
 $$BASE_DIR/src/dlgprefeq.cpp \
@@ -622,9 +615,7 @@ SOURCES += $$BASE_DIR/lib/replaygain/replaygain_analysis.c
 FORMS += \
 $$BASE_DIR/src/dlgaboutdlg.ui \
 $$BASE_DIR/src/dlgautodj.ui \
-$$BASE_DIR/src/dlgbpmschemedlg.ui \
 $$BASE_DIR/src/dlgmidilearning.ui \
-$$BASE_DIR/src/dlgprefbpmdlg.ui \
 $$BASE_DIR/src/dlgprefcontrolsdlg.ui \
 $$BASE_DIR/src/dlgprefcrossfaderdlg.ui \
 $$BASE_DIR/src/dlgprefeqdlg.ui \
@@ -913,17 +904,31 @@ win32 {
     system( echo $$TARGET --resourcePath \"$$replace(PWD, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}res\">\"$${PWD}$${DIR_SEPARATOR}$$replace(DESTDIR, /,$${DIR_SEPARATOR})$${DIR_SEPARATOR}testrun-$${TARGET}.cmd\" )
 }
 
-# Get info from BZR about the current branch
-BZR_REVNO = $$system( bzr revno )
-BZR_INFO = $$system( bzr info )
-for(BZR_INFO_BITS, BZR_INFO) {
-	BZR_BRANCH_URL = $${BZR_INFO_BITS}
+exists( .bzr ) {
+    # Get info from BZR about the current branch
+    BZR_REVNO = $$system( bzr revno )
+    BZR_INFO = $$system( bzr info )
+    for(BZR_INFO_BITS, BZR_INFO) {
+        BZR_BRANCH_URL = $${BZR_INFO_BITS}
+    }
+    BZR_BRANCH_NAME = $$dirname(BZR_BRANCH_URL)
+    BZR_BRANCH_NAME = $$basename(BZR_BRANCH_NAME)
+    message(BRANCH_NAME is $$BZR_BRANCH_NAME)
+    message(REVISION is $$BZR_REVNO)
+    message(BRANCH_URL is $$BZR_BRANCH_URL)
+    VCS_BRANCH_NAME = $${BZR_BRANCH_NAME}
+    VCS_REVNO = $${BZR_REVNO}
 }
-BZR_BRANCH_NAME = $$dirname(BZR_BRANCH_URL)
-BZR_BRANCH_NAME = $$basename(BZR_BRANCH_NAME)
-message(BRANCH_NAME is $$BZR_BRANCH_NAME)
-message(REVISION is $$BZR_REVNO)
-message(BRANCH_URL is $$BZR_BRANCH_URL)
+
+exists ( .git ) {
+    # Get info from git about the current branch
+    GIT_REVNO = $$system( git log --pretty=oneline --first-parent | wc -l )
+    GIT_BRANCH_NAME = $$system( git branch | grep \* | sed -e "s/\* //;" )
+    message(BRANCH_NAME is $$GIT_BRANCH_NAME)
+    message(REVISION is $$GIT_REVNO)
+    VCS_BRANCH_NAME = $${GIT_BRANCH_NAME}
+    VCS_REVNO = $${GIT_REVNO}
+}
 
 win32 {
     # Makefile target to build an NSIS Installer...
@@ -932,13 +937,13 @@ win32 {
     # SH Usage: make -f Makefile.Debug nsis
     nsis.target = nsis
     exists($$BUILDDIR/gdb.exe):INCLUDE_GDB = -DINCLUDE_GDB
-    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DGCC -DBINDIR=\"$$BUILDDIR\" -DBUILD_REV=\"$$BZR_BRANCH_NAME-$$BZR_REVNO\" $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
+    nsis.commands = \"$$(PROGRAMFILES)\NSIS\makensis.exe\" -NOCD -DGCC -DBINDIR=\"$$BUILDDIR\" -DBUILD_REV=\"$$VCS_BRANCH_NAME-$$VCS_REVNO\" $$INCLUDE_GDB build\\\\nsis\\\\Mixxx.nsi
     # nsis.depends =
     QMAKE_EXTRA_UNIX_TARGETS += nsis
 }
 
 # build.h
-BUILD_REV = $${BZR_BRANCH_NAME} : $${BZR_REVNO}
+BUILD_REV = $${VCS_BRANCH_NAME} : $${VCS_REVNO}
 isEmpty( BUILD_REV ):BUILD_REV = Killroy was here
 BUILD_REV += - built via qmake/Qt Creator
 message( Generating src$${DIR_SEPARATOR}build.h with contents: $${LITERAL_HASH}define BUILD_REV '"'$$BUILD_REV'"' )

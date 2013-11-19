@@ -31,11 +31,22 @@ bool WaveformSignalColors::setup(const QDomNode &node)
     m_highColor = WSkinColor::getCorrectColor(m_highColor);
 
     m_axesColor.setNamedColor(WWidget::selectNodeQString(node, "AxesColor"));
+    if (!m_axesColor.isValid()) {
+        m_axesColor = QColor(245,245,245);
+    }    
     m_axesColor = WSkinColor::getCorrectColor(m_axesColor);
 
-    if (!m_axesColor.isValid()) {
-        m_axesColor = QColor(245,245,245,128);
+    m_playPosColor.setNamedColor(WWidget::selectNodeQString(node, "PlayPosColor"));
+    m_playPosColor = WSkinColor::getCorrectColor(m_playPosColor);
+    if (!m_playPosColor.isValid()) {
+        m_playPosColor = m_axesColor;
     }
+
+    m_bgColor.setNamedColor(WWidget::selectNodeQString(node, "BgColor"));
+    if (!m_bgColor.isValid()) {
+        m_bgColor = QColor(0, 0, 0);
+    }
+    m_bgColor = WSkinColor::getCorrectColor(m_bgColor);
 
     bool filteredColorValid = m_lowColor.isValid() && m_midColor.isValid() && m_highColor.isValid();
 

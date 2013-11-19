@@ -1,4 +1,3 @@
-// basesqltablemodel.h
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
 #include <QtAlgorithms>
@@ -9,7 +8,9 @@
 
 #include "library/stardelegate.h"
 #include "library/starrating.h"
+#include "library/bpmdelegate.h"
 #include "library/previewbuttondelegate.h"
+#include "library/queryutil.h"
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 #include "playerinfo.h"
@@ -18,16 +19,15 @@ const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
-                                     QSqlDatabase db,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
-           TrackModel(db, settingsNamespace),
-           m_currentSearch(""),
-           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
-           m_iPreviewDeckTrackId(-1),
+           TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_database(db) {
+           m_database(pTrackCollection->getDatabase()),
+           m_currentSearch(""),
+           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
+           m_iPreviewDeckTrackId(-1) {
     m_bInitialized = false;
     m_bDirty = true;
     m_iSortColumn = 0;
@@ -177,15 +177,6 @@ void BaseSqlTableModel::select() {
     QTime time;
     time.start();
 
-    // Remove all the rows from the table.
-    // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
-        m_rowInfo.clear();
-        m_trackIdToRows.clear();
-        endRemoveRows();
-    }
-
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
@@ -202,8 +193,18 @@ void BaseSqlTableModel::select() {
     query.prepare(queryString);
 
     if (!query.exec()) {
-        qDebug() << this << "select() error:" << __FILE__ << __LINE__
-                 << query.executedQuery() << query.lastError();
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    // Remove all the rows from the table. We wait to do this until after the
+    // table query has succeeded. See Bug #1090888.
+    // TODO(rryan) we could edit the table in place instead of clearing it?
+    if (m_rowInfo.size() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+        m_rowInfo.clear();
+        m_trackIdToRows.clear();
+        endRemoveRows();
     }
 
     QSqlRecord record = query.record();
@@ -215,8 +216,7 @@ void BaseSqlTableModel::select() {
         tableColumnIndices.push_back(record.indexOf(column));
     }
 
-	// sqlite does not set size and m_rowInfo was just cleared
-    //int rows = query.size();
+    // sqlite does not set size and m_rowInfo was just cleared
     //if (sDebug) {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
     //}
@@ -357,7 +357,7 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString extra
     m_bDirty = true;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString extraFilter) {
+void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
@@ -464,9 +464,13 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
                 value = value.toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
-                value = value.toDateTime();
+                QDateTime gmtDate = value.toDateTime();
+                gmtDate.setTimeSpec(Qt::UTC);
+                value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-                value = value.toDateTime().time();
+                QDateTime gmtDate = value.toDateTime();
+                gmtDate.setTimeSpec(Qt::UTC);
+                value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             }
@@ -620,6 +624,10 @@ int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex(m_idColumn)).data().toInt();
 }
 
+TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
+    return m_trackDAO.getTrack(getTrackId(index));
+}
+
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
         return "";
@@ -692,7 +700,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
         // QVariant::toFloat needs >= QT 4.6.x
-        pTrack->setBpm(static_cast<float>(value.toDouble()));
+        pTrack->setBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
         pTrack->setPlayedAndUpdatePlaycount(value.toBool());
     } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
@@ -795,6 +803,8 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
+    } else if (i == fieldIndex(LIBRARYTABLE_BPM)) {
+        return new BPMDelegate(pParent, i, fieldIndex(LIBRARYTABLE_BPM_LOCK));
     } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
         return new PreviewButtonDelegate(pParent, i);
     }
@@ -814,5 +824,3 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // there.
     select(); //Repopulate the data model.
 }
-
-

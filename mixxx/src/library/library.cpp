@@ -19,7 +19,9 @@
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/preparefeature.h"
+#ifdef __PROMO__
 #include "library/promotracksfeature.h"
+#endif
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
@@ -35,17 +37,19 @@
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
 Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
-                 RecordingManager* pRecordingManager)
-    : m_pConfig(pConfig),
-      m_pRecordingManager(pRecordingManager) {
-    m_pTrackCollection = new TrackCollection(pConfig);
-    m_pSidebarModel = new SidebarModel(parent);
-    m_pLibraryControl = new LibraryControl(this);
+                 RecordingManager* pRecordingManager) :
+        m_pConfig(pConfig),
+        m_pSidebarModel(new SidebarModel(parent)),
+        m_pTrackCollection(new TrackCollection(pConfig)),
+        m_pLibraryControl(new LibraryControl),
+        m_pRecordingManager(pRecordingManager) {
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
-    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection);
+    m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
+
+#ifdef __PROMO__
     if (PromoTracksFeature::isSupported(m_pConfig)) {
         m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
                                                        m_pTrackCollection,
@@ -54,11 +58,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     } else {
         m_pPromoTracksFeature = NULL;
     }
+#endif
 
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
-    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, pConfig);
+    m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pPlaylistFeature);
-    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, pConfig);
+    m_pCrateFeature = new CrateFeature(this, m_pTrackCollection, m_pConfig);
     addFeature(m_pCrateFeature);
     addFeature(new BrowseFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
     addFeature(new RecordingFeature(this, pConfig, m_pTrackCollection, m_pRecordingManager));
@@ -143,8 +148,8 @@ void Library::bindWidget(WLibrary* pLibraryWidget,
             pTrackTableView, SLOT(loadTrackModel(QAbstractItemModel*)));
     connect(pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
+    connect(pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     pLibraryWidget->registerView(m_sTrackViewName, pTrackTableView);
 
     connect(this, SIGNAL(switchToView(const QString&)),
@@ -169,8 +174,8 @@ void Library::addFeature(LibraryFeature* feature) {
             this, SLOT(slotSwitchToView(const QString&)));
     connect(feature, SIGNAL(loadTrack(TrackPointer)),
             this, SLOT(slotLoadTrack(TrackPointer)));
-    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString)));
+    connect(feature, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SLOT(slotLoadTrackToPlayer(TrackPointer, QString, bool)));
     connect(feature, SIGNAL(restoreSearch(const QString&)),
             this, SLOT(slotRestoreSearch(const QString&)));
 }
@@ -211,27 +216,24 @@ void Library::slotLoadLocationToPlayer(QString location, QString group) {
     emit(loadTrackToPlayer(pTrack, group));
 }
 
-void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group) {
-    emit(loadTrackToPlayer(pTrack, group));
+void Library::slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play) {
+    emit(loadTrackToPlayer(pTrack, group, play));
 }
 
 void Library::slotRestoreSearch(const QString& text) {
     emit(restoreSearch(text));
 }
 
-void Library::slotRefreshLibraryModels()
-{
+void Library::slotRefreshLibraryModels() {
    m_pMixxxLibraryFeature->refreshLibraryModels();
    m_pPrepareFeature->refreshLibraryModels();
 }
 
-void Library::slotCreatePlaylist()
-{
+void Library::slotCreatePlaylist() {
     m_pPlaylistFeature->slotCreatePlaylist();
 }
 
-void Library::slotCreateCrate()
-{
+void Library::slotCreateCrate() {
     m_pCrateFeature->slotCreateCrate();
 }
 
@@ -240,10 +242,10 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-QList<TrackPointer> Library::getTracksToAutoLoad()
-{
+QList<TrackPointer> Library::getTracksToAutoLoad() {
+#ifdef __PROMO__
     if (m_pPromoTracksFeature)
         return m_pPromoTracksFeature->getTracksToAutoLoad();
-    else
-        return QList<TrackPointer>();
+#endif
+    return QList<TrackPointer>();
 }

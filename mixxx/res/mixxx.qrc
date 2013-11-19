@@ -12,6 +12,7 @@
         <file>images/preferences/ic_preferences_equalizers.png</file>
         <file>images/preferences/ic_preferences_interface.png</file>
         <file>images/preferences/ic_preferences_library.png</file>
+        <file>images/preferences/ic_preferences_modplug.png</file>
         <file>images/preferences/ic_preferences_recording.png</file>
         <file>images/preferences/ic_preferences_replaygain.png</file>
         <file>images/preferences/ic_preferences_sampler.png</file>
@@ -37,6 +38,8 @@
 		<file>images/library/ic_library_banshee.png</file>
         <file>images/library/ic_library_preview_play.png</file>
         <file>images/library/ic_library_preview_pause.png</file>
+        <file>images/library/ic_library_checked.png</file>
+        <file>images/library/ic_library_unchecked.png</file>
         <file>shaders/computemaxsignal.frag</file>
         <file>shaders/filteredsignal.frag</file>
         <file>shaders/passthrough.vert</file>
@@ -46,6 +49,7 @@
         <file>translations/mixxx_br.qm</file>
         <file>translations/mixxx_bs.qm</file>
         <file>translations/mixxx_ca.qm</file>
+        <file>translations/mixxx_ceb.qm</file>
         <file>translations/mixxx_cs.qm</file>
         <file>translations/mixxx_da.qm</file>
         <file>translations/mixxx_de.qm</file>
@@ -59,6 +63,7 @@
         <file>translations/mixxx_fr.qm</file>
         <file>translations/mixxx_ga.qm</file>
         <file>translations/mixxx_gl.qm</file>
+        <file>translations/mixxx_hr.qm</file>
         <file>translations/mixxx_he.qm</file>
         <file>translations/mixxx_hu.qm</file>
         <file>translations/mixxx_hy.qm</file>
@@ -67,11 +72,16 @@
         <file>translations/mixxx_is.qm</file>
         <file>translations/mixxx_it.qm</file>
         <file>translations/mixxx_ja.qm</file>
+        <file>translations/mixxx_ky.qm</file>
         <file>translations/mixxx_lb.qm</file>
+        <file>translations/mixxx_lt.qm</file>
+        <file>translations/mixxx_lv.qm</file>
+        <file>translations/mixxx_mk.qm</file>
         <file>translations/mixxx_ml.qm</file>
         <file>translations/mixxx_mn.qm</file>
         <file>translations/mixxx_mr.qm</file>
         <file>translations/mixxx_ms.qm</file>
+        <file>translations/mixxx_my.qm</file>
         <file>translations/mixxx_nb.qm</file>
         <file>translations/mixxx_nl.qm</file>
         <file>translations/mixxx_nn.qm</file>

@@ -20,17 +20,18 @@
 #include "mixxx.h"
 
 // this (7) represents latency values from 1 ms to about 80 ms -- bkgood
-const unsigned int SoundManagerConfig::kMaxLatency = 7;
+const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;
 
 const QString SoundManagerConfig::kDefaultAPI = QString("None");
-const unsigned int SoundManagerConfig::kDefaultSampleRate = 48000;
-// latency=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
-const int SoundManagerConfig::kDefaultLatency = 5;
+// Sample Rate even the cheap sound Devices will support most likely
+const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
+// audioBufferSizeIndex=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
+const int SoundManagerConfig::kDefaultAudioBufferSizeIndex = 5;
 
-SoundManagerConfig::SoundManagerConfig()
-    : m_api("None")
-    , m_sampleRate(kDefaultSampleRate)
-    , m_latency(kDefaultLatency) {
+SoundManagerConfig::SoundManagerConfig() 
+    : m_api("None"),
+      m_sampleRate(kFallbackSampleRate),
+      m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex) {
     m_configFile = QFileInfo(CmdlineArgs::Instance().getSettingsPath() + SOUNDMANAGERCONFIG_FILENAME);
 }
 
@@ -59,7 +60,8 @@ bool SoundManagerConfig::readFromDisk() {
     rootElement = doc.documentElement();
     setAPI(rootElement.attribute("api"));
     setSampleRate(rootElement.attribute("samplerate", "0").toUInt());
-    setLatency(rootElement.attribute("latency", "0").toUInt());
+    // audioBufferSizeIndex is refereed as "latency" in the config file
+    setAudioBufferSizeIndex(rootElement.attribute("latency", "0").toUInt());
     clearOutputs();
     clearInputs();
     QDomNodeList devElements(rootElement.elementsByTagName("SoundDevice"));
@@ -111,7 +113,8 @@ bool SoundManagerConfig::writeToDisk() const {
     QDomElement docElement(doc.createElement("SoundManagerConfig"));
     docElement.setAttribute("api", m_api);
     docElement.setAttribute("samplerate", m_sampleRate);
-    docElement.setAttribute("latency", m_latency);
+    // audioBufferSizeIndex is refereed as "latency" in the config file
+    docElement.setAttribute("latency", m_audioBufferSizeIndex);
     doc.appendChild(docElement);
     foreach (QString device, m_outputs.keys().toSet().unite(m_inputs.keys().toSet())) {
         QDomElement devElement(doc.createElement("SoundDevice"));
@@ -166,7 +169,7 @@ unsigned int SoundManagerConfig::getSampleRate() const {
 
 void SoundManagerConfig::setSampleRate(unsigned int sampleRate) {
     // making sure we don't divide by zero elsewhere
-    m_sampleRate = sampleRate != 0 ? sampleRate : kDefaultSampleRate;
+    m_sampleRate = sampleRate != 0 ? sampleRate : kFallbackSampleRate;
 }
 
 /**
@@ -182,36 +185,35 @@ bool SoundManagerConfig::checkSampleRate(const SoundManager &soundManager) {
     return true;
 }
 
-unsigned int SoundManagerConfig::getLatency() const {
-    return m_latency;
+unsigned int SoundManagerConfig::getAudioBufferSizeIndex() const {
+    return m_audioBufferSizeIndex;
 }
 
 unsigned int SoundManagerConfig::getFramesPerBuffer() const {
-    Q_ASSERT(m_latency > 0); // endless loop otherwise
+    Q_ASSERT(m_audioBufferSizeIndex > 0); // endless loop otherwise
     unsigned int framesPerBuffer = 1;
     double sampleRate = m_sampleRate; // need this to avoid int division
     // first, get to the framesPerBuffer value corresponding to latency index 1
     for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
     }
     // then, keep going until we get to our desired latency index (if not 1)
-    for (unsigned int latencyIndex = 1; latencyIndex < m_latency; ++latencyIndex) {
+    for (unsigned int latencyIndex = 1; latencyIndex < m_audioBufferSizeIndex; ++latencyIndex) {
         framesPerBuffer <<= 1; // *= 2
     }
     return framesPerBuffer;
 }
 
-/**
- * Set the latency value.
- * @warning This IS NOT a value in milliseconds, or a number of frames per
- * buffer. It is an index, where 1 is the first power-of-two buffer size (in
- * frames) which corresponds to a latency greater than or equal to 1 ms, 2 is
- * the second, etc. This is so that latency values are roughly equivalent
- * between different sample rates.
- */
-void SoundManagerConfig::setLatency(unsigned int latency) {
-    // latency should be either the min of kMaxLatency and the passed value
+
+// Set the audio buffer size
+// @warning This IS NOT a value in milliseconds, or a number of frames per
+// buffer. It is an index, where 1 is the first power-of-two buffer size (in
+// frames) which corresponds to a latency greater than or equal to 1 ms, 2 is
+// the second, etc. This is so that latency values are roughly equivalent
+// between different sample rates.
+void SoundManagerConfig::setAudioBufferSizeIndex(unsigned int sizeIndex) {
+    // latency should be either the min of kMaxAudioBufferSizeIndex and the passed value
     // if it's 0, pretend it was 1 -- bkgood
-    m_latency = latency != 0 ? math_min(latency, kMaxLatency) : 1;
+    m_audioBufferSizeIndex = sizeIndex != 0 ? math_min(sizeIndex, kMaxAudioBufferSizeIndex) : 1;
 }
 
 void SoundManagerConfig::addOutput(const QString &device, const AudioOutput &out) {
@@ -315,29 +317,36 @@ void SoundManagerConfig::loadDefaults(SoundManager *soundManager, unsigned int f
 #endif
         }
     }
+
+    unsigned int defaultSampleRate = kFallbackSampleRate;
     if (flags & SoundManagerConfig::DEVICES) {
         clearOutputs();
         clearInputs();
         QList<SoundDevice*> outputDevices = soundManager->getDeviceList(m_api, true, false);
         if (!outputDevices.isEmpty()) {
             foreach (SoundDevice *device, outputDevices) {
-                if (device->getNumOutputChannels() < 2) continue;
+                if (device->getNumOutputChannels() < 2) {
+                    continue;
+                }
                 AudioOutput masterOut(AudioPath::MASTER, 0);
                 addOutput(device->getInternalName(), masterOut);
+                defaultSampleRate = device->getDefaultSampleRate();
                 break;
             }
         }
     }
     if (flags & SoundManagerConfig::OTHER) {
         QList<unsigned int> sampleRates = soundManager->getSampleRates(m_api);
-        if (sampleRates.contains(kDefaultSampleRate)) {
-            m_sampleRate = kDefaultSampleRate;
+        if (sampleRates.contains(defaultSampleRate)) {
+            m_sampleRate = defaultSampleRate;
+        } else if (sampleRates.contains(kFallbackSampleRate)) {
+            m_sampleRate = kFallbackSampleRate;
         } else if (!sampleRates.isEmpty()) {
             m_sampleRate = sampleRates.first();
         } else {
             qWarning() << "got empty sample rate list from SoundManager, this is a bug";
-            m_sampleRate = kDefaultSampleRate;
+            m_sampleRate = kFallbackSampleRate;
         }
-        m_latency = kDefaultLatency;
+        m_audioBufferSizeIndex = kDefaultAudioBufferSizeIndex;
     }
 }

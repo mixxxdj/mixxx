@@ -92,6 +92,7 @@ class AudioOutput : public AudioPath {
 public:
     AudioOutput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                 unsigned char index = 0);
+    virtual ~AudioOutput();
     QDomElement toXML(QDomElement *element) const;
     static AudioOutput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();
@@ -109,6 +110,7 @@ class AudioInput : public AudioPath {
 public:
     AudioInput(AudioPathType type = INVALID, unsigned char channelBase = 0,
                unsigned char index = 0);
+    virtual ~AudioInput();
     QDomElement toXML(QDomElement *element) const;
     static AudioInput fromXML(const QDomElement &xml);
     static QList<AudioPathType> getSupportedTypes();

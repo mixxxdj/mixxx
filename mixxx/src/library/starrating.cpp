@@ -17,7 +17,7 @@
 
 
 #include <QtGui>
-#include <math.h>
+#include <cmath>
 
 #include "starrating.h"
 

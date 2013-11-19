@@ -18,6 +18,8 @@ public:
     inline const QColor& getMidColor() const { return m_midColor;}
     inline const QColor& getHighColor() const { return m_highColor;}
     inline const QColor& getAxesColor() const { return m_axesColor;}
+    inline const QColor& getPlayPosColor() const { return m_playPosColor;}
+    inline const QColor& getBgColor() const { return m_bgColor;}
 
 protected:
     void fallBackFromSignalColor();
@@ -31,6 +33,8 @@ private:
     QColor m_midColor;
     QColor m_highColor;
     QColor m_axesColor;
+    QColor m_playPosColor;
+    QColor m_bgColor;
 };
 
 #endif // WAVEFORMSIGNALCOLORS_H

@@ -41,6 +41,7 @@ class BasePlaylistFeature : public LibraryFeature {
 
   protected slots:
     void slotDeletePlaylist();
+    void slotDuplicatePlaylist();
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
     void slotRenamePlaylist();
@@ -68,6 +69,7 @@ class BasePlaylistFeature : public LibraryFeature {
     QAction *m_pLockPlaylistAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
+    QAction *m_pDuplicatePlaylistAction;
     QList<QPair<int, QString> > m_playlistList;
     QModelIndex m_lastRightClickedIndex;
     TreeItemModel m_childModel;

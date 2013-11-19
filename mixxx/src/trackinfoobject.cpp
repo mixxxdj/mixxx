@@ -53,7 +53,7 @@ TrackInfoObject::TrackInfoObject(const QFileInfo& fileInfo, bool parseHeader)
 }
 
 TrackInfoObject::TrackInfoObject(const QDomNode &nodeHeader)
-        : m_qMutex(QMutex::Recursive), 
+        : m_qMutex(QMutex::Recursive),
           m_waveform(new Waveform()),
           m_waveformSummary(new Waveform()),
           m_analyserProgress(-1) {
@@ -305,7 +305,7 @@ void TrackInfoObject::setReplayGain(float f)
     emit(ReplayGainUpdated(f));
 }
 
-float TrackInfoObject::getBpm() const {
+double TrackInfoObject::getBpm() const {
     QMutexLocker lock(&m_qMutex);
     if (!m_pBeats) {
         return 0;
@@ -318,7 +318,7 @@ float TrackInfoObject::getBpm() const {
     return 0;
 }
 
-void TrackInfoObject::setBpm(float f) {
+void TrackInfoObject::setBpm(double f) {
     if (f < 0) {
         return;
     }

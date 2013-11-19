@@ -53,7 +53,7 @@
 	<manifest>
 	<title>LateNight1280x1024-SXGA</title>
 	<author>jus</author>
-	<version>1.11.0.13</version>
+	<version>1.11.0.16</version>
 	<description>A 2-deck parallel waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -101,12 +101,12 @@
 	############################################################################################
 	-->
 	<WidgetGroup>
-		<Pos>0,375</Pos>
+		<Pos>0,370</Pos>
 		<!--
 		<size> is optional, this will limit the size so that any part of a child widget outside of the size rectangle is not shown
 		<Size>w,h</Size>
 		-->
-		<Size>1280,550</Size>
+		<Size>1280,555f</Size>
 		<Layout>vertical</Layout>
 		<!--deactivate the standard
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -115,9 +115,9 @@
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
-				<Size>i,110</Size>
+				<Size>i,m</Size>
 				<Layout>horizontal</Layout>
-				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 8px 0px;} </Style>
+				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 0px 0px;} </Style>
 				<Children>
 					<!-- all sub-widgets for the sampler decks -->
 					<WidgetGroup>
@@ -137,7 +137,7 @@
 								</Style>
 								<Group>[Sampler1]</Group>
 								<Pos>5,3</Pos>
-								<Size>205,21</Size>
+								<Size>205f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -148,7 +148,7 @@
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -216,7 +216,7 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
@@ -652,7 +652,7 @@
 								</Style>
 								<Group>[Sampler2]</Group>
 								<Pos>5,3</Pos>
-								<Size>205,21</Size>
+								<Size>205f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -663,7 +663,7 @@
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -731,7 +731,7 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
@@ -1167,7 +1167,7 @@
 								</Style>
 								<Group>[Sampler3]</Group>
 								<Pos>5,3</Pos>
-								<Size>205,21</Size>
+								<Size>205f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1178,7 +1178,7 @@
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1246,7 +1246,7 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
@@ -1682,7 +1682,7 @@
 								</Style>
 								<Group>[Sampler4]</Group>
 								<Pos>5,3</Pos>
-								<Size>205,21</Size>
+								<Size>205f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1693,7 +1693,7 @@
 								<Property>title</Property>
 								<Group>[Sampler4]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1761,7 +1761,7 @@
 								<SignalMidColor></SignalMidColor>
 								<SignalLowColor></SignalLowColor>
 								<SignalColor>#3087BF</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>bottom</Align>
 									<Color>#00FF00</Color>
@@ -2211,6 +2211,10 @@
 				QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
 				QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
+				QPushButton#LibraryBPMButton {background: transparent; border: 0;}
+				QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
+				QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
+
 				QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 
 				<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
@@ -2383,7 +2387,7 @@
 														<SignalMidColor>#0099FF</SignalMidColor>
 														<SignalLowColor>#FF0035</SignalLowColor>
 														<SignalColor>#FF8000</SignalColor>
-														<MarkerColor>#00FF00</MarkerColor>
+														<PlayPosColor>#00FF00</PlayPosColor>
 														<DefaultMark>
 															<Align>bottom</Align>
 															<Color>#FFFFFF</Color>
@@ -2817,9 +2821,7 @@
 						<BgPixmap>style/style_bg_waveform1.png</BgPixmap>
 						<SignalColor>#0099FF</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor>#00FF00</BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#000000</CueColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<DefaultMark>
 							<Align>top</Align>
@@ -2872,9 +2874,7 @@
 						<BgPixmap>style/style_bg_waveform2.png</BgPixmap>
 						<SignalColor>#E17800</SignalColor>
 						<BeatColor>#ffffff</BeatColor>
-						<BeatHighlightColor>#00FF00</BeatHighlightColor>
-						<MarkerColor>#00FF00</MarkerColor>
-						<CueColor>#000000</CueColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<DefaultMark>
 							<Align>top</Align>
@@ -4176,12 +4176,11 @@
 				<Channel>1</Channel>
 				<Pos>1,66</Pos>
 				<Size>398,43</Size>
-				<!-- transparent background if no <BgColor> & <BgPixmap> is present
-				<BgColor>#1C1C1C</BgColor>
+				<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+				<BgColor></BgColor>
 				<BgPixmap></BgPixmap>
-				-->
 				<SignalColor>#0099FF</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
+				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
 					<Align>bottom</Align>
@@ -4222,7 +4221,7 @@
 				<Property>title</Property>
 				<Channel>1</Channel>
 				<Pos>0,1</Pos>
-				<Size>370,23</Size>
+				<Size>370f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -4238,7 +4237,7 @@
 				<Property>artist</Property>
 				<Channel>1</Channel>
 				<Pos>0,25</Pos>
-				<Size>350,23</Size>
+				<Size>350f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -4254,7 +4253,7 @@
 				<Property>album</Property>
 				<Channel>1</Channel>
 				<Pos>0,50</Pos>
-				<Size>350,15</Size>
+				<Size>350f,15</Size>
 			</TrackProperty>
 
 			<!--
@@ -5159,12 +5158,11 @@
 				<Channel>2</Channel>
 				<Pos>1,66</Pos>
 				<Size>398,43</Size>
-				<!-- transparent background if no <BgColor> & <BgPixmap> is present
-				<BgColor>#1C1C1C</BgColor>
+				<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
+				<BgColor></BgColor>
 				<BgPixmap></BgPixmap>
-				-->
 				<SignalColor>#E17800</SignalColor>
-				<MarkerColor>#00FF00</MarkerColor>
+				<PlayPosColor>#00FF00</PlayPosColor>
 				<EndOfTrackColor>#EA0000</EndOfTrackColor>
 				<DefaultMark>
 					<Align>bottom</Align>
@@ -5205,7 +5203,7 @@
 				<Property>title</Property>
 				<Channel>2</Channel>
 				<Pos>0,1</Pos>
-				<Size>370,23</Size>
+				<Size>370f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -5221,7 +5219,7 @@
 				<Property>artist</Property>
 				<Channel>2</Channel>
 				<Pos>0,25</Pos>
-				<Size>350,23</Size>
+				<Size>350f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -5237,7 +5235,7 @@
 				<Property>album</Property>
 				<Channel>2</Channel>
 				<Pos>0,50</Pos>
-				<Size>350,15</Size>
+				<Size>350f,15</Size>
 			</TrackProperty>
 
 			<!--

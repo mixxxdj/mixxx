@@ -11,17 +11,17 @@
 #include "widget/wlibrary.h"
 #include "widget/wlibrarytextbrowser.h"
 
-BasePlaylistFeature::BasePlaylistFeature(
-    QObject* parent, ConfigObject<ConfigValue>* pConfig,
-    TrackCollection* pTrackCollection,
-    QString rootViewName)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()),
-          m_trackDao(pTrackCollection->getTrackDAO()),
-          m_pPlaylistTableModel(NULL),
-          m_rootViewName(rootViewName) {
+BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
+                                         ConfigObject<ConfigValue>* pConfig,
+                                         TrackCollection* pTrackCollection,
+                                         QString rootViewName)
+                    : LibraryFeature(parent),
+                      m_pConfig(pConfig),
+                      m_pTrackCollection(pTrackCollection),
+                      m_playlistDao(pTrackCollection->getPlaylistDAO()),
+                      m_trackDao(pTrackCollection->getTrackDAO()),
+                      m_pPlaylistTableModel(NULL),
+                      m_rootViewName(rootViewName) {
     m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
@@ -50,6 +50,10 @@ BasePlaylistFeature::BasePlaylistFeature(
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
 
+    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate Playlist"), this);
+    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotDuplicatePlaylist()));
+
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
@@ -73,6 +77,7 @@ BasePlaylistFeature::~BasePlaylistFeature() {
     delete m_pDeletePlaylistAction;
     delete m_pImportPlaylistAction;
     delete m_pExportPlaylistAction;
+    delete m_pDuplicatePlaylistAction;
     delete m_pAddToAutoDJAction;
     delete m_pAddToAutoDJTopAction;
     delete m_pRenamePlaylistAction;
@@ -91,7 +96,7 @@ void BasePlaylistFeature::activateChild(const QModelIndex& index) {
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
     if (m_pPlaylistTableModel) {
-        m_pPlaylistTableModel->setPlaylist(playlistId);
+        m_pPlaylistTableModel->setTableModel(playlistId);
         emit(showTrackModel(m_pPlaylistTableModel));
     }
 }
@@ -141,6 +146,53 @@ void BasePlaylistFeature::slotRenamePlaylist() {
     } while (!validNameGiven);
 
     m_playlistDao.renamePlaylist(playlistId, newName);
+}
+
+void BasePlaylistFeature::slotDuplicatePlaylist() {
+    QString oldName = m_lastRightClickedIndex.data().toString();
+    int oldPlaylistId = m_playlistDao.getPlaylistIdFromName(oldName);
+
+
+    QString name;
+    bool validNameGiven = false;
+
+    do {
+        bool ok = false;
+        name = QInputDialog::getText(NULL,
+                                        tr("Duplicate Playlist"),
+                                        tr("Playlist name:"),
+                                        QLineEdit::Normal,
+                                        //: Appendix to default name when duplicating a playlist
+                                        oldName + tr("_copy" , "[noun]"),
+                                        &ok).trimmed();
+
+        if (!ok || oldName == name) {
+            return;
+        }
+
+        int existingId = m_playlistDao.getPlaylistIdFromName(name);
+
+        if (existingId != -1) {
+            QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("A playlist by that name already exists."));
+        }
+        else if (name.isEmpty()) {
+            QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("A playlist cannot have a blank name."));
+        }
+        else {
+            validNameGiven = true;
+        }
+    } while (!validNameGiven);
+
+    int newPlaylistId = m_playlistDao.createPlaylist(name);
+
+    if (newPlaylistId != -1 &&
+        m_playlistDao.copyPlaylistTracks(oldPlaylistId, newPlaylistId)) {
+        emit(showTrackModel(m_pPlaylistTableModel));
+    }
 }
 
 void BasePlaylistFeature::slotTogglePlaylistLock() {
@@ -202,6 +254,7 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     }
 }
 
+
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
@@ -253,9 +306,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
     QList<QString> entries = playlist_parser->parse(playlist_file);
 
     // Iterate over the List that holds URLs of playlist entires
-    for (int i = 0; i < entries.size(); ++i) {
-        m_pPlaylistTableModel->addTrack(QModelIndex(), entries[i]);
-    }
+    m_pPlaylistTableModel->addTracks(QModelIndex(), entries);
 
     // delete the parser object
     if (playlist_parser) {
@@ -286,11 +337,12 @@ void BasePlaylistFeature::slotExportPlaylist() {
     }
 
     // Create a new table model since the main one might have an active search.
+    // This will only export songs that we think exist on default
     QScopedPointer<PlaylistTableModel> pPlaylistTableModel(
         new PlaylistTableModel(this, m_pTrackCollection,
                                "mixxx.db.model.playlist_export"));
 
-    pPlaylistTableModel->setPlaylist(m_pPlaylistTableModel->getPlaylist());
+    pPlaylistTableModel->setTableModel(m_pPlaylistTableModel->getPlaylist());
     pPlaylistTableModel->setSort(pPlaylistTableModel->fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     pPlaylistTableModel->select();
 

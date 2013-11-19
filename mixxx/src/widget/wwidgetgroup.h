@@ -14,11 +14,13 @@ class WWidgetGroup : public QGroupBox {
     void addWidget(QWidget* pChild);
 
   protected:
-    virtual void paintEvent(QPaintEvent *);
+    virtual void paintEvent(QPaintEvent* pe);
+    virtual void resizeEvent(QResizeEvent* re);
 
-  protected:
+  private:
     // Associated background pixmap
     QPixmap *m_pPixmapBack;
+    QPixmap m_pixmapBackScaled;
 };
 
 #endif // WWIDGETGROUP_H

@@ -7,7 +7,7 @@
 */
 
 #include "controllers/dlgcontrollerlearning.h"
-
+#include "vinylcontrol/defs_vinylcontrol.h"
 #include "engine/cuecontrol.h"
 
 DlgControllerLearning::DlgControllerLearning(QWidget * parent,
@@ -102,7 +102,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckControl("vinylcontrol_enabled", tr("Toggle vinyl-control (ON/OFF)"), vinylControlMenu);
     addDeckControl("vinylcontrol_cueing", tr("Toggle vinyl-control cueing mode (OFF/ONE/HOT)"), vinylControlMenu);
     addDeckControl("vinylcontrol_mode", tr("Toggle vinyl-control mode (ABS/REL/CONST)"), vinylControlMenu);
-    addControl("[VinylControl]", "Toggle", tr("Single deck mode - Toggle vinyl control to next deck"), vinylControlMenu);
+    addControl(VINYL_PREF_KEY, "Toggle", tr("Single deck mode - Toggle vinyl control to next deck"), vinylControlMenu);
 
     // Cues
     QMenu* cueMenu = addSubmenu(tr("Cues"));
@@ -181,6 +181,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[Playlist]", "LoadSelectedIntoFirstStopped", tr("Load selected track into first stopped deck"),
                libraryMenu);
     addDeckAndSamplerControl("LoadSelectedTrack", tr("Load selected track"), libraryMenu);
+    addDeckAndSamplerControl("LoadSelectedTrackAndPlay", tr("Load selected track and play"), libraryMenu);
 
     // Flanger Controls
     QMenu* effectsMenu = addSubmenu(tr("Effects"));
@@ -200,7 +201,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addControl("[AutoDJ]", "shuffle_playlist", tr("Shuffle the content of the Auto DJ playlist"), autodjMenu);
     addControl("[AutoDJ]", "skip_next", tr("Skip the next track in the Auto DJ playlist"), autodjMenu);
     addControl("[AutoDJ]", "fade_now", tr("Trigger the transition to the next track"), autodjMenu);
-    addControl("[AutoDJ]", "toggle_autodj", tr("Toggle Auto DJ (ON/OFF)"), autodjMenu);
+    addControl("[AutoDJ]", "enabled", tr("Toggle Auto DJ (ON/OFF)"), autodjMenu);
 
     // Skin Controls
     QMenu* guiMenu = addSubmenu(tr("User Interface"));

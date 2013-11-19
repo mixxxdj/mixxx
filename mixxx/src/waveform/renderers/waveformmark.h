@@ -7,11 +7,13 @@
 
 class ControlObjectThreadMain;
 class QDomNode;
+class WaveformSignalColors;
 
 class WaveformMark {
   public:
     WaveformMark();
-    void setup( const QString& group, const QDomNode& node);
+    void setup(const QString& group, const QDomNode& node,
+            const WaveformSignalColors& signalColors);
 
   private:
     ControlObjectThreadMain* m_pointControl;

@@ -99,6 +99,10 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
     stream_public->setChecked((bool)m_pConfig->getValueString(
         ConfigKey(SHOUTCAST_PREF_KEY,"stream_public")).toInt());
 
+    // OGG "dynamicupdate" checkbox
+    ogg_dynamicupdate->setChecked((bool)m_pConfig->getValueString(
+        ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt());
+
     // Encoding bitrate combobox
     QString kbps_pattern = QString("%1 kbps");
     QList<int> valid_kpbs;
@@ -112,7 +116,8 @@ DlgPrefShoutcast::DlgPrefShoutcast(QWidget *parent, ConfigObject<ConfigValue> *_
                << SHOUTCAST_BITRATE_96KBPS
                << SHOUTCAST_BITRATE_80KBPS
                << SHOUTCAST_BITRATE_64KBPS
-               << SHOUTCAST_BITRATE_48KBPS;
+               << SHOUTCAST_BITRATE_48KBPS
+               << SHOUTCAST_BITRATE_32KBPS;
     foreach (int kbps, valid_kpbs) {
         comboBoxEncodingBitrate->addItem(
             kbps_pattern.arg(QString::number(kbps)), kbps);
@@ -195,6 +200,7 @@ void DlgPrefShoutcast::slotApply()
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc"),   ConfigValue(stream_desc->toPlainText()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre"),  ConfigValue(stream_genre->text()));
     m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "stream_public"), ConfigValue(stream_public->isChecked()));
+    m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY, "ogg_dynamicupdate"), ConfigValue(ogg_dynamicupdate->isChecked()));
 
     QString charset = "";
     if (enableUtf8Metadata->isChecked()) {

@@ -16,11 +16,11 @@ const QString PrepareFeature::m_sPrepareViewName = QString("Prepare");
 
 PrepareFeature::PrepareFeature(QObject* parent,
                                ConfigObject<ConfigValue>* pConfig,
-                               TrackCollection* pTrackCollection)
-        : LibraryFeature(parent),
-          m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_pAnalyserQueue(NULL) {
+                               TrackCollection* pTrackCollection) :
+        LibraryFeature(parent),
+        m_pConfig(pConfig),
+        m_pTrackCollection(pTrackCollection),
+        m_pAnalyserQueue(NULL) {
 }
 
 PrepareFeature::~PrepareFeature() {
@@ -53,7 +53,7 @@ void PrepareFeature::bindWidget(WLibrary* libraryWidget,
 
     connect(this, SIGNAL(analysisActive(bool)),
             m_pPrepareView, SLOT(analysisActive(bool)));
- 
+
     m_pPrepareView->installEventFilter(keyboard);
 
     // Let the DlgPrepare know whether or not analysis is active.
@@ -67,8 +67,7 @@ TreeItemModel* PrepareFeature::getChildModel() {
     return &m_childModel;
 }
 
-void PrepareFeature::refreshLibraryModels()
-{
+void PrepareFeature::refreshLibraryModels() {
     if (m_pPrepareView) {
         m_pPrepareView->onShow();
     }
@@ -90,7 +89,7 @@ void PrepareFeature::analyzeTracks(QList<int> trackIds) {
         m_pConfig->set(ConfigKey("[BPM]","BPMDetectionEnabled"), ConfigValue(1));
         // Note: this sucks... we should refactor the prefs/analyser to fix this hacky bit ^^^^.
 
-        m_pAnalyserQueue = AnalyserQueue::createPrepareViewAnalyserQueue(m_pConfig);
+        m_pAnalyserQueue = AnalyserQueue::createPrepareViewAnalyserQueue(m_pConfig, m_pTrackCollection);
 
         connect(m_pAnalyserQueue, SIGNAL(trackProgress(int)),
                 m_pPrepareView, SLOT(trackAnalysisProgress(int)));

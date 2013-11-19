@@ -31,16 +31,6 @@ bool WLibrary::registerView(QString name, QWidget* view) {
     return true;
 }
 
-void WLibrary::setup(QDomNode node) {
-    QMutexLocker lock(&m_mutex);
-    QListIterator<QWidget*> views_it(m_viewMap.values());
-
-    while(views_it.hasNext()) {
-        QWidget* widget = views_it.next();
-        dynamic_cast<LibraryView*>(widget)->setup(node);
-    }
-}
-
 void WLibrary::switchToView(const QString& name) {
     QMutexLocker lock(&m_mutex);
     //qDebug() << "WLibrary::switchToView" << name;
@@ -60,22 +50,6 @@ void WLibrary::search(const QString& name) {
     LibraryView* view = dynamic_cast<LibraryView*>(current);
     lock.unlock();
     view->onSearch(name);
-}
-
-void WLibrary::searchCleared() {
-    QMutexLocker lock(&m_mutex);
-    QWidget* current = currentWidget();
-    LibraryView* view = dynamic_cast<LibraryView*>(current);
-    lock.unlock();
-    view->onSearchCleared();
-}
-
-void WLibrary::searchStarting() {
-    QMutexLocker lock(&m_mutex);
-    QWidget* current = currentWidget();
-    LibraryView* view = dynamic_cast<LibraryView*>(current);
-    lock.unlock();
-    view->onSearchStarting();
 }
 
 LibraryView* WLibrary::getActiveView() const {

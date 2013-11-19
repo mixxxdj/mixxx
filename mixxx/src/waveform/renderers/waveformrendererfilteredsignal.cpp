@@ -225,11 +225,11 @@ void WaveformRendererFilteredSignal::draw(QPainter* painter,
         }
     }
 
-    painter->setPen(QPen(QBrush(m_colors.getLowColor()), 1));
+    painter->setPen(QPen(QBrush(m_pColors->getLowColor()), 1));
     painter->drawLines(&m_lowLines[0], actualLowLineNumber);
-    painter->setPen(QPen(QBrush(m_colors.getMidColor()), 1));
+    painter->setPen(QPen(QBrush(m_pColors->getMidColor()), 1));
     painter->drawLines(&m_midLines[0], actualMidLineNumber);
-    painter->setPen(QPen(QBrush(m_colors.getHighColor()), 1));
+    painter->setPen(QPen(QBrush(m_pColors->getHighColor()), 1));
     painter->drawLines(&m_highLines[0], actualHighLineNumber);
 
     painter->restore();

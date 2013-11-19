@@ -20,20 +20,10 @@
 #include "configobject.h"
 #include "controlobject.h"
 
-/** Turn Table rotary controller class. The turntable rotary sends midi events: 0 when turning
-  * backwards, and 1 when turning forward. This class keeps track of it's speed, using a timer
-  * interrupt */
-class ControlTTRotary : public ControlObject
-{
+class ControlTTRotary : public ControlObject {
     Q_OBJECT
-public:
+  public:
     ControlTTRotary(ConfigKey key);
-    
-    double getValueFromWidget(double dValue);
-    double getValueToWidget(double dValue);
-    
-protected:
-    void setValueFromMidi(MidiOpCode o, double v);
 };
 
 #endif

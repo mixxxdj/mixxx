@@ -14,9 +14,7 @@ WaveformRenderBackground::~WaveformRenderBackground() {
 }
 
 void WaveformRenderBackground::setup(const QDomNode& node) {
-    m_backgroundColor.setNamedColor(
-        WWidget::selectNodeQString(node, "BgColor"));
-    m_backgroundColor = WSkinColor::getCorrectColor(m_backgroundColor);
+    m_backgroundColor = m_waveformRenderer->getWaveformSignalColors()->getBgColor();
     m_backgroundPixmapPath = WWidget::selectNodeQString(node, "BgPixmap");
     setDirty(true);
 }

@@ -34,6 +34,5 @@ void PropertyBinder::slotValueChanged(double dValue) {
     if (!m_pWidget->setProperty(propertyAscii.constData(), value)) {
         qDebug() << "Setting property" << m_propertyName << "to widget failed. Value:" << value;
     }
-    m_pConfig->set(m_pControlThreadMain->getControlObject()->getKey(),
-            QString::number(dValue));
+    m_pConfig->set(m_pControlThreadMain->getKey(), QString::number(dValue));
 }

@@ -53,7 +53,7 @@
 	<manifest>
 	<title>ShadeDark1024x600-Netbook</title>
 	<author>jus</author>
-	<version>1.11.0.10</version>
+	<version>1.11.0.15</version>
 	<description>A 2-deck split-waveform skin with 4 samplers.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -107,7 +107,7 @@
 		<size> is optional, this will limit the size so that any part of a child widget outside of the size rectangle is not shown
 		<Size>w,h</Size>
 		-->
-		<Size>1014,285</Size>
+		<Size>1014,285f</Size>
 		<Layout>vertical</Layout>
 		<!--deactivate the standard
 		<Style>QGroupBox { border: 0px solid red; } QWidget { margin: 0; padding: 0; }</Style>
@@ -116,7 +116,7 @@
 		<Children>
 			<!-- Sampler Bank sub-widget -->
 			<WidgetGroup>
-				<Size>1014,me</Size>
+				<Size>i,m</Size>
 				<Layout>horizontal</Layout>
 				<Style>QGroupBox { border: 0px solid yellow; margin: 0px 0px 6px 0px;} </Style>
 				<Children>
@@ -138,7 +138,7 @@
 								</Style>
 								<Group>[Sampler1]</Group>
 								<Pos>2,3</Pos>
-								<Size>165,21</Size>
+								<Size>165f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -149,7 +149,7 @@
 								<Property>title</Property>
 								<Group>[Sampler1]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -212,12 +212,12 @@
 								<Group>[Sampler1]</Group>
 								<Pos>36,25</Pos>
 								<Size>139,35</Size>
-								<BgColor></BgColor>
+								<BgColor>#3F4249</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>top</Align>
 									<Color>#3FC7FA</Color>
@@ -652,7 +652,7 @@
 								</Style>
 								<Group>[Sampler2]</Group>
 								<Pos>2,3</Pos>
-								<Size>165,21</Size>
+								<Size>165f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -663,7 +663,7 @@
 								<Property>title</Property>
 								<Group>[Sampler2]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -726,12 +726,12 @@
 								<Group>[Sampler2]</Group>
 								<Pos>36,25</Pos>
 								<Size>139,35</Size>
-								<BgColor></BgColor>
+								<BgColor>#3F4249</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>top</Align>
 									<Color>#3FC7FA</Color>
@@ -1166,7 +1166,7 @@
 								</Style>
 								<Group>[Sampler3]</Group>
 								<Pos>2,3</Pos>
-								<Size>165,21</Size>
+								<Size>165f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1177,7 +1177,7 @@
 								<Property>title</Property>
 								<Group>[Sampler3]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1240,12 +1240,12 @@
 								<Group>[Sampler3]</Group>
 								<Pos>36,25</Pos>
 								<Size>139,35</Size>
-								<BgColor></BgColor>
+								<BgColor>#3F4249</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>top</Align>
 									<Color>#3FC7FA</Color>
@@ -1680,7 +1680,7 @@
 								</Style>
 								<Group>[Sampler4]</Group>
 								<Pos>2,3</Pos>
-								<Size>165,21</Size>
+								<Size>165f,21</Size>
 							</Text>
 							<!-- Alternative "TITLE ONLY" display
 							<TrackProperty>
@@ -1691,7 +1691,7 @@
 								<Property>title</Property>
 								<Group>[Sampler4]</Group>
 								<Pos>4,4</Pos>
-								<Size>258,20</Size>
+								<Size>258f,20</Size>
 							</TrackProperty>
 							-->
 
@@ -1754,12 +1754,12 @@
 								<Group>[Sampler4]</Group>
 								<Pos>36,25</Pos>
 								<Size>139,35</Size>
-								<BgColor></BgColor>
+								<BgColor>#3F4249</BgColor>
 								<SignalHighColor>#FFE300</SignalHighColor>
 								<SignalMidColor>#0099FF</SignalMidColor>
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
-								<MarkerColor>#00FF00</MarkerColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<DefaultMark>
 									<Align>top</Align>
 									<Color>#3FC7FA</Color>
@@ -2209,6 +2209,10 @@
 				QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
 				QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
 
+				QPushButton#LibraryBPMButton {background: transparent; border: 0;}
+				QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
+				QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
+
 				QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 
 				<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
@@ -2375,13 +2379,12 @@
 														<Style></Style>
 														<Group>[PreviewDeck1]</Group>
 														<Size>me,30f</Size>
-														<BgColor></BgColor>
-														<BgColor>#FFFFFF</BgColor>
+														<BgColor>#3F4249</BgColor>
 														<SignalHighColor>#FFE300</SignalHighColor>
 														<SignalMidColor>#0099FF</SignalMidColor>
 														<SignalLowColor>#FF0035</SignalLowColor>
 														<SignalColor>#FF8000</SignalColor>
-														<MarkerColor>#00FF00</MarkerColor>
+														<PlayPosColor>#00FF00</PlayPosColor>
 														<DefaultMark>
 															<Align>bottom</Align>
 															<Color>#FFFFFF</Color>
@@ -3355,7 +3358,7 @@
 					<!-- Collapsing Waveform, Vinylcontrol & spinning Vinyl widget-->
 					<WidgetGroup>
 						<Pos>2,43</Pos>
-						<Size>318,118</Size>
+						<Size>316,117</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
@@ -3387,9 +3390,7 @@
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
 								<BeatColor>#E4E4E4</BeatColor>
-								<BeatHighlightColor>#E4E4E4</BeatHighlightColor>
-								<MarkerColor>#00FF00</MarkerColor>
-								<CueColor>#FFFF00</CueColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<AxesColor>#00FF00</AxesColor>
 								<Align></Align>
@@ -3436,14 +3437,14 @@
 
 							<!-- Spinning Vinyl & Vinylcontrol -->
 							<WidgetGroup>
-								<Style>QGroupBox { border: 0px solid yellow; border-left: 1px solid #565E6B; } QWidget { margin: 0; padding: 0; }</Style>
+								<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>
 								<Children>
 									<!-- Spinning Vinyl sub-widget -->
 									<WidgetGroup>
 										<!--<Pos>296,0</Pos>-->
 										<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
-										<Size>88,82</Size>
+										<Size>86,82</Size>
 										<Children>
 											<!--
 											**********************************************
@@ -3469,7 +3470,7 @@
 									<!-- Vinylcontrol sub-widget -->
 									<WidgetGroup>
 										<Pos>0,0</Pos>
-										<Size>88,35</Size>
+										<Size>86,35</Size>
 										<Style>QGroupBox { border: 0px solid green;} QWidget { margin: 0; padding: 0; }</Style>
 										<!--<Layout>horizontal</Layout>-->
 										<Children>
@@ -3532,7 +3533,7 @@
 													<Pressed>btn_vinylcontrol_mode_const1.png</Pressed>
 													<Unpressed>btn_vinylcontrol_mode_const1.png</Unpressed>
 												</State>
-												<Pos>-1,2</Pos>
+												<Pos>0,2</Pos>
 												<Connection>
 													<ConfigKey>[Channel1],vinylcontrol_mode</ConfigKey>
 												</Connection>
@@ -3589,14 +3590,14 @@
 						<Channel>1</Channel>
 						<Pos>2,161</Pos>
 						<Size>250,37</Size>
+						<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
 						<BgColor></BgColor>
-						<!--<BgPixmap>style/style_bg_woverview.png</BgPixmap>-->
+						<BgPixmap></BgPixmap>
 						<SignalHighColor>#FFE300</SignalHighColor>
 						<SignalMidColor>#0099FF</SignalMidColor>
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#FF8000</SignalColor>
-						<SignalColor>#E4E4E4</SignalColor>
-						<MarkerColor>#00FF00</MarkerColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<DefaultMark>
 							<Align>bottom</Align>
@@ -3637,7 +3638,7 @@
 						<Property>title</Property>
 						<Channel>1</Channel>
 						<Pos>0,4</Pos>
-						<Size>230,18</Size>
+						<Size>230f,18</Size>
 					</TrackProperty>
 
 					<!--
@@ -3653,7 +3654,7 @@
 						<Property>artist</Property>
 						<Channel>1</Channel>
 						<Pos>0,24</Pos>
-						<Size>210,18</Size>
+						<Size>210f,18</Size>
 					</TrackProperty>
 
 					<!--
@@ -4700,7 +4701,7 @@
 					<!-- Collapsing Waveform, Vinylcontrol & spinning Vinyl widget-->
 					<WidgetGroup>
 						<Pos>2,43</Pos>
-						<Size>318,118</Size>
+						<Size>316,117</Size>
 						<Layout>horizontal</Layout>
 						<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 						<Children>
@@ -4732,9 +4733,7 @@
 								<SignalLowColor>#FF0035</SignalLowColor>
 								<SignalColor>#FF8000</SignalColor>
 								<BeatColor>#E4E4E4</BeatColor>
-								<BeatHighlightColor>#E4E4E4</BeatHighlightColor>
-								<MarkerColor>#00FF00</MarkerColor>
-								<CueColor>#FFFF00</CueColor>
+								<PlayPosColor>#00FF00</PlayPosColor>
 								<EndOfTrackColor>#EA0000</EndOfTrackColor>
 								<AxesColor>#00FF00</AxesColor>
 								<Align></Align>
@@ -4781,14 +4780,14 @@
 
 							<!-- Spinning Vinyl & Vinylcontrol -->
 							<WidgetGroup>
-								<Style>QGroupBox { border: 0px solid yellow; border-left: 1px solid #565E6B; } QWidget { margin: 0; padding: 0; }</Style>
+								<Style>QGroupBox { border: 0px solid yellow; } QWidget { margin: 0; padding: 0; }</Style>
 								<Layout>vertical</Layout>
 								<Children>
 									<!-- Spinning Vinyl sub-widget -->
 									<WidgetGroup>
 										<!--<Pos>296,0</Pos>-->
 										<Style>QGroupBox { border: 0px solid green; } QWidget { margin: 0; padding: 0;} </Style>
-										<Size>88,82</Size>
+										<Size>86,82</Size>
 										<Children>
 											<!--
 											**********************************************
@@ -4814,7 +4813,7 @@
 									<!-- Vinylcontrol sub-widget -->
 									<WidgetGroup>
 										<Pos>0,0</Pos>
-										<Size>88,35</Size>
+										<Size>86,35</Size>
 										<Style>QGroupBox { border: 0px solid green;} QWidget { margin: 0; padding: 0; }</Style>
 										<!--<Layout>horizontal</Layout>-->
 										<Children>
@@ -4877,7 +4876,7 @@
 													<Pressed>btn_vinylcontrol_mode_const2.png</Pressed>
 													<Unpressed>btn_vinylcontrol_mode_const2.png</Unpressed>
 												</State>
-												<Pos>-1,2</Pos>
+												<Pos>0,2</Pos>
 												<Connection>
 													<ConfigKey>[Channel2],vinylcontrol_mode</ConfigKey>
 												</Connection>
@@ -4934,14 +4933,14 @@
 						<Channel>2</Channel>
 						<Pos>2,161</Pos>
 						<Size>250,37</Size>
+						<!-- transparent background if no <BgColor> & <BgPixmap> is present -->
 						<BgColor></BgColor>
-						<!--<BgPixmap>style/style_bg_woverview.png</BgPixmap>-->
-						<SignalHighColor></SignalHighColor>
+						<BgPixmap></BgPixmap>
 						<SignalHighColor>#FFE300</SignalHighColor>
 						<SignalMidColor>#0099FF</SignalMidColor>
 						<SignalLowColor>#FF0035</SignalLowColor>
 						<SignalColor>#FF8000</SignalColor>
-						<MarkerColor>#00FF00</MarkerColor>
+						<PlayPosColor>#00FF00</PlayPosColor>
 						<EndOfTrackColor>#EA0000</EndOfTrackColor>
 						<DefaultMark>
 							<Align>bottom</Align>
@@ -4982,7 +4981,7 @@
 						<Property>title</Property>
 						<Channel>2</Channel>
 						<Pos>0,4</Pos>
-						<Size>230,18</Size>
+						<Size>230f,18</Size>
 					</TrackProperty>
 
 					<!--
@@ -4998,7 +4997,7 @@
 						<Property>artist</Property>
 						<Channel>2</Channel>
 						<Pos>0,24</Pos>
-						<Size>210,18</Size>
+						<Size>210f,18</Size>
 					</TrackProperty>
 
 					<!--

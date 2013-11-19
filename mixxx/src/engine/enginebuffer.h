@@ -46,6 +46,7 @@ class ControlTTRotary;
 class ControlPotmeter;
 class CachingReader;
 class EngineBufferScale;
+class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineWorkerScheduler;
@@ -73,13 +74,6 @@ const int TRACK_END_MODE_STOP = 0;
 const int TRACK_END_MODE_NEXT = 1;
 const int TRACK_END_MODE_LOOP = 2;
 const int TRACK_END_MODE_PING = 3;
-
-//vinyl status constants
-//XXX: move this to vinylcontrol.h once thread startup is moved
-const int VINYL_STATUS_DISABLED = 0;
-const int VINYL_STATUS_OK = 1;
-const int VINYL_STATUS_WARNING = 2;
-const int VINYL_STATUS_ERROR = 3;
 
 const int ENGINE_RAMP_DOWN = -1;
 const int ENGINE_RAMP_NONE = 0;
@@ -109,9 +103,11 @@ public:
     /** Sets pointer to other engine buffer/channel */
     void setEngineMaster(EngineMaster*);
 
+    void queueNewPlaypos(double newpos);
+
     /** Reset buffer playpos and set file playpos. This must only be called
       * while holding the pause mutex */
-    void setNewPlaypos(double);
+    void setNewPlaypos(double playpos);
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
@@ -136,7 +132,7 @@ public:
     // Request that the EngineBuffer load a track. Since the process is
     // asynchronous, EngineBuffer will emit a trackLoaded signal when the load
     // has completed.
-    void slotLoadTrack(TrackPointer pTrack);
+    void slotLoadTrack(TrackPointer pTrack, bool play = false);
 
     void slotEjectTrack(double);
 
@@ -253,8 +249,19 @@ private:
     EngineBufferScaleLinear* m_pScaleLinear;
     /** Object used for pitch-indep time stretch (key lock) scaling of the audio */
     EngineBufferScaleST* m_pScaleST;
+    EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
+
+    QAtomicInt m_bSeekQueued;
+    // TODO(XXX) make a macro or something.
+#if defined(__GNUC__)
+    double m_dQueuedPosition __attribute__ ((aligned(sizeof(double))));
+#elif defined(_MSC_VER)
+    double __declspec(align(8)) m_dQueuedPosition;
+#else
+    double m_dQueuedPosition;
+#endif
 
     /** Holds the last sample value of the previous buffer. This is used when ramping to
       * zero in case of an immediate stop of the playback */
@@ -262,6 +269,7 @@ private:
     /** Is true if the previous buffer was silent due to pausing */
     bool m_bLastBufferPaused;
     QAtomicInt m_iTrackLoading;
+    bool m_bPlayAfterLoading;
     float m_fRampValue;
     int m_iRampState;
     //int m_iRampIter;

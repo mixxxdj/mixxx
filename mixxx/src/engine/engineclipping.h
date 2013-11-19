@@ -33,7 +33,7 @@ public:
     bool hasClipped();
 };
 
-#endif
+#endif // ENGINECLIPPING_H
 
 
 

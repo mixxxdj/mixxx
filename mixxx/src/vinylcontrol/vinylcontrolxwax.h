@@ -1,10 +1,10 @@
 #ifndef __VINYLCONTROLXWAX_H__
 #define __VINYLCONTROLXWAX_H__
 
-#include "vinylcontrol.h"
-#include "steadypitch.h"
-#include <time.h>
 #include <QTime>
+
+#include "vinylcontrol/vinylcontrol.h"
+#include "vinylcontrol/steadypitch.h"
 
 #ifdef _MSC_VER
 #include "timecoder.h"
@@ -20,20 +20,19 @@ extern "C" {
 #define QUALITY_RING_SIZE 100
 #define MIN_SIGNAL 75
 
-
-class VinylControlXwax : public VinylControl
-{
+class VinylControlXwax : public VinylControl {
   public:
     VinylControlXwax(ConfigObject<ConfigValue> *pConfig, QString group);
     virtual ~VinylControlXwax();
-    void ToggleVinylControl(bool enable);
-    bool isEnabled();
+
     static void freeLUTs();
-    unsigned char* getScopeBytemap();
-    float getAngle();
-    void AnalyseSamples(const short* samples, size_t size);
+    void analyzeSamples(const short* samples, size_t nFrames);
+
+    virtual bool writeQualityReport(VinylSignalQualityReport* qualityReportFifo);
+
   protected:
-    void run(); // main thread loop
+    float getAngle();
+
   private:
     void syncPosition();
     void togglePlayButton(bool on);
@@ -48,19 +47,23 @@ class VinylControlXwax : public VinylControl
     bool uiUpdateTime(double time);
     void establishQuality(bool quality_sample);
 
-    double dFileLength; // The length (in samples) of the current song.
     unsigned int m_uiSafeZone; // Cache the position of the end of record
 
     double dOldPos; // The position read last time it was polled.
-    double dOldPitch;
 
     bool bQualityRing[QUALITY_RING_SIZE];
     int iQualPos;
     int iQualFilled;
 
-    bool bSeeking; // Are we seeking through the record? (ie. is it moving really fast?)
-    bool bHaveSignal; // Any signal at all?
-    bool bAtRecordEnd;
+    // Local variables copied from run(). TODO(XXX): Rename and prefix.
+    int iPosition;
+    float filePosition;
+    double dDriftAmt;
+    double dPitchRing[RING_SIZE];
+    int ringPos;
+    int ringFilled;
+    double old_duration;
+
     bool bForceResync;
     int iOldMode;
     double dOldFilePos;
@@ -73,18 +76,15 @@ class VinylControlXwax : public VinylControl
     double dCurTrackSelectPos;
     bool bTrackSelectMode;
 
-    // Contains information that xwax's code needs internally about the timecode and how to process it.
-    struct timecoder timecoder;
-    static QMutex s_xwaxLUTMutex; /** Static mutex that protects our creation/destruction of the xwax LUTs */
-    static bool m_bLUTInitialized;
-
-    short*  m_samples;
-    size_t  m_SamplesSize;
-
-    bool bShouldClose;
-    bool bIsRunning;
     bool m_bNeedleSkipPrevention;
     bool m_bCDControl;
+
+    // Contains information that xwax's code needs internally about the timecode
+    // and how to process it.
+    struct timecoder timecoder;
+    // Static mutex that protects our creation/destruction of the xwax LUTs
+    static QMutex s_xwaxLUTMutex;
+    static bool s_bLUTInitialized;
 };
 
 #endif

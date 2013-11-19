@@ -45,13 +45,6 @@
 
 #include "trackinfoobject.h"
 
-#ifdef _MSC_VER
-#include <float.h>  // for _isnan() on VC++
-#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
-#else
-#include <math.h>  // for isnan() everywhere else
-#endif
-
 const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
 
@@ -77,8 +70,11 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
     m_bScalerChanged(false),
+    m_bSeekQueued(0),
+    m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
     m_iTrackLoading(0),
+    m_bPlayAfterLoading(false),
     m_fRampValue(0.0),
     m_iRampState(ENGINE_RAMP_NONE),
     m_pDitherBuffer(new CSAMPLE[MAX_BUFFER_LEN]),
@@ -217,10 +213,8 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pScaleLinear = new EngineBufferScaleLinear(m_pReadAheadManager);
 
     m_pScaleST = new EngineBufferScaleST(m_pReadAheadManager);
-    //m_pScaleST = (EngineBufferScaleST*)new EngineBufferScaleDummy(m_pReadAheadManager);
+    m_pScaleDummy = new EngineBufferScaleDummy(m_pReadAheadManager);
     setPitchIndpTimeStretch(false); // default to VE, let the user specify PITS in their mix
-
-    setNewPlaypos(0.);
 
     m_pKeylock = new ControlPushButton(ConfigKey(m_group, "keylock"));
     m_pKeylock->setButtonMode(ControlPushButton::TOGGLE);
@@ -268,6 +262,7 @@ EngineBuffer::~EngineBuffer()
     delete m_pTrackSampleRate;
 
     delete m_pScaleLinear;
+    delete m_pScaleDummy;
     delete m_pScaleST;
 
     delete m_pKeylock;
@@ -333,6 +328,13 @@ void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster)
     m_pBpmControl->setEngineMaster(pEngineMaster);
 }
 
+void EngineBuffer::queueNewPlaypos(double newpos) {
+    // Temp Workaround: All seeks need to be done in the Engine thread so queue
+    // it up.
+    m_dQueuedPosition = newpos;
+    m_bSeekQueued.fetchAndStoreRelease(1);
+}
+
 void EngineBuffer::setNewPlaypos(double newpos)
 {
     //qDebug() << "engine new pos " << newpos;
@@ -382,7 +384,7 @@ void EngineBuffer::slotTrackLoading() {
     m_pause.unlock();
 
     m_playButton->set(0.0); //Stop playback
-    m_pTrackSamples->set(0); // stop renderer
+    m_pTrackSamples->set(0); // Stop renderer
 }
 
 // WARNING: Always called from the EngineWorker thread pool
@@ -403,11 +405,16 @@ void EngineBuffer::slotTrackLoaded(TrackPointer pTrack,
     // Start buffer processing after all EngineContols are up to date
     // with the current track e.g track is seeked to Cue
     m_iTrackLoading = 0;
+    if (m_bPlayAfterLoading) {
+        m_bPlayAfterLoading = false;
+        m_playButton->set(1);
+    }
 }
 
 // WARNING: Always called from the EngineWorker thread pool
 void EngineBuffer::slotTrackLoadFailed(TrackPointer pTrack,
                                        QString reason) {
+    m_bPlayAfterLoading = false;
     m_playButton->set(0.0f);
     ejectTrack();
     emit(trackLoadFailed(pTrack, reason));
@@ -459,7 +466,7 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    setNewPlaypos(new_playpos);
+    queueNewPlaypos(new_playpos);
 }
 
 // WARNING: This method runs from SyncWorker and Engine Worker
@@ -563,12 +570,13 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         float sr = m_pSampleRate->get();
 
         double baserate = 0.0f;
-        if (sr > 0)
+        if (sr > 0) {
             baserate = ((double)m_file_srate_old / sr);
+        }
 
         bool paused = m_playButton->get() != 0.0f ? false : true;
 
-        bool is_scratching = false;
+        bool is_scratching;
         rate = m_pRateControl->calculateRate(baserate, paused, iBufferSize,
                                              &is_scratching);
 
@@ -592,13 +600,17 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             }
         }
 
+        if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
+            setNewPlaypos(m_dQueuedPosition);
+        }
+
         // If the rate has changed, set it in the scale object
         if (rate != m_rate_old || m_bScalerChanged) {
             // The rate returned by the scale object can be different from the wanted rate!
             // Make sure new scaler has proper position
             if (m_bScalerChanged) {
                 setNewPlaypos(m_filepos_play);
-            } else if (m_pScale != m_pScaleLinear) { //linear scaler does this part for us now
+            } else if (m_pScale != m_pScaleLinear) { // linear scaler does this part for us now
                 //XXX: Trying to force RAMAN to read from correct
                 //     playpos when rate changes direction - Albert
                 if ((m_rate_old <= 0 && rate > 0) ||
@@ -607,8 +619,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
                 }
             }
 
-            if (baserate > 0) //Prevent division by 0
-                rate = baserate*m_pScale->setTempo(rate/baserate);
+            if (baserate > 0) { // Prevent division by 0
+                rate = baserate * m_pScale->setTempo(rate/baserate);
+            }
             m_pScale->setBaseRate(baserate);
             m_rate_old = rate;
             // Scaler is up to date now.
@@ -621,9 +634,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If we're playing past the end, playing before the start, or standing
         // still then by definition the buffer is paused.
-        bCurBufferPaused = rate == 0 ||
-            //(at_start && backwards) ||
-            (at_end && !backwards);
+        bCurBufferPaused = (rate == 0 || (at_end && !backwards));
 
         // If the buffer is not paused, then scale the audio.
         if (!bCurBufferPaused) {
@@ -659,7 +670,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             m_filepos_play =
                     m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
                         static_cast<int>(m_filepos_play), samplesRead);
-        } // else (bCurBufferPaused)
+        }
 
         //Crossfade if we just did a seek
         if (m_iCrossFadeSamples > 0) {
@@ -674,7 +685,6 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
             double cross_mix = 0.0;
             double cross_inc = 1.0 / cross_len;
-
             // Do crossfade from old fadeout buffer to this new data
             for (int j = 0; j + 1 < iBufferSize && i + 1 < m_iCrossFadeSamples; i += 2, j += 2) {
                 pOutput[j] = pOutput[j] * cross_mix + m_pCrossFadeBuffer[i] * (1.0 - cross_mix);
@@ -689,53 +699,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         while (it.hasNext()) {
             EngineControl* pControl = it.next();
             pControl->setCurrentSample(m_filepos_play, m_file_length_old);
-            double control_seek = pControl->process(rate, m_filepos_play,
-                                                    m_file_length_old, iBufferSize);
-
-            if (control_seek != kNoTrigger) {
-                // If we have not processed loops by this point then we have a
-                // bug. RAMAN should be in charge of taking loops now. This
-                // final step is more to notify all the EngineControls of the
-                // happenings of the engine. TODO(rryan) log condition to a
-                // stats-pipe once we have them.
-
-                m_filepos_play = control_seek;
-                double filepos_play_rounded = round(m_filepos_play);
-                if (filepos_play_rounded != m_filepos_play) {
-                    qWarning() << __FILE__ << __LINE__ << "ERROR: filepos_play is not round:" << m_filepos_play;
-                    m_filepos_play = filepos_play_rounded;
-                }
-
-                // Fix filepos_play so that it is not out of bounds.
-                if (m_file_length_old > 0) {
-                    if (m_filepos_play > m_file_length_old) {
-                        // TODO(XXX) limit to kMaxPlayposRange instead of file_length_old
-                        m_filepos_play = m_file_length_old;
-                    } else if(m_filepos_play < m_file_length_old * kMinPlayposRange) {
-                        m_filepos_play = kMinPlayposRange * m_file_length_old;
-                    }
-                }
-
-                // Safety check that the EngineControl didn't pass us a bogus
-                // value
-                if (!even(m_filepos_play))
-                    m_filepos_play--;
-
-                // TODO(XXX) need to re-evaluate this later. If we
-                // setNewPlaypos, that clear()'s soundtouch, which might screw
-                // up the audio. This sort of jump is a normal event. Also, the
-                // EngineControl which caused this jump will get a notifySeek
-                // for the same jump which might be confusing. For 1.8.0
-                // purposes this works fine. If we do not notifySeek the RAMAN,
-                // the engine and RAMAN can get out of sync.
-
-                //setNewPlaypos(filepos_play);
-                m_pReadAheadManager->notifySeek(m_filepos_play);
-                // Notify seek the rate control since it needs to track things
-                // like looping. Hacky, I know, but this helps prevent things
-                // like the scratch controller from flipping out.
-                m_pRateControl->notifySeek(m_filepos_play);
-            }
+            pControl->process(rate, m_filepos_play, m_file_length_old, iBufferSize);
         }
         m_engineLock.unlock();
 
@@ -755,7 +719,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((m_playButton->get() || (m_fwdButton->get() || m_backButton->get()))
-            && end_of_track) {
+            	&& end_of_track) {
             if (repeat_enabled) {
                 double seekPosition = at_start ? m_file_length_old : 0;
                 slotControlSeek(seekPosition);
@@ -805,9 +769,10 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     float ramp_inc = 0;
     if (m_iRampState == ENGINE_RAMP_UP ||
         m_iRampState == ENGINE_RAMP_DOWN) {
+        // Ramp of 3.33 ms
         ramp_inc = m_iRampState * 300 / m_pSampleRate->get();
 
-        for (int i=0; i<iBufferSize; i+=2) {
+        for (int i=0; i < iBufferSize; i += 2) {
             if (bCurBufferPaused) {
                 float dither = m_pDitherBuffer[m_iDitherBufferReadIndex];
                 m_iDitherBufferReadIndex = (m_iDitherBufferReadIndex + 1) % MAX_BUFFER_LEN;
@@ -822,8 +787,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             if (m_fRampValue >= 1.0) {
                 m_iRampState = ENGINE_RAMP_NONE;
                 m_fRampValue = 1.0;
-            }
-            if (m_fRampValue <= 0.0) {
+            } else if (m_fRampValue <= 0.0) {
                 m_iRampState = ENGINE_RAMP_NONE;
                 m_fRampValue = 0.0;
             }
@@ -905,9 +869,10 @@ void EngineBuffer::hintReader(const double dRate) {
 }
 
 // WARNING: This method runs in the GUI thread
-void EngineBuffer::slotLoadTrack(TrackPointer pTrack) {
+void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
     // Signal to the reader to load the track. The reader will respond with
     // trackLoading and then either with trackLoaded or trackLoadFailed signals.
+    m_bPlayAfterLoading = play;
     m_pReader->newTrack(pTrack);
     m_pReader->wake();
 }
@@ -917,12 +882,7 @@ void EngineBuffer::addControl(EngineControl* pControl) {
     m_engineLock.lock();
     m_engineControls.push_back(pControl);
     m_engineLock.unlock();
-    connect(pControl, SIGNAL(seek(double)),
-            this, SLOT(slotControlSeek(double)),
-            Qt::DirectConnection);
-    connect(pControl, SIGNAL(seekAbs(double)),
-            this, SLOT(slotControlSeekAbs(double)),
-            Qt::DirectConnection);
+    pControl->setEngineBuffer(this);
     connect(this, SIGNAL(trackLoaded(TrackPointer)),
             pControl, SLOT(trackLoaded(TrackPointer)),
             Qt::DirectConnection);

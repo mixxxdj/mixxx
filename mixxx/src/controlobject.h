@@ -23,51 +23,19 @@
 #include <QMutex>
 
 #include "configobject.h"
-#include "controlobjectthread.h"
 #include "controllers/midi/midimessage.h"
+#include "control/control.h"
 
-class QWidget;
-class ConfigKey;
-
-struct QueueObjectThread
-{
-    ControlObjectThread *pControlObjectThread;
-    ControlObject *pControlObject;
-    double value;
-};
-
-struct QueueObjectMidi
-{
-    ControlObject *pControlObject;
-    MidiOpCode opcode;
-    double value;
-};
-
-/**
-  * ControlObjects is used as a way to share controller values between controllers, GUI and
-  * the sound engine. Whenever the value is changed by either a connected widget or a ControlEventMidi
-  * the emitValueChanged method is called which syncronizes the new value with the player thread
-  * using the semaphore protected queue.
-  *
-  * The player thread has a corresponding ControlEngine object for each ControlObject. The
-  * ControlEngine object updates the ControlObject by queueing the values, and sending them as an
-  * event to the ControlObject.
-  *
-  *@author Tue and Ken Haste Andersen
-  */
-
-class ControlObject : public QObject
-{
+class ControlObject : public QObject {
     Q_OBJECT
-public:
+  public:
     ControlObject();
-    ControlObject(ConfigKey key, bool bIgnoreNops=true, bool track=false);
-    ControlObject(const QString& group, const QString& item, bool bIgnoreNops=true);
+    ControlObject(ConfigKey key,
+                  bool bIgnoreNops=true, bool bTrack=false);
+    ControlObject(const QString& group, const QString& item,
+                  bool bIgnoreNops=true, bool bTrack=false);
     virtual ~ControlObject();
-    /** Connect two control objects dest and src, so each time src is updated, so is dest. */
-    static bool connectControls(ConfigKey src, ConfigKey dest);
-    /** Disonnect a control object. */
-    static bool disconnectControl(ConfigKey key);
+
     /** Returns a pointer to the ControlObject matching the given ConfigKey */
     static ControlObject* getControl(const ConfigKey& key);
     static inline ControlObject* getControl(const QString& group, const QString& item) {
@@ -78,90 +46,54 @@ public:
     // Adds all ControlObjects that currently exist to pControlList
     static void getControls(QList<ControlObject*>* pControlsList);
 
-    /** Used to add a pointer to the corresponding ControlObjectThread of this ControlObject */
-    void addProxy(ControlObjectThread *pControlObjectThread);
-    // To get rid of a proxy when the corresponding object is being deleted for example
-    void removeProxy(ControlObjectThread *pControlObjectThread);
-    /** Update proxies, execep the one given a pointer to. Returns true if all updates
-      * happend, otherwise false. */
-    bool updateProxies(ControlObjectThread *pProxyNoUpdate=0);
-    /** Return the key of the object */
-    inline ConfigKey getKey() { return m_key; }
-    /** Return the value of the ControlObject */
-    inline double get() { return m_dValue; }
-    /** Add to value. Not thread safe. */
-    void add(double dValue);
-    /** Subtract from value. Not thread safe. */
-    void sub(double dValue);
-    /** Syncronizes all ControlObjects with their corresponding proxies. */
-    static void sync();
-    /** Queue a control change from a widget. Thread safe. Blocking. */
-    void queueFromThread(double dValue, ControlObjectThread *pControlObjectThread=0);
-    /** Queue a control change from MIDI. Thread safe. Blocking. */
-    void queueFromMidi(MidiOpCode o, double v);
-    /** Return a ControlObject value, corresponding to the widget input value. Thread safe. */
-    virtual double getValueFromWidget(double dValue);
-    /** Return a widget value corresponding to the ControlObject input value. Thread safe. */
-    virtual double getValueToWidget(double dValue);
-    /** get value (range 0..127) **/
-    virtual double GetMidiValue();
-    virtual void setDefaultValue(double dValue) {
-        m_dDefaultValue = dValue;
+    // Return the key of the object
+    inline ConfigKey getKey() const { return m_key; }
+    // Returns the value of the ControlObject
+    double get() const;
+    // Sets the ControlObject value
+    void set(const double& value);
+    // Sets the default value
+    void reset();
+
+    inline void setDefaultValue(double dValue) {
+        if (m_pControl) {
+            m_pControl->setDefaultValue(dValue);
+        }
     }
-    virtual double defaultValue() const {
-        return m_dDefaultValue;
+    inline double defaultValue() const {
+        return m_pControl ? m_pControl->defaultValue() : 0.0;
     }
 
-public slots:
-    /** Sets the value of the object and updates associated proxy objects. Not thread safe. */
-    void set(double dValue);
-
-signals:
+  signals:
     void valueChanged(double);
     void valueChangedFromEngine(double);
 
-protected:
-    /** Sets the value of the object. Not thread safe. */
-    virtual void setValueFromEngine(double dValue);
-    /** Called when a widget has changed value. Not thread safe. */
+  public:
+    // DEPRECATED: Called to set the control value from the controller
+    // subsystem.
     virtual void setValueFromMidi(MidiOpCode o, double v);
-    /** Called when another thread has changed value. Not thread safe. */
-    virtual void setValueFromThread(double dValue);
+    virtual double getValueToMidi() const;
+    // DEPRECATED: Called to set the control value from another thread.
+    virtual void setValueFromThread(double dValue, QObject* pSetter);
 
-protected:
-    /** The actual value of the controller */
-    double m_dValue;
-    double m_dDefaultValue;
-    /** Key of the object */
+  protected:
+    // Key of the object
     ConfigKey m_key;
+    ControlDoublePrivate* m_pControl;
 
-private:
-    // Whether to ignore set/add/sub()'s which would have no effect
-    bool m_bIgnoreNops;
-    // Whether to track value changes with the stats framework.
-    bool m_bTrack;
-    QString m_trackKey;
-    int m_trackType;
-    int m_trackFlags;
-    /** List of associated proxy objects */
-    QList<ControlObjectThread*> m_qProxyList;
-    /** Mutex for the proxy list */
-    QMutex m_qProxyListMutex;
+  private slots:
+    void privateValueChanged(double value, QObject* pSetter);
 
-    /** Hash of ControlObject instantiations */
+  private:
+    void initialize(ConfigKey key, bool bIgnoreNops, bool bTrack);
+    inline bool ignoreNops() const {
+        return m_pControl ? m_pControl->ignoreNops() : true;
+    }
+
+    // Hash of ControlObject instantiations
     static QHash<ConfigKey,ControlObject*> m_sqCOHash;
-    /** Mutex guarding access to the ControlObject hash **/
+    // Mutex guarding access to the ControlObject hash
     static QMutex m_sqCOHashMutex;
-    /** Mutex protecting access to the queues */
-    static QMutex m_sqQueueMutexMidi, m_sqQueueMutexThread, m_sqQueueMutexChanges;
-    /** Queue holding control changes from MIDI */
-    static QQueue<QueueObjectMidi*> m_sqQueueMidi;
-    /** Queues holding control changes from other application threads and from widgets */
-    static QQueue<QueueObjectThread*> m_sqQueueThread;
-    /** Queue holding ControlObjects that has changed, but not been syncronized with it's
-     * associated ControlObjectProxy objects. */
-    static QQueue<ControlObject*> m_sqQueueChanges;
 };
-
 
 #endif

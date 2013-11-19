@@ -25,10 +25,10 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   private slots:
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
-    void slotImportAsMixxxPlaylist();
+    virtual void slotImportAsMixxxPlaylist();
 
   private:
-    void addToAutoDJ(bool bTop);
+    virtual void addToAutoDJ(bool bTop);
 
     TrackCollection* m_pTrackCollection;
     QModelIndex m_lastRightClickedIndex;

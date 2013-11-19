@@ -5,6 +5,7 @@
 #define PLAYERMANAGER_H
 
 #include <QList>
+#include <QMutex>
 
 #include "configobject.h"
 #include "trackinfoobject.h"
@@ -19,28 +20,31 @@ class Library;
 class EngineMaster;
 class AnalyserQueue;
 class SoundManager;
-class VinylControlManager;
+class TrackCollection;
 
 class PlayerManager : public QObject {
     Q_OBJECT
   public:
-    PlayerManager(ConfigObject<ConfigValue> *pConfig,
+    PlayerManager(ConfigObject<ConfigValue>* pConfig,
                   SoundManager* pSoundManager,
-                  EngineMaster* pEngine,
-                  VinylControlManager* pVCManager);
+                  EngineMaster* pEngine);
     virtual ~PlayerManager();
 
     // Add a deck to the PlayerManager
-    Deck* addDeck();
+    void addDeck();
 
     // Add a sampler to the PlayerManager
-    Sampler* addSampler();
+    void addSampler();
 
     // Add a PreviewDeck to the PlayerManager
-    PreviewDeck* addPreviewDeck();
+    void addPreviewDeck();
 
     // Return the number of players. Thread-safe.
     static unsigned int numDecks();
+
+    // Returns true if the group is a deck group. If index is non-NULL,
+    // populates it with the deck number (1-indexed).
+    static bool isDeckGroup(const QString& group, int* number=NULL);
 
     // Return the number of samplers. Thread-safe.
     static unsigned int numSamplers();
@@ -78,9 +82,12 @@ class PlayerManager : public QObject {
         return QString("[PreviewDeck%1]").arg(i+1);
     }
 
+    // Used to determine if the user has configured an input for the given vinyl deck.
+    bool hasVinylInput(int inputnum) const;
+
   public slots:
     // Slots for loading tracks into a Player, which is either a Sampler or a Deck
-    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group);
+    void slotLoadTrackToPlayer(TrackPointer pTrack, QString group, bool play = false);
     void slotLoadToPlayer(QString location, QString group);
 
     // Slots for loading tracks to decks
@@ -104,10 +111,22 @@ class PlayerManager : public QObject {
 
   private:
     TrackPointer lookupTrack(QString location);
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new deck.
+    void addDeckInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new sampler.
+    void addSamplerInner();
+    // Must hold m_mutex before calling this method. Internal method that
+    // creates a new preview deck.
+    void addPreviewDeckInner();
+
+    // Used to protect access to PlayerManager state across threads.
+    mutable QMutex m_mutex;
+
     ConfigObject<ConfigValue>* m_pConfig;
     SoundManager* m_pSoundManager;
     EngineMaster* m_pEngine;
-    VinylControlManager* m_pVCManager;
     AnalyserQueue* m_pAnalyserQueue;
     ControlObject* m_pCONumDecks;
     ControlObject* m_pCONumSamplers;
@@ -119,4 +138,4 @@ class PlayerManager : public QObject {
     QMap<QString, BaseTrackPlayer*> m_players;
 };
 
-#endif /* PLAYERMANAGER_H */
+#endif // PLAYERMANAGER_H

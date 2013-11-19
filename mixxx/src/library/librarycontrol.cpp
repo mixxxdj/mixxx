@@ -11,25 +11,43 @@
 #include "library/librarycontrol.h"
 #include "library/libraryview.h"
 
-LoadToGroupController::LoadToGroupController(QObject* pParent, const QString group)
-        : QObject(pParent),
-          m_group(group) {
+LoadToGroupController::LoadToGroupController(QObject* pParent,
+                                             const QString group) :
+        QObject(pParent),
+        m_group(group) {
     m_pLoadControl = new ControlObject(ConfigKey(group, "LoadSelectedTrack"));
     m_pLoadCOTM = new ControlObjectThreadMain(m_pLoadControl);
     connect(m_pLoadCOTM, SIGNAL(valueChanged(double)),
             this, SLOT(slotLoadToGroup(double)));
+
+    m_pLoadAndPlayControl = new ControlObject(ConfigKey(group, "LoadSelectedTrackAndPlay"));
+    m_pLoadAndPlayCOTM = new ControlObjectThreadMain(m_pLoadAndPlayControl);
+    connect(m_pLoadAndPlayCOTM, SIGNAL(valueChanged(double)),
+            this, SLOT(slotLoadToGroupAndPlay(double)));
+
+    connect(this, SIGNAL(loadToGroup(QString, bool)),
+            pParent, SLOT(slotLoadSelectedTrackToGroup(QString, bool)));
 }
 
 LoadToGroupController::~LoadToGroupController() {
     delete m_pLoadCOTM;
     delete m_pLoadControl;
+    delete m_pLoadAndPlayCOTM;
+    delete m_pLoadAndPlayControl;
 }
 
 void LoadToGroupController::slotLoadToGroup(double v) {
     if (v > 0) {
-        emit(loadToGroup(m_group));
+        emit(loadToGroup(m_group, false));
     }
 }
+
+void LoadToGroupController::slotLoadToGroupAndPlay(double v) {
+    if (v > 0) {
+        emit(loadToGroup(m_group, true));
+    }
+}
+
 
 LibraryControl::LibraryControl(QObject* pParent) : QObject(pParent) {
     m_pLibraryWidget = NULL;
@@ -37,20 +55,15 @@ LibraryControl::LibraryControl(QObject* pParent) : QObject(pParent) {
 
     // Make controls for library navigation and track loading. Leaking all these CO's, but oh well?
 
-    // We don't know how many decks or samplers there will be, so create 100 of them.
+    // We don't know how many decks or samplers there will be, so create 10 of them.
+    //TODO(xxx) find out the correct numbers
     for (int i = 0; i < 10; ++i) {
-        LoadToGroupController* pLoadController = new LoadToGroupController(
-            this, PlayerManager::groupForDeck(i));
-        connect(pLoadController, SIGNAL(loadToGroup(QString)),
-                this, SLOT(slotLoadSelectedTrackToGroup(QString)));
-        pLoadController = new LoadToGroupController(
-            this, PlayerManager::groupForSampler(i));
-        connect(pLoadController, SIGNAL(loadToGroup(QString)),
-                this, SLOT(slotLoadSelectedTrackToGroup(QString)));
-        pLoadController = new LoadToGroupController(
-            this, PlayerManager::groupForPreviewDeck(i));
-        connect(pLoadController, SIGNAL(loadToGroup(QString)),
-                this, SLOT(slotLoadSelectedTrackToGroup(QString)));
+        (void)new LoadToGroupController(
+                this, PlayerManager::groupForDeck(i));
+        (void)new LoadToGroupController(
+                this, PlayerManager::groupForSampler(i));
+        (void)new LoadToGroupController(
+                this, PlayerManager::groupForPreviewDeck(i));
     }
 
     m_pSelectNextTrack = new ControlObjectThreadMain(
@@ -109,6 +122,7 @@ void LibraryControl::bindSidebarWidget(WLibrarySidebar* pSidebarWidget) {
 }
 
 void LibraryControl::bindWidget(WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboard) {
+    Q_UNUSED(pKeyboard);
     if (m_pLibraryWidget != NULL) {
         disconnect(m_pLibraryWidget, 0, this, 0);
     }
@@ -125,23 +139,24 @@ void LibraryControl::sidebarWidgetDeleted() {
     m_pSidebarWidget = NULL;
 }
 
-void LibraryControl::slotLoadSelectedTrackToGroup(QString group) {
-    if (m_pLibraryWidget == NULL)
+void LibraryControl::slotLoadSelectedTrackToGroup(QString group, bool play) {
+    if (m_pLibraryWidget == NULL) {
         return;
+    }
 
     LibraryView* activeView = m_pLibraryWidget->getActiveView();
     if (!activeView) {
         return;
     }
-    activeView->loadSelectedTrackToGroup(group);
+    activeView->loadSelectedTrackToGroup(group, play);
 }
 
 void LibraryControl::slotLoadSelectedIntoFirstStopped(double v) {
-    if (m_pLibraryWidget == NULL)
+    if (m_pLibraryWidget == NULL) {
         return;
+    }
 
-    if (v > 0)
-    {
+    if (v > 0) {
         LibraryView* activeView = m_pLibraryWidget->getActiveView();
         if (!activeView) {
             return;

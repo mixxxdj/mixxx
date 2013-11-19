@@ -34,7 +34,8 @@ DlgPrepare::DlgPrepare(QWidget* parent,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pPrepareLibraryTableView);
 
-    m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this, pTrackCollection);
+    m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this,
+                                    pTrackCollection);
     m_pPrepareLibraryTableView->loadTrackModel(m_pPrepareLibraryTableModel);
 
 /*
@@ -90,28 +91,13 @@ DlgPrepare::DlgPrepare(QWidget* parent,
 DlgPrepare::~DlgPrepare() {
 }
 
-void DlgPrepare::onShow()
-{
+void DlgPrepare::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
     m_pPrepareLibraryTableModel->select();
 }
 
-void DlgPrepare::setup(QDomNode node)
-{
-    Q_UNUSED(node);
-}
-
-void DlgPrepare::onSearchStarting()
-{
-}
-
-void DlgPrepare::onSearchCleared()
-{
-}
-
-void DlgPrepare::onSearch(const QString& text)
-{
+void DlgPrepare::onSearch(const QString& text) {
     m_pPrepareLibraryTableModel->search(text);
 }
 
@@ -119,19 +105,20 @@ void DlgPrepare::loadSelectedTrack() {
     m_pPrepareLibraryTableView->loadSelectedTrack();
 }
 
-void DlgPrepare::loadSelectedTrackToGroup(QString group) {
-    m_pPrepareLibraryTableView->loadSelectedTrackToGroup(group);
+void DlgPrepare::loadSelectedTrackToGroup(QString group, bool play) {
+    m_pPrepareLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
 void DlgPrepare::moveSelection(int delta) {
     m_pPrepareLibraryTableView->moveSelection(delta);
 }
 
-void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected) {
+void DlgPrepare::tableSelectionChanged(const QItemSelection& selected,
+                                       const QItemSelection& deselected) {
     Q_UNUSED(selected);
     Q_UNUSED(deselected);
     bool tracksSelected = m_pPrepareLibraryTableView->selectionModel()->hasSelection();
-    pushButtonAnalyze->setEnabled(tracksSelected);
+    pushButtonAnalyze->setEnabled(tracksSelected || m_bAnalysisActive);
 }
 
 void DlgPrepare::selectAll() {
@@ -192,13 +179,11 @@ void DlgPrepare::trackAnalysisProgress(int progress) {
     }
 }
 
-void DlgPrepare::showRecentSongs()
-{
+void DlgPrepare::showRecentSongs() {
     m_pPrepareLibraryTableModel->showRecentSongs();
 }
 
-void DlgPrepare::showAllSongs()
-{
+void DlgPrepare::showAllSongs() {
     m_pPrepareLibraryTableModel->showAllSongs();
 }
 

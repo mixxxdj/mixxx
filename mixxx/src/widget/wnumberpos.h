@@ -39,7 +39,8 @@ class WNumberPos : public WNumber {
     bool m_bRemain;
     ControlObjectThreadMain* m_pShowTrackTimeRemaining;
     // Pointer to control object for rate and track info
-    ControlObjectThreadWidget *m_pRateControl, *m_pRateDirControl, *m_pTrackSamples, *m_pTrackSampleRate;
+    ControlObjectThreadWidget* m_pTrackSamples; 
+    ControlObjectThreadWidget* m_pTrackSampleRate;
 };
 
 #endif

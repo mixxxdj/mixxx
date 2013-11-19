@@ -42,7 +42,6 @@ class ControllerManager : public QObject {
     void requestSetUpDevices();
     void requestShutdown();
     void requestSave(bool onlyActive);
-    void syncControlSystem();
 
   public slots:
     void updateControllerList();
@@ -70,10 +69,12 @@ class ControllerManager : public QObject {
     void maybeStartOrStopPolling();
 
     static QString presetFilenameFromName(QString name) {
-        return name.replace(" ", "_");
+        return name.replace(" ", "_").replace("/", "_").replace("\\", "_");
     }
 
   private:
+    QList<QString> getScriptPaths();
+
     ConfigObject<ConfigValue> *m_pConfig;
     ControllerLearningEventFilter* m_pControllerLearningEventFilter;
     QTimer m_pollTimer;

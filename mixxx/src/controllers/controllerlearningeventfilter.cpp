@@ -46,7 +46,6 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
             } else {
                 qDebug() << "No control bound to left-click for" << pWidget;
             }
-
         }
         if (mouseEvent->button() & Qt::RightButton) {
             if (info.rightClickControl) {
@@ -88,9 +87,9 @@ bool ControllerLearningEventFilter::eventFilter(QObject* pObject, QEvent* pEvent
 }
 
 void ControllerLearningEventFilter::addWidgetClickInfo(
-    QWidget* pWidget, Qt::MouseButton buttonState,
-    ControlObject* pControl,
-    ControlObjectThreadWidget::EmitOption emitOption) {
+        QWidget* pWidget, Qt::MouseButton buttonState,
+        ControlObject* pControl,
+        ControlObjectThreadWidget::EmitOption emitOption) {
     ControlInfo& info = m_widgetControlInfo[pWidget];
 
     if (buttonState == Qt::LeftButton) {

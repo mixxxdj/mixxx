@@ -406,6 +406,12 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the album name of the loaded track.")
             << trackTags;
 
+    add("track_key")
+            //: The musical key of a track
+            << tr("Track Key")
+            << tr("Displays the musical key of the loaded track.")
+            << trackTags;
+
     add("text")
             << tr("Track Artist/Title")
             << tr("Displays the artist and title of the loaded track.")

@@ -124,7 +124,8 @@ const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
     return QLinkedList<int>();
 }
 
-void BrowseTableModel::search(const QString& searchText) {
+void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
+    Q_UNUSED(extraFilter);
     Q_UNUSED(searchText);
 }
 
@@ -381,6 +382,8 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
 }
 
 QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
+    Q_UNUSED(i);
+    Q_UNUSED(pParent);
     return NULL;
 }
 

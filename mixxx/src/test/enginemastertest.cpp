@@ -23,6 +23,7 @@ class EngineChannelMock : public EngineChannel {
     }
 
     MOCK_METHOD0(isActive, bool());
+    MOCK_METHOD0(isMaster, bool());
     MOCK_METHOD0(isPFL, bool());
     MOCK_METHOD3(process, void(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize));
 };
@@ -49,10 +50,16 @@ class EngineMasterTest : public testing::Test {
         }
     }
 
-    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value, int iBufferLen) {
+    void AssertWholeBufferEquals(const CSAMPLE* pBuffer, CSAMPLE value,
+                                 int iBufferLen, bool verbose=false) {
+        int differences = 0;
         for (int i = 0; i < iBufferLen; ++i) {
-            EXPECT_FLOAT_EQ(value, pBuffer[i]);
+            differences += (value != pBuffer[i]);
+            if (verbose) {
+                EXPECT_FLOAT_EQ(value, pBuffer[i]);
+            }
         }
+        EXPECT_EQ(0, differences);
     }
 
     ConfigObject<ConfigValue>* m_pConfig;
@@ -68,8 +75,11 @@ TEST_F(EngineMasterTest, SingleChannelOutputWorks) {
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannelBuffer, 1.0f, MAX_BUFFER_LEN);
 
-    // Instruct the mock to claim it is active and not PFL.
+    // Instruct the mock to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel, isPFL())
@@ -106,16 +116,22 @@ TEST_F(EngineMasterTest, TwoChannelOutputWorks) {
     FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
     FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
 
-    // Instruct channel 1 to claim it is active and not PFL.
+    // Instruct channel 1 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isPFL())
             .Times(1)
             .WillOnce(Return(false));
 
-    // Instruct channel 2 to claim it is active and not PFL.
+    // Instruct channel 2 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isPFL())
@@ -155,16 +171,22 @@ TEST_F(EngineMasterTest, TwoChannelPFLOutputWorks) {
     FillBuffer(pChannel1Buffer, 1.0f, MAX_BUFFER_LEN);
     FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
 
-    // Instruct channel 1 to claim it is active and not PFL.
+    // Instruct channel 1 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isPFL())
             .Times(1)
             .WillOnce(Return(true));
 
-    // Instruct channel 2 to claim it is active and not PFL.
+    // Instruct channel 2 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isPFL())
@@ -208,24 +230,33 @@ TEST_F(EngineMasterTest, ThreeChannelOutputWorks) {
     FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
     FillBuffer(pChannel3Buffer, 3.0f, MAX_BUFFER_LEN);
 
-    // Instruct channel 1 to claim it is active and not PFL.
+    // Instruct channel 1 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isPFL())
             .Times(1)
             .WillOnce(Return(false));
 
-    // Instruct channel 2 to claim it is active and not PFL.
+    // Instruct channel 2 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isPFL())
             .Times(1)
             .WillOnce(Return(false));
 
-    // Instruct channel 3 to claim it is active and not PFL.
+    // Instruct channel 3 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel3, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel3, isPFL())
@@ -272,24 +303,33 @@ TEST_F(EngineMasterTest, ThreeChannelPFLOutputWorks) {
     FillBuffer(pChannel2Buffer, 2.0f, MAX_BUFFER_LEN);
     FillBuffer(pChannel3Buffer, 3.0f, MAX_BUFFER_LEN);
 
-    // Instruct channel 1 to claim it is active and not PFL.
+    // Instruct channel 1 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel1, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel1, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel1, isPFL())
             .Times(1)
             .WillOnce(Return(true));
 
-    // Instruct channel 2 to claim it is active and not PFL.
+    // Instruct channel 2 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel2, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel2, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel2, isPFL())
             .Times(1)
             .WillOnce(Return(true));
 
-    // Instruct channel 3 to claim it is active and not PFL.
+    // Instruct channel 3 to claim it is active, master and not PFL.
     EXPECT_CALL(*pChannel3, isActive())
+            .Times(1)
+            .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel3, isMaster())
             .Times(1)
             .WillOnce(Return(true));
     EXPECT_CALL(*pChannel3, isPFL())
@@ -327,10 +367,13 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
     // We assume it uses MAX_BUFFER_LEN. This should probably be fixed.
     FillBuffer(pChannelBuffer, 1.0f, MAX_BUFFER_LEN);
 
-    // Instruct the mock to claim it is active and PFL
+    // Instruct the mock to claim it is active, not master and PFL
     EXPECT_CALL(*pChannel, isActive())
             .Times(1)
             .WillOnce(Return(true));
+    EXPECT_CALL(*pChannel, isMaster())
+            .Times(1)
+            .WillOnce(Return(false));
     EXPECT_CALL(*pChannel, isPFL())
             .Times(1)
             .WillOnce(Return(true));
@@ -342,9 +385,9 @@ TEST_F(EngineMasterTest, SingleChannelPFLOutputWorks) {
 
     m_pMaster->process(NULL, NULL, MAX_BUFFER_LEN);
 
-    // Check that the master output contains the channel data.
+    // Check that the master output is empty.
     const CSAMPLE* pMasterBuffer = m_pMaster->getMasterBuffer();
-    AssertWholeBufferEquals(pMasterBuffer, 1.0f, MAX_BUFFER_LEN);
+    AssertWholeBufferEquals(pMasterBuffer, 0.0f, MAX_BUFFER_LEN);
 
     // Check that the headphone output contains the channel data.
     const CSAMPLE* pHeadphoneBuffer = m_pMaster->getHeadphoneBuffer();

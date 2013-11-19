@@ -4,6 +4,7 @@
 		<name>Numark Total Control</name>
 		<author>Smashuu / David Gnedt</author>
 		<description>Optimized for Traktor label card</description>
+                <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=1252</forums>
 	</info>
 	<controller id="TotalTrack Control">
 		<scriptfiles>

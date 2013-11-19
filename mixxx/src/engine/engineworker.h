@@ -4,6 +4,7 @@
 #ifndef ENGINEWORKER_H
 #define ENGINEWORKER_H
 
+#include <QAtomicInt>
 #include <QObject>
 #include <QRunnable>
 
@@ -11,6 +12,8 @@
 // audio callback is not active. While the audio callback is active, an
 // EngineWorker can emit its workReady signal, and an EngineWorkerManager will
 // schedule it for running after the audio callback has completed.
+
+class EngineWorkerScheduler;
 
 class EngineWorker : public QObject, public QRunnable {
     Q_OBJECT
@@ -20,10 +23,22 @@ class EngineWorker : public QObject, public QRunnable {
 
     virtual void run();
 
-  signals:
-    void workReady(EngineWorker* worker);
-    void workStarting(EngineWorker* worker);
-    void workDone(EngineWorker* worker);
+    // Thread-safe, sets whether this EngineWorker is active.
+    inline void setActive(bool bActive) {
+        m_isActive = bActive;
+    }
+
+    // Thread-safe, returns true if this EngineWorker is active.
+    inline bool isActive() const {
+        return m_isActive > 0;
+    }
+
+    void setScheduler(EngineWorkerScheduler* pScheduler);
+    void workReady();
+
+  private:
+    EngineWorkerScheduler* m_pScheduler;
+    QAtomicInt m_isActive;
 };
 
 #endif /* ENGINEWORKER_H */

@@ -59,7 +59,6 @@ class Waveform {
 
     double getVisualSampleRate() const { return m_visualSampleRate; }
     double getAudioVisualRatio() const { return m_audioVisualRatio; }
-    int getAudioSamplesPerVisualSample() const { return m_audioSamplesPerVisualSample; }
 
     // Atomically lookup the completion of the waveform. Represents the number
     // of data elements that have been processed out of dataSize.
@@ -93,9 +92,8 @@ class Waveform {
     void resize(int size);
     void assign(int size, int value = 0);
 
-    void computeBestVisualSampleRate(int audioSampleRate,
-                                     double desiredVisualSampleRate);
-    void allocateForAudioSamples(int audioSamples);
+    void initalise(int audioSampleRate, int audioSamples,
+            int desiredVisualSampleRate, int maxVisualSamples = -1);
 
     inline WaveformData& at(int i) { return m_data[i];}
     inline unsigned char& low(int i) { return m_data[i].filtered.low;}
@@ -115,7 +113,6 @@ class Waveform {
     const QAtomicInt m_numChannels;
     QAtomicInt m_dataSize; //m_data allocated size
     std::vector<WaveformData> m_data;
-    int m_audioSamplesPerVisualSample;
     double m_visualSampleRate;
     double m_audioVisualRatio;
 

@@ -51,7 +51,7 @@ if int(build.flags['vamp']):
     if not conf.CheckLib('vamp-sdk'):
         INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
         # For header includes
-        build.env.Append(CPPPATH=[INTERNAL_VAMP_PATH])
+        env.Append(CPPPATH=[INTERNAL_VAMP_PATH])
         sdk_src_path = '%s/src/vamp-sdk' % INTERNAL_VAMP_PATH
         mixxxminimal_sources.extend(path % sdk_src_path for path in
                                     ['%s/PluginAdapter.cpp',

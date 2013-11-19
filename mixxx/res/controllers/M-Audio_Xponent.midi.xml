@@ -3,7 +3,7 @@
 <info>
   <name>M-Audio Xponent</name>
   <author>Luca Franceschini, Juan Pedro Bolívar Puente</author>
-  <description>This is a midi present of Xponent.</description>
+  <description>Make sure to set the bank switch on the bottom of the Xponent to A.</description>
   <!-- These comments are not suppported by mixxx hile 2012-08-06 -->
   <!-- <deviceid>Xponent Port 1</deviceid><deviceid>Xponent Port 2</deviceid> -->
 </info>

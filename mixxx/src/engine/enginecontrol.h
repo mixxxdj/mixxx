@@ -11,6 +11,7 @@
 #include "trackinfoobject.h"
 
 class EngineMaster;
+class EngineBuffer;
 struct Hint;
 
 const double kNoTrigger = -1;
@@ -27,14 +28,6 @@ const double kNoTrigger = -1;
  * callback from the sound engine. This implies that any ControlObject accesses
  * made in either of these methods are mutually exclusive, since one is
  * exclusively in the call graph of the other.
- *
- * Furthermore, most slots that are connected to Mixxx ControlObjects are safe
- * to process without locking EngineBuffer/EngineControl owned values, since
- * Mixxx only synchronizes ControlObjects in the SoundManager callback, and thus
- * EngineBuffer::process (and correspondingly, EngineControl::process) are
- * mutually exclusive to any ControlObject related slots that fire on an
- * EngineControl. This is not true in every case, so when in doubt, ask a core
- * developer.
  */
 class EngineControl : public QObject {
     Q_OBJECT
@@ -70,6 +63,7 @@ class EngineControl : public QObject {
     virtual void hintReader(QList<Hint>& hintList);
 
     void setEngineMaster(EngineMaster* pEngineMaster);
+    void setEngineBuffer(EngineBuffer* pEngineBuffer);
     void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
@@ -81,14 +75,14 @@ class EngineControl : public QObject {
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
 
-  signals:
+  protected:
     void seek(double fractionalPosition);
     void seekAbs(double sample);
 
-  protected:
     const char* getGroup();
     ConfigObject<ConfigValue>* getConfig();
     EngineMaster* getEngineMaster();
+    EngineBuffer* getEngineBuffer();
 
   private:
     const char* m_pGroup;
@@ -96,6 +90,7 @@ class EngineControl : public QObject {
     double m_dCurrentSample;
     double m_dTotalSamples;
     EngineMaster* m_pEngineMaster;
+    EngineBuffer* m_pEngineBuffer;
 };
 
 #endif /* ENGINECONTROL_H */

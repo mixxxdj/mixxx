@@ -53,7 +53,7 @@
 	<manifest>
 	<title>Phoney1600x1200-UXGA</title>
 	<author>jus</author>
-	<version>1.11.0.07</version>
+	<version>1.11.0.09</version>
 	<description>A 2-deck parallel waveform skin.</description>
 	<language>en</language>
 	<license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
@@ -115,7 +115,11 @@
 			QPushButton#LibraryPreviewButton { width: 23px; height: 12px; background: transparent; border: 0; }
 			QPushButton#LibraryPreviewButton:!checked{ image: url(skin:/style/style_library_preview_play.png); }
 			QPushButton#LibraryPreviewButton:checked{ image: url(skin:/style/style_library_preview_pause.png); }
-	
+
+			QPushButton#LibraryBPMButton {background: transparent; border: 0;}
+			QPushButton#LibraryBPMButton::checked {image: url(:/images/library/ic_library_checked.png);}
+			QPushButton#LibraryBPMButton::!checked {image: url(:/images/library/ic_library_unchecked.png);}
+
 			QHeaderView { font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif; }
 	
 			<!--Styling a QSpinbox is complex and it took ages to figure out how to remove the surrounding frame and make the background transparent without affecting the subcontrols (up/down-buttons).
@@ -210,9 +214,7 @@
 		<SignalLowColor></SignalLowColor>
 		<SignalColor>#0080FF</SignalColor>
 		<BeatColor>#454C53</BeatColor>
-		<BeatHighlightColor>#454C53</BeatHighlightColor>
-		<MarkerColor>#FD0564</MarkerColor>
-		<CueColor>#000000</CueColor>
+		<PlayPosColor>#FD0564</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#000000</AxesColor>
 		<Align></Align>
@@ -268,11 +270,10 @@
 		<SignalLowColor></SignalLowColor>
 		<SignalColor>#E17000</SignalColor>
 		<BeatColor>#454C53</BeatColor>
-		<BeatHighlightColor>#454C53</BeatHighlightColor>
-		<MarkerColor>#FD0564</MarkerColor>
-		<CueColor>#000000</CueColor>
+		<PlayPosColor>#FD0564</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<AxesColor>#000000</AxesColor>
+		<Align></Align>
 		<DefaultMark>
 			<Align>top</Align>
 			<Color>#333333</Color>
@@ -327,7 +328,7 @@
 		<Size>320,35</Size>
 		<BgColor>#F7F7F7</BgColor>
 		<SignalColor>#0080FF</SignalColor>
-		<MarkerColor>#191919</MarkerColor>
+		<PlayPosColor>#FD0564</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>
@@ -362,7 +363,7 @@
 		<Size>320,35</Size>
 		<BgColor>#F7F7F7</BgColor>
 		<SignalColor>#E17000</SignalColor>
-		<MarkerColor>#191919</MarkerColor>
+		<PlayPosColor>#FD0564</PlayPosColor>
 		<EndOfTrackColor>#EA0000</EndOfTrackColor>
 		<DefaultMark>
 			<Align>bottom</Align>

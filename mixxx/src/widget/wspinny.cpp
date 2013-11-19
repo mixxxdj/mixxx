@@ -7,7 +7,9 @@
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "sharedglcontext.h"
-#include "wspinny.h"
+#include "widget/wspinny.h"
+#include "vinylcontrol/vinylcontrolmanager.h"
+#include "vinylcontrol/vinylcontrol.h"
 
 WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
         : QGLWidget(parent, SharedGLContext::getWidget()),
@@ -19,16 +21,15 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pVisualPlayPos(NULL),
           m_pDuration(NULL),
           m_pTrackSamples(NULL),
-          m_pBPM(NULL),
           m_pScratch(NULL),
           m_pScratchToggle(NULL),
           m_pScratchPos(NULL),
           m_pVinylControlSpeedType(NULL),
           m_pVinylControlEnabled(NULL),
+          m_iVinylInput(-1),
           m_bVinylActive(false),
           m_bSignalActive(true),
-          m_iSize(0),
-          m_iSignalUpdateTick(0),
+          m_iVinylScopeSize(0),
           m_fAngle(0.0f),
           m_dAngleLastPlaypos(-1),
           m_fGhostAngle(0.0f),
@@ -40,44 +41,69 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_bClampFailedWarning(false) {
 #ifdef __VINYLCONTROL__
     m_pVCManager = pVCMan;
-    m_pVinylControl = NULL;
 #endif
     //Drag and drop
     setAcceptDrops(true);
-    qDebug() << "Created QGLWidget. Context"
+    qDebug() << "WSpinny(): Created QGLWidget, Context"
              << "Valid:" << context()->isValid()
              << "Sharing:" << context()->isSharing();
 }
 
-WSpinny::~WSpinny()
-{
-    //Don't delete these because the image store takes care of them.
-    //delete m_pBgImage;
-    //delete m_pFgImage;
-    //delete m_pGhostImage;
-    WImageStore::deleteImage(m_pBgImage);
-    WImageStore::deleteImage(m_pFgImage);
-    WImageStore::deleteImage(m_pGhostImage);
-    delete m_pPlay;
-    delete m_pPlayPos;
-    delete m_pVisualPlayPos;
-    delete m_pDuration;
-    delete m_pTrackSamples;
-    delete m_pTrackSampleRate;
-    delete m_pBPM;
-    delete m_pScratch;
-    delete m_pScratchToggle;
-    delete m_pScratchPos;
-#ifdef __VINYLCONTROL__
-    delete m_pVinylControlSpeedType;
-    delete m_pVinylControlEnabled;
-    delete m_pSignalEnabled;
-#endif
-
+WSpinny::~WSpinny() {
+    // No need to delete anything if m_group is empty because setup() was not called.
+    if (!m_group.isEmpty()) {
+        WImageStore::deleteImage(m_pBgImage);
+        WImageStore::deleteImage(m_pFgImage);
+        WImageStore::deleteImage(m_pGhostImage);
+        delete m_pPlay;
+        delete m_pPlayPos;
+        delete m_pVisualPlayPos;
+        delete m_pDuration;
+        delete m_pTrackSamples;
+        delete m_pTrackSampleRate;
+        delete m_pScratch;
+        delete m_pScratchToggle;
+        delete m_pScratchPos;
+    #ifdef __VINYLCONTROL__
+        delete m_pVinylControlSpeedType;
+        delete m_pVinylControlEnabled;
+        delete m_pSignalEnabled;
+    #endif
+    }
 }
 
-void WSpinny::setup(QDomNode node, QString group)
-{
+void WSpinny::onVinylSignalQualityUpdate(const VinylSignalQualityReport& report) {
+#ifdef __VINYLCONTROL__
+    // Skip reports for vinyl inputs we don't care about.
+    if (report.processor != m_iVinylInput) {
+        return;
+    }
+    int r,g,b;
+    QColor qual_color = QColor();
+    float signalQuality = report.timecode_quality;
+
+    // color is related to signal quality
+    // hsv:  s=1, v=1
+    // h is the only variable.
+    // h=0 is red, h=120 is green
+    qual_color.setHsv((int)(120.0 * signalQuality), 255, 255);
+    qual_color.getRgb(&r, &g, &b);
+
+    for (int y = 0; y < m_iVinylScopeSize; ++y) {
+        QRgb *line = (QRgb *)m_qImage.scanLine(y);
+        for (int x = 0; x < m_iVinylScopeSize; ++x) {
+            // use xwax's bitmap to set alpha data only
+            // adjust alpha by 3/4 so it's not quite so distracting
+            // setpixel is slow, use scanlines instead
+            //m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iVinylScopeSize*y] * .75));
+            *line = qRgba(r,g,b,(int)(report.scope[x+m_iVinylScopeSize*y] * .75));
+            line++;
+        }
+    }
+#endif
+}
+
+void WSpinny::setup(QDomNode node, QString group) {
     m_group = group;
 
     // Set images
@@ -92,9 +118,13 @@ void WSpinny::setup(QDomNode node, QString group)
     }
 
 #ifdef __VINYLCONTROL__
-    m_iSize = MIXXX_VINYL_SCOPE_SIZE;
-    m_qImage = QImage(m_iSize, m_iSize, QImage::Format_ARGB32);
-    //fill with transparent black
+    // Find the vinyl input we should listen to reports about.
+    if (m_pVCManager) {
+        m_iVinylInput = m_pVCManager->vinylInputFromGroup(m_group);
+    }
+    m_iVinylScopeSize = MIXXX_VINYL_SCOPE_SIZE;
+    m_qImage = QImage(m_iVinylScopeSize, m_iVinylScopeSize, QImage::Format_ARGB32);
+    // fill with transparent black
     m_qImage.fill(qRgba(0,0,0,0));
 #endif
 
@@ -111,8 +141,6 @@ void WSpinny::setup(QDomNode node, QString group)
     m_pTrackSampleRate = new ControlObjectThreadMain(
                                     ControlObject::getControl(
                                     ConfigKey(group, "track_samplerate")));
-    m_pBPM = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "bpm")));
 
     m_pScratch = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "scratch2")));
@@ -134,19 +162,23 @@ void WSpinny::setup(QDomNode node, QString group)
         //Initialize the rotational speed.
         this->updateVinylControlSpeed(m_pVinylControlSpeedType->get());
     }
+
     m_pVinylControlEnabled = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_enabled")));
+    connect(m_pVinylControlEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(updateVinylControlEnabled(double)));
+
     m_pSignalEnabled = new ControlObjectThreadMain(ControlObject::getControl(
                         ConfigKey(group, "vinylcontrol_signal_enabled")));
+    connect(m_pSignalEnabled, SIGNAL(valueChanged(double)),
+            this, SLOT(updateVinylControlSignalEnabled(double)));
 
     //Match the vinyl control's set RPM so that the spinny widget rotates at the same
     //speed as your physical decks, if you're using vinyl control.
     connect(m_pVinylControlSpeedType, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlSpeed(double)));
 
-    //Make sure vinyl control proxies are up to date
-    connect(m_pVinylControlEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(updateVinylControlEnabled(double)));
+
 
 #else
     //if no vinyl control, just call it 33
@@ -166,44 +198,9 @@ void WSpinny::paintEvent(QPaintEvent *e) {
 
 #ifdef __VINYLCONTROL__
     // Overlay the signal quality drawing if vinyl is active
-    if (m_bVinylActive && m_bSignalActive)
-    {
-        // reduce cpu load by only updating every 3 times
-        m_iSignalUpdateTick = (m_iSignalUpdateTick + 1) % 3;
-        if (m_iSignalUpdateTick == 0)
-        {
-            unsigned char * buf = m_pVinylControl->getScopeBytemap();
-            if (buf) {
-                int r,g,b;
-                QColor qual_color = QColor();
-                float signalQuality = m_pVinylControl->getTimecodeQuality();
-
-                // color is related to signal quality
-                // hsv:  s=1, v=1
-                // h is the only variable.
-                // h=0 is red, h=120 is green
-                qual_color.setHsv((int)(120.0 * signalQuality), 255, 255);
-                qual_color.getRgb(&r, &g, &b);
-
-                for (int y=0; y<m_iSize; y++) {
-                    QRgb *line = (QRgb *)m_qImage.scanLine(y);
-                    for(int x=0; x<m_iSize; x++) {
-                        // use xwax's bitmap to set alpha data only
-                        // adjust alpha by 3/4 so it's not quite so distracting
-                        // setpixel is slow, use scanlines instead
-                        //m_qImage.setPixel(x, y, qRgba(r,g,b,(int)buf[x+m_iSize*y] * .75));
-                        *line = qRgba(r,g,b,(int)(buf[x+m_iSize*y] * .75));
-                        line++;
-                    }
-                }
-                p.drawImage(this->rect(), m_qImage);
-            }
-        }
-        else
-        {
-            // draw the last good image
-            p.drawImage(this->rect(), m_qImage);
-        }
+    if (m_bVinylActive && m_bSignalActive) {
+        // draw the last good image
+        p.drawImage(this->rect(), m_qImage);
     }
 #endif
 
@@ -235,14 +232,16 @@ void WSpinny::paintEvent(QPaintEvent *e) {
     if (m_pFgImage && !m_pFgImage->isNull()) {
         // Now rotate the image and draw it on the screen.
         p.rotate(m_fAngle);
-        p.drawImage(-(width() / 2), -(height() / 2), *m_pFgImage);
+        p.drawImage(-(m_pFgImage->width() / 2),
+                -(m_pFgImage->height() / 2), *m_pFgImage);
     }
 
     if (bGhostPlayback && m_pGhostImage && !m_pGhostImage->isNull()) {
         p.restore();
         p.save();
         p.rotate(m_fGhostAngle);
-        p.drawImage(-(width() / 2), -(height() / 2), *m_pGhostImage);
+        p.drawImage(-(m_pGhostImage->width() / 2),
+                -(m_pGhostImage->height() / 2), *m_pGhostImage);
 
         //Rotate back to the playback position (not the ghost positon),
         //and draw the beat marks from there.
@@ -347,38 +346,20 @@ void WSpinny::updateVinylControlSpeed(double rpm) {
     m_dRotationsPerSecond = rpm/60.;
 }
 
-void WSpinny::updateVinylControlEnabled(double enabled) {
-#ifdef __VINYLCONTROL__
-    if (enabled)
-    {
-        if (m_pVinylControl == NULL)
-        {
-            m_pVinylControl = m_pVCManager->getVinylControlProxyForChannel(m_group);
-            if (m_pVinylControl != NULL)
-            {
-                m_bVinylActive = true;
-                m_bSignalActive = m_pSignalEnabled->get();
-                connect(m_pVinylControl, SIGNAL(destroyed()),
-                    this, SLOT(invalidateVinylControl()));
-            }
-        }
-        else
-        {
-            m_bVinylActive = true;
-        }
+void WSpinny::updateVinylControlSignalEnabled(double enabled) {
+    m_bSignalActive = enabled;
+
+    if (enabled && m_iVinylInput != -1) {
+        m_pVCManager->addSignalQualityListener(this);
+    } else {
+        m_pVCManager->removeSignalQualityListener(this);
+        // fill with transparent black
+        m_qImage.fill(qRgba(0,0,0,0));
     }
-    else
-    {
-        m_bVinylActive = false;
-    }
-#endif
 }
 
-void WSpinny::invalidateVinylControl() {
-#ifdef __VINYLCONTROL__
-    m_bVinylActive = false;
-    m_pVinylControl = NULL;
-#endif
+void WSpinny::updateVinylControlEnabled(double enabled) {
+    m_bVinylActive = enabled;
 }
 
 void WSpinny::mouseMoveEvent(QMouseEvent * e) {
@@ -484,6 +465,23 @@ void WSpinny::wheelEvent(QWheelEvent *e)
 
     e->accept();
     */
+}
+
+void WSpinny::showEvent(QShowEvent* event) {
+    // If we want to draw the VC signal on this widget then register for
+    // updates.
+    if (m_bSignalActive && m_iVinylInput != -1 && m_pVCManager) {
+        m_pVCManager->addSignalQualityListener(this);
+    }
+}
+
+void WSpinny::hideEvent(QHideEvent* event) {
+    // When we are hidden we do not want signal quality updates.
+    if (m_pVCManager) {
+        m_pVCManager->removeSignalQualityListener(this);
+    }
+    // fill with transparent black
+    m_qImage.fill(qRgba(0,0,0,0));
 }
 
 /** DRAG AND DROP **/

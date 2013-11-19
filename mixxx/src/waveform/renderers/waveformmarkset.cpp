@@ -9,7 +9,9 @@
 WaveformMarkSet::WaveformMarkSet() {
 }
 
-void WaveformMarkSet::setup( const QString& group, const QDomNode& node) {
+void WaveformMarkSet::setup(const QString& group, const QDomNode& node,
+        const WaveformSignalColors& signalColors) {
+
     m_defaultMark = WaveformMark();
     m_marks.clear();
 
@@ -25,16 +27,16 @@ void WaveformMarkSet::setup( const QString& group, const QDomNode& node) {
     QDomNode child = node.firstChild();
     while (!child.isNull()) {
         if (child.nodeName() == "DefaultMark") {
-            m_defaultMark.setup( group, child);
+            m_defaultMark.setup(group, child, signalColors);
             hasDefaultMark = true;
         } else if (child.nodeName() == "Mark") {
             m_marks.push_back(WaveformMark());
             WaveformMark& mark = m_marks.back();
-            mark.setup(group, child);
+            mark.setup(group, child, signalColors);
 
-            if (mark.m_pointControl && mark.m_pointControl->getControlObject()) {
+            if (mark.m_pointControl) {
                 // guarantee uniqueness even if there is a misdesigned skin
-                QString item = mark.m_pointControl->getControlObject()->getKey().item;
+                QString item = mark.m_pointControl->getKey().item;
                 if (!controlItemSet.insert(item).second) {
                     qWarning() << "WaveformRenderMark::setup - redefinition of" << item;
                     m_marks.removeAt(m_marks.size() - 1);

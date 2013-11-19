@@ -21,8 +21,8 @@ AutoDJFeature::AutoDJFeature(QObject* parent,
         : LibraryFeature(parent),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_playlistDao(pTrackCollection->getPlaylistDAO()) {
-    m_pAutoDJView = NULL;
+          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+          m_pAutoDJView(NULL) {
 }
 
 AutoDJFeature::~AutoDJFeature() {
@@ -42,12 +42,11 @@ void AutoDJFeature::bindWidget(WLibrary* libraryWidget,
                                   m_pConfig,
                                   m_pTrackCollection,
                                   keyboard);
-    m_pAutoDJView->installEventFilter(keyboard);
     libraryWidget->registerView(m_sAutoDJViewName, m_pAutoDJView);
     connect(m_pAutoDJView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(m_pAutoDJView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 }
 
 TreeItemModel* AutoDJFeature::getChildModel() {
@@ -89,8 +88,9 @@ bool AutoDJFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
             trackIds.removeAt(trackId--);
         }
     }
-    m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
-    return true;
+
+    // Return whether the tracks were appended.
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
 bool AutoDJFeature::dragMoveAccept(QUrl url) {
