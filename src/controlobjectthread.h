@@ -27,28 +27,31 @@
 #include "configobject.h"
 
 class ControlDoublePrivate;
-class ControlObject;
 
 class ControlObjectThread : public QObject {
     Q_OBJECT
   public:
-    ControlObjectThread(ControlObject *pControlObject, QObject* pParent=NULL);
-    ControlObjectThread(ConfigKey key, QObject* pParent=NULL);
+    ControlObjectThread(const QString& g, const QString& i, QObject* pParent=NULL);
+    ControlObjectThread(const char* g, const char* i, QObject* pParent=NULL);
+    ControlObjectThread(const ConfigKey& key, QObject* pParent=NULL);
     virtual ~ControlObjectThread();
 
-    void initialize(ConfigKey key);
+    void initialize(const ConfigKey& key);
+
+    bool connectValueChanged(const QObject* receiver,
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectValueChanged(
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection );
+
 
     /** Called from update(); */
     void emitValueChanged();
 
-    inline ConfigKey getKey() const {
-        return m_key;
-    }
+    inline ConfigKey getKey() const { return m_key; }
+    inline bool valid() const { return m_pControl != NULL; }
 
     // Returns the value of the object. Thread safe, non-blocking.
     virtual double get();
-
-    bool valid() const;
 
   public slots:
     // Set the control to a new value. Non-blocking.
@@ -72,7 +75,7 @@ class ControlObjectThread : public QObject {
   protected:
     ConfigKey m_key;
     // Pointer to connected control.
-    ControlDoublePrivate* m_pControl;
+    QSharedPointer<ControlDoublePrivate> m_pControl;
 };
 
 #endif

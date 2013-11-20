@@ -72,7 +72,7 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 19;
+    int requiredSchemaVersion = 22;
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
@@ -120,12 +120,13 @@ QSqlDatabase& TrackCollection::getDatabase() {
     @param trackDao The track data access object which provides a connection to the database. We use this parameter in order to make this function callable from separate threads. You need to use a different DB connection for each thread.
     @return true if the scan completed without being cancelled. False if the scan was cancelled part-way through.
 */
-bool TrackCollection::importDirectory(QString directory, TrackDAO &trackDao,
-                                    const QStringList & nameFilters, volatile bool* cancel) {
+bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackDao,
+                                      const QStringList& nameFilters,
+                                      volatile bool* cancel) {
     //qDebug() << "TrackCollection::importDirectory(" << directory<< ")";
 
     emit(startedLoading());
-    QFileInfoList files;
+    // QFileInfoList files;
 
     //get a list of the contents of the directory and go through it.
     QDirIterator it(directory, nameFilters, QDir::Files | QDir::NoDotAndDotDot);
@@ -184,12 +185,12 @@ PlaylistDAO& TrackCollection::getPlaylistDAO() {
 }
 
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
-    const QString name) {
+    const QString& name) {
     return m_trackSources.value(name, QSharedPointer<BaseTrackCache>());
 }
 
 void TrackCollection::addTrackSource(
-    const QString name, QSharedPointer<BaseTrackCache> trackSource) {
+    const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
 }

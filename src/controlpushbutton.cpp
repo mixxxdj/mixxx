@@ -21,16 +21,15 @@
    Purpose: Creates a new simulated latching push-button.
    Input:   key - Key for the configuration file
    -------- ------------------------------------------------------ */
-ControlPushButton::ControlPushButton(ConfigKey key) :
-        ControlObject(key, false),
-        m_buttonMode(PUSH),
-        m_iNoStates(2) {
+ControlPushButton::ControlPushButton(ConfigKey key)
+        : ControlObject(key, false),
+          m_buttonMode(PUSH),
+          m_iNoStates(2) {
     if (m_pControl) {
-        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
-            new ControlPushButtonBehavior(
-                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                m_iNoStates));
-        delete pOldBehavior;
+        m_pControl->setBehavior(
+                new ControlPushButtonBehavior(
+                        static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                        m_iNoStates));
     }
 }
 
@@ -43,11 +42,10 @@ void ControlPushButton::setButtonMode(enum ButtonMode mode) {
     m_buttonMode = mode;
 
     if (m_pControl) {
-        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
-            new ControlPushButtonBehavior(
-                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                m_iNoStates));
-        delete pOldBehavior;
+        m_pControl->setBehavior(
+                new ControlPushButtonBehavior(
+                        static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                        m_iNoStates));
     }
 }
 
@@ -55,11 +53,10 @@ void ControlPushButton::setStates(int num_states) {
     m_iNoStates = num_states;
 
     if (m_pControl) {
-        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
-            new ControlPushButtonBehavior(
-                static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
-                m_iNoStates));
-        delete pOldBehavior;
+            m_pControl->setBehavior(
+                    new ControlPushButtonBehavior(
+                            static_cast<ControlPushButtonBehavior::ButtonMode>(m_buttonMode),
+                            m_iNoStates));
     }
 }
 

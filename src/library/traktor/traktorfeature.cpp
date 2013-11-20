@@ -482,8 +482,9 @@ void TraktorFeature::parsePlaylistEntries(
 
     //playlist_id = id_query.lastInsertId().toInt();
     int playlist_id = -1;
+    const int idColumn = id_query.record().indexOf("id");
     while (id_query.next()) {
-        playlist_id = id_query.value(id_query.record().indexOf ("id")).toInt();
+        playlist_id = id_query.value(idColumn).toInt();
     }
 
     int playlist_position = 1;
@@ -516,7 +517,7 @@ void TraktorFeature::parsePlaylistEntries(
                     }
 
                     if (finder_query.next()) {
-                        track_id = finder_query.value(finder_query.record().indexOf ("id")).toInt();
+                        track_id = finder_query.value(finder_query.record().indexOf("id")).toInt();
                     }
 
                     query_insert_into_playlisttracks.bindValue(":playlist_id", playlist_id);

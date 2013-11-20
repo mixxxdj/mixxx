@@ -15,96 +15,33 @@
 *                                                                         *
 ***************************************************************************/
 
-
-
 #include "engine/enginefilterbutterworth8.h"
 #include "engine/enginefilter.h"
 #include "engine/engineobject.h"
 #include "../lib/fidlib-0.9.10/fidlib.h"
 
-/* Local Prototypes */
 inline double _processLowpass(double *coef, double *buf, register double val);
 inline double _processBandpass(double *coef, double *buf, register double val);
 double inline _processHighpass(double *coef, double *buf, register double val);
 
-inline void zap_buffer_denormals(double *buf, int bufSize)
-{
+inline void zap_buffer_denormals(double *buf, int bufSize) {
 	for(int i=0; i < bufSize; i++)
 		buf[i] = zap_denormal(buf[i]);
 }
 
-EngineFilterButterworth8::EngineFilterButterworth8(filterType type, int sampleRate, double freqCorner1, double freqCorner2)
-{
-	m_type = type;
-
-	switch(type)
-	{
-		case FILTER_LOWPASS:
-			m_bufSize = 8;
-			Q_ASSERT(freqCorner2 == 0);
-			m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "LpBu8", sampleRate, freqCorner1, 0, 0);
-			break;
-
-		case FILTER_BANDPASS:
-			m_bufSize = 16;
-			m_coef[0]= 1 * fid_design_coef(m_coef + 1, 16, "BpBu8", sampleRate, freqCorner1, freqCorner2, 0);
-			break;
-
-		case FILTER_HIGHPASS:
-			m_bufSize = 8;
-			Q_ASSERT(freqCorner2 == 0);
-			m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "HpBu8", sampleRate, freqCorner1, 0, 0);
-			break;
-	}
-
-	//Initialize Buffers
-	for(int i=0; i < m_bufSize; i++)
-	{
-		m_buf1[i] = 0;
-		m_buf2[i] = 0;
-	}
+EngineFilterButterworth8::EngineFilterButterworth8(int sampleRate, int bufSize)
+        : m_sampleRate(sampleRate),
+          m_bufSize(bufSize) {
 }
 
-EngineFilterButterworth8::~EngineFilterButterworth8()
-{
+EngineFilterButterworth8::~EngineFilterButterworth8() {
 }
 
-void EngineFilterButterworth8::process(const CSAMPLE *pIn, const CSAMPLE *ppOut, const int iBufferSize)
-{
-	CSAMPLE * pOutput = (CSAMPLE *)ppOut;
-
-	switch(m_type)
-	{
-	case FILTER_LOWPASS:
-		for(int i=0; i < iBufferSize; i += 2)
-		{
-			pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
-			pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
-		}
-		break;
-
-	case FILTER_BANDPASS:
-		for(int i=0; i < iBufferSize; i += 2)
-		{
-			pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
-			pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
-			if(pOutput[i] != pOutput[i])	//Check for NaN
-				pOutput[i] = 0;
-			if(pOutput[i+1] != pOutput[i+1])	//Check for NaN
-				pOutput[i+1] = 0;
-		}
-		break;
-
-	case FILTER_HIGHPASS:
-		for(int i=0; i < iBufferSize; i += 2)
-		{
-			pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
-			pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);
-		}
-		break;
-	}
-	zap_buffer_denormals(m_buf1, m_bufSize);
-	zap_buffer_denormals(m_buf2, m_bufSize);
+void EngineFilterButterworth8::initBuffers() {
+    for (int i=0; i < m_bufSize; i++) {
+        m_buf1[i] = 0;
+        m_buf2[i] = 0;
+    }
 }
 
 inline double _processLowpass(double *coef, double *buf, register double val) {
@@ -203,4 +140,92 @@ double inline _processHighpass(double *coef, double *buf, register double val) {
    fir += iir;
    buf[7]= iir; val= fir;
    return val;
+}
+
+
+EngineFilterButterworth8Low::EngineFilterButterworth8Low(int sampleRate,
+        double freqCorner1)
+        : EngineFilterButterworth8(sampleRate, 8) {
+    setFrequencyCorners(freqCorner1);
+}
+
+// TODO(XXX) We need to do ramping in the next process() call
+// if one or both corners are changed
+// https://bugs.launchpad.net/mixxx/+bug/1209294
+void EngineFilterButterworth8Low::setFrequencyCorners(double freqCorner1) {
+    m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "LpBu8", m_sampleRate,
+                                    freqCorner1, 0, 0);
+    initBuffers();
+}
+
+void EngineFilterButterworth8Low::process(const CSAMPLE *pIn,
+        const CSAMPLE *ppOut, const int iBufferSize) {
+    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
+
+    for (int i=0; i < iBufferSize; i += 2) {
+        pOutput[i] = _processLowpass(m_coef, m_buf1, pIn[i]);
+        pOutput[i+1] = _processLowpass(m_coef, m_buf2, pIn[i+1]);
+    }
+
+    zap_buffer_denormals(m_buf1, m_bufSize);
+    zap_buffer_denormals(m_buf2, m_bufSize);
+}
+
+
+EngineFilterButterworth8Band::EngineFilterButterworth8Band(int sampleRate,
+                                                           double freqCorner1,
+                                                           double freqCorner2)
+        : EngineFilterButterworth8(sampleRate, 16) {
+    setFrequencyCorners(freqCorner1, freqCorner2);
+}
+
+void EngineFilterButterworth8Band::setFrequencyCorners(double freqCorner1,
+        double freqCorner2) {
+    m_coef[0]= 1 * fid_design_coef(m_coef + 1, 16, "BpBu8", m_sampleRate,
+                                   freqCorner1, freqCorner2, 0);
+    initBuffers();
+}
+
+void EngineFilterButterworth8Band::process(const CSAMPLE *pIn,
+        const CSAMPLE *ppOut, const int iBufferSize) {
+    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
+
+    for (int i=0; i < iBufferSize; i += 2) {
+        pOutput[i] = _processBandpass(m_coef, m_buf1, pIn[i]);
+        pOutput[i+1] = _processBandpass(m_coef, m_buf2, pIn[i+1]);
+        if(pOutput[i] != pOutput[i])	//Check for NaN
+            pOutput[i] = 0;
+        if(pOutput[i+1] != pOutput[i+1])	//Check for NaN
+            pOutput[i+1] = 0;
+    }
+
+    zap_buffer_denormals(m_buf1, m_bufSize);
+    zap_buffer_denormals(m_buf2, m_bufSize);
+}
+
+
+EngineFilterButterworth8High::EngineFilterButterworth8High(int sampleRate,
+                                                           double freqCorner1)
+        : EngineFilterButterworth8(sampleRate, 8) {
+    setFrequencyCorners(freqCorner1);
+}
+
+void EngineFilterButterworth8High::setFrequencyCorners(double freqCorner1) {
+    m_coef[0] = 1 * fid_design_coef(m_coef + 1, 8, "HpBu8", m_sampleRate,
+                                    freqCorner1, 0, 0);
+    initBuffers();
+}
+
+void EngineFilterButterworth8High::process(const CSAMPLE *pIn,
+                                           const CSAMPLE *ppOut,
+                                           const int iBufferSize) {
+    CSAMPLE *pOutput = (CSAMPLE *)ppOut;
+
+    for (int i=0; i < iBufferSize; i += 2) {
+        pOutput[i] = _processHighpass(m_coef, m_buf1, pIn[i]);
+        pOutput[i+1] = _processHighpass(m_coef, m_buf2, pIn[i+1]);
+    }
+
+    zap_buffer_denormals(m_buf1, m_bufSize);
+    zap_buffer_denormals(m_buf2, m_bufSize);
 }

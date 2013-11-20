@@ -13,7 +13,6 @@
 #include "library/treeitem.h"
 #include "library/recording/recordingfeature.h"
 #include "library/trackcollection.h"
-#include "library/dao/trackdao.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"
 

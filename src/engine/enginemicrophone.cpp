@@ -64,7 +64,7 @@ void EngineMicrophone::onInputDisconnected(AudioInput input) {
     m_pEnabled->set(0.0f);
 }
 
-void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int iNumSamples) {
+void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, unsigned int nFrames) {
 
     if (input.getType() != AudioPath::MICROPHONE ||
         AudioInput::channelsNeededForType(input.getType()) != 1) {
@@ -76,23 +76,23 @@ void EngineMicrophone::receiveBuffer(AudioInput input, const short* pBuffer, uns
     // Use the conversion buffer to both convert from short and double into
     // stereo.
 
-    // Check that the number of mono samples doesn't exceed MAX_BUFFER_LEN/2
+    // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
-    if (iNumSamples > MAX_BUFFER_LEN / 2) {
+    if (nFrames > MAX_BUFFER_LEN / 2) {
         qWarning() << "Dropping microphone samples because the input buffer is too large.";
-        iNumSamples = MAX_BUFFER_LEN / 2;
+        nFrames = MAX_BUFFER_LEN / 2;
     }
 
     // There isn't a suitable SampleUtil method that can do mono->stereo and
     // short->float in one pass.
     // SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
-    for (unsigned int i = 0; i < iNumSamples; ++i) {
+    for (unsigned int i = 0; i < nFrames; ++i) {
         m_pConversionBuffer[i*2 + 0] = pBuffer[i];
         m_pConversionBuffer[i*2 + 1] = pBuffer[i];
     }
 
     // m_pConversionBuffer is now stereo, so double the number of samples
-    iNumSamples *= 2;
+    const unsigned int iNumSamples = nFrames * 2;
 
     // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
     unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, iNumSamples);

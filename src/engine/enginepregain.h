@@ -33,6 +33,7 @@ public:
 
 
 private:
+    float m_fPrevGain;
     ControlLogpotmeter *potmeterPregain;
     ControlObject *m_pTotalGain;
     ControlObject *m_pControlReplayGain;

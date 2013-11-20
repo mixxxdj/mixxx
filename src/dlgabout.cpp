@@ -16,22 +16,18 @@
 ***************************************************************************/
 
 #include "dlgabout.h"
-
-#include "defs_version.h"
+#include "util/version.h"
 
 DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
     setupUi(this);
 
-    QString buildBranch, buildRevision;
-#ifdef BUILD_BRANCH
-    buildBranch = BUILD_BRANCH;
-#endif
-#ifdef BUILD_REV
-    buildRevision = BUILD_REV;
-#endif
+    QString mixxxVersion = Version::version();
+    QString buildBranch = Version::developmentBranch();
+    QString buildRevision = Version::developmentRevision();
 
     QStringList version;
-    version.append(VERSION);
+    version.append(mixxxVersion);
+
     if (!buildBranch.isEmpty() || !buildRevision.isEmpty()) {
         QStringList buildInfo;
         buildInfo.append("build");
@@ -45,7 +41,7 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
     }
     version_label->setText(version.join(" "));
 
-    QString s_devTeam = QString(tr("Mixxx %1 Development Team")).arg(VERSION);
+    QString s_devTeam = QString(tr("Mixxx %1 Development Team")).arg(mixxxVersion);
     QString s_contributions = tr("With contributions from:");
     QString s_specialThanks = tr("And special thanks to:");
     QString s_pastDevs = tr("Past Developers");
@@ -133,6 +129,14 @@ DlgAbout::DlgAbout(QWidget* parent) :  QDialog(parent), Ui::DlgAboutDlg() {
 "Jo&atilde;o Reys Santos<br>"
 "Carl Pillot<br>"
 "Vedant Agarwala<br>"
+"Nazar Gerasymchuk<br>"
+"Federico Briata<br>"
+"Leo Combes<br>"
+"Florian Kiekh&auml;fer<br>"
+"Michael Sawyer<br>"
+"Nicu Badescu<br>"
+"Tuukka Pasanen<br>"
+"Uwe Klotz<br>"
 
 "</p>"
 "<p align=\"center\"><b>%3</b></p>"

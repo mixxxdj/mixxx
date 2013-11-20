@@ -324,7 +324,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
     // Log parsing of header information in developer mode. This is useful for
     // tracking down corrupt files.
     if (CmdlineArgs::Instance().getDeveloper()) {
-	qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
+        qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
     }
 
     SoundSource* sndsrc = initialize(qFilename);
@@ -345,10 +345,12 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         }
         p->setTitle(title);
         p->setAlbum(sndsrc->getAlbum());
+        p->setAlbumArtist(sndsrc->getAlbumArtist());
         p->setType(sndsrc->getType());
         p->setYear(sndsrc->getYear());
         p->setGenre(sndsrc->getGenre());
         p->setComposer(sndsrc->getComposer());
+        p->setGrouping(sndsrc->getGrouping());
         p->setComment(sndsrc->getComment());
         p->setTrackNumber(sndsrc->getTrackNumber());
         p->setReplayGain(sndsrc->getReplayGain());
@@ -359,14 +361,13 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
         p->setChannels(sndsrc->getChannels());
         p->setKey(sndsrc->getKey());
         p->setHeaderParsed(true);
-    }
-    else
-    {
+    } else {
+        qDebug() << "SoundSourceProxy::ParseHeader() error at file " << qFilename;
         p->setHeaderParsed(false);
     }
     delete sndsrc;
 
-    return 0;
+    return OK;
 }
 
 // static
@@ -374,6 +375,9 @@ QStringList SoundSourceProxy::supportedFileExtensions()
 {
     QMutexLocker locker(&m_extensionsMutex);
     QList<QString> supportedFileExtensions;
+#ifdef __FFMPEGFILE__
+    supportedFileExtensions.append(SoundSourceFFmpeg::supportedFileExtensions());
+#endif
 #ifdef __MAD__
     supportedFileExtensions.append(SoundSourceMp3::supportedFileExtensions());
 #endif

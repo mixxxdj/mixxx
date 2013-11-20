@@ -2,6 +2,7 @@
 #include <QMutexLocker>
 
 #include "util/statsmanager.h"
+#include "util/compatibility.h"
 
 // In practice we process stats pipes about once a minute @1ms latency.
 const int kStatsPipeSize = 1 << 20;
@@ -99,7 +100,7 @@ void StatsManager::run() {
         processIncomingStatReports();
         m_statsPipeLock.unlock();
 
-        if (m_quit == 1) {
+        if (deref(m_quit) == 1) {
             qDebug() << "StatsManager thread shutting down.";
             break;
         }

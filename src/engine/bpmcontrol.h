@@ -11,6 +11,7 @@
 class ControlObject;
 class ControlPushButton;
 class EngineBuffer;
+class ControlObjectSlave;
 
 class BpmControl : public EngineControl {
     Q_OBJECT
@@ -38,16 +39,12 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslate(double);
 
   private:
-    EngineBuffer* pickSyncTarget();
     bool syncTempo(EngineBuffer* pOtherEngineBuffer);
     bool syncPhase(EngineBuffer* pOtherEngineBuffer);
 
-    // ControlObjects that come from PlayerManager
-    ControlObject* m_pNumDecks;
-
     // ControlObjects that come from EngineBuffer
-    ControlObject* m_pPlayButton;
-    ControlObject* m_pRateSlider;
+    ControlObjectSlave* m_pPlayButton;
+    ControlObjectSlave* m_pRateSlider;
     ControlObject* m_pRateRange;
     ControlObject* m_pRateDir;
 

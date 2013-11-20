@@ -1,7 +1,11 @@
-#include <QtCore>
-#include <QtGui>
-#include "defs_version.h"
-#include "songdownloader.h"
+#include "library/songdownloader.h"
+
+#include <QApplication>
+#include <QFileInfo>
+#include <QString>
+#include <QtDebug>
+
+#include "util/version.h"
 
 #define TEMP_EXTENSION ".tmp"
 
@@ -33,7 +37,6 @@ bool SongDownloader::downloadSongFromURL(QUrl& url) {
     return true;
 }
 
-
 bool SongDownloader::downloadFromQueue() {
     QUrl downloadUrl = m_downloadQueue.dequeue();
     //Extract the filename from the URL path
@@ -52,7 +55,8 @@ bool SongDownloader::downloadFromQueue() {
     m_pRequest = new QNetworkRequest(downloadUrl);
 
     //Set up user agent for great justice
-    QString mixxxUA = QString("%1 %2").arg(QApplication::applicationName(), VERSION);
+    QString mixxxUA = QString("%1 %2").arg(QApplication::applicationName(),
+                                           Version::version());
     QByteArray mixxxUABA = mixxxUA.toAscii();
     m_pRequest->setRawHeader("User-Agent", mixxxUABA);
     m_pReply = m_pNetwork->get(*m_pRequest);
@@ -121,13 +125,3 @@ void SongDownloader::slotDownloadFinished() {
     //Emit this signal when all the files have been downloaded.
     emit(downloadFinished());
 }
-
-/*
-void SongDownloader::finishedSlot(QNetworkReply* reply) {
-    if (reply->error() == QNetworkReply::NoError)
-    {
-        qDebug() << "SongDownloader: finishedSlot, no error";
-    }
-    else
-        qDebug() << "SongDownloader: NAM error :-/";
-}*/

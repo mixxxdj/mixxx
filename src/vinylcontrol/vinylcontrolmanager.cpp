@@ -19,13 +19,15 @@ const int kNumberOfDecks = 4; // set to 4 because it will ideally not be more
 // forgotten in any 2->4 deck switchover. Only real consequence is
 // sizeof(void*)*2 bytes of wasted memory if we're only using 2 decks -bkgood
 
-VinylControlManager::VinylControlManager(QObject *pParent,
-                                         ConfigObject<ConfigValue> *pConfig,
+VinylControlManager::VinylControlManager(QObject* pParent,
+                                         ConfigObject<ConfigValue>* pConfig,
                                          SoundManager* pSoundManager)
         : QObject(pParent),
           m_pConfig(pConfig),
           m_pProcessor(new VinylControlProcessor(this, pConfig)),
-          m_iTimerId(-1) {
+          m_iTimerId(-1),
+          m_pVcEnabled1(NULL),
+          m_pVcEnabled2(NULL) {
     // Register every possible VC input with SoundManager to route to the
     // VinylControlProcessor.
     for (int i = 0; i < kMaximumVinylControlInputs; ++i) {
@@ -42,32 +44,29 @@ VinylControlManager::~VinylControlManager() {
     m_pConfig->set(ConfigKey("[Channel1]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey("[Channel2]","vinylcontrol_enabled"), false);
     m_pConfig->set(ConfigKey(VINYL_PREF_KEY,"cueing_ch1"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel1]","vinylcontrol_cueing"))->get()));
+        ConfigValue((int)ControlObject::get(
+            ConfigKey("[Channel1]","vinylcontrol_cueing"))));
     m_pConfig->set(ConfigKey(VINYL_PREF_KEY,"cueing_ch2"),
-        ConfigValue((int)ControlObject::getControl(
-            ConfigKey("[Channel2]","vinylcontrol_cueing"))->get()));
+        ConfigValue((int)ControlObject::get(
+            ConfigKey("[Channel2]","vinylcontrol_cueing"))));
 }
 
 void VinylControlManager::init() {
     // Load saved preferences now that the objects exist
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_enabled"))
-            ->setValueFromThread(0, NULL);
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_enabled"))
-            ->setValueFromThread(0, NULL);
+    m_pVcEnabled1 = new ControlObjectThread("[Channel1]", "vinylcontrol_enabled", this);
+    m_pVcEnabled1->set(0);
+    m_pVcEnabled2 = new ControlObjectThread("[Channel2]", "vinylcontrol_enabled", this);
+    m_pVcEnabled2->set(0);
 
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_mode"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey(VINYL_PREF_KEY,"mode")).toDouble(), NULL);
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_mode"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey(VINYL_PREF_KEY,"mode")).toDouble(), NULL);
-    ControlObject::getControl(ConfigKey("[Channel1]","vinylcontrol_cueing"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey(VINYL_PREF_KEY,"cueing_ch1")).toDouble(), NULL);
-    ControlObject::getControl(ConfigKey("[Channel2]","vinylcontrol_cueing"))
-            ->setValueFromThread(m_pConfig->getValueString(
-                ConfigKey(VINYL_PREF_KEY,"cueing_ch2")).toDouble(), NULL);
+    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_mode"),
+            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "mode")).toDouble());
+    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_mode"),
+            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "mode")).toDouble());
+
+    ControlObject::set(ConfigKey("[Channel1]", "vinylcontrol_cueing"),
+            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "cueing_ch1")).toDouble());
+    ControlObject::set(ConfigKey("[Channel2]", "vinylcontrol_cueing"),
+            m_pConfig->getValueString(ConfigKey(VINYL_PREF_KEY, "cueing_ch2")).toDouble());
 }
 
 void VinylControlManager::requestReloadConfig() {
@@ -75,9 +74,14 @@ void VinylControlManager::requestReloadConfig() {
 }
 
 bool VinylControlManager::vinylInputEnabled(int deck) {
-    ControlObjectThread input_enabled(ControlObject::getControl(
-        ConfigKey(kVCGroup.arg(deck+1), "vinylcontrol_enabled")));
-    return input_enabled.get() > 0;
+    switch (deck) {
+    case 1:
+        return m_pVcEnabled1->get() != 0;
+    case 2:
+        return m_pVcEnabled2->get() != 0;
+    default:
+        return false;
+    }
 }
 
 int VinylControlManager::vinylInputFromGroup(const QString& group) {

@@ -17,6 +17,7 @@
 
 #include <QtCore>
 #include <QtGui>
+#include <QFileDialog>
 
 #include "dlgprefrecord.h"
 #include "recording/defs_recording.h"
@@ -24,30 +25,30 @@
 #include "controlobjectthreadmain.h"
 #include "encoder/encoder.h"
 
-DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _config)
-        : QWidget(parent) {
-    config = _config;
-    confirmOverwrite = false;
-    radioFlac = 0;
-    radioMp3 = 0;
-    radioOgg = 0;
-    radioAiff= 0;
-    radioWav = 0;
+DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig)
+        : DlgPreferencePage(parent),
+          m_pConfig(pConfig),
+          m_bConfirmOverwrite(false),
+          m_pRadioOgg(NULL),
+          m_pRadioMp3(NULL),
+          m_pRadioAiff(NULL),
+          m_pRadioFlac(NULL),
+          m_pRadioWav(NULL) {
     setupUi(this);
 
-    //See RECORD_* #defines in defs_recording.h
-    recordControl = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(RECORDING_PREF_KEY, "status")));
+    // See RECORD_* #defines in defs_recording.h
+    m_pRecordControl = new ControlObjectThread(
+            RECORDING_PREF_KEY, "status");
 
-    radioOgg = new QRadioButton("Ogg Vorbis");
-    radioMp3 = new QRadioButton(ENCODING_MP3);
+    m_pRadioOgg = new QRadioButton("Ogg Vorbis");
+    m_pRadioMp3 = new QRadioButton(ENCODING_MP3);
 
-    // Setting recordings path
-    QString recordingsPath = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory"));
+    // Setting recordings path.
+    QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     if (recordingsPath == "") {
         // Initialize recordings path in config to old default path.
         // Do it here so we show current value in UI correctly.
-        QString musicDir = config->getValueString(ConfigKey("[Playlist]","Directory"));
+        QString musicDir = m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory"));
         if (musicDir.isEmpty()) {
             musicDir = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
         }
@@ -59,63 +60,60 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     connect(PushButtonBrowseRecordings, SIGNAL(clicked()), this, SLOT(slotBrowseRecordingsDir()));
     connect(LineEditRecordings, SIGNAL(returnPressed()), this, SLOT(slotApply()));
 
-    connect(radioOgg,SIGNAL(clicked()),
+    connect(m_pRadioOgg, SIGNAL(clicked()),
             this, SLOT(slotApply()));
-    connect(radioMp3, SIGNAL(clicked()),
+    connect(m_pRadioMp3, SIGNAL(clicked()),
             this, SLOT(slotApply()));
-    horizontalLayout->addWidget(radioOgg);
-    horizontalLayout->addWidget(radioMp3);
+    horizontalLayout->addWidget(m_pRadioOgg);
+    horizontalLayout->addWidget(m_pRadioMp3);
 
-    //AIFF and WAVE are supported by default
-    radioWav = new QRadioButton(ENCODING_WAVE);
-    connect(radioWav, SIGNAL(clicked()),
-            this, SLOT(slotApply()));
-    horizontalLayout->addWidget(radioWav);
+    // AIFF and WAVE are supported by default.
+    m_pRadioWav = new QRadioButton(ENCODING_WAVE);
+    connect(m_pRadioWav, SIGNAL(clicked()), this, SLOT(slotApply()));
+    horizontalLayout->addWidget(m_pRadioWav);
 
-    radioAiff = new QRadioButton(ENCODING_AIFF);
-    connect(radioAiff, SIGNAL(clicked()),
-            this, SLOT(slotApply()));
-    horizontalLayout->addWidget(radioAiff);
+    m_pRadioAiff = new QRadioButton(ENCODING_AIFF);
+    connect(m_pRadioAiff, SIGNAL(clicked()), this, SLOT(slotApply()));
+    horizontalLayout->addWidget(m_pRadioAiff);
 
 #ifdef SF_FORMAT_FLAC
-    radioFlac = new QRadioButton(ENCODING_FLAC);
-    connect(radioFlac,SIGNAL(clicked()),
-            this, SLOT(slotApply()));
-    horizontalLayout->addWidget(radioFlac);
+    m_pRadioFlac = new QRadioButton(ENCODING_FLAC);
+    connect(m_pRadioFlac, SIGNAL(clicked()), this, SLOT(slotApply()));
+    horizontalLayout->addWidget(m_pRadioFlac);
 #endif
 
-    //Read config and check radio button
-    QString format = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Encoding"));
-    if(format == ENCODING_WAVE)
-        radioWav->setChecked(true);
-    else if(format == ENCODING_OGG)
-        radioOgg->setChecked(true);
-    else if (format == ENCODING_MP3)
-        radioMp3->setChecked(true);
-    else if (format == ENCODING_AIFF)
-        radioAiff->setChecked(true);
+    // Read config and check radio button.
+    QString format = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
+    if (format == ENCODING_WAVE) {
+        m_pRadioWav->setChecked(true);
+    } else if (format == ENCODING_OGG) {
+        m_pRadioOgg->setChecked(true);
+    } else if (format == ENCODING_MP3) {
+        m_pRadioMp3->setChecked(true);
+    } else if (format == ENCODING_AIFF) {
+        m_pRadioAiff->setChecked(true);
 #ifdef SF_FORMAT_FLAC
-    else if (format == ENCODING_FLAC)
-        radioFlac->setChecked(true);
+    } else if (format == ENCODING_FLAC) {
+        m_pRadioFlac->setChecked(true);
 #endif
-    else //Invalid, so set default and save
-    {
-        //If no config was available, set to WAVE as default
-        radioWav->setChecked(true);
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
+    } else {
+        // Invalid, so set default and save.
+        // If no config was available, set to WAVE as default.
+        m_pRadioWav->setChecked(true);
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
     }
 
     loadMetaData();
 
-    //Connections
-    connect(SliderQuality,    SIGNAL(valueChanged(int)), this,  SLOT(slotSliderQuality()));
-    connect(SliderQuality,    SIGNAL(sliderMoved(int)), this,   SLOT(slotSliderQuality()));
-    connect(SliderQuality,    SIGNAL(sliderReleased()), this,   SLOT(slotSliderQuality()));
+    connect(SliderQuality, SIGNAL(valueChanged(int)), this, SLOT(slotSliderQuality()));
+    connect(SliderQuality, SIGNAL(sliderMoved(int)), this, SLOT(slotSliderQuality()));
+    connect(SliderQuality, SIGNAL(sliderReleased()), this, SLOT(slotSliderQuality()));
     connect(CheckBoxRecordCueFile, SIGNAL(stateChanged(int)), this, SLOT(slotEnableCueFile(int)));
-    connect(comboBoxSplitting, SIGNAL(activated(int)),   this,   SLOT(slotChangeSplitSize()));
+    connect(comboBoxSplitting, SIGNAL(activated(int)), this, SLOT(slotChangeSplitSize()));
 
     slotApply();
-    recordControl->slotSet(RECORD_OFF); //make sure a corrupt config file won't cause us to record constantly
+    // Make sure a corrupt config file won't cause us to record constantly.
+    m_pRecordControl->slotSet(RECORD_OFF);
 
     comboBoxSplitting->addItem(SPLIT_650MB);
     comboBoxSplitting->addItem(SPLIT_700MB);
@@ -123,166 +121,131 @@ DlgPrefRecord::DlgPrefRecord(QWidget * parent, ConfigObject<ConfigValue> * _conf
     comboBoxSplitting->addItem(SPLIT_2048MB);
     comboBoxSplitting->addItem(SPLIT_4096MB);
 
-    QString fileSizeStr = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"FileSize"));
+    QString fileSizeStr = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "FileSize"));
     int index = comboBoxSplitting->findText(fileSizeStr);
-    if(index > 0){
-        //set file split size
+    if (index > 0) {
+        // Set file split size
         comboBoxSplitting->setCurrentIndex(index);
     }
-    //Otherwise 650 MB will be default file split size
+    // Otherwise 650 MB will be default file split size.
 
-    //Read CUEfile info
-    CheckBoxRecordCueFile->setChecked((bool) config->getValueString(ConfigKey(RECORDING_PREF_KEY,"CueEnabled")).toInt());
+    // Read CUEfile info
+    CheckBoxRecordCueFile->setChecked(
+            (bool) m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "CueEnabled")).toInt());
 
 }
 
-void DlgPrefRecord::slotSliderQuality()
-{
+void DlgPrefRecord::slotSliderQuality() {
     updateTextQuality();
 
-    if (radioOgg && radioOgg->isChecked())
-    {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), ConfigValue(SliderQuality->value()));
-    }
-    else if (radioMp3 && radioMp3->isChecked())
-    {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality"), ConfigValue(SliderQuality->value()));
+    if (m_pRadioOgg && m_pRadioOgg->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality"), ConfigValue(SliderQuality->value()));
+    } else if (m_pRadioMp3 && m_pRadioMp3->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality"), ConfigValue(SliderQuality->value()));
     }
 }
 
-int DlgPrefRecord::getSliderQualityVal()
-{
-
-    /* Commented by Tobias Rafreider
-     * We always use the bitrate to denote the quality since it is more common to the users
-     */
+int DlgPrefRecord::getSliderQualityVal() {
+    // We always use the bitrate to denote the quality since it is more common to the users.
     return Encoder::convertToBitrate(SliderQuality->value());
-
 }
 
-void DlgPrefRecord::updateTextQuality()
-{
+void DlgPrefRecord::updateTextQuality() {
     int quality = getSliderQualityVal();
     //QString encodingType = comboBoxEncoding->currentText();
 
     TextQuality->setText(QString( QString::number(quality) + tr("kbps")));
-
-
 }
 
-void DlgPrefRecord::slotEncoding()
-{
-    //set defaults
+void DlgPrefRecord::slotEncoding() {
+    // set defaults
     groupBoxQuality->setEnabled(true);
-    //config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
+    //m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(comboBoxEncoding->currentText()));
 
-    if (radioWav && radioWav->isChecked()) {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
+    if (m_pRadioWav && m_pRadioWav->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
         groupBoxQuality->setEnabled(false);
-    }
-    else if(radioFlac && radioFlac->isChecked()){
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_FLAC));
+    } else if (m_pRadioFlac && m_pRadioFlac->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_FLAC));
         groupBoxQuality->setEnabled(false);
-    }
-    else if(radioAiff && radioAiff->isChecked()){
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
+    } else if (m_pRadioAiff && m_pRadioAiff->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
         groupBoxQuality->setEnabled(false);
-    }
-    else if (radioOgg && radioOgg->isChecked())
-    {
-        int value = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toInt();
-        //if value == 0 then a default value of 128kbps is proposed.
-        if(!value)
+    } else if (m_pRadioOgg && m_pRadioOgg->isChecked()) {
+        int value = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "OGG_Quality")).toInt();
+        // If value == 0 then a default value of 128kbps is proposed.
+        if (!value)
             value = 6; // 128kbps
 
         SliderQuality->setValue(value);
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_OGG));
-    }
-    else if (radioMp3 && radioMp3->isChecked())
-    {
-        int value = config->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toInt();
-        //if value == 0 then a default value of 128kbps is proposed.
-        if(!value)
-            value = 6; // 128kbps
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_OGG));
+    } else if (m_pRadioMp3 && m_pRadioMp3->isChecked()) {
+        int value = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "MP3_Quality")).toInt();
+        // If value == 0 then a default value of 128kbps is proposed.
+        if (!value) {
+            value = 6;  // 128kbps
+        }
 
         SliderQuality->setValue(value);
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_MP3));
-    }
-    else
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_MP3));
+    } else {
         qDebug() << "Invalid recording encoding type in" << __FILE__ << "on line:" << __LINE__;
+    }
 }
 
-void DlgPrefRecord::setMetaData()
-{
-    config->set(ConfigKey(RECORDING_PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
-    config->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditAuthor->text()));
-    config->set(ConfigKey(RECORDING_PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
+void DlgPrefRecord::setMetaData() {
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditAuthor->text()));
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Album"), ConfigValue(LineEditAlbum->text()));
 }
 
-void DlgPrefRecord::loadMetaData()
-{
-    LineEditTitle->setText( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")));
-    LineEditAuthor->setText( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")));
-    LineEditAlbum->setText( config->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")));
+void DlgPrefRecord::loadMetaData() {
+    LineEditTitle->setText(m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Title")));
+    LineEditAuthor->setText(m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Author")));
+    LineEditAlbum->setText(m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Album")));
 }
 
-DlgPrefRecord::~DlgPrefRecord()
-{
-   delete recordControl;
+DlgPrefRecord::~DlgPrefRecord() {
+   delete m_pRecordControl;
 }
 
-void DlgPrefRecord::slotRecordPathChange()
-{
-    confirmOverwrite = false;
+void DlgPrefRecord::slotRecordPathChange() {
+    m_bConfirmOverwrite = false;
     slotApply();
 }
 
-//This function updates/refreshes the contents of this dialog
-void DlgPrefRecord::slotUpdate()
-{
-    // Recordings path
-    QString recordingsPath = config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory"));
+// This function updates/refreshes the contents of this dialog.
+void DlgPrefRecord::slotUpdate() {
+
+    QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     LineEditRecordings->setText(recordingsPath);
 
-    if (radioWav && radioWav->isChecked())
-    {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
-    }
-    else if (radioAiff && radioAiff->isChecked())
-    {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
-    }
-    else if (radioFlac && radioFlac->isChecked())
-    {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_FLAC));
-    }
-    else if (radioOgg && radioOgg->isChecked())
-    {
-        config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_OGG));
-    }
-    else if (radioMp3 && radioMp3->isChecked())
-    {
-       config->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_MP3));
+    if (m_pRadioWav && m_pRadioWav->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
+    } else if (m_pRadioAiff && m_pRadioAiff->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
+    } else if (m_pRadioFlac && m_pRadioFlac->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_FLAC));
+    } else if (m_pRadioOgg && m_pRadioOgg->isChecked()) {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_OGG));
+    } else if (m_pRadioMp3 && m_pRadioMp3->isChecked()) {
+       m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_MP3));
     }
     loadMetaData();
 }
 
-void DlgPrefRecord::slotBrowseRecordingsDir()
-{
+void DlgPrefRecord::slotBrowseRecordingsDir() {
     QString fd = QFileDialog::getExistingDirectory(this, tr("Choose recordings directory"),
-                                                   config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory")));
-    if (fd != "")
-    {
+                                            m_pConfig->getValueString(
+                                                        ConfigKey(RECORDING_PREF_KEY, "Directory")));
+    if (fd != "") {
         LineEditRecordings->setText(fd);
     }
 }
 
-void DlgPrefRecord::slotApply()
-{
+void DlgPrefRecord::slotApply() {
     setRecordingFolder();
-
     setMetaData();
-
     slotEncoding();
 }
 
@@ -291,21 +254,18 @@ void DlgPrefRecord::setRecordingFolder() {
         qDebug() << "Recordings path was empty in dialog";
         return;
     }
-    if (LineEditRecordings->text() != config->getValueString(ConfigKey(RECORDING_PREF_KEY,"Directory")))
-    {
+    if (LineEditRecordings->text() != m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"))) {
         qDebug() << "Saved recordings path" << LineEditRecordings->text();
-        config->set(ConfigKey(RECORDING_PREF_KEY,"Directory"), LineEditRecordings->text());
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Directory"), LineEditRecordings->text());
     }
 }
 
-void DlgPrefRecord::slotEnableCueFile(int enabled)
-{
-    config->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(enabled != Qt::Unchecked));
+void DlgPrefRecord::slotEnableCueFile(int enabled) {
+    m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "CueEnabled"), ConfigValue(enabled != Qt::Unchecked));
 }
 
-void DlgPrefRecord::slotChangeSplitSize()
-{
-        config->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
+void DlgPrefRecord::slotChangeSplitSize() {
+        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "FileSize"),
                     ConfigValue(comboBoxSplitting->currentText()));
 
 }

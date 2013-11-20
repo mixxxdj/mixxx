@@ -6,9 +6,8 @@
 ControlLinPotmeter::ControlLinPotmeter(ConfigKey key, double dMinValue, double dMaxValue) :
     ControlPotmeter(key, dMinValue, dMaxValue) {
     if (m_pControl) {
-        ControlNumericBehavior* pOldBehavior = m_pControl->setBehavior(
-            new ControlLinPotmeterBehavior(dMinValue, dMaxValue));
-        delete pOldBehavior;
+        m_pControl->setBehavior(
+                new ControlLinPotmeterBehavior(dMinValue, dMaxValue));
     }
 }
 

@@ -24,16 +24,15 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
     m_bScratching = false;
     m_bBending = false;
 
-    m_pZoom = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "waveform_zoom")));
+    m_pZoom = new ControlObjectThread(group, "waveform_zoom");
 
     connect(m_pZoom, SIGNAL(valueChanged(double)),
             this, SLOT(onZoomChange(double)));
 
-    m_pScratchPositionEnable = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
-    m_pScratchPosition = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "scratch_position")));
+    m_pScratchPositionEnable = new ControlObjectThread(
+            group, "scratch_position_enable");
+    m_pScratchPosition = new ControlObjectThread(
+            group, "scratch_position");
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 
@@ -146,11 +145,9 @@ void WWaveformViewer::dragEnterEvent(QDragEnterEvent * event) {
     // Accept the enter event if the thing is a filepath.
     if (event->mimeData()->hasUrls() &&
             event->mimeData()->urls().size() > 0) {
-        ControlObject *pPlayCO = ControlObject::getControl(
-                    ConfigKey(m_pGroup, "play"));
-        // Accept if the Deck isn't playing or the settings allow to interupt a playing deck
-        if (pPlayCO && (!pPlayCO->get() ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
+        // Accept if the Deck isn't playing or the settings allow to interrupt a playing deck
+        if ((!ControlObject::get(ConfigKey(m_pGroup, "play")) ||
+                m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
             event->acceptProposedAction();
         } else {
             event->ignore();

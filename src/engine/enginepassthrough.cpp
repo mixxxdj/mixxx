@@ -14,12 +14,12 @@ EnginePassthrough::EnginePassthrough(const char* pGroup)
           m_clipping(pGroup),
           m_vuMeter(pGroup),
           m_pEnabled(new ControlObject(ConfigKey(pGroup, "passthrough_enabled"))),
-          m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough_passing"))),
+          m_pPassing(new ControlPushButton(ConfigKey(pGroup, "passthrough"))),
           m_pConversionBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
-    m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
+    m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
 }
 
 EnginePassthrough::~EnginePassthrough() {
@@ -73,21 +73,19 @@ void EnginePassthrough::receiveBuffer(AudioInput input, const short* pBuffer, un
     // Use the conversion buffer to both convert from short and double into
     // stereo.
 
-    // Check that the number of mono samples doesn't exceed MAX_BUFFER_LEN/2
+    // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
     if (nFrames > MAX_BUFFER_LEN / 2) {
         qDebug() << "WARNING: Dropping passthrough samples because the input buffer is too large.";
         nFrames = MAX_BUFFER_LEN / 2;
     }
 
-    // There isn't a suitable SampleUtil method that can do mono->stereo and
-    // short->float in one pass.
-    // SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
-    SampleUtil::convert(m_pConversionBuffer, pBuffer, nFrames*2);
+    const unsigned int iNumSamples = nFrames * 2;
+    SampleUtil::convert(m_pConversionBuffer, pBuffer, iNumSamples);
 
     // TODO(rryan) (or bkgood?) do we need to verify the input is the one we asked for? Oh well.
-    unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, nFrames*2);
-    if (samplesWritten < nFrames*2) {
+    unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, iNumSamples);
+    if (samplesWritten < iNumSamples) {
         // Buffer overflow. We aren't processing samples fast enough. This
         // shouldn't happen since the deck spits out samples just as fast as they
         // come in, right?

@@ -1,6 +1,7 @@
 #include <math.h>
 
 #include <QtDebug>
+#include <QApplication>
 
 #include "mathstuff.h"
 #include "wimagestore.h"
@@ -19,7 +20,6 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
           m_pPlay(NULL),
           m_pPlayPos(NULL),
           m_pVisualPlayPos(NULL),
-          m_pDuration(NULL),
           m_pTrackSamples(NULL),
           m_pScratch(NULL),
           m_pScratchToggle(NULL),
@@ -50,6 +50,9 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
 }
 
 WSpinny::~WSpinny() {
+#ifdef __VINYLCONTROL__
+    m_pVCManager->removeSignalQualityListener(this);
+#endif
     // No need to delete anything if m_group is empty because setup() was not called.
     if (!m_group.isEmpty()) {
         WImageStore::deleteImage(m_pBgImage);
@@ -58,12 +61,13 @@ WSpinny::~WSpinny() {
         delete m_pPlay;
         delete m_pPlayPos;
         delete m_pVisualPlayPos;
-        delete m_pDuration;
         delete m_pTrackSamples;
         delete m_pTrackSampleRate;
         delete m_pScratch;
         delete m_pScratchToggle;
         delete m_pScratchPos;
+        delete m_pSlipEnabled;
+        delete m_pSlipPosition;
     #ifdef __VINYLCONTROL__
         delete m_pVinylControlSpeedType;
         delete m_pVinylControlEnabled;
@@ -128,48 +132,45 @@ void WSpinny::setup(QDomNode node, QString group) {
     m_qImage.fill(qRgba(0,0,0,0));
 #endif
 
-    m_pPlay = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "play")));
-    m_pPlayPos = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "playposition")));
-    m_pVisualPlayPos = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "visual_playposition")));
-    m_pDuration = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "duration")));
-    m_pTrackSamples = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "track_samples")));
-    m_pTrackSampleRate = new ControlObjectThreadMain(
-                                    ControlObject::getControl(
-                                    ConfigKey(group, "track_samplerate")));
+    m_pPlay = new ControlObjectThread(
+            group, "play");
+    m_pPlayPos = new ControlObjectThread(
+            group, "playposition");
+    m_pVisualPlayPos = new ControlObjectThread(
+            group, "visual_playposition");
+    m_pTrackSamples = new ControlObjectThread(
+            group, "track_samples");
+    m_pTrackSampleRate = new ControlObjectThread(
+            group, "track_samplerate");
 
-    m_pScratch = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "scratch2")));
-    m_pScratchToggle = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "scratch_position_enable")));
-    m_pScratchPos = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "scratch_position")));
+    m_pScratch = new ControlObjectThread(
+            group, "scratch2");
+    m_pScratchToggle = new ControlObjectThread(
+            group, "scratch_position_enable");
+    m_pScratchPos = new ControlObjectThread(
+            group, "scratch_position");
 
-    m_pSlipEnabled = new ControlObjectThreadMain(ControlObject::getControl(
-        ConfigKey(group, "slip_enabled")));
-    m_pSlipPosition = new ControlObjectThreadMain(ControlObject::getControl(
-        ConfigKey(group, "slip_playposition")));
+    m_pSlipEnabled = new ControlObjectThread(
+            group, "slip_enabled");
+    m_pSlipPosition = new ControlObjectThread(
+            group, "slip_playposition");
 
 #ifdef __VINYLCONTROL__
-    m_pVinylControlSpeedType = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "vinylcontrol_speed_type")));
+    m_pVinylControlSpeedType = new ControlObjectThread(
+            group, "vinylcontrol_speed_type");
     if (m_pVinylControlSpeedType)
     {
         //Initialize the rotational speed.
         this->updateVinylControlSpeed(m_pVinylControlSpeedType->get());
     }
 
-    m_pVinylControlEnabled = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "vinylcontrol_enabled")));
+    m_pVinylControlEnabled = new ControlObjectThread(
+            group, "vinylcontrol_enabled");
     connect(m_pVinylControlEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlEnabled(double)));
 
-    m_pSignalEnabled = new ControlObjectThreadMain(ControlObject::getControl(
-                        ConfigKey(group, "vinylcontrol_signal_enabled")));
+    m_pSignalEnabled = new ControlObjectThread(
+            group, "vinylcontrol_signal_enabled");
     connect(m_pSignalEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(updateVinylControlSignalEnabled(double)));
 
@@ -305,15 +306,14 @@ int WSpinny::calculateFullRotations(double playpos)
     if (isnan(playpos))
         return 0.0f;
     //Convert playpos to seconds.
-    //double t = playpos * m_pDuration->get();
-    double t = playpos * (m_pTrackSamples->get()/2 /  // Stereo audio!
+    double t = playpos * (m_pTrackSamples->get() / 2 /  // Stereo audio!
                           m_pTrackSampleRate->get());
 
     //33 RPM is approx. 0.5 rotations per second.
     //qDebug() << t;
-    double angle = 360*m_dRotationsPerSecond*t;
+    double angle = 360 * m_dRotationsPerSecond * t;
 
-    return (((int)angle+180) / 360);
+    return (((int)angle + 180) / 360);
 }
 
 //Inverse of calculateAngle()
@@ -333,8 +333,7 @@ double WSpinny::calculatePositionFromAngle(double angle)
         return 0.0f;
     }
 
-    //Convert t from seconds into a normalized playposition value.
-    //double playpos = t / m_pDuration->get();
+    // Convert t from seconds into a normalized playposition value.
     double playpos = t * trackSampleRate / trackFrames;
     if (isnan(playpos)) {
         return 0.0;
@@ -468,6 +467,7 @@ void WSpinny::wheelEvent(QWheelEvent *e)
 }
 
 void WSpinny::showEvent(QShowEvent* event) {
+    Q_UNUSED(event);
     // If we want to draw the VC signal on this widget then register for
     // updates.
     if (m_bSignalActive && m_iVinylInput != -1 && m_pVCManager) {
@@ -476,6 +476,7 @@ void WSpinny::showEvent(QShowEvent* event) {
 }
 
 void WSpinny::hideEvent(QHideEvent* event) {
+    Q_UNUSED(event);
     // When we are hidden we do not want signal quality updates.
     if (m_pVCManager) {
         m_pVCManager->removeSignalQualityListener(this);

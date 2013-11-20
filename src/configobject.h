@@ -42,11 +42,11 @@ typedef QMap<char,char> MidiValueMap;
   Class for the key for a specific configuration element. A key consists of a
   group and an item.
 */
-class ConfigKey
-{
-public:
+class ConfigKey {
+  public:
     ConfigKey();
-    ConfigKey(QString g, QString i);
+    ConfigKey(const QString& g, const QString& i);
+    ConfigKey(const char* g, const char* i);
     static ConfigKey parseCommaSeparated(QString key);
     QString group, item;
 };
@@ -65,9 +65,8 @@ inline uint qHash(const ConfigKey &key) {
   The value corresponding to a key. The basic value is a string, but can be
   subclassed to more specific needs.
 */
-class ConfigValue
-{
-public:
+class ConfigValue {
+  public:
     ConfigValue();
     ConfigValue(QString _value);
     ConfigValue(int _value);
@@ -79,9 +78,8 @@ public:
 };
 
 
-class ConfigValueKbd : public ConfigValue
-{
-public:
+class ConfigValueKbd : public ConfigValue {
+  public:
     ConfigValueKbd();
     ConfigValueKbd(QString _value);
     ConfigValueKbd(QKeySequence key);
@@ -92,8 +90,7 @@ public:
     QKeySequence m_qKey;
 };
 
-template <class ValueType> class ConfigOption
-{
+template <class ValueType> class ConfigOption {
   public:
     ConfigOption() { val = NULL; key = NULL;};
     ConfigOption(ConfigKey *_key, ValueType *_val) { key = _key ; val = _val; };

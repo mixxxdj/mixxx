@@ -24,11 +24,15 @@ class PlaylistTableModel : public BaseSqlTableModel {
     // Adding multiple tracks at one to a playlist. Returns the number of
     // successful additions.
     int addTracks(const QModelIndex& index, QList<QString> locations);
-    bool appendTrack(int trackId);
+    bool appendTrack(const int trackId);
     void moveTrack(const QModelIndex& sourceIndex,
-                           const QModelIndex& destIndex);
-    void shuffleTracks(const QModelIndex& shuffleStartIndex);
+                   const QModelIndex& destIndex);
+    bool isLocked();
+    void shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude);
     TrackModel::CapabilitiesFlags getCapabilities() const;
+
+  private slots:
+    void playlistChanged(int playlistId);
 
   private:
     PlaylistDAO& m_playlistDao;

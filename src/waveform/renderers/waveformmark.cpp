@@ -12,12 +12,15 @@ WaveformMark::WaveformMark()
     : m_pointControl(NULL) {
 }
 
+WaveformMark::~WaveformMark() {
+    if (m_pointControl) {
+        delete m_pointControl;
+    }
+}
+
 void WaveformMark::setup(const QString& group, const QDomNode& node, const WaveformSignalColors& signalColors) {
     QString item = XmlParse::selectNodeQString(node, "Control");
-    ControlObject* pPointControl = ControlObject::getControl(ConfigKey(group, item));
-    if (pPointControl) {
-        m_pointControl = new ControlObjectThreadMain(pPointControl);
-    }
+    m_pointControl = new ControlObjectThread(group, item);
 
     m_color = XmlParse::selectNodeQString(node, "Color");
     if (m_color == "") {
@@ -46,3 +49,8 @@ void WaveformMark::setup(const QString& group, const QDomNode& node, const Wavef
     m_pixmapPath = XmlParse::selectNodeQString(node,"Pixmap");
 }
 
+
+void WaveformMark::setKeyAndIndex(const ConfigKey& key, int i) {
+    m_pointControl = new ControlObjectThread(key);
+    m_text = m_text.arg(i);
+}

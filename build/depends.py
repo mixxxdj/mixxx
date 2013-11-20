@@ -157,10 +157,27 @@ class FLAC(Dependence):
         return ['soundsourceflac.cpp',]
 
 class Qt(Dependence):
-    DEFAULT_QTDIRS = {'linux': '/usr/share/qt4',
+    DEFAULT_QT4DIRS = {'linux': '/usr/share/qt4',
                       'bsd': '/usr/local/lib/qt4',
                       'osx': '/Library/Frameworks',
                       'windows': 'C:\\qt\\4.6.0'}
+
+    DEFAULT_QT5DIRS64 = {'linux': '/usr/lib/x86_64-linux-gnu/qt5',
+                        'osx': '/Library/Frameworks',
+                        'windows': 'C:\\qt\\5.0.1'}
+
+    DEFAULT_QT5DIRS32 = {'linux': '/usr/lib/i386-linux-gnu/qt5',
+                        'osx': '/Library/Frameworks',
+                        'windows': 'C:\\qt\\5.0.1'}
+
+    @staticmethod
+    def qt5_enabled(build):
+        return int(util.get_flags(build.env, 'qt5', 0))
+
+    @staticmethod
+    def uic(build):
+        qt5 = Qt.qt5_enabled(build)
+        return build.env.Uic5 if qt5 else build.env.Uic4
 
     @staticmethod
     def find_framework_path(qtdir):
@@ -174,35 +191,43 @@ class Qt(Dependence):
         pass
 
     def configure(self, build, conf):
+        qt5 = Qt.qt5_enabled(build)
         # Emit various Qt defines
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
-
-        # Promo tracks is the only thing that uses webkit currently.
-        use_qtwebkit = int(util.get_flags(build.env, 'promo', 0)) > 0
-
-        # TODO(XXX) what is with the slightly differing modules used for each
-        # platform here? Document the differences and make them all
-        # programmatically driven from one list instead of hard-coded multiple
-        # times.
-
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
             'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
-            #'QtUiTools', #'QtDesigner',
         ]
 
-        if use_qtwebkit:
-            qt_modules.append('QtWebKit')
+        if qt5:
+            # Enable qt4 support.
+            build.env.Append(CPPDEFINES = 'QT_DISABLE_DEPRECATED_BEFORE')
+            qt_modules.extend(['QtWidgets', 'QtConcurrent'])
 
         # Enable Qt include paths
         if build.platform_is_linux:
-            if not conf.CheckForPKG('QtCore', '4.6'):
+            if qt5 and not conf.CheckForPKG('Qt5Core', '5.0'):
+                raise Exception('Qt >= 5.0 not found')
+            elif not qt5 and not conf.CheckForPKG('QtCore', '4.6'):
                 raise Exception('QT >= 4.6 not found')
 
-            #(This hopefully respects our qtdir=blah flag while linking now.)
-            build.env.EnableQt4Modules(qt_modules,debug=False)
+            # This automatically converts QtXXX to Qt5XXX where appropriate.
+            if qt5:
+                build.env.EnableQt5Modules(qt_modules, debug=False)
+            else:
+                build.env.EnableQt4Modules(qt_modules, debug=False)
 
+            if qt5:
+                # Note that -reduce-relocations is enabled by default in Qt5.
+                # So we must build the code with position independent code               
+                build.env.Append(CCFLAGS = '-fPIE')
+
+        elif build.platform_is_bsd:
+            build.env.Append(LIBS=qt_modules)
+            include_paths = ['$QTDIR/include/%s' % module
+                             for module in qt_modules]
+            build.env.Append(CPPPATH=include_paths)
         elif build.platform_is_osx:
             qtdir = build.env['QTDIR']
             build.env.Append(
@@ -219,35 +244,13 @@ class Qt(Dependence):
             # the search path and a QObject.h in QtCore.framework/Headers.
             build.env.Append(CCFLAGS = ['-F%s' % os.path.join(framework_path)])
             build.env.Append(LINKFLAGS = ['-F%s' % os.path.join(framework_path)])
-
-        # Setup Qt library includes for non-OSX
-        if build.platform_is_linux or build.platform_is_bsd:
-            build.env.Append(LIBS = 'QtCore')
-            build.env.Append(LIBS = 'QtGui')
-            build.env.Append(LIBS = 'QtOpenGL')
-            build.env.Append(LIBS = 'QtXml')
-            build.env.Append(LIBS = 'QtNetwork')
-            build.env.Append(LIBS = 'QtScript')
-            if use_qtwebkit:
-                build.env.Append(LIBS = 'QtWebKit')
         elif build.platform_is_windows:
-            build.env.Append(LIBPATH=['$QTDIR/lib'])
-            # Since we use WebKit, that's only available dynamically
-            qt_libs = ['QtCore4',
-                       'QtGui4',
-                       'QtOpenGL4',
-                       'QtXml4',
-                       'QtNetwork4',
-                       'QtXmlPatterns4',
-                       'QtSql4',
-                       'QtScript4',]
-            if use_qtwebkit:
-                qt_libs.append('QtWebKit4')
-
-            # Use the debug versions of the libs if we are building in debug mode.
-            if build.msvcdebug:
-                qt_libs = [lib.replace('4', 'd4') for lib in qt_libs]
-            build.env.Append(LIBS=qt_libs)
+            # This automatically converts QtCore to QtCore[45][d] where
+            # appropriate.
+            if qt5:
+                build.env.EnableQt5Modules(qt_modules, debug=build.msvcdebug)
+            else:
+                build.env.EnableQt4Modules(qt_modules, debug=build.msvcdebug)
 
             # if build.static_dependencies:
                 # # Pulled from qt-4.8.2-source\mkspecs\win32-msvc2010\qmake.conf
@@ -269,20 +272,6 @@ class Qt(Dependence):
                 # # QtOpenGL
                 # build.env.Append(LIBS = 'glu32')
                 # build.env.Append(LIBS = 'opengl32')
-
-        # Set Qt include paths for non-OSX
-        if not build.platform_is_osx:
-            include_paths = ['$QTDIR/include/QtCore',
-                             '$QTDIR/include/QtGui',
-                             '$QTDIR/include/QtOpenGL',
-                             '$QTDIR/include/QtXml',
-                             '$QTDIR/include/QtNetwork',
-                             '$QTDIR/include/QtSql',
-                             '$QTDIR/include/QtScript',
-                             '$QTDIR/include/Qt']
-            if use_qtwebkit:
-                include_paths.append('$QTDIR/include/QtWebKit')
-            build.env.Append(CPPPATH=include_paths)
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
@@ -433,6 +422,7 @@ class MixxxCore(Feature):
                    "configobject.cpp",
                    "control/control.cpp",
                    "control/controlbehavior.cpp",
+                   "controlobjectslave.cpp",
                    "controlobjectthread.cpp",
                    "controlobjectthreadwidget.cpp",
                    "controlobjectthreadmain.cpp",
@@ -444,13 +434,14 @@ class MixxxCore(Feature):
                    "controlpushbutton.cpp",
                    "controlttrotary.cpp",
 
+                   "preferences/dlgpreferencepage.cpp",
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
                    "dlgprefsounditem.cpp",
                    "controllers/dlgprefcontroller.cpp",
                    "controllers/dlgprefmappablecontroller.cpp",
                    "controllers/dlgcontrollerlearning.cpp",
-                   "controllers/dlgprefnocontrollers.cpp",
+                   "controllers/dlgprefcontrollers.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",
                    "dlgprefreplaygain.cpp",
@@ -460,7 +451,7 @@ class MixxxCore(Feature):
                    "dlgprefcrossfader.cpp",
                    "dlgtagfetcher.cpp",
                    "dlgtrackinfo.cpp",
-                   "dlgprepare.cpp",
+                   "dlganalysis.cpp",
                    "dlgautodj.cpp",
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
@@ -481,6 +472,7 @@ class MixxxCore(Feature):
                    "engine/enginemaster.cpp",
                    "engine/enginedelay.cpp",
                    "engine/engineflanger.cpp",
+                   "engine/enginefiltereffect.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",
                    "engine/sidechain/enginesidechain.cpp",
@@ -489,6 +481,7 @@ class MixxxCore(Feature):
                    "engine/enginemicrophone.cpp",
                    "engine/enginedeck.cpp",
                    "engine/enginepassthrough.cpp",
+                   "engine/channelmixer_autogen.cpp",
 
                    "engine/enginecontrol.cpp",
                    "engine/ratecontrol.cpp",
@@ -500,6 +493,7 @@ class MixxxCore(Feature):
                    "engine/clockcontrol.cpp",
                    "engine/readaheadmanager.cpp",
                    "cachingreader.cpp",
+                   "cachingreaderworker.cpp",
 
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
@@ -545,6 +539,8 @@ class MixxxCore(Feature):
                    "widget/wslider.cpp",
                    "widget/wstatuslight.cpp",
                    "widget/woverview.cpp",
+                   "widget/woverviewlmh.cpp",
+                   "widget/woverviewhsv.cpp",
                    "widget/wspinny.cpp",
                    "widget/wskincolor.cpp",
                    "widget/wabstractcontrol.cpp",
@@ -571,23 +567,21 @@ class MixxxCore(Feature):
                    "widget/wlibrarysidebar.cpp",
                    "widget/wlibrary.cpp",
                    "widget/wlibrarytableview.cpp",
-                   "widget/wpreparelibrarytableview.cpp",
-                   "widget/wpreparecratestableview.cpp",
+                   "widget/wanalysislibrarytableview.cpp",
                    "widget/wlibrarytextbrowser.cpp",
-                   "library/preparecratedelegate.cpp",
                    "library/trackcollection.cpp",
                    "library/basesqltablemodel.cpp",
                    "library/basetrackcache.cpp",
                    "library/librarytablemodel.cpp",
                    "library/searchqueryparser.cpp",
-                   "library/preparelibrarytablemodel.cpp",
+                   "library/analysislibrarytablemodel.cpp",
                    "library/missingtablemodel.cpp",
                    "library/hiddentablemodel.cpp",
                    "library/proxytrackmodel.cpp",
 
                    "library/playlisttablemodel.cpp",
                    "library/libraryfeature.cpp",
-                   "library/preparefeature.cpp",
+                   "library/analysisfeature.cpp",
                    "library/autodjfeature.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/baseplaylistfeature.cpp",
@@ -653,8 +647,6 @@ class MixxxCore(Feature):
                    "library/parserpls.cpp",
                    "library/parserm3u.cpp",
                    "library/parsercsv.cpp",
-
-                   "bpm/bpmscheme.cpp",
 
                    "soundsourceproxy.cpp",
 
@@ -732,7 +724,6 @@ class MixxxCore(Feature):
                    "encoder/encodermp3.cpp",
                    "encoder/encodervorbis.cpp",
 
-                   "segmentation.cpp",
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",
@@ -741,10 +732,10 @@ class MixxxCore(Feature):
                    "util/stat.cpp",
                    "util/timer.cpp",
                    "util/performancetimer.cpp",
+                   "util/version.cpp",
+                   "util/rlimit.cpp",
 
-                   # Add the QRC file which compiles in some extra resources
-                   # (prefs icons, etc.)
-                   build.env.Qrc('#res/mixxx.qrc')
+                   '#res/mixxx.qrc'
                    ]
 
         proto_args = {
@@ -759,36 +750,35 @@ class MixxxCore(Feature):
                         for proto_source in proto_sources]
         sources.extend(proto_objects)
 
-
         # Uic these guys (they're moc'd automatically after this) - Generates
-        # the code for the QT UI forms
-        build.env.Uic4('dlgpreferencesdlg.ui')
-        build.env.Uic4('dlgprefsounddlg.ui')
-
-        build.env.Uic4('controllers/dlgprefcontrollerdlg.ui')
-        build.env.Uic4('controllers/dlgprefmappablecontrollerdlg.ui')
-        build.env.Uic4('controllers/dlgcontrollerlearning.ui')
-        build.env.Uic4('controllers/dlgprefnocontrollersdlg.ui')
-
-        build.env.Uic4('dlgprefplaylistdlg.ui')
-        build.env.Uic4('dlgprefcontrolsdlg.ui')
-        build.env.Uic4('dlgprefeqdlg.ui')
-        build.env.Uic4('dlgprefcrossfaderdlg.ui')
-        build.env.Uic4('dlgprefreplaygaindlg.ui')
-        build.env.Uic4('dlgprefbeatsdlg.ui')
-        # build.env.Uic4('dlgbpmtapdlg.ui')
-        build.env.Uic4('dlgprefvinyldlg.ui')
-        build.env.Uic4('dlgprefnovinyldlg.ui')
-        build.env.Uic4('dlgprefrecorddlg.ui')
-        build.env.Uic4('dlgaboutdlg.ui')
-        build.env.Uic4('dlgtagfetcher.ui')
-        build.env.Uic4('dlgtrackinfo.ui')
-        build.env.Uic4('dlgprepare.ui')
-        build.env.Uic4('dlgautodj.ui')
-        build.env.Uic4('dlgprefsounditem.ui')
-        build.env.Uic4('dlgrecording.ui')
-        build.env.Uic4('dlghidden.ui')
-        build.env.Uic4('dlgmissing.ui')
+        # the code for the QT UI forms.
+        ui_files = [
+            'controllers/dlgcontrollerlearning.ui',
+            'controllers/dlgprefcontrollerdlg.ui',
+            'controllers/dlgprefmappablecontrollerdlg.ui',
+            'controllers/dlgprefcontrollersdlg.ui',
+            'dlgaboutdlg.ui',
+            'dlganalysis.ui',
+            'dlgautodj.ui',
+            'dlghidden.ui',
+            'dlgmissing.ui',
+            'dlgprefbeatsdlg.ui',
+            'dlgprefcontrolsdlg.ui',
+            'dlgprefcrossfaderdlg.ui',
+            'dlgprefeqdlg.ui',
+            'dlgpreferencesdlg.ui',
+            'dlgprefnovinyldlg.ui',
+            'dlgprefplaylistdlg.ui',
+            'dlgprefrecorddlg.ui',
+            'dlgprefreplaygaindlg.ui',
+            'dlgprefsounddlg.ui',
+            'dlgprefsounditem.ui',
+            'dlgprefvinyldlg.ui',
+            'dlgrecording.ui',
+            'dlgtagfetcher.ui',
+            'dlgtrackinfo.ui',
+        ]
+        map(Qt.uic(build), ui_files)
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such

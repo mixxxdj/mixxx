@@ -13,6 +13,7 @@
 #include "controlobjectthread.h"
 #include "errordialoghandler.h"
 #include "mathstuff.h"
+#include "playermanager.h"
 
 // #include <QScriptSyntaxCheckResult>
 
@@ -42,7 +43,6 @@ ControllerEngine::ControllerEngine(Controller* controller)
     m_rampFactor.resize(kDecks);
     m_brakeActive.resize(kDecks);
     m_brakeKeylock.resize(kDecks);
-
     // Initialize arrays used for testing and pointers
     for (int i=0; i < kDecks; i++) {
         m_dx[i] = 0.0;
@@ -150,8 +150,8 @@ void ControllerEngine::gracefulShutdown() {
     while (i.hasNext()) {
         i.next();
         qDebug() << "Aborting scratching on deck" << i.value();
-        // Clear scratch2_enable
-        QString group = QString("[Channel%1]").arg(i.value());
+        // Clear scratch2_enable. PlayerManager::groupForDeck is 0-indexed.
+        QString group = PlayerManager::groupForDeck(i.value() - 1);
         ControlObjectThread *cot = getControlObjectThread(group, "scratch2_enable");
         if (cot != NULL) {
             cot->slotSet(0);
@@ -554,9 +554,9 @@ void ControllerEngine::scriptErrorDialog(QString detailedError) {
     props->setType(DLG_WARNING);
     props->setTitle(tr("Controller script error"));
     props->setText(tr("A control you just used is not working properly."));
-    props->setInfoText(tr("<html>(The script code needs to be fixed.)"
-        "<br>For now, you can:<ul><li>Ignore this error for this session but you may experience erratic behavior</li>"
-        "<li>Try to recover by resetting your controller</li></ul></html>"));
+    props->setInfoText("<html>"+tr("The script code needs to be fixed.")+
+        "<p>"+tr("For now, you can: Ignore this error for this session but you may experience erratic behavior.")+
+        "<br>"+tr("Try to recover by resetting your controller.")+"</p>"+"</html>");
     props->setDetails(detailedError);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
 
@@ -597,18 +597,17 @@ void ControllerEngine::errorDialogButton(QString key, QMessageBox::StandardButto
 
 ControlObjectThread* ControllerEngine::getControlObjectThread(QString group, QString name) {
     ConfigKey key = ConfigKey(group, name);
-
-    ControlObjectThread *cot = NULL;
-    if(!m_controlCache.contains(key)) {
-        ControlObject *co = ControlObject::getControl(key);
-        if(co != NULL) {
-            cot = new ControlObjectThread(co);
+    ControlObjectThread* cot = m_controlCache.value(key, NULL);
+    if (cot == NULL) {
+        // create COT
+        cot = new ControlObjectThread(key, this);
+        if (cot->valid()) {
             m_controlCache.insert(key, cot);
+        } else {
+            delete cot;
+            cot = NULL;
         }
-    } else {
-        cot = m_controlCache.value(key);
     }
-
     return cot;
 }
 
@@ -688,7 +687,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
     }
 
     if (m_pEngine == NULL) {
-        return QScriptValue(FALSE);
+        return QScriptValue(false);
     }
 
     if (callback.isString()) {
@@ -698,13 +697,13 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
 
         if (disconnect) {
             disconnectControl(cb);
-            return QScriptValue(TRUE);
+            return QScriptValue(true);
         }
 
         function = m_pEngine->evaluate(callback.toString());
         if (checkException() || !function.isFunction()) {
             qWarning() << "Could not evaluate callback function:" << callback.toString();
-            return QScriptValue(FALSE);
+            return QScriptValue(false);
         } else if (m_connectedControls.contains(key, cb)) {
             // Do not allow multiple connections to named functions
 
@@ -735,7 +734,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
     }
     else {
         qWarning() << "Invalid callback";
-        return QScriptValue(FALSE);
+        return QScriptValue(false);
     }
 
     if (function.isFunction()) {
@@ -743,6 +742,10 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
         connect(cot, SIGNAL(valueChanged(double)),
                 this, SLOT(slotValueChanged(double)),
                 Qt::QueuedConnection);
+        connect(cot, SIGNAL(valueChangedByThis(double)),
+                this, SLOT(slotValueChanged(double)),
+                Qt::QueuedConnection);
+
 
         ControllerEngineConnection conn;
         conn.key = key;
@@ -772,7 +775,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
             QScriptEngine::ScriptOwnership);
     }
 
-    return QScriptValue(FALSE);
+    return QScriptValue(false);
 }
 
 /* -------- ------------------------------------------------------
@@ -793,6 +796,8 @@ void ControllerEngine::disconnectControl(const ControllerEngineConnection conn) 
         // Only disconnect the signal if there are no other instances of this control using it
         if (!m_connectedControls.contains(conn.key)) {
             disconnect(cot, SIGNAL(valueChanged(double)),
+                       this, SLOT(slotValueChanged(double)));
+            disconnect(cot, SIGNAL(valueChangedByThis(double)),
                        this, SLOT(slotValueChanged(double)));
         }
     } else {
@@ -1102,7 +1107,8 @@ void ControllerEngine::scratchEnable(int deck, int intervalsPerRev, float rpm,
     m_rampFactor[deck] = 0.001;
     m_brakeActive[deck] = false;
 
-    QString group = QString("[Channel%1]").arg(deck);
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     // Ramp
     float initVelocity = 0.0;   // Default to stopped
@@ -1187,7 +1193,8 @@ void ControllerEngine::scratchTick(int deck, int interval) {
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchProcess(int timerId) {
     int deck = m_scratchTimers[timerId];
-    QString group = QString("[Channel%1]").arg(deck);
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
     PitchFilter* filter = m_pitchFilter[deck];
     if (!filter) {
         qWarning() << "Scratch filter pointer is null on deck" << deck;
@@ -1263,7 +1270,8 @@ void ControllerEngine::scratchProcess(int timerId) {
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::scratchDisable(int deck, bool ramp) {
-    QString group = QString("[Channel%1]").arg(deck);
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     m_rampTo[deck] = 0.0;
 
@@ -1322,8 +1330,9 @@ void ControllerEngine::scratchDisable(int deck, bool ramp) {
     Output:  True if so
     -------- ------------------------------------------------------ */
 bool ControllerEngine::isScratching(int deck) {
-    QString group = QString("[Channel%1]").arg(deck);
-    return getValue(group,"scratch2_enable")>0;
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
+    return getValue(group, "scratch2_enable") > 0;
 }
 
 /*  -------- ------------------------------------------------------
@@ -1362,7 +1371,8 @@ void ControllerEngine::spinback(int deck, bool activate, float factor, float rat
     Output:  -
     -------- ------------------------------------------------------ */
 void ControllerEngine::brake(int deck, bool activate, float factor, float rate) {
-    QString group = QString("[Channel%1]").arg(deck);
+    // PlayerManager::groupForDeck is 0-indexed.
+    QString group = PlayerManager::groupForDeck(deck - 1);
 
     // kill timer when both enabling or disabling
     int timerId = m_scratchTimers.key(deck);
@@ -1375,7 +1385,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
         cot->slotSet(activate ? 1 : 0);
     }
 
-    // used in scratchProcess for the different timer behaviour we need
+    // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
 
     if (activate) {

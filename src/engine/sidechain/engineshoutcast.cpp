@@ -50,10 +50,8 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
           m_encoder(NULL),
           m_pShoutcastNeedUpdateFromPrefs(NULL),
           m_pUpdateShoutcastFromPrefs(NULL),
-          m_pMasterSamplerate(new ControlObjectThread(
-              ControlObject::getControl(ConfigKey("[Master]", "samplerate")))),
-          m_pShoutcastStatus(new ControlObjectThread(
-              new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status")))),
+          m_pMasterSamplerate(new ControlObjectThread("[Master]", "samplerate")),
+          m_pShoutcastStatus(new ControlObject(ConfigKey(SHOUTCAST_PREF_KEY, "status"))),
           m_bQuit(false),
           m_custom_metadata(false),
           m_firstCall(false),
@@ -70,11 +68,11 @@ EngineShoutcast::EngineShoutcast(ConfigObject<ConfigValue> *_config)
     signal(SIGPIPE, SIG_IGN);
 #endif
 
-    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
     m_pShoutcastNeedUpdateFromPrefs = new ControlObject(
-        ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
+            ConfigKey(SHOUTCAST_PREF_KEY,"update_from_prefs"));
     m_pUpdateShoutcastFromPrefs = new ControlObjectThread(
-        m_pShoutcastNeedUpdateFromPrefs);
+            m_pShoutcastNeedUpdateFromPrefs->getKey());
 
     // Initialize libshout
     shout_init();
@@ -122,7 +120,7 @@ bool EngineShoutcast::serverDisconnect() {
         m_encoder = NULL;
     }
 
-    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
 
     if (m_pShout) {
         shout_close(m_pShout);
@@ -175,45 +173,45 @@ void EngineShoutcast::updateFromPreferences() {
 
     // Host, server type, port, mountpoint, login, password should be latin1.
     QByteArray baHost = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "host")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "host")).toLatin1();
     QByteArray baServerType = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "servertype")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "servertype")).toLatin1();
     QByteArray baPort = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "port")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "port")).toLatin1();
     QByteArray baMountPoint = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "mountpoint")).toLatin1();
     QByteArray baLogin = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "login")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "login")).toLatin1();
     QByteArray baPassword = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "password")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "password")).toLatin1();
     QByteArray baFormat = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "format")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "format")).toLatin1();
     QByteArray baBitrate = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "bitrate")).toLatin1();
+            ConfigKey(SHOUTCAST_PREF_KEY, "bitrate")).toLatin1();
 
     // Encode metadata like stream name, website, desc, genre, title/author with
     // the chosen TextCodec.
     QByteArray baStreamName = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_name")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_name")));
     QByteArray baStreamWebsite = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_website")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_website")));
     QByteArray baStreamDesc = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_desc")));
     QByteArray baStreamGenre = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_genre")));
     QByteArray baStreamPublic = encodeString(m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")));
+            ConfigKey(SHOUTCAST_PREF_KEY, "stream_public")));
 
     // Dynamic Ogg metadata update
-    m_ogg_dynamic_update = (bool)m_pConfig->getValueString(ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
+    m_ogg_dynamic_update = (bool)m_pConfig->getValueString(
+	        ConfigKey(SHOUTCAST_PREF_KEY,"ogg_dynamicupdate")).toInt();
 
     m_custom_metadata = (bool)m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
-    QString title = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"));
-    QString artist = m_pConfig->getValueString(
-        ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
-    m_baCustomSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
+            ConfigKey(SHOUTCAST_PREF_KEY, "enable_metadata")).toInt();
+    m_customTitle = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "custom_title"));
+    m_customArtist = m_pConfig->getValueString(
+            ConfigKey(SHOUTCAST_PREF_KEY, "custom_artist"));
 
     int format;
     int protocol;
@@ -364,12 +362,17 @@ bool EngineShoutcast::serverConnect() {
     // set to busy in case another thread calls one of the other
     // EngineShoutcast calls
     m_iShoutStatus = SHOUTERR_BUSY;
-    m_pShoutcastStatus->slotSet(SHOUTCAST_CONNECTING);
+    m_pShoutcastStatus->set(SHOUTCAST_CONNECTING);
     // reset the number of failures to zero
     m_iShoutFailures = 0;
     // set to a high number to automatically update the metadata
     // on the first change
     m_iMetaDataLife = 31337;
+    // clear metadata, to make sure the first track is not skipped
+    // because it was sent via an previous connection (see metaDataHasChanged)
+    if(m_pMetaData) {
+        m_pMetaData.clear();
+    }
     //If static metadata is available, we only need to send metadata one time
     m_firstCall = false;
 
@@ -380,7 +383,7 @@ bool EngineShoutcast::serverConnect() {
      */
     if(m_encoder == NULL){
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
     const int iMaxTries = 3;
@@ -405,13 +408,13 @@ bool EngineShoutcast::serverConnect() {
         if (m_pShout)
             shout_close(m_pShout);
         m_pConfig->set(ConfigKey(SHOUTCAST_PREF_KEY,"enabled"),ConfigValue("0"));
-        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
     if (m_bQuit) {
         if (m_pShout)
             shout_close(m_pShout);
-        m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+        m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
         return false;
     }
 
@@ -425,7 +428,7 @@ bool EngineShoutcast::serverConnect() {
     }
     if (m_iShoutStatus == SHOUTERR_CONNECTED) {
         qDebug() << "***********Connected to Shoutcast server...";
-        m_pShoutcastStatus->slotSet(SHOUTCAST_CONNECTED);
+        m_pShoutcastStatus->set(SHOUTCAST_CONNECTED);
         return true;
     }
     //otherwise disable shoutcast in preferences
@@ -434,7 +437,7 @@ bool EngineShoutcast::serverConnect() {
         shout_close(m_pShout);
         //errorDialog(tr("Mixxx could not connect to the server"), tr("Please check your connection to the Internet and verify that your username and password are correct."));
     }
-    m_pShoutcastStatus->slotSet(SHOUTCAST_DISCONNECTED);
+    m_pShoutcastStatus->set(SHOUTCAST_DISCONNECTED);
     return false;
 }
 
@@ -497,7 +500,7 @@ void EngineShoutcast::process(const CSAMPLE* pBuffer, const int iBufferSize) {
         if (isConnected()) {
             // We are conneced but shoutcast is disabled. Disconnect.
             serverDisconnect();
-            infoDialog(tr("Mixxx has successfully disconnected to the shoutcast server"), "");
+            infoDialog(tr("Mixxx has successfully disconnected from the shoutcast server"), "");
         }
         return;
     }
@@ -550,7 +553,7 @@ bool EngineShoutcast::metaDataHasChanged() {
 
     m_iMetaDataLife = 0;
 
-    pTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    pTrack = PlayerInfo::instance().getCurrentPlayingTrack();
     if (!pTrack)
         return false;
 
@@ -572,7 +575,6 @@ void EngineShoutcast::updateMetaData() {
     if (!m_pShout || !m_pShoutMetaData)
         return;
 
-    QByteArray baSong = "";
     /**
      * If track has changed and static metadata is disabled
      * Send new metadata to shoutcast!
@@ -587,21 +589,51 @@ void EngineShoutcast::updateMetaData() {
      */
 
 
-    //If we use either MP3 streaming or OGG streaming with dynamic update of metadata being enabled,
-    //we want dynamic metadata changes
+    // If we use either MP3 streaming or OGG streaming with dynamic update of
+    // metadata being enabled, we want dynamic metadata changes
     if (!m_custom_metadata && (m_format_is_mp3 || m_ogg_dynamic_update)) {
         if (m_pMetaData != NULL) {
+
             QString artist = m_pMetaData->getArtist();
             QString title = m_pMetaData->getTitle();
-            QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
-            shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+
+            // shoutcast uses only "song" as field for "artist - title".
+            // icecast2 supports separate fields for "artist" and "title", 
+            // which will get displayed accordingly if the streamingformat and
+            // player supports it. ("song" is treated as an alias for "title")
+            // 
+            // Note (EinWesen): 
+            // Currently that seems to be OGG only, although it is no problem 
+            // setting both fields for MP3, tested players do not show anything different.
+            // Also I do not know about icecast1. To be safe, i stick to the
+            // old way for those use cases.
+            if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                shout_metadata_add(m_pShoutMetaData, "artist",  encodeString(artist).constData());
+                shout_metadata_add(m_pShoutMetaData, "title",  encodeString(title).constData());
+            } else {
+                QByteArray baSong = encodeString(artist.isEmpty() ? title : artist + " - " + title);
+                shout_metadata_add(m_pShoutMetaData, "song",  baSong.constData());
+            }
             shout_set_metadata(m_pShout, m_pShoutMetaData);
+
         }
     } else {
-        //Otherwise we might use static metadata
-        /** If we use static metadata, we only need to call the following line once **/
+        // Otherwise we might use static metadata
+        // If we use static metadata, we only need to call the following line once
         if (m_custom_metadata && !m_firstCall) {
-            shout_metadata_add(m_pShoutMetaData, "song",  m_baCustomSong.constData());
+
+            // see comment above...
+            if (!m_format_is_mp3 && m_protocol_is_icecast2) {
+                shout_metadata_add(
+                        m_pShoutMetaData,"artist",encodeString(m_customArtist).constData());
+
+                shout_metadata_add(
+                        m_pShoutMetaData,"title",encodeString(m_customTitle).constData());
+            } else {
+                QByteArray baCustomSong = encodeString(m_customArtist.isEmpty() ? m_customTitle : m_customArtist + " - " + m_customTitle);
+                shout_metadata_add(m_pShoutMetaData, "song", baCustomSong.constData());
+            }
+
             shout_set_metadata(m_pShout, m_pShoutMetaData);
             m_firstCall = true;
         }

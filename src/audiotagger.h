@@ -20,8 +20,10 @@ public:
     void setArtist (QString artist );
     void setTitle (QString title );
     void setAlbum (QString album );
+    void setAlbumArtist (QString albumArtist );
     void setGenre (QString genre );
     void setComposer (QString composer );
+    void setGrouping (QString grouping );
     void setYear (QString year );
     void setComment (QString comment );
     void setKey (QString key );
@@ -33,9 +35,11 @@ public:
 private:
     QString m_artist;
     QString m_title;
+    QString m_albumArtist;
     QString m_genre;
     QString m_composer;
     QString m_album;
+    QString m_grouping;
     QString m_year;
     QString m_comment;
     QString m_key;

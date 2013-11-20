@@ -28,14 +28,14 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
-        : QWidget(parent),
-          m_selectedAnalyser() {
-    m_pconfig = _config;
+        : DlgPreferencePage(parent),
+          m_pconfig(_config) {
     setupUi(this);
 
     populate();
     loadSettings();
-    //Connections
+
+    // Connections
     connect(plugincombo, SIGNAL(currentIndexChanged(int)),
             this, SLOT(pluginSelected(int)));
     connect(banalyserenabled, SIGNAL(stateChanged(int)),
@@ -56,7 +56,6 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
 
     connect(bReanalyse,SIGNAL(stateChanged(int)),
             this, SLOT(slotReanalyzeChanged(int)));
-
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
@@ -239,6 +238,7 @@ void DlgPrefBeats::populate() {
     std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
     qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
     for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
+        // TODO(XXX): WTF, 48000
         Plugin *plugin = loader->loadPlugin(plugins[iplugin], 48000);
         //TODO: find a way to add beat trackers only
         if (plugin) {
@@ -268,6 +268,4 @@ void DlgPrefBeats::populate() {
             plugin = 0;
         }
     }
-    // m_selectedAnalyser = selectedAnalyser;
 }
-

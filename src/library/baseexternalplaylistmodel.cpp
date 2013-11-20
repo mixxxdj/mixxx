@@ -51,7 +51,6 @@ TrackPointer BaseExternalPlaylistModel::getTrack(const QModelIndex& index) const
     }
 
     TrackPointer pTrack;
-
     if (track_id < 0) {
         // Add Track to library failed, create a transient TrackInfoObject
         pTrack = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
@@ -97,9 +96,10 @@ void BaseExternalPlaylistModel::setPlaylist(QString playlist_path) {
 
     // TODO(XXX): Why not last-insert id?
     int playlistId = -1;
+    QSqlRecord finder_query_record = finder_query.record();
     while (finder_query.next()) {
         playlistId = finder_query.value(
-            finder_query.record().indexOf("id")).toInt();
+            finder_query_record.indexOf("id")).toInt();
     }
 
     if (playlistId == -1) {

@@ -17,8 +17,8 @@ class TrackCollection;
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent, 
-                 TrackCollection* pTrackCollection, 
+    CrateFeature(QObject* parent,
+                 TrackCollection* pTrackCollection,
                  ConfigObject<ConfigValue>* pConfig);
     virtual ~CrateFeature();
 
@@ -26,13 +26,16 @@ class CrateFeature : public LibraryFeature {
     QIcon getIcon();
 
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                         QWidget *pSource);
+                         QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
+
+  signals:
+    void analyzeTracks(QList<int>);
 
   public slots:
     void activate();
@@ -44,10 +47,13 @@ class CrateFeature : public LibraryFeature {
     void slotDeleteCrate();
     void slotRenameCrate();
     void slotDuplicateCrate();
+    void slotAutoDjTrackSourceChanged();
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
+    void slotAnalyzeCrate();
     void slotCrateTableChanged(int playlistId);
+    void slotCrateTableRenamed(int playlistId, QString a_strName);
     void htmlLinkClicked(const QUrl & link);
 
   private:
@@ -63,8 +69,12 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pRenameCrateAction;
     QAction *m_pLockCrateAction;
     QAction *m_pDuplicateCrateAction;
+#ifdef __AUTODJCRATES__
+    QAction *m_pAutoDjTrackSource;
+#endif // __AUTODJCRATES__
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
+    QAction *m_pAnalyzeCrateAction;
     QList<QPair<int, QString> > m_crateList;
     CrateTableModel m_crateTableModel;
     QModelIndex m_lastRightClickedIndex;

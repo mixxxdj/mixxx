@@ -5,7 +5,6 @@
 #include <QMimeData>
 
 #include "library/trackmodel.h"
-#include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
 #include "recording/recordingmanager.h"
 
@@ -25,6 +24,8 @@ const int COLUMN_KEY = 11;
 const int COLUMN_TYPE = 12;
 const int COLUMN_BITRATE = 13;
 const int COLUMN_LOCATION = 14;
+const int COLUMN_ALBUMARTIST = 15;
+const int COLUMN_GROUPING = 16;
 
 // The BrowseTable models displays tracks
 // of given directory on the HDD.
@@ -51,6 +52,7 @@ class BrowseTableModel : public QStandardItemModel, public virtual TrackModel {
     const QString currentSearch() const;
     bool isColumnInternal(int);
     void moveTrack(const QModelIndex&, const QModelIndex&);
+    bool isLocked() { return false;}
     bool isColumnHiddenByDefault(int column);
     const QList<int>& searchColumns() const;
     Qt::ItemFlags flags(const QModelIndex &index) const;

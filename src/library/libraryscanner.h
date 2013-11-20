@@ -44,9 +44,9 @@ class LibraryScanner : public QThread {
     virtual ~LibraryScanner();
 
     void run();
-    void scan(QString libraryPath, QWidget *parent);
+    void scan(const QString &libraryPath, QWidget *parent);
     void scan();
-    bool recursiveScan(QString dirPath, QStringList& verifiedDirectories);
+    bool recursiveScan(const QString &dirPath, QStringList& verifiedDirectories);
   public slots:
     void cancel();
     void resetCancel();
@@ -56,7 +56,7 @@ class LibraryScanner : public QThread {
   private:
     TrackCollection* m_pCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
-                             // since we run in a different thread */
+                             // since we run in a different thread
     QString m_qLibraryPath; // The path to the library on disk
     LibraryScannerDlg* m_pProgress; // The library scanning window
 

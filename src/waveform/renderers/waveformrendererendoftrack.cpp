@@ -16,37 +16,37 @@
 WaveformRendererEndOfTrack::WaveformRendererEndOfTrack(
         WaveformWidgetRenderer* waveformWidgetRenderer)
     : WaveformRendererAbstract(waveformWidgetRenderer),
-      m_endOfTrackControl(NULL),
+      m_pEndOfTrackControl(NULL),
       m_endOfTrackEnabled(false),
-      m_trackSampleRate(NULL),
-      m_playControl(NULL),
-      m_loopControl(NULL),
+      m_pTrackSampleRate(NULL),
+      m_pPlayControl(NULL),
+      m_pLoopControl(NULL),
       m_color(200, 25, 20),
       m_blinkingPeriodMillis(1000),
       m_remainingTimeTriggerSeconds(30.0) {
 }
 
 WaveformRendererEndOfTrack::~WaveformRendererEndOfTrack() {
-    delete m_endOfTrackControl;
-    delete m_trackSampleRate;
-    delete m_playControl;
-    delete m_loopControl;
+    delete m_pEndOfTrackControl;
+    delete m_pTrackSampleRate;
+    delete m_pPlayControl;
+    delete m_pLoopControl;
 }
 
 bool WaveformRendererEndOfTrack::init() {
     m_timer.restart();
 
-    m_endOfTrackControl = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "end_of_track")));
-    m_endOfTrackControl->slotSet(0.);
+    m_pEndOfTrackControl = new ControlObjectThread(
+            m_waveformRenderer->getGroup(), "end_of_track");
+    m_pEndOfTrackControl->slotSet(0.);
     m_endOfTrackEnabled = false;
 
-    m_trackSampleRate = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "track_samplerate")));
-    m_playControl = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "play")));
-    m_loopControl = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_waveformRenderer->getGroup(), "loop_enabled")));
+    m_pTrackSampleRate = new ControlObjectThread(
+            m_waveformRenderer->getGroup(), "track_samplerate");
+    m_pPlayControl = new ControlObjectThread(
+            m_waveformRenderer->getGroup(), "play");
+    m_pLoopControl = new ControlObjectThread(
+            m_waveformRenderer->getGroup(), "loop_enabled");
     return true;
 }
 
@@ -75,7 +75,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
                                       QPaintEvent* /*event*/) {
 
     const double trackSamples = m_waveformRenderer->getTrackSamples();
-    const double sampleRate = m_trackSampleRate->get();
+    const double sampleRate = m_pTrackSampleRate->get();
 
     /*qDebug() << "WaveformRendererEndOfTrack :: "
              << "trackSamples" << trackSamples
@@ -83,19 +83,19 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
              << "m_playControl->get()" << m_playControl->get()
              << "m_loopControl->get()" << m_loopControl->get();*/
 
-    m_endOfTrackEnabled = m_endOfTrackControl->get() > 0.5;
+    m_endOfTrackEnabled = m_pEndOfTrackControl->get() > 0.5;
 
     //special case of track not long enougth
     const double trackLength = 0.5 * trackSamples / sampleRate;
 
     if (sampleRate < 0.1 //not ready
             || trackSamples < 0.1 //not ready
-            || m_playControl->get() < 0.5 //not playing
-            || m_loopControl->get() > 0.5 //in loop
+            || m_pPlayControl->get() < 0.5 //not playing
+            || m_pLoopControl->get() > 0.5 //in loop
             || trackLength <= m_remainingTimeTriggerSeconds //track too short
             ) {
         if (m_endOfTrackEnabled) {
-            m_endOfTrackControl->slotSet(0.0);
+            m_pEndOfTrackControl->slotSet(0.0);
             m_endOfTrackEnabled = false;
         }
         return;
@@ -107,7 +107,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     if (remainingTime > m_remainingTimeTriggerSeconds) {
         if (m_endOfTrackEnabled) {
-            m_endOfTrackControl->slotSet(0.);
+            m_pEndOfTrackControl->slotSet(0.);
             m_endOfTrackEnabled = false;
         }
         return;
@@ -115,7 +115,7 @@ void WaveformRendererEndOfTrack::draw(QPainter* painter,
 
     // end of track is on
     if (!m_endOfTrackEnabled) {
-        m_endOfTrackControl->slotSet(1.);
+        m_pEndOfTrackControl->slotSet(1.);
         m_endOfTrackEnabled = true;
 
         //qDebug() << "EndOfTrack ON";

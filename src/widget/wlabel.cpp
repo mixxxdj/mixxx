@@ -15,12 +15,10 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wlabel.h"
-#include "wskincolor.h"
-#include <math.h>
-#include <qfont.h>
-//Added by qt3to4:
-#include <QLabel>
+#include <QVBoxLayout>
+
+#include "widget/wlabel.h"
+#include "widget/wskincolor.h"
 
 WLabel::WLabel(QWidget * parent) : WWidget(parent)
 {
@@ -32,8 +30,7 @@ WLabel::WLabel(QWidget * parent) : WWidget(parent)
     m_qsText = "";
 }
 
-WLabel::~WLabel()
-{
+WLabel::~WLabel() {
     delete m_pLabel;
 }
 
@@ -59,10 +56,9 @@ void WLabel::setup(QDomNode node)
     if (!selectNode(node, "Alignment").isNull()) {
         if (selectNodeQString(node, "Alignment")=="right")
             m_pLabel->setAlignment(Qt::AlignRight|Qt::AlignVCenter);
+        // FWI: Begin of font alignment patch
+        else if (selectNodeQString(node, "Alignment")=="center")
+            m_pLabel->setAlignment(Qt::AlignHCenter|Qt::AlignVCenter);
+        // FWI: End of font alignment patch
     }
-}
-
-void WLabel::setAlignment(Qt::Alignment i)
-{
-    m_pLabel->setAlignment(i);
 }

@@ -12,7 +12,7 @@
 #include "library/trackcollection.h"
 #include "library/treeitem.h"
 #include "playerinfo.h"
-
+#include "playermanager.h"
 
 SetlogFeature::SetlogFeature(QObject* parent,
                              ConfigObject<ConfigValue>* pConfig,
@@ -20,7 +20,7 @@ SetlogFeature::SetlogFeature(QObject* parent,
         : BasePlaylistFeature(parent, pConfig, pTrackCollection, "SETLOGHOME") {
     m_pPlaylistTableModel = new PlaylistTableModel(this, pTrackCollection,
                                                    "mixxx.db.model.setlog",
-                                                   true);//show all tracks
+                                                   true); //show all tracks
     m_pJoinWithPreviousAction = new QAction(tr("Join with previous"), this);
     connect(m_pJoinWithPreviousAction, SIGNAL(triggered()),
             this, SLOT(slotJoinWithPrevious()));
@@ -75,7 +75,7 @@ void SetlogFeature::bindWidget(WLibrary* libraryWidget,
                                MixxxKeyboard* keyboard) {
     BasePlaylistFeature::bindWidget(libraryWidget,
                                     keyboard);
-    connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
+    connect(&PlayerInfo::instance(), SIGNAL(currentPlayingDeckChanged(int)),
             this, SLOT(slotPlayingDeckChanged(int)));
 }
 
@@ -138,8 +138,9 @@ void SetlogFeature::buildPlaylistList() {
     while (playlistTableModel.canFetchMore()) {
         playlistTableModel.fetchMore();
     }
-    int nameColumn = playlistTableModel.record().indexOf("name");
-    int idColumn = playlistTableModel.record().indexOf("id");
+    QSqlRecord record = playlistTableModel.record();
+    int nameColumn = record.indexOf("name");
+    int idColumn = record.indexOf("id");
 
     for (int row = 0; row < playlistTableModel.rowCount(); ++row) {
         int id = playlistTableModel.data(
@@ -212,10 +213,10 @@ void SetlogFeature::slotJoinWithPrevious() {
 }
 
 void SetlogFeature::slotPlayingDeckChanged(int deck) {
-    if (deck > 0) {
-        QString chan = QString("[Channel%1]").arg(deck);
+    if (deck > -1) {
+        QString chan = PlayerManager::groupForDeck(deck);
         TrackPointer currentPlayingTrack =
-                PlayerInfo::Instance().getTrackInfo(chan);
+                PlayerInfo::instance().getTrackInfo(chan);
         if (!currentPlayingTrack) {
             return;
         }

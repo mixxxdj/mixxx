@@ -7,8 +7,6 @@
 
 #include "controlobjectthread.h"
 
-class ControlObject;
-
 // ControlObjectThreadMain is a variant of ControlObjectThread that should only
 // ever have its methods called by the main thread. The benefit is that the
 // valueChanged() signal is proxied to the main thread automatically and the
@@ -19,7 +17,9 @@ class ControlObject;
 class ControlObjectThreadMain : public ControlObjectThread {
     Q_OBJECT
   public:
-    ControlObjectThreadMain(ControlObject *pControlObject, QObject* pParent=NULL);
+    ControlObjectThreadMain(const ConfigKey& key, QObject* pParent = NULL);
+    ControlObjectThreadMain(const QString& g, const QString& i, QObject* pParent = NULL);
+    ControlObjectThreadMain(const char* g, const char* i, QObject* pParent = NULL);
 
     bool eventFilter(QObject* o, QEvent* e);
 
@@ -28,6 +28,9 @@ class ControlObjectThreadMain : public ControlObjectThread {
     // thread, and re-emits either valueChanged(double) or
     // valueChangedByThis(double) based on pSetter.
     virtual void slotValueChanged(double v, QObject* pSetter);
+
+  private:
+    void initialize();
 };
 
 #endif

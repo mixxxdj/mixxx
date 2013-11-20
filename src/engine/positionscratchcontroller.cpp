@@ -86,9 +86,10 @@ PositionScratchController::PositionScratchController(const char* pGroup)
 }
 
 PositionScratchController::~PositionScratchController() {
-    delete m_pScratchEnable;
-    delete m_pVelocityController;
     delete m_pRateIIFilter;
+    delete m_pVelocityController;
+    delete m_pScratchPosition;
+    delete m_pScratchEnable;
 }
 
 //volatile double _p = 0.3;

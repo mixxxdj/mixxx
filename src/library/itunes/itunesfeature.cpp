@@ -36,8 +36,10 @@ ITunesFeature::ITunesFeature(QObject* parent, TrackCollection* pTrackCollection)
             << "artist"
             << "title"
             << "album"
+            << "album_artist"
             << "year"
             << "genre"
+            << "grouping"
             << "tracknumber"
             << "location"
             << "comment"
@@ -321,6 +323,7 @@ TreeItem* ITunesFeature::importLibrary() {
         qDebug() << "Cannot open iTunes music collection";
         return NULL;
     }
+
     QXmlStreamReader xml(&itunes_file);
     TreeItem* playlist_root = NULL;
     while (!xml.atEnd() && !m_cancelImport) {
@@ -358,18 +361,16 @@ TreeItem* ITunesFeature::importLibrary() {
 }
 
 void ITunesFeature::parseTracks(QXmlStreamReader &xml) {
+    bool in_container_dictionary = false;
+    bool in_track_dictionary = false;
     QSqlQuery query(m_database);
-    query.prepare("INSERT INTO itunes_library (id, artist, title, album, year, genre, comment, tracknumber,"
+    query.prepare("INSERT INTO itunes_library (id, artist, title, album, album_artist, year, genre, grouping, comment, tracknumber,"
                   "bpm, bitrate,"
                   "duration, location,"
                   "rating ) "
-                  "VALUES (:id, :artist, :title, :album, :year, :genre, :comment, :tracknumber,"
+                  "VALUES (:id, :artist, :title, :album, :album_artist, :year, :genre, :grouping, :comment, :tracknumber,"
                   ":bpm, :bitrate,"
                   ":duration, :location," ":rating )");
-
-
-    bool in_container_dictionary = false;
-    bool in_track_dictionary = false;
 
     qDebug() << "Parse iTunes music collection";
 
@@ -410,8 +411,10 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     QString title;
     QString artist;
     QString album;
+    QString album_artist;
     QString year;
     QString genre;
+    QString grouping;
     QString location;
 
     int bpm = 0;
@@ -429,8 +432,8 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
         if (xml.isStartElement()) {
             if (xml.name() == "key") {
                 QString key = xml.readElementText();
-                QString content =  "";
 
+                QString content;
                 if (readNextStartElement(xml)) {
                     content = xml.readElementText();
                 }
@@ -453,8 +456,16 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                     album = content;
                     continue;
                 }
+                if (key == "Album Artist") {
+                    album_artist = content;
+                    continue;
+                }
                 if (key == "Genre") {
                     genre = content;
+                    continue;
+                }
+                if (key == "Grouping") {
+                    grouping = content;
                     continue;
                 }
                 if (key == "BPM") {
@@ -510,7 +521,9 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     query.bindValue(":artist", artist);
     query.bindValue(":title", title);
     query.bindValue(":album", album);
+    query.bindValue(":album_artist", album_artist);
     query.bindValue(":genre", genre);
+    query.bindValue(":grouping", grouping);
     query.bindValue(":year", year);
     query.bindValue(":duration", playtime);
     query.bindValue(":location", location);
@@ -523,7 +536,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     bool success = query.exec();
 
     if (!success) {
-        qDebug() << "SQL Error in itunesfeature.cpp: line" << __LINE__ << " " << query.lastError();
+        LOG_FAILED_QUERY(query);
         return;
     }
 }

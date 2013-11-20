@@ -3,7 +3,8 @@
 
 #include <QObject>
 
-class ControlObjectThreadMain;
+#include "controlobjectthread.h"
+
 class ControlObject;
 class WLibrary;
 class WLibrarySidebar;
@@ -12,19 +13,20 @@ class MixxxKeyboard;
 class LoadToGroupController : public QObject {
     Q_OBJECT
   public:
-    LoadToGroupController(QObject* pParent, const QString group);
+    LoadToGroupController(QObject* pParent, const QString& group);
     virtual ~LoadToGroupController();
+
   signals:
     void loadToGroup(QString group, bool);
+
   public slots:
     void slotLoadToGroup(double v);
     void slotLoadToGroupAndPlay(double v);
+
   private:
     QString m_group;
     ControlObject* m_pLoadControl;
     ControlObject* m_pLoadAndPlayControl;
-    ControlObjectThreadMain* m_pLoadCOTM;
-    ControlObjectThreadMain* m_pLoadAndPlayCOTM;
 };
 
 class LibraryControl : public QObject {
@@ -32,6 +34,7 @@ class LibraryControl : public QObject {
   public:
     LibraryControl(QObject* pParent=NULL);
     virtual ~LibraryControl();
+
     void bindWidget(WLibrary* pLibrary, MixxxKeyboard* pKeyboard);
     void bindSidebarWidget(WLibrarySidebar* pLibrarySidebar);
 
@@ -46,18 +49,25 @@ class LibraryControl : public QObject {
     void slotToggleSelectedSidebarItem(double v);
     void slotLoadSelectedIntoFirstStopped(double v);
     void slotSelectTrackKnob(double v);
-
+    void maybeCreateGroupController(const QString& group);
+    void slotNumDecksChanged(double v);
+    void slotNumSamplersChanged(double v);
+    void slotNumPreviewDecksChanged(double v);
 
   private:
-    ControlObjectThreadMain* m_pSelectNextTrack;
-    ControlObjectThreadMain* m_pSelectPrevTrack;
-    ControlObjectThreadMain* m_pSelectNextPlaylist;
-    ControlObjectThreadMain* m_pSelectPrevPlaylist;
-    ControlObjectThreadMain* m_pToggleSidebarItem;
-    ControlObjectThreadMain* m_pLoadSelectedIntoFirstStopped;
-    ControlObjectThreadMain* m_pSelectTrackKnob;
+    ControlObject* m_pSelectNextTrack;
+    ControlObject* m_pSelectPrevTrack;
+    ControlObject* m_pSelectNextPlaylist;
+    ControlObject* m_pSelectPrevPlaylist;
+    ControlObject* m_pToggleSidebarItem;
+    ControlObject* m_pLoadSelectedIntoFirstStopped;
+    ControlObject* m_pSelectTrackKnob;
     WLibrary* m_pLibraryWidget;
     WLibrarySidebar* m_pSidebarWidget;
+    ControlObjectThread m_numDecks;
+    ControlObjectThread m_numSamplers;
+    ControlObjectThread m_numPreviewDecks;
+    QMap<QString, LoadToGroupController*> m_loadToGroupControllers;
 };
 
 #endif //LIBRARYMIDICONTROL_H

@@ -14,7 +14,6 @@
 #include "library/treeitem.h"
 #include "library/browse/browsefeature.h"
 #include "library/trackcollection.h"
-#include "library/dao/trackdao.h"
 #include "widget/wlibrarytextbrowser.h"
 #include "widget/wlibrary.h"
 #include "mixxxkeyboard.h"

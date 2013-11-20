@@ -16,8 +16,10 @@
 #include "vamp-sdk/PluginAdapter.h"
 #include "plugins/BeatTrack.h"
 #include "plugins/BarBeatTrack.h"
+#include "plugins/KeyDetect.h"
 #include "plugins/MixxxBpmDetection.h"
 
+static Vamp::PluginAdapter<KeyDetector> keyDetectorPluginAdapter;
 static Vamp::PluginAdapter<BeatTracker> beatTrackerAdapter;
 static Vamp::PluginAdapter<BarBeatTracker> barBeatTrackPluginAdapter;
 static Vamp::PluginAdapter<MixxxBpmDetection> MixxxBpmDetection;
@@ -33,6 +35,7 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     case  0: return MixxxBpmDetection.getDescriptor();
     case  1: return beatTrackerAdapter.getDescriptor();
     case  2: return barBeatTrackPluginAdapter.getDescriptor();
+    case  3: return keyDetectorPluginAdapter.getDescriptor();
     default: return 0;
     }
 }
