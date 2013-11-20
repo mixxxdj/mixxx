@@ -470,12 +470,13 @@ const QLinkedList<int> BansheePlaylistModel::getTrackRows(int trackId) const {
     return ret;
 }
 
-void BansheePlaylistModel::search(const QString& searchText) {
+void BansheePlaylistModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug)
         qDebug() << this << "search" << searchText;
 
-    if (m_currentSearch != searchText) {
+    if (m_currentSearch != searchText || m_currentSearchFilter != extraFilter) {
         m_currentSearch = searchText;
+        m_currentSearchFilter = extraFilter;
         setPlaylist(m_playlistId);
     }
 }

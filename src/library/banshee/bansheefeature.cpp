@@ -23,7 +23,7 @@ BansheeFeature::BansheeFeature(QObject* parent, TrackCollection* pTrackCollectio
           m_pTrackCollection(pTrackCollection),
           m_cancelImport(false) {
     Q_UNUSED(pConfig);
- //   m_pBansheePlaylistModel = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
+    m_pBansheePlaylistModel = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
     m_isActivated = false;
     m_title = tr("Banshee");
 }
@@ -158,18 +158,16 @@ void BansheeFeature::addToAutoDJ(bool bTop) {
         QString playlist = item->dataPath().toString();
         int playlistID = playlist.toInt();
         if (playlistID > 0) {
-//            BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
-//            pPlaylistModelToAdd->setPlaylist(playlistID);
+            BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
+            pPlaylistModelToAdd->setPlaylist(playlistID);
             PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
             int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
 
-            int rows =
-                    0;
- //                   pPlaylistModelToAdd->rowCount();
+            int rows = pPlaylistModelToAdd->rowCount();
             for(int i = 0; i < rows; ++i){
-                QModelIndex index; // = pPlaylistModelToAdd->index(i,0);
+                QModelIndex index = pPlaylistModelToAdd->index(i,0);
                 if (index.isValid()) {
-                    TrackPointer track; // = pPlaylistModelToAdd->getTrack(index);
+                    TrackPointer track = pPlaylistModelToAdd->getTrack(index);
                     if (bTop) {
                         // Start at position 2 because position 1 was already loaded to the deck
                         playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
@@ -178,7 +176,7 @@ void BansheeFeature::addToAutoDJ(bool bTop) {
                     }
                 }
             }
-//            delete pPlaylistModelToAdd;
+            delete pPlaylistModelToAdd;
         }
     }
 }
@@ -193,8 +191,8 @@ void BansheeFeature::slotImportAsMixxxPlaylist() {
         int playlistID = playlistStId.toInt();
         qDebug() << "BansheeFeature::slotImportAsMixxxPlaylist " << playlistName << " " << playlistStId;
         if (playlistID > 0) {
- //           BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
- //           pPlaylistModelToAdd->setPlaylist(playlistID);
+            BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
+            pPlaylistModelToAdd->setPlaylist(playlistID);
             PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
 
             int playlistId = playlistDao.getPlaylistIdFromName(playlistName);
@@ -218,8 +216,8 @@ void BansheeFeature::slotImportAsMixxxPlaylist() {
                     QModelIndex index; // = pPlaylistModelToAdd->index(i,0);
                     if (index.isValid()) {
                         //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
-//                        TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-//                        playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
+                        TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+                        playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
                     }
                 }
             }
@@ -230,7 +228,7 @@ void BansheeFeature::slotImportAsMixxxPlaylist() {
                                       + playlistName);
             }
 
- //           delete pPlaylistModelToAdd;
+            delete pPlaylistModelToAdd;
         }
     }
 }
