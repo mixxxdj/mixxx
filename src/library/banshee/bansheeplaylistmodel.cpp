@@ -144,7 +144,6 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
     }
 
     int ivalue;
-    float fvalue;
     QDateTime timeAdded;
 
     int row = index.row();
@@ -202,8 +201,7 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
         case BPM:
             ivalue = m_sortedPlaylist.at(row).pTrack->bpm;
             if (ivalue) {
-                fvalue = ivalue/10.0;
-                value = fvalue;
+                value = ivalue;
             }
             break;
         case BITRATE:
@@ -379,7 +377,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
     }
 
     // If this track was not in the Mixxx library it is now added and will be
-    // saved with the metadata from iTunes. If it was already in the library
+    // saved with the metadata from Banshee. If it was already in the library
     // then we do not touch it so that we do not over-write the user's metadata.
     if (!track_already_in_library) {
         pTrack->setArtist(m_sortedPlaylist.at(row).pArtist->name);
@@ -390,7 +388,7 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setRating(m_sortedPlaylist.at(row).pTrack->rating);
         pTrack->setGenre(m_sortedPlaylist.at(row).pTrack->genre);
         pTrack->setTrackNumber(QString::number(m_sortedPlaylist.at(row).pTrack->tracknumber));
-        double bpm = ((double)m_sortedPlaylist.at(row).pTrack->bpm)/10.0;
+        double bpm = ((double)m_sortedPlaylist.at(row).pTrack->bpm);
         pTrack->setBpm(bpm);
         pTrack->setBitrate(m_sortedPlaylist.at(row).pTrack->bitrate);
         pTrack->setComment(m_sortedPlaylist.at(row).pTrack->comment);
