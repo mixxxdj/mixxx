@@ -20,6 +20,8 @@ class EngineChannelMock : public EngineChannel {
     }
 
     void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {
+        Q_UNUSED(pBuff);
+        Q_UNUSED(iBufferSize);
     }
 
     MOCK_METHOD0(isActive, bool());
