@@ -51,22 +51,43 @@ void BansheePlaylistModel::appendColumnsInfo(
 
 void BansheePlaylistModel::initHeaderData() {
 
-    appendColumnsInfo(VIEW_ORDER, tr("#"), &BansheeDbConnection::viewOrderLessThen, &BansheeDbConnection::viewOrderGreaterThen);
-    appendColumnsInfo(ARTIST, tr("Artist"), &BansheeDbConnection::artistLessThen, &BansheeDbConnection::artistGreaterThen);
-    appendColumnsInfo(TITLE, tr("Title"), &BansheeDbConnection::titleLessThen, &BansheeDbConnection::titleGreaterThen);
-    appendColumnsInfo(DURATION, tr("Duration"), &BansheeDbConnection::durationLessThen, &BansheeDbConnection::durationGreaterThen);
-    appendColumnsInfo(ALBUM, tr("Album"), &BansheeDbConnection::albumLessThen, &BansheeDbConnection::albumGreaterThen);
-    appendColumnsInfo(YEAR, tr("Year"), &BansheeDbConnection::yearLessThen, &BansheeDbConnection::yearGreaterThen);
-    appendColumnsInfo(RATING, tr("Rating"), &BansheeDbConnection::ratingLessThen, &BansheeDbConnection::ratingGreaterThen);
-    appendColumnsInfo(GENRE, tr("Genre"), &BansheeDbConnection::genreLessThen, &BansheeDbConnection::genreGreaterThen);
-    appendColumnsInfo(COMPOSER, tr("Composer"), &BansheeDbConnection::composerLessThen, &BansheeDbConnection::composerGreaterThen);
-    appendColumnsInfo(TRACKNUMBER, tr("Track #"), &BansheeDbConnection::tracknumberLessThen, &BansheeDbConnection::tracknumberGreaterThen);
-    appendColumnsInfo(DATEADDED, tr("Date Added"), &BansheeDbConnection::dateaddedLessThen, &BansheeDbConnection::dateaddedGreaterThen);
-    appendColumnsInfo(BPM, tr("BPM"), &BansheeDbConnection::bpmLessThen, &BansheeDbConnection::bpmGreaterThen);
-    appendColumnsInfo(BITRATE, tr("Bitrate"), &BansheeDbConnection::bitrateLessThen, &BansheeDbConnection::bitrateGreaterThen);
-    appendColumnsInfo(COMMENT, tr("Comment"), &BansheeDbConnection::commentLessThen, &BansheeDbConnection::commentGreaterThen);
-    appendColumnsInfo(PLAYCOUNT, tr("Played"), &BansheeDbConnection::playcountLessThen, &BansheeDbConnection::playcountGreaterThen);
-    appendColumnsInfo(URI, tr("Uri"), &BansheeDbConnection::uriLessThen, &BansheeDbConnection::uriGreaterThen);
+    appendColumnsInfo(VIEW_ORDER, tr("#"),
+            &BansheeDbConnection::viewOrderLessThen, &BansheeDbConnection::viewOrderGreaterThen);
+    appendColumnsInfo(ARTIST, tr("Artist"),
+            &BansheeDbConnection::artistLessThen, &BansheeDbConnection::artistGreaterThen);
+    appendColumnsInfo(TITLE, tr("Title"),
+            &BansheeDbConnection::titleLessThen, &BansheeDbConnection::titleGreaterThen);
+    appendColumnsInfo(DURATION, tr("Duration"),
+            &BansheeDbConnection::durationLessThen, &BansheeDbConnection::durationGreaterThen);
+    appendColumnsInfo(ALBUM, tr("Album"),
+            &BansheeDbConnection::albumLessThen, &BansheeDbConnection::albumGreaterThen);
+    appendColumnsInfo(ALBUM_ARTIST, tr("Album Artist"),
+            &BansheeDbConnection::albumArtistLessThen, &BansheeDbConnection::albumArtistGreaterThen);
+    appendColumnsInfo(YEAR, tr("Year"),
+            &BansheeDbConnection::yearLessThen, &BansheeDbConnection::yearGreaterThen);
+    appendColumnsInfo(RATING, tr("Rating"),
+            &BansheeDbConnection::ratingLessThen, &BansheeDbConnection::ratingGreaterThen);
+    appendColumnsInfo(GENRE, tr("Genre"),
+            &BansheeDbConnection::genreLessThen, &BansheeDbConnection::genreGreaterThen);
+    appendColumnsInfo(GROUPING, tr("Grouping"),
+            &BansheeDbConnection::groupingLessThen, &BansheeDbConnection::groupingGreaterThen);
+    appendColumnsInfo(COMPOSER, tr("Composer"),
+            &BansheeDbConnection::composerLessThen, &BansheeDbConnection::composerGreaterThen);
+    appendColumnsInfo(TRACKNUMBER, tr("Track #"),
+            &BansheeDbConnection::tracknumberLessThen,
+            &BansheeDbConnection::tracknumberGreaterThen);
+    appendColumnsInfo(DATEADDED, tr("Date Added"),
+            &BansheeDbConnection::dateaddedLessThen, &BansheeDbConnection::dateaddedGreaterThen);
+    appendColumnsInfo(BPM, tr("BPM"),
+            &BansheeDbConnection::bpmLessThen, &BansheeDbConnection::bpmGreaterThen);
+    appendColumnsInfo(BITRATE, tr("Bitrate"),
+            &BansheeDbConnection::bitrateLessThen, &BansheeDbConnection::bitrateGreaterThen);
+    appendColumnsInfo(COMMENT, tr("Comment"),
+            &BansheeDbConnection::commentLessThen, &BansheeDbConnection::commentGreaterThen);
+    appendColumnsInfo(PLAYCOUNT, tr("Played"),
+            &BansheeDbConnection::playcountLessThen, &BansheeDbConnection::playcountGreaterThen);
+    appendColumnsInfo(URI, tr("Uri"),
+            &BansheeDbConnection::uriLessThen, &BansheeDbConnection::uriGreaterThen);
 }
 
 QVariant BansheePlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const {
@@ -384,9 +405,11 @@ TrackPointer BansheePlaylistModel::getTrack(const QModelIndex& index) const {
         pTrack->setTitle(m_sortedPlaylist.at(row).pTrack->title);
         pTrack->setDuration(m_sortedPlaylist.at(row).pTrack->duration);
         pTrack->setAlbum(m_sortedPlaylist.at(row).pAlbum->title);
+        pTrack->setAlbumArtist(m_sortedPlaylist.at(row).pAlbumArtist->name);
         pTrack->setYear(QString::number(m_sortedPlaylist.at(row).pTrack->year));
-        pTrack->setRating(m_sortedPlaylist.at(row).pTrack->rating);
         pTrack->setGenre(m_sortedPlaylist.at(row).pTrack->genre);
+        pTrack->setGrouping(m_sortedPlaylist.at(row).pTrack->grouping);
+        pTrack->setRating(m_sortedPlaylist.at(row).pTrack->rating);
         pTrack->setTrackNumber(QString::number(m_sortedPlaylist.at(row).pTrack->tracknumber));
         double bpm = ((double)m_sortedPlaylist.at(row).pTrack->bpm);
         pTrack->setBpm(bpm);
