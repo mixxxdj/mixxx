@@ -17,7 +17,6 @@ public:
         QString title;
         QUrl uri;
         int duration;
-        int artistId;
         int year;
         int rating;
         QString genre;
@@ -37,7 +36,6 @@ public:
 
     struct Album {
         QString title;
-        int artistId;
     };
 
     struct PlaylistEntry {

@@ -177,6 +177,9 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
         case ARTIST:
             value = m_sortedPlaylist.at(row).pArtist->name;
             break;
+        case ALBUM_ARTIST:
+            value = m_sortedPlaylist.at(row).pAlbumArtist->name;
+            break;
         case TITLE:
             value = m_sortedPlaylist.at(row).pTrack->title;
             break;
@@ -200,10 +203,14 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
             break;
         case RATING:
             ivalue = m_sortedPlaylist.at(row).pTrack->rating;
-            value = qVariantFromValue(StarRating(ivalue));
+            value = ivalue;
+ //           value = qVariantFromValue(StarRating(ivalue));
             break;
         case GENRE:
             value = m_sortedPlaylist.at(row).pTrack->genre;
+            break;
+        case GROUPING:
+            value = m_sortedPlaylist.at(row).pTrack->grouping;
             break;
         case TRACKNUMBER:
             ivalue = m_sortedPlaylist.at(row).pTrack->tracknumber;
