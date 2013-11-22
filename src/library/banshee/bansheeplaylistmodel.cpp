@@ -203,8 +203,7 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
             break;
         case RATING:
             ivalue = m_sortedPlaylist.at(row).pTrack->rating;
-            value = ivalue;
- //           value = qVariantFromValue(StarRating(ivalue));
+            value = qVariantFromValue(StarRating(ivalue));
             break;
         case GENRE:
             value = m_sortedPlaylist.at(row).pTrack->genre;
@@ -543,7 +542,13 @@ void BansheePlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QMode
     Q_UNUSED(sourceIndex);
 }
 
-QItemDelegate* BansheePlaylistModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
+QAbstractItemDelegate* BansheePlaylistModel::delegateForColumn(const int i,  QObject* pParent) {
+    if (m_headerList.at(i).id == RATING) {
+        return new StarDelegate(pParent);
+//    } else if (PlayerManager::numPreviewDecks() > 0 && m_headerList.at(i).id == PREVIEW) {
+//        return new PreviewButtonDelegate(pParent, i);
+    }
+    return NULL;
+
     return NULL;
 }
