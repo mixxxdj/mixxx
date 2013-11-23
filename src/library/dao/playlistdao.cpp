@@ -526,20 +526,24 @@ void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, const bool bTop
         return;
     }
 
-    // Get the ID of the Auto-DJ playlist
-    int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
-
     // Loop through the tracks, adding them to the Auto-DJ Queue. Start at
     // position 2 because position 1 was already loaded to the deck.
     QList<int> ids;
     while (query.next()) {
         ids.append(query.value(0).toInt());
     }
+    addTracksToAutoDJQueue(ids, bTop);
+}
+
+void PlaylistDAO::addTracksToAutoDJQueue(const QList<int>& trackIds, const bool bTop) {
+    // Get the ID of the Auto-DJ playlist
+    int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
+
     if (bTop) {
-        insertTracksIntoPlaylist(ids, autoDJId, 2);
+        // Start at position 2 because position 1 might be already loaded to the deck.
+        insertTracksIntoPlaylist(trackIds, autoDJId, 2);
     } else {
-        // TODO(XXX): Care whether the append succeeded.
-        appendTracksToPlaylist(ids, autoDJId);
+        appendTracksToPlaylist(trackIds, autoDJId);
     }
 }
 
