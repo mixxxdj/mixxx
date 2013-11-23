@@ -40,8 +40,10 @@ class PlaylistDAO : public QObject, public virtual DAO {
 
     void initialize();
     void setDatabase(QSqlDatabase& database) { m_database = database; }
-    // Create a playlist
+    // Create a playlist, fails with -1 if already exists
     int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
+    // Create a playlist, appends "(n)" if already exists, name becomes the new name
+    int createUniquePlaylist(QString* name, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
     void deletePlaylist(const int playlistId);
     // Rename a playlist
@@ -81,7 +83,9 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Inserts a list of tracks into playlist
     int insertTracksIntoPlaylist(const QList<int>& trackIds, const int playlistId, int position);
     // Add a playlist to the Auto-DJ Queue
-    void addToAutoDJQueue(const int playlistId, const bool bTop);
+    void addPlaylistToAutoDJQueue(const int playlistId, const bool bTop);
+    // Add a list of tracks to the Auto-DJ Queue
+    void addTracksToAutoDJQueue(const QList<int>& trackIds, const bool bTop);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
     int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;

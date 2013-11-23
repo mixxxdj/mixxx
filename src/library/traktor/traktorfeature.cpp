@@ -194,8 +194,6 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
     }
     QXmlStreamReader xml(&traktor_file);
     bool inCollectionTag = false;
-    //TODO(XXX) is this still needed to parse the library correctly?
-    bool inEntryTag = false;
     bool inPlaylistsTag = false;
     bool isRootFolderParsed = false;
     int nAudioFiles = 0;
@@ -208,7 +206,6 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
             }
             // Each "ENTRY" tag in <COLLECTION> represents a track
             if (inCollectionTag && xml.name() == "ENTRY" ) {
-                inEntryTag = true;
                 //parse track
                 parseTrack(xml, query);
                 ++nAudioFiles; //increment number of files in the music collection
@@ -230,9 +227,6 @@ TreeItem* TraktorFeature::importLibrary(QString file) {
         if (xml.isEndElement()) {
             if (xml.name() == "COLLECTION") {
                 inCollectionTag = false;
-            }
-            if (xml.name() == "ENTRY" && inCollectionTag) {
-                inEntryTag = false;
             }
             if (xml.name() == "PLAYLISTS" && inPlaylistsTag) {
                 inPlaylistsTag = false;
