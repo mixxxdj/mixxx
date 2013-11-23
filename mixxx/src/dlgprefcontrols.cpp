@@ -206,6 +206,12 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //NOTE: for CueRecall, 0 means ON....
     connect(ComboBoxCueRecall, SIGNAL(activated(int)), this, SLOT(slotSetCueRecall(int)));
 
+    // Re-queue tracks in Auto DJ
+    ComboBoxAutoDjRequeue->addItem(tr("Off"));
+    ComboBoxAutoDjRequeue->addItem(tr("On"));
+    ComboBoxAutoDjRequeue->setCurrentIndex(m_pConfig->getValueString(ConfigKey("[Auto DJ]", "Requeue")).toInt());
+    connect(ComboBoxAutoDjRequeue, SIGNAL(activated(int)), this, SLOT(slotSetAutoDjRequeue(int)));
+
     //
     // Skin configurations
     //
@@ -247,17 +253,15 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     //
     // Tooltip configuration
     //
-    // Set default value in config file, if not present
-    if (m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).length() == 0)
-        m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue(0));
-
-    ComboBoxTooltips->addItem(tr("On"));
-    ComboBoxTooltips->addItem(tr("On (only in Library)"));
-    ComboBoxTooltips->addItem(tr("Off"));
+    ComboBoxTooltips->addItem(tr("On")); // 1
+    ComboBoxTooltips->addItem(tr("On (only in Library)")); // 2
+    ComboBoxTooltips->addItem(tr("Off")); // 0
 
     // Update combo box
-    ComboBoxTooltips->setCurrentIndex((m_pConfig->getValueString(ConfigKey("[Controls]","Tooltips")).toInt()));
-
+    int configTooltips = m_mixxx->getToolTipsCgf();
+    // Add two mod-3 makes the on-disk order match up with the combo-box
+    // order.
+    ComboBoxTooltips->setCurrentIndex((configTooltips + 2) % 3);
     connect(ComboBoxTooltips, SIGNAL(currentIndexChanged(int)), this, SLOT(slotSetTooltips(int)));
 
     //
@@ -415,10 +419,15 @@ void DlgPrefControls::slotSetCueRecall(int)
     m_pConfig->set(ConfigKey("[Controls]","CueRecall"), ConfigValue(ComboBoxCueRecall->currentIndex()));
 }
 
+void DlgPrefControls::slotSetAutoDjRequeue(int)
+{
+    m_pConfig->set(ConfigKey("[Auto DJ]", "Requeue"), ConfigValue(ComboBoxAutoDjRequeue->currentIndex()));
+}
+
 void DlgPrefControls::slotSetTooltips(int)
 {
-    m_pConfig->set(ConfigKey("[Controls]","Tooltips"), ConfigValue((ComboBoxTooltips->currentIndex())));
-    m_mixxx->setToolTips(ComboBoxTooltips->currentIndex());
+    int configValue = (ComboBoxTooltips->currentIndex() + 1) % 3;
+    m_mixxx->setToolTipsCfg(configValue);
 }
 
 void DlgPrefControls::notifyRebootNecessary() {

@@ -21,7 +21,6 @@
 #include "controlobject.h"
 #include "controllers/midi/midimessage.h"
 #include "defs.h"
-#include <QTimer>
 
 /**
   *@author Tue and Ken Haste Andersen
@@ -31,11 +30,10 @@ class ControlPushButton : public ControlObject {
     Q_OBJECT
   public:
     enum ButtonMode {
-         PUSH,
+         PUSH = 0,
          TOGGLE,
          POWERWINDOW
     };
-    static const int kPowerWindowTimeMillis;
 
     ControlPushButton(ConfigKey key);
     virtual ~ControlPushButton();
@@ -46,13 +44,9 @@ class ControlPushButton : public ControlObject {
     void setButtonMode(enum ButtonMode mode);
     void setStates(int num_states);
 
-  protected:
-    void setValueFromMidi(MidiOpCode o, double v);
-
   private:
     enum ButtonMode m_buttonMode;
     int m_iNoStates;
-    QTimer m_pushTimer;
 };
 
 #endif

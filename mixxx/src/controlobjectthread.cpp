@@ -15,133 +15,74 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qapplication.h>
+#include <QApplication>
+#include <QtDebug>
+
 #include "controlobjectthread.h"
 #include "controlobject.h"
-
-
-QWaitCondition ControlObjectThread::m_sqWait;
-QMutex ControlObjectThread::m_sqMutex;
-QQueue<ControlObjectThread*> ControlObjectThread::m_sqQueue;
+#include "control/control.h"
 
 ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
-        : QObject(pParent),
-          m_dValue(0.0),
-          m_pControlObject(pControlObject) {
-    // Register with the associated ControlObject
-    if (m_pControlObject != NULL) {
-        m_pControlObject->addProxy(this);
-        connect(m_pControlObject, SIGNAL(destroyed()),
-                this, SLOT(slotParentDead()));
-        // Initialize value
-        m_dValue = m_pControlObject->get();
+        : QObject(pParent) {
+    initialize(pControlObject ? pControlObject->getKey() : ConfigKey());
+}
+
+ControlObjectThread::ControlObjectThread(ConfigKey key, QObject* pParent)
+        : QObject(pParent) {
+    initialize(key);
+}
+
+void ControlObjectThread::initialize(ConfigKey key) {
+    m_key = key;
+    m_pControl = ControlDoublePrivate::getControl(m_key, false);
+    if (m_pControl) {
+        connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+                this, SLOT(slotValueChanged(double, QObject*)),
+                Qt::DirectConnection);
     }
-    emitValueChanged();
 }
 
 ControlObjectThread::~ControlObjectThread() {
-    if (m_pControlObject) {
-        // Our parent is still around, make sure it doesn't send us any more events
-        m_pControlObject->removeProxy(this);
-    }
+}
+
+bool ControlObjectThread::valid() const {
+    return m_pControl != NULL;
 }
 
 double ControlObjectThread::get() {
-    m_dataMutex.lock();
-    double v = m_dValue;
-    m_dataMutex.unlock();
-
-    return v;
+    return m_pControl ? m_pControl->get() : 0.0;
 }
 
 void ControlObjectThread::slotSet(double v) {
-    m_dataMutex.lock();
-    m_dValue = v;
-    m_dataMutex.unlock();
-
-    updateControlObject();
+    set(v);
 }
 
-bool ControlObjectThread::setExtern(double v) {
-    bool result = false;
-
-    if (m_dataMutex.tryLock()) {
-        m_dValue = v;
-        result = true;
-        m_dataMutex.unlock();
+void ControlObjectThread::set(double v) {
+    if (m_pControl) {
+        m_pControl->set(v, this);
     }
-
-    // if ( m_sqMutex.tryLock() )
-    // {
-    //     if( m_dataMutex.tryLock() )
-    //     {
-    //         m_sqQueue.enqueue(this);
-    //         m_dValue = v;
-
-    //         m_dataMutex.unlock();
-    //         m_sqMutex.unlock();
-
-    //         result = true;
-    //     }
-    //     else
-    //     {
-    //         m_sqMutex.unlock();
-    //     }
-    // }
-
-    emitValueChanged();
-    return result;
 }
 
-bool ControlObjectThread::update() {
-    bool result = false;
-
-    m_sqMutex.lock();
-    ControlObjectThread* p = NULL;
-    if (!m_sqQueue.isEmpty())
-        p = m_sqQueue.dequeue();
-    m_sqMutex.unlock();
-
-    if (p) {
-        p->emitValueChanged();
-        result = true;
+void ControlObjectThread::reset() {
+    if (m_pControl) {
+        // NOTE(rryan): This is important. The originator of this action does
+        // not know the resulting value so it makes sense that we should emit a
+        // general valueChanged() signal even though the change originated from
+        // us. For this reason, we provide NULL here so that the change is
+        // broadcast as valueChanged() and not valueChangedByThis().
+        m_pControl->reset(NULL);
     }
-
-    return result;
 }
 
 void ControlObjectThread::emitValueChanged() {
     emit(valueChanged(get()));
 }
 
-void ControlObjectThread::add(double v) {
-    m_dataMutex.lock();
-    m_dValue += v;
-    m_dataMutex.unlock();
-
-    updateControlObject();
-}
-
-void ControlObjectThread::sub(double v) {
-    m_dataMutex.lock();
-    m_dValue -= v;
-    m_dataMutex.unlock();
-
-    updateControlObject();
-}
-
-void ControlObjectThread::updateControlObject() {
-    if (m_pControlObject) {
-        m_pControlObject->queueFromThread(get(), this);
+void ControlObjectThread::slotValueChanged(double v, QObject* pSetter) {
+    if (pSetter != this) {
+        // This is base implementation of this function without scaling
+        emit(valueChanged(v));
+    } else {
+        emit(valueChangedByThis(v));
     }
-}
-
-void ControlObjectThread::slotParentDead() {
-    // Now we've got a chance of avoiding segfaults with judicious
-    // use of if(m_pControlObject)
-    m_pControlObject = NULL;
-}
-
-ControlObject* ControlObjectThread::getControlObject() {
-   return m_pControlObject;
 }

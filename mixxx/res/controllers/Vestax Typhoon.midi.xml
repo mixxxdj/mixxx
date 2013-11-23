@@ -4,6 +4,7 @@
     <name>Vestax Typhoon</name>
     <author>Bill Good, based on the work of Anders Gunnarsson</author>
     <description>Bill's controller mapping for Vestax Typhoon + script</description>
+    <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=1634&amp;start=20#p7000</forums>
   </info>
   <controller id="Vestax Typhoon">
     <scriptfiles>

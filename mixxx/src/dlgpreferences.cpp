@@ -31,10 +31,10 @@
 #ifdef __SHOUTCAST__
 #include "dlgprefshoutcast.h"
 #endif
-#ifdef __VAMP__
-    #include "dlgprefbeats.h"
-#else
-    #include "dlgprefbpm.h"
+#include "dlgprefbeats.h"
+
+#ifdef __MODPLUG__
+    #include "dlgprefmodplug.h"
 #endif
 
 #include "dlgpreferences.h"
@@ -87,13 +87,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     m_wcrossfader = new DlgPrefCrossfader(this, config);
     addPageWidget(m_wcrossfader);
 
-#ifdef __VAMP__
     m_wbeats = new DlgPrefBeats(this, config);
     addPageWidget (m_wbeats);
-#else
-    m_wbpm = new DlgPrefBpm(this, config);
-    addPageWidget(m_wbpm);
-#endif
     m_wreplaygain = new DlgPrefReplayGain(this, config);
     addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, config);
@@ -108,6 +103,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #ifdef __SHOUTCAST__
     m_wshoutcast = new DlgPrefShoutcast(this, config);
     addPageWidget(m_wshoutcast);
+#endif
+#ifdef __MODPLUG__
+    m_wmodplug = new DlgPrefModplug(this, config);
+    addPageWidget(m_wmodplug);
 #endif
     m_wNoControllers = new DlgPrefNoControllers(this, config);
     addPageWidget(m_wNoControllers);
@@ -131,13 +130,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(this, SIGNAL(showDlg()), m_weq,        SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wcrossfader, SLOT(slotUpdate()));
 
-#ifdef __VAMP__
     connect(this, SIGNAL(showDlg()),
             m_wbeats, SLOT(slotUpdate()));
-#else
-    connect(this, SIGNAL(showDlg()),
-            m_wbpm, SLOT(slotUpdate()));
-#endif
 
     connect(this, SIGNAL(showDlg()), m_wreplaygain,SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()), m_wrecord,    SLOT(slotUpdate()));
@@ -152,6 +146,10 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(this, SIGNAL(showDlg()), m_wshoutcast,SLOT(slotUpdate()));
 #endif
 
+#ifdef __MODPLUG__
+    connect(this, SIGNAL(showDlg()), m_wmodplug,SLOT(slotUpdate()));
+#endif
+
 #ifdef __VINYLCONTROL__
     connect(buttonBox, SIGNAL(accepted()), m_wvinylcontrol,    SLOT(slotApply())); //It's important for this to be before the
                                                                                  //connect for wsound...
@@ -163,15 +161,14 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     connect(buttonBox, SIGNAL(accepted()), m_wcrossfader,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), this,      SLOT(slotApply()));
 
-#ifdef __VAMP__
     connect(buttonBox, SIGNAL(accepted()), m_wbeats,      SLOT(slotApply()));
-#else
-    connect(buttonBox, SIGNAL(accepted()), m_wbpm,      SLOT(slotApply()));
-#endif
     connect(buttonBox, SIGNAL(accepted()), m_wreplaygain,SLOT(slotApply()));
     connect(buttonBox, SIGNAL(accepted()), m_wrecord,   SLOT(slotApply()));
 #ifdef __SHOUTCAST__
     connect(buttonBox, SIGNAL(accepted()), m_wshoutcast,SLOT(slotApply()));
+#endif
+#ifdef __MODPLUG__
+    connect(buttonBox, SIGNAL(accepted()), m_wmodplug,SLOT(slotApply()));
 #endif
 
     //Update the library when you change the options
@@ -232,19 +229,11 @@ void DlgPreferences::createIcons()
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 
-#ifdef __VAMP__
     m_pAnalysersButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pAnalysersButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
     m_pAnalysersButton->setText(0, tr("Beat Detection"));
     m_pAnalysersButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pAnalysersButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-#else
-    m_pBPMdetectButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pBPMdetectButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
-    m_pBPMdetectButton->setText(0, tr("BPM Detection"));
-    m_pBPMdetectButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pBPMdetectButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-#endif
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
     m_pReplayGainButton->setText(0, tr("Normalization"));
@@ -276,6 +265,15 @@ void DlgPreferences::createIcons()
     m_pShoutcastButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pShoutcastButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 #endif
+
+#ifdef __MODPLUG__
+    m_pModplugButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pModplugButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_modplug.png"));
+    m_pModplugButton->setText(0, tr("Modplug Decoder"));
+    m_pModplugButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pModplugButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+#endif
+
     connect(contentsTreeWidget,
             SIGNAL(currentItemChanged(QTreeWidgetItem *, QTreeWidgetItem *)),
             this, SLOT(changePage(QTreeWidgetItem *, QTreeWidgetItem*)));
@@ -299,14 +297,8 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
     	pagesWidget->setCurrentWidget(m_wcrossfader->parentWidget()->parentWidget());
     } else if (current == m_pRecordingButton) {
     	pagesWidget->setCurrentWidget(m_wrecord->parentWidget()->parentWidget());
-
-#ifdef __VAMP__
     } else if (current == m_pAnalysersButton ) {
         pagesWidget->setCurrentWidget(m_wbeats->parentWidget()->parentWidget());
-#else
-    } else if (current == m_pBPMdetectButton) {
-        pagesWidget->setCurrentWidget(m_wbpm->parentWidget()->parentWidget());
-#endif
     } else if (current == m_pReplayGainButton) {
     	pagesWidget->setCurrentWidget(m_wreplaygain->parentWidget()->parentWidget());
 
@@ -320,6 +312,10 @@ void DlgPreferences::changePage(QTreeWidgetItem * current, QTreeWidgetItem * pre
 #ifdef __SHOUTCAST__
     } else if (current == m_pShoutcastButton) {
            pagesWidget->setCurrentWidget(m_wshoutcast->parentWidget()->parentWidget());
+#endif
+#ifdef __MODPLUG__
+    } else if (current == m_pModplugButton) {
+           pagesWidget->setCurrentWidget(m_wmodplug->parentWidget()->parentWidget());
 #endif
     //Handle selection of controller items
     } else if (m_controllerWindowLinks.indexOf(current) >= 0) {

@@ -65,7 +65,6 @@ class PresetInfoEnumerator {
     bool hasPresetInfo(const QString extension, const QString name);
     bool hasPresetInfo(const QString path);
 
-    PresetInfo getPresetInfo(const QString extension, const QString name);
     PresetInfo getPresetInfo(const QString path);
 
     // Return cached list of presets for this extension

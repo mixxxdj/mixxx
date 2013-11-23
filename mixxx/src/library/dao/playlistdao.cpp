@@ -177,7 +177,7 @@ bool PlaylistDAO::isPlaylistLocked(int playlistId) {
     return false;
 }
 
-void PlaylistDAO::appendTracksToPlaylist(QList<int> trackIds, int playlistId) {
+bool PlaylistDAO::appendTracksToPlaylist(QList<int> trackIds, int playlistId) {
     // qDebug() << "PlaylistDAO::appendTracksToPlaylist"
     //          << QThread::currentThread() << m_database.connectionName();
 
@@ -203,6 +203,7 @@ void PlaylistDAO::appendTracksToPlaylist(QList<int> trackIds, int playlistId) {
         query.bindValue(":position", insertPosition++);
         if (!query.exec()) {
             LOG_FAILED_QUERY(query);
+            return false;
         }
     }
 
@@ -215,12 +216,13 @@ void PlaylistDAO::appendTracksToPlaylist(QList<int> trackIds, int playlistId) {
         emit(trackAdded(playlistId, trackId, insertPosition++));
     }
     emit(changed(playlistId));
+    return true;
 }
 
-void PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId) {
+bool PlaylistDAO::appendTrackToPlaylist(int trackId, int playlistId) {
     QList<int> tracks;
     tracks.append(trackId);
-    appendTracksToPlaylist(tracks, playlistId);
+    return appendTracksToPlaylist(tracks, playlistId);
 }
 
 /** Find out how many playlists exist. */
@@ -301,7 +303,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
 
-    query.prepare("SELECT id FROM PlaylistTracks WHERE playlist_id=:id "
+    query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
                   "AND position=:position");
     query.bindValue(":id", playlistId);
     query.bindValue(":position", position);
@@ -316,7 +318,7 @@ void PlaylistDAO::removeTrackFromPlaylist(int playlistId, int position)
                  << position << "in playlist:" << playlistId;
         return;
     }
-    int trackId = query.value(query.record().indexOf("id")).toInt();
+    int trackId = query.value(query.record().indexOf("track_id")).toInt();
 
     //Delete the track from the playlist.
     query.prepare("DELETE FROM PlaylistTracks "
@@ -352,7 +354,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions)
     ScopedTransaction transaction(m_database);
     QSqlQuery query(m_database);
     foreach (int position , positions) {
-        query.prepare("SELECT id FROM PlaylistTracks WHERE playlist_id=:id "
+        query.prepare("SELECT track_id FROM PlaylistTracks WHERE playlist_id=:id "
                     "AND position=:position");
         query.bindValue(":id", playlistId);
         query.bindValue(":position", position);
@@ -367,7 +369,7 @@ void PlaylistDAO::removeTracksFromPlaylist(int playlistId, QList<int> positions)
                     << position << "in playlist:" << playlistId;
             return;
         }
-        int trackId = query.value(query.record().indexOf("id")).toInt();
+        int trackId = query.value(query.record().indexOf("track_id")).toInt();
 
         //Delete the track from the playlist.
         query.prepare("DELETE FROM PlaylistTracks "
@@ -447,6 +449,12 @@ int PlaylistDAO::insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, i
     int tracksAdded = 0;
     ScopedTransaction transaction(m_database);
 
+    int max_position = getMaxPosition(playlistId) + 1;
+
+    if (position > max_position) {
+        position = max_position;
+    }
+
     QSqlQuery insertQuery(m_database);
     insertQuery.prepare("INSERT INTO PlaylistTracks (playlist_id, track_id, position)"
                         "VALUES (:playlist_id, :track_id, :position)");
@@ -517,6 +525,7 @@ void PlaylistDAO::addToAutoDJQueue(int playlistId, bool bTop) {
     if (bTop) {
         insertTracksIntoPlaylist(ids, autoDJId, 2);
     } else {
+        // TODO(XXX): Care whether the append succeeded.
         appendTracksToPlaylist(ids, autoDJId);
     }
 }
@@ -543,23 +552,59 @@ int PlaylistDAO::getPreviousPlaylist(int currentPlaylistId, HiddenType hidden) {
     return previousPlaylistId;
 }
 
-void PlaylistDAO::copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistId) {
-    // Query Tracks from the source Playlist
+bool PlaylistDAO::copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistID) {
+    // Start the transaction
+    ScopedTransaction transaction(m_database);
+
+    // Copy the new tracks after the last track in the target playlist.
+    int positionOffset = getMaxPosition(targetPlaylistID);
+
+    // Copy the tracks from one playlist to another, adjusting the position of
+    // each copied track, and preserving the date/time added.
+    // INSERT INTO PlaylistTracks (playlist_id, track_id, position, pl_datetime_added) SELECT :target_plid, track_id, position + :position_offset, pl_datetime_added FROM PlaylistTracks WHERE playlist_id = :source_plid;
     QSqlQuery query(m_database);
-    query.prepare("SELECT track_id FROM PlaylistTracks "
-                  "WHERE playlist_id = :plid");
-    query.bindValue(":plid", sourcePlaylistID);
+    query.prepare(QString("INSERT INTO " PLAYLIST_TRACKS_TABLE
+        " (%1, %2, %3, %4) SELECT :target_plid, %2, "
+        "%3 + :position_offset, %4 FROM " PLAYLIST_TRACKS_TABLE
+        " WHERE %1 = :source_plid")
+        .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)        // %1
+        .arg(PLAYLISTTRACKSTABLE_TRACKID)           // %2
+        .arg(PLAYLISTTRACKSTABLE_POSITION)          // %3
+        .arg(PLAYLISTTRACKSTABLE_DATETIMEADDED));   // %4
+    query.bindValue(":position_offset", positionOffset);
+    query.bindValue(":source_plid", sourcePlaylistID);
+    query.bindValue(":target_plid", targetPlaylistID);
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
-        return;
+        return false;
     }
 
-    QList<int> trackIds;
-    while (query.next()) {
-        trackIds.append(query.value(0).toInt());
+    // Query each added track and its new position.
+    // SELECT track_id, position FROM PlaylistTracks WHERE playlist_id = :target_plid AND position > :position_offset;
+    query.prepare(QString("SELECT %2, %3 FROM " PLAYLIST_TRACKS_TABLE
+        " WHERE %1 = :target_plid AND %3 > :position_offset")
+        .arg(PLAYLISTTRACKSTABLE_PLAYLISTID)    // %1
+        .arg(PLAYLISTTRACKSTABLE_TRACKID)       // %2
+        .arg(PLAYLISTTRACKSTABLE_POSITION));    // %3
+    query.bindValue(":target_plid", targetPlaylistID);
+    query.bindValue(":position_offset", positionOffset);
+    if (!query.exec()) {
+        LOG_FAILED_QUERY(query);
+        return false;
     }
-    appendTracksToPlaylist(trackIds, targetPlaylistId);
+
+    // Commit the transaction
+    transaction.commit();
+
+    // Let subscribers know about each added track.
+    while (query.next()) {
+        int copiedTrackId = query.value(0).toInt();
+        int copiedPosition = query.value(1).toInt();
+        emit(trackAdded(targetPlaylistID, copiedTrackId, copiedPosition));
+    }
+    emit(changed(targetPlaylistID));
+    return true;
 }
 
 int PlaylistDAO::getMaxPosition(int playlistId) {
@@ -597,8 +642,8 @@ void PlaylistDAO::removeTracksFromPlaylists(QList<int> ids) {
         idList << QString::number(id);
     }
     QSqlQuery query(m_database);
-    query.prepare("DELETE FROM PlaylistTracks WHERE track_id in ("
-                  +idList.join(",") + ")");
+    query.prepare(QString("DELETE FROM PlaylistTracks WHERE track_id in (%1)")
+                  .arg(idList.join(",")));
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }

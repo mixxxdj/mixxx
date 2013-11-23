@@ -6,19 +6,13 @@
 #include "controlpotmeter.h"
 #include "controlttrotary.h"
 #include "rotary.h"
+#include "mathstuff.h"
 
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
 #include <QDebug>
-
-#ifdef _MSC_VER
-#include <float.h>  // for _isnan() on VC++
-#define isnan(x) _isnan(x)  // VC++ uses _isnan() instead of isnan()
-#else
-#include <math.h>  // for isnan() everywhere else
-#endif
 
 // Static default values for rate buttons (percents)
 double RateControl::m_dTemp = 4.00; //(eg. 4.00%)
@@ -30,18 +24,17 @@ int RateControl::m_iRateRampSensitivity = 250;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
 RateControl::RateControl(const char* _group,
-                         ConfigObject<ConfigValue>* _config) :
-    EngineControl(_group, _config),
-    m_bVinylControlEnabled(false),
-    m_bVinylControlScratching(false),
-    m_ePbCurrent(0),
-    m_ePbPressed(0),
-    m_bTempStarted(false),
-    m_dTempRateChange(0.0),
-    m_dRateTemp(0.0),
-    m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
-    m_dRateTempRampbackChange(0.0),
-    m_dOldRate(0.0f) {
+                         ConfigObject<ConfigValue>* _config)
+    : EngineControl(_group, _config),
+      m_bVinylControlEnabled(false),
+      m_bVinylControlScratching(false),
+      m_ePbCurrent(0),
+      m_ePbPressed(0),
+      m_bTempStarted(false),
+      m_dTempRateChange(0.0),
+      m_dRateTemp(0.0),
+      m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
+      m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
@@ -264,28 +257,33 @@ void RateControl::slotControlRatePermDown(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDown->get())
-        m_pRateSlider->sub(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() -
+                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRatePermDownSmall(double)
 {
     // Adjusts temp rate down if button pressed
     if (buttonRatePermDownSmall->get())
-        m_pRateSlider->sub(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() -
+                           m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRatePermUp(double)
 {
     // Adjusts temp rate up if button pressed
-    if (buttonRatePermUp->get())
-        m_pRateSlider->add(m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+    if (buttonRatePermUp->get()) {
+        m_pRateSlider->set(m_pRateSlider->get() +
+                           m_pRateDir->get() * m_dPerm / (100. * m_pRateRange->get()));
+    }
 }
 
 void RateControl::slotControlRatePermUpSmall(double)
 {
     // Adjusts temp rate up if button pressed
     if (buttonRatePermUpSmall->get())
-        m_pRateSlider->add(m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
+        m_pRateSlider->set(m_pRateSlider->get() +
+                           m_pRateDir->get() * m_dPermSmall / (100. * m_pRateRange->get()));
 }
 
 void RateControl::slotControlRateTempDown(double)
@@ -379,73 +377,87 @@ double RateControl::getJogFactor() {
 
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
                                   bool* isScratching) {
-    double rate = 0.0;
-    double wheelFactor = getWheelFactor();
-    double jogFactor = getJogFactor();
-    bool searching = m_pRateSearch->get() != 0.;
-    bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
-    double scratchFactor = m_pScratch->get();
-    double oldScratchFactor = m_pOldScratch->get(); // Deprecated
+    double rate = (paused ? 0 : 1.0);
 
-    // Don't trust values from m_pScratch
-    if(isnan(scratchFactor)) {
-        scratchFactor = 0.0;
-    }
-    if(isnan(oldScratchFactor)) {
-        oldScratchFactor = 0.0;
-    }
-
-    double currentSample = getCurrentSample();
-    m_pScratchController->process(currentSample, paused, iSamplesPerBuffer);
-
-    // If position control is enabled, override scratchFactor
-    if (m_pScratchController->isEnabled()) {
-        scratchEnable = true;
-        scratchFactor = m_pScratchController->getRate();
-        *isScratching = true;
-    }
-
-    // If vinyl control is enabled and scratching then also set isScratching
-    if (m_bVinylControlEnabled && m_bVinylControlScratching) {
-        *isScratching = true;
-    }
-
+    double searching = m_pRateSearch->get();
     if (searching) {
-        // If searching is in progress, it overrides the playback rate.
-        rate = m_pRateSearch->get();
-    } else if (paused) {
-        // Stopped. Wheel, jog and scratch controller all scrub through audio.
-        // New scratch behavior overrides old
-        if (scratchEnable) rate = scratchFactor + jogFactor + wheelFactor*40.0;
-        else rate = oldScratchFactor + jogFactor*18 + wheelFactor; // Just remove oldScratchFactor in future
+        // If searching is in progress, it overrides everything else
+        rate = searching;
     } else {
-        // The buffer is playing, so calculate the buffer rate.
 
-        // There are four rate effects we apply: wheel, scratch, jog and temp.
-        // Wheel: a linear additive effect (no spring-back)
-        // Scratch: a rate multiplier
-        // Jog: a linear additive effect whose value is filtered (springs back)
-        // Temp: pitch bend
 
-        rate = 1. + getRawRate() + getTempRate();
-        rate += wheelFactor;
+        double wheelFactor = getWheelFactor();
+        double jogFactor = getJogFactor();
+        bool scratchEnable = m_pScratchToggle->get() != 0 || m_bVinylControlEnabled;
 
-        // New scratch behavior - overrides playback speed (and old behavior)
-        if (scratchEnable) rate = scratchFactor;
-        else {
-            // Deprecated old scratch behavior
-            if (oldScratchFactor < 0.) {
-                rate *= (oldScratchFactor-1.);
-            } else if (oldScratchFactor > 0.) {
-                rate *= (oldScratchFactor+1.);
+
+        double scratchFactor = m_pScratch->get();
+        // Don't trust values from m_pScratch
+        if (isnan(scratchFactor)) {
+            scratchFactor = 0.0;
+        }
+
+        // Old Scratch works without scratchEnable
+        double oldScratchFactor = m_pOldScratch->get(); // Deprecated
+        // Don't trust values from m_pScratch
+        if (isnan(oldScratchFactor)) {
+            oldScratchFactor = 0.0;
+        }
+
+        // If vinyl control is enabled and scratching then also set isScratching
+        if (m_bVinylControlEnabled && m_bVinylControlScratching) {
+            *isScratching = true;
+        }
+
+        if (paused) {
+            // Stopped. Wheel, jog and scratch controller all scrub through audio.
+            // New scratch behavior overrides old
+            if (scratchEnable) {
+                rate = scratchFactor + jogFactor + wheelFactor * 40.0;
+            } else {
+                // Just remove oldScratchFactor in future
+                rate = oldScratchFactor + jogFactor * 18 + wheelFactor;
+            }
+        } else {
+            // The buffer is playing, so calculate the buffer rate.
+
+            // There are four rate effects we apply: wheel, scratch, jog and temp.
+            // Wheel: a linear additive effect (no spring-back)
+            // Scratch: a rate multiplier
+            // Jog: a linear additive effect whose value is filtered (springs back)
+            // Temp: pitch bend
+
+            // New scratch behavior - overrides playback speed (and old behavior)
+            if (scratchEnable) {
+                rate = scratchFactor;
+            } else {
+
+                rate = 1. + getRawRate() + getTempRate();
+                rate += wheelFactor;
+
+                // Deprecated old scratch behavior
+                if (oldScratchFactor < 0.) {
+                    rate *= (oldScratchFactor - 1.);
+                } else if (oldScratchFactor > 0.) {
+                    rate *= (oldScratchFactor + 1.);
+                }
+            }
+
+            rate += jogFactor;
+
+            // If we are reversing (and not scratching,) flip the rate.
+            if (!scratchEnable && m_pReverseButton->get()) {
+                rate = -rate;
             }
         }
 
-        rate += jogFactor;
+        double currentSample = getCurrentSample();
+        m_pScratchController->process(currentSample, rate, iSamplesPerBuffer, baserate);
 
-        // If we are reversing (and not scratching,) flip the rate.
-        if (!scratchEnable && m_pReverseButton->get()) {
-            rate = -rate;
+        // If waveform scratch is enabled, override all other controls
+        if (m_pScratchController->isEnabled()) {
+            rate = m_pScratchController->getRate();
+            *isScratching = true;
         }
     }
 
@@ -460,6 +472,9 @@ double RateControl::process(const double rate,
                             const double totalSamples,
                             const int bufferSamples)
 {
+    Q_UNUSED(rate);
+    Q_UNUSED(currentSample);
+    Q_UNUSED(totalSamples);
     /*
      * Code to handle temporary rate change buttons.
      *

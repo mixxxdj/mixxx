@@ -4,11 +4,14 @@
 #include "waveformmark.h"
 #include <QList>
 
+class WaveformWidgetRenderer;
+
 class WaveformMarkSet
 {
 public:
     WaveformMarkSet();
-    void setup( const QString& group, const QDomNode& node);
+    void setup(const QString& group, const QDomNode& node,
+            const WaveformSignalColors& signalColors);
 
     int size() const { return m_marks.size();}
     WaveformMark& operator[] (int i) { return m_marks[i];}

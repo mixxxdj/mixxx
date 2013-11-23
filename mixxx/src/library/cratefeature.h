@@ -17,19 +17,19 @@ class TrackCollection;
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig);
+    CrateFeature(QObject* parent, 
+                 TrackCollection* pTrackCollection, 
+                 ConfigObject<ConfigValue>* pConfig);
     virtual ~CrateFeature();
 
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QList<QUrl> urls);
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
-    bool dragMoveAccept(QUrl url);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+                         QWidget *pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
-    void bindWidget(WLibrarySidebar* sidebarWidget,
-                    WLibrary* libraryWidget,
+    void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
 
     TreeItemModel* getChildModel();
@@ -39,11 +39,11 @@ class CrateFeature : public LibraryFeature {
     void activateChild(const QModelIndex& index);
     void onRightClick(const QPoint& globalPos);
     void onRightClickChild(const QPoint& globalPos, QModelIndex index);
-    void onLazyChildExpandation(const QModelIndex& index);
 
     void slotCreateCrate();
     void slotDeleteCrate();
     void slotRenameCrate();
+    void slotDuplicateCrate();
     void slotToggleCrateLock();
     void slotImportPlaylist();
     void slotExportPlaylist();
@@ -62,6 +62,7 @@ class CrateFeature : public LibraryFeature {
     QAction *m_pDeleteCrateAction;
     QAction *m_pRenameCrateAction;
     QAction *m_pLockCrateAction;
+    QAction *m_pDuplicateCrateAction;
     QAction *m_pImportPlaylistAction;
     QAction *m_pExportPlaylistAction;
     QList<QPair<int, QString> > m_crateList;

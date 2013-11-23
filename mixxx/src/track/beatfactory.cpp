@@ -37,11 +37,8 @@ BeatsPointer BeatFactory::makeBeatGrid(TrackInfoObject* pTrack, double dBpm, dou
     return BeatsPointer(pGrid, &BeatFactory::deleteBeats);
 }
 
-QString BeatFactory::getPreferredVersion(
-    const bool bEnableFixedTempoCorrection,
-    const bool bEnableOffsetCorrection,
-    const int iMinBpm, const int iMaxBpm,
-    const QHash<QString, QString> extraVersionInfo) {
+// static
+QString BeatFactory::getPreferredVersion(const bool bEnableFixedTempoCorrection) {
     if (bEnableFixedTempoCorrection) {
         return BEAT_GRID_2_VERSION;
     }
@@ -99,10 +96,7 @@ BeatsPointer BeatFactory::makePreferredBeats(
     const int iSampleRate, const int iTotalSamples,
     const int iMinBpm, const int iMaxBpm) {
 
-    const QString version = getPreferredVersion(bEnableFixedTempoCorrection,
-                                                bEnableOffsetCorrection,
-                                                iMinBpm, iMaxBpm,
-                                                extraVersionInfo);
+    const QString version = getPreferredVersion(bEnableFixedTempoCorrection);
     const QString subVersion = getPreferredSubVersion(bEnableFixedTempoCorrection,
                                                       bEnableOffsetCorrection,
                                                       iMinBpm, iMaxBpm,

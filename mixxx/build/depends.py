@@ -113,6 +113,14 @@ class OggVorbis(Dependence):
         if not conf.CheckLib(libs):
             raise Exception('Did not find libogg.a, libogg.lib, or the libogg development headers')
 
+        # libvorbisenc only exists on Linux, OSX and mingw32 on Windows. On
+        # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
+        # libogg are included from build.py so don't add here.
+        if not build.platform_is_windows or build.toolchain_is_gnu:
+            vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
+            if not vorbisenc_found:
+                raise Exception('Did not find libvorbisenc.a, libvorbisenc.lib, or the libvorbisenc development headers.')
+
     def sources(self, build):
         return ['soundsourceoggvorbis.cpp']
 
@@ -170,6 +178,9 @@ class Qt(Dependence):
         build.env.Append(CPPDEFINES = ['QT_SHARED',
                                        'QT_TABLET_SUPPORT'])
 
+        # Promo tracks is the only thing that uses webkit currently.
+        use_qtwebkit = int(util.get_flags(build.env, 'promo', 0)) > 0
+
         # TODO(XXX) what is with the slightly differing modules used for each
         # platform here? Document the differences and make them all
         # programmatically driven from one list instead of hard-coded multiple
@@ -177,10 +188,12 @@ class Qt(Dependence):
 
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtWebKit',
-            'QtNetwork'
+            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
             #'QtUiTools', #'QtDesigner',
         ]
+
+        if use_qtwebkit:
+            qt_modules.append('QtWebKit')
 
         # Enable Qt include paths
         if build.platform_is_linux:
@@ -213,10 +226,10 @@ class Qt(Dependence):
             build.env.Append(LIBS = 'QtGui')
             build.env.Append(LIBS = 'QtOpenGL')
             build.env.Append(LIBS = 'QtXml')
-            build.env.Append(LIBS = 'QtWebKit')
             build.env.Append(LIBS = 'QtNetwork')
-
             build.env.Append(LIBS = 'QtScript')
+            if use_qtwebkit:
+                build.env.Append(LIBS = 'QtWebKit')
         elif build.platform_is_windows:
             build.env.Append(LIBPATH=['$QTDIR/lib'])
             # Since we use WebKit, that's only available dynamically
@@ -224,11 +237,12 @@ class Qt(Dependence):
                        'QtGui4',
                        'QtOpenGL4',
                        'QtXml4',
-                       'QtWebKit4',
                        'QtNetwork4',
                        'QtXmlPatterns4',
                        'QtSql4',
                        'QtScript4',]
+            if use_qtwebkit:
+                qt_libs.append('QtWebKit4')
 
             # Use the debug versions of the libs if we are building in debug mode.
             if build.msvcdebug:
@@ -258,15 +272,17 @@ class Qt(Dependence):
 
         # Set Qt include paths for non-OSX
         if not build.platform_is_osx:
-            build.env.Append(CPPPATH=['$QTDIR/include/QtCore',
-                                      '$QTDIR/include/QtGui',
-                                      '$QTDIR/include/QtOpenGL',
-                                      '$QTDIR/include/QtXml',
-                                      '$QTDIR/include/QtWebKit',
-                                      '$QTDIR/include/QtNetwork',
-                                      '$QTDIR/include/QtSql',
-                                      '$QTDIR/include/QtScript',
-                                      '$QTDIR/include/Qt'])
+            include_paths = ['$QTDIR/include/QtCore',
+                             '$QTDIR/include/QtGui',
+                             '$QTDIR/include/QtOpenGL',
+                             '$QTDIR/include/QtXml',
+                             '$QTDIR/include/QtNetwork',
+                             '$QTDIR/include/QtSql',
+                             '$QTDIR/include/QtScript',
+                             '$QTDIR/include/Qt']
+            if use_qtwebkit:
+                include_paths.append('$QTDIR/include/QtWebKit')
+            build.env.Append(CPPPATH=include_paths)
 
         # Set the rpath for linux/bsd/osx.
         # This is not supported on OS X before the 10.5 SDK.
@@ -281,7 +297,7 @@ class Qt(Dependence):
             framework_path = os.path.join(qtdir, 'lib')
             if os.path.isdir(framework_path):
                 build.env.Append(LINKFLAGS = "-Wl,-rpath," + framework_path)
-                build.env.Append(LINKFLAGS = "-L," + framework_path)
+                build.env.Append(LINKFLAGS = "-L" + framework_path)
 
         #QtSQLite DLL
         if build.platform_is_windows:
@@ -353,17 +369,19 @@ class SoundTouch(Dependence):
                  '#lib/%s/sse_optimized.cpp' % self.SOUNDTOUCH_PATH,])
         return sources
 
-    def configure(self, build, conf):
+    def configure(self, build, conf, env=None):
+        if env is None:
+            env = build.env
         if build.platform_is_windows:
             # Regardless of the bitwidth, ST checks for WIN32
-            build.env.Append(CPPDEFINES = 'WIN32')
-        build.env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
+            env.Append(CPPDEFINES = 'WIN32')
+        env.Append(CPPPATH=['#lib/%s' % self.SOUNDTOUCH_PATH])
 
         # Check if the compiler has SSE extention enabled
         # Allways the case on x64 (core instructions)
-        optimize = int(util.get_flags(build.env, 'optimize', 1))
+        optimize = int(util.get_flags(env, 'optimize', 1))
         if self.sse_enabled(build):
-            build.env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
+            env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
 class TagLib(Dependence):
     def configure(self, build, conf):
@@ -381,6 +399,17 @@ class TagLib(Dependence):
 
         if build.platform_is_windows and build.static_dependencies:
             build.env.Append(CPPDEFINES = 'TAGLIB_STATIC')
+
+class Chromaprint(Dependence):
+    def configure(self, build, conf):
+        if not conf.CheckLib(['chromaprint', 'libchromaprint', 'chromaprint_p', 'libchromaprint_p']):
+            raise Exception("Could not find libchromaprint or its development headers.")
+        if build.platform_is_windows and build.static_dependencies:
+            build.env.Append(CPPDEFINES = 'CHROMAPRINT_NODLL')
+
+            # On Windows, we link chromaprint with FFTW3.
+            if not conf.CheckLib(['fftw', 'libfftw', 'fftw3', 'libfftw3']):
+                raise Exception("Could not find fftw3 or its development headers.")
 
 class ProtoBuf(Dependence):
     def configure(self, build, conf):
@@ -402,17 +431,18 @@ class MixxxCore(Feature):
         sources = ["mixxxkeyboard.cpp",
 
                    "configobject.cpp",
+                   "control/control.cpp",
+                   "control/controlbehavior.cpp",
                    "controlobjectthread.cpp",
                    "controlobjectthreadwidget.cpp",
                    "controlobjectthreadmain.cpp",
                    "controlevent.cpp",
                    "controllogpotmeter.cpp",
                    "controlobject.cpp",
-                   "controlnull.cpp",
                    "controlpotmeter.cpp",
+                   "controllinpotmeter.cpp",
                    "controlpushbutton.cpp",
                    "controlttrotary.cpp",
-                   "controlbeat.cpp",
 
                    "dlgpreferences.cpp",
                    "dlgprefsound.cpp",
@@ -423,20 +453,20 @@ class MixxxCore(Feature):
                    "controllers/dlgprefnocontrollers.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",
-                   "dlgprefbpm.cpp",
                    "dlgprefreplaygain.cpp",
                    "dlgprefnovinyl.cpp",
-                   "dlgbpmscheme.cpp",
                    "dlgabout.cpp",
                    "dlgprefeq.cpp",
                    "dlgprefcrossfader.cpp",
+                   "dlgtagfetcher.cpp",
                    "dlgtrackinfo.cpp",
                    "dlgprepare.cpp",
                    "dlgautodj.cpp",
+                   "dlghidden.cpp",
+                   "dlgmissing.cpp",
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
-                   "engine/syncworker.cpp",
                    "engine/enginebuffer.cpp",
                    "engine/enginebufferscale.cpp",
                    "engine/enginebufferscaledummy.cpp",
@@ -453,7 +483,7 @@ class MixxxCore(Feature):
                    "engine/engineflanger.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",
-                   "engine/enginesidechain.cpp",
+                   "engine/sidechain/enginesidechain.cpp",
                    "engine/enginefilterbutterworth8.cpp",
                    "engine/enginexfader.cpp",
                    "engine/enginemicrophone.cpp",
@@ -473,7 +503,6 @@ class MixxxCore(Feature):
 
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
-                   "analyserbpm.cpp",
                    "analyserwaveform.cpp",
 
                    "controllers/controller.cpp",
@@ -501,6 +530,8 @@ class MixxxCore(Feature):
 
                    "sharedglcontext.cpp",
                    "widget/wwidget.cpp",
+                   "widget/wwidgetgroup.cpp",
+                   "widget/wwidgetstack.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
                    "widget/wnumber.cpp",
@@ -519,11 +550,20 @@ class MixxxCore(Feature):
                    "widget/wabstractcontrol.cpp",
                    "widget/wsearchlineedit.cpp",
                    "widget/wpixmapstore.cpp",
+                   "widget/wimagestore.cpp",
                    "widget/hexspinbox.cpp",
                    "widget/wtrackproperty.cpp",
                    "widget/wtime.cpp",
 
                    "mathstuff.cpp",
+
+                   "network.cpp",
+                   "musicbrainz/tagfetcher.cpp",
+                   "musicbrainz/gzip.cpp",
+                   "musicbrainz/crc.c",
+                   "musicbrainz/acoustidclient.cpp",
+                   "musicbrainz/chromaprinter.cpp",
+                   "musicbrainz/musicbrainzclient.cpp",
 
                    "rotary.cpp",
                    "widget/wtracktableview.cpp",
@@ -562,19 +602,15 @@ class MixxxCore(Feature):
                    "library/recording/recordingfeature.cpp",
                    "dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
+                   "engine/sidechain/enginerecord.cpp",
 
                    # External Library Features
                    "library/baseexternallibraryfeature.cpp",
+                   "library/baseexternaltrackmodel.cpp",
+                   "library/baseexternalplaylistmodel.cpp",
                    "library/rhythmbox/rhythmboxfeature.cpp",
-                   "library/rhythmbox/rhythmboxtrackmodel.cpp",
-                   "library/rhythmbox/rhythmboxplaylistmodel.cpp",
                    "library/itunes/itunesfeature.cpp",
-                   "library/itunes/itunestrackmodel.cpp",
-                   "library/itunes/itunesplaylistmodel.cpp",
                    "library/traktor/traktorfeature.cpp",
-                   "library/traktor/traktortablemodel.cpp",
-                   "library/traktor/traktorplaylistmodel.cpp",
-
 
                    "library/cratefeature.cpp",
                    "library/sidebarmodel.cpp",
@@ -582,7 +618,6 @@ class MixxxCore(Feature):
                    "library/libraryscannerdlg.cpp",
                    "library/legacylibraryimporter.cpp",
                    "library/library.cpp",
-                   "library/searchthread.cpp",
 
                    "library/dao/cratedao.cpp",
                    "library/cratetablemodel.cpp",
@@ -596,13 +631,13 @@ class MixxxCore(Feature):
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
-                   "library/promotracksfeature.cpp",
-                   "library/featuredartistswebview.cpp",
-                   "library/bundledsongswebview.cpp",
                    "library/songdownloader.cpp",
                    "library/starrating.cpp",
                    "library/stardelegate.cpp",
                    "library/stareditor.cpp",
+                   "library/bpmdelegate.cpp",
+                   "library/bpmeditor.cpp",
+                   "library/previewbuttondelegate.cpp",
                    "audiotagger.cpp",
 
                    "library/treeitemmodel.cpp",
@@ -633,6 +668,7 @@ class MixxxCore(Feature):
                    "waveform/renderers/waveformrendererpreroll.cpp",
 
                    "waveform/renderers/waveformrendererfilteredsignal.cpp",
+                   "waveform/renderers/waveformrendererhsv.cpp",
                    "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/qtwaveformrenderersimplesignal.cpp",
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
@@ -649,6 +685,7 @@ class MixxxCore(Feature):
                    "waveform/widgets/waveformwidgetabstract.cpp",
                    "waveform/widgets/emptywaveformwidget.cpp",
                    "waveform/widgets/softwarewaveformwidget.cpp",
+                   "waveform/widgets/hsvwaveformwidget.cpp",
                    "waveform/widgets/qtwaveformwidget.cpp",
                    "waveform/widgets/qtsimplewaveformwidget.cpp",
                    "waveform/widgets/glwaveformwidget.cpp",
@@ -676,6 +713,7 @@ class MixxxCore(Feature):
                    "basetrackplayer.cpp",
                    "deck.cpp",
                    "sampler.cpp",
+                   "previewdeck.cpp",
                    "playermanager.cpp",
                    "samplerbank.cpp",
                    "sounddevice.cpp",
@@ -685,14 +723,19 @@ class MixxxCore(Feature):
                    "dlgprefrecord.cpp",
                    "playerinfo.cpp",
 
-                   "recording/enginerecord.cpp",
-                   "recording/encoder.cpp",
+                   "encoder/encoder.cpp",
+                   "encoder/encodermp3.cpp",
+                   "encoder/encodervorbis.cpp",
 
                    "segmentation.cpp",
                    "tapfilter.cpp",
 
                    "util/pa_ringbuffer.c",
                    "util/sleepableqthread.cpp",
+                   "util/statsmanager.cpp",
+                   "util/stat.cpp",
+                   "util/timer.cpp",
+                   "util/performancetimer.cpp",
 
                    # Add the QRC file which compiles in some extra resources
                    # (prefs icons, etc.)
@@ -726,20 +769,21 @@ class MixxxCore(Feature):
         build.env.Uic4('dlgprefcontrolsdlg.ui')
         build.env.Uic4('dlgprefeqdlg.ui')
         build.env.Uic4('dlgprefcrossfaderdlg.ui')
-        build.env.Uic4('dlgprefbpmdlg.ui')
         build.env.Uic4('dlgprefreplaygaindlg.ui')
         build.env.Uic4('dlgprefbeatsdlg.ui')
-        build.env.Uic4('dlgbpmschemedlg.ui')
         # build.env.Uic4('dlgbpmtapdlg.ui')
         build.env.Uic4('dlgprefvinyldlg.ui')
         build.env.Uic4('dlgprefnovinyldlg.ui')
         build.env.Uic4('dlgprefrecorddlg.ui')
         build.env.Uic4('dlgaboutdlg.ui')
+        build.env.Uic4('dlgtagfetcher.ui')
         build.env.Uic4('dlgtrackinfo.ui')
         build.env.Uic4('dlgprepare.ui')
         build.env.Uic4('dlgautodj.ui')
         build.env.Uic4('dlgprefsounditem.ui')
         build.env.Uic4('dlgrecording.ui')
+        build.env.Uic4('dlghidden.ui')
+        build.env.Uic4('dlgmissing.ui')
 
         if build.platform_is_windows:
             # Add Windows resource file with icons and such
@@ -887,7 +931,8 @@ class MixxxCore(Feature):
 
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
-                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf]
+                FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
+                Chromaprint]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

@@ -15,10 +15,8 @@
 #include "library/treeitemmodel.h"
 #include "library/treeitem.h"
 
-//class ITunesPlaylistModel;
-class ITunesTrackModel;
-class ITunesPlaylistModel;
-
+class BaseExternalTrackModel;
+class BaseExternalPlaylistModel;
 
 class ITunesFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -30,40 +28,35 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QList<QUrl> urls);
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
-    bool dragMoveAccept(QUrl url);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
-
     TreeItemModel* getChildModel();
 
   public slots:
     void activate();
     void activate(bool forceReload);
     void activateChild(const QModelIndex& index);
-    virtual void onRightClick(const QPoint& globalPos);
-    void onLazyChildExpandation(const QModelIndex& index);
+    void onRightClick(const QPoint& globalPos);
     void onTrackCollectionLoaded();
 
   private:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     static QString getiTunesMusicPath();
-    //returns the invisible rootItem for the sidebar model
+    // returns the invisible rootItem for the sidebar model
     TreeItem* importLibrary();
     void guessMusicLibraryMountpoint(QXmlStreamReader &xml);
     void parseTracks(QXmlStreamReader &xml);
     void parseTrack(QXmlStreamReader &xml, QSqlQuery &query);
     TreeItem* parsePlaylists(QXmlStreamReader &xml);
-    void parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query1, QSqlQuery &query2, TreeItem*);
+    void parsePlaylist(QXmlStreamReader &xml, QSqlQuery &query1,
+                       QSqlQuery &query2, TreeItem*);
     void clearTable(QString table_name);
     bool readNextStartElement(QXmlStreamReader& xml);
 
-    ITunesTrackModel* m_pITunesTrackModel;
-    ITunesPlaylistModel* m_pITunesPlaylistModel;
+    BaseExternalTrackModel* m_pITunesTrackModel;
+    BaseExternalPlaylistModel* m_pITunesPlaylistModel;
     TreeItemModel m_childModel;
     QStringList m_playlists;
     TrackCollection* m_pTrackCollection;
-    //a new DB connection for the worker thread
+    // a new DB connection for the worker thread
     QSqlDatabase m_database;
     bool m_cancelImport;
     bool m_isActivated;
@@ -79,4 +72,4 @@ class ITunesFeature : public BaseExternalLibraryFeature {
     static const QString ITDB_PATH_KEY;
 };
 
-#endif /* ITUNESFEATURE_H */
+#endif // ITUNESFEATURE_H

@@ -1,9 +1,12 @@
 LateNight , Skin for Mixxx 1.11.x
 www.mixxx.org
-Copyright (C) 2010-2012 jus ; jus@justmail.de
+Copyright (C) 2010-2012 jus <s.brandt@mixxx.org>
 This file is part of the "LateNight" Skin for Mixxx
 "LateNight" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 http://creativecommons.org/licenses/by-sa/3.0/
+
+With every copy of the work, you are required to either provide a copy of the license it self
+or a link (URI). Failure to do this is a failure to complete the terms of the CC license.
 
 You are free:
 to Share - to copy, distribute and transmit the work
@@ -12,11 +15,54 @@ to Remix - to adapt the work
 Under the following conditions:
 Attribution - You must attribute the work in the manner specified by the author or licensor
 (but not in any way that suggests that they endorse you or your use of the work).
+A attribution should include the following: The name of the author and/or licensor, 
+the title of the work, the URL that is associated with the work.
 
 Share Alike - If you alter, transform, or build upon this work, you may distribute
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.11.0.17  (13/04/2013)
+* Fix: Removes <BeatHighlightColor> from the waveforms, which blinks for a brief about of
+  time to indicate when the beat is near the playposition. Fixes lp:1112396
+  
+v1.11.0.16  (16/02/2013)
+* Fix: Remove background graphic for Deck 1&2 waveform overview. Fixes lp:1099180
+
+v1.11.0.15  (20/01/2013)
+* Feature: Add <PlayPosColor> to improve visibility of play position marker. Part of lp:1099182 & lp:1094791
+* Fix: Correct <Size> attributes and margins in sampler decks so they don't break the layout on skin change
+  anymore and the library's scrollbar stay visible at the buttom.
+* Fix: Remove deprecated <CueColor> key, Set empty <BeatHighlightColor> to reduce "on-beat" flicker in waveform
+
+v1.11.0.14  (19/01/2013)
+* Fix: Add fixed size width to <Size> attribute in <Text> and track_title, track_artist, track_album <TrackProperty> keys,
+  workaround for lp:1100071
+
+v1.11.0.13	(14/12/2012)
+* Feature: Add custom Preview button to library
+
+v1.11.0.12	(29/11/2012)
+* Feature: Toggles visibility of WidgetGroups at skin load in the <manifest>
+* Feature: Added [PreviewDeck1] which plays a track through headphones, lp:366091
+* Feature: Construct the library from individual widgets <SearchBox>, <LibrarySidebar>, <Library>
+* Remove: <TableView> replaced by the above library wdgets. Makes future layouts more flexible  
+* Update: Clarify the text of the license terms
+* Update: Links to MixxxControls and QT documentation updated
+
+v1.11.0.11	(18/11/2012)
+* Feature: Added SYNC buttons to the sampler decks , lp:1072229
+
+v1.11.0.10	(25/10/2012)
+* Feature: Added the <manifest> skin section that allows you to specify the skin title, author, description, etc. 
+  and set Mixxx controls on skin load , lp:1017399
+
+v1.11.0.09	(17/10/2012)
+* Feature: Added a clock widget that shows the current time. lp:661439
+* Fix: Add 3rd and 4th button state graphics.
+  Buttons should now give a better visual feedback about the actual button state. lp:907364
+* Fix: Update Play button in Sample Decks to properly jump to start on right-click, lp:908480
+
 v1.11.0.08	(09/09/2012)
 * Feature: Support beatlooproll_X_activate , lp:703585
   Right-click of the loop buttons now activates a rolling loop.

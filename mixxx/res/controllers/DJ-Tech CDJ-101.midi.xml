@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.11+">
     <info>
-        <name>DJTech CDJ 101</name>
+        <name>DJ-Tech CDJ-101</name>
         <author>zestoi</author>
-        <description>Select midi channel 1 or 2 on the CDJ101 to select which deck to control in Mixxx. Hold down the push encoder for additional controls.</description>
+        <description>Select midi channel 1 or 2 on the CDJ-101 to select which deck to control in Mixxx. Hold down the push encoder for additional controls.</description>
+        <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
     </info>
     <controller id="DJ-Tech CDJ-101">
 		<scriptfiles>

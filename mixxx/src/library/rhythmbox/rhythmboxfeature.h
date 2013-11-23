@@ -13,9 +13,10 @@
 
 #include "library/baseexternallibraryfeature.h"
 #include "library/treeitemmodel.h"
-#include "library/rhythmbox/rhythmboxtrackmodel.h"
-#include "library/rhythmbox/rhythmboxplaylistmodel.h"
 #include "library/trackcollection.h"
+
+class BaseExternalTrackModel;
+class BaseExternalPlaylistModel;
 
 class RhythmboxFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
@@ -27,31 +28,25 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAccept(QList<QUrl> urls);
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls);
-    bool dragMoveAccept(QUrl url);
-    bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
-
     TreeItemModel* getChildModel();
-    /** processes the music collection **/
+    // processes the music collection
     TreeItem* importMusicCollection();
-    /** processes the playlist entries **/
+    // processes the playlist entries
     TreeItem* importPlaylists();
 
   public slots:
     void activate();
     void activateChild(const QModelIndex& index);
-
-    void onLazyChildExpandation(const QModelIndex& index);
     void onTrackCollectionLoaded();
 
   private:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
 
-    RhythmboxTrackModel* m_pRhythmboxTrackModel;
-    RhythmboxPlaylistModel* m_pRhythmboxPlaylistModel;
+    BaseExternalTrackModel* m_pRhythmboxTrackModel;
+    BaseExternalPlaylistModel* m_pRhythmboxPlaylistModel;
+
     TrackCollection* m_pTrackCollection;
-    //new DB object because of threads
+    // new DB object because of threads
     QSqlDatabase m_database;
     bool m_isActivated;
     QString m_title;
@@ -61,12 +56,12 @@ class RhythmboxFeature : public BaseExternalLibraryFeature {
     TreeItemModel m_childModel;
     bool m_cancelImport;
 
-    /**Removes all rows from a given table **/
+    // Removes all rows from a given table
     void clearTable(QString table_name);
-    /** reads the properties of a track and executes a SQL statement **/
+    // reads the properties of a track and executes a SQL statement
     void importTrack(QXmlStreamReader &xml, QSqlQuery &query);
-    /** reads all playlist entries and executes a SQL statement **/
+    // reads all playlist entries and executes a SQL statement
     void importPlaylist(QXmlStreamReader &xml, QSqlQuery &query, int playlist_id);
 };
 
-#endif /* RHYTHMBOXFEATURE_H */
+#endif // RHYTHMBOXFEATURE_H

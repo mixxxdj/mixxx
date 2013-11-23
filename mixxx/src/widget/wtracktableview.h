@@ -7,9 +7,9 @@
 #include "configobject.h"
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
-#include "library/searchthread.h"
 #include "library/trackmodel.h" // Can't forward declare enums
 #include "widget/wlibrarytableview.h"
+#include "dlgtagfetcher.h"
 
 class ControlObjectThreadMain;
 class DlgTrackInfo;
@@ -32,36 +32,48 @@ class WTrackTableView : public WLibraryTableView {
     void onShow();
     virtual void keyPressEvent(QKeyEvent* event);
     virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void loadSelectedTrackToGroup(QString group, bool play);
+
+    enum BPMScale {
+        DOUBLE,
+        HALVE,
+        TWOTHIRDS,
+        THREEFOURTHS,
+    };
 
   public slots:
     void loadTrackModel(QAbstractItemModel* model);
     void slotMouseDoubleClicked(const QModelIndex &);
+    void slotUnhide();
+    void slotPurge();
 
   private slots:
     void slotRemove();
     void slotHide();
-    void slotUnhide();
-    void slotPurge();
     void slotOpenInFileBrowser();
     void slotShowTrackInfo();
+    void slotShowDlgTagFetcher();
     void slotNextTrackInfo();
+    void slotNextDlgTagFetcher();
     void slotPrevTrackInfo();
+    void slotPrevDlgTagFetcher();
     void slotSendToAutoDJ();
     void slotSendToAutoDJTop();
     void slotReloadTrackMetadata();
     void slotResetPlayed();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
-    void loadSelectionToGroup(QString group);
+    void loadSelectionToGroup(QString group, bool play = false);
     void doSortByColumn(int headerSection);
     void slotLockBpm();
     void slotUnlockBpm();
+    void slotScaleBpm(int); 
     void slotClearBeats();
 
   private:
     void sendToAutoDJ(bool bTop);
     void showTrackInfo(QModelIndex index);
+    void showDlgTagFetcher(QModelIndex index);
     void createActions();
     void dragMoveEvent(QDragMoveEvent * event);
     void dragEnterEvent(QDragEnterEvent * event);
@@ -82,19 +94,24 @@ class WTrackTableView : public WLibraryTableView {
     QSignalMapper m_loadTrackMapper;
 
     DlgTrackInfo* m_pTrackInfo;
+    DlgTagFetcher m_DlgTagFetcher;
     QModelIndex currentTrackInfoIndex;
 
-    SearchThread m_searchThread;
 
     ControlObjectThreadMain* m_pNumSamplers;
     ControlObjectThreadMain* m_pNumDecks;
+    ControlObjectThreadMain* m_pNumPreviewDecks;
 
     // Context menu machinery
-    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu;
+    QMenu *m_pMenu, *m_pPlaylistMenu, *m_pCrateMenu, *m_pSamplerMenu, *m_pBPMMenu;
     QSignalMapper m_playlistMapper, m_crateMapper, m_deckMapper, m_samplerMapper;
 
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
+    QAction *m_pReloadMetadataFromMusicBrainzAct;
+
+    // Load Track to PreviewDeck
+    QAction* m_pAddToPreviewDeck;
 
     // Send to Auto-DJ Action
     QAction *m_pAutoDJAct;
@@ -113,9 +130,14 @@ class WTrackTableView : public WLibraryTableView {
     QAction *m_pPropertiesAct;
     QAction *m_pFileBrowserAct;
 
-    // BPM Lock feature
+    // BPM feature
     QAction *m_pBpmLockAction;
     QAction *m_pBpmUnlockAction;
+    QSignalMapper m_BpmMapper;
+    QAction *m_pBpmDoubleAction;
+    QAction *m_pBpmHalveAction;
+    QAction *m_pBpmTwoThirdsAction;
+    QAction *m_pBpmThreeFourthsAction;
 
     // Clear track beats
     QAction* m_pClearBeatsAction;

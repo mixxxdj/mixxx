@@ -25,11 +25,14 @@ EngineChannel::EngineChannel(const char* pGroup,
         : m_group(pGroup) {
     m_pPFL = new ControlPushButton(ConfigKey(m_group, "pfl"));
     m_pPFL->setButtonMode(ControlPushButton::TOGGLE);
+    m_pMaster = new ControlPushButton(ConfigKey(m_group, "master"));
+    m_pMaster->setButtonMode(ControlPushButton::TOGGLE);
     m_pOrientation = new ControlObject(ConfigKey(m_group, "orientation"));
     m_pOrientation->set(defaultOrientation);
 }
 
 EngineChannel::~EngineChannel() {
+    delete m_pMaster;
     delete m_pPFL;
     delete m_pOrientation;
 }
@@ -39,11 +42,11 @@ const QString& EngineChannel::getGroup() const {
 }
 
 bool EngineChannel::isPFL() {
-    return m_pPFL->get() == 1.0;
+    return m_pPFL->get() > 0.0;
 }
 
 bool EngineChannel::isMaster() {
-    return true;
+    return m_pMaster->get() > 0.0;
 }
 
 EngineChannel::ChannelOrientation EngineChannel::getOrientation() {

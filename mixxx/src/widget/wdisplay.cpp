@@ -23,49 +23,41 @@
 #include <QtDebug>
 #include <QPixmap>
 
-WDisplay::WDisplay(QWidget * parent) : WWidget(parent)
-{
+WDisplay::WDisplay(QWidget * parent) : WWidget(parent) {
     m_pPixmaps = 0;
     setPositions(0);
 }
 
-WDisplay::~WDisplay()
-{
+WDisplay::~WDisplay() {
     resetPositions();
 }
 
-void WDisplay::setup(QDomNode node)
-{
+void WDisplay::setup(QDomNode node) {
     // Number of states
     setPositions(selectNodeInt(node, "NumberStates"));
 
     // Load knob  pixmaps
     QString path = selectNodeQString(node, "Path");
-    for (int i=0; i<m_iNoPos; ++i)
-    {
+    for (int i=0; i<m_iNoPos; ++i) {
         setPixmap(i, getPath(path.arg(i)));
     }
 }
 
-void WDisplay::setPositions(int iNoPos)
-{
+void WDisplay::setPositions(int iNoPos) {
     m_iNoPos = iNoPos;
     m_iPos = 0;
 
     resetPositions();
 
-    if (m_iNoPos>0)
-    {
+    if (m_iNoPos>0) {
         m_pPixmaps = new QPixmap*[m_iNoPos];
         for (int i=0; i<m_iNoPos; i++)
             m_pPixmaps[i] = 0;
     }
 }
 
-void WDisplay::resetPositions()
-{
-    if (m_pPixmaps)
-    {
+void WDisplay::resetPositions() {
+    if (m_pPixmaps) {
         for (int i=0; i<m_iNoPos; i++)
             if (m_pPixmaps[i])
                 WPixmapStore::deletePixmap(m_pPixmaps[i]);
@@ -75,8 +67,7 @@ void WDisplay::resetPositions()
     }
 }
 
-void WDisplay::setPixmap(int iPos, const QString &filename)
-{
+void WDisplay::setPixmap(int iPos, const QString &filename) {
     m_pPixmaps[iPos] = WPixmapStore::getPixmap(filename);
     if (!m_pPixmaps[iPos])
         qDebug() << "WDisplay: Error loading pixmap" << filename;
@@ -84,10 +75,8 @@ void WDisplay::setPixmap(int iPos, const QString &filename)
         setFixedSize(m_pPixmaps[iPos]->size());
 }
 
-void WDisplay::paintEvent(QPaintEvent *)
-{
-    if (m_pPixmaps>0)
-    {
+void WDisplay::paintEvent(QPaintEvent *) {
+    if (m_pPixmaps) {
         int idx = (int)(m_fValue*(float)(m_iNoPos)/128.);
         // Range check
         if (idx>(m_iNoPos-1))
@@ -100,6 +89,3 @@ void WDisplay::paintEvent(QPaintEvent *)
         }
     }
 }
-
-
-

@@ -699,8 +699,8 @@ StantonSCS1d.vinylMoved = function (data, length) {
     var iMoved = (iState - StantonSCS1d.scratch["prevState"] + 384) % 256 - 128;
     var iSpeed = iMoved/(iTimeStamp - StantonSCS1d.scratch["prevTimeStamp"]);
     
-    //if (StantonSCS1d.debug)
-    //    print("Timestamp="+iTimeStamp+" State="+iState+" Moved="+iMoved+" Speed="+(iSpeed*60000|0));
+//     if (StantonSCS1d.debug)
+//        print("Timestamp="+iTimeStamp+" State="+iState+" Moved="+iMoved+" Speed="+(iSpeed*60000|0));
     
     StantonSCS1d.scratch["prevTimeStamp"] = iTimeStamp;
     StantonSCS1d.scratch["prevState"] = iState;
@@ -2108,7 +2108,7 @@ TODO:
 - Connect cross-fader signal?
 
 BUGS:
-- Dragging the window/tooltips screw up speed - use timestamps
+- Dragging the window/tooltips screw up speed on Windows - use timestamps
 - Sticker drift - timestamps?
 - Manipulating other controls in vinyl mode makes speed jiggly - timestamps??
 */

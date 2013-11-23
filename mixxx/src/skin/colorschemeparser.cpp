@@ -2,6 +2,7 @@
 #include "skin/colorschemeparser.h"
 
 #include "widget/wpixmapstore.h"
+#include "widget/wimagestore.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
 
@@ -38,13 +39,16 @@ void ColorSchemeParser::setupLegacyColorSchemes(QDomElement docElem,
             QSharedPointer<ImgSource> imsrc =
                     QSharedPointer<ImgSource>(parseFilters(sch.namedItem("Filters")));
             WPixmapStore::setLoader(imsrc);
+            WImageStore::setLoader(imsrc);
             WSkinColor::setLoader(imsrc);
         } else {
             WPixmapStore::setLoader(QSharedPointer<ImgSource>());
+            WImageStore::setLoader(QSharedPointer<ImgSource>());
             WSkinColor::setLoader(QSharedPointer<ImgSource>());
         }
     } else {
         WPixmapStore::setLoader(QSharedPointer<ImgSource>());
+        WImageStore::setLoader(QSharedPointer<ImgSource>());
         WSkinColor::setLoader(QSharedPointer<ImgSource>());
     }
 }

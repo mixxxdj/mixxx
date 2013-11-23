@@ -33,8 +33,8 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     m_pTrackTableView->installEventFilter(pKeyboard);
     connect(m_pTrackTableView, SIGNAL(loadTrack(TrackPointer)),
             this, SIGNAL(loadTrack(TrackPointer)));
-    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString)),
-            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
+    connect(m_pTrackTableView, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)),
+            this, SIGNAL(loadTrackToPlayer(TrackPointer, QString, bool)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
@@ -50,7 +50,7 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
         playlistId = playlistDao.createPlaylist(AUTODJ_TABLE,
                                                 PlaylistDAO::PLHT_AUTO_DJ);
     }
-    m_pAutoDJTableModel->setPlaylist(playlistId);
+    m_pAutoDJTableModel->setTableModel(playlistId);
     m_pTrackTableView->loadTrackModel(m_pAutoDJTableModel);
 
     // Override some playlist-view properties:
@@ -88,13 +88,15 @@ DlgAutoDJ::DlgAutoDJ(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
     connect(spinBoxTransition, SIGNAL(valueChanged(int)),
             this, SLOT(transitionValueChanged(int)));
 
-    m_pCOToggleAutoDJ = new ControlPushButton(
-            ConfigKey("[AutoDJ]", "toggle_autodj"));
-    m_pCOTToggleAutoDJ = new ControlObjectThreadMain(m_pCOToggleAutoDJ);
-    connect(m_pCOToggleAutoDJ, SIGNAL(valueChanged(double)),
-            this, SLOT(toggleAutoDJ(double)));
     connect(pushButtonAutoDJ, SIGNAL(toggled(bool)),
-            this,  SLOT(toggleAutoDJButton(bool))); _blah;
+            this, SLOT(toggleAutoDJButton(bool))); _blah;
+
+    m_pCOEnabledAutoDJ = new ControlPushButton(
+            ConfigKey("[AutoDJ]", "enabled"));
+    m_pCOEnabledAutoDJ->setButtonMode(ControlPushButton::TOGGLE);
+    m_pCOTEnabledAutoDJ = new ControlObjectThreadMain(m_pCOEnabledAutoDJ);
+    connect(m_pCOTEnabledAutoDJ, SIGNAL(valueChanged(double)),
+            this, SLOT(enableAutoDJCo(double)));
 
     // playposition is from -0.14 to + 1.14
     m_pCOPlayPos1 = new ControlObjectThreadMain(
@@ -142,11 +144,11 @@ DlgAutoDJ::~DlgAutoDJ() {
     delete m_pCOCrossfaderReverse;
     delete m_pCOSkipNext;
     delete m_pCOShufflePlaylist;
-    delete m_pCOToggleAutoDJ;
+    delete m_pCOEnabledAutoDJ;
     delete m_pCOFadeNow;
     delete m_pCOTSkipNext;
     delete m_pCOTShufflePlaylist;
-    delete m_pCOTToggleAutoDJ;
+    delete m_pCOTEnabledAutoDJ;
     delete m_pCOTFadeNow;
     // Delete m_pTrackTableView before the table model. This is because the
     // table view saves the header state using the model.
@@ -158,40 +160,10 @@ void DlgAutoDJ::onShow() {
     m_pAutoDJTableModel->select();
 }
 
-void DlgAutoDJ::setup(QDomNode node) {
-    QPalette pal = palette();
-
-    // Row colors
-    if (!WWidget::selectNode(node, "BgColorRowEven").isNull() &&
-        !WWidget::selectNode(node, "BgColorRowUneven").isNull()) {
-        QColor r1;
-        r1.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowEven"));
-        r1 = WSkinColor::getCorrectColor(r1);
-        QColor r2;
-        r2.setNamedColor(WWidget::selectNodeQString(node, "BgColorRowUneven"));
-        r2 = WSkinColor::getCorrectColor(r2);
-
-        // For now make text the inverse of the background so it's readable In
-        // the future this should be configurable from the skin with this as the
-        // fallback option
-        QColor text(255 - r1.red(), 255 - r1.green(), 255 - r1.blue());
-        QColor fgColor;
-        fgColor.setNamedColor(WWidget::selectNodeQString(node, "FgColor"));
-        fgColor = WSkinColor::getCorrectColor(fgColor);
-
-        pal.setColor(QPalette::Base, r1);
-        pal.setColor(QPalette::AlternateBase, r2);
-        pal.setColor(QPalette::Text, text);
-        pal.setColor(QPalette::WindowText, fgColor);
-    }
-
-    setPalette(pal);
-
-    pushButtonAutoDJ->setPalette(pal);
-
-    // Since we're getting this passed into us already created, shouldn't need
-    // to set the palette.
-    //m_pTrackTableView->setPalette(pal);
+void DlgAutoDJ::onSearch(const QString& text) {
+    // Do not allow filtering the Auto DJ playlist, because
+    // Auto DJ will work from the filtered table
+    Q_UNUSED(text);
 }
 
 double DlgAutoDJ::getCrossfader() const {
@@ -208,24 +180,12 @@ void DlgAutoDJ::setCrossfader(double value) {
     m_pCOCrossfader->slotSet(value);
 }
 
-void DlgAutoDJ::onSearchStarting() {
-}
-
-void DlgAutoDJ::onSearchCleared() {
-}
-
-void DlgAutoDJ::onSearch(const QString& text) {
-    Q_UNUSED(text);
-    // Do not allow filtering the Auto DJ playlist, because
-    // Auto DJ will work from the filtered table
-}
-
 void DlgAutoDJ::loadSelectedTrack() {
     m_pTrackTableView->loadSelectedTrack();
 }
 
-void DlgAutoDJ::loadSelectedTrackToGroup(QString group) {
-    m_pTrackTableView->loadSelectedTrackToGroup(group);
+void DlgAutoDJ::loadSelectedTrackToGroup(QString group, bool play) {
+    m_pTrackTableView->loadSelectedTrackToGroup(group, play);
 }
 
 void DlgAutoDJ::moveSelection(int delta) {
@@ -290,17 +250,11 @@ void DlgAutoDJ::fadeNow(double value) {
     }
 }
 
-void DlgAutoDJ::toggleAutoDJ(double v) {
-    if (v > 0) {
-        pushButtonAutoDJ->toggle();
-    }
-}
-
-void DlgAutoDJ::toggleAutoDJButton(bool toggle) {
+void DlgAutoDJ::toggleAutoDJButton(bool enable) {
     bool deck1Playing = m_pCOPlay1Fb->get() == 1.0f;
     bool deck2Playing = m_pCOPlay2Fb->get() == 1.0f;
 
-    if (toggle) {  // Enable Auto DJ
+    if (enable) {  // Enable Auto DJ
         if (deck1Playing && deck2Playing) {
             QMessageBox::warning(
                 NULL, tr("Auto-DJ"),
@@ -323,12 +277,18 @@ void DlgAutoDJ::toggleAutoDJButton(bool toggle) {
         if (!nextTrack) {
             qDebug() << "Queue is empty now";
             pushButtonAutoDJ->setChecked(false);
+            if (m_pCOTEnabledAutoDJ->get() != 0.0) {
+                m_pCOTEnabledAutoDJ->slotSet(0.0);
+            }
             return;
         }
 
         // Track is available so GO
         pushButtonAutoDJ->setToolTip(tr("Disable Auto DJ"));
         pushButtonAutoDJ->setText(tr("Disable Auto DJ"));
+        if (m_pCOTEnabledAutoDJ->get() != 1.0) {
+            m_pCOTEnabledAutoDJ->slotSet(1.0);
+        }
         qDebug() << "Auto DJ enabled";
 
         pushButtonSkipNext->setEnabled(true);
@@ -365,6 +325,9 @@ void DlgAutoDJ::toggleAutoDJButton(bool toggle) {
     } else {  // Disable Auto DJ
         pushButtonAutoDJ->setToolTip(tr("Enable Auto DJ"));
         pushButtonAutoDJ->setText(tr("Enable Auto DJ"));
+        if (m_pCOTEnabledAutoDJ->get() != 0.0) {
+            m_pCOTEnabledAutoDJ->slotSet(0.0);
+        }
         qDebug() << "Auto DJ disabled";
         m_eState = ADJ_DISABLED;
         pushButtonFadeNow->setEnabled(false);
@@ -375,6 +338,12 @@ void DlgAutoDJ::toggleAutoDJButton(bool toggle) {
         m_pCOPlay1->disconnect(this);
         m_pCOPlay2->disconnect(this);
     }
+}
+
+void DlgAutoDJ::enableAutoDJCo(double value) {
+    bool enable = (bool)value;
+    pushButtonAutoDJ->setChecked(enable);
+    toggleAutoDJButton(enable);
 }
 
 void DlgAutoDJ::player1PositionChanged(double value) {
@@ -623,6 +592,10 @@ bool DlgAutoDJ::removePlayingTrackFromQueue(QString group) {
     // remove the top track
     m_pAutoDJTableModel->removeTrack(m_pAutoDJTableModel->index(0, 0));
 
+    // Re-queue if configured
+    if (m_pConfig->getValueString(ConfigKey(CONFIG_KEY, "Requeue")).toInt()) {
+        m_pAutoDJTableModel->appendTrack(loadedId);
+    }
     return true;
 }
 

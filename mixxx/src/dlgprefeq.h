@@ -21,7 +21,7 @@
 #include "ui_dlgprefeqdlg.h"
 #include "configobject.h"
 #include "engine/enginefilterblock.h"
-#include "controlobject.h"
+#include "controlobjectthread.h"
 
 class QWidget;
 /**

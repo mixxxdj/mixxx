@@ -34,7 +34,8 @@ DlgPrepare::DlgPrepare(QWidget* parent,
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(1, m_pPrepareLibraryTableView);
 
-    m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this, pTrackCollection);
+    m_pPrepareLibraryTableModel =  new PrepareLibraryTableModel(this,
+                                    pTrackCollection);
     m_pPrepareLibraryTableView->loadTrackModel(m_pPrepareLibraryTableModel);
 
 /*
@@ -90,28 +91,13 @@ DlgPrepare::DlgPrepare(QWidget* parent,
 DlgPrepare::~DlgPrepare() {
 }
 
-void DlgPrepare::onShow()
-{
+void DlgPrepare::onShow() {
     // Refresh table
     // There might be new tracks dropped to other views
     m_pPrepareLibraryTableModel->select();
 }
 
-void DlgPrepare::setup(QDomNode node)
-{
-
-}
-
-void DlgPrepare::onSearchStarting()
-{
-}
-
-void DlgPrepare::onSearchCleared()
-{
-}
-
-void DlgPrepare::onSearch(const QString& text)
-{
+void DlgPrepare::onSearch(const QString& text) {
     m_pPrepareLibraryTableModel->search(text);
 }
 
@@ -119,20 +105,20 @@ void DlgPrepare::loadSelectedTrack() {
     m_pPrepareLibraryTableView->loadSelectedTrack();
 }
 
-void DlgPrepare::loadSelectedTrackToGroup(QString group) {
-    m_pPrepareLibraryTableView->loadSelectedTrackToGroup(group);
+void DlgPrepare::loadSelectedTrackToGroup(QString group, bool play) {
+    m_pPrepareLibraryTableView->loadSelectedTrackToGroup(group, play);
 }
 
 void DlgPrepare::moveSelection(int delta) {
     m_pPrepareLibraryTableView->moveSelection(delta);
 }
 
-void DlgPrepare::tableSelectionChanged(const QItemSelection& selected, const QItemSelection& deselected)
-{
-    if (selected == QItemSelection()) //Empty selection
-        pushButtonAnalyze->setEnabled(false);
-    else
-        pushButtonAnalyze->setEnabled(true);
+void DlgPrepare::tableSelectionChanged(const QItemSelection& selected,
+                                       const QItemSelection& deselected) {
+    Q_UNUSED(selected);
+    Q_UNUSED(deselected);
+    bool tracksSelected = m_pPrepareLibraryTableView->selectionModel()->hasSelection();
+    pushButtonAnalyze->setEnabled(tracksSelected || m_bAnalysisActive);
 }
 
 void DlgPrepare::selectAll() {
@@ -175,8 +161,7 @@ void DlgPrepare::analysisActive(bool bActive) {
 }
 
 // slot
-void DlgPrepare::trackAnalysisFinished(TrackPointer pTrack, int size) {
-    Q_UNUSED(pTrack);
+void DlgPrepare::trackAnalysisFinished(int size) {
     qDebug() << "Analysis finished" << size << "tracks left";
     if (size > 0) {
         m_currentTrack = m_tracksInQueue - size + 1;
@@ -184,8 +169,7 @@ void DlgPrepare::trackAnalysisFinished(TrackPointer pTrack, int size) {
 }
 
 // slot
-void DlgPrepare::trackAnalysisProgress(TrackPointer tio, int progress) {
-    Q_UNUSED(tio);
+void DlgPrepare::trackAnalysisProgress(int progress) {
     if (m_bAnalysisActive) {
         QString text = tr("Analyzing %1/%2 %3%").arg(
                 QString::number(m_currentTrack),
@@ -195,18 +179,11 @@ void DlgPrepare::trackAnalysisProgress(TrackPointer tio, int progress) {
     }
 }
 
-void DlgPrepare::showRecentSongs()
-{
-    int datetimeColumn = m_pPrepareLibraryTableModel->fieldIndex(LIBRARYTABLE_DATETIMEADDED);
-    // Don't tell the TableView to sortByColumn() because this generates excess
-    // select()'s. Use setSort() on the model, and it will take effect when
-    // showRecentSongs() select()'s.
-    m_pPrepareLibraryTableModel->setSort(datetimeColumn, Qt::DescendingOrder);
+void DlgPrepare::showRecentSongs() {
     m_pPrepareLibraryTableModel->showRecentSongs();
 }
 
-void DlgPrepare::showAllSongs()
-{
+void DlgPrepare::showAllSongs() {
     m_pPrepareLibraryTableModel->showAllSongs();
 }
 

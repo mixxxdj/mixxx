@@ -62,7 +62,7 @@ void GLWaveformRendererSimpleSignal::draw(QPainter* painter, QPaintEvent* /*even
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    const QColor& color = m_colors.getSignalColor();
+    const QColor& color = m_pColors->getSignalColor();
 
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
     const double visualGain = factory->getVisualGain(::WaveformWidgetFactory::All);

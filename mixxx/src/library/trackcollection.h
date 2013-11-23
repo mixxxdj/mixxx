@@ -63,6 +63,10 @@ class TrackCollection : public QObject
     void addTrackSource(const QString name, QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();
 
+    ConfigObject<ConfigValue>* getConfig() {
+        return m_pConfig;
+    }
+
   signals:
     void startedLoading();
     void progressLoading(QString path);

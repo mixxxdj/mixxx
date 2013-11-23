@@ -5,53 +5,33 @@
  *      Author: asantoni
  */
 
-#ifndef VINYLCONTROLSIGNALWIDGET_H_
-#define VINYLCONTROLSIGNALWIDGET_H_
+#ifndef VINYLCONTROLSIGNALWIDGET_H
+#define VINYLCONTROLSIGNALWIDGET_H
 
 #include <QtGui>
 #include <QPainter>
 #include <QTimerEvent>
 
-class VinylControlProxy;
+#include "vinylcontrol/vinylsignalquality.h"
 
-enum VinylControlSignalType {
-    VINYLCONTROL_SIGQUALITY = 0,
-    VINYLCONTROL_SIGLEFTCHANNEL,
-    VINYLCONTROL_SIGRIGHTCHANNEL,
-    VINYLCONTROL_SIGTYPE_NUM
-};
-
-class VinylControlSignalWidget : public QWidget
-{
+class VinylControlSignalWidget : public QWidget, public VinylSignalQualityListener {
     Q_OBJECT
-public:
+  public:
     VinylControlSignalWidget();
     VinylControlSignalWidget(int size);
-    ~VinylControlSignalWidget();
-    void setVinylControlProxy(VinylControlProxy* vc);
+    virtual ~VinylControlSignalWidget();
+
+    void onVinylSignalQualityUpdate(const VinylSignalQualityReport& report);
+
     void paintEvent(QPaintEvent* event);
+    void setVinylInput(int input);
     void setSize(int size);
     void setVinylActive(bool active);
 
     void resetWidget();
-    void startDrawing();
-    void stopDrawing();
 
-public slots:
-    void invalidateVinylControl();
-
-protected:
-    void timerEvent(QTimerEvent* event);
-
-private:
-    QMutex m_controlLock;
-    VinylControlProxy* m_pVinylControl;
-
-    float m_fRMSvolumeSum[VINYLCONTROL_SIGTYPE_NUM];
-    float m_fRMSvolume[VINYLCONTROL_SIGTYPE_NUM];
-    long m_samplesCalculated[VINYLCONTROL_SIGTYPE_NUM];
-
-    int m_iTimerId;
+  private:
+    int m_iVinylInput;
     int m_iSize;
 
     QImage m_qImage;
@@ -61,4 +41,4 @@ private:
     bool m_bVinylActive;
 };
 
-#endif /* VINYLCONTROLSIGNALWIDGET_H_ */
+#endif /* VINYLCONTROLSIGNALWIDGET_H */

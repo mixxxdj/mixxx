@@ -20,13 +20,10 @@ class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual Library
                TrackCollection* pTrackCollection);
     virtual ~DlgPrepare();
 
-    virtual void setup(QDomNode node);
-    virtual void onSearchStarting();
-    virtual void onSearchCleared();
     virtual void onSearch(const QString& text);
     virtual void onShow();
     virtual void loadSelectedTrack();
-    virtual void loadSelectedTrackToGroup(QString group);
+    virtual void loadSelectedTrackToGroup(QString group, bool play);
     virtual void moveSelection(int delta);
     inline const QString currentSearch() { return m_pPrepareLibraryTableModel->currentSearch(); };
 
@@ -35,8 +32,8 @@ class DlgPrepare : public QWidget, public Ui::DlgPrepare, public virtual Library
                                const QItemSelection& deselected);
     void selectAll();
     void analyze();
-    void trackAnalysisFinished(TrackPointer pTrack, int queue_size);
-    void trackAnalysisProgress(TrackPointer tio, int progress);
+    void trackAnalysisFinished(int size);
+    void trackAnalysisProgress(int progress);
     void showRecentSongs();
     void showAllSongs();
     void installEventFilter(QObject* pFilter);

@@ -15,7 +15,7 @@
 #include "controlpotmeter.h"
 
 
-WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent, Qt::WFlags f)
+WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget * parent)
         : QWidget(parent),
           m_pGroup(group),
           m_pConfig(pConfig) {
@@ -23,7 +23,6 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
 
     m_bScratching = false;
     m_bBending = false;
-    m_iMouseStart = -1;
 
     m_pZoom = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(group, "waveform_zoom")));
@@ -31,20 +30,10 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
     connect(m_pZoom, SIGNAL(valueChanged(double)),
             this, SLOT(onZoomChange(double)));
 
-    m_pScratchEnable = new ControlObjectThreadMain(
+    m_pScratchPositionEnable = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(group, "scratch_position_enable")));
-    m_pScratch = new ControlObjectThreadMain(
+    m_pScratchPosition = new ControlObjectThreadMain(
                 ControlObject::getControl(ConfigKey(group, "scratch_position")));
-    m_pTrackSamples = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "track_samples")));
-    m_pTrackSampleRate = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(group, "track_samplerate")));
-    m_pRate = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_pGroup, "rate")));
-    m_pRateRange = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_pGroup, "rateRange")));
-    m_pRateDir = new ControlObjectThreadMain(
-                ControlObject::getControl(ConfigKey(m_pGroup, "rate_dir")));
 
     setAttribute(Qt::WA_OpaquePaintEvent);
 
@@ -56,13 +45,8 @@ WWaveformViewer::~WWaveformViewer() {
     //qDebug() << "~WWaveformViewer";
 
     delete m_pZoom;
-    delete m_pScratchEnable;
-    delete m_pScratch;
-    delete m_pTrackSamples;
-    delete m_pTrackSampleRate;
-    delete m_pRate;
-    delete m_pRateRange;
-    delete m_pRateDir;
+    delete m_pScratchPositionEnable;
+    delete m_pScratchPosition;
 }
 
 void WWaveformViewer::setup(QDomNode node) {
@@ -78,7 +62,6 @@ void WWaveformViewer::resizeEvent(QResizeEvent* /*event*/) {
 
 void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
     m_mouseAnchor = event->pos();
-    m_iMouseStart = event->x();
 
     if(event->button() == Qt::LeftButton) {
         // If we are pitch-bending then disable and reset because the two
@@ -88,14 +71,15 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
             m_bBending = false;
         }
         m_bScratching = true;
-        m_pScratch->slotSet(0.0f);
-        m_pScratchEnable->slotSet(1.0f);
+        double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
+        double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
+        m_pScratchPosition->slotSet(targetPosition);
+        m_pScratchPositionEnable->slotSet(1.0f);
     } else if (event->button() == Qt::RightButton) {
         // If we are scratching then disable and reset because the two shouldn't
         // be used at once.
         if (m_bScratching) {
-            m_pScratch->slotSet(0.0f);
-            m_pScratchEnable->slotSet(0.0f);
+            m_pScratchPositionEnable->slotSet(0.0f);
             m_bScratching = false;
         }
         emit(valueChangedRightDown(64));
@@ -107,25 +91,17 @@ void WWaveformViewer::mousePressEvent(QMouseEvent* event) {
 }
 
 void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
-    QPoint diff = event->pos() - m_mouseAnchor;
-
     // Only send signals for mouse moving if the left button is pressed
-    if (m_iMouseStart != -1 && m_bScratching) {
-        // Adjusts for one-to-one movement. Track sample rate in hundreds of
-        // samples times two is the number of samples per pixel.  rryan
-        // 4/2011
-        double samplesPerPixel = m_pTrackSampleRate->get() / 100.0 * 2;
-
-        // To take care of one one movement when zoom changes with pitch
-        double rateAdjust = m_pRateDir->get() *
-                math_min(0.99, m_pRate->get() * m_pRateRange->get());
-        double targetPosition = -1.0 * diff.x() *
-                samplesPerPixel * (1 + rateAdjust);
+    if (m_bScratching && m_waveformWidget) {
+        // Adjusts for one-to-one movement.
+        double audioSamplePerPixel = m_waveformWidget->getAudioSamplePerPixel();
+        double targetPosition = -1.0 * event->pos().x() * audioSamplePerPixel * 2;
         //qDebug() << "Target:" << targetPosition;
-        m_pScratch->slotSet(targetPosition);
-    } else if (m_iMouseStart != -1 && m_bBending) {
+        m_pScratchPosition->slotSet(targetPosition);
+    } else if (m_bBending) {
+        QPoint diff = event->pos() - m_mouseAnchor;
         // start at the middle of 0-127, and emit values based on
-        // how far the mouse has travelled horizontally
+        // how far the mouse has traveled horizontally
         double v = 64.0 + diff.x()/10.0f;
         // clamp to [0, 127]
         v = math_min(127.0, math_max(0.0, v));
@@ -133,17 +109,15 @@ void WWaveformViewer::mouseMoveEvent(QMouseEvent* event) {
     }
 }
 
-void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/){
+void WWaveformViewer::mouseReleaseEvent(QMouseEvent* /*event*/) {
     if (m_bScratching) {
-        m_pScratchEnable->slotSet(0.0f);
-        m_pScratch->slotSet(0.0f);
+        m_pScratchPositionEnable->slotSet(0.0f);
         m_bScratching = false;
     }
     if (m_bBending) {
         emit(valueChangedRightDown(64));
         m_bBending = false;
     }
-    m_iMouseStart = -1;
     m_mouseAnchor = QPoint();
 
     // Set the cursor back to an arrow.

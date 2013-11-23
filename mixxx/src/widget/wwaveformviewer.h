@@ -19,7 +19,7 @@ class ControlPotmeter;
 class WWaveformViewer : public QWidget {
     Q_OBJECT
   public:
-    WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0, Qt::WFlags f = 0);
+    WWaveformViewer(const char *group, ConfigObject<ConfigValue>* pConfig, QWidget *parent=0);
     virtual ~WWaveformViewer();
 
     const char* getGroup() const { return m_pGroup;}
@@ -65,16 +65,10 @@ private:
     ConfigObject<ConfigValue>* m_pConfig;
     int m_zoomZoneWidth;
     ControlObjectThreadMain* m_pZoom;
-    ControlObjectThreadMain* m_pScratchEnable;
-    ControlObjectThreadMain* m_pScratch;
-    ControlObjectThreadMain* m_pTrackSamples;
-    ControlObjectThreadMain* m_pTrackSampleRate;
-    ControlObjectThreadMain* m_pRate;
-    ControlObjectThreadMain* m_pRateRange;
-    ControlObjectThreadMain* m_pRateDir;
+    ControlObjectThreadMain* m_pScratchPositionEnable;
+    ControlObjectThreadMain* m_pScratchPosition;
     bool m_bScratching;
     bool m_bBending;
-    int m_iMouseStart;
     QPoint m_mouseAnchor;
 
     WaveformWidgetAbstract* m_waveformWidget;

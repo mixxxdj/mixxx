@@ -74,6 +74,7 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.addAction(m_pAddToAutoDJAction);
     menu.addAction(m_pAddToAutoDJTopAction);
     menu.addAction(m_pRenamePlaylistAction);
+    menu.addAction(m_pDuplicatePlaylistAction);
     menu.addAction(m_pDeletePlaylistAction);
     menu.addAction(m_pLockPlaylistAction);
     menu.addSeparator();
@@ -82,7 +83,8 @@ void PlaylistFeature::onRightClickChild(const QPoint& globalPos, QModelIndex ind
     menu.exec(globalPos);
 }
 
-bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls){
+bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
+                                      QWidget *pSource){
     //TODO: Filter by supported formats regex and reject anything that doesn't match.
     QString playlistName = index.data().toString();
     int playlistId = m_playlistDao.getPlaylistIdFromName(playlistName);
@@ -97,11 +99,16 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         files.append(url.toLocalFile());
     }
 
-    // If a track is dropped onto a playlist's name, but the track isn't in the
-    // library, then add the track to the library before adding it to the
-    // playlist.
-    // Adds track, does not insert duplicates, handles unremoving logic.
-    QList<int> trackIds = m_trackDao.addTracks(files, true);
+    QList<int> trackIds;
+    if (pSource) {
+        trackIds = m_pTrackCollection->getTrackDAO().getTrackIds(files);
+    } else {
+        // If a track is dropped onto a playlist's name, but the track isn't in the
+        // library, then add the track to the library before adding it to the
+        // playlist.
+        // Adds track, does not insert duplicates, handles unremoving logic.
+        trackIds = m_pTrackCollection->getTrackDAO().addTracks(files, true);
+    }
 
     // remove tracks that could not be added
     for (int trackId =0; trackId<trackIds.size() ; trackId++) {
@@ -110,10 +117,8 @@ bool PlaylistFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls
         }
     }
 
-    // appendTracksToPlaylist doesn't return whether it succeeded, so assume it
-    // did.
-    m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
-    return true;
+    // Return whether appendTracksToPlaylist succeeded.
+    return m_playlistDao.appendTracksToPlaylist(trackIds, playlistId);
 }
 
 bool PlaylistFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
@@ -174,7 +179,7 @@ void PlaylistFeature::slotPlaylistTableChanged(int playlistId) {
 
         if (type != PlaylistDAO::PLHT_UNKNOWN) {
             // Switch the view to the playlist.
-            m_pPlaylistTableModel->setPlaylist(playlistId);
+            m_pPlaylistTableModel->setTableModel(playlistId);
             // Update selection
             emit(featureSelect(this, m_lastRightClickedIndex));
         }

@@ -15,23 +15,21 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "mixxxkeyboard.h"
-#include "controlobject.h"
 #include <QList>
 #include <QtDebug>
 #include <QKeyEvent>
 #include <QEvent>
 
-MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent)
-{
+#include "mixxxkeyboard.h"
+#include "controlobject.h"
+#include "util/cmdlineargs.h"
+
+MixxxKeyboard::MixxxKeyboard(ConfigObject<ConfigValueKbd> * pKbdConfigObject, QObject * parent, const char * name) : QObject(parent) {
     m_pKbdConfigObject = pKbdConfigObject;
     setObjectName(name);
 }
 
-MixxxKeyboard::~MixxxKeyboard()
-{
-   // TODO(XXX) ugly workaround to get no leak
-   delete m_pKbdConfigObject;
+MixxxKeyboard::~MixxxKeyboard() {
 }
 
 bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
@@ -65,10 +63,17 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
 
             if (pConfigKey)
             {
-                ControlObject::getControl(*pConfigKey)->queueFromMidi(MIDI_NOTE_ON, 1);
-                // Add key to active key list
-                m_qActiveKeyList.append(QPair<int, ConfigKey *>(keyId,pConfigKey));
-                return true;
+                ControlObject* control = ControlObject::getControl(*pConfigKey);
+                if (control) {
+                    control->setValueFromMidi(MIDI_NOTE_ON, 1);
+                    // Add key to active key list
+                    m_qActiveKeyList.append(QPair<int, ConfigKey *>(keyId,pConfigKey));
+                    return true;
+                } else {
+                    qDebug() << "Warning: Keyboard key is configured for nonexistent control: "
+                             << pConfigKey->group << " " << pConfigKey->item;
+                    return false;
+                }
             }
         }
     } else if (e->type()==QEvent::KeyRelease) {
@@ -88,7 +93,7 @@ bool MixxxKeyboard::eventFilter(QObject *, QEvent * e) {
         for (int i = m_qActiveKeyList.size() - 1; i >= 0; i--) {
             if (m_qActiveKeyList[i].first == keyId) {
                 if(!autoRepeat) {
-                    ControlObject::getControl(*(m_qActiveKeyList[i].second))->queueFromMidi(MIDI_NOTE_OFF, 0);
+                    ControlObject::getControl(*(m_qActiveKeyList[i].second))->setValueFromMidi(MIDI_NOTE_OFF, 0);
                     m_qActiveKeyList.removeAt(i);
                 }
                 return true;
@@ -132,7 +137,9 @@ QKeySequence MixxxKeyboard::getKeySeq(QKeyEvent * e) {
     keyseq = QKeySequence(e->key()).toString();
     k = QKeySequence(modseq + keyseq);
 
-    qDebug() << "keyboard press: " << k.toString();
+    if (CmdlineArgs::Instance().getDeveloper()) {
+        qDebug() << "keyboard press: " << k.toString();
+    }
     return k;
 }
 

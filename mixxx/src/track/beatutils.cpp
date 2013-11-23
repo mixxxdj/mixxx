@@ -18,7 +18,7 @@
 #define BPM_ERROR 0.05f
 
 // the raw beatgrid is divided into blocks of size N from which the local bpm is
-// computed.
+// computed. Tweaked from 8 to 12 which improves the BPM accurancy for 'problem songs'.
 #define N 12
 
 static bool sDebug = false;
@@ -68,8 +68,8 @@ double BeatUtils::computeSampleMedian(QList<double> sortedItems) {
     // of the middle 2 elements.
     if (sortedItems.size() % 2 == 0) {
         int item_position = sortedItems.size()/2;
-        double item_value1 = sortedItems.at(item_position);
-        double item_value2 = sortedItems.at(item_position + 1);
+        double item_value1 = sortedItems.at(item_position - 1);
+        double item_value2 = sortedItems.at(item_position);
         return (item_value1 + item_value2)/2.0;
     }
 
@@ -147,7 +147,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
      * added to a list from which the statistical
      * median is computed
      *
-     * N=8 seems to work great; We coincide with Traktor's
+     * N=12 seems to work great; We coincide with Traktor's
      * BPM value in many case but not worse than +-0.2 BPM
      */
     /*
@@ -180,7 +180,7 @@ double BeatUtils::calculateBpm(const QVector<double>& beats, int SampleRate, int
     // If we don't have enough beats for our regular approach, just divide the #
     // of beats by the duration in minutes.
     if (beats.size() <= N) {
-        return 60.0 * beats.size() * SampleRate / (beats.last() - beats.first());
+        return 60.0 * (beats.size()-1) * SampleRate / (beats.last() - beats.first());
     }
 
     QMap<double, int> frequency_table;

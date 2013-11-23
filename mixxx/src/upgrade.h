@@ -27,6 +27,7 @@ class Upgrade
         bool isFirstRun() { return m_bFirstRun; };
         bool isUpgraded() { return m_bUpgraded; };
     private:
+        bool askReanalyzeBeats();
         bool m_bFirstRun;
         bool m_bUpgraded;
 };

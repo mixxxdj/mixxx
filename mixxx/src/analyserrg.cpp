@@ -23,15 +23,20 @@ AnalyserGain::~AnalyserGain() {
 }
 
 bool AnalyserGain::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
-    bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
-    float fReplayGain = tio->getReplayGain();
-    if(totalSamples == 0 || fReplayGain != 0 || !bAnalyserEnabled) {
-        //qDebug() << "Replaygain Analyser will not start.";
-        //if (fReplayGain != 0 ) qDebug() << "Found a ReplayGain value of " << 20*log10(fReplayGain) << "dB for track :" <<(tio->getFilename());
+    if (loadStored(tio) || totalSamples == 0) {
         return false;
     }
     m_bStepControl = m_pReplayGain->initialise((long)sampleRate, 2);
     return true;
+}
+
+bool AnalyserGain::loadStored(TrackPointer tio) const {
+    bool bAnalyserEnabled = (bool)m_pConfigReplayGain->getValueString(ConfigKey("[ReplayGain]","ReplayGainAnalyserEnabled")).toInt();
+    float fReplayGain = tio->getReplayGain();
+    if (fReplayGain != 0 || !bAnalyserEnabled) {
+        return true;
+    }
+    return false;
 }
 
 void AnalyserGain::cleanup(TrackPointer tio) {

@@ -243,11 +243,11 @@ void CachingReader::processChunkReadRequest(ChunkReadRequest* request,
                                             ReaderStatusUpdate* update) {
     int chunk_number = request->chunk->chunk_number;
     //qDebug() << "Processing ChunkReadRequest for" << chunk_number;
-    update->status = CHUNK_READ_INVALID;
     update->chunk = request->chunk;
     update->chunk->length = 0;
 
     if (m_pCurrentSoundSource == NULL || chunk_number < 0) {
+        update->status = CHUNK_READ_INVALID;
         return;
     }
 
@@ -284,9 +284,9 @@ void CachingReader::processChunkReadRequest(ChunkReadRequest* request,
 }
 
 void CachingReader::newTrack(TrackPointer pTrack) {
-    m_trackQueueMutex.lock();
-    m_trackQueue.enqueue(pTrack);
-    m_trackQueueMutex.unlock();
+    m_newTrackMutex.lock();
+    m_newTrack = pTrack;
+    m_newTrackMutex.unlock();
 }
 
 void CachingReader::process() {
@@ -421,9 +421,9 @@ int CachingReader::read(int sample, int num_samples, CSAMPLE* buffer) {
 
         // If the chunk is not in cache, then we must return an error.
         if (current == NULL) {
-            qDebug() << "Couldn't get chunk " << chunk_num
-                     << " in read() of [" << sample << "," << sample+num_samples
-                     << "] chunks " << start_chunk << "-" << end_chunk;
+            // qDebug() << "Couldn't get chunk " << chunk_num
+            //          << " in read() of [" << sample << "," << sample+num_samples
+            //          << "] chunks " << start_chunk << "-" << end_chunk;
 
             // Something is wrong. Break out of the loop, that should fill the
             // samples requested with zeroes.
@@ -592,16 +592,14 @@ void CachingReader::hintAndMaybeWake(QList<Hint>& hintList) {
 }
 
 void CachingReader::run() {
-    // Notify the EngineWorkerScheduler that the work we scheduled is starting.
-    emit(workStarting(this));
+    TrackPointer pLoadTrack;
 
-    m_trackQueueMutex.lock();
-    TrackPointer pLoadTrack = TrackPointer();
-    if (!m_trackQueue.isEmpty()) {
-        pLoadTrack = m_trackQueue.takeLast();
-        m_trackQueue.clear();
+    m_newTrackMutex.lock();
+    if (m_newTrack) {
+        pLoadTrack = m_newTrack;
+        m_newTrack = TrackPointer();
     }
-    m_trackQueueMutex.unlock();
+    m_newTrackMutex.unlock();
 
     if (pLoadTrack) {
         loadTrack(pLoadTrack);
@@ -616,16 +614,19 @@ void CachingReader::run() {
     }
 
     // Notify the EngineWorkerScheduler that the work we did is done.
-    emit(workDone(this));
+    setActive(false);
 }
 
 void CachingReader::wake() {
     //qDebug() << m_pGroup << "CachingReader::wake()";
-    emit(workReady(this));
+    workReady();
 }
 
 void CachingReader::loadTrack(TrackPointer pTrack) {
     //qDebug() << m_pGroup << "CachingReader::loadTrack() lock acquired for load.";
+
+    // Emit that a new track is loading, stops the current track
+    emit(trackLoading());
 
     ReaderStatusUpdate status;
     status.status = TRACK_LOADED;

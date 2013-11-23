@@ -328,4 +328,23 @@ METADATA
       ALTER TABLE Library ADD COLUMN beats_sub_version TEXT DEFAULT '';
     </sql>
   </revision>
+  <revision version="18" min_compatible="3">
+    <description>
+      Add keys column to library table.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN keys BLOB;
+      ALTER TABLE Library ADD COLUMN keys_version TEXT;
+      ALTER TABLE Library ADD COLUMN keys_sub_version TEXT;
+    </sql>
+  </revision>
+  <revision version="19" min_compatible="3">
+    <description>
+      Add key_id column to library table for caching the global key. Default to
+      INVALID.
+    </description>
+    <sql>
+      ALTER TABLE Library ADD COLUMN key_id INTEGER DEFAULT 0;
+    </sql>
+  </revision>
 </schema>

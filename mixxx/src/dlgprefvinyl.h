@@ -44,7 +44,6 @@ public slots:
     /** Update widget */
     void slotUpdate();
     void slotApply();
-    void EnableRelativeModeSlotApply();
     void VinylTypeSlotApply();
     void VinylGainSlotApply();
     void slotClose();
@@ -61,7 +60,6 @@ private:
     VinylControlManager* m_pVCManager;
     /** Pointer to config object */
     ConfigObject<ConfigValue> *config;
-    ControlObjectThreadMain m_COMode;
     ControlObjectThreadMain m_COSpeed1;
     ControlObjectThreadMain m_COSpeed2;
 };

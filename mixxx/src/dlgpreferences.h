@@ -35,7 +35,6 @@ class DlgPrefControls;
 class DlgPrefEQ;
 class DlgPrefCrossfader;
 class DlgPrefRecord;
-class DlgPrefBpm;
 class DlgPrefBeats;
 class DlgPrefVinyl;
 class DlgPrefNoVinyl;
@@ -45,6 +44,9 @@ class ControllerManager;
 class SkinLoader;
 class PlayerManager;
 class VinylControlManager;
+#ifdef __MODPLUG__
+class DlgPrefModplug;
+#endif
 
 /**
   *@author Tue & Ken Haste Andersen
@@ -87,12 +89,14 @@ private:
     DlgPrefEQ* m_weq;
     DlgPrefCrossfader* m_wcrossfader;
     DlgPrefRecord* m_wrecord;
-    DlgPrefBpm* m_wbpm;
     DlgPrefBeats* m_wbeats;
     DlgPrefVinyl* m_wvinylcontrol;
     DlgPrefNoVinyl* m_wnovinylcontrol;
     DlgPrefShoutcast* m_wshoutcast;
     DlgPrefReplayGain* m_wreplaygain;
+#ifdef __MODPLUG__
+    DlgPrefModplug* m_wmodplug;
+#endif
 
     /*
     QScrollArea* m_sasound;
@@ -120,6 +124,9 @@ private:
     QTreeWidgetItem* m_pVinylControlButton;
     QTreeWidgetItem* m_pShoutcastButton;
     QTreeWidgetItem* m_pReplayGainButton;
+#ifdef __MODPLUG__
+    QTreeWidgetItem* m_pModplugButton;
+#endif
     QTreeWidgetItem* m_pControllerTreeItem;
     QList<QTreeWidgetItem*> m_controllerWindowLinks;
 

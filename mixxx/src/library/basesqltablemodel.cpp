@@ -1,4 +1,3 @@
-// basesqltablemodel.h
 // Created by RJ Ryan (rryan@mit.edu) 1/29/2010
 
 #include <QtAlgorithms>
@@ -7,26 +6,35 @@
 
 #include "library/basesqltablemodel.h"
 
-#include "library/starrating.h"
 #include "library/stardelegate.h"
+#include "library/starrating.h"
+#include "library/bpmdelegate.h"
+#include "library/previewbuttondelegate.h"
+#include "library/queryutil.h"
 #include "mixxxutils.cpp"
+#include "playermanager.h"
+#include "playerinfo.h"
 
 const bool sDebug = false;
 
 BaseSqlTableModel::BaseSqlTableModel(QObject* pParent,
                                      TrackCollection* pTrackCollection,
-                                     QSqlDatabase db,
                                      QString settingsNamespace)
         :  QAbstractTableModel(pParent),
-           TrackModel(db, settingsNamespace),
-           m_currentSearch(""),
+           TrackModel(pTrackCollection->getDatabase(), settingsNamespace),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_database(db) {
+           m_database(pTrackCollection->getDatabase()),
+           m_currentSearch(""),
+           m_previewDeckGroup(PlayerManager::groupForPreviewDeck(0)),
+           m_iPreviewDeckTrackId(-1) {
     m_bInitialized = false;
     m_bDirty = true;
     m_iSortColumn = 0;
     m_eSortOrder = Qt::AscendingOrder;
+    connect(&PlayerInfo::Instance(), SIGNAL(trackLoaded(QString, TrackPointer)),
+            this, SLOT(trackLoaded(QString, TrackPointer)));
+    trackLoaded(m_previewDeckGroup, PlayerInfo::Instance().getTrackInfo(m_previewDeckGroup));
 }
 
 BaseSqlTableModel::~BaseSqlTableModel() {
@@ -75,6 +83,9 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Key"));
     setHeaderData(fieldIndex(LIBRARYTABLE_BPM_LOCK),
                   Qt::Horizontal, tr("BPM Lock"));
+
+    setHeaderData(fieldIndex("preview"),
+                  Qt::Horizontal, tr("Preview"));
 }
 
 QSqlDatabase BaseSqlTableModel::database() const {
@@ -166,15 +177,6 @@ void BaseSqlTableModel::select() {
     QTime time;
     time.start();
 
-    // Remove all the rows from the table.
-    // TODO(rryan) we could edit the table in place instead of clearing it?
-    if (m_rowInfo.size() > 0) {
-        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
-        m_rowInfo.clear();
-        m_trackIdToRows.clear();
-        endRemoveRows();
-    }
-
     QString columns = m_tableColumnsJoined;
     QString orderBy = orderByClause();
     QString queryString = QString("SELECT %1 FROM %2 %3")
@@ -191,8 +193,18 @@ void BaseSqlTableModel::select() {
     query.prepare(queryString);
 
     if (!query.exec()) {
-        qDebug() << this << "select() error:" << __FILE__ << __LINE__
-                 << query.executedQuery() << query.lastError();
+        LOG_FAILED_QUERY(query);
+        return;
+    }
+
+    // Remove all the rows from the table. We wait to do this until after the
+    // table query has succeeded. See Bug #1090888.
+    // TODO(rryan) we could edit the table in place instead of clearing it?
+    if (m_rowInfo.size() > 0) {
+        beginRemoveRows(QModelIndex(), 0, m_rowInfo.size()-1);
+        m_rowInfo.clear();
+        m_trackIdToRows.clear();
+        endRemoveRows();
     }
 
     QSqlRecord record = query.record();
@@ -204,8 +216,7 @@ void BaseSqlTableModel::select() {
         tableColumnIndices.push_back(record.indexOf(column));
     }
 
-	// sqlite does not set size and m_rowInfo was just cleared    
-    //int rows = query.size();
+    // sqlite does not set size and m_rowInfo was just cleared
     //if (sDebug) {
     //    qDebug() << "Rows returned" << rows << m_rowInfo.size();
     //}
@@ -218,7 +229,7 @@ void BaseSqlTableModel::select() {
 
         RowInfo thisRowInfo;
         thisRowInfo.trackId = id;
-        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located        
+        thisRowInfo.order = rowInfo.size(); // save rows where this currently track id is located
         // Get all the table columns and store them in the hash for this
         // row-info section.
 
@@ -315,7 +326,7 @@ void BaseSqlTableModel::setTable(const QString& tableName,
 
     // Build a map from the column names to their indices, used by fieldIndex()
     m_tableColumnIndex.clear();
-    for (int i = 0; i < tableColumns.size(); ++i) {
+    for (int i = 0; i < m_tableColumns.size(); ++i) {
         m_tableColumnIndex[m_tableColumns[i]] = i;
     }
 
@@ -346,7 +357,7 @@ void BaseSqlTableModel::setSearch(const QString& searchText, const QString extra
     m_bDirty = true;
 }
 
-void BaseSqlTableModel::search(const QString& searchText, const QString extraFilter) {
+void BaseSqlTableModel::search(const QString& searchText, const QString& extraFilter) {
     if (sDebug) {
         qDebug() << this << "search" << searchText;
     }
@@ -396,7 +407,7 @@ int BaseSqlTableModel::columnCount(const QModelIndex& parent) const {
 
     // Subtract one from trackSource::columnCount to ignore the id column
     int count = m_tableColumns.size() +
-            (m_trackSource ? m_trackSource->columnCount() - 1: 0);
+                (m_trackSource ? m_trackSource->columnCount() - 1: 0);
     return count;
 }
 
@@ -405,9 +416,17 @@ int BaseSqlTableModel::fieldIndex(const QString& fieldName) const {
     if (tableIndex > -1) {
         return tableIndex;
     }
-    // Subtract one from the fieldIndex() result to account for the id column
-    return m_trackSource ? (m_tableColumns.size() +
-                            m_trackSource->fieldIndex(fieldName) - 1) : -1;
+
+    if (m_trackSource) {
+        // We need to account for the case where the field name is not a table
+        // column or a source column.
+        int sourceTableIndex = m_trackSource->fieldIndex(fieldName);
+        if (sourceTableIndex > -1) {
+            // Subtract one from the fieldIndex() result to account for the id column
+            return m_tableColumns.size() + sourceTableIndex - 1;
+        }
+    }
+    return -1;
 }
 
 QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
@@ -445,9 +464,13 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
             } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
                 value = value.toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
-                value = value.toDateTime();
+                QDateTime gmtDate = value.toDateTime();
+                gmtDate.setTimeSpec(Qt::UTC);
+                value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
-                value = value.toDateTime().time();
+                QDateTime gmtDate = value.toDateTime();
+                gmtDate.setTimeSpec(Qt::UTC);
+                value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
             }
@@ -601,6 +624,10 @@ int BaseSqlTableModel::getTrackId(const QModelIndex& index) const {
     return index.sibling(index.row(), fieldIndex(m_idColumn)).data().toInt();
 }
 
+TrackPointer BaseSqlTableModel::getTrack(const QModelIndex& index) const {
+    return m_trackDAO.getTrack(getTrackId(index));
+}
+
 QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     if (!index.isValid()) {
         return "";
@@ -608,6 +635,23 @@ QString BaseSqlTableModel::getTrackLocation(const QModelIndex& index) const {
     QString location = index.sibling(
         index.row(), fieldIndex("location")).data().toString();
     return location;
+}
+
+void BaseSqlTableModel::trackLoaded(QString group, TrackPointer pTrack) {
+    if (group == m_previewDeckGroup) {
+        // If there was a previously loaded track, refresh its rows so the
+        // preview state will update.
+        if (m_iPreviewDeckTrackId > -1) {
+            const int numColumns = columnCount();
+            QLinkedList<int> rows = getTrackRows(m_iPreviewDeckTrackId);
+            foreach (int row, rows) {
+                QModelIndex left = index(row, 0);
+                QModelIndex right = index(row, numColumns);
+                emit(dataChanged(left, right));
+            }
+        }
+        m_iPreviewDeckTrackId = pTrack ? pTrack->getId() : -1;
+    }
 }
 
 void BaseSqlTableModel::tracksChanged(QSet<int> trackIds) {
@@ -656,7 +700,7 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setBitrate(value.toInt());
     } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
         // QVariant::toFloat needs >= QT 4.6.x
-        pTrack->setBpm(static_cast<float>(value.toDouble()));
+        pTrack->setBpm(static_cast<double>(value.toDouble()));
     } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
         pTrack->setPlayedAndUpdatePlaycount(value.toBool());
     } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
@@ -694,6 +738,15 @@ QVariant BaseSqlTableModel::getBaseValue(
     // If the row info has the row-specific column, return that.
     const QHash<int, QVariant>& columns = rowInfo.metadata;
     if (columns.contains(column)) {
+        // Special case for preview column. Return whether trackId is the
+        // current preview deck track.
+        if (column == fieldIndex("preview")) {
+            if (role == Qt::ToolTipRole) {
+                return "";
+            }
+            return m_iPreviewDeckTrackId == trackId;
+        }
+
         if (sDebug) {
             qDebug() << "Returning table-column value" << columns[column]
                      << "for column" << column << "role" << role;
@@ -750,6 +803,10 @@ QMimeData* BaseSqlTableModel::mimeData(const QModelIndexList &indexes) const {
 QAbstractItemDelegate* BaseSqlTableModel::delegateForColumn(const int i, QObject* pParent) {
     if (i == fieldIndex(LIBRARYTABLE_RATING)) {
         return new StarDelegate(pParent);
+    } else if (i == fieldIndex(LIBRARYTABLE_BPM)) {
+        return new BPMDelegate(pParent, i, fieldIndex(LIBRARYTABLE_BPM_LOCK));
+    } else if (PlayerManager::numPreviewDecks() > 0 && i == fieldIndex("preview")) {
+        return new PreviewButtonDelegate(pParent, i);
     }
     return NULL;
 }
@@ -767,5 +824,3 @@ void BaseSqlTableModel::hideTracks(const QModelIndexList& indices) {
     // there.
     select(); //Repopulate the data model.
 }
-
-

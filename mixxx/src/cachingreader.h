@@ -124,6 +124,7 @@ class CachingReader : public EngineWorker {
 
   signals:
     // Emitted once a new track is loaded and ready to be read from.
+    void trackLoading();
     void trackLoaded(TrackPointer pTrack, int iSampleRate, int iNumSamples);
     void trackLoadFailed(TrackPointer pTrack, QString reason);
 
@@ -157,8 +158,8 @@ class CachingReader : public EngineWorker {
 
     // Queue of Tracks to load, and the corresponding lock. Must acquire the
     // lock to touch.
-    QMutex m_trackQueueMutex;
-    QQueue<TrackWeakPointer> m_trackQueue;
+    QMutex m_newTrackMutex;
+    TrackPointer m_newTrack;
 
     ////////////////////////////////////////////////////////////////////////////
     // The following may /only/ be called within the engine callback

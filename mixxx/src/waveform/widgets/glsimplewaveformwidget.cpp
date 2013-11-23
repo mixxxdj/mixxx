@@ -1,6 +1,7 @@
 #include "glsimplewaveformwidget.h"
 
 #include <QPainter>
+#include <QtDebug>
 
 #include "sharedglcontext.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -13,22 +14,24 @@
 #include "waveform/renderers/waveformrenderbeat.h"
 
 GLSimpleWaveformWidget::GLSimpleWaveformWidget( const char* group, QWidget* parent)
-    : QGLWidget(SharedGLContext::getContext(), parent),
-      WaveformWidgetAbstract(group) {
-
+        : QGLWidget(parent, SharedGLContext::getWidget()),
+          WaveformWidgetAbstract(group) {
     addRenderer<WaveformRenderBackground>();
     addRenderer<WaveformRendererEndOfTrack>();
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<GLWaveformRendererSimpleSignal>();
-    addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
+    addRenderer<WaveformRenderMark>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     setAutoBufferSwap(false);
 
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
     if (QGLContext::currentContext() != context()) {
         makeCurrent();
     }

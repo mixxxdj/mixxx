@@ -1,9 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <MixxxMIDIPreset schemaVersion="1" mixxxVersion="1.11+">
 	<info>
-		<name>DJTech DJM 101</name>
+		<name>DJ-Tech DJM-101</name>
 		<author>zestoi</author>
-		<description>Mapping with full led feedback for the DJTech DJM 101</description>
+		<description>Mapping with full led feedback for the DJ-Tech DJM-101</description>
+		<forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
 	</info>
     <controller id="DJM-101">
 		<scriptfiles>

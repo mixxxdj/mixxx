@@ -3,6 +3,7 @@
       <name>Hercules DJ Console 4-Mx</name>
       <author>deusdiabolus</author>
       <description>Mapping for Hercules DJ Console 4-Mx</description>
+      <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=3693</forums>
     </info>
     <controller id="DJ Console 4-Mx MIDI">
         <scriptfiles>

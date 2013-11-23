@@ -17,43 +17,54 @@
 #include "mathstuff.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
+#include "analyserqueue.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
-                                 ConfigObject<ConfigValue> *pConfig,
+                                 ConfigObject<ConfigValue>* pConfig,
                                  EngineMaster* pMixingEngine,
                                  EngineChannel::ChannelOrientation defaultOrientation,
-                                 AnalyserQueue* pAnalyserQueue,
-                                 QString group)
-        : BasePlayer(pParent, group),
-          m_pConfig(pConfig),
-          m_pLoadedTrack(),
-          m_pAnalyserQueue(pAnalyserQueue) {
+                                 QString group,
+                                 bool defaultMaster,
+                                 bool defaultHeadphones) :
+        BasePlayer(pParent, group),
+        m_pConfig(pConfig),
+        m_pLoadedTrack() {
 
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    EngineDeck* pChannel = new EngineDeck(pSafeGroupName,
-                                          pConfig, defaultOrientation);
-    EngineBuffer* pEngineBuffer = pChannel->getEngineBuffer();
-    pMixingEngine->addChannel(pChannel);
+    m_pChannel = new EngineDeck(pSafeGroupName,
+                                pConfig, defaultOrientation);
+
+    EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
+    pMixingEngine->addChannel(m_pChannel);
+
+    // Set the routing option defaults for the master and headphone mixes.
+    {
+        ControlObjectThreadMain* pMaster = new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(getGroup(), "master")));
+        pMaster->slotSet(defaultMaster);
+        delete pMaster;
+
+        ControlObjectThreadMain* pHeadphones = new ControlObjectThreadMain(
+            ControlObject::getControl(ConfigKey(getGroup(), "pfl")));
+        pHeadphones->slotSet(defaultHeadphones);
+        delete pHeadphones;
+    }
 
     ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
     pEngineBuffer->addControl(pClockControl);
 
     CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
-    connect(this, SIGNAL(newTrackLoaded(TrackPointer)),
-            pCueControl, SLOT(loadTrack(TrackPointer)));
-    connect(this, SIGNAL(unloadingTrack(TrackPointer)),
-            pCueControl, SLOT(unloadTrack(TrackPointer)));
     pEngineBuffer->addControl(pCueControl);
 
     // Connect our signals and slots with the EngineBuffer's signals and
     // slots. This will let us know when the reader is done loading a track, and
     // let us request that the reader load a track.
-    connect(this, SIGNAL(loadTrack(TrackPointer)),
-            pEngineBuffer, SLOT(slotLoadTrack(TrackPointer)));
+    connect(this, SIGNAL(loadTrack(TrackPointer, bool)),
+            pEngineBuffer, SLOT(slotLoadTrack(TrackPointer, bool)));
     connect(pEngineBuffer, SIGNAL(trackLoaded(TrackPointer)),
             this, SLOT(slotFinishLoading(TrackPointer)));
     connect(pEngineBuffer, SIGNAL(trackLoadFailed(TrackPointer, QString)),
@@ -116,8 +127,7 @@ BaseTrackPlayer::~BaseTrackPlayer()
     delete m_pDuration;
 }
 
-void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos) {
-    Q_UNUSED(bStartFromEndPos);
+void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
 
     //Disconnect the old track's signals.
     if (m_pLoadedTrack) {
@@ -168,12 +178,13 @@ void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bStartFromEndPos) {
             this, SLOT(slotSetReplayGain(double)));
 
     //Request a new track from the reader
-    emit(loadTrack(track));
+    emit(loadTrack(track, bPlay));
 }
 
 void BaseTrackPlayer::slotLoadFailed(TrackPointer track, QString reason) {
     if (track != NULL) {
         qDebug() << "Failed to load track" << track->getLocation() << reason;
+        emit(loadTrackFailed(track));
     } else {
         qDebug() << "Failed to load track (NULL track object)" << reason;
     }
@@ -245,10 +256,6 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
     emit(newTrackLoaded(m_pLoadedTrack));
 }
 
-AnalyserQueue* BaseTrackPlayer::getAnalyserQueue() const {
-    return m_pAnalyserQueue;
-}
-
 TrackPointer BaseTrackPlayer::getLoadedTrack() const {
     return m_pLoadedTrack;
 }
@@ -260,4 +267,8 @@ void BaseTrackPlayer::slotSetReplayGain(double replayGain) {
     if (m_pPlay->get() == 0.0) {
         m_pReplayGain->slotSet(replayGain);
     }
+}
+
+EngineDeck* BaseTrackPlayer::getEngineDeck() const {
+    return m_pChannel;
 }

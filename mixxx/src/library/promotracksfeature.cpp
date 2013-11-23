@@ -26,7 +26,6 @@
 #include "trackinfoobject.h"
 #include "defs_promo.h"
 #include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 
 QString PromoTracksFeature::m_sPromoLocalHTMLLocation;
@@ -131,11 +130,8 @@ QList<TrackPointer> PromoTracksFeature::getTracksToAutoLoad()
     return m_tracksToAutoLoad;
 }
 
-void PromoTracksFeature::bindWidget(WLibrarySidebar* sidebarWidget,
-                                    WLibrary* libraryWidget,
+void PromoTracksFeature::bindWidget(WLibrary* libraryWidget,
                                     MixxxKeyboard* keyboard) {
-    Q_UNUSED(sidebarWidget);
-
     QString libraryPath = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
 
     ConfigObject<ConfigValue>* config = m_pConfig; //Long story, macros macros macros
@@ -180,40 +176,4 @@ void PromoTracksFeature::activateChild(const QModelIndex& index) {
     } else {
         emit(switchToView(itemString));
     }
-}
-
-void PromoTracksFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
-}
-
-void PromoTracksFeature::onRightClickChild(const QPoint& globalPos,
-                                            QModelIndex index) {
-    Q_UNUSED(globalPos);
-    Q_UNUSED(index);
-}
-
-bool PromoTracksFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool PromoTracksFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool PromoTracksFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool PromoTracksFeature::dragMoveAcceptChild(const QModelIndex& index,
-                                             QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-void PromoTracksFeature::onLazyChildExpandation(const QModelIndex &index){
-    //Nothing to do because the childmodel is not of lazy nature.
 }

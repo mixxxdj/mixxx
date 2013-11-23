@@ -60,9 +60,19 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
         return;
     }
 
-    QString playlist = m_lastRightClickedIndex.data().toString();
+    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
+    // use the dataPath because models with nested playlists need to use the
+    // full path/name of the playlist.
+    QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
+
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
         getPlaylistModelForPlaylist(playlist));
+
+    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
+        qDebug() << "BaseExternalLibraryFeature::addToAutoDJ could not initialize a playlist model for playlist:" << playlist;
+        return;
+    }
+
     pPlaylistModelToAdd->select();
     PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
     int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
@@ -83,6 +93,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
             // Start at position 2 because position 1 was already loaded to the deck
             playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
         } else {
+            // TODO(XXX): Care whether the append succeeded.
             playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
         }
     }
@@ -95,9 +106,18 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
         return;
     }
 
-    QString playlist = m_lastRightClickedIndex.data().toString();
+    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
+    // use the dataPath because models with nested playlists need to use the
+    // full path/name of the playlist.
+    QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
         getPlaylistModelForPlaylist(playlist));
+
+    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
+        qDebug() << "BaseExternalLibraryFeature::slotImportAsMixxxPlaylist could not initialize a playlist model for playlist:" << playlist;
+        return;
+    }
+
     pPlaylistModelToAdd->select();
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
@@ -123,6 +143,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
             if (index.isValid()) {
                 qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
                 TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+                // TODO(XXX): Care whether the append succeeded.
                 playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
             }
         }

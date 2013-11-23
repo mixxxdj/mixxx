@@ -357,9 +357,9 @@ void GLSLWaveformRendererSignal::draw(QPainter* painter, QPaintEvent* /*event*/)
 
         glViewport(0, 0, m_framebuffer->width(), m_framebuffer->height());
 
-        m_frameShaderProgram->setUniformValue("lowColor",m_colors.getLowColor());
-        m_frameShaderProgram->setUniformValue("midColor",m_colors.getMidColor());
-        m_frameShaderProgram->setUniformValue("highColor",m_colors.getHighColor());
+        m_frameShaderProgram->setUniformValue("lowColor", m_pColors->getLowColor());
+        m_frameShaderProgram->setUniformValue("midColor", m_pColors->getMidColor());
+        m_frameShaderProgram->setUniformValue("highColor", m_pColors->getHighColor());
 
         glBindTexture(GL_TEXTURE_2D, m_signalMaxbuffer->texture());
         glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);

@@ -76,6 +76,11 @@ class ErrorDialogProperties {
         m_modal = modal;
     }
 
+    /** Set whether Mixxx should quit after the user acknowledges the error. */
+    inline void setShouldQuit(bool shouldQuit) {
+        m_shouldQuit = shouldQuit;
+    }
+
     /** Automatically sets the icon to match the type for convenience. */
     void setType(DialogType typeToSet);
 
@@ -107,6 +112,7 @@ class ErrorDialogProperties {
     QString m_infoText;
     QString m_details;
     bool m_modal;
+    bool m_shouldQuit;
     DialogType m_type;
     QMessageBox::Icon m_icon;
     /** List of standard buttons to add to the box, in order
@@ -140,8 +146,10 @@ class ErrorDialogHandler : public QObject {
 
     // Any thread may call either of these to emit a signal to display the
     // requested message box. They return false if a dialog with the same key
-    // (or title if no key) is already displayed.
-    bool requestErrorDialog(DialogType type, QString message);
+    // (or title if no key) is already displayed. If shouldQuit is true, Mixxx
+    // will shut down.
+    bool requestErrorDialog(DialogType type, QString message,
+                            bool shouldQuit=false);
     bool requestErrorDialog(ErrorDialogProperties* props);
 
     // Allows a means for main() to skip exec() if there was a critical or fatal

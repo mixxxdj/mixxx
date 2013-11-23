@@ -19,8 +19,8 @@ SoftwareWaveformWidget::SoftwareWaveformWidget( const char* group, QWidget* pare
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
     addRenderer<WaveformRendererFilteredSignal>();
-    addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
+    addRenderer<WaveformRenderMark>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
@@ -37,5 +37,5 @@ void SoftwareWaveformWidget::castToQWidget() {
 
 void SoftwareWaveformWidget::paintEvent( QPaintEvent* event) {
     QPainter painter(this);
-    draw(&painter,event);
+    draw(&painter, event);
 }

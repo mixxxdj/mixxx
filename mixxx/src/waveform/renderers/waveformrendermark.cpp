@@ -4,12 +4,13 @@
 
 #include "waveform/renderers/waveformrendermark.h"
 
-#include "controlobject.h"
+#include "controlobjectthreadmain.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/waveform.h"
 #include "widget/wskincolor.h"
 #include "widget/wwidget.h"
+#include "widget/wimagestore.h"
 
 
 
@@ -18,7 +19,7 @@ WaveformRenderMark::WaveformRenderMark( WaveformWidgetRenderer* waveformWidgetRe
 }
 
 void WaveformRenderMark::setup( const QDomNode& node) {
-    m_marks.setup(m_waveformRenderer->getGroup(),node);
+    m_marks.setup(m_waveformRenderer->getGroup(), node, *m_waveformRenderer->getWaveformSignalColors());
 }
 
 void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
@@ -37,45 +38,45 @@ void WaveformRenderMark::draw( QPainter* painter, QPaintEvent* /*event*/) {
     for( int i = 0; i < m_marks.size(); i++) {
         WaveformMark& mark = m_marks[i];
 
-        if( !mark.m_pointControl)
+        if (!mark.m_pointControl)
             continue;
 
-        //Generate pixmap on first paint can't be done in setup since we need
-        //render widget to be resized yet ...
-        if( mark.m_pixmap.isNull())
-            generateMarkPixmap(mark);
+        // Generate image on first paint can't be done in setup since we need
+        // render widget to be resized yet ...
+        if( mark.m_image.isNull()) {
+            generateMarkImage(mark);
+        }
 
         int samplePosition = mark.m_pointControl->get();
-        if( samplePosition > 0.0) {
+        if (samplePosition >= 0.0) {
             m_waveformRenderer->regulateVisualSample(samplePosition);
             double currentMarkPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(samplePosition);
 
-            //NOTE: vRince I guess pixmap width is odd to display the center on the exact line !
-            //external pixmap should respect that ...
-            const int markHalfWidth = mark.m_pixmap.width()/2.0;
+            // NOTE: vRince I guess image width is odd to display the center on the exact line !
+            //external image should respect that ...
+            const int markHalfWidth = mark.m_image.width()/2.0;
 
             //check if the current point need to be displayed
-            if( currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth)
-                painter->drawPixmap(QPoint(currentMarkPoint-markHalfWidth,0), mark.m_pixmap);
+            if( currentMarkPoint > -markHalfWidth && currentMarkPoint < m_waveformRenderer->getWidth() + markHalfWidth) {
+                painter->drawImage(QPoint(currentMarkPoint-markHalfWidth,0), mark.m_image);
+            }
         }
     }
-
     painter->restore();
 }
 
-void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
+void WaveformRenderMark::generateMarkImage( WaveformMark& mark) {
     // Load the pixmap from file -- takes precedence over text.
     if( mark.m_pixmapPath != "") {
-        // TODO(XXX) We could use WPixmapStore here, which would recolor the
-        // pixmap according to the theme. Then we would have to worry about
-        // deleting it -- for now we'll just load the pixmap directly.
         QString path =  WWidget::getPath(mark.m_pixmapPath);
-        mark.m_pixmap = QPixmap( path);
-
-        // If loading the pixmap didn't fail, then we're done. Otherwise fall
+        QImage image = QImage(path);
+        // If loading the image didn't fail, then we're done. Otherwise fall
         // through and render a label.
-        if( !mark.m_pixmap.isNull())
+        if (!image.isNull()) {
+            mark.m_image = image.convertToFormat(QImage::Format_ARGB32_Premultiplied);
+            WImageStore::correctImageColors(&mark.m_image);
             return;
+        }
     }
 
     QPainter painter;
@@ -83,8 +84,8 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
     int labelRectWidth = 0;
     int labelRectHeight = 0;
 
-    // If no text is provided, leave m_markPixmap as a null pixmap
-    if( !mark.m_text.isNull()) {
+    // If no text is provided, leave m_markImage as a null image
+    if (!mark.m_text.isNull()) {
         //QFont font("Bitstream Vera Sans");
         //QFont font("Helvetica");
         QFont font; // Uses the application default
@@ -95,29 +96,31 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
 
         //fixed margin ...
         QRect wordRect = metrics.tightBoundingRect(mark.m_text);
-        int marginX = 1;
-        int marginY = 1;
-        wordRect.moveTop(marginX+1);
-        wordRect.moveLeft(marginY+1);
-        wordRect.setWidth( wordRect.width() + (wordRect.width())%2);
-        //even wodrrect to have an event pixmap >> draw the line in the middle !
+        const int marginX = 1;
+        const int marginY = 1;
+        wordRect.moveTop(marginX + 1);
+        wordRect.moveLeft(marginY + 1);
+        wordRect.setWidth(wordRect.width() + (wordRect.width())%2);
+        //even wordrect to have an even Image >> draw the line in the middle !
 
         labelRectWidth = wordRect.width() + 2*marginX + 4;
         labelRectHeight = wordRect.height() + 2*marginY + 4 ;
 
-        //vRince all the 0.5 stuff produce nicer rounded rectangle ... I don't know why !
-        QRectF labelRect(0.5,0.5,(float)labelRectWidth - 0.5f,(float)labelRectHeight - 0.5f);
+        QRectF labelRect(0, 0,
+                (float)labelRectWidth, (float)labelRectHeight);
 
-        mark.m_pixmap = QPixmap(labelRectWidth+1, m_waveformRenderer->getHeight());
+        mark.m_image = QImage(labelRectWidth+1,
+                m_waveformRenderer->getHeight(),
+                QImage::Format_ARGB32_Premultiplied);
 
-        if(mark.m_align == Qt::AlignBottom) {
-            labelRect.moveBottom( mark.m_pixmap.height() - 0.6);
+        if (mark.m_align == Qt::AlignBottom) {
+            labelRect.moveBottom(mark.m_image.height()-1);
         }
 
         // Fill with transparent pixels
-        mark.m_pixmap.fill(QColor(0,0,0,0));
+        mark.m_image.fill(QColor(0,0,0,0).rgba());
 
-        painter.begin(&mark.m_pixmap);
+        painter.begin(&mark.m_image);
         painter.setRenderHint(QPainter::TextAntialiasing);
 
         painter.setWorldMatrixEnabled(false);
@@ -129,6 +132,7 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         painter.setPen(mark.m_color);
         painter.setBrush(QBrush(rectColor));
         painter.drawRoundedRect(labelRect, 2.0, 2.0);
+        //painter.drawRect(labelRect);
 
         //draw text
         painter.setBrush(QBrush(QColor(0,0,0,0)));
@@ -142,14 +146,14 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         lineColor.setAlpha(200);
         painter.setPen(lineColor);
 
-        float middle = mark.m_pixmap.width()/2;
+        float middle = mark.m_image.width()/2;
         //Default line align top
         float lineTop = labelRectHeight + 1;
-        float lineBottom = mark.m_pixmap.height();
+        float lineBottom = mark.m_image.height();
 
         if(mark.m_align == Qt::AlignBottom) {
             lineTop = 0.0;
-            lineBottom = mark.m_pixmap.height() - labelRectHeight - 1;
+            lineBottom = mark.m_image.height() - labelRectHeight - 1;
         }
 
         painter.drawLine( middle, lineTop, middle, lineBottom);
@@ -163,10 +167,12 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
     else //no text draw triangle
     {
         float triangleSize = 9.0;
-        mark.m_pixmap = QPixmap(triangleSize+1, m_waveformRenderer->getHeight());
-        mark.m_pixmap.fill(QColor(0,0,0,0));
+        mark.m_image = QImage(labelRectWidth+1,
+                m_waveformRenderer->getHeight(),
+                QImage::Format_ARGB32_Premultiplied);
+        mark.m_image.fill(QColor(0,0,0,0).rgba());
 
-        painter.begin(&mark.m_pixmap);
+        painter.begin(&mark.m_image);
         painter.setRenderHint(QPainter::TextAntialiasing);
 
         painter.setWorldMatrixEnabled(false);
@@ -187,9 +193,9 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         painter.drawPolygon(triangle);
 
         triangle.clear();
-        triangle.append(QPointF(0.0,mark.m_pixmap.height()));
-        triangle.append(QPointF(triangleSize+0.5,mark.m_pixmap.height()));
-        triangle.append(QPointF(triangleSize*0.5 + 0.1, mark.m_pixmap.height() - triangleSize*0.5 - 2.1));
+        triangle.append(QPointF(0.0,mark.m_image.height()));
+        triangle.append(QPointF(triangleSize+0.5,mark.m_image.height()));
+        triangle.append(QPointF(triangleSize*0.5 + 0.1, mark.m_image.height() - triangleSize*0.5 - 2.1));
 
         painter.drawPolygon(triangle);
 
@@ -198,10 +204,10 @@ void WaveformRenderMark::generateMarkPixmap( WaveformMark& mark) {
         QColor lineColor = mark.m_color;
         lineColor.setAlpha(140);
         painter.setPen(lineColor);
-        float middle = mark.m_pixmap.width()/2;
+        float middle = mark.m_image.width()/2;
 
         float lineTop = triangleSize*0.5 + 1;
-        float lineBottom = mark.m_pixmap.height() - triangleSize*0.5 - 1;
+        float lineBottom = mark.m_image.height() - triangleSize*0.5 - 1;
 
         painter.drawLine( middle, lineTop, middle, lineBottom);
 

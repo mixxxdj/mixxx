@@ -26,7 +26,7 @@ import os
 import logging
 logging.getLogger().setLevel(logging.DEBUG)
 
-from build import mixxx, features
+from build import mixxx, features, depends
 target = ARGUMENTS.get('target', None)
 machine = ARGUMENTS.get('machine', None)
 build_type = ARGUMENTS.get('build', None)
@@ -48,11 +48,13 @@ available_features = [features.HifiEq,
                       features.Optimize,
                       features.FAAD,
                       features.WavPack,
+                      features.ModPlug,
                       features.TestSuite,
                       features.LADSPA,
                       features.MSVCDebug,
                       features.MSVSHacks,
                       features.Vamp,
+                      features.PromoTracks,
 
                       # "Features" of dubious quality
                       features.PerfTools,
@@ -87,22 +89,23 @@ soundsource_plugins = SConscript(
 
 #Build Vamp minimal plugins
 #VariantDir("vamp-plugins", "src", duplicate=0)
+mixxxminimal_depends = [ depends.SoundTouch ]
 mixxxminimal_plugins = SConscript(
-    File('vamp-plugins/SConscript'), 
-    variant_dir=Dir(build.build_dir + "/vamp-plugins"), 
-    duplicate=0, exports=['build'])
+    File('vamp-plugins/SConscript'),
+    variant_dir=Dir(build.build_dir + "/vamp-plugins"),
+    duplicate=0, exports=['build', 'mixxxminimal_depends'])
 
 # Setup and build the "mixxx" executable target. Also sets up our install
 # targets for each platform.
 SConscript(File('src/SConscript'), variant_dir=Dir(build.build_dir), duplicate=0,
            exports=['build', 'sources', 'soundsource_plugins', 'mixxxminimal_plugins'])
-           
+
 # For convenience, copy the Mixxx binary out of the build directory to the
 # root. Don't do it on windows because the binary can't run on its own and needs
 # the DLLs present with it.
 if not build.platform_is_windows:
     Command("mixxx", os.path.join(build.build_dir, "mixxx"), Copy("$TARGET", "$SOURCE"))
-    
+
 
 
 #On OS X, if the bundle has been built, copy it up:

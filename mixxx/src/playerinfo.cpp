@@ -93,7 +93,12 @@ TrackPointer PlayerInfo::getTrackInfo(QString group) {
 void PlayerInfo::setTrackInfo(QString group, TrackPointer track)
 {
     QMutexLocker locker(&m_mutex);
+    TrackPointer pOld = m_loadedTrackMap[group];
+    if (pOld) {
+        emit(trackUnloaded(group, pOld));
+    }
     m_loadedTrackMap[group] = track;
+    emit(trackLoaded(group, track));
 }
 
 bool PlayerInfo::isTrackLoaded(TrackPointer pTrack) const {

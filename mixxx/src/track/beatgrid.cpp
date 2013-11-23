@@ -220,16 +220,20 @@ double BeatGrid::getBpmRange(double startSample, double stopSample) const {
 }
 
 void BeatGrid::addBeat(double dBeatSample) {
+    Q_UNUSED(dBeatSample);
     //QMutexLocker locker(&m_mutex);
     return;
 }
 
 void BeatGrid::removeBeat(double dBeatSample) {
+    Q_UNUSED(dBeatSample);
     //QMutexLocker locker(&m_mutex);
     return;
 }
 
 void BeatGrid::moveBeat(double dBeatSample, double dNewBeatSample) {
+    Q_UNUSED(dBeatSample);
+    Q_UNUSED(dNewBeatSample);
     //QMutexLocker locker(&m_mutex);
     return;
 }

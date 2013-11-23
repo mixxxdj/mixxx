@@ -16,11 +16,11 @@
 #include "vamp-sdk/PluginAdapter.h"
 #include "plugins/BeatTrack.h"
 #include "plugins/BarBeatTrack.h"
-//#include "plugins/MixxxBpmDetection.h"
+#include "plugins/MixxxBpmDetection.h"
 
 static Vamp::PluginAdapter<BeatTracker> beatTrackerAdapter;
 static Vamp::PluginAdapter<BarBeatTracker> barBeatTrackPluginAdapter;
-//static Vamp::PluginAdapter<MixxxBpmDetection> MixxxBpmDetection;
+static Vamp::PluginAdapter<MixxxBpmDetection> MixxxBpmDetection;
 
 const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
                                                     unsigned int index)
@@ -28,9 +28,11 @@ const VampPluginDescriptor *vampGetPluginDescriptor(unsigned int vampApiVersion,
     if (vampApiVersion < 1) return 0;
 
     switch (index) {
-    case  0: return beatTrackerAdapter.getDescriptor();
-    case  1: return barBeatTrackPluginAdapter.getDescriptor();
-    //case  2: return MixxxBpmDetection.getDescriptor();
+    // cases have to start at 0, to have mixxxbpmdetection as a fallback
+    // it should always be the first one, kain88 12/2012
+    case  0: return MixxxBpmDetection.getDescriptor();
+    case  1: return beatTrackerAdapter.getDescriptor();
+    case  2: return barBeatTrackPluginAdapter.getDescriptor();
     default: return 0;
     }
 }

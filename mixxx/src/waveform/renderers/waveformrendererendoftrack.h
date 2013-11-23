@@ -2,7 +2,6 @@
 #define WAVEFORMRENDERERENDOFTRACK_H
 
 #include <QColor>
-#include <QPixmap>
 #include <QTime>
 
 #include "util.h"

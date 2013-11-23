@@ -9,7 +9,6 @@
 #include "waveform/renderers/waveformrendermarkrange.h"
 
 #include "configobject.h"
-#include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "trackinfoobject.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -31,7 +30,7 @@ void WaveformRenderMarkRange::setup(const QDomNode &node) {
     while (!child.isNull()) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
-            m_markRanges.back().setup( m_waveformRenderer->getGroup(), child);
+            m_markRanges.back().setup(m_waveformRenderer->getGroup(), child, *m_waveformRenderer->getWaveformSignalColors());
         }
         child = child.nextSibling();
     }
@@ -42,20 +41,22 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
 
     painter->setWorldMatrixEnabled(false);
 
-    if (isDirty())
-        generatePixmaps();
+    if (isDirty()) {
+        generateImages();
+    }
 
     for (unsigned int i = 0; i < m_markRanges.size(); i++) {
         WaveformMarkRange& markRange = m_markRanges[i];
 
-        if (!markRange.isValid())
+        // If the mark range is not active we should not draw it.
+        if (!markRange.active()) {
             continue;
+        }
 
-        int startSample = markRange.m_markStartPointControl->get();
-        int endSample = markRange.m_markEndPointControl->get();
-        if (startSample == endSample)
-            continue;
-
+        // Active mark ranges by definition have starts/ends that are not
+        // disabled so no need to check.
+        int startSample = markRange.start();
+        int endSample = markRange.end();
 
         m_waveformRenderer->regulateVisualSample(startSample);
         double startPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(startSample);
@@ -64,29 +65,25 @@ void WaveformRenderMarkRange::draw(QPainter *painter, QPaintEvent * /*event*/) {
         double endPosition = m_waveformRenderer->transformSampleIndexInRendererWorld(endSample);
 
         //range not in the current display
-        if (startPosition > m_waveformRenderer->getWidth() ||
-                endPosition < 0)
+        if (startPosition > m_waveformRenderer->getWidth() || endPosition < 0)
             continue;
 
-        QPixmap* selectedPixmap = 0;
+        QImage* selectedImage = NULL;
 
-        if (markRange.m_markEnabledControl && markRange.m_markEnabledControl->get() < 0.5)
-            selectedPixmap = &markRange.m_disabledPixmap;
-        else
-            selectedPixmap = &markRange.m_activePixmap;
+        selectedImage = markRange.enabled() ? &markRange.m_activeImage : &markRange.m_disabledImage;
 
-        //draw the correcponding portion of the selected pixmap
-        //this shouldn't involve *any* scaling it should be fast even in software mode
+        // draw the corresponding portion of the selected image
+        // this shouldn't involve *any* scaling it should be fast even in software mode
         QRect rect(startPosition,0,endPosition-startPosition,m_waveformRenderer->getHeight());
-        painter->drawPixmap(rect, *selectedPixmap, rect);
+        painter->drawImage(rect, *selectedImage, rect);
     }
 
     painter->restore();
 }
 
-void WaveformRenderMarkRange::generatePixmaps() {
+void WaveformRenderMarkRange::generateImages() {
     for (unsigned int i = 0; i < m_markRanges.size(); i++) {
-        m_markRanges[i].generatePixmap(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
+        m_markRanges[i].generateImage(m_waveformRenderer->getWidth(), m_waveformRenderer->getHeight());
     }
     setDirty(false);
 }

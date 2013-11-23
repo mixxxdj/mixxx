@@ -10,13 +10,13 @@
 #include "controlpotmeter.h"
 #include "configobject.h"
 #include "controllers/controllerengine.h"
+#include "test/mixxxtest.h"
 
 namespace {
 
-class ControllerEngineTest : public testing::Test {
+class ControllerEngineTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        QApplication *app;
         qDebug() << "SetUp";
         static int argc = 1;
         static char* argv[2] = { "test", NULL };
@@ -41,23 +41,17 @@ class ControllerEngineTest : public testing::Test {
 };
 
 TEST_F(ControllerEngineTest, commonScriptHasNoErrors) {
-    // ConfigObject<ConfigValue> config("~/.mixxx/mixxx.cfg");
-    // QString commonScript = config.getConfigPath() + "/" +
-    //         "/midi/midi-mappings-scripts.js";
     QString commonScript = "./res/controllers/common-controller-scripts.js";
     cEngine->evaluate(commonScript);
     EXPECT_FALSE(cEngine->hasErrors(commonScript));
 }
 
 TEST_F(ControllerEngineTest, scriptSetValue) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write("setValue = function() { engine.setValue('[Channel1]', 'co', 1.0); }\n");
-    f.close();
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "setValue = function() { engine.setValue('[Channel1]', 'co', 1.0); }\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
     ControlObject *co = new ControlObject(ConfigKey("[Channel1]", "co"));
     co->set(0.0);
@@ -66,38 +60,24 @@ TEST_F(ControllerEngineTest, scriptSetValue) {
     EXPECT_DOUBLE_EQ(co->get(), 1.0f);
 
     delete co;
-    co = NULL;
-
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, scriptGetSetValue) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write("getSetValue = function() { var val = engine.getValue('[Channel1]', 'co'); engine.setValue('[Channel1]', 'co', val + 1); }\n");
-    f.close();
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "getSetValue = function() { var val = engine.getValue('[Channel1]', 'co'); engine.setValue('[Channel1]', 'co', val + 1); }\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    ControlObject *co = new ControlObject(ConfigKey("[Channel1]", "co"));
+    ScopedControl co(new ControlObject(ConfigKey("[Channel1]", "co")));
     co->set(0.0);
     cEngine->execute("getSetValue");
     ControlObject::sync();
     EXPECT_DOUBLE_EQ(co->get(), 1.0f);
-
-    delete co;
-    co = NULL;
-
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlNamedFunction) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write(
+    ScopedTemporaryFile script(makeTemporaryFile(
         "var executed = false;\n"
         "var connection;\n"
         "testConnectDisconnectControlCallback = function() {\n"
@@ -115,24 +95,20 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlNamedFunction) {
         "        throw 'Did Not Execute Callback';\n"
         "    }\n"
         "    return executed;\n"
-        "};\n"
-    );
-    f.close();
+        "};\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
+    // trigger() calls are processed via QueuedConnection. Use processEvents()
+    // to cause Qt to deliver them.
+    app->processEvents();
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
-
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlClosure) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write(
+    ScopedTemporaryFile script(makeTemporaryFile(
         "var executed = false;\n"
         "var connection;\n"
         "testConnectDisconnectControl = function() { \n"
@@ -148,24 +124,20 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlClosure) {
         "        throw 'Did Not Execute Callback';\n"
         "    }\n"
         "    return executed;\n"
-        "};\n"
-    );
-    f.close();
+        "};\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
+    // trigger() calls are processed via QueuedConnection. Use processEvents()
+    // to cause Qt to deliver them.
+    app->processEvents();
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
-
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnected) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write(
+    ScopedTemporaryFile script(makeTemporaryFile(
         "var executed = false;\n"
         "var connection;\n"
         "testConnectDisconnectControl = function() { \n"
@@ -183,24 +155,20 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnected) {
         "        throw 'Callback was executed';\n"
         "    }\n"
         "    return executed==false;\n"
-        "};\n"
-    );
-    f.close();
+        "};\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
+    // trigger() calls are processed via QueuedConnection. Use processEvents()
+    // to cause Qt to deliver them.
+    app->processEvents();
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
-
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByName) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write(
+    ScopedTemporaryFile script(makeTemporaryFile(
         "var executed = false;\n"
         "var connection;\n"
         "connectionCallback = function() { executed = true; }\n"
@@ -217,24 +185,17 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByName)
         "        throw 'Callback was executed';\n"
         "    }\n"
         "    return executed==false;\n"
-        "};\n"
-    );
-    f.close();
+        "};\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
-
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByObject) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write(
+    ScopedTemporaryFile script(makeTemporaryFile(
         "var executed = false;\n"
         "var connection;\n"
         "testConnectDisconnectControl = function() { \n"
@@ -252,63 +213,49 @@ TEST_F(ControllerEngineTest, scriptConnectDisconnectControlIsDisconnectedByObjec
         "        throw 'Callback was executed';\n"
         "    }\n"
         "    return executed==false;\n"
-        "};\n"
-    );
-    f.close();
+        "};\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
     EXPECT_TRUE(cEngine->execute("testConnectDisconnectControl"));
+    // trigger() calls are processed via QueuedConnection. Use processEvents()
+    // to cause Qt to deliver them.
+    app->processEvents();
     EXPECT_TRUE(cEngine->execute("checkConnectDisconnectControl"));
-
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, setInvalidControlObject) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write("setValue = function() { engine.setValue('[Nothing]', 'nothing', 1.0); }\n");
-    f.close();
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "setValue = function() { engine.setValue('[Nothing]', 'nothing', 1.0); }\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
     EXPECT_TRUE(cEngine->execute("setValue"));
-
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, getInvalidControlObject) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write("getValue = function() { return engine.getValue('[Nothing]', 'nothing'); }\n");
-    f.close();
-    
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "getValue = function() { return engine.getValue('[Nothing]', 'nothing'); }\n"));
+
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
     EXPECT_TRUE(cEngine->execute("getValue"));
-    
-    f.remove();
 }
 
 TEST_F(ControllerEngineTest, automaticReaction) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write("setUp = function() { engine.connectControl('[Channel1]','co','reaction'); }\n");
-    f.write("reaction = function(value) { if (value == 2.5) print('TEST PASSED: '+value);\
-                                          else print('TEST FAILED!  TEST FAILED!  TEST FAILED: '+value);\
-                                          return value; }\n");
-    f.close();
+    ScopedTemporaryFile script(makeTemporaryFile(
+        "setUp = function() { engine.connectControl('[Channel1]','co','reaction'); }\n"
+        "reaction = function(value) { if (value == 2.5) print('TEST PASSED: '+value);\n"
+        "else print('TEST FAILED!  TEST FAILED!  TEST FAILED: '+value);  "
+        "return value; }\n"));
 
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
+    cEngine->evaluate(script->fileName());
+    EXPECT_FALSE(cEngine->hasErrors(script->fileName()));
 
-    ControlObject *co = new ControlObject(ConfigKey("[Channel1]", "co"));
+    ScopedControl co(new ControlObject(ConfigKey("[Channel1]", "co")));
     co->set(0.0);
     EXPECT_TRUE(cEngine->execute("setUp"));
     ControlObject::sync();
@@ -318,34 +265,6 @@ TEST_F(ControllerEngineTest, automaticReaction) {
     //  can tell if it actually passed or not
     co->set(2.5);
     ControlObject::sync();
-
-    f.remove();
 }
-
-// Can't test timed reactions without an event loop!
-/*
-TEST_F(ControllerEngineTest, oneShotTimedReaction) {
-    QString script = "test.js";
-    QFile f(script);
-    f.open(QIODevice::ReadWrite | QIODevice::Truncate);
-    f.write("function global() {}\n");
-    f.write("setUp = function() { global.date = new Date(); engine.beginTimer(250,'reaction()',true); }\n");
-    f.write("reaction = function() { if ((new Date()-global.date) == 250) print('TEST PASSED');\
-                                     else print('TEST FAILED!  TEST FAILED!  TEST FAILED: '+(new Date()-global.date));\
-                                     return (new Date()-global.date); }\n");
-    f.close();
-    
-    cEngine->evaluate(script);
-    EXPECT_FALSE(cEngine->hasErrors(script));
-
-    EXPECT_TRUE(cEngine->execute("setUp"));
-    usleep(500*1000);
-
-    // Test passes if the JS prints it after 250ms
-    //  TODO: Have the JS call a function in this test class
-
-    f.remove();
-}
-*/
 
 }

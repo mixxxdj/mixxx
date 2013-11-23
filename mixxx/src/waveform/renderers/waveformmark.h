@@ -2,26 +2,28 @@
 #define WAVEFORMMARK_H
 
 #include <QString>
-#include <QPixmap>
+#include <QImage>
+#include <QColor>
 
-class ControlObject;
+class ControlObjectThreadMain;
 class QDomNode;
+class WaveformSignalColors;
 
-class WaveformMark
-{
-public:
+class WaveformMark {
+  public:
     WaveformMark();
-    void setup( const QString& group, const QDomNode& node);
+    void setup(const QString& group, const QDomNode& node,
+            const WaveformSignalColors& signalColors);
 
-private:
-    ControlObject* m_pointControl;
+  private:
+    ControlObjectThreadMain* m_pointControl;
 
     QColor m_color;
     QColor m_textColor;
     QString m_text;
     Qt::Alignment m_align;
     QString m_pixmapPath;
-    QPixmap m_pixmap;
+    QImage m_image;
 
     friend class WaveformMarkSet;
     friend class WaveformRenderMark;

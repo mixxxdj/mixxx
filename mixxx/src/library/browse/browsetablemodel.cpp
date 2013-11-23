@@ -124,12 +124,13 @@ const QLinkedList<int> BrowseTableModel::getTrackRows(int trackId) const {
     return QLinkedList<int>();
 }
 
-void BrowseTableModel::search(const QString& searchText) {
+void BrowseTableModel::search(const QString& searchText, const QString& extraFilter) {
+    Q_UNUSED(extraFilter);
     Q_UNUSED(searchText);
 }
 
 const QString BrowseTableModel::currentSearch() const {
-    return QString(""); 
+    return QString("");
 }
 
 bool BrowseTableModel::isColumnInternal(int) {
@@ -141,10 +142,6 @@ bool BrowseTableModel::isColumnHiddenByDefault(int) {
 }
 
 void BrowseTableModel::moveTrack(const QModelIndex&, const QModelIndex&) {
-}
-
-QItemDelegate* BrowseTableModel::delegateForColumn(const int) {
-    return NULL;
 }
 
 void BrowseTableModel::removeTrack(const QModelIndex& index) {
@@ -272,6 +269,7 @@ TrackModel::CapabilitiesFlags BrowseTableModel::getCapabilities() const {
             | TRACKMODELCAPS_ADDTOCRATE
             | TRACKMODELCAPS_ADDTOAUTODJ
             | TRACKMODELCAPS_LOADTODECK
+            | TRACKMODELCAPS_LOADTOPREVIEWDECK
             | TRACKMODELCAPS_LOADTOSAMPLER;
 }
 
@@ -382,3 +380,10 @@ bool BrowseTableModel::setData(const QModelIndex &index, const QVariant &value,
         return false;
     }
 }
+
+QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject* pParent) {
+    Q_UNUSED(i);
+    Q_UNUSED(pParent);
+    return NULL;
+}
+

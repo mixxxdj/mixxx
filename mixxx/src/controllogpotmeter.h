@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -26,28 +26,10 @@
  *@author Tue and Ken Haste Andersen
  */
 
-class ControlLogpotmeter : public ControlPotmeter
-{
+class ControlLogpotmeter : public ControlPotmeter {
     Q_OBJECT
-public:
+  public:
     ControlLogpotmeter(ConfigKey key, double dMaxValue=5.);
-    
-    double getValueFromWidget(double dValue);
-    double getValueToWidget(double dValue);
-
-    double GetMidiValue();
-    
-    void setValueFromMidi(MidiOpCode o, double v);
-
-protected:
-
-    // This is true, if the log potmeter is divided into two states, one from 0 to 1, and
-    // the second from 1 to m_dMaxValue. Two states is often used with knobs where the first
-    // half rotation is used to control a value between 0 and 1, and the second half between
-    // 1 and some bigger value.
-    bool m_bTwoState;
-    
-    double m_fB1, m_fB2;
 };
 
 #endif

@@ -138,7 +138,7 @@ int PortMidiController::close() {
 }
 
 bool PortMidiController::poll() {
-    // Poll the controller for new data, if it's an input device
+    // Poll the controller for new data if it's an input device
     if (!m_pInputStream)
         return false;
 

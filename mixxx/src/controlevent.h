@@ -19,8 +19,9 @@
 #define CONTROLEVENT_H
 
 #include <qevent.h>
-#include "mixxxevent.h"
+#include <QObject>
 
+#include "mixxxevent.h"
 
 /**
   *@author Tue Haste Andersen
@@ -30,12 +31,14 @@
   */
 
 class ControlEvent : public QEvent {
-public: 
-    ControlEvent(double dValue);
+public:
+    ControlEvent(double dValue, QObject* pSender);
     ~ControlEvent();
     double value() const;
+    QObject* sender() const;
 private:
     double m_dValue;
+    QObject* m_pSender;
 };
 
 #endif

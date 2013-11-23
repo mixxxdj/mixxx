@@ -62,9 +62,9 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(sampleRateChanged(int)));
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(updateLatencies(int)));
-    connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
-            this, SLOT(latencyChanged(int)));
+            this, SLOT(updateAudioBufferSizes(int)));
+    connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
+            this, SLOT(audioBufferChanged(int)));
 
     initializePaths();
     loadSettings();
@@ -73,7 +73,7 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
             this, SLOT(settingChanged()));
     connect(sampleRateComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
-    connect(latencyComboBox, SIGNAL(currentIndexChanged(int)),
+    connect(audioBufferComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(settingChanged()));
 
     connect(queryButton, SIGNAL(clicked()),
@@ -95,10 +95,16 @@ DlgPrefSound::DlgPrefSound(QWidget *pParent, SoundManager *pSoundManager,
                     new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "underflow_count")));
     connect(m_pMasterUnderflowCount, SIGNAL(valueChanged(double)),
             this, SLOT(bufferUnderflow(double)));
+
+    m_pMasterLatency =
+                    new ControlObjectThreadMain(ControlObject::getControl(ConfigKey("[Master]", "latency")));
+    connect(m_pMasterLatency, SIGNAL(valueChanged(double)),
+            this, SLOT(masterLatencyChanged(double)));
 }
 
 DlgPrefSound::~DlgPrefSound() {
     delete m_pMasterUnderflowCount;
+    delete m_pMasterLatency;
 }
 
 /**
@@ -290,16 +296,16 @@ void DlgPrefSound::loadSettings(const SoundManagerConfig &config) {
     int sampleRateIndex = sampleRateComboBox->findData(m_config.getSampleRate());
     if (sampleRateIndex != -1) {
         sampleRateComboBox->setCurrentIndex(sampleRateIndex);
-        if (latencyComboBox->count() <= 0) {
-            updateLatencies(sampleRateIndex); // so the latency combo box is
+        if (audioBufferComboBox->count() <= 0) {
+            updateAudioBufferSizes(sampleRateIndex); // so the latency combo box is
             // sure to be populated, if setCurrentIndex is called with the
             // currentIndex, the currentIndexChanged signal won't fire and
             // the updateLatencies slot won't run -- bkgood lp bug 689373
         }
     }
-    int latencyIndex = latencyComboBox->findData(m_config.getLatency());
-    if (latencyIndex != -1) {
-        latencyComboBox->setCurrentIndex(latencyIndex);
+    int sizeIndex = audioBufferComboBox->findData(m_config.getAudioBufferSizeIndex());
+    if (sizeIndex != -1) {
+        audioBufferComboBox->setCurrentIndex(sizeIndex);
     }
     emit(loadPaths(m_config));
     m_loading = false;
@@ -317,10 +323,10 @@ void DlgPrefSound::apiChanged(int index) {
     // JACK sets its own latency
     if (m_config.getAPI() == MIXXX_PORTAUDIO_JACK_STRING) {
         latencyLabel->setEnabled(false);
-        latencyComboBox->setEnabled(false);
+        audioBufferComboBox->setEnabled(false);
     } else {
         latencyLabel->setEnabled(true);
-        latencyComboBox->setEnabled(true);
+        audioBufferComboBox->setEnabled(true);
     }
 }
 
@@ -357,42 +363,42 @@ void DlgPrefSound::sampleRateChanged(int index) {
  * Slot called when the latency combo box is changed to update the
  * latency in the config.
  */
-void DlgPrefSound::latencyChanged(int index) {
-    m_config.setLatency(
-            latencyComboBox->itemData(index).toUInt());
+void DlgPrefSound::audioBufferChanged(int index) {
+    m_config.setAudioBufferSizeIndex(
+            audioBufferComboBox->itemData(index).toUInt());
 }
 
-/**
- * Slot called whenever the selected sample rate is changed. Populates the
- * latency input box with SMConfig::kMaxLatency values, starting at 1ms,
- * representing a number of frames per buffer, which will always be a power
- * of 2 (so the values displayed in ms won't be constant between sample rates,
- * but they'll be close).
- */
-void DlgPrefSound::updateLatencies(int sampleRateIndex) {
+
+// Slot called whenever the selected sample rate is changed. Populates the
+// audio buffer input box with SMConfig::kMaxLatency values, starting at 1ms,
+// representing a number of frames per buffer, which will always be a power
+// of 2 (so the values displayed in ms won't be constant between sample rates,
+// but they'll be close).
+void DlgPrefSound::updateAudioBufferSizes(int sampleRateIndex) {
     double sampleRate = sampleRateComboBox->itemData(sampleRateIndex).toDouble();
-    int oldLatency = latencyComboBox->currentIndex();
+    int oldSizeIndex = audioBufferComboBox->currentIndex();
     unsigned int framesPerBuffer = 1; // start this at 0 and inf loop happens
-    // we don't want to display any sub-1ms latencies (well maybe we do but I
+    // we don't want to display any sub-1ms buffer sizes (well maybe we do but I
     // don't right now!), so we iterate over all the buffer sizes until we
-    // find the first that gives us a latency >= 1 ms -- bkgood
+    // find the first that gives us a buffer size >= 1 ms -- bkgood
     // no div-by-0 in the next line because we don't allow srates of 0 in our
     // srate list when we construct it in the ctor -- bkgood
-    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2);
-    latencyComboBox->clear();
-    for (unsigned int i = 0; i < SoundManagerConfig::kMaxLatency; ++i) {
+    for (; framesPerBuffer / sampleRate * 1000 < 1.0; framesPerBuffer *= 2) {
+    }    
+    audioBufferComboBox->clear();
+    for (unsigned int i = 0; i < SoundManagerConfig::kMaxAudioBufferSizeIndex; ++i) {
         float latency = framesPerBuffer / sampleRate * 1000;
         // i + 1 in the next line is a latency index as described in SSConfig
-        latencyComboBox->addItem(QString(tr("%1 ms")).arg(latency,0,'g',3), i + 1);
+        audioBufferComboBox->addItem(QString(tr("%1 ms")).arg(latency,0,'g',3), i + 1);
         framesPerBuffer <<= 1; // *= 2
     }
-    if (oldLatency < latencyComboBox->count() && oldLatency >= 0) {
-        latencyComboBox->setCurrentIndex(oldLatency);
+    if (oldSizeIndex < audioBufferComboBox->count() && oldSizeIndex >= 0) {
+        audioBufferComboBox->setCurrentIndex(oldSizeIndex);
     } else {
         // set it to the max, let the user dig if they need better latency. better
         // than having a user get the pops on first use and thinking poorly of mixxx
         // because of it -- bkgood
-        latencyComboBox->setCurrentIndex(latencyComboBox->count() - 1);
+        audioBufferComboBox->setCurrentIndex(audioBufferComboBox->count() - 1);
     }
 }
 
@@ -450,4 +456,8 @@ void DlgPrefSound::bufferUnderflow(double count) {
     update();
 }
 
+void DlgPrefSound::masterLatencyChanged(double latency) {
+    currentLatency->setText(QString("%1 ms").arg(latency));
+    update();
+}
 

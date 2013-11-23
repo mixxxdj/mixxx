@@ -36,28 +36,18 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
 
     // A loop will only limit the amount we can read in one shot.
 
-    QPair<int, double> next_loop;
-    next_loop.first = 0;
-    next_loop.second = m_sEngineControls[0]->nextTrigger(dRate,
-                                                         m_iCurrentPosition,
-                                                         0, 0);
+    const double loop_trigger = m_sEngineControls[0]->nextTrigger(
+        dRate, m_iCurrentPosition, 0, 0);
+    bool loop_active = loop_trigger != kNoTrigger;
     int preloop_samples = 0;
 
-    if (next_loop.second != kNoTrigger) {
-        int samples_available;
-        if (in_reverse) {
-            samples_available = m_iCurrentPosition - next_loop.second;
-        } else {
-            samples_available = next_loop.second - m_iCurrentPosition;
-        }
+    if (loop_active) {
+        int samples_available = in_reverse ?
+                m_iCurrentPosition - loop_trigger :
+                loop_trigger - m_iCurrentPosition;
+        preloop_samples = samples_available;
         samples_needed = math_max(0, math_min(samples_needed,
                                               samples_available));
-
-        if (in_reverse) {
-            preloop_samples = m_iCurrentPosition - next_loop.second;
-        } else {
-            preloop_samples = next_loop.second - m_iCurrentPosition;
-        }
     }
 
     if (in_reverse) {
@@ -73,8 +63,9 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     int samples_read = m_pReader->read(start_sample, samples_needed,
                                        base_buffer);
 
-    if (samples_read != samples_needed)
+    if (samples_read != samples_needed) {
         qDebug() << "didn't get what we wanted" << samples_read << samples_needed;
+    }
 
     // Increment or decrement current read-ahead position
     if (in_reverse) {
@@ -86,25 +77,17 @@ int ReadAheadManager::getNextSamples(double dRate, CSAMPLE* buffer,
     }
 
     // Activate on this trigger if necessary
-    if (next_loop.second != kNoTrigger) {
-        double loop_trigger = next_loop.second;
-        double loop_target = m_sEngineControls[next_loop.first]->
-            getTrigger(dRate,
-                       m_iCurrentPosition,
-                       0, 0);
+    if (loop_active) {
+        // LoopingControl makes the decision about whether we should loop or
+        // not.
+        const double loop_target = m_sEngineControls[0]->
+                process(dRate, m_iCurrentPosition, 0, 0);
 
-        if (loop_target != kNoTrigger &&
-            ((in_reverse && m_iCurrentPosition <= loop_trigger) ||
-            (!in_reverse && m_iCurrentPosition >= loop_trigger))) {
-
+        if (loop_target != kNoTrigger) {
             m_iCurrentPosition = loop_target;
 
-            int loop_read_position = m_iCurrentPosition;
-            if (in_reverse) {
-                loop_read_position += preloop_samples;
-            } else {
-                loop_read_position -= preloop_samples;
-            }
+            int loop_read_position = m_iCurrentPosition +
+                    (in_reverse ? preloop_samples : -preloop_samples);
 
             int looping_samples_read = m_pReader->read(
                 loop_read_position, samples_read, m_pCrossFadeBuffer);
@@ -170,8 +153,7 @@ void ReadAheadManager::notifySeek(int iSeekPosition) {
     // }
 }
 
-void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList,
-                                  int iSamplesPerBuffer) {
+void ReadAheadManager::hintReader(double dRate, QList<Hint>& hintList) {
     bool in_reverse = dRate < 0;
     Hint current_position;
 

@@ -20,16 +20,16 @@
 EngineBufferScale::EngineBufferScale()
 {
     m_dTempo = 1.;
-    buffer = new CSAMPLE[MAX_BUFFER_LEN];
-    new_playpos = 0;
+    m_buffer = new CSAMPLE[MAX_BUFFER_LEN];
+    m_samplesRead = 0;
 }
 
 EngineBufferScale::~EngineBufferScale()
 {
-    delete [] buffer;
+    delete [] m_buffer;
 }
 
-double EngineBufferScale::getNewPlaypos()
+double EngineBufferScale::getSamplesRead()
 {
-    return new_playpos;
+    return m_samplesRead;
 }

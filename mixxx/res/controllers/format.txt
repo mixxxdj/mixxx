@@ -1,5 +1,0 @@
-Quick-start information on adding/changing controller mappings & advanced behaviors: http://mixxx.org/forums/viewtopic.php?f=3&t=949
-
-See http://mixxx.org/wiki/doku.php/midi_controller_mapping_file_format for the most up-to-date information on the format of MIDI device XML files.
-
-Quick links to all MIDI info pages are on the wiki: http://mixxx.org/wiki/doku.php/#editing_midi_mappings_scripts

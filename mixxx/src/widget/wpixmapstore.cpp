@@ -16,21 +16,21 @@
 ***************************************************************************/
 
 #include "wpixmapstore.h"
-//Added by qt3to4:
+
 #include <QPixmap>
 #include <QtDebug>
 
-QHash<QString, PixmapInfoType*> WPixmapStore::dictionary;
+// static
+QHash<QString, WPixmapStore::PixmapInfoType*> WPixmapStore::m_dictionary;
+QSharedPointer<ImgSource> WPixmapStore::m_loader = QSharedPointer<ImgSource>();
 
-QSharedPointer<ImgSource> WPixmapStore::loader = QSharedPointer<ImgSource>();
-
-QPixmap * WPixmapStore::getPixmap(const QString &fileName)
-{
+// static
+QPixmap * WPixmapStore::getPixmap(const QString &fileName) {
     // Search for pixmap in list
     PixmapInfoType* info = NULL;
 
-    QHash<QString, PixmapInfoType*>::iterator it = dictionary.find(fileName);
-    if (it != dictionary.end()) {
+    QHash<QString, PixmapInfoType*>::iterator it = m_dictionary.find(fileName);
+    if (it != m_dictionary.end()) {
         info = it.value();
         info->instCount++;
         //qDebug() << "WPixmapStore returning cached pixmap for:" << fileName;
@@ -39,22 +39,8 @@ QPixmap * WPixmapStore::getPixmap(const QString &fileName)
 
     // Pixmap wasn't found, construct it
     //qDebug() << "WPixmapStore Loading pixmap from file" << fileName;
-
-    QPixmap* loadedPixmap = NULL;
-    if (loader) {
-        QImage* img = loader->getImage(fileName);
-
-        if (img != NULL && !img->isNull()) {
-            // ack, hacky; there must be a better way (we're using pixmap
-            // pointers, but perhaps qt4 expects that you'll just copy?) --kousu
-            // 2009/03
-            loadedPixmap = new QPixmap(QPixmap::fromImage(*img));
-        }
-        // No longer need the original QImage (I hope...) - adam_d
-        delete img;
-    } else {
-        loadedPixmap = new QPixmap(fileName);
-    }
+    
+    QPixmap* loadedPixmap = getPixmapNoCache(fileName);
 
     if (loadedPixmap == NULL || loadedPixmap->isNull()) {
         qDebug() << "WPixmapStore couldn't load:" << fileName << (loadedPixmap == NULL);
@@ -65,26 +51,34 @@ QPixmap * WPixmapStore::getPixmap(const QString &fileName)
     info = new PixmapInfoType;
     info->pixmap = loadedPixmap;
     info->instCount = 1;
-    dictionary.insert(fileName, info);
+    m_dictionary.insert(fileName, info);
     return info->pixmap;
 }
 
+// static
 QPixmap * WPixmapStore::getPixmapNoCache(const QString& fileName) {
-    if (loader) {
-        QImage * img = loader->getImage(fileName);
-        QPixmap r = QPixmap::fromImage(*img);
+    QPixmap* pPixmap;
+    if (m_loader) {
+        QImage * img = m_loader->getImage(fileName);
+#if QT_VERSION >= 0x040700
+        pPixmap = new QPixmap(); 
+        pPixmap->convertFromImage(*img); 
+#else 
+        pPixmap = new QPixmap(QPixmap::fromImage(*img));        
+#endif 
         delete img;
-        return new QPixmap(r); //ack, hacky; there must be a better way (we're using pixmap pointers, but perhaps qt4 expects that you'll just copy?) --kousu 2009/03
     } else {
-        return new QPixmap(fileName);
+        pPixmap = new QPixmap(fileName);
     }
+    return pPixmap; 
 }
 
+// static 
 void WPixmapStore::deletePixmap(QPixmap * p)
 {
     // Search for pixmap in list
     PixmapInfoType *info = NULL;
-    QMutableHashIterator<QString, PixmapInfoType*> it(dictionary);
+    QMutableHashIterator<QString, PixmapInfoType*> it(m_dictionary);
 
     while (it.hasNext())
     {
@@ -104,10 +98,6 @@ void WPixmapStore::deletePixmap(QPixmap * p)
     }
 }
 
-void WPixmapStore::emptyStore() {
-
-}
-
 void WPixmapStore::setLoader(QSharedPointer<ImgSource> ld) {
-    loader = ld;
+    m_loader = ld;
 }

@@ -76,14 +76,14 @@ QStringList plugin_paths; //yes this is global. sometimes global is good.
 //void qInitImages_mixxx();
 
 QFile Logfile; // global logfile variable
+QMutex mutexLogfile;
 
 /* Debug message handler which outputs to both a logfile and a
  * and prepends the thread the message came from too.
  */
 void MessageHandler(QtMsgType type, const char *input)
 {
-    static QMutex mutex;
-    QMutexLocker locker(&mutex);
+    QMutexLocker locker(&mutexLogfile);
     QByteArray ba;
     QThread* thread = QThread::currentThread();
     if (thread) {
@@ -94,8 +94,7 @@ void MessageHandler(QtMsgType type, const char *input)
     ba += input;
     ba += "\n";
 
-    if(!Logfile.isOpen())
-    {
+    if (!Logfile.isOpen()) {
         // This Must be done in the Message Handler itself, to guarantee that the
         // QApplication is initialized
         QString logFileName = CmdlineArgs::Instance().getSettingsPath() + "/mixxx.log";
@@ -123,24 +122,16 @@ void MessageHandler(QtMsgType type, const char *input)
         fprintf(stderr, "Warning %s", ba.constData());
         Logfile.write("Warning ");
         Logfile.write(ba);
-        // Don't use qWarning for reporting user-facing errors.
-        //dialogHandler->requestErrorDialog(DLG_WARNING,input);
         break;
     case QtCriticalMsg:
         fprintf(stderr, "Critical %s", ba.constData());
         Logfile.write("Critical ");
         Logfile.write(ba);
-        Logfile.flush();    // Ensure the error is written to the log before exiting
-        dialogHandler->requestErrorDialog(DLG_CRITICAL,input);
-//         exit(-1);    // Done in ErrorDialogHandler
         break; //NOTREACHED
     case QtFatalMsg:
         fprintf(stderr, "Fatal %s", ba.constData());
         Logfile.write("Fatal ");
         Logfile.write(ba);
-        Logfile.flush();    // Ensure the error is written to the log before aborting
-        dialogHandler->requestErrorDialog(DLG_FATAL,input);
-//         abort();    // Done in ErrorDialogHandler
         break; //NOTREACHED
     }
     Logfile.flush();
@@ -155,13 +146,15 @@ int main(int argc, char * argv[])
     // logic in the OS X appstore support patch from QTBUG-16549.
     QCoreApplication::setOrganizationDomain("mixxx.org");
     QCoreApplication::setOrganizationName("Mixxx");
+    QCoreApplication::setApplicationName("Mixxx");
+    QCoreApplication::setApplicationVersion(VERSION);
 
     // Construct a list of strings based on the command line arguments
     CmdlineArgs& args = CmdlineArgs::Instance();
     if (!args.Parse(argc, argv)) {
-        fputs("Mixxx digital DJ software v",stdout);
-        fputs(VERSION,stdout);
-        fputs(" - Command line options",stdout);
+        fputs("Mixxx digital DJ software v", stdout);
+        fputs(VERSION, stdout);
+        fputs(" - Command line options", stdout);
         fputs(
                    "\n(These are case-sensitive.)\n\n\
     [FILE]                  Load the specified music file(s) at start-up.\n\
@@ -193,6 +186,9 @@ int main(int argc, char * argv[])
     --controllerDebug       Causes Mixxx to display/log all of the controller\n\
                             data it receives and script functions it loads\n\
 \n\
+    --developer             Enables developer-mode. Includes extra log info,\n\
+                            stats on performance, and a Developer tools menu.\n\
+\n\
     --locale LOCALE         Use a custom locale for loading translations\n\
                             (e.g 'fr')\n\
 \n\
@@ -218,6 +214,9 @@ int main(int argc, char * argv[])
     //      * ErrorDialogHandler::errorDialog()
     QThread::currentThread()->setObjectName("Main");
     QApplication a(argc, argv);
+
+    //Support utf-8 for all translation strings
+    QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
 
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
@@ -310,8 +309,11 @@ int main(int argc, char * argv[])
 
     // Don't make any more output after this
     //    or mixxx.log will get clobbered!
-    if(Logfile.isOpen()) {
-        Logfile.close();
+    { // scope
+        QMutexLocker locker(&mutexLogfile);
+        if(Logfile.isOpen()) {
+            Logfile.close();
+        }
     }
 
     //delete plugin_paths;

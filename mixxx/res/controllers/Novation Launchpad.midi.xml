@@ -4,6 +4,7 @@
         <name>Novation Launchpad</name>
         <author>zestoi</author>
         <description>Multi page mapping for the Novation Launchpad</description>
+        <forums>http://mixxx.org/forums/viewtopic.php?f=7&amp;t=3739</forums>
     </info>
     <controller id="Novation Launchpad">
         <scriptfiles>

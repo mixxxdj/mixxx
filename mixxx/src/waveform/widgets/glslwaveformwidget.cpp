@@ -1,6 +1,7 @@
 #include "glslwaveformwidget.h"
 
 #include <QPainter>
+#include <QtDebug>
 
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "waveform/renderers/waveformrenderbackground.h"
@@ -13,7 +14,7 @@
 #include "sharedglcontext.h"
 
 GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent)
-        : QGLWidget(SharedGLContext::getContext(), parent),
+        : QGLWidget(parent, SharedGLContext::getWidget()),
           WaveformWidgetAbstract(group) {
 
     addRenderer<WaveformRenderBackground>();
@@ -21,15 +22,20 @@ GLSLWaveformWidget::GLSLWaveformWidget( const char* group, QWidget* parent)
     addRenderer<WaveformRendererPreroll>();
     addRenderer<WaveformRenderMarkRange>();
     signalRenderer_ = addRenderer<GLSLWaveformRendererSignal>();
-    addRenderer<WaveformRenderMark>();
     addRenderer<WaveformRenderBeat>();
+    addRenderer<WaveformRenderMark>();
 
     setAttribute(Qt::WA_NoSystemBackground);
     setAttribute(Qt::WA_OpaquePaintEvent);
 
     setAutoBufferSwap(false);
 
-    makeCurrent();
+    qDebug() << "Created QGLWidget. Context"
+             << "Valid:" << context()->isValid()
+             << "Sharing:" << context()->isSharing();
+    if (QGLContext::currentContext() != context()) {
+        makeCurrent();
+    }
     m_initSuccess = init();
 }
 

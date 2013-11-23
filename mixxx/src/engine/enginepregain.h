@@ -19,7 +19,7 @@
 
 #include "engine/engineobject.h"
 #include "controlobject.h"
-
+#include "util/performancetimer.h"
 
 class ControlLogpotmeter;
 class ControlPotmeter;
@@ -36,13 +36,11 @@ private:
     ControlLogpotmeter *potmeterPregain;
     ControlObject *m_pTotalGain;
     ControlObject *m_pControlReplayGain;
+    ControlObject *m_pPassthroughEnabled;
     static ControlPotmeter *s_pReplayGainBoost;
     static ControlObject *s_pEnableReplayGain;
-    float m_fReplayGainCorrection, m_fReplayGain, m_fOldReplayGainCorrection;
     bool m_bSmoothFade;
-    float m_fClock;
-    float m_fSumClock;
-
+    PerformanceTimer m_timer;
 };
 
 #endif

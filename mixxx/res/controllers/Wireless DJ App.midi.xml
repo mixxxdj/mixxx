@@ -4,6 +4,7 @@
 		<name>Wireless DJ App</name>
 		<author>Evgen Bodunov / Ilya Birman</author>
 		<description>iPad wireless midi controller application (http://wirelessdjapp.com)</description>
+                <forums>http://www.mixxx.org/forums/viewtopic.php?f=7&amp;t=2767</forums>
 	</info>
     <controller id="Network Wireless DJ">
         <scriptfiles>
@@ -353,7 +354,7 @@
                     <Script-Binding/>
                 </options>
             </control>
-<!-- Master -->            
+<!-- Master -->
             <control>
                 <status>0xb0</status>
                 <midino>0x1a</midino>

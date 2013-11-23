@@ -22,27 +22,28 @@ class TrackModel {
     }
     virtual ~TrackModel() {}
 
+    // These enums are the bits in a bitvector. Any individual column cannot
+    // have a value other than 0, 1, 2, 4, or 8!
     enum Capabilities {
-        TRACKMODELCAPS_NONE           = 0x0000,
-        TRACKMODELCAPS_REORDER        = 0x0001,
-        TRACKMODELCAPS_RECEIVEDROPS   = 0x0002,
-        TRACKMODELCAPS_ADDTOPLAYLIST  = 0x0004,
-        TRACKMODELCAPS_ADDTOCRATE     = 0x0008,
-        TRACKMODELCAPS_ADDTOAUTODJ    = 0x0010,
-        TRACKMODELCAPS_LOCKED         = 0x0020,
-        TRACKMODELCAPS_RELOADMETADATA = 0x0040,
-        TRACKMODELCAPS_LOADTODECK     = 0x0080,
-        TRACKMODELCAPS_LOADTOSAMPLER  = 0x0100,
-        TRACKMODELCAPS_REMOVE         = 0x0200,
-        TRACKMODELCAPS_RELOCATE       = 0x0400,
-        TRACKMODELCAPS_BPMLOCK        = 0x0800,
-        TRACKMODELCAPS_CLEAR_BEATS    = 0x1000,
-        TRACKMODELCAPS_RESETPLAYED    = 0x2000,
-        TRACKMODELCAPS_HIDE           = 0x3000,
-        TRACKMODELCAPS_UNHIDE         = 0x4000,
-        TRACKMODELCAPS_PURGE          = 0x8000,
+        TRACKMODELCAPS_NONE              = 0x00000,
+        TRACKMODELCAPS_REORDER           = 0x00001,
+        TRACKMODELCAPS_RECEIVEDROPS      = 0x00002,
+        TRACKMODELCAPS_ADDTOPLAYLIST     = 0x00004,
+        TRACKMODELCAPS_ADDTOCRATE        = 0x00008,
+        TRACKMODELCAPS_ADDTOAUTODJ       = 0x00010,
+        TRACKMODELCAPS_LOCKED            = 0x00020,
+        TRACKMODELCAPS_RELOADMETADATA    = 0x00040,
+        TRACKMODELCAPS_LOADTODECK        = 0x00080,
+        TRACKMODELCAPS_LOADTOSAMPLER     = 0x00100,
+        TRACKMODELCAPS_LOADTOPREVIEWDECK = 0x00200,
+        TRACKMODELCAPS_REMOVE            = 0x00400,
+        TRACKMODELCAPS_MANIPULATEBEATS   = 0x00800,
+        TRACKMODELCAPS_CLEAR_BEATS       = 0x01000,
+        TRACKMODELCAPS_RESETPLAYED       = 0x02000,
+        TRACKMODELCAPS_HIDE              = 0x04000,
+        TRACKMODELCAPS_UNHIDE            = 0x08000,
+        TRACKMODELCAPS_PURGE             = 0x10000
     };
-
     typedef int CapabilitiesFlags; /** Enables us to do ORing */
 
     // Deserialize and return the track at the given QModelIndex in this result
@@ -60,7 +61,7 @@ class TrackModel {
     virtual const QLinkedList<int> getTrackRows(int trackId) const = 0;
 
     bool isTrackModel() { return true;}
-    virtual void search(const QString& searchText) = 0;
+    virtual void search(const QString& searchText, const QString& extraFilter=QString()) = 0;
     virtual const QString currentSearch() const = 0;
     virtual bool isColumnInternal(int column) = 0;
     // if no header state exists, we may hide some columns so that the user can
@@ -68,9 +69,7 @@ class TrackModel {
     virtual bool isColumnHiddenByDefault(int column) = 0;
     virtual const QList<int>& showableColumns() const { return m_emptyColumns; }
     virtual const QList<int>& searchColumns() const { return m_emptyColumns; }
-    virtual void removeTrack(const QModelIndex& index) {
-        Q_UNUSED(index);
-    }
+
     virtual void removeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
     }
@@ -82,11 +81,6 @@ class TrackModel {
     }
     virtual void purgeTracks(const QModelIndexList& indices) {
         Q_UNUSED(indices);
-    }
-    virtual bool addTrack(const QModelIndex& index, QString location) {
-        Q_UNUSED(index);
-        Q_UNUSED(location);
-        return false;
     }
     virtual int addTracks(const QModelIndex& index, QList<QString> locations) {
         Q_UNUSED(index);
@@ -130,10 +124,13 @@ class TrackModel {
         m_iDefaultSortColumn = sortColumn;
         m_eDefaultSortOrder = sortOrder;
     }
-
+    
     virtual int fieldIndex(const QString& fieldName) const {
         Q_UNUSED(fieldName);
-        return 0;
+        return -1;
+    }
+
+    virtual void select() {
     }
 
   private:

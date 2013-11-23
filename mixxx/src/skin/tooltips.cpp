@@ -30,6 +30,7 @@ void Tooltips::addStandardTooltips() {
     QString resetToDefault = tr("Reset to default value.");
     QString leftClick = tr("Left-click");
     QString rightClick = tr("Right-click");
+    QString scrollWheel = tr("Scroll-wheel");
 
     add("waveform_overview")
             << tr("Waveform Overview")
@@ -43,6 +44,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Shows the loaded track's waveform near the playback position.")
             << QString("%1: %2").arg(leftClick, scratchMouse)
             << QString("%1: %2").arg(rightClick, tr("Drag with mouse to make temporary pitch adjustments."))
+            << QString("%1: %2").arg(scrollWheel, tr("Scroll to change the waveform zoom level."))
             << dropTracksHere;
 
     add("spinny")
@@ -134,6 +136,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Vinyl Control")
             << tr("Show/hide the Vinyl Control section.")
             << tr("Activate Vinyl Control from the Menu -> Options.");
+
+    add("show_previewdeck")
+            << tr("Preview Deck")
+            << tr("Show/hide the Preview deck.");
 
     add("microphone_volume")
             << tr("Microphone Volume")
@@ -278,12 +284,16 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(leftClick, tr("Fast forward through the track."))
             << QString("%1: %2").arg(rightClick, tr("Jumps to the end of the track."));
 
+    // Ghetto-Sync (TM)
     add("beatsync_beatsync_tempo")
             << tr("Synchronize")
             << QString("%1: %2").arg(leftClick, tr("Syncs the tempo (BPM) and phase to that of the other track, "))
             << tr("if BPM is detected on both.")
             << QString("%1: %2").arg(rightClick, tr("Syncs the tempo (BPM) to that of the other track,"))
-            << tr("if BPM is detected on both.");
+            << tr("if BPM is detected on both.")
+            << tr("Syncs to the first deck (in numerical order) that is playing a track and has a BPM.")
+            << tr("If no deck is playing, syncs to the first deck that has a BPM.")
+            << tr("Decks can't sync to samplers and samplers can only sync to decks.");
 
     add("rate")
             << tr("Pitch Control")
@@ -349,6 +359,11 @@ void Tooltips::addStandardTooltips() {
             << QString("%1: %2").arg(rightClick, tr("Temporarily setup a rolling loop over the set number of beats."))
             << tr("Playback will resume where the track would have been if it had not entered the loop.");
 
+    add("loop_exit")
+            << tr("Loop Exit")
+            << tr("Turns the current loop off.")
+            << tr("Works only if Loop-In and Loop-Out marker are set.");
+
     add("reloop_exit")
             << tr("Reloop/Exit")
             << tr("Toggles the current loop on or off.")
@@ -389,6 +404,12 @@ void Tooltips::addStandardTooltips() {
     add("track_album")
             << tr("Track Album")
             << tr("Displays the album name of the loaded track.")
+            << trackTags;
+
+    add("track_key")
+            //: The musical key of a track
+            << tr("Track Key")
+            << tr("Displays the musical key of the loaded track.")
             << trackTags;
 
     add("text")

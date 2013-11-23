@@ -31,9 +31,13 @@
 #ifdef __FFMPEGFILE__
 #include "soundsourceffmpeg.h"
 #endif
+#ifdef __MODPLUG__
+#include "soundsourcemodplug.h"
+#endif
 #include "soundsourceflac.h"
 
 #include "mixxx.h"
+#include "util/cmdlineargs.h"
 
 #include <QLibrary>
 #include <QMutexLocker>
@@ -120,8 +124,6 @@ void SoundSourceProxy::loadPlugins()
 
 // static
 Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
-
-    Mixxx::SoundSource* sndsrc = NULL;
     QString extension = qFilename;
     extension.remove(0, (qFilename.lastIndexOf(".")+1));
     extension = extension.toLower();
@@ -140,6 +142,10 @@ Mixxx::SoundSource* SoundSourceProxy::initialize(QString qFilename) {
 #ifdef __COREAUDIO__
     } else if (SoundSourceCoreAudio::supportedFileExtensions().contains(extension)) {
         return new SoundSourceCoreAudio(qFilename);
+#endif
+#ifdef __MODPLUG__
+    } else if (SoundSourceModPlug::supportedFileExtensions().contains(extension)) {
+        return new SoundSourceModPlug(qFilename);
 #endif
     } else if (m_extensionsSupportedByPlugins.contains(extension)) {
         getSoundSourceFunc getter = m_extensionsSupportedByPlugins.value(extension);
@@ -273,8 +279,9 @@ int SoundSourceProxy::open()
     //      duration.)
     // SSMP3 will set duration to -1 on VBR files,
     //  so we must look for that here too
-    if (m_pTrack->getDuration() <= 0)
+    if (m_pTrack && m_pTrack->getDuration() <= 0) {
         m_pTrack->setDuration(m_pSoundSource->getDuration());
+    }
 
     return retVal;
 }
@@ -298,7 +305,7 @@ unsigned SoundSourceProxy::read(unsigned long size, const SAMPLE * p)
 long unsigned SoundSourceProxy::length()
 {
     if (!m_pSoundSource) {
-	return 0;
+        return 0;
     }
     return m_pSoundSource->length();
 }
@@ -313,6 +320,13 @@ int SoundSourceProxy::parseHeader()
 int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 {
     QString qFilename = p->getLocation();
+
+    // Log parsing of header information in developer mode. This is useful for
+    // tracking down corrupt files.
+    if (CmdlineArgs::Instance().getDeveloper()) {
+	qDebug() << "SoundSourceProxy::ParseHeader()" << qFilename;
+    }
+
     SoundSource* sndsrc = initialize(qFilename);
     if (sndsrc == NULL)
         return ERR;
@@ -369,6 +383,9 @@ QStringList SoundSourceProxy::supportedFileExtensions()
 #endif
 #ifdef __COREAUDIO__
     supportedFileExtensions.append(SoundSourceCoreAudio::supportedFileExtensions());
+#endif
+#ifdef __MODPLUG__
+    supportedFileExtensions.append(SoundSourceModPlug::supportedFileExtensions());
 #endif
     supportedFileExtensions.append(m_extensionsSupportedByPlugins.keys());
 

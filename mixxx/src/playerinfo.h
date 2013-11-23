@@ -40,6 +40,8 @@ class PlayerInfo : public QObject
 
   signals:
     void currentPlayingDeckChanged(int deck);
+    void trackLoaded(QString group, TrackPointer pTrack);
+    void trackUnloaded(QString group, TrackPointer pTrack);
 
   private:
     void timerEvent(QTimerEvent* pTimerEvent);

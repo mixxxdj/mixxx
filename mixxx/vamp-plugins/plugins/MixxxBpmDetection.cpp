@@ -43,7 +43,7 @@ string MixxxBpmDetection::getCopyright() const {
     // need to say who made the plugin -- getMaker does that -- but it
     // should indicate the terms under which it is distributed.  For
     // example, "Copyright (year). All Rights Reserved", or "GPL"
-    return "GPL";
+    return "LGPL v2.1";
 }
 
 MixxxBpmDetection::InputDomain

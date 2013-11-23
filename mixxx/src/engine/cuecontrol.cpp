@@ -15,14 +15,14 @@
 CueControl::CueControl(const char * _group,
                        ConfigObject<ConfigValue> * _config) :
         EngineControl(_group, _config),
+        m_bHotcueCancel(false),
         m_bPreviewing(false),
         m_bPreviewingHotcue(false),
         m_pPlayButton(ControlObject::getControl(ConfigKey(_group, "play"))),
         m_iCurrentlyPreviewingHotcues(0),
         m_iNumHotCues(NUM_HOT_CUES),
         m_pLoadedTrack(),
-        m_mutex(QMutex::Recursive),
-        m_bHotcueCancel(false) {
+        m_mutex(QMutex::Recursive) {
     createControls();
 
     m_pTrackSamples = ControlObject::getControl(ConfigKey(_group, "track_samples"));
@@ -164,10 +164,10 @@ void CueControl::detachCue(int hotCue) {
     pControl->getEnabled()->set(0);
 }
 
-void CueControl::loadTrack(TrackPointer pTrack) {
+void CueControl::trackLoaded(TrackPointer pTrack) {
     QMutexLocker lock(&m_mutex);
     if (m_pLoadedTrack)
-        unloadTrack(m_pLoadedTrack);
+        trackUnloaded(m_pLoadedTrack);
 
     if (!pTrack) {
         return;
@@ -203,17 +203,16 @@ void CueControl::loadTrack(TrackPointer pTrack) {
         ConfigKey("[Controls]","CueRecall")).toInt();
     //If cue recall is ON in the prefs, then we're supposed to seek to the cue
     //point on song load. Note that cueRecall == 0 corresponds to "ON", not OFF.
+    double loadCuePoint = 0;
     if (loadCue && cueRecall == 0) {
-        double loadCuePoint = loadCue->getPosition();
-
-        // Need to unlock before emitting any signals to prevent deadlock.
-        lock.unlock();
-
-        emit(seekAbs(loadCuePoint));
+        loadCuePoint = loadCue->getPosition();
     }
+    // Need to unlock before emitting any signals to prevent deadlock.
+    lock.unlock();
+    seekAbs(loadCuePoint);
 }
 
-void CueControl::unloadTrack(TrackPointer pTrack) {
+void CueControl::trackUnloaded(TrackPointer pTrack) {
     QMutexLocker lock(&m_mutex);
     disconnect(pTrack.data(), 0, this, 0);
     for (int i = 0; i < m_iNumHotCues; ++i) {
@@ -332,7 +331,7 @@ void CueControl::hotcueSet(HotcueControl* pControl, double v) {
     bool playing = m_pPlayButton->get() > 0;
     if (!playing && m_pQuantizeEnabled->get() > 0.0) {
         lock.unlock();  // prevent deadlock.
-        emit(seekAbs(cuePosition));
+        seekAbs(cuePosition);
     }
 }
 
@@ -352,7 +351,7 @@ void CueControl::hotcueGoto(HotcueControl* pControl, double v) {
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
-            emit(seekAbs(position));
+            seekAbs(position);
         }
     }
 }
@@ -374,7 +373,7 @@ void CueControl::hotcueGotoAndStop(HotcueControl* pControl, double v) {
         int position = pCue->getPosition();
         if (position != -1) {
             m_pPlayButton->set(0.0);
-            emit(seekAbs(position));
+            seekAbs(position);
         }
     }
 }
@@ -395,7 +394,7 @@ void CueControl::hotcueGotoAndPlay(HotcueControl* pControl, double v) {
     if (pCue) {
         int position = pCue->getPosition();
         if (position != -1) {
-            emit(seekAbs(position));
+            seekAbs(position);
             m_pPlayButton->set(1.0);
         }
     }
@@ -463,7 +462,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-            emit(seekAbs(iPosition));
+            seekAbs(iPosition);
         }
     } else if (m_bPreviewingHotcue) {
         // This is a activate release and we are previewing at least one
@@ -490,7 +489,7 @@ void CueControl::hotcueActivatePreview(HotcueControl* pControl, double v) {
                     m_pPlayButton->set(0.0);
                     // Need to unlock before emitting any signals to prevent deadlock.
                     lock.unlock();
-                    emit(seekAbs(iPosition));
+                    seekAbs(iPosition);
                 }
             }
         }
@@ -595,7 +594,7 @@ void CueControl::cueGoto(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    emit(seekAbs(cuePoint));
+    seekAbs(cuePoint);
 }
 
 void CueControl::cueGotoAndPlay(double v)
@@ -622,7 +621,7 @@ void CueControl::cueGotoAndStop(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    emit(seekAbs(cuePoint));
+    seekAbs(cuePoint);
 }
 
 void CueControl::cuePreview(double v)
@@ -642,7 +641,7 @@ void CueControl::cuePreview(double v)
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    emit(seekAbs(cuePoint));
+    seekAbs(cuePoint);
 }
 
 void CueControl::cueSimple(double v) {
@@ -661,7 +660,7 @@ void CueControl::cueSimple(double v) {
     // Need to unlock before emitting any signals to prevent deadlock.
     lock.unlock();
 
-    emit(seekAbs(cuePoint));
+    seekAbs(cuePoint);
 }
 
 void CueControl::cueCDJ(double v) {
@@ -686,7 +685,7 @@ void CueControl::cueCDJ(double v) {
             // Need to unlock before emitting any signals to prevent deadlock.
             lock.unlock();
 
-            emit(seekAbs(cuePoint));
+            seekAbs(cuePoint);
         } else {
             if (fabs(getCurrentSample() - m_pCuePoint->get()) < 1.0f) {
                 m_pPlayButton->set(1.0);
@@ -700,7 +699,7 @@ void CueControl::cueCDJ(double v) {
                 // necessarily where we currently are
                 if (m_pQuantizeEnabled->get() > 0.0) {
                     lock.unlock();  // prevent deadlock.
-                    emit(seekAbs(m_pCuePoint->get()));
+                    seekAbs(m_pCuePoint->get());
                 }
             }
         }
@@ -711,7 +710,7 @@ void CueControl::cueCDJ(double v) {
         // Need to unlock before emitting any signals to prevent deadlock.
         lock.unlock();
 
-        emit(seekAbs(cuePoint));
+        seekAbs(cuePoint);
     }
     else {
         // Re-trigger the play button value so controllers get the correct one

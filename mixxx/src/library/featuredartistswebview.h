@@ -32,9 +32,6 @@ class FeaturedArtistsWebView : public QWebView, public LibraryView
         FeaturedArtistsWebView(QWidget* parent, QString libraryPath,
                                QString remoteURL, SongDownloader* downloader);
         ~FeaturedArtistsWebView();
-        virtual void setup(QDomNode node);
-        virtual void onSearchStarting() {};
-        virtual void onSearchCleared()  {};
         virtual void onSearch(const QString&) {};
         virtual void onShow() {};
         virtual QWidget* getWidgetForMIDIControl() { return this; };
@@ -47,7 +44,7 @@ class FeaturedArtistsWebView : public QWebView, public LibraryView
 
     signals:
         void loadTrack(TrackInfoObject* pTrack);
-        void loadTrackToPlayer(TrackInfoObject* pTrack, QString group);
+        void loadTrackToPlayer(TrackInfoObject* pTrack, QString group, bool play);
     protected:
         //virtual QString userAgentForUrl (const QUrl & url) const;
 

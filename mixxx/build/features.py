@@ -21,19 +21,11 @@ class HSS1394(Feature):
     def add_options(self, build, vars):
         if build.platform_is_windows or build.platform_is_osx:
             vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 1)
-        else:
-            vars.Add('hss1394', 'Set to 1 to enable HSS1394 MIDI device support.', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        if build.platform_is_linux:
-            # TODO(XXX) Enable this when when FFADO back-end support is written into Mixxx
-            return
-            #have_ffado = conf.CheckLib('ffado', autoadd=False)
-            #if not have_ffado:
-            #    raise Exception('Could not find libffado.')
-        else:
+        if build.platform_is_windows or build.platform_is_osx:
 #            if not conf.CheckHeader('HSS1394/HSS1394.h'):  # WTF this gives tons of cmath errors on MSVC
 #                raise Exception('Did not find HSS1394 development headers')
 #            elif not conf.CheckLib(['libHSS1394', 'HSS1394']):
@@ -140,7 +132,8 @@ class Bulk(Feature):
     def sources(self, build):
         sources = ['controllers/bulk/bulkcontroller.cpp',
                    'controllers/bulk/bulkenumerator.cpp']
-
+        if not int(build.flags['hid']):
+		    sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 
@@ -209,7 +202,8 @@ class MediaFoundation(Feature):
             return True
         return False
     def add_options(self, build, vars):
-        vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
+        if build.platform_is_windows:
+            vars.Add(self.FLAG, "Set to 1 to enable the Media Foundation AAC decoder plugin (Windows Vista with KB2117917 or Windows 7 required)", 0)
     def configure(self, build, conf):
         if not self.enabled(build):
             return
@@ -399,11 +393,11 @@ class VinylControl(Feature):
 
     def sources(self, build):
         sources = ['vinylcontrol/vinylcontrol.cpp',
-                   'vinylcontrol/vinylcontrolproxy.cpp',
                    'vinylcontrol/vinylcontrolxwax.cpp',
                    'dlgprefvinyl.cpp',
                    'vinylcontrol/vinylcontrolsignalwidget.cpp',
                    'vinylcontrol/vinylcontrolmanager.cpp',
+                   'vinylcontrol/vinylcontrolprocessor.cpp',
                    'vinylcontrol/steadypitch.cpp',
                    'engine/vinylcontrolcontrol.cpp',]
         if build.platform_is_windows:
@@ -466,12 +460,11 @@ class Vamp(Feature):
             build.env.Append(CPPPATH=[self.INTERNAL_VAMP_PATH])
             self.INTERNAL_LINK = True
 
-        build.env.Append(CPPDEFINES = '__VAMP__')
-
         # Needed on Linux at least. Maybe needed elsewhere?
         if build.platform_is_linux:
-            # Optionally link libdl. Required for some distros.
+            # Optionally link libdl and libX11. Required for some distros.
             conf.CheckLib(['dl', 'libdl'])
+            conf.CheckLib(['X11', 'libX11'])
 
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
@@ -497,6 +490,40 @@ class Vamp(Feature):
                             '%s/PluginWrapper.cpp',
                             '%s/RealTime.cpp'])
         return sources
+
+
+class ModPlug(Feature):
+    def description(self):
+        return "Modplug module decoder plugin"
+
+    def enabled(self, build):
+        build.flags['modplug'] = util.get_flags(build.env, 'modplug', 0)
+        if int(build.flags['modplug']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('modplug', 'Set to 1 to enable libmodplug based module tracker support.', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+
+        build.env.Append(CPPDEFINES = '__MODPLUG__')
+
+        have_modplug_h = conf.CheckHeader('libmodplug/modplug.h')
+        have_modplug = conf.CheckLib(['modplug','libmodplug'], autoadd=True)
+
+        if not have_modplug_h:
+            raise Exception('Could not find libmodplug development headers.')
+
+        if not have_modplug:
+            raise Exception('Could not find libmodplug shared library.')
+
+    def sources(self, build):
+        build.env.Uic4('dlgprefmodplugdlg.ui')
+        return ['soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
+
 
 class FAAD(Feature):
     def description(self):
@@ -780,14 +807,6 @@ class Shoutcast(Feature):
         if not libshout_found:
             raise Exception('Could not find libshout or its development headers. Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.')
 
-        # libvorbisenc only exists on Linux, OSX and mingw32 on Windows. On
-        # Windows with MSVS it is included in vorbisfile.dll. libvorbis and
-        # libogg are included from build.py so don't add here.
-        if not build.platform_is_windows or build.toolchain_is_gnu:
-            vorbisenc_found = conf.CheckLib(['libvorbisenc', 'vorbisenc'])
-            if not vorbisenc_found:
-                raise Exception("libvorbisenc was not found! Please install it or compile Mixxx without Shoutcast support using the shoutcast=0 flag.")
-
         if build.platform_is_windows and build.static_dependencies:
             conf.CheckLib('winmm')
             conf.CheckLib('ws2_32')
@@ -795,9 +814,8 @@ class Shoutcast(Feature):
     def sources(self, build):
         build.env.Uic4('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
-                'engine/engineshoutcast.cpp',
-                'recording/encodervorbis.cpp',
-                'recording/encodermp3.cpp']
+                'shoutcast/shoutcastmanager.cpp',
+                'engine/sidechain/engineshoutcast.cpp']
 
 
 class FFMPEG(Feature):
@@ -1062,3 +1080,28 @@ class Tuned(Feature):
                     build.env.Append(CCFLAGS = '/favor:' + build.machine)
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"
+
+class PromoTracks(Feature):
+    def description(self):
+        return "Promotional tracks feature."
+
+    def enabled(self, build):
+        build.flags['promo'] = util.get_flags(build.env, 'promo', 0)
+        if int(build.flags['promo']):
+            return True
+        return False
+
+    def add_options(self, build, vars):
+        vars.Add('promo', 'Set to 1 to include promo tracks feature (deprecated, unused).', 0)
+
+    def configure(self, build, conf):
+        if not self.enabled(build):
+            return
+        build.env.Append(CPPDEFINES = '__PROMO__')
+
+    def sources(self, build):
+        return ['library/promotracksfeature.cpp',
+                'library/bundledsongswebview.cpp',
+                "library/featuredartistswebview.cpp",
+                ]
+

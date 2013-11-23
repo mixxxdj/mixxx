@@ -13,13 +13,13 @@
 #include "controllers/defs_controllers.h"
 
 BulkReader::BulkReader(libusb_device_handle *handle, unsigned char in_epaddr)
-        : QThread() {
-    m_phandle = handle;
-    m_in_epaddr = in_epaddr;
+        : QThread(),
+          m_phandle(handle),
+          m_stop(0),
+          m_in_epaddr(in_epaddr) {
 }
 
 BulkReader::~BulkReader() {
-    m_phandle = NULL;
 }
 
 void BulkReader::stop() {
@@ -65,8 +65,11 @@ static QString get_string(libusb_device_handle *handle, u_int8_t id) {
 }
 
 
-BulkController::BulkController(libusb_device_handle *handle,
-                               struct libusb_device_descriptor *desc) {
+BulkController::BulkController(libusb_context* context,
+                               libusb_device_handle *handle,
+                               struct libusb_device_descriptor *desc)
+        : m_context(context),
+          m_phandle(handle) {
     vendor_id = desc->idVendor;
     product_id = desc->idProduct;
 
@@ -153,12 +156,11 @@ int BulkController::open() {
         qWarning() << "USB Bulk device" << getName() << "unsupported";
         return -1;
     }
-    m_phandle = NULL;
 
     // XXX: we should enumerate devices and match vendor, product, and serial
     if (m_phandle == NULL) {
         m_phandle = libusb_open_device_with_vid_pid(
-            NULL, vendor_id, product_id);
+            m_context, vendor_id, product_id);
     }
 
     if (m_phandle == NULL) {
@@ -217,6 +219,7 @@ int BulkController::close() {
         qDebug() << "  Closing device";
     }
     libusb_close(m_phandle);
+    m_phandle = NULL;
     setOpen(false);
     return 0;
 }

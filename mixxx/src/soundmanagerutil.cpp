@@ -276,6 +276,10 @@ AudioOutput::AudioOutput(AudioPathType type /* = INVALID */,
     }
 }
 
+AudioOutput::~AudioOutput() {
+    
+}
+
 /**
  * Writes this AudioOutput's data to an XML element, preallocated from an XML
  * DOM document.
@@ -339,6 +343,10 @@ AudioInput::AudioInput(AudioPathType type /* = INVALID */,
     }
 }
 
+AudioInput::~AudioInput() {
+    
+}
+
 /**
  * Writes this AudioInput's data to an XML element, preallocated from an XML
  * DOM document.
@@ -372,6 +380,8 @@ QList<AudioPathType> AudioInput::getSupportedTypes() {
     // this disables vinyl control for all of the sound devices stuff
     // (prefs, etc), minimal ifdefs :) -- bkgood
     types.append(VINYLCONTROL);
+#else
+    types.append(EXTPASSTHROUGH);
 #endif
     types.append(MICROPHONE);
     return types;
