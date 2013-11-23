@@ -78,7 +78,6 @@ void BansheeFeature::activate() {
     //qDebug("BansheeFeature::activate()");
 
     if (!m_isActivated) {
-
         if (!QFile::exists(m_databaseFile)) {
             // Fall back to default
             m_databaseFile = BansheeDbConnection::getDatabaseFile();
@@ -114,9 +113,9 @@ void BansheeFeature::activate() {
             // append the playlist to the child model
             TreeItem *item = new TreeItem(playlist.name, playlist.playlistId, this, playlist_root);
             playlist_root->appendChild(item);
-        };
+        }
 
-        if(playlist_root){
+        if (playlist_root) {
             m_childModel.setRootItem(playlist_root);
             if (m_isActivated) {
                 activate();
@@ -220,14 +219,12 @@ void BansheeFeature::slotImportAsMixxxPlaylist() {
                         playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
                     }
                 }
-            }
-            else {
+            } else {
                 QMessageBox::warning(NULL,
                                      tr("Playlist Creation Failed"),
                                      tr("An unknown error occurred while creating playlist: ")
                                       + playlistName);
             }
-
             delete pPlaylistModelToAdd;
         }
     }

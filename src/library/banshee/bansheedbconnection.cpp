@@ -78,20 +78,7 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
 
     QSqlQuery query(m_database);
     query.setForwardOnly(true); // Saves about 50% time
-/*
-    QString queryString = QString(
-        "CREATE TEMPORARY VIEW IF NOT EXISTS %1 AS "
-        "SELECT %2 FROM PlaylistTracks "
-        "INNER JOIN library ON library.id = PlaylistTracks.track_id "
-        "WHERE PlaylistTracks.playlist_id = %3 AND library.mixxx_deleted = 0")
-            .arg(escaper.escapeString(playlistTableName))
-            .arg(columns.join(","))
-            .arg(playlistId);
-    query.prepare(queryString);
-    if (!query.exec()) {
-        LOG_FAILED_QUERY(query);
-    }
-*/
+
     QString queryString;
 
     if (playlistId == 0) {
@@ -123,9 +110,7 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
             "FROM CoreTracks "
             "INNER JOIN CoreArtists ON CoreArtists.ArtistID = CoreTracks.ArtistID "
             "INNER JOIN CoreArtists AlbumArtists ON AlbumArtists.ArtistID = CoreAlbums.ArtistID "
-            "INNER JOIN CoreAlbums ON CoreAlbums.AlbumID = CoreTracks.AlbumID "
-
-                );
+            "INNER JOIN CoreAlbums ON CoreAlbums.AlbumID = CoreTracks.AlbumID ");
      } else {
         // SELECT playlist from CorePlaylistEntries
         queryString = QString(

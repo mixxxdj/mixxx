@@ -25,8 +25,7 @@ BansheePlaylistModel::BansheePlaylistModel(QObject* pParent, TrackCollection* pT
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
            m_pConnection(pConnection),
-           m_playlistId(-1)
-{
+           m_playlistId(-1) {
     initHeaderData();
 }
 
@@ -93,13 +92,13 @@ void BansheePlaylistModel::initHeaderData() {
 }
 
 QVariant BansheePlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const {
-    if (role != Qt::DisplayRole)
+    if (role != Qt::DisplayRole) {
         return QAbstractTableModel::headerData(section, orientation, role);
+    }
 
-    if (   orientation == Qt::Horizontal
-        && role == Qt::DisplayRole
-        && section < m_headerList.size()
-    ) {
+    if (orientation == Qt::Horizontal &&
+            role == Qt::DisplayRole &&
+            section < m_headerList.size()) {
         return QVariant(m_headerList.at(section).lable);
     }
     return QAbstractTableModel::headerData(section, orientation, role);
@@ -142,7 +141,6 @@ void BansheePlaylistModel::sort(int column, Qt::SortOrder order) {
 }
 
 int BansheePlaylistModel::rowCount(const QModelIndex& parent) const {
-
     if (!parent.isValid()) {
         return m_sortedPlaylist.size();
     }
@@ -158,11 +156,10 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
 
     QVariant value = QVariant();
 
-    if (    role != Qt::DisplayRole
-         && role != Qt::EditRole
-         && role != Qt::CheckStateRole
-         && role != Qt::ToolTipRole
-    ) {
+    if (role != Qt::DisplayRole &&
+            role != Qt::EditRole &&
+            role != Qt::CheckStateRole &&
+            role != Qt::ToolTipRole) {
         return value;
     }
 
@@ -171,7 +168,6 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
 
     int row = index.row();
     if (row < m_sortedPlaylist.size()) {
-        int duration;
         switch (m_headerList.at(index.column()).id) {
         case VIEW_ORDER:
             value = m_sortedPlaylist.at(row).viewOrder;
@@ -186,9 +182,11 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
             value = m_sortedPlaylist.at(row).pTrack->title;
             break;
         case DURATION:
-            duration = m_sortedPlaylist.at(row).pTrack->duration;
-            if (duration) {
-                value = MixxxUtils::millisecondsToMinutes(duration, true);
+            {
+                int duration = m_sortedPlaylist.at(row).pTrack->duration;
+                if (duration) {
+                    value = MixxxUtils::millisecondsToMinutes(duration, true);
+                }
             }
             break;
         case URI:
@@ -253,28 +251,19 @@ QVariant BansheePlaylistModel::data(const QModelIndex& index, int role) const {
         }
     }
 
-
-/*
-    // This value is the value in its most raw form. It was looked up either
-    // from the SQL table or from the cached track layer.
-    QVariant value = getBaseValue(index, role);
-*/
-
-
     // Format the value based on whether we are in a tooltip, display, or edit
     // role
     switch (role) {
-        case Qt::ToolTipRole:
-        case Qt::DisplayRole:
-            break;
-        case Qt::EditRole:
-            break;
-        case Qt::CheckStateRole:
-            value = QVariant();
-            //}
-            break;
-        default:
-            break;
+    case Qt::ToolTipRole:
+    case Qt::DisplayRole:
+        break;
+    case Qt::EditRole:
+        break;
+    case Qt::CheckStateRole:
+        value = QVariant();
+        break;
+    default:
+        break;
     }
     return value;
 }
@@ -353,12 +342,11 @@ void BansheePlaylistModel::setPlaylist(int playlistId) {
             bool found = true;
             QStringList search = m_currentSearch.split(" ", QString::SkipEmptyParts);
             foreach (const QString &str, search) {
-                if (entry.pArtist->name.contains(str, Qt::CaseInsensitive)) {
-                } else if (entry.pTrack->title.contains(str, Qt::CaseInsensitive)) {
-                } else if (entry.pAlbum->title.contains(str, Qt::CaseInsensitive)) {
-                } else if (entry.pTrack->comment.contains(str, Qt::CaseInsensitive)) {
-                } else if (entry.pTrack->genre.contains(str, Qt::CaseInsensitive)) {
-                } else {
+                if (!entry.pArtist->name.contains(str, Qt::CaseInsensitive) &&
+                        !entry.pTrack->title.contains(str, Qt::CaseInsensitive) &&
+                        !entry.pAlbum->title.contains(str, Qt::CaseInsensitive) &&
+                        !entry.pTrack->comment.contains(str, Qt::CaseInsensitive) &&
+                        !entry.pTrack->genre.contains(str, Qt::CaseInsensitive)) {
                     // search String part not found, don't add entry to m_sortedPlaylist
                     found = false;
                     break;
@@ -481,8 +469,7 @@ int BansheePlaylistModel::getTrackId(const QModelIndex& index) const {
     int row = index.row();
     if (row < m_sortedPlaylist.size()) {
         return m_sortedPlaylist.at(index.row()).viewOrder;
-    }
-    else {
+    } else {
         return 0;
     }
 }
@@ -491,7 +478,7 @@ const QLinkedList<int> BansheePlaylistModel::getTrackRows(int trackId) const {
     // In this case we get the position as trackId, returned from getTrackId above.
     QLinkedList<int> ret;
     for (int i = 0; i < m_sortedPlaylist.size(); ++i) {
-        if (m_sortedPlaylist.at(i).viewOrder == trackId ){
+        if (m_sortedPlaylist.at(i).viewOrder == trackId) {
             ret.push_back(i);
             break;
         }
@@ -500,8 +487,9 @@ const QLinkedList<int> BansheePlaylistModel::getTrackRows(int trackId) const {
 }
 
 void BansheePlaylistModel::search(const QString& searchText, const QString& extraFilter) {
-    if (sDebug)
+    if (sDebug) {
         qDebug() << this << "search" << searchText;
+    }
 
     if (m_currentSearch != searchText || m_currentSearchFilter != extraFilter) {
         m_currentSearch = searchText;
@@ -519,7 +507,7 @@ bool BansheePlaylistModel::isColumnInternal(int column) {
     return false;
 }
 
-    /** if no header state exists, we may hide some columns so that the user can reactivate them **/
+// if no header state exists, we may hide some columns so that the user can reactivate them
 bool BansheePlaylistModel::isColumnHiddenByDefault(int column) {
     Q_UNUSED(column);
     return false;
@@ -544,11 +532,11 @@ void BansheePlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QMode
     Q_UNUSED(sourceIndex);
 }
 
-QAbstractItemDelegate* BansheePlaylistModel::delegateForColumn(const int i,  QObject* pParent) {
+QAbstractItemDelegate* BansheePlaylistModel::delegateForColumn(const int i, QObject* pParent) {
     if (m_headerList.at(i).id == RATING) {
         return new StarDelegate(pParent);
-//    } else if (PlayerManager::numPreviewDecks() > 0 && m_headerList.at(i).id == PREVIEW) {
-//        return new PreviewButtonDelegate(pParent, i);
+    //} else if (PlayerManager::numPreviewDecks() > 0 && m_headerList.at(i).id == PREVIEW) {
+    //    return new PreviewButtonDelegate(pParent, i);
     }
     return NULL;
 }
