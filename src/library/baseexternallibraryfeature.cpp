@@ -68,7 +68,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
     QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
 
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-        getPlaylistModelForPlaylist(playlist));
+            getPlaylistModelForPlaylist(playlist));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
         qDebug() << "BaseExternalLibraryFeature::addToAutoDJ could not initialize a playlist model for playlist:" << playlist;
@@ -77,7 +77,7 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
 
     pPlaylistModelToAdd->select();
     PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
-    int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
+    QList<int> trackIds;
 
     int rows = pPlaylistModelToAdd->rowCount();
     for (int i = 0; i < rows; ++i) {
@@ -86,19 +86,18 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
             continue;
         }
         TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-
-        if (!track || track->getId() == -1) {
+        if (!track) {
             continue;
         }
 
-        if (bTop) {
-            // Start at position 2 because position 1 was already loaded to the deck
-            playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
-        } else {
-            // TODO(XXX): Care whether the append succeeded.
-            playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
+        int trackId = track->getId();
+        if (trackId == -1) {
+            continue;
         }
+
+        trackIds.append(trackId);
     }
+    playlistDao.addTracksToAutoDJQueue(trackIds, bTop);
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
@@ -138,6 +137,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     playlistId = playlistDao.createPlaylist(playlist);
 
     if (playlistId != -1) {
+        QList<int> trackIds;
         // Copy Tracks
         int rows = pPlaylistModelToAdd->rowCount();
         for (int i = 0; i < rows; ++i) {
@@ -145,10 +145,19 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
             if (index.isValid()) {
                 qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
                 TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-                // TODO(XXX): Care whether the append succeeded.
-                playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
+                if (!track) {
+                    continue;
+                }
+
+                int trackId = track->getId();
+                if (trackId == -1) {
+                    continue;
+                }
+
+                trackIds.append(trackId);
             }
         }
+        playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     } else {
         // Do not change strings here without also changing strings in
         // src/library/baseplaylistfeature.cpp
