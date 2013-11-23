@@ -33,45 +33,6 @@ enum SYNC_STATE {
     SYNC_MASTER = 2
 };
 
-/*class RateControl : public QObject {
-    Q_OBJECT
-  public:
-    RateControl(EngineChannel* pChannel);
-    virtual ~RateControl();
-
-    const QString& getGroup() const {
-        return m_group;
-    }
-
-    EngineChannel* getChannel();
-    void setState(double state);
-    double getState() const;
-    double getFileBpm() const;
-    void setBpm(double bpm);
-
-    ControlObject* getRateEngineControl();
-    ControlObject* getBeatDistanceControl();
-
-  signals:
-    void channelSyncStateChanged(RateControl*, double);
-    void channelRateSliderChanged(RateControl*, double);
-
-  private slots:
-    void slotChannelSyncStateChanged(double);
-    void slotChannelRateSliderChanged(double);
-
-  private:
-    EngineChannel* m_pChannel;
-    QString m_group;
-    ControlObject* m_pChannelSyncState;
-    ControlObject* m_pFileBpm;
-    ControlObject* m_pRateEngine;
-    ControlObject* m_pBeatDistance;
-    ControlObject* m_pRateSlider;
-    ControlObject* m_pRateRange;
-    ControlObject* m_pRateDir;
-};*/
-
 class EngineSync : public EngineControl {
     Q_OBJECT
 
