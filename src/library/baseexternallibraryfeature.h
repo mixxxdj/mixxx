@@ -22,6 +22,8 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   protected:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) = 0;
 
+    QModelIndex m_lastRightClickedIndex;
+
   private slots:
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
@@ -31,7 +33,6 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     virtual void addToAutoDJ(bool bTop);
 
     TrackCollection* m_pTrackCollection;
-    QModelIndex m_lastRightClickedIndex;
     QAction* m_pAddToAutoDJAction;
     QAction* m_pAddToAutoDJTopAction;
     QAction* m_pImportAsMixxxPlaylistAction;

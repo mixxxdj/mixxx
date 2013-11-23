@@ -149,7 +149,7 @@ TreeItemModel* BansheeFeature::getChildModel() {
 }
 
 void BansheeFeature::addToAutoDJ(bool bTop) {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
         TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
@@ -169,7 +169,7 @@ void BansheeFeature::addToAutoDJ(bool bTop) {
                     TrackPointer track = pPlaylistModelToAdd->getTrack(index);
                     if (bTop) {
                         // Start at position 2 because position 1 was already loaded to the deck
-                        playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
+                        playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i + 2);
                     } else {
                         playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
                     }
@@ -181,7 +181,7 @@ void BansheeFeature::addToAutoDJ(bool bTop) {
 }
 
 void BansheeFeature::slotImportAsMixxxPlaylist() {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    //qDebug() << "slotImportAsMixxxPlaylist() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
         TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
@@ -210,9 +210,9 @@ void BansheeFeature::slotImportAsMixxxPlaylist() {
 
             if (playlistId != -1) {
                 // Copy Tracks
-                int rows = 0; //= pPlaylistModelToAdd->rowCount();
+                int rows = pPlaylistModelToAdd->rowCount();
                 for (int i = 0; i < rows; ++i) {
-                    QModelIndex index; // = pPlaylistModelToAdd->index(i,0);
+                    QModelIndex index = pPlaylistModelToAdd->index(i,0);
                     if (index.isValid()) {
                         //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
                         TrackPointer track = pPlaylistModelToAdd->getTrack(index);

@@ -19,7 +19,7 @@ class BansheePlaylistModel;
 
 class BansheeFeature : public BaseExternalLibraryFeature {
     Q_OBJECT
- public:
+  public:
     BansheeFeature(QObject* parent, TrackCollection* pTrackCollection, ConfigObject<ConfigValue>* pConfig);
     virtual ~BansheeFeature();
     static bool isSupported();
@@ -40,8 +40,6 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     static QString getiTunesMusicPath();
     // returns the invisible rootItem for the sidebar model
     virtual void addToAutoDJ(bool bTop);
-
-     QModelIndex m_lastRightClickedIndex;
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
     TreeItemModel m_childModel;

@@ -102,7 +102,9 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
+    //
+
+    qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     if (!m_lastRightClickedIndex.isValid()) {
         return;
