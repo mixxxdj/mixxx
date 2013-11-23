@@ -58,68 +58,26 @@ void BaseExternalLibraryFeature::slotAddToAutoDJTop() {
 void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
     // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
-    if (!m_lastRightClickedIndex.isValid()) {
-        return;
-    }
-
-    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
-    // use the dataPath because models with nested playlists need to use the
-    // full path/name of the playlist.
-    QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
-
-    QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-            getPlaylistModelForPlaylist(playlist));
-
-    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::addToAutoDJ could not initialize a playlist model for playlist:" << playlist;
-        return;
-    }
-
-    pPlaylistModelToAdd->select();
-    PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
     QList<int> trackIds;
-
-    int rows = pPlaylistModelToAdd->rowCount();
-    for (int i = 0; i < rows; ++i) {
-        QModelIndex index = pPlaylistModelToAdd->index(i, 0);
-        if (!index.isValid()) {
-            continue;
-        }
-        TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-        if (!track) {
-            continue;
-        }
-
-        int trackId = track->getId();
-        if (trackId == -1) {
-            continue;
-        }
-
-        trackIds.append(trackId);
+    appendTrackIdsFromRightClickIndex(&trackIds);
+    if (trackIds.isEmpty()) {
+        return;
     }
+
+    PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
     playlistDao.addTracksToAutoDJQueue(trackIds, bTop);
 }
 
 void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
-    if (!m_lastRightClickedIndex.isValid()) {
+    QList<int> trackIds;
+    appendTrackIdsFromRightClickIndex(&trackIds);
+    if (trackIds.isEmpty()) {
         return;
     }
 
-    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
-    // use the dataPath because models with nested playlists need to use the
-    // full path/name of the playlist.
     QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
-    QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-        getPlaylistModelForPlaylist(playlist));
-
-    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::slotImportAsMixxxPlaylist could not initialize a playlist model for playlist:" << playlist;
-        return;
-    }
-
-    pPlaylistModelToAdd->select();
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
     int playlistId = playlistDao.getPlaylistIdFromName(playlist);
@@ -137,26 +95,6 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     playlistId = playlistDao.createPlaylist(playlist);
 
     if (playlistId != -1) {
-        QList<int> trackIds;
-        // Copy Tracks
-        int rows = pPlaylistModelToAdd->rowCount();
-        for (int i = 0; i < rows; ++i) {
-            QModelIndex index = pPlaylistModelToAdd->index(i,0);
-            if (index.isValid()) {
-                qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
-                TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-                if (!track) {
-                    continue;
-                }
-
-                int trackId = track->getId();
-                if (trackId == -1) {
-                    continue;
-                }
-
-                trackIds.append(trackId);
-            }
-        }
         playlistDao.appendTracksToPlaylist(trackIds, playlistId);
     } else {
         // Do not change strings here without also changing strings in
@@ -168,4 +106,43 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     }
 }
 
+void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds) {
+    if (!m_lastRightClickedIndex.isValid()) {
+        return;
+    }
+
+    // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
+    // use the dataPath because models with nested playlists need to use the
+    // full path/name of the playlist.
+    QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
+    QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
+            getPlaylistModelForPlaylist(playlist));
+
+    if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
+        qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex could not initialize a playlist model for playlist:" << playlist;
+        return;
+    }
+
+    pPlaylistModelToAdd->select();
+
+    // Copy Tracks
+    int rows = pPlaylistModelToAdd->rowCount();
+    for (int i = 0; i < rows; ++i) {
+        QModelIndex index = pPlaylistModelToAdd->index(i,0);
+        if (index.isValid()) {
+            qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
+            TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+            if (!track) {
+                continue;
+            }
+
+            int trackId = track->getId();
+            if (trackId == -1) {
+                continue;
+            }
+
+            trackIds->append(trackId);
+        }
+    }
+}
 
