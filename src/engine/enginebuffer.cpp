@@ -30,6 +30,7 @@
 #include "engine/enginebufferscalelinear.h"
 #include "engine/enginebufferscaledummy.h"
 #include "mathstuff.h"
+#include "engine/enginesync.h"
 #include "engine/engineworkerscheduler.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginecontrol.h"
@@ -39,6 +40,7 @@
 #include "engine/quantizecontrol.h"
 #include "engine/cuecontrol.h"
 #include "engine/clockcontrol.h"
+#include "engine/enginemaster.h"
 #include "util/timer.h"
 #include "controlobjectslave.h"
 #include "util/compatibility.h"
@@ -52,7 +54,8 @@
 const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
 
-EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config) :
+EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config,
+                           EngineMaster* pMixingEngine) :
     m_engineLock(QMutex::Recursive),
     m_group(_group),
     m_pConfig(_config),
@@ -193,15 +196,13 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-#ifdef __VINYLCONTROL__
-    // If VinylControl is enabled, add a VinylControlControl. This must be done
-    // before RateControl is created.
-    addControl(new VinylControlControl(m_group, _config));
-#endif
-
     // Create the Rate Controller
-    m_pRateControl = new RateControl(_group, _config);
+    m_pRateControl = pMixingEngine->getEngineSync()->addDeck(_group);
     addControl(m_pRateControl);
+    
+#ifdef __VINYLCONTROL__
+    addControl(m_pRateControl->getVinylControlControl());
+#endif
 
     m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
     m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));

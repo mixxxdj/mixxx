@@ -9,9 +9,14 @@
 #include "mathstuff.h"
 
 #include "engine/bpmcontrol.h"
+#include "engine/enginechannel.h"
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
+
+#ifdef __VINYLCONTROL__
+#include "engine/vinylcontrolcontrol.h"
+#endif
 
 #include <QDebug>
 
@@ -42,6 +47,14 @@ RateControl::RateControl(const char* _group,
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
+    if (m_pRateSlider) {
+        connect(m_pRateSlider, SIGNAL(valueChanged(double)),
+                this, SLOT(slotChannelRateSliderChanged(double)),
+                Qt::DirectConnection);
+    }
+
+    m_pRateEngine = ControlObject::getControl(ConfigKey(_group, "rateEngine"));
+    m_pBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
 
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate
@@ -157,6 +170,8 @@ RateControl::RateControl(const char* _group,
     m_iSyncState = SYNC_NONE;
 
 #ifdef __VINYLCONTROL__
+    m_pVinylControlControl = new VinylControlControl(_group, _config);
+
     m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
@@ -173,6 +188,7 @@ RateControl::~RateControl() {
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
+    delete m_pBeatDistance;
 
     delete m_pRateSearch;
 
@@ -196,10 +212,21 @@ RateControl::~RateControl() {
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
+    delete m_pVinylControlControl;
 }
 
 void RateControl::setBpmControl(BpmControl* bpmcontrol) {
     m_pBpmControl = bpmcontrol;
+}
+
+void RateControl::setEngineChannel(EngineChannel* pChannel) {
+    m_pChannel = pChannel;
+    ControlObject* file_bpm = 
+            ControlObject::getControl(ConfigKey(pChannel->getGroup(), "file_bpm"));
+    Q_ASSERT(file_bpm);
+    connect(file_bpm, SIGNAL(valueChanged(double)),
+            this, SLOT(slotFileBpmChanged(double)),
+            Qt::DirectConnection);
 }
 
 void RateControl::setRateRamp(bool linearMode)
@@ -350,9 +377,21 @@ void RateControl::slotControlRateTempUpSmall(double)
     }
 }
 
+void RateControl::slotFileBpmChanged(double bpm) {
+    m_dFileBpm = bpm;
+    slotChannelRateSliderChanged(m_pRateSlider->get());
+}
+
 void RateControl::slotSyncStateChanged(double state) {
     m_iSyncState = state;
+    emit(channelSyncStateChanged(this, state));
 }
+
+void RateControl::slotChannelRateSliderChanged(double v) {
+    const double new_bpm = getFileBpm() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
+    emit(channelRateSliderChanged(this, new_bpm));
+}
+
 
 void RateControl::trackLoaded(TrackPointer pTrack) {
     if (m_pTrack) {
@@ -395,6 +434,26 @@ double RateControl::getJogFactor() const {
     }
 
     return jogFactor;
+}
+
+ControlObject* RateControl::getRateEngineControl() {
+    return m_pRateEngine;
+}
+
+VinylControlControl* RateControl::getVinylControlControl() {
+    return m_pVinylControlControl;
+}
+
+ControlObject* RateControl::getBeatDistanceControl() {
+    return m_pBeatDistance;
+}
+
+double RateControl::getState() const {
+    return m_pSyncState->get();
+}
+
+void RateControl::setState(double state) {
+    m_pSyncState->set(state);
 }
 
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,

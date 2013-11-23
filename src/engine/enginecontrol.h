@@ -69,6 +69,7 @@ class EngineControl : public QObject {
     virtual void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double getCurrentSample() const;
     double getTotalSamples() const;
+    const char* getGroup() const;
 
     // Called whenever a seek occurs to allow the EngineControl to respond.
     virtual void notifySeek(double dNewPlaypo);
@@ -82,7 +83,6 @@ class EngineControl : public QObject {
     void seekAbs(double sample);
     EngineBuffer* pickSyncTarget();
 
-    const char* getGroup();
     ConfigObject<ConfigValue>* getConfig();
     EngineMaster* getEngineMaster();
     EngineBuffer* getEngineBuffer();
