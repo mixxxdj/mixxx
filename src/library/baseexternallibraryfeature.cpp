@@ -59,7 +59,8 @@ void BaseExternalLibraryFeature::addToAutoDJ(bool bTop) {
     // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     QList<int> trackIds;
-    appendTrackIdsFromRightClickIndex(&trackIds);
+    QString playlist;
+    appendTrackIdsFromRightClickIndex(&trackIds, &playlist);
     if (trackIds.isEmpty()) {
         return;
     }
@@ -72,12 +73,12 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     QList<int> trackIds;
-    appendTrackIdsFromRightClickIndex(&trackIds);
+    QString playlist;
+    appendTrackIdsFromRightClickIndex(&trackIds, &playlist);
     if (trackIds.isEmpty()) {
         return;
     }
 
-    QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
     int playlistId = playlistDao.createUniquePlaylist(&playlist);
@@ -94,7 +95,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     }
 }
 
-void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds) {
+void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist) {
     if (!m_lastRightClickedIndex.isValid()) {
         return;
     }
@@ -102,12 +103,13 @@ void BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex(QList<int>* t
     // Qt::UserRole asks TreeItemModel for the TreeItem's dataPath. We need to
     // use the dataPath because models with nested playlists need to use the
     // full path/name of the playlist.
-    QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
+    *pPlaylist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
     QScopedPointer<BaseSqlTableModel> pPlaylistModelToAdd(
-            getPlaylistModelForPlaylist(playlist));
+            getPlaylistModelForPlaylist(*pPlaylist));
 
     if (!pPlaylistModelToAdd || !pPlaylistModelToAdd->initialized()) {
-        qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex could not initialize a playlist model for playlist:" << playlist;
+        qDebug() << "BaseExternalLibraryFeature::appendTrackIdsFromRightClickIndex "
+                "could not initialize a playlist model for playlist:" << *pPlaylist;
         return;
     }
 
