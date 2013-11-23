@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>512</width>
-    <height>469</height>
+    <width>649</width>
+    <height>556</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">Form3</string>
+   <string>Library Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -140,8 +140,7 @@
       <item row="0" column="0">
        <widget class="QCheckBox" name="checkBoxPromoStats">
         <property name="text">
-         <string>Support Mixxx by counting and sharing bundled songs
-playback and outbound link statistics</string>
+         <string>Support Mixxx by counting and sharing bundled song playback and outbound link statistics</string>
         </property>
        </widget>
       </item>
@@ -223,7 +222,14 @@ playback and outbound link statistics</string>
       <item row="8" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>    You will need to restart Mixxx for this to take effect</string>
+         <string>You will need to restart Mixxx for these settings to take effect</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
@@ -246,6 +252,19 @@ playback and outbound link statistics</string>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>LineEditSongfiles</tabstop>
+  <tabstop>PushButtonBrowsePlaylist</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>pushButtonExtraPlugins</tabstop>
+  <tabstop>checkBoxPromoStats</tabstop>
+  <tabstop>checkBox_library_scan</tabstop>
+  <tabstop>checkbox_ID3_sync</tabstop>
+  <tabstop>checkBox_use_relative_path</tabstop>
+  <tabstop>checkBox_show_rhythmbox</tabstop>
+  <tabstop>checkBox_show_itunes</tabstop>
+  <tabstop>checkBox_show_traktor</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>
