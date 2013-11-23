@@ -7,8 +7,10 @@
 #include "library/banshee/bansheedbconnection.h"
 #include "mixxxutils.cpp"
 #include "library/starrating.h"
+#include "library/previewbuttondelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
+#include "playermanager.h"
 
 
 const bool sDebug = false;
@@ -548,7 +550,5 @@ QAbstractItemDelegate* BansheePlaylistModel::delegateForColumn(const int i,  QOb
 //    } else if (PlayerManager::numPreviewDecks() > 0 && m_headerList.at(i).id == PREVIEW) {
 //        return new PreviewButtonDelegate(pParent, i);
     }
-    return NULL;
-
     return NULL;
 }
