@@ -80,19 +80,7 @@ void BaseExternalLibraryFeature::slotImportAsMixxxPlaylist() {
     QString playlist = m_lastRightClickedIndex.data(Qt::UserRole).toString();
     PlaylistDAO& playlistDao = m_pTrackCollection->getPlaylistDAO();
 
-    int playlistId = playlistDao.getPlaylistIdFromName(playlist);
-    int i = 1;
-
-    if (playlistId != -1) {
-        // Calculate a unique name
-        playlist += "(%1)";
-        while (playlistId != -1) {
-            i++;
-            playlistId = playlistDao.getPlaylistIdFromName(playlist.arg(i));
-        }
-        playlist = playlist.arg(i);
-    }
-    playlistId = playlistDao.createPlaylist(playlist);
+    int playlistId = playlistDao.createUniquePlaylist(&playlist);
 
     if (playlistId != -1) {
         playlistDao.appendTracksToPlaylist(trackIds, playlistId);

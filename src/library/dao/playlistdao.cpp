@@ -61,6 +61,22 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     return playlistId;
 }
 
+int PlaylistDAO::createUniquePlaylist(QString* name, const HiddenType hidden) {
+    int playlistId = getPlaylistIdFromName(*name);
+    int i = 1;
+
+    if (playlistId != -1) {
+        // Calculate a unique name
+        *name += "(%1)";
+        while (playlistId != -1) {
+            i++;
+            playlistId = getPlaylistIdFromName(name->arg(i));
+        }
+        *name = name->arg(i);
+    }
+    return createPlaylist(*name, hidden);
+}
+
 QString PlaylistDAO::getPlaylistName(const int playlistId) const {
     //qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
 
