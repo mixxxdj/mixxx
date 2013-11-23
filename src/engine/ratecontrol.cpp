@@ -161,6 +161,9 @@ RateControl::RateControl(const char* _group,
     m_iSyncState = SYNC_NONE;
 
 #ifdef __VINYLCONTROL__
+    // WHY NOT JUST CREATE THE VINYL OBJECT HERE???
+
+
     m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
