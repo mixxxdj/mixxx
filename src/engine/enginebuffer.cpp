@@ -196,15 +196,13 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-#ifdef __VINYLCONTROL__
-    // If VinylControl is enabled, add a VinylControlControl. This must be done
-    // before RateControl is created.
-    addControl(new VinylControlControl(m_group, _config));
-#endif
-
     // Create the Rate Controller
     m_pRateControl = pMixingEngine->getEngineSync()->addDeck(_group);
     addControl(m_pRateControl);
+    
+#ifdef __VINYLCONTROL__
+    addControl(m_pRateControl->getVinylControlControl());
+#endif
 
     m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
     m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));

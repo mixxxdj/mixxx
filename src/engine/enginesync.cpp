@@ -147,30 +147,40 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
 EngineSync::~EngineSync() {
     // We use the slider value because that is never set to 0.0.
     m_pConfig->set(ConfigKey("[Master]", "sync_bpm"), ConfigValue(m_pSyncRateSlider->get()));
-    while (!m_channels.isEmpty()) {
-        delete m_channels.takeLast();
+    while (!m_ratecontrols.isEmpty()) {
+        delete m_ratecontrols.takeLast();
     }
     delete m_pMasterBpm;
     delete m_pMasterBeatDistance;
     delete m_pSyncRateSlider;
 }
 
-void EngineSync::addDeck(const char* group) {
-    foreach (const RateControl* pRate, m_channels) {
-        if (pRate->getGroup() == group) {
-            qDebug() << "EngineSync: already has channel for" << group;
+void EngineSync::addChannel(EngineChannel* pChannel) {
+    foreach (RateControl* pRate, m_ratecontrols) {
+        if (pRate->getGroup() == pChannel->getGroup()) {
+            pRate->setEngineChannel(pChannel);
             return;
         }
     }
-    // EngineControls want a c_str, but EngineChannels use QString, so we have to convert.
-    RateControl* pRateControl = new RateControl(group.toUtf8().constData(), m_pConfig);
+    qDebug() << "No RateControl found for group (probably not a playback deck) " << pChannel->getGroup();
+}
+
+RateControl* EngineSync::addDeck(const char* group) {
+    foreach (RateControl* pRate, m_ratecontrols) {
+        if (pRate->getGroup() == group) {
+            qDebug() << "EngineSync: already has channel for" << group;
+            return pRate;
+        }
+    }
+    RateControl* pRateControl = new RateControl(group, m_pConfig);
     connect(pRateControl, SIGNAL(channelSyncStateChanged(RateControl*, double)),
             this, SLOT(slotChannelSyncStateChanged(RateControl*, double)),
             Qt::DirectConnection);
     connect(pRateControl, SIGNAL(channelRateSliderChanged(RateControl*, double)),
             this, SLOT(slotChannelRateSliderChanged(RateControl*, double)),
             Qt::DirectConnection);
-    m_channels.append(pRateControl);
+    m_ratecontrols.append(pRateControl);
+    return pRateControl;
 }
 
 void EngineSync::disableChannelMaster(const QString& channel) {
@@ -190,7 +200,7 @@ void EngineSync::disableChannelMaster(const QString& channel) {
     m_pChannelMaster = NULL;
 
     bool channelIsEmpty = channel.isEmpty();
-    foreach (RateControl* pChannel, m_channels) {
+    foreach (RateControl* pChannel, m_ratecontrols) {
         // If channel is empty, unset master on *all* other channels -- sometimes we
         // end up with two masters for some reason.
         if (channelIsEmpty || pChannel->getGroup() == channel) {
@@ -283,7 +293,7 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
 
 QString EngineSync::chooseNewMaster(const QString& dontpick) {
     QString fallback = kMasterSyncGroup;
-    foreach (RateControl* pRateControl, m_channels) {
+    foreach (RateControl* pRateControl, m_ratecontrols) {
         const QString& group = pRateControl->getGroup();
         if (group == dontpick) {
             continue;
@@ -514,7 +524,7 @@ EngineChannel* EngineSync::getMaster() const {
 }
 
 RateControl* EngineSync::getRateControlForGroup(const QString& group) {
-    foreach (RateControl* pChannel, m_channels) {
+    foreach (RateControl* pChannel, m_ratecontrols) {
         if (pChannel->getGroup() == group) {
             return pChannel;
         }

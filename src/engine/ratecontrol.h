@@ -23,6 +23,7 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineChannel;
 class PositionScratchController;
+class VinylControlControl;
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from
@@ -30,10 +31,11 @@ class PositionScratchController;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(const char* _group, ConfigObject<ConfigValue>* _config, EngineChannel *pChannel);
+    RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
+    void setEngineChannel(EngineChannel* pChannel);
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     double process(const double dRate,
@@ -48,7 +50,9 @@ public:
     double getState() const;
     void setState(double state);
     double getFileBpm() const { return m_dFileBpm; }
-    EngineChannel* getChannel() { return m_pChannel; }
+    EngineChannel* getChannel() { Q_ASSERT(m_pChannel); return m_pChannel; }
+    VinylControlControl* getVinylControlControl();
+    const QString getGroup() const { return m_sGroup; }
 
 
     // Set rate change when temp rate button is pressed
@@ -64,6 +68,10 @@ public:
     /** Set Rate Ramp Sensitivity */
     static void setRateRampSensitivity(int);
     virtual void notifySeek(double dNewPlaypos);
+    
+  signals:
+    void channelSyncStateChanged(RateControl*, double);
+    void channelRateSliderChanged(RateControl*, double);
 
   public slots:
     void slotControlRatePermDown(double);
@@ -80,7 +88,9 @@ public:
     virtual void trackUnloaded(TrackPointer pTrack);
 
   private slots:
+    void slotFileBpmChanged(double);
     void slotSyncStateChanged(double);
+    void slotChannelRateSliderChanged(double);
 
   private:
     double getJogFactor() const;
@@ -123,6 +133,7 @@ public:
     ControlObject* m_pJog;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
+    VinylControlControl *m_pVinylControlControl;
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;

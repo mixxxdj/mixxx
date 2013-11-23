@@ -80,6 +80,7 @@ class EngineSync : public EngineControl {
     virtual ~EngineSync();
 
     void addChannel(EngineChannel* pChannel);
+    RateControl* addDeck(const char* group);
     EngineChannel* getMaster() const;
     void onCallbackStart(int bufferSize);
     RateControl* getRateControlForGroup(const QString& group);
@@ -115,7 +116,7 @@ class EngineSync : public EngineControl {
     ControlPushButton* m_pSyncInternalEnabled;
     ControlPotmeter* m_pSyncRateSlider;
 
-    QList<RateControl*> m_channels;
+    QList<RateControl*> m_ratecontrols;
     QString m_sSyncSource;
     int m_iSampleRate;
     double m_dSourceRate;
