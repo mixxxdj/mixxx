@@ -10,6 +10,13 @@
 #define PLAYLIST_TABLE "Playlists"
 #define PLAYLIST_TRACKS_TABLE "PlaylistTracks"
 
+const QString PLAYLISTTABLE_ID = "id";
+const QString PLAYLISTTABLE_NAME = "name";
+const QString PLAYLISTTABLE_POSITION = "position";
+const QString PLAYLISTTABLE_HIDDEN = "hidden";
+const QString PLAYLISTTABLE_DATECREATED = "date_created";
+const QString PLAYLISTTABLE_DATEMODIFIED = "date_modified";
+
 const QString PLAYLISTTRACKSTABLE_TRACKID = "track_id";
 const QString PLAYLISTTRACKSTABLE_POSITION = "position";
 const QString PLAYLISTTRACKSTABLE_PLAYLISTID = "playlist_id";
@@ -32,65 +39,74 @@ class PlaylistDAO : public QObject, public virtual DAO {
     virtual ~PlaylistDAO();
 
     void initialize();
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    void setDatabase(QSqlDatabase& database) { m_database = database; }
     // Create a playlist
-    int createPlaylist(QString name, HiddenType type = PLHT_NOT_HIDDEN);
+    int createPlaylist(const QString& name, const HiddenType type = PLHT_NOT_HIDDEN);
     // Delete a playlist
-    void deletePlaylist(int playlistId);
+    void deletePlaylist(const int playlistId);
     // Rename a playlist
-    void renamePlaylist(int playlistId, const QString& newName);
+    void renamePlaylist(const int playlistId, const QString& newName);
     // Lock or unlock a playlist
-    bool setPlaylistLocked(int playlistId, bool locked);
+    bool setPlaylistLocked(const int playlistId, const bool locked);
     // Find out the state of a playlist lock
-    bool isPlaylistLocked(int playlistId);
+    bool isPlaylistLocked(const int playlistId) const;
     // Append a list of tracks to a playlist
-    bool appendTracksToPlaylist(QList<int> trackIds, int playlistId);
+    bool appendTracksToPlaylist(const QList<int>& trackIds, const int playlistId);
     // Append a track to a playlist
-    bool appendTrackToPlaylist(int trackId, int playlistId);
+    bool appendTrackToPlaylist(const int trackId, const int playlistId);
     // Find out how many playlists exist.
-    unsigned int playlistCount();
+    unsigned int playlistCount() const;
     // Find out the name of the playlist at the given Id
-    QString getPlaylistName(int playlistId);
+    QString getPlaylistName(const int playlistId) const;
     // Get the playlist id by its name
-    int getPlaylistIdFromName(QString name);
+    int getPlaylistIdFromName(const QString& name) const;
     // Get the id of the playlist at index. Note that the index is the natural
     // position in the database table, not the display order position column
     // stored in the database.
-    int getPlaylistId(int index);
+    int getPlaylistId(const int index) const;
+    QList<int> getTrackIds(const int playlistId) const;
     // Returns true if the playlist with playlistId is hidden
-    bool isHidden(int playlistId);
+    bool isHidden(const int playlistId) const;
     // Returns the HiddenType of playlistId
-    HiddenType getHiddenType(int playlistId);
+    HiddenType getHiddenType(const int playlistId) const;
     // Returns the maximum position of the given playlist
-    int getMaxPosition(int playlistId);
+    int getMaxPosition(const int playlistId) const;
     // Remove a track from all playlists
-    void removeTrackFromPlaylists(int trackId);
-    void removeTracksFromPlaylists(QList<int> ids);
+    void removeTracksFromPlaylists(const QList<int>& ids);
     // Remove a track from a playlist
-    void removeTrackFromPlaylist(int playlistId, int position);
-    void removeTracksFromPlaylist(int playlistId, QList<int> positions);
+    void removeTrackFromPlaylist(const int playlistId, const int position);
+    void removeTracksFromPlaylist(const int playlistId, QList<int>& positions);
     // Insert a track into a specific position in a playlist
     bool insertTrackIntoPlaylist(int trackId, int playlistId, int position);
     // Inserts a list of tracks into playlist
-    int insertTracksIntoPlaylist(QList<int> trackIds, int playlistId, int position);
+    int insertTracksIntoPlaylist(const QList<int>& trackIds, const int playlistId, int position);
     // Add a playlist to the Auto-DJ Queue
-    void addToAutoDJQueue(int playlistId, bool bTop);
+    void addToAutoDJQueue(const int playlistId, const bool bTop);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
-    int getPreviousPlaylist(int currentPlaylistId, HiddenType hidden);
+    int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;
     // Append all the tracks in the source playlist to the target playlist.
-    bool copyPlaylistTracks(int sourcePlaylistID, int targetPlaylistID);
+    bool copyPlaylistTracks(const int sourcePlaylistID, const int targetPlaylistID);
     // Returns the number of tracks in the given playlist.
-    int tracksInPlaylist(int playlistId);
+    int tracksInPlaylist(const int playlistId) const;
+    // moved Track to a new position
+    void moveTrack(const int playlistId,
+            const int oldPosition, const int newPosition);
+    // shuffles all tracks in the position List
+    void shuffleTracks(const int playlistId, const QList<int>& positions);
+
   signals:
     void added(int playlistId);
     void deleted(int playlistId);
     void changed(int playlistId);
     void trackAdded(int playlistId, int trackId, int position);
     void trackRemoved(int playlistId, int trackId, int position);
-    void renamed(int playlistId);
+    void renamed(int playlistId, QString a_strName);
     void lockChanged(int playlistId);
+
   private:
+    void removeTracksFromPlaylistsInner(const QStringList& idList);
+
     QSqlDatabase& m_database;
     DISALLOW_COPY_AND_ASSIGN(PlaylistDAO);
 };

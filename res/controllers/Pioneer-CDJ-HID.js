@@ -138,8 +138,8 @@ function PioneerCDJController() {
         packet.addOutput("hid","rate",22,"h");
         this.controller.registerOutputPacket(packet);
 
-        // Control packet to initialize HID mode on CDJ. 
-        // TODO - Sean: This is arbitrary example packet, fix the 
+        // Control packet to initialize HID mode on CDJ.
+        // TODO - Sean: This is arbitrary example packet, fix the
         // bytes to get it working. Need to add a response packet
         // to input packets as well, if we receive acknowledgement
         packet = new HIDPacket("request_hid_mode",[0x1],0x20);
@@ -149,10 +149,10 @@ function PioneerCDJController() {
         // Control packet for screen text control
         // TODO - Sean: this is just a silly example how to register
         // another packet, this must be handled completely separately
-        // anyway when implemented. When I know what data is sent, I 
+        // anyway when implemented. When I know what data is sent, I
         // will add a helper function to actually do something with it!
-        var textlines = 1; 
-        var chars = 1; 
+        var textlines = 1;
+        var chars = 1;
         var offset = 2;
         // Register 2 bytes for each letter, I expect UTF-8 output
         packet = new HIDPacket("display",[0x2,0x2],2+textlines*chars*2);
@@ -167,7 +167,7 @@ function PioneerCDJController() {
         // Control packet for waveform display
         // TODO - Sean: this is just a silly example how to register
         // arbitrary byte packet, this must be handled completely separately
-        // anyway when implemented. When I know what data is sent, I 
+        // anyway when implemented. When I know what data is sent, I
         // will add a helper function to actually do something with it!
         var waveform_packet_datalen = 400;
         packet = new HIDPacket("waveform",[0x1,0x2],2+waveform_packet_datalen);;
@@ -181,11 +181,11 @@ function PioneerCDJController() {
     this.jogScaler = function(group,name,value) { return value/12; }
 
     // Jog wheel scratch event (ticks) scaler
-    this.jogPositionDelta = function(group,name,value) { 
+    this.jogPositionDelta = function(group,name,value) {
         // We sometimes receive invalid events with value > 32000, ignore those
-        if (value>=8192) 
+        if (value>=8192)
             return 0;
-        return value/3; 
+        return value/3;
     }
 
     // Pitch on CDJ sends -1000 to 1000, reset at 0, swap direction
@@ -233,16 +233,16 @@ function PioneerCDJController() {
         controller.setOutput("hid","flag_6_8",0);
 
         controller.setOutput("hid","flags_9",0x0
-            //0x1|0x2|0x4|0x8|0x10|0x20|0x40|0x80 
+            //0x1|0x2|0x4|0x8|0x10|0x20|0x40|0x80
         );
         controller.setOutput("hid","flags_10",0x0
-            //0x1|0x2|0x4|0x8|0x10|0x20|0x40|0x80 
+            //0x1|0x2|0x4|0x8|0x10|0x20|0x40|0x80
         );
         controller.setOutput("hid","jog_vinyl_logo",1);
 
-        if ( PioneerCDJHID.id=="PIONEER CDJ-900" || 
+        if ( PioneerCDJHID.id=="PIONEER CDJ-900" ||
              PioneerCDJHID.id=="PIONEER CDJ-2000") {
-            
+
             //tracknumber frames/ms control 0x1
             //rate control 0x10
             //bpm control 0x20
@@ -328,7 +328,7 @@ PioneerCDJHID.incomingData = function(data,length) {
 }
 
 // Link virtual HID naming of input and Output controls to mixxx
-// Note: HID specification has more fields than we map here. 
+// Note: HID specification has more fields than we map here.
 PioneerCDJHID.registerCallbacks = function() {
     var controller = PioneerCDJHID.controller;
 
@@ -376,13 +376,13 @@ PioneerCDJHID.registerCallbacks = function() {
     controller.setCallback("control","hid","beatloop_2",PioneerCDJHID.beatloop);
     controller.setCallback("control","hid","time_mode",PioneerCDJHID.timeMode);
 
-    // Link normal jog touch and delta to HIDController default jog 
-    // and scratch functions. CDJ reports more than these fields from job, 
+    // Link normal jog touch and delta to HIDController default jog
+    // and scratch functions. CDJ reports more than these fields from job,
     // we ignore the other input fields for jog control. Feel free to adopt.
     controller.linkControl("hid","jog_touch","deck","jog_touch");
     controller.linkControl("hid","jog_wheel","deck","jog_wheel");
-     
-    // Standard HIDController scalers for jog functionality. 
+
+    // Standard HIDController scalers for jog functionality.
     // Not related to field specifications names above!
     controller.setScaler("jog",PioneerCDJHID.jogScaler);
     controller.setScaler("jog_scratch",PioneerCDJHID.jogPositionDelta);
@@ -393,7 +393,7 @@ PioneerCDJHID.registerCallbacks = function() {
     controller.linkControl("hid","master_tempo","deck","beatsync");
     controller.linkControl("hid","tempo_range","deck","beats_translate_curpos");
     controller.linkControl("hid","jog_mode","deck","pfl");
-     
+
     // Unused buttons
     // controller.linkControl("hid","menu_back","deck","");
     // controller.linkControl("hid","tag_track","deck","");
@@ -418,7 +418,7 @@ PioneerCDJHID.registerCallbacks = function() {
 // Callback to update LEDs from engine.connectControl
 PioneerCDJHID.updateLED = function(value,group,key) {
     var controller = PioneerCDJHID.controller;
-    if (value==1) 
+    if (value==1)
         controller.setOutput("deck",key,controller.LEDColors.on,true);
     else
         controller.setOutput("deck",key,controller.LEDColors.off,true);
@@ -504,7 +504,7 @@ PioneerCDJHID.setRate = function(value) {
     var range = Math.floor(100*engine.getValue(group,"rateRange"));
 
     // We still need to multiply actual rate with 100
-    controller.setOutput("hid","rate", 
+    controller.setOutput("hid","rate",
         100 * range * engine.getValue(group,"rate_dir") * engine.getValue(group,"rate")
     );
 }
@@ -513,7 +513,7 @@ PioneerCDJHID.setRate = function(value) {
 PioneerCDJHID.setTime = function(value) {
     var controller = PioneerCDJHID.controller;
     var minutes,seconds,frames;
-    if (value==undefined) 
+    if (value==undefined)
         value = engine.getValue(
             controller.resolveDeckGroup(controller.activeDeck),
             "playposition"
@@ -629,13 +629,13 @@ PioneerCDJHID.track = function(field) {
         return;
 
     if (field.name=='previous_track') {
-        var position = PioneerCDJHID.track_length - 
+        var position = PioneerCDJHID.track_length -
             PioneerCDJHID.track_length * engine.getValue(group,"playposition");
         if (position<PioneerCDJHID.previousJumpStartSeconds) {
             // Move to beginning of track if play position was far enough
-            // TODO - implement this with timer so that multiple presses 
-            // still jump to previous track. 
-            // Currently just disabled by setting the previousJumpStartSeconds 
+            // TODO - implement this with timer so that multiple presses
+            // still jump to previous track.
+            // Currently just disabled by setting the previousJumpStartSeconds
             // value to 0
             engine.setValue(group,"playposition",0);
         } else {
@@ -661,18 +661,18 @@ PioneerCDJHID.track = function(field) {
 
 PioneerCDJHID.needlesearch = function(field) {
     var controller = PioneerCDJHID.controller;
-    var group = controller.resolveDeckGroup(controller.activeDeck); 
+    var group = controller.resolveDeckGroup(controller.activeDeck);
     var value = field.value / 400;
-    if (value==0) 
+    if (value==0)
         return;
     engine.setValue(group,"play",false);
     engine.setValue(group,"playposition",value);
-    
+
 }
 
 PioneerCDJHID.hotcue = function(field) {
     var controller = PioneerCDJHID.controller;
-    var group = controller.resolveDeckGroup(controller.activeDeck); 
+    var group = controller.resolveDeckGroup(controller.activeDeck);
     var control;
     if (field.value==controller.buttonStates.released) {
         controller.setOutput("hid",field.name+"_red",0);
@@ -699,7 +699,7 @@ PioneerCDJHID.hotcue = function(field) {
 // Set given size beatloop or a hotcue, light LED for beatloop
 PioneerCDJHID.beatloop = function(field) {
     var controller = PioneerCDJHID.controller;
-    var group = controller.resolveDeckGroup(controller.activeDeck); 
+    var group = controller.resolveDeckGroup(controller.activeDeck);
     var size;
 
     if (field.value==controller.buttonStates.released)
@@ -742,7 +742,7 @@ PioneerCDJHID.reloop_exit = function(field) {
     engine.setValue(
         controller.resolveDeckGroup(controller.activeDeck),
         "reloop_exit",
-        true 
+        true
     );
     var output_packet = controller.getOutputPacket("lights");
     controller.setOutput("hid","beatloop_16",controller.LEDColors.off);

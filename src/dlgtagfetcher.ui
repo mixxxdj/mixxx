@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Dialog</string>
+   <string>MusicBrainz</string>
   </property>
   <widget class="QWidget" name="verticalLayoutWidget_3">
    <property name="geometry">
@@ -26,7 +26,7 @@
     <item>
      <widget class="QStackedWidget" name="stack">
       <property name="currentIndex">
-       <number>1</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="results_page">
        <widget class="QWidget" name="verticalLayoutWidget_2">
@@ -57,6 +57,12 @@
            <property name="rootIsDecorated">
             <bool>false</bool>
            </property>
+           <attribute name="headerDefaultSectionSize">
+            <number>150</number>
+           </attribute>
+           <attribute name="headerMinimumSectionSize">
+            <number>50</number>
+           </attribute>
            <attribute name="headerDefaultSectionSize">
             <number>150</number>
            </attribute>
@@ -133,9 +139,9 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLabel" name="message1">
+            <widget class="QLabel" name="fetchingDataMessage">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Fetching track data from MusicBrainz&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+              <string>Fetching track data from the MusicBrainz database</string>
              </property>
             </widget>
            </item>
@@ -170,16 +176,9 @@
             </spacer>
            </item>
            <item>
-            <widget class="QLabel" name="status">
+            <widget class="QLabel" name="loadingStatus">
              <property name="text">
-              <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Status:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-             </property>
-            </widget>
-           </item>
-           <item>
-            <widget class="QLabel" name="loading">
-             <property name="text">
-              <string/>
+              <string notr="true">Status: %1</string>
              </property>
             </widget>
            </item>
@@ -200,6 +199,197 @@
          </item>
          <item>
           <spacer name="verticalSpacer_4">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="networkError_page">
+       <widget class="QWidget" name="verticalLayoutWidget_6">
+        <property name="geometry">
+         <rect>
+          <x>-1</x>
+          <y>-1</y>
+          <width>791</width>
+          <height>341</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_7">
+         <item>
+          <spacer name="verticalSpacer_7">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_6">
+           <item>
+            <spacer name="horizontalSpacer_12">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="cantConnectHttp">
+             <property name="text">
+              <string notr="true">Mixxx can't connect to %1. </string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_13">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_5">
+           <item>
+            <spacer name="horizontalSpacer_9">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="httpStatus">
+             <property name="text">
+              <string notr="true">HTTP Status: %1</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_8">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_8">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </widget>
+      </widget>
+      <widget class="QWidget" name="generalnetworkError_page">
+       <widget class="QWidget" name="verticalLayoutWidget_7">
+        <property name="geometry">
+         <rect>
+          <x>0</x>
+          <y>0</y>
+          <width>791</width>
+          <height>331</height>
+         </rect>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <item>
+          <spacer name="verticalSpacer_5">
+           <property name="orientation">
+            <enum>Qt::Vertical</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>20</width>
+             <height>40</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_7">
+           <item>
+            <spacer name="horizontalSpacer_10">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="cantConnectMessage">
+             <property name="text">
+              <string notr="true">Mixxx can't connect to %1 for an unknown reason.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_11">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <spacer name="verticalSpacer_6">
            <property name="orientation">
             <enum>Qt::Vertical</enum>
            </property>
@@ -239,18 +429,44 @@
           </spacer>
          </item>
          <item>
-          <widget class="QLabel" name="label">
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;&lt;span style=&quot; font-size:14pt; font-weight:600;&quot;&gt;Sorry&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_10">
+           <item>
+            <spacer name="horizontalSpacer_16">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QLabel" name="trackNotFound">
+             <property name="text">
+              <string>Mixxx could not find this track in the MusicBrainz database.</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <spacer name="horizontalSpacer_17">
+             <property name="orientation">
+              <enum>Qt::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
          </item>
          <item>
-          <widget class="QLabel" name="label_2">
-           <property name="text">
-            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p align=&quot;center&quot;&gt;Mixxx could not find this song&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-           </property>
-          </widget>
+          <layout class="QHBoxLayout" name="horizontalLayout_8"/>
          </item>
          <item>
           <spacer name="verticalSpacer_2">
@@ -291,7 +507,7 @@
            <item>
             <widget class="QPushButton" name="btnApikey">
              <property name="text">
-              <string>get API-Key</string>
+              <string comment="To be able to submit audio fingerprints to the MusicBrainz database, a free application programming interface key (API key) is required.">Get API-Key</string>
              </property>
             </widget>
            </item>
@@ -324,7 +540,7 @@
            <item>
             <widget class="QPushButton" name="btnSubmit">
              <property name="text">
-              <string>Submit</string>
+              <string comment="Submits audio fingerprints to the MusicBrainz database.">Submit</string>
              </property>
             </widget>
            </item>
@@ -376,13 +592,6 @@
            </item>
           </widget>
          </item>
-         <item>
-          <widget class="QLabel" name="progressLabel">
-           <property name="text">
-            <string>TextLabel</string>
-           </property>
-          </widget>
-         </item>
         </layout>
        </widget>
       </widget>
@@ -393,14 +602,14 @@
       <item>
        <widget class="QPushButton" name="btnPrev">
         <property name="text">
-         <string>Prev</string>
+         <string>&amp;Previous</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnNext">
         <property name="text">
-         <string>Next</string>
+         <string>&amp;Next</string>
         </property>
        </widget>
       </item>
@@ -420,14 +629,14 @@
       <item>
        <widget class="QPushButton" name="btnApply">
         <property name="text">
-         <string>Apply</string>
+         <string>&amp;Apply</string>
         </property>
        </widget>
       </item>
       <item>
        <widget class="QPushButton" name="btnQuit">
         <property name="text">
-         <string>Close</string>
+         <string>&amp;Close</string>
         </property>
        </widget>
       </item>
@@ -436,6 +645,17 @@
    </layout>
   </widget>
  </widget>
+ <tabstops>
+  <tabstop>results</tabstop>
+  <tabstop>apikey</tabstop>
+  <tabstop>btnApikey</tabstop>
+  <tabstop>btnSubmit</tabstop>
+  <tabstop>submit_tree</tabstop>
+  <tabstop>btnPrev</tabstop>
+  <tabstop>btnNext</tabstop>
+  <tabstop>btnApply</tabstop>
+  <tabstop>btnQuit</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

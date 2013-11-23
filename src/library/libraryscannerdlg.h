@@ -21,8 +21,9 @@
 #define LIBRARYSCANNERDLG_H
 
 #include <QThread>
-#include <QtCore>
-#include <QtGui>
+#include <QWidget>
+#include <QString>
+#include <QTime>
 
 class LibraryScannerDlg : public QWidget {
     Q_OBJECT

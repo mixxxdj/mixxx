@@ -22,6 +22,42 @@
 #include "mathstuff.h"
 #include "sampleutil.h"
 
+class EngineFlangerControls {
+  public:
+    static QSharedPointer<EngineFlangerControls> instance() {
+        if (!m_pInstance) {
+            QSharedPointer<EngineFlangerControls> ptr(new EngineFlangerControls());
+            m_pInstance = ptr;
+            return ptr;
+        }
+        return m_pInstance;
+    }
+
+    ~EngineFlangerControls() {
+        qDebug() << "~EngineFlangerControls";
+        delete m_pPotmeterDepth;
+        delete m_pPotmeterDelay;
+        delete m_pPotmeterLFOperiod;
+    }
+
+    ControlObject* m_pPotmeterDepth;
+    ControlObject* m_pPotmeterDelay;
+    ControlObject* m_pPotmeterLFOperiod;
+
+  private:
+    EngineFlangerControls() {
+        m_pPotmeterDepth = new ControlPotmeter(
+                ConfigKey("[Flanger]", "lfoDepth"), 0., 1.);
+        m_pPotmeterDelay = new ControlPotmeter(
+                ConfigKey("[Flanger]", "lfoDelay"), 50., 10000.);
+        m_pPotmeterLFOperiod = new ControlPotmeter(
+                ConfigKey("[Flanger]", "lfoPeriod"), 50000., 2000000.);
+    }
+    static QWeakPointer<EngineFlangerControls> m_pInstance;
+};
+
+// static
+QWeakPointer<EngineFlangerControls> EngineFlangerControls::m_pInstance;
 
 /*----------------------------------------------------------------
    A flanger effect.
@@ -31,87 +67,78 @@
     LFOamplitude - the amplitude of the modulation of the delay length.
     depth - the depth of the flanger, controlled by a ControlPotmeter.
    ----------------------------------------------------------------*/
-EngineFlanger::EngineFlanger(const char * group)
-{
+EngineFlanger::EngineFlanger(const char * group) {
     // Init. buffers:
-    delay_buffer = SampleUtil::alloc(max_delay + 1);
-    SampleUtil::applyGain(delay_buffer, 0.0f, max_delay+1);
+    m_pDelay_buffer = SampleUtil::alloc(max_delay + 1);
+    SampleUtil::applyGain(m_pDelay_buffer, 0.0f, max_delay+1);
 
     // Init. potmeters
 
     // rryan 6/2010 This is gross. The flanger was originally written as this
     // hack that hard-coded the two channels, and while pulling it apart, I have
     // to keep these global [Flanger]-group controls, except there is one
-    // EngineFlanger per deck, so create these controls if they don't exist,
-    // otherwise look them up.
-
-    potmeterDepth = ControlObject::getControl(ConfigKey("[Flanger]", "lfoDepth"));
-    potmeterDelay = ControlObject::getControl(ConfigKey("[Flanger]", "lfoDelay"));
-    potmeterLFOperiod = ControlObject::getControl(ConfigKey("[Flanger]", "lfoPeriod"));
-
-    if (potmeterDepth == NULL)
-        potmeterDepth = new ControlPotmeter(ConfigKey("[Flanger]", "lfoDepth"), 0., 1.);
-    if (potmeterDelay == NULL)
-        potmeterDelay = new ControlPotmeter(ConfigKey("[Flanger]", "lfoDelay"), 50., 10000.);
-    if (potmeterLFOperiod == NULL)
-        potmeterLFOperiod = new ControlPotmeter(ConfigKey("[Flanger]", "lfoPeriod"), 50000., 2000000.);
+    // EngineFlanger per deck
+    m_pControls = EngineFlangerControls::instance();
 
     // Create an enable key on a per-deck basis.
-    flangerEnable = new ControlPushButton(ConfigKey(group, "flanger"));
-    flangerEnable->setButtonMode(ControlPushButton::TOGGLE);
+    m_pFlangerEnable = new ControlPushButton(ConfigKey(group, "flanger"));
+    m_pFlangerEnable->setButtonMode(ControlPushButton::TOGGLE);
 
     // Fixed values of controls:
-    LFOamplitude = 240;
-    average_delay_length = 250;
+    m_LFOamplitude = 240;
+    m_average_delay_length = 250;
 
     // Set initial values for vars
-    delay_pos=0;
-    time = 0;
+    m_delay_pos = 0;
+    m_time = 0;
 }
 
-EngineFlanger::~EngineFlanger()
-{
+EngineFlanger::~EngineFlanger() {
     // Don't delete the controls anymore since we don't know if we created them.
-    // delete potmeterDepth;
-    // delete potmeterDelay;
-    // delete potmeterLFOperiod;
+    // delete m_pPotmeterDepth;
+    // delete m_pPotmeterDelay;
+    // delete m_pPotmeterLFOperiod;
 
-    delete flangerEnable;
+    delete m_pFlangerEnable;
 
-    SampleUtil::free(delay_buffer);
+    SampleUtil::free(m_pDelay_buffer);
 }
 
-void EngineFlanger::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
-{
+void EngineFlanger::process(const CSAMPLE * pIn,
+        const CSAMPLE * pOut, const int iBufferSize) {
     CSAMPLE * pOutput = (CSAMPLE *)pOut;
     CSAMPLE delayed_sample,prev,next;
     FLOAT_TYPE frac;
 
-    if (flangerEnable->get() == 0.0f) {
+    if (m_pFlangerEnable->get() == 0.0f) {
         // SampleUtil handles shortcuts when aliased, and gains of 1.0, etc.
         return SampleUtil::copyWithGain(pOutput, pIn, 1.0f, iBufferSize);
     }
 
-    for (int i=0; i<iBufferSize; ++i)
-    {
+    for (int i=0; i<iBufferSize; ++i) {
         // put sample into delay buffer:
-        delay_buffer[delay_pos] = pIn[i];
-        delay_pos++;
-        if (delay_pos >= max_delay)
-            delay_pos=0;
+        m_pDelay_buffer[m_delay_pos] = pIn[i];
+        m_delay_pos++;
+        if (m_delay_pos >= max_delay) {
+            m_delay_pos = 0;
+        }
 
         // Update the LFO to find the current delay:
-        time++;
-        if (time==potmeterLFOperiod->get()) time=0;
-        delay = average_delay_length + LFOamplitude *sin( two_pi * ((FLOAT_TYPE) time)/((FLOAT_TYPE) potmeterLFOperiod->get()) );
+        m_time++;
+        if (m_time == m_pControls->m_pPotmeterLFOperiod->get()) {
+            m_time = 0;
+        }
+        FLOAT_TYPE delay = m_average_delay_length + m_LFOamplitude *
+                sin(two_pi * ((FLOAT_TYPE)m_time) /
+                        ((FLOAT_TYPE)m_pControls->m_pPotmeterLFOperiod->get()));
 
         // Make a linear interpolation to find the delayed sample:
-        prev = delay_buffer[(delay_pos-(int)delay+max_delay-1) % max_delay];
-        next = delay_buffer[(delay_pos-(int)delay+max_delay) % max_delay];
+        prev = m_pDelay_buffer[(m_delay_pos-(int)delay + max_delay - 1) % max_delay];
+        next = m_pDelay_buffer[(m_delay_pos-(int)delay + max_delay) % max_delay];
         frac = delay - floor(delay);
-        delayed_sample = prev + frac*(next-prev);
+        delayed_sample = prev + frac * (next - prev);
 
         // Take the sample from the delay buffer and mix it with the source buffer:
-        pOutput[i] = pIn[i] + potmeterDepth->get()*delayed_sample;
+        pOutput[i] = pIn[i] + m_pControls->m_pPotmeterDepth->get() * delayed_sample;
     }
 }

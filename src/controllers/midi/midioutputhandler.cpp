@@ -12,13 +12,13 @@
 #include "controllers/midi/midicontroller.h"
 #include "controlobject.h"
 
-MidiOutputHandler::MidiOutputHandler(QString group, QString key,
+MidiOutputHandler::MidiOutputHandler(const QString& group, const QString& key,
                                      MidiController *controller,
                                      float min, float max,
                                      unsigned char status, unsigned char midino,
                                      unsigned char on, unsigned char off)
         : m_pController(controller),
-          m_cobj(ControlObject::getControl(ConfigKey(group, key))),
+          m_cot(group, key),
           m_min(min),
           m_max(max),
           m_status(status),
@@ -26,12 +26,12 @@ MidiOutputHandler::MidiOutputHandler(QString group, QString key,
           m_on(on),
           m_off(off),
           m_lastVal(0) {
-    connect(&m_cobj, SIGNAL(valueChanged(double)),
+    connect(&m_cot, SIGNAL(valueChanged(double)),
             this, SLOT(controlChanged(double)));
 }
 
 MidiOutputHandler::~MidiOutputHandler() {
-    ConfigKey cKey = m_cobj.getKey();
+    ConfigKey cKey = m_cot.getKey();
     if (m_pController->debugging()) {
         qDebug() << QString("Destroying static MIDI output handler on %1 for %2,%3")
                 .arg(m_pController->getName(), cKey.group, cKey.item);
@@ -39,11 +39,11 @@ MidiOutputHandler::~MidiOutputHandler() {
 }
 
 bool MidiOutputHandler::validate() {
-    return m_cobj.valid();
+    return m_cot.valid();
 }
 
 void MidiOutputHandler::update() {
-    controlChanged(m_cobj.get());
+    controlChanged(m_cot.get());
 }
 
 void MidiOutputHandler::controlChanged(double value) {

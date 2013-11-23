@@ -34,7 +34,7 @@ class BeatMapIterator : public BeatIterator {
               m_endBeat(end) {
         // Advance to the first enabled beat.
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
-            m_currentBeat++;
+            ++m_currentBeat;
         }
     }
 
@@ -44,9 +44,9 @@ class BeatMapIterator : public BeatIterator {
 
     virtual double next() {
         double beat = framesToSamples(m_currentBeat->frame_position());
-        m_currentBeat++;
+        ++m_currentBeat;
         while (m_currentBeat != m_endBeat && !m_currentBeat->enabled()) {
-            m_currentBeat++;
+            ++m_currentBeat;
         }
         return beat;
     }
@@ -189,15 +189,15 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
         // Count down until n=1
         while (it != m_beats.end()) {
             if (!it->enabled()) {
-                it++;
+                ++it;
                 continue;
             }
             if (n == 1) {
                 // Return a sample offset
                 return framesToSamples(it->frame_position());
             }
-            it++;
-            n--;
+            ++it;
+            --n;
         }
     } else if (n < 0) {
         BeatList::const_iterator it =
@@ -211,7 +211,7 @@ double BeatMap::findNthBeat(double dSamples, int n) const {
             // last instance of dSamples-or-smaller, we decrement it by 1 before
             // touching it. The guard of this while loop guarantees this does
             // not put us before the start of the loop.
-            it--;
+            --it;
             if (!it->enabled()) {
                 continue;
             }
@@ -450,7 +450,7 @@ double BeatMap::calculateBpm(const Beat& startBeat, const Beat& stopBeat) const 
             qUpperBound(m_beats.begin(), m_beats.end(), stopBeat, BeatLessThan);
 
     QVector<double> beatvect;
-    for (; curBeat != lastBeat; curBeat++) {
+    for (; curBeat != lastBeat; ++curBeat) {
         const Beat& beat = *curBeat;
         if (beat.enabled()) {
             beatvect.append(beat.frame_position());

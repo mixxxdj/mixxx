@@ -24,7 +24,6 @@ class EngineWorkerScheduler : public QThread {
     EngineWorkerScheduler(QObject* pParent=NULL);
     virtual ~EngineWorkerScheduler();
 
-    void bindWorker(EngineWorker* pWorker);
     void runWorkers();
     void workerReady(EngineWorker* worker);
 
@@ -33,7 +32,6 @@ class EngineWorkerScheduler : public QThread {
 
   private:
     FIFO<EngineWorker*> m_scheduleFIFO;
-    QThreadPool m_workerThreadPool;
     QWaitCondition m_waitCondition;
     QMutex m_mutex;
     volatile bool m_bQuit;

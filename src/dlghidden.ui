@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Manage</string>
+   <string>Hidden Tracks</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>

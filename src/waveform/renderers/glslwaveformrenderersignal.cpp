@@ -223,7 +223,7 @@ void GLSLWaveformRendererSignal::createFrameBuffers()
     if (!m_framebuffer->isValid())
         qWarning() << "GLSLWaveformRendererSignal::createFrameBuffer - frame buffer not valid";
 
-    m_frameBuffersValid = m_framebuffer->isValid() && m_framebuffer->isValid();
+    m_frameBuffersValid = m_framebuffer->isValid() && m_signalMaxbuffer->isValid();
 
     //qDebug() << m_waveformRenderer->getWidth();
     //qDebug() << m_waveformRenderer->getWidth()*3;

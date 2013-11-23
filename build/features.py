@@ -4,6 +4,7 @@ import os
 import util
 from mixxx import Feature
 import SCons.Script as SCons
+import depends
 
 class HSS1394(Feature):
     def description(self):
@@ -133,7 +134,7 @@ class Bulk(Feature):
         sources = ['controllers/bulk/bulkcontroller.cpp',
                    'controllers/bulk/bulkenumerator.cpp']
         if not int(build.flags['hid']):
-		    sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
+            sources.append('controllers/hid/hidcontrollerpresetfilehandler.cpp')
         return sources
 
 
@@ -141,14 +142,19 @@ class Mad(Feature):
     def description(self):
         return "MAD MP3 Decoder"
 
+    def default(self, build):
+        return 0 if build.platform_is_osx else 1
+
     def enabled(self, build):
-        build.flags['mad'] = util.get_flags(build.env, 'mad', 1)
+        build.flags['mad'] = util.get_flags(build.env, 'mad',
+                                            self.default(build))
         if int(build.flags['mad']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.', 1)
+        vars.Add('mad', 'Set to 1 to enable MAD MP3 decoder support.',
+                 self.default(build))
 
     def configure(self, build, conf):
         if not self.enabled(build):
@@ -168,29 +174,34 @@ class CoreAudio(Feature):
     def description(self):
         return "CoreAudio MP3/AAC Decoder"
 
+    def default(self, build):
+        return 1 if build.platform_is_osx else 0
+
     def enabled(self, build):
-        build.flags['coreaudio'] = util.get_flags(build.env, 'coreaudio', 0)
+        build.flags['coreaudio'] = util.get_flags(build.env, 'coreaudio', self.default(build))
         if int(build.flags['coreaudio']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('coreaudio', 'Set to 1 to enable CoreAudio MP3/AAC decoder support.', 0)
+        vars.Add('coreaudio', 'Set to 1 to enable CoreAudio MP3/AAC decoder support.',
+                 self.default(build))
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
+
         if not build.platform_is_osx:
             raise Exception('CoreAudio is only supported on OS X!');
-        else:
-            build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
-            build.env.Append(CPPPATH='#lib/apple/')
-            build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
-            build.env.Append(CPPDEFINES = '__COREAUDIO__')
+
+        build.env.Append(CPPPATH='/System/Library/Frameworks/AudioToolbox.framework/Headers/')
+        build.env.Append(CPPPATH='#lib/apple/')
+        build.env.Append(LINKFLAGS='-framework AudioToolbox -framework CoreFoundation')
+        build.env.Append(CPPDEFINES = '__COREAUDIO__')
 
     def sources(self, build):
         return ['soundsourcecoreaudio.cpp',
-                '#lib/apple/CAStreamBasicDescription.h']
+                '#lib/apple/CAStreamBasicDescription.cpp']
 
 class MediaFoundation(Feature):
     FLAG = 'mediafoundation'
@@ -409,31 +420,6 @@ class VinylControl(Feature):
 
         return sources
 
-class Tonal(Feature):
-    def description(self):
-        return "NOT-WORKING Tonal Audio Detection"
-
-    def enabled(self, build):
-        build.flags['tonal'] = util.get_flags(build.env, 'tonal', 0)
-        if int(build.flags['tonal']):
-            return True
-        return False
-
-    def add_options(self, build, vars):
-        vars.Add('tonal', 'Set to 1 to enable tonal analysis', 0)
-
-    def configure(self, build, conf):
-        if not self.enabled(build):
-            return
-
-    def sources(self, build):
-        sources = ['tonal/FourierTransform.cxx',
-                   'tonal/Segmentation.cxx',
-                   'tonal/tonalanalyser.cpp',
-                   'tonal/ConstantQTransform.cxx',
-                   'tonal/ConstantQFolder.cxx']
-        return sources
-
 class Vamp(Feature):
     INTERNAL_LINK = False
     INTERNAL_VAMP_PATH = '#lib/vamp-2.3'
@@ -521,7 +507,7 @@ class ModPlug(Feature):
             raise Exception('Could not find libmodplug shared library.')
 
     def sources(self, build):
-        build.env.Uic4('dlgprefmodplugdlg.ui')
+        depends.Qt.uic(build)('dlgprefmodplugdlg.ui')
         return ['soundsourcemodplug.cpp', 'dlgprefmodplug.cpp']
 
 
@@ -544,10 +530,11 @@ class FAAD(Feature):
 
         have_mp4v2_h = conf.CheckHeader('mp4v2/mp4v2.h')
         have_mp4v2 = conf.CheckLib(['mp4v2','libmp4v2'], autoadd=False)
+        have_mp4_h = conf.CheckHeader('mp4.h')
         have_mp4 = conf.CheckLib('mp4', autoadd=False)
 
         # Either mp4 or mp4v2 works
-        have_mp4 = (have_mp4v2_h and have_mp4v2) or have_mp4
+        have_mp4 = (have_mp4v2_h or have_mp4_h) and (have_mp4v2 or have_mp4)
 
         if not have_mp4:
             raise Exception('Could not find libmp4, libmp4v2 or the libmp4v2 development headers.')
@@ -683,10 +670,16 @@ class Verbose(Feature):
 
             build.env['QT4_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
             build.env['QT4_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
-            build.env['QT4_RCCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT4_QRCCOMSTR'] = '[QRC] $SOURCE'
             build.env['QT4_UICCOMSTR'] = '[UIC4] $SOURCE'
             build.env['QT4_MOCFROMHCOMSTR'] = '[MOC] $SOURCE'
             build.env['QT4_MOCFROMCXXCOMSTR'] = '[MOC] $SOURCE'
+
+            build.env['QT5_LUPDATECOMSTR'] = '[LUPDATE] $SOURCE'
+            build.env['QT5_LRELEASECOMSTR'] = '[LRELEASE] $SOURCE'
+            build.env['QT5_QRCCOMSTR'] = '[QRC] $SOURCE'
+            build.env['QT5_UICCOMSTR'] = '[UIC5] $SOURCE'
+            build.env['QT5_MOCCOMSTR'] = '[MOC] $SOURCE'
 
 class MSVSHacks(Feature):
     """Visual Studio 2005 hacks (MSVS Express Edition users shouldn't enable
@@ -812,7 +805,7 @@ class Shoutcast(Feature):
             conf.CheckLib('ws2_32')
 
     def sources(self, build):
-        build.env.Uic4('dlgprefshoutcastdlg.ui')
+        depends.Qt.uic(build)('dlgprefshoutcastdlg.ui')
         return ['dlgprefshoutcast.cpp',
                 'shoutcast/shoutcastmanager.cpp',
                 'engine/sidechain/engineshoutcast.cpp']
@@ -820,7 +813,7 @@ class Shoutcast(Feature):
 
 class FFMPEG(Feature):
     def description(self):
-        return "NOT-WORKING FFMPEG support"
+        return "FFMPEG/LibAV support"
 
     def enabled(self, build):
         build.flags['ffmpeg'] = util.get_flags(build.env, 'ffmpeg', 0)
@@ -829,43 +822,125 @@ class FFMPEG(Feature):
         return False
 
     def add_options(self, build, vars):
-        vars.Add('ffmpeg', '(NOT-WORKING) Set to 1 to enable FFMPEG support', 0)
+        vars.Add('ffmpeg', 'Set to 1 to enable FFMPEG/Libav support \
+                           (supported FFMPEG 0.11-2.0 and Libav 0.8.x-9.x)', 0)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
 
-        if build.platform_is_linux or build.platform_is_osx or build.platform_is_bsd:
+        # Supported version are FFMPEG 0.11-2.0 and Libav 0.8.x-9.x
+        # FFMPEG is multimedia library that can be found http://ffmpeg.org/
+        # Libav is fork of FFMPEG that is used mainly in Debian and Ubuntu 
+        # that can be found http://libav.org
+        if build.platform_is_linux or build.platform_is_osx \
+           or build.platform_is_bsd:
             # Check for libavcodec, libavformat
-            # I just randomly picked version numbers lower than mine for this - Albert
-            if not conf.CheckForPKG('libavcodec', '51.20.0'):
-                raise Exception('libavcodec not found.')
-            if not conf.CheckForPKG('libavformat', '51.1.0'):
-                raise Exception('libavcodec not found.')
+            # I just randomly picked version numbers lower than mine for this
+            if not conf.CheckForPKG('libavcodec', '53.35.0'):
+                raise Exception('Missing libavcodec or it\'s too old! It can'
+                                'be separated from main package so check your'
+                                'operating system packages.')
+            if not conf.CheckForPKG('libavformat', '53.21.0'):
+                raise Exception('Missing libavformat  or it\'s too old!'
+                                'It can be separated from main package so' 
+                                'check your operating system packages.')
+
+            # Needed to build new FFMPEG
+            build.env.Append(CCFLAGS = '-D__STDC_CONSTANT_MACROS') 
+            build.env.Append(CCFLAGS = '-D__STDC_LIMIT_MACROS') 
+            build.env.Append(CCFLAGS = '-D__STDC_FORMAT_MACROS') 
+
             #Grabs the libs and cflags for ffmpeg
-            build.env.ParseConfig('pkg-config libavcodec --silence-errors --cflags --libs')
-            build.env.ParseConfig('pkg-config libavformat --silence-errors --cflags --libs')
-            build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
+            build.env.ParseConfig('pkg-config libavcodec --silence-errors \
+                                  --cflags --libs')
+            build.env.ParseConfig('pkg-config libavformat --silence-errors \
+                                   --cflags --libs')
+            build.env.ParseConfig('pkg-config libavutil --silence-errors \
+                                   --cflags --libs')
+
+            # What are libavresample and libswresample??
+            # Libav forked from FFMPEG in version 0.10 and there wasn't any 
+            # separated library for resampling audio. There we resample API 
+            # (actually two and they are both a big mess). API is now marked as 
+            # depricated but both are  still available in current version 
+            # FFMPEG up to version 1.2 or Libav up to version 9
+            # In some point developers FFMPEG decided to make libswresample 
+            # (Software Resample). Libav people also noticed API problem and 
+            # created libavresample. After that libavresample were imported in 
+            # FFMPEG and it's API/ABI compatible with LibAV.
+            # If you have FFMPEG version 0.10 or Libav version 0.8.x your
+            # resampling is done through inner API
+            # FFMPEG 0.11 Have libswresample but ain't libavresample
+            # FFMPEG 1.0 and above have libswresample and libavresample
+            # Libav after 0.8.x and between 9 have some libavresample
+            # Libav 9 have libavresample have libavresample
+            # Most Linux systems have separated packages for libswresample/
+            # libavresample so you can have them installed or not in you 
+            # system most use libavresample.
+            # Ubuntu/Debian only have Libav 0.8.x available (There is PPA for 
+            # libav 9)
+            # Fedora uses newest FFMPEG 1.x/2.x (With compability libs)
+            # openSUSE uses newest FFMPEG 1.x/2.x (With compability libs)
+            # Mac OS X does have FFMPEG available (with libswresample) from 
+            # macports or homebrew
+            # Microsoft Windows can download FFMPEG or Libav resample libraries
+
+            if conf.CheckForPKG('libavresample', '0.0.3'):
+                build.env.ParseConfig('pkg-config libavresample \
+                                       --silence-errors --cflags --libs')
+                build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
+                build.env.Append(CPPDEFINES = '__LIBAVRESAMPLE__')
+                self.status = "Enabled -- with libavresample"
+            elif conf.CheckForPKG('libswresample', '0.0.1'):
+                build.env.ParseConfig('pkg-config libswresample \
+                                       --silence-errors --cflags --libs')
+                build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
+                build.env.Append(CPPDEFINES = '__LIBSWRESAMPLE__')
+                self.status = "Enabled -- with libswresample"
+            else:
+                build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
+                build.env.Append(CPPDEFINES = '__FFMPEGOLDAPI__')
+                self.status = "Enabled --  with old resample API"
+
         else:
-            # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev libdts-dev
+            # aptitude install libavcodec-dev libavformat-dev liba52-0.7.4-dev 
+            # libdts-dev
+            # Append some stuff to CFLAGS in Windows also
+            build.env.Append(CCFLAGS = '-D__STDC_CONSTANT_MACROS') 
+            build.env.Append(CCFLAGS = '-D__STDC_LIMIT_MACROS') 
+            build.env.Append(CCFLAGS = '-D__STDC_FORMAT_MACROS') 
+
             build.env.Append(LIBS = 'avcodec')
             build.env.Append(LIBS = 'avformat')
-            build.env.Append(LIBS = 'z')
-            build.env.Append(LIBS = 'a52')
-            build.env.Append(LIBS = 'dts')
-            build.env.Append(LIBS = 'gsm')
-            build.env.Append(LIBS = 'dc1394_control')
-            build.env.Append(LIBS = 'dl')
-            build.env.Append(LIBS = 'vorbisenc')
-            build.env.Append(LIBS = 'raw1394')
             build.env.Append(LIBS = 'avutil')
+            build.env.Append(LIBS = 'z')
+            build.env.Append(LIBS = 'swresample')
+            #build.env.Append(LIBS = 'a52')
+            #build.env.Append(LIBS = 'dts')
+            build.env.Append(LIBS = 'gsm')
+            #build.env.Append(LIBS = 'dc1394_control')
+            #build.env.Append(LIBS = 'dl')
+            build.env.Append(LIBS = 'vorbisenc')
+            #build.env.Append(LIBS = 'raw1394')
             build.env.Append(LIBS = 'vorbis')
             build.env.Append(LIBS = 'm')
             build.env.Append(LIBS = 'ogg')
             build.env.Append(CPPDEFINES = '__FFMPEGFILE__')
 
+        # Add new path for ffmpeg header files.
+        # Non-crosscompiled builds need this too, don't they?
+        if build.crosscompile and build.platform_is_windows \
+           and build.toolchain_is_gnu:
+            build.env.Append(CPPPATH=os.path.join(build.crosscompile_root, 
+                                                  'include', 'ffmpeg'))
+
     def sources(self, build):
-        return ['soundsourceffmpeg.cpp']
+        return ['soundsourceffmpeg.cpp',
+                'encoder/encoderffmpegresample.cpp',
+                'encoder/encoderffmpegcore.cpp',
+                'encoder/encoderffmpegmp3.cpp',
+                'encoder/encoderffmpegvorbis.cpp']
 
 class Optimize(Feature):
     def description(self):
@@ -1081,27 +1156,24 @@ class Tuned(Feature):
             else:
                 self.status = "Disabled (not supported on 32-bit MSVC)"
 
-class PromoTracks(Feature):
+class AutoDjCrates(Feature):
     def description(self):
-        return "Promotional tracks feature."
+        return "Auto-DJ crates (for random tracks)"
 
     def enabled(self, build):
-        build.flags['promo'] = util.get_flags(build.env, 'promo', 0)
-        if int(build.flags['promo']):
+        build.flags['autodjcrates'] = \
+            util.get_flags(build.env, 'autodjcrates', 1)
+        if int(build.flags['autodjcrates']):
             return True
         return False
 
     def add_options(self, build, vars):
-        vars.Add('promo', 'Set to 1 to include promo tracks feature (deprecated, unused).', 0)
+        vars.Add('autodjcrates', 'Set to 1 to enable crates as a source for random Auto-DJ tracks.', 1)
 
     def configure(self, build, conf):
         if not self.enabled(build):
             return
-        build.env.Append(CPPDEFINES = '__PROMO__')
+        build.env.Append(CPPDEFINES = '__AUTODJCRATES__')
 
     def sources(self, build):
-        return ['library/promotracksfeature.cpp',
-                'library/bundledsongswebview.cpp',
-                "library/featuredartistswebview.cpp",
-                ]
-
+        return ['library/dao/autodjcratesdao.cpp']

@@ -12,16 +12,16 @@ class LibraryHashDAO : public DAO {
     void setDatabase(QSqlDatabase& database) { m_database = database; };
 
     void initialize();
-    int getDirectoryHash(QString dirPath);
-    void saveDirectoryHash(QString dirPath, int hash);
-    void updateDirectoryHash(QString dirPath, int newHash, int dir_deleted);
-    void markAsExisting(QString dirPath);
-    void markAsVerified(QString dirPath);
+    int getDirectoryHash(const QString& dirPath);
+    void saveDirectoryHash(const QString& dirPath, const int hash);
+    void updateDirectoryHash(const QString& dirPath, const int newHash, const int dir_deleted);
+    void markAsExisting(const QString& dirPath);
+    void markAsVerified(const QString& dirPath);
     //void markAllDirectoriesAsDeleted();
     void invalidateAllDirectories();
     void markUnverifiedDirectoriesAsDeleted();
     void removeDeletedDirectoryHashes();
-    void updateDirectoryStatuses(QStringList dirPaths, bool deleted, bool verified);
+    void updateDirectoryStatuses(QStringList dirPaths, const bool deleted, const bool verified);
   private:
     QSqlDatabase &m_database;
 

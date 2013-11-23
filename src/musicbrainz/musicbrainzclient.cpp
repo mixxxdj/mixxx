@@ -66,7 +66,9 @@ void MusicBrainzClient::requestFinished() {
     ResultList ret;
 
     if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
-        emit finished(id, ret);
+        emit(networkError(
+             reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
+             "Musicbrainz"));
         return;
     }
 
@@ -83,7 +85,7 @@ void MusicBrainzClient::requestFinished() {
             }
         }
     }
-    emit finished(id, uniqueResults(ret));
+    emit (finished(id, uniqueResults(ret)));
 }
 
 MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& reader) {

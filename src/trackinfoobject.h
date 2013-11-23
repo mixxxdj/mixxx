@@ -46,8 +46,6 @@ class TrackInfoObject;
 typedef QSharedPointer<TrackInfoObject> TrackPointer;
 typedef QWeakPointer<TrackInfoObject> TrackWeakPointer;
 
-#include "segmentation.h"
-
 class TrackInfoObject : public QObject
 {
     Q_OBJECT
@@ -63,7 +61,6 @@ public:
     /** Returns true if the object contains valid information */
     bool isValid() const;
     int parse();
-    void writeToXML( QDomDocument &, QDomElement & );
 
     /** Returns the duration in seconds */
     int getDuration() const;
@@ -78,8 +75,10 @@ public:
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum)
+    Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist)
     Q_PROPERTY(QString genre READ getGenre WRITE setGenre)
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer)
+    Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping)
     Q_PROPERTY(QString year READ getYear WRITE setYear)
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
     Q_PROPERTY(int times_played READ getTimesPlayed)
@@ -164,6 +163,10 @@ public:
     QString getAlbum() const;
     /** Set album */
     void setAlbum(QString);
+    /** Return album artist */
+    QString getAlbumArtist() const;
+    /** Set album artist */
+    void setAlbumArtist(QString);
     /** Return Year */
     QString getYear() const;
     /** Set year */
@@ -176,6 +179,10 @@ public:
     QString getComposer() const;
     /** Set composer */
     void setComposer(QString);
+    /** Return grouping */
+    QString getGrouping() const;
+    /** Set grouping */
+    void setGrouping(QString);
     /** Return Track Number */
     QString getTrackNumber() const;
     /** Set Track Number */
@@ -249,13 +256,11 @@ public:
     // Set the track's Beats
     void setBeats(BeatsPointer beats);
 
-    const Segmentation<QString>* getChordData();
-    void setChordData(Segmentation<QString> cd);
 
   public slots:
     void slotCueUpdated();
 
-signals:
+  signals:
     void waveformUpdated();
     void waveformSummaryUpdated();
     void analyserProgress(int progress);
@@ -268,11 +273,10 @@ signals:
     void clean(TrackInfoObject* pTrack);
     void save(TrackInfoObject* pTrack);
 
-private slots:
+  private slots:
     void slotBeatsUpdated();
 
-private:
-
+  private:
     // Common initialization function between all TIO constructors.
     void initialize(bool parseHeader);
 
@@ -286,6 +290,7 @@ private:
     // Set whether the TIO is dirty not. This should never be called except by
     // TIO local methods or the TrackDAO.
     void setDirty(bool bDirty);
+
 
     // Set a unique identifier for the track. Only used by services like
     // TrackDAO
@@ -312,12 +317,16 @@ private:
     QString m_sAlbum;
     /** Artist */
     QString m_sArtist;
+    /** Album Artist */
+    QString m_sAlbumArtist;
     /** Title */
     QString m_sTitle;
     /** Genre */
     QString m_sGenre;
     /** Composer */
     QString m_sComposer;
+    /** Grouping */
+    QString m_sGrouping;
     /** Year */
     QString m_sYear;
     /** Track Number */
@@ -370,8 +379,6 @@ private:
 
     /** True if object contains valid information */
     bool m_bIsValid;
-
-    Segmentation<QString> m_chordData;
 
     // Storage for the track's beats
     BeatsPointer m_pBeats;

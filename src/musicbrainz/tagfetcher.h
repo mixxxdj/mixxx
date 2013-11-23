@@ -36,6 +36,7 @@ class TagFetcher : public QObject {
     void resultAvailable(const TrackPointer originalTrack,
                          const QList<TrackPointer>& tracksGuessed);
     void fetchProgress(QString);
+    void networkError(int,QString);
 
   private slots:
     void fingerprintFound(int index);

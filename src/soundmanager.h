@@ -31,6 +31,7 @@ class AudioOutput;
 class AudioInput;
 class AudioSource;
 class AudioDestination;
+class ControlObject;
 
 #define MIXXX_PORTAUDIO_JACK_STRING "JACK Audio Connection Kit"
 #define MIXXX_PORTAUDIO_ALSA_STRING "ALSA"
@@ -86,13 +87,13 @@ class SoundManager : public QObject {
 
     // Requests a buffer in the proper format, if we're prepared to give one.
     void requestBuffer(
-        const QList<AudioOutput>& outputs, float* outputBuffer,
+        const QList<AudioOutputBuffer>& outputs, float* outputBuffer,
         const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
         SoundDevice *device, double streamTime = 0);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
-    void pushBuffer(const QList<AudioInput>& inputs, short *inputBuffer,
+    void pushBuffer(const QList<AudioInputBuffer>& inputs, short *inputBuffer,
                     const unsigned long iFramesPerBuffer, const unsigned int iFrameSize);
 
     void registerOutput(AudioOutput output, const AudioSource *src);
@@ -117,7 +118,6 @@ class SoundManager : public QObject {
 #endif
     QList<SoundDevice*> m_devices;
     QList<unsigned int> m_samplerates;
-    QHash<AudioOutput, const CSAMPLE*> m_outputBuffers;
     QHash<AudioInput, short*> m_inputBuffers;
     // Clock reference, used to make sure the same device triggers buffer
     // refresh every $latency-ms period
@@ -127,8 +127,8 @@ class SoundManager : public QObject {
     SoundDevice* m_pErrorDevice;
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
-    ControlObject* m_pControlObjectSoundStatus;
-    ControlObjectThreadMain* m_pControlObjectVinylControlGain;
+    ControlObject* m_pControlObjectSoundStatusCO;
+    ControlObject* m_pControlObjectVinylControlGainCO;
 };
 
 #endif

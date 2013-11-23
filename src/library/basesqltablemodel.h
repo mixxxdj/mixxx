@@ -50,8 +50,8 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     // to cause instability / crashes.
     bool initialized() const { return m_bInitialized; }
     int getTrackId(const QModelIndex& index) const;
-    void search(const QString& searchText, const QString& extraFilter=QString());
-    void setSearch(const QString& searchText, const QString extraFilter=QString());
+    void search(const QString& searchText, const QString& extraFilter = QString());
+    void setSearch(const QString& searchText, const QString& extraFilter = QString());
     const QString currentSearch() const;
     void setSort(int column, Qt::SortOrder order);
     void hideTracks(const QModelIndexList& indices);
@@ -64,10 +64,10 @@ class BaseSqlTableModel : public QAbstractTableModel, public TrackModel {
     void sort(int column, Qt::SortOrder order);
     int rowCount(const QModelIndex& parent=QModelIndex()) const;
     QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const;
-    bool setData(const QModelIndex& index, const QVariant& value, int role=Qt::EditRole);
-    int columnCount(const QModelIndex& parent=QModelIndex()) const;
+    bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+    int columnCount(const QModelIndex& parent = QModelIndex()) const;
     bool setHeaderData(int section, Qt::Orientation orientation,
-                               const QVariant &value, int role=Qt::EditRole);
+                               const QVariant &value, int role = Qt::EditRole);
     QVariant headerData(int section, Qt::Orientation orientation,
                                 int role=Qt::DisplayRole) const;
     virtual QMimeData* mimeData(const QModelIndexList &indexes) const;

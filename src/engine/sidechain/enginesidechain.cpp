@@ -14,15 +14,13 @@
 *                                                                         *
 ***************************************************************************/
 
-/* This class provides a way to do audio processing that does not need
- * to be executed in real-time. For example, m_shoutcast encoding/broadcasting
- * and recording encoding can be done here. This class uses double-buffering
- * to increase the amount of time the CPU has to do whatever work needs to
- * be done, and that work is executed in a separate thread. (Threading
- * allows the next buffer to be filled while processing a buffer that's is
- * already full.)
- *
- */
+// This class provides a way to do audio processing that does not need
+// to be executed in real-time. For example, shoutcast encoding/broadcasting
+// and recording encoding can be done here. This class uses double-buffering
+// to increase the amount of time the CPU has to do whatever work needs to
+// be done, and that work is executed in a separate thread. (Threading
+// allows the next buffer to be filled while processing a buffer that's is
+// already full.)
 
 #include <QtCore>
 #include <QtDebug>
@@ -91,6 +89,11 @@ void EngineSideChain::run() {
     QThread::currentThread()->setObjectName(QString("EngineSideChain %1").arg(++id));
 
     while (!m_bStopThread) {
+        // Sleep until samples are available.
+        m_waitLock.lock();
+        m_waitForSamples.wait(&m_waitLock);
+        m_waitLock.unlock();
+
         int samples_read;
         while ((samples_read = m_sampleFifo.read(
             m_pWorkBuffer, SIDECHAIN_BUFFER_SIZE))) {
@@ -104,10 +107,5 @@ void EngineSideChain::run() {
         if (m_bStopThread) {
             return;
         }
-
-        // Sleep until samples are available.
-        m_waitLock.lock();
-        m_waitForSamples.wait(&m_waitLock);
-        m_waitLock.unlock();
     }
 }

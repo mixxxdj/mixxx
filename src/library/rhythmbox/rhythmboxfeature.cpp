@@ -376,8 +376,9 @@ void RhythmboxFeature::importPlaylist(QXmlStreamReader &xml,
 
 
             if (success) {
+                const int idColumn = finder_query.record().indexOf("id");
                 while (finder_query.next()) {
-                    track_id = finder_query.value(finder_query.record().indexOf ("id")).toInt();
+                    track_id = finder_query.value(idColumn).toInt();
                 }
              } else {
                 qDebug() << "SQL Error in RhythmboxFeature.cpp: line"

@@ -46,53 +46,53 @@ class SoundManager;
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
-/**
-  * This Class is the base class for Mixxx. It sets up the main
-  * window and providing a menubar.
-  * For the main view, an instance of class MixxxView is
-  * created which creates your view.
-  */
+class ControlObjectThread;
+
+// This Class is the base class for Mixxx. It sets up the main
+// window and providing a menubar.
+// For the main view, an instance of class MixxxView is
+// created which creates your view.
 class MixxxApp : public QMainWindow {
     Q_OBJECT
 
   public:
-    /** Construtor. files is a list of command line arguments */
+    // Construtor. files is a list of command line arguments
     MixxxApp(QApplication *app, const CmdlineArgs& args);
     virtual ~MixxxApp();
-    /** initializes all QActions of the application */
+    // initializes all QActions of the application
     void initActions();
-    /** initMenuBar creates the menu_bar and inserts the menuitems */
+    // initMenuBar creates the menu_bar and inserts the menuitems
     void initMenuBar();
 
     void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
 
     void setToolTipsCfg(int tt);
-    inline int getToolTipsCgf() { return m_toolTipsCfg; };
+    inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
 
   public slots:
 
     //void slotQuitFullScreen();
     void slotFileLoadSongPlayer(int deck);
-    /** Opens a file in player 1 */
+    // Opens a file in player 1
     void slotFileLoadSongPlayer1();
-    /** Opens a file in player 2 */
+    // Opens a file in player 2
     void slotFileLoadSongPlayer2();
-    /** exits the application */
+    // exits the application
     void slotFileQuit();
 
-    /** toggle vinyl control - Don't #ifdef this because MOC is dumb**/
+    // toggle vinyl control - Don't #ifdef this because MOC is dumb
     void slotControlVinylControl(double toggle);
     void slotCheckboxVinylControl(bool toggle);
     void slotControlVinylControl2(double toggle);
     void slotCheckboxVinylControl2(bool toggle);
-    /** toogle keyboard on-off */
+    // toogle keyboard on-off
     void slotOptionsKeyboard(bool toggle);
-    /** Preference dialog */
+    // Preference dialog
     void slotOptionsPreferences();
-    /** shows an about dlg*/
+    // shows an about dlg
     void slotHelpAbout();
-    /** visits support section of website*/
+    // visits support section of website
     void slotHelpSupport();
     // Visits a feedback form
     void slotHelpFeedback();
@@ -106,12 +106,12 @@ class MixxxApp : public QMainWindow {
     void slotEnableRescanLibraryAction();
     //Updates the checkboxes for Recording and Livebroadcasting when connection drops, or lame is not available
     void slotOptionsMenuShow();
-    /** toogle on-screen widget visibility */
+    // toogle on-screen widget visibility
     void slotViewShowSamplers(bool);
     void slotViewShowVinylControl(bool);
     void slotViewShowMicrophone(bool);
     void slotViewShowPreviewDeck(bool);
-    /** toogle full screen mode */
+    // toogle full screen mode
     void slotViewFullScreen(bool toggle);
     // Reload the skin.
     void slotDeveloperReloadSkin(bool toggle);
@@ -124,7 +124,7 @@ class MixxxApp : public QMainWindow {
     void newSkinLoaded();
 
   protected:
-    /** Event filter to block certain events (eg. tooltips if tooltips are disabled) */
+    // Event filter to block certain events (eg. tooltips if tooltips are disabled)
     bool eventFilter(QObject *obj, QEvent *event);
     void closeEvent(QCloseEvent *event);
 
@@ -141,7 +141,7 @@ class MixxxApp : public QMainWindow {
     QWidget* m_pWidgetParent;
 
     // The mixing engine.
-    EngineMaster *m_pEngine;
+    EngineMaster* m_pEngine;
 
     // The skin loader
     SkinLoader* m_pSkinLoader;
@@ -156,11 +156,11 @@ class MixxxApp : public QMainWindow {
 #ifdef __SHOUTCAST__
     ShoutcastManager* m_pShoutcastManager;
 #endif
-    ControllerManager *m_pControllerManager;
+    ControllerManager* m_pControllerManager;
 
-    ConfigObject<ConfigValue> *m_pConfig;
+    ConfigObject<ConfigValue>* m_pConfig;
 
-    VinylControlManager *m_pVCManager;
+    VinylControlManager* m_pVCManager;
 
     MixxxKeyboard* m_pKeyboard;
     // Library scanner object
@@ -168,59 +168,59 @@ class MixxxApp : public QMainWindow {
     // The library management object
     Library* m_pLibrary;
 
-    /** file_menu contains all items of the menubar entry "File" */
-    QMenu *m_pFileMenu;
-    /** edit_menu contains all items of the menubar entry "Edit" */
-    QMenu *m_pEditMenu;
-    /** library menu */
-    QMenu *m_pLibraryMenu;
-    /** options_menu contains all items of the menubar entry "Options" */
-    QMenu *m_pOptionsMenu;
-    /** view_menu contains all items of the menubar entry "View" */
-    QMenu *m_pViewMenu;
-    /** view_menu contains all items of the menubar entry "Help" */
-    QMenu *m_pHelpMenu;
+    // file_menu contains all items of the menubar entry "File"
+    QMenu* m_pFileMenu;
+    // edit_menu contains all items of the menubar entry "Edit"
+    QMenu* m_pEditMenu;
+    // library menu
+    QMenu* m_pLibraryMenu;
+    // options_menu contains all items of the menubar entry "Options"
+    QMenu* m_pOptionsMenu;
+    // view_menu contains all items of the menubar entry "View"
+    QMenu* m_pViewMenu;
+    // view_menu contains all items of the menubar entry "Help"
+    QMenu* m_pHelpMenu;
     // Developer options.
     QMenu* m_pDeveloperMenu;
 
-    QAction *m_pFileLoadSongPlayer1;
-    QAction *m_pFileLoadSongPlayer2;
-    QAction *m_pFileQuit;
-    QAction *m_pPlaylistsNew;
-    QAction *m_pCratesNew;
-    QAction *m_pLibraryRescan;
+    QAction* m_pFileLoadSongPlayer1;
+    QAction* m_pFileLoadSongPlayer2;
+    QAction* m_pFileQuit;
+    QAction* m_pPlaylistsNew;
+    QAction* m_pCratesNew;
+    QAction* m_pLibraryRescan;
 #ifdef __VINYLCONTROL__
-    QMenu *m_pVinylControlMenu;
-    QAction *m_pOptionsVinylControl;
-    QAction *m_pOptionsVinylControl2;
+    QMenu* m_pVinylControlMenu;
+    QAction* m_pOptionsVinylControl;
+    QAction* m_pOptionsVinylControl2;
 #endif
-    QAction *m_pOptionsRecord;
-    QAction *m_pOptionsKeyboard;
+    QAction* m_pOptionsRecord;
+    QAction* m_pOptionsKeyboard;
 
-    QAction *m_pOptionsPreferences;
+    QAction* m_pOptionsPreferences;
 #ifdef __SHOUTCAST__
-    QAction *m_pOptionsShoutcast;
+    QAction* m_pOptionsShoutcast;
 #endif
-    QAction *m_pViewShowSamplers;
-    QAction *m_pViewVinylControl;
-    QAction *m_pViewShowMicrophone;
-    QAction *m_pViewShowPreviewDeck;
-    QAction *m_pViewFullScreen;
-    QAction *m_pHelpAboutApp;
-    QAction *m_pHelpSupport;
-    QAction *m_pHelpFeedback;
-    QAction *m_pHelpTranslation;
-    QAction *m_pHelpManual;
+    QAction* m_pViewShowSamplers;
+    QAction* m_pViewVinylControl;
+    QAction* m_pViewShowMicrophone;
+    QAction* m_pViewShowPreviewDeck;
+    QAction* m_pViewFullScreen;
+    QAction* m_pHelpAboutApp;
+    QAction* m_pHelpSupport;
+    QAction* m_pHelpFeedback;
+    QAction* m_pHelpTranslation;
+    QAction* m_pHelpManual;
 
-    QAction *m_pDeveloperReloadSkin;
+    QAction* m_pDeveloperReloadSkin;
 
     int m_iNoPlaylists;
 
     /** Pointer to preference dialog */
-    DlgPreferences *m_pPrefDlg;
+    DlgPreferences* m_pPrefDlg;
 
     int noSoundDlg(void);
-    int noOutputDlg(bool *continueClicked);
+    int noOutputDlg(bool* continueClicked);
     // Fullscreen patch
     QPoint m_winpos;
     bool m_NativeMenuBarSupport;
@@ -233,6 +233,9 @@ class MixxxApp : public QMainWindow {
     Timer m_runtime_timer;
 
     const CmdlineArgs& m_cmdLineArgs;
+
+    ControlObjectThread* m_pVinylcontrol1Enabled;
+    ControlObjectThread* m_pVinylcontrol2Enabled;
 };
 
 #endif

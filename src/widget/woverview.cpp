@@ -30,35 +30,30 @@
 #include "waveform/waveform.h"
 #include "waveform/waveformwidgetfactory.h"
 
-WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget * parent) :
+WOverview::WOverview(const char *pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent) :
         WWidget(parent),
-        m_pGroup(pGroup),
-        m_pConfig(pConfig),
         m_pWaveform(NULL),
         m_pWaveformSourceImage(NULL),
+        m_actualCompletion(0),
         m_pixmapDone(false),
         m_waveformPeak(-1.0),
-        m_actualCompletion(0),
+        m_diffGain(0),
+        m_group(pGroup),
+        m_pConfig(pConfig),
+        m_endOfTrack(0),
         m_bDrag(false),
         m_iPos(0),
         m_a(1.0),
         m_b(0.0),
         m_analyserProgress(-1),
-        m_trackLoaded(false),
-        m_diffGain(0) {
-
-    m_endOfTrackControl = new ControlObjectThreadMain(
-                ControlObject::getControl( ConfigKey(m_pGroup,"end_of_track")));
+        m_trackLoaded(false) {
+    m_endOfTrackControl = new ControlObjectThread(
+            m_group, "end_of_track");
     connect(m_endOfTrackControl, SIGNAL(valueChanged(double)),
-             this, SLOT( onEndOfTrackChange(double)));
-    m_endOfTrack = false;
-
-    m_trackSamplesControl = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pGroup, "track_samples")));
+             this, SLOT(onEndOfTrackChange(double)));
+    m_trackSamplesControl = new ControlObjectThread(m_group, "track_samples");
+    m_playControl = new ControlObjectThread(m_group, "play");
     setAcceptDrops(true);
-
-    m_playControl = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey(m_pGroup, "play")));
 }
 
 WOverview::~WOverview() {
@@ -98,7 +93,7 @@ void WOverview::setup(QDomNode node) {
     setPalette(palette);
 
     //setup hotcues and cue and loop(s)
-    m_marks.setup(m_pGroup, node, m_signalColors);
+    m_marks.setup(m_group, node, m_signalColors);
 
     for (int i = 0; i < m_marks.size(); ++i) {
         WaveformMark& mark = m_marks[i];
@@ -111,7 +106,7 @@ void WOverview::setup(QDomNode node) {
         if (child.nodeName() == "MarkRange") {
             m_markRanges.push_back(WaveformMarkRange());
             WaveformMarkRange& markRange = m_markRanges.back();
-            markRange.setup(m_pGroup, child, m_signalColors);
+            markRange.setup(m_group, child, m_signalColors);
 
             connect(markRange.m_markEnabledControl, SIGNAL(valueChanged(double)),
                      this, SLOT(onMarkRangeChange(double)));
@@ -248,109 +243,6 @@ void WOverview::onMarkRangeChange(double /*v*/) {
     update();
 }
 
-bool WOverview::drawNextPixmapPart() {
-    ScopedTimer t("WOverview::drawNextPixmapPart");
-
-    //qDebug() << "WOverview::drawNextPixmapPart() - m_waveform" << m_waveform;
-
-    int currentCompletion;
-
-    if (!m_pWaveform) {
-        return false;
-    }
-
-    const int dataSize = m_pWaveform->getDataSize();
-    if (dataSize == 0 ) {
-        return false;
-    }
-
-    if (!m_pWaveformSourceImage) {
-        //waveform pixmap twice the height of the viewport to be scalable by total_gain
-        //we keep full range waveform data to scale it on paint
-        m_pWaveformSourceImage = new QImage(dataSize / 2, 2 * 255, QImage::Format_ARGB32_Premultiplied);
-        m_pWaveformSourceImage->fill(QColor(0,0,0,0).value());
-    }
-
-    const int waveformCompletion = m_pWaveform->getCompletion(); // always multiple of 2
-    // test if there is some new to draw (at least of pixel width)
-    const int completionIncrement = waveformCompletion - m_actualCompletion;
-
-    int visiblePixelIncrement = completionIncrement * width() / dataSize; 
-    if (completionIncrement < 2 || visiblePixelIncrement == 0) {
-        return false;
-    }
-
-    if (!m_pWaveform->getMutex()->tryLock()) {
-        return false;
-    }
-
-    const int nextCompletion = m_actualCompletion + completionIncrement;
-
-    //qDebug() << "WOverview::drawNextPixmapPart() - nextCompletion:" << nextCompletion
-    //         << "m_actualCompletion:" << m_actualCompletion
-    //         << "waveformCompletion:" << waveformCompletion
-    //         << "completionIncrement:" << completionIncrement;
-
-
-    QPainter painter(m_pWaveformSourceImage);
-    painter.translate(0.0,(double)m_pWaveformSourceImage->height()/2.0);
-
-    QColor lowColor = m_signalColors.getLowColor();
-    QPen lowColorPen(QBrush(lowColor), 1);
-
-    QColor midColor = m_signalColors.getMidColor();
-    QPen midColorPen(QBrush(midColor), 1);
-
-    QColor highColor = m_signalColors.getHighColor();
-    QPen highColorPen(QBrush(highColor), 1);
-
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
-        unsigned char lowNeg = m_pWaveform->getLow(currentCompletion);
-        unsigned char lowPos = m_pWaveform->getLow(currentCompletion+1);
-        if (lowPos || lowNeg) {
-            painter.setPen(lowColorPen);
-            painter.drawLine(QPoint(currentCompletion / 2, -lowNeg),
-                             QPoint(currentCompletion / 2, lowPos));
-        }
-    }
-
-    for (currentCompletion = m_actualCompletion; 
-            currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen(midColorPen);
-        painter.drawLine(QPoint(currentCompletion / 2, - m_pWaveform->getMid(currentCompletion)),
-                         QPoint(currentCompletion / 2, m_pWaveform->getMid(currentCompletion+1)));
-    }
-
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
-        painter.setPen(highColorPen);
-        painter.drawLine(QPoint(currentCompletion / 2, - m_pWaveform->getHigh(currentCompletion)),
-                         QPoint(currentCompletion / 2, m_pWaveform->getHigh(currentCompletion+1)));
-    }
-
-    //evaluate waveform ratio peak
-
-    for (currentCompletion = m_actualCompletion;
-            currentCompletion < nextCompletion; currentCompletion += 2) {
-        m_waveformPeak = math_max(m_waveformPeak, (float)m_pWaveform->getAll(currentCompletion));
-        m_waveformPeak = math_max(m_waveformPeak, (float)m_pWaveform->getAll(currentCompletion+1));
-    }
-
-    m_actualCompletion = nextCompletion;
-    m_waveformImageScaled = QImage();
-    m_diffGain = 0;
-
-    //test if the complete waveform is done
-    if (m_actualCompletion >= dataSize - 2) {
-        m_pixmapDone = true;
-        //qDebug() << "m_waveformPeakRatio" << m_waveformPeak;
-    }
-
-    m_pWaveform->getMutex()->unlock();
-    return true;
-}
-
 void WOverview::mouseMoveEvent(QMouseEvent* e) {
     m_iPos = e->x();
     m_iPos = math_max(0, math_min(m_iPos,width() - 1));
@@ -365,7 +257,7 @@ void WOverview::mouseReleaseEvent(QMouseEvent* e) {
 
     //qDebug() << "WOverview::mouseReleaseEvent" << e->pos() << m_iPos << ">>" << fValue;
 
-    if (e->button() == Qt::RightButton) { 
+    if (e->button() == Qt::RightButton) {
         emit(valueChangedRightUp(fValue));
     } else {
         emit(valueChangedLeftUp(fValue));
@@ -591,7 +483,7 @@ void WOverview::dragEnterEvent(QDragEnterEvent* event) {
     // in this deck or the settings allow to interrupt the playing deck.
     if (event->mimeData()->hasUrls() && event->mimeData()->urls().size() > 0) {
         if ((m_playControl->get() == 0.0 ||
-            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_pGroup=="[PreviewDeck1]")) {
+            m_pConfig->getValueString(ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt()) || (m_group=="[PreviewDeck1]")) {
             event->acceptProposedAction();
         } else {
             event->ignore();
@@ -610,7 +502,7 @@ void WOverview::dropEvent(QDropEvent* event) {
             name = url.toString();
         }
         event->accept();
-        emit(trackDropped(name, m_pGroup));
+        emit(trackDropped(name, m_group));
     } else {
         event->ignore();
     }

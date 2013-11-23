@@ -6,9 +6,12 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #include <QFuture>
 #include <QUrl>
+#if QT_VERSION >= QT_VERSION_CHECK(5, 0, 0)
+#include <QtConcurrent>
+#endif
 #include <QtConcurrentMap>
 
 #include "musicbrainz/tagfetcher.h"
@@ -24,6 +27,10 @@ TagFetcher::TagFetcher(QObject* parent)
             this, SLOT(mbidFound(int,QString)));
     connect(&m_MusicbrainzClient, SIGNAL(finished(int,MusicBrainzClient::ResultList)),
             this, SLOT(tagsFetched(int,MusicBrainzClient::ResultList)));
+    connect(&m_AcoustidClient, SIGNAL(networkError(int, QString)),
+            this, SIGNAL(networkError(int, QString)));
+    connect(&m_MusicbrainzClient, SIGNAL(networkError(int, QString)),
+            this, SIGNAL(networkError(int, QString)));
 }
 
 QString TagFetcher::getFingerprint(const TrackPointer tio) {
@@ -44,7 +51,7 @@ void TagFetcher::startFetch(const TrackPointer track) {
             SLOT(fingerprintFound(int)));
 
     foreach (const TrackPointer ptrack, m_tracks) {
-        emit fetchProgress(tr("Fingerprinting track"));
+        emit(fetchProgress(tr("Fingerprinting track")));
     }
 }
 
@@ -72,11 +79,11 @@ void TagFetcher::fingerprintFound(int index) {
     const TrackPointer ptrack = m_tracks[index];
 
     if (fingerprint.isEmpty()) {
-        emit resultAvailable(ptrack, QList<TrackPointer>());
+        emit(resultAvailable(ptrack, QList<TrackPointer>()));
         return;
     }
 
-    emit fetchProgress(tr("Identifying track"));
+    emit(fetchProgress(tr("Identifying track")));
     // qDebug() << "start to look up the MBID";
     m_AcoustidClient.start(index, fingerprint, ptrack->getDuration());
 }
@@ -89,7 +96,7 @@ void TagFetcher::mbidFound(int index, const QString& mbid) {
     const TrackPointer pTrack = m_tracks[index];
 
     if (mbid.isEmpty()) {
-        emit resultAvailable(pTrack, QList<TrackPointer>());
+        emit(resultAvailable(pTrack, QList<TrackPointer>()));
         return;
     }
 
@@ -117,5 +124,5 @@ void TagFetcher::tagsFetched(int index, const MusicBrainzClient::ResultList& res
         track->setYear(QString::number(result.m_year));
         tracksGuessed << track;
     }
-    emit resultAvailable(originalTrack, tracksGuessed);
+    emit(resultAvailable(originalTrack, tracksGuessed));
 }

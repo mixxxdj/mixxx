@@ -3,6 +3,7 @@
 #include <QtGui>
 #include <QtXml>
 #include <QModelIndex>
+#include <QInputDialog>
 
 #include "widget/wwidget.h"
 #include "widget/wskincolor.h"
@@ -50,12 +51,12 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     connect(&m_BpmMapper, SIGNAL(mapped(int)),
             this, SLOT(slotScaleBpm(int)));
 
-    m_pNumSamplers = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_samplers")));
-    m_pNumDecks = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_decks")));
-    m_pNumPreviewDecks = new ControlObjectThreadMain(
-        ControlObject::getControl(ConfigKey("[Master]", "num_preview_decks")));
+    m_pNumSamplers = new ControlObjectThread(
+            "[Master]", "num_samplers");
+    m_pNumDecks = new ControlObjectThread(
+            "[Master]", "num_decks");
+    m_pNumPreviewDecks = new ControlObjectThread(
+            "[Master]", "num_preview_decks");
 
     m_pMenu = new QMenu(this);
 
@@ -66,7 +67,7 @@ WTrackTableView::WTrackTableView(QWidget * parent,
     m_pCrateMenu = new QMenu(this);
     m_pCrateMenu->setTitle(tr("Add to Crate"));
     m_pBPMMenu = new QMenu(this);
-    m_pBPMMenu->setTitle(tr("BPM Settings"));
+    m_pBPMMenu->setTitle(tr("BPM Options"));
 
     // Disable editing
     //setEditTriggers(QAbstractItemView::NoEditTriggers);
@@ -245,7 +246,7 @@ void WTrackTableView::loadTrackModel(QAbstractItemModel *model) {
         }
     }
 
-    // Set up drag and drop behaviour according to whether or not the track
+    // Set up drag and drop behavior according to whether or not the track
     // model says it supports it.
 
     // Defaults
@@ -302,11 +303,11 @@ void WTrackTableView::createActions() {
     connect(m_pAutoDJTopAct, SIGNAL(triggered()),
             this, SLOT(slotSendToAutoDJTop()));
 
-    m_pReloadMetadataAct = new QAction(tr("Reload Track Metadata"), this);
+    m_pReloadMetadataAct = new QAction(tr("Reload Metadata from File"), this);
     connect(m_pReloadMetadataAct, SIGNAL(triggered()),
             this, SLOT(slotReloadTrackMetadata()));
 
-    m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Reload from Musicbrainz"),this);
+    m_pReloadMetadataFromMusicBrainzAct = new QAction(tr("Get Metadata from MusicBrainz"),this);
     connect(m_pReloadMetadataFromMusicBrainzAct, SIGNAL(triggered()),
             this, SLOT(slotShowDlgTagFetcher()));
 
@@ -338,7 +339,7 @@ void WTrackTableView::createActions() {
     m_BpmMapper.setMapping(m_pBpmHalveAction, HALVE);
     m_BpmMapper.setMapping(m_pBpmTwoThirdsAction, TWOTHIRDS);
     m_BpmMapper.setMapping(m_pBpmThreeFourthsAction, THREEFOURTHS);
-    
+
     connect(m_pBpmDoubleAction, SIGNAL(triggered()),
             &m_BpmMapper, SLOT(map()));
     connect(m_pBpmHalveAction, SIGNAL(triggered()),
@@ -373,13 +374,12 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
         // playing before trying to load it
         if (!(m_pConfig->getValueString(
             ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt())) {
-            ControlObject* pPlayCO = ControlObject::getControl(ConfigKey(group, "play"));
             // TODO(XXX): Check for other than just the first preview deck.
-            if (group != "[PreviewDeck1]" && pPlayCO && pPlayCO->get() > 0.0f) {
+            if (group != "[PreviewDeck1]" &&
+                    ControlObject::get(ConfigKey(group, "play")) > 0.0f) {
                 return;
             }
         }
-
         QModelIndex index = indices.at(0);
         TrackModel* trackModel = getTrackModel();
         TrackPointer pTrack;
@@ -390,8 +390,7 @@ void WTrackTableView::loadSelectionToGroup(QString group, bool play) {
     }
 }
 
-void WTrackTableView::slotRemove()
-{
+void WTrackTableView::slotRemove() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
@@ -401,7 +400,7 @@ void WTrackTableView::slotRemove()
     }
 }
 
-void WTrackTableView::slotPurge(){
+void WTrackTableView::slotPurge() {
     QModelIndexList indices = selectionModel()->selectedRows();
     if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
@@ -437,11 +436,9 @@ void WTrackTableView::slotOpenInFileBrowser() {
     }
 }
 
-void WTrackTableView::slotHide()
-{
+void WTrackTableView::slotHide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->hideTracks(indices);
@@ -449,11 +446,10 @@ void WTrackTableView::slotHide()
     }
 }
 
-void WTrackTableView::slotUnhide()
-{
+void WTrackTableView::slotUnhide() {
     QModelIndexList indices = selectionModel()->selectedRows();
-    if (indices.size() > 0)
-    {
+
+    if (indices.size() > 0) {
         TrackModel* trackModel = getTrackModel();
         if (trackModel) {
             trackModel->unhideTracks(indices);
@@ -524,7 +520,7 @@ void WTrackTableView::showDlgTagFetcher(QModelIndex index) {
     m_DlgTagFetcher.show();
 }
 
-void WTrackTableView::slotShowDlgTagFetcher(){
+void WTrackTableView::slotShowDlgTagFetcher() {
     QModelIndexList indices = selectionModel()->selectedRows();
 
     if (indices.size() > 0) {
@@ -550,12 +546,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         int iNumDecks = m_pNumDecks->get();
         if (iNumDecks > 0) {
             for (int i = 1; i <= iNumDecks; ++i) {
-                QString deckGroup = QString("[Channel%1]").arg(i);
-                ControlObject* pPlayCO = ControlObject::getControl(
-                    ConfigKey(deckGroup, "play"));
-                bool deckPlaying = pPlayCO && pPlayCO->get() > 0.0;
+                // PlayerManager::groupForDeck is 0-indexed.
+                QString deckGroup = PlayerManager::groupForDeck(i - 1);
+                bool deckPlaying = ControlObject::get(
+                        ConfigKey(deckGroup, "play")) > 0.0;
                 bool loadTrackIntoPlayingDeck = m_pConfig->getValueString(
-                    ConfigKey("[Controls]","AllowTrackLoadToPlayingDeck")).toInt();
+                    ConfigKey("[Controls]", "AllowTrackLoadToPlayingDeck")).toInt();
                 bool deckEnabled = (!deckPlaying  || loadTrackIntoPlayingDeck)  && oneSongSelected;
                 QAction* pAction = new QAction(tr("Load to Deck %1").arg(i), m_pMenu);
                 pAction->setEnabled(deckEnabled);
@@ -571,10 +567,10 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         if (iNumSamplers > 0) {
             m_pSamplerMenu->clear();
             for (int i = 1; i <= iNumSamplers; ++i) {
-                QString samplerGroup = QString("[Sampler%1]").arg(i);
-                ControlObject* pPlayCO = ControlObject::getControl(
-                                              ConfigKey(samplerGroup, "play"));
-                bool samplerPlaying = pPlayCO && pPlayCO->get() > 0.0;
+                // PlayerManager::groupForSampler is 0-indexed.
+                QString samplerGroup = PlayerManager::groupForSampler(i - 1);
+                bool samplerPlaying = ControlObject::get(
+                        ConfigKey(samplerGroup, "play")) > 0.0;
                 bool samplerEnabled = !samplerPlaying && oneSongSelected;
                 QAction* pAction = new QAction(tr("Sampler %1").arg(i), m_pSamplerMenu);
                 pAction->setEnabled(samplerEnabled);
@@ -616,6 +612,12 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
                 connect(pAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
             }
         }
+        m_pPlaylistMenu->addSeparator();
+        QAction *newPlaylistAction = new QAction( tr("Create New Playlist"), m_pPlaylistMenu);
+        m_pPlaylistMenu->addAction(newPlaylistAction);
+        m_playlistMapper.setMapping(newPlaylistAction, -1);// -1 to signify new playlist
+        connect(newPlaylistAction, SIGNAL(triggered()), &m_playlistMapper, SLOT(map()));
+
         m_pMenu->addMenu(m_pPlaylistMenu);
     }
 
@@ -640,18 +642,26 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
             m_crateMapper.setMapping(pAction, it.value());
             connect(pAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
         }
+        m_pCrateMenu->addSeparator();
+        QAction *newCrateAction = new QAction( tr("Create New Crate"), m_pCrateMenu);
+        m_pCrateMenu->addAction(newCrateAction);
+        m_crateMapper.setMapping(newCrateAction, -1);// -1 to signify new playlist
+        connect(newCrateAction, SIGNAL(triggered()), &m_crateMapper, SLOT(map()));
+
         m_pMenu->addMenu(m_pCrateMenu);
     }
     m_pMenu->addSeparator();
 
     //start of BPM section of menu
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_MANIPULATEBEATS)) {
-        m_pBPMMenu->addAction(m_pBpmLockAction);
-        m_pBPMMenu->addAction(m_pBpmUnlockAction);
         m_pBPMMenu->addAction(m_pBpmDoubleAction);
         m_pBPMMenu->addAction(m_pBpmHalveAction);
-        m_pBPMMenu->addAction(m_pBpmTwoThirdsAction); 
+        m_pBPMMenu->addAction(m_pBpmTwoThirdsAction);
         m_pBPMMenu->addAction(m_pBpmThreeFourthsAction);
+        m_pBPMMenu->addSeparator();
+        m_pBPMMenu->addAction(m_pBpmLockAction);
+        m_pBPMMenu->addAction(m_pBpmUnlockAction);
+        m_pBPMMenu->addSeparator();
         if (oneSongSelected) {
             TrackModel* trackModel = getTrackModel();
             if (trackModel == NULL) {
@@ -730,6 +740,7 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
         m_pMenu->addAction(m_pReloadMetadataFromMusicBrainzAct);
     }
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
+    m_pMenu->addSeparator();
     if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REMOVE)) {
         m_pRemoveAct->setEnabled(!locked);
         m_pMenu->addAction(m_pRemoveAct);
@@ -824,9 +835,8 @@ void WTrackTableView::mouseMoveEvent(QMouseEvent* pEvent) {
     drag->exec(Qt::CopyAction);
 }
 
-/** Drag enter event, happens when a dragged item hovers over the track table view*/
-void WTrackTableView::dragEnterEvent(QDragEnterEvent * event)
-{
+// Drag enter event, happens when a dragged item hovers over the track table view
+void WTrackTableView::dragEnterEvent(QDragEnterEvent * event) {
     //qDebug() << "dragEnterEvent" << event->mimeData()->formats();
     if (event->mimeData()->hasUrls())
     {
@@ -880,8 +890,16 @@ void WTrackTableView::dragMoveEvent(QDragMoveEvent * event) {
 }
 
 // Drag-and-drop "drop" event. Occurs when something is dropped onto the track table view
-void WTrackTableView::dropEvent(QDropEvent * event){
-    if (!event->mimeData()->hasUrls()) {
+void WTrackTableView::dropEvent(QDropEvent * event) {
+    TrackModel* trackModel = getTrackModel();
+
+    // We only do things to the TrackModel in this method so if we don't have
+    // one we should just bail.
+    if (!trackModel) {
+        return;
+    }
+
+    if (!event->mimeData()->hasUrls() || trackModel->isLocked()) {
         event->ignore();
         return;
     }
@@ -892,11 +910,11 @@ void WTrackTableView::dropEvent(QDropEvent * event){
     // Filter out invalid URLs (eg. files that aren't supported audio filetypes, etc.)
     QRegExp fileRx(SoundSourceProxy::supportedFileExtensionsRegex(),
                     Qt::CaseInsensitive);
-    for (int i=0; i<urls.size(); i++) {
+    for (int i = 0; i < urls.size(); ++i) {
         if (fileRx.indexIn(urls.at(i).path()) == -1) {
             // remove invalid urls and decrease i because the size of
             // urls has changed.
-            urls.removeAt(i--);
+            urls.removeAt(--i);
         }
     }
 
@@ -906,15 +924,20 @@ void WTrackTableView::dropEvent(QDropEvent * event){
     // up to the top, which is confusing when you're dragging and dropping. :)
     saveVScrollBarPos();
 
-    // The model index where the track or tracks are destined to go. :)
+
+    // Calculate the model index where the track or tracks are destined to go.
     // (the "drop" position in a drag-and-drop)
-    QModelIndex destIndex = indexAt(event->pos());
+    // The user usually drops on the seam between two rows.
+    // We take the row below the seam for reference.
+    int dropRow = rowAt(event->pos().y());
+    int hight = rowHeight(dropRow);
+    QPoint pointOfRowBelowSeam(event->pos().x(), event->pos().y() + hight / 2);
+    QModelIndex destIndex = indexAt(pointOfRowBelowSeam);
 
     //qDebug() << "destIndex.row() is" << destIndex.row();
 
     // Drag and drop within this widget (track reordering)
-    if (event->source() == this)
-    {
+    if (event->source() == this) {
         // For an invalid destination (eg. dropping a track beyond
         // the end of the playlist), place the track(s) at the end
         // of the playlist.
@@ -937,8 +960,7 @@ void WTrackTableView::dropEvent(QDropEvent * event){
 
         QList<int> selectedRows;
         QModelIndex idx;
-        foreach (idx, indices)
-        {
+        foreach (idx, indices) {
             selectedRows.append(idx.row());
         }
 
@@ -946,11 +968,10 @@ void WTrackTableView::dropEvent(QDropEvent * event){
         // is that as soon as we've moved ANY track, all of our QModelIndexes probably
         // get screwed up. The starting point for the logic below is to say screw it to
         // the QModelIndexes, and just keep a list of row numbers to work from. That
-        // ends up making the logic simpler and the behaviour totally predictable,
+        // ends up making the logic simpler and the behavior totally predictable,
         // which lets us do nice things like "restore" the selection model.
 
         if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
-            TrackModel* trackModel = getTrackModel();
 
             // The model indices are sorted so that we remove the tracks from the table
             // in ascending order. This is necessary because if track A is above track B in
@@ -968,31 +989,33 @@ void WTrackTableView::dropEvent(QDropEvent * event){
             int selectedRowCount = selectedRows.count();
             int firstRowToSelect = destIndex.row();
 
-            //If you drag a contiguous selection of multiple tracks and drop
-            //them somewhere inside that same selection, do nothing.
-            if (destIndex.row() >= minRow && destIndex.row() <= maxRow)
+            // If you drag a contiguous selection of multiple tracks and drop
+            // them somewhere inside that same selection, do nothing.
+            if (destIndex.row() >= minRow && destIndex.row() <= maxRow) {
                 return;
+            }
 
-            //If we're moving the tracks _up_, then reverse the order of the row selection
-            //to make the algorithm below work without added complexity.
             if (destIndex.row() < minRow) {
+                // If we're moving the tracks _up_, then reverse the order of the row selection
+                // to make the algorithm below work without added complexity.
                 qSort(selectedRows.begin(), selectedRows.end(), qGreater<int>());
             }
 
             if (destIndex.row() > maxRow) {
-                //Shuffle the row we're going to start making a new selection at:
-                firstRowToSelect = firstRowToSelect - selectedRowCount + 1;
+                // If we're moving the tracks _down_,
+                // Move the row we're going to start making a new selection at:
+                firstRowToSelect = firstRowToSelect - selectedRowCount;
             }
 
-            //For each row that needs to be moved...
+            // For each row that needs to be moved...
             while (!selectedRows.isEmpty()) {
                 int movedRow = selectedRows.takeFirst(); //Remember it's row index
-                //Move it
+                // Move it
                 trackModel->moveTrack(model()->index(movedRow, 0), destIndex);
 
-                //Shuffle the row indices for rows that got bumped up
-                //into the void we left, or down because of the new spot
-                //we're taking.
+                // Move the row indices for rows that got bumped up
+                // into the void we left, or down because of the new spot
+                // we're taking.
                 for (int i = 0; i < selectedRows.count(); i++) {
                     if ((selectedRows[i] > movedRow) &&
                         (destIndex.row() > selectedRows[i])) {
@@ -1004,70 +1027,66 @@ void WTrackTableView::dropEvent(QDropEvent * event){
                 }
             }
 
-            //Highlight the moved rows again (restoring the selection)
+            // Highlight the moved rows again (restoring the selection)
             //QModelIndex newSelectedIndex = destIndex;
             for (int i = 0; i < selectedRowCount; i++) {
                 this->selectionModel()->select(model()->index(firstRowToSelect + i, 0),
                                                 QItemSelectionModel::Select | QItemSelectionModel::Rows);
             }
         }
-    } else {//Drag and drop inside Mixxx is only for few rows, bulks happen here
-        //Reset the selected tracks (if you had any tracks highlighted, it
-        //clears them)
+    } else { // Drag and drop inside Mixxx is only for few rows, bulks happen here
+        // Reset the selected tracks (if you had any tracks highlighted, it
+        // clears them)
         this->selectionModel()->clear();
 
-        //Drag-and-drop from an external application
-        //eg. dragging a track from Windows Explorer onto the track table.
-        TrackModel* trackModel = getTrackModel();
-        if (trackModel) {
-            int numNewRows = urls.count();
+        // Drag-and-drop from an external application
+        // eg. dragging a track from Windows Explorer onto the track table.
+        int numNewRows = urls.count();
 
-            // Have to do this here because the index is invalid after
-            // addTrack
-            int selectionStartRow = destIndex.row();
+        // Have to do this here because the index is invalid after
+        // addTrack
+        int selectionStartRow = destIndex.row();
 
-            // Make a new selection starting from where the first track was
-            // dropped, and select all the dropped tracks
+        // Make a new selection starting from where the first track was
+        // dropped, and select all the dropped tracks
 
-            // If the track was dropped into an empty playlist, start at row
-            // 0 not -1 :)
-            if ((destIndex.row() == -1) && (model()->rowCount() == 0)) {
-                selectionStartRow = 0;
-            } else if ((destIndex.row() == -1) && (model()->rowCount() > 0)) {
-                // If the track was dropped beyond the end of a playlist, then
-                // we need to fudge the destination a bit...
-                //qDebug() << "Beyond end of playlist";
-                //qDebug() << "rowcount is:" << model()->rowCount();
-                selectionStartRow = model()->rowCount();
-            }
+        // If the track was dropped into an empty playlist, start at row
+        // 0 not -1 :)
+        if ((destIndex.row() == -1) && (model()->rowCount() == 0)) {
+            selectionStartRow = 0;
+        } else if ((destIndex.row() == -1) && (model()->rowCount() > 0)) {
+            // If the track was dropped beyond the end of a playlist, then
+            // we need to fudge the destination a bit...
+            //qDebug() << "Beyond end of playlist";
+            //qDebug() << "rowcount is:" << model()->rowCount();
+            selectionStartRow = model()->rowCount();
+        }
 
-            // Add all the dropped URLs/tracks to the track model (playlist/crate)
-            QList<QString> fileLocationList;
-            foreach(url, urls) {
-                QString file(url.toLocalFile());
-                fileLocationList.append(file);
-            }
-            // calling the addTracks returns number of failed additions
-            int tracksAdded = trackModel->addTracks(destIndex, fileLocationList);
+        // Add all the dropped URLs/tracks to the track model (playlist/crate)
+        QList<QString> fileLocationList;
+        foreach(url, urls) {
+            QString file(url.toLocalFile());
+            fileLocationList.append(file);
+        }
+        // calling the addTracks returns number of failed additions
+        int tracksAdded = trackModel->addTracks(destIndex, fileLocationList);
 
-            // Decrement # of rows to select if some were skipped
-            numNewRows -= (fileLocationList.size() - tracksAdded);
+        // Decrement # of rows to select if some were skipped
+        numNewRows -= (fileLocationList.size() - tracksAdded);
 
-            // Create the selection, but only if the track model supports
-            // reordering. (eg. crates don't support reordering/indexes)
-            if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
-                for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
-                    this->selectionModel()->select(model()->index(i, 0),
-                                                    QItemSelectionModel::Select |
-                                                    QItemSelectionModel::Rows);
-                }
+        // Create the selection, but only if the track model supports
+        // reordering. (eg. crates don't support reordering/indexes)
+        if (modelHasCapabilities(TrackModel::TRACKMODELCAPS_REORDER)) {
+            for (int i = selectionStartRow; i < selectionStartRow + numNewRows; i++) {
+                this->selectionModel()->select(model()->index(i, 0),
+                                               QItemSelectionModel::Select |
+                                               QItemSelectionModel::Rows);
             }
         }
     }
 
     event->acceptProposedAction();
     restoreVScrollBarPos();
-
 }
 
 TrackModel* WTrackTableView::getTrackModel() {
@@ -1150,11 +1169,11 @@ void WTrackTableView::sendToAutoDJ(bool bTop) {
         // Load track to position two because position one is
         // already loaded to the player
         playlistDao.insertTracksIntoPlaylist(trackIds,
-                                            iAutoDJPlaylistId, 2);
+                                             iAutoDJPlaylistId, 2);
     } else {
         // TODO(XXX): Care whether the append succeeded.
         playlistDao.appendTracksToPlaylist(
-            trackIds, iAutoDJPlaylistId);
+                trackIds, iAutoDJPlaylistId);
     }
 }
 
@@ -1216,6 +1235,41 @@ void WTrackTableView::addSelectionToPlaylist(int iPlaylistId) {
             trackIds.append(iTrackId);
         }
     }
+   if (iPlaylistId==-1){//i.e. a new playlist is suppose to be created
+       QString name;
+       bool validNameGiven = false;
+
+       do {
+           bool ok = false;
+           name = QInputDialog::getText(NULL,
+                                        tr("Create New Playlist"),
+                                        tr("Enter name for new playlist:"),
+                                        QLineEdit::Normal,
+                                        tr("New Playlist"),
+                                        &ok).trimmed();
+           if (!ok)
+               return;
+           if (playlistDao.getPlaylistIdFromName(name) != -1) {
+               QMessageBox::warning(NULL,
+                                    tr("Playlist Creation Failed"),
+                                    tr("A playlist by that name already exists."));
+           } else if (name.isEmpty()) {
+               QMessageBox::warning(NULL,
+                                    tr("Playlist Creation Failed"),
+                                    tr("A playlist cannot have a blank name."));
+           } else {
+               validNameGiven = true;
+           }
+       } while (!validNameGiven);
+       iPlaylistId = playlistDao.createPlaylist(name);//-1 is changed to the new playlist ID return from the DAO
+       if (iPlaylistId == -1) {
+           QMessageBox::warning(NULL,
+                                tr("Playlist Creation Failed"),
+                                tr("An unknown error occurred while creating playlist: ")
+                                 +name);
+           return;
+       }
+   }
     if (trackIds.size() > 0) {
         // TODO(XXX): Care whether the append succeeded.
         playlistDao.appendTracksToPlaylist(trackIds, iPlaylistId);
@@ -1242,9 +1296,45 @@ void WTrackTableView::addSelectionToCrate(int iCrateId) {
             trackIds.append(iTrackId);
         }
     }
-
+    if (iCrateId == -1){//i.e. a new crate is suppose to be created
+        QString name;
+        bool validNameGiven = false;
+        do {
+            bool ok = false;
+            name = QInputDialog::getText(NULL,
+                                         tr("Create New Crate"),
+                                         tr("Enter name for new crate:"),
+                                         QLineEdit::Normal, tr("New Crate"),
+                                         &ok).trimmed();
+            if (!ok)
+                return;
+            int existingId = crateDao.getCrateIdByName(name);
+            if (existingId != -1) {
+                QMessageBox::warning(NULL,
+                                     tr("Creating Crate Failed"),
+                                     tr("A crate by that name already exists."));
+            }
+            else if (name.isEmpty()) {
+                QMessageBox::warning(NULL,
+                                     tr("Creating Crate Failed"),
+                                     tr("A crate cannot have a blank name."));
+            }
+            else {
+                validNameGiven = true;
+            }
+        } while (!validNameGiven);
+        iCrateId = crateDao.createCrate(name);// -1 is changed to the new crate ID returned by the DAO
+        if (iCrateId == -1) {
+            qDebug() << "Error creating crate with name " << name;
+            QMessageBox::warning(NULL,
+                                 tr("Creating Crate Failed"),
+                                 tr("An unknown error occurred while creating crate: ")
+                                 + name);
+            return;
+        }
+    }
     if (trackIds.size() > 0) {
-        crateDao.addTracksToCrate(trackIds, iCrateId);
+        crateDao.addTracksToCrate(iCrateId, &trackIds);
     }
 }
 
@@ -1324,7 +1414,7 @@ void WTrackTableView::slotScaleBpm(int scale){
     if (trackModel == NULL) {
         return;
     }
-    
+
     double scalingFactor=1;
     if (scale == DOUBLE)
         scalingFactor = 2;

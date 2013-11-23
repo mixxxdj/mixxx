@@ -8,15 +8,11 @@
 #include "playerinfo.h"
 #include "util/timer.h"
 #include "library/trackcollection.h"
-
-#ifdef __TONAL__
-#include "tonal/tonalanalyser.h"
-#endif
-
 #include "analyserwaveform.h"
 #include "analyserrg.h"
 #include "analyserbeats.h"
 #include "vamp/vampanalyser.h"
+#include "util/compatibility.h"
 
 #include <typeinfo>
 
@@ -48,7 +44,7 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
 bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer tio) {
     QMutexLocker queueLocker(&m_qm);
 
-    const PlayerInfo& info = PlayerInfo::Instance();
+    const PlayerInfo& info = PlayerInfo::instance();
     TrackPointer pTrack;
     bool trackWaiting = false;
     QMutableListIterator<TrackPointer> it(m_tioq);
@@ -102,7 +98,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
         }
     }
 
-    const PlayerInfo& info = PlayerInfo::Instance();
+    const PlayerInfo& info = PlayerInfo::instance();
     TrackPointer pLoadTrack;
     QMutableListIterator<TrackPointer> it(m_tioq);
     while (it.hasNext()) {
@@ -135,10 +131,9 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
 
 // This is called from the AnalyserQueue thread
 bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource) {
-    // TonalAnalyser requires a block size of 65536. Using a different value
-    // breaks the tonal analyser. We need to use a smaller block size becuase on
-    // Linux, the AnalyserQueue can starve the CPU of its resources, resulting
-    // in xruns.. A block size of 8192 seems to do fine.
+    // We need to use a smaller block size becuase on Linux, the AnalyserQueue
+    // can starve the CPU of its resources, resulting in xruns.. A block size of
+    // 8192 seems to do fine.
     const int ANALYSISBLOCKSIZE = 8192;
 
     int totalSamples = pSoundSource->length();
@@ -218,7 +213,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         //QThread::usleep(10);
 
         //has something new entered the queue?
-        if (m_aiCheckPriorities) {
+        if (deref(m_aiCheckPriorities)) {
             m_aiCheckPriorities = false;
             if (isLoadedTrackWaiting(tio)) {
                 qDebug() << "Interrupting analysis to give preference to a loaded track.";
@@ -344,7 +339,7 @@ void AnalyserQueue::run() {
 
 // This is called from the AnalyserQueue thread
 void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
-    if (!m_exit) {    
+    if (!m_exit) {
         // First tryAcqire will have always success because sema is initialized with on
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
@@ -398,10 +393,6 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
         ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-#ifdef __TONAL__
-    ret->addAnalyser(new TonalAnalyser());
-#endif
-
     ret->addAnalyser(new AnalyserWaveform(_config));
     ret->addAnalyser(new AnalyserGain(_config));
     VampAnalyser::initializePluginPaths();
@@ -413,7 +404,7 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 }
 
 // static
-AnalyserQueue* AnalyserQueue::createPrepareViewAnalyserQueue(
+AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
         ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 

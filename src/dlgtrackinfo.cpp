@@ -41,6 +41,10 @@ void DlgTrackInfo::init(){
             this, SLOT(slotBpmDouble()));
     connect(bpmHalve, SIGNAL(clicked()),
             this, SLOT(slotBpmHalve()));
+    connect(bpmTwoThirds, SIGNAL(clicked()),
+            this, SLOT(slotBpmTwoThirds()));
+    connect(bpmThreeFourth, SIGNAL(clicked()),
+            this, SLOT(slotBpmThreeFourth()));
 
     connect(btnCueActivate, SIGNAL(clicked()),
             this, SLOT(cueActivate()));
@@ -109,13 +113,14 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtTrackName->setText(pTrack->getTitle());
     txtArtist->setText(pTrack->getArtist());
     txtAlbum->setText(pTrack->getAlbum());
+    txtAlbumArtist->setText(pTrack->getAlbumArtist());
     txtGenre->setText(pTrack->getGenre());
     txtComposer->setText(pTrack->getComposer());
+    txtGrouping->setText(pTrack->getGrouping());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
     txtComment->setText(pTrack->getComment());
     spinBpm->setValue(pTrack->getBpm());
-
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
     txtFilepath->setText(pTrack->getFilename());
@@ -131,6 +136,8 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     bpmTap->setEnabled(enableBpmEditing);
     bpmDouble->setEnabled(enableBpmEditing);
     bpmHalve->setEnabled(enableBpmEditing);
+    bpmTwoThirds->setEnabled(enableBpmEditing);
+    bpmThreeFourth->setEnabled(enableBpmEditing);
 }
 
 void DlgTrackInfo::loadTrack(TrackPointer pTrack) {
@@ -215,8 +222,10 @@ void DlgTrackInfo::unloadTrack(bool save) {
         m_pLoadedTrack->setTitle(txtTrackName->text());
         m_pLoadedTrack->setArtist(txtArtist->text());
         m_pLoadedTrack->setAlbum(txtAlbum->text());
+        m_pLoadedTrack->setAlbumArtist(txtAlbumArtist->text());
         m_pLoadedTrack->setGenre(txtGenre->text());
         m_pLoadedTrack->setComposer(txtComposer->text());
+        m_pLoadedTrack->setGrouping(txtGrouping->text());
         m_pLoadedTrack->setYear(txtYear->text());
         m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
         m_pLoadedTrack->setComment(txtComment->toPlainText());
@@ -272,8 +281,10 @@ void DlgTrackInfo::clear() {
     txtTrackName->setText("");
     txtArtist->setText("");
     txtAlbum->setText("");
+    txtAlbumArtist->setText("");
     txtGenre->setText("");
     txtComposer->setText("");
+    txtGrouping->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
     txtComment->setText("");
@@ -297,6 +308,14 @@ void DlgTrackInfo::slotBpmDouble() {
 
 void DlgTrackInfo::slotBpmHalve() {
     spinBpm->setValue(spinBpm->value() / 2.0);
+}
+
+void DlgTrackInfo::slotBpmTwoThirds() {
+    spinBpm->setValue(spinBpm->value() * (2./3.));
+}
+
+void DlgTrackInfo::slotBpmThreeFourth() {
+    spinBpm->setValue(spinBpm->value() * (3./4.));
 }
 
 void DlgTrackInfo::slotBpmTap() {

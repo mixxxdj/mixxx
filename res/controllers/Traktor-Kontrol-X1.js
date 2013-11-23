@@ -29,7 +29,7 @@ KontrolX1.shutdown = function() {
     }
     KontrolX1.debug(KontrolX1.id + " shutdown");
 }
-  
+
 KontrolX1.debug = function(message) {
     if (!KontrolX1.debugging)
         return;
@@ -57,14 +57,14 @@ KontrolX1.registerControls = function() {
     KontrolX1.addKnob(0x6,"[Channel1]","volume");
     KontrolX1.addKnob(0x7,"[Channel2]","volume");
 
-    //KontrolX1.addKnob(0x2c,"[Channel1]","mixer_1_shift");
-    //KontrolX1.addKnob(0x2d,"[Channel2]","mixer_1_shift");
-    //KontrolX1.addKnob(0x2e,"[Channel1]","mixer_2_shift");
-    //KontrolX1.addKnob(0x2f,"[Channel2]","mixer_2_shift");
-    //KontrolX1.addKnob(0x30,"[Channel1]","mixer_3_shift");
-    //KontrolX1.addKnob(0x31,"[Channel2]","mixer_3_shift");
-    //KontrolX1.addKnob(0x32,"[Channel1]","mixer_4_shift");
-    //KontrolX1.addKnob(0x33,"[Channel2]","mixer_4_shift");
+    KontrolX1.addKnob(0x2c,"[Channel1]","mixer_1_shift","eq",KontrolX1.UnmappedShiftedKnob);
+    KontrolX1.addKnob(0x2d,"[Channel2]","mixer_1_shift","eq",KontrolX1.UnmappedShiftedKnob);
+    KontrolX1.addKnob(0x2e,"[Channel1]","mixer_2_shift","eq",KontrolX1.UnmappedShiftedKnob);
+    KontrolX1.addKnob(0x2f,"[Channel2]","mixer_2_shift","eq",KontrolX1.UnmappedShiftedKnob);
+    KontrolX1.addKnob(0x30,"[Channel1]","mixer_3_shift","eq",KontrolX1.UnmappedShiftedKnob);
+    KontrolX1.addKnob(0x31,"[Channel2]","mixer_3_shift","eq",KontrolX1.UnmappedShiftedKnob);
+    KontrolX1.addKnob(0x32,"[Channel1]","mixer_4_shift","eq",KontrolX1.UnmappedShiftedKnob);
+    KontrolX1.addKnob(0x33,"[Channel2]","mixer_4_shift","eq",KontrolX1.UnmappedShiftedKnob);
 
     KontrolX1.addLEDButton(0x8,"[Channel1]","filterHighKill");
     KontrolX1.addLEDButton(0x9,"[Channel2]","filterHighKill");
@@ -75,18 +75,18 @@ KontrolX1.registerControls = function() {
     KontrolX1.addLEDButton(0xe,"[Channel1]","pfl");
     KontrolX1.addLEDButton(0xf,"[Channel2]","pfl");
 
-    KontrolX1.addButton(0x34,"[Channel1]","mixer_1_shift");
-    KontrolX1.addButton(0x35,"[Channel2]","mixer_1_shift");
-    KontrolX1.addButton(0x36,"[Channel1]","mixer_2_shift");
-    KontrolX1.addButton(0x37,"[Channel2]","mixer_2_shift");
-    KontrolX1.addButton(0x38,"[Channel1]","mixer_3_shift");
-    KontrolX1.addButton(0x39,"[Channel2]","mixer_3_shift");
-    KontrolX1.addButton(0x3a,"[Channel1]","mixer_4_shift");
-    KontrolX1.addButton(0x3b,"[Channel2]","mixer_4_shift");
+    KontrolX1.addButton(0x34,"[Channel1]","mixer_1_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x35,"[Channel2]","mixer_1_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x36,"[Channel1]","mixer_2_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x37,"[Channel2]","mixer_2_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x38,"[Channel1]","mixer_3_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x39,"[Channel2]","mixer_3_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x3a,"[Channel1]","mixer_4_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x3b,"[Channel2]","mixer_4_shift",KontrolX1.UnmappedShiftedButton);
 
-    KontrolX1.addEncoder(0x10,"[Channel1]","encoder_1");
-    KontrolX1.addButton(0x12,"[Channel1]","encoder_1_button");
-    KontrolX1.addEncoder(0x11,"[Playlist]","SelectTrackKnob");
+    KontrolX1.addEncoder(0x10,"[Channel1]","encoder_1",KontrolX1.ExtraEncoder);
+    KontrolX1.addButton(0x12,"[Channel1]","encoder_1_button",KontrolX1.ExtraEncoderButton);
+    KontrolX1.addEncoder(0x11,"[Playlist]","SelectTrackKnob",KontrolX1.SelectTrackKnob);
     KontrolX1.addButton(0x13,"[Playlist]","LoadSelectedIntoFirstStopped",true);
 
     KontrolX1.addEncoder(0x1a,"[Channel1]","rate_encoder",KontrolX1.rate_encoder);
@@ -94,15 +94,15 @@ KontrolX1.registerControls = function() {
     KontrolX1.addEncoder(0x1b,"[Channel2]","rate_encoder",KontrolX1.rate_encoder);
     KontrolX1.addButton(0x19,"[Channel2]","rate_reset",true,KontrolX1.rate_reset);
 
-    KontrolX1.addEncoder(0x3c,"[Channel1]","encoder_1_shift");
-    KontrolX1.addButton(0x3e,"[Channel1]","encoder_1_button_shift");
-    KontrolX1.addEncoder(0x3d,"[Channel2]","encoder_1_shift");
-    KontrolX1.addButton(0x3f,"[Channel2]","encoder_1_button_shift");
+    KontrolX1.addEncoder(0x3c,"[Channel1]","encoder_1_shift",KontrolX1.UnmappedShiftedEncoder);
+    KontrolX1.addButton(0x3e,"[Channel1]","encoder_1_button_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addEncoder(0x3d,"[Channel2]","encoder_1_shift",KontrolX1.UnmappedShiftedEncoder);
+    KontrolX1.addButton(0x3f,"[Channel2]","encoder_1_button_shift",KontrolX1.UnmappedShiftedButton);
 
-    KontrolX1.addEncoder(0x46,"[Channel1]","encoder_2_shift");
-    KontrolX1.addButton(0x44,"[Channel1]","encoder_2_button_shift");
-    KontrolX1.addEncoder(0x47,"[Channel2]","encoder_2_shift");
-    KontrolX1.addButton(0x45,"[Channel2]","encoder_2_button_shift");
+    KontrolX1.addEncoder(0x46,"[Channel1]","encoder_2_shift",KontrolX1.UnmappedShiftedEncoder);
+    KontrolX1.addButton(0x44,"[Channel1]","encoder_2_button_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addEncoder(0x47,"[Channel2]","encoder_2_shift",KontrolX1.UnmappedShiftedEncoder);
+    KontrolX1.addButton(0x45,"[Channel2]","encoder_2_button_shift",KontrolX1.UnmappedShiftedButton);
 
     KontrolX1.addLEDButton(0x14,"[Channel1]","quantize");
     KontrolX1.addLEDButton(0x15,"[Channel2]","quantize");
@@ -141,25 +141,24 @@ KontrolX1.registerControls = function() {
     KontrolX1.addLEDButton(0x4f,"[Channel2]","loop_double",true);
 
     // TODO - unmapped buttons
-    KontrolX1.addButton(0x50,"[Channel1]","reverse_shift");
-    KontrolX1.addButton(0x51,"[Channel2]","reverse_shift");
-    KontrolX1.addButton(0x52,"[Channel1]","reloop_exit_shift");
-    KontrolX1.addButton(0x53,"[Channel2]","reloop_exit_shift");
-    KontrolX1.addButton(0x54,"[Channel1]","play_shift");
-    KontrolX1.addButton(0x55,"[Channel2]","play_shift");
-    KontrolX1.addButton(0x56,"[Channel1]","cue_shift");
-    KontrolX1.addButton(0x57,"[Channel2]","cue_shift");
+    KontrolX1.addButton(0x50,"[Channel1]","reverse_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x51,"[Channel2]","reverse_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x52,"[Channel1]","reloop_exit_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x53,"[Channel2]","reloop_exit_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x54,"[Channel1]","play_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x55,"[Channel2]","play_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x56,"[Channel1]","cue_shift",KontrolX1.UnmappedShiftedButton);
+    KontrolX1.addButton(0x57,"[Channel2]","cue_shift",KontrolX1.UnmappedShiftedButton);
 }
 
-// Define output LEDs
 KontrolX1.addLED = function(index,group,control) {
-    led_id = group+"."+control;
     var led = new Object();
-    led.id = led_id;
+    led.id = group+"."+control;
     led.group = group;
     led.control = control;
     led.index = index;
-    KontrolX1.ledmap[led_id] = led; 
+    KontrolX1.ledmap[led.id] = led;
+    // KontrolX1.debug("register LED "+led.id+" group "+led.group+" index "+led.index)
     engine.connectControl(led.group,led.control,KontrolX1.setLED);
 }
 
@@ -181,6 +180,7 @@ KontrolX1.setLED = function(value,group,key) {
         return;
     }
     value = (value==1) ? KontrolX1.ledStates.on : KontrolX1.ledStates.off;
+    // KontrolX1.debug("KontrolX1.setLED "+KontrolX1.ledOutStatus+" index "+led.index+" value "+value);
     midi.sendShortMsg(KontrolX1.ledOutStatus,led.index,value);
 }
 
@@ -212,7 +212,7 @@ KontrolX1.buttons = function(channel,control,value,status,group) {
         button.callback(channel,button.control,value,status,button.group);
         return;
     }
-    if (!button.hold && value==0) 
+    if (!button.hold && value==0)
         return;
 
     if (button.control=="play") {
@@ -253,9 +253,9 @@ KontrolX1.knobs = function(channel,control,value,status,group) {
         return;
     }
     if (knob.scaler==undefined) {
-        KontrolX1.debug("No valid scaling function registered for " + knob.id); 
+        KontrolX1.debug("No valid scaling function registered for " + knob.id);
         return;
-    }   
+    }
     if (knob.callback!=undefined) {
         knob.callback(channel,control,value,status,group);
         return;
@@ -278,7 +278,7 @@ KontrolX1.encoders = function(channel,control,value,status,group) {
     var encoder = KontrolX1.encodermap[control];
     var shift = (control>=0x2c) ? true : false;
 
-    if (encoder==undefined) { 
+    if (encoder==undefined) {
         KontrolX1.debug("ENCODER not defined in mapping: " + control);
         return;
     }
@@ -291,6 +291,13 @@ KontrolX1.encoders = function(channel,control,value,status,group) {
     engine.setValue(encoder.group,encoder.control,value);
 }
 
+// Track selector encoder callback parsed with KontrolX1.encoders to -1/1
+KontrolX1.SelectTrackKnob = function(channel,control,value,status,group) {
+    control = (value==-1) ? "SelectPrevTrack" : "SelectNextTrack";
+    // KontrolX1.debug(engine+' KontrolX1.SelectTrackKnob '+group+" "+control+" "+1);
+    engine.setValue(group,control,1);
+}
+
 // Seek button callback
 KontrolX1.seek = function(channel,control,value,status,group) {
     if (value==0) {
@@ -298,7 +305,8 @@ KontrolX1.seek = function(channel,control,value,status,group) {
         return;
     }
     value = (engine.getValue(group,"play")==true) ? 0.02 : 0.5;
-    if (control=='seek_back') value = -value;
+    if (control=='seek_back')
+        value = -value;
     engine.setValue(group,'wheel',value);
 }
 
@@ -310,11 +318,11 @@ KontrolX1.rate_reset = function(channel,control,value,status,group) {
 // Callback for rate encoders
 KontrolX1.rate_encoder = function(channel,control,value,status,group) {
     switch (value) {
-    case -1: 
+    case -1:
         control = "rate_perm_down_small"; break;
-    case 1: 
+    case 1:
         control = "rate_perm_up_small"; break;
-    default: 
+    default:
         KontrolX1.debug("Unknown value for rate_encoder: " + value);
         return;
     }
@@ -322,4 +330,13 @@ KontrolX1.rate_encoder = function(channel,control,value,status,group) {
     engine.setValue(group,control,false);
 }
 
+// Unmapped top left encoder callbacks
+KontrolX1.ExtraEncoder =  function(channel,control,value,status,group) {
+}
+KontrolX1.ExtraEncoderButton =  function(channel,control,value,status,group) {
+}
 
+// Unmapped shifted knobs, buttons and encoders
+KontrolX1.UnmappedShiftedKnob =  function(channel,control,value,status,group) {}
+KontrolX1.UnmappedShiftedButton =  function(channel,control,value,status,group) {}
+KontrolX1.UnmappedShiftedEncoder =  function(channel,control,value,status,group) {}

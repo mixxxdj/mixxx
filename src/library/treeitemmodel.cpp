@@ -58,6 +58,30 @@ QVariant TreeItemModel::data(const QModelIndex &index, int role) const {
     return item->data();
 }
 
+bool TreeItemModel::setData (const QModelIndex &a_rIndex,
+                             const QVariant &a_rValue, int a_iRole) {
+    // Get the item referred to by this index.
+    TreeItem *pItem = static_cast<TreeItem*>(a_rIndex.internalPointer());
+    if (pItem == NULL) {
+        return false;
+    }
+
+    // Set the relevant data.
+    switch (a_iRole) {
+    case Qt::DisplayRole:
+        pItem->setData(a_rValue, pItem->dataPath());
+        break;
+    case Qt::UserRole:
+        pItem->setData(pItem->data(), a_rValue);
+        break;
+    default:
+        return false;
+    }
+
+    emit(dataChanged(a_rIndex, a_rIndex));
+    return true;
+}
+
 Qt::ItemFlags TreeItemModel::flags(const QModelIndex &index) const {
     if (!index.isValid())
         return 0;

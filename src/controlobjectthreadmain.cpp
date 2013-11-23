@@ -7,13 +7,26 @@
 #include <QThread>
 
 #include "controlobjectthreadmain.h"
-#include "controlobject.h"
 #include "controlevent.h"
 
-ControlObjectThreadMain::ControlObjectThreadMain(ControlObject * pControlObject, QObject* pParent)
-        : ControlObjectThread(pControlObject, pParent) {
-    setObjectName("ControlObjectThreadMain");
-    installEventFilter(this);
+ControlObjectThreadMain::ControlObjectThreadMain(const ConfigKey& key, QObject* pParent)
+        : ControlObjectThread(key, pParent) {
+    initialize();
+}
+
+ControlObjectThreadMain::ControlObjectThreadMain(const QString& g, const QString& i, QObject* pParent)
+        : ControlObjectThread(g, i, pParent) {
+    initialize();
+}
+
+ControlObjectThreadMain::ControlObjectThreadMain(const char* g, const char* i, QObject* pParent)
+        : ControlObjectThread(g, i, pParent) {
+    initialize();
+}
+
+void ControlObjectThreadMain::initialize() {
+   setObjectName("ControlObjectThreadMain");
+   installEventFilter(this);
 }
 
 bool ControlObjectThreadMain::eventFilter(QObject* o, QEvent* e) {

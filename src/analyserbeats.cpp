@@ -34,10 +34,13 @@ AnalyserBeats::AnalyserBeats(ConfigObject<ConfigValue> *_config)
 AnalyserBeats::~AnalyserBeats(){
 }
 
+// TODO(XXX): Get rid of the horrible duplication here between initialise and
+// loadStored.
 bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSamples) {
     m_bShouldAnalyze = false;
-    if (totalSamples == 0)
+    if (totalSamples == 0) {
         return false;
+    }
 
     bool bPreferencesBeatDetectionEnabled = static_cast<bool>(
         m_pConfig->getValueString(
@@ -85,7 +88,6 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
 
     m_pluginId = pluginID;
-
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
 
@@ -96,12 +98,8 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
         QString version = pBeats->getVersion();
         QString subVersion = pBeats->getSubVersion();
 
-        QHash<QString, QString> extraVersionInfo;
-        extraVersionInfo["vamp_plugin_id"] = pluginID;
-        if (m_bPreferencesFastAnalysis) {
-            extraVersionInfo["fast_analysis"] = "1";
-        }
-
+        QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
+            m_pluginId, m_bPreferencesFastAnalysis);
         QString newVersion = BeatFactory::getPreferredVersion(
                 m_bPreferencesFixedTempo);
         QString newSubVersion = BeatFactory::getPreferredSubVersion(
@@ -149,6 +147,8 @@ bool AnalyserBeats::initialise(TrackPointer tio, int sampleRate, int totalSample
     return m_bShouldAnalyze;
 }
 
+// TODO(XXX): Get rid of the horrible duplication here between initialise and
+// loadStored.
 bool AnalyserBeats::loadStored(TrackPointer tio) const {
     int iMinBpm;
     int iMaxBpm;
@@ -188,6 +188,7 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_BEAT_PLUGIN_ID));
 
     // At first start config for QM and Vamp does not exist --> set default
+    // TODO(XXX): This is no longer present in initialise. Remove?
     if (library.isEmpty() || library.isNull())
         library = "libmixxxminimal";
     if (pluginID.isEmpty() || pluginID.isNull())
@@ -200,12 +201,8 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
         QString version = pBeats->getVersion();
         QString subVersion = pBeats->getSubVersion();
 
-        QHash<QString, QString> extraVersionInfo;
-        extraVersionInfo["vamp_plugin_id"] = pluginID;
-        if (bPreferencesFastAnalysis) {
-            extraVersionInfo["fast_analysis"] = "1";
-        }
-
+        QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
+            pluginID, bPreferencesFastAnalysis);
         QString newVersion = BeatFactory::getPreferredVersion(
             bPreferencesOffsetCorrection);
         QString newSubVersion = BeatFactory::getPreferredSubVersion(
@@ -232,11 +229,10 @@ bool AnalyserBeats::loadStored(TrackPointer tio) const {
             return true;
         }
     } else {
-        // If we got here, we think we may want to analyze this track.
+        // If we got here, we want to analyze this track.
         return false;
     }
 }
-
 
 void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
     if (!m_bShouldAnalyze || m_pVamp == NULL)
@@ -251,9 +247,6 @@ void AnalyserBeats::process(const CSAMPLE *pIn, const int iLen) {
 void AnalyserBeats::cleanup(TrackPointer tio)
 {
     Q_UNUSED(tio);
-    if (!m_bShouldAnalyze) {
-        return;
-    }
     delete m_pVamp;
     m_pVamp = NULL;
 }
@@ -277,12 +270,8 @@ void AnalyserBeats::finalise(TrackPointer tio) {
         return;
     }
 
-    QHash<QString, QString> extraVersionInfo;
-    extraVersionInfo["vamp_plugin_id"] = m_pluginId;
-    if (m_bPreferencesFastAnalysis) {
-        extraVersionInfo["fast_analysis"] = "1";
-    }
-
+    QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
+        m_pluginId, m_bPreferencesFastAnalysis);
     BeatsPointer pBeats = BeatFactory::makePreferredBeats(
         tio, beats, extraVersionInfo,
         m_bPreferencesFixedTempo, m_bPreferencesOffsetCorrection,
@@ -298,6 +287,8 @@ void AnalyserBeats::finalise(TrackPointer tio) {
         return;
     }
 
+    // If the track received the beat lock while we were analyzing it then we
+    // abort setting it.
     if (tio->hasBpmLock()) {
         qDebug() << "Track was BPM-locked as we were analysing it. Aborting analysis.";
         return;
@@ -322,4 +313,15 @@ void AnalyserBeats::finalise(TrackPointer tio) {
     if (currentFirstBeat == 0.0 && newFirstBeat > 0) {
         pCurrentBeats->translate(newFirstBeat);
     }
+}
+
+// static
+QHash<QString, QString> AnalyserBeats::getExtraVersionInfo(
+    QString pluginId, bool bPreferencesFastAnalysis) {
+    QHash<QString, QString> extraVersionInfo;
+    extraVersionInfo["vamp_plugin_id"] = pluginId;
+    if (bPreferencesFastAnalysis) {
+        extraVersionInfo["fast_analysis"] = "1";
+    }
+    return extraVersionInfo;
 }

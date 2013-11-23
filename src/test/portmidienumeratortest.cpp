@@ -1,4 +1,4 @@
-#include <gtest/gtest.h>
+        #include <gtest/gtest.h>
 #include <QtDebug>
 
 #include "controllers/midi/portmidienumerator.h"
@@ -65,6 +65,19 @@ TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
         "Vestax VCI-100 MIDI 12",
         "Vestax VCI-100 MIDI 12 123 Something Else"));
 
+    // Bug 1033375 - contain string 'to' in device name, strip
+    // ' input port ' and ' output port ' from strings
+    ASSERT_TRUE(shouldLinkInputToOutput(
+        "Traktor Kontrol X1 - 1 MIDI input port 0",
+        "Traktor Kontrol X1 - 1 MIDI output port 0"));
+
+    // Bug 1033375 - contain string 'to' in device name, strip
+    // ' input port ' and ' output port ' from strings not done
+    // because of invalid strings
+    ASSERT_FALSE(shouldLinkInputToOutput(
+        "Traktor Kontrol X1 - 1 MIDI input 0",
+        "Traktor Kontrol X1 - 1 MIDI output 0"));
+
     // Dangling numerals after the device name but before MIDI are fine.
     ASSERT_TRUE(shouldLinkInputToOutput(
         "Vestax VCI-100 2 MIDI 12",
@@ -92,4 +105,6 @@ TEST_F(PortMidiEnumeratorTest, InputOutputPortsLinked) {
     ASSERT_FALSE(shouldLinkInputToOutput(
         "nanoKONTROL 2 1 CTRL",
         "nanoKONTROL 2 3 SLIDER/KNOB"));
+
 }
+

@@ -9,7 +9,7 @@
 #include "library/ipod/ipodfeature.h"
 #include "library/ipod/gpoditdb.h"
 
-#include "library/itunes/itunestrackmodel.h"
+//#include "library/itunes/itunestrackmodel.h"
 #include "library/ipod/ipodplaylistmodel.h"
 #include "library/dao/settingsdao.h"
 

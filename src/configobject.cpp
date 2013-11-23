@@ -34,14 +34,17 @@
 
 #include "mixxx.h"
 
-ConfigKey::ConfigKey()
-{
+ConfigKey::ConfigKey() {
 }
 
-ConfigKey::ConfigKey(QString g, QString i)
-{
-    group = g;
-    item = i;
+ConfigKey::ConfigKey(const QString& g, const QString& i)
+    : group(g),
+      item(i) {
+}
+
+ConfigKey::ConfigKey(const char* g, const char* i)
+    : group(g),
+      item(i) {
 }
 
 // static

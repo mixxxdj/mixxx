@@ -21,7 +21,7 @@ http://mixxxblog.blogspot.com
 * UPGRADING ************************************************
 
 We recommend deleting your old skins directory before
-installing a new version of Mixxx. SCONS may not properly
+installing a new version of Mixxx. SCons may not properly
 overwrite your skins directory when you do a "scons install",
 and it might cause Mixxx to crash on launch.
 You can delete it by running:
@@ -41,7 +41,7 @@ Mixxx has the following dependencies:
 - libflac
 - libshout
 - libhss1394
-- taglib (New in 1.9!)
+- taglib
 - PortAudio-v19
 - portmidi
 - QT 4.6+
@@ -51,17 +51,17 @@ Mixxx has the following dependencies:
 - libmp4v2 (optional, m4a support)
 - libfaad (optional, m4a support)
 - vamp-plugin-sdk (optional, internal version included)
+- libchromaprint
 
 NOTE: If you want JACK support in Mixxx, make sure you
 compile PortAudio-v19 with JACK support first.
 
-Mixxx's build system is now SCONS as of Mixxx 1.6.0.
-To compile Mixxx using SCONS, go into the "mixxx"
-directory and run:
+Mixxx's build system is now SCons as of Mixxx 1.6.0.
+To compile Mixxx using SCons, run:
 
    $ scons
 
-SCONS does both dependency checking and building, so it will
+SCons does both dependency checking and building, so it will
 tell you if you're missing any of the dependencies listed above.
 It's also possible to specify a prefix path and additional
 build flags, for example:

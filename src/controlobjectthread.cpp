@@ -19,24 +19,28 @@
 #include <QtDebug>
 
 #include "controlobjectthread.h"
-#include "controlobject.h"
 #include "control/control.h"
 
-ControlObjectThread::ControlObjectThread(ControlObject* pControlObject, QObject* pParent)
+ControlObjectThread::ControlObjectThread(const QString& g, const QString& i, QObject* pParent)
         : QObject(pParent) {
-    initialize(pControlObject ? pControlObject->getKey() : ConfigKey());
+    initialize(ConfigKey(g, i));
 }
 
-ControlObjectThread::ControlObjectThread(ConfigKey key, QObject* pParent)
+ControlObjectThread::ControlObjectThread(const char* g, const char* i, QObject* pParent)
+        : QObject(pParent) {
+    initialize(ConfigKey(g, i));
+}
+
+ControlObjectThread::ControlObjectThread(const ConfigKey& key, QObject* pParent)
         : QObject(pParent) {
     initialize(key);
 }
 
-void ControlObjectThread::initialize(ConfigKey key) {
+void ControlObjectThread::initialize(const ConfigKey& key) {
     m_key = key;
-    m_pControl = ControlDoublePrivate::getControl(m_key, false);
+    m_pControl = ControlDoublePrivate::getControl(key);
     if (m_pControl) {
-        connect(m_pControl, SIGNAL(valueChanged(double, QObject*)),
+        connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                 this, SLOT(slotValueChanged(double, QObject*)),
                 Qt::DirectConnection);
     }
@@ -45,9 +49,16 @@ void ControlObjectThread::initialize(ConfigKey key) {
 ControlObjectThread::~ControlObjectThread() {
 }
 
-bool ControlObjectThread::valid() const {
-    return m_pControl != NULL;
+bool ControlObjectThread::connectValueChanged(const QObject* receiver,
+        const char* method, Qt::ConnectionType type) {
+    return connect((QObject*)this, SIGNAL(valueChanged(double)), receiver, method, type);
 }
+
+bool ControlObjectThread::connectValueChanged(
+        const char* method, Qt::ConnectionType type) {
+    return connect((QObject*)this, SIGNAL(valueChanged(double)), parent(), method, type);
+}
+
 
 double ControlObjectThread::get() {
     return m_pControl ? m_pControl->get() : 0.0;
@@ -70,7 +81,7 @@ void ControlObjectThread::reset() {
         // general valueChanged() signal even though the change originated from
         // us. For this reason, we provide NULL here so that the change is
         // broadcast as valueChanged() and not valueChangedByThis().
-        m_pControl->reset(NULL);
+        m_pControl->reset();
     }
 }
 

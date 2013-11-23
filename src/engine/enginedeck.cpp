@@ -22,6 +22,7 @@
 #include "engineclipping.h"
 #include "enginepregain.h"
 #include "engineflanger.h"
+#include "enginefiltereffect.h"
 #include "enginefilterblock.h"
 #include "enginevumeter.h"
 #include "enginefilteriir.h"
@@ -33,13 +34,13 @@ EngineDeck::EngineDeck(const char* group,
                              EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
-          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough_enabled"))),
+          m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
 
     // Set up passthrough utilities and fields
-    m_pPassing->setButtonMode(ControlPushButton::TOGGLE);
+    m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
     m_pConversionBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_bPassthroughIsActive = false;
     m_bPassthroughWasActive = false;
@@ -53,6 +54,7 @@ EngineDeck::EngineDeck(const char* group,
     m_pPregain = new EnginePregain(group);
     m_pFilter = new EngineFilterBlock(group);
     m_pFlanger = new EngineFlanger(group);
+    m_pFilterEffect = new EngineFilterEffect(group);
     m_pClipping = new EngineClipping(group);
     m_pBuffer = new EngineBuffer(group, pConfig);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
@@ -67,6 +69,7 @@ EngineDeck::~EngineDeck() {
     delete m_pClipping;
     delete m_pFilter;
     delete m_pFlanger;
+    delete m_pFilterEffect;
     delete m_pPregain;
     delete m_pVinylSoundEmu;
     delete m_pVUMeter;
@@ -108,6 +111,7 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
     m_pFilter->process(pOut, pOut, iBufferSize);
     // TODO(XXX) LADSPA
     m_pFlanger->process(pOut, pOut, iBufferSize);
+    m_pFilterEffect->process(pOut, pOut, iBufferSize);
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);
     // Update VU meter
@@ -140,7 +144,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
 
     const unsigned int iChannels = AudioInput::channelsNeededForType(input.getType());
 
-    // Check that the number of mono samples doesn't exceed MAX_BUFFER_LEN/2
+    // Check that the number of mono frames doesn't exceed MAX_BUFFER_LEN/2
     // because thats our conversion buffer size.
     if (nFrames > MAX_BUFFER_LEN / iChannels) {
         qWarning() << "WARNING: Dropping passthrough samples because the input buffer is too large.";
@@ -161,7 +165,7 @@ void EngineDeck::receiveBuffer(AudioInput input, const short* pBuffer, unsigned 
         qWarning() << "EnginePassthrough got greater than stereo input. Not currently handled.";
     }
 
-    const int samplesToWrite = nFrames * iChannels;
+    const unsigned int samplesToWrite = nFrames * iChannels;
 
     // TODO(rryan) do we need to verify the input is the one we asked for? Oh well.
     unsigned int samplesWritten = m_sampleBuffer.write(m_pConversionBuffer, samplesToWrite);

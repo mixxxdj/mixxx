@@ -45,7 +45,7 @@ class EngineChannel : public EngineObject {
     EngineChannel(const char *pGroup, ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineChannel();
 
-    virtual ChannelOrientation getOrientation();
+    virtual ChannelOrientation getOrientation() const;
     virtual const QString& getGroup() const;
 
     virtual bool isActive() = 0;

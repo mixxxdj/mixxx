@@ -31,12 +31,13 @@
 
 class ControlObject;
 
-class MixxxKeyboard : public QObject
-{
+class MixxxKeyboard : public QObject {
     Q_OBJECT
-public:
-    MixxxKeyboard(ConfigObject<ConfigValueKbd> *pKbdConfigObject, QObject *parent=0, const char *name=0);
-    ~MixxxKeyboard();
+  public:
+    MixxxKeyboard(ConfigObject<ConfigValueKbd> *pKbdConfigObject,
+                  QObject *parent=NULL, const char* name=NULL);
+    virtual ~MixxxKeyboard();
+
     /** Event filter */
     bool eventFilter(QObject *obj, QEvent *e);
 
@@ -45,11 +46,22 @@ public:
     void setKeyboardConfig(ConfigObject<ConfigValueKbd> *pKbdConfigObject);
     ConfigObject<ConfigValueKbd>* getKeyboardConfig();
 
-private:
+  private:
+    struct KeyDownInformation {
+        KeyDownInformation(int keyId, int modifiers, ConfigKey* pConfigKey)
+                : keyId(keyId),
+                  modifiers(modifiers),
+                  pConfigKey(pConfigKey) {
+        }
+
+        int keyId;
+        int modifiers;
+        ConfigKey* pConfigKey;
+    };
     /** Returns a valid QString with modifier keys from a QKeyEvent */
     QKeySequence getKeySeq(QKeyEvent *e);
     /** List containing keys which is currently pressed */
-    QList<QPair<int, ConfigKey*> > m_qActiveKeyList;
+    QList<KeyDownInformation> m_qActiveKeyList;
     /** Pointer to keyboard config object */
     ConfigObject<ConfigValueKbd> *m_pKbdConfigObject;
 };

@@ -14,7 +14,7 @@ SettingsDAO::~SettingsDAO() {
 void SettingsDAO::initialize() {
 }
 
-QString SettingsDAO::getValue(QString name, QString defaultValue) {
+QString SettingsDAO::getValue(const QString& name, QString defaultValue) {
     QSqlQuery query(m_db);
 
     query.prepare("SELECT value FROM settings WHERE name = :name");
@@ -27,7 +27,7 @@ QString SettingsDAO::getValue(QString name, QString defaultValue) {
     return value;
 }
 
-bool SettingsDAO::setValue(QString name, QVariant value) {
+bool SettingsDAO::setValue(const QString& name, const QVariant& value) {
     if (!qVariantCanConvert<QString>(value)) {
         return false;
     }
