@@ -81,7 +81,7 @@ class PlaylistDAO : public QObject, public virtual DAO {
     // Inserts a list of tracks into playlist
     int insertTracksIntoPlaylist(const QList<int>& trackIds, const int playlistId, int position);
     // Add a playlist to the Auto-DJ Queue
-    void addToAutoDJQueue(const int playlistId, const bool bTop);
+    void addPlaylistToAutoDJQueue(const int playlistId, const bool bTop);
     // Get the preceding playlist of currentPlaylistId with the HiddenType
     // hidden. Returns -1 if no such playlist exists.
     int getPreviousPlaylist(const int currentPlaylistId, HiddenType hidden) const;

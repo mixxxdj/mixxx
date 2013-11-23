@@ -512,7 +512,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds, const int 
     return tracksAdded;
 }
 
-void PlaylistDAO::addToAutoDJQueue(const int playlistId, const bool bTop) {
+void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, const bool bTop) {
     //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
 
     // Query the PlaylistTracks database to locate tracks in the selected
