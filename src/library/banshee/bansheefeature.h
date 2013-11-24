@@ -35,9 +35,6 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     virtual void activateChild(const QModelIndex& index);
 
   private:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
-    static QString getiTunesMusicPath();
-    // returns the invisible rootItem for the sidebar model
     virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
@@ -64,4 +61,4 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     static const QString BANSHEE_MOUNT_KEY;
 };
 
-#endif /* BANSHEEFEATURE_H */
+#endif // BANSHEEFEATURE_H

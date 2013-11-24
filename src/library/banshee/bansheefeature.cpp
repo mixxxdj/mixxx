@@ -41,17 +41,6 @@ BansheeFeature::~BansheeFeature() {
     delete m_pBansheePlaylistModel;
 }
 
-BaseSqlTableModel* BansheeFeature::getPlaylistModelForPlaylist(QString playlist) {
-    BaseExternalPlaylistModel* pModel = new BaseExternalPlaylistModel(
-        this, m_pTrackCollection,
-        "mixxx.db.model.itunes_playlist",
-        "itunes_playlists",
-        "itunes_playlist_tracks",
-        "itunes");
-    pModel->setPlaylist(playlist);
-    return pModel;
-}
-
 // static
 bool BansheeFeature::isSupported() {
     return !m_databaseFile.isEmpty();

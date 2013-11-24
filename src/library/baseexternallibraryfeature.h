@@ -20,7 +20,12 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     virtual void onRightClickChild(const QPoint& globalPos, QModelIndex index);
 
   protected:
-    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) = 0;
+    // Must be implemented by external Libraries copied to Mixxx DB
+    virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) {
+        Q_UNUSED(playlist);
+        return NULL;
+    }
+    // Must be implemented by external Libraries not copied to Mixxx DB
     virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
 
     QModelIndex m_lastRightClickedIndex;
@@ -39,4 +44,4 @@ class BaseExternalLibraryFeature : public LibraryFeature {
     QAction* m_pImportAsMixxxPlaylistAction;
 };
 
-#endif /* BASEEXTERNALLIBRARYFEATURE_H */
+#endif // BASEEXTERNALLIBRARYFEATURE_H
