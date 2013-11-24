@@ -301,8 +301,8 @@ void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
     if (new_bpm != 0) {
         qDebug() << "master bpm -> master slider";
-        m_pSyncRateSlider->set(new_bpm);
-        slotSyncRateSliderChanged(new_bpm);
+        //m_pSyncRateSlider->set(new_bpm);
+        //slotSyncRateSliderChanged(new_bpm);
         m_dMasterBpm = new_bpm;
     } else {
         return;
@@ -327,8 +327,8 @@ void EngineSync::slotMasterBpmChanged(double new_bpm) {
 //            m_pMasterBpm->set(m_dMasterBpm);
 //            return;
 //        }
-        m_pSyncRateSlider->set(new_bpm);
-        slotSyncRateSliderChanged(new_bpm);
+        //m_pSyncRateSlider->set(new_bpm);
+        //slotSyncRateSliderChanged(new_bpm);
         updateSamplesPerBeat();
 
         // This change could hypothetically push us over distance 1.0, so check
