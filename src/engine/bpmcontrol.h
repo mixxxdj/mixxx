@@ -52,6 +52,7 @@ class BpmControl : public EngineControl {
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
     void slotMasterBpmChanged(double);
+    void slotMasterSyncSliderChanged(double);
     void slotSyncMasterChanged(double);
     void slotSyncSlaveChanged(double);
     void slotSyncInternalChanged(double);
@@ -106,7 +107,7 @@ class BpmControl : public EngineControl {
     double m_dPreviousSample;
 
     // Master Sync objects and values.
-    ControlObject *m_pMasterBpm;
+    ControlObject *m_pMasterBpm, *m_pMasterSyncSlider;
     ControlObject *m_pSyncInternalEnabled;
     ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
     ControlObject *m_pSyncState;

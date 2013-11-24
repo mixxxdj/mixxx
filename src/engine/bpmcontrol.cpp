@@ -112,6 +112,14 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotMasterBpmChanged(double)),
             Qt::DirectConnection);
 
+    m_pMasterSyncSlider = ControlObject::getControl(ConfigKey("[Master]","sync_slider"));
+    connect(m_pMasterSyncSlider, SIGNAL(valueChanged(double)),
+            this, SLOT(slotMasterSyncSliderChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pMasterSyncSlider, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotMasterSyncSliderChanged(double)),
+            Qt::DirectConnection);
+
     m_pSyncMasterEnabled = new ControlPushButton(ConfigKey(_group, "sync_master"));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
@@ -166,7 +174,12 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(bpm * dRate);
     m_dFileBpm = bpm;
-    slotMasterBpmChanged(m_pMasterBpm->get());
+    if (m_iSyncState == SYNC_MASTER) {
+        m_pMasterBpm->set(bpm * dRate);
+    } else if (m_iSyncState == SYNC_SLAVE) {
+        slotMasterBpmChanged(m_pMasterBpm->get());
+        slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
+    }
 }
 
 void BpmControl::slotSetEngineBpm(double bpm) {
@@ -341,11 +354,17 @@ void BpmControl::slotMasterBpmChanged(double syncbpm) {
         }
         qDebug() << "new sync rate " << dDesiredRate;
         m_dSyncedRate = dDesiredRate;
-        if (m_dSyncedRate != 0) {
-            m_pRateSlider->set(((m_dSyncedRate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
-        } else {
-            m_pRateSlider->set(0);
-        }
+    }
+}
+
+void BpmControl::slotMasterSyncSliderChanged(double bpm) {
+    // Vinyl overrides
+    if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
+        return;
+    }
+    if (m_iSyncState == SYNC_SLAVE) {
+        double newRate = bpm / m_pFileBpm->get();
+        m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
     }
 }
 
@@ -695,25 +714,9 @@ void BpmControl::onEngineRateChange(double rate) {
 }
 
 void BpmControl::slotAdjustBpm() {
-//    qDebug() << "ADJUST BPM";
-//    double dFileBpm = m_pFileBpm->get();
-//    qDebug() << "FILE BPM " << dFileBpm;
-//    if (dFileBpm != m_dFileBpm) {
-//        m_dFileBpm = dFileBpm;
-//        if (m_iSyncState == SYNC_SLAVE) {
-//            slotMasterBpmChanged(m_pMasterBpm->get());
-//            return;
-//        }
-//    }
-//    
-//    slotFileBpmChanged(dFileBpm);
-    // Adjust the file-bpm with the current setting of the rate to get the
-    // engine BPM.
-    
     if (m_iSyncState == SYNC_SLAVE) {
         return;
     }
-    
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(m_pFileBpm->get() * dRate);
 }

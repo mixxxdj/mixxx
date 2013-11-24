@@ -45,10 +45,17 @@ RateControl::RateControl(const char* _group,
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
+    // For testing, make sure there is a sane, non-zero default direction.
+    m_pRateDir->set(1.0);
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
+    // For testing, make sure there is a sane, non-zero default range.
+    m_pRateRange->set(1.0);
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
     if (m_pRateSlider) {
         connect(m_pRateSlider, SIGNAL(valueChanged(double)),
+                this, SLOT(slotChannelRateSliderChanged(double)),
+                Qt::DirectConnection);
+        connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotChannelRateSliderChanged(double)),
                 Qt::DirectConnection);
     }
@@ -206,10 +213,13 @@ void RateControl::setBpmControl(BpmControl* bpmcontrol) {
 
 void RateControl::setEngineChannel(EngineChannel* pChannel) {
     m_pChannel = pChannel;
-    ControlObject* file_bpm = 
+    ControlObject* file_bpm =
             ControlObject::getControl(ConfigKey(pChannel->getGroup(), "file_bpm"));
     Q_ASSERT(file_bpm);
     connect(file_bpm, SIGNAL(valueChanged(double)),
+            this, SLOT(slotFileBpmChanged(double)),
+            Qt::DirectConnection);
+    connect(file_bpm, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
 }
@@ -483,7 +493,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             }
             rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
 
-            m_pRateSlider->set(((rate - 1.0f) / m_pRateRange->get()) * m_pRateDir->get());
             return rate;
         }
 

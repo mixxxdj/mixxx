@@ -48,13 +48,13 @@ class EngineSync : public EngineControl {
 
   private slots:
     void slotMasterBpmChanged(double);
-    void slotSourceRateChanged(double);
     void slotSyncRateSliderChanged(double);
+    void slotSourceRateChanged(double);
+    void slotChannelRateSliderChanged(RateControl*, double);
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
     void slotInternalMasterChanged(double);
     void slotChannelSyncStateChanged(RateControl*, double);
-    void slotChannelRateSliderChanged(RateControl*, double);
 
   private:
     void setMaster(const QString& group);

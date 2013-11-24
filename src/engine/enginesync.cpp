@@ -72,7 +72,6 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
 
-    m_pMasterBpm->set(m_dMasterBpm);  // This will initialize all our values
     updateSamplesPerBeat();
 }
 
@@ -193,7 +192,6 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     m_pChannelMaster = pRateControl;
     m_sSyncSource = group;
 
-
     ControlObject* pSourceRate = pRateControl->getRateEngineControl();
     if (!pSourceRate) {
         return false;
@@ -260,9 +258,7 @@ void EngineSync::slotSourceRateChanged(double rate_engine) {
         double filebpm = m_pChannelMaster->getFileBpm();
         m_dMasterBpm = rate_engine * filebpm;
 
-        if (m_dMasterBpm != 0) {
-            m_pSyncRateSlider->set(m_dMasterBpm);
-        }
+
         // This will trigger all of the slaves to change rate.
         m_pMasterBpm->set(m_dMasterBpm);
     }
@@ -274,6 +270,12 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
     setPseudoPosition(beat_dist);
 }
 
+void EngineSync::slotChannelRateSliderChanged(RateControl* pRateControl, double new_bpm) {
+    if (pRateControl->getState() == SYNC_MASTER) {
+        m_pSyncRateSlider->set(new_bpm);
+    }
+}
+
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
     m_pMasterBpm->set(new_bpm);
 }
@@ -281,27 +283,33 @@ void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
     if (new_bpm != 0) {
         m_pSyncRateSlider->set(new_bpm);
+        slotSyncRateSliderChanged(new_bpm);
+        m_dMasterBpm = new_bpm;
+    } else {
+        return;
     }
 
     if (new_bpm != m_dMasterBpm) {
-        if (m_sSyncSource != kMasterSyncGroup) {
-            // XXX(Owen):
-            // it looks like this is Good Enough for preventing accidental
-            // tweaking of rate.  But maybe it should set master to internal?
+//        if (m_sSyncSource != kMasterSyncGroup) {
+//            // XXX(Owen):
+//            // it looks like this is Good Enough for preventing accidental
+//            // tweaking of rate.  But maybe it should set master to internal?
 
-            // Changing to internal is weird, feels like a bug having master
-            // designation turn off
-            // setInternalMaster();
+//            // Changing to internal is weird, feels like a bug having master
+//            // designation turn off
+//            // setInternalMaster();
 
-            // how about just setting the bpm value for the deck master?
-            // problem with that is here we have bpm, but deck expects
-            // a percentage.  Let's keep this to "no you can't do that" for now
+//            // how about just setting the bpm value for the deck master?
+//            // problem with that is here we have bpm, but deck expects
+//            // a percentage.  Let's keep this to "no you can't do that" for now
 
-            // TODO: Use CO validation instead of this pattern.
-            m_pMasterBpm->set(m_dMasterBpm);
-            return;
-        }
-        m_dMasterBpm = new_bpm;
+//            // TODO: Use CO validation instead of this pattern.
+//            qDebug() << "not master, reset " <<m_sSyncSource << " " << kMasterSyncGroup;
+//            m_pMasterBpm->set(m_dMasterBpm);
+//            return;
+//        }
+        m_pSyncRateSlider->set(new_bpm);
+        slotSyncRateSliderChanged(new_bpm);
         updateSamplesPerBeat();
 
         // This change could hypothetically push us over distance 1.0, so check
@@ -370,17 +378,6 @@ void EngineSync::slotChannelSyncStateChanged(RateControl* pRateControl, double s
             setMaster(chooseNewMaster(""));
         }
     }
-}
-
-void EngineSync::slotChannelRateSliderChanged(RateControl* pRateControl, double new_bpm) {
-    // A deck's rate slider was twiddled -- if it's a slave, we should affect
-    // master bpm anyway.
-
-    // DISABLED: this causes circular problems when the user uses position scratch on the master.
-    // The slave rate changes get returned back to the master and the waveform gets stuch in FF.
-    //if (pRateControl->getState() == SYNC_SLAVE and new_bpm != 0) {
-    //    m_pChannelMaster->setBpm(new_bpm);
-    //}
 }
 
 double EngineSync::getInternalBeatDistance() const {

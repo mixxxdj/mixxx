@@ -71,7 +71,7 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     double default_bpm = _config->getValueString(ConfigKey("[Master]", "sync_bpm"),
                                                  "124.0").toDouble();
     ControlObject::getControl(ConfigKey("[Master]","sync_bpm"))->set(default_bpm);
-    ControlObject::getControl(ConfigKey("[Master]","rate"))->set(default_bpm);
+    ControlObject::getControl(ConfigKey("[Master]","sync_slider"))->set(default_bpm);
 
 #ifdef __LADSPA__
     // LADSPA

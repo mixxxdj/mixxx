@@ -72,7 +72,7 @@ public:
     /** Set Rate Ramp Sensitivity */
     static void setRateRampSensitivity(int);
     virtual void notifySeek(double dNewPlaypos);
-    
+
   signals:
     void channelSyncStateChanged(RateControl*, double);
     void channelRateSliderChanged(RateControl*, double);
