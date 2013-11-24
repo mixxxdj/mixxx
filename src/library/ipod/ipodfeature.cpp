@@ -19,9 +19,8 @@ extern "C" {
 
 const QString IPodFeature::IPOD_MOUNT_KEY = "mixxx.IPodFeature.mount";
 
-
 IPodFeature::IPodFeature(QObject* parent, TrackCollection* pTrackCollection)
-        : LibraryFeature(parent),
+        : BaseExternalLibraryFeature(parent, pTrackCollection),
           m_pTrackCollection(pTrackCollection),
           m_isActivated(false),
           m_cancelImport(false),
@@ -33,18 +32,6 @@ IPodFeature::IPodFeature(QObject* parent, TrackCollection* pTrackCollection)
     m_gPodItdb = new GPodItdb();
 
     connect(&m_future_watcher, SIGNAL(finished()), this, SLOT(onTrackCollectionLoaded()));
-
-    m_pAddToAutoDJAction = new QAction(tr("Add to Auto DJ bottom"),this);
-    connect(m_pAddToAutoDJAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJ()));
-
-    m_pAddToAutoDJTopAction = new QAction(tr("Add to Auto DJ top 2"),this);
-    connect(m_pAddToAutoDJTopAction, SIGNAL(triggered()),
-            this, SLOT(slotAddToAutoDJTop()));
-
-    m_pImportAsMixxxPlaylistAction = new QAction(tr("Import as Mixxx Playlist"), this);
-    connect(m_pImportAsMixxxPlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotImportAsMixxxPlaylist()));
 }
 
 IPodFeature::~IPodFeature() {
@@ -60,9 +47,6 @@ IPodFeature::~IPodFeature() {
         itdb_free(m_itdb);
     }
     delete m_pIPodPlaylistModel;
-    delete m_pAddToAutoDJAction;
-    delete m_pAddToAutoDJTopAction;
-    delete m_pImportAsMixxxPlaylistAction;
     delete m_gPodItdb;
 }
 
@@ -105,8 +89,8 @@ void IPodFeature::activate(bool forceReload) {
 
         if (!QFile::exists(m_dbfile)) {
             m_dbfile = QFileDialog::getExistingDirectory(
-                NULL,
-                tr("Select your iPod mount"));
+                    NULL,
+                    tr("Select your iPod mount"));
             if (m_dbfile.isEmpty()) {
                 emit(showTrackModel(m_pIPodPlaylistModel));
                 return;
@@ -115,15 +99,14 @@ void IPodFeature::activate(bool forceReload) {
 
         m_isActivated =  true;
 
-        QThreadPool::globalInstance()->setMaxThreadCount(4); //Tobias decided to use 4
+        QThreadPool::globalInstance()->setMaxThreadCount(4); // Tobias decided to use 4
         // Let a worker thread do the iPod parsing
         m_future = QtConcurrent::run(this, &IPodFeature::importLibrary);
         m_future_watcher.setFuture(m_future);
         m_title = tr("(loading) iPod"); // (loading) at start in respect to small displays
         //calls a slot in the sidebar model such that '(loading)iPod' is displayed.
         emit (featureIsLoading(this));
-    }
-    else{
+    } else {
         m_pIPodPlaylistModel->setPlaylist(itdb_playlist_mpl(m_itdb)); // Gets the master playlist
     }
     emit(showTrackModel(m_pIPodPlaylistModel));
@@ -189,49 +172,8 @@ TreeItemModel* IPodFeature::getChildModel() {
     return &m_childModel;
 }
 
-void IPodFeature::onRightClick(const QPoint& globalPos) {
-    Q_UNUSED(globalPos);
-}
 
-void IPodFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index) {
-    //Save the model index so we can get it in the action slots...
-    m_lastRightClickedIndex = index;
-
-    //Create the right-click menu
-    QMenu menu(NULL);
-    menu.addAction(m_pAddToAutoDJAction);
-    menu.addAction(m_pAddToAutoDJTopAction);
-    menu.addSeparator();
-    menu.addAction(m_pImportAsMixxxPlaylistAction);
-    menu.exec(globalPos);
-}
-
-bool IPodFeature::dropAccept(QList<QUrl> urls) {
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool IPodFeature::dropAcceptChild(const QModelIndex& index, QList<QUrl> urls) {
-    Q_UNUSED(index);
-    Q_UNUSED(urls);
-    return false;
-}
-
-bool IPodFeature::dragMoveAccept(QUrl url) {
-    Q_UNUSED(url);
-    return false;
-}
-
-bool IPodFeature::dragMoveAcceptChild(const QModelIndex& index, QUrl url) {
-    Q_UNUSED(index);
-    Q_UNUSED(url);
-    return false;
-}
-
-/*
- * This method is executed in a separate thread
- * via QtConcurrent::run
- */
+// This method is executed in a separate thread via QtConcurrent::run
 TreeItem* IPodFeature::importLibrary() {
     // Give thread a low priority
     QThread* thisThread = QThread::currentThread();
@@ -304,102 +246,35 @@ void IPodFeature::onTrackCollectionLoaded(){
     activate();
 }
 
-void IPodFeature::onLazyChildExpandation(const QModelIndex &index){
-    Q_UNUSED(index);
-    //Nothing to do because the childmodel is not of lazy nature.
-}
-
-void IPodFeature::slotAddToAutoDJ() {
-    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(false); // Top = True
-}
 
 
-void IPodFeature::slotAddToAutoDJTop() {
-    //qDebug() << "slotAddToAutoDJTop() row:" << m_lastRightClickedIndex.data();
-    addToAutoDJ(true); // bTop = True
-}
 
-void IPodFeature::addToAutoDJ(bool bTop) {
-    // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-
-    if (m_lastRightClickedIndex.isValid()) {
-        TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
-        qDebug() << "IPodFeature::addToAutoDJ " << item->data() << " " << item->dataPath();
-        QString playlist = item->dataPath().toString();
-        Itdb_Playlist* pPlaylist = (Itdb_Playlist*)playlist.toUInt();
-        if (pPlaylist) {
-            IPodPlaylistModel* pPlaylistModelToAdd = new IPodPlaylistModel(this, m_pTrackCollection);
-            pPlaylistModelToAdd->setPlaylist(pPlaylist);
-            PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
-            int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-
-            int rows = pPlaylistModelToAdd->rowCount();
-            for(int i = 0; i < rows; ++i){
-                QModelIndex index = pPlaylistModelToAdd->index(i,0);
-                if (index.isValid()) {
-                    TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-                    if (bTop) {
-                        // Start at position 2 because position 1 was already loaded to the deck
-                        playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i+2);
-                    } else {
-                        playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
-                    }
-                }
-            }
-            delete pPlaylistModelToAdd;
-        }
-    }
-}
-
-void IPodFeature::slotImportAsMixxxPlaylist() {
+void IPodFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylistName) {
     // qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
 
     if (m_lastRightClickedIndex.isValid()) {
         TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
         qDebug() << "IPodFeature::slotImportAsMixxxPlaylist " << item->data() << " " << item->dataPath();
-        QString playlist = item->dataPath().toString();
-        Itdb_Playlist* pPlaylist = (Itdb_Playlist*)playlist.toUInt();
-        playlist = QString::fromUtf8(pPlaylist->name);
+        QString pPlaylistAsSting = item->dataPath().toString();
+        Itdb_Playlist* pPlaylist = (Itdb_Playlist*)pPlaylistAsSting.toUInt();
         if (pPlaylist) {
+            *pPlaylistName = QString::fromUtf8(pPlaylist->name);
             IPodPlaylistModel* pPlaylistModelToAdd = new IPodPlaylistModel(this, m_pTrackCollection);
             pPlaylistModelToAdd->setPlaylist(pPlaylist);
-            PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
 
-            int playlistId = playlistDao.getPlaylistIdFromName(playlist);
-            int i = 1;
-
-            if (playlistId != -1) {
-                // Calculate a unique name
-                playlist += "(%1)";
-                while (playlistId != -1) {
-                    i++;
-                    playlistId = playlistDao.getPlaylistIdFromName(playlist.arg(i));
-                }
-                playlist = playlist.arg(i);
-            }
-            playlistId = playlistDao.createPlaylist(playlist);
-
-            if (playlistId != -1) {
-                // Copy Tracks
-                int rows = pPlaylistModelToAdd->rowCount();
-                for (int i = 0; i < rows; ++i) {
-                    QModelIndex index = pPlaylistModelToAdd->index(i,0);
-                    if (index.isValid()) {
-                        //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
-                        TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-                        playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
-                    }
+            // Copy Tracks
+            int rows = pPlaylistModelToAdd->rowCount();
+            for (int i = 0; i < rows; ++i) {
+                QModelIndex index = pPlaylistModelToAdd->index(i,0);
+                if (index.isValid()) {
+                    //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
+                    TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+                    trackIds->append(track->getId());
                 }
             }
-            else {
-                QMessageBox::warning(NULL,
-                                     tr("Playlist Creation Failed"),
-                                     tr("An unknown error occurred while creating playlist: ")
-                                      + playlist);
-            }
-
             delete pPlaylistModelToAdd;
         }
     }
 }
+
+
