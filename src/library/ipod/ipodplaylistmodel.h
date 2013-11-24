@@ -41,10 +41,6 @@ class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
-    virtual void removeTrack(const QModelIndex& index);
-    virtual void removeTracks(const QModelIndexList& indices);
-    virtual bool addTrack(const QModelIndex& index, QString location);
-    virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     QMimeData* mimeData(const QModelIndexList &indexes) const;
@@ -67,7 +63,6 @@ class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
     ////////////////////////////////////////////////////////////////////////////
 
     virtual const QString currentSearch() const;
-    virtual void setSort(int column, Qt::SortOrder order);
     virtual int fieldIndex(const QString& fieldName) const;
 
   protected:
@@ -89,18 +84,9 @@ class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
 
   private:
     inline TrackPointer lookupCachedTrack(int trackId) const;
-    inline QVariant getTrackValueForColumn(TrackPointer pTrack, int column) const;
-    inline QVariant getTrackValueForColumn(int trackId, int column,
-                                           TrackPointer pTrack=TrackPointer()) const;
     inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
-    QVariant getBaseValue(const QModelIndex& index, int role = Qt::DisplayRole) const;
 
     static bool columnLessThan(const playlist_member &s1, const playlist_member &s2);
-
-
-    virtual int compareColumnValues(int iColumnNumber, Qt::SortOrder eSortOrder, QVariant val1, QVariant val2);
-    virtual int findSortInsertionPoint(int trackId, TrackPointer pTrack,
-                                       const QVector<QPair<int, QHash<int, QVariant> > >& rowInfo);
 
     Itdb_Track* getPTrackFromModelIndex(const QModelIndex& index) const;
 

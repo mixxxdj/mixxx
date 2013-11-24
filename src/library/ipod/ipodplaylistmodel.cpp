@@ -89,65 +89,8 @@ QVariant IPodPlaylistModel::headerData(int section, Qt::Orientation orientation,
     return QAbstractTableModel::headerData(section, orientation, role);
 }
 
-
-int IPodPlaylistModel::findSortInsertionPoint(int trackId, TrackPointer pTrack,
-                                              const QVector<QPair<int, QHash<int, QVariant> > >& rowInfo) {
-    QVariant trackValue = getTrackValueForColumn(trackId, m_iSortColumn, pTrack);
-
-    int min = 0;
-    int max = rowInfo.size()-1;
-
-    if (sDebug) {
-        qDebug() << this << "Trying to insertion sort:"
-                 << trackValue << "min" << min << "max" << max;
-    }
-
-    while (min <= max) {
-        int mid = min + (max - min) / 2;
-        const QPair<int, QHash<int, QVariant> >& otherRowInfo = rowInfo[mid];
-        int otherTrackId = otherRowInfo.first;
-        // const QHash<int, QVariant>& otherRowCache = otherRowInfo.second; // not used
-
-
-        // This should not happen, but it's a recoverable error so we should only log it.
-        if (!m_recordCache.contains(otherTrackId)) {
-            qDebug() << "WARNING: track" << otherTrackId << "was not in index";
-//           updateTrackInIndex(otherTrackId);
-        }
-
-        QVariant tableValue = getTrackValueForColumn(otherTrackId, m_iSortColumn);
-        int compare = compareColumnValues(m_iSortColumn, m_eSortOrder, trackValue, tableValue);
-
-        if (sDebug) {
-            qDebug() << this << "Comparing" << trackValue
-                     << "to" << tableValue << ":" << compare;
-        }
-
-        if (compare == 0) {
-            // Alright, if we're here then we can insert it here and be
-            // "correct"
-            min = mid;
-            break;
-        } else if (compare > 0) {
-            min = mid + 1;
-        } else {
-            max = mid - 1;
-        }
-    }
-    return min;
-}
-
 const QString IPodPlaylistModel::currentSearch() const {
     return m_currentSearch;
-}
-
-void IPodPlaylistModel::setSort(int column, Qt::SortOrder order) {
-    if (sDebug) {
-        qDebug() << this << "setSort()";
-    }
-
-    m_iSortColumn = column;
-    m_eSortOrder = order;
 }
 
 void IPodPlaylistModel::sort(int column, Qt::SortOrder order) {
@@ -175,9 +118,6 @@ int IPodPlaylistModel::columnCount(const QModelIndex& parent) const {
 }
 
 int IPodPlaylistModel::fieldIndex(const QString& fieldName) const {
-    // Usually a small list, so O(n) is small
-    //return m_queryRecord.indexOf(fieldName);
-    //return m_columnNames.indexOf(fieldName);
     QHash<QString, int>::const_iterator it = m_columnIndex.constFind(fieldName);
     if (it != m_columnIndex.end()) {
         return it.value();
@@ -388,176 +328,10 @@ bool IPodPlaylistModel::columnLessThan(const playlist_member &s1, const playlist
     return ret;
 }
 
-int IPodPlaylistModel::compareColumnValues(int iColumnNumber, Qt::SortOrder eSortOrder,
-                                           QVariant val1, QVariant val2) {
-    int result = 0;
-
-    if (iColumnNumber == fieldIndex(PLAYLISTTRACKSTABLE_POSITION) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_BITRATE) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_BPM) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_DURATION) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_TIMESPLAYED) ||
-        iColumnNumber == fieldIndex(LIBRARYTABLE_RATING)) {
-        // Sort as floats.
-        double delta = val1.toDouble() - val2.toDouble();
-
-        if (fabs(delta) < .00001)
-            result = 0;
-        else if (delta > 0.0)
-            result = 1;
-        else
-            result = -1;
-    } else {
-        // Default to case-insensitive string comparison
-        result = val1.toString().compare(val2.toString(), Qt::CaseInsensitive);
-    }
-
-    // If we're in descending order, flip the comparison.
-    if (eSortOrder == Qt::DescendingOrder) {
-        result = -result;
-    }
-
-    return result;
-}
-
-
-QVariant IPodPlaylistModel::getTrackValueForColumn(int trackId, int column, TrackPointer pTrack) const {
-    QVariant result;
-
-    // The caller can optionally provide a pTrack if they already looked it
-    // up. This is just an optimization to help reduce the # of calls to
-    // lookupCachedTrack. If they didn't provide it, look it up.
-    if (pTrack) {
-        result = getTrackValueForColumn(pTrack, column);
-    }
-
-    // If the track lookup failed (could happen for track properties we dont
-    // keep track of in Track, like playlist position) look up the value in
-    // their SQL record.
-
-    // TODO(rryan) this code is flawed for columns that contains row-specific
-    // metadata. Currently the upper-levels will not delegate row-specific
-    // columns to this method, but there should still be a check here I think.
-    if (!result.isValid()) {
-        QHash<int, QVector<QVariant> >::const_iterator it =
-                m_recordCache.find(trackId);
-        if (it != m_recordCache.end()) {
-            const QVector<QVariant>& fields = it.value();
-            result = fields.value(column, result);
-        }
-    }
-    return result;
-}
-
-QVariant IPodPlaylistModel::getTrackValueForColumn(TrackPointer pTrack, int column) const {
-    if (!pTrack)
-        return QVariant();
-
-    // TODO(XXX) Qt properties could really help here.
-    if (fieldIndex(LIBRARYTABLE_ARTIST) == column) {
-        return QVariant(pTrack->getArtist());
-    } else if (fieldIndex(LIBRARYTABLE_TITLE) == column) {
-        return QVariant(pTrack->getTitle());
-    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == column) {
-        return QVariant(pTrack->getAlbum());
-    } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
-        return QVariant(pTrack->getYear());
-    } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
-        return QVariant(pTrack->getGenre());
-    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
-        return QVariant(pTrack->getType());
-    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {
-        return QVariant(pTrack->getTrackNumber());
-    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == column) {
-        return QVariant(pTrack->getLocation());
-    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == column) {
-        return QVariant(pTrack->getComment());
-    } else if (fieldIndex(LIBRARYTABLE_DURATION) == column) {
-        return pTrack->getDuration();
-    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == column) {
-        return QVariant(pTrack->getBitrate());
-    } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
-        return QVariant(pTrack->getBpm());
-    } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
-        return QVariant(pTrack->getPlayed());
-    } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
-        return QVariant(pTrack->getTimesPlayed());
-    } else if (fieldIndex(LIBRARYTABLE_RATING) == column) {
-        return pTrack->getRating();
-    } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
-        return pTrack->getKey();
-    }
-    return QVariant();
-}
-
 void IPodPlaylistModel::setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value) {
-    // TODO(XXX) Qt properties could really help here.
-    if (fieldIndex(LIBRARYTABLE_ARTIST) == column) {
-        pTrack->setArtist(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_TITLE) == column) {
-        pTrack->setTitle(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_ALBUM) == column) {
-        pTrack->setAlbum(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
-        pTrack->setYear(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
-        pTrack->setGenre(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
-        pTrack->setType(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {
-        pTrack->setTrackNumber(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_LOCATION) == column) {
-        pTrack->setLocation(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_COMMENT) == column) {
-        pTrack->setComment(value.toString());
-    } else if (fieldIndex(LIBRARYTABLE_DURATION) == column) {
-        pTrack->setDuration(value.toInt());
-    } else if (fieldIndex(LIBRARYTABLE_BITRATE) == column) {
-        pTrack->setBitrate(value.toInt());
-    } else if (fieldIndex(LIBRARYTABLE_BPM) == column) {
-        //QVariant::toFloat needs >= QT 4.6.x
-        pTrack->setBpm((float) value.toDouble());
-    } else if (fieldIndex(LIBRARYTABLE_PLAYED) == column) {
-        pTrack->setPlayed(value.toBool());
-    } else if (fieldIndex(LIBRARYTABLE_TIMESPLAYED) == column) {
-        pTrack->setTimesPlayed(value.toInt());
-    } else if (fieldIndex(LIBRARYTABLE_RATING) == column) {
-        StarRating starRating = qVariantValue<StarRating>(value);
-        pTrack->setRating(starRating.starCount());
-    } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
-        pTrack->setKey(value.toString());
-    }
-}
-
-QVariant IPodPlaylistModel::getBaseValue(const QModelIndex& index, int role) const {
-    if (role != Qt::DisplayRole &&
-        role != Qt::ToolTipRole &&
-        role != Qt::EditRole) {
-        return QVariant();
-    }
-
-    int row = index.row();
-    int column = index.column();
-
-    if (row < 0 || row >= m_rowInfo.size()) {
-        return QVariant();
-    }
-
-    const QPair<int, QHash<int, QVariant> >& rowInfo = m_rowInfo[row];
-    int trackId = rowInfo.first;
-
-    // If the row info has the row-specific column, return that.
-    const QHash<int, QVariant>& columns = rowInfo.second;
-    if (columns.contains(column)) {
-        if (sDebug) {
-            qDebug() << "Returning table-column value" << columns[column] << "for column" << column;
-        }
-        return columns[column];
-    }
-
-    // Otherwise, return the information from the track record cache for the
-    // given track ID
-    return getTrackValueForColumn(trackId, column);
+    Q_UNUSED(pTrack);
+    Q_UNUSED(column);
+    Q_UNUSED(value);
 }
 
 void IPodPlaylistModel::setPlaylist(Itdb_Playlist* pPlaylist) {
@@ -650,7 +424,6 @@ bool IPodPlaylistModel::findInUtf8Case(gchar* heystack, gchar* needles) {
 }
 
 TrackPointer IPodPlaylistModel::getTrack(const QModelIndex& index) const {
-
     Itdb_Track* pTrack = getPTrackFromModelIndex(index);
     if (!pTrack) {
         return TrackPointer();
@@ -676,8 +449,7 @@ TrackPointer IPodPlaylistModel::getTrack(const QModelIndex& index) const {
         // Add Track to library failed
         // Create own TrackInfoObject
         pTrackP = TrackPointer(new TrackInfoObject(location), &QObject::deleteLater);
-    }
-    else {
+    } else {
         pTrackP = track_dao.getTrack(track_id);
     }
 
@@ -724,8 +496,7 @@ int IPodPlaylistModel::getTrackId(const QModelIndex& index) const {
     int row = index.row();
     if (row < m_sortedPlaylist.size()) {
         return m_sortedPlaylist.at(row).pos;
-    }
-    else {
+    } else {
         return 0;
     }
 }
@@ -790,29 +561,11 @@ QMimeData* IPodPlaylistModel::mimeData(const QModelIndexList &indexes) const {
     mimeData->setUrls(urls);
     return mimeData;
 }
-    /** if no header state exists, we may hide some columns so that the user can reactivate them **/
+
+// if no header state exists, we may hide some columns so that the user can reactivate them
 bool IPodPlaylistModel::isColumnHiddenByDefault(int column) {
     Q_UNUSED(column);
     return false;
-}
-
-void IPodPlaylistModel::removeTrack(const QModelIndex& index) {
-    Q_UNUSED(index);
-}
-
-void IPodPlaylistModel::removeTracks(const QModelIndexList& indices) {
-    Q_UNUSED(indices);
-}
-
-bool IPodPlaylistModel::addTrack(const QModelIndex& index, QString location) {
-    Q_UNUSED(index);
-    Q_UNUSED(location);
-    return false;
-}
-
-void IPodPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
-    Q_UNUSED(destIndex);
-    Q_UNUSED(sourceIndex);
 }
 
 QAbstractItemDelegate* IPodPlaylistModel::delegateForColumn(const int i, QObject* pParent) {
