@@ -5,8 +5,11 @@
 #include "library/ipod/ipodplaylistmodel.h"
 #include "mixxxutils.cpp"
 #include "library/starrating.h"
+#include "library/stardelegate.h"
+#include "library/previewbuttondelegate.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
+#include "playermanager.h"
 
 extern "C" {
 #include <glib-object.h> // g_type_init
@@ -23,8 +26,7 @@ IPodPlaylistModel::IPodPlaylistModel(QObject* pParent, TrackCollection* pTrackCo
            m_currentSearch(""),
            m_pTrackCollection(pTrackCollection),
            m_trackDAO(m_pTrackCollection->getTrackDAO()),
-           m_pPlaylist(NULL)
-{
+           m_pPlaylist(NULL) {
     initHeaderData();
 }
 
@@ -51,7 +53,6 @@ void IPodPlaylistModel::initHeaderData() {
     m_headerList.append(qMakePair(QString(tr("Bitrate")),    offsetof(Itdb_Track, bitrate)));
     m_headerList.append(qMakePair(QString(tr("Location")),   offsetof(Itdb_Track, ipod_path)));
     m_headerList.append(qMakePair(QString(tr("Comment")),    offsetof(Itdb_Track, comment)));
-
 }
 
 void IPodPlaylistModel::initDefaultSearchColumns() {
@@ -76,13 +77,13 @@ void IPodPlaylistModel::setSearchColumns(const QStringList& searchColumns) {
 }
 
 QVariant IPodPlaylistModel::headerData(int section, Qt::Orientation orientation, int role) const {
-    if (role != Qt::DisplayRole)
+    if (role != Qt::DisplayRole) {
         return QAbstractTableModel::headerData(section, orientation, role);
+    }
 
-    if (   orientation == Qt::Horizontal
-        && role == Qt::DisplayRole
-        && section < m_headerList.size()
-    ) {
+    if (orientation == Qt::Horizontal &&
+            role == Qt::DisplayRole &&
+            section < m_headerList.size()) {
         return QVariant(m_headerList.at(section).first);
     }
     return QAbstractTableModel::headerData(section, orientation, role);
@@ -136,7 +137,6 @@ int IPodPlaylistModel::findSortInsertionPoint(int trackId, TrackPointer pTrack,
     return min;
 }
 
-
 const QString IPodPlaylistModel::currentSearch() const {
     return m_currentSearch;
 }
@@ -189,11 +189,10 @@ QVariant IPodPlaylistModel::data(const QModelIndex& index, int role) const {
     //qDebug() << this << "data()";
     QVariant value = QVariant();
 
-    if (    role != Qt::DisplayRole
-         && role != Qt::EditRole
-         && role != Qt::CheckStateRole
-         && role != Qt::ToolTipRole
-    ) {
+    if (role != Qt::DisplayRole &&
+            role != Qt::EditRole &&
+            role != Qt::CheckStateRole &&
+            role != Qt::ToolTipRole) {
         return value;
     }
 
@@ -245,57 +244,16 @@ QVariant IPodPlaylistModel::data(const QModelIndex& index, int role) const {
         value = QVariant(ret);
     }
 
-
-/*
-    // This value is the value in its most raw form. It was looked up either
-    // from the SQL table or from the cached track layer.
-    QVariant value = getBaseValue(index, role);
-*/
-
-
     // Format the value based on whether we are in a tooltip, display, or edit
     // role
     switch (role) {
         case Qt::ToolTipRole:
         case Qt::DisplayRole:
-            /*
-            if (column == fieldIndex(LIBRARYTABLE_DURATION)) {
-                if (qVariantCanConvert<int>(value))
-                    value = MixxxUtils::secondsToMinutes(qVariantValue<int>(value));
-            } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value))
-                    value = qVariantFromValue(StarRating(value.toInt()));
-            } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                if (qVariantCanConvert<int>(value))
-                    value =  QString("(%1)").arg(value.toInt());
-            } else if (column == fieldIndex(LIBRARYTABLE_PLAYED)) {
-                // Convert to a bool. Not really that useful since it gets converted
-                // right back to a QVariant
-                value = (value == "true") ? true : false;
-            }
-            */
             break;
         case Qt::EditRole:
-            /*
-            if (column == fieldIndex(LIBRARYTABLE_BPM)) {
-                return value.toDouble();
-            } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                return index.sibling(row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
-            } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value))
-                    value = qVariantFromValue(StarRating(value.toInt()));
-            }
-            */
             break;
         case Qt::CheckStateRole:
-            /*
-            if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                bool played = index.sibling(row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
-                value = played ? Qt::Checked : Qt::Unchecked;
-            } else {
-            */
             value = QVariant();
-            //}
             break;
         default:
             break;
@@ -369,24 +327,11 @@ Qt::ItemFlags IPodPlaylistModel::readWriteFlags(const QModelIndex &index) const 
 
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
-    //Enable dragging songs from this data model to elsewhere (like the waveform
-    //widget to load a track into a Player).
+    // Enable dragging songs from this data model to elsewhere (like the waveform
+    // widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
-    //int row = index.row(); // not used
-    int column = index.column();
-
-    if ( column == fieldIndex(LIBRARYTABLE_FILETYPE)
-         || column == fieldIndex(LIBRARYTABLE_LOCATION)
-         || column == fieldIndex(LIBRARYTABLE_DURATION)
-         || column == fieldIndex(LIBRARYTABLE_BITRATE)
-         || column == fieldIndex(LIBRARYTABLE_DATETIMEADDED)) {
-        return defaultFlags;
-    } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-        return defaultFlags | Qt::ItemIsUserCheckable;
-    } else {
-        return defaultFlags | Qt::ItemIsEditable;
-    }
+    return defaultFlags;
 }
 
 Qt::ItemFlags IPodPlaylistModel::readOnlyFlags(const QModelIndex &index) const
@@ -406,17 +351,6 @@ void IPodPlaylistModel::trackChanged(int trackId) {
     if (sDebug) {
         qDebug() << this << "trackChanged" << trackId;
     }
-    // TODO(daschuer): eg. use that for played column
-    //m_trackOverrides.insert(trackId);
-    //QLinkedList<int> rows = getTrackRows(trackId);
-/*
-    foreach (int row, rows) {
-        //qDebug() << "Row in this result set was updated. Signalling update. track:" << trackId << "row:" << row;
-        QModelIndex left = index(row, 0);
-        QModelIndex right = index(row, columnCount());
-        emit(dataChanged(left, right));
-    }
-*/
 }
 
 //static
@@ -764,9 +698,9 @@ TrackPointer IPodPlaylistModel::getTrack(const QModelIndex& index) const {
         BeatsPointer pBeats = BeatFactory::makeBeatGrid(pTrackP.data(), bpm, 0.0f);
         pTrackP->setBeats(pBeats);
     }
-
     return pTrackP;
 }
+
 // Gets the on-disk location of the track at the given location.
 QString IPodPlaylistModel::getTrackLocation(const QModelIndex& index) const {
 
@@ -808,12 +742,14 @@ const QLinkedList<int> IPodPlaylistModel::getTrackRows(int trackId) const {
     return ret;
 }
 
-void IPodPlaylistModel::search(const QString& searchText) {
-    if (sDebug)
+void IPodPlaylistModel::search(const QString& searchText, const QString& extraFilter) {
+    if (sDebug) {
         qDebug() << this << "search" << searchText;
+    }
 
-    if (m_currentSearch != searchText) {
+    if (m_currentSearch != searchText || m_currentSearchFilter != extraFilter) {
         m_currentSearch = searchText;
+        m_currentSearchFilter = extraFilter;
         if (itdb_playlist_is_mpl(m_pPlaylist)) {
             setPlaylist(m_pPlaylist);
         }
@@ -843,10 +779,11 @@ QMimeData* IPodPlaylistModel::mimeData(const QModelIndexList &indexes) const {
             if (!rows.contains(index.row())) {
                 rows.push_back(index.row());
                 QUrl url = QUrl::fromLocalFile(getTrackLocation(index));
-                if (!url.isValid())
+                if (!url.isValid()) {
                     qDebug() << "ERROR invalid url\n";
-                else
+                } else {
                     urls.append(url);
+                }
             }
         }
     }
@@ -878,8 +815,13 @@ void IPodPlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIn
     Q_UNUSED(sourceIndex);
 }
 
-QItemDelegate* IPodPlaylistModel::delegateForColumn(const int i) {
-    Q_UNUSED(i);
+QAbstractItemDelegate* IPodPlaylistModel::delegateForColumn(const int i, QObject* pParent) {
+    size_t structOffset = m_headerList.at(i).second;
+    if (structOffset == offsetof(Itdb_Track, rating)) {
+        return new StarDelegate(pParent);
+    //} else if (PlayerManager::numPreviewDecks() > 0 && (structOffset == offsetof(Itdb_Track, preview)) {
+    //    return new PreviewButtonDelegate(pParent, i);
+    }
     return NULL;
 }
 

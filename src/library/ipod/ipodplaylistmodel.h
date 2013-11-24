@@ -15,8 +15,6 @@ extern "C"
 #include <gpod/itdb.h>
 }
 
-// BaseSqlTableModel is a custom-written SQL-backed table which aggressively
-// caches the contents of the table and supports lightweight updates.
 class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
 {
     Q_OBJECT
@@ -39,7 +37,7 @@ class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
     virtual QString getTrackLocation(const QModelIndex& index) const;
     virtual int getTrackId(const QModelIndex& index) const;
     virtual const QLinkedList<int> getTrackRows(int trackId) const;
-    virtual void search(const QString& searchText);
+    virtual void search(const QString& searchText, const QString& extraFilter = QString());
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
@@ -51,7 +49,7 @@ class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
     QMimeData* mimeData(const QModelIndexList &indexes) const;
 
-    QItemDelegate* delegateForColumn(const int i);
+    QAbstractItemDelegate* delegateForColumn(const int i, QObject* pParent);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
     virtual void sort(int column, Qt::SortOrder order);
@@ -73,9 +71,9 @@ class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
     virtual int fieldIndex(const QString& fieldName) const;
 
   protected:
-    /** Use this if you want a model that is read-only. */
+    // Use this if you want a model that is read-only.
     virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
-    /** Use this if you want a model that can be changed  */
+    // Use this if you want a model that can be changed
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
     // Set the columns used for searching. Names must correspond to the column
@@ -143,4 +141,4 @@ class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
     Itdb_Playlist* m_pPlaylist;
 };
 
-#endif /* IPODPLAYLISTMODEL_H */
+#endif // IPODPLAYLISTMODEL_H

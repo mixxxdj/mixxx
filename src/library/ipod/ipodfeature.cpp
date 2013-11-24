@@ -159,7 +159,7 @@ void IPodFeature::activateChild(const QModelIndex& index) {
     TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
     qDebug() << "IPodFeature::activateChild " << item->data() << " " << item->dataPath();
     QString playlist = item->dataPath().toString();
-    Itdb_Playlist* pPlaylist = (Itdb_Playlist*)playlist.toUInt();
+    Itdb_Playlist* pPlaylist = (Itdb_Playlist*)playlist.toULongLong();
 
     if (pPlaylist) {
         qDebug() << "Activating " << QString::fromUtf8(pPlaylist->name);
@@ -214,7 +214,7 @@ TreeItem* IPodFeature::importLibrary() {
                 QString playlistname = QString::fromUtf8(pPlaylist->name);
                 qDebug() << playlistname;
                 // append the playlist to the child model
-                TreeItem *item = new TreeItem(playlistname, QString::number((uint)pPlaylist), this, playlist_root);
+                TreeItem *item = new TreeItem(playlistname, QString::number((qlonglong)pPlaylist), this, playlist_root);
                 playlist_root->appendChild(item);
             }
         }
@@ -256,7 +256,7 @@ void IPodFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QStrin
         TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
         qDebug() << "IPodFeature::slotImportAsMixxxPlaylist " << item->data() << " " << item->dataPath();
         QString pPlaylistAsSting = item->dataPath().toString();
-        Itdb_Playlist* pPlaylist = (Itdb_Playlist*)pPlaylistAsSting.toUInt();
+        Itdb_Playlist* pPlaylist = (Itdb_Playlist*)pPlaylistAsSting.toULongLong();
         if (pPlaylist) {
             *pPlaylistName = QString::fromUtf8(pPlaylist->name);
             IPodPlaylistModel* pPlaylistModelToAdd = new IPodPlaylistModel(this, m_pTrackCollection);

@@ -37,6 +37,7 @@ class IPodFeature : public BaseExternalLibraryFeature {
     void activate();
     void activate(bool forceReload);
     void activateChild(const QModelIndex& index);
+    void onTrackCollectionLoaded();
 
   private:
     virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
