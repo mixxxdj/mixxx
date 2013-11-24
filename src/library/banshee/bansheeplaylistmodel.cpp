@@ -2,7 +2,6 @@
 #include <QtDebug>
 #include <QTime>
 
-
 #include "library/banshee/bansheeplaylistmodel.h"
 #include "library/banshee/bansheedbconnection.h"
 #include "mixxxutils.cpp"
@@ -289,13 +288,14 @@ Qt::ItemFlags BansheePlaylistModel::flags(const QModelIndex &index) const {
 }
 
 Qt::ItemFlags BansheePlaylistModel::readWriteFlags(const QModelIndex &index) const {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return Qt::ItemIsEnabled;
+    }
 
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
-    //Enable dragging songs from this data model to elsewhere (like the waveform
-    //widget to load a track into a Player).
+    // Enable dragging songs from this data model to elsewhere (like the waveform
+    // widget to load a track into a Player).
     defaultFlags |= Qt::ItemIsDragEnabled;
 
     return defaultFlags;
@@ -511,25 +511,6 @@ bool BansheePlaylistModel::isColumnInternal(int column) {
 bool BansheePlaylistModel::isColumnHiddenByDefault(int column) {
     Q_UNUSED(column);
     return false;
-}
-
-void BansheePlaylistModel::removeTrack(const QModelIndex& index) {
-    Q_UNUSED(index);
-}
-
-void BansheePlaylistModel::removeTracks(const QModelIndexList& indices) {
-    Q_UNUSED(indices);
-}
-
-bool BansheePlaylistModel::addTrack(const QModelIndex& index, QString location) {
-    Q_UNUSED(index);
-    Q_UNUSED(location);
-    return false;
-}
-
-void BansheePlaylistModel::moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex) {
-    Q_UNUSED(destIndex);
-    Q_UNUSED(sourceIndex);
 }
 
 QAbstractItemDelegate* BansheePlaylistModel::delegateForColumn(const int i, QObject* pParent) {

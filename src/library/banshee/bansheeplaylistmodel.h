@@ -12,8 +12,6 @@
 #include "library/banshee/bansheedbconnection.h"
 #include "library/stardelegate.h"
 
-// BaseSqlTableModel is a custom-written SQL-backed table which aggressively
-// caches the contents of the table and supports lightweight updates.
 class BansheePlaylistModel : public QAbstractTableModel , public virtual TrackModel
 {
     Q_OBJECT
@@ -61,10 +59,6 @@ class BansheePlaylistModel : public QAbstractTableModel , public virtual TrackMo
     virtual const QString currentSearch();
     virtual bool isColumnInternal(int column);
     virtual bool isColumnHiddenByDefault(int column);
-    virtual void removeTrack(const QModelIndex& index);
-    virtual void removeTracks(const QModelIndexList& indices);
-    virtual bool addTrack(const QModelIndex& index, QString location);
-    virtual void moveTrack(const QModelIndex& sourceIndex, const QModelIndex& destIndex);
 
     virtual Qt::ItemFlags flags(const QModelIndex &index) const;
 
