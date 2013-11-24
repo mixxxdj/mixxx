@@ -14,6 +14,10 @@ class EngineEffect;
 class Effect;
 typedef QSharedPointer<Effect> EffectPointer;
 
+// The Effect class is the main-thread representation of an instantiation of an
+// effect. This class is NOT thread safe and must only be used by the main
+// thread. The getEngineEffect() method can be used to get a pointer to the
+// Engine-thread representation of the effect.
 class Effect : public QObject {
     Q_OBJECT
   public:

@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QList>
-#include <QMutex>
 #include <QSet>
 #include <QString>
 
@@ -34,7 +33,6 @@ class EffectsBackend : public QObject {
                         EffectInstantiator pInstantiator);
 
   private:
-    mutable QMutex m_mutex;
     QString m_name;
     QMap<QString, QPair<EffectManifest, EffectInstantiator> > m_registeredEffects;
 };

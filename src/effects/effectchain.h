@@ -8,11 +8,12 @@
 
 #include "util.h"
 #include "effects/effect.h"
-#include "effects/effectslot.h"
 
 class EffectChain;
 typedef QSharedPointer<EffectChain> EffectChainPointer;
 
+// The main-thread representation of an effect chain. This class is NOT
+// thread-safe and must only be used from the main thread.
 class EffectChain : public QObject {
     Q_OBJECT
   public:
@@ -36,29 +37,15 @@ class EffectChain : public QObject {
     QList<EffectPointer> getEffects() const;
     unsigned int numEffects() const;
 
-    // Take a buffer of numSamples samples of audio from channel channelId,
-    // provided as pInput, and apply each Effect in this EffectChain to it,
-    // putting the resulting output in pOutput. If pInput is equal to pOutput,
-    // then the operation must occur in-place. Both pInput and pOutput are
-    // represented as stereo interleaved samples. There are numSamples total
-    // samples, so numSamples/2 left channel samples and numSamples/2 right
-    // channel samples. The channelId provided allows the effects to maintain
-    // state on a per-channel basis. This is important because one Effect
-    // instance may be used to process the audio of multiple channels.
-    virtual void process(const QString& channelId,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples);
-
   signals:
     // Signal that indicates that the EffectChain has changed (i.e. an Effect
     // has been added or removed).
     void updated();
+
   private:
     QString debugString() const {
         return QString("EffectChain(%1)").arg(m_id);
     }
-
-    mutable QMutex m_mutex;
 
     bool m_bEnabled;
     QString m_id;
@@ -70,6 +57,5 @@ class EffectChain : public QObject {
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };
-
 
 #endif /* EFFECTCHAIN_H */

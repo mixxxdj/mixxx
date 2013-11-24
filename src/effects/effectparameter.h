@@ -12,7 +12,8 @@ class Effect;
 // An EffectParameter is an instance of an EffectManifestParameter, which is in
 // charge of keeping track of the instance values for the default, minimum,
 // maximum and value for each Effect's parameter, and validating that they are
-// always within acceptable ranges.
+// always within acceptable ranges. This class is NOT thread-safe and must only
+// be used from the main thread.
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
