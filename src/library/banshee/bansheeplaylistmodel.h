@@ -113,11 +113,6 @@ class BansheePlaylistModel : public QAbstractTableModel , public virtual TrackMo
             bool (*lessThen)(struct BansheeDbConnection::PlaylistEntry &s1, struct BansheeDbConnection::PlaylistEntry &s2),
             bool (*greaterThen)(struct BansheeDbConnection::PlaylistEntry &s1, struct BansheeDbConnection::PlaylistEntry &s2));
 
-
-//    Itdb_Track* getPTrackFromModelIndex(const QModelIndex& index) const;
-
-//    static bool findInUtf8Case(gchar* heystack, gchar* needles);
-
     QString m_tableName;
     QStringList m_columnNames;
     QString m_columnNamesJoined;
