@@ -29,6 +29,10 @@ bool BansheeDbConnection::open(const QString& databaseFile) {
         return false;
     } else {
         // TODO(DSC): Verify schema
+        // Banshee Schema file:
+        // https://git.gnome.org/browse/banshee/tree/src/Core/Banshee.Services/Banshee.Database/BansheeDbFormatMigrator.cs
+        // "Grouping" was introduced in schema 19 2008-08-19
+        // Tested from 39 to 45
         qDebug() << "Successful opened Banshee database";
         return true;
     }
