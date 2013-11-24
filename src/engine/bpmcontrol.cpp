@@ -170,7 +170,6 @@ double BpmControl::getBpm() const {
 void BpmControl::slotFileBpmChanged(double bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM.
-    qDebug() << "whee the file bpm changed, update " << bpm;
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(bpm * dRate);
     m_dFileBpm = bpm;
@@ -334,10 +333,8 @@ bool BpmControl::syncTempo() {
 void BpmControl::slotMasterBpmChanged(double syncbpm) {
     // Vinyl overrides
     if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
-        qDebug() << "vinyl override";
         return;
     }
-    qDebug() << "master bpm change " << syncbpm;
     if (m_iSyncState == SYNC_SLAVE) {
         // If we're a slave, update the rate value -- we don't set anything here,
         // this comes into effect in the return from calculaterate
@@ -352,7 +349,6 @@ void BpmControl::slotMasterBpmChanged(double syncbpm) {
         } else {
             dDesiredRate = syncbpm / m_dFileBpm;
         }
-        qDebug() << "new sync rate " << dDesiredRate;
         m_dSyncedRate = dDesiredRate;
     }
 }
@@ -549,7 +545,6 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
         // We are on a beat
         return 0;
     }
-    //qDebug() << m_sGroup << " my distance is " << (dThisPosition - dPrevBeat) / (dNextBeat - dPrevBeat);
     return (dThisPosition - dPrevBeat) / (dNextBeat - dPrevBeat);
 }
 

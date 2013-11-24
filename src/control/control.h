@@ -68,7 +68,6 @@ class ControlDoublePrivate : public QObject {
     }
 
     inline void removeCreatorCO() {
-        //qDebug() << "SETTING CREATOR NULL " << m_pCreatorCO;
         m_pCreatorCO = NULL;
     }
 

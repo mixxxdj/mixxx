@@ -36,7 +36,6 @@ ControlObject::ControlObject(ConfigKey key, bool bIgnoreNops, bool bTrack)
 }
 
 ControlObject::~ControlObject() {
-    //qDebug() << "removecreatorco";
     m_pControl->removeCreatorCO();
 }
 
@@ -65,7 +64,6 @@ ControlObject* ControlObject::getControl(const ConfigKey& key, bool warn) {
     if (pCDP) {
         return pCDP->getCreatorCO();
     }
-    //qDebug() << "returning NULL";
     return NULL;
 }
 

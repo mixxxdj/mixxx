@@ -62,13 +62,9 @@ QSharedPointer<ControlDoublePrivate> ControlDoublePrivate::getControl(
     QSharedPointer<ControlDoublePrivate> pControl;
     QHash<ConfigKey, QWeakPointer<ControlDoublePrivate> >::const_iterator it = m_sqCOHash.find(key);
     if (it != m_sqCOHash.end()) {
-        if (pCreatorCO != NULL) {
+        if (pCreatorCO) {
             if (warn) {
-//                if (key.item != "num_decks" && key.group != "[Master]") {
-//                    Q_ASSERT(false);
-//                }
-                qDebug() << "~~~~~~~~~~~~~~~~~~~~~ControlObject" << key.group << key.item << "already created " << pCreatorCO;
-                //Q_ASSERT(false);
+                qDebug() << "ControlObject" << key.group << key.item << "already created";
             }
         } else {
             pControl = it.value();

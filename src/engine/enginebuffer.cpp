@@ -293,10 +293,7 @@ EngineBuffer::~EngineBuffer()
 
     while (m_engineControls.size() > 0) {
         EngineControl* pControl = m_engineControls.takeLast();
-        if (!pControl) {
-            //qDebug() << "Control is already NULL";
-        } else {
-            //qDebug() << "trying to delete " << pControl;
+        if (pControl) {
             delete pControl;
         }
     }

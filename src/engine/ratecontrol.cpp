@@ -227,16 +227,8 @@ void RateControl::setEngineChannel(EngineChannel* pChannel) {
 #ifdef __VINYLCONTROL__
 void RateControl::setVinylControlControl(VinylControlControl* vinylcontrolcontrol) {
     m_pVinylControlControl = vinylcontrolcontrol;
-
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(m_pVCEnabled);
-
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(m_pVCScratching);
 }
 #endif
 
