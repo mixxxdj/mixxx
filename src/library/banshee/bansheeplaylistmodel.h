@@ -89,9 +89,9 @@ class BansheePlaylistModel : public QAbstractTableModel , public virtual TrackMo
     virtual void setSort(int column, Qt::SortOrder order);
 
   protected:
-    /** Use this if you want a model that is read-only. */
+    // Use this if you want a model that is read-only.
     virtual Qt::ItemFlags readOnlyFlags(const QModelIndex &index) const;
-    /** Use this if you want a model that can be changed  */
+    // Use this if you want a model that can be changed
     virtual Qt::ItemFlags readWriteFlags(const QModelIndex &index) const;
 
     // Set the columns used for searching. Names must correspond to the column
@@ -149,4 +149,4 @@ class BansheePlaylistModel : public QAbstractTableModel , public virtual TrackMo
     int m_playlistId;
 };
 
-#endif /* BANSHEEPLAYLISTMODEL_H */
+#endif // BANSHEEPLAYLISTMODEL_H
