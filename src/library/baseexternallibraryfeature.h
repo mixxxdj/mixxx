@@ -28,10 +28,10 @@ class BaseExternalLibraryFeature : public LibraryFeature {
   private slots:
     void slotAddToAutoDJ();
     void slotAddToAutoDJTop();
-    virtual void slotImportAsMixxxPlaylist();
+    void slotImportAsMixxxPlaylist();
 
   private:
-    virtual void addToAutoDJ(bool bTop);
+    void addToAutoDJ(bool bTop);
 
     TrackCollection* m_pTrackCollection;
     QAction* m_pAddToAutoDJAction;

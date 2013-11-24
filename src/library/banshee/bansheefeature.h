@@ -25,21 +25,20 @@ class BansheeFeature : public BaseExternalLibraryFeature {
     static bool isSupported();
     static void prepareDbPath(ConfigObject<ConfigValue>* pConfig);
 
-    QVariant title();
-    QIcon getIcon();
+    virtual QVariant title();
+    virtual QIcon getIcon();
 
-    TreeItemModel* getChildModel();
+    virtual TreeItemModel* getChildModel();
 
   public slots:
-    void activate();
-    void activateChild(const QModelIndex& index);
-    virtual void slotImportAsMixxxPlaylist();
+    virtual void activate();
+    virtual void activateChild(const QModelIndex& index);
 
   private:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist);
     static QString getiTunesMusicPath();
     // returns the invisible rootItem for the sidebar model
-    virtual void addToAutoDJ(bool bTop);
+    virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
 
     BansheePlaylistModel* m_pBansheePlaylistModel;
     TreeItemModel m_childModel;

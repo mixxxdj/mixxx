@@ -148,84 +148,31 @@ TreeItemModel* BansheeFeature::getChildModel() {
     return &m_childModel;
 }
 
-void BansheeFeature::addToAutoDJ(bool bTop) {
-    //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-
+void BansheeFeature::appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist) {
     if (m_lastRightClickedIndex.isValid()) {
         TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
-        qDebug() << "BansheeFeature::addToAutoDJ " << item->data() << " " << item->dataPath();
-        QString playlist = item->dataPath().toString();
-        int playlistID = playlist.toInt();
-        if (playlistID > 0) {
-            BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
-            pPlaylistModelToAdd->setPlaylist(playlistID);
-            PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
-            int autoDJId = playlistDao.getPlaylistIdFromName(AUTODJ_TABLE);
-
-            int rows = pPlaylistModelToAdd->rowCount();
-            for(int i = 0; i < rows; ++i){
-                QModelIndex index = pPlaylistModelToAdd->index(i,0);
-                if (index.isValid()) {
-                    TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-                    if (bTop) {
-                        // Start at position 2 because position 1 was already loaded to the deck
-                        playlistDao.insertTrackIntoPlaylist(track->getId(), autoDJId, i + 2);
-                    } else {
-                        playlistDao.appendTrackToPlaylist(track->getId(), autoDJId);
-                    }
-                }
-            }
-            delete pPlaylistModelToAdd;
-        }
-    }
-}
-
-void BansheeFeature::slotImportAsMixxxPlaylist() {
-    //qDebug() << "slotImportAsMixxxPlaylist() row:" << m_lastRightClickedIndex.data();
-
-    if (m_lastRightClickedIndex.isValid()) {
-        TreeItem *item = static_cast<TreeItem*>(m_lastRightClickedIndex.internalPointer());
-        QString playlistName = item->data().toString();
+        *pPlaylist = item->data().toString();
         QString playlistStId = item->dataPath().toString();
         int playlistID = playlistStId.toInt();
-        qDebug() << "BansheeFeature::slotImportAsMixxxPlaylist " << playlistName << " " << playlistStId;
+        qDebug() << "BansheeFeature::appendTrackIdsFromRightClickIndex " << *pPlaylist << " " << playlistStId;
         if (playlistID > 0) {
             BansheePlaylistModel* pPlaylistModelToAdd = new BansheePlaylistModel(this, m_pTrackCollection, &m_connection);
             pPlaylistModelToAdd->setPlaylist(playlistID);
-            PlaylistDAO &playlistDao = m_pTrackCollection->getPlaylistDAO();
 
-            int playlistId = playlistDao.getPlaylistIdFromName(playlistName);
-            int i = 1;
-
-            if (playlistId != -1) {
-                // Calculate a unique name
-                playlistName += "(%1)";
-                while (playlistId != -1) {
-                    i++;
-                    playlistId = playlistDao.getPlaylistIdFromName(playlistName.arg(i));
+            // Copy Tracks
+            int rows = pPlaylistModelToAdd->rowCount();
+            for (int i = 0; i < rows; ++i) {
+                QModelIndex index = pPlaylistModelToAdd->index(i,0);
+                if (index.isValid()) {
+                    //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
+                    TrackPointer track = pPlaylistModelToAdd->getTrack(index);
+                    trackIds->append(track->getId());
                 }
-                playlistName = playlistName.arg(i);
-            }
-            playlistId = playlistDao.createPlaylist(playlistName);
-
-            if (playlistId != -1) {
-                // Copy Tracks
-                int rows = pPlaylistModelToAdd->rowCount();
-                for (int i = 0; i < rows; ++i) {
-                    QModelIndex index = pPlaylistModelToAdd->index(i,0);
-                    if (index.isValid()) {
-                        //qDebug() << pPlaylistModelToAdd->getTrackLocation(index);
-                        TrackPointer track = pPlaylistModelToAdd->getTrack(index);
-                        playlistDao.appendTrackToPlaylist(track->getId(), playlistId);
-                    }
-                }
-            } else {
-                QMessageBox::warning(NULL,
-                                     tr("Playlist Creation Failed"),
-                                     tr("An unknown error occurred while creating playlist: ")
-                                      + playlistName);
             }
             delete pPlaylistModelToAdd;
         }
     }
 }
+
+
+
