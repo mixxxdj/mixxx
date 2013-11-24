@@ -23,7 +23,9 @@ class ControlPotmeter;
 class ControlPushButton;
 class EngineChannel;
 class PositionScratchController;
+#ifdef __VINYLCONTROL__
 class VinylControlControl;
+#endif
 
 // RateControl is an EngineControl that is in charge of managing the rate of
 // playback of a given channel of audio in the Mixxx engine. Using input from
@@ -36,6 +38,9 @@ public:
 
     void setBpmControl(BpmControl* bpmcontrol);
     void setEngineChannel(EngineChannel* pChannel);
+#ifdef __VINYLCONTROL__
+    void setVinylControlControl(VinylControlControl* vinylcontrolcontrol);
+#endif
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     double process(const double dRate,
@@ -51,7 +56,6 @@ public:
     void setState(double state);
     double getFileBpm() const { return m_dFileBpm; }
     EngineChannel* getChannel() { Q_ASSERT(m_pChannel); return m_pChannel; }
-    VinylControlControl* getVinylControlControl();
     const QString getGroup() const { return m_sGroup; }
 
 
@@ -133,7 +137,9 @@ public:
     ControlObject* m_pJog;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
+#ifdef __VINYLCONTROL__
     VinylControlControl *m_pVinylControlControl;
+#endif
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;

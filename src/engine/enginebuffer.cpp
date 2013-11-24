@@ -198,11 +198,12 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
 
     // Create the Rate Controller
     m_pRateControl = pMixingEngine->getEngineSync()->addDeck(_group);
-    addControl(m_pRateControl);
-    
 #ifdef __VINYLCONTROL__
-    addControl(m_pRateControl->getVinylControlControl());
+    VinylControlControl *vcc = new VinylControlControl(_group, _config);
+    addControl(vcc);
+    m_pRateControl->setVinylControlControl(vcc);
 #endif
+    addControl(m_pRateControl);
 
     m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
     m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));
@@ -292,7 +293,12 @@ EngineBuffer::~EngineBuffer()
 
     while (m_engineControls.size() > 0) {
         EngineControl* pControl = m_engineControls.takeLast();
-        delete pControl;
+        if (!pControl) {
+            //qDebug() << "Control is already NULL";
+        } else {
+            //qDebug() << "trying to delete " << pControl;
+            delete pControl;
+        }
     }
 }
 
@@ -913,6 +919,7 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
 }
 
 void EngineBuffer::addControl(EngineControl* pControl) {
+    qDebug() << "add control " << pControl;
     // Connect to signals from EngineControl here...
     m_engineLock.lock();
     m_engineControls.push_back(pControl);

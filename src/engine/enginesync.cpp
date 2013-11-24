@@ -66,7 +66,8 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             this, SLOT(slotInternalMasterChanged(double)),
             Qt::DirectConnection);
 
-    m_pSyncRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "rate"), 40.0, 200.0);
+    qDebug() << "ENGINE SYNC INIT";
+    m_pSyncRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"), 40.0, 200.0);
     connect(m_pSyncRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);

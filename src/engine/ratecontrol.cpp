@@ -168,20 +168,6 @@ RateControl::RateControl(const char* _group,
                 Qt::DirectConnection);
 
     m_iSyncState = SYNC_NONE;
-
-#ifdef __VINYLCONTROL__
-    m_pVinylControlControl = new VinylControlControl(_group, _config);
-
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(m_pVCEnabled);
-
-    m_pVCScratching = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_scratching"));
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(m_pVCScratching);
-#endif
 }
 
 RateControl::~RateControl() {
@@ -212,7 +198,6 @@ RateControl::~RateControl() {
     delete m_pJog;
     delete m_pJogFilter;
     delete m_pScratchController;
-    delete m_pVinylControlControl;
 }
 
 void RateControl::setBpmControl(BpmControl* bpmcontrol) {
@@ -228,6 +213,22 @@ void RateControl::setEngineChannel(EngineChannel* pChannel) {
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
 }
+
+#ifdef __VINYLCONTROL__
+void RateControl::setVinylControlControl(VinylControlControl* vinylcontrolcontrol) {
+    m_pVinylControlControl = vinylcontrolcontrol;
+
+    m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(m_pVCEnabled);
+
+    m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(m_pVCScratching);
+}
+#endif
 
 void RateControl::setRateRamp(bool linearMode)
 {
@@ -438,10 +439,6 @@ double RateControl::getJogFactor() const {
 
 ControlObject* RateControl::getRateEngineControl() {
     return m_pRateEngine;
-}
-
-VinylControlControl* RateControl::getVinylControlControl() {
-    return m_pVinylControlControl;
 }
 
 ControlObject* RateControl::getBeatDistanceControl() {

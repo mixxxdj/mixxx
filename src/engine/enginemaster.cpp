@@ -176,6 +176,7 @@ EngineMaster::~EngineMaster() {
         delete pChannelInfo->m_pVolumeControl;
         delete pChannelInfo;
     }
+    qDebug() << "out of enginemaster";
 }
 
 const CSAMPLE* EngineMaster::getMasterBuffer() const {

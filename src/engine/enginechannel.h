@@ -24,7 +24,6 @@
 class ControlObject;
 class EngineBuffer;
 class EnginePregain;
-class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
 class EngineFlanger;
