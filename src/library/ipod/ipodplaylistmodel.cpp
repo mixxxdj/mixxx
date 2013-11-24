@@ -202,50 +202,10 @@ QVariant IPodPlaylistModel::data(const QModelIndex& index, int role) const {
 }
 
 bool IPodPlaylistModel::setData(const QModelIndex& index, const QVariant& value, int role) {
-
-    if (!index.isValid())
-        return false;
-
-    int row = index.row();
-    int column = index.column();
-
-    if (sDebug) {
-        qDebug() << this << "setData() column:" << column << "value:" << value << "role:" << role;
-    }
-
-    // Over-ride sets to TIMESPLAYED and re-direct them to PLAYED
-    if (role == Qt::CheckStateRole) {
-        if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-            QString val = value.toInt() > 0 ? QString("true") : QString("false");
-            QModelIndex playedIndex = index.sibling(index.row(), fieldIndex(LIBRARYTABLE_PLAYED));
-            return setData(playedIndex, val, Qt::EditRole);
-        }
-        return false;
-    }
-
-    if (row < 0 || row >= m_rowInfo.size()) {
-        return false;
-    }
-
-    const QPair<int, QHash<int, QVariant> >& rowInfo = m_rowInfo[row];
-    int trackId = rowInfo.first;
-
-    // You can't set something in the table columns because we have no way of
-    // persisting it.
-    const QHash<int, QVariant>& columns = rowInfo.second;
-    if (columns.contains(column)) {
-        return false;
-    }
-
-    TrackPointer pTrack = m_trackDAO.getTrack(trackId);
-    setTrackValueForColumn(pTrack, column, value);
-
-    // Do not save the track here. Changing the track dirties it and the caching
-    // system will automatically save the track once it is unloaded from
-    // memory. rryan 10/2010
-    //m_trackDAO.saveTrack(pTrack);
-
-    return true;
+    Q_UNUSED(index);
+    Q_UNUSED(value);
+    Q_UNUSED(role);
+    return false;
 }
 
 TrackModel::CapabilitiesFlags IPodPlaylistModel::getCapabilities() const {
@@ -262,8 +222,9 @@ Qt::ItemFlags IPodPlaylistModel::flags(const QModelIndex &index) const {
 }
 
 Qt::ItemFlags IPodPlaylistModel::readWriteFlags(const QModelIndex &index) const {
-    if (!index.isValid())
+    if (!index.isValid()) {
         return Qt::ItemIsEnabled;
+    }
 
     Qt::ItemFlags defaultFlags = QAbstractItemModel::flags(index);
 
@@ -326,12 +287,6 @@ bool IPodPlaylistModel::columnLessThan(const playlist_member &s1, const playlist
         return !ret;
     }
     return ret;
-}
-
-void IPodPlaylistModel::setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value) {
-    Q_UNUSED(pTrack);
-    Q_UNUSED(column);
-    Q_UNUSED(value);
 }
 
 void IPodPlaylistModel::setPlaylist(Itdb_Playlist* pPlaylist) {

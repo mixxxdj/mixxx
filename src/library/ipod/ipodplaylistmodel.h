@@ -83,13 +83,8 @@ class IPodPlaylistModel : public QAbstractTableModel , public virtual TrackModel
     void trackChanged(int trackId);
 
   private:
-    inline TrackPointer lookupCachedTrack(int trackId) const;
-    inline void setTrackValueForColumn(TrackPointer pTrack, int column, QVariant value);
-
     static bool columnLessThan(const playlist_member &s1, const playlist_member &s2);
-
     Itdb_Track* getPTrackFromModelIndex(const QModelIndex& index) const;
-
     static bool findInUtf8Case(gchar* heystack, gchar* needles);
 
     QString m_tableName;
