@@ -13,10 +13,9 @@
 #include "gpoditdb.h"
 
 
-GPodItdb::GPodItdb() :
-        m_itdb(NULL),
-        m_libGPodLoaded(true) {
-
+GPodItdb::GPodItdb()
+        : m_itdb(NULL),
+          m_libGPodLoaded(true) {
     // Load shared library
     QLibrary libGPod("libgpod");
 
@@ -29,7 +28,8 @@ GPodItdb::GPodItdb() :
     fp_itdb_parse = (itdb_parse__)libGPod.resolve("itdb_parse");
     if(!fp_itdb_parse) m_libGPodLoaded = false;
 
-    qDebug() << "GPodItdb: try to resolve libgpod functions: " << (m_libGPodLoaded?"success":"failed");
+    qDebug() << "GPodItdb: try to resolve libgpod functions: "
+             << (m_libGPodLoaded ? "success" : "failed");
 }
 
 GPodItdb::~GPodItdb() {
@@ -38,8 +38,7 @@ GPodItdb::~GPodItdb() {
     }
 }
 
-void GPodItdb::parse(const QString& mount, GError **error) {
-
+void GPodItdb::parse(const QString& mount, GError** error) {
     if (m_itdb) {
         fp_itdb_free(m_itdb);
         m_itdb = NULL;
