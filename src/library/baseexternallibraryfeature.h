@@ -21,6 +21,7 @@ class BaseExternalLibraryFeature : public LibraryFeature {
 
   protected:
     virtual BaseSqlTableModel* getPlaylistModelForPlaylist(QString playlist) = 0;
+    virtual void appendTrackIdsFromRightClickIndex(QList<int>* trackIds, QString* pPlaylist);
 
   private slots:
     void slotAddToAutoDJ();
