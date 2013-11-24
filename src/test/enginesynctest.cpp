@@ -37,70 +37,39 @@ class EngineSyncTest : public MixxxTest {
     }
 
     virtual void TearDown() {
-        // I get crashes if I delete these.  Better to just leak like a sieve.
+        // I get crashes if I delete this.  Better to just leak like a sieve.
         //delete m_pEngineMaster;
         delete m_pNumDecks;
 
-        //delete m_pEngineMaster;
         delete m_pChannel1;
         delete m_pChannel2;
 
-        // Check for leaked ControlObjects and give warnings.
+        // Clean up the rest of the controls.
         QList<ControlDoublePrivate*> leakedControls;
         QList<ConfigKey> leakedConfigKeys;
 
         ControlDoublePrivate::getControls(&leakedControls);
-
         int count = leakedControls.size();
-
         while (leakedControls.size() > 0) {
-            qDebug() << "Deleting " << leakedControls.size() << " COs";
             foreach (ControlDoublePrivate* pCOP, leakedControls) {
                 ConfigKey key = pCOP->getKey();
-//                if (key.group == m_sGroup1 || key.group == m_sGroup2) {
-//                    //qDebug() << key.group << key.item << pCOP->getCreatorCO();
-//                    leakedConfigKeys.append(key);
-//                } else if (key.item == "num_decks") {
-//                    leakedConfigKeys.append(key);
-//                }
-                //qDebug() << key.group << key.item << pCOP->getCreatorCO();
                 leakedConfigKeys.append(key);
             }
 
             foreach (ConfigKey key, leakedConfigKeys) {
-                // delete just to satisfy valgrind:
-                // check if the pointer is still valid, the control object may have bin already
-                // deleted by its parent in this loop
                 ControlObject* pCo = ControlObject::getControl(key, false);
                 if (pCo) {
-                    //qDebug() << "deleting " << key.group << key.item << " " << pCo;
-//                    ControlDoublePrivate* pCOP = pCo->getCreatorCO();
-//                    if (pCo->getCreatorCO()) {
-//
-//                    }
-                    // it might happens that a control is deleted as child from an other control
                     delete pCo;
-//                    QSharedPointer<ControlDoublePrivate> pCOP = ControlDoublePrivate::getControl(key, false);
-//                    if (!pCOP.isNull()) {
-//                        qDebug() << "also deleting the private CO";
-//                        pCOP.clear();
-//                    }
                 }
             }
 
-
             ControlDoublePrivate::getControls(&leakedControls);
-            qDebug() << "TRY AGAIN " << leakedControls.size() << " " << count;
+            // Sometimes we can't delete all of the controls.  Give up.
             if (leakedControls.size() == count) {
-                qDebug() << "no change in count, exit";
                 break;
             }
             count = leakedControls.size();
         }
-
-//        delete m_pChannel1;
-//        delete m_pChannel2;
-        // The enginebuffers will delete the ratecontrols.
     }
 
     ControlObject* m_pNumDecks;
@@ -130,27 +99,121 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
 
     // The master sync should now be channel 1.
     ASSERT_EQ(m_pChannel1, m_pEngineSync->getMaster());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
 
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_state")));
     pButtonMasterSync2->slotSet(SYNC_SLAVE);
 
     ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
 
     // Now set channel 2 to be master.
     pButtonMasterSync2->slotSet(SYNC_MASTER);
 
     // Now channel 2 should be master, and channel 1 should be a slave.
     ASSERT_EQ(m_pChannel2, m_pEngineSync->getMaster());
+    ASSERT_EQ(SYNC_MASTER, pButtonMasterSync2->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
     ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync1->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
 
     // Now back again.
     pButtonMasterSync1->slotSet(SYNC_MASTER);
 
-    // Now channel 2 should be master, and channel 1 should be a slave.
+    // Now channel 1 should be master, and channel 2 should be a slave.
     ASSERT_EQ(m_pChannel1, m_pEngineSync->getMaster());
+    ASSERT_EQ(SYNC_MASTER, pButtonMasterSync1->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
     ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
+
+    // Now set channel 1 to slave, internal will be master because no track loaded.
+    pButtonMasterSync1->slotSet(SYNC_SLAVE);
+
+    ASSERT_EQ(NULL, m_pEngineSync->getMaster());
+    ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync1->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
+    ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey("[Master]", "sync_master"))->get());
 }
+
+TEST_F(EngineSyncTest, SetMasterByLights) {
+    // Same as above, except we use the midi lights to change state.
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_state")));
+    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_state")));
+    QScopedPointer<ControlObjectThread> pButtonSyncSlave1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_slave")));
+    QScopedPointer<ControlObjectThread> pButtonSyncSlave2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_slave")));
+    QScopedPointer<ControlObjectThread> pButtonSyncMaster1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_master")));
+    QScopedPointer<ControlObjectThread> pButtonSyncMaster2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_master")));
+
+    // Set channel 1 to be master.
+    pButtonSyncMaster1->slotSet(1);
+
+    // The master sync should now be channel 1.
+    ASSERT_EQ(m_pChannel1, m_pEngineSync->getMaster());
+    EXPECT_EQ(0, pButtonSyncSlave1->get());
+    EXPECT_EQ(1, pButtonSyncMaster1->get());
+
+    // Set channel 2 to be slave.
+    pButtonSyncSlave2->slotSet(1);
+
+    ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
+    EXPECT_EQ(1, pButtonSyncSlave2->get());
+    EXPECT_EQ(0, pButtonSyncMaster2->get());
+
+    // Now set channel 2 to be master.
+    pButtonSyncMaster2->slotSet(1);
+
+    // Now channel 2 should be master, and channel 1 should be a slave.
+    ASSERT_EQ(m_pChannel2, m_pEngineSync->getMaster());
+    ASSERT_EQ(SYNC_MASTER, pButtonMasterSync2->get());
+    EXPECT_EQ(0, pButtonSyncSlave2->get());
+    EXPECT_EQ(1, pButtonSyncMaster2->get());
+    ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync1->get());
+    EXPECT_EQ(1, pButtonSyncSlave1->get());
+    EXPECT_EQ(0, pButtonSyncMaster1->get());
+
+    // Now back again.
+    pButtonSyncMaster1->slotSet(1);
+
+    // Now channel 1 should be master, and channel 2 should be a slave.
+    ASSERT_EQ(m_pChannel1, m_pEngineSync->getMaster());
+    ASSERT_EQ(SYNC_MASTER, pButtonMasterSync1->get());
+    EXPECT_EQ(0, pButtonSyncSlave1->get());
+    EXPECT_EQ(1, pButtonSyncMaster1->get());
+    ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
+    EXPECT_EQ(1, pButtonSyncSlave2->get());
+    EXPECT_EQ(0, pButtonSyncMaster2->get());
+
+    // Now set channel 1 to slave, internal will be master because no track loaded.
+    pButtonSyncSlave1->slotSet(1);
+
+    ASSERT_EQ(NULL, m_pEngineSync->getMaster());
+    ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync1->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
+    ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey("[Master]", "sync_master"))->get());
+}
+
 
 TEST_F(EngineSyncTest, RateChangeTest) {
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
@@ -193,7 +256,6 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
 
     // Set the rate slider of channel 1 to 1.2.
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(0.2);
-
 
     // rate slider for channel 2 should now be 1.6 = 160 * 1.2 / 120.
     ASSERT_FLOAT_EQ(0.6, ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());

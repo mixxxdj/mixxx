@@ -196,22 +196,24 @@ EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _con
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-    // Create the Rate Controller
+    // blech -- when enginebuffer tries to delete this bad things happen.
     m_pRateControl = pMixingEngine->getEngineSync()->addDeck(_group);
+    // Add the Rate Controller
+    addControl(m_pRateControl, /* owned */ false);
 #ifdef __VINYLCONTROL__
     VinylControlControl *vcc = new VinylControlControl(_group, _config);
     addControl(vcc);
     m_pRateControl->setVinylControlControl(vcc);
 #endif
-    addControl(m_pRateControl);
-
-    m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
-    m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
-    m_pRateControl->setBpmControl(m_pBpmControl);
     addControl(m_pBpmControl);
+    m_pRateControl->setBpmControl(m_pBpmControl);
+
+
+    m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
+    m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));
 
     // Create the clock controller
     m_pClockControl = new ClockControl(_group, _config);
@@ -294,6 +296,7 @@ EngineBuffer::~EngineBuffer()
     while (m_engineControls.size() > 0) {
         EngineControl* pControl = m_engineControls.takeLast();
         if (pControl) {
+            qDebug() << "deleting " << pControl;
             delete pControl;
         }
     }
@@ -915,12 +918,14 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
     m_pReader->newTrack(pTrack);
 }
 
-void EngineBuffer::addControl(EngineControl* pControl) {
-    qDebug() << "add control " << pControl;
+void EngineBuffer::addControl(EngineControl* pControl, bool owned) {
     // Connect to signals from EngineControl here...
-    m_engineLock.lock();
-    m_engineControls.push_back(pControl);
-    m_engineLock.unlock();
+    if (owned) {
+        m_engineLock.lock();
+        // Don't delete a control if we don't own it.
+        m_engineControls.push_back(pControl);
+        m_engineLock.unlock();
+    }
     pControl->setEngineBuffer(this);
     connect(this, SIGNAL(trackLoaded(TrackPointer)),
             pControl, SLOT(trackLoaded(TrackPointer)),

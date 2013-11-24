@@ -170,6 +170,7 @@ RateControl::RateControl(const char* _group,
     connect(m_pSyncState, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncStateChanged(double)),
                 Qt::DirectConnection);
+    // If we connect to FromEngine, we get circular calls of sync state changes.
     connect(m_pSyncState, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotSyncStateChanged(double)),
                 Qt::DirectConnection);
@@ -209,6 +210,16 @@ RateControl::~RateControl() {
 
 void RateControl::setBpmControl(BpmControl* bpmcontrol) {
     m_pBpmControl = bpmcontrol;
+    ControlObject* sync_master_button =
+            ControlObject::getControl(ConfigKey(getGroup(), "sync_master"));
+    connect(sync_master_button, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSyncMasterChanged(double)),
+            Qt::DirectConnection);
+    ControlObject* sync_slave_button =
+            ControlObject::getControl(ConfigKey(getGroup(), "sync_slave"));
+    connect(sync_slave_button, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSyncSlaveChanged(double)),
+            Qt::DirectConnection);
 }
 
 void RateControl::setEngineChannel(EngineChannel* pChannel) {
@@ -386,8 +397,62 @@ void RateControl::slotFileBpmChanged(double bpm) {
 }
 
 void RateControl::slotSyncStateChanged(double state) {
+    qDebug() << "ratecontrol state change? " << getGroup() << " " << state;
+    if (state == m_iSyncState) {
+        qDebug() << "redundant, ignoring";
+        return;
+    }
     m_iSyncState = state;
     emit(channelSyncStateChanged(this, state));
+}
+
+void RateControl::slotSyncMasterChanged(double state) {
+    qDebug() << getGroup() << " got a request to be master " << state;
+    if (state) {
+        if (m_iSyncState == SYNC_MASTER) {
+            qDebug() << "already master";
+            return;
+        }
+
+//        if (m_pTrack.isNull()) {
+//            qDebug() << "rejecting, no track";
+//            m_pSyncMasterEnabled->set(false);
+//            return;
+//        }
+
+        qDebug() << "doing it";
+        m_pSyncState->set(SYNC_MASTER);
+        //// We don't connect FromEngine so trigger the emit manually;
+        //slotSyncStateChanged(SYNC_MASTER);
+    } else {
+        // Turning off master turns off sync mode
+        if (m_iSyncState != SYNC_MASTER) {
+            return;
+        }
+        // Unset ourselves
+        m_pSyncState->set(SYNC_NONE);
+        //slotSyncStateChanged(SYNC_NONE);
+    }
+}
+
+void RateControl::slotSyncSlaveChanged(double state) {
+    qDebug() << getGroup() << " got a request to be slave " << state;
+    if (state) {
+        if (m_iSyncState == SYNC_SLAVE) {
+            return;
+        }
+//        if (m_pTrack.isNull()) {
+//            qDebug() << m_sGroup << " no track loaded, can't be slave";
+//            m_pSyncSlaveEnabled->set(false);
+//            return;
+//        }
+        m_pSyncState->set(SYNC_SLAVE);
+        //slotSyncStateChanged(SYNC_SLAVE);
+    } else {
+        // Turning off slave turns off syncing
+        m_pSyncState->set(SYNC_NONE);
+        //slotSyncStateChanged(SYNC_NONE);
+    }
 }
 
 void RateControl::slotChannelRateSliderChanged(double v) {
@@ -447,12 +512,17 @@ ControlObject* RateControl::getBeatDistanceControl() {
     return m_pBeatDistance;
 }
 
+//BpmControl* RateControl::getBpmControl() {
+//    return m_pBpmControl;
+//}
+
 double RateControl::getState() const {
     return m_pSyncState->get();
 }
 
 void RateControl::setState(double state) {
     m_pSyncState->set(state);
+    //slotSyncStateChanged(state);
 }
 
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,

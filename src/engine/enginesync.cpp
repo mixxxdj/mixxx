@@ -126,19 +126,22 @@ void EngineSync::disableChannelMaster(const QString& channel) {
             disconnect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
                        this, SLOT(slotSourceBeatDistanceChanged(double)));
         }
+        pOldChannelMaster->setState(SYNC_SLAVE);
     }
+    m_sSyncSource = "";
     m_pChannelMaster = NULL;
 
-    bool channelIsEmpty = channel.isEmpty();
-    foreach (RateControl* pChannel, m_ratecontrols) {
-        // If channel is empty, unset master on *all* other channels -- sometimes we
-        // end up with two masters for some reason.
-        if (channelIsEmpty || pChannel->getGroup() == channel) {
-            if (pChannel->getState() == SYNC_MASTER) {
-                pChannel->setState(SYNC_SLAVE);
-            }
-        }
-    }
+//    bool channelIsEmpty = channel.isEmpty();
+//    foreach (RateControl* pControl, m_ratecontrols) {
+//        // If channel is empty, unset master on *all* other channels -- sometimes we
+//        // end up with two masters for some reason.
+//        if (channelIsEmpty || pControl->getGroup() == channel) {
+//            if (pControl->getState() == SYNC_MASTER) {
+//                qDebug() << "telling ratecontrol it's a slave now " << pControl->getGroup();
+//                pControl->setState(SYNC_SLAVE);
+//            }
+//        }
+//    }
 }
 
 void EngineSync::setMaster(const QString& group) {
@@ -151,12 +154,16 @@ void EngineSync::setMaster(const QString& group) {
         if (!setChannelMaster(pRateControl)) {
             qDebug() << "WARNING: failed to set selected master" << group << ", going with Internal instead";
             setInternalMaster();
+        } else {
+            pRateControl->setState(SYNC_MASTER);
         }
     }
 }
 
 void EngineSync::setInternalMaster() {
+    qDebug() << "requested internal master";
     if (m_sSyncSource == kMasterSyncGroup) {
+        qDebug() << "already master";
         return;
     }
     m_dMasterBpm = m_pMasterBpm->get();
@@ -167,16 +174,22 @@ void EngineSync::setInternalMaster() {
     updateSamplesPerBeat();
 
     // This is all we have to do, we'll start using the pseudoposition right away.
+    qDebug() << "~~~~~~~~~~~~~~~~~~SET INTERNAL MASTER TRUE";
     m_pSyncInternalEnabled->set(TRUE);
 }
 
 bool EngineSync::setChannelMaster(RateControl* pRateControl) {
-    // If a channel is master, disable it.
-    disableChannelMaster(m_sSyncSource);
-
     if (!pRateControl) {
         return false;
     }
+
+    // If a channel is master, disable it.
+    if (m_sSyncSource == pRateControl->getGroup()) {
+        qDebug() << "already master";
+        return true;
+    }
+    qDebug() << "disabling previous master " << m_sSyncSource;
+    disableChannelMaster(m_sSyncSource);
 
     // Only accept channels with an EngineBuffer.
     EngineChannel* pChannel = pRateControl->getChannel();
@@ -185,11 +198,13 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     }
 
     const QString& group = pChannel->getGroup();
+    m_sSyncSource = group;
 
     // Only consider channels that have a track loaded and are in the master
     // mix.
     m_pChannelMaster = pRateControl;
-    m_sSyncSource = group;
+
+    qDebug() << "setting up master " << m_sSyncSource;
 
     ControlObject* pSourceRate = pRateControl->getRateEngineControl();
     if (!pSourceRate) {
@@ -214,8 +229,8 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     slotSourceRateChanged(pSourceRate->get());
 
     // This is not redundant, I swear.  Make sure lights are all up to date
-    ControlObject::getControl(ConfigKey(group, "sync_master"))->set(TRUE);
-    ControlObject::getControl(ConfigKey(group, "sync_slave"))->set(FALSE);
+//    ControlObject::getControl(ConfigKey(group, "sync_master"))->set(TRUE);
+//    ControlObject::getControl(ConfigKey(group, "sync_slave"))->set(FALSE);
 
     return true;
 }
@@ -242,11 +257,13 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the channel is playing then go with it immediately.
                 if (fabs(pBuffer->getRate()) > 0) {
+                    qDebug() << "returning " << group;
                     return group;
                 }
             }
         }
     }
+    qDebug() << "falling back";
     return fallback;
 }
 
@@ -271,16 +288,19 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
 
 void EngineSync::slotChannelRateSliderChanged(RateControl* pRateControl, double new_bpm) {
     if (pRateControl->getState() == SYNC_MASTER) {
+        qDebug() << "rate slider -> master slider";
         m_pSyncRateSlider->set(new_bpm);
     }
 }
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
+    qDebug() << "master slider -> master bpm";
     m_pMasterBpm->set(new_bpm);
 }
 
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
     if (new_bpm != 0) {
+        qDebug() << "master bpm -> master slider";
         m_pSyncRateSlider->set(new_bpm);
         slotSyncRateSliderChanged(new_bpm);
         m_dMasterBpm = new_bpm;
@@ -348,26 +368,32 @@ void EngineSync::slotChannelSyncStateChanged(RateControl* pRateControl, double s
     if (!pRateControl) {
         return;
     }
+
     const QString& group = pRateControl->getGroup();
+    qDebug() << "engine sync state request " << group << " " << state;
 
     const bool channelIsMaster = m_sSyncSource == group;
 
     // In the following logic, m_sSyncSource acts like "previous sync source".
     if (state == SYNC_MASTER) {
+        qDebug() << "master plz";
         // TODO(owilliams): should we reject requests to be master from
         // non-playing decks?  If so, then that creates a weird situation on
         // startup where the user can't turn on Master.
 
         // If setting this channel as master fails, pick a new master.
         if (!setChannelMaster(pRateControl)) {
+            qDebug() << "fail, fall back";
             setMaster(chooseNewMaster(group));
         }
     } else if (state == SYNC_SLAVE) {
+        qDebug() << "slave plz";
         // Was this deck master before?  If so do a handoff
         if (channelIsMaster) {
+            qDebug() << "was master";
             // TODO(rryan) isn't this redundant? Is this because of MIDI light
             // breakage?
-            pRateControl->setState(SYNC_SLAVE);
+            //pRateControl->setState(SYNC_SLAVE);
             // Choose a new master, but don't pick the current one!
             setMaster(chooseNewMaster(group));
         }
@@ -376,6 +402,7 @@ void EngineSync::slotChannelSyncStateChanged(RateControl* pRateControl, double s
         if (channelIsMaster) {
             setMaster(chooseNewMaster(""));
         }
+        pRateControl->setState(SYNC_NONE);
     }
 }
 

@@ -125,12 +125,18 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pSyncMasterEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncMasterChanged(double)),
             Qt::DirectConnection);
+//    connect(m_pSyncMasterEnabled, SIGNAL(valueChangedFromEngine(double)),
+//            this, SLOT(slotSyncMasterChanged(double)),
+//            Qt::DirectConnection);
 
     m_pSyncSlaveEnabled = new ControlPushButton(ConfigKey(_group, "sync_slave"));
     m_pSyncSlaveEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pSyncSlaveEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncSlaveChanged(double)),
             Qt::DirectConnection);
+//    connect(m_pSyncSlaveEnabled, SIGNAL(valueChangedFromEngine(double)),
+//            this, SLOT(slotSyncSlaveChanged(double)),
+//            Qt::DirectConnection);
 
     m_pSyncInternalEnabled = ControlObject::getControl(ConfigKey("[Master]", "sync_master"));
     connect(m_pSyncInternalEnabled, SIGNAL(valueChanged(double)),
@@ -171,6 +177,7 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    qDebug() << "file bpm changed";
     m_pEngineBpm->set(bpm * dRate);
     m_dFileBpm = bpm;
     if (m_iSyncState == SYNC_MASTER) {
@@ -188,6 +195,7 @@ void BpmControl::slotSetEngineBpm(double bpm) {
 
     if (filebpm && ratedir && raterange) {
         double newRate = bpm / filebpm;
+        qDebug() << "set engine bpm" << bpm;
         m_pRateSlider->set((newRate - 1.0) / ratedir / raterange);
     }
 }
@@ -360,59 +368,64 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
     }
     if (m_iSyncState == SYNC_SLAVE) {
         double newRate = bpm / m_pFileBpm->get();
+        qDebug() << "master slider change " << bpm;
         m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
     }
 }
 
 void BpmControl::slotSyncMasterChanged(double state) {
+//    qDebug() << "got a request to be master " << state;
+//    if (state) {
+//        if (m_iSyncState == SYNC_MASTER) {
+//            qDebug() << "already master";
+//            return;
+//        }
 
-    if (state) {
-        if (m_iSyncState == SYNC_MASTER) {
-            return;
-        }
+////        if (m_pTrack.isNull()) {
+////            qDebug() << "rejecting, no track";
+////            m_pSyncMasterEnabled->set(false);
+////            return;
+////        }
 
-        if (m_pTrack.isNull()) {
-            m_pSyncMasterEnabled->set(false);
-            return;
-        }
-
-        m_pSyncState->set(SYNC_MASTER);
-    } else {
-        // Turning off master turns off sync mode
-        if (m_iSyncState != SYNC_MASTER) {
-            return;
-        }
-        // Unset ourselves
-        m_pSyncState->set(SYNC_NONE);
-    }
+//        qDebug() << "doing it";
+//        m_pSyncState->set(SYNC_MASTER);
+//    } else {
+//        // Turning off master turns off sync mode
+//        if (m_iSyncState != SYNC_MASTER) {
+//            return;
+//        }
+//        // Unset ourselves
+//        m_pSyncState->set(SYNC_NONE);
+//    }
 }
 
 void BpmControl::slotSyncSlaveChanged(double state) {
-    if (state) {
-        if (m_iSyncState == SYNC_SLAVE) {
-            return;
-        }
-        if (m_pTrack.isNull()) {
-            qDebug() << m_sGroup << " no track loaded, can't be slave";
-            m_pSyncSlaveEnabled->set(false);
-            return;
-        }
-        m_pSyncState->set(SYNC_SLAVE);
-    } else {
-        // Turning off slave turns off syncing
-        m_pSyncState->set(SYNC_NONE);
-    }
+//    if (state) {
+//        if (m_iSyncState == SYNC_SLAVE) {
+//            return;
+//        }
+//        if (m_pTrack.isNull()) {
+//            qDebug() << m_sGroup << " no track loaded, can't be slave";
+//            m_pSyncSlaveEnabled->set(false);
+//            return;
+//        }
+//        m_pSyncState->set(SYNC_SLAVE);
+//    } else {
+//        // Turning off slave turns off syncing
+//        m_pSyncState->set(SYNC_NONE);
+//    }
 }
 
 void BpmControl::slotSyncInternalChanged(double state) {
-    if (state) {
-        if (m_iSyncState == SYNC_MASTER) {
-            m_pSyncState->set(SYNC_SLAVE);
-        }
-    }
+//    if (state) {
+//        if (m_iSyncState == SYNC_MASTER) {
+//            m_pSyncState->set(SYNC_SLAVE);
+//        }
+//    }
 }
 
 void BpmControl::slotSyncStateChanged(double state) {
+    qDebug() << "bpmcontrol sync state change";
     double changed = m_iSyncState != state;
     m_iSyncState = state;
     if (changed) {
@@ -424,6 +437,7 @@ void BpmControl::slotSyncStateChanged(double state) {
 }
 
 void BpmControl::slotSetStatuses() {
+    qDebug() << "SETTING STATUS LIGHTS";
     switch (m_iSyncState) {
     case SYNC_NONE:
         m_pSyncMasterEnabled->set(false);
@@ -704,6 +718,7 @@ double BpmControl::getPhaseOffset(double reference_position) {
 
 void BpmControl::onEngineRateChange(double rate) {
     if (m_iSyncState == SYNC_SLAVE) {
+        qDebug() << "engine rate change";
         m_pEngineBpm->set(rate * m_pFileBpm->get());
     }
 }
@@ -713,6 +728,7 @@ void BpmControl::slotAdjustBpm() {
         return;
     }
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+    qDebug() << "slotadjustbpm";
     m_pEngineBpm->set(m_pFileBpm->get() * dRate);
 }
 

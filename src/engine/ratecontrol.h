@@ -52,6 +52,7 @@ public:
     double getRawRate() const;
     ControlObject* getRateEngineControl();
     ControlObject* getBeatDistanceControl();
+//    BpmControl* getBpmControl();
     double getState() const;
     void setState(double state);
     double getFileBpm() const { return m_dFileBpm; }
@@ -94,6 +95,8 @@ public:
   private slots:
     void slotFileBpmChanged(double);
     void slotSyncStateChanged(double);
+    void slotSyncMasterChanged(double);
+    void slotSyncSlaveChanged(double);
     void slotChannelRateSliderChanged(double);
 
   private:
