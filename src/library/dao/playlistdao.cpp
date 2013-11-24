@@ -61,6 +61,22 @@ int PlaylistDAO::createPlaylist(const QString& name, const HiddenType hidden) {
     return playlistId;
 }
 
+int PlaylistDAO::createUniquePlaylist(QString* pName, const HiddenType hidden) {
+    int playlistId = getPlaylistIdFromName(*pName);
+    int i = 1;
+
+    if (playlistId != -1) {
+        // Calculate a unique name
+        *pName += "(%1)";
+        while (playlistId != -1) {
+            i++;
+            playlistId = getPlaylistIdFromName(pName->arg(i));
+        }
+        *pName = pName->arg(i);
+    }
+    return createPlaylist(*pName, hidden);
+}
+
 QString PlaylistDAO::getPlaylistName(const int playlistId) const {
     //qDebug() << "PlaylistDAO::getPlaylistName" << QThread::currentThread() << m_database.connectionName();
 
@@ -512,7 +528,7 @@ int PlaylistDAO::insertTracksIntoPlaylist(const QList<int>& trackIds, const int 
     return tracksAdded;
 }
 
-void PlaylistDAO::addToAutoDJQueue(const int playlistId, const bool bTop) {
+void PlaylistDAO::addPlaylistToAutoDJQueue(const int playlistId, const bool bTop) {
     //qDebug() << "Adding tracks from playlist " << playlistId << " to the Auto-DJ Queue";
 
     // Query the PlaylistTracks database to locate tracks in the selected
@@ -526,20 +542,24 @@ void PlaylistDAO::addToAutoDJQueue(const int playlistId, const bool bTop) {
         return;
     }
 
-    // Get the ID of the Auto-DJ playlist
-    int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
-
     // Loop through the tracks, adding them to the Auto-DJ Queue. Start at
     // position 2 because position 1 was already loaded to the deck.
     QList<int> ids;
     while (query.next()) {
         ids.append(query.value(0).toInt());
     }
+    addTracksToAutoDJQueue(ids, bTop);
+}
+
+void PlaylistDAO::addTracksToAutoDJQueue(const QList<int>& trackIds, const bool bTop) {
+    // Get the ID of the Auto-DJ playlist
+    int autoDJId = getPlaylistIdFromName(AUTODJ_TABLE);
+
     if (bTop) {
-        insertTracksIntoPlaylist(ids, autoDJId, 2);
+        // Start at position 2 because position 1 might be already loaded to the deck.
+        insertTracksIntoPlaylist(trackIds, autoDJId, 2);
     } else {
-        // TODO(XXX): Care whether the append succeeded.
-        appendTracksToPlaylist(ids, autoDJId);
+        appendTracksToPlaylist(trackIds, autoDJId);
     }
 }
 
