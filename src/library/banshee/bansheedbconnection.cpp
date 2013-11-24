@@ -189,12 +189,6 @@ QList<struct BansheeDbConnection::PlaylistEntry> BansheeDbConnection::getPlaylis
     }
 
     qDebug() << "BansheeDbConnection::getPlaylistEntries(), took " << time.elapsed() << "ms";
-    // Benchmark:
-    // 98 ms for select CorePlaylistEntries first Time
-    // 51 ms for select CorePlaylistEntries second Time
-    // 151 ms for select CorePlaylistEntries first Time with one join
-    // 46 ms for select CorePlaylistEntries second Time with one join
-
 
     return list;
 }
