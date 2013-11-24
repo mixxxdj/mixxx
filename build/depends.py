@@ -603,6 +603,11 @@ class MixxxCore(Feature):
                    "library/baseexternaltrackmodel.cpp",
                    "library/baseexternalplaylistmodel.cpp",
                    "library/rhythmbox/rhythmboxfeature.cpp",
+
+                   "library/banshee/bansheefeature.cpp",
+                   "library/banshee/bansheeplaylistmodel.cpp",
+                   "library/banshee/bansheedbconnection.cpp",
+
                    "library/itunes/itunesfeature.cpp",
                    "library/traktor/traktorfeature.cpp",
 

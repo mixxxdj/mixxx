@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>649</width>
-    <height>556</height>
+    <height>584</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -186,13 +186,30 @@
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
-      <string>Other Libraries</string>
+      <string>Other Libraries </string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_10">
+        <property name="text">
+         <string>You will need to restart Mixxx for these settings to take effect</string>
+        </property>
+       </widget>
+      </item>
       <item row="0" column="0">
        <widget class="QCheckBox" name="checkBox_show_rhythmbox">
         <property name="text">
          <string>Show Rhythmbox Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox_show_banshee">
+        <property name="text">
+         <string>Show Banshee Library</string>
         </property>
         <property name="checked">
          <bool>true</bool>
@@ -219,17 +236,10 @@
         </property>
        </widget>
       </item>
-      <item row="8" column="0">
-       <widget class="QLabel" name="label_10">
-        <property name="text">
-         <string>You will need to restart Mixxx for these settings to take effect</string>
-        </property>
-       </widget>
-      </item>
       <item row="5" column="0">
-       <widget class="Line" name="line">
-        <property name="orientation">
-         <enum>Qt::Horizontal</enum>
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>All other libraries are shown write protected</string>
         </property>
        </widget>
       </item>
