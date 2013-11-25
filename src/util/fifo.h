@@ -55,40 +55,41 @@ class FIFO {
 
 // TwoWayMessagePipe is a bare-bones wrapper around the above FIFO class that
 // facilitates non-blocking two-way communication. To keep terminology clear,
-// there are two sides to the message pipe, the sender side and the target side.
-// The non-blocking aspect of the underlying FIFO class requires that the sender
-// methods and target methods each only be called from a single thread, or
-// alternatively guarded with a mutex. The most common use-case of this class is
-// sending and receiving messages with the callback thread without the callback
-// thread blocking.
-template <class SenderMessageType, class TargetMessageType>
+// there are two sides to the message pipe, the sender side and the receiver
+// side.  The non-blocking aspect of the underlying FIFO class requires that the
+// sender methods and target methods each only be called from a single thread,
+// or alternatively guarded with a mutex. The most common use-case of this class
+// is sending and receiving messages with the callback thread without the
+// callback thread blocking.
+template <class SenderMessageType, class ReceiverMessageType>
 class TwoWayMessagePipe {
   public:
-    TwoWayMessagePipe(int sender_fifo_size, int target_fifo_size)
-            : m_target_messages(target_fifo_size),
+    TwoWayMessagePipe(int sender_fifo_size, int receiver_fifo_size)
+            : m_receiver_messages(receiver_fifo_size),
               m_sender_messages(sender_fifo_size) {
     }
 
     ////////////////////////////////////////////////////////////////////////////
-    // Target methods. These should only be called from the target thread. Wrap
-    // with a mutex to make these methods callable from any thread.
+    // Receiver methods. These should only be called from the receiver
+    // thread. Wrap with a mutex to make these methods callable from any thread.
     ////////////////////////////////////////////////////////////////////////////
 
     // Returns the number of SenderMessageType messages waiting to be read by
-    // the target.
-    inline int targetMessageCount() const {
-        return m_target_messages.readAvailable();
+    // the receiver.
+    inline int receiverMessageCount() const {
+        return m_receiver_messages.readAvailable();
     }
 
     // Read SenderMessageType messages from the sender up to a maximum of
     // 'count'. Returns the number of messages written to 'messages'.
-    inline int targetReadMessages(SenderMessageType* messages, int count) {
-        return m_target_messages.read(messages, count);
+    inline int receiverReadMessages(SenderMessageType* messages, int count) {
+        return m_receiver_messages.read(messages, count);
     }
 
     // Writes up to 'count' messages from the 'message' array to the sender and
     // returns the number of successfully written messages.
-    inline int targetWriteMessage(const TargetMessageType* messages, int count) {
+    inline int receiverWriteMessage(const ReceiverMessageType* messages,
+                                    int count) {
         return m_sender_messages.write(messages, count);
     }
 
@@ -98,34 +99,34 @@ class TwoWayMessagePipe {
     // with a mutex to make these methods callable from any thread.
     ////////////////////////////////////////////////////////////////////////////
 
-    // Returns the number of TargetMessageType messages waiting to be read by
+    // Returns the number of ReceiverMessageType messages waiting to be read by
     // the sender.
     inline int senderMessageCount() const {
         return m_sender_messages.readAvailable();
     }
 
-    // Read a TargetMessageType written by the target addressed to the
+    // Read a ReceiverMessageType written by the receiver addressed to the
     // sender.
-    inline int senderReadMessages(TargetMessageType* messages, int count) {
+    inline int senderReadMessages(ReceiverMessageType* messages, int count) {
         return m_sender_messages.read(messages, count);
     }
 
-    // Writes up to 'count' messages from the 'message' array to the target and
+    // Writes up to 'count' messages from the 'message' array to the receiver and
     // returns the number of successfully written messages.
     inline int senderWriteMessage(const SenderMessageType* messages, int count) {
-        return m_target_messages.write(messages, count);
+        return m_receiver_messages.write(messages, count);
     }
 
   private:
-    // Messages waiting to be delivered to the target.
-    FIFO<SenderMessageType> m_target_messages;
+    // Messages waiting to be delivered to the receiver.
+    FIFO<SenderMessageType> m_receiver_messages;
     // Messages waiting to be delivered to the sender.
-    FIFO<TargetMessageType> m_sender_messages;
+    FIFO<ReceiverMessageType> m_sender_messages;
 
     // This #define is because the macro gets confused by the template
     // parameters.
 #define COMMA ,
-    DISALLOW_COPY_AND_ASSIGN(TwoWayMessagePipe<SenderMessageType COMMA TargetMessageType>);
+    DISALLOW_COPY_AND_ASSIGN(TwoWayMessagePipe<SenderMessageType COMMA ReceiverMessageType>);
 #undef COMMA
 };
 
