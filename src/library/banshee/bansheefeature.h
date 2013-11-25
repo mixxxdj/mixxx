@@ -56,8 +56,6 @@ class BansheeFeature : public BaseExternalLibraryFeature {
 
     static QString m_databaseFile;
 
-    QString m_mixxxItunesRoot;
-
     static const QString BANSHEE_MOUNT_KEY;
 };
 
