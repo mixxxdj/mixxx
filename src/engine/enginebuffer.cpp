@@ -298,7 +298,7 @@ EngineBuffer::~EngineBuffer()
         EngineControlOwnership* eco = m_engineControls.takeLast();
         EngineControl* pControl = eco->pEngineControl;
         if (eco->owned) {
-            qDebug() << "deleting " << pControl;
+            qDebug() << "Enginebuffer deleting " << pControl;
             delete pControl;
         } else {
             ++unowned;

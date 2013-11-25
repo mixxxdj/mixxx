@@ -49,7 +49,6 @@ void MidiOutputHandler::update() {
 void MidiOutputHandler::controlChanged(double value) {
     // Don't send redundant messages.
     if (value == m_lastVal) {
-        qDebug() << "not updating light that is already in that state";
         return;
     }
 

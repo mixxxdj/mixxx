@@ -53,9 +53,6 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslate(double);
     void slotMasterBpmChanged(double);
     void slotMasterSyncSliderChanged(double);
-    void slotSyncMasterChanged(double);
-    void slotSyncSlaveChanged(double);
-    void slotSyncInternalChanged(double);
     void slotSyncStateChanged(double);
     void slotSetStatuses();
 

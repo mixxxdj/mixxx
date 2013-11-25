@@ -399,9 +399,7 @@ void RateControl::slotFileBpmChanged(double bpm) {
 }
 
 void RateControl::slotSyncStateChanged(double state) {
-    qDebug() << "ratecontrol state change? " << getGroup() << " " << state;
     if (state == m_iSyncState) {
-        qDebug() << "redundant, ignoring";
         return;
     }
     m_iSyncState = state;
@@ -409,10 +407,8 @@ void RateControl::slotSyncStateChanged(double state) {
 }
 
 void RateControl::slotSyncMasterChanged(double state) {
-    qDebug() << getGroup() << " got a request to be master " << state;
     if (state) {
         if (m_iSyncState == SYNC_MASTER) {
-            qDebug() << "already master";
             return;
         }
 
@@ -422,10 +418,7 @@ void RateControl::slotSyncMasterChanged(double state) {
 //            return;
 //        }
 
-        qDebug() << "doing it";
         m_pSyncState->set(SYNC_MASTER);
-        //// We don't connect FromEngine so trigger the emit manually;
-        //slotSyncStateChanged(SYNC_MASTER);
     } else {
         // Turning off master turns off sync mode
         if (m_iSyncState != SYNC_MASTER) {
@@ -433,12 +426,10 @@ void RateControl::slotSyncMasterChanged(double state) {
         }
         // Unset ourselves
         m_pSyncState->set(SYNC_NONE);
-        //slotSyncStateChanged(SYNC_NONE);
     }
 }
 
 void RateControl::slotSyncSlaveChanged(double state) {
-    qDebug() << getGroup() << " got a request to be slave " << state;
     if (state) {
         if (m_iSyncState == SYNC_SLAVE) {
             return;
@@ -449,11 +440,9 @@ void RateControl::slotSyncSlaveChanged(double state) {
 //            return;
 //        }
         m_pSyncState->set(SYNC_SLAVE);
-        //slotSyncStateChanged(SYNC_SLAVE);
     } else {
         // Turning off slave turns off syncing
         m_pSyncState->set(SYNC_NONE);
-        //slotSyncStateChanged(SYNC_NONE);
     }
 }
 
@@ -518,17 +507,12 @@ ControlObject* RateControl::getBeatDistanceControl() {
     return m_pBeatDistance;
 }
 
-//BpmControl* RateControl::getBpmControl() {
-//    return m_pBpmControl;
-//}
-
 double RateControl::getState() const {
     return m_pSyncState->get();
 }
 
 void RateControl::setState(double state) {
     m_pSyncState->set(state);
-    //slotSyncStateChanged(state);
 }
 
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
