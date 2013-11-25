@@ -70,6 +70,9 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
     connect(m_pSyncRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
+    connect(m_pSyncRateSlider, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotSyncRateSliderChanged(double)),
+            Qt::DirectConnection);
 
     updateSamplesPerBeat();
 }
@@ -167,6 +170,8 @@ void EngineSync::setInternalMaster() {
         return;
     }
     m_dMasterBpm = m_pMasterBpm->get();
+    m_pMasterBpm->set(m_dMasterBpm);
+    m_pSyncRateSlider->set(m_dMasterBpm);
     QString old_master = m_sSyncSource;
     m_sSyncSource = kMasterSyncGroup;
     resetInternalBeatDistance();
@@ -174,7 +179,6 @@ void EngineSync::setInternalMaster() {
     updateSamplesPerBeat();
 
     // This is all we have to do, we'll start using the pseudoposition right away.
-    qDebug() << "~~~~~~~~~~~~~~~~~~SET INTERNAL MASTER TRUE";
     m_pSyncInternalEnabled->set(TRUE);
 }
 
@@ -274,7 +278,6 @@ void EngineSync::slotSourceRateChanged(double rate_engine) {
         double filebpm = m_pChannelMaster->getFileBpm();
         m_dMasterBpm = rate_engine * filebpm;
 
-
         // This will trigger all of the slaves to change rate.
         m_pMasterBpm->set(m_dMasterBpm);
     }
@@ -290,25 +293,34 @@ void EngineSync::slotChannelRateSliderChanged(RateControl* pRateControl, double 
     if (pRateControl->getState() == SYNC_MASTER) {
         qDebug() << "rate slider -> master slider";
         m_pSyncRateSlider->set(new_bpm);
-    }
+        m_pMasterBpm->set(new_bpm);
+    } /*else if (pRateControl->getState() == SYNC_SLAVE) {
+        // override user-tweaked slider value
+        pRateControl
+    }*/
 }
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
-    qDebug() << "master slider -> master bpm";
-    m_pMasterBpm->set(new_bpm);
+    qDebug() << "master slider -> master bpm " << new_bpm;
+    if (m_sSyncSource == kMasterSyncGroup && m_pMasterBpm->get() != new_bpm) {
+        qDebug() << "setting it";
+        m_pMasterBpm->set(new_bpm);
+    } else {
+        qDebug() << "no change, ignoring?";
+    }
 }
 
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
-    if (new_bpm != 0) {
-        qDebug() << "master bpm -> master slider";
-        //m_pSyncRateSlider->set(new_bpm);
-        //slotSyncRateSliderChanged(new_bpm);
-        m_dMasterBpm = new_bpm;
-    } else {
-        return;
-    }
+//    if (new_bpm != 0) {
+//        qDebug() << "master bpm -> master slider " << new_bpm;
+//        //m_pSyncRateSlider->set(new_bpm);
+//        //slotSyncRateSliderChanged(new_bpm);
+//        m_dMasterBpm = new_bpm;
+//    }
 
+    qDebug() << "master bpm -> master slider " << new_bpm;
     if (new_bpm != m_dMasterBpm) {
+        qDebug() << "it's different";
 //        if (m_sSyncSource != kMasterSyncGroup) {
 //            // XXX(Owen):
 //            // it looks like this is Good Enough for preventing accidental

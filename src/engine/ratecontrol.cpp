@@ -46,10 +46,12 @@ RateControl::RateControl(const char* _group,
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     // For testing, make sure there is a sane, non-zero default direction.
-    m_pRateDir->set(1.0);
+    // This value affects tests.
+    m_pRateDir->set(2.0);
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
     // For testing, make sure there is a sane, non-zero default range.
-    m_pRateRange->set(1.0);
+    // This value affects tests.
+    m_pRateRange->set(2.0);
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
     if (m_pRateSlider) {
         connect(m_pRateSlider, SIGNAL(valueChanged(double)),
@@ -456,6 +458,10 @@ void RateControl::slotSyncSlaveChanged(double state) {
 }
 
 void RateControl::slotChannelRateSliderChanged(double v) {
+    if (m_iSyncState == SYNC_SLAVE) {
+        // bpm control will override this value.
+        return;
+    }
     const double new_bpm = getFileBpm() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
     emit(channelRateSliderChanged(this, new_bpm));
 }

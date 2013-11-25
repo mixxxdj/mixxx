@@ -724,11 +724,19 @@ void BpmControl::onEngineRateChange(double rate) {
 }
 
 void BpmControl::slotAdjustBpm() {
+    qDebug() << m_sGroup << "adjustbpm";
     if (m_iSyncState == SYNC_SLAVE) {
+        // Override user-tweaked rate.
+        //1.6 = (160 * 1.2 / 120) - 1.0.
+        //getFileBpm() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
+
+        // b = ((bpm / filebpm) - 1.0) / m_pRateDir->get() / m_pRateRange->get()
+        qDebug() << "synced rate override " << m_pMasterBpm->get() << " " << m_dFileBpm;
+        m_pRateSlider->set(((m_pMasterBpm->get() / m_dFileBpm) - 1.0) / m_pRateDir->get() / m_pRateRange->get());
         return;
     }
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-    qDebug() << "slotadjustbpm";
+    qDebug() << "slotadjustbpm " << m_pRateSlider->get() << " " << m_pMasterBpm->get();
     m_pEngineBpm->set(m_pFileBpm->get() * dRate);
 }
 

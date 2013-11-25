@@ -72,6 +72,10 @@ class EngineSyncTest : public MixxxTest {
         }
     }
 
+    double getRateSliderValue(double rate) const {
+        return (rate - 1.0) / kRateRangeDivisor;
+    }
+
     ControlObject* m_pNumDecks;
 
     EngineSync* m_pEngineSync;
@@ -81,6 +85,9 @@ class EngineSyncTest : public MixxxTest {
 
     const char* m_sGroup1 = "[Test1]";
     const char* m_sGroup2 = "[Test2]";
+    // Based on the default rate range of 2.0 (set in ratecontrol.cpp), we have to adjust
+    // rates by this amount.
+    const double kRateRangeDivisor = 4.0;
 };
 
 TEST_F(EngineSyncTest, ControlObjectsExist) {
@@ -214,7 +221,6 @@ TEST_F(EngineSyncTest, SetMasterByLights) {
     EXPECT_EQ(1, ControlObject::getControl(ConfigKey("[Master]", "sync_master"))->get());
 }
 
-
 TEST_F(EngineSyncTest, RateChangeTest) {
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_state")));
@@ -227,16 +233,18 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
     ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
 
-    // Set the rate of channel 1 to 1.2 (which, because of how the slider works, is 0.2).
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(0.2);
-    ASSERT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    // Set the rate of channel 1 to 1.2.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.2));
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.2),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
 
     // Set the file bpm of channel 2 to 120bpm.
     ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(120.0);
     ASSERT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
 
     // rate slider for channel 2 should now be 1.6 = 160 * 1.2 / 120.
-    ASSERT_FLOAT_EQ(0.6, ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.6),
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
@@ -255,11 +263,75 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(120.0);
 
     // Set the rate slider of channel 1 to 1.2.
-    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(0.2);
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.2));
 
-    // rate slider for channel 2 should now be 1.6 = 160 * 1.2 / 120.
-    ASSERT_FLOAT_EQ(0.6, ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+    // Rate slider for channel 2 should now be 1.6 = (160 * 1.2 / 120) - 1.0.
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.6),
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
 }
 
+TEST_F(EngineSyncTest, RateChangeOverride) {
+    // This is like the test above, but the user loads the track after the slider has been tweaked.
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_state")));
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_state")));
+    pButtonMasterSync2->slotSet(SYNC_SLAVE);
+
+    // Set the file bpm of channel 1 to 160bpm.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
+
+    // Set the file bpm of channel 2 to 120bpm.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(120.0);
+
+    // Set the rate slider of channel 1 to 1.2.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.2));
+
+    // Rate slider for channel 2 should now be 1.6 = (160 * 1.2 / 120).
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.6),
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+
+    qDebug() << "twiddle the rate!";
+    // Try to twiddle the rate slider on channel 2.
+    QScopedPointer<ControlObjectThread> pSlider2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "rate")));
+    qDebug() << "current setting " << pSlider2->get();
+    pSlider2->slotSet(getRateSliderValue(0.8));
+
+    // Rate should get reset back to where it was.
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.6),
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+}
+
+TEST_F(EngineSyncTest, InternalRateChangeTest) {
+    QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
+            ConfigKey("[Master]", "sync_state")));
+    pButtonMasterSyncInternal->slotSet(SYNC_MASTER);
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_state")));
+    pButtonMasterSync1->slotSet(SYNC_SLAVE);
+    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_state")));
+    pButtonMasterSync2->slotSet(SYNC_SLAVE);
+
+    // Set the file bpm of channel 1 to 160bpm.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
+    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
+
+    // Set the file bpm of channel 2 to 120bpm.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(120.0);
+    ASSERT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
+
+    // Set the internal rate to 150.
+    ControlObject::getControl(ConfigKey("[Master]", "sync_slider"))->set(150.0);
+    ASSERT_FLOAT_EQ(150, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
+
+    // Rate sliders for channels 1 and 2 should change appropriately.
+    ASSERT_FLOAT_EQ(getRateSliderValue(0.9375),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.25),
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+}
 
 }  // namespace
