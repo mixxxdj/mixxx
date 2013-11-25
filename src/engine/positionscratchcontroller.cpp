@@ -241,7 +241,7 @@ void PositionScratchController::process(double currentSample, double releaseRate
             // We were previously in scratch mode and are no longer in scratch
             // mode. Disable everything, or optionally enable inertia mode if
             // the previous rate was high enough to count as a 'throw'
-            
+
             // The rate threshold above which disabling position scratching will enable
             // an 'inertia' mode.
             const double kThrowThreshold = 2.5;
@@ -280,7 +280,7 @@ double PositionScratchController::getRate() {
 }
 
 void PositionScratchController::notifySeek(double currentSample) {
-    // scratching continues after seek due to calculating the relative distance traveled 
-    // in m_dPositionDeltaSum   
+    // scratching continues after seek due to calculating the relative distance traveled
+    // in m_dPositionDeltaSum
     m_dLastPlaypos = currentSample;
 }

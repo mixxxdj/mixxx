@@ -553,8 +553,8 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             if (userTweakingSync) {
                 rate += userTweak;
             }
-            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
 
+            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
             return rate;
         }
 

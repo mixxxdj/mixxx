@@ -293,12 +293,17 @@ EngineBuffer::~EngineBuffer()
     delete [] m_pDitherBuffer;
     delete [] m_pCrossFadeBuffer;
 
-    while (m_engineControls.size() > 0) {
-        EngineControl* pControl = m_engineControls.takeLast();
-        if (pControl) {
+    int unowned = 0;
+    while (m_engineControls.size() > unowned) {
+        EngineControlOwnership* eco = m_engineControls.takeLast();
+        EngineControl* pControl = eco->pEngineControl;
+        if (eco->owned) {
             qDebug() << "deleting " << pControl;
             delete pControl;
+        } else {
+            ++unowned;
         }
+        delete eco;
     }
 }
 
@@ -350,8 +355,8 @@ double EngineBuffer::getFileBpm() {
 
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster) {
     m_engineLock.lock();
-    foreach (EngineControl* pControl, m_engineControls) {
-        pControl->setEngineMaster(pEngineMaster);
+    foreach (EngineControlOwnership* eco, m_engineControls) {
+        eco->pEngineControl->setEngineMaster(pEngineMaster);
     }
     m_engineLock.unlock();
 }
@@ -384,10 +389,9 @@ void EngineBuffer::setNewPlaypos(double newpos)
 
     // Must hold the engineLock while using m_engineControls
     m_engineLock.lock();
-    for (QList<EngineControl*>::iterator it = m_engineControls.begin();
+    for (QList<EngineControlOwnership*>::iterator it = m_engineControls.begin();
          it != m_engineControls.end(); it++) {
-        EngineControl *pControl = *it;
-        pControl->notifySeek(m_filepos_play);
+        (*it)->pEngineControl->notifySeek(m_filepos_play);
     }
     m_engineLock.unlock();
 }
@@ -739,9 +743,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
 
         m_engineLock.lock();
-        QListIterator<EngineControl*> it(m_engineControls);
+        QListIterator<EngineControlOwnership*> it(m_engineControls);
         while (it.hasNext()) {
-            EngineControl* pControl = it.next();
+            EngineControl* pControl = it.next()->pEngineControl;
             pControl->setCurrentSample(m_filepos_play, m_file_length_old);
             pControl->process(resample_rate, m_filepos_play, m_file_length_old, iBufferSize);
         }
@@ -900,9 +904,9 @@ void EngineBuffer::hintReader(const double dRate) {
         m_hintList.append(hint);
     }
 
-    QListIterator<EngineControl*> it(m_engineControls);
+    QListIterator<EngineControlOwnership*> it(m_engineControls);
     while (it.hasNext()) {
-        EngineControl* pControl = it.next();
+        EngineControl* pControl = it.next()->pEngineControl;
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);
@@ -920,12 +924,14 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
 
 void EngineBuffer::addControl(EngineControl* pControl, bool owned) {
     // Connect to signals from EngineControl here...
-    if (owned) {
-        m_engineLock.lock();
-        // Don't delete a control if we don't own it.
-        m_engineControls.push_back(pControl);
-        m_engineLock.unlock();
-    }
+    m_engineLock.lock();
+    // Don't delete a control if we don't own it.
+    EngineControlOwnership* eco = new EngineControlOwnership;
+    eco->pEngineControl = pControl;
+    eco->owned = owned;
+    m_engineControls.push_back(eco);
+    m_engineLock.unlock();
+
     pControl->setEngineBuffer(this);
     connect(this, SIGNAL(trackLoaded(TrackPointer)),
             pControl, SLOT(trackLoaded(TrackPointer)),

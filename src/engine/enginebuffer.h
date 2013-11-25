@@ -190,7 +190,12 @@ private:
     // Pointer to the cue control object
     CueControl* m_pCueControl;
 
-    QList<EngineControl*> m_engineControls;
+    struct EngineControlOwnership {
+        EngineControl* pEngineControl;
+        bool owned;
+    };
+
+    QList<EngineControlOwnership*> m_engineControls;
 
     // The read ahead manager for EngineBufferScale's that need to read ahead
     ReadAheadManager* m_pReadAheadManager;
