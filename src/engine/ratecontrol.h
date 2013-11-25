@@ -7,6 +7,7 @@
 #include <QObject>
 
 #include "configobject.h"
+#include "controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/enginesync.h"
 
@@ -55,7 +56,7 @@ public:
 //    BpmControl* getBpmControl();
     double getMode() const;
     void setMode(double state);
-    double getFileBpm() const { return m_dFileBpm; }
+    double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
     EngineChannel* getChannel() { Q_ASSERT(m_pChannel); return m_pChannel; }
     const QString getGroup() const { return m_sGroup; }
 
@@ -89,7 +90,6 @@ public:
     virtual void trackUnloaded(TrackPointer pTrack);
 
   private slots:
-    void slotFileBpmChanged(double);
     void slotSyncModeChanged(double);
     void slotSyncMasterChanged(double);
     void slotSyncSlaveChanged(double);
@@ -149,11 +149,9 @@ public:
     // For Master Sync
     BpmControl* m_pBpmControl;
     ControlObject* m_pSyncMode;
-    int m_iSyncMode;
 
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
-    double m_dFileBpm;
 
     // Enumerations which hold the state of the pitchbend buttons.
     // These enumerations can be used like a bitmask.

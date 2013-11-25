@@ -5,6 +5,7 @@
 #ifndef BPMCONTROL_H
 #define BPMCONTROL_H
 
+#include "controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/enginesync.h"
 #include "tapfilter.h"
@@ -22,7 +23,7 @@ class BpmControl : public EngineControl {
     virtual ~BpmControl();
 
     double getBpm() const;
-    double getFileBpm() const { return m_dFileBpm; }
+    double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
     void onEngineRateChange(double rate);
     double getSyncAdjustment(bool userTweakingSync);
     double getSyncedRate() const { return m_dSyncedRate; }
@@ -99,7 +100,6 @@ class BpmControl : public EngineControl {
     // playposition.
     ControlPushButton* m_pTranslateBeats;
 
-    double m_dFileBpm;
     double m_dLoopSize; // Only used to see if we shouldn't quantize position.
     double m_dPreviousSample;
 
@@ -112,7 +112,6 @@ class BpmControl : public EngineControl {
     double m_dSyncAdjustment;
     double m_dUserOffset;
     double m_dSyncedRate;
-    int m_iSyncMode;
 
     TapFilter m_tapFilter;
 
