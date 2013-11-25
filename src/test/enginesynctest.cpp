@@ -91,12 +91,14 @@ class EngineSyncTest : public MixxxTest {
     RateControl *m_pRateControl1, *m_pRateControl2;
     EngineDeck *m_pChannel1, *m_pChannel2;
 
-    const char* m_sGroup1 = "[Test1]";
-    const char* m_sGroup2 = "[Test2]";
-    // Based on the default rate range of 2.0 (set in ratecontrol.cpp), we have to adjust
-    // rates by this amount.
-    const double kRateRangeDivisor = 4.0;
+    static const char* m_sGroup1;
+    static const char* m_sGroup2;
+    static const double kRateRangeDivisor;
 };
+
+const char* EngineSyncTest::m_sGroup1 = "[Test1]";
+const char* EngineSyncTest::m_sGroup2 = "[Test2]";
+const double EngineSyncTest::kRateRangeDivisor = 4.0;
 
 TEST_F(EngineSyncTest, ControlObjectsExist) {
     // This isn't exhaustive, but certain COs have a habit of not being set up properly.
@@ -109,7 +111,7 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     // If we set the first channel to master, EngineSync should get that message.
 
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_state")));
+            ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_MASTER);
 
     // The master sync should now be channel 1.
@@ -118,7 +120,7 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
 
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_state")));
+            ConfigKey(m_sGroup2, "sync_mode")));
     pButtonMasterSync2->slotSet(SYNC_SLAVE);
 
     ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
@@ -168,9 +170,9 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
 TEST_F(EngineSyncTest, SetMasterByLights) {
     // Same as above, except we use the midi lights to change state.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_state")));
+            ConfigKey(m_sGroup1, "sync_mode")));
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_state")));
+            ConfigKey(m_sGroup2, "sync_mode")));
     QScopedPointer<ControlObjectThread> pButtonSyncSlave1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_slave")));
     QScopedPointer<ControlObjectThread> pButtonSyncSlave2(getControlObjectThread(
@@ -237,10 +239,10 @@ TEST_F(EngineSyncTest, SetMasterByLights) {
 
 TEST_F(EngineSyncTest, RateChangeTest) {
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_state")));
+            ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_state")));
+            ConfigKey(m_sGroup2, "sync_mode")));
     pButtonMasterSync2->slotSet(SYNC_SLAVE);
 
     // Set the file bpm of channel 1 to 160bpm.
@@ -264,10 +266,10 @@ TEST_F(EngineSyncTest, RateChangeTest) {
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     // This is like the test above, but the user loads the track after the slider has been tweaked.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_state")));
+            ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_state")));
+            ConfigKey(m_sGroup2, "sync_mode")));
     pButtonMasterSync2->slotSet(SYNC_SLAVE);
 
     // Set the file bpm of channel 1 to 160bpm.
@@ -287,10 +289,10 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
 TEST_F(EngineSyncTest, RateChangeOverride) {
     // This is like the test above, but the user loads the track after the slider has been tweaked.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_state")));
+            ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_state")));
+            ConfigKey(m_sGroup2, "sync_mode")));
     pButtonMasterSync2->slotSet(SYNC_SLAVE);
 
     // Set the file bpm of channel 1 to 160bpm.
@@ -320,13 +322,13 @@ TEST_F(EngineSyncTest, RateChangeOverride) {
 
 TEST_F(EngineSyncTest, InternalRateChangeTest) {
     QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
-            ConfigKey("[Master]", "sync_state")));
+            ConfigKey("[Master]", "sync_mode")));
     pButtonMasterSyncInternal->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_state")));
+            ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_SLAVE);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
-            ConfigKey(m_sGroup2, "sync_state")));
+            ConfigKey(m_sGroup2, "sync_mode")));
     pButtonMasterSync2->slotSet(SYNC_SLAVE);
 
     // Set the file bpm of channel 1 to 160bpm.

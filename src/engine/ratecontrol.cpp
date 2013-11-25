@@ -34,7 +34,7 @@ RateControl::RateControl(const char* _group,
     : EngineControl(_group, _config),
       m_sGroup(_group),
       m_pBpmControl(NULL),
-      m_iSyncState(SYNC_NONE),
+      m_iSyncMode(SYNC_NONE),
       m_ePbCurrent(0),
       m_ePbPressed(0),
       m_bTempStarted(false),
@@ -168,16 +168,14 @@ RateControl::RateControl(const char* _group,
     m_iRateRampSensitivity =
             getConfig()->getValueString(ConfigKey("[Controls]","RateRampSensitivity")).toInt();
 
-    m_pSyncState = new ControlObject(ConfigKey(_group, "sync_state"));
-    connect(m_pSyncState, SIGNAL(valueChanged(double)),
-                this, SLOT(slotSyncStateChanged(double)),
+    m_pSyncMode = new ControlObject(ConfigKey(_group, "sync_mode"));
+    connect(m_pSyncMode, SIGNAL(valueChanged(double)),
+                this, SLOT(slotSyncModeChanged(double)),
                 Qt::DirectConnection);
     // If we connect to FromEngine, we get circular calls of sync state changes.
-    connect(m_pSyncState, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotSyncStateChanged(double)),
+    connect(m_pSyncMode, SIGNAL(valueChangedFromEngine(double)),
+                this, SLOT(slotSyncModeChanged(double)),
                 Qt::DirectConnection);
-
-    m_iSyncState = SYNC_NONE;
 }
 
 RateControl::~RateControl() {
@@ -398,17 +396,17 @@ void RateControl::slotFileBpmChanged(double bpm) {
     slotChannelRateSliderChanged(m_pRateSlider->get());
 }
 
-void RateControl::slotSyncStateChanged(double state) {
-    if (state == m_iSyncState) {
+void RateControl::slotSyncModeChanged(double state) {
+    if (state == m_iSyncMode) {
         return;
     }
-    m_iSyncState = state;
-    emit(channelSyncStateChanged(this, state));
+    m_iSyncMode = state;
+    emit(channelSyncModeChanged(this, state));
 }
 
 void RateControl::slotSyncMasterChanged(double state) {
     if (state) {
-        if (m_iSyncState == SYNC_MASTER) {
+        if (m_iSyncMode == SYNC_MASTER) {
             return;
         }
 
@@ -418,20 +416,20 @@ void RateControl::slotSyncMasterChanged(double state) {
 //            return;
 //        }
 
-        m_pSyncState->set(SYNC_MASTER);
+        m_pSyncMode->set(SYNC_MASTER);
     } else {
         // Turning off master turns off sync mode
-        if (m_iSyncState != SYNC_MASTER) {
+        if (m_iSyncMode != SYNC_MASTER) {
             return;
         }
         // Unset ourselves
-        m_pSyncState->set(SYNC_NONE);
+        m_pSyncMode->set(SYNC_NONE);
     }
 }
 
 void RateControl::slotSyncSlaveChanged(double state) {
     if (state) {
-        if (m_iSyncState == SYNC_SLAVE) {
+        if (m_iSyncMode == SYNC_SLAVE) {
             return;
         }
 //        if (m_pTrack.isNull()) {
@@ -439,15 +437,15 @@ void RateControl::slotSyncSlaveChanged(double state) {
 //            m_pSyncSlaveEnabled->set(false);
 //            return;
 //        }
-        m_pSyncState->set(SYNC_SLAVE);
+        m_pSyncMode->set(SYNC_SLAVE);
     } else {
         // Turning off slave turns off syncing
-        m_pSyncState->set(SYNC_NONE);
+        m_pSyncMode->set(SYNC_NONE);
     }
 }
 
 void RateControl::slotChannelRateSliderChanged(double v) {
-    if (m_iSyncState == SYNC_SLAVE) {
+    if (m_iSyncMode == SYNC_SLAVE) {
         // bpm control will override this value.
         return;
     }
@@ -507,12 +505,12 @@ ControlObject* RateControl::getBeatDistanceControl() {
     return m_pBeatDistance;
 }
 
-double RateControl::getState() const {
-    return m_pSyncState->get();
+double RateControl::getMode() const {
+    return m_pSyncMode->get();
 }
 
-void RateControl::setState(double state) {
-    m_pSyncState->set(state);
+void RateControl::setMode(double state) {
+    m_pSyncMode->set(state);
 }
 
 double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerBuffer,
@@ -530,7 +528,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         bool scratchEnable = m_pScratchToggle->get() != 0 || bVinylControlEnabled;
 
         // if master sync is on, respond to it -- but vinyl always overrides
-        if (m_iSyncState == SYNC_SLAVE && !paused && !bVinylControlEnabled)
+        if (m_iSyncMode == SYNC_SLAVE && !paused && !bVinylControlEnabled)
         {
             if (m_pBpmControl == NULL) {
                 qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";

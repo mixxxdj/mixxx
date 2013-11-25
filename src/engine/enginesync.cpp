@@ -106,8 +106,8 @@ RateControl* EngineSync::addDeck(const char* group) {
         }
     }
     RateControl* pRateControl = new RateControl(group, m_pConfig);
-    connect(pRateControl, SIGNAL(channelSyncStateChanged(RateControl*, double)),
-            this, SLOT(slotChannelSyncStateChanged(RateControl*, double)),
+    connect(pRateControl, SIGNAL(channelSyncModeChanged(RateControl*, double)),
+            this, SLOT(slotChannelSyncModeChanged(RateControl*, double)),
             Qt::DirectConnection);
     connect(pRateControl, SIGNAL(channelRateSliderChanged(RateControl*, double)),
             this, SLOT(slotChannelRateSliderChanged(RateControl*, double)),
@@ -129,7 +129,7 @@ void EngineSync::disableChannelMaster() {
             disconnect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
                        this, SLOT(slotSourceBeatDistanceChanged(double)));
         }
-        pOldChannelMaster->setState(SYNC_SLAVE);
+        pOldChannelMaster->setMode(SYNC_SLAVE);
     }
     m_pChannelMaster = NULL;
 }
@@ -145,7 +145,7 @@ void EngineSync::setMaster(const QString& group) {
             qDebug() << "WARNING: failed to set selected master" << group << ", going with Internal instead";
             setInternalMaster();
         } else {
-            pRateControl->setState(SYNC_MASTER);
+            pRateControl->setMode(SYNC_MASTER);
         }
     }
 }
@@ -226,11 +226,11 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
             continue;
         }
 
-        double sync_state = pRateControl->getState();
-        if (sync_state == SYNC_MASTER) {
+        double sync_mode = pRateControl->getMode();
+        if (sync_mode == SYNC_MASTER) {
             qDebug() << "Already have a new master" << group;
             return group;
-        } else if (sync_state == SYNC_NONE) {
+        } else if (sync_mode == SYNC_NONE) {
             continue;
         }
 
@@ -267,7 +267,7 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
 }
 
 void EngineSync::slotChannelRateSliderChanged(RateControl* pRateControl, double new_bpm) {
-    if (pRateControl->getState() == SYNC_MASTER) {
+    if (pRateControl->getMode() == SYNC_MASTER) {
         m_pSyncRateSlider->set(new_bpm);
         m_pMasterBpm->set(new_bpm);
     }
@@ -334,7 +334,7 @@ void EngineSync::slotInternalMasterChanged(double state) {
     }
 }
 
-void EngineSync::slotChannelSyncStateChanged(RateControl* pRateControl, double state) {
+void EngineSync::slotChannelSyncModeChanged(RateControl* pRateControl, double state) {
     if (!pRateControl) {
         return;
     }
@@ -363,7 +363,7 @@ void EngineSync::slotChannelSyncStateChanged(RateControl* pRateControl, double s
         if (channelIsMaster) {
             setMaster(chooseNewMaster(""));
         }
-        pRateControl->setState(SYNC_NONE);
+        pRateControl->setMode(SYNC_NONE);
     }
 }
 

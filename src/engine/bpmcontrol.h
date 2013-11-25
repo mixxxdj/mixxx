@@ -53,7 +53,7 @@ class BpmControl : public EngineControl {
     void slotBeatsTranslate(double);
     void slotMasterBpmChanged(double);
     void slotMasterSyncSliderChanged(double);
-    void slotSyncStateChanged(double);
+    void slotSyncModeChanged(double);
     void slotSetStatuses();
 
   private:
@@ -107,12 +107,12 @@ class BpmControl : public EngineControl {
     ControlObject *m_pMasterBpm, *m_pMasterSyncSlider;
     ControlObject *m_pSyncInternalEnabled;
     ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
-    ControlObject *m_pSyncState;
+    ControlObject *m_pSyncMode;
     ControlObject* m_pMasterBeatDistance;
     double m_dSyncAdjustment;
     double m_dUserOffset;
     double m_dSyncedRate;
-    int m_iSyncState;
+    int m_iSyncMode;
 
     TapFilter m_tapFilter;
 

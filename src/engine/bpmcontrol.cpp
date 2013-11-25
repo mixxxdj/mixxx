@@ -24,7 +24,7 @@ BpmControl::BpmControl(const char* _group,
         m_dSyncAdjustment(1.0),
         m_dUserOffset(0.0),
         m_dSyncedRate(1.0),
-        m_iSyncState(SYNC_NONE),
+        m_iSyncMode(SYNC_NONE),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
 
@@ -126,12 +126,12 @@ BpmControl::BpmControl(const char* _group,
     m_pSyncSlaveEnabled = new ControlPushButton(ConfigKey(_group, "sync_slave"));
     m_pSyncSlaveEnabled->setButtonMode(ControlPushButton::TOGGLE);
 
-    m_pSyncState = ControlObject::getControl(ConfigKey(_group, "sync_state"));
-    connect(m_pSyncState, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSyncStateChanged(double)),
+    m_pSyncMode = ControlObject::getControl(ConfigKey(_group, "sync_mode"));
+    connect(m_pSyncMode, SIGNAL(valueChanged(double)),
+            this, SLOT(slotSyncModeChanged(double)),
             Qt::DirectConnection);
-    connect(m_pSyncState, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotSyncStateChanged(double)),
+    connect(m_pSyncMode, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotSyncModeChanged(double)),
             Qt::DirectConnection);
 
 #ifdef __VINYLCONTROL__
@@ -162,9 +162,9 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(bpm * dRate);
     m_dFileBpm = bpm;
-    if (m_iSyncState == SYNC_MASTER) {
+    if (m_iSyncMode == SYNC_MASTER) {
         m_pMasterBpm->set(bpm * dRate);
-    } else if (m_iSyncState == SYNC_SLAVE) {
+    } else if (m_iSyncMode == SYNC_SLAVE) {
         slotMasterBpmChanged(m_pMasterBpm->get());
         slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }
@@ -324,7 +324,7 @@ void BpmControl::slotMasterBpmChanged(double syncbpm) {
     if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
         return;
     }
-    if (m_iSyncState == SYNC_SLAVE) {
+    if (m_iSyncMode == SYNC_SLAVE) {
         // If we're a slave, update the rate value -- we don't set anything here,
         // this comes into effect in the return from calculaterate
         // TODO: let's ignore x2, /2 issues for now
@@ -347,15 +347,15 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
     if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
         return;
     }
-    if (m_iSyncState == SYNC_SLAVE) {
+    if (m_iSyncMode == SYNC_SLAVE) {
         double newRate = bpm / m_pFileBpm->get();
         m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
     }
 }
 
-void BpmControl::slotSyncStateChanged(double state) {
-    double changed = m_iSyncState != state;
-    m_iSyncState = state;
+void BpmControl::slotSyncModeChanged(double state) {
+    double changed = m_iSyncMode != state;
+    m_iSyncMode = state;
     if (changed) {
         slotSetStatuses();
     }
@@ -365,7 +365,7 @@ void BpmControl::slotSyncStateChanged(double state) {
 }
 
 void BpmControl::slotSetStatuses() {
-    switch (m_iSyncState) {
+    switch (m_iSyncMode) {
     case SYNC_NONE:
         m_pSyncMasterEnabled->set(false);
         m_pSyncSlaveEnabled->set(false);
@@ -490,7 +490,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
 }
 
 bool BpmControl::syncPhase() {
-    if (m_iSyncState == SYNC_MASTER) {
+    if (m_iSyncMode == SYNC_MASTER) {
         return true;
     }
     double dThisPosition = getCurrentSample();
@@ -525,7 +525,7 @@ double BpmControl::getPhaseOffset(double reference_position) {
     }
 
     double dOtherBeatFraction;
-    if (m_iSyncState == SYNC_SLAVE) {
+    if (m_iSyncMode == SYNC_SLAVE) {
         // If we're a slave, it's easy to get the other beat fraction
         dOtherBeatFraction = m_pMasterBeatDistance->get();
     } else {
@@ -644,13 +644,13 @@ double BpmControl::getPhaseOffset(double reference_position) {
 }
 
 void BpmControl::onEngineRateChange(double rate) {
-    if (m_iSyncState == SYNC_SLAVE) {
+    if (m_iSyncMode == SYNC_SLAVE) {
         m_pEngineBpm->set(rate * m_pFileBpm->get());
     }
 }
 
 void BpmControl::slotAdjustBpm() {
-    if (m_iSyncState == SYNC_SLAVE) {
+    if (m_iSyncMode == SYNC_SLAVE) {
         // Override user-tweaked rate.
         m_pRateSlider->set(((m_pMasterBpm->get() / m_dFileBpm) - 1.0) / m_pRateDir->get() / m_pRateRange->get());
         return;
@@ -719,7 +719,7 @@ double BpmControl::process(const double dRate,
     Q_UNUSED(iBufferSize);
     // It doesn't make sense to me to use the position before update, but this
     // results in better sync.
-    if (m_iSyncState == SYNC_MASTER) {
+    if (m_iSyncMode == SYNC_MASTER) {
         m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
     }
     return kNoTrigger;

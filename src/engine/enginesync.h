@@ -27,7 +27,7 @@ class ControlPushButton;
 class ControlPotmeter;
 class RateControl;
 
-enum SYNC_STATE {
+enum SYNC_MODE {
     SYNC_NONE = 0,
     SYNC_SLAVE = 1,
     SYNC_MASTER = 2
@@ -55,7 +55,7 @@ class EngineSync : public EngineControl {
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
     void slotInternalMasterChanged(double);
-    void slotChannelSyncStateChanged(RateControl*, double);
+    void slotChannelSyncModeChanged(RateControl*, double);
 
   private:
     void setMaster(const QString& group);

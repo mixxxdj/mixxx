@@ -54,7 +54,7 @@
 const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
 
-EngineBuffer::EngineBuffer(const char * _group, ConfigObject<ConfigValue> * _config,
+EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
                            EngineMaster* pMixingEngine) :
     m_engineLock(QMutex::Recursive),
     m_group(_group),

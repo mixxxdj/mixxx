@@ -53,8 +53,8 @@ public:
     ControlObject* getRateEngineControl();
     ControlObject* getBeatDistanceControl();
 //    BpmControl* getBpmControl();
-    double getState() const;
-    void setState(double state);
+    double getMode() const;
+    void setMode(double state);
     double getFileBpm() const { return m_dFileBpm; }
     EngineChannel* getChannel() { Q_ASSERT(m_pChannel); return m_pChannel; }
     const QString getGroup() const { return m_sGroup; }
@@ -75,7 +75,7 @@ public:
     virtual void notifySeek(double dNewPlaypos);
 
   signals:
-    void channelSyncStateChanged(RateControl*, double);
+    void channelSyncModeChanged(RateControl*, double);
     void channelRateSliderChanged(RateControl*, double);
 
   public slots:
@@ -94,7 +94,7 @@ public:
 
   private slots:
     void slotFileBpmChanged(double);
-    void slotSyncStateChanged(double);
+    void slotSyncModeChanged(double);
     void slotSyncMasterChanged(double);
     void slotSyncSlaveChanged(double);
     void slotChannelRateSliderChanged(double);
@@ -151,8 +151,8 @@ public:
 
     // For Master Sync
     BpmControl* m_pBpmControl;
-    ControlObject* m_pSyncState;
-    int m_iSyncState;
+    ControlObject* m_pSyncMode;
+    int m_iSyncMode;
 
     // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
