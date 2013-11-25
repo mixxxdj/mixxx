@@ -11,6 +11,7 @@
 #include "engine/bpmcontrol.h"
 #include "engine/enginechannel.h"
 #include "engine/enginecontrol.h"
+#include "engine/enginesync.h"
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
@@ -30,9 +31,11 @@ int RateControl::m_iRateRampSensitivity = 250;
 enum RateControl::RATERAMP_MODE RateControl::m_eRateRampMode = RateControl::RATERAMP_STEP;
 
 RateControl::RateControl(const char* _group,
-                         ConfigObject<ConfigValue>* _config)
+                         ConfigObject<ConfigValue>* _config,
+                         EngineSync* enginesync)
     : EngineControl(_group, _config),
       m_sGroup(_group),
+      m_pEngineSync(enginesync),
       m_pBpmControl(NULL),
       m_iSyncMode(SYNC_NONE),
       m_ePbCurrent(0),
@@ -172,7 +175,6 @@ RateControl::RateControl(const char* _group,
     connect(m_pSyncMode, SIGNAL(valueChanged(double)),
                 this, SLOT(slotSyncModeChanged(double)),
                 Qt::DirectConnection);
-    // If we connect to FromEngine, we get circular calls of sync state changes.
     connect(m_pSyncMode, SIGNAL(valueChangedFromEngine(double)),
                 this, SLOT(slotSyncModeChanged(double)),
                 Qt::DirectConnection);
@@ -401,7 +403,7 @@ void RateControl::slotSyncModeChanged(double state) {
         return;
     }
     m_iSyncMode = state;
-    emit(channelSyncModeChanged(this, state));
+    m_pEngineSync->setChannelSyncMode(this, m_iSyncMode);
 }
 
 void RateControl::slotSyncMasterChanged(double state) {
@@ -450,7 +452,7 @@ void RateControl::slotChannelRateSliderChanged(double v) {
         return;
     }
     const double new_bpm = getFileBpm() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
-    emit(channelRateSliderChanged(this, new_bpm));
+    m_pEngineSync->setChannelRateSlider(this, new_bpm);
 }
 
 

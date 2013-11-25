@@ -196,7 +196,6 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-    // blech -- when enginebuffer tries to delete this bad things happen.
     m_pRateControl = pMixingEngine->getEngineSync()->addDeck(_group);
     // Add the Rate Controller
     addControl(m_pRateControl, /* owned */ false);

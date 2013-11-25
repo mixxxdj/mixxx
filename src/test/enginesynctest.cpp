@@ -13,6 +13,7 @@
 
 #include "defs.h"
 #include "configobject.h"
+#include "controlobject.h"
 #include "deck.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
@@ -322,7 +323,7 @@ TEST_F(EngineSyncTest, RateChangeOverride) {
 
 TEST_F(EngineSyncTest, InternalRateChangeTest) {
     QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
-            ConfigKey("[Master]", "sync_mode")));
+            ConfigKey("[Master]", "sync_master")));
     pButtonMasterSyncInternal->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));

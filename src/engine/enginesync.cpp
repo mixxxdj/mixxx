@@ -105,13 +105,7 @@ RateControl* EngineSync::addDeck(const char* group) {
             return pRate;
         }
     }
-    RateControl* pRateControl = new RateControl(group, m_pConfig);
-    connect(pRateControl, SIGNAL(channelSyncModeChanged(RateControl*, double)),
-            this, SLOT(slotChannelSyncModeChanged(RateControl*, double)),
-            Qt::DirectConnection);
-    connect(pRateControl, SIGNAL(channelRateSliderChanged(RateControl*, double)),
-            this, SLOT(slotChannelRateSliderChanged(RateControl*, double)),
-            Qt::DirectConnection);
+    RateControl* pRateControl = new RateControl(group, m_pConfig, this);
     m_ratecontrols.append(pRateControl);
     return pRateControl;
 }
@@ -248,6 +242,46 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
     return fallback;
 }
 
+void EngineSync::setChannelRateSlider(RateControl* pRateControl, double new_bpm) {
+    if (pRateControl->getMode() == SYNC_MASTER) {
+        m_pSyncRateSlider->set(new_bpm);
+        m_pMasterBpm->set(new_bpm);
+    }
+}
+
+void EngineSync::setChannelSyncMode(RateControl* pRateControl, int state) {
+    if (!pRateControl) {
+        return;
+    }
+
+    const QString& group = pRateControl->getGroup();
+    const bool channelIsMaster = m_sSyncSource == group;
+
+    // In the following logic, m_sSyncSource acts like "previous sync source".
+    if (state == SYNC_MASTER) {
+        // TODO(owilliams): should we reject requests to be master from
+        // non-playing decks?  If so, then that creates a weird situation on
+        // startup where the user can't turn on Master.
+
+        // If setting this channel as master fails, pick a new master.
+        if (!setChannelMaster(pRateControl)) {
+            setMaster(chooseNewMaster(group));
+        }
+    } else if (state == SYNC_SLAVE) {
+        // Was this deck master before?  If so do a handoff.
+        if (channelIsMaster) {
+            // Choose a new master, but don't pick the current one.
+            setMaster(chooseNewMaster(group));
+        }
+    } else {
+        // if we were the master, choose a new one.
+        if (channelIsMaster) {
+            setMaster(chooseNewMaster(""));
+        }
+        pRateControl->setMode(SYNC_NONE);
+    }
+}
+
 void EngineSync::slotSourceRateChanged(double rate_engine) {
     // Master buffer can be null due to timing issues
     if (m_pChannelMaster && rate_engine != m_dSourceRate) {
@@ -266,12 +300,6 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
     setPseudoPosition(beat_dist);
 }
 
-void EngineSync::slotChannelRateSliderChanged(RateControl* pRateControl, double new_bpm) {
-    if (pRateControl->getMode() == SYNC_MASTER) {
-        m_pSyncRateSlider->set(new_bpm);
-        m_pMasterBpm->set(new_bpm);
-    }
-}
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
     if (m_sSyncSource == kMasterSyncGroup && m_pMasterBpm->get() != new_bpm) {
@@ -331,39 +359,6 @@ void EngineSync::slotInternalMasterChanged(double state) {
     } else {
         // Internal has been turned off. Pick a slave.
         setMaster(chooseNewMaster(""));
-    }
-}
-
-void EngineSync::slotChannelSyncModeChanged(RateControl* pRateControl, double state) {
-    if (!pRateControl) {
-        return;
-    }
-
-    const QString& group = pRateControl->getGroup();
-    const bool channelIsMaster = m_sSyncSource == group;
-
-    // In the following logic, m_sSyncSource acts like "previous sync source".
-    if (state == SYNC_MASTER) {
-        // TODO(owilliams): should we reject requests to be master from
-        // non-playing decks?  If so, then that creates a weird situation on
-        // startup where the user can't turn on Master.
-
-        // If setting this channel as master fails, pick a new master.
-        if (!setChannelMaster(pRateControl)) {
-            setMaster(chooseNewMaster(group));
-        }
-    } else if (state == SYNC_SLAVE) {
-        // Was this deck master before?  If so do a handoff.
-        if (channelIsMaster) {
-            // Choose a new master, but don't pick the current one.
-            setMaster(chooseNewMaster(group));
-        }
-    } else {
-        // if we were the master, choose a new one.
-        if (channelIsMaster) {
-            setMaster(chooseNewMaster(""));
-        }
-        pRateControl->setMode(SYNC_NONE);
     }
 }
 

@@ -33,7 +33,7 @@ class VinylControlControl;
 class RateControl : public EngineControl {
     Q_OBJECT
 public:
-    RateControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    RateControl(const char* _group, ConfigObject<ConfigValue>* _config, EngineSync* enginesync);
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
@@ -73,10 +73,6 @@ public:
     /** Set Rate Ramp Sensitivity */
     static void setRateRampSensitivity(int);
     virtual void notifySeek(double dNewPlaypos);
-
-  signals:
-    void channelSyncModeChanged(RateControl*, double);
-    void channelRateSliderChanged(RateControl*, double);
 
   public slots:
     void slotControlRatePermDown(double);
@@ -119,6 +115,7 @@ public:
 
     QString m_sGroup;
     EngineChannel* m_pChannel;
+    EngineSync* m_pEngineSync;
     ControlPushButton *buttonRateTempDown, *buttonRateTempDownSmall,
         *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
