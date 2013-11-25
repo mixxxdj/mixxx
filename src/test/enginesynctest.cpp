@@ -128,6 +128,7 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync1->get());
     EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
     EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
+    ASSERT_EQ(m_sGroup2, m_pEngineSync->getSyncSource().toStdString());
 
     // Now back again.
     pButtonMasterSync1->slotSet(SYNC_MASTER);
@@ -140,6 +141,7 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
     EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
     EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
+    ASSERT_EQ(m_sGroup1, m_pEngineSync->getSyncSource().toStdString());
 
     // Now set channel 1 to slave, internal will be master because no track loaded.
     pButtonMasterSync1->slotSet(SYNC_SLAVE);
@@ -152,6 +154,7 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
     EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
     EXPECT_EQ(1, ControlObject::getControl(ConfigKey("[Master]", "sync_master"))->get());
+    ASSERT_EQ("[Master]", m_pEngineSync->getSyncSource().toStdString());
 }
 
 TEST_F(EngineSyncTest, SetMasterByLights) {
@@ -195,6 +198,7 @@ TEST_F(EngineSyncTest, SetMasterByLights) {
     ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync1->get());
     EXPECT_EQ(1, pButtonSyncSlave1->get());
     EXPECT_EQ(0, pButtonSyncMaster1->get());
+    ASSERT_EQ(m_sGroup2, m_pEngineSync->getSyncSource().toStdString());
 
     // Now back again.
     pButtonSyncMaster1->slotSet(1);
@@ -207,6 +211,7 @@ TEST_F(EngineSyncTest, SetMasterByLights) {
     ASSERT_EQ(SYNC_SLAVE, pButtonMasterSync2->get());
     EXPECT_EQ(1, pButtonSyncSlave2->get());
     EXPECT_EQ(0, pButtonSyncMaster2->get());
+    ASSERT_EQ(m_sGroup1, m_pEngineSync->getSyncSource().toStdString());
 
     // Now set channel 1 to slave, internal will be master because no track loaded.
     pButtonSyncSlave1->slotSet(1);
@@ -219,6 +224,7 @@ TEST_F(EngineSyncTest, SetMasterByLights) {
     EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
     EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
     EXPECT_EQ(1, ControlObject::getControl(ConfigKey("[Master]", "sync_master"))->get());
+    ASSERT_EQ("[Master]", m_pEngineSync->getSyncSource().toStdString());
 }
 
 TEST_F(EngineSyncTest, RateChangeTest) {
@@ -325,13 +331,27 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
 
     // Set the internal rate to 150.
     ControlObject::getControl(ConfigKey("[Master]", "sync_slider"))->set(150.0);
-    ASSERT_FLOAT_EQ(150, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
+    ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
 
     // Rate sliders for channels 1 and 2 should change appropriately.
     ASSERT_FLOAT_EQ(getRateSliderValue(0.9375),
                     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
     ASSERT_FLOAT_EQ(getRateSliderValue(1.25),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+//    ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine"))->get());
+//    ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
+
+    // Set the internal rate to 80.
+    ControlObject::getControl(ConfigKey("[Master]", "sync_slider"))->set(80.0);
+    ASSERT_FLOAT_EQ(80.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
+
+    // Rate sliders for channels 1 and 2 should change appropriately.
+    ASSERT_FLOAT_EQ(getRateSliderValue(0.5),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    ASSERT_FLOAT_EQ(getRateSliderValue(0.6666667),
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+//    ASSERT_FLOAT_EQ(80.0, ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine"))->get());
+//    ASSERT_FLOAT_EQ(80.0, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
 }
 
 }  // namespace

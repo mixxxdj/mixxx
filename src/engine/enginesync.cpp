@@ -131,7 +131,6 @@ void EngineSync::disableChannelMaster(const QString& channel) {
         }
         pOldChannelMaster->setState(SYNC_SLAVE);
     }
-    m_sSyncSource = "";
     m_pChannelMaster = NULL;
 
 //    bool channelIsEmpty = channel.isEmpty();
@@ -434,7 +433,7 @@ void EngineSync::resetInternalBeatDistance() {
 
     m_dPseudoBufferPos = beat_distance * m_dSamplesPerBeat;
     qDebug() << "Resetting internal beat distance to new master"
-             << m_dPseudoBufferPos << beat_distance;
+             << m_dPseudoBufferPos << " " << beat_distance;
 }
 
 void EngineSync::updateSamplesPerBeat() {

@@ -45,6 +45,7 @@ class EngineSync : public EngineControl {
     EngineChannel* getMaster() const;
     void onCallbackStart(int bufferSize);
     RateControl* getRateControlForGroup(const QString& group);
+    const QString getSyncSource() const { return m_sSyncSource; }
 
   private slots:
     void slotMasterBpmChanged(double);
