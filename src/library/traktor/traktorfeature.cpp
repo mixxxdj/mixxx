@@ -542,7 +542,7 @@ void TraktorFeature::clearTable(QString table_name) {
         qDebug() << "Could not delete remove old entries from table "
                  << table_name << " : " << query.lastError();
     else
-        qDebug() << "Traktor table entries of '" << table_name <<"' have been cleared.";
+        qDebug() << "Traktor table entries of '" << table_name << "' have been cleared.";
 }
 
 QString TraktorFeature::getTraktorMusicDatabase() {
