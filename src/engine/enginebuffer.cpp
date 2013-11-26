@@ -919,7 +919,6 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
 void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineLock.lock();
-    // Don't delete a control if we don't own it.
     m_engineControls.push_back(pControl);
     m_engineLock.unlock();
 
