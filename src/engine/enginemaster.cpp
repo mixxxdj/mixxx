@@ -277,8 +277,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
     ScopedTimer t("EngineMaster::process");
 
-    // Notify EngineSync that we are starting the callback.
-    m_pMasterSync->onCallbackStart(iBufferSize);
+    // Update internal master sync if necessary.
+    m_pMasterSync->process(iBufferSize);
 
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);

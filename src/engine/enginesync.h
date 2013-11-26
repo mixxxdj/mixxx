@@ -43,7 +43,7 @@ class EngineSync : public EngineControl {
     void addChannel(EngineChannel* pChannel);
     void addDeck(RateControl* pRate);
     EngineChannel* getMaster() const;
-    void onCallbackStart(int bufferSize);
+    void process(int bufferSize);
     RateControl* getRateControlForGroup(const QString& group);
     const QString getSyncSource() const { return m_sSyncSource; }
     void setChannelSyncMode(RateControl*, int);
@@ -84,6 +84,8 @@ class EngineSync : public EngineControl {
     double m_dSourceRate;
     double m_dMasterBpm;
     double m_dSamplesPerBeat;
+
+    // Used for maintaining internal master sync.
     double m_dPseudoBufferPos;
 };
 
