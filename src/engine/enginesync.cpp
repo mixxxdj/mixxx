@@ -204,7 +204,7 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     return true;
 }
 
-QString EngineSync::chooseNewMaster(const QString& dontpick) {
+void EngineSync::chooseNewMaster(const QString& dontpick) {
     QString fallback = kMasterSyncGroup;
     foreach (RateControl* pRateControl, m_ratecontrols) {
         const QString& group = pRateControl->getGroup();
@@ -215,7 +215,7 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
         double sync_mode = pRateControl->getMode();
         if (sync_mode == SYNC_MASTER) {
             qDebug() << "Already have a new master" << group;
-            return group;
+            return;
         } else if (sync_mode == SYNC_NONE) {
             continue;
         }
@@ -226,12 +226,13 @@ QString EngineSync::chooseNewMaster(const QString& dontpick) {
             if (pBuffer && pBuffer->getBpm() > 0) {
                 // If the channel is playing then go with it immediately.
                 if (fabs(pBuffer->getRate()) > 0) {
-                    return group;
+                    pRateControl->setMode(SYNC_MASTER);
+                    return;
                 }
             }
         }
     }
-    return fallback;
+    setInternalMaster();
 }
 
 void EngineSync::setChannelRateSlider(RateControl* pRateControl, double new_bpm) {
@@ -257,18 +258,18 @@ void EngineSync::setChannelSyncMode(RateControl* pRateControl, int state) {
 
         // If setting this channel as master fails, pick a new master.
         if (!setChannelMaster(pRateControl)) {
-            setMaster(chooseNewMaster(group));
+            chooseNewMaster(group);
         }
     } else if (state == SYNC_SLAVE) {
         // Was this deck master before?  If so do a handoff.
         if (channelIsMaster) {
             // Choose a new master, but don't pick the current one.
-            setMaster(chooseNewMaster(group));
+            chooseNewMaster(group);
         }
     } else {
         // if we were the master, choose a new one.
         if (channelIsMaster) {
-            setMaster(chooseNewMaster(""));
+            chooseNewMaster("");
         }
         pRateControl->setMode(SYNC_NONE);
     }
@@ -343,7 +344,7 @@ void EngineSync::slotInternalMasterChanged(double state) {
         setInternalMaster();
     } else {
         // Internal has been turned off. Pick a slave.
-        setMaster(chooseNewMaster(""));
+        chooseNewMaster("");
     }
 }
 
