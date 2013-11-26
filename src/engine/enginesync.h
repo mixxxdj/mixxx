@@ -80,9 +80,6 @@ class EngineSync : public EngineControl {
 
     QList<RateControl*> m_ratecontrols;
     QString m_sSyncSource;
-    int m_iSampleRate;
-    double m_dSourceRate;
-    double m_dMasterBpm;
     double m_dSamplesPerBeat;
 
     // Used for maintaining internal master sync.

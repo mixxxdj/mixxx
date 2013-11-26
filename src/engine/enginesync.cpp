@@ -34,8 +34,6 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
           m_pConfig(_config),
           m_pChannelMaster(NULL),
           m_sSyncSource(kMasterSyncGroup),
-          m_dSourceRate(0.0f),  // Has to be zero so that master bpm gets set correctly on startup
-          m_dMasterBpm(124.0f),
           m_dPseudoBufferPos(0.0f) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
@@ -47,12 +45,13 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             this, SLOT(slotSampleRateChanged(double)),
             Qt::DirectConnection);
 
-    m_iSampleRate = m_pSampleRate->get();
-    if (m_iSampleRate == 0) {
-        m_iSampleRate = 44100;
+    if (m_pSampleRate->get()) {
+        m_pSampleRate->set(44100);
     }
 
     m_pMasterBpm = new ControlObject(ConfigKey(kMasterSyncGroup, "sync_bpm"));
+    // Initialize with a default value (will get overridden by config).
+    m_pMasterBpm->set(124.0);
     connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotMasterBpmChanged(double)),
             Qt::DirectConnection);
@@ -145,9 +144,8 @@ void EngineSync::setInternalMaster() {
     if (m_sSyncSource == kMasterSyncGroup) {
         return;
     }
-    m_dMasterBpm = m_pMasterBpm->get();
-    m_pMasterBpm->set(m_dMasterBpm);
-    m_pSyncRateSlider->set(m_dMasterBpm);
+    double master_bpm = m_pMasterBpm->get();
+    m_pSyncRateSlider->set(master_bpm);
     QString old_master = m_sSyncSource;
     m_sSyncSource = kMasterSyncGroup;
     resetInternalBeatDistance();
@@ -281,13 +279,9 @@ void EngineSync::setChannelSyncMode(RateControl* pRateControl, int state) {
 
 void EngineSync::slotSourceRateChanged(double rate_engine) {
     // Master buffer can be null due to timing issues
-    if (m_pChannelMaster && rate_engine != m_dSourceRate) {
-        m_dSourceRate = rate_engine;
-        double filebpm = m_pChannelMaster->getFileBpm();
-        m_dMasterBpm = rate_engine * filebpm;
-
+    if (m_pChannelMaster) {
         // This will trigger all of the slaves to change rate.
-        m_pMasterBpm->set(m_dMasterBpm);
+        m_pMasterBpm->set(rate_engine * m_pChannelMaster->getFileBpm());
     }
 }
 
@@ -305,7 +299,7 @@ void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
 }
 
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
-    if (new_bpm != m_dMasterBpm) {
+    if (new_bpm != m_pMasterBpm->get()) {
 //        if (m_sSyncSource != kMasterSyncGroup) {
 //            // XXX(Owen):
 //            // it looks like this is Good Enough for preventing accidental
@@ -342,12 +336,9 @@ void EngineSync::slotMasterBpmChanged(double new_bpm) {
 void EngineSync::slotSampleRateChanged(double srate) {
     int new_rate = static_cast<int>(srate);
     double internal_position = getInternalBeatDistance();
-    if (new_rate != m_iSampleRate) {
-        m_iSampleRate = new_rate;
-        // Recalculate pseudo buffer position based on new sample rate.
-        m_dPseudoBufferPos = new_rate * internal_position / m_dSamplesPerBeat;
-        updateSamplesPerBeat();
-    }
+    // Recalculate pseudo buffer position based on new sample rate.
+    m_dPseudoBufferPos = new_rate * internal_position / m_dSamplesPerBeat;
+    updateSamplesPerBeat();
 }
 
 void EngineSync::slotInternalMasterChanged(double state) {
@@ -386,14 +377,16 @@ void EngineSync::updateSamplesPerBeat() {
     //   beat    second       1 minute       beats
 
     // that last term is 1 over bpm.
-    if (m_dMasterBpm == 0) {
-        m_dSamplesPerBeat = m_iSampleRate;
+    double master_bpm = m_pMasterBpm->get();
+    double sample_rate = m_pSampleRate->get();
+    if (master_bpm == 0) {
+        m_dSamplesPerBeat = sample_rate;
         return;
     }
-    m_dSamplesPerBeat = (m_iSampleRate * 60.0) / m_dMasterBpm;
+    m_dSamplesPerBeat = (sample_rate * 60.0) / master_bpm;
     if (m_dSamplesPerBeat <= 0) {
         qDebug() << "WARNING: Tried to set samples per beat <=0";
-        m_dSamplesPerBeat = m_iSampleRate;
+        m_dSamplesPerBeat = sample_rate;
     }
 }
 
