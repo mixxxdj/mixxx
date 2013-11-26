@@ -41,7 +41,7 @@ class EngineSync : public EngineControl {
     virtual ~EngineSync();
 
     void addChannel(EngineChannel* pChannel);
-    RateControl* addDeck(const char* group);
+    void addDeck(RateControl* pRate);
     EngineChannel* getMaster() const;
     void onCallbackStart(int bufferSize);
     RateControl* getRateControlForGroup(const QString& group);

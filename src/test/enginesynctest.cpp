@@ -38,8 +38,8 @@ class EngineSyncTest : public MixxxTest {
         m_pChannel1 = new EngineDeck(m_sGroup1, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
         m_pChannel2 = new EngineDeck(m_sGroup2, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
         m_pEngineSync = m_pEngineMaster->getEngineSync();
-        m_pRateControl1 = m_pEngineSync->addDeck(m_sGroup1);
-        m_pRateControl2 = m_pEngineSync->addDeck(m_sGroup2);
+        m_pRateControl1 = m_pEngineSync->getRateControlForGroup(m_sGroup1);
+        m_pRateControl2 = m_pEngineSync->getRateControlForGroup(m_sGroup2);
 
         m_pEngineSync->addChannel(m_pChannel1);
         m_pEngineSync->addChannel(m_pChannel2);

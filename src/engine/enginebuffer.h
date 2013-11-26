@@ -97,7 +97,7 @@ public:
     void bindWorkers(EngineWorkerScheduler* pWorkerScheduler);
 
     // Add an engine control to the EngineBuffer
-    void addControl(EngineControl* pControl, bool owned=true);
+    void addControl(EngineControl* pControl);
 
     // Return the current rate (not thread-safe)
     double getRate();
@@ -190,12 +190,7 @@ private:
     // Pointer to the cue control object
     CueControl* m_pCueControl;
 
-    struct EngineControlOwnership {
-        EngineControl* pEngineControl;
-        bool owned;
-    };
-
-    QList<EngineControlOwnership*> m_engineControls;
+    QList<EngineControl*> m_engineControls;
 
     // The read ahead manager for EngineBufferScale's that need to read ahead
     ReadAheadManager* m_pReadAheadManager;

@@ -196,9 +196,10 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-    m_pRateControl = pMixingEngine->getEngineSync()->addDeck(_group);
+    m_pRateControl = new RateControl(_group, _config, pMixingEngine->getEngineSync());
+    pMixingEngine->getEngineSync()->addDeck(m_pRateControl);
     // Add the Rate Controller
-    addControl(m_pRateControl, /* owned */ false);
+    addControl(m_pRateControl);
 #ifdef __VINYLCONTROL__
     VinylControlControl *vcc = new VinylControlControl(_group, _config);
     addControl(vcc);
@@ -292,17 +293,10 @@ EngineBuffer::~EngineBuffer()
     delete [] m_pDitherBuffer;
     delete [] m_pCrossFadeBuffer;
 
-    int unowned = 0;
-    while (m_engineControls.size() > unowned) {
-        EngineControlOwnership* eco = m_engineControls.takeLast();
-        EngineControl* pControl = eco->pEngineControl;
-        if (eco->owned) {
-            qDebug() << "Enginebuffer deleting " << pControl;
-            delete pControl;
-        } else {
-            ++unowned;
-        }
-        delete eco;
+    while (m_engineControls.size() > 0) {
+        EngineControl* pControl = m_engineControls.takeLast();
+        qDebug() << "Enginebuffer deleting " << pControl;
+        delete pControl;
     }
 }
 
@@ -354,8 +348,8 @@ double EngineBuffer::getFileBpm() {
 
 void EngineBuffer::setEngineMaster(EngineMaster * pEngineMaster) {
     m_engineLock.lock();
-    foreach (EngineControlOwnership* eco, m_engineControls) {
-        eco->pEngineControl->setEngineMaster(pEngineMaster);
+    foreach (EngineControl* pControl, m_engineControls) {
+        pControl->setEngineMaster(pEngineMaster);
     }
     m_engineLock.unlock();
 }
@@ -388,9 +382,10 @@ void EngineBuffer::setNewPlaypos(double newpos)
 
     // Must hold the engineLock while using m_engineControls
     m_engineLock.lock();
-    for (QList<EngineControlOwnership*>::iterator it = m_engineControls.begin();
+    for (QList<EngineControl*>::iterator it = m_engineControls.begin();
          it != m_engineControls.end(); it++) {
-        (*it)->pEngineControl->notifySeek(m_filepos_play);
+        EngineControl *pControl = *it;
+        pControl->notifySeek(m_filepos_play);
     }
     m_engineLock.unlock();
 }
@@ -742,9 +737,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
 
         m_engineLock.lock();
-        QListIterator<EngineControlOwnership*> it(m_engineControls);
+        QListIterator<EngineControl*> it(m_engineControls);
         while (it.hasNext()) {
-            EngineControl* pControl = it.next()->pEngineControl;
+            EngineControl* pControl = it.next();
             pControl->setCurrentSample(m_filepos_play, m_file_length_old);
             pControl->process(resample_rate, m_filepos_play, m_file_length_old, iBufferSize);
         }
@@ -903,9 +898,9 @@ void EngineBuffer::hintReader(const double dRate) {
         m_hintList.append(hint);
     }
 
-    QListIterator<EngineControlOwnership*> it(m_engineControls);
+    QListIterator<EngineControl*> it(m_engineControls);
     while (it.hasNext()) {
-        EngineControl* pControl = it.next()->pEngineControl;
+        EngineControl* pControl = it.next();
         pControl->hintReader(&m_hintList);
     }
     m_pReader->hintAndMaybeWake(m_hintList);
@@ -921,14 +916,11 @@ void EngineBuffer::slotLoadTrack(TrackPointer pTrack, bool play) {
     m_pReader->newTrack(pTrack);
 }
 
-void EngineBuffer::addControl(EngineControl* pControl, bool owned) {
+void EngineBuffer::addControl(EngineControl* pControl) {
     // Connect to signals from EngineControl here...
     m_engineLock.lock();
     // Don't delete a control if we don't own it.
-    EngineControlOwnership* eco = new EngineControlOwnership;
-    eco->pEngineControl = pControl;
-    eco->owned = owned;
-    m_engineControls.push_back(eco);
+    m_engineControls.push_back(pControl);
     m_engineLock.unlock();
 
     pControl->setEngineBuffer(this);
