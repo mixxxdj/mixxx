@@ -63,10 +63,6 @@ class EngineMaster : public EngineObject, public AudioSource {
         return QString("[Headphone]");
     }
 
-    EffectsManager* getEffectsManager() const {
-        return m_pEffectsManager;
-    }
-
     void process(const CSAMPLE *, const CSAMPLE *pOut, const int iBufferSize);
 
     // Add an EngineChannel to the mixing engine. This is not thread safe --

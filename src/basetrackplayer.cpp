@@ -16,10 +16,12 @@
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
 #include "analyserqueue.h"
+#include "effects/effectsmanager.h"
 
 BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  ConfigObject<ConfigValue>* pConfig,
                                  EngineMaster* pMixingEngine,
+                                 EffectsManager* pEffectsManager,
                                  EngineChannel::ChannelOrientation defaultOrientation,
                                  QString group,
                                  bool defaultMaster,
@@ -32,9 +34,8 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    m_pChannel = new EngineDeck(
-        pSafeGroupName, pConfig, pMixingEngine->getEffectsManager(),
-        defaultOrientation);
+    m_pChannel = new EngineDeck(pSafeGroupName, pConfig, pEffectsManager,
+                                defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
