@@ -28,15 +28,9 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pRateRange, SIGNAL(valueChanged(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
-    connect(m_pRateRange, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotAdjustBpm()),
-            Qt::DirectConnection);
 
     m_pRateDir = ControlObject::getControl(_group, "rate_dir");
     connect(m_pRateDir, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm()),
-            Qt::DirectConnection);
-    connect(m_pRateDir, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotAdjustBpm()),
             Qt::DirectConnection);
 
