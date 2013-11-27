@@ -31,9 +31,10 @@ class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
-class EffectsManager;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
+class EffectsManager;
+class EngineEffectsManager;
 class ControlPushButton;
 
 class EngineDeck : public EngineChannel, public AudioDestination {
@@ -77,7 +78,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     EnginePregain* m_pPregain;
     EngineVinylSoundEmu* m_pVinylSoundEmu;
     EngineVuMeter* m_pVUMeter;
-    EffectsManager* m_pEffectsManager;
+    EngineEffectsManager* m_pEngineEffectsManager;
 
     // Begin vinyl passthrough fields
     ControlPushButton* m_pPassing;

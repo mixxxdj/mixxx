@@ -34,6 +34,7 @@
 #include "enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
 #include "sampleutil.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "effects/effectsmanager.h"
 #include "util/timer.h"
 #include "playermanager.h"
@@ -48,15 +49,15 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
                            bool bRampingGain)
-        : m_pEffectsManager(pEffectsManager),
+        : m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
           m_bRampingGain(bRampingGain),
           m_headphoneMasterGainOld(0.0),
           m_headphoneVolumeOld(1.0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
-    m_pEffectsManager->registerChannel(getMasterChannelId());
-    m_pEffectsManager->registerChannel(getHeadphoneChannelId());
+    pEffectsManager->registerChannel(getMasterChannelId());
+    pEffectsManager->registerChannel(getHeadphoneChannelId());
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
@@ -193,6 +194,8 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);
 
+    m_pEngineEffectsManager->onCallbackStart();
+
     // Prepare each channel for output
 
     // Bitvector of enabled channels
@@ -288,7 +291,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                               iBufferSize);
 
     // Process master channel effects
-    m_pEffectsManager->process(getMasterChannelId(), m_pMaster, m_pMaster, iBufferSize);
+    m_pEngineEffectsManager->process(getMasterChannelId(), m_pMaster, m_pMaster, iBufferSize);
 
 #ifdef __LADSPA__
     // LADPSA master effects
@@ -333,7 +336,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     m_headphoneMasterGainOld = cmaster_gain;
 
     // Process headphone channel effects
-    m_pEffectsManager->process(getHeadphoneChannelId(), m_pHead, m_pHead, iBufferSize);
+    m_pEngineEffectsManager->process(getHeadphoneChannelId(), m_pHead, m_pHead, iBufferSize);
 
     // Head volume and clipping
     CSAMPLE headphoneVolume = m_pHeadVolume->get();

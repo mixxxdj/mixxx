@@ -5,13 +5,17 @@
 #include <QMutex>
 #include <QList>
 #include <QSet>
+#include <QScopedPointer>
 
 #include "util.h"
+#include "util/fifo.h"
 #include "effects/effect.h"
 #include "effects/effectsbackend.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectchain.h"
+#include "engine/effects/message.h"
 
+class EngineEffectsManager;
 class EffectChainManager;
 
 class EffectsManager : public QObject {
@@ -19,6 +23,10 @@ class EffectsManager : public QObject {
   public:
     EffectsManager(QObject* pParent);
     virtual ~EffectsManager();
+
+    EngineEffectsManager* getEngineEffectsManager() {
+        return m_pEngineEffectsManager;
+    }
 
     // Add an effect backend to be managed by EffectsManager. EffectsManager
     // takes ownership of the backend, and will delete it when EffectsManager is
@@ -28,17 +36,6 @@ class EffectsManager : public QObject {
     unsigned int numEffectChainSlots() const;
     void addEffectChainSlot();
     EffectChainSlotPointer getEffectChainSlot(unsigned int i);
-
-    // Take a buffer of numSamples samples of audio from channel channelId,
-    // provided as pInput, and apply each EffectChain enabled for this channel
-    // to it, putting the resulting output in pOutput. If pInput is equal to
-    // pOutput, then the operation must occur in-place. Both pInput and pOutput
-    // are represented as stereo interleaved samples. There are numSamples total
-    // samples, so numSamples/2 left channel samples and numSamples/2 right
-    // channel samples.
-    virtual void process(const QString channelId,
-                         const CSAMPLE* pInput, CSAMPLE* pOutput,
-                         const unsigned int numSamples);
 
     void registerChannel(const QString channelID);
 
@@ -63,6 +60,9 @@ class EffectsManager : public QObject {
     QList<EffectsBackend*> m_effectsBackends;
     QList<EffectChainSlotPointer> m_effectChainSlots;
     QSet<QString> m_registeredChannels;
+
+    EngineEffectsManager* m_pEngineEffectsManager;
+    QScopedPointer<EffectsRequestPipe> m_pRequestPipe;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

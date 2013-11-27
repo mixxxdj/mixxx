@@ -17,6 +17,7 @@
 
 #include "controlpushbutton.h"
 #include "effects/effectsmanager.h"
+#include "engine/effects/engineeffectsmanager.h"
 #include "enginebuffer.h"
 #include "enginevinylsoundemu.h"
 #include "enginedeck.h"
@@ -34,12 +35,12 @@ EngineDeck::EngineDeck(const char* group,
                        EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
-          m_pEffectsManager(pEffectsManager),
+          m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
           m_pPassing(new ControlPushButton(ConfigKey(group, "passthrough"))),
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
-    m_pEffectsManager->registerChannel(getGroup());
+    pEffectsManager->registerChannel(getGroup());
 
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);
@@ -109,7 +110,7 @@ void EngineDeck::process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBuf
     m_pFilter->process(pOut, pOut, iBufferSize);
 
     // Process effects enabled for this channel
-    m_pEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
+    m_pEngineEffectsManager->process(getGroup(), pOut, pOut, iBufferSize);
 
     // Apply clipping
     m_pClipping->process(pOut, pOut, iBufferSize);

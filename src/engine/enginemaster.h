@@ -39,6 +39,7 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class EffectsManager;
+class EngineEffectsManager;
 class SyncWorker;
 
 class EngineMaster : public EngineObject, public AudioSource {
@@ -142,7 +143,7 @@ class EngineMaster : public EngineObject, public AudioSource {
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
 
-    EffectsManager* m_pEffectsManager;
+    EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
     QList<CSAMPLE> m_channelHeadphoneGainCache;

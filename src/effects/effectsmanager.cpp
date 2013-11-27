@@ -2,14 +2,22 @@
 #include "effects/effectsmanager.h"
 
 #include "effects/effectchainmanager.h"
+#include "engine/effects/engineeffectsmanager.h"
 
 // TODO(rryan) REMOVE
 #include "effects/native/flangereffect.h"
 
 EffectsManager::EffectsManager(QObject* pParent)
         : QObject(pParent),
-          m_mutex(QMutex::Recursive) {
-    m_pEffectChainManager = new EffectChainManager(this);
+          m_mutex(QMutex::Recursive),
+          m_pEffectChainManager(new EffectChainManager(this)) {
+    QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
+            TwoWayMessagePipe<EngineEffectsManagerRequest,
+                              EngineEffectsManagerResponse>::makeTwoWayMessagePipe(
+                                  2048, 2048, false, false);
+
+    m_pRequestPipe.reset(requestPipes.first);
+    m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);
 }
 
 EffectsManager::~EffectsManager() {
@@ -64,43 +72,6 @@ EffectChainSlotPointer EffectsManager::getEffectChainSlot(unsigned int i) {
         return EffectChainSlotPointer();
     }
     return m_effectChainSlots[i];
-}
-
-void EffectsManager::process(const QString channelId,
-                             const CSAMPLE* pInput, CSAMPLE* pOutput,
-                             const unsigned int numSamples) {
-    QMutexLocker locker(&m_mutex);
-
-    QList<EffectChainPointer> enabledEffects;
-
-    for (int i = 0; i < m_effectChainSlots.size(); ++i) {
-        EffectChainSlotPointer pChainSlot = m_effectChainSlots[i];
-        if (pChainSlot->isEnabledForChannel(channelId))
-            enabledEffects.append(pChainSlot->getEffectChain());
-    }
-
-    ////////////////////////////////////////////////////////////////////////////
-    // AFTER THIS LINE, THE MUTEX IS UNLOCKED. DONT TOUCH ANY MEMBER STATE
-    ////////////////////////////////////////////////////////////////////////////
-    locker.unlock();
-
-    bool inPlace = pInput == pOutput;
-    for (int i = 0; i < enabledEffects.size(); ++i) {
-        EffectChainPointer pChain = enabledEffects[i];
-
-        if (!pChain)
-            continue;
-
-        if (inPlace) {
-            // Since we're doing this in-place, using a temporary buffer doesn't
-            // matter.
-            pChain->process(channelId, pInput, pOutput, numSamples);
-        } else {
-            qDebug() << debugString() << "WARNING: non-inplace processing not implemented!";
-            // TODO(rryan) implement. Trickier because you have to use temporary
-            // memory. Punting this for now just to get everything working.
-        }
-    }
 }
 
 void EffectsManager::registerChannel(const QString channelId) {
