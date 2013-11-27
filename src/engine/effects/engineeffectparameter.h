@@ -10,7 +10,8 @@
 
 class EngineEffectParameter {
   public:
-    EngineEffectParameter(const EffectManifestParameter& parameter) : m_parameter(parameter) {
+    EngineEffectParameter(const EffectManifestParameter& parameter)
+            : m_parameter(parameter) {
     }
     virtual ~EngineEffectParameter() { }
 

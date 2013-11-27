@@ -38,6 +38,10 @@ class EngineEffect {
         }
     }
 
+    const QString& name() const {
+        return m_manifest.name();
+    }
+
     EngineEffectParameter* getParameterById(const QString& id) {
         return m_parametersById.value(id, NULL);
     }

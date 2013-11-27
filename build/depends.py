@@ -475,6 +475,7 @@ class MixxxCore(Feature):
                    "effects/native/flangereffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
+                   "engine/effects/engineeffectchain.cpp",
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",

@@ -3,38 +3,65 @@
 
 #include "util/fifo.h"
 
-struct AddEffectChainSlotRequest {
-    int iChainNumber;
-};
-
-struct RemoveEffectChainSlotRequest {
-    int iChainNumber;
-};
-
-struct LoadEffectChainToSlotRequest {
-    int iChainNumber;
-};
+class EngineEffect;
 
 struct EffectsRequest {
     enum MessageType {
-        ADD_EFFECT_CHAIN_SLOT_REQUEST,
-        REMOVE_EFFECT_CHAIN_SLOT_REQUEST,
-        ADD_EFFECT_CHAIN_REQUEST,
-        REMOVE_EFFECT_CHAIN_REQUEST,
+        ADD_EFFECT_CHAIN_SLOT,
+        REMOVE_EFFECT_CHAIN_SLOT,
+        ADD_EFFECT_CHAIN,
+        REMOVE_EFFECT_CHAIN,
+        ADD_EFFECT_TO_CHAIN,
+        REMOVE_EFFECT_FROM_CHAIN,
+
+        // Must come last.
+        NUM_REQUEST_TYPES
     };
-    MessageType m_type;
+
+    EffectsRequest()
+            : type(NUM_REQUEST_TYPES),
+              request_id(-1),
+              pEffect(NULL) {
+    }
+
+    MessageType type;
     qint64 request_id;
+
+    // The chain referred to by this request.
+    QString chainId;
+
+    // The effect referred to by this request. NULL if none.
+    EngineEffect* pEffect;
 };
 
 struct EffectsResponse {
     enum MessageType {
-        ADD_EFFECT_CHAIN_SLOT_RESPONSE,
-        REMOVE_EFFECT_CHAIN_SLOT_RESPONSE,
-        ADD_EFFECT_CHAIN_RESPONSE,
-        REMOVE_EFFECT_CHAIN_RESPONSE,
+        ADD_EFFECT_CHAIN_SLOT,
+        REMOVE_EFFECT_CHAIN_SLOT,
+        ADD_EFFECT_CHAIN,
+        REMOVE_EFFECT_CHAIN,
+        ADD_EFFECT_TO_CHAIN,
+        REMOVE_EFFECT_FROM_CHAIN,
+
+        // Must come last.
+        NUM_RESPONSE_TYPES
     };
-    MessageType m_type;
+
+    EffectsResponse()
+            : type(NUM_RESPONSE_TYPES),
+              request_id(-1),
+              success(false) {
+    }
+
+    EffectsResponse(const EffectsRequest& request, bool succeeded=false)
+            : type(NUM_RESPONSE_TYPES),
+              request_id(request.request_id),
+              success(succeeded) {
+    }
+
+    MessageType type;
     qint64 request_id;
+    bool success;
 };
 
 // For communicating from the main thread to the EngineEffectsManager.
