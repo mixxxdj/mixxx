@@ -168,6 +168,20 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     ASSERT_EQ("[Master]", m_pEngineSync->getSyncSource().toStdString());
 }
 
+TEST_F(EngineSyncTest, SetSlaveNoMaster) {
+    // If we set the first channel to slave, Internal should become master.
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_mode")));
+    pButtonMasterSync1->slotSet(SYNC_SLAVE);
+
+    // The master sync should now be Internal.
+    ASSERT_EQ(NULL, m_pEngineSync->getMaster());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey("[Master]", "sync_master"))->get());
+    ASSERT_EQ("[Master]", m_pEngineSync->getSyncSource().toStdString());
+}
+
 TEST_F(EngineSyncTest, SetMasterByLights) {
     // Same as above, except we use the midi lights to change state.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(

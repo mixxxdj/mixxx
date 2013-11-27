@@ -33,7 +33,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
         : EngineControl(kMasterSyncGroup, _config),
           m_pConfig(_config),
           m_pChannelMaster(NULL),
-          m_sSyncSource(kMasterSyncGroup),
+          m_sSyncSource(""),
           m_dPseudoBufferPos(0.0f) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
@@ -265,6 +265,9 @@ void EngineSync::setChannelSyncMode(RateControl* pRateControl, int state) {
         if (channelIsMaster) {
             // Choose a new master, but don't pick the current one.
             chooseNewMaster(group);
+        } else if (m_sSyncSource == "") {
+            // If there is no current master, use internal master.
+            setInternalMaster();
         }
     } else {
         // if we were the master, choose a new one.
