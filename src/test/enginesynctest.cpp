@@ -182,6 +182,24 @@ TEST_F(EngineSyncTest, SetSlaveNoMaster) {
     ASSERT_EQ("[Master]", m_pEngineSync->getSyncSource().toStdString());
 }
 
+TEST_F(EngineSyncTest, InternalMasterSetSlaveSliderMoves) {
+    // If internal is master, and we turn on a slave, the slider should move.
+    QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
+            ConfigKey("[Master]", "sync_master")));
+    pButtonMasterSyncInternal->slotSet(1);
+    ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->set(100.0);
+
+	// Set the file bpm of channel 1 to 160bpm.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(80.0);
+
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_mode")));
+    pButtonMasterSync1->slotSet(SYNC_SLAVE);
+
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.25),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+}
+
 TEST_F(EngineSyncTest, SetMasterByLights) {
     // Same as above, except we use the midi lights to change state.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(

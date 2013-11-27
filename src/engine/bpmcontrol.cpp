@@ -354,6 +354,8 @@ void BpmControl::slotSyncModeChanged(double state) {
     slotSetStatuses();
     if (state == SYNC_SLAVE) {
         slotMasterBpmChanged(m_pMasterBpm->get());
+        // Update the slider immediately.
+        slotMasterSyncSliderChanged(m_pMasterBpm->get());
     }
 }
 
