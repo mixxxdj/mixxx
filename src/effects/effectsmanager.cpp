@@ -12,9 +12,8 @@ EffectsManager::EffectsManager(QObject* pParent)
           m_mutex(QMutex::Recursive),
           m_pEffectChainManager(new EffectChainManager(this)) {
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
-            TwoWayMessagePipe<EngineEffectsManagerRequest,
-                              EngineEffectsManagerResponse>::makeTwoWayMessagePipe(
-                                  2048, 2048, false, false);
+            TwoWayMessagePipe<EffectsRequest, EffectsResponse>::makeTwoWayMessagePipe(
+                2048, 2048, false, false);
 
     m_pRequestPipe.reset(requestPipes.first);
     m_pEngineEffectsManager = new EngineEffectsManager(requestPipes.second);

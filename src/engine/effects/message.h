@@ -15,7 +15,7 @@ struct LoadEffectChainToSlotRequest {
     int iChainNumber;
 };
 
-struct EngineEffectsManagerRequest {
+struct EffectsRequest {
     enum MessageType {
         ADD_EFFECT_CHAIN_SLOT_REQUEST,
         REMOVE_EFFECT_CHAIN_SLOT_REQUEST,
@@ -26,7 +26,7 @@ struct EngineEffectsManagerRequest {
     qint64 request_id;
 };
 
-struct EngineEffectsManagerResponse {
+struct EffectsResponse {
     enum MessageType {
         ADD_EFFECT_CHAIN_SLOT_RESPONSE,
         REMOVE_EFFECT_CHAIN_SLOT_RESPONSE,
@@ -38,11 +38,16 @@ struct EngineEffectsManagerResponse {
 };
 
 // For communicating from the main thread to the EngineEffectsManager.
-typedef MessagePipe<EngineEffectsManagerRequest,
-                    EngineEffectsManagerResponse> EffectsRequestPipe;
-// For communicating from the EngineEffectsManager to the main thread.
-typedef MessagePipe<EngineEffectsManagerResponse,
-                    EngineEffectsManagerRequest> EffectsResponsePipe;
+typedef MessagePipe<EffectsRequest, EffectsResponse> EffectsRequestPipe;
 
+// For communicating from the EngineEffectsManager to the main thread.
+typedef MessagePipe<EffectsResponse, EffectsRequest> EffectsResponsePipe;
+
+class EffectsRequestHandler {
+  public:
+    virtual bool processEffectsRequest(
+        const EffectsRequest& message,
+        const QSharedPointer<EffectsResponsePipe>& pResponsePipe) = 0;
+};
 
 #endif /* MESSAGE_H */
