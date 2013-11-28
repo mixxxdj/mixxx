@@ -1,5 +1,7 @@
 #include "engine/effects/engineeffectchain.h"
 
+#include "engine/effects/engineeffect.h"
+
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
           m_bEnabled(false),
@@ -33,10 +35,13 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
 
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_TO_CHAIN:
-            response.success = addEffect(message.pEffect);
+            response.success = addEffect(
+                message.AddEffectToChain.pEffect);
             break;
         case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
-            response.success = removeEffect(message.pEffect);
+            response.success = removeEffect(
+                message.RemoveEffectFromChain.pEffect);
+            break;
             break;
         default:
             return false;

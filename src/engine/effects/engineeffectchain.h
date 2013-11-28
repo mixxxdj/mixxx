@@ -2,16 +2,14 @@
 #define ENGINEEFFECTCHAIN_H
 
 #include "defs.h"
-#include "engine/effects/engineeffect.h"
 #include "engine/effects/message.h"
+
+class EngineEffect;
 
 class EngineEffectChain : public EffectsRequestHandler {
   public:
     EngineEffectChain(const QString& id);
     virtual ~EngineEffectChain();
-
-    bool addEffect(EngineEffect* pEffect);
-    bool removeEffect(EngineEffect* pEffect);
 
     bool processEffectsRequest(
         const EffectsRequest& message,
@@ -21,10 +19,17 @@ class EngineEffectChain : public EffectsRequestHandler {
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples);
 
+    const QString& id() const {
+        return m_id;
+    }
+
   private:
     QString debugString() const {
         return QString("EngineEffectChain(%1)").arg(m_id);
     }
+
+    bool addEffect(EngineEffect* pEffect);
+    bool removeEffect(EngineEffect* pEffect);
 
     QString m_id;
     bool m_bEnabled;

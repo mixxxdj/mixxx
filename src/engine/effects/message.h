@@ -3,6 +3,7 @@
 
 #include "util/fifo.h"
 
+class EngineEffectChain;
 class EngineEffect;
 
 struct EffectsRequest {
@@ -20,18 +21,37 @@ struct EffectsRequest {
 
     EffectsRequest()
             : type(NUM_REQUEST_TYPES),
-              request_id(-1),
-              pEffect(NULL) {
+              request_id(-1) {
+        memset(&AddEffectChain, 0, sizeof(AddEffectChain));
+        memset(&RemoveEffectChain, 0, sizeof(RemoveEffectChain));
+        memset(&AddEffectToChain, 0, sizeof(AddEffectToChain));
+        memset(&RemoveEffectFromChain, 0, sizeof(RemoveEffectFromChain));
     }
 
     MessageType type;
     qint64 request_id;
 
-    // The chain referred to by this request.
+    // The chain referred to by this request. Not POD so can't be part of the
+    // union below.
     QString chainId;
 
-    // The effect referred to by this request. NULL if none.
-    EngineEffect* pEffect;
+    union {
+        struct {
+            EngineEffectChain* pChain;
+        } AddEffectChain;
+        struct {
+            EngineEffectChain* pChain;
+        } RemoveEffectChain;
+
+        struct {
+            // The effect referred to by this request. NULL if none.
+            EngineEffect* pEffect;
+        } AddEffectToChain;
+        struct {
+            // The effect referred to by this request. NULL if none.
+            EngineEffect* pEffect;
+        } RemoveEffectFromChain;
+    };
 };
 
 struct EffectsResponse {
