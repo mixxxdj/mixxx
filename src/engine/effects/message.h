@@ -8,10 +8,13 @@ class EngineEffect;
 
 struct EffectsRequest {
     enum MessageType {
+        // Messages for EngineEffectsManager
         ADD_EFFECT_CHAIN_SLOT,
         REMOVE_EFFECT_CHAIN_SLOT,
         ADD_EFFECT_CHAIN,
         REMOVE_EFFECT_CHAIN,
+
+        // Messages for EngineEffectChain
         SET_EFFECT_CHAIN_PARAMETERS,
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
@@ -62,6 +65,14 @@ struct EffectsRequest {
 };
 
 struct EffectsResponse {
+    enum StatusCode {
+        OK,
+        UNHANDLED_MESSAGE_TYPE,
+        NO_SUCH_CHAIN,
+
+        // Must come last.
+        NUM_STATUS_CODES
+    };
     enum MessageType {
         ADD_EFFECT_CHAIN_SLOT,
         REMOVE_EFFECT_CHAIN_SLOT,
@@ -77,18 +88,21 @@ struct EffectsResponse {
     EffectsResponse()
             : type(NUM_RESPONSE_TYPES),
               request_id(-1),
-              success(false) {
+              success(false),
+              status(NUM_STATUS_CODES) {
     }
 
     EffectsResponse(const EffectsRequest& request, bool succeeded=false)
             : type(NUM_RESPONSE_TYPES),
               request_id(request.request_id),
-              success(succeeded) {
+              success(succeeded),
+              status(NUM_STATUS_CODES) {
     }
 
     MessageType type;
     qint64 request_id;
     bool success;
+    StatusCode status;
 };
 
 // For communicating from the main thread to the EngineEffectsManager.
@@ -101,7 +115,7 @@ class EffectsRequestHandler {
   public:
     virtual bool processEffectsRequest(
         const EffectsRequest& message,
-        const QSharedPointer<EffectsResponsePipe>& pResponsePipe) = 0;
+        EffectsResponsePipe* pResponsePipe) = 0;
 };
 
 #endif /* MESSAGE_H */

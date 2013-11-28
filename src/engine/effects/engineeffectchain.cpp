@@ -35,12 +35,12 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
 }
 
 bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
-                                              const QSharedPointer<EffectsResponsePipe>& pResponsePipe) {
-    EffectsResponse response(message);
+                                              EffectsResponsePipe* pResponsePipe) {
     if (message.chainId != m_id) {
         return false;
     }
 
+    EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_TO_CHAIN:
             response.success = addEffect(

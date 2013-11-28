@@ -29,7 +29,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
 
     bool processEffectsRequest(
         const EffectsRequest& message,
-        const QSharedPointer<EffectsResponsePipe>& pResponsePipe);
+        EffectsResponsePipe* pResponsePipe);
 
   private:
     QString debugString() const {
