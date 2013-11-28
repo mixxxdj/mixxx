@@ -26,6 +26,14 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect) {
     return m_effects.removeAll(pEffect) > 0;
 }
 
+bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
+    // TODO(rryan): Parameter interpolation.
+    m_bEnabled = message.SetEffectChainParameters.enabled;
+    m_dMix = message.SetEffectChainParameters.mix;
+    m_dParameter = message.SetEffectChainParameters.parameter;
+    return true;
+}
+
 bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
                                               const QSharedPointer<EffectsResponsePipe>& pResponsePipe) {
     EffectsResponse response(message);
@@ -42,6 +50,8 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
             response.success = removeEffect(
                 message.RemoveEffectFromChain.pEffect);
             break;
+        case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
+            response.success = updateParameters(message);
             break;
         default:
             return false;

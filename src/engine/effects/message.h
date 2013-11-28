@@ -12,6 +12,7 @@ struct EffectsRequest {
         REMOVE_EFFECT_CHAIN_SLOT,
         ADD_EFFECT_CHAIN,
         REMOVE_EFFECT_CHAIN,
+        SET_EFFECT_CHAIN_PARAMETERS,
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
 
@@ -26,6 +27,7 @@ struct EffectsRequest {
         memset(&RemoveEffectChain, 0, sizeof(RemoveEffectChain));
         memset(&AddEffectToChain, 0, sizeof(AddEffectToChain));
         memset(&RemoveEffectFromChain, 0, sizeof(RemoveEffectFromChain));
+        memset(&SetEffectChainParameters, 0, sizeof(SetEffectChainParameters));
     }
 
     MessageType type;
@@ -51,6 +53,11 @@ struct EffectsRequest {
             // The effect referred to by this request. NULL if none.
             EngineEffect* pEffect;
         } RemoveEffectFromChain;
+        struct {
+            bool enabled;
+            double mix;
+            double parameter;
+        } SetEffectChainParameters;
     };
 };
 
