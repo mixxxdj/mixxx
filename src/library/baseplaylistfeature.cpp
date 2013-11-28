@@ -402,7 +402,7 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
                 m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addToAutoDJQueue(playlistId, bTop);
+            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
         }
     }
 }

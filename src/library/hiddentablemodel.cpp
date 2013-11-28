@@ -55,7 +55,7 @@ void HiddenTableModel::purgeTracks(const QModelIndexList& indices) {
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
-    select(); //Repopulate the data model.
+    select(); // Repopulate the data model.
 }
 
 void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
@@ -70,7 +70,7 @@ void HiddenTableModel::unhideTracks(const QModelIndexList& indices) {
 
     // TODO(rryan) : do not select, instead route event to BTC and notify from
     // there.
-    select(); //Repopulate the data model.
+    select(); // Repopulate the data model.
 }
 
 bool HiddenTableModel::isColumnInternal(int column) {

@@ -34,7 +34,7 @@ void CrateTableModel::setTableModel(int crateId) {
     FieldEscaper escaper(m_database);
     QString filter = "library.mixxx_deleted = 0";
     QStringList columns;
-    columns << "crate_tracks."+CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
+    columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
             << "'' as preview";
 
     // We drop files that have been explicitly deleted from mixxx
@@ -146,8 +146,9 @@ bool CrateTableModel::isColumnInternal(int column) {
 }
 
 bool CrateTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
+    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
         return true;
+    }
     return false;
 }
 

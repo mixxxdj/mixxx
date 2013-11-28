@@ -57,7 +57,7 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
             }
 
             // Create the new active-tracks view.
-            if (!createActiveTracksView (bUseIgnoreTime)) {
+            if (!createActiveTracksView(bUseIgnoreTime)) {
                 return;
             }
 
