@@ -7,7 +7,9 @@
 #include "util/fifo.h"
 #include "engine/effects/message.h"
 
-class EngineEffectsManager {
+class EngineEffectChain;
+
+class EngineEffectsManager : public EffectsRequestHandler {
   public:
     EngineEffectsManager(EffectsResponsePipe* pResponsePipe);
     virtual ~EngineEffectsManager();
@@ -25,8 +27,20 @@ class EngineEffectsManager {
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples);
 
+    bool processEffectsRequest(
+        const EffectsRequest& message,
+        const QSharedPointer<EffectsResponsePipe>& pResponsePipe);
+
   private:
+    QString debugString() const {
+        return QString("EngineEffectsManager");
+    }
+
+    bool addEffectChain(EngineEffectChain* pChain);
+    bool removeEffectChain(EngineEffectChain* pChain);
+
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
+    QList<EngineEffectChain*> m_chains;
 };
 
 
