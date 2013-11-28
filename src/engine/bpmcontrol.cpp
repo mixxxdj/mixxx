@@ -345,6 +345,7 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
     if (m_pSyncMode->get() == SYNC_SLAVE) {
         double newRate = bpm / m_pFileBpm->get();
         m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
+        m_pEngineBpm->set(bpm);
     }
 }
 
