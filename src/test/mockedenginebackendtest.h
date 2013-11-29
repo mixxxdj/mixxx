@@ -37,8 +37,8 @@ class MockScaler : public EngineBufferScale {
     double getSamplesRead() { return m_dSamplesRead; }
     void clear() { }
     CSAMPLE *getScaled(unsigned long buf_size) {
-    	m_dSamplesRead += buf_size;
-    	return m_buffer;
+        m_dSamplesRead += buf_size;
+        return m_buffer;
     }
 
   private:
