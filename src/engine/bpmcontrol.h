@@ -62,9 +62,6 @@ class BpmControl : public EngineControl {
     bool syncTempo();
     bool syncPhase();
 
-    // ControlObjects that come from PlayerManager
-    ControlObject* m_pNumDecks;
-
     // ControlObjects that come from EngineBuffer
     ControlObjectSlave* m_pPlayButton;
     ControlObjectSlave* m_pRateSlider;

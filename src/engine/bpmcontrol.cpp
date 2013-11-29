@@ -27,9 +27,9 @@ BpmControl::BpmControl(const char* _group,
         m_sGroup(_group) {
 
     m_pPlayButton = new ControlObjectSlave(_group, "play", this);
+    m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)), Qt::DirectConnection);
     m_pRateSlider = new ControlObjectSlave(_group, "rate", this);
     m_pRateSlider->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
-    m_pNumDecks = ControlObject::getControl("[Master]", "num_decks");
     m_pQuantize = ControlObject::getControl(_group, "quantize");
     m_pRateRange = new ControlObjectSlave(_group, "rateRange", this);
     m_pRateRange->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
@@ -195,6 +195,12 @@ void BpmControl::slotControlPlay(double v) {
     if (v > 0.0) {
         if (m_pQuantize->get() > 0.0) {
             syncPhase();
+        }
+    } else {
+        // If the stop button was pushed while master, choose a new master.
+        // As usual, if vinyl is on don't do anything.
+        if (m_pSyncMode->get() == SYNC_MASTER && !(m_pVCEnabled && m_pVCEnabled->get() > 0)) {
+            m_pSyncMode->set(SYNC_SLAVE);
         }
     }
 }

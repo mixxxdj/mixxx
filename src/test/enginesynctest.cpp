@@ -344,4 +344,29 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ASSERT_FLOAT_EQ(0.6666667, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
 }
 
+TEST_F(EngineSyncTest, MasterStopChooseNewTest) {
+	// If the master is playing, and stop is pushed, pick a new master.
+	ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(120.0);
+	ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(128.0);
+
+	ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
+	ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_SLAVE);
+
+	QScopedPointer<ControlObjectThread> pChannel1Play(getControlObjectThread(
+            ConfigKey(m_sGroup1, "play")));
+	pChannel1Play->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    ProcessBuffer();
+
+    pChannel1Play->set(0.0);
+
+    ProcessBuffer();
+
+    ASSERT_EQ(SYNC_SLAVE, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->get());
+    ASSERT_EQ(SYNC_MASTER, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
+}
+
 }  // namespace
