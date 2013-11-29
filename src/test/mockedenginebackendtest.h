@@ -1,5 +1,5 @@
-#ifndef MOCKENGINEBACKEND_H_
-#define MOCKENGINEBACKEND_H_
+#ifndef MOCKENGINEBACKENDTEST_H_
+#define MOCKENGINEBACKENDTEST_H_
 
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
@@ -140,7 +140,8 @@ class MockedEngineBackendTest : public MixxxTest {
 
 const char* MockedEngineBackendTest::m_sGroup1 = "[Test1]";
 const char* MockedEngineBackendTest::m_sGroup2 = "[Test2]";
+// This value is 2x the default rate range set in ratecontrol.cpp.
 const double MockedEngineBackendTest::kRateRangeDivisor = 4.0;
 
 
-#endif /* MOCKEDDECK_H_ */
+#endif /* MOCKEDENGINEBACKENDTEST_H_ */
