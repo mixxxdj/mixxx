@@ -282,6 +282,7 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
     ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
+    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
 
     // Set the rate of channel 1 to 1.2.
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.2));
@@ -297,6 +298,9 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     ASSERT_FLOAT_EQ(getRateSliderValue(1.6),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
     ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Internal master should also be 192.
+    ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
 }
 
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
@@ -310,6 +314,7 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
 
     // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
+    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
 
     // Set the file bpm of channel 2 to 120bpm.
     ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(120.0);
@@ -321,6 +326,9 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     ASSERT_FLOAT_EQ(getRateSliderValue(1.6),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
     ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+
+    // Internal Master BPM should read the same.
+    ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
 }
 
 TEST_F(EngineSyncTest, RateChangeOverride) {
