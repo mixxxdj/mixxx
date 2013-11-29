@@ -123,6 +123,9 @@ public:
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
 
+    // For dependency injection of scalers.
+    void setScaler(EngineBufferScale* pScale);
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);
@@ -153,7 +156,7 @@ public:
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
 
-  protected:
+  private:
     void setPitchIndpTimeStretch(bool b);
 
     void updateIndicators(double rate, int iBufferSize);
@@ -266,6 +269,8 @@ public:
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;
+    // Indicates that dependency injection has taken place.
+    bool m_bScalerOverride;
 
     QAtomicInt m_bSeekQueued;
     // TODO(XXX) make a macro or something.

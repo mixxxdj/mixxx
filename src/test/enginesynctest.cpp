@@ -11,161 +11,16 @@
 
 #include <QtDebug>
 
-#include "defs.h"
 #include "configobject.h"
 #include "controlobject.h"
-#include "deck.h"
-#include "engine/enginebuffer.h"
-#include "engine/enginebufferscale.h"
-#include "engine/enginechannel.h"
-#include "engine/enginedeck.h"
-#include "engine/enginemaster.h"
-#include "engine/enginesync.h"
-#include "engine/ratecontrol.h"
-#include "sampleutil.h"
+#include "test/mockedenginebackendtest.h"
+#include "test/mixxxtest.h"
 
-#include "mixxxtest.h"
-
-using ::testing::Return;
-using ::testing::_;
 
 namespace {
 
-class MockScaler : public EngineBufferScale {
-  public:
-	MockScaler() :
-			EngineBufferScale(),
-			m_dSamplesRead(0) {
-		SampleUtil::applyGain(m_buffer, 0, MAX_BUFFER_LEN);
-
-	}
-    void setBaseRate(double dBaseRate) { m_dBaseRate = dBaseRate; }
-    double setTempo(double dTempo) { return m_dTempo = dTempo; }
-    double getSamplesRead() { return m_dSamplesRead; }
-    void clear() { }
-    CSAMPLE *getScaled(unsigned long buf_size) {
-    	m_dSamplesRead += buf_size;
-    	return m_buffer;
-    }
-
-  private:
-    double m_dSamplesRead;
+class EngineSyncTest : public MockedEngineBackendTest {
 };
-
-class EngineBufferMockScaler : public EngineBuffer {
-  public:
-	EngineBufferMockScaler(const char* _group, ConfigObject<ConfigValue>* _config,
-                           EngineMaster* pMixingEngine) :
-            EngineBuffer(_group, _config, pMixingEngine) {
-		m_pMockScaler = new MockScaler();
-		m_pScale = m_pMockScaler;
-	}
-
-	~EngineBufferMockScaler() {
-		delete m_pMockScaler;
-	}
-
-	void setPitchIndpTimeStretch(bool b) { }
-
-  protected:
-	MockScaler* m_pMockScaler;
-};
-
-class EngineDeckMockScaler : public EngineDeck {
-  public:
-	EngineDeckMockScaler(const char* group,
-                         ConfigObject<ConfigValue>* pConfig,
-                         EngineMaster* pMixingEngine,
-                         EngineChannel::ChannelOrientation defaultOrientation)
-            : EngineDeck(group, pConfig, pMixingEngine, defaultOrientation) {
-		m_pOldBuffer = m_pBuffer;
-		// This is the only change from the regular class.
-		m_pBuffer = new EngineBufferMockScaler(group, pConfig, pMixingEngine);
-	}
-
-	~EngineDeckMockScaler() {
-	}
-
-	void process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBufferSize) {
-		CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
-		m_pBuffer->process(0, pOut, iBufferSize);
-	}
-  protected:
-	EngineBuffer* m_pOldBuffer;  // Keep around the old buffer so it doesn't call destructors
-};
-
-class EngineSyncTest : public MixxxTest {
-  protected:
-    virtual void SetUp() {
-        m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pNumDecks->set(2);
-
-        m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]", false, false);
-        m_pChannel1 = new EngineDeckMockScaler(m_sGroup1, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
-        m_pChannel2 = new EngineDeckMockScaler(m_sGroup2, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
-        m_pEngineSync = m_pEngineMaster->getEngineSync();
-        m_pRateControl1 = m_pEngineSync->getRateControlForGroup(m_sGroup1);
-        m_pRateControl2 = m_pEngineSync->getRateControlForGroup(m_sGroup2);
-
-        m_pEngineSync->addChannel(m_pChannel1);
-        m_pEngineSync->addChannel(m_pChannel2);
-    }
-
-    virtual void TearDown() {
-        // I get crashes if I delete this.  Better to just leak like a sieve.
-        //delete m_pEngineMaster;
-        delete m_pNumDecks;
-
-        delete m_pChannel1;
-        delete m_pChannel2;
-
-        // Clean up the rest of the controls.
-        QList<ControlDoublePrivate*> leakedControls;
-        QList<ConfigKey> leakedConfigKeys;
-
-        ControlDoublePrivate::getControls(&leakedControls);
-        int count = leakedControls.size();
-        while (leakedControls.size() > 0) {
-            foreach (ControlDoublePrivate* pCOP, leakedControls) {
-                ConfigKey key = pCOP->getKey();
-                leakedConfigKeys.append(key);
-            }
-
-            foreach (ConfigKey key, leakedConfigKeys) {
-                ControlObject* pCo = ControlObject::getControl(key, false);
-                if (pCo) {
-                    delete pCo;
-                }
-            }
-
-            ControlDoublePrivate::getControls(&leakedControls);
-            // Sometimes we can't delete all of the controls.  Give up.
-            if (leakedControls.size() == count) {
-                break;
-            }
-            count = leakedControls.size();
-        }
-    }
-
-    double getRateSliderValue(double rate) const {
-        return (rate - 1.0) / kRateRangeDivisor;
-    }
-
-    ControlObject* m_pNumDecks;
-
-    EngineSync* m_pEngineSync;
-    EngineMaster* m_pEngineMaster;
-    RateControl *m_pRateControl1, *m_pRateControl2;
-    EngineDeck *m_pChannel1, *m_pChannel2;
-
-    static const char* m_sGroup1;
-    static const char* m_sGroup2;
-    static const double kRateRangeDivisor;
-};
-
-const char* EngineSyncTest::m_sGroup1 = "[Test1]";
-const char* EngineSyncTest::m_sGroup2 = "[Test2]";
-const double EngineSyncTest::kRateRangeDivisor = 4.0;
 
 TEST_F(EngineSyncTest, ControlObjectsExist) {
     // This isn't exhaustive, but certain COs have a habit of not being set up properly.

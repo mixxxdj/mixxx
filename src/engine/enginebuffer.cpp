@@ -77,6 +77,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pScaleLinear(NULL),
     m_pScaleST(NULL),
     m_bScalerChanged(false),
+    m_bScalerOverride(false),
     m_bSeekQueued(0),
     m_dQueuedPosition(0),
     m_bLastBufferPaused(true),
@@ -196,7 +197,6 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-    qDebug() << "initing rate control!";
     m_pRateControl = new RateControl(_group, _config, pMixingEngine->getEngineSync());
     pMixingEngine->getEngineSync()->addDeck(m_pRateControl);
     // Add the Rate Controller
@@ -328,6 +328,7 @@ void EngineBuffer::setPitchIndpTimeStretch(bool b)
     //causes some weird bad pointer somewhere, which will either cause
     //the waveform the roll in a weird way or fire an ASSERT from
     //visualchannel.cpp or something. Need to valgrind this or something.
+	if (m_bScalerOverride) { return; }
 
     if (b == true) {
         m_pScale = m_pScaleST;
@@ -966,3 +967,9 @@ void EngineBuffer::setReader(CachingReader* pReader) {
             Qt::DirectConnection);
 }
 */
+
+void EngineBuffer::setScaler(EngineBufferScale* pScale) {
+	m_pScale = pScale;
+	// This bool is permanently set and can't be undone.
+	m_bScalerOverride = true;
+}

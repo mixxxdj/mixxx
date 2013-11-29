@@ -70,7 +70,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
   public slots:
     void slotPassingToggle(double v);
 
-  protected:
+  private:
     ConfigObject<ConfigValue>* m_pConfig;
     EngineBuffer* m_pBuffer;
     EngineClipping* m_pClipping;
