@@ -16,10 +16,13 @@
 #include "controlobject.h"
 #include "deck.h"
 #include "engine/enginebuffer.h"
+#include "engine/enginebufferscale.h"
 #include "engine/enginechannel.h"
+#include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "engine/enginesync.h"
 #include "engine/ratecontrol.h"
+#include "sampleutil.h"
 
 #include "mixxxtest.h"
 
@@ -28,6 +31,69 @@ using ::testing::_;
 
 namespace {
 
+class MockScaler : public EngineBufferScale {
+  public:
+	MockScaler() :
+			EngineBufferScale(),
+			m_dSamplesRead(0) {
+		SampleUtil::applyGain(m_buffer, 0, MAX_BUFFER_LEN);
+
+	}
+    void setBaseRate(double dBaseRate) { m_dBaseRate = dBaseRate; }
+    double setTempo(double dTempo) { return m_dTempo = dTempo; }
+    double getSamplesRead() { return m_dSamplesRead; }
+    void clear() { }
+    CSAMPLE *getScaled(unsigned long buf_size) {
+    	m_dSamplesRead += buf_size;
+    	return m_buffer;
+    }
+
+  private:
+    double m_dSamplesRead;
+};
+
+class EngineBufferMockScaler : public EngineBuffer {
+  public:
+	EngineBufferMockScaler(const char* _group, ConfigObject<ConfigValue>* _config,
+                           EngineMaster* pMixingEngine) :
+            EngineBuffer(_group, _config, pMixingEngine) {
+		m_pMockScaler = new MockScaler();
+		m_pScale = m_pMockScaler;
+	}
+
+	~EngineBufferMockScaler() {
+		delete m_pMockScaler;
+	}
+
+	void setPitchIndpTimeStretch(bool b) { }
+
+  protected:
+	MockScaler* m_pMockScaler;
+};
+
+class EngineDeckMockScaler : public EngineDeck {
+  public:
+	EngineDeckMockScaler(const char* group,
+                         ConfigObject<ConfigValue>* pConfig,
+                         EngineMaster* pMixingEngine,
+                         EngineChannel::ChannelOrientation defaultOrientation)
+            : EngineDeck(group, pConfig, pMixingEngine, defaultOrientation) {
+		m_pOldBuffer = m_pBuffer;
+		// This is the only change from the regular class.
+		m_pBuffer = new EngineBufferMockScaler(group, pConfig, pMixingEngine);
+	}
+
+	~EngineDeckMockScaler() {
+	}
+
+	void process(const CSAMPLE*, const CSAMPLE * pOutput, const int iBufferSize) {
+		CSAMPLE* pOut = const_cast<CSAMPLE*>(pOutput);
+		m_pBuffer->process(0, pOut, iBufferSize);
+	}
+  protected:
+	EngineBuffer* m_pOldBuffer;  // Keep around the old buffer so it doesn't call destructors
+};
+
 class EngineSyncTest : public MixxxTest {
   protected:
     virtual void SetUp() {
@@ -35,8 +101,8 @@ class EngineSyncTest : public MixxxTest {
         m_pNumDecks->set(2);
 
         m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]", false, false);
-        m_pChannel1 = new EngineDeck(m_sGroup1, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
-        m_pChannel2 = new EngineDeck(m_sGroup2, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
+        m_pChannel1 = new EngineDeckMockScaler(m_sGroup1, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
+        m_pChannel2 = new EngineDeckMockScaler(m_sGroup2, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
         m_pEngineSync = m_pEngineMaster->getEngineSync();
         m_pRateControl1 = m_pEngineSync->getRateControlForGroup(m_sGroup1);
         m_pRateControl2 = m_pEngineSync->getRateControlForGroup(m_sGroup2);

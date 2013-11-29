@@ -94,13 +94,15 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
     qDebug() << "No RateControl found for group (probably not a playback deck) " << pChannel->getGroup();
 }
 
-void EngineSync::addDeck(RateControl *pRate) {
+void EngineSync::addDeck(RateControl *pNewRate) {
     foreach (RateControl* pRate, m_ratecontrols) {
-        if (pRate->getGroup() == pRate->getGroup()) {
-            qDebug() << "EngineSync: already has channel for" << pRate->getGroup();
+        if (pRate->getGroup() == pNewRate->getGroup()) {
+            qDebug() << "EngineSync: already has channel for" << pRate->getGroup() << ", replacing";
+            pRate = pNewRate;
+            return;
         }
     }
-    m_ratecontrols.append(pRate);
+    m_ratecontrols.append(pNewRate);
 }
 
 void EngineSync::disableChannelMaster() {

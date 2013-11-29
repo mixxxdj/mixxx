@@ -196,6 +196,7 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
+    qDebug() << "initing rate control!";
     m_pRateControl = new RateControl(_group, _config, pMixingEngine->getEngineSync());
     pMixingEngine->getEngineSync()->addDeck(m_pRateControl);
     // Add the Rate Controller

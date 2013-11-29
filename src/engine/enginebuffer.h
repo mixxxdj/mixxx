@@ -153,7 +153,7 @@ public:
     void slotTrackLoadFailed(TrackPointer pTrack,
                              QString reason);
 
-private:
+  protected:
     void setPitchIndpTimeStretch(bool b);
 
     void updateIndicators(double rate, int iBufferSize);
