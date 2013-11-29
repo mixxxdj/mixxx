@@ -69,8 +69,8 @@ class BpmControl : public EngineControl {
     ControlObjectSlave* m_pPlayButton;
     ControlObjectSlave* m_pRateSlider;
     ControlObject* m_pQuantize;
-    ControlObject* m_pRateRange;
-    ControlObject* m_pRateDir;
+    ControlObjectSlave* m_pRateRange;
+    ControlObjectSlave* m_pRateDir;
 
     ControlObject* m_pThisBeatDistance;
 
@@ -78,20 +78,20 @@ class BpmControl : public EngineControl {
     ControlObject* m_pVCEnabled;
 
     // ControlObjects that come from LoopingControl
-    ControlObject* m_pLoopEnabled;
-    ControlObject* m_pLoopStartPosition;
-    ControlObject* m_pLoopEndPosition;
+    ControlObjectSlave* m_pLoopEnabled;
+    ControlObjectSlave* m_pLoopStartPosition;
+    ControlObjectSlave* m_pLoopEndPosition;
 
-    /** The current loaded file's detected BPM */
+    // The current loaded file's detected BPM
     ControlObject* m_pFileBpm;
 
-    /** The current effective BPM of the engine */
+    // The current effective BPM of the engine
     ControlObject* m_pEngineBpm;
 
     // Used for bpm tapping from GUI and MIDI
     ControlPushButton* m_pButtonTap;
 
-    /** Button for sync'ing with the other EngineBuffer */
+    // Button for sync'ing with the other EngineBuffer
     ControlPushButton* m_pButtonSync;
     ControlPushButton* m_pButtonSyncPhase;
     ControlPushButton* m_pButtonSyncTempo;
@@ -122,4 +122,4 @@ class BpmControl : public EngineControl {
 };
 
 
-#endif /* BPMCONTROL_H */
+#endif // BPMCONTROL_H

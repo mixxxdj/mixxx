@@ -31,20 +31,15 @@ BpmControl::BpmControl(const char* _group,
     m_pRateSlider->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
     m_pNumDecks = ControlObject::getControl("[Master]", "num_decks");
     m_pQuantize = ControlObject::getControl(_group, "quantize");
+    m_pRateRange = new ControlObjectSlave(_group, "rateRange", this);
+    m_pRateRange->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
+    m_pRateDir = new ControlObjectSlave(_group, "rate_dir", this);
+    m_pRateDir->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
 
-    m_pRateRange = ControlObject::getControl(_group, "rateRange");
-    connect(m_pRateRange, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm()),
-            Qt::DirectConnection);
 
-    m_pRateDir = ControlObject::getControl(_group, "rate_dir");
-    connect(m_pRateDir, SIGNAL(valueChanged(double)),
-            this, SLOT(slotAdjustBpm()),
-            Qt::DirectConnection);
-
-    m_pLoopEnabled = ControlObject::getControl(_group, "loop_enabled");
-    m_pLoopStartPosition = ControlObject::getControl(_group, "loop_start_position");
-    m_pLoopEndPosition = ControlObject::getControl(_group, "loop_end_position");
+    m_pLoopEnabled = new ControlObjectSlave(_group, "loop_enabled", this);
+    m_pLoopStartPosition = new ControlObjectSlave(_group, "loop_start_position", this);
+    m_pLoopEndPosition = new ControlObjectSlave(_group, "loop_end_position", this);
 
     m_pFileBpm = new ControlObject(ConfigKey(_group, "file_bpm"));
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
