@@ -49,12 +49,17 @@ class MockScaler : public EngineBufferScale {
 class MockedEngineBackendTest : public MixxxTest {
   protected:
     virtual void SetUp() {
+        m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
         m_pNumDecks->set(2);
 
         m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]", false, false);
         m_pChannel1 = new EngineDeck(m_sGroup1, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
+        ControlObject::getControl(ConfigKey(m_sGroup1, "master"))->set(1);
         m_pChannel2 = new EngineDeck(m_sGroup2, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
+        ControlObject::getControl(ConfigKey(m_sGroup2, "master"))->set(1);
+        m_pEngineMaster->addChannel(m_pChannel1);
+        m_pEngineMaster->addChannel(m_pChannel2);
         m_pEngineSync = m_pEngineMaster->getEngineSync();
         m_pRateControl1 = m_pEngineSync->getRateControlForGroup(m_sGroup1);
         m_pRateControl2 = m_pEngineSync->getRateControlForGroup(m_sGroup2);
@@ -63,11 +68,8 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pMockScaler2 = new MockScaler();
         m_pChannel1->getEngineBuffer()->setScaler(m_pMockScaler1);
         m_pChannel2->getEngineBuffer()->setScaler(m_pMockScaler2);
-
-        TrackPointer pTrack1(new TrackInfoObject(), &QObject::deleteLater);
-        TrackPointer pTrack2(new TrackInfoObject(), &QObject::deleteLater);
-        m_pChannel1->getEngineBuffer()->slotLoadTrack(pTrack1, true);
-        m_pChannel2->getEngineBuffer()->slotLoadTrack(pTrack2, true);
+        m_pChannel1->getEngineBuffer()->loadFakeTrack();
+        m_pChannel2->getEngineBuffer()->loadFakeTrack();
 
         m_pEngineSync->addChannel(m_pChannel1);
         m_pEngineSync->addChannel(m_pChannel2);
@@ -116,6 +118,10 @@ class MockedEngineBackendTest : public MixxxTest {
         return (rate - 1.0) / kRateRangeDivisor;
     }
 
+    void ProcessBuffer() {
+        m_pEngineMaster->process(NULL, m_pBuffer, 1024);
+    }
+
     ControlObject* m_pNumDecks;
 
     EngineSync* m_pEngineSync;
@@ -123,6 +129,8 @@ class MockedEngineBackendTest : public MixxxTest {
     RateControl *m_pRateControl1, *m_pRateControl2;
     EngineDeck *m_pChannel1, *m_pChannel2;
     MockScaler *m_pMockScaler1, *m_pMockScaler2;
+
+    CSAMPLE *m_pBuffer;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;

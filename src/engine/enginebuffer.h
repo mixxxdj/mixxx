@@ -126,6 +126,9 @@ public:
     // For dependency injection of scalers.
     void setScaler(EngineBufferScale* pScale);
 
+    // For dependency injection of fake tracks.
+    void loadFakeTrack();
+
   public slots:
     void slotControlPlayRequest(double);
     void slotControlPlayFromStart(double);

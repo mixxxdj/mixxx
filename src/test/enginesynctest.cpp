@@ -309,6 +309,12 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ControlObject::getControl(ConfigKey("[Master]", "sync_slider"))->set(150.0);
     ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
 
+    // Set decks playing, and process a buffer to update all the COs.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    ProcessBuffer();
+
     // Rate sliders for channels 1 and 2 should change appropriately.
     ASSERT_FLOAT_EQ(getRateSliderValue(0.9375),
                     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
@@ -316,11 +322,15 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ASSERT_FLOAT_EQ(getRateSliderValue(1.25),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
     ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-//    ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine"))->get());
-//    ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
+    ASSERT_FLOAT_EQ(0.9375, ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine"))->get());
+    ASSERT_FLOAT_EQ(1.25, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
 
     // Set the internal rate to 80.
     ControlObject::getControl(ConfigKey("[Master]", "sync_slider"))->set(80.0);
+
+    // Update COs again.
+    ProcessBuffer();
+
     ASSERT_FLOAT_EQ(80.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
 
     // Rate sliders for channels 1 and 2 should change appropriately.
@@ -330,8 +340,8 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ASSERT_FLOAT_EQ(getRateSliderValue(0.6666667),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
     ASSERT_FLOAT_EQ(80.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
-//    ASSERT_FLOAT_EQ(80.0, ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine"))->get());
-//    ASSERT_FLOAT_EQ(80.0, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
+    ASSERT_FLOAT_EQ(0.5, ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine"))->get());
+    ASSERT_FLOAT_EQ(0.6666667, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
 }
 
 }  // namespace
