@@ -43,7 +43,7 @@ class FlangerEffectProcessor : public EffectProcessor {
     void initialize(EngineEffect* pEffect);
 
     // See effectprocessor.h
-    void process(const QString& channelId,
+    void process(const QString& group,
                  const CSAMPLE* pInput, CSAMPLE* pOutput,
                  const unsigned int numSamples);
 
@@ -51,7 +51,7 @@ class FlangerEffectProcessor : public EffectProcessor {
     QString debugString() const {
         return "FlangerEffectProcessor";
     }
-    FlangerState* getStateForChannel(const QString channelId);
+    FlangerState* getStateForGroup(const QString& group);
 
     EngineEffectParameter* m_periodParameter;
     EngineEffectParameter* m_depthParameter;

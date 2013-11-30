@@ -85,13 +85,13 @@ void FlangerEffectProcessor::initialize(EngineEffect* pEffect) {
     m_delayParameter = pEffect->getParameterById("delay");
 }
 
-void FlangerEffectProcessor::process(const QString& channelId,
+void FlangerEffectProcessor::process(const QString& group,
                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
                                      const unsigned int numSamples) {
-    FlangerState* pState = getStateForChannel(channelId);
+    FlangerState* pState = getStateForGroup(group);
 
     if (!pState) {
-        qDebug() << debugString() << "WARNING: Couldn't get flanger state for channel" << channelId;
+        qDebug() << debugString() << "WARNING: Couldn't get flanger state for group" << group;
         return;
     }
 
@@ -129,16 +129,16 @@ void FlangerEffectProcessor::process(const QString& channelId,
     }
 }
 
-FlangerState* FlangerEffectProcessor::getStateForChannel(const QString channelId) {
+FlangerState* FlangerEffectProcessor::getStateForGroup(const QString& group) {
     FlangerState* pState = NULL;
-    if (!m_flangerStates.contains(channelId)) {
+    if (!m_flangerStates.contains(group)) {
         pState = new FlangerState();
-        m_flangerStates[channelId] = pState;
+        m_flangerStates[group] = pState;
         SampleUtil::applyGain(pState->delayBuffer, 0.0f, kMaxDelay);
         pState->delayPos = 0;
         pState->time = 0;
     } else {
-        pState = m_flangerStates[channelId];
+        pState = m_flangerStates[group];
     }
     return pState;
 }
