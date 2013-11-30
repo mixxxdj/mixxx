@@ -38,7 +38,7 @@ class PresetInfo {
     inline const QString getWikiLink() const { return wikilink; };
     inline const QString getAuthor() const { return author; };
 
-    inline const QList< QHash<QString,QString> > getProducts() const { return products; };
+    inline const QList<QHash<QString,QString> > getProducts() const { return products; };
 
   private:
     QHash<QString,QString> parseBulkProduct(const QDomElement& element) const;
@@ -54,7 +54,7 @@ class PresetInfo {
     QString description;
     QString forumlink;
     QString wikilink;
-    QList< QHash<QString,QString> > products;
+    QList<QHash<QString,QString> > products;
 };
 
 class PresetInfoEnumerator {
@@ -70,7 +70,7 @@ class PresetInfoEnumerator {
     PresetInfo getPresetInfo(const QString path);
 
     // Return cached list of presets for this extension
-    QList <PresetInfo> getPresets(const QString extension);
+    QList<PresetInfo> getPresets(const QString extension);
 
     // Updates presets matching given extension
     void updatePresets(const QString extension);
@@ -80,15 +80,15 @@ class PresetInfoEnumerator {
     void loadSupportedPresets();
 
   private:
-    QList <QString> fileExtensions;
+    QList<QString> fileExtensions;
     ConfigObject<ConfigValue>* m_pConfig;
 
     // List of paths for controller presets
-    QList <QString> controllerDirPaths;
+    QList<QString> controllerDirPaths;
 
     // Cached presets by extension. Map format is:
     // [extension,[preset_path,preset]]
-    QMap <QString, QMap<QString, PresetInfo> > presetsByExtension;
+    QMap<QString, QMap<QString, PresetInfo> > presetsByExtension;
 
 };
 
