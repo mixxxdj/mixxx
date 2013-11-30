@@ -54,9 +54,14 @@ class EffectChain : public QObject {
     EngineEffectChain* getEngineEffectChain();
 
   signals:
-    // Signal that indicates that the EffectChain has changed (i.e. an Effect
-    // has been added or removed).
-    void updated();
+    // Signal that indicates that an effect has been added or removed.
+    void effectAdded();
+    void effectRemoved();
+    void nameChanged(const QString& name);
+    void enabledChanged(double v);
+    void mixChanged(double v);
+    void parameterChanged(double v);
+    void groupStatusChanged(const QString& group, bool enabled);
 
   private:
     QString debugString() const {

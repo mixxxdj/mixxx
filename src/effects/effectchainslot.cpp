@@ -39,6 +39,7 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
 
 EffectChainSlot::~EffectChainSlot() {
     qDebug() << debugString() << "destroyed";
+    clear();
     delete m_pControlNumEffects;
     delete m_pControlChainEnabled;
     delete m_pControlChainMix;
@@ -61,8 +62,33 @@ QString EffectChainSlot::name() const {
     return tr("None");
 }
 
-void EffectChainSlot::slotChainUpdated() {
-    qDebug() << debugString() << "slotChainUpdated";
+void EffectChainSlot::slotChainNameChanged(const QString&) {
+    emit(updated());
+}
+
+void EffectChainSlot::slotChainEnabledChanged(bool bEnabled) {
+    m_pControlChainEnabled->set(bEnabled);
+    emit(updated());
+}
+
+void EffectChainSlot::slotChainMixChanged(double mix) {
+    m_pControlChainMix->set(mix);
+    emit(updated());
+}
+
+void EffectChainSlot::slotChainParameterChanged(double parameter) {
+    m_pControlChainParameter->set(parameter);
+    emit(updated());
+}
+
+void EffectChainSlot::slotChainGroupStatusChanged(const QString& group,
+                                                  bool enabled) {
+    m_channelEnableControls[group]->set(enabled);
+    emit(updated());
+}
+
+void EffectChainSlot::slotChainEffectsChanged(bool shouldEmit) {
+    qDebug() << debugString() << "slotChainEffectsChanged";
     if (m_pEffectChain) {
         QList<EffectPointer> effects = m_pEffectChain->getEffects();
         while (effects.size() > m_slots.size()) {
@@ -78,15 +104,9 @@ void EffectChainSlot::slotChainUpdated() {
             if (pSlot)
                 pSlot->loadEffect(pEffect);
         }
-
         m_pControlNumEffects->set(m_pEffectChain->numEffects());
-        m_pControlChainEnabled->set(m_pEffectChain->enabled());
-        m_pControlChainMix->set(m_pEffectChain->mix());
-        m_pControlChainParameter->set(m_pEffectChain->parameter());
-
-        for (QMap<QString, ControlObject*>::iterator it = m_channelEnableControls.begin();
-             it != m_channelEnableControls.end(); ++it) {
-            it.value()->set(m_pEffectChain->enabledForGroup(it.key()));
+        if (shouldEmit) {
+            emit(updated());
         }
     }
 }
@@ -97,9 +117,31 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
 
     if (pEffectChain) {
         m_pEffectChain = pEffectChain;
-        connect(m_pEffectChain.data(), SIGNAL(updated()),
-                this, SLOT(slotChainUpdated()));
-        slotChainUpdated();
+        connect(m_pEffectChain.data(), SIGNAL(effectAdded()),
+                this, SLOT(slotChainEffectsChanged()));
+        connect(m_pEffectChain.data(), SIGNAL(effectRemoved()),
+                this, SLOT(slotChainEffectsChanged()));
+        connect(m_pEffectChain.data(), SIGNAL(nameChanged(const QString&)),
+                this, SLOT(slotChainNameChanged(const QString&)));
+        connect(m_pEffectChain.data(), SIGNAL(enabledChanged(bool)),
+                this, SLOT(slotChainEnabledChanged(bool)));
+        connect(m_pEffectChain.data(), SIGNAL(parameterChanged(double)),
+                this, SLOT(slotChainParameterChanged(double)));
+        connect(m_pEffectChain.data(), SIGNAL(mixChanged(double)),
+                this, SLOT(slotChainMixChanged(double)));
+        connect(m_pEffectChain.data(), SIGNAL(groupStatusChanged(const QString&, bool)),
+                this, SLOT(slotChainGroupStatusChanged(const QString&, bool)));
+
+        m_pControlChainParameter->set(m_pEffectChain->parameter());
+        m_pControlChainMix->set(m_pEffectChain->mix());
+        m_pControlChainEnabled->set(m_pEffectChain->enabled());
+
+        for (QMap<QString, ControlObject*>::iterator it = m_channelEnableControls.begin();
+             it != m_channelEnableControls.end(); ++it) {
+            it.value()->set(m_pEffectChain->enabledForGroup(it.key()));
+        }
+        // Don't emit because we will below.
+        slotChainEffectsChanged(false);
     }
 
     emit(effectChainLoaded(pEffectChain));

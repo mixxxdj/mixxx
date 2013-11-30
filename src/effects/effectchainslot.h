@@ -64,7 +64,13 @@ class EffectChainSlot : public QObject {
     void updated();
 
   private slots:
-    void slotChainUpdated();
+    void slotChainEffectsChanged(bool shouldEmit=true);
+    void slotChainNameChanged(const QString& name);
+    void slotChainParameterChanged(double parameter);
+    void slotChainEnabledChanged(bool enabled);
+    void slotChainMixChanged(double mix);
+    void slotChainGroupStatusChanged(const QString& group, bool enabled);
+
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
 
     void slotControlNumEffects(double v);

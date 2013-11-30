@@ -99,7 +99,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     request->AddEffectToChain.pEffect = pEffect->getEngineEffect();
     request->AddEffectToChain.iIndex = m_effects.size() - 1;
     m_pEffectsManager->writeRequest(request);
-    emit(updated());
+    emit(effectAdded());
 }
 
 void EffectChain::removeEffect(EffectPointer pEffect) {
@@ -110,7 +110,7 @@ void EffectChain::removeEffect(EffectPointer pEffect) {
         request->targetId = id();
         request->RemoveEffectFromChain.pEffect = pEffect->getEngineEffect();
         m_pEffectsManager->writeRequest(request);
-        emit(updated());
+        emit(effectRemoved());
     }
 }
 
