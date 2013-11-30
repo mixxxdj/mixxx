@@ -36,13 +36,15 @@ class EffectChain : public QObject {
     bool enabledForGroup(const QString& group) const;
     void disableForGroup(const QString& group);
 
-
     // Get the human-readable name of the EffectChain
     QString name() const;
     void setName(const QString& name);
 
     double parameter() const;
     void setParameter(const double& dParameter);
+
+    double mix() const;
+    void setMix(const double& dMix);
 
     void addEffect(EffectPointer pEffect);
     void removeEffect(EffectPointer pEffect);

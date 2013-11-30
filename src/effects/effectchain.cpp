@@ -75,6 +75,14 @@ void EffectChain::setParameter(const double& dParameter) {
     m_dParameter = dParameter;
 }
 
+double EffectChain::mix() const {
+    return m_dMix;
+}
+
+void EffectChain::setMix(const double& dMix) {
+    m_dMix = dMix;
+}
+
 void EffectChain::addEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "addEffect";
     if (m_effects.contains(pEffect)) {
