@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QHash>
 #include <QList>
 #include <QSet>
 #include <QScopedPointer>
@@ -46,6 +47,8 @@ class EffectsManager : public QObject {
     // Temporary, but for setting up all the default EffectChains
     void setupDefaultChains();
 
+    bool writeRequest(EffectsRequest* request);
+
   private slots:
     void loadNextChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain);
     void loadPrevChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain);
@@ -55,6 +58,8 @@ class EffectsManager : public QObject {
         return "EffectsManager";
     }
 
+    void processEffectsResponses();
+
     mutable QMutex m_mutex;
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
@@ -62,7 +67,10 @@ class EffectsManager : public QObject {
     QSet<QString> m_registeredChannels;
 
     EngineEffectsManager* m_pEngineEffectsManager;
+
     QScopedPointer<EffectsRequestPipe> m_pRequestPipe;
+    qint64 m_nextRequestId;
+    QHash<qint64, EffectsRequest*> m_activeRequests;
 
     DISALLOW_COPY_AND_ASSIGN(EffectsManager);
 };

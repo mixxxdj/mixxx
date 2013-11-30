@@ -10,7 +10,8 @@
 EffectsManager::EffectsManager(QObject* pParent)
         : QObject(pParent),
           m_mutex(QMutex::Recursive),
-          m_pEffectChainManager(new EffectChainManager(this)) {
+          m_pEffectChainManager(new EffectChainManager(this)),
+          m_nextRequestId(0) {
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
                 2048, 2048, false, false);
@@ -20,12 +21,18 @@ EffectsManager::EffectsManager(QObject* pParent)
 }
 
 EffectsManager::~EffectsManager() {
+    processEffectsResponses();
     m_effectChainSlots.clear();
     while (!m_effectsBackends.isEmpty()) {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
     }
     delete m_pEffectChainManager;
+    for (QHash<qint64, EffectsRequest*>::iterator it = m_activeRequests.begin();
+         it != m_activeRequests.end();) {
+        delete it.value();
+        it = m_activeRequests.erase(it);
+    }
 }
 
 void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
@@ -165,4 +172,37 @@ void EffectsManager::setupDefaultChains() {
         pChain->addEffect(flanger);
         m_pEffectChainManager->addEffectChain(pChain);
     }
+}
+
+bool EffectsManager::writeRequest(EffectsRequest* request) {
+    // This is effectively only GC at this point so only deal with responses
+    // when writing new requests.
+    processEffectsResponses();
+
+    request->request_id = m_nextRequestId++;
+    if (m_pRequestPipe->writeMessages(&request, 1) == 1) {
+        m_activeRequests[request->request_id] = request;
+        return true;
+    }
+    return false;
+}
+
+void EffectsManager::processEffectsResponses() {
+    EffectsResponse response;
+    while (m_pRequestPipe->readMessages(&response, 1) == 1) {
+        QHash<qint64, EffectsRequest*>::iterator it =
+                m_activeRequests.find(response.request_id);
+
+        if (it == m_activeRequests.end()) {
+            qDebug() << debugString()
+                     << "WARNING: EffectsResponse with an inactive request_id:"
+                     << response.request_id;
+        }
+
+        while (it != m_activeRequests.end() && it.key() == response.request_id) {
+            delete it.value();
+            it = m_activeRequests.erase(it);
+        }
+    }
+
 }
