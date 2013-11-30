@@ -22,7 +22,6 @@ BpmControl::BpmControl(const char* _group,
         m_dPreviousSample(0),
         m_dSyncAdjustment(1.0),
         m_dUserOffset(0.0),
-        m_dSyncedRate(1.0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
 
@@ -92,12 +91,6 @@ BpmControl::BpmControl(const char* _group,
     // TODO: should we only hook these up if we are a slave?  beat distance
     // is updated on every iteration so it may be heavy.
     m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]","sync_bpm"));
-    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotMasterBpmChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pMasterBpm, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotMasterBpmChanged(double)),
-            Qt::DirectConnection);
 
     m_pMasterSyncSlider = ControlObject::getControl(ConfigKey("[Master]","sync_slider"));
     connect(m_pMasterSyncSlider, SIGNAL(valueChanged(double)),
@@ -151,7 +144,6 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     if (m_pSyncMode->get() == SYNC_MASTER) {
         m_pMasterBpm->set(bpm * dRate);
     } else if (m_pSyncMode->get() == SYNC_SLAVE) {
-        slotMasterBpmChanged(m_pMasterBpm->get());
         slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }
 }
@@ -309,22 +301,14 @@ bool BpmControl::syncTempo() {
     return false;
 }
 
-void BpmControl::slotMasterBpmChanged(double syncbpm) {
-    if (m_pSyncMode->get() == SYNC_SLAVE) {
-        // If we're a slave, update the rate value -- we don't set anything here,
-        // this comes into effect in the return from calculaterate
-        // TODO: let's ignore x2, /2 issues for now
-        // This is reproduced from bpmcontrol::syncTempo -- should break this out
-        double dDesiredRate;
-        if (m_pFileBpm->get() == 0.0)
-        {
-            // XXX TODO: what to do about this case
-            qDebug() << "Zero BPM, I guess we call the desired rate 1.0!";
-            dDesiredRate = 1.0;
-        } else {
-            dDesiredRate = syncbpm / m_pFileBpm->get();
-        }
-        m_dSyncedRate = dDesiredRate;
+double BpmControl::getSyncedRate() const {
+    // TODO: let's ignore x2, /2 issues for now
+    // This is reproduced from bpmcontrol::syncTempo -- should break this out
+    if (m_pFileBpm->get() == 0.0) {
+        // XXX TODO: what to do about this case
+        return 1.0;
+    } else {
+        return m_pMasterBpm->get() / m_pFileBpm->get();
     }
 }
 
@@ -343,7 +327,6 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
 void BpmControl::slotSyncModeChanged(double state) {
     slotSetStatuses();
     if (state == SYNC_SLAVE) {
-        slotMasterBpmChanged(m_pMasterBpm->get());
         // Update the slider immediately.
         slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }

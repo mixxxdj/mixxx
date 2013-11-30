@@ -26,7 +26,7 @@ class BpmControl : public EngineControl {
     double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
     void onEngineRateChange(double rate);
     double getSyncAdjustment(bool userTweakingSync);
-    double getSyncedRate() const { return m_dSyncedRate; }
+    double getSyncedRate() const;
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
 
@@ -52,7 +52,6 @@ class BpmControl : public EngineControl {
     void slotAdjustBpm();
     void slotUpdatedTrackBeats();
     void slotBeatsTranslate(double);
-    void slotMasterBpmChanged(double);
     void slotMasterSyncSliderChanged(double);
     void slotSyncModeChanged(double);
     void slotSetStatuses();
@@ -108,7 +107,6 @@ class BpmControl : public EngineControl {
     ControlObject* m_pMasterBeatDistance;
     double m_dSyncAdjustment;
     double m_dUserOffset;
-    double m_dSyncedRate;
 
     TapFilter m_tapFilter;
 
