@@ -74,12 +74,19 @@ BpmControl::BpmControl(const char* _group,
 }
 
 BpmControl::~BpmControl() {
-    delete m_pEngineBpm;
+    delete m_pPlayButton;
+    delete m_pRateSlider;
+    delete m_pRateRange;
+    delete m_pRateDir;
+    delete m_pLoopEnabled;
+    delete m_pLoopStartPosition;
+    delete m_pLoopEndPosition;
     delete m_pFileBpm;
-    delete m_pButtonSync;
-    delete m_pButtonSyncTempo;
-    delete m_pButtonSyncPhase;
+    delete m_pEngineBpm;
     delete m_pButtonTap;
+    delete m_pButtonSync;
+    delete m_pButtonSyncPhase;
+    delete m_pButtonSyncTempo;
     delete m_pTranslateBeats;
 }
 
