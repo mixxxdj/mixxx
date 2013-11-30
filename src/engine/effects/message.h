@@ -26,11 +26,13 @@ struct EffectsRequest {
     EffectsRequest()
             : type(NUM_REQUEST_TYPES),
               request_id(-1) {
-        memset(&AddEffectChain, 0, sizeof(AddEffectChain));
-        memset(&RemoveEffectChain, 0, sizeof(RemoveEffectChain));
-        memset(&AddEffectToChain, 0, sizeof(AddEffectToChain));
-        memset(&RemoveEffectFromChain, 0, sizeof(RemoveEffectFromChain));
-        memset(&SetEffectChainParameters, 0, sizeof(SetEffectChainParameters));
+#define CLEAR_STRUCT(x) memset(&x, 0, sizeof(x));
+        CLEAR_STRUCT(AddEffectChain);
+        CLEAR_STRUCT(RemoveEffectChain);
+        CLEAR_STRUCT(AddEffectToChain);
+        CLEAR_STRUCT(RemoveEffectFromChain);
+        CLEAR_STRUCT(SetEffectChainParameters);
+#undef CLEAR_STRUCT
     }
 
     MessageType type;
