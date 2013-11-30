@@ -1,12 +1,9 @@
-#include <QMutexLocker>
-
 #include "effects/effectchainslot.h"
 #include "sampleutil.h"
 #include "controlpotmeter.h"
 
 EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
         : QObject(),
-          m_mutex(QMutex::Recursive),
           m_iChainNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything is 0-indexed.
           m_group(formatGroupString(iChainNumber)) {
@@ -53,14 +50,12 @@ EffectChainSlot::~EffectChainSlot() {
 }
 
 QString EffectChainSlot::id() const {
-    QMutexLocker locker(&m_mutex);
     if (m_pEffectChain)
         return m_pEffectChain->id();
     return "";
 }
 
 QString EffectChainSlot::name() const {
-    QMutexLocker locker(&m_mutex);
     if (m_pEffectChain)
         return m_pEffectChain->name();
     return tr("None");
@@ -98,8 +93,6 @@ void EffectChainSlot::slotChainUpdated() {
 
 void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
     qDebug() << debugString() << "loadEffectChain" << (pEffectChain ? pEffectChain->id() : "(null)");
-    QMutexLocker locker(&m_mutex);
-
     clear();
 
     if (pEffectChain) {
@@ -109,7 +102,6 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         slotChainUpdated();
     }
 
-    locker.unlock();
     emit(effectChainLoaded(pEffectChain));
     emit(updated());
 }
@@ -138,13 +130,11 @@ void EffectChainSlot::clear() {
 
 unsigned int EffectChainSlot::numSlots() const {
     qDebug() << debugString() << "numSlots";
-    QMutexLocker locker(&m_mutex);
     return m_slots.size();
 }
 
 void EffectChainSlot::addEffectSlot() {
     qDebug() << debugString() << "addEffectSlot";
-    QMutexLocker locker(&m_mutex);
 
     EffectSlot* pEffectSlot = new EffectSlot(this, m_iChainNumber, m_slots.size());
     // Rebroadcast effectLoaded signals
@@ -174,7 +164,6 @@ void EffectChainSlot::slotEffectLoaded(EffectPointer pEffect, unsigned int slotN
 
 EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
     qDebug() << debugString() << "getEffectSlot" << slotNumber;
-    QMutexLocker locker(&m_mutex);
     if (slotNumber >= m_slots.size()) {
         qDebug() << "WARNING: slotNumber out of range";
         return EffectSlotPointer();
@@ -184,13 +173,11 @@ EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
 
 void EffectChainSlot::slotControlNumEffects(double v) {
     qDebug() << debugString() << "slotControlNumEffects" << v;
-    QMutexLocker locker(&m_mutex);
     qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
 
 void EffectChainSlot::slotControlChainEnabled(double v) {
     qDebug() << debugString() << "slotControlChainEnabled" << v;
-    QMutexLocker locker(&m_mutex);
 
     bool bEnabled = v > 0.0f;
     if (m_pEffectChain) {
@@ -200,7 +187,6 @@ void EffectChainSlot::slotControlChainEnabled(double v) {
 
 void EffectChainSlot::slotControlChainMix(double v) {
     qDebug() << debugString() << "slotControlChainMix" << v;
-    QMutexLocker locker(&m_mutex);
 
     // Clamp to [0.0, 1.0]
     if (v < 0.0f || v > 1.0f) {
@@ -215,7 +201,6 @@ void EffectChainSlot::slotControlChainMix(double v) {
 
 void EffectChainSlot::slotControlChainParameter(double v) {
     qDebug() << debugString() << "slotControlChainParameter" << v;
-    QMutexLocker locker(&m_mutex);
 
     // Clamp to [0.0, 1.0]
     if (v < 0.0f || v > 1.0f) {
@@ -230,7 +215,6 @@ void EffectChainSlot::slotControlChainParameter(double v) {
 
 void EffectChainSlot::slotControlChainNextPreset(double v) {
     qDebug() << debugString() << "slotControlChainNextPreset" << v;
-    //QMutexLocker locker(&m_mutex);
     // const int read is not worth locking for
     if (v > 0)
         emit(nextChain(m_iChainNumber, m_pEffectChain));
@@ -238,7 +222,6 @@ void EffectChainSlot::slotControlChainNextPreset(double v) {
 
 void EffectChainSlot::slotControlChainPrevPreset(double v) {
     qDebug() << debugString() << "slotControlChainPrevPreset" << v;
-    //QMutexLocker locker(&m_mutex);
     // const int read is not worth locking for
     if (v > 0)
         emit(prevChain(m_iChainNumber, m_pEffectChain));

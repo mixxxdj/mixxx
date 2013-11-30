@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QMap>
-#include <QMutex>
 #include <QList>
 #include <QSignalMapper>
 
@@ -44,19 +43,22 @@ class EffectChainSlot : public QObject {
     // Indicates that the effect pEffect has been loaded into slotNumber of
     // EffectChainSlot chainNumber. pEffect may be an invalid pointer, which
     // indicates that a previously loaded effect was removed from the slot.
-    void effectLoaded(EffectPointer pEffect, unsigned int chainNumber, unsigned int slotNumber);
+    void effectLoaded(EffectPointer pEffect, unsigned int chainNumber,
+                      unsigned int slotNumber);
 
     // Indicates that the given EffectChain was loaded into this
     // EffectChainSlot
     void effectChainLoaded(EffectChainPointer pEffectChain);
 
-    // Signal that whoever is in charge of this EffectChainSlot should load the next
-    // EffectChain into it.
-    void nextChain(const unsigned int iChainSlotNumber, EffectChainPointer pEffectChain);
+    // Signal that whoever is in charge of this EffectChainSlot should load the
+    // next EffectChain into it.
+    void nextChain(const unsigned int iChainSlotNumber,
+                   EffectChainPointer pEffectChain);
 
     // Signal that whoever is in charge of this EffectChainSlot should load the
     // previous EffectChain into it.
-    void prevChain(const unsigned int iChainSlotNumber, EffectChainPointer pEffectChain);
+    void prevChain(const unsigned int iChainSlotNumber,
+                   EffectChainPointer pEffectChain);
 
     // Signal that indicates that the EffectChainSlot has been updated.
     void updated();
@@ -80,7 +82,6 @@ class EffectChainSlot : public QObject {
 
     void clear();
 
-    mutable QMutex m_mutex;
     const unsigned int m_iChainNumber;
     const QString m_group;
 

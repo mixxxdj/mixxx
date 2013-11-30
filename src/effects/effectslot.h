@@ -1,7 +1,6 @@
 #ifndef EFFECTSLOT_H
 #define EFFECTSLOT_H
 
-#include <QMutex>
 #include <QObject>
 #include <QSharedPointer>
 #include <QString>
@@ -17,10 +16,12 @@ typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
-    EffectSlot(QObject* pParent, const unsigned int iChainNumber, const unsigned int iSlotNumber);
+    EffectSlot(QObject* pParent, const unsigned int iChainNumber,
+               const unsigned int iSlotNumber);
     virtual ~EffectSlot();
 
-    static QString formatGroupString(const unsigned int iChainNumber, const unsigned int iSlotNumber) {
+    static QString formatGroupString(const unsigned int iChainNumber,
+                                     const unsigned int iSlotNumber) {
         return QString("[EffectChain%1_Effect%2]").arg(iChainNumber+1).arg(iSlotNumber+1);
     }
 
@@ -47,7 +48,6 @@ class EffectSlot : public QObject {
     // Unload the currently loaded effect
     void clear();
 
-    mutable QMutex m_mutex;
     const unsigned int m_iChainNumber;
     const unsigned int m_iSlotNumber;
     const QString m_group;

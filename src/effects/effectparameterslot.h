@@ -2,7 +2,6 @@
 #define EFFECTPARAMETERSLOT_H
 
 #include <QObject>
-#include <QMutex>
 #include <QVariant>
 #include <QString>
 
@@ -49,7 +48,6 @@ class EffectParameterSlot : QObject {
     // Clear the currently loaded effect
     void clear();
 
-    mutable QMutex m_mutex;
     const unsigned int m_iChainNumber;
     const unsigned int m_iSlotNumber;
     const unsigned int m_iParameterNumber;

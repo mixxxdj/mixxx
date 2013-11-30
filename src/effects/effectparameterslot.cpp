@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QMutexLocker>
 
 #include "defs.h"
 #include "controlpotmeter.h"
@@ -9,53 +8,52 @@ EffectParameterSlot::EffectParameterSlot(QObject* pParent, const unsigned int iC
                                          const unsigned int iSlotNumber,
                                          const unsigned int iParameterNumber)
         : QObject(),
-          m_mutex(QMutex::Recursive),
           m_iChainNumber(iChainNumber),
           m_iSlotNumber(iSlotNumber),
           m_iParameterNumber(iParameterNumber),
           m_group(formatGroupString(iChainNumber, iSlotNumber, iParameterNumber)),
           m_pEffectParameter(NULL) {
-    m_pControlEnabled = new ControlObject(ConfigKey(m_group, QString("enabled")));
-    m_pControlLinked = new ControlObject(ConfigKey(m_group, QString("linked")));
-    m_pControlValue = new ControlObject(ConfigKey(m_group, QString("value")));
-    m_pControlValueNormalized = new ControlPotmeter(ConfigKey(m_group, QString("value_normalized")), 0.0, 1.0);
-    m_pControlValueType = new ControlObject(ConfigKey(m_group, QString("value_type")));
-    m_pControlValueDefault = new ControlObject(ConfigKey(m_group, QString("value_default")));
-    m_pControlValueMaximum = new ControlObject(ConfigKey(m_group, QString("value_max")));
-    m_pControlValueMaximumLimit = new ControlObject(ConfigKey(m_group, QString("value_max_limit")));
-    m_pControlValueMinimum = new ControlObject(ConfigKey(m_group, QString("value_min")));
-    m_pControlValueMinimumLimit = new ControlObject(ConfigKey(m_group, QString("value_min_limit")));
+    m_pControlEnabled = new ControlObject(
+        ConfigKey(m_group, QString("enabled")));
+    m_pControlLinked = new ControlObject(
+        ConfigKey(m_group, QString("linked")));
+    m_pControlValue = new ControlObject(
+        ConfigKey(m_group, QString("value")));
+    m_pControlValueNormalized = new ControlPotmeter(
+        ConfigKey(m_group, QString("value_normalized")), 0.0, 1.0);
+    m_pControlValueType = new ControlObject(
+        ConfigKey(m_group, QString("value_type")));
+    m_pControlValueDefault = new ControlObject(
+        ConfigKey(m_group, QString("value_default")));
+    m_pControlValueMaximum = new ControlObject(
+        ConfigKey(m_group, QString("value_max")));
+    m_pControlValueMaximumLimit = new ControlObject(
+        ConfigKey(m_group, QString("value_max_limit")));
+    m_pControlValueMinimum = new ControlObject(
+        ConfigKey(m_group, QString("value_min")));
+    m_pControlValueMinimumLimit = new ControlObject(
+        ConfigKey(m_group, QString("value_min_limit")));
 
     connect(m_pControlEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEnabled(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotEnabled(double)));
     connect(m_pControlLinked, SIGNAL(valueChanged(double)),
-            this, SLOT(slotEnabled(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotEnabled(double)));
     connect(m_pControlValue, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValue(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotValue(double)));
     connect(m_pControlValueNormalized, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueNormalized(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotValueNormalized(double)));
     connect(m_pControlValueType, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueType(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotValueType(double)));
     connect(m_pControlValueDefault, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueDefault(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotValueDefault(double)));
     connect(m_pControlValueMaximum, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueMaximum(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotValueMaximum(double)));
     connect(m_pControlValueMaximumLimit, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueMaximumLimit(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotValueMaximumLimit(double)));
     connect(m_pControlValueMinimum, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueMinimum(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotValueMinimum(double)));
     connect(m_pControlValueMinimumLimit, SIGNAL(valueChanged(double)),
-            this, SLOT(slotValueMinimumLimit(double)),
-            Qt::DirectConnection);
+            this, SLOT(slotValueMinimumLimit(double)));
 
     clear();
 }
@@ -78,7 +76,6 @@ EffectParameterSlot::~EffectParameterSlot() {
 
 void EffectParameterSlot::loadEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "loadEffect" << (pEffect ? pEffect->getManifest().name() : "(null)");
-    QMutexLocker locker(&m_mutex);
     if (pEffect) {
         m_pEffect = pEffect;
         // Returns null if it doesn't have a parameter for that number
@@ -137,19 +134,16 @@ void EffectParameterSlot::clear() {
 
 void EffectParameterSlot::slotEnabled(double v) {
     qDebug() << debugString() << "slotEnabled" << v;
-    QMutexLocker locker(&m_mutex);
     qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
     // TODO(rryan) add protection
 }
 
 void EffectParameterSlot::slotLinked(double v) {
     qDebug() << debugString() << "slotLinked" << v;
-    QMutexLocker locker(&m_mutex);
 }
 
 void EffectParameterSlot::slotValue(double v) {
     qDebug() << debugString() << "slotValue" << v;
-    QMutexLocker locker(&m_mutex);
 
     double dMin = m_pControlValueMinimum->get();
     double dMax = m_pControlValueMaximum->get();
@@ -168,7 +162,6 @@ void EffectParameterSlot::slotValue(double v) {
 
 void EffectParameterSlot::slotValueNormalized(double v) {
     qDebug() << debugString() << "slotValueNormalized" << v;
-    QMutexLocker locker(&m_mutex);
 
     // Set the raw value to match the interpolated equivalent.
     double dMin = m_pControlValueMinimum->get();
@@ -185,19 +178,16 @@ void EffectParameterSlot::slotValueNormalized(double v) {
 
 void EffectParameterSlot::slotValueType(double v) {
     qDebug() << debugString() << "slotValueType" << v;
-    QMutexLocker locker(&m_mutex);
     qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
 
 void EffectParameterSlot::slotValueDefault(double v) {
     qDebug() << debugString() << "slotValueDefault" << v;
-    QMutexLocker locker(&m_mutex);
     qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
 
 void EffectParameterSlot::slotValueMaximum(double v) {
     qDebug() << debugString() << "slotValueMaximum" << v;
-    QMutexLocker locker(&m_mutex);
     double dMaxLimit = m_pControlValueMaximumLimit->get();
     if (v > dMaxLimit) {
         qDebug() << "WARNING: Maximum parameter value is out of limits.";
@@ -211,13 +201,11 @@ void EffectParameterSlot::slotValueMaximum(double v) {
 
 void EffectParameterSlot::slotValueMaximumLimit(double v) {
     qDebug() << debugString() << "slotValueMaximumLimit" << v;
-    QMutexLocker locker(&m_mutex);
     qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }
 
 void EffectParameterSlot::slotValueMinimum(double v) {
     qDebug() << debugString() << "slotValueMinimum" << v;
-    QMutexLocker locker(&m_mutex);
     double dMinLimit = m_pControlValueMinimumLimit->get();
     if (v < dMinLimit) {
         qDebug() << "WARNING: Minimum parameter value is out of limits.";
@@ -232,6 +220,5 @@ void EffectParameterSlot::slotValueMinimum(double v) {
 
 void EffectParameterSlot::slotValueMinimumLimit(double v) {
     qDebug() << debugString() << "slotValueMinimumLimit" << v;
-    QMutexLocker locker(&m_mutex);
     qDebug() << debugString() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
 }

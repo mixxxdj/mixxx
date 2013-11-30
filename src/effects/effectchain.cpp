@@ -1,5 +1,3 @@
-#include <QMutexLocker>
-
 #include "effects/effectchain.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/message.h"

@@ -3,7 +3,6 @@
 
 #include <QObject>
 #include <QMap>
-#include <QMutex>
 #include <QList>
 
 #include "util.h"
