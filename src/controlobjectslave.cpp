@@ -42,7 +42,8 @@ bool ControlObjectSlave::connectValueChanged(const QObject* receiver,
             // duplicate connections.
             connect(m_pControl.data(), SIGNAL(valueChanged(double, QObject*)),
                     this, SLOT(slotValueChanged(double, QObject*)),
-                    Qt::DirectConnection | Qt::UniqueConnection);
+                    static_cast<Qt::ConnectionType>(Qt::DirectConnection |
+                                                    Qt::UniqueConnection));
         }
     }
     return ret;
