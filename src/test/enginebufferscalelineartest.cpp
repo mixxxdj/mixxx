@@ -27,6 +27,7 @@ class ReadAheadManagerMock : public ReadAheadManager {
     }
 
     int getNextSamplesFake(double dRate, CSAMPLE* buffer, int requested_samples) {
+        Q_UNUSED(dRate);
         bool hasBuffer = m_pBuffer != NULL;
         // You forgot to set the mock read buffer.
         EXPECT_TRUE(hasBuffer);
