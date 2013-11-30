@@ -9,6 +9,7 @@
 #include "util.h"
 #include "effects/effect.h"
 
+class EngineEffectChain;
 class EffectChain;
 typedef QSharedPointer<EffectChain> EffectChainPointer;
 
@@ -17,13 +18,12 @@ typedef QSharedPointer<EffectChain> EffectChainPointer;
 class EffectChain : public QObject {
     Q_OBJECT
   public:
-    EffectChain(QObject* pParent=NULL);
+    EffectChain(QObject* pParent, const QString& id);
     virtual ~EffectChain();
 
     // The ID of an EffectChain is a unique ID given to it to help associate it
     // with the preset from which it was loaded.
     QString id() const;
-    void setId(const QString& id);
 
     // Get the human-readable name of the EffectChain
     QString name() const;
@@ -36,6 +36,8 @@ class EffectChain : public QObject {
     EffectPointer getEffect(unsigned int i) const;
     QList<EffectPointer> getEffects() const;
     unsigned int numEffects() const;
+
+    EngineEffectChain* getEngineEffectChain();
 
   signals:
     // Signal that indicates that the EffectChain has changed (i.e. an Effect
@@ -54,6 +56,7 @@ class EffectChain : public QObject {
     double m_dParameter;
 
     QList<EffectPointer> m_effects;
+    EngineEffectChain* m_pEngineEffectChain;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChain);
 };

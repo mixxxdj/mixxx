@@ -1,15 +1,17 @@
 #include <QMutexLocker>
 
 #include "effects/effectchain.h"
+#include "engine/effects/engineeffectchain.h"
 #include "sampleutil.h"
 
-EffectChain::EffectChain(QObject* pParent)
+EffectChain::EffectChain(QObject* pParent, const QString& id)
         : QObject(pParent),
           m_bEnabled(false),
-          m_id(""),
+          m_id(id),
           m_name(""),
           m_dMix(0),
-          m_dParameter(0) {
+          m_dParameter(0),
+          m_pEngineEffectChain(new EngineEffectChain(m_id)) {
 }
 
 EffectChain::~EffectChain() {
@@ -18,10 +20,6 @@ EffectChain::~EffectChain() {
 
 QString EffectChain::id() const {
     return m_id;
-}
-
-void EffectChain::setId(const QString& id) {
-    m_id = id;
 }
 
 QString EffectChain::name() const {
@@ -59,4 +57,8 @@ EffectPointer EffectChain::getEffect(unsigned int effectNumber) const {
         qDebug() << debugString() << "WARNING: list index out of bounds for getEffect";
     }
     return m_effects[effectNumber];
+}
+
+EngineEffectChain* EffectChain::getEngineEffectChain() {
+    return m_pEngineEffectChain;
 }

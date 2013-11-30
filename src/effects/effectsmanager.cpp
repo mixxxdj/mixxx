@@ -154,8 +154,8 @@ void EffectsManager::setupDefaultChains() {
     QString flangerId = flanger.getId();
 
     if (effects.contains(flangerId)) {
-        EffectChainPointer pChain = EffectChainPointer(new EffectChain());
-        pChain->setId("org.mixxx.effectchain.flanger");
+        EffectChainPointer pChain = EffectChainPointer(new EffectChain(
+            this, "org.mixxx.effectchain.flanger"));
         pChain->setName(tr("Flanger"));
         pChain->setParameter(0.0f);
 
@@ -163,8 +163,8 @@ void EffectsManager::setupDefaultChains() {
         pChain->addEffect(flanger);
         m_pEffectChainManager->addEffectChain(pChain);
 
-        pChain = EffectChainPointer(new EffectChain());
-        pChain->setId("org.mixxx.effectchain.flanger2");
+        pChain = EffectChainPointer(new EffectChain(
+            this, "org.mixxx.effectchain.flanger2"));
         pChain->setName(tr("Flanger2"));
         pChain->setParameter(0.0f);
 
