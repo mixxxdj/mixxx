@@ -25,6 +25,8 @@ void EngineEffectsManager::onCallbackStart() {
             case EffectsRequest::ADD_EFFECT_TO_CHAIN:
             case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
             case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
+            case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP:
+            case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP:
                 foreach (EngineEffectChain* pChain, m_chains) {
                     if (pChain->processEffectsRequest(*request, m_pResponsePipe.data())) {
                         processed = true;

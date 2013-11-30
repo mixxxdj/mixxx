@@ -16,14 +16,14 @@ class EngineEffectsManager : public EffectsRequestHandler {
 
     void onCallbackStart();
 
-    // Take a buffer of numSamples samples of audio from channel channelId,
-    // provided as pInput, and apply each EffectChain enabled for this channel
-    // to it, putting the resulting output in pOutput. If pInput is equal to
-    // pOutput, then the operation must occur in-place. Both pInput and pOutput
-    // are represented as stereo interleaved samples. There are numSamples total
+    // Take a buffer of numSamples samples of audio from group, provided as
+    // pInput, and apply each EffectChain enabled for this group to it,
+    // putting the resulting output in pOutput. If pInput is equal to pOutput,
+    // then the operation must occur in-place. Both pInput and pOutput are
+    // represented as stereo interleaved samples. There are numSamples total
     // samples, so numSamples/2 left channel samples and numSamples/2 right
     // channel samples.
-    virtual void process(const QString channelId,
+    virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
                          const unsigned int numSamples);
 

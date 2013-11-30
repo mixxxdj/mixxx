@@ -20,6 +20,8 @@ struct EffectsRequest {
         SET_EFFECT_CHAIN_PARAMETERS,
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
+        ENABLE_EFFECT_CHAIN_FOR_GROUP,
+        DISABLE_EFFECT_CHAIN_FOR_GROUP,
 
         // Messages for EngineEffect
         SET_EFFECT_PARAMETER,
@@ -46,6 +48,7 @@ struct EffectsRequest {
 
     // Message-specific, non-POD values that can't be part of the below union.
     QString targetId;
+    QString group;
     QVariant minimum;
     QVariant maximum;
     QVariant default_value;

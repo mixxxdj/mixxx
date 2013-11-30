@@ -7,6 +7,9 @@ EngineEffectChain::EngineEffectChain(const QString& id)
           m_bEnabled(false),
           m_dMix(0),
           m_dParameter(0) {
+    // Make sure there's plenty of room so we don't allocate on
+    // insertion/deletion.
+    m_enabledGroups.reserve(64);
 }
 
 EngineEffectChain::~EngineEffectChain() {
@@ -58,6 +61,12 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
         case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
             response.success = updateParameters(message);
             break;
+        case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP:
+            response.success = enableForGroup(message.group);
+            break;
+        case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP:
+            response.success = disableForGroup(message.group);
+            break;
         default:
             return false;
     }
@@ -65,7 +74,17 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
     return true;
 }
 
-void EngineEffectChain::process(const QString channelId,
+bool EngineEffectChain::enableForGroup(const QString& group) {
+    m_enabledGroups.insert(group);
+    return true;
+}
+
+bool EngineEffectChain::disableForGroup(const QString& group) {
+    m_enabledGroups.remove(group);
+    return true;
+}
+
+void EngineEffectChain::process(const QString& group,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples) {
 }
