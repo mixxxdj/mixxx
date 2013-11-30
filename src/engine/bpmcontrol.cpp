@@ -310,10 +310,6 @@ bool BpmControl::syncTempo() {
 }
 
 void BpmControl::slotMasterBpmChanged(double syncbpm) {
-    // Vinyl overrides
-    if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
-        return;
-    }
     if (m_pSyncMode->get() == SYNC_SLAVE) {
         // If we're a slave, update the rate value -- we don't set anything here,
         // this comes into effect in the return from calculaterate
