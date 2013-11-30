@@ -19,7 +19,7 @@ class ControllerEngineTest : public MixxxTest {
     virtual void SetUp() {
         qDebug() << "SetUp";
         static int argc = 1;
-        static char* argv[1] = { "test"};
+        static char* argv[1] = { strdup("test") };
         QThread::currentThread()->setObjectName("Main");
         // start the app without the GUI so that we can generate and
         // destroy it several times in one thread, see
