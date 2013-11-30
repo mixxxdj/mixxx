@@ -46,6 +46,13 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainParameter;
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
+
+    for (QMap<QString, ControlObject*>::iterator it = m_channelEnableControls.begin();
+         it != m_channelEnableControls.end();) {
+        delete it.value();
+        it = m_channelEnableControls.erase(it);
+    }
+
     m_slots.clear();
     m_pEffectChain.clear();
 }
