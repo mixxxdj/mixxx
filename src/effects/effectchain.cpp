@@ -33,6 +33,40 @@ void EffectChain::setName(const QString& name) {
     m_name = name;
 }
 
+bool EffectChain::enabled() const {
+    return m_bEnabled;
+}
+
+void EffectChain::setEnabled(bool enabled) {
+    m_bEnabled = enabled;
+}
+
+void EffectChain::enableForGroup(const QString& group) {
+    if (!m_enabledGroups.contains(group)) {
+        m_enabledGroups.insert(group);
+
+        EffectsRequest* request = new EffectsRequest();
+        request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP;
+        request->targetId = id();
+        request->group = group;
+        m_pEffectsManager->writeRequest(request);
+    }
+}
+
+bool EffectChain::enabledForGroup(const QString& group) const {
+    return m_enabledGroups.contains(group);
+}
+
+void EffectChain::disableForGroup(const QString& group) {
+    if (m_enabledGroups.remove(group)) {
+        EffectsRequest* request = new EffectsRequest();
+        request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP;
+        request->targetId = id();
+        request->group = group;
+        m_pEffectsManager->writeRequest(request);
+    }
+}
+
 double EffectChain::parameter() const {
     return m_dParameter;
 }

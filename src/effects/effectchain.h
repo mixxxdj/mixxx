@@ -26,6 +26,17 @@ class EffectChain : public QObject {
     // with the preset from which it was loaded.
     QString id() const;
 
+    // Whether the chain is enabled (loaded to a slot and eligible for
+    // processing).
+    bool enabled() const;
+    void setEnabled(bool enabled);
+
+    // Activates EffectChain processing for the provided group.
+    void enableForGroup(const QString& group);
+    bool enabledForGroup(const QString& group) const;
+    void disableForGroup(const QString& group);
+
+
     // Get the human-readable name of the EffectChain
     QString name() const;
     void setName(const QString& name);
@@ -59,6 +70,7 @@ class EffectChain : public QObject {
     double m_dMix;
     double m_dParameter;
 
+    QSet<QString> m_enabledGroups;
     QList<EffectPointer> m_effects;
     EngineEffectChain* m_pEngineEffectChain;
 
