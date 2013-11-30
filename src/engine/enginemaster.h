@@ -56,11 +56,11 @@ class EngineMaster : public EngineObject, public AudioSource {
     // be called by SoundManager.
     const CSAMPLE* buffer(AudioOutput output) const;
 
-    const QString getMasterChannelId() const {
+    const QString getMasterGroup() const {
         return QString("[Master]");
     }
 
-    const QString getHeadphoneChannelId() const {
+    const QString getHeadphoneGroup() const {
         return QString("[Headphone]");
     }
 

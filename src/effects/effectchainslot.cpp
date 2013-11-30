@@ -47,10 +47,10 @@ EffectChainSlot::~EffectChainSlot() {
     delete m_pControlChainPrevPreset;
     delete m_pControlChainNextPreset;
 
-    for (QMap<QString, ControlObject*>::iterator it = m_channelEnableControls.begin();
-         it != m_channelEnableControls.end();) {
+    for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
+         it != m_groupEnableControls.end();) {
         delete it.value();
-        it = m_channelEnableControls.erase(it);
+        it = m_groupEnableControls.erase(it);
     }
 
     m_slots.clear();
@@ -90,7 +90,7 @@ void EffectChainSlot::slotChainParameterChanged(double parameter) {
 
 void EffectChainSlot::slotChainGroupStatusChanged(const QString& group,
                                                   bool enabled) {
-    m_channelEnableControls[group]->set(enabled);
+    m_groupEnableControls[group]->set(enabled);
     emit(updated());
 }
 
@@ -143,8 +143,8 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         m_pControlChainMix->set(m_pEffectChain->mix());
         m_pControlChainEnabled->set(m_pEffectChain->enabled());
 
-        for (QMap<QString, ControlObject*>::iterator it = m_channelEnableControls.begin();
-             it != m_channelEnableControls.end(); ++it) {
+        for (QMap<QString, ControlObject*>::iterator it = m_groupEnableControls.begin();
+             it != m_groupEnableControls.end(); ++it) {
             it.value()->set(m_pEffectChain->enabledForGroup(it.key()));
         }
         // Don't emit because we will below.
@@ -192,16 +192,18 @@ void EffectChainSlot::addEffectSlot() {
     m_slots.append(EffectSlotPointer(pEffectSlot));
 }
 
-void EffectChainSlot::registerChannel(const QString channelId) {
-    if (m_channelEnableControls.contains(channelId)) {
-        qDebug() << debugString() << "WARNING: registerChannel already has channel registered:" << channelId;
+void EffectChainSlot::registerGroup(const QString& group) {
+    if (m_groupEnableControls.contains(group)) {
+        qDebug() << debugString()
+                 << "WARNING: registerGroup already has group registered:"
+                 << group;
         return;
     }
     ControlObject* pEnableControl = new ControlObject(
-        ConfigKey(m_group, QString("channel_%1").arg(channelId)));
+        ConfigKey(m_group, QString("channel_%1").arg(group)));
     pEnableControl->set(0.0f);
-    m_channelEnableControls[channelId] = pEnableControl;
-    m_groupStatusMapper.setMapping(pEnableControl, channelId);
+    m_groupEnableControls[group] = pEnableControl;
+    m_groupStatusMapper.setMapping(pEnableControl, group);
     connect(pEnableControl, SIGNAL(valueChanged(double)),
             &m_groupStatusMapper, SLOT(map()));
 }
@@ -278,7 +280,7 @@ void EffectChainSlot::slotControlChainPrevPreset(double v) {
 
 void EffectChainSlot::slotGroupStatusChanged(const QString& group) {
     if (m_pEffectChain) {
-        bool bEnable = m_channelEnableControls[group]->get() > 0;
+        bool bEnable = m_groupEnableControls[group]->get() > 0;
         if (bEnable) {
             m_pEffectChain->enableForGroup(group);
         } else {

@@ -37,7 +37,7 @@ class EffectChainSlot : public QObject {
     void loadEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getEffectChain() const;
 
-    void registerChannel(const QString channelId);
+    void registerGroup(const QString& group);
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
@@ -100,7 +100,7 @@ class EffectChainSlot : public QObject {
     ControlObject* m_pControlChainNextPreset;
     ControlObject* m_pControlChainPrevPreset;
 
-    QMap<QString, ControlObject*> m_channelEnableControls;
+    QMap<QString, ControlObject*> m_groupEnableControls;
 
     QList<EffectSlotPointer> m_slots;
     QSignalMapper m_groupStatusMapper;

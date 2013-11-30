@@ -56,8 +56,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
-    pEffectsManager->registerChannel(getMasterChannelId());
-    pEffectsManager->registerChannel(getHeadphoneChannelId());
+    pEffectsManager->registerGroup(getMasterGroup());
+    pEffectsManager->registerGroup(getHeadphoneGroup());
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
@@ -291,7 +291,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                               iBufferSize);
 
     // Process master channel effects
-    m_pEngineEffectsManager->process(getMasterChannelId(), m_pMaster, m_pMaster, iBufferSize);
+    m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster, iBufferSize);
 
 #ifdef __LADSPA__
     // LADPSA master effects
@@ -336,7 +336,7 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     m_headphoneMasterGainOld = cmaster_gain;
 
     // Process headphone channel effects
-    m_pEngineEffectsManager->process(getHeadphoneChannelId(), m_pHead, m_pHead, iBufferSize);
+    m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead, iBufferSize);
 
     // Head volume and clipping
     CSAMPLE headphoneVolume = m_pHeadVolume->get();

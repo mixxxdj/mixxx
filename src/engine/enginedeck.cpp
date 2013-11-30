@@ -40,7 +40,7 @@ EngineDeck::EngineDeck(const char* group,
           // Need a +1 here because the CircularBuffer only allows its size-1
           // items to be held at once (it keeps a blank spot open persistently)
           m_sampleBuffer(MAX_BUFFER_LEN+1) {
-    pEffectsManager->registerChannel(getGroup());
+    pEffectsManager->registerGroup(getGroup());
 
     // Set up passthrough utilities and fields
     m_pPassing->setButtonMode(ControlPushButton::POWERWINDOW);

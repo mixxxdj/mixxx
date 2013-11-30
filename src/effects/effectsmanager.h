@@ -38,7 +38,7 @@ class EffectsManager : public QObject {
     void addEffectChainSlot();
     EffectChainSlotPointer getEffectChainSlot(unsigned int i);
 
-    void registerChannel(const QString channelID);
+    void registerGroup(const QString& group);
 
     const QSet<QString> getAvailableEffects() const;
     EffectManifest getEffectManifest(const QString& effectId) const;
@@ -66,7 +66,7 @@ class EffectsManager : public QObject {
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
     QList<EffectChainSlotPointer> m_effectChainSlots;
-    QSet<QString> m_registeredChannels;
+    QSet<QString> m_registeredGroups;
 
     EngineEffectsManager* m_pEngineEffectsManager;
 

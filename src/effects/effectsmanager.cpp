@@ -64,8 +64,8 @@ void EffectsManager::addEffectChainSlot() {
             this, SLOT(loadPrevChain(const unsigned int, EffectChainPointer)));
 
     // Register all the existing channels with the new EffectChain
-    foreach (QString channelId, m_registeredChannels) {
-        pChainSlot->registerChannel(channelId);
+    foreach (const QString& group, m_registeredGroups) {
+        pChainSlot->registerGroup(group);
     }
 
     m_effectChainSlots.append(EffectChainSlotPointer(pChainSlot));
@@ -80,16 +80,17 @@ EffectChainSlotPointer EffectsManager::getEffectChainSlot(unsigned int i) {
     return m_effectChainSlots[i];
 }
 
-void EffectsManager::registerChannel(const QString channelId) {
+void EffectsManager::registerGroup(const QString& group) {
     QMutexLocker locker(&m_mutex);
-    if (m_registeredChannels.contains(channelId)) {
-        qDebug() << debugString() << "WARNING: Channel already registered:" << channelId;
+    if (m_registeredGroups.contains(group)) {
+        qDebug() << debugString() << "WARNING: Group already registered:"
+                 << group;
         return;
     }
 
-    m_registeredChannels.insert(channelId);
+    m_registeredGroups.insert(group);
     foreach (EffectChainSlotPointer pEffectChainSlot, m_effectChainSlots) {
-        pEffectChainSlot->registerChannel(channelId);
+        pEffectChainSlot->registerGroup(group);
     }
 }
 

@@ -19,8 +19,8 @@ class EffectProcessor {
     // operation must occur in-place. Both pInput and pOutput are represented as
     // stereo interleaved samples. There are numSamples total samples, so
     // numSamples/2 left channel samples and numSamples/2 right channel
-    // samples. The channelId provided allows the effect to maintain state on a
-    // per-channel basis. This is important because one Effect instance may be
+    // samples. The group provided allows the effect to maintain state on a
+    // per-group basis. This is important because one Effect instance may be
     // used to process the audio of multiple channels.
     virtual void process(const QString& group,
                          const CSAMPLE* pInput, CSAMPLE* pOutput,
