@@ -1,6 +1,7 @@
 #include "engine/effects/engineeffectsmanager.h"
 
 #include "engine/effects/engineeffectchain.h"
+#include "engine/effects/engineeffect.h"
 
 EngineEffectsManager::EngineEffectsManager(EffectsResponsePipe* pResponsePipe)
         : m_pResponsePipe(pResponsePipe) {
@@ -17,8 +18,6 @@ void EngineEffectsManager::onCallbackStart() {
         switch (request.type) {
             case EffectsRequest::ADD_EFFECT_CHAIN:
             case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            case EffectsRequest::ADD_EFFECT_CHAIN_SLOT:
-            case EffectsRequest::REMOVE_EFFECT_CHAIN_SLOT:
                 if (processEffectsRequest(request, m_pResponsePipe.data())) {
                     processed = true;
                 }
@@ -29,6 +28,15 @@ void EngineEffectsManager::onCallbackStart() {
                 foreach (EngineEffectChain* pChain, m_chains) {
                     if (pChain->processEffectsRequest(request, m_pResponsePipe.data())) {
                         processed = true;
+
+                        // When an effect becomes active (part of a chain), keep
+                        // it in our master list so that we can respond to
+                        // requests about it.
+                        if (request.type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
+                            m_effects.append(request.AddEffectToChain.pEffect);
+                        } else if (request.type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                            m_effects.removeAll(request.RemoveEffectFromChain.pEffect);
+                        }
                         break;
                     }
                 }

@@ -41,6 +41,7 @@ class EngineEffectsManager : public EffectsRequestHandler {
 
     QScopedPointer<EffectsResponsePipe> m_pResponsePipe;
     QList<EngineEffectChain*> m_chains;
+    QList<EngineEffect*> m_effects;
 };
 
 
