@@ -9,6 +9,7 @@
 #include "util.h"
 #include "effects/effect.h"
 
+class EffectsManager;
 class EngineEffectChain;
 class EffectChain;
 typedef QSharedPointer<EffectChain> EffectChainPointer;
@@ -18,7 +19,7 @@ typedef QSharedPointer<EffectChain> EffectChainPointer;
 class EffectChain : public QObject {
     Q_OBJECT
   public:
-    EffectChain(QObject* pParent, const QString& id);
+    EffectChain(EffectsManager* pEffectsManager, const QString& id);
     virtual ~EffectChain();
 
     // The ID of an EffectChain is a unique ID given to it to help associate it
@@ -33,6 +34,7 @@ class EffectChain : public QObject {
     void setParameter(const double& dParameter);
 
     void addEffect(EffectPointer pEffect);
+    void removeEffect(EffectPointer pEffect);
     EffectPointer getEffect(unsigned int i) const;
     QList<EffectPointer> getEffects() const;
     unsigned int numEffects() const;
@@ -48,6 +50,8 @@ class EffectChain : public QObject {
     QString debugString() const {
         return QString("EffectChain(%1)").arg(m_id);
     }
+
+    EffectsManager* m_pEffectsManager;
 
     bool m_bEnabled;
     QString m_id;

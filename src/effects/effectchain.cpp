@@ -1,11 +1,14 @@
 #include <QMutexLocker>
 
 #include "effects/effectchain.h"
+#include "effects/effectsmanager.h"
+#include "engine/effects/message.h"
 #include "engine/effects/engineeffectchain.h"
 #include "sampleutil.h"
 
-EffectChain::EffectChain(QObject* pParent, const QString& id)
-        : QObject(pParent),
+EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id)
+        : QObject(pEffectsManager),
+          m_pEffectsManager(pEffectsManager),
           m_bEnabled(false),
           m_id(id),
           m_name(""),
@@ -40,8 +43,32 @@ void EffectChain::setParameter(const double& dParameter) {
 
 void EffectChain::addEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "addEffect";
+    if (m_effects.contains(pEffect)) {
+        qDebug() << debugString()
+                 << "WARNING: EffectChain already contains Effect:"
+                 << pEffect;
+        return;
+    }
     m_effects.append(pEffect);
+    EffectsRequest* request = new EffectsRequest();
+    request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
+    request->targetId = id();
+    request->AddEffectToChain.pEffect = pEffect->getEngineEffect();
+    request->AddEffectToChain.iIndex = m_effects.size() - 1;
+    m_pEffectsManager->writeRequest(request);
     emit(updated());
+}
+
+void EffectChain::removeEffect(EffectPointer pEffect) {
+    qDebug() << debugString() << "removeEffect";
+    if (m_effects.removeAll(pEffect) > 0) {
+        EffectsRequest* request = new EffectsRequest();
+        request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
+        request->targetId = id();
+        request->RemoveEffectFromChain.pEffect = pEffect->getEngineEffect();
+        m_pEffectsManager->writeRequest(request);
+        emit(updated());
+    }
 }
 
 unsigned int EffectChain::numEffects() const {
