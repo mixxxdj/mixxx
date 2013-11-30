@@ -5,6 +5,7 @@
 #include <QMap>
 #include <QMutex>
 #include <QList>
+#include <QSignalMapper>
 
 #include "util.h"
 #include "effects/effect.h"
@@ -36,9 +37,6 @@ class EffectChainSlot : public QObject {
 
     void loadEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getEffectChain() const;
-
-    bool isEnabled() const;
-    bool isEnabledForChannel(QString channelId) const;
 
     void registerChannel(const QString channelId);
 
@@ -73,6 +71,7 @@ class EffectChainSlot : public QObject {
     void slotControlChainParameter(double v);
     void slotControlChainNextPreset(double v);
     void slotControlChainPrevPreset(double v);
+    void slotGroupStatusChanged(const QString& group);
 
   private:
     QString debugString() const {
@@ -80,7 +79,6 @@ class EffectChainSlot : public QObject {
     }
 
     void clear();
-    bool privateIsEnabled() const;
 
     mutable QMutex m_mutex;
     const unsigned int m_iChainNumber;
@@ -98,6 +96,7 @@ class EffectChainSlot : public QObject {
     QMap<QString, ControlObject*> m_channelEnableControls;
 
     QList<EffectSlotPointer> m_slots;
+    QSignalMapper m_groupStatusMapper;
 
     DISALLOW_COPY_AND_ASSIGN(EffectChainSlot);
 };
