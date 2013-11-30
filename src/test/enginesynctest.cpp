@@ -26,12 +26,14 @@ TEST_F(EngineSyncTest, ControlObjectsExist) {
     // This isn't exhaustive, but certain COs have a habit of not being set up properly.
     ASSERT_TRUE(m_pRateControl1 != NULL);
     ASSERT_TRUE(ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm")) != NULL);
-    ASSERT_TRUE(m_pRateControl1->getRateEngineControl() != NULL);
+    ASSERT_TRUE(ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine")) != NULL);
 }
 
 TEST_F(EngineSyncTest, SetMasterSuccess) {
     // If we set the first channel to master, EngineSync should get that message.
 
+    // Throughout these tests we use ControlObjectThreads so that we can trigger ValueChanged,
+    // and not just ValueChangedFromEngine.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_MASTER);
@@ -89,6 +91,42 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     ASSERT_EQ("[Master]", m_pEngineSync->getSyncSource().toStdString());
 }
 
+TEST_F(EngineSyncTest, SetMasterWhilePlaying) {
+    // Make sure we don't get two master lights if we change masters while playing.
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(120.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(124.0);
+    ControlObject::getControl(ConfigKey(m_sGroup3, "file_bpm"))->set(128.0);
+
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_mode")));
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_mode")));
+    pButtonMasterSync2->slotSet(SYNC_SLAVE);
+    QScopedPointer<ControlObjectThread> pButtonMasterSync3(getControlObjectThread(
+            ConfigKey(m_sGroup3, "sync_mode")));
+    pButtonMasterSync3->slotSet(SYNC_SLAVE);
+
+    ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+    ControlObject::getControl(ConfigKey(m_sGroup3, "play"))->set(1.0);
+
+    ProcessBuffer();
+
+    pButtonMasterSync3->slotSet(SYNC_MASTER);
+
+    ProcessBuffer();
+
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_slave"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
+    EXPECT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup3, "sync_slave"))->get());
+    EXPECT_EQ(1, ControlObject::getControl(ConfigKey(m_sGroup3, "sync_master"))->get());
+}
+
+
 TEST_F(EngineSyncTest, SetSlaveNoMaster) {
     // If we set the first channel to slave, Internal should become master.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
@@ -109,6 +147,7 @@ TEST_F(EngineSyncTest, InternalMasterSetSlaveSliderMoves) {
             ConfigKey("[Master]", "sync_master")));
     pButtonMasterSyncInternal->slotSet(1);
     ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->set(100.0);
+    ControlObject::getControl(ConfigKey("[Master]", "sync_slider"))->set(100.0);
 
 	// Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(80.0);
@@ -138,7 +177,7 @@ TEST_F(EngineSyncTest, SetMasterByLights) {
             ConfigKey(m_sGroup2, "sync_master")));
 
     // Set channel 1 to be master.
-    pButtonSyncMaster1->slotSet(1);
+    pButtonSyncMaster1->slotSet(1.0);
 
     // The master sync should now be channel 1.
     ASSERT_EQ(m_pChannel1, m_pEngineSync->getMaster());
@@ -252,6 +291,31 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"))->get());
 }
 
+TEST_F(EngineSyncTest, RateChangeTestOrder3) {
+    // Set the file bpm of channel 1 to 160bpm.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
+    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
+
+    // Set the file bpm of channel 2 to 120bpm.
+    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(120.0);
+    ASSERT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
+
+    // Turn on Master and Slave.
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_mode")));
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_mode")));
+    pButtonMasterSync2->slotSet(SYNC_SLAVE);
+
+    // Slave should immediately set its slider.
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.3333333333),
+                    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
+    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey("[Master]", "sync_slider"))->get());
+}
+
+
 TEST_F(EngineSyncTest, RateChangeOverride) {
     // This is like the test above, but the user loads the track after the slider has been tweaked.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
@@ -349,13 +413,19 @@ TEST_F(EngineSyncTest, MasterStopChooseNewTest) {
 	ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(120.0);
 	ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(128.0);
 
-	ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->set(SYNC_MASTER);
-	ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->set(SYNC_SLAVE);
+	QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+            ConfigKey(m_sGroup1, "sync_mode")));
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
+    QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_mode")));
+    pButtonMasterSync2->slotSet(SYNC_SLAVE);
 
 	QScopedPointer<ControlObjectThread> pChannel1Play(getControlObjectThread(
             ConfigKey(m_sGroup1, "play")));
 	pChannel1Play->set(1.0);
-    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+	QScopedPointer<ControlObjectThread> pChannel2Play(getControlObjectThread(
+            ConfigKey(m_sGroup2, "play")));
+    pChannel2Play->set(1.0);
 
     ProcessBuffer();
 

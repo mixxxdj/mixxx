@@ -196,12 +196,6 @@ void BpmControl::slotControlPlay(double v) {
         if (m_pQuantize->get() > 0.0) {
             syncPhase();
         }
-    } else {
-        // If the stop button was pushed while master, choose a new master.
-        // As usual, if vinyl is on don't do anything.
-        if (m_pSyncMode->get() == SYNC_MASTER && !(m_pVCEnabled && m_pVCEnabled->get() > 0)) {
-            m_pSyncMode->set(SYNC_SLAVE);
-        }
     }
 }
 
@@ -355,7 +349,7 @@ void BpmControl::slotSyncModeChanged(double state) {
     if (state == SYNC_SLAVE) {
         slotMasterBpmChanged(m_pMasterBpm->get());
         // Update the slider immediately.
-        slotMasterSyncSliderChanged(m_pMasterBpm->get());
+        slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }
 }
 

@@ -51,28 +51,36 @@ class MockedEngineBackendTest : public MixxxTest {
     virtual void SetUp() {
         m_pBuffer = new CSAMPLE[MAX_BUFFER_LEN];
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pNumDecks->set(2);
+        m_pNumDecks->set(3);
 
         m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]", false, false);
         m_pChannel1 = new EngineDeck(m_sGroup1, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
         ControlObject::getControl(ConfigKey(m_sGroup1, "master"))->set(1);
         m_pChannel2 = new EngineDeck(m_sGroup2, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
         ControlObject::getControl(ConfigKey(m_sGroup2, "master"))->set(1);
+        m_pChannel3 = new EngineDeck(m_sGroup3, m_pConfig.data(), m_pEngineMaster, EngineChannel::CENTER);
+        ControlObject::getControl(ConfigKey(m_sGroup3, "master"))->set(1);
         m_pEngineMaster->addChannel(m_pChannel1);
         m_pEngineMaster->addChannel(m_pChannel2);
+        m_pEngineMaster->addChannel(m_pChannel3);
         m_pEngineSync = m_pEngineMaster->getEngineSync();
         m_pRateControl1 = m_pEngineSync->getRateControlForGroup(m_sGroup1);
         m_pRateControl2 = m_pEngineSync->getRateControlForGroup(m_sGroup2);
+        m_pRateControl3 = m_pEngineSync->getRateControlForGroup(m_sGroup3);
 
         m_pMockScaler1 = new MockScaler();
         m_pMockScaler2 = new MockScaler();
+        m_pMockScaler3 = new MockScaler();
         m_pChannel1->getEngineBuffer()->setScaler(m_pMockScaler1);
         m_pChannel2->getEngineBuffer()->setScaler(m_pMockScaler2);
+        m_pChannel3->getEngineBuffer()->setScaler(m_pMockScaler3);
         m_pChannel1->getEngineBuffer()->loadFakeTrack();
         m_pChannel2->getEngineBuffer()->loadFakeTrack();
+        m_pChannel3->getEngineBuffer()->loadFakeTrack();
 
         m_pEngineSync->addChannel(m_pChannel1);
         m_pEngineSync->addChannel(m_pChannel2);
+        m_pEngineSync->addChannel(m_pChannel3);
     }
 
     virtual void TearDown() {
@@ -82,6 +90,7 @@ class MockedEngineBackendTest : public MixxxTest {
 
         delete m_pChannel1;
         delete m_pChannel2;
+        delete m_pChannel3;
 
         // Clean up the rest of the controls.
         QList<ControlDoublePrivate*> leakedControls;
@@ -112,6 +121,7 @@ class MockedEngineBackendTest : public MixxxTest {
 
         delete m_pMockScaler1;
         delete m_pMockScaler2;
+        delete m_pMockScaler3;
     }
 
     double getRateSliderValue(double rate) const {
@@ -126,20 +136,22 @@ class MockedEngineBackendTest : public MixxxTest {
 
     EngineSync* m_pEngineSync;
     EngineMaster* m_pEngineMaster;
-    RateControl *m_pRateControl1, *m_pRateControl2;
-    EngineDeck *m_pChannel1, *m_pChannel2;
-    MockScaler *m_pMockScaler1, *m_pMockScaler2;
+    RateControl *m_pRateControl1, *m_pRateControl2, *m_pRateControl3;
+    EngineDeck *m_pChannel1, *m_pChannel2, *m_pChannel3;
+    MockScaler *m_pMockScaler1, *m_pMockScaler2, *m_pMockScaler3;
 
     CSAMPLE *m_pBuffer;
 
     static const char* m_sGroup1;
     static const char* m_sGroup2;
+    static const char* m_sGroup3;
     static const double kRateRangeDivisor;
 };
 
 
 const char* MockedEngineBackendTest::m_sGroup1 = "[Test1]";
 const char* MockedEngineBackendTest::m_sGroup2 = "[Test2]";
+const char* MockedEngineBackendTest::m_sGroup3 = "[Test3]";
 // This value is 2x the default rate range set in ratecontrol.cpp.
 const double MockedEngineBackendTest::kRateRangeDivisor = 4.0;
 

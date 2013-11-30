@@ -108,10 +108,17 @@ void EngineSync::addDeck(RateControl *pNewRate) {
 void EngineSync::disableChannelMaster() {
     RateControl* pOldChannelMaster = m_pChannelMaster;
     if (pOldChannelMaster) {
-        ControlObject* pSourceRate = pOldChannelMaster->getRateEngineControl();
-        if (pSourceRate) {
-            disconnect(pSourceRate, SIGNAL(valueChangedFromEngine(double)),
-                       this, SLOT(slotSourceRateChanged(double)));
+        ControlObject* pSourceRateEngine =
+                ControlObject::getControl(ConfigKey(pOldChannelMaster->getGroup(), "rateEngine"));
+        if (pSourceRateEngine) {
+            disconnect(pSourceRateEngine, SIGNAL(valueChangedFromEngine(double)),
+                       this, SLOT(slotSourceRateEngineChanged(double)));
+        }
+        ControlObject* pSourceBpm =
+                ControlObject::getControl(ConfigKey(pOldChannelMaster->getGroup(), "bpm"));
+        if (pSourceBpm) {
+            disconnect(pSourceBpm, SIGNAL(valueChangedFromEngine(double)),
+                       this, SLOT(slotSourceBpmChanged(double)));
         }
         ControlObject* pSourceBeatDistance = pOldChannelMaster->getBeatDistanceControl();
         if (pSourceBeatDistance) {
@@ -119,6 +126,7 @@ void EngineSync::disableChannelMaster() {
                        this, SLOT(slotSourceBeatDistanceChanged(double)));
         }
         pOldChannelMaster->setMode(SYNC_SLAVE);
+        m_sSyncSource = "";
     }
     m_pChannelMaster = NULL;
 }
@@ -144,11 +152,13 @@ void EngineSync::setInternalMaster() {
         return;
     }
     double master_bpm = m_pMasterBpm->get();
-    m_pSyncRateSlider->set(master_bpm);
+    if (master_bpm != 0) {
+        m_pSyncRateSlider->set(master_bpm);
+    }
     QString old_master = m_sSyncSource;
-    m_sSyncSource = kMasterSyncGroup;
     resetInternalBeatDistance();
     disableChannelMaster();
+    m_sSyncSource = kMasterSyncGroup;
     updateSamplesPerBeat();
 
     // This is all we have to do, we'll start using the pseudoposition right away.
@@ -181,18 +191,22 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
 
     qDebug() << "Setting up master " << m_sSyncSource;
 
-    ControlObject* pSourceRate = pRateControl->getRateEngineControl();
-    if (!pSourceRate) {
-        return false;
-    }
-    connect(pSourceRate, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotSourceRateChanged(double)),
+    ControlObject *pSourceRateEngine =
+            ControlObject::getControl(ConfigKey(pRateControl->getGroup(), "rateEngine"));
+    Q_ASSERT(pSourceRateEngine);
+    connect(pSourceRateEngine, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotSourceRateEngineChanged(double)),
             Qt::DirectConnection);
 
-    ControlObject* pSourceBeatDistance = pRateControl->getBeatDistanceControl();
-    if (!pSourceBeatDistance) {
-        return false;
-    }
+    ControlObject *pSourceBpm =
+            ControlObject::getControl(ConfigKey(pRateControl->getGroup(), "bpm"));
+    Q_ASSERT(pSourceBpm);
+    connect(pSourceBpm, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotSourceBpmChanged(double)),
+            Qt::DirectConnection);
+
+    ControlObject *pSourceBeatDistance = pRateControl->getBeatDistanceControl();
+    Q_ASSERT(pSourceBeatDistance);
     connect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotSourceBeatDistanceChanged(double)),
             Qt::DirectConnection);
@@ -200,8 +214,9 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     // Reset internal beat distance to equal the new master
     resetInternalBeatDistance();
 
-    m_pSyncInternalEnabled->set(FALSE);
-    slotSourceRateChanged(pSourceRate->get());
+    m_pSyncInternalEnabled->set(false);
+    slotSourceRateEngineChanged(pSourceRateEngine->get());
+    slotSourceBpmChanged(pSourceBpm->get());
 
     return true;
 }
@@ -280,11 +295,18 @@ void EngineSync::setChannelSyncMode(RateControl* pRateControl, int state) {
     }
 }
 
-void EngineSync::slotSourceRateChanged(double rate_engine) {
+void EngineSync::slotSourceRateEngineChanged(double rate_engine) {
     // Master buffer can be null due to timing issues
     if (m_pChannelMaster) {
         // This will trigger all of the slaves to change rate.
         m_pMasterBpm->set(rate_engine * m_pChannelMaster->getFileBpm());
+    }
+}
+
+void EngineSync::slotSourceBpmChanged(double bpm) {
+    // Master buffer can be null due to timing issues
+    if (m_pChannelMaster) {
+        m_pSyncRateSlider->set(bpm);
     }
 }
 

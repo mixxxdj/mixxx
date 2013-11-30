@@ -52,7 +52,8 @@ class EngineSync : public EngineControl {
   private slots:
     void slotMasterBpmChanged(double);
     void slotSyncRateSliderChanged(double);
-    void slotSourceRateChanged(double);
+    void slotSourceRateEngineChanged(double);
+    void slotSourceBpmChanged(double);
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
     void slotInternalMasterChanged(double);
