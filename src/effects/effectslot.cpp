@@ -3,7 +3,7 @@
 #include "effects/effectslot.h"
 
 // The maximum number of effect parameters we're going to support.
-const unsigned int kMaxParameters = 20;
+const unsigned int kDefaultMaxParameters = 32;
 
 EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber,
                        const unsigned int iSlotNumber)
@@ -16,7 +16,7 @@ EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber,
     m_pControlEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
 
-    for (unsigned int i = 0; i < kMaxParameters; ++i) {
+    for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
         EffectParameterSlot* pParameter = new EffectParameterSlot(
             this, m_iChainNumber, m_iSlotNumber, m_parameters.size());
         m_parameters.append(pParameter);
@@ -49,7 +49,12 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
     if (pEffect) {
         m_pEffect = pEffect;
         m_pControlEnabled->set(1.0f);
-        m_pControlNumParameters->set(m_pEffect->getManifest().parameters().size());
+        m_pControlNumParameters->set(m_pEffect->numParameters());
+
+        while (m_parameters.size() < m_pEffect->numParameters()) {
+            m_parameters.append(new EffectParameterSlot(
+                this, m_iChainNumber, m_iSlotNumber, m_parameters.size()));
+        }
 
         foreach (EffectParameterSlot* pParameter, m_parameters) {
             pParameter->loadEffect(m_pEffect);
