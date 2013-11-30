@@ -121,10 +121,10 @@ struct EffectsResponse {
 };
 
 // For communicating from the main thread to the EngineEffectsManager.
-typedef MessagePipe<EffectsRequest, EffectsResponse> EffectsRequestPipe;
+typedef MessagePipe<EffectsRequest*, EffectsResponse> EffectsRequestPipe;
 
 // For communicating from the EngineEffectsManager to the main thread.
-typedef MessagePipe<EffectsResponse, EffectsRequest> EffectsResponsePipe;
+typedef MessagePipe<EffectsResponse, EffectsRequest*> EffectsResponsePipe;
 
 class EffectsRequestHandler {
   public:

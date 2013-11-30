@@ -11,14 +11,14 @@ EngineEffectsManager::~EngineEffectsManager() {
 }
 
 void EngineEffectsManager::onCallbackStart() {
-    EffectsRequest request;
+    EffectsRequest* request = NULL;
     while (m_pResponsePipe->readMessages(&request, 1) > 0) {
-        EffectsResponse response(request);
+        EffectsResponse response(*request);
         bool processed = false;
-        switch (request.type) {
+        switch (request->type) {
             case EffectsRequest::ADD_EFFECT_CHAIN:
             case EffectsRequest::REMOVE_EFFECT_CHAIN:
-                if (processEffectsRequest(request, m_pResponsePipe.data())) {
+                if (processEffectsRequest(*request, m_pResponsePipe.data())) {
                     processed = true;
                 }
                 break;
@@ -26,16 +26,16 @@ void EngineEffectsManager::onCallbackStart() {
             case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
             case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
                 foreach (EngineEffectChain* pChain, m_chains) {
-                    if (pChain->processEffectsRequest(request, m_pResponsePipe.data())) {
+                    if (pChain->processEffectsRequest(*request, m_pResponsePipe.data())) {
                         processed = true;
 
                         // When an effect becomes active (part of a chain), keep
                         // it in our master list so that we can respond to
                         // requests about it.
-                        if (request.type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
-                            m_effects.append(request.AddEffectToChain.pEffect);
-                        } else if (request.type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
-                            m_effects.removeAll(request.RemoveEffectFromChain.pEffect);
+                        if (request->type == EffectsRequest::ADD_EFFECT_TO_CHAIN) {
+                            m_effects.append(request->AddEffectToChain.pEffect);
+                        } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
+                            m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
                         }
                         break;
                     }
@@ -48,15 +48,15 @@ void EngineEffectsManager::onCallbackStart() {
                 break;
 
             case EffectsRequest::SET_EFFECT_PARAMETER:
-                if (!m_effects.contains(request.SetEffectParameter.pEffect)) {
+                if (!m_effects.contains(request->SetEffectParameter.pEffect)) {
                     qDebug() << debugString()
                              << "WARNING: SetEffectParameter message for unloaded effect"
-                             << request.SetEffectParameter.pEffect;
+                             << request->SetEffectParameter.pEffect;
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_EFFECT;
                 } else {
-                    processed = request.SetEffectParameter.pEffect
-                            ->processEffectsRequest(request, m_pResponsePipe.data());
+                    processed = request->SetEffectParameter.pEffect
+                            ->processEffectsRequest(*request, m_pResponsePipe.data());
 
                     if (!processed) {
                         // If we got here, the message was not handled.
