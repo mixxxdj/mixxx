@@ -49,7 +49,8 @@ void LibraryTableModel::setTableModel(int id) {
 }
 
 
-int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int LibraryTableModel::addTracks(const QModelIndex& index,
+                                 const QList<QString>& locations) {
     Q_UNUSED(index);
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
