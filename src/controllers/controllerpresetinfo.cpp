@@ -159,11 +159,16 @@ bool PresetInfoEnumerator::hasPresetInfo(const QString extension, const QString 
     // Check if preset info matching extension and preset name can be found
     if (!isValidExtension(extension))
         return false;
-    foreach (QString extension, presetsByExtension.keys()) {
-        QMap <QString,PresetInfo> presets = presetsByExtension[extension];
-        foreach (PresetInfo preset, presets.values())
-            if (name == preset.getName())
+
+    for (QMap<QString, QMap<QString, PresetInfo> >::const_iterator it =
+                 presetsByExtension.begin();
+         it != presetsByExtension.end(); ++it) {
+        for (QMap<QString, PresetInfo>::const_iterator it2 = it.value().begin();
+             it2 != it.value().end(); ++it2) {
+            if (name == it2.value().getName()) {
                 return true;
+            }
+        }
     }
     return false;
 }
