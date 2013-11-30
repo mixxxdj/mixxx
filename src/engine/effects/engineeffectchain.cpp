@@ -74,6 +74,10 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
     return true;
 }
 
+bool EngineEffectChain::enabledForGroup(const QString& group) const {
+    return m_enabledGroups.contains(group);
+}
+
 bool EngineEffectChain::enableForGroup(const QString& group) {
     m_enabledGroups.insert(group);
     return true;
@@ -87,4 +91,7 @@ bool EngineEffectChain::disableForGroup(const QString& group) {
 void EngineEffectChain::process(const QString& group,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples) {
+    foreach (EngineEffect* pEffect, m_effects) {
+        pEffect->process(group, pInput, pOutput, numSamples);
+    }
 }

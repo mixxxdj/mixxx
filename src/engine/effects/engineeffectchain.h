@@ -27,6 +27,8 @@ class EngineEffectChain : public EffectsRequestHandler {
         return m_id;
     }
 
+    bool enabledForGroup(const QString& group) const;
+
   private:
     QString debugString() const {
         return QString("EngineEffectChain(%1)").arg(m_id);

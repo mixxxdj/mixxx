@@ -36,6 +36,10 @@ class EngineEffect : public EffectsRequestHandler {
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
 
+    void process(const QString& group,
+                 const CSAMPLE* pInput, CSAMPLE* pOutput,
+                 const unsigned int numSamples);
+
   private:
     QString debugString() const {
         return QString("EngineEffect(%1)").arg(m_manifest.name());
