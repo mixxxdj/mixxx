@@ -12,9 +12,11 @@
 #ifndef CONTROLLERPRESETINFO_H
 #define CONTROLLERPRESETINFO_H
 
-#include <QtGui>
+#include <QString>
 #include <QMap>
+#include <QList>
 #include <QHash>
+#include <QDomElement>
 
 #include "configobject.h"
 
