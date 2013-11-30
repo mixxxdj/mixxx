@@ -90,31 +90,19 @@ struct EffectsResponse {
         // Must come last.
         NUM_STATUS_CODES
     };
-    enum MessageType {
-        ADD_EFFECT_CHAIN,
-        REMOVE_EFFECT_CHAIN,
-        ADD_EFFECT_TO_CHAIN,
-        REMOVE_EFFECT_FROM_CHAIN,
-
-        // Must come last.
-        NUM_RESPONSE_TYPES
-    };
 
     EffectsResponse()
-            : type(NUM_RESPONSE_TYPES),
-              request_id(-1),
+            : request_id(-1),
               success(false),
               status(NUM_STATUS_CODES) {
     }
 
     EffectsResponse(const EffectsRequest& request, bool succeeded=false)
-            : type(NUM_RESPONSE_TYPES),
-              request_id(request.request_id),
+            : request_id(request.request_id),
               success(succeeded),
               status(NUM_STATUS_CODES) {
     }
 
-    MessageType type;
     qint64 request_id;
     bool success;
     StatusCode status;
