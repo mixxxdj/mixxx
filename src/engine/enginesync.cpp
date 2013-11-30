@@ -105,8 +105,11 @@ void EngineSync::addDeck(RateControl *pNewRate) {
     m_ratecontrols.append(pNewRate);
 }
 
-void EngineSync::disableChannelMaster() {
+void EngineSync::disableCurrentMaster() {
     RateControl* pOldChannelMaster = m_pChannelMaster;
+    if (m_sSyncSource == kMasterSyncGroup) {
+        m_pSyncInternalEnabled->set(false);
+    }
     if (pOldChannelMaster) {
         ControlObject* pSourceRateEngine =
                 ControlObject::getControl(ConfigKey(pOldChannelMaster->getGroup(), "rateEngine"));
@@ -126,8 +129,8 @@ void EngineSync::disableChannelMaster() {
                        this, SLOT(slotSourceBeatDistanceChanged(double)));
         }
         pOldChannelMaster->setMode(SYNC_SLAVE);
-        m_sSyncSource = "";
     }
+    m_sSyncSource = "";
     m_pChannelMaster = NULL;
 }
 
@@ -157,12 +160,12 @@ void EngineSync::setInternalMaster() {
     }
     QString old_master = m_sSyncSource;
     resetInternalBeatDistance();
-    disableChannelMaster();
+    disableCurrentMaster();
     m_sSyncSource = kMasterSyncGroup;
     updateSamplesPerBeat();
 
     // This is all we have to do, we'll start using the pseudoposition right away.
-    m_pSyncInternalEnabled->set(TRUE);
+    m_pSyncInternalEnabled->set(true);
 }
 
 bool EngineSync::setChannelMaster(RateControl* pRateControl) {
@@ -174,7 +177,7 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     if (m_sSyncSource == pRateControl->getGroup()) {
         return true;
     }
-    disableChannelMaster();
+    disableCurrentMaster();
 
     // Only accept channels with an EngineBuffer.
     EngineChannel* pChannel = pRateControl->getChannel();
@@ -222,7 +225,6 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
 }
 
 void EngineSync::chooseNewMaster(const QString& dontpick) {
-    QString fallback = kMasterSyncGroup;
     foreach (RateControl* pRateControl, m_ratecontrols) {
         const QString& group = pRateControl->getGroup();
         if (group == dontpick) {
@@ -244,12 +246,15 @@ void EngineSync::chooseNewMaster(const QString& dontpick) {
                 // If the channel is playing then go with it immediately.
                 if (fabs(pBuffer->getRate()) > 0) {
                     pRateControl->setMode(SYNC_MASTER);
+                    setChannelSyncMode(pRateControl, SYNC_MASTER);
                     return;
                 }
             }
         }
     }
-    setInternalMaster();
+    if (dontpick != kMasterSyncGroup) {
+        setInternalMaster();
+    }
 }
 
 void EngineSync::setChannelRateSlider(RateControl* pRateControl, double new_bpm) {
@@ -371,7 +376,8 @@ void EngineSync::slotInternalMasterChanged(double state) {
         setInternalMaster();
     } else {
         // Internal has been turned off. Pick a slave.
-        chooseNewMaster("");
+        m_sSyncSource = "";
+        chooseNewMaster(kMasterSyncGroup);
     }
 }
 

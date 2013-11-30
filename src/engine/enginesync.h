@@ -63,7 +63,7 @@ class EngineSync : public EngineControl {
     bool setChannelMaster(RateControl* pRateControl);
     void setInternalMaster();
     void chooseNewMaster(const QString& dontpick);
-    void disableChannelMaster();
+    void disableCurrentMaster();
     void updateSamplesPerBeat();
     void setPseudoPosition(double percent);
     void resetInternalBeatDistance();

@@ -394,17 +394,19 @@ void RateControl::slotControlRateTempUpSmall(double)
 }
 
 void RateControl::slotControlPlay(double state) {
+    // I'm not liking this behavior, disable for now.
+
     // If the stop button was pushed while master, choose a new master.
     // As usual, if vinyl is on don't do anything.
-    if (state == 0.0) {
-        if (m_pVCEnabled && m_pVCEnabled->get() > 0.0) {
-            return;
-        }
-        if (m_pSyncMode->get() == SYNC_MASTER) {
-            m_pSyncMode->set(SYNC_SLAVE);
-            m_pEngineSync->setChannelSyncMode(this, SYNC_SLAVE);
-        }
-    }
+//    if (state == 0.0) {
+//        if (m_pVCEnabled && m_pVCEnabled->get() > 0.0) {
+//            return;
+//        }
+//        if (m_pSyncMode->get() == SYNC_MASTER) {
+//            m_pSyncMode->set(SYNC_SLAVE);
+//            m_pEngineSync->setChannelSyncMode(this, SYNC_SLAVE);
+//        }
+//    }
 }
 
 void RateControl::slotSyncModeChanged(double state) {
