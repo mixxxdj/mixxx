@@ -9,8 +9,6 @@ class EngineEffect;
 struct EffectsRequest {
     enum MessageType {
         // Messages for EngineEffectsManager
-        ADD_EFFECT_CHAIN_SLOT,
-        REMOVE_EFFECT_CHAIN_SLOT,
         ADD_EFFECT_CHAIN,
         REMOVE_EFFECT_CHAIN,
 
