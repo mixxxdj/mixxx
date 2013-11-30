@@ -12,13 +12,18 @@ EngineEffectChain::EngineEffectChain(const QString& id)
 EngineEffectChain::~EngineEffectChain() {
 }
 
-bool EngineEffectChain::addEffect(EngineEffect* pEffect) {
+bool EngineEffectChain::addEffect(EngineEffect* pEffect, int iIndex) {
+    if (iIndex < 0 || iIndex > m_effects.size()) {
+        qDebug() << debugString()
+                 << "WARNING: ADD_EFFECT_TO_CHAIN message with invalid index:"
+                 << iIndex;
+    }
     if (m_effects.contains(pEffect)) {
         qDebug() << debugString() << "WARNING: effect already added to EngineEffectChain:"
                  << pEffect->name();
         return false;
     }
-    m_effects.append(pEffect);
+    m_effects.insert(iIndex, pEffect);
     return true;
 }
 
@@ -36,15 +41,15 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
 
 bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
                                               EffectsResponsePipe* pResponsePipe) {
-    if (message.chainId != m_id) {
+    if (message.targetId != m_id) {
         return false;
     }
 
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_TO_CHAIN:
-            response.success = addEffect(
-                message.AddEffectToChain.pEffect);
+            response.success = addEffect(message.AddEffectToChain.pEffect,
+                                         message.AddEffectToChain.iIndex);
             break;
         case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
             response.success = removeEffect(

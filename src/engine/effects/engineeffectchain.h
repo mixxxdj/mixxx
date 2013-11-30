@@ -29,7 +29,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     }
 
     bool updateParameters(const EffectsRequest& message);
-    bool addEffect(EngineEffect* pEffect);
+    bool addEffect(EngineEffect* pEffect, int iIndex);
     bool removeEffect(EngineEffect* pEffect);
 
     QString m_id;

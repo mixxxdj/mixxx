@@ -33,16 +33,41 @@ class EngineEffectParameter {
     // Value Settings
     ///////////////////////////////////////////////////////////////////////////
 
-    QVariant getValue() const {
-        return m_value.getValue();
+    const QVariant& value() const {
+        return m_value;
     }
     void setValue(const QVariant& value) {
-        m_value.setValue(value);
+        m_value = value;
+    }
+
+    const QVariant& defaultValue() const {
+        return m_default_value;
+    }
+    void setDefaultValue(const QVariant& default_value) {
+        m_default_value = default_value;
+    }
+
+    const QVariant& minimum() const {
+        return m_minimum;
+    }
+    void setMinimum(const QVariant& minimum) {
+        m_minimum = minimum;
+    }
+
+    const QVariant& maximum() const {
+        return m_maximum;
+    }
+    void setMaximum(const QVariant& maximum) {
+        m_maximum = maximum;
     }
 
   private:
     EffectManifestParameter m_parameter;
-    ControlValueAtomic<QVariant> m_value;
+    QVariant m_value;
+    QVariant m_default_value;
+    QVariant m_minimum;
+    QVariant m_maximum;
+
     DISALLOW_COPY_AND_ASSIGN(EngineEffectParameter);
 };
 

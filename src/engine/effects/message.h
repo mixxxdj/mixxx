@@ -1,6 +1,10 @@
 #ifndef MESSAGE_H
 #define MESSAGE_H
 
+#include <QVariant>
+#include <QString>
+#include <QtGlobal>
+
 #include "util/fifo.h"
 
 class EngineEffectChain;
@@ -17,6 +21,9 @@ struct EffectsRequest {
         ADD_EFFECT_TO_CHAIN,
         REMOVE_EFFECT_FROM_CHAIN,
 
+        // Messages for EngineEffect
+        SET_EFFECT_PARAMETER,
+
         // Must come last.
         NUM_REQUEST_TYPES
     };
@@ -30,15 +37,19 @@ struct EffectsRequest {
         CLEAR_STRUCT(AddEffectToChain);
         CLEAR_STRUCT(RemoveEffectFromChain);
         CLEAR_STRUCT(SetEffectChainParameters);
+        CLEAR_STRUCT(SetEffectParameter);
 #undef CLEAR_STRUCT
     }
 
     MessageType type;
     qint64 request_id;
 
-    // The chain referred to by this request. Not POD so can't be part of the
-    // union below.
-    QString chainId;
+    // Message-specific, non-POD values that can't be part of the below union.
+    QString targetId;
+    QVariant minimum;
+    QVariant maximum;
+    QVariant default_value;
+    QVariant value;
 
     union {
         struct {
@@ -47,10 +58,10 @@ struct EffectsRequest {
         struct {
             EngineEffectChain* pChain;
         } RemoveEffectChain;
-
         struct {
             // The effect referred to by this request. NULL if none.
             EngineEffect* pEffect;
+            int iIndex;
         } AddEffectToChain;
         struct {
             // The effect referred to by this request. NULL if none.
@@ -61,6 +72,9 @@ struct EffectsRequest {
             double mix;
             double parameter;
         } SetEffectChainParameters;
+        struct {
+            EngineEffect* pEffect;
+        } SetEffectParameter;
     };
 };
 
@@ -69,13 +83,14 @@ struct EffectsResponse {
         OK,
         UNHANDLED_MESSAGE_TYPE,
         NO_SUCH_CHAIN,
+        NO_SUCH_EFFECT,
+        NO_SUCH_PARAMETER,
+        INVALID_PARAMETER_UPDATE,
 
         // Must come last.
         NUM_STATUS_CODES
     };
     enum MessageType {
-        ADD_EFFECT_CHAIN_SLOT,
-        REMOVE_EFFECT_CHAIN_SLOT,
         ADD_EFFECT_CHAIN,
         REMOVE_EFFECT_CHAIN,
         ADD_EFFECT_TO_CHAIN,

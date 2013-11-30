@@ -10,33 +10,12 @@
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
 #include "engine/effects/engineeffectparameter.h"
+#include "engine/effects/message.h"
 
-class EngineEffect {
+class EngineEffect : public EffectsRequestHandler {
   public:
-    EngineEffect(const EffectManifest& manifest, EffectProcessor* pProcessor)
-            : m_manifest(manifest),
-              m_pProcessor(pProcessor),
-              m_parameters(manifest.parameters().size()) {
-        const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
-        for (int i = 0; i < parameters.size(); ++i) {
-            const EffectManifestParameter& parameter = parameters.at(i);
-            EngineEffectParameter* pParameter =
-                    new EngineEffectParameter(parameter);
-            m_parameters[i] = pParameter;
-            m_parametersById[parameter.id()] = pParameter;
-        }
-    }
-
-    virtual ~EngineEffect() {
-        qDebug() << debugString() << "destroyed";
-        delete m_pProcessor;
-        m_parametersById.clear();
-        for (int i = 0; i < m_parameters.size(); ++i) {
-            EngineEffectParameter* pParameter = m_parameters.at(i);
-            m_parameters[i] = NULL;
-            delete pParameter;
-        }
-    }
+    EngineEffect(const EffectManifest& manifest, EffectProcessor* pProcessor);
+    virtual ~EngineEffect();
 
     const QString& name() const {
         return m_manifest.name();
@@ -52,6 +31,10 @@ class EngineEffect {
             pParameter->setValue(value);
         }
     }
+
+    bool processEffectsRequest(
+        const EffectsRequest& message,
+        EffectsResponsePipe* pResponsePipe);
 
   private:
     QString debugString() const {

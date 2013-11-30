@@ -476,6 +476,7 @@ class MixxxCore(Feature):
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectchain.cpp",
+                   "engine/effects/engineeffect.cpp",
 
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",

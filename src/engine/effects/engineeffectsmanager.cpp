@@ -47,6 +47,29 @@ void EngineEffectsManager::onCallbackStart() {
                 }
                 break;
 
+            case EffectsRequest::SET_EFFECT_PARAMETER:
+                if (!m_effects.contains(request.SetEffectParameter.pEffect)) {
+                    qDebug() << debugString()
+                             << "WARNING: SetEffectParameter message for unloaded effect"
+                             << request.SetEffectParameter.pEffect;
+                    response.success = false;
+                    response.status = EffectsResponse::NO_SUCH_EFFECT;
+                } else {
+                    processed = request.SetEffectParameter.pEffect
+                            ->processEffectsRequest(request, m_pResponsePipe.data());
+
+                    if (!processed) {
+                        // If we got here, the message was not handled.
+                        response.success = false;
+                        response.status = EffectsResponse::INVALID_PARAMETER_UPDATE;
+                    }
+                }
+                if (!processed) {
+                    // If we got here, the message was not handled.
+                    response.success = false;
+                    response.status = EffectsResponse::NO_SUCH_EFFECT;
+                }
+                break;
             default:
                 response.success = false;
                 response.status = EffectsResponse::UNHANDLED_MESSAGE_TYPE;

@@ -95,10 +95,10 @@ void FlangerEffectProcessor::process(const QString& channelId,
         return;
     }
 
-    CSAMPLE lfoPeriod = m_periodParameter ? m_periodParameter->getValue().toDouble() : 0.0f;
-    CSAMPLE lfoDepth = m_depthParameter ? m_depthParameter->getValue().toDouble() : 0.0f;
+    CSAMPLE lfoPeriod = m_periodParameter ? m_periodParameter->value().toDouble() : 0.0f;
+    CSAMPLE lfoDepth = m_depthParameter ? m_depthParameter->value().toDouble() : 0.0f;
     // Unused in EngineFlanger
-    CSAMPLE lfoDelay = m_delayParameter ? m_delayParameter->getValue().toDouble() : 0.0f;
+    CSAMPLE lfoDelay = m_delayParameter ? m_delayParameter->value().toDouble() : 0.0f;
 
     qDebug() << debugString() << "period" << lfoPeriod << "depth" << lfoDepth << "delay" << lfoDelay;
 
