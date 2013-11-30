@@ -37,6 +37,7 @@ bool EffectChain::enabled() const {
 
 void EffectChain::setEnabled(bool enabled) {
     m_bEnabled = enabled;
+    sendParameterUpdate();
 }
 
 void EffectChain::enableForGroup(const QString& group) {
@@ -71,6 +72,7 @@ double EffectChain::parameter() const {
 
 void EffectChain::setParameter(const double& dParameter) {
     m_dParameter = dParameter;
+    sendParameterUpdate();
 }
 
 double EffectChain::mix() const {
@@ -79,6 +81,7 @@ double EffectChain::mix() const {
 
 void EffectChain::setMix(const double& dMix) {
     m_dMix = dMix;
+    sendParameterUpdate();
 }
 
 void EffectChain::addEffect(EffectPointer pEffect) {
@@ -128,4 +131,14 @@ EffectPointer EffectChain::getEffect(unsigned int effectNumber) const {
 
 EngineEffectChain* EffectChain::getEngineEffectChain() {
     return m_pEngineEffectChain;
+}
+
+void EffectChain::sendParameterUpdate() {
+    EffectsRequest* pRequest = new EffectsRequest();
+    pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
+    pRequest->targetId = id();
+    pRequest->SetEffectChainParameters.enabled = m_bEnabled;
+    pRequest->SetEffectChainParameters.mix = m_dMix;
+    pRequest->SetEffectChainParameters.parameter = m_dParameter;
+    m_pEffectsManager->writeRequest(pRequest);
 }

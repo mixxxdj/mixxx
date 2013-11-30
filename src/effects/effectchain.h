@@ -63,6 +63,8 @@ class EffectChain : public QObject {
         return QString("EffectChain(%1)").arg(m_id);
     }
 
+    void sendParameterUpdate();
+
     EffectsManager* m_pEffectsManager;
 
     bool m_bEnabled;
