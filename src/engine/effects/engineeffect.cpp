@@ -32,7 +32,8 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
 
     switch (message.type) {
         case EffectsRequest::SET_EFFECT_PARAMETER:
-            pParameter = m_parametersById.value(message.targetId, NULL);
+            pParameter = m_parameters.value(
+                message.SetEffectParameter.iParameter, NULL);
             if (pParameter) {
                 pParameter->setMinimum(message.minimum);
                 pParameter->setMaximum(message.maximum);
@@ -42,12 +43,11 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
             } else {
                 response.success = false;
                 response.status = EffectsResponse::NO_SUCH_PARAMETER;
-
             }
             pResponsePipe->writeMessages(&response, 1);
             return true;
         default:
-            return false;
+            break;
     }
     return false;
 }

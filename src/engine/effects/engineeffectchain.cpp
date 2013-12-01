@@ -44,10 +44,6 @@ bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
 
 bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
                                               EffectsResponsePipe* pResponsePipe) {
-    if (message.targetId != m_id) {
-        return false;
-    }
-
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_TO_CHAIN:

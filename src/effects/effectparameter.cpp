@@ -5,10 +5,11 @@
 #include "effects/effect.h"
 
 EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
-                                 const EffectManifestParameter& parameter)
+                                 int iParameterNumber, const EffectManifestParameter& parameter)
         : QObject(pEffect),
           m_pEffect(pEffect),
           m_pEffectsManager(pEffectsManager),
+          m_iParameterNumber(iParameterNumber),
           m_parameter(parameter) {
     qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
              << m_parameter.id();
@@ -395,8 +396,8 @@ void EffectParameter::setMaximum(QVariant maximum) {
 void EffectParameter::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_PARAMETER;
-    pRequest->SetEffectParameter.pEffect = m_pEffect->getEngineEffect();
-    pRequest->targetId = m_parameter.id();
+    pRequest->pTargetEffect = m_pEffect->getEngineEffect();
+    pRequest->SetEffectParameter.iParameter = m_iParameterNumber;
     pRequest->value = m_value;
     pRequest->minimum = m_minimum;
     pRequest->maximum = m_maximum;

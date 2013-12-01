@@ -19,7 +19,7 @@ class EffectParameter : public QObject {
     Q_OBJECT
   public:
     EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
-                    const EffectManifestParameter& parameter);
+                    int iParameterNumber, const EffectManifestParameter& parameter);
     virtual ~EffectParameter();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -60,6 +60,7 @@ class EffectParameter : public QObject {
 
     Effect* m_pEffect;
     EffectsManager* m_pEffectsManager;
+    int m_iParameterNumber;
     EffectManifestParameter m_parameter;
     QVariant m_minimum;
     QVariant m_maximum;

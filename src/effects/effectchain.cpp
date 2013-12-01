@@ -46,7 +46,7 @@ void EffectChain::enableForGroup(const QString& group) {
 
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP;
-        request->targetId = id();
+        request->pTargetChain = m_pEngineEffectChain;
         request->group = group;
         m_pEffectsManager->writeRequest(request);
     }
@@ -60,7 +60,7 @@ void EffectChain::disableForGroup(const QString& group) {
     if (m_enabledGroups.remove(group)) {
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP;
-        request->targetId = id();
+        request->pTargetChain = m_pEngineEffectChain;
         request->group = group;
         m_pEffectsManager->writeRequest(request);
     }
@@ -95,7 +95,7 @@ void EffectChain::addEffect(EffectPointer pEffect) {
     m_effects.append(pEffect);
     EffectsRequest* request = new EffectsRequest();
     request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
-    request->targetId = id();
+    request->pTargetChain = m_pEngineEffectChain;
     request->AddEffectToChain.pEffect = pEffect->getEngineEffect();
     request->AddEffectToChain.iIndex = m_effects.size() - 1;
     m_pEffectsManager->writeRequest(request);
@@ -107,7 +107,7 @@ void EffectChain::removeEffect(EffectPointer pEffect) {
     if (m_effects.removeAll(pEffect) > 0) {
         EffectsRequest* request = new EffectsRequest();
         request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
-        request->targetId = id();
+        request->pTargetChain = m_pEngineEffectChain;
         request->RemoveEffectFromChain.pEffect = pEffect->getEngineEffect();
         m_pEffectsManager->writeRequest(request);
         emit(effectRemoved());
@@ -136,7 +136,7 @@ EngineEffectChain* EffectChain::getEngineEffectChain() {
 void EffectChain::sendParameterUpdate() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
-    pRequest->targetId = id();
+    pRequest->pTargetChain = m_pEngineEffectChain;
     pRequest->SetEffectChainParameters.enabled = m_bEnabled;
     pRequest->SetEffectChainParameters.mix = m_dMix;
     pRequest->SetEffectChainParameters.parameter = m_dParameter;

@@ -27,10 +27,17 @@ void EngineEffectsManager::onCallbackStart() {
             case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
             case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP:
             case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP:
-                foreach (EngineEffectChain* pChain, m_chains) {
-                    if (pChain->processEffectsRequest(*request, m_pResponsePipe.data())) {
-                        processed = true;
+                if (!m_chains.contains(request->pTargetChain)) {
+                    qDebug() << debugString()
+                             << "WARNING: message for unloaded chain"
+                             << request->pTargetChain;
+                    response.success = false;
+                    response.status = EffectsResponse::NO_SUCH_CHAIN;
+                } else {
+                    processed = request->pTargetChain->processEffectsRequest(
+                        *request, m_pResponsePipe.data());
 
+                    if (processed) {
                         // When an effect becomes active (part of a chain), keep
                         // it in our master list so that we can respond to
                         // requests about it.
@@ -39,37 +46,34 @@ void EngineEffectsManager::onCallbackStart() {
                         } else if (request->type == EffectsRequest::REMOVE_EFFECT_FROM_CHAIN) {
                             m_effects.removeAll(request->RemoveEffectFromChain.pEffect);
                         }
-                        break;
+                    } else {
+                        if (!processed) {
+                            // If we got here, the message was not handled for
+                            // an unknown reason.
+                            response.success = false;
+                            response.status = EffectsResponse::INVALID_REQUEST;
+                        }
                     }
-                }
-                if (!processed) {
-                    // If we got here, the message was not handled.
-                    response.success = false;
-                    response.status = EffectsResponse::NO_SUCH_CHAIN;
                 }
                 break;
 
             case EffectsRequest::SET_EFFECT_PARAMETER:
-                if (!m_effects.contains(request->SetEffectParameter.pEffect)) {
+                if (!m_effects.contains(request->pTargetEffect)) {
                     qDebug() << debugString()
                              << "WARNING: SetEffectParameter message for unloaded effect"
-                             << request->SetEffectParameter.pEffect;
+                             << request->pTargetEffect;
                     response.success = false;
                     response.status = EffectsResponse::NO_SUCH_EFFECT;
                 } else {
-                    processed = request->SetEffectParameter.pEffect
+                    processed = request->pTargetEffect
                             ->processEffectsRequest(*request, m_pResponsePipe.data());
 
                     if (!processed) {
-                        // If we got here, the message was not handled.
+                        // If we got here, the message was not handled for an
+                        // unknown reason.
                         response.success = false;
-                        response.status = EffectsResponse::INVALID_PARAMETER_UPDATE;
+                        response.status = EffectsResponse::INVALID_REQUEST;
                     }
-                }
-                if (!processed) {
-                    // If we got here, the message was not handled.
-                    response.success = false;
-                    response.status = EffectsResponse::NO_SUCH_EFFECT;
                 }
                 break;
             default:
@@ -125,7 +129,7 @@ bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
             response.success = addEffectChain(message.AddEffectChain.pChain);
             break;
         case EffectsRequest::REMOVE_EFFECT_CHAIN:
-            response.success = removeEffectChain(message.AddEffectChain.pChain);
+            response.success = removeEffectChain(message.RemoveEffectChain.pChain);
             break;
         default:
             return false;

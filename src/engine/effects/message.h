@@ -33,6 +33,8 @@ struct EffectsRequest {
     EffectsRequest()
             : type(NUM_REQUEST_TYPES),
               request_id(-1) {
+        pTargetChain = NULL;
+        pTargetEffect = NULL;
 #define CLEAR_STRUCT(x) memset(&x, 0, sizeof(x));
         CLEAR_STRUCT(AddEffectChain);
         CLEAR_STRUCT(RemoveEffectChain);
@@ -46,14 +48,21 @@ struct EffectsRequest {
     MessageType type;
     qint64 request_id;
 
-    // Message-specific, non-POD values that can't be part of the below union.
-    QString targetId;
-    QString group;
-    QVariant minimum;
-    QVariant maximum;
-    QVariant default_value;
-    QVariant value;
+    // Target of the message.
+    union {
+        // Used by:
+        // - ADD_EFFECT_TO_CHAIN
+        // - REMOVE_EFFECT_FROM_CHAIN
+        // - SET_EFFECT_CHAIN_PARAMETERS
+        // - ENABLE_EFFECT_CHAIN_FOR_GROUP
+        // - DISABLE_EFFECT_CHAIN_FOR_GROUP
+        EngineEffectChain* pTargetChain;
+        // Used by:
+        // - SET_EFFECT_PARAMETER
+        EngineEffect* pTargetEffect;
+    };
 
+    // Message-specific data.
     union {
         struct {
             EngineEffectChain* pChain;
@@ -62,12 +71,10 @@ struct EffectsRequest {
             EngineEffectChain* pChain;
         } RemoveEffectChain;
         struct {
-            // The effect referred to by this request. NULL if none.
             EngineEffect* pEffect;
             int iIndex;
         } AddEffectToChain;
         struct {
-            // The effect referred to by this request. NULL if none.
             EngineEffect* pEffect;
         } RemoveEffectFromChain;
         struct {
@@ -76,9 +83,22 @@ struct EffectsRequest {
             double parameter;
         } SetEffectChainParameters;
         struct {
-            EngineEffect* pEffect;
+            int iParameter;
         } SetEffectParameter;
     };
+
+    ////////////////////////////////////////////////////////////////////////////
+    // Message-specific, non-POD values that can't be part of the above union.
+    ////////////////////////////////////////////////////////////////////////////
+
+    // Used by ENABLE_EFFECT_CHAIN_FOR_GROUP and DISABLE_EFFECT_CHAIN_FOR_GROUP.
+    QString group;
+
+    // Used by SET_EFFECT_PARAMETER.
+    QVariant minimum;
+    QVariant maximum;
+    QVariant default_value;
+    QVariant value;
 };
 
 struct EffectsResponse {
@@ -88,7 +108,7 @@ struct EffectsResponse {
         NO_SUCH_CHAIN,
         NO_SUCH_EFFECT,
         NO_SUCH_PARAMETER,
-        INVALID_PARAMETER_UPDATE,
+        INVALID_REQUEST,
 
         // Must come last.
         NUM_STATUS_CODES
