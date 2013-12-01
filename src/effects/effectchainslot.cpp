@@ -163,8 +163,8 @@ void EffectChainSlot::clear() {
     // Stop listening to signals from any loaded effect
     if (m_pEffectChain) {
         m_pEffectChain->disconnect(this);
-        m_pEffectChain.clear();
         m_pEffectChain->setEnabled(false);
+        m_pEffectChain.clear();
 
         foreach (EffectSlotPointer pSlot, m_slots) {
             pSlot->loadEffect(EffectPointer());
