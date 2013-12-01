@@ -186,7 +186,7 @@ void EngineEffectChain::process(const QString& group,
                 pOutput, pInput, 1.0 - wet_gain_old, 1.0 - wet_gain,
                 m_pBuffer, wet_gain_old, wet_gain, numSamples);
         }
-    } else { // SEND mode: output = input * (2-wet) + effect(input) * wet
+    } else { // SEND mode: output = input + effect(input) * wet
         // Clear scratch buffer.
         SampleUtil::applyGain(m_pBuffer, 0.0, numSamples);
 
@@ -195,13 +195,19 @@ void EngineEffectChain::process(const QString& group,
             EngineEffect* pEffect = m_effects[i];
             const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
             CSAMPLE* pIntermediateOutput = m_pBuffer;
-            pEffect->process(group, pIntermediateInput, pIntermediateOutput, numSamples);
+            pEffect->process(group, pIntermediateInput,
+                             pIntermediateOutput, numSamples);
         }
 
         // m_pBuffer now contains the fully wet output.
-        SampleUtil::copy2WithRampingGain(
-            pOutput, pInput, 2.0 - wet_gain_old, 2.0 - wet_gain,
-            m_pBuffer, wet_gain_old, wet_gain, numSamples);
+        if (pInput == pOutput) {
+            SampleUtil::addWithRampingGain(pOutput, m_pBuffer,
+                                           wet_gain_old, wet_gain, numSamples);
+        } else {
+            SampleUtil::copy2WithRampingGain(pOutput, pInput, 1.0, 1.0,
+                                             m_pBuffer, wet_gain_old, wet_gain,
+                                             numSamples);
+        }
     }
 
     // Update GroupStatus with the latest values.
