@@ -148,21 +148,20 @@ void EffectsManager::setupDefaultChains() {
     if (effects.contains(flangerId)) {
         EffectChainPointer pChain = EffectChainPointer(new EffectChain(
             this, "org.mixxx.effectchain.flanger"));
+        m_pEffectChainManager->addEffectChain(pChain);
         pChain->setName(tr("Flanger"));
         pChain->setParameter(0.0f);
-
         EffectPointer flanger = instantiateEffect(flangerId);
         pChain->addEffect(flanger);
-        m_pEffectChainManager->addEffectChain(pChain);
+
 
         pChain = EffectChainPointer(new EffectChain(
             this, "org.mixxx.effectchain.flanger2"));
+        m_pEffectChainManager->addEffectChain(pChain);
         pChain->setName(tr("Flanger2"));
         pChain->setParameter(0.0f);
-
         flanger = instantiateEffect(flangerId);
         pChain->addEffect(flanger);
-        m_pEffectChainManager->addEffectChain(pChain);
     }
 }
 
