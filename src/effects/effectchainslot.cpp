@@ -7,6 +7,9 @@ EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
           m_iChainNumber(iChainNumber),
           // The control group names are 1-indexed while internally everything is 0-indexed.
           m_group(formatGroupString(iChainNumber)) {
+    m_pControlClear = new ControlObject(ConfigKey(m_group, "clear"));
+    connect(m_pControlClear, SIGNAL(valueChanged(double)),
+            this, SLOT(slotControlClear(double)));
 
     m_pControlNumEffects = new ControlObject(ConfigKey(m_group, "num_effects"));
     m_pControlNumEffects->set(0.0f);
@@ -220,6 +223,12 @@ EffectSlotPointer EffectChainSlot::getEffectSlot(unsigned int slotNumber) {
         return EffectSlotPointer();
     }
     return m_slots[slotNumber];
+}
+
+void EffectChainSlot::slotControlClear(double v) {
+    if (v > 0) {
+        clear();
+    }
 }
 
 void EffectChainSlot::slotControlNumEffects(double v) {

@@ -73,6 +73,7 @@ class EffectChainSlot : public QObject {
 
     void slotEffectLoaded(EffectPointer pEffect, unsigned int slotNumber);
 
+    void slotControlClear(double v);
     void slotControlNumEffects(double v);
     void slotControlChainEnabled(double v);
     void slotControlChainMix(double v);
@@ -93,6 +94,7 @@ class EffectChainSlot : public QObject {
 
     EffectChainPointer m_pEffectChain;
 
+    ControlObject* m_pControlClear;
     ControlObject* m_pControlNumEffects;
     ControlObject* m_pControlChainEnabled;
     ControlObject* m_pControlChainMix;
