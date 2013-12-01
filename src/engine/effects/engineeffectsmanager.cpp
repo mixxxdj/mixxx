@@ -56,7 +56,6 @@ void EngineEffectsManager::onCallbackStart() {
                     }
                 }
                 break;
-
             case EffectsRequest::SET_EFFECT_PARAMETER:
                 if (!m_effects.contains(request->pTargetEffect)) {
                     qDebug() << debugString()
@@ -93,7 +92,7 @@ void EngineEffectsManager::process(const QString& group,
                                    const unsigned int numSamples) {
     const bool inPlace = pInput == pOutput;
     foreach (EngineEffectChain* pChain, m_chains) {
-        if (!pChain->enabledForGroup(group)) {
+        if (!pChain->enabled() || !pChain->enabledForGroup(group)) {
             continue;
         }
 
