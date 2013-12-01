@@ -6,6 +6,7 @@
 #include <QSet>
 
 #include "defs.h"
+#include "util.h"
 #include "engine/effects/message.h"
 #include "effects/effectchain.h"
 
@@ -62,6 +63,8 @@ class EngineEffectChain : public EffectsRequestHandler {
         bool ramp_out;
     };
     QMap<QString, GroupStatus> m_groupStatus;
+
+    DISALLOW_COPY_AND_ASSIGN(EngineEffectChain);
 };
 
 #endif /* ENGINEEFFECTCHAIN_H */
