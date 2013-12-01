@@ -33,6 +33,8 @@ class Effect : public QObject {
     EffectParameter* getParameterById(const QString& id) const;
     EngineEffect* getEngineEffect();
 
+    void updateEngineState();
+
   private:
     QString debugString() const {
         return QString("Effect(%1)").arg(m_manifest.name());

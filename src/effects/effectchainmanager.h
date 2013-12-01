@@ -19,6 +19,7 @@ class EffectChainManager : public QObject {
     virtual ~EffectChainManager();
 
     void addEffectChain(EffectChainPointer pEffectChain);
+    void removeEffectChain(EffectChainPointer pEffectChain);
 
     // To support cycling through effect chains, there is a global ordering of
     // chains. These methods allow you to get the next or previous chain given

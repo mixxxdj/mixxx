@@ -34,6 +34,12 @@ Effect::~Effect() {
     }
 }
 
+void Effect::updateEngineState() {
+    foreach (EffectParameter* pParameter, m_parameters) {
+        pParameter->updateEngineState();
+    }
+}
+
 EngineEffect* Effect::getEngineEffect() {
     return m_pEngineEffect;
 }

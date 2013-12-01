@@ -207,7 +207,7 @@ void EffectParameter::setValue(QVariant value) {
     if (clampValue()) {
         qDebug() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
-    sendParameterUpdate();
+    updateEngineState();
 }
 
 QVariant EffectParameter::getDefault() const {
@@ -240,7 +240,7 @@ void EffectParameter::setDefault(QVariant dflt) {
         qDebug() << debugString() << "WARNING: Default parameter value was outside of range, clamped.";
     }
 
-    sendParameterUpdate();
+    updateEngineState();
 }
 
 QVariant EffectParameter::getMinimum() const {
@@ -315,7 +315,7 @@ void EffectParameter::setMinimum(QVariant minimum) {
         qDebug() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
     }
 
-    sendParameterUpdate();
+    updateEngineState();
 }
 
 QVariant EffectParameter::getMaximum() const {
@@ -390,10 +390,10 @@ void EffectParameter::setMaximum(QVariant maximum) {
         qDebug() << debugString() << "WARNING: Default was outside of new maximum, clamped.";
     }
 
-    sendParameterUpdate();
+    updateEngineState();
 }
 
-void EffectParameter::sendParameterUpdate() {
+void EffectParameter::updateEngineState() {
     EffectsRequest* pRequest = new EffectsRequest();
     pRequest->type = EffectsRequest::SET_EFFECT_PARAMETER;
     pRequest->pTargetEffect = m_pEffect->getEngineEffect();

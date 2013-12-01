@@ -45,6 +45,8 @@ class EffectParameter : public QObject {
     QVariant getMaximum() const;
     void setMaximum(QVariant maximum);
 
+    void updateEngineState();
+
   private:
     QString debugString() const {
         return QString("EffectParameter(%1)").arg(m_parameter.name());
@@ -56,7 +58,6 @@ class EffectParameter : public QObject {
     bool clampDefault();
     bool clampRanges();
     bool checkType(const QVariant& value) const;
-    void sendParameterUpdate();
 
     Effect* m_pEffect;
     EffectsManager* m_pEffectsManager;

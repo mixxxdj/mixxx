@@ -21,6 +21,9 @@ class EffectChain : public QObject {
     EffectChain(EffectsManager* pEffectsManager, const QString& id);
     virtual ~EffectChain();
 
+    void addToEngine();
+    void removeFromEngine();
+
     // The ID of an EffectChain is a unique ID given to it to help associate it
     // with the preset from which it was loaded.
     QString id() const;
@@ -75,6 +78,8 @@ class EffectChain : public QObject {
         return QString("EffectChain(%1)").arg(m_id);
     }
 
+    void addEffectToEngine(EffectPointer pEffect, int iIndex);
+    void removeEffectFromEngine(EffectPointer pEffect);
     void sendParameterUpdate();
 
     EffectsManager* m_pEffectsManager;

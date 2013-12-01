@@ -15,11 +15,14 @@ EffectChainManager::~EffectChainManager() {
 void EffectChainManager::addEffectChain(EffectChainPointer pEffectChain) {
     if (pEffectChain) {
         m_effectChains.append(pEffectChain);
-        EffectsRequest* pRequest = new EffectsRequest();
-        pRequest->type = EffectsRequest::ADD_EFFECT_CHAIN;
-        pRequest->AddEffectChain.pChain = pEffectChain->getEngineEffectChain();
-        m_pEffectsManager->writeRequest(pRequest);
+        pEffectChain->addToEngine();
+    }
+}
 
+void EffectChainManager::removeEffectChain(EffectChainPointer pEffectChain) {
+    if (pEffectChain) {
+        m_effectChains.removeAll(pEffectChain);
+        pEffectChain->removeFromEngine();
     }
 }
 

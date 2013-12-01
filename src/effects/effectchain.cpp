@@ -20,6 +20,34 @@ EffectChain::~EffectChain() {
     qDebug() << debugString() << "destroyed";
 }
 
+void EffectChain::addToEngine() {
+    EffectsRequest* pRequest = new EffectsRequest();
+    pRequest->type = EffectsRequest::ADD_EFFECT_CHAIN;
+    pRequest->AddEffectChain.pChain = getEngineEffectChain();
+    m_pEffectsManager->writeRequest(pRequest);
+
+    // Add all effects.
+    for (int i = 0; i < m_effects.size(); ++i) {
+        EffectPointer pEffect = m_effects[i];
+        // Add the effect to the engine.
+        addEffectToEngine(pEffect, i);
+        // Update its parameters in the engine.
+        pEffect->updateEngineState();
+    }
+}
+
+void EffectChain::removeFromEngine() {
+    // Order doesn't matter when removing.
+    for (int i = 0; i < m_effects.size(); ++i) {
+        removeEffectFromEngine(m_effects[i]);
+    }
+
+    EffectsRequest* pRequest = new EffectsRequest();
+    pRequest->type = EffectsRequest::REMOVE_EFFECT_CHAIN;
+    pRequest->RemoveEffectChain.pChain = getEngineEffectChain();
+    m_pEffectsManager->writeRequest(pRequest);
+}
+
 QString EffectChain::id() const {
     return m_id;
 }
@@ -103,23 +131,14 @@ void EffectChain::addEffect(EffectPointer pEffect) {
         return;
     }
     m_effects.append(pEffect);
-    EffectsRequest* request = new EffectsRequest();
-    request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
-    request->pTargetChain = m_pEngineEffectChain;
-    request->AddEffectToChain.pEffect = pEffect->getEngineEffect();
-    request->AddEffectToChain.iIndex = m_effects.size() - 1;
-    m_pEffectsManager->writeRequest(request);
+    addEffectToEngine(pEffect, m_effects.size() - 1);
     emit(effectAdded());
 }
 
 void EffectChain::removeEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "removeEffect";
     if (m_effects.removeAll(pEffect) > 0) {
-        EffectsRequest* request = new EffectsRequest();
-        request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
-        request->pTargetChain = m_pEngineEffectChain;
-        request->RemoveEffectFromChain.pEffect = pEffect->getEngineEffect();
-        m_pEffectsManager->writeRequest(request);
+        removeEffectFromEngine(pEffect);
         emit(effectRemoved());
     }
 }
@@ -152,4 +171,21 @@ void EffectChain::sendParameterUpdate() {
     pRequest->SetEffectChainParameters.mix = m_dMix;
     pRequest->SetEffectChainParameters.parameter = m_dParameter;
     m_pEffectsManager->writeRequest(pRequest);
+}
+
+void EffectChain::addEffectToEngine(EffectPointer pEffect, int iIndex) {
+    EffectsRequest* request = new EffectsRequest();
+    request->type = EffectsRequest::ADD_EFFECT_TO_CHAIN;
+    request->pTargetChain = m_pEngineEffectChain;
+    request->AddEffectToChain.pEffect = pEffect->getEngineEffect();
+    request->AddEffectToChain.iIndex = iIndex;
+    m_pEffectsManager->writeRequest(request);
+}
+
+void EffectChain::removeEffectFromEngine(EffectPointer pEffect) {
+    EffectsRequest* request = new EffectsRequest();
+    request->type = EffectsRequest::REMOVE_EFFECT_FROM_CHAIN;
+    request->pTargetChain = m_pEngineEffectChain;
+    request->RemoveEffectFromChain.pEffect = pEffect->getEngineEffect();
+    m_pEffectsManager->writeRequest(request);
 }
