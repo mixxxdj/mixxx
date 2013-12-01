@@ -32,7 +32,6 @@ class Effect : public QObject {
     EffectParameter* getParameter(unsigned int parameterNumber);
     EffectParameter* getParameterById(const QString& id) const;
     EngineEffect* getEngineEffect();
-    void setEngineParameterById(const QString& id, const QVariant& value);
 
   private:
     QString debugString() const {

@@ -8,6 +8,7 @@
 #include "effects/effectmanifestparameter.h"
 
 class Effect;
+class EffectsManager;
 
 // An EffectParameter is an instance of an EffectManifestParameter, which is in
 // charge of keeping track of the instance values for the default, minimum,
@@ -17,7 +18,8 @@ class Effect;
 class EffectParameter : public QObject {
     Q_OBJECT
   public:
-    EffectParameter(Effect* pEffect, const EffectManifestParameter& parameter);
+    EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
+                    const EffectManifestParameter& parameter);
     virtual ~EffectParameter();
 
     ///////////////////////////////////////////////////////////////////////////
@@ -54,8 +56,10 @@ class EffectParameter : public QObject {
     bool clampDefault();
     bool clampRanges();
     bool checkType(const QVariant& value) const;
+    void sendParameterUpdate();
 
     Effect* m_pEffect;
+    EffectsManager* m_pEffectsManager;
     EffectManifestParameter m_parameter;
     QVariant m_minimum;
     QVariant m_maximum;

@@ -13,7 +13,8 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
           m_manifest(manifest),
           m_pEngineEffect(new EngineEffect(manifest, pProcessor)) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
-        EffectParameter* pParameter = new EffectParameter(this, parameter);
+        EffectParameter* pParameter = new EffectParameter(this, pEffectsManager,
+                                                          parameter);
         m_parameters.append(pParameter);
         if (m_parametersById.contains(parameter.id())) {
             qDebug() << debugString() << "WARNING: Loaded EffectManifest that had parameters with duplicate IDs. Dropping one of them.";
@@ -36,12 +37,6 @@ EngineEffect* Effect::getEngineEffect() {
     return m_pEngineEffect;
 }
 
-void Effect::setEngineParameterById(const QString& id, const QVariant& value) {
-    if (m_pEngineEffect) {
-        m_pEngineEffect->setParameterById(id, value);
-    }
-}
-
 const EffectManifest& Effect::getManifest() const {
     return m_manifest;
 }
@@ -53,7 +48,8 @@ unsigned int Effect::numParameters() const {
 EffectParameter* Effect::getParameterById(const QString& id) const {
     EffectParameter* pParameter = m_parametersById.value(id, NULL);
     if (pParameter == NULL) {
-        qDebug() << debugString() << "parameterFromId" << "WARNING: parameter for id does not exist:" << id;
+        qDebug() << debugString() << "getParameterById"
+                 << "WARNING: parameter for id does not exist:" << id;
     }
     return pParameter;
 }

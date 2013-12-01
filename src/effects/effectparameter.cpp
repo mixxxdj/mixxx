@@ -1,11 +1,14 @@
 #include <QtDebug>
 
 #include "effects/effectparameter.h"
+#include "effects/effectsmanager.h"
 #include "effects/effect.h"
 
-EffectParameter::EffectParameter(Effect* pEffect, const EffectManifestParameter& parameter)
-        : QObject(),
+EffectParameter::EffectParameter(Effect* pEffect, EffectsManager* pEffectsManager,
+                                 const EffectManifestParameter& parameter)
+        : QObject(pEffect),
           m_pEffect(pEffect),
+          m_pEffectsManager(pEffectsManager),
           m_parameter(parameter) {
     qDebug() << debugString() << "Constructing new EffectParameter from EffectManifestParameter:"
              << m_parameter.id();
@@ -203,9 +206,7 @@ void EffectParameter::setValue(QVariant value) {
     if (clampValue()) {
         qDebug() << debugString() << "WARNING: Value was outside of limits, clamped.";
     }
-    if (m_pEffect) {
-        m_pEffect->setEngineParameterById(m_parameter.id(), m_value);
-    }
+    sendParameterUpdate();
 }
 
 QVariant EffectParameter::getDefault() const {
@@ -237,6 +238,8 @@ void EffectParameter::setDefault(QVariant dflt) {
     if (clampDefault()) {
         qDebug() << debugString() << "WARNING: Default parameter value was outside of range, clamped.";
     }
+
+    sendParameterUpdate();
 }
 
 QVariant EffectParameter::getMinimum() const {
@@ -310,6 +313,8 @@ void EffectParameter::setMinimum(QVariant minimum) {
     if (clampDefault()) {
         qDebug() << debugString() << "WARNING: Default was outside of new minimum, clamped.";
     }
+
+    sendParameterUpdate();
 }
 
 QVariant EffectParameter::getMaximum() const {
@@ -383,5 +388,18 @@ void EffectParameter::setMaximum(QVariant maximum) {
     if (clampDefault()) {
         qDebug() << debugString() << "WARNING: Default was outside of new maximum, clamped.";
     }
+
+    sendParameterUpdate();
 }
 
+void EffectParameter::sendParameterUpdate() {
+    EffectsRequest* pRequest = new EffectsRequest();
+    pRequest->type = EffectsRequest::SET_EFFECT_PARAMETER;
+    pRequest->SetEffectParameter.pEffect = m_pEffect->getEngineEffect();
+    pRequest->targetId = m_parameter.id();
+    pRequest->value = m_value;
+    pRequest->minimum = m_minimum;
+    pRequest->maximum = m_maximum;
+    pRequest->default_value = m_default;
+    m_pEffectsManager->writeRequest(pRequest);
+}

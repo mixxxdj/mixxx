@@ -25,13 +25,6 @@ class EngineEffect : public EffectsRequestHandler {
         return m_parametersById.value(id, NULL);
     }
 
-    void setParameterById(const QString& id, const QVariant& value) {
-        EngineEffectParameter* pParameter = getParameterById(id);
-        if (pParameter) {
-            pParameter->setValue(value);
-        }
-    }
-
     bool processEffectsRequest(
         const EffectsRequest& message,
         EffectsResponsePipe* pResponsePipe);
