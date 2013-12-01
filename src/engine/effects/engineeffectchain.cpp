@@ -1,13 +1,15 @@
 #include "engine/effects/engineeffectchain.h"
 
 #include "engine/effects/engineeffect.h"
+#include "sampleutil.h"
 
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
           m_bEnabled(false),
           m_insertionType(EffectChain::INSERT),
           m_dMix(0),
-          m_dParameter(0) {
+          m_dParameter(0),
+          m_pBuffer(SampleUtil::alloc(MAX_BUFFER_LEN)) {
     // Make sure there's plenty of room so we don't allocate on
     // insertion/deletion.
     m_enabledGroups.reserve(64);
@@ -103,7 +105,56 @@ void EngineEffectChain::process(const QString& group,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples) {
 
-    foreach (EngineEffect* pEffect, m_effects) {
-        pEffect->process(group, pInput, pOutput, numSamples);
+    CSAMPLE wet_gain = m_dMix;
+    CSAMPLE dry_gain = 1 - m_dMix;
+
+    // INSERT mode: output = input * (1-wet) + effect(input) * wet
+    if (m_insertionType == EffectChain::INSERT) {
+        // Fully wet, insert optimization. No temporary buffer needed.
+        if (wet_gain == 1.0) {
+            for (int i = 0; i < m_effects.size(); ++i) {
+                EngineEffect* pEffect = m_effects[i];
+                const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : pOutput;
+                CSAMPLE* pIntermediateOutput = pOutput;
+                pEffect->process(group, pIntermediateInput, pIntermediateOutput, numSamples);
+            }
+        } else {
+            // Clear scratch buffer.
+            SampleUtil::applyGain(m_pBuffer, 0.0, numSamples);
+
+            // Chain each effect
+            for (int i = 0; i < m_effects.size(); ++i) {
+                EngineEffect* pEffect = m_effects[i];
+                const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
+                CSAMPLE* pIntermediateOutput = m_pBuffer;
+                pEffect->process(group, pIntermediateInput, pIntermediateOutput, numSamples);
+            }
+
+            // m_pBuffer now contains the fully wet output.
+            // TODO(rryan): benchmark applyGain followed by addWithGain versus
+            // copy2WithGain.
+            SampleUtil::copy2WithGain(pOutput, pInput, dry_gain,
+                                      m_pBuffer, wet_gain, numSamples);
+        }
+    } else { // SEND mode: output = input * (2-wet) + effect(input) * wet
+        // Clear scratch buffer.
+        SampleUtil::applyGain(m_pBuffer, 0.0, numSamples);
+
+        // Chain each effect
+        for (int i = 0; i < m_effects.size(); ++i) {
+            EngineEffect* pEffect = m_effects[i];
+            const CSAMPLE* pIntermediateInput = (i == 0) ? pInput : m_pBuffer;
+            CSAMPLE* pIntermediateOutput = m_pBuffer;
+            pEffect->process(group, pIntermediateInput, pIntermediateOutput, numSamples);
+        }
+
+        // m_pBuffer now contains the fully wet output.
+        if (pInput == pOutput) {
+            SampleUtil::add2WithGain(pOutput, pInput, dry_gain,
+                                     m_pBuffer, wet_gain, numSamples);
+        } else {
+            SampleUtil::copy2WithGain(pOutput, pInput, 1.0 + dry_gain,
+                                      m_pBuffer, wet_gain, numSamples);
+        }
     }
 }

@@ -52,6 +52,7 @@ class EngineEffectChain : public EffectsRequestHandler {
     double m_dParameter;
     QList<EngineEffect*> m_effects;
     QSet<QString> m_enabledGroups;
+    CSAMPLE* m_pBuffer;
 };
 
 #endif /* ENGINEEFFECTCHAIN_H */
