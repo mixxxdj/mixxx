@@ -12,6 +12,7 @@ class EffectsManager;
 class EffectsBackend;
 class EffectInstantiator {
   public:
+    virtual ~EffectInstantiator() {}
     virtual EffectPointer instantiate(EffectsManager* pEffectsManager,
                                       EffectsBackend* pEffectsBackend,
                                       const EffectManifest& manifest) = 0;
