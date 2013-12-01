@@ -10,6 +10,7 @@ EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id)
           m_bEnabled(false),
           m_id(id),
           m_name(""),
+          m_insertionType(EffectChain::INSERT),
           m_dMix(0),
           m_dParameter(0),
           m_pEngineEffectChain(new EngineEffectChain(m_id)) {
@@ -84,6 +85,15 @@ void EffectChain::setMix(const double& dMix) {
     sendParameterUpdate();
 }
 
+EffectChain::InsertionType EffectChain::insertionType() const {
+    return m_insertionType;
+}
+
+void EffectChain::setInsertionType(InsertionType insertionType) {
+    m_insertionType = insertionType;
+    sendParameterUpdate();
+}
+
 void EffectChain::addEffect(EffectPointer pEffect) {
     qDebug() << debugString() << "addEffect";
     if (m_effects.contains(pEffect)) {
@@ -138,6 +148,7 @@ void EffectChain::sendParameterUpdate() {
     pRequest->type = EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS;
     pRequest->pTargetChain = m_pEngineEffectChain;
     pRequest->SetEffectChainParameters.enabled = m_bEnabled;
+    pRequest->SetEffectChainParameters.insertion_type = m_insertionType;
     pRequest->SetEffectChainParameters.mix = m_dMix;
     pRequest->SetEffectChainParameters.parameter = m_dParameter;
     m_pEffectsManager->writeRequest(pRequest);

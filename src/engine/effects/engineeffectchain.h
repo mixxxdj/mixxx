@@ -7,6 +7,7 @@
 
 #include "defs.h"
 #include "engine/effects/message.h"
+#include "effects/effectchain.h"
 
 class EngineEffect;
 
@@ -46,6 +47,7 @@ class EngineEffectChain : public EffectsRequestHandler {
 
     QString m_id;
     bool m_bEnabled;
+    EffectChain::InsertionType m_insertionType;
     double m_dMix;
     double m_dParameter;
     QList<EngineEffect*> m_effects;

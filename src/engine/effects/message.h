@@ -6,6 +6,7 @@
 #include <QtGlobal>
 
 #include "util/fifo.h"
+#include "effects/effectchain.h"
 
 class EngineEffectChain;
 class EngineEffect;
@@ -79,6 +80,7 @@ struct EffectsRequest {
         } RemoveEffectFromChain;
         struct {
             bool enabled;
+            EffectChain::InsertionType insertion_type;
             double mix;
             double parameter;
         } SetEffectChainParameters;

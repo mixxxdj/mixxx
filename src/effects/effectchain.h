@@ -45,6 +45,13 @@ class EffectChain : public QObject {
     double mix() const;
     void setMix(const double& dMix);
 
+    enum InsertionType {
+        INSERT = 0,
+        SEND = 1
+    };
+    InsertionType insertionType() const;
+    void setInsertionType(InsertionType type);
+
     void addEffect(EffectPointer pEffect);
     void removeEffect(EffectPointer pEffect);
     EffectPointer getEffect(unsigned int i) const;
@@ -75,6 +82,7 @@ class EffectChain : public QObject {
     bool m_bEnabled;
     QString m_id;
     QString m_name;
+    InsertionType m_insertionType;
     double m_dMix;
     double m_dParameter;
 

@@ -5,6 +5,7 @@
 EngineEffectChain::EngineEffectChain(const QString& id)
         : m_id(id),
           m_bEnabled(false),
+          m_insertionType(EffectChain::INSERT),
           m_dMix(0),
           m_dParameter(0) {
     // Make sure there's plenty of room so we don't allocate on
@@ -37,6 +38,7 @@ bool EngineEffectChain::removeEffect(EngineEffect* pEffect) {
 bool EngineEffectChain::updateParameters(const EffectsRequest& message) {
     // TODO(rryan): Parameter interpolation.
     m_bEnabled = message.SetEffectChainParameters.enabled;
+    m_insertionType = message.SetEffectChainParameters.insertion_type;
     m_dMix = message.SetEffectChainParameters.mix;
     m_dParameter = message.SetEffectChainParameters.parameter;
     return true;
