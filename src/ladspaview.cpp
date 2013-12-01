@@ -7,9 +7,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include <QtGui>
-
 #include "ladspaview.h"
 #include "ladspa/ladspapresetmanager.h"
 #include "ladspa/ladspapresetinstance.h"

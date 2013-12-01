@@ -2,6 +2,7 @@
 
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 #include "library/parser.h"
 #include "library/parserm3u.h"
@@ -402,7 +403,7 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
                 m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addToAutoDJQueue(playlistId, bTop);
+            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
         }
     }
 }
@@ -485,4 +486,3 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0, m_playlistList.size());
 }
-

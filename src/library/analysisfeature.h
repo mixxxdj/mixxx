@@ -2,10 +2,16 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 // Forked 11/11/2009 by Albert Santoni (alberts@mixxx.org)
 
-#ifndef TRIAGEFEATURE_H
-#define TRIAGEFEATURE_H
+#ifndef ANALYSISFEATURE_H
+#define ANALYSISFEATURE_H
 
 #include <QStringListModel>
+#include <QUrl>
+#include <QObject>
+#include <QVariant>
+#include <QIcon>
+#include <QList>
+
 #include "library/libraryfeature.h"
 #include "configobject.h"
 #include "treeitemmodel.h"
@@ -18,8 +24,8 @@ class AnalysisFeature : public LibraryFeature {
     Q_OBJECT
   public:
     AnalysisFeature(QObject* parent,
-                   ConfigObject<ConfigValue>* pConfig,
-                   TrackCollection* pTrackCollection);
+                    ConfigObject<ConfigValue>* pConfig,
+                    TrackCollection* pTrackCollection);
     virtual ~AnalysisFeature();
 
     QVariant title();

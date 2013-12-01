@@ -9,10 +9,6 @@
 
 #include "ladspapresetslot.h"
 
-#include <QtCore>
-#include <QtGui>
-#include <QtXml>
-
 #include "ladspapresetmanager.h"
 #include "ladspapreset.h"
 #include "ladspapresetinstance.h"

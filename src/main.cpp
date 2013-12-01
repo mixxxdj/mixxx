@@ -18,21 +18,18 @@
 #include <QThread>
 #include <QDir>
 #include <QtDebug>
-#include <qapplication.h>
-#include <qfont.h>
-#include <qstring.h>
-#include <qtextcodec.h>
-#include <qtranslator.h>
-#include <qmessagebox.h>
-#include <qiodevice.h>
-#include <qfile.h>
-#include <qstringlist.h>
+#include <QApplication>
+#include <QStringList>
+#include <QString>
+#include <QTextCodec>
+#include <QIODevice>
+#include <QFile>
+
 #include <stdio.h>
 #include <math.h>
+
 #include "mixxx.h"
 #include "soundsourceproxy.h"
-#include "qpixmap.h"
-#include "qsplashscreen.h"
 #include "errordialoghandler.h"
 #include "util/version.h"
 

@@ -12,6 +12,7 @@
 #include "library/browse/browsefeature.h"
 #include "library/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
@@ -64,6 +65,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
     if (RhythmboxFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
+	}
+    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+        BansheeFeature::prepareDbPath(pConfig);
+        if (BansheeFeature::isSupported()) {
+            addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
+		}
     }
     if (ITunesFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {

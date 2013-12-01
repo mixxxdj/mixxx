@@ -1,5 +1,7 @@
 #include "widget/wtime.h"
 
+#include <QTime>
+
 WTime::WTime(QWidget *parent)
         : WLabel(parent),
           m_sTimeFormat("h:mm AP"),

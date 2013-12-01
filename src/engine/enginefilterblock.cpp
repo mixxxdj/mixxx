@@ -16,6 +16,7 @@
 ***************************************************************************/
 
 #include <QtDebug>
+
 #include "controlpushbutton.h"
 #include "controllogpotmeter.h"
 #include "engine/enginefilterblock.h"

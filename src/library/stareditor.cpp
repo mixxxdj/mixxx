@@ -24,10 +24,8 @@
  * see http://doc.trolltech.com/4.5/itemviews-stardelegate.html            *
  ***************************************************************************/
 
- #include <QtGui>
-
- #include "stareditor.h"
- #include "starrating.h"
+#include "stareditor.h"
+#include "starrating.h"
 
 /*
  * We enable mouse tracking on the widget so we can follow the cursor even

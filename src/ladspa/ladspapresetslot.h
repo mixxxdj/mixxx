@@ -10,10 +10,6 @@
 #ifndef LADSPAPRESETSLOT_H
 #define LADSPAPRESETSLOT_H
 
-#include <QtCore>
-#include <QtGui>
-#include <QtXml>
-
 class WKnob;
 class WPushButton;
 class WLabel;

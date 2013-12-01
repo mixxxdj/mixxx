@@ -15,7 +15,6 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
 #include <cstring> // for memcpy and strcmp
 
 #ifdef __PORTAUDIO__

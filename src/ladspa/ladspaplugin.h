@@ -10,7 +10,8 @@
 #ifndef LADSPAPLUGIN_H
 #define LADSPAPLUGIN_H
 
-#include <QtCore>
+#include <QList>
+#include <QVector>
 
 #include <ladspa.h>
 

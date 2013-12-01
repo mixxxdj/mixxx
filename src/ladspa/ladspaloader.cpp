@@ -7,14 +7,13 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include <qapplication.h>
+#include <QApplication>
 #include "ladspaloader.h"
 
 LADSPALoader::LADSPALoader()
 {
     m_PluginCount = 0;
-    
+
     QStringList plugin_paths;
 
     // set up the plugin paths...
@@ -60,7 +59,7 @@ LADSPALoader::LADSPALoader()
         QDir dir(* path);
 
         qDebug() << "Looking for plugins in directory:" << dir.absolutePath();
-    
+
         // get the list of files in the directory
         QFileInfoList files = dir.entryInfoList();
 

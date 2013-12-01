@@ -15,7 +15,7 @@
  *                                                                         *
  ***************************************************************************/
 
-#include <QDebug>
+#include <QtDebug>
 
 #include <signal.h>
 
@@ -598,12 +598,12 @@ void EngineShoutcast::updateMetaData() {
             QString title = m_pMetaData->getTitle();
 
             // shoutcast uses only "song" as field for "artist - title".
-            // icecast2 supports separate fields for "artist" and "title", 
+            // icecast2 supports separate fields for "artist" and "title",
             // which will get displayed accordingly if the streamingformat and
             // player supports it. ("song" is treated as an alias for "title")
-            // 
-            // Note (EinWesen): 
-            // Currently that seems to be OGG only, although it is no problem 
+            //
+            // Note (EinWesen):
+            // Currently that seems to be OGG only, although it is no problem
             // setting both fields for MP3, tested players do not show anything different.
             // Also I do not know about icecast1. To be safe, i stick to the
             // old way for those use cases.

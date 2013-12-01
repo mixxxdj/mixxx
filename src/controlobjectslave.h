@@ -1,12 +1,9 @@
 #ifndef CONTROLOBJECTSLAVE_H
 #define CONTROLOBJECTSLAVE_H
 
-#include <qmutex.h>
-#include <qobject.h>
-#include <qmutex.h>
-#include <qwaitcondition.h>
-#include <QQueue>
+#include <QObject>
 #include <QSharedPointer>
+#include <QString>
 
 #include "configobject.h"
 

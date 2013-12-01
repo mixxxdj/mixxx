@@ -22,7 +22,6 @@
 // allows the next buffer to be filled while processing a buffer that's is
 // already full.)
 
-#include <QtCore>
 #include <QtDebug>
 #include <QMutexLocker>
 

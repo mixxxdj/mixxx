@@ -15,7 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QEvent>
 #include <QtDebug>
 
 #include "engine/enginebuffer.h"

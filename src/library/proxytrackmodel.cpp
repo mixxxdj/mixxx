@@ -1,7 +1,6 @@
 // proxytrackmodel.cpp
 // Created 10/22/2009 by RJ Ryan (rryan@mit.edu)
 
-#include <QtCore>
 #include <QVariant>
 
 #include "library/proxytrackmodel.h"
