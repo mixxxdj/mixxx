@@ -20,6 +20,10 @@
 #include <QtDebug>
 #include <QThread>
 
+#ifdef __LINUX__
+#include <QLibrary>
+#endif
+
 #include "sounddeviceportaudio.h"
 
 #include "controlobjectthreadmain.h"
