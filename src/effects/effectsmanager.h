@@ -2,7 +2,6 @@
 #define EFFECTSMANAGER_H
 
 #include <QObject>
-#include <QMutex>
 #include <QHash>
 #include <QList>
 #include <QSet>
@@ -62,7 +61,6 @@ class EffectsManager : public QObject {
 
     void processEffectsResponses();
 
-    mutable QMutex m_mutex;
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
     QList<EffectChainSlotPointer> m_effectChainSlots;
