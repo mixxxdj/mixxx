@@ -886,6 +886,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
     // Update visual control object, this needs to be done more often
     m_visualPlaypos->set(fFractionalPlaypos);
     m_rateEngine->set(rate);
+    m_pRateControl->checkTrackPosition(fFractionalPlaypos);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
