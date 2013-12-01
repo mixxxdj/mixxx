@@ -56,13 +56,6 @@ EffectManifest FlangerEffect::getManifest() const {
     return manifest;
 }
 
-// static
-EffectPointer FlangerEffect::create(EffectsBackend* pBackend,
-                                    const EffectManifest& manifest) {
-    return EffectPointer(new Effect(
-        pBackend, manifest, new FlangerEffectProcessor(manifest)));
-}
-
 FlangerEffectProcessor::FlangerEffectProcessor(const EffectManifest& manifest) {
 }
 

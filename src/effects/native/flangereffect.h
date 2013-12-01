@@ -21,11 +21,6 @@ class FlangerEffect : public NativeEffect {
 
     QString getId() const;
     EffectManifest getManifest() const;
-    EffectInstantiator getInstantiator() const {
-        return FlangerEffect::create;
-    }
-    static EffectPointer create(EffectsBackend* pBackend,
-                                const EffectManifest& manifest);
 };
 
 struct FlangerState {
@@ -61,6 +56,5 @@ class FlangerEffectProcessor : public EffectProcessor {
 
     DISALLOW_COPY_AND_ASSIGN(FlangerEffectProcessor);
 };
-
 
 #endif /* FLANGEREFFECT_H */

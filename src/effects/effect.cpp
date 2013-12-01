@@ -2,11 +2,14 @@
 
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
+#include "effects/effectsmanager.h"
 #include "engine/effects/engineeffect.h"
 
-Effect::Effect(QObject* pParent, const EffectManifest& manifest,
+Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
+               const EffectManifest& manifest,
                EffectProcessor* pProcessor)
         : QObject(pParent),
+          m_pEffectsManager(pEffectsManager),
           m_manifest(manifest),
           m_pEngineEffect(new EngineEffect(manifest, pProcessor)) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {

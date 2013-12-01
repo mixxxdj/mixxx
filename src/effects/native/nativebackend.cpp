@@ -8,8 +8,7 @@ NativeBackend::NativeBackend(QObject* pParent)
     FlangerEffect flanger;
     const EffectManifest& flanger_manifest = flanger.getManifest();
     m_effectManifests.append(flanger_manifest);
-    registerEffect(flanger.getId(), flanger_manifest,
-                   flanger.getInstantiator());
+    registerEffect<FlangerEffectProcessor>(flanger.getId(), flanger_manifest);
 }
 
 NativeBackend::~NativeBackend() {

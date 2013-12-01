@@ -43,7 +43,8 @@ unsigned int EffectsManager::numEffectChainSlots() const {
 }
 
 void EffectsManager::addEffectChainSlot() {
-    EffectChainSlot* pChainSlot = new EffectChainSlot(this, m_effectChainSlots.size());
+    EffectChainSlot* pChainSlot =
+            new EffectChainSlot(this, m_effectChainSlots.size());
 
     // TODO(rryan) How many should we make default? They create controls that
     // the GUI may rely on, so the choice is important to communicate to skin
@@ -87,14 +88,18 @@ void EffectsManager::registerGroup(const QString& group) {
     }
 }
 
-void EffectsManager::loadNextChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain) {
-    EffectChainPointer pNextChain = m_pEffectChainManager->getNextEffectChain(pLoadedChain);
+void EffectsManager::loadNextChain(const unsigned int iChainSlotNumber,
+                                   EffectChainPointer pLoadedChain) {
+    EffectChainPointer pNextChain =
+            m_pEffectChainManager->getNextEffectChain(pLoadedChain);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
 }
 
 
-void EffectsManager::loadPrevChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain) {
-    EffectChainPointer pPrevChain = m_pEffectChainManager->getPrevEffectChain(pLoadedChain);
+void EffectsManager::loadPrevChain(const unsigned int iChainSlotNumber,
+                                   EffectChainPointer pLoadedChain) {
+    EffectChainPointer pPrevChain =
+            m_pEffectChainManager->getPrevEffectChain(pLoadedChain);
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
 }
 
@@ -128,7 +133,7 @@ EffectManifest EffectsManager::getEffectManifest(const QString& effectId) const 
 EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     foreach (EffectsBackend* pBackend, m_effectsBackends) {
         if (pBackend->canInstantiateEffect(effectId)) {
-            return pBackend->instantiateEffect(effectId);
+            return pBackend->instantiateEffect(this, effectId);
         }
     }
     return EffectPointer();
@@ -186,7 +191,8 @@ void EffectsManager::processEffectsResponses() {
                      << response.request_id;
         }
 
-        while (it != m_activeRequests.end() && it.key() == response.request_id) {
+        while (it != m_activeRequests.end() &&
+               it.key() == response.request_id) {
             delete it.value();
             it = m_activeRequests.erase(it);
         }

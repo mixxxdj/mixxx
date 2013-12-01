@@ -10,6 +10,7 @@
 
 class EffectProcessor;
 class EngineEffect;
+class EffectsManager;
 
 class Effect;
 typedef QSharedPointer<Effect> EffectPointer;
@@ -21,7 +22,8 @@ typedef QSharedPointer<Effect> EffectPointer;
 class Effect : public QObject {
     Q_OBJECT
   public:
-    Effect(QObject* pParent, const EffectManifest& manifest, EffectProcessor* pProcessor);
+    Effect(QObject* pParent, EffectsManager* pEffectsManager,
+           const EffectManifest& manifest, EffectProcessor* pProcessor);
     virtual ~Effect();
 
     const EffectManifest& getManifest() const;
@@ -37,6 +39,7 @@ class Effect : public QObject {
         return QString("Effect(%1)").arg(m_manifest.name());
     }
 
+    EffectsManager* m_pEffectsManager;
     EffectManifest m_manifest;
     EngineEffect* m_pEngineEffect;
     QList<EffectParameter*> m_parameters;

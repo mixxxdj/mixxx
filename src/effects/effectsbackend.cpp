@@ -1,6 +1,7 @@
 #include <QtDebug>
 
 #include "effects/effectsbackend.h"
+#include "effects/effectsmanager.h"
 
 EffectsBackend::EffectsBackend(QObject* pParent, QString name)
         : QObject(pParent),
@@ -8,21 +9,27 @@ EffectsBackend::EffectsBackend(QObject* pParent, QString name)
 }
 
 EffectsBackend::~EffectsBackend() {
+    for (QMap<QString, QPair<EffectManifest, EffectInstantiator*> >::iterator it =
+                 m_registeredEffects.begin();
+         it != m_registeredEffects.end();) {
+        delete it.value().second;
+        it = m_registeredEffects.erase(it);
+    }
 }
 
 const QString EffectsBackend::getName() const {
     return m_name;
 }
 
-void EffectsBackend::registerEffect(const QString id,
+void EffectsBackend::registerEffect(const QString& id,
                                     const EffectManifest& manifest,
-                                    EffectInstantiator pInstantiator) {
+                                    EffectInstantiator* pInstantiator) {
     if (m_registeredEffects.contains(id)) {
         qDebug() << "WARNING: Effect" << id << "already registered";
         return;
     }
 
-    m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiator>(
+    m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiator*>(
         manifest, pInstantiator);
 }
 
@@ -42,11 +49,15 @@ bool EffectsBackend::canInstantiateEffect(const QString& effectId) const {
     return m_registeredEffects.contains(effectId);
 }
 
-EffectPointer EffectsBackend::instantiateEffect(const QString& effectId) {
+EffectPointer EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
+                                                const QString& effectId) {
     if (!m_registeredEffects.contains(effectId)) {
         qDebug() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();
     }
-    QPair<EffectManifest, EffectInstantiator>& effectInfo = m_registeredEffects[effectId];
-    return (*effectInfo.second)(this, effectInfo.first);
+    QPair<EffectManifest, EffectInstantiator*>& effectInfo =
+            m_registeredEffects[effectId];
+    return effectInfo.second->instantiate(pEffectsManager,
+                                          this, effectInfo.first);
+
 }
