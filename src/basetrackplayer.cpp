@@ -1,4 +1,3 @@
-#include <QtCore>
 #include <QMessageBox>
 
 #include "basetrackplayer.h"

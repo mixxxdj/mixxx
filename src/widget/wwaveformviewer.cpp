@@ -1,6 +1,6 @@
 
-#include <QDebug>
-#include <QtXml/QDomNode>
+#include <QtDebug>
+#include <QDomNode>
 #include <QEvent>
 #include <QDragEnterEvent>
 #include <QUrl>

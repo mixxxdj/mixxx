@@ -19,7 +19,7 @@
 #include "engine/vinylcontrolcontrol.h"
 #endif
 
-#include <QDebug>
+#include <QtDebug>
 
 // Static default values for rate buttons (percents)
 double RateControl::m_dTemp = 4.00; //(eg. 4.00%)

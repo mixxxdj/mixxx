@@ -18,7 +18,7 @@
 #include <portaudio.h>
 
 #include <QtDebug>
-#include <QtCore>
+#include <QThread>
 
 #include "sounddeviceportaudio.h"
 

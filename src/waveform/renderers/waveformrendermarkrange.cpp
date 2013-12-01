@@ -1,4 +1,4 @@
-#include <QDebug>
+#include <QtDebug>
 #include <QColor>
 #include <QDomNode>
 #include <QPaintEvent>

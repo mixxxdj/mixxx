@@ -18,9 +18,11 @@
 #ifndef IMGSOURCE_H
 #define IMGSOURCE_H
 
-#include <qimage.h>
-#include <qcolor.h>
-#include <QDebug>
+#include <QImage>
+#include <QColor>
+#include <QString>
+#include <QRgb>
+#include <QtDebug>
 
 class ImgSource {
   public:
@@ -132,4 +134,3 @@ public:
 };
 
 #endif
-

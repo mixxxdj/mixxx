@@ -2,6 +2,7 @@
 
 #include <QtDebug>
 #include <QApplication>
+#include <QUrl>
 
 #include "mathstuff.h"
 #include "wimagestore.h"

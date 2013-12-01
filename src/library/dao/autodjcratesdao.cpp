@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QtCore>
 #include <QtSql>
 
 #include "playerinfo.h"

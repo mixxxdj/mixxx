@@ -5,6 +5,7 @@
 #include <QFileDialog>
 #include <QMenu>
 #include <QAction>
+#include <QUrl>
 
 #include "library/itunes/itunesfeature.h"
 
@@ -713,4 +714,3 @@ void ITunesFeature::onTrackCollectionLoaded() {
     emit(featureLoadingFinished(this));
     activate();
 }
-

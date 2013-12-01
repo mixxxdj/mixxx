@@ -3,7 +3,7 @@
                              -------------------
     begin                : Wed Feb 20 2002
     copyright            : (C) 2002 by Tue and Ken Haste Andersen
-    email                : 
+    email                :
  ***************************************************************************/
 
 /***************************************************************************
@@ -18,7 +18,8 @@
 #ifndef ENGINEOBJECT_H
 #define ENGINEOBJECT_H
 
-#include <qobject.h>
+#include <QObject>
+
 #include "defs.h"
 
 /**

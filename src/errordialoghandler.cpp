@@ -15,9 +15,11 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QMessageBox>
+#include <QCoreApplication>
+#include <QMutexLocker>
+#include <QScopedPointer>
+#include <QThread>
 #include <QtDebug>
-#include <QtCore>
 
 #include "errordialoghandler.h"
 

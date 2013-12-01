@@ -1,7 +1,8 @@
 #ifndef BASEPLAYER_H
 #define BASEPLAYER_H
 
-#include <QtCore>
+#include <QObject>
+#include <QString>
 
 class BasePlayer : public QObject {
     Q_OBJECT

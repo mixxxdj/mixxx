@@ -15,7 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
 #include <QtDebug>
 #include <QDesktopServices>
 

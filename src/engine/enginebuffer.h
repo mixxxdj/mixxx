@@ -18,7 +18,6 @@
 #ifndef ENGINEBUFFER_H
 #define ENGINEBUFFER_H
 
-#include <qapplication.h>
 #include <QMutex>
 #include <QAtomicInt>
 
@@ -30,7 +29,8 @@
 
 //for the writer
 #ifdef __SCALER_DEBUG__
-#include <QtCore>
+#include <QFile>
+#include <QTextStream>
 #endif
 
 class EngineControl;

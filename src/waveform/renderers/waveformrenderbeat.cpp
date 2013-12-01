@@ -70,7 +70,7 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
-    beatPen.setWidth(1.5);
+    beatPen.setWidthF(1.5);
 
     while (it->hasNext()) {
         int beatPosition = it->next();

@@ -28,6 +28,11 @@
 #define STAREDITOR_H
 
 #include <QWidget>
+#include <QMouseEvent>
+#include <QEvent>
+#include <QStyle>
+#include <QSize>
+#include <QPaintEvent>
 
 #include "starrating.h"
 
