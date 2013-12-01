@@ -18,6 +18,7 @@
 #include <cstring> // for memcpy and strcmp
 
 #ifdef __PORTAUDIO__
+#include <QLibrary>
 #include <portaudio.h>
 #endif // ifdef __PORTAUDIO__
 
