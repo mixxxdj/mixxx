@@ -21,6 +21,7 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
         }
         m_parametersById[parameter.id()] = pParameter;
     }
+    pProcessor->initialize(m_pEngineEffect);
 }
 
 Effect::~Effect() {
