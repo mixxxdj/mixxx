@@ -47,20 +47,33 @@ bool EngineEffectChain::processEffectsRequest(const EffectsRequest& message,
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_TO_CHAIN:
+            qDebug() << debugString() << "ADD_EFFECT_TO_CHAIN"
+                     << message.AddEffectToChain.pEffect
+                     << message.AddEffectToChain.iIndex;
             response.success = addEffect(message.AddEffectToChain.pEffect,
                                          message.AddEffectToChain.iIndex);
             break;
         case EffectsRequest::REMOVE_EFFECT_FROM_CHAIN:
+            qDebug() << debugString() << "REMOVE_EFFECT_FROM_CHAIN"
+                     << message.RemoveEffectFromChain.pEffect;
             response.success = removeEffect(
                 message.RemoveEffectFromChain.pEffect);
             break;
         case EffectsRequest::SET_EFFECT_CHAIN_PARAMETERS:
+            qDebug() << debugString() << "SET_EFFECT_CHAIN_PARAMETERS"
+                     << "enabled" << message.SetEffectChainParameters.enabled
+                     << "mix" << message.SetEffectChainParameters.mix
+                     << "parameter" << message.SetEffectChainParameters.parameter;
             response.success = updateParameters(message);
             break;
         case EffectsRequest::ENABLE_EFFECT_CHAIN_FOR_GROUP:
+            qDebug() << debugString() << "ENABLE_EFFECT_CHAIN_FOR_GROUP"
+                     << message.group;
             response.success = enableForGroup(message.group);
             break;
         case EffectsRequest::DISABLE_EFFECT_CHAIN_FOR_GROUP:
+            qDebug() << debugString() << "DISABLE_EFFECT_CHAIN_FOR_GROUP"
+                     << message.group;
             response.success = disableForGroup(message.group);
             break;
         default:
@@ -87,6 +100,7 @@ bool EngineEffectChain::disableForGroup(const QString& group) {
 void EngineEffectChain::process(const QString& group,
                                 const CSAMPLE* pInput, CSAMPLE* pOutput,
                                 const unsigned int numSamples) {
+
     foreach (EngineEffect* pEffect, m_effects) {
         pEffect->process(group, pInput, pOutput, numSamples);
     }

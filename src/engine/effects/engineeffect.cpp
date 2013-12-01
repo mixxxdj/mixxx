@@ -32,6 +32,12 @@ bool EngineEffect::processEffectsRequest(const EffectsRequest& message,
 
     switch (message.type) {
         case EffectsRequest::SET_EFFECT_PARAMETER:
+            qDebug() << debugString() << "SET_EFFECT_PARAMETER"
+                     << "parameter" << message.SetEffectParameter.iParameter
+                     << "minimum" << message.minimum
+                     << "maximum" << message.maximum
+                     << "default_value" << message.default_value
+                     << "value" << message.value;
             pParameter = m_parameters.value(
                 message.SetEffectParameter.iParameter, NULL);
             if (pParameter) {

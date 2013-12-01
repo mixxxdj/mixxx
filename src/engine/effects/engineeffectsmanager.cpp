@@ -126,9 +126,13 @@ bool EngineEffectsManager::processEffectsRequest(const EffectsRequest& message,
     EffectsResponse response(message);
     switch (message.type) {
         case EffectsRequest::ADD_EFFECT_CHAIN:
+            qDebug() << debugString() << "ADD_EFFECT_CHAIN"
+                     << message.AddEffectChain.pChain;
             response.success = addEffectChain(message.AddEffectChain.pChain);
             break;
         case EffectsRequest::REMOVE_EFFECT_CHAIN:
+            qDebug() << debugString() << "REMOVE_EFFECT_CHAIN"
+                     << message.RemoveEffectChain.pChain;
             response.success = removeEffectChain(message.RemoveEffectChain.pChain);
             break;
         default:
