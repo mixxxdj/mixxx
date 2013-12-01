@@ -193,7 +193,14 @@ void EffectsManager::processEffectsResponses() {
 
         while (it != m_activeRequests.end() &&
                it.key() == response.request_id) {
-            delete it.value();
+            EffectsRequest* pRequest = it.value();
+
+            if (!response.success) {
+                qDebug() << debugString() << "WARNING: Failed EffectsRequest"
+                         << "type" << pRequest->type;
+            }
+
+            delete pRequest;
             it = m_activeRequests.erase(it);
         }
     }
