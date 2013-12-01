@@ -4,7 +4,6 @@
 #include <QString>
 #include <QVariant>
 
-#include "control/controlvalue.h"
 #include "util.h"
 #include "effects/effectmanifestparameter.h"
 
@@ -12,6 +11,22 @@ class EngineEffectParameter {
   public:
     EngineEffectParameter(const EffectManifestParameter& parameter)
             : m_parameter(parameter) {
+        // NOTE(rryan): This is just to set the parameter values to sane
+        // defaults. When an effect is loaded into the engine it is supposed to
+        // immediately send a parameter update. Some effects will go crazy if
+        // their parameters are not within the manifest's minimum/maximum bounds
+        // so just to be safe we read the min/max/default from the manifest
+        // here.
+        if (m_parameter.hasMinimum()) {
+            m_minimum = m_parameter.getMinimum();
+        }
+        if (m_parameter.hasMaximum()) {
+            m_maximum = m_parameter.getMaximum();
+        }
+        if (m_parameter.hasDefault()) {
+            m_default_value = m_parameter.getDefault();
+        }
+        m_value = m_default_value;
     }
     virtual ~EngineEffectParameter() { }
 
