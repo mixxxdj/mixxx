@@ -48,11 +48,20 @@ class EngineEffectChain : public EffectsRequestHandler {
     QString m_id;
     bool m_bEnabled;
     EffectChain::InsertionType m_insertionType;
-    double m_dMix;
+    CSAMPLE m_dMix;
     double m_dParameter;
     QList<EngineEffect*> m_effects;
-    QSet<QString> m_enabledGroups;
     CSAMPLE* m_pBuffer;
+    struct GroupStatus {
+        GroupStatus() : enabled(false),
+                        old_gain(0),
+                        ramp_out(false) {
+        }
+        bool enabled;
+        CSAMPLE old_gain;
+        bool ramp_out;
+    };
+    QMap<QString, GroupStatus> m_groupStatus;
 };
 
 #endif /* ENGINEEFFECTCHAIN_H */

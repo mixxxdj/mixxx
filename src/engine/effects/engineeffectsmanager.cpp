@@ -90,19 +90,8 @@ void EngineEffectsManager::onCallbackStart() {
 void EngineEffectsManager::process(const QString& group,
                                    const CSAMPLE* pInput, CSAMPLE* pOutput,
                                    const unsigned int numSamples) {
-    const bool inPlace = pInput == pOutput;
     foreach (EngineEffectChain* pChain, m_chains) {
-        if (!pChain->enabled() || !pChain->enabledForGroup(group)) {
-            continue;
-        }
-
-        if (inPlace) {
-            pChain->process(group, pInput, pOutput, numSamples);
-        } else {
-            qDebug() << debugString() << "WARNING: non-inplace processing not implemented!";
-            // TODO(rryan) implement. Trickier because you have to use temporary
-            // memory. Punting this for now just to get everything working.
-        }
+        pChain->process(group, pInput, pOutput, numSamples);
     }
 }
 
