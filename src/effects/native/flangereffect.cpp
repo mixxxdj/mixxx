@@ -56,7 +56,10 @@ EffectManifest FlangerEffect::getManifest() const {
     return manifest;
 }
 
-FlangerEffectProcessor::FlangerEffectProcessor(const EffectManifest& manifest) {
+FlangerEffectProcessor::FlangerEffectProcessor(const EffectManifest& manifest)
+        : m_pPeriodParameter(NULL),
+          m_pDepthParameter(NULL),
+          m_pDelayParameter(NULL) {
 }
 
 FlangerEffectProcessor::~FlangerEffectProcessor() {
@@ -73,25 +76,24 @@ FlangerEffectProcessor::~FlangerEffectProcessor() {
 }
 
 void FlangerEffectProcessor::initialize(EngineEffect* pEffect) {
-    m_periodParameter = pEffect->getParameterById("period");
-    m_depthParameter = pEffect->getParameterById("depth");
-    m_delayParameter = pEffect->getParameterById("delay");
+    m_pPeriodParameter = pEffect->getParameterById("period");
+    m_pDepthParameter = pEffect->getParameterById("depth");
+    m_pDelayParameter = pEffect->getParameterById("delay");
 }
 
 void FlangerEffectProcessor::process(const QString& group,
                                      const CSAMPLE* pInput, CSAMPLE* pOutput,
                                      const unsigned int numSamples) {
     FlangerState* pState = getStateForGroup(group);
-
     if (!pState) {
         qDebug() << debugString() << "WARNING: Couldn't get flanger state for group" << group;
         return;
     }
 
-    CSAMPLE lfoPeriod = m_periodParameter ? m_periodParameter->value().toDouble() : 0.0f;
-    CSAMPLE lfoDepth = m_depthParameter ? m_depthParameter->value().toDouble() : 0.0f;
+    CSAMPLE lfoPeriod = m_pPeriodParameter ? m_pPeriodParameter->value().toDouble() : 0.0f;
+    CSAMPLE lfoDepth = m_pDepthParameter ? m_pDepthParameter->value().toDouble() : 0.0f;
     // Unused in EngineFlanger
-    CSAMPLE lfoDelay = m_delayParameter ? m_delayParameter->value().toDouble() : 0.0f;
+    CSAMPLE lfoDelay = m_pDelayParameter ? m_pDelayParameter->value().toDouble() : 0.0f;
 
     qDebug() << debugString() << "period" << lfoPeriod << "depth" << lfoDepth << "delay" << lfoDelay;
 
@@ -100,8 +102,8 @@ void FlangerEffectProcessor::process(const QString& group,
     // delay needs to be >=0
     // depth is ???
 
+    CSAMPLE* delayBuffer = pState->delayBuffer;
     for (int i = 0; i < numSamples; ++i) {
-        CSAMPLE* delayBuffer = pState->delayBuffer;
         delayBuffer[pState->delayPos] = pInput[i];
         pState->delayPos = (pState->delayPos + 1) % kMaxDelay;
 
@@ -123,15 +125,13 @@ void FlangerEffectProcessor::process(const QString& group,
 }
 
 FlangerState* FlangerEffectProcessor::getStateForGroup(const QString& group) {
-    FlangerState* pState = NULL;
-    if (!m_flangerStates.contains(group)) {
+    FlangerState* pState = m_flangerStates.value(group, NULL);
+    if (pState == NULL) {
         pState = new FlangerState();
         m_flangerStates[group] = pState;
         SampleUtil::applyGain(pState->delayBuffer, 0.0f, kMaxDelay);
         pState->delayPos = 0;
         pState->time = 0;
-    } else {
-        pState = m_flangerStates[group];
     }
     return pState;
 }

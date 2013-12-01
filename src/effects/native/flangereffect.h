@@ -48,9 +48,9 @@ class FlangerEffectProcessor : public EffectProcessor {
     }
     FlangerState* getStateForGroup(const QString& group);
 
-    EngineEffectParameter* m_periodParameter;
-    EngineEffectParameter* m_depthParameter;
-    EngineEffectParameter* m_delayParameter;
+    EngineEffectParameter* m_pPeriodParameter;
+    EngineEffectParameter* m_pDepthParameter;
+    EngineEffectParameter* m_pDelayParameter;
 
     QMap<QString, FlangerState*> m_flangerStates;
 
