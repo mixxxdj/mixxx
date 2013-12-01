@@ -18,7 +18,6 @@
 #include <QTabWidget>
 #include <QTabBar>
 #include <QDialog>
-#include <QtGui>
 #include <QEvent>
 #include <QScrollArea>
 #include <QDesktopWidget>

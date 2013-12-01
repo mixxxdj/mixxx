@@ -1,7 +1,6 @@
-#include <QtGui>
+#include "library/treeitemmodel.h"
 
 #include "library/treeitem.h"
-#include "library/treeitemmodel.h"
 
 /*
  * Just a word about how the TreeItem objects and TreeItemModels are used in general:

@@ -1,5 +1,5 @@
 #include <QMutexLocker>
-#include <QDebug>
+#include <QtDebug>
 
 #include "track/beatgrid.h"
 #include "mathstuff.h"

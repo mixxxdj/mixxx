@@ -6,10 +6,11 @@
  *  as published by Sam Hocevar.                                             *
  *  See http://www.wtfpl.net/ for more details.                              *
  *****************************************************************************/
-    
+
 #include <QCoreApplication>
 #include <QNetworkReply>
 #include <QXmlStreamReader>
+#include <QUrl>
 
 #include "acoustidclient.h"
 #include "gzip.h"
@@ -44,11 +45,11 @@ void AcoustidClient::start(int id, const QString& fingerprint, int duration) {
     req.setHeader(QNetworkRequest::ContentTypeHeader, "application/x-www-form-urlencoded");
     req.setRawHeader("Content-Encoding", "gzip");
     req.setRawHeader("User-Agent", CLIENT_NAME.toAscii());
-    
+
     QNetworkReply* reply = m_network.post(req, gzipCompress(url.encodedQuery()));
     connect(reply, SIGNAL(finished()), SLOT(requestFinished()));
     m_requests[reply] = id;
-    
+
     m_timeouts.addReply(reply);
 }
 
@@ -67,13 +68,13 @@ void AcoustidClient::requestFinished() {
     QNetworkReply* reply = qobject_cast<QNetworkReply*>(sender());
     if (!reply)
         return;
-    
+
     reply->deleteLater();
     if (!m_requests.contains(reply))
         return;
-    
+
     int id = m_requests.take(reply);
-    
+
     if (reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt() != 200) {
         emit(networkError(
              reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt(),
@@ -84,7 +85,7 @@ void AcoustidClient::requestFinished() {
     QXmlStreamReader reader(reply);
     QString ID;
     while (!reader.atEnd()) {
-        if (reader.readNext() == QXmlStreamReader::StartElement 
+        if (reader.readNext() == QXmlStreamReader::StartElement
             && reader.name()== "results") {
                 ID = parseResult(reader);
             }

@@ -1,10 +1,9 @@
-
-#include <QtCore>
 #include <QtSql>
 #include <QStringList>
 #include <QtConcurrentRun>
 #include <QMetaType>
 #include <QMessageBox>
+#include <QUrl>
 
 #include "library/browse/browsetablemodel.h"
 #include "library/browse/browsethread.h"
@@ -389,4 +388,3 @@ QAbstractItemDelegate* BrowseTableModel::delegateForColumn(const int i, QObject*
     Q_UNUSED(pParent);
     return NULL;
 }
-

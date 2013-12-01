@@ -21,10 +21,9 @@ from it and overwrite the parse function and add class specific functions to
 it afterwards fro proper functioning
 **/
 
-#include <qobject.h>
-#include <qstring.h>
-#include <qfile.h>
-
+#include <QObject>
+#include <QString>
+#include <QList>
 
 class Parser : public QObject
 {

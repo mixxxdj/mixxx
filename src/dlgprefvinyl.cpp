@@ -17,10 +17,7 @@
 *                                                                         *
 ***************************************************************************/
 
-
-#include <QtCore>
 #include <QtDebug>
-#include <QtGui>
 
 #include "dlgprefvinyl.h"
 

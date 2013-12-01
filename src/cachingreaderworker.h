@@ -1,7 +1,7 @@
 #ifndef CACHINGREADERWORKER_H
 #define CACHINGREADERWORKER_H
 
-#include <QDebug>
+#include <QtDebug>
 #include <QMutex>
 #include <QSemaphore>
 #include <QThread>

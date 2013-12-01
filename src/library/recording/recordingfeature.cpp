@@ -1,13 +1,6 @@
 // recordingfeature.cpp
 // Created 03/26/2010 by Tobias Rafreider
 
-#include <QStringList>
-#include <QTreeView>
-#include <QDirModel>
-#include <QStringList>
-#include <QFileInfo>
-#include <QDesktopServices>
-
 #include "dlgrecording.h"
 #include "trackinfoobject.h"
 #include "library/treeitem.h"

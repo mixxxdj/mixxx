@@ -2,7 +2,7 @@
 #include <QtDebug>
 #include <QTime>
 #include <QMutexLocker>
-#include <QDebug>
+#include <QtDebug>
 #include <time.h>
 
 #include "analyserwaveform.h"

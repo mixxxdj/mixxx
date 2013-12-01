@@ -16,13 +16,13 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
-#include <QtGui>
 #include <QTranslator>
 #include <QMenu>
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QDesktopWidget>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "mixxx.h"
 

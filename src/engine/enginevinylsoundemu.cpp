@@ -15,7 +15,7 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QtGlobal>
+
 #include "configobject.h"
 #include "controlobject.h"
 #include "enginevinylsoundemu.h"
@@ -81,4 +81,3 @@ void EngineVinylSoundEmu::process(const CSAMPLE * pIn, const CSAMPLE * pOut, con
     }
     m_fOldSpeed = m_fSpeed;
 }
-

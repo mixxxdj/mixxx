@@ -11,9 +11,10 @@
 #ifndef CONTROLLERPRESET_H
 #define CONTROLLERPRESET_H
 
-#include <QtCore>
 #include <QHash>
 #include <QSharedPointer>
+#include <QString>
+#include <QList>
 
 class ControllerPresetVisitor;
 

@@ -3,8 +3,8 @@
 #include <QTimer>
 #include <QWidget>
 #include <QtDebug>
-#include <QtOpenGL/QGLFormat>
-#include <QtOpenGL/QGLShaderProgram>
+#include <QGLFormat>
+#include <QGLShaderProgram>
 
 #include "waveform/waveformwidgetfactory.h"
 
