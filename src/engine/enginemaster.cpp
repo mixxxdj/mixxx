@@ -49,15 +49,17 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            EffectsManager* pEffectsManager,
                            bool bEnableSidechain,
                            bool bRampingGain)
-        : m_pEngineEffectsManager(pEffectsManager->getEngineEffectsManager()),
+        : m_pEngineEffectsManager(pEffectsManager ? pEffectsManager->getEngineEffectsManager() : NULL),
           m_bRampingGain(bRampingGain),
           m_headphoneMasterGainOld(0.0),
           m_headphoneVolumeOld(1.0) {
     m_pWorkerScheduler = new EngineWorkerScheduler(this);
     m_pWorkerScheduler->start();
 
-    pEffectsManager->registerGroup(getMasterGroup());
-    pEffectsManager->registerGroup(getHeadphoneGroup());
+    if (pEffectsManager) {
+        pEffectsManager->registerGroup(getMasterGroup());
+        pEffectsManager->registerGroup(getHeadphoneGroup());
+    }
 
     // Master sample rate
     m_pMasterSampleRate = new ControlObject(ConfigKey(group, "samplerate"), true, true);
@@ -194,7 +196,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);
 
-    m_pEngineEffectsManager->onCallbackStart();
+    if (m_pEngineEffectsManager) {
+        m_pEngineEffectsManager->onCallbackStart();
+    }
 
     // Prepare each channel for output
 
@@ -291,7 +295,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
                               iBufferSize);
 
     // Process master channel effects
-    m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster, iBufferSize);
+    if (m_pEngineEffectsManager) {
+        m_pEngineEffectsManager->process(getMasterGroup(), m_pMaster, m_pMaster, iBufferSize);
+    }
 
 #ifdef __LADSPA__
     // LADPSA master effects
@@ -336,7 +342,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     m_headphoneMasterGainOld = cmaster_gain;
 
     // Process headphone channel effects
-    m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead, iBufferSize);
+    if (m_pEngineEffectsManager) {
+        m_pEngineEffectsManager->process(getHeadphoneGroup(), m_pHead, m_pHead, iBufferSize);
+    }
 
     // Head volume and clipping
     CSAMPLE headphoneVolume = m_pHeadVolume->get();

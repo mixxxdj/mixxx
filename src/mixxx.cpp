@@ -295,7 +295,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pEffectsManager->addEffectChainSlot();
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true);
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true, true);
 
     // TODO(rryan) the only reason I'm creating the effects backends here is
     // that I'm not totally confident some effect backend is going to want to

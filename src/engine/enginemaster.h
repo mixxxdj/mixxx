@@ -49,7 +49,7 @@ class EngineMaster : public EngineObject, public AudioSource {
                  const char* pGroup,
                  EffectsManager* pEffectsManager,
                  bool bEnableSidechain,
-                 bool bRampingGain=true);
+                 bool bRampingGain);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
