@@ -7,7 +7,7 @@ EffectRack::EffectRack(EffectChainManager* pEffectChainManager,
         : m_iRackNumber(iRackNumber),
           m_group(formatGroupString(m_iRackNumber)),
           m_pEffectChainManager(pEffectChainManager),
-          m_controlClearRack(ConfigKey(m_group, "clear_rack")) {
+          m_controlClearRack(ConfigKey(m_group, "clear")) {
     connect(&m_controlClearRack, SIGNAL(valueChanged(double)),
             this, SLOT(slotClearRack(double)));
 }
