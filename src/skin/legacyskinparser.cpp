@@ -1189,18 +1189,21 @@ QWidget* LegacySkinParser::parseStyle(QDomElement node) {
 QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
     WEffectChain* pEffectChain = new WEffectChain(m_pParent);
 
-    // To Mixxx users, EffectChains are 1-indexed, but code-wise the chains are
-    // 0-indexed.
-    unsigned int chainNumber = XmlParse::selectNodeInt(node, "EffectChain") - 1;
+    EffectRackPointer pRack = m_pEffectsManager->getDefaultEffectRack();
+    if (pRack) {
+        // To Mixxx users, EffectChains are 1-indexed, but code-wise the chains are
+        // 0-indexed.
+        unsigned int chainNumber = XmlParse::selectNodeInt(node, "EffectChain") - 1;
 
-    EffectChainSlotPointer pChainSlot = m_pEffectsManager->getEffectChainSlot(chainNumber);
 
-    if (pChainSlot) {
-        pEffectChain->setEffectChainSlot(pChainSlot);
-    } else {
-        qDebug() << "EffectChainName node had invalid EffectChainSlot number.";
+        EffectChainSlotPointer pChainSlot = pRack->getEffectChainSlot(chainNumber);
+
+        if (pChainSlot) {
+            pEffectChain->setEffectChainSlot(pChainSlot);
+        } else {
+            qDebug() << "EffectChainName node had invalid EffectChainSlot number.";
+        }
     }
-
     setupWidget(node, pEffectChain);
     pEffectChain->installEventFilter(m_pKeyboard);
     return pEffectChain;

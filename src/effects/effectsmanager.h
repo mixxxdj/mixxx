@@ -13,6 +13,7 @@
 #include "effects/effectsbackend.h"
 #include "effects/effectchainslot.h"
 #include "effects/effectchain.h"
+#include "effects/effectrack.h"
 #include "engine/effects/message.h"
 
 class EngineEffectsManager;
@@ -32,27 +33,20 @@ class EffectsManager : public QObject {
     // takes ownership of the backend, and will delete it when EffectsManager is
     // being deleted. Not thread safe -- use only from the GUI thread.
     void addEffectsBackend(EffectsBackend* pEffectsBackend);
-
-    unsigned int numEffectChainSlots() const;
-    void addEffectChainSlot();
-    EffectChainSlotPointer getEffectChainSlot(unsigned int i);
-
     void registerGroup(const QString& group);
+
+    EffectRackPointer getDefaultEffectRack();
 
     const QSet<QString> getAvailableEffects() const;
     EffectManifest getEffectManifest(const QString& effectId) const;
     EffectPointer instantiateEffect(const QString& effectId);
 
-    // Temporary, but for setting up all the default EffectChains
-    void setupDefaultChains();
+    // Temporary, but for setting up all the default EffectChains and EffectRack
+    void setupDefaults();
 
     // Write an EffectsRequest to the EngineEffectsManager. EffectsManager takes
     // ownership of request and deletes it once a response is received.
     bool writeRequest(EffectsRequest* request);
-
-  private slots:
-    void loadNextChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain);
-    void loadPrevChain(const unsigned int iChainSlotNumber, EffectChainPointer pLoadedChain);
 
   private:
     QString debugString() const {
@@ -63,8 +57,6 @@ class EffectsManager : public QObject {
 
     EffectChainManager* m_pEffectChainManager;
     QList<EffectsBackend*> m_effectsBackends;
-    QList<EffectChainSlotPointer> m_effectChainSlots;
-    QSet<QString> m_registeredGroups;
 
     EngineEffectsManager* m_pEngineEffectsManager;
 

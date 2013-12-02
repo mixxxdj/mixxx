@@ -17,11 +17,15 @@ typedef QSharedPointer<EffectChainSlot> EffectChainSlotPointer;
 class EffectChainSlot : public QObject {
     Q_OBJECT
   public:
-    EffectChainSlot(QObject* pParent, const unsigned int iChainNumber);
+    EffectChainSlot(QObject* pParent,
+                    const unsigned int iRackNumber,
+                    const unsigned int iChainNumber);
     virtual ~EffectChainSlot();
 
-    static QString formatGroupString(const unsigned int iChainNumber) {
-        return QString("[EffectRack1_EffectChain%1]").arg(iChainNumber+1);
+    static QString formatGroupString(const unsigned int iRackNumber,
+                                     const unsigned int iChainNumber) {
+        return QString("[EffectRack%1_EffectChain%2]").arg(
+            QString::number(iRackNumber+1), QString::number(iChainNumber+1));
     }
 
     // Get the ID of the loaded EffectChain
@@ -38,6 +42,9 @@ class EffectChainSlot : public QObject {
     EffectChainPointer getEffectChain() const;
 
     void registerGroup(const QString& group);
+
+    // Unload the loaded EffectChain.
+    void clear();
 
   signals:
     // Indicates that the effect pEffect has been loaded into slotNumber of
@@ -87,8 +94,7 @@ class EffectChainSlot : public QObject {
         return QString("EffectChainSlot(%1)").arg(m_iChainNumber);
     }
 
-    void clear();
-
+    const unsigned int m_iRackNumber;
     const unsigned int m_iChainNumber;
     const QString m_group;
 

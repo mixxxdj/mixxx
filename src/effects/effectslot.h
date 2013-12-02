@@ -16,13 +16,20 @@ typedef QSharedPointer<EffectSlot> EffectSlotPointer;
 class EffectSlot : public QObject {
     Q_OBJECT
   public:
-    EffectSlot(QObject* pParent, const unsigned int iChainNumber,
+    EffectSlot(QObject* pParent,
+               const unsigned int iRackNumber,
+               const unsigned int iChainNumber,
                const unsigned int iSlotNumber);
     virtual ~EffectSlot();
 
-    static QString formatGroupString(const unsigned int iChainNumber,
+    static QString formatGroupString(const unsigned int iRackNumber,
+                                     const unsigned int iChainNumber,
                                      const unsigned int iSlotNumber) {
-        return QString("[EffectRack1_EffectChain%1_Effect%2]").arg(iChainNumber+1).arg(iSlotNumber+1);
+        return QString("[EffectRack%1_EffectChain%2_Effect%3]").arg(
+            QString::number(iRackNumber+1),
+            QString::number(iChainNumber+1),
+            QString::number(iSlotNumber+1));
+
     }
 
     // Return the currently loaded effect, if any. If no effect is loaded,
@@ -45,9 +52,12 @@ class EffectSlot : public QObject {
         return QString("EffectSlot(%1,%2)").arg(m_iChainNumber).arg(m_iSlotNumber);
     }
 
+    void addEffectParameterSlot();
+
     // Unload the currently loaded effect
     void clear();
 
+    const unsigned int m_iRackNumber;
     const unsigned int m_iChainNumber;
     const unsigned int m_iSlotNumber;
     const QString m_group;

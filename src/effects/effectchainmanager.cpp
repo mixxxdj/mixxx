@@ -12,6 +12,33 @@ EffectChainManager::~EffectChainManager() {
     qDebug() << debugString() << "destroyed";
 }
 
+void EffectChainManager::registerGroup(const QString& group) {
+    if (m_registeredGroups.contains(group)) {
+        qDebug() << debugString() << "WARNING: Group already registered:"
+                 << group;
+        return;
+    }
+    m_registeredGroups.insert(group);
+
+    foreach (EffectRackPointer pRack, m_effectRacks) {
+        pRack->registerGroup(group);
+    }
+}
+
+EffectRackPointer EffectChainManager::addEffectRack() {
+    EffectRackPointer pRack = EffectRackPointer(new EffectRack(
+        this, m_effectRacks.size()));
+    m_effectRacks.append(pRack);
+    return pRack;
+}
+
+EffectRackPointer EffectChainManager::getEffectRack(int i) {
+    if (i < 0 || i >= m_effectRacks.size()) {
+        return EffectRackPointer();
+    }
+    return m_effectRacks[i];
+}
+
 void EffectChainManager::addEffectChain(EffectChainPointer pEffectChain) {
     if (pEffectChain) {
         m_effectChains.append(pEffectChain);

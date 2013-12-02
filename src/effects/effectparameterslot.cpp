@@ -4,14 +4,18 @@
 #include "controlpotmeter.h"
 #include "effects/effectparameterslot.h"
 
-EffectParameterSlot::EffectParameterSlot(QObject* pParent, const unsigned int iChainNumber,
+EffectParameterSlot::EffectParameterSlot(QObject* pParent,
+                                         const unsigned int iRackNumber,
+                                         const unsigned int iChainNumber,
                                          const unsigned int iSlotNumber,
                                          const unsigned int iParameterNumber)
         : QObject(),
+          m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
           m_iSlotNumber(iSlotNumber),
           m_iParameterNumber(iParameterNumber),
-          m_group(formatGroupString(iChainNumber, iSlotNumber, iParameterNumber)),
+          m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
+                                    m_iSlotNumber, m_iParameterNumber)),
           m_pEffectParameter(NULL) {
     m_pControlEnabled = new ControlObject(
         ConfigKey(m_group, QString("enabled")));

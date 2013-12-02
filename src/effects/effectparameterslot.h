@@ -12,16 +12,22 @@
 class EffectParameterSlot : QObject {
     Q_OBJECT
   public:
-    EffectParameterSlot(QObject* pParent, const unsigned int iChainNumber,
-                        const unsigned int iSlotNumber, const unsigned int iParameterNumber);
+    EffectParameterSlot(QObject* pParent,
+                        const unsigned int iRackNumber,
+                        const unsigned int iChainNumber,
+                        const unsigned int iSlotNumber,
+                        const unsigned int iParameterNumber);
     virtual ~EffectParameterSlot();
 
-    static QString formatGroupString(const unsigned int iChainNumber, const unsigned int iSlotNumber,
-                              const unsigned int iParameterNumber) {
-        return QString("[EffectRack1_EffectChain%1_Effect%2_Parameter%3]")
-                .arg(iChainNumber+1)
-                .arg(iSlotNumber+1)
-                .arg(iParameterNumber+1);
+    static QString formatGroupString(const unsigned int iRackNumber,
+                                     const unsigned int iChainNumber,
+                                     const unsigned int iSlotNumber,
+                                     const unsigned int iParameterNumber) {
+        return QString("[EffectRack%1_EffectChain%2_Effect%3_Parameter%4]")
+                .arg(QString::number(iRackNumber+1),
+                     QString::number(iChainNumber+1),
+                     QString::number(iSlotNumber+1),
+                     QString::number(iParameterNumber+1));
     }
 
     // Load the parameter of the given effect into this EffectParameterSlot
@@ -48,6 +54,7 @@ class EffectParameterSlot : QObject {
     // Clear the currently loaded effect
     void clear();
 
+    const unsigned int m_iRackNumber;
     const unsigned int m_iChainNumber;
     const unsigned int m_iSlotNumber;
     const unsigned int m_iParameterNumber;

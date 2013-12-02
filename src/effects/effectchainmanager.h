@@ -6,6 +6,7 @@
 
 #include "util.h"
 #include "effects/effectchain.h"
+#include "effects/effectrack.h"
 
 class EffectsManager;
 
@@ -17,6 +18,14 @@ class EffectChainManager : public QObject {
   public:
     EffectChainManager(EffectsManager* pEffectsManager);
     virtual ~EffectChainManager();
+
+    void registerGroup(const QString& group);
+    const QSet<QString>& registeredGroups() const {
+        return m_registeredGroups;
+    }
+
+    EffectRackPointer addEffectRack();
+    EffectRackPointer getEffectRack(int i);
 
     void addEffectChain(EffectChainPointer pEffectChain);
     void removeEffectChain(EffectChainPointer pEffectChain);
@@ -37,8 +46,9 @@ class EffectChainManager : public QObject {
     }
 
     EffectsManager* m_pEffectsManager;
+    QList<EffectRackPointer> m_effectRacks;
     QList<EffectChainPointer> m_effectChains;
-
+    QSet<QString> m_registeredGroups;
     DISALLOW_COPY_AND_ASSIGN(EffectChainManager);
 };
 

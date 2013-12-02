@@ -3,20 +3,22 @@
 // The maximum number of effect parameters we're going to support.
 const unsigned int kDefaultMaxParameters = 32;
 
-EffectSlot::EffectSlot(QObject* pParent, const unsigned int iChainNumber,
+EffectSlot::EffectSlot(QObject* pParent, const unsigned int iRackNumber,
+                       const unsigned int iChainNumber,
                        const unsigned int iSlotNumber)
         : QObject(),
+          m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
           m_iSlotNumber(iSlotNumber),
-          // The control group names are 1-indexed while internally everything is 0-indexed.
-          m_group(formatGroupString(m_iChainNumber, m_iSlotNumber)) {
+          // The control group names are 1-indexed while internally everything
+          // is 0-indexed.
+          m_group(formatGroupString(m_iRackNumber, m_iChainNumber,
+                                    m_iSlotNumber)) {
     m_pControlEnabled = new ControlObject(ConfigKey(m_group, "enabled"));
     m_pControlNumParameters = new ControlObject(ConfigKey(m_group, "num_parameters"));
 
     for (unsigned int i = 0; i < kDefaultMaxParameters; ++i) {
-        EffectParameterSlot* pParameter = new EffectParameterSlot(
-            this, m_iChainNumber, m_iSlotNumber, m_parameters.size());
-        m_parameters.append(pParameter);
+        addEffectParameterSlot();
     }
 
     clear();
@@ -35,6 +37,13 @@ EffectSlot::~EffectSlot() {
     }
 }
 
+void EffectSlot::addEffectParameterSlot() {
+    EffectParameterSlot* pParameter = new EffectParameterSlot(
+        this, m_iRackNumber, m_iChainNumber, m_iSlotNumber,
+        m_parameters.size());
+    m_parameters.append(pParameter);
+}
+
 EffectPointer EffectSlot::getEffect() const {
     return m_pEffect;
 }
@@ -48,8 +57,7 @@ void EffectSlot::loadEffect(EffectPointer pEffect) {
         m_pControlNumParameters->set(m_pEffect->numParameters());
 
         while (m_parameters.size() < m_pEffect->numParameters()) {
-            m_parameters.append(new EffectParameterSlot(
-                this, m_iChainNumber, m_iSlotNumber, m_parameters.size()));
+            addEffectParameterSlot();
         }
 
         foreach (EffectParameterSlot* pParameter, m_parameters) {

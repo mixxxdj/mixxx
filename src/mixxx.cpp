@@ -287,13 +287,6 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     initializeKeyboard();
 
-    // Setup the effects manager with four effects chains
-    m_pEffectsManager = new EffectsManager(this);
-    m_pEffectsManager->addEffectChainSlot();
-    m_pEffectsManager->addEffectChainSlot();
-    m_pEffectsManager->addEffectChainSlot();
-    m_pEffectsManager->addEffectChainSlot();
-
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true, true);
 
@@ -303,7 +296,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     NativeBackend* pNativeBackend = new NativeBackend(m_pEffectsManager);
     m_pEffectsManager->addEffectsBackend(pNativeBackend);
 
-    m_pEffectsManager->setupDefaultChains();
+    // Sets up the default EffectChains and EffectRack.
+    m_pEffectsManager->setupDefaults();
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
 #ifdef __SHOUTCAST__

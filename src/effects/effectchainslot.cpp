@@ -2,11 +2,14 @@
 #include "sampleutil.h"
 #include "controlpotmeter.h"
 
-EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iChainNumber)
+EffectChainSlot::EffectChainSlot(QObject* pParent, unsigned int iRackNumber,
+                                 unsigned int iChainNumber)
         : QObject(),
+          m_iRackNumber(iRackNumber),
           m_iChainNumber(iChainNumber),
-          // The control group names are 1-indexed while internally everything is 0-indexed.
-          m_group(formatGroupString(iChainNumber)) {
+          // The control group names are 1-indexed while internally everything
+          // is 0-indexed.
+          m_group(formatGroupString(iRackNumber, iChainNumber)) {
     m_pControlClear = new ControlObject(ConfigKey(m_group, "clear"));
     connect(m_pControlClear, SIGNAL(valueChanged(double)),
             this, SLOT(slotControlClear(double)));
@@ -188,7 +191,8 @@ unsigned int EffectChainSlot::numSlots() const {
 void EffectChainSlot::addEffectSlot() {
     qDebug() << debugString() << "addEffectSlot";
 
-    EffectSlot* pEffectSlot = new EffectSlot(this, m_iChainNumber, m_slots.size());
+    EffectSlot* pEffectSlot = new EffectSlot(
+        this, m_iRackNumber, m_iChainNumber, m_slots.size());
     // Rebroadcast effectLoaded signals
     connect(pEffectSlot, SIGNAL(effectLoaded(EffectPointer, unsigned int)),
             this, SLOT(slotEffectLoaded(EffectPointer, unsigned int)));

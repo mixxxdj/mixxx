@@ -20,7 +20,6 @@ EffectsManager::EffectsManager(QObject* pParent)
 
 EffectsManager::~EffectsManager() {
     processEffectsResponses();
-    m_effectChainSlots.clear();
     while (!m_effectsBackends.isEmpty()) {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
@@ -38,69 +37,8 @@ void EffectsManager::addEffectsBackend(EffectsBackend* pBackend) {
     m_effectsBackends.append(pBackend);
 }
 
-unsigned int EffectsManager::numEffectChainSlots() const {
-    return m_effectChainSlots.size();
-}
-
-void EffectsManager::addEffectChainSlot() {
-    EffectChainSlot* pChainSlot =
-            new EffectChainSlot(this, m_effectChainSlots.size());
-
-    // TODO(rryan) How many should we make default? They create controls that
-    // the GUI may rely on, so the choice is important to communicate to skin
-    // designers.
-    pChainSlot->addEffectSlot();
-    pChainSlot->addEffectSlot();
-    pChainSlot->addEffectSlot();
-    pChainSlot->addEffectSlot();
-
-    connect(pChainSlot, SIGNAL(nextChain(const unsigned int, EffectChainPointer)),
-            this, SLOT(loadNextChain(const unsigned int, EffectChainPointer)));
-    connect(pChainSlot, SIGNAL(prevChain(const unsigned int, EffectChainPointer)),
-            this, SLOT(loadPrevChain(const unsigned int, EffectChainPointer)));
-
-    // Register all the existing channels with the new EffectChain
-    foreach (const QString& group, m_registeredGroups) {
-        pChainSlot->registerGroup(group);
-    }
-
-    m_effectChainSlots.append(EffectChainSlotPointer(pChainSlot));
-}
-
-EffectChainSlotPointer EffectsManager::getEffectChainSlot(unsigned int i) {
-    if (i >= m_effectChainSlots.size()) {
-        qDebug() << "WARNING: Invalid index for getEffectChainSlot";
-        return EffectChainSlotPointer();
-    }
-    return m_effectChainSlots[i];
-}
-
 void EffectsManager::registerGroup(const QString& group) {
-    if (m_registeredGroups.contains(group)) {
-        qDebug() << debugString() << "WARNING: Group already registered:"
-                 << group;
-        return;
-    }
-
-    m_registeredGroups.insert(group);
-    foreach (EffectChainSlotPointer pEffectChainSlot, m_effectChainSlots) {
-        pEffectChainSlot->registerGroup(group);
-    }
-}
-
-void EffectsManager::loadNextChain(const unsigned int iChainSlotNumber,
-                                   EffectChainPointer pLoadedChain) {
-    EffectChainPointer pNextChain =
-            m_pEffectChainManager->getNextEffectChain(pLoadedChain);
-    m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
-}
-
-
-void EffectsManager::loadPrevChain(const unsigned int iChainSlotNumber,
-                                   EffectChainPointer pLoadedChain) {
-    EffectChainPointer pPrevChain =
-            m_pEffectChainManager->getPrevEffectChain(pLoadedChain);
-    m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
+    m_pEffectChainManager->registerGroup(group);
 }
 
 const QSet<QString> EffectsManager::getAvailableEffects() const {
@@ -139,9 +77,18 @@ EffectPointer EffectsManager::instantiateEffect(const QString& effectId) {
     return EffectPointer();
 }
 
-void EffectsManager::setupDefaultChains() {
-    QSet<QString> effects = getAvailableEffects();
+EffectRackPointer EffectsManager::getDefaultEffectRack() {
+    return m_pEffectChainManager->getEffectRack(0);
+}
 
+void EffectsManager::setupDefaults() {
+    EffectRackPointer pRack = m_pEffectChainManager->addEffectRack();
+    pRack->addEffectChainSlot();
+    pRack->addEffectChainSlot();
+    pRack->addEffectChainSlot();
+    pRack->addEffectChainSlot();
+
+    QSet<QString> effects = getAvailableEffects();
     FlangerEffect flanger;
     QString flangerId = flanger.getId();
 
