@@ -42,7 +42,7 @@
 #include <QLibrary>
 #include <QMutexLocker>
 #include <QMutex>
-#include <QDebug>
+#include <QtDebug>
 #include <QDir>
 #include <QDesktopServices>
 #include <QCoreApplication>

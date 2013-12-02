@@ -20,7 +20,9 @@
 #define SOUNDMANAGERCONFIG_FILENAME "soundconfig.xml"
 #endif
 
-#include <QtCore>
+#include <QString>
+#include <QMultiHash>
+#include <QFileInfo>
 
 #include "soundmanagerutil.h"
 

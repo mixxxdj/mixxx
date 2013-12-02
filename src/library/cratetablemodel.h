@@ -24,7 +24,7 @@ class CrateTableModel : public BaseSqlTableModel {
     void removeTracks(const QModelIndexList& indices);
     bool addTrack(const QModelIndex &index, QString location);
     // Returns the number of unsuccessful track additions
-    int addTracks(const QModelIndex& index,const QList <QString> &locations);
+    int addTracks(const QModelIndex& index, const QList<QString>& locations);
     TrackModel::CapabilitiesFlags getCapabilities() const;
 
   private:

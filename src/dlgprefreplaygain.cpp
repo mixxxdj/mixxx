@@ -1,17 +1,6 @@
-
-#include <qlineedit.h>
-#include <qwidget.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpushbutton.h>
-#include <qlcdnumber.h>
-#include <qslider.h>
-#include <QtCore>
-#include <QMessageBox>
-#include "controlobject.h"
-
 #include "dlgprefreplaygain.h"
+
+#include "controlobject.h"
 
 #define CONFIG_KEY "[ReplayGain]"
 

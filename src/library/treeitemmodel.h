@@ -19,6 +19,8 @@ class TreeItemModel : public QAbstractItemModel {
     virtual QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
     virtual QModelIndex index(int row, int column, const QModelIndex &parent = QModelIndex()) const;
     virtual QModelIndex parent(const QModelIndex &index) const;
+    // Tell the compiler we don't mean to shadow insertRows.
+    using QAbstractItemModel::insertRows;
     virtual bool insertRows(QList<TreeItem*> &data, int position, int rows, const QModelIndex &parent = QModelIndex());
     virtual bool removeRows(int position, int rows, const QModelIndex &parent = QModelIndex());
     virtual bool setData(const QModelIndex &a_rIndex, const QVariant &a_rValue,

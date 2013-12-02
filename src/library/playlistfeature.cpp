@@ -1,8 +1,7 @@
 #include <QtDebug>
 #include <QMenu>
-#include <QInputDialog>
-#include <QFileDialog>
-#include <QDesktopServices>
+#include <QFile>
+#include <QFileInfo>
 
 #include "library/playlistfeature.h"
 #include "library/parser.h"

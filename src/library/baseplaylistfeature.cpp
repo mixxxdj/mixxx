@@ -2,6 +2,7 @@
 
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 #include "library/parser.h"
 #include "library/parserm3u.h"
@@ -485,4 +486,3 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0, m_playlistList.size());
 }
-

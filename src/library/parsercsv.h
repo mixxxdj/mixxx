@@ -11,13 +11,15 @@
 // Copyright: See COPYING file that comes with this distribution
 //
 //
-#include "library/parser.h"
-#include "library/basesqltablemodel.h"
-
 #ifndef PARSERCSV_H
 #define PARSERCSV_H
 
-class QTextStream;
+#include <QList>
+#include <QString>
+#include <QByteArray>
+
+#include "library/parser.h"
+#include "library/basesqltablemodel.h"
 
 class ParserCsv : public Parser
 {

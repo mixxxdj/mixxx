@@ -19,6 +19,9 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QString>
+#include <QList>
+#include <QHash>
 
 #include "defs.h"
 #include "configobject.h"

@@ -3,6 +3,7 @@
 #include <QtAlgorithms>
 #include <QtDebug>
 #include <QTime>
+#include <QUrl>
 
 #include "library/basesqltablemodel.h"
 

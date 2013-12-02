@@ -29,7 +29,7 @@
 //#include <fcntl.h>
 //#endif
 
-#include <QDebug>
+#include <QtDebug>
 
 static QMutex ffmpegmutex;
 

@@ -5,8 +5,6 @@
  *      Author: Albert Santoni
  */
 
-#include <QtCore>
-#include <QtGui>
 #include "configobject.h"
 #include "controlgroupdelegate.h" //Need to get CONTROLGROUP_CHANNEL1_STRING, etc.
 #include "controlvaluedelegate.h"

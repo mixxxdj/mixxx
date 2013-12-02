@@ -1,5 +1,5 @@
 #include <set>
-#include <QDebug>
+#include <QtDebug>
 
 #include "waveformmarkset.h"
 #include "engine/cuecontrol.h"

@@ -1,6 +1,3 @@
-#include <QtCore>
-#include <QtXml>
-
 #include "controllers/mixxxcontrol.h"
 
 MixxxControl::MixxxControl(QString controlobject_group, QString controlobject_item,

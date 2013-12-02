@@ -20,9 +20,10 @@
 
 #include <encoder/encoderffmpegresample.h>
 
-#include <qstring.h>
+#include <QString>
 #include <QByteArray>
-#include <QBuffer>
+#include <QList>
+
 #include "soundsource.h"
 extern "C" {
 // Needed to ensure that macros in <stdint.h> get defined.

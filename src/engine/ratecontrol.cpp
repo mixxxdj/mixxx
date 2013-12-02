@@ -12,7 +12,7 @@
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
 
-#include <QDebug>
+#include <QtDebug>
 
 // Static default values for rate buttons (percents)
 double RateControl::m_dTemp = 4.00; //(eg. 4.00%)

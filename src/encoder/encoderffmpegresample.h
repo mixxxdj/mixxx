@@ -18,7 +18,7 @@
 #ifndef ENCODERFFMPEGRESAMPLE_H
 #define ENCODERFFMPEGRESAMPLE_H
 
-#include <QDebug>
+#include <QtDebug>
 
 extern "C" {
 // Needed to ensure that macros in <stdint.h> get defined.

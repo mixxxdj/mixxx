@@ -5,6 +5,14 @@
 #define MIXXXLIBRARYFEATURE_H
 
 #include <QStringListModel>
+#include <QUrl>
+#include <QVariant>
+#include <QIcon>
+#include <QModelIndex>
+#include <QList>
+#include <QString>
+#include <QSharedPointer>
+#include <QObject>
 
 #include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"

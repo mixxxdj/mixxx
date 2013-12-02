@@ -15,9 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include <QtGui>
-
 #include "vinylcontrol/vinylcontrolsignalwidget.h"
 
 VinylControlSignalWidget::VinylControlSignalWidget()
