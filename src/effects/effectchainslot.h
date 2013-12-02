@@ -21,7 +21,7 @@ class EffectChainSlot : public QObject {
     virtual ~EffectChainSlot();
 
     static QString formatGroupString(const unsigned int iChainNumber) {
-        return QString("[EffectChain%1]").arg(iChainNumber+1);
+        return QString("[EffectRack1_EffectChain%1]").arg(iChainNumber+1);
     }
 
     // Get the ID of the loaded EffectChain

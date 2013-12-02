@@ -18,7 +18,7 @@ class EffectParameterSlot : QObject {
 
     static QString formatGroupString(const unsigned int iChainNumber, const unsigned int iSlotNumber,
                               const unsigned int iParameterNumber) {
-        return QString("[EffectChain%1_Effect%2_Parameter%3]")
+        return QString("[EffectRack1_EffectChain%1_Effect%2_Parameter%3]")
                 .arg(iChainNumber+1)
                 .arg(iSlotNumber+1)
                 .arg(iParameterNumber+1);

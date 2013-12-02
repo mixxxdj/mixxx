@@ -22,7 +22,7 @@ class EffectSlot : public QObject {
 
     static QString formatGroupString(const unsigned int iChainNumber,
                                      const unsigned int iSlotNumber) {
-        return QString("[EffectChain%1_Effect%2]").arg(iChainNumber+1).arg(iSlotNumber+1);
+        return QString("[EffectRack1_EffectChain%1_Effect%2]").arg(iChainNumber+1).arg(iSlotNumber+1);
     }
 
     // Return the currently loaded effect, if any. If no effect is loaded,
