@@ -20,6 +20,10 @@
 #include <QtDebug>
 #include <QThread>
 
+#ifdef __LINUX__
+#include <QLibrary>
+#endif
+
 #include "sounddeviceportaudio.h"
 
 #include "controlobjectthreadmain.h"
@@ -27,6 +31,7 @@
 #include "sounddevice.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
+#include "visualplayposition.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 
@@ -288,6 +293,10 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
     if (!m_bSetThreadPriority) {
         QThread::currentThread()->setPriority(QThread::TimeCriticalPriority);
         m_bSetThreadPriority = true;
+    }
+
+    if (m_pSoundManager->isDeviceClkRef(this)) {
+        VisualPlayPosition::setTimeInfo(timeInfo);
     }
 
     if (!m_undeflowUpdateCount) {
