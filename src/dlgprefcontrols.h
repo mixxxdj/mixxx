@@ -46,8 +46,6 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
   public slots:
     void slotUpdate();
     void slotApply();
-    void slotShow();
-    void slotHide();
 
     void slotSetRateRange(int pos);
     void slotSetRateDir(int pos);
@@ -83,9 +81,7 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     void slotSetVisualGainMid(double gain);
     void slotSetVisualGainHigh(double gain);
     void slotSetNormalizeOverview( bool normalize);
-
-  protected:
-    void timerEvent(QTimerEvent *);
+    void slotWaveformMeasured(float frameRate, int rtErrorCnt);
 
   private:
     void initWaveformControl();
@@ -93,7 +89,6 @@ class DlgPrefControls : public DlgPreferencePage, public Ui::DlgPrefControlsDlg 
     bool checkSkinResolution(QString skin);
 
     ConfigObject<ConfigValue>* m_pConfig;
-    int m_timer;
     ControlObject* m_pControlPositionDisplay;
     QList<ControlObjectThread*> m_cueControls;
     QList<ControlObjectThread*> m_rateControls;
