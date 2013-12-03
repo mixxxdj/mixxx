@@ -1,10 +1,12 @@
 #include "effects/native/bitcrushereffect.h"
 
-QString BitCrusherEffect::getId() const {
+// static
+QString BitCrusherProcessor::getId() {
     return "org.mixxx.effects.bitcrusher";
 }
 
-EffectManifest BitCrusherEffect::getManifest() const {
+// static
+EffectManifest BitCrusherProcessor::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("BitCrusher"));

@@ -10,19 +10,13 @@
 #include "engine/effects/engineeffectparameter.h"
 #include "util.h"
 
-class BitCrusherEffect : public NativeEffect {
-  public:
-    BitCrusherEffect() {}
-    virtual ~BitCrusherEffect() {}
-
-    QString getId() const;
-    EffectManifest getManifest() const;
-};
-
 class BitCrusherProcessor : public EffectProcessor {
   public:
     BitCrusherProcessor(const EffectManifest& manifest);
     virtual ~BitCrusherProcessor();
+
+    static QString getId();
+    static EffectManifest getManifest();
 
     // See effectprocessor.h
     void initialize(EngineEffect* pEffect);

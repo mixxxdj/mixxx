@@ -3,13 +3,6 @@
 
 #include "effects/effectsbackend.h"
 
-class NativeEffect {
-  public:
-    virtual ~NativeEffect() { }
-    virtual QString getId() const = 0;
-    virtual EffectManifest getManifest() const = 0;
-};
-
 class NativeBackend : public EffectsBackend {
     Q_OBJECT
   public:
@@ -20,7 +13,6 @@ class NativeBackend : public EffectsBackend {
     QString debugString() const {
         return "NativeBackend";
     }
-    QList<EffectManifest> m_effectManifests;
 };
 
 #endif /* NATIVEBACKEND_H */

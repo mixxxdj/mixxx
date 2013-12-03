@@ -5,11 +5,13 @@
 #include "mathstuff.h"
 #include "sampleutil.h"
 
-QString FlangerEffect::getId() const {
+// static
+QString FlangerProcessor::getId() {
     return "org.mixxx.effects.flanger";
 }
 
-EffectManifest FlangerEffect::getManifest() const {
+// static
+EffectManifest FlangerProcessor::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Flanger"));

@@ -14,15 +14,6 @@ const unsigned int kMaxDelay = 5000;
 const unsigned int kLfoAmplitude = 240;
 const unsigned int kAverageDelayLength = 250;
 
-class FlangerEffect : public NativeEffect {
-  public:
-    FlangerEffect() { }
-    virtual ~FlangerEffect() { }
-
-    QString getId() const;
-    EffectManifest getManifest() const;
-};
-
 struct FlangerState {
     CSAMPLE delayBuffer[kMaxDelay];
     unsigned int delayPos;
@@ -33,6 +24,9 @@ class FlangerProcessor : public EffectProcessor {
   public:
     FlangerProcessor(const EffectManifest& manifest);
     virtual ~FlangerProcessor();
+
+    static QString getId();
+    static EffectManifest getManifest();
 
     // See effectprocessor.h
     void initialize(EngineEffect* pEffect);

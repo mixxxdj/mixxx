@@ -53,9 +53,9 @@ class EffectsBackend : public QObject {
                         EffectInstantiator* pInstantiator);
 
     template <typename EffectProcessorImpl>
-    void registerEffect(const QString& id,
-                        const EffectManifest& manifest) {
-        registerEffect(id, manifest,
+    void registerEffect() {
+        registerEffect(EffectProcessorImpl::getId(),
+                       EffectProcessorImpl::getManifest(),
                        new EffectProcessorInstantiator<EffectProcessorImpl>());
     }
 
