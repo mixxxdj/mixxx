@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Manage</string>
+   <string>Auto DJ</string>
   </property>
   <property name="styleSheet">
    <string notr="true"/>
@@ -50,6 +50,16 @@
        </property>
        <property name="checkable">
         <bool>false</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="pushButtonAddRandom">
+       <property name="toolTip">
+        <string>Add a random track from track sources (crates) to the Auto DJ playlist.</string>
+       </property>
+       <property name="text">
+        <string>Add Random</string>
        </property>
       </widget>
      </item>

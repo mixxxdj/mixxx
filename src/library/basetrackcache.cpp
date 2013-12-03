@@ -41,7 +41,9 @@ BaseTrackCache::BaseTrackCache(TrackCollection* pTrackCollection,
           m_pQueryParser(new SearchQueryParser(m_pTrackCollection->getDatabase())) {
     m_searchColumns << "artist"
                     << "album"
+                    << "album_artist"
                     << "location"
+                    << "grouping"
                     << "comment"
                     << "title"
                     << "genre";
@@ -168,7 +170,6 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
         QVector<QVariant>& record = m_trackInfo[id];
         // prealocate memory for all columns at once
         record.resize(numColumns);
-
         for (int i = 0; i < numColumns; ++i) {
             getTrackValueForColumn(pTrack, i, record[i]);
         }
@@ -176,7 +177,7 @@ bool BaseTrackCache::updateIndexWithTrackpointer(TrackPointer pTrack) {
     return true;
 }
 
-bool BaseTrackCache::updateIndexWithQuery(QString queryString) {
+bool BaseTrackCache::updateIndexWithQuery(const QString& queryString) {
     QTime timer;
     timer.start();
 
@@ -284,6 +285,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getTitle());
     } else if (fieldIndex(LIBRARYTABLE_ALBUM) == column) {
         trackValue.setValue(pTrack->getAlbum());
+    } else if (fieldIndex(LIBRARYTABLE_ALBUMARTIST) == column) {
+        trackValue.setValue(pTrack->getAlbumArtist());
     } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         trackValue.setValue(pTrack->getYear());
     } else if (fieldIndex(LIBRARYTABLE_DATETIMEADDED) == column) {
@@ -292,6 +295,8 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
         trackValue.setValue(pTrack->getGenre());
     } else if (fieldIndex(LIBRARYTABLE_COMPOSER) == column) {
         trackValue.setValue(pTrack->getComposer());
+    } else if (fieldIndex(LIBRARYTABLE_GROUPING) == column) {
+        trackValue.setValue(pTrack->getGrouping());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
         trackValue.setValue(pTrack->getType());
     } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {
@@ -490,7 +495,7 @@ bool BaseTrackCache::trackMatchesNamedString(const TrackPointer& pTrack,
             return false;
         }
         if (field == "artist") {
-            if (! pTrack->getArtist().contains(expression, Qt::CaseInsensitive)) {
+            if (! (pTrack->getArtist().contains(expression, Qt::CaseInsensitive) || pTrack->getAlbumArtist().contains(expression, Qt::CaseInsensitive)) ) {
                 return false;
             }
         } else if (field == "album") {
@@ -499,6 +504,10 @@ bool BaseTrackCache::trackMatchesNamedString(const TrackPointer& pTrack,
             }
         } else if (field == "location") {
             if (! pTrack->getLocation().contains(expression, Qt::CaseInsensitive)) {
+                return false;
+            }
+        } else if (field == "grouping") {
+            if (! pTrack->getGrouping().contains(expression, Qt::CaseInsensitive)) {
                 return false;
             }
         } else if (field == "comment") {
@@ -568,8 +577,7 @@ void BaseTrackCache::filterAndSort(const QSet<int>& trackIds,
         LOG_FAILED_QUERY(query);
     }
 
-    QSqlRecord record = query.record();
-    int idColumn = record.indexOf(m_idColumn);
+    int idColumn = query.record().indexOf(m_idColumn);
     int rows = query.size();
 
     if (sDebug) {
@@ -709,9 +717,6 @@ QString BaseTrackCache::orderByClause(int sortColumn,
     // This is all stolen from QSqlTableModel::orderByClause(), just rigged to
     // sort case-insensitively.
 
-    // TODO(rryan) I couldn't get QSqlRecord to work without exec'ing this damn
-    // query. Need to find out how to make it work without exec()'ing and remove
-    // this.
     QSqlQuery query(m_database);
     QString queryString = QString("SELECT %1 FROM %2 LIMIT 1")
             .arg(m_columnsJoined, m_tableName);

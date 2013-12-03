@@ -18,6 +18,9 @@
 #ifndef SOUNDDEVICE_H
 #define SOUNDDEVICE_H
 
+#include <QString>
+#include <QList>
+
 #include "soundmanager.h"
 
 //Forward declarations
@@ -50,8 +53,8 @@ class SoundDevice {
     virtual unsigned int getDefaultSampleRate() const = 0;
     int getNumOutputChannels() const;
     int getNumInputChannels() const;
-    SoundDeviceError addOutput(const AudioOutput &out);
-    SoundDeviceError addInput(const AudioInput &in);
+    SoundDeviceError addOutput(const AudioOutputBuffer& out);
+    SoundDeviceError addInput(const AudioInputBuffer& in);
     void clearOutputs();
     void clearInputs();
     bool operator==(const SoundDevice &other) const;
@@ -74,8 +77,8 @@ class SoundDevice {
     // The name of the audio API used by this device.
     QString m_hostAPI;
     unsigned int m_framesPerBuffer;
-    QList<AudioOutput> m_audioOutputs;
-    QList<AudioInput> m_audioInputs;
+    QList<AudioOutputBuffer> m_audioOutputs;
+    QList<AudioInputBuffer> m_audioInputs;
 };
 
 #endif

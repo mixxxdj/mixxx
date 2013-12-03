@@ -18,7 +18,9 @@
 #ifndef WWIDGET_H
 #define WWIDGET_H
 
-#include <QtGui>
+#include <QWidget>
+#include <QString>
+#include <QDomNode>
 
 #include "configobject.h"
 
@@ -35,7 +37,7 @@
 class WWidget : public QWidget  {
    Q_OBJECT
 public:
-    WWidget(QWidget *parent=0, Qt::WFlags flags=0);
+    WWidget(QWidget *parent=0, Qt::WindowFlags flags=0);
     virtual ~WWidget();
 
     /** Sets the path used to find pixmaps */

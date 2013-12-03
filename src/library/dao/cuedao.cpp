@@ -15,7 +15,6 @@ CueDAO::CueDAO(QSqlDatabase& database)
 }
 
 CueDAO::~CueDAO() {
-
 }
 
 void CueDAO::initialize() {
@@ -93,9 +92,10 @@ QList<Cue*> CueDAO::getCuesForTrack(const int trackId) const {
     query.prepare("SELECT * FROM " CUE_TABLE " WHERE track_id = :id");
     query.bindValue(":id", trackId);
     if (query.exec()) {
+        const int idColumn = query.record().indexOf("id");
         while (query.next()) {
             Cue* cue = NULL;
-            int cueId = query.value(query.record().indexOf("id")).toInt();
+            int cueId = query.value(idColumn).toInt();
             if (m_cues.contains(cueId)) {
                 cue = m_cues[cueId];
             }

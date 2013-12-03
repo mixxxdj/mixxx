@@ -15,19 +15,12 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qlineedit.h>
-#include <qfiledialog.h>
-#include <qwidget.h>
-#include <qspinbox.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpushbutton.h>
-#include <QtCore>
-#include <QMessageBox>
-#include "track/key_preferences.h"
-
 #include "dlgprefkey.h"
+
+#include <QLineEdit>
+#include <QMessageBox>
+
+#include "track/key_preferences.h"
 #include "xmlparse.h"
 #include "controlobject.h"
 #include "vamp/vampanalyser.h"
@@ -40,7 +33,7 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
           Ui::DlgPrefKeyDlg(),
           m_pConfig(_config),
           m_bAnalyserEnabled(false),

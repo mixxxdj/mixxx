@@ -5,6 +5,14 @@
 #define MIXXXLIBRARYFEATURE_H
 
 #include <QStringListModel>
+#include <QUrl>
+#include <QVariant>
+#include <QIcon>
+#include <QModelIndex>
+#include <QList>
+#include <QString>
+#include <QSharedPointer>
+#include <QObject>
 
 #include "library/libraryfeature.h"
 #include "library/dao/trackdao.h"
@@ -28,7 +36,7 @@ class MixxxLibraryFeature : public LibraryFeature {
 
     QVariant title();
     QIcon getIcon();
-    bool dropAccept(QList<QUrl> urls, QWidget *pSource);
+    bool dropAccept(QList<QUrl> urls, QObject* pSource);
     bool dragMoveAccept(QUrl url);
     TreeItemModel* getChildModel();
     void bindWidget(WLibrary* pLibrary,

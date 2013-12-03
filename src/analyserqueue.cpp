@@ -15,6 +15,7 @@
 #include "analyserbeats.h"
 #include "analyserkey.h"
 #include "vamp/vampanalyser.h"
+#include "util/compatibility.h"
 
 // Measured in 0.1%,
 // 0 for no progress during finalize
@@ -44,7 +45,7 @@ void AnalyserQueue::addAnalyser(Analyser* an) {
 bool AnalyserQueue::isLoadedTrackWaiting(TrackPointer tio) {
     QMutexLocker queueLocker(&m_qm);
 
-    const PlayerInfo& info = PlayerInfo::Instance();
+    const PlayerInfo& info = PlayerInfo::instance();
     TrackPointer pTrack;
     bool trackWaiting = false;
     QMutableListIterator<TrackPointer> it(m_tioq);
@@ -98,7 +99,7 @@ TrackPointer AnalyserQueue::dequeueNextBlocking() {
         }
     }
 
-    const PlayerInfo& info = PlayerInfo::Instance();
+    const PlayerInfo& info = PlayerInfo::instance();
     TrackPointer pLoadTrack;
     QMutableListIterator<TrackPointer> it(m_tioq);
     while (it.hasNext()) {
@@ -213,7 +214,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         //QThread::usleep(10);
 
         //has something new entered the queue?
-        if (m_aiCheckPriorities) {
+        if (deref(m_aiCheckPriorities)) {
             m_aiCheckPriorities = false;
             if (isLoadedTrackWaiting(tio)) {
                 qDebug() << "Interrupting analysis to give preference to a loaded track.";

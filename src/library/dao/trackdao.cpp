@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QtCore>
 #include <QtSql>
 
 #include "library/dao/trackdao.h"
@@ -18,6 +17,8 @@
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
+
+enum { UndefinedRecordIndex = -2 };
 
 // The number of tracks to cache in memory at once. Once the n+1'th track is
 // created, the TrackDAO's QCache deletes its TrackPointer to the track, which
@@ -44,7 +45,10 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_pQueryLibraryInsert(NULL),
           m_pQueryLibraryUpdate(NULL),
           m_pQueryLibrarySelect(NULL),
-          m_pTransaction(NULL) {
+          m_pTransaction(NULL),
+          m_trackLocationIdColumn(UndefinedRecordIndex),
+          m_queryLibraryIdColumn(UndefinedRecordIndex),
+          m_queryLibraryMixxxDeletedColumn(UndefinedRecordIndex) {
 }
 
 TrackDAO::~TrackDAO() {
@@ -128,8 +132,9 @@ QList<int> TrackDAO::getTrackIds(const QList<QFileInfo>& files) {
     }
 
     QList<int> ids;
+    const int idColumn = query.record().indexOf("id");
     while (query.next()) {
-        ids.append(query.value(query.record().indexOf("id")).toInt());
+        ids.append(query.value(idColumn).toInt());
     }
 
     return ids;
@@ -150,8 +155,9 @@ QString TrackDAO::getTrackLocation(const int trackId) {
         LOG_FAILED_QUERY(query);
         return "";
     }
+    const int locationColumn = query.record().indexOf("location");
     while (query.next()) {
-        trackLocation = query.value(query.record().indexOf("location")).toString();
+        trackLocation = query.value(locationColumn).toString();
     }
 
     return trackLocation;
@@ -287,9 +293,11 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":artist", pTrack->getArtist());
     m_pQueryLibraryInsert->bindValue(":title", pTrack->getTitle());
     m_pQueryLibraryInsert->bindValue(":album", pTrack->getAlbum());
+    m_pQueryLibraryInsert->bindValue(":album_artist", pTrack->getAlbumArtist());
     m_pQueryLibraryInsert->bindValue(":year", pTrack->getYear());
     m_pQueryLibraryInsert->bindValue(":genre", pTrack->getGenre());
     m_pQueryLibraryInsert->bindValue(":composer", pTrack->getComposer());
+    m_pQueryLibraryInsert->bindValue(":grouping", pTrack->getGrouping());
     m_pQueryLibraryInsert->bindValue(":tracknumber", pTrack->getTrackNumber());
     m_pQueryLibraryInsert->bindValue(":filetype", pTrack->getType());
     m_pQueryLibraryInsert->bindValue(":location", trackLocationId);
@@ -360,7 +368,7 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
 
 void TrackDAO::addTracksPrepare() {
 
-    if (m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
+        if (m_pQueryLibraryInsert || m_pQueryTrackLocationInsert ||
         m_pQueryLibrarySelect || m_pQueryTrackLocationSelect ||
         m_pTransaction) {
         qDebug() << "TrackDAO::addTracksPrepare: old Querys have been "
@@ -384,15 +392,15 @@ void TrackDAO::addTracksPrepare() {
     m_pQueryTrackLocationSelect->prepare("SELECT id FROM track_locations WHERE location=:location");
 
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
-            "(artist, title, album, year, genre, tracknumber, "
-            "filetype, location, comment, url, duration, rating, key, key_id, "
+            "(artist, title, album, album_artist, year, genre, tracknumber, composer, "
+            "grouping, filetype, location, comment, url, duration, rating, key, key_id, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, "
             "channels, mixxx_deleted, header_parsed, "
             "beats_version, beats_sub_version, beats, bpm_lock, "
             "keys_version, keys_sub_version, keys) "
             "VALUES ("
-            ":artist, :title, :album, :year, :genre, :tracknumber, "
+            ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
             ":timesplayed, "
@@ -456,8 +464,11 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
                         << "Can't find track location ID after failing to insert. Something is wrong.";
             return false;
         }
+        if (m_trackLocationIdColumn == UndefinedRecordIndex) {
+            m_trackLocationIdColumn = m_pQueryTrackLocationSelect->record().indexOf("id");
+        }
         while (m_pQueryTrackLocationSelect->next()) {
-            trackLocationId = m_pQueryTrackLocationSelect->value(m_pQueryTrackLocationSelect->record().indexOf("id")).toInt();
+            trackLocationId = m_pQueryTrackLocationSelect->value(m_trackLocationIdColumn).toInt();
         }
 
         m_pQueryLibrarySelect->bindValue(":location", trackLocationId);
@@ -467,10 +478,16 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
                      << pTrack->getFilename();
         } else {
             bool mixxx_deleted = 0;
+            if (m_queryLibraryIdColumn == UndefinedRecordIndex) {
+                QSqlRecord queryLibraryRecord = m_pQueryLibrarySelect->record();
+                m_queryLibraryIdColumn = queryLibraryRecord.indexOf("id");
+                m_queryLibraryMixxxDeletedColumn =
+                        queryLibraryRecord.indexOf("mixxx_deleted");
+            }
 
             while (m_pQueryLibrarySelect->next()) {
-                trackId = m_pQueryLibrarySelect->value(m_pQueryLibrarySelect->record().indexOf("id")).toInt();
-                mixxx_deleted = m_pQueryLibrarySelect->value(m_pQueryLibrarySelect->record().indexOf("mixxx_deleted")).toBool();
+                trackId = m_pQueryLibrarySelect->value(m_queryLibraryIdColumn).toInt();
+                mixxx_deleted = m_pQueryLibrarySelect->value(m_queryLibraryMixxxDeletedColumn).toBool();
             }
             if (unremove && mixxx_deleted) {
                 // Set mixxx_deleted back to 0
@@ -588,8 +605,9 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+    const int idColumn = query.record().indexOf("id");
     while (query.next()) {
-        int trackId = query.value(query.record().indexOf("id")).toInt();
+        int trackId = query.value(idColumn).toInt();
         trackIDs.append(trackId);
     }
 
@@ -615,8 +633,9 @@ QList<int> TrackDAO::addTracks(const QList<QFileInfo>& fileInfoList,
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
     }
+    const int locationColumn = query.record().indexOf("location");
     while (query.next()) {
-        QString filePath = query.value(query.record().indexOf("location")).toString();
+        QString filePath = query.value(locationColumn).toString();
         TrackInfoObject* pTrack = new TrackInfoObject(QFileInfo(filePath));
         addTracksAdd(pTrack, unremove);
         int trackID = pTrack->getId();
@@ -705,10 +724,13 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     FieldEscaper escaper(m_database);
     QStringList locationList;
     QSet<QString> dirs;
+    QSqlRecord queryRecord = query.record();
+    const int locationColumn = queryRecord.indexOf("location");
+    const int directoryColumn = queryRecord.indexOf("directory");
     while (query.next()) {
-        QString filePath = query.value(query.record().indexOf("location")).toString();
+        QString filePath = query.value(locationColumn).toString();
         locationList << escaper.escapeString(filePath);
-        QString directory = query.value(query.record().indexOf("directory")).toString();
+        QString directory = query.value(directoryColumn).toString();
         dirs.insert(directory);
     }
 
@@ -789,8 +811,8 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     QSqlQuery query(m_database);
 
     query.prepare(
-        "SELECT library.id, artist, title, album, year, genre, composer, tracknumber, "
-        "filetype, rating, key, track_locations.location as location, "
+        "SELECT library.id, artist, title, album, album_artist, year, genre, composer, "
+        "grouping, tracknumber, filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
         "header_parsed, timesplayed, played, "
@@ -803,36 +825,69 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
     );
 
     if (query.exec()) {
+        QSqlRecord queryRecord = query.record();
+        const int artistColumn = queryRecord.indexOf("artist");
+        const int titleColumn = queryRecord.indexOf("title");
+        const int albumColumn = queryRecord.indexOf("album");
+        const int albumArtistColumn = queryRecord.indexOf("album_artist");
+        const int yearColumn = queryRecord.indexOf("year");
+        const int genreColumn = queryRecord.indexOf("genre");
+        const int composerColumn = queryRecord.indexOf("composer");
+        const int groupingColumn = queryRecord.indexOf("grouping");
+        const int trackNumberColumn = queryRecord.indexOf("tracknumber");
+        const int commentColumn = queryRecord.indexOf("comment");
+        const int urlColumn = queryRecord.indexOf("url");
+        const int keyColumn = queryRecord.indexOf("key");
+        const int durationColumn = queryRecord.indexOf("duration");
+        const int bitrateColumn = queryRecord.indexOf("bitrate");
+        const int ratingColumn = queryRecord.indexOf("rating");
+        const int samplerateColumn = queryRecord.indexOf("samplerate");
+        const int cuepointColumn = queryRecord.indexOf("cuepoint");
+        const int bpmColumn = queryRecord.indexOf("bpm");
+        const int replaygainColumn = queryRecord.indexOf("replaygain");
+        const int timesplayedColumn = queryRecord.indexOf("timesplayed");
+        const int datetimeAddedColumn = queryRecord.indexOf("datetime_added");
+        const int playedColumn = queryRecord.indexOf("played");
+        const int channelsColumn = queryRecord.indexOf("channels");
+        const int filetypeColumn = queryRecord.indexOf("filetype");
+        const int locationColumn = queryRecord.indexOf("location");
+        const int headerParsedColumn = queryRecord.indexOf("header_parsed");
+        const int bpmLockColumn = queryRecord.indexOf("bpm_lock");
+
+        const int beatsVersionColumn = queryRecord.indexOf("beats_version");
+        const int beatsSubVersionColumn = queryRecord.indexOf("beats_sub_version");
+        const int beatsColumn = queryRecord.indexOf("beats");
+
         while (query.next()) {
             bool shouldDirty = false;
-            // Good god! Assign query.record() to a freaking variable!
-            // int trackId = query.value(query.record().indexOf("id")).toInt();
-            QString artist = query.value(query.record().indexOf("artist")).toString();
-            QString title = query.value(query.record().indexOf("title")).toString();
-            QString album = query.value(query.record().indexOf("album")).toString();
-            QString year = query.value(query.record().indexOf("year")).toString();
-            QString genre = query.value(query.record().indexOf("genre")).toString();
-            QString composer = query.value(query.record().indexOf("composer")).toString();
-            QString tracknumber = query.value(query.record().indexOf("tracknumber")).toString();
-            QString comment = query.value(query.record().indexOf("comment")).toString();
-            QString url = query.value(query.record().indexOf("url")).toString();
-            QString keyText = query.value(query.record().indexOf("key")).toString();
-            int duration = query.value(query.record().indexOf("duration")).toInt();
-            int bitrate = query.value(query.record().indexOf("bitrate")).toInt();
-            int rating = query.value(query.record().indexOf("rating")).toInt();
-            int samplerate = query.value(query.record().indexOf("samplerate")).toInt();
-            int cuepoint = query.value(query.record().indexOf("cuepoint")).toInt();
-            QString bpm = query.value(query.record().indexOf("bpm")).toString();
-            QString replaygain = query.value(query.record().indexOf("replaygain")).toString();
-            int timesplayed = query.value(query.record().indexOf("timesplayed")).toInt();
-            QDateTime datetime_added = query.value(query.record().indexOf("datetime_added")).toDateTime();
-            int played = query.value(query.record().indexOf("played")).toInt();
-            int channels = query.value(query.record().indexOf("channels")).toInt();
-            //int filesize = query.value(query.record().indexOf("filesize")).toInt();
-            QString filetype = query.value(query.record().indexOf("filetype")).toString();
-            QString location = query.value(query.record().indexOf("location")).toString();
-            bool header_parsed = query.value(query.record().indexOf("header_parsed")).toBool();
-            bool has_bpm_lock = query.value(query.record().indexOf("bpm_lock")).toBool();
+
+            QString artist = query.value(artistColumn).toString();
+            QString title = query.value(titleColumn).toString();
+            QString album = query.value(albumColumn).toString();
+            QString albumArtist = query.value(albumArtistColumn).toString();
+            QString year = query.value(yearColumn).toString();
+            QString genre = query.value(genreColumn).toString();
+            QString composer = query.value(composerColumn).toString();
+            QString grouping = query.value(groupingColumn).toString();
+            QString tracknumber = query.value(trackNumberColumn).toString();
+            QString comment = query.value(commentColumn).toString();
+            QString url = query.value(urlColumn).toString();
+            QString keyText = query.value(keyColumn).toString();
+            int duration = query.value(durationColumn).toInt();
+            int bitrate = query.value(bitrateColumn).toInt();
+            int rating = query.value(ratingColumn).toInt();
+            int samplerate = query.value(samplerateColumn).toInt();
+            int cuepoint = query.value(cuepointColumn).toInt();
+            QString bpm = query.value(bpmColumn).toString();
+            QString replaygain = query.value(replaygainColumn).toString();
+            int timesplayed = query.value(timesplayedColumn).toInt();
+            QDateTime datetime_added = query.value(datetimeAddedColumn).toDateTime();
+            int played = query.value(playedColumn).toInt();
+            int channels = query.value(channelsColumn).toInt();
+            QString filetype = query.value(filetypeColumn).toString();
+            QString location = query.value(locationColumn).toString();
+            bool header_parsed = query.value(headerParsedColumn).toBool();
+            bool has_bpm_lock = query.value(bpmLockColumn).toBool();
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(location, false), &TrackDAO::deleteTrack);
 
@@ -844,9 +899,11 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setArtist(artist);
             pTrack->setTitle(title);
             pTrack->setAlbum(album);
+            pTrack->setAlbumArtist(albumArtist);
             pTrack->setYear(year);
             pTrack->setGenre(genre);
             pTrack->setComposer(composer);
+            pTrack->setGrouping(grouping);
             pTrack->setTrackNumber(tracknumber);
             pTrack->setRating(rating);
 
@@ -858,9 +915,9 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setCuePoint((float)cuepoint);
             pTrack->setReplayGain(replaygain.toFloat());
 
-            QString beatsVersion = query.value(query.record().indexOf("beats_version")).toString();
-            QString beatsSubVersion = query.value(query.record().indexOf("beats_sub_version")).toString();
-            QByteArray beatsBlob = query.value(query.record().indexOf("beats")).toByteArray();
+            QString beatsVersion = query.value(beatsVersionColumn).toString();
+            QString beatsSubVersion = query.value(beatsSubVersionColumn).toString();
+            QByteArray beatsBlob = query.value(beatsColumn).toByteArray();
             BeatsPointer pBeats = BeatFactory::loadBeatsFromByteArray(pTrack, beatsVersion, beatsSubVersion, &beatsBlob);
             if (pBeats) {
                 pTrack->setBeats(pBeats);
@@ -915,7 +972,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             connect(pTrack.data(), SIGNAL(save(TrackInfoObject*)),
                     this, SLOT(slotTrackSave(TrackInfoObject*)),
                     Qt::DirectConnection);
-
 
             m_sTracksMutex.lock();
             // Automatic conversion to a weak pointer
@@ -1008,9 +1064,11 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
-                  "title=:title, album=:album, year=:year, genre=:genre, "
-                  "composer=:composer, filetype=:filetype, tracknumber=:tracknumber, "
-                  "comment=:comment, url=:url, duration=:duration, rating=:rating, "
+                  "title=:title, album=:album, album_artist=:album_artist, "
+                  "year=:year, genre=:genre, composer=:composer, "
+                  "grouping=:grouping, filetype=:filetype, "
+                  "tracknumber=:tracknumber, comment=:comment, url=:url, "
+                  "duration=:duration, rating=:rating, "
                   "key=:key, key_id=:key_id, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, replaygain=:replaygain, "
@@ -1023,9 +1081,11 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
     query.bindValue(":album", pTrack->getAlbum());
+    query.bindValue(":album_artist", pTrack->getAlbumArtist());
     query.bindValue(":year", pTrack->getYear());
     query.bindValue(":genre", pTrack->getGenre());
     query.bindValue(":composer", pTrack->getComposer());
+    query.bindValue(":grouping", pTrack->getGrouping());
     query.bindValue(":filetype", pTrack->getType());
     query.bindValue(":tracknumber", pTrack->getTrackNumber());
     query.bindValue(":comment", pTrack->getComment());
@@ -1129,8 +1189,7 @@ void TrackDAO::invalidateTrackLocationsInLibrary(QString libraryPath) {
     }
 }
 
-void TrackDAO::markTrackLocationAsVerified(const QString& location)
-{
+void TrackDAO::markTrackLocationAsVerified(const QString& location) {
     //qDebug() << "TrackDAO::markTrackLocationAsVerified" << QThread::currentThread() << m_database.connectionName();
     //qDebug() << "markTrackLocationAsVerified()" << location;
 
@@ -1222,20 +1281,26 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
                    "filename=:filename AND "
                    "filesize=:filesize");
 
+    QSqlRecord queryRecord = query.record();
+    const int idColumn = queryRecord.indexOf("id");
+    const int filenameColumn = queryRecord.indexOf("filename");
+    const int filesizeColumn = queryRecord.indexOf("filesize");
+
     //For each track that's been "deleted" on disk...
     while (query.next()) {
         newTrackLocationId = -1; //Reset this var
-        oldTrackLocationId = query.value(query.record().indexOf("id")).toInt();
-        filename = query.value(query.record().indexOf("filename")).toString();
-        fileSize = query.value(query.record().indexOf("filesize")).toInt();
+        oldTrackLocationId = query.value(idColumn).toInt();
+        filename = query.value(filenameColumn).toString();
+        fileSize = query.value(filesizeColumn).toInt();
 
         query2.bindValue(":filename", filename);
         query2.bindValue(":filesize", fileSize);
         Q_ASSERT(query2.exec());
 
         Q_ASSERT(query2.size() <= 1); //WTF duplicate tracks?
+        const int query2idColumn = query2.record().indexOf("id");
         while (query2.next()) {
-            newTrackLocationId = query2.value(query2.record().indexOf("id")).toInt();
+            newTrackLocationId = query2.value(query2idColumn).toInt();
         }
 
         //If we found a moved track...
@@ -1256,8 +1321,9 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
             query3.bindValue(":location", newTrackLocationId);
             Q_ASSERT(query3.exec());
 
+            const int query3idColumn = query3.record().indexOf("id");
             if (query3.next()) {
-                int newTrackId = query3.value(query3.record().indexOf("id")).toInt();
+                int newTrackId = query3.value(query3idColumn).toInt();
                 query3.prepare("DELETE FROM library WHERE id=:newid");
                 query3.bindValue(":newid", newTrackLocationId);
                 Q_ASSERT(query3.exec());
@@ -1273,7 +1339,7 @@ void TrackDAO::detectMovedFiles(QSet<int>* pTracksMovedSetOld, QSet<int>* pTrack
             Q_ASSERT(query3.exec());
 
             if (query3.next()) {
-                int oldTrackId = query3.value(query3.record().indexOf("id")).toInt();
+                int oldTrackId = query3.value(query3idColumn).toInt();
                 query3.prepare("UPDATE library SET location=:newloc WHERE id=:oldid");
                 query3.bindValue(":newloc", newTrackLocationId);
                 query3.bindValue(":oldid", oldTrackId);
@@ -1299,10 +1365,15 @@ void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
         tagger.setTitle(pTrack->getTitle());
         tagger.setGenre(pTrack->getGenre());
         tagger.setComposer(pTrack->getComposer());
+        tagger.setGrouping(pTrack->getGrouping());
         tagger.setAlbum(pTrack->getAlbum());
+        tagger.setAlbumArtist(pTrack->getAlbumArtist());
         tagger.setComment(pTrack->getComment());
         tagger.setTracknumber(pTrack->getTrackNumber());
         tagger.setBpm(pTrack->getBpmStr());
+        tagger.setKey(pTrack->getKeyText());
+        tagger.setComposer(pTrack->getComposer());
+        tagger.setGrouping(pTrack->getGrouping());
 
         tagger.save();
     }
@@ -1338,8 +1409,9 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pC
                    "SET fs_deleted=:fs_deleted, needs_verification=0 "
                    "WHERE location=:location");
 
+    const int locationColumn = query.record().indexOf("location");
     while (query.next()) {
-        trackLocation = query.value(query.record().indexOf("location")).toString();
+        trackLocation = query.value(locationColumn).toString();
         query2.bindValue(":fs_deleted", (int)!QFile::exists(trackLocation));
         query2.bindValue(":location", trackLocation);
         if (!query2.exec()) {
@@ -1353,4 +1425,3 @@ void TrackDAO::verifyTracksOutside(const QString& libraryPath, volatile bool* pC
     transaction.commit();
     qDebug() << "verifyTracksOutside finished";
 }
-

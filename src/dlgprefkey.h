@@ -8,8 +8,9 @@
 #include "ui_dlgprefkeydlg.h"
 #include "configobject.h"
 #include "track/keyutils.h"
+#include "preferences/dlgpreferencepage.h"
 
-class DlgPrefKey : public QWidget, Ui::DlgPrefKeyDlg {
+class DlgPrefKey : public DlgPreferencePage, Ui::DlgPrefKeyDlg {
     Q_OBJECT
   public:
     DlgPrefKey(QWidget *parent, ConfigObject<ConfigValue> *_config);

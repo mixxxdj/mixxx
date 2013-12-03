@@ -24,39 +24,45 @@
 #include "playermanager.h"
 
 static const int kPlayingDeckUpdateIntervalMillis = 2000;
+static PlayerInfo* m_pPlayerInfo = NULL;
 
 PlayerInfo::PlayerInfo()
-        : m_COxfader("[Master]","crossfader"),
+        : m_pCOxfader(new ControlObjectThread("[Master]","crossfader")),
           m_currentlyPlayingDeck(-1) {
     startTimer(kPlayingDeckUpdateIntervalMillis);
 }
 
 PlayerInfo::~PlayerInfo() {
     m_loadedTrackMap.clear();
+    clearControlCache();
+    delete m_pCOxfader;
 }
 
-PlayerInfo &PlayerInfo::Instance() {
-    static PlayerInfo playerInfo;
-    return playerInfo;
+// static
+PlayerInfo& PlayerInfo::instance() {
+    if (!m_pPlayerInfo) {
+        m_pPlayerInfo = new PlayerInfo();
+    }
+    return *m_pPlayerInfo;
+}
+
+// static
+void PlayerInfo::destroy() {
+    delete m_pPlayerInfo;
 }
 
 TrackPointer PlayerInfo::getTrackInfo(const QString& group) {
     QMutexLocker locker(&m_mutex);
-
-    if (m_loadedTrackMap.contains(group)) {
-        return m_loadedTrackMap[group];
-    }
-
-    return TrackPointer();
+    return m_loadedTrackMap.value(group);
 }
 
 void PlayerInfo::setTrackInfo(const QString& group, const TrackPointer& track) {
     QMutexLocker locker(&m_mutex);
-    TrackPointer pOld = m_loadedTrackMap[group];
+    TrackPointer pOld = m_loadedTrackMap.value(group);
     if (pOld) {
         emit(trackUnloaded(group, pOld));
     }
-    m_loadedTrackMap[group] = track;
+    m_loadedTrackMap.insert(group, track);
     emit(trackLoaded(group, track));
 }
 
@@ -72,13 +78,22 @@ bool PlayerInfo::isTrackLoaded(const TrackPointer& pTrack) const {
     return false;
 }
 
+QMap<QString, TrackPointer> PlayerInfo::getLoadedTracks() {
+    QMutexLocker locker(&m_mutex);
+    QMap<QString, TrackPointer> ret = m_loadedTrackMap;
+    return ret;
+}
+
 bool PlayerInfo::isFileLoaded(const QString& track_location) const {
     QMutexLocker locker(&m_mutex);
     QMapIterator<QString, TrackPointer> it(m_loadedTrackMap);
     while (it.hasNext()) {
         it.next();
-        if (it.value()->getLocation() == track_location) {
-            return true;
+        TrackPointer pTrack = it.value();
+        if (pTrack) {
+            if (pTrack->getLocation() == track_location) {
+                return true;
+            }
         }
     }
     return false;
@@ -95,27 +110,27 @@ void PlayerInfo::updateCurrentPlayingDeck() {
     double maxVolume = 0;
     int maxDeck = -1;
 
-    for (unsigned int i = 0; i < PlayerManager::numDecks(); ++i) {
-        QString group = PlayerManager::groupForDeck(i);
+    for (int i = 0; i < (int)PlayerManager::numDecks(); ++i) {
+        DeckControls* pDc = getDeckControls(i);
 
-        if (ControlObject::get(ConfigKey(group, "play")) == 0.0) {
+        if (pDc->m_play.get() == 0.0) {
             continue;
         }
 
-        if (ControlObject::get(ConfigKey(group, "pregain")) <= 0.5) {
+        if (pDc->m_pregain.get() <= 0.5) {
             continue;
         }
 
-        double fvol = ControlObject::get(ConfigKey(group, "volume"));
+        double fvol = pDc->m_volume.get();
         if (fvol == 0.0) {
             continue;
         }
 
         double xfl, xfr;
-        EngineXfader::getXfadeGains(m_COxfader.get(), 1.0, 0.0, false, false,
+        EngineXfader::getXfadeGains(m_pCOxfader->get(), 1.0, 0.0, false, false,
                                     &xfl, &xfr);
 
-        int orient = ControlObject::get(ConfigKey(group, "orientation"));
+        int orient = pDc->m_orientation.get();
         double xfvol;
         if (orient == EngineChannel::LEFT) {
             xfvol = xfl;
@@ -150,4 +165,19 @@ TrackPointer PlayerInfo::getCurrentPlayingTrack() {
         return getTrackInfo(PlayerManager::groupForDeck(deck));
     }
     return TrackPointer();
+}
+
+PlayerInfo::DeckControls* PlayerInfo::getDeckControls(int i) {
+    if (m_deckControlList.count() >= i) {
+        QString group = PlayerManager::groupForDeck(i);
+        m_deckControlList.append(new DeckControls(group));
+    }
+    return m_deckControlList[i];
+}
+
+void PlayerInfo::clearControlCache() {
+    for (int i = 0; i < m_deckControlList.count(); ++i) {
+        delete m_deckControlList[i];
+    }
+    m_deckControlList.clear();
 }

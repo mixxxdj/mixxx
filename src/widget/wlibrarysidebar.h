@@ -1,9 +1,15 @@
 #ifndef WLIBRARYSIDEBAR_H
 #define WLIBRARYSIDEBAR_H
 
-#include <QtGui>
-#include <QTreeView>
 #include <QBasicTimer>
+#include <QContextMenuEvent>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
+#include <QKeyEvent>
+#include <QModelIndex>
+#include <QPoint>
+#include <QTimerEvent>
+#include <QTreeView>
 
 class WLibrarySidebar : public QTreeView {
   Q_OBJECT

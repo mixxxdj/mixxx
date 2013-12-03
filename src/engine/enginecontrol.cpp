@@ -7,14 +7,14 @@
 #include "playermanager.h"
 
 EngineControl::EngineControl(const char * _group,
-                             ConfigObject<ConfigValue> * _config) :
-    m_pGroup(_group),
-    m_pConfig(_config),
-    m_dCurrentSample(0),
-    m_dTotalSamples(0),
-    m_pEngineMaster(NULL),
-    m_pEngineBuffer(NULL),
-    m_numDecks(ConfigKey("[Master]", "num_decks")) {
+                             ConfigObject<ConfigValue> * _config)
+        : m_pGroup(_group),
+          m_pConfig(_config),
+          m_dTotalSamples(0),
+          m_pEngineMaster(NULL),
+          m_pEngineBuffer(NULL),
+          m_numDecks(ConfigKey("[Master]", "num_decks")) {
+    m_dCurrentSample.setValue(0);
 }
 
 EngineControl::~EngineControl() {
@@ -59,12 +59,12 @@ void EngineControl::setEngineBuffer(EngineBuffer* pEngineBuffer) {
 }
 
 void EngineControl::setCurrentSample(const double dCurrentSample, const double dTotalSamples) {
-    m_dCurrentSample = dCurrentSample;
+    m_dCurrentSample.setValue(dCurrentSample);
     m_dTotalSamples = dTotalSamples;
 }
 
 double EngineControl::getCurrentSample() const {
-    return m_dCurrentSample;
+    return m_dCurrentSample.getValue();
 }
 
 double EngineControl::getTotalSamples() const {

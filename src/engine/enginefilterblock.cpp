@@ -16,6 +16,7 @@
 ***************************************************************************/
 
 #include <QtDebug>
+
 #include "controlpushbutton.h"
 #include "controllogpotmeter.h"
 #include "engine/enginefilterblock.h"
@@ -88,6 +89,8 @@ EngineFilterBlock::EngineFilterBlock(const char * group)
     memset(m_pTemp1, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp2, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
     memset(m_pTemp3, 0, sizeof(CSAMPLE) * MAX_BUFFER_LEN);
+
+    old_low = old_mid = old_high = 1.0;
 }
 
 EngineFilterBlock::~EngineFilterBlock()
@@ -137,9 +140,10 @@ void EngineFilterBlock::setFilters(bool forceSetting)
         }
         else
         {
-            low = new EngineFilterButterworth8(FILTER_LOWPASS, 44100, (int)s_loEqFreq->get());
-            band = new EngineFilterButterworth8(FILTER_BANDPASS, 44100, (int)s_loEqFreq->get(), (int)s_hiEqFreq->get());
-            high = new EngineFilterButterworth8(FILTER_HIGHPASS, 44100, (int)s_hiEqFreq->get());
+            low = new EngineFilterButterworth8Low(44100, (int)s_loEqFreq->get());
+            band = new EngineFilterButterworth8Band(44100,
+                    (int)s_loEqFreq->get(), (int)s_hiEqFreq->get());
+            high = new EngineFilterButterworth8High(44100, (int)s_hiEqFreq->get());
         }
 
     }
@@ -166,9 +170,20 @@ void EngineFilterBlock::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const
     band->process(pIn, m_pTemp2, iBufferSize);
     high->process(pIn, m_pTemp3, iBufferSize);
 
-    SampleUtil::copy3WithGain(pOutput,
-                              m_pTemp1, fLow,
-                              m_pTemp2, fMid,
-                              m_pTemp3, fHigh, iBufferSize);
-}
+    if (fLow != old_low || fMid != old_mid || fHigh != old_high) {
+        SampleUtil::copy3WithRampingGain(pOutput,
+                                         m_pTemp1, old_low, fLow,
+                                         m_pTemp2, old_mid, fMid,
+                                         m_pTemp3, old_high, fHigh,
+                                         iBufferSize);
+    } else {
+        SampleUtil::copy3WithGain(pOutput,
+                          m_pTemp1, fLow,
+                          m_pTemp2, fMid,
+                          m_pTemp3, fHigh, iBufferSize);
+    }
 
+    old_low = fLow;
+    old_mid = fMid;
+    old_high = fHigh;
+}

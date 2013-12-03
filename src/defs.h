@@ -17,8 +17,6 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define MIXXX_PROMO_DIR "promo"
-
 #include <math.h>
 #include <iostream>
 #include <stdlib.h>
@@ -56,7 +54,7 @@ const int MAX_PATH = 260;
 #endif
 // Use POSIX name for MAX_PATH
 enum {
-	PATH_MAX = MAX_PATH
+    PATH_MAX = MAX_PATH
 };
 #endif
 

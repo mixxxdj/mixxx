@@ -18,8 +18,6 @@
 #ifndef ENGINEMASTER_H
 #define ENGINEMASTER_H
 
-#include <QMap>
-
 #include "controlobject.h"
 #include "engine/engineobject.h"
 #include "engine/enginechannel.h"
@@ -46,7 +44,8 @@ class EngineMaster : public EngineObject, public AudioSource {
   public:
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
-                 bool bEnableSidechain);
+                 bool bEnableSidechain,
+                 bool bRampingGain=true);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -77,6 +76,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     // These are really only exposed for tests to use.
     const CSAMPLE* getMasterBuffer() const;
     const CSAMPLE* getHeadphoneBuffer() const;
+    const CSAMPLE* getOutputBusBuffer(unsigned int i) const;
     const CSAMPLE* getDeckBuffer(unsigned int i) const;
     const CSAMPLE* getChannelBuffer(QString name) const;
 
@@ -84,7 +84,6 @@ class EngineMaster : public EngineObject, public AudioSource {
         return m_pSideChain;
     }
 
-  private:
     struct ChannelInfo {
         EngineChannel* m_pChannel;
         CSAMPLE* m_pBuffer;
@@ -93,11 +92,11 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     class GainCalculator {
       public:
-        virtual double getGain(ChannelInfo* pChannelInfo) = 0;
+        virtual double getGain(ChannelInfo* pChannelInfo) const = 0;
     };
     class ConstantGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) {
+        inline double getGain(ChannelInfo* pChannelInfo) const {
             Q_UNUSED(pChannelInfo);
             return m_dGain;
         }
@@ -109,12 +108,16 @@ class EngineMaster : public EngineObject, public AudioSource {
     };
     class OrientationVolumeGainCalculator : public GainCalculator {
       public:
-        inline double getGain(ChannelInfo* pChannelInfo) {
-            double channelVolume = pChannelInfo->m_pVolumeControl->get();
-            double orientationGain = EngineMaster::gainForOrientation(
+        OrientationVolumeGainCalculator()
+                : m_dVolume(1.0), m_dLeftGain(1.0), m_dCenterGain(1.0), m_dRightGain(1.0) { }
+
+        inline double getGain(ChannelInfo* pChannelInfo) const {
+            const double channelVolume = pChannelInfo->m_pVolumeControl->get();
+            const double orientationGain = EngineMaster::gainForOrientation(
                 pChannelInfo->m_pChannel->getOrientation(),
                 m_dLeftGain, m_dCenterGain, m_dRightGain);
-            return m_dVolume * channelVolume * orientationGain;
+            const double gain = m_dVolume * channelVolume * orientationGain;
+            return gain;
         }
 
         inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain) {
@@ -123,18 +126,24 @@ class EngineMaster : public EngineObject, public AudioSource {
             m_dCenterGain = centerGain;
             m_dRightGain = rightGain;
         }
+
       private:
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
 
-    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
-                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
-
+    bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
+    QList<CSAMPLE> m_channelHeadphoneGainCache;
 
-    CSAMPLE *m_pMaster, *m_pHead;
+    struct OutputBus {
+        CSAMPLE* m_pBuffer;
+        OrientationVolumeGainCalculator m_gain;
+        QList<CSAMPLE> m_gainCache;
+    } m_outputBus[3];
+    CSAMPLE* m_pMaster;
+    CSAMPLE* m_pHead;
 
-    EngineWorkerScheduler *m_pWorkerScheduler;
+    EngineWorkerScheduler* m_pWorkerScheduler;
 
     ControlObject* m_pMasterVolume;
     ControlObject* m_pHeadVolume;
@@ -143,19 +152,27 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlObject* m_pMasterAudioBufferSize;
     ControlObject* m_pMasterUnderflowCount;
     ControlPotmeter* m_pMasterRate;
-    EngineClipping *clipping, *head_clipping;
+    EngineClipping* m_pClipping;
+    EngineClipping* m_pHeadClipping;
 
 #ifdef __LADSPA__
-    EngineLADSPA *ladspa;
+    EngineLADSPA* m_pLadspa;
 #endif
-    EngineVuMeter *vumeter;
+    EngineVuMeter* m_pVumeter;
     EngineSideChain* m_pSideChain;
 
-    ControlPotmeter *crossfader, *head_mix, *m_pBalance,
-        *xFaderMode, *xFaderCurve, *xFaderCalibration, *xFaderReverse;
+    ControlPotmeter* m_pCrossfader;
+    ControlPotmeter* m_pHeadMix;
+    ControlPotmeter* m_pBalance;
+    ControlPotmeter* m_pXFaderMode;
+    ControlPotmeter* m_pXFaderCurve;
+    ControlPotmeter* m_pXFaderCalibration;
+    ControlPotmeter* m_pXFaderReverse;
 
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
+    CSAMPLE m_headphoneMasterGainOld;
+    CSAMPLE m_headphoneVolumeOld;
 };
 
 #endif

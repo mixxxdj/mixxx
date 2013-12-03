@@ -15,11 +15,12 @@ Recommends: libmp3lame0
 Suggests: pdf-viewer
 Replaces: mixxx-data
 Description: Free Digital DJ software. Start making live DJ mixes today.
-Mixxx is free DJ software that gives you everything you need to perform live DJ mixes.
-Blend songs together with automatic BPM matching and remix on-the-fly with looping
-and hot cues. Whether you're a pro DJ or just getting started, Mixxx has you covered.
+ Mixxx is free DJ software that gives you everything you need to perform live DJ
+ mixes. Blend songs together with automatic BPM matching and remix on-the-fly
+ with looping and hot cues. Whether you're a pro DJ or just getting started,
+ Mixxx has you covered.
 
-Mixxx works with ALSA, JACK, OSS and supports many popular DJ controllers.
+ Mixxx works with ALSA, JACK, OSS and supports many popular DJ controllers.
 
  Features include:
   - Parallel or split scratchable waveform displays

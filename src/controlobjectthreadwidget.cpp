@@ -1,5 +1,6 @@
 #include <QtDebug>
-#include <qapplication.h>
+#include <QApplication>
+
 #include "controlobjectthreadwidget.h"
 #include "controlevent.h"
 #include "control/control.h"

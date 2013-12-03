@@ -7,11 +7,11 @@
     <x>0</x>
     <y>0</y>
     <width>519</width>
-    <height>729</height>
+    <height>939</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form1</string>
+   <string>Interface Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
@@ -57,7 +57,7 @@
         <font/>
        </property>
        <property name="text">
-        <string>Scheme</string>
+        <string>Color Scheme</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
@@ -211,7 +211,7 @@
      <item row="9" column="0">
       <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
        <property name="text">
-        <string>Track load behaviour</string>
+        <string>Track load behavior</string>
        </property>
        <property name="buddy">
         <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
@@ -224,7 +224,7 @@
      <item row="8" column="0">
       <widget class="QLabel" name="labelCueBehaviour">
        <property name="text">
-        <string>Cue behaviour</string>
+        <string>Cue behavior</string>
        </property>
        <property name="buddy">
         <cstring>ComboBoxCueDefault</cstring>
@@ -280,6 +280,49 @@
        </property>
        <property name="alignment">
         <set>Qt::AlignJustify|Qt::AlignVCenter</set>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="0">
+      <widget class="QLabel" name="autoDjMinimumAvailableLabel">
+       <property name="text">
+        <string>Auto DJ: Minimum available tracks [%]</string>
+       </property>
+      </widget>
+     </item>
+     <item row="11" column="1" colspan="2">
+      <widget class="QSpinBox" name="autoDjMinimumAvailableSpinBox">
+       <property name="toolTip">
+        <string>This percentage of tracks are always available for selecting, regardless of when they were last played.</string>
+       </property>
+       <property name="maximum">
+        <number>100</number>
+       </property>
+       <property name="value">
+        <number>20</number>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="0">
+      <widget class="QCheckBox" name="autoDjIgnoreTimeCheckBox">
+       <property name="toolTip">
+        <string>Uncheck, to ignore all played tracks.</string>
+       </property>
+       <property name="text">
+        <string>Auto DJ: Suspend track from re-queue</string>
+       </property>
+      </widget>
+     </item>
+     <item row="12" column="1" colspan="2">
+      <widget class="QTimeEdit" name="autoDjIgnoreTimeEdit">
+       <property name="toolTip">
+        <string>Duration after which a track is eligible for selection by Auto DJ again</string>
+       </property>
+       <property name="displayFormat">
+        <string>hh:mm</string>
+       </property>
+       <property name="timeSpec">
+        <enum>Qt::LocalTime</enum>
        </property>
       </widget>
      </item>
@@ -609,7 +652,11 @@
        </widget>
       </item>
       <item row="0" column="2" colspan="4">
-       <widget class="QComboBox" name="waveformTypeComboBox"/>
+       <widget class="QComboBox" name="waveformTypeComboBox">
+        <property name="toolTip">
+         <string>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+        </property>
+       </widget>
       </item>
       <item row="2" column="2" colspan="2">
        <widget class="QSlider" name="frameRateSlider">
@@ -828,8 +875,11 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="toolTip">
+         <string extracomment="The big waveform summary shows the waveform envelope of the track near the current playback position."/>
+        </property>
         <property name="text">
-         <string>Display type</string>
+         <string>Summary type</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -840,12 +890,19 @@
        </widget>
       </item>
       <item row="1" column="2" colspan="4">
-       <widget class="QComboBox" name="waveformOverviewComboBox"/>
+       <widget class="QComboBox" name="waveformOverviewComboBox">
+        <property name="toolTip">
+         <string>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="waveformOverviewLabel">
+        <property name="toolTip">
+         <string extracomment="The smaller, zoomed-out version of the waveform shows the various markers within the track as well as the waveform envelope of the entire track."/>
+        </property>
         <property name="text">
-         <string>Preview type</string>
+         <string>Overview type</string>
         </property>
        </widget>
       </item>

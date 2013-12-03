@@ -18,11 +18,7 @@
 #ifndef CONTROLOBJECTTHREAD_H
 #define CONTROLOBJECTTHREAD_H
 
-#include <qmutex.h>
-#include <qobject.h>
-#include <qmutex.h>
-#include <qwaitcondition.h>
-#include <QQueue>
+#include <QObject>
 
 #include "configobject.h"
 
@@ -37,6 +33,12 @@ class ControlObjectThread : public QObject {
     virtual ~ControlObjectThread();
 
     void initialize(const ConfigKey& key);
+
+    bool connectValueChanged(const QObject* receiver,
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection);
+    bool connectValueChanged(
+            const char* method, Qt::ConnectionType type = Qt::AutoConnection );
+
 
     /** Called from update(); */
     void emitValueChanged();
@@ -69,7 +71,7 @@ class ControlObjectThread : public QObject {
   protected:
     ConfigKey m_key;
     // Pointer to connected control.
-    ControlDoublePrivate* m_pControl;
+    QSharedPointer<ControlDoublePrivate> m_pControl;
 };
 
 #endif

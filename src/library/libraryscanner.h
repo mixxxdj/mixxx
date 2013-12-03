@@ -21,8 +21,12 @@
 #define LIBRARYSCANNER_H
 
 #include <QThread>
-#include <QtCore>
 #include <QList>
+#include <QString>
+#include <QList>
+#include <QWidget>
+#include <QSqlDatabase>
+#include <QStringList>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -56,7 +60,7 @@ class LibraryScanner : public QThread {
   private:
     TrackCollection* m_pCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
-                             // since we run in a different thread */
+                             // since we run in a different thread
     QString m_qLibraryPath; // The path to the library on disk
     LibraryScannerDlg* m_pProgress; // The library scanning window
 

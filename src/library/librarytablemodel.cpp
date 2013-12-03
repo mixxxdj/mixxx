@@ -17,15 +17,15 @@ LibraryTableModel::LibraryTableModel(QObject* parent,
 LibraryTableModel::~LibraryTableModel() {
 }
 
-void LibraryTableModel::setTableModel(int id){
+void LibraryTableModel::setTableModel(int id) {
     Q_UNUSED(id);
     QStringList columns;
-    columns << "library."+LIBRARYTABLE_ID << "'' as preview";
+    columns << "library." + LIBRARYTABLE_ID << "'' as preview";
 
-    QString tableName = "library_view";
+    const QString tableName = "library_view";
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
-    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS "+tableName+" AS "
+    QString queryString = "CREATE TEMPORARY VIEW IF NOT EXISTS " + tableName + " AS "
             "SELECT " + columns.join(", ") +
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -49,7 +49,8 @@ void LibraryTableModel::setTableModel(int id){
 }
 
 
-int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int LibraryTableModel::addTracks(const QModelIndex& index,
+                                 const QList<QString>& locations) {
     Q_UNUSED(index);
     QList<QFileInfo> fileInfoList;
     foreach (QString fileLocation, locations) {
@@ -62,18 +63,18 @@ int LibraryTableModel::addTracks(const QModelIndex& index, QList<QString> locati
 
 bool LibraryTableModel::isColumnInternal(int column) {
     if ((column == fieldIndex(LIBRARYTABLE_ID)) ||
-        (column == fieldIndex(LIBRARYTABLE_URL)) ||
-        (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
-        (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
-        (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
-        (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
-        (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
-        (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
-        (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
-        (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
-        (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
-        (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) ||
-        (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
+            (column == fieldIndex(LIBRARYTABLE_URL)) ||
+            (column == fieldIndex(LIBRARYTABLE_CUEPOINT)) ||
+            (column == fieldIndex(LIBRARYTABLE_REPLAYGAIN)) ||
+            (column == fieldIndex(LIBRARYTABLE_WAVESUMMARYHEX)) ||
+            (column == fieldIndex(LIBRARYTABLE_SAMPLERATE)) ||
+            (column == fieldIndex(LIBRARYTABLE_MIXXXDELETED)) ||
+            (column == fieldIndex(LIBRARYTABLE_HEADERPARSED)) ||
+            (column == fieldIndex(LIBRARYTABLE_PLAYED)) ||
+            (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) ||
+            (column == fieldIndex(LIBRARYTABLE_CHANNELS)) ||
+            (column == fieldIndex(TRACKLOCATIONSTABLE_FSDELETED)) ||
+            (PlayerManager::numPreviewDecks() == 0 && column == fieldIndex("preview"))) {
         return true;
     }
 

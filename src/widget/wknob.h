@@ -18,12 +18,13 @@
 #ifndef WKNOB_H
 #define WKNOB_H
 
-#include "wabstractcontrol.h"
-#include <qpixmap.h>
-#include <qstring.h>
-//Added by qt3to4:
+#include <QPixmap>
+#include <QString>
 #include <QPaintEvent>
 #include <QMouseEvent>
+#include <QWheelEvent>
+
+#include "widget/wabstractcontrol.h"
 
 /**
   *@author Tue & Ken Haste Andersen

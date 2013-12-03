@@ -13,7 +13,9 @@
 #ifndef XMLPARSE_H
 #define XMLPARSE_H
 
-#include <qdom.h>
+#include <QDomNode>
+#include <QDomElement>
+#include <QDomDocument>
 #include <QVector>
 #include <QList>
 

@@ -20,11 +20,13 @@
 #ifndef WSTATUSLIGHT_H
 #define WSTATUSLIGHT_H
 
-#include "wwidget.h"
-#include <qpixmap.h>
-#include <qstring.h>
-//Added by qt3to4:
 #include <QPaintEvent>
+#include <QWidget>
+#include <QString>
+#include <QDomNode>
+#include <QPixmap>
+
+#include "widget/wwidget.h"
 
 /**
   *@author John Sully

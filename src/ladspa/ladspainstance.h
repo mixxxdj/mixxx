@@ -10,7 +10,9 @@
 #ifndef LADSPAINSTANCE_H
 #define LADSPAINSTANCE_H
 
-#include <QtCore>
+#include <QList>
+#include <QLinkedList>
+#include <QVector>
 
 #include <ladspa.h>
 
@@ -38,7 +40,7 @@ public:
 
 private:
     const LADSPA_Descriptor * m_pDescriptor;
-    static ControlObjectThreadMain *m_pControlObjectSampleRate;
+    static ControlObjectThread *m_pControlObjectSampleRate;
     ControlObject *m_pControlObjectEnable;
     ControlObject *m_pControlObjectDryWet;
 };

@@ -17,7 +17,10 @@
 #ifndef ENGINESIDECHAIN_H
 #define ENGINESIDECHAIN_H
 
-#include <QtCore>
+#include <QThread>
+#include <QMutex>
+#include <QWaitCondition>
+#include <QList>
 
 #include "configobject.h"
 #include "defs.h"

@@ -2,9 +2,9 @@
  * browsethread.cpp         (C) 2011 Tobias Rafreider
  */
 
+#include <QtDebug>
 #include <QStringList>
 #include <QDirIterator>
-#include <QtCore>
 
 #include "library/browse/browsethread.h"
 #include "library/browse/browsetablemodel.h"
@@ -26,8 +26,8 @@ static QMutex s_Mutex;
  * signals to BrowseModel objects. It does not
  * make sense to use this class in non-GUI threads
  */
-BrowseThread::BrowseThread(QObject *parent): QThread(parent)
-{
+BrowseThread::BrowseThread(QObject *parent)
+        : QThread(parent) {
     m_bStopThread = false;
     m_model_observer = NULL;
     //start Thread
@@ -143,6 +143,10 @@ void BrowseThread::populateModel() {
         item->setToolTip(item->text());
         row_data.insert(COLUMN_ALBUM, item);
 
+        item = new QStandardItem(tio.getAlbumArtist());
+        item->setToolTip(item->text());
+        row_data.insert(COLUMN_ALBUMARTIST, item);
+
         item = new QStandardItem(tio.getTrackNumber());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_TRACK_NUMBER, item);
@@ -158,6 +162,10 @@ void BrowseThread::populateModel() {
         item = new QStandardItem(tio.getComposer());
         item->setToolTip(item->text());
         row_data.insert(COLUMN_COMPOSER, item);
+
+        item = new QStandardItem(tio.getGrouping());
+        item->setToolTip(item->text());
+        row_data.insert(COLUMN_GROUPING, item);
 
         item = new QStandardItem(tio.getComment());
         item->setToolTip(item->text());

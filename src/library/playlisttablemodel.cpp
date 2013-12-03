@@ -56,14 +56,22 @@ void PlaylistTableModel::setTableModel(int playlistId) {
     columns[0] = LIBRARYTABLE_ID;
     columns[3] = "preview";
     setTable(playlistTableName, columns[0], columns,
-             m_pTrackCollection->getTrackSource("default"));
+            m_pTrackCollection->getTrackSource("default"));
     initHeaderData();
     setSearch("");
     setDefaultSort(fieldIndex(PLAYLISTTRACKSTABLE_POSITION), Qt::AscendingOrder);
     setSort(defaultSortColumn(), defaultSortOrder());
+
+    connect(&m_playlistDao, SIGNAL(changed(int)),
+            this, SLOT(playlistChanged(int)));
 }
 
-int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int PlaylistTableModel::addTracks(const QModelIndex& index,
+                                  const QList<QString>& locations) {
+    if (locations.size() == 0) {
+        return 0;
+    }
+
     const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumn).data().toInt();
 
@@ -82,9 +90,7 @@ int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locat
     int tracksAdded = m_playlistDao.insertTracksIntoPlaylist(
         trackIds, m_iPlaylistId, position);
 
-    if (tracksAdded > 0) {
-        select();
-    } else if (locations.size() - tracksAdded > 0) {
+    if (locations.size() - tracksAdded > 0) {
         qDebug() << "PlaylistTableModel::addTracks could not add"
                  << locations.size() - tracksAdded
                  << "to playlist" << m_iPlaylistId;
@@ -96,11 +102,7 @@ bool PlaylistTableModel::appendTrack(int trackId) {
     if (trackId < 0) {
         return false;
     }
-
-    m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
-
-    select(); //Repopulate the data model.
-    return true;
+    return m_playlistDao.appendTrackToPlaylist(trackId, m_iPlaylistId);
 }
 
 void PlaylistTableModel::removeTrack(const QModelIndex& index) {
@@ -111,13 +113,10 @@ void PlaylistTableModel::removeTrack(const QModelIndex& index) {
     const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
     int position = index.sibling(index.row(), positionColumnIndex).data().toInt();
     m_playlistDao.removeTrackFromPlaylist(m_iPlaylistId, position);
-    select(); //Repopulate the data model.
 }
 
 void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
-    bool locked = m_playlistDao.isPlaylistLocked(m_iPlaylistId);
-
-    if (locked) {
+    if (m_playlistDao.isPlaylistLocked(m_iPlaylistId)) {
         return;
     }
 
@@ -130,160 +129,66 @@ void PlaylistTableModel::removeTracks(const QModelIndexList& indices) {
     }
 
     m_playlistDao.removeTracksFromPlaylist(m_iPlaylistId,trackPositions);
-
-    // Have to re-lookup every track b/c their playlist ranks might have changed
-    select();
 }
 
 void PlaylistTableModel::moveTrack(const QModelIndex& sourceIndex,
                                    const QModelIndex& destIndex) {
-    //QSqlRecord sourceRecord = this->record(sourceIndex.row());
-    //sourceRecord.setValue("position", destIndex.row());
-    //this->removeRows(sourceIndex.row(), 1);
-
-    //this->insertRecord(destIndex.row(), sourceRecord);
-
-    //TODO: execute a real query to DELETE the sourceIndex.row() row from the PlaylistTracks table.
-    //int newPosition = destIndex.row();
-    //int oldPosition = sourceIndex.row();
-    //const int positionColumnIndex = this->fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-    //int newPosition = index.sibling(destIndex.row(), positionColumnIndex).data().toInt();
-    //int oldPosition = index.sibling(sourceIndex.row(), positionColumnIndex).data().toInt();
-
 
     int playlistPositionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
 
-    // this->record(destIndex.row()).value(PLAYLISTTRACKSTABLE_POSITION).toInt();
     int newPosition = destIndex.sibling(destIndex.row(), playlistPositionColumn).data().toInt();
-    // this->record(sourceIndex.row()).value(PLAYLISTTRACKSTABLE_POSITION).toInt();
     int oldPosition = sourceIndex.sibling(sourceIndex.row(), playlistPositionColumn).data().toInt();
 
+    if (newPosition > oldPosition) {
+        // new position moves up due to closing the gap of the old position
+        --newPosition;
+    }
 
     //qDebug() << "old pos" << oldPosition << "new pos" << newPosition;
-
-    //Invalid for the position to be 0 or less.
-    if (newPosition < 0)
+    if (newPosition < 0 || newPosition == oldPosition) {
+        // Invalid for the position to be 0 or less.
+        // or no move at all
         return;
-    else if (newPosition == 0) //Dragged out of bounds, which is past the end of the rows...
+    } else if (newPosition == 0) {
+        //Dragged out of bounds, which is past the end of the rows...
         newPosition = rowCount();
-
-    //Start the transaction
-    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
-
-    //Find out the highest position existing in the playlist so we know what
-    //position this track should have.
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-
-    //Insert the song into the PlaylistTracks table
-
-    // ALGORITHM for code below
-    // Case 1: destination < source (newPos < oldPos)
-    //    1) Set position = -1 where pos=source -- Gives that track a dummy index to keep stuff simple.
-    //    2) Decrement position where pos > source
-    //    3) increment position where pos > dest
-    //    4) Set position = dest where pos=-1 -- Move track from dummy pos to final destination.
-
-     // Case 2: destination > source (newPos > oldPos)
-     //   1) Set position=-1 where pos=source -- Give track a dummy index again.
-     //   2) Decrement position where pos > source AND pos <= dest
-     //   3) Set postion=dest where pos=-1 -- Move that track from dummy pos to final destination
-
-    QString queryString;
-    if (newPosition < oldPosition) {
-        queryString =
-            QString("UPDATE PlaylistTracks SET position=-1 "
-                    "WHERE position=%1 AND "
-                    "playlist_id=%2").arg(QString::number(oldPosition),
-                                          QString::number(m_iPlaylistId));
-        query.exec(queryString);
-        //qDebug() << queryString;
-
-        queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
-                              "WHERE position > %1 AND "
-                              "playlist_id=%2").arg(QString::number(oldPosition),
-                                                    QString::number(m_iPlaylistId));
-        query.exec(queryString);
-
-        queryString = QString("UPDATE PlaylistTracks SET position=position+1 "
-                              "WHERE position >= %1 AND " //position < %2 AND "
-                              "playlist_id=%3").arg(QString::number(newPosition),
-                                                    QString::number(m_iPlaylistId));
-        query.exec(queryString);
-
-        queryString = QString("UPDATE PlaylistTracks SET position=%1 "
-                              "WHERE position=-1 AND "
-                              "playlist_id=%2").arg(QString::number(newPosition),
-                                                    QString::number(m_iPlaylistId));
-        query.exec(queryString);
-    } else if (newPosition > oldPosition) {
-        queryString = QString("UPDATE PlaylistTracks SET position=-1 "
-                              "WHERE position = %1 AND "
-                              "playlist_id=%2").arg(QString::number(oldPosition),
-                                                    QString::number(m_iPlaylistId));
-        //qDebug() << queryString;
-        query.exec(queryString);
-
-        queryString = QString("UPDATE PlaylistTracks SET position=position-1 "
-                              "WHERE position > %1 AND position <= %2 AND "
-                              "playlist_id=%3").arg(QString::number(oldPosition),
-                                                    QString::number(newPosition),
-                                                    QString::number(m_iPlaylistId));
-        query.exec(queryString);
-
-        queryString = QString("UPDATE PlaylistTracks SET position=%1 "
-                              "WHERE position=-1 AND "
-                              "playlist_id=%2").arg(QString::number(newPosition),
-                                                    QString::number(m_iPlaylistId));
-        query.exec(queryString);
     }
 
-    transaction.commit();
-
-    //Print out any SQL error, if there was one.
-    if (query.lastError().isValid()) {
-        qDebug() << query.lastError();
-    }
-
-    select();
+    m_playlistDao.moveTrack(m_iPlaylistId, oldPosition, newPosition);
 }
 
 bool PlaylistTableModel::isLocked(){
     return m_playlistDao.isPlaylistLocked(m_iPlaylistId);
 }
 
-void PlaylistTableModel::shuffleTracks(const QModelIndex& shuffleStartIndex) {
-    int numOfTracks = rowCount();
-    int seed = QDateTime::currentDateTime().toTime_t();
-    qsrand(seed);
-    QSqlQuery query(m_pTrackCollection->getDatabase());
-    const int positionColumnIndex = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
-    int shuffleStartRow = shuffleStartIndex.row();
-
-    ScopedTransaction transaction(m_pTrackCollection->getDatabase());
-
-    // This is a simple Fisher-Yates shuffling algorithm
-    for (int i=numOfTracks-1; i >= shuffleStartRow; i--) {
-        int oldPosition = index(i, positionColumnIndex).data().toInt();
-        int random = int(qrand() / (RAND_MAX + 1.0) * (numOfTracks - shuffleStartRow) + shuffleStartRow + 1);
-        qDebug() << "Swapping tracks " << oldPosition << " and " << random;
-        QString swapQuery = "UPDATE PlaylistTracks SET position=%1 WHERE position=%2 AND playlist_id=%3";
-        query.exec(swapQuery.arg(QString::number(-1),
-                                 QString::number(oldPosition),
-                                 QString::number(m_iPlaylistId)));
-        query.exec(swapQuery.arg(QString::number(oldPosition),
-                                 QString::number(random),
-                                 QString::number(m_iPlaylistId)));
-        query.exec(swapQuery.arg(QString::number(random),
-                                 QString::number(-1),
-                                 QString::number(m_iPlaylistId)));
-
-        if (query.lastError().isValid())
-            qDebug() << query.lastError();
+void PlaylistTableModel::shuffleTracks(const QModelIndexList& shuffle, const QModelIndex& exclude) {
+    QList<int> positions;
+    const int positionColumn = fieldIndex(PLAYLISTTRACKSTABLE_POSITION);
+    int excludePos = -1;
+    if (exclude.row() > -1) {
+        // this is uses to exclude the already loaded track at pos #1 if used from running Auto-DJ
+        excludePos = exclude.sibling(exclude.row(), positionColumn).data().toInt();
+    }
+    if (shuffle.count() > 1) {
+        // if there is more then one track selected, shuffle selection only
+        foreach(QModelIndex shuffleIndex, shuffle) {
+            int oldPosition = shuffleIndex.sibling(shuffleIndex.row(), positionColumn).data().toInt();
+            if (oldPosition != excludePos) {
+                positions.append(oldPosition);
+            }
+        }
+    } else {
+        // if there is only on track selected, shuffle all tracks
+        int numOfTracks = rowCount();
+        for (int i = 0; i < numOfTracks; i++) {
+            int oldPosition = index(i, positionColumn).data().toInt();
+            if (oldPosition != excludePos) {
+                positions.append(oldPosition);
+            }
+        }
     }
 
-    transaction.commit();
-    // TODO(XXX) set dirty because someday select() will only do work on dirty.
-    select();
+    m_playlistDao.shuffleTracks(m_iPlaylistId, positions);
 }
 
 bool PlaylistTableModel::isColumnInternal(int column) {
@@ -331,4 +236,10 @@ TrackModel::CapabilitiesFlags PlaylistTableModel::getCapabilities() const {
     }
 
     return caps;
+}
+
+void PlaylistTableModel::playlistChanged(int playlistId) {
+    if (playlistId == m_iPlaylistId) {
+        select(); // Repopulate the data model.
+    }
 }

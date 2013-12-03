@@ -52,16 +52,18 @@ QByteArray Waveform::toByteArray() const {
     io::Waveform::Signal* high = filtered->mutable_high();
 
     // TODO(vrince) set max/min for each signal
+    int numChannels = getNumChannels();
     all->set_units(io::Waveform::RMS);
-    all->set_channels(m_numChannels);
+    all->set_channels(numChannels);
     low->set_units(io::Waveform::RMS);
-    low->set_channels(m_numChannels);
+    low->set_channels(numChannels);
     mid->set_units(io::Waveform::RMS);
-    mid->set_channels(m_numChannels);
+    mid->set_channels(numChannels);
     high->set_units(io::Waveform::RMS);
-    high->set_channels(m_numChannels);
+    high->set_channels(numChannels);
 
-    for (int i = 0; i < m_dataSize; ++i) {
+    int dataSize = getDataSize();
+    for (int i = 0; i < dataSize; ++i) {
         const WaveformData& datum = m_data.at(i);
         all->add_value(datum.filtered.all);
         low->add_value(datum.filtered.low);
@@ -70,7 +72,7 @@ QByteArray Waveform::toByteArray() const {
     }
 
     qDebug() << "Writing waveform from byte array:"
-             << "dataSize" << m_dataSize
+             << "dataSize" << dataSize
              << "allSignalSize" << all->value_size()
              << "visualSampleRate" << waveform.visual_sample_rate()
              << "audioVisualRatio" << waveform.audio_visual_ratio();
@@ -116,7 +118,8 @@ void Waveform::readByteArray(const QByteArray data) {
 
     resize(all.value_size());
 
-    if (all.value_size() != m_dataSize) {
+    int dataSize = getDataSize();
+    if (all.value_size() != dataSize) {
         qDebug() << "ERROR: Couldn't resize Waveform to" << all.value_size()
                  << "while reading.";
         resize(0);
@@ -125,9 +128,9 @@ void Waveform::readByteArray(const QByteArray data) {
 
     m_visualSampleRate = waveform.visual_sample_rate();
     m_audioVisualRatio = waveform.audio_visual_ratio();
-    if (low.value_size() != m_dataSize ||
-        mid.value_size() != m_dataSize ||
-        high.value_size() != m_dataSize) {
+    if (low.value_size() != dataSize ||
+        mid.value_size() != dataSize ||
+        high.value_size() != dataSize) {
         qDebug() << "WARNING: Filtered data size does not match all-signal size.";
     }
 
@@ -136,7 +139,7 @@ void Waveform::readByteArray(const QByteArray data) {
     bool low_valid = low.units() == io::Waveform::RMS;
     bool mid_valid = mid.units() == io::Waveform::RMS;
     bool high_valid = high.units() == io::Waveform::RMS;
-    for (int i = 0; i < m_dataSize; ++i) {
+    for (int i = 0; i < dataSize; ++i) {
         m_data[i].filtered.all = static_cast<unsigned char>(all.value(i));
         bool use_low = low_valid && i < low.value_size();
         bool use_mid = mid_valid && i < mid.value_size();
@@ -145,7 +148,7 @@ void Waveform::readByteArray(const QByteArray data) {
         m_data[i].filtered.mid = use_mid ? static_cast<unsigned char>(mid.value(i)) : 0;
         m_data[i].filtered.high = use_high ? static_cast<unsigned char>(high.value(i)) : 0;
     }
-    m_completion = m_dataSize;
+    m_completion = dataSize;
     m_bDirty = false;
 }
 
@@ -234,9 +237,9 @@ int Waveform::computeTextureSize(int size) {
 
 void Waveform::dump() const {
     qDebug() << "Waveform" << this
-             << "size("+QString::number(m_dataSize)+")"
+             << "size("+QString::number(getDataSize())+")"
              << "textureStride("+QString::number(m_textureStride)+")"
-             << "completion("+QString::number(m_completion)+")"
+             << "completion("+QString::number(getCompletion())+")"
              << "visualSampleRate("+QString::number(m_visualSampleRate)+")"
              << "audioVisualRatio("+QString::number(m_audioVisualRatio)+")";
 }

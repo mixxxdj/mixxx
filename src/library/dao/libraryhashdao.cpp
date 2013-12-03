@@ -37,8 +37,7 @@ int LibraryHashDAO::getDirectoryHash(const QString& dirPath) {
     if (query.next()) {
         hash = query.value(query.record().indexOf("hash")).toInt();
         //qDebug() << "prev hash exists" << hash << dirPath;
-    }
-    else {
+    } else {
         //qDebug() << "prev hash does not exist" << dirPath;
     }
 
@@ -128,8 +127,7 @@ void LibraryHashDAO::markAsVerified(const QString& dirPath) {
     }
 }
 
-void LibraryHashDAO::invalidateAllDirectories()
-{
+void LibraryHashDAO::invalidateAllDirectories() {
     //qDebug() << "LibraryHashDAO::invalidateAllDirectories"
     //<< QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
@@ -141,8 +139,7 @@ void LibraryHashDAO::invalidateAllDirectories()
     }
 }
 
-void LibraryHashDAO::markUnverifiedDirectoriesAsDeleted()
-{
+void LibraryHashDAO::markUnverifiedDirectoriesAsDeleted() {
     //qDebug() << "LibraryHashDAO::markUnverifiedDirectoriesAsDeleted"
     //<< QThread::currentThread() << m_database.connectionName();
     QSqlQuery query(m_database);
@@ -155,8 +152,7 @@ void LibraryHashDAO::markUnverifiedDirectoriesAsDeleted()
     }
 }
 
-void LibraryHashDAO::removeDeletedDirectoryHashes()
-{
+void LibraryHashDAO::removeDeletedDirectoryHashes() {
     QSqlQuery query(m_database);
     query.prepare("DELETE FROM LibraryHashes WHERE "
                "directory_deleted=:directory_deleted");

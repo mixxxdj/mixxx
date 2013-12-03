@@ -18,7 +18,7 @@ class CueDAO : public DAO {
   public:
     CueDAO(QSqlDatabase& database);
     virtual ~CueDAO();
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    void setDatabase(QSqlDatabase& database) { m_database = database; }
 
     void initialize();
     int cueCount();

@@ -2,7 +2,7 @@
 #include <QSqlResult>
 #include <QSqlError>
 #include <QTime>
-#include <QDebug>
+#include <QtDebug>
 
 #include "waveform/waveform.h"
 #include "library/dao/analysisdao.h"
@@ -76,18 +76,21 @@ QList<AnalysisDao::AnalysisInfo> AnalysisDao::loadAnalysesFromQuery(const int tr
     }
 
     int bytes = 0;
+    QSqlRecord queryRecord = query->record();
+    const int idColumn = queryRecord.indexOf("id");
+    const int typeColumn = queryRecord.indexOf("type");
+    const int descriptionColumn = queryRecord.indexOf("description");
+    const int versionColumn = queryRecord.indexOf("version");
+    const int dataChecksumColumn = queryRecord.indexOf("data_checksum");
+
     while (query->next()) {
         AnalysisDao::AnalysisInfo info;
-        info.analysisId = query->value(query->record().indexOf("id")).toInt();
+        info.analysisId = query->value(idColumn).toInt();
         info.trackId = trackId;
-        info.type = static_cast<AnalysisType>(
-            query->value(query->record().indexOf("type")).toInt());
-        info.description = query->value(
-            query->record().indexOf("description")).toString();
-        info.version = query->value(
-            query->record().indexOf("version")).toString();
-        int checksum = query->value(
-            query->record().indexOf("data_checksum")).toInt();
+        info.type = static_cast<AnalysisType>(query->value(typeColumn).toInt());
+        info.description = query->value(descriptionColumn).toString();
+        info.version = query->value(versionColumn).toString();
+        int checksum = query->value(dataChecksumColumn).toInt();
         QString dataPath = getAnalysisStoragePath().absoluteFilePath(
             QString::number(info.analysisId));
         QByteArray compressedData = loadDataFromFile(dataPath);
@@ -212,8 +215,9 @@ void AnalysisDao::deleteAnalysises(const QList<int>& ids) {
     if (!query.exec()) {
         LOG_FAILED_QUERY(query) << "couldn't delete analysis";
     }
+    const int idColumn = query.record().indexOf("id");
     while(query.next()){
-        int id = query.value(query.record().indexOf("id")).toInt();
+        int id = query.value(idColumn).toInt();
         QString dataPath = getAnalysisStoragePath().absoluteFilePath(
                             QString::number(id));
         qDebug() << dataPath;
@@ -241,9 +245,10 @@ bool AnalysisDao::deleteAnalysesForTrack(const int trackId) {
     }
 
     QList<int> analysesToDelete;
+    const int idColumn = query.record().indexOf("id");
     while (query.next()) {
         analysesToDelete.append(
-            query.value(query.record().indexOf("id")).toInt());
+            query.value(idColumn).toInt());
     }
     foreach (int analysisId, analysesToDelete) {
         deleteAnalysis(analysisId);

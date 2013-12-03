@@ -1,5 +1,3 @@
-#include <QtCore>
-
 #include "engine/enginebufferscaledummy.h"
 
 #include "engine/enginebufferscale.h"

@@ -15,8 +15,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-
 #include "enginebufferscalest.h"
 
 // Fixes redefinition warnings from SoundTouch.

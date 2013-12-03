@@ -3,7 +3,6 @@
 // Author: asantoni, rryan
 
 #include <QtDebug>
-#include <QObject>
 
 #include "controlobject.h"
 #include "configobject.h"
@@ -224,11 +223,10 @@ double LoopingControl::process(const double dRate,
     bool reverse = dRate < 0;
 
     double retval = kNoTrigger;
-    if(m_bLoopingEnabled &&
-       m_iLoopStartSample != kNoTrigger &&
-       m_iLoopEndSample != kNoTrigger) {
+    if (m_bLoopingEnabled && m_iLoopStartSample != kNoTrigger &&
+            m_iLoopEndSample != kNoTrigger) {
         bool outsideLoop = currentSample >= m_iLoopEndSample ||
-                currentSample <= m_iLoopStartSample;
+                           currentSample <= m_iLoopStartSample;
         if (outsideLoop) {
             retval = reverse ? m_iLoopEndSample : m_iLoopStartSample;
         }
@@ -246,7 +244,7 @@ double LoopingControl::nextTrigger(const double dRate,
     Q_UNUSED(iBufferSize);
     bool bReverse = dRate < 0;
 
-    if(m_bLoopingEnabled) {
+    if (m_bLoopingEnabled) {
         if (bReverse)
             return m_iLoopStartSample;
         else
@@ -264,7 +262,7 @@ double LoopingControl::getTrigger(const double dRate,
     Q_UNUSED(iBufferSize);
     bool bReverse = dRate < 0;
 
-    if(m_bLoopingEnabled) {
+    if (m_bLoopingEnabled) {
         if (bReverse)
             return m_iLoopEndSample;
         else
@@ -638,10 +636,37 @@ void LoopingControl::slotBeatLoop(double beats, bool keepStartPoint) {
             // loop_in is set to the previous beat if quantize is on.  The
             // closest beat might be ahead of play position which would cause a seek.
             // TODO: If in reverse, should probably choose nextBeat.
+            double cur_pos = getCurrentSample();
             double prevBeat =
-                    floorf(m_pBeats->findPrevBeat(getCurrentSample()));
-            loop_in = (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) ?
-                    prevBeat : floorf(getCurrentSample());
+                    floorf(m_pBeats->findPrevBeat(cur_pos));
+
+            if (m_pQuantizeEnabled->get() > 0.0 && prevBeat != -1) {
+                if (beats >= 1.0) {
+                    loop_in = prevBeat;
+                } else {
+                    // In case of beat length less then 1 beat:
+                    // (| - beats, ^ - current track's position):
+                    //
+                    // ...|...................^........|...
+                    //
+                    // If we press 1/2 beatloop we want loop from 50% to 100%,
+                    // If I press 1/4 beatloop, we want loop from 50% to 75% etc
+                    double nextBeat =
+                            floorf(m_pBeats->findNextBeat(cur_pos));
+                    double beat_len = nextBeat - prevBeat;
+                    double loops_per_beat = 1.0 / beats;
+                    double beat_pos = cur_pos - prevBeat;
+                    int beat_frac =
+                            static_cast<int>(floor((beat_pos / beat_len) *
+                                                   loops_per_beat));
+                    loop_in = prevBeat + beat_len / loops_per_beat * beat_frac;
+                }
+
+            } else {
+                loop_in = floorf(cur_pos);
+            }
+
+
             if (!even(loop_in)) {
                 loop_in--;
             }

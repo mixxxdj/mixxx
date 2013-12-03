@@ -16,13 +16,17 @@
 #include "trackinfoobject.h"
 #include "util.h"
 
+#define LIBRARY_TABLE "library"
+
 const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
 const QString LIBRARYTABLE_TITLE = "title";
 const QString LIBRARYTABLE_ALBUM = "album";
+const QString LIBRARYTABLE_ALBUMARTIST = "album_artist";
 const QString LIBRARYTABLE_YEAR = "year";
 const QString LIBRARYTABLE_GENRE = "genre";
 const QString LIBRARYTABLE_COMPOSER = "composer";
+const QString LIBRARYTABLE_GROUPING = "grouping";
 const QString LIBRARYTABLE_TRACKNUMBER = "tracknumber";
 const QString LIBRARYTABLE_FILETYPE = "filetype";
 const QString LIBRARYTABLE_LOCATION = "location";
@@ -72,7 +76,7 @@ class TrackDAO : public QObject, public virtual DAO {
     virtual ~TrackDAO();
 
     void finish();
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    void setDatabase(QSqlDatabase& database) { m_database = database; }
 
     void initialize();
     int getTrackId(const QString& absoluteFilePath);
@@ -161,6 +165,9 @@ class TrackDAO : public QObject, public virtual DAO {
     QSqlQuery* m_pQueryLibraryUpdate;
     QSqlQuery* m_pQueryLibrarySelect;
     ScopedTransaction* m_pTransaction;
+    int m_trackLocationIdColumn;
+    int m_queryLibraryIdColumn;
+    int m_queryLibraryMixxxDeletedColumn;
 
     QSet<int> m_tracksAddedSet;
 

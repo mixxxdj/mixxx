@@ -20,6 +20,8 @@ class EngineChannelMock : public EngineChannel {
     }
 
     void applyVolume(CSAMPLE* pBuff, const int iBufferSize) {
+        Q_UNUSED(pBuff);
+        Q_UNUSED(iBufferSize);
     }
 
     MOCK_METHOD0(isActive, bool());
@@ -32,7 +34,7 @@ class EngineMasterTest : public testing::Test {
   protected:
     virtual void SetUp() {
         m_pConfig = new ConfigObject<ConfigValue>("");
-        m_pMaster = new EngineMaster(m_pConfig, "[Master]", false);
+        m_pMaster = new EngineMaster(m_pConfig, "[Master]", false, false);
     }
 
     virtual void TearDown() {

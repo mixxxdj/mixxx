@@ -1,9 +1,7 @@
-#include <QtCore>
-#include <QtGui>
 #include <QtSql>
 #include <QtDebug>
 
-#include "trackcollection.h"
+#include "library/trackcollection.h"
 
 #include "defs.h"
 #include "library/librarytablemodel.h"
@@ -72,7 +70,7 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 20;
+    int requiredSchemaVersion = 22;
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
