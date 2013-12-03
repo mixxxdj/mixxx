@@ -8,6 +8,7 @@
 
 #include "engine/enginebuffer.h"
 #include "engine/bpmcontrol.h"
+#include "visualplayposition.h"
 #include "engine/enginechannel.h"
 #include "engine/enginemaster.h"
 #include "controlobjectslave.h"
@@ -266,10 +267,8 @@ bool BpmControl::syncPhase(EngineBuffer* pOtherEngineBuffer) {
 
     // Get the current position of both decks
     double dThisPosition = getCurrentSample();
-    double dOtherLength = ControlObject::get(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "track_samples"));
-    double dOtherEnginePlayPos = ControlObject::get(
-        ConfigKey(pOtherEngineBuffer->getGroup(), "visual_playposition"));
+    double dOtherLength = pOtherEngineBuffer->getTrackSamples();
+    double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
     double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
     double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
