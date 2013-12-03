@@ -3,9 +3,6 @@
 #include "effects/effectchainmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 
-// TODO(rryan) REMOVE
-#include "effects/native/flangereffect.h"
-
 EffectsManager::EffectsManager(QObject* pParent)
         : QObject(pParent),
           m_pEffectChainManager(new EffectChainManager(this)),
@@ -89,27 +86,24 @@ void EffectsManager::setupDefaults() {
     pRack->addEffectChainSlot();
 
     QSet<QString> effects = getAvailableEffects();
-    FlangerEffect flanger;
-    QString flangerId = flanger.getId();
 
-    if (effects.contains(flangerId)) {
-        EffectChainPointer pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.flanger"));
-        pChain->setName(tr("Flanger"));
-        pChain->setParameter(0.0f);
-        EffectPointer flanger = instantiateEffect(flangerId);
-        pChain->addEffect(flanger);
-        m_pEffectChainManager->addEffectChain(pChain);
+    EffectChainPointer pChain = EffectChainPointer(new EffectChain(
+        this, "org.mixxx.effectchain.flanger"));
+    pChain->setName(tr("Flanger"));
+    pChain->setParameter(0.0f);
+    EffectPointer flanger = instantiateEffect(
+        "org.mixxx.effects.flanger");
+    pChain->addEffect(flanger);
+    m_pEffectChainManager->addEffectChain(pChain);
 
 
-        pChain = EffectChainPointer(new EffectChain(
-            this, "org.mixxx.effectchain.flanger2"));
-        pChain->setName(tr("Flanger2"));
-        pChain->setParameter(0.0f);
-        flanger = instantiateEffect(flangerId);
-        pChain->addEffect(flanger);
-        m_pEffectChainManager->addEffectChain(pChain);
-    }
+    pChain = EffectChainPointer(new EffectChain(
+        this, "org.mixxx.effectchain.bitcrusher"));
+    pChain->setName(tr("BitCrusher"));
+    pChain->setParameter(0.0f);
+    flanger = instantiateEffect("org.mixxx.effects.bitcrusher");
+    pChain->addEffect(flanger);
+    m_pEffectChainManager->addEffectChain(pChain);
 }
 
 bool EffectsManager::writeRequest(EffectsRequest* request) {

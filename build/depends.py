@@ -473,6 +473,7 @@ class MixxxCore(Feature):
                    "effects/effectsbackend.cpp",
 
                    "effects/native/nativebackend.cpp",
+                   "effects/native/bitcrushereffect.cpp",
                    "effects/native/flangereffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
