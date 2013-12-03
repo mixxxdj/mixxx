@@ -26,23 +26,17 @@ using ::testing::_;
 
 class MockScaler : public EngineBufferScale {
   public:
-	MockScaler() :
-			EngineBufferScale(),
-			m_dSamplesRead(0) {
+	MockScaler() : EngineBufferScale() {
 		SampleUtil::applyGain(m_buffer, 0, MAX_BUFFER_LEN);
-
 	}
     void setBaseRate(double dBaseRate) { m_dBaseRate = dBaseRate; }
     double setTempo(double dTempo) { return m_dTempo = dTempo; }
-    double getSamplesRead() { return m_dSamplesRead; }
     void clear() { }
     CSAMPLE *getScaled(unsigned long buf_size) {
-        m_dSamplesRead += buf_size;
+        m_samplesRead += buf_size;
         return m_buffer;
     }
 
-  private:
-    double m_dSamplesRead;
 };
 
 
@@ -71,9 +65,9 @@ class MockedEngineBackendTest : public MixxxTest {
         m_pMockScaler1 = new MockScaler();
         m_pMockScaler2 = new MockScaler();
         m_pMockScaler3 = new MockScaler();
-        m_pChannel1->getEngineBuffer()->setScaler(m_pMockScaler1);
-        m_pChannel2->getEngineBuffer()->setScaler(m_pMockScaler2);
-        m_pChannel3->getEngineBuffer()->setScaler(m_pMockScaler3);
+        m_pChannel1->getEngineBuffer()->setScalerForTest(m_pMockScaler1);
+        m_pChannel2->getEngineBuffer()->setScalerForTest(m_pMockScaler2);
+        m_pChannel3->getEngineBuffer()->setScalerForTest(m_pMockScaler3);
         m_pChannel1->getEngineBuffer()->loadFakeTrack();
         m_pChannel2->getEngineBuffer()->loadFakeTrack();
         m_pChannel3->getEngineBuffer()->loadFakeTrack();

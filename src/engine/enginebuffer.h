@@ -124,7 +124,7 @@ public:
     //void setReader(CachingReader* pReader);
 
     // For dependency injection of scalers.
-    void setScaler(EngineBufferScale* pScale);
+    void setScalerForTest(EngineBufferScale* pScale);
 
     // For dependency injection of fake tracks.
     void loadFakeTrack();

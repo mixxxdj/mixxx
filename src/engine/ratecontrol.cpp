@@ -775,7 +775,7 @@ void RateControl::notifySeek(double playPos) {
 
 void RateControl::checkTrackPosition(double fractionalPlaypos) {
     // If we're close to the end, and master, disable master so we don't stop the party.
-    if (m_pSyncMode->get() == SYNC_MASTER and fractionalPlaypos > TRACK_POSITION_MASTER_HANDOFF) {
+    if (m_pSyncMode->get() == SYNC_MASTER && fractionalPlaypos > TRACK_POSITION_MASTER_HANDOFF) {
         slotSyncModeChanged(SYNC_SLAVE);
     }
 }

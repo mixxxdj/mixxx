@@ -15,7 +15,7 @@ const int RATE_TEMP_STEP = 500;
 const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;
 const int RATE_SENSITIVITY_MIN = 100;
 const int RATE_SENSITIVITY_MAX = 2500;
-const int TRACK_POSITION_MASTER_HANDOFF = 0.98;
+const double TRACK_POSITION_MASTER_HANDOFF = 0.98;
 
 class BpmControl;
 class Rotary;

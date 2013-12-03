@@ -712,11 +712,16 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // Copy scaled audio into pOutput
             memcpy(pOutput, output, sizeof(pOutput[0]) * iBufferSize);
 
-            // Adjust filepos_play by the amount we processed. TODO(XXX) what
-            // happens if samplesRead is a fraction?
-            m_filepos_play =
-                    m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
-                        static_cast<int>(m_filepos_play), samplesRead);
+            if (m_bScalerOverride) {
+                // If testing, we don't have a real log so we fake the position.
+                m_filepos_play += samplesRead;
+            } else {
+                // Adjust filepos_play by the amount we processed. TODO(XXX) what
+                // happens if samplesRead is a fraction?
+                m_filepos_play =
+                        m_pReadAheadManager->getEffectiveVirtualPlaypositionFromLog(
+                                static_cast<int>(m_filepos_play), samplesRead);
+            }
         }
 
         //Crossfade if we just did a seek
@@ -972,7 +977,7 @@ void EngineBuffer::setReader(CachingReader* pReader) {
 }
 */
 
-void EngineBuffer::setScaler(EngineBufferScale* pScale) {
+void EngineBuffer::setScalerForTest(EngineBufferScale* pScale) {
 	m_pScale = pScale;
 	// This bool is permanently set and can't be undone.
 	m_bScalerOverride = true;
