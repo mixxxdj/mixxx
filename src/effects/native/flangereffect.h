@@ -29,10 +29,10 @@ struct FlangerState {
     unsigned int time;
 };
 
-class FlangerEffectProcessor : public EffectProcessor {
+class FlangerProcessor : public EffectProcessor {
   public:
-    FlangerEffectProcessor(const EffectManifest& manifest);
-    virtual ~FlangerEffectProcessor();
+    FlangerProcessor(const EffectManifest& manifest);
+    virtual ~FlangerProcessor();
 
     // See effectprocessor.h
     void initialize(EngineEffect* pEffect);
@@ -44,7 +44,7 @@ class FlangerEffectProcessor : public EffectProcessor {
 
   private:
     QString debugString() const {
-        return "FlangerEffectProcessor";
+        return "FlangerProcessor";
     }
     FlangerState* getStateForGroup(const QString& group);
 
@@ -54,7 +54,7 @@ class FlangerEffectProcessor : public EffectProcessor {
 
     QMap<QString, FlangerState*> m_flangerStates;
 
-    DISALLOW_COPY_AND_ASSIGN(FlangerEffectProcessor);
+    DISALLOW_COPY_AND_ASSIGN(FlangerProcessor);
 };
 
 #endif /* FLANGEREFFECT_H */

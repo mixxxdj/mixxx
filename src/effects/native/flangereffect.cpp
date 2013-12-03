@@ -25,9 +25,9 @@ EffectManifest FlangerEffect::getManifest() const {
     depth->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefault(0.0f);
-    depth->setMinimum(0.0f);
-    depth->setMaximum(1.0f);
+    depth->setDefault(0.0);
+    depth->setMinimum(0.0);
+    depth->setMaximum(1.0);
 
     EffectManifestParameter* delay = manifest.addParameter();
     delay->setId("delay");
@@ -37,9 +37,9 @@ EffectManifest FlangerEffect::getManifest() const {
     delay->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     delay->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     delay->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    delay->setDefault(50.0f);
-    delay->setMinimum(50.0f);
-    delay->setMaximum(10000.0f);
+    delay->setDefault(50.0);
+    delay->setMinimum(50.0);
+    delay->setMaximum(10000.0);
 
     EffectManifestParameter* period = manifest.addParameter();
     period->setId("period");
@@ -49,20 +49,20 @@ EffectManifest FlangerEffect::getManifest() const {
     period->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     period->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     period->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    period->setDefault(50000.0f);
-    period->setMinimum(50000.0f);
-    period->setMaximum(2000000.0f);
+    period->setDefault(50000.0);
+    period->setMinimum(50000.0);
+    period->setMaximum(2000000.0);
 
     return manifest;
 }
 
-FlangerEffectProcessor::FlangerEffectProcessor(const EffectManifest& manifest)
+FlangerProcessor::FlangerProcessor(const EffectManifest& manifest)
         : m_pPeriodParameter(NULL),
           m_pDepthParameter(NULL),
           m_pDelayParameter(NULL) {
 }
 
-FlangerEffectProcessor::~FlangerEffectProcessor() {
+FlangerProcessor::~FlangerProcessor() {
     qDebug() << debugString() << "destroyed";
 
     QMutableMapIterator<QString, FlangerState*> it(m_flangerStates);
@@ -75,15 +75,15 @@ FlangerEffectProcessor::~FlangerEffectProcessor() {
     }
 }
 
-void FlangerEffectProcessor::initialize(EngineEffect* pEffect) {
+void FlangerProcessor::initialize(EngineEffect* pEffect) {
     m_pPeriodParameter = pEffect->getParameterById("period");
     m_pDepthParameter = pEffect->getParameterById("depth");
     m_pDelayParameter = pEffect->getParameterById("delay");
 }
 
-void FlangerEffectProcessor::process(const QString& group,
-                                     const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                     const unsigned int numSamples) {
+void FlangerProcessor::process(const QString& group,
+                               const CSAMPLE* pInput, CSAMPLE* pOutput,
+                               const unsigned int numSamples) {
     FlangerState* pState = getStateForGroup(group);
     if (!pState) {
         qDebug() << debugString() << "WARNING: Couldn't get flanger state for group" << group;
@@ -124,7 +124,7 @@ void FlangerEffectProcessor::process(const QString& group,
     }
 }
 
-FlangerState* FlangerEffectProcessor::getStateForGroup(const QString& group) {
+FlangerState* FlangerProcessor::getStateForGroup(const QString& group) {
     FlangerState* pState = m_flangerStates.value(group, NULL);
     if (pState == NULL) {
         pState = new FlangerState();
