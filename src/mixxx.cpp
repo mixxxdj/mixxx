@@ -415,6 +415,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pControllerManager = new ControllerManager(m_pConfig);
 
     WaveformWidgetFactory::create();
+    WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
@@ -1483,7 +1484,6 @@ void MixxxApp::rebootMixxxView() {
 
     m_pView->hide();
 
-    WaveformWidgetFactory::instance()->stop();
     WaveformWidgetFactory::instance()->destroyWidgets();
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1525,14 +1525,12 @@ void MixxxApp::rebootMixxxView() {
         //qDebug() << "view size" << m_pView->size() << size();
     }
 
-    if( wasFullScreen) {
+    if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
         move(initPosition.x() + (initSize.width() - m_pView->width()) / 2,
              initPosition.y() + (initSize.height() - m_pView->height()) / 2);
     }
-
-    WaveformWidgetFactory::instance()->start();
 
 #ifdef __APPLE__
     // Original the following line fixes issue on OSX where menu bar went away
