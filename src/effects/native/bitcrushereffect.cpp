@@ -15,35 +15,35 @@ EffectManifest BitCrusherProcessor::getManifest() {
     manifest.setDescription("TODO");
 
     EffectManifestParameter* depth = manifest.addParameter();
-    depth->setId("depth");
-    depth->setName(QObject::tr("Depth"));
+    depth->setId("bit_depth");
+    depth->setName(QObject::tr("Bit Depth"));
     depth->setDescription("TODO");
     depth->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     depth->setValueHint(EffectManifestParameter::EffectManifestParameter::VALUE_INTEGRAL);
     depth->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     depth->setUnitsHint(EffectManifestParameter::UNITS_UNKNOWN);
-    depth->setDefault(0);
-    depth->setMinimum(0);
+    depth->setDefault(16);
+    depth->setMinimum(1);
     depth->setMaximum(16);
 
     EffectManifestParameter* frequency = manifest.addParameter();
-    frequency->setId("frequency");
-    frequency->setName(QObject::tr("Frequency"));
+    frequency->setId("downsample");
+    frequency->setName(QObject::tr("Downsampling"));
     frequency->setDescription("TODO");
     frequency->setControlHint(EffectManifestParameter::CONTROL_KNOB_LINEAR);
     frequency->setValueHint(EffectManifestParameter::VALUE_FLOAT);
     frequency->setSemanticHint(EffectManifestParameter::SEMANTIC_UNKNOWN);
     frequency->setUnitsHint(EffectManifestParameter::UNITS_SAMPLERATE);
-    frequency->setDefault(1.0);
+    frequency->setDefault(0.0);
     frequency->setMinimum(0.0);
-    frequency->setMaximum(1.0);
+    frequency->setMaximum(0.9999);
 
     return manifest;
 }
 
 BitCrusherProcessor::BitCrusherProcessor(const EffectManifest& manifest)
-        : m_pDepthParameter(NULL),
-          m_pFrequencyParameter(NULL) {
+        : m_pBitDepthParameter(NULL),
+          m_pDownsampleParameter(NULL) {
 }
 
 BitCrusherProcessor::~BitCrusherProcessor() {
@@ -51,8 +51,8 @@ BitCrusherProcessor::~BitCrusherProcessor() {
 }
 
 void BitCrusherProcessor::initialize(EngineEffect* pEffect) {
-    m_pDepthParameter = pEffect->getParameterById("depth");
-    m_pFrequencyParameter = pEffect->getParameterById("frequency");
+    m_pBitDepthParameter = pEffect->getParameterById("bit_depth");
+    m_pDownsampleParameter = pEffect->getParameterById("downsample");
 }
 
 void BitCrusherProcessor::process(const QString& group,
@@ -60,23 +60,27 @@ void BitCrusherProcessor::process(const QString& group,
                                   const unsigned int numSamples) {
     ChannelState& group_state = m_groupState[group];
 
-    CSAMPLE frequency = m_pFrequencyParameter ?
-            m_pFrequencyParameter->value().toDouble() : 1.0;
+    const CSAMPLE downsample = m_pDownsampleParameter ?
+            m_pDownsampleParameter->value().toDouble() : 0.0;
+    const CSAMPLE accumulate = 1.0 - downsample;
 
-    int depth = m_pDepthParameter ? m_pDepthParameter->value().toInt() : 0;
-    const CSAMPLE step = 1.0 / pow(2.0, static_cast<double>(depth));
+    int bit_depth = m_pBitDepthParameter ?
+            m_pBitDepthParameter->value().toInt() : 1;
+    bit_depth = math_max(bit_depth, 1);
+
+    const CSAMPLE step = static_cast<CSAMPLE>(SHRT_MAX) / (1 << (bit_depth-1));
 
     const int kChannels = 2;
-    const int numFrames = numSamples / kChannels;
+    for (int i = 0; i < numSamples; i += kChannels) {
+        group_state.accumulator += accumulate;
 
-    for (int i = 0; i < numFrames; i += kChannels) {
-        group_state.phasor += frequency;
-
-        if (group_state.phasor >= 1.0) {
-            group_state.phasor -= 1.0;
-
-            pOutput[i] = step * floorf(pInput[i]/step + 0.5);
-            pOutput[i+1] = step * floorf(pInput[i+1]/step + 0.5);
+        if (group_state.accumulator >= 1.0) {
+            group_state.accumulator -= 1.0;
+            group_state.hold_l = step * floorf(pInput[i] / step + 0.5);
+            group_state.hold_r = step * floorf(pInput[i+1] / step + 0.5);
         }
+
+        pOutput[i] = group_state.hold_l;
+        pOutput[i+1] = group_state.hold_r;
     }
 }

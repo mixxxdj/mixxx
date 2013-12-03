@@ -31,13 +31,19 @@ class BitCrusherProcessor : public EffectProcessor {
         return "BitCrusherProcessor";
     }
 
-    EngineEffectParameter* m_pDepthParameter;
-    EngineEffectParameter* m_pFrequencyParameter;
+    EngineEffectParameter* m_pBitDepthParameter;
+    EngineEffectParameter* m_pDownsampleParameter;
 
     struct ChannelState {
-        ChannelState() : phasor(0) {
+        // Default accumulator to 1 so we immediately pick an input value.
+        ChannelState()
+                : hold_l(0),
+                  hold_r(0),
+                  accumulator(1) {
         }
-        CSAMPLE phasor;
+        CSAMPLE hold_l, hold_r;
+        // Accumulated fractions of a samplerate period.
+        CSAMPLE accumulator;
     };
     QMap<QString, ChannelState> m_groupState;
 
