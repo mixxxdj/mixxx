@@ -1,12 +1,12 @@
 #include "effects/native/bitcrushereffect.h"
 
 // static
-QString BitCrusherProcessor::getId() {
+QString BitCrusherEffect::getId() {
     return "org.mixxx.effects.bitcrusher";
 }
 
 // static
-EffectManifest BitCrusherProcessor::getManifest() {
+EffectManifest BitCrusherEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("BitCrusher"));
@@ -41,24 +41,24 @@ EffectManifest BitCrusherProcessor::getManifest() {
     return manifest;
 }
 
-BitCrusherProcessor::BitCrusherProcessor(const EffectManifest& manifest)
+BitCrusherEffect::BitCrusherEffect(const EffectManifest& manifest)
         : m_pBitDepthParameter(NULL),
           m_pDownsampleParameter(NULL) {
 }
 
-BitCrusherProcessor::~BitCrusherProcessor() {
+BitCrusherEffect::~BitCrusherEffect() {
     qDebug() << debugString() << "destroyed";
 }
 
-void BitCrusherProcessor::initialize(EngineEffect* pEffect) {
+void BitCrusherEffect::initialize(EngineEffect* pEffect) {
     m_pBitDepthParameter = pEffect->getParameterById("bit_depth");
     m_pDownsampleParameter = pEffect->getParameterById("downsample");
 }
 
-void BitCrusherProcessor::process(const QString& group,
-                                  const CSAMPLE* pInput, CSAMPLE* pOutput,
-                                  const unsigned int numSamples) {
-    ChannelState& group_state = m_groupState[group];
+void BitCrusherEffect::process(const QString& group,
+                               const CSAMPLE* pInput, CSAMPLE* pOutput,
+                               const unsigned int numSamples) {
+    GroupState& group_state = m_groupState[group];
 
     const CSAMPLE downsample = m_pDownsampleParameter ?
             m_pDownsampleParameter->value().toDouble() : 0.0;

@@ -3,15 +3,18 @@
 #include "effects/native/flangereffect.h"
 
 #include "mathstuff.h"
-#include "sampleutil.h"
+
+const unsigned int kMaxDelay = 5000;
+const unsigned int kLfoAmplitude = 240;
+const unsigned int kAverageDelayLength = 250;
 
 // static
-QString FlangerProcessor::getId() {
+QString FlangerEffect::getId() {
     return "org.mixxx.effects.flanger";
 }
 
 // static
-EffectManifest FlangerProcessor::getManifest() {
+EffectManifest FlangerEffect::getManifest() {
     EffectManifest manifest;
     manifest.setId(getId());
     manifest.setName(QObject::tr("Flanger"));
@@ -58,82 +61,57 @@ EffectManifest FlangerProcessor::getManifest() {
     return manifest;
 }
 
-FlangerProcessor::FlangerProcessor(const EffectManifest& manifest)
+FlangerEffect::FlangerEffect(const EffectManifest& manifest)
         : m_pPeriodParameter(NULL),
           m_pDepthParameter(NULL),
           m_pDelayParameter(NULL) {
 }
 
-FlangerProcessor::~FlangerProcessor() {
+FlangerEffect::~FlangerEffect() {
     qDebug() << debugString() << "destroyed";
-
-    QMutableMapIterator<QString, FlangerState*> it(m_flangerStates);
-
-    while (it.hasNext()) {
-        it.next();
-        FlangerState* pState = it.value();
-        it.remove();
-        delete pState;
-    }
 }
 
-void FlangerProcessor::initialize(EngineEffect* pEffect) {
+void FlangerEffect::initialize(EngineEffect* pEffect) {
     m_pPeriodParameter = pEffect->getParameterById("period");
     m_pDepthParameter = pEffect->getParameterById("depth");
     m_pDelayParameter = pEffect->getParameterById("delay");
 }
 
-void FlangerProcessor::process(const QString& group,
-                               const CSAMPLE* pInput, CSAMPLE* pOutput,
-                               const unsigned int numSamples) {
-    FlangerState* pState = getStateForGroup(group);
-    if (!pState) {
-        qDebug() << debugString() << "WARNING: Couldn't get flanger state for group" << group;
-        return;
-    }
+void FlangerEffect::process(const QString& group,
+                            const CSAMPLE* pInput, CSAMPLE* pOutput,
+                            const unsigned int numSamples) {
+    GroupState& group_state = m_groupState[group];
 
-    CSAMPLE lfoPeriod = m_pPeriodParameter ? m_pPeriodParameter->value().toDouble() : 0.0f;
-    CSAMPLE lfoDepth = m_pDepthParameter ? m_pDepthParameter->value().toDouble() : 0.0f;
+    CSAMPLE lfoPeriod = m_pPeriodParameter ?
+            m_pPeriodParameter->value().toDouble() : 0.0f;
+    CSAMPLE lfoDepth = m_pDepthParameter ?
+            m_pDepthParameter->value().toDouble() : 0.0f;
     // Unused in EngineFlanger
-    CSAMPLE lfoDelay = m_pDelayParameter ? m_pDelayParameter->value().toDouble() : 0.0f;
-
-    qDebug() << debugString() << "period" << lfoPeriod << "depth" << lfoDepth << "delay" << lfoDelay;
+    CSAMPLE lfoDelay = m_pDelayParameter ?
+            m_pDelayParameter->value().toDouble() : 0.0f;
 
     // TODO(rryan) check ranges
     // period needs to be >=0
     // delay needs to be >=0
     // depth is ???
 
-    CSAMPLE* delayBuffer = pState->delayBuffer;
+    CSAMPLE* delayBuffer = group_state.delayBuffer;
     for (int i = 0; i < numSamples; ++i) {
-        delayBuffer[pState->delayPos] = pInput[i];
-        pState->delayPos = (pState->delayPos + 1) % kMaxDelay;
+        delayBuffer[group_state.delayPos] = pInput[i];
+        group_state.delayPos = (group_state.delayPos + 1) % kMaxDelay;
 
-        pState->time++;
-        if (pState->time > lfoPeriod) {
-            pState->time = 0;
+        group_state.time++;
+        if (group_state.time > lfoPeriod) {
+            group_state.time = 0;
         }
 
-        CSAMPLE periodFraction = CSAMPLE(pState->time) / lfoPeriod;
+        CSAMPLE periodFraction = CSAMPLE(group_state.time) / lfoPeriod;
         CSAMPLE delay = kAverageDelayLength + kLfoAmplitude * sin(two_pi * periodFraction);
 
-        CSAMPLE prev = delayBuffer[(pState->delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay];
-        CSAMPLE next = delayBuffer[(pState->delayPos - int(delay) + kMaxDelay    ) % kMaxDelay];
+        CSAMPLE prev = delayBuffer[(group_state.delayPos - int(delay) + kMaxDelay - 1) % kMaxDelay];
+        CSAMPLE next = delayBuffer[(group_state.delayPos - int(delay) + kMaxDelay    ) % kMaxDelay];
         CSAMPLE frac = delay - floor(delay);
         CSAMPLE delayed_sample = prev + frac * (next - prev);
-
         pOutput[i] = pInput[i] + lfoDepth * delayed_sample;
     }
-}
-
-FlangerState* FlangerProcessor::getStateForGroup(const QString& group) {
-    FlangerState* pState = m_flangerStates.value(group, NULL);
-    if (pState == NULL) {
-        pState = new FlangerState();
-        m_flangerStates[group] = pState;
-        SampleUtil::applyGain(pState->delayBuffer, 0.0f, kMaxDelay);
-        pState->delayPos = 0;
-        pState->time = 0;
-    }
-    return pState;
 }

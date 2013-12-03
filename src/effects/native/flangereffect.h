@@ -3,27 +3,17 @@
 
 #include <QMap>
 
+#include "defs.h"
 #include "util.h"
-#include "effects/effect.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
-#include "effects/native/nativebackend.h"
 #include "effects/effectprocessor.h"
+#include "sampleutil.h"
 
-const unsigned int kMaxDelay = 5000;
-const unsigned int kLfoAmplitude = 240;
-const unsigned int kAverageDelayLength = 250;
-
-struct FlangerState {
-    CSAMPLE delayBuffer[kMaxDelay];
-    unsigned int delayPos;
-    unsigned int time;
-};
-
-class FlangerProcessor : public EffectProcessor {
+class FlangerEffect : public EffectProcessor {
   public:
-    FlangerProcessor(const EffectManifest& manifest);
-    virtual ~FlangerProcessor();
+    FlangerEffect(const EffectManifest& manifest);
+    virtual ~FlangerEffect();
 
     static QString getId();
     static EffectManifest getManifest();
@@ -38,17 +28,26 @@ class FlangerProcessor : public EffectProcessor {
 
   private:
     QString debugString() const {
-        return "FlangerProcessor";
+        return getId();
     }
-    FlangerState* getStateForGroup(const QString& group);
 
     EngineEffectParameter* m_pPeriodParameter;
     EngineEffectParameter* m_pDepthParameter;
     EngineEffectParameter* m_pDelayParameter;
 
-    QMap<QString, FlangerState*> m_flangerStates;
+    struct GroupState {
+        GroupState()
+                : delayPos(0),
+                  time(0) {
+            SampleUtil::applyGain(delayBuffer, 0, MAX_BUFFER_LEN);
+        }
+        CSAMPLE delayBuffer[MAX_BUFFER_LEN];
+        unsigned int delayPos;
+        unsigned int time;
+    };
+    QMap<QString, GroupState> m_groupState;
 
-    DISALLOW_COPY_AND_ASSIGN(FlangerProcessor);
+    DISALLOW_COPY_AND_ASSIGN(FlangerEffect);
 };
 
 #endif /* FLANGEREFFECT_H */

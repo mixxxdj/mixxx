@@ -5,15 +5,14 @@
 
 #include "effects/effect.h"
 #include "effects/effectprocessor.h"
-#include "effects/native/nativebackend.h"
 #include "engine/effects/engineeffect.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "util.h"
 
-class BitCrusherProcessor : public EffectProcessor {
+class BitCrusherEffect : public EffectProcessor {
   public:
-    BitCrusherProcessor(const EffectManifest& manifest);
-    virtual ~BitCrusherProcessor();
+    BitCrusherEffect(const EffectManifest& manifest);
+    virtual ~BitCrusherEffect();
 
     static QString getId();
     static EffectManifest getManifest();
@@ -28,15 +27,15 @@ class BitCrusherProcessor : public EffectProcessor {
 
   private:
     QString debugString() const {
-        return "BitCrusherProcessor";
+        return getId();
     }
 
     EngineEffectParameter* m_pBitDepthParameter;
     EngineEffectParameter* m_pDownsampleParameter;
 
-    struct ChannelState {
+    struct GroupState {
         // Default accumulator to 1 so we immediately pick an input value.
-        ChannelState()
+        GroupState()
                 : hold_l(0),
                   hold_r(0),
                   accumulator(1) {
@@ -45,10 +44,9 @@ class BitCrusherProcessor : public EffectProcessor {
         // Accumulated fractions of a samplerate period.
         CSAMPLE accumulator;
     };
-    QMap<QString, ChannelState> m_groupState;
+    QMap<QString, GroupState> m_groupState;
 
-    DISALLOW_COPY_AND_ASSIGN(BitCrusherProcessor);
+    DISALLOW_COPY_AND_ASSIGN(BitCrusherEffect);
 };
-
 
 #endif /* BITCRUSHEREFFECT_H */

@@ -6,8 +6,8 @@
 
 NativeBackend::NativeBackend(QObject* pParent)
         : EffectsBackend(pParent, tr("Native")) {
-    registerEffect<FlangerProcessor>();
-    registerEffect<BitCrusherProcessor>();
+    registerEffect<FlangerEffect>();
+    registerEffect<BitCrusherEffect>();
 }
 
 NativeBackend::~NativeBackend() {
