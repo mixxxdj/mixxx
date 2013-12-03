@@ -17,7 +17,7 @@ class EffectManifestParameter {
     enum ControlHint {
         CONTROL_UNKNOWN = 0,
         CONTROL_KNOB_LINEAR,
-        CONTROL_KNOB_LOGARHYTHMIC,
+        CONTROL_KNOB_LOGARITHMIC,
         CONTROL_TOGGLE
     };
 
