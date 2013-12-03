@@ -145,6 +145,7 @@ void EffectChainSlot::loadEffectChain(EffectChainPointer pEffectChain) {
         connect(m_pEffectChain.data(), SIGNAL(groupStatusChanged(const QString&, bool)),
                 this, SLOT(slotChainGroupStatusChanged(const QString&, bool)));
 
+        m_pEffectChain->setEnabled(true);
         m_pControlChainParameter->set(m_pEffectChain->parameter());
         m_pControlChainMix->set(m_pEffectChain->mix());
         m_pControlChainEnabled->set(m_pEffectChain->enabled());
@@ -242,11 +243,8 @@ void EffectChainSlot::slotControlNumEffects(double v) {
 
 void EffectChainSlot::slotControlChainEnabled(double v) {
     qDebug() << debugString() << "slotControlChainEnabled" << v;
-
-    bool bEnabled = v > 0.0f;
-    if (m_pEffectChain) {
-        m_pEffectChain->setEnabled(bEnabled);
-    }
+    qDebug() << "WARNING: Somebody has set a read-only control. Stability may be compromised.";
+    m_pControlChainEnabled->set(m_pEffectChain ? m_pEffectChain->enabled() : false);
 }
 
 void EffectChainSlot::slotControlChainMix(double v) {
