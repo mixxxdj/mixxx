@@ -70,15 +70,53 @@ EffectChainSlotPointer EffectRack::getEffectChainSlot(int i) {
 
 void EffectRack::loadNextChain(const unsigned int iChainSlotNumber,
                                EffectChainPointer pLoadedChain) {
-    EffectChainPointer pNextChain =
-            m_pEffectChainManager->getNextEffectChain(pLoadedChain);
+    EffectChainPointer pNextChain = pLoadedChain;
+    while (true) {
+        pNextChain = m_pEffectChainManager->getNextEffectChain(pNextChain);
+
+        if (!pNextChain) {
+            break;
+        }
+
+        // No next chain available.
+        if (pNextChain == pLoadedChain) {
+            pNextChain = EffectChainPointer();
+            break;
+        }
+
+        // Don't load chains that are already loaded.
+        if (pNextChain->enabled()) {
+            continue;
+        }
+
+        break;
+    }
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pNextChain);
 }
 
 
 void EffectRack::loadPrevChain(const unsigned int iChainSlotNumber,
-                                   EffectChainPointer pLoadedChain) {
-    EffectChainPointer pPrevChain =
-            m_pEffectChainManager->getPrevEffectChain(pLoadedChain);
+                               EffectChainPointer pLoadedChain) {
+    EffectChainPointer pPrevChain = pLoadedChain;
+    while (true) {
+        pPrevChain = m_pEffectChainManager->getPrevEffectChain(pPrevChain);
+
+        if (!pPrevChain) {
+            break;
+        }
+
+        // No prev chain available.
+        if (pPrevChain == pLoadedChain) {
+            pPrevChain = EffectChainPointer();
+            break;
+        }
+
+        // Don't load chains that are already loaded.
+        if (pPrevChain->enabled()) {
+            continue;
+        }
+
+        break;
+    }
     m_effectChainSlots[iChainSlotNumber]->loadEffectChain(pPrevChain);
 }
