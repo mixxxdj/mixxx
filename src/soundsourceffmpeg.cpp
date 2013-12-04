@@ -30,6 +30,7 @@
 //#endif
 
 #include <QtDebug>
+#include <QBuffer>
 
 static QMutex ffmpegmutex;
 
