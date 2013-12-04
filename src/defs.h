@@ -85,14 +85,5 @@ inline double zap_denormal(double x)
 #define math_min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-// MSVC 2005/2008 needs these
-#ifndef fmax
-#define fmax math_max
-#endif
-
-#ifndef fmin
-#define fmin math_min
-#endif
-
 #endif
 
