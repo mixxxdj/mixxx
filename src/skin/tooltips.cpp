@@ -417,25 +417,6 @@ void Tooltips::addStandardTooltips() {
             << tr("Displays the artist and title of the loaded track.")
             << trackTags;
 
-    add("flanger")
-            << tr("Flanger")
-            << tr("Toggles the flange effect. Use the depth/delay/lfo knobs to adjust.");
-
-    add("lfoDelay")
-            << tr("Flanger Delay")
-            << tr("Adjusts the phase delay of the flange effect (when active).")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("lfoDepth")
-            << tr("Flanger Depth")
-            << tr("Adjusts the intensity of the flange effect (when active).")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("lfoPeriod")
-            << tr("Flanger LFO Period")
-            << tr("Adjusts the wavelength of the flange effect (when active).")
-            << QString("%1: %2").arg(rightClick, resetToDefault);
-
     add("time")
             << tr("Clock")
             << tr("Displays the current time.");
