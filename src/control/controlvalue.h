@@ -66,8 +66,7 @@ class ControlValueAtomicBase {
   public:
     inline T getValue() const {
         T value = T();
-        unsigned int index = (unsigned int)m_readIndex
-                % (cRingSize);
+        unsigned int index = (unsigned int)m_readIndex % (cRingSize);
         while (m_ring[index].tryGet(&value) == false) {
             // We are here if
             // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
