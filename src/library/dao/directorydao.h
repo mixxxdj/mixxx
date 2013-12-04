@@ -26,9 +26,8 @@ class DirectoryDAO : public DAO {
     QSet<int> relocateDirectory(const QString& oldFolder, const QString& newFolder);
     QStringList getDirs();
 
-    bool isChildDir(QString testDir, QString dir);
-
   private:
+    bool isChildDir(QString testDir, QString dirStr);
     QSqlDatabase& m_database;
 };
 

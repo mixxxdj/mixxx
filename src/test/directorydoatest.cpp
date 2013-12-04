@@ -46,7 +46,14 @@ class DirectoryDAOTest : public testing::Test {
 TEST_F(DirectoryDAOTest, addDirTest) {
     DirectoryDAO m_DirectoryDao = m_pTrackCollection->getDirectoryDAO();
     // prepend dir with '/' so that QT thinks the dir starts at the root
-    QString testdir = "/TestDir/a";
+    QString testdir(QDir::tempPath() + "/TestDir/a");
+    QString testChild(QDir::tempPath() + "/TestDir/a/child");
+    QString testParent(QDir::tempPath() + "/TestDir");
+
+    //create temp dirs
+    QDir(QDir::temp()).mkpath(testParent);
+    QDir(QDir::temp()).mkpath(testdir);
+    QDir(QDir::temp()).mkpath(testChild);
 
     // check if directory doa adds and thinks everything is ok
     int success = m_DirectoryDao.addDirectory(testdir);
@@ -57,11 +64,11 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     EXPECT_EQ(success, SQL_ERROR );
 
     // check that we don't add a child directory
-    success = m_DirectoryDao.addDirectory("/TestDir/a/child");
+    success = m_DirectoryDao.addDirectory(testChild);
     EXPECT_EQ(success, ALREADY_WATCHING );
 
     // check that we add the parent dir
-    success = m_DirectoryDao.addDirectory("/TestDir");
+    success = m_DirectoryDao.addDirectory(testParent);
     EXPECT_EQ(success, ALL_FINE);
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
@@ -77,7 +84,7 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     // the test db should be always empty when tests are started.
     EXPECT_TRUE(dirs.size() == 1);
     if ( dirs.size() > 0) {
-        EXPECT_TRUE(dirs.at(0) == "/TestDir");
+        EXPECT_TRUE(dirs.at(0) == testParent);
     }
 }
 

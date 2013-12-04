@@ -24,8 +24,8 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     // the db.:
     ScopedTransaction transaction(m_database);
     QStringList dirs = getDirs();
-    QString childDir("");
-    QString parentDir("");
+    QString childDir;
+    QString parentDir;
     foreach (const QString& dir, dirs) {
         if (isChildDir(newDir, dir)) {
             childDir = dir;
@@ -57,31 +57,24 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
     return ALL_FINE;
 }
 
-bool DirectoryDAO::isChildDir(QString testDir, QString dir){
-    // Qt internally always uses '/' as a seperator so this should also work
-    // fine on windows -- kain88 (sep 2013)
-    QStringList testDirNames = QDir(testDir).absolutePath().split('/');
-    QStringList dirNames = QDir(dir).absolutePath().split('/');
+bool DirectoryDAO::isChildDir(QString testDir, QString dirStr){
+    QDir test = QDir(testDir);
+    QDir dir = QDir(dirStr);
 
-    bool related = false;
-    // testDir could be a child if the path a more items.
-    if (testDirNames.size() > dirNames.size()){
-        // To test if we have a child folder we go through all the folders and check
-        // them for equality. 'related' is set to true at the beginning so we can use
-        // the AND operation that will convert 'related' to false once one folder level
-        // does not match anymore
-        related = true;
-        for (int i=0; i < dirNames.size(); ++i) {
-            related = (testDirNames.at(i) == dirNames.at(i)) && related;
+    bool child = false;
+    while (test.cdUp()) {
+        // a parent of test is equal to dir
+        if (dir == test) {
+            child = true;
         }
     }
 
     // qDebug() << "--- test related function ---";
     // qDebug() << "testDir " << testDir;
-    // qDebug() << "dir" << dir;
-    // qDebug() << "related = " << related;
+    // qDebug() << "dir" << dirStr;
+    // qDebug() << "child = " << child;
     // qDebug() << "-----------------------------";
-    return related;
+    return child;
 }
 
 int DirectoryDAO::removeDirectory(const QString& dir) {
