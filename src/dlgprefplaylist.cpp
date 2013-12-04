@@ -125,9 +125,9 @@ void DlgPrefPlaylist::slotRemoveDir() {
     removeMsgBox.setText(tr("Mixxx will hide any information about tracks in "
                             "this directory. Once you re-add the directory all "
                             "metadata will be restored"));
-    removeMsgBox.setInformativeText(tr("Do you want to remove this directory ?"));
+    removeMsgBox.setInformativeText(tr("Do you want to remove this directory?"));
     removeMsgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-    QPushButton *removeAllButton = removeMsgBox.addButton(tr("remove metadata"),
+    QPushButton *removeAllButton = removeMsgBox.addButton(tr("Remove Metadata"),
             QMessageBox::YesRole);
     removeMsgBox.setDefaultButton(QMessageBox::Cancel);
 
@@ -158,7 +158,7 @@ void DlgPrefPlaylist::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("Choose a music library directory"), startDir);
+        this, tr("relocate to directory"), startDir);
 
     if (!fd.isEmpty()) {
         emit(requestRelocateDir(currentFd, fd));
