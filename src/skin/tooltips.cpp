@@ -368,7 +368,7 @@ void Tooltips::addStandardTooltips() {
             << tr("Reloop/Exit")
             << tr("Toggles the current loop on or off.")
             << tr("Works only if Loop-In and Loop-Out marker are set.");
-    
+
     add("slip_mode")
             << tr("Slip Mode")
             << tr("When active, the playback continues muted in the background during a loop, reverse, scratch etc.")
@@ -435,14 +435,6 @@ void Tooltips::addStandardTooltips() {
             << tr("Flanger LFO Period")
             << tr("Adjusts the wavelength of the flange effect (when active).")
             << QString("%1: %2").arg(rightClick, resetToDefault);
-
-    add("filter")
-            << tr("Filter")
-            << tr("Toggles the filter effect. Use the depth knobs to adjust.");
-
-    add("filterDepth")
-            << tr("Filter Depth")
-            << tr("Adjusts the intensity of the filter effect (when active).");
 
     add("time")
             << tr("Clock")
