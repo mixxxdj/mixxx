@@ -2,13 +2,14 @@
 #define VISUALPLAYPOSITION_H
 
 #include <portaudio.h>
-#include "util/performancetimer.h"
-#include "control/controlvalue.h"
 
 #include <QMutex>
 #include <QTime>
 #include <QMap>
 #include <QAtomicPointer>
+
+#include "util/performancetimer.h"
+#include "control/controlvalue.h"
 
 class ControlObjectSlave;
 class VSyncThread;
@@ -38,37 +39,38 @@ class VisualPlayPositionData {
 };
 
 
-class VisualPlayPosition
-{
+class VisualPlayPosition {
   public:
     VisualPlayPosition(const QString& m_key);
     ~VisualPlayPosition();
 
+    // WARNING: Not thread safe. This function must be called only from the
+    // engine thread.
     void set(double playPos, double rate, double positionStep, double pSlipPosition);
     double getAtNextVSync(VSyncThread* vsyncThread);
     void getPlaySlipAt(int usFromNow, double* playPosition, double* slipPosition);
     double getEnginePlayPos();
-    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(QString group);
-    static void setTimeInfo(const PaStreamCallbackTimeInfo *timeInfo);
-    void setInvalid() { m_valid = false; };
 
+    // WARNING: Not thread safe. This function must only be called from the main
+    // thread.
+    static QSharedPointer<VisualPlayPosition> getVisualPlayPosition(QString group);
+
+    // This is called by SoundDevicePortAudio just after the callback starts.
+    static void setTimeInfo(const PaStreamCallbackTimeInfo *timeInfo);
+
+    void setInvalid() { m_valid = false; };
 
   private:
     ControlValueAtomic<VisualPlayPositionData> m_data;
-    double m_playPosOld;
-    int m_deltatime;
     ControlObjectSlave* m_audioBufferSize;
-    PaTime m_outputBufferDacTime;
     bool m_valid;
     QString m_key;
 
     static QMap<QString, QWeakPointer<VisualPlayPosition> > m_listVisualPlayPosition;
     // Time info from the Sound device, updated just after audio callback is called
-    static const PaStreamCallbackTimeInfo* m_timeInfo;
+    static PaStreamCallbackTimeInfo m_timeInfo;
     // Time stamp for m_timeInfo in main CPU time
     static PerformanceTimer m_timeInfoTime;
-
 };
 
 #endif // VISUALPLAYPOSITION_H
-
