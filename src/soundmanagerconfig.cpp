@@ -17,7 +17,7 @@
 #include "soundmanagerutil.h"
 #include "sounddevice.h"
 #include "soundmanager.h"
-#include "mixxx.h"
+#include "util/cmdlineargs.h"
 
 // this (7) represents latency values from 1 ms to about 80 ms -- bkgood
 const unsigned int SoundManagerConfig::kMaxAudioBufferSizeIndex = 7;
@@ -28,7 +28,7 @@ const unsigned int SoundManagerConfig::kFallbackSampleRate = 48000;
 // audioBufferSizeIndex=5 means about 21 ms of latency which is default in trunk r2453 -- bkgood
 const int SoundManagerConfig::kDefaultAudioBufferSizeIndex = 5;
 
-SoundManagerConfig::SoundManagerConfig() 
+SoundManagerConfig::SoundManagerConfig()
     : m_api("None"),
       m_sampleRate(kFallbackSampleRate),
       m_audioBufferSizeIndex(kDefaultAudioBufferSizeIndex) {
