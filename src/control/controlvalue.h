@@ -2,7 +2,7 @@
 #define CONTROLVALUE_H
 
 #include <limits>
-
+#include "util/compatibility.h"
 #include <QAtomicInt>
 #include <QObject>
 
@@ -66,7 +66,7 @@ class ControlValueAtomicBase {
   public:
     inline T getValue() const {
         T value = T();
-        unsigned int index = (unsigned int)m_readIndex.load() % (cRingSize);
+        unsigned int index = static_cast<unsigned int>(deref(m_readIndex)) % (cRingSize);
         while (m_ring[index].tryGet(&value) == false) {
             // We are here if
             // 1) there are more then cReaderSlotCnt reader (get) reading the same value or
