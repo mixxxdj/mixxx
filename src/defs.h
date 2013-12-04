@@ -89,13 +89,4 @@ inline double zap_denormal(double x)
 #define math_clamp(v, min, max)  (((min) < (max)) ? (math_min((max), math_max((v), (min)))) : (math_min((min), math_max((v), (max)))))
 #endif
 
-// MSVC 2005/2008 needs these
-#ifndef fmax
-#define fmax math_max
-#endif
-
-#ifndef fmin
-#define fmin math_min
-#endif
-
 #endif
