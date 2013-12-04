@@ -475,6 +475,7 @@ class MixxxCore(Feature):
                    "effects/native/nativebackend.cpp",
                    "effects/native/bitcrushereffect.cpp",
                    "effects/native/flangereffect.cpp",
+                   "effects/native/filtereffect.cpp",
 
                    "engine/effects/engineeffectsmanager.cpp",
                    "engine/effects/engineeffectchain.cpp",
@@ -496,7 +497,6 @@ class MixxxCore(Feature):
                    "engine/enginemaster.cpp",
                    "engine/enginedelay.cpp",
                    "engine/engineflanger.cpp",
-                   "engine/enginefiltereffect.cpp",
                    "engine/enginevumeter.cpp",
                    "engine/enginevinylsoundemu.cpp",
                    "engine/sidechain/enginesidechain.cpp",

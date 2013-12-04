@@ -96,12 +96,19 @@ void EffectsManager::setupDefaults() {
     pChain->addEffect(flanger);
     m_pEffectChainManager->addEffectChain(pChain);
 
-
     pChain = EffectChainPointer(new EffectChain(
         this, "org.mixxx.effectchain.bitcrusher"));
     pChain->setName(tr("BitCrusher"));
     pChain->setParameter(0.0f);
     flanger = instantiateEffect("org.mixxx.effects.bitcrusher");
+    pChain->addEffect(flanger);
+    m_pEffectChainManager->addEffectChain(pChain);
+
+    pChain = EffectChainPointer(new EffectChain(
+        this, "org.mixxx.effectchain.filter"));
+    pChain->setName(tr("Filter"));
+    pChain->setParameter(0.0f);
+    flanger = instantiateEffect("org.mixxx.effects.filter");
     pChain->addEffect(flanger);
     m_pEffectChainManager->addEffectChain(pChain);
 }
