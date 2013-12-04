@@ -3,6 +3,7 @@
 #include <QHeaderView>
 #include <QUrl>
 #include <QtDebug>
+#include <QMimeData>
 
 #include "library/sidebarmodel.h"
 
