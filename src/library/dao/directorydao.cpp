@@ -22,6 +22,7 @@ void DirectoryDAO::initialize() {
 int DirectoryDAO::addDirectory(const QString& newDir) {
     // Do nothing if the dir to add is a child of a directory that is already in
     // the db.:
+    ScopedTransaction transaction(m_database);
     QStringList dirs = getDirs();
     QString childDir("");
     QString parentDir("");
@@ -52,6 +53,7 @@ int DirectoryDAO::addDirectory(const QString& newDir) {
         LOG_FAILED_QUERY(query) << "Adding new dir (" % newDir % ") failed.";
         return SQL_ERROR;
     }
+    transaction.commit();
     return ALL_FINE;
 }
 
@@ -139,10 +141,10 @@ QSet<int> DirectoryDAO::relocateDirectory(const QString& oldFolder,
 
     QString replacement("UPDATE track_locations SET location = :newloc "
                         "WHERE id = :id");
+    query.prepare(replacement);
     for (int i = 0; i < loc_ids.size(); ++i) {
         QString newloc = old_locs.at(i);
         newloc.replace(0, oldFolder.size(), newFolder);
-        query.prepare(replacement);
         query.bindValue("newloc", newloc);
         query.bindValue("id", loc_ids.at(i));
         if (!query.exec()) {
@@ -161,7 +163,7 @@ QStringList DirectoryDAO::getDirs() {
     QSqlQuery query(m_database);
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
     if (!query.exec()) {
-        LOG_FAILED_QUERY(query) << "There are no directories saved in the db";
+        LOG_FAILED_QUERY(query) << "could not retrieve directory list from database";
     }
     QStringList dirs;
     const int dirColumn = query.record().indexOf(DIRECTORYDAO_DIR);
