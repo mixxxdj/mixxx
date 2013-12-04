@@ -426,6 +426,7 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
     int rating = 0;
     QString comment;
     QString tracknumber;
+    QString tracktype;
 
     while (!xml.atEnd()) {
         xml.readNext();
@@ -509,6 +510,10 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
                     rating = (content.toInt() / 20);
                     continue;
                 }
+                if (key == "Track Type") {
+                    tracktype = content;
+                    continue;
+                }
             }
         }
         //exit loop on closing </dict>
@@ -516,6 +521,13 @@ void ITunesFeature::parseTrack(QXmlStreamReader &xml, QSqlQuery &query) {
             break;
         }
     }
+    
+    // If file is a remote file from iTunes Match, don't save it to the database.
+    // There's no way that mixxx can access it.
+    if (tracktype == "Remote") {
+        return;
+    }
+    
     // If we reach the end of <dict>
     // Save parsed track to database
     query.bindValue(":id", id);

@@ -8,10 +8,7 @@
 
 //static
 QMap<QString, QWeakPointer<VisualPlayPosition> > VisualPlayPosition::m_listVisualPlayPosition;
-PaStreamCallbackTimeInfo VisualPlayPosition::m_timeInfo = {
-    .inputBufferAdcTime = 0.0,
-    .currentTime = 0.0,
-    .outputBufferDacTime = 0.0 };
+PaStreamCallbackTimeInfo VisualPlayPosition::m_timeInfo = { 0.0, 0.0, 0.0 };
 PerformanceTimer VisualPlayPosition::m_timeInfoTime;
 
 VisualPlayPosition::VisualPlayPosition(const QString& key)
