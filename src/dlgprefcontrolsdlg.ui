@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form1</string>
+   <string>Interface Preferences</string>
   </property>
   <layout class="QGridLayout" name="gridLayout_3">
    <item row="0" column="0">
@@ -57,7 +57,7 @@
         <font/>
        </property>
        <property name="text">
-        <string>Scheme</string>
+        <string>Color Scheme</string>
        </property>
        <property name="wordWrap">
         <bool>false</bool>
@@ -211,7 +211,7 @@
      <item row="9" column="0">
       <widget class="QLabel" name="textLabelAllowTrackLoadToPlayingDeck">
        <property name="text">
-        <string>Track load behaviour</string>
+        <string>Track load behavior</string>
        </property>
        <property name="buddy">
         <cstring>ComboBoxAllowTrackLoadToPlayingDeck</cstring>
@@ -224,7 +224,7 @@
      <item row="8" column="0">
       <widget class="QLabel" name="labelCueBehaviour">
        <property name="text">
-        <string>Cue behaviour</string>
+        <string>Cue behavior</string>
        </property>
        <property name="buddy">
         <cstring>ComboBoxCueDefault</cstring>
@@ -652,7 +652,11 @@
        </widget>
       </item>
       <item row="0" column="2" colspan="4">
-       <widget class="QComboBox" name="waveformTypeComboBox"/>
+       <widget class="QComboBox" name="waveformTypeComboBox">
+        <property name="toolTip">
+         <string>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+        </property>
+       </widget>
       </item>
       <item row="2" column="2" colspan="2">
        <widget class="QSlider" name="frameRateSlider">
@@ -871,8 +875,11 @@
           <verstretch>0</verstretch>
          </sizepolicy>
         </property>
+        <property name="toolTip">
+         <string extracomment="The big waveform summary shows the waveform envelope of the track near the current playback position."/>
+        </property>
         <property name="text">
-         <string>Display type</string>
+         <string>Summary type</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
@@ -883,12 +890,19 @@
        </widget>
       </item>
       <item row="1" column="2" colspan="4">
-       <widget class="QComboBox" name="waveformOverviewComboBox"/>
+       <widget class="QComboBox" name="waveformOverviewComboBox">
+        <property name="toolTip">
+         <string>Select from different types of displays for the waveform, which differ primarily in the level of detail shown in the waveform.</string>
+        </property>
+       </widget>
       </item>
       <item row="1" column="0">
        <widget class="QLabel" name="waveformOverviewLabel">
+        <property name="toolTip">
+         <string extracomment="The smaller, zoomed-out version of the waveform shows the various markers within the track as well as the waveform envelope of the entire track."/>
+        </property>
         <property name="text">
-         <string>Preview type</string>
+         <string>Overview type</string>
         </property>
        </widget>
       </item>

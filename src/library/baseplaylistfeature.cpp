@@ -2,6 +2,7 @@
 
 #include <QInputDialog>
 #include <QFileDialog>
+#include <QDesktopServices>
 
 #include "library/parser.h"
 #include "library/parserm3u.h"
@@ -25,7 +26,7 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
           m_trackDao(pTrackCollection->getTrackDAO()),
           m_pPlaylistTableModel(NULL),
           m_rootViewName(rootViewName) {
-    m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
+    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
 
@@ -49,13 +50,13 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(m_pLockPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotTogglePlaylistLock()));
 
+    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
+    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotDuplicatePlaylist()));
+
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
-
-    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate Playlist"), this);
-    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotDuplicatePlaylist()));
 
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
@@ -126,7 +127,7 @@ void BasePlaylistFeature::slotRenamePlaylist() {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Playlist"),
-                                        tr("New playlist name:"),
+                                        tr("Enter new name for playlist:"),
                                         QLineEdit::Normal,
                                         oldName,
                                         &ok).trimmed();
@@ -169,7 +170,7 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                      tr("Duplicate Playlist"),
-                                     tr("Playlist name:"),
+                                     tr("Enter name for new playlist:"),
                                      QLineEdit::Normal,
                                      //: Appendix to default name when duplicating a playlist
                                      oldName + tr("_copy" , "[noun]"),
@@ -222,8 +223,8 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
-                                     tr("New Playlist"),
-                                     tr("Playlist name:"),
+                                     tr("Create New Playlist"),
+                                     tr("Enter name for new playlist:"),
                                      QLineEdit::Normal,
                                      tr("New Playlist"),
                                      &ok).trimmed();
@@ -402,7 +403,7 @@ void BasePlaylistFeature::addToAutoDJ(bool bTop) {
                 m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addToAutoDJQueue(playlistId, bTop);
+            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
         }
     }
 }
@@ -485,4 +486,3 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
 void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0, m_playlistList.size());
 }
-

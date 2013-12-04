@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>512</width>
-    <height>723</height>
+    <width>546</width>
+    <height>688</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -204,39 +204,9 @@ playback and outbound link statistics</string>
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
-      <string>Other Libraries</string>
+      <string>External Libraries</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBox_show_rhythmbox">
-        <property name="text">
-         <string>Show Rhythmbox Library</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="3" column="0">
-       <widget class="QCheckBox" name="checkBox_show_itunes">
-        <property name="text">
-         <string>Show iTunes Library</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QCheckBox" name="checkBox_show_traktor">
-        <property name="text">
-         <string>Show Traktor Library</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
       <item row="0" column="0" alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="label_10">
         <property name="text">
@@ -244,12 +214,79 @@ playback and outbound link statistics</string>
         </property>
        </widget>
       </item>
+      <item row="1" column="0" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>All external libraries are shown write protected</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="0">
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBox_show_rhythmbox">
+          <property name="text">
+           <string>Show Rhythmbox Library</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_show_itunes">
+          <property name="text">
+           <string>Show iTunes Library</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkBox_show_banshee">
+          <property name="text">
+           <string>Show Banshee Library</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="checkBox_show_traktor">
+          <property name="text">
+           <string>Show Traktor Library</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
+ <tabstops>
+  <tabstop>dirList</tabstop>
+  <tabstop>PushButtonAddDir</tabstop>
+  <tabstop>PushButtonRelocateDir</tabstop>
+  <tabstop>PushButtonRemoveDir</tabstop>
+  <tabstop>pushButton</tabstop>
+  <tabstop>pushButtonExtraPlugins</tabstop>
+  <tabstop>checkBoxPromoStats</tabstop>
+  <tabstop>checkBox_library_scan</tabstop>
+  <tabstop>checkbox_ID3_sync</tabstop>
+  <tabstop>checkBox_use_relative_path</tabstop>
+  <tabstop>checkBox_show_rhythmbox</tabstop>
+  <tabstop>checkBox_show_banshee</tabstop>
+  <tabstop>checkBox_show_itunes</tabstop>
+  <tabstop>checkBox_show_traktor</tabstop>
+ </tabstops>
  <resources/>
  <connections/>
 </ui>

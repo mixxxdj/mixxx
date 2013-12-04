@@ -17,10 +17,7 @@
 *                                                                         *
 ***************************************************************************/
 
-
-#include <QtCore>
 #include <QtDebug>
-#include <QtGui>
 
 #include "dlgprefvinyl.h"
 
@@ -38,7 +35,7 @@ DlgPrefVinyl::DlgPrefVinyl(QWidget * parent, VinylControlManager *pVCMan,
           m_COSpeed2("[Channel2]", "vinylcontrol_speed_type") {
     setupUi(this);
 
-    //Set up a button group for the vinyl control behaviour options
+    //Set up a button group for the vinyl control behavior options
     QButtonGroup vinylControlMode;
     vinylControlMode.addButton(AbsoluteMode);
     vinylControlMode.addButton(RelativeMode);

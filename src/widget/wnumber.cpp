@@ -15,12 +15,14 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wnumber.h"
-#include "wskincolor.h"
+#include "widget/wnumber.h"
+
 #include <math.h>
-#include <qfont.h>
+#include <QFont>
 #include <QLabel>
 #include <QVBoxLayout>
+
+#include "widget/wskincolor.h"
 
 WNumber::WNumber(QWidget * parent) : WWidget(parent)
 {

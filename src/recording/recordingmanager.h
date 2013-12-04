@@ -1,10 +1,9 @@
 #ifndef RECORDINGMANAGER_H
 #define RECORDINGMANAGER_H
 
-#include <QDesktopServices>
 #include <QDateTime>
 #include <QObject>
-
+#include <QString>
 
 #include "configobject.h"
 #include "controlobject.h"

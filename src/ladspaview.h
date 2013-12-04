@@ -10,9 +10,6 @@
 #ifndef LADSPAVIEW_H
 #define LADSPAVIEW_H
 
-#include <QtCore>
-#include <QtGui>
-
 #include "configobject.h"
 
 class QListWidget;

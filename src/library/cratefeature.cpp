@@ -5,6 +5,7 @@
 #include <QInputDialog>
 #include <QLineEdit>
 #include <QMenu>
+#include <QDesktopServices>
 
 #include "library/cratefeature.h"
 #include "library/parser.h"
@@ -28,7 +29,7 @@ CrateFeature::CrateFeature(QObject* parent,
           m_crateTableModel(this, pTrackCollection),
           m_pConfig(pConfig) {
     Q_UNUSED(parent);
-    m_pCreateCrateAction = new QAction(tr("New Crate"),this);
+    m_pCreateCrateAction = new QAction(tr("Create New Crate"),this);
     connect(m_pCreateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotCreateCrate()));
 
@@ -47,11 +48,12 @@ CrateFeature::CrateFeature(QObject* parent,
     m_pImportPlaylistAction = new QAction(tr("Import Crate"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
+
     m_pExportPlaylistAction = new QAction(tr("Export Crate"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotExportPlaylist()));
 
-    m_pDuplicateCrateAction = new QAction(tr("Duplicate Crate"),this);
+    m_pDuplicateCrateAction = new QAction(tr("Duplicate"),this);
     connect(m_pDuplicateCrateAction, SIGNAL(triggered()),
             this, SLOT(slotDuplicateCrate()));
 
@@ -210,11 +212,13 @@ void CrateFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index)
     menu.addAction(m_pDuplicateCrateAction);
     menu.addAction(m_pDeleteCrateAction);
     menu.addAction(m_pLockCrateAction);
+    menu.addSeparator();
 #ifdef __AUTODJCRATES__
     menu.addAction(m_pAutoDjTrackSource);
-#endif // __AUTODJCRATES__
     menu.addSeparator();
+#endif // __AUTODJCRATES__
     menu.addAction(m_pAnalyzeCrateAction);
+    menu.addSeparator();
     menu.addAction(m_pImportPlaylistAction);
     menu.addAction(m_pExportPlaylistAction);
     menu.exec(globalPos);
@@ -227,8 +231,8 @@ void CrateFeature::slotCreateCrate() {
     while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
-                                     tr("New Crate"),
-                                     tr("Crate name:"),
+                                     tr("Create New Crate"),
+                                     tr("Enter name for new crate:"),
                                      QLineEdit::Normal, tr("New Crate"),
                                      &ok).trimmed();
 
@@ -299,7 +303,7 @@ void CrateFeature::slotRenameCrate() {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Crate"),
-                                        tr("New crate name:"),
+                                        tr("Enter new name for crate:"),
                                         QLineEdit::Normal,
                                         oldName,
                                         &ok).trimmed();
@@ -339,7 +343,7 @@ void CrateFeature::slotDuplicateCrate() {
         bool ok = false;
         name = QInputDialog::getText(NULL,
                                         tr("Duplicate Crate"),
-                                        tr("New crate name:"),
+                                        tr("Enter name for new crate:"),
                                         QLineEdit::Normal,
                                         //: Appendix to default name when duplicating a crate
                                         oldName + tr("_copy" , "[noun]"),
@@ -601,7 +605,7 @@ QString CrateFeature::getRootViewHtml() const {
     QString cratesSummary3 = tr("Crates let you organize your music however you'd like!");
 
     QString html;
-    QString createCrateLink = tr("Create new crate");
+    QString createCrateLink = tr("Create New Crate");
     html.append(QString("<h2>%1</h2>").arg(cratesTitle));
     html.append("<table border=\"0\" cellpadding=\"5\"><tr><td>");
     html.append(QString("<p>%1</p>").arg(cratesSummary));

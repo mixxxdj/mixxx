@@ -10,12 +10,11 @@
 #ifndef LADSPAPRESETKNOB_H
 #define LADSPAPRESETKNOB_H
 
-#include <QtCore>
-#include <QtXml>
+#include <QString>
+#include <QDomElement>
+#include <QVector>
 
 #include <ladspa.h>
-
-class QDomElement;
 
 struct LADSPAPortConnection
 {

@@ -18,22 +18,20 @@
 #include <QThread>
 #include <QDir>
 #include <QtDebug>
-#include <qapplication.h>
-#include <qfont.h>
-#include <qstring.h>
-#include <qtextcodec.h>
-#include <qtranslator.h>
-#include <qmessagebox.h>
-#include <qiodevice.h>
-#include <qfile.h>
-#include <qstringlist.h>
+#include <QApplication>
+#include <QStringList>
+#include <QString>
+#include <QTextCodec>
+#include <QIODevice>
+#include <QFile>
+
 #include <stdio.h>
 #include <math.h>
+
 #include "mixxx.h"
 #include "soundsourceproxy.h"
-#include "qpixmap.h"
-#include "qsplashscreen.h"
 #include "errordialoghandler.h"
+#include "util/cmdlineargs.h"
 #include "util/version.h"
 
 #ifdef __FFMPEGFILE__
@@ -45,6 +43,10 @@ extern "C" {
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
+#endif
+
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
 #endif
 
 #ifdef __WINDOWS__
@@ -155,6 +157,11 @@ void MessageHandler(QtMsgType type,
 
 int main(int argc, char * argv[])
 {
+
+#ifdef Q_WS_X11
+    XInitThreads();
+#endif
+
     // Check if an instance of Mixxx is already running
     // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
 

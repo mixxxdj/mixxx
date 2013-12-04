@@ -16,7 +16,6 @@
 ***************************************************************************/
 
 #include <QPixmap>
-#include <QtCore>
 #include <QMessageBox>
 #include <QTranslator>
 

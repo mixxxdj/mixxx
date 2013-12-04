@@ -14,11 +14,7 @@
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#include <qapplication.h>
 #include "configobject.h"
-#include <qdir.h>
-#include <QtDebug>
-#include "widget/wwidget.h"
 
 #ifdef __WINDOWS__
 #include <windows.h>
@@ -28,11 +24,16 @@
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
-#include <qiodevice.h>
-#include <QTextStream>
 #include <math.h>
 
-#include "mixxx.h"
+#include <QIODevice>
+#include <QTextStream>
+#include <QApplication>
+#include <QDir>
+#include <QtDebug>
+
+#include "widget/wwidget.h"
+#include "util/cmdlineargs.h"
 
 ConfigKey::ConfigKey() {
 }
@@ -436,4 +437,3 @@ template <class ValueType> QString ConfigObject<ValueType>::getSettingsPath() co
 
 template class ConfigObject<ConfigValue>;
 template class ConfigObject<ConfigValueKbd>;
-

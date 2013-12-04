@@ -12,9 +12,6 @@
 #include "engine/engineladspa.h"
 #include "ladspaloader.h"
 
-#include <QtCore>
-#include <QtXml>
-
 LADSPAPreset::LADSPAPreset()
 {
 }

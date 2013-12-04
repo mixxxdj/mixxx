@@ -18,7 +18,6 @@
 #include <QTabWidget>
 #include <QTabBar>
 #include <QDialog>
-#include <QtGui>
 #include <QEvent>
 #include <QScrollArea>
 #include <QDesktopWidget>
@@ -63,7 +62,6 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     contentsTreeWidget->setHeaderHidden(true);
 #endif
 
-    setWindowTitle(tr("Preferences"));
     createIcons();
 
     while (pagesWidget->count() > 0) {

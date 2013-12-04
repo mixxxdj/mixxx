@@ -52,7 +52,6 @@ private:
     inline FLAC__int16 shift(const FLAC__int32 sample) const;
     QFile m_file;
     FLAC__StreamDecoder *m_decoder;
-    FLAC__StreamMetadata_StreamInfo *m_streamInfo;
     unsigned int m_samples; // total number of samples
     unsigned int m_bps; // bits per sample
     // misc bits about the flac format:

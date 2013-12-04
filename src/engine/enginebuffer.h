@@ -18,7 +18,6 @@
 #ifndef ENGINEBUFFER_H
 #define ENGINEBUFFER_H
 
-#include <qapplication.h>
 #include <QMutex>
 #include <QAtomicInt>
 
@@ -30,7 +29,8 @@
 
 //for the writer
 #ifdef __SCALER_DEBUG__
-#include <QtCore>
+#include <QFile>
+#include <QTextStream>
 #endif
 
 class EngineControl;
@@ -53,6 +53,7 @@ class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
 class EngineWorkerScheduler;
+class VisualPlayPosition;
 class EngineMaster;
 
 struct Hint;
@@ -84,8 +85,7 @@ const int ENGINE_RAMP_UP = 1;
 
 //const int kiRampLength = 3;
 
-class EngineBuffer : public EngineObject
-{
+class EngineBuffer : public EngineObject {
      Q_OBJECT
 public:
     EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
@@ -103,13 +103,13 @@ public:
     double getBpm();
     // Returns the BPM of the loaded track (not thread-safe)
     double getFileBpm();
-    /** Sets pointer to other engine buffer/channel */
+    // Sets pointer to other engine buffer/channel
     void setEngineMaster(EngineMaster*);
 
     void queueNewPlaypos(double newpos);
 
-    /** Reset buffer playpos and set file playpos. This must only be called
-      * while holding the pause mutex */
+    // Reset buffer playpos and set file playpos. This must only be called
+    // while holding the pause mutex
     void setNewPlaypos(double playpos);
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
@@ -117,6 +117,9 @@ public:
     const char* getGroup();
     bool isTrackLoaded();
     TrackPointer getLoadedTrack() const;
+
+    double getVisualPlayPos();
+    double getTrackSamples();
 
     // For dependency injection of readers.
     //void setReader(CachingReader* pReader);
@@ -196,18 +199,18 @@ private:
     // List of hints to provide to the CachingReader
     QVector<Hint> m_hintList;
 
-    /** The current sample to play in the file. */
+    // The current sample to play in the file.
     double m_filepos_play;
-    /** Copy of rate_exchange, used to check if rate needs to be updated */
+    // Copy of rate_exchange, used to check if rate needs to be updated
     double m_rate_old;
-    /** Copy of length of file */
+    // Copy of length of file
     long int m_file_length_old;
-    /** Copy of file sample rate*/
+    // Copy of file sample rate
     int m_file_srate_old;
-    /** Mutex controlling weather the process function is in pause mode. This happens
-      * during seek and loading of a new track */
+    // Mutex controlling weather the process function is in pause mode. This happens
+    // during seek and loading of a new track
     QMutex m_pause;
-    /** Used in update of playpos slider */
+    // Used in update of playpos slider
     int m_iSamplesCalculated;
     int m_iUiSlowTick;
 
@@ -229,13 +232,11 @@ private:
     ControlObject* m_fwdButton;
     ControlObject* m_backButton;
     ControlPushButton* m_pSlipButton;
-    ControlObject* m_pSlipPosition;
 
     ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
-    ControlPotmeter* m_visualPlaypos;
     ControlObjectSlave* m_pSampleRate;
     ControlPushButton* m_pKeylock;
 
@@ -244,18 +245,18 @@ private:
     // Whether or not to repeat the track when at the end
     ControlPushButton* m_pRepeat;
 
-    ControlObject* m_pVinylStatus;  //Status of vinyl control
+    ControlObject* m_pVinylStatus;  // Status of vinyl control
     ControlObject* m_pVinylSeek;
 
-    /** Fwd and back controls, start and end of track control */
+    // Fwd and back controls, start and end of track control
     ControlPushButton* m_startButton;
     ControlPushButton* m_endButton;
 
-    /** Object used to perform waveform scaling (sample rate conversion) */
+    // Object used to perform waveform scaling (sample rate conversion)
     EngineBufferScale* m_pScale;
-    /** Object used for linear interpolation scaling of the audio */
+    // Object used for linear interpolation scaling of the audio
     EngineBufferScaleLinear* m_pScaleLinear;
-    /** Object used for pitch-indep time stretch (key lock) scaling of the audio */
+    // Object used for pitch-indep time stretch (key lock) scaling of the audio
     EngineBufferScaleST* m_pScaleST;
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
@@ -271,10 +272,10 @@ private:
     double m_dQueuedPosition;
 #endif
 
-    /** Holds the last sample value of the previous buffer. This is used when ramping to
-      * zero in case of an immediate stop of the playback */
+    // Holds the last sample value of the previous buffer. This is used when ramping to
+    // zero in case of an immediate stop of the playback
     float m_fLastSampleValue[2];
-    /** Is true if the previous buffer was silent due to pausing */
+    // Is true if the previous buffer was silent due to pausing
     bool m_bLastBufferPaused;
     QAtomicInt m_iTrackLoading;
     bool m_bPlayAfterLoading;
@@ -292,6 +293,8 @@ private:
     CSAMPLE* m_pCrossFadeBuffer;
     int m_iCrossFadeSamples;
     int m_iLastBufferSize;
+
+    QSharedPointer<VisualPlayPosition> m_visualPlayPos;
 };
 
 #endif

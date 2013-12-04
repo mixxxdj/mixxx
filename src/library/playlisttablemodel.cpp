@@ -66,7 +66,8 @@ void PlaylistTableModel::setTableModel(int playlistId) {
             this, SLOT(playlistChanged(int)));
 }
 
-int PlaylistTableModel::addTracks(const QModelIndex& index, QList<QString> locations) {
+int PlaylistTableModel::addTracks(const QModelIndex& index,
+                                  const QList<QString>& locations) {
     if (locations.size() == 0) {
         return 0;
     }

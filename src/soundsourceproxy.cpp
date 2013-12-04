@@ -35,14 +35,12 @@
 #include "soundsourcemodplug.h"
 #endif
 #include "soundsourceflac.h"
-
-#include "mixxx.h"
 #include "util/cmdlineargs.h"
 
 #include <QLibrary>
 #include <QMutexLocker>
 #include <QMutex>
-#include <QDebug>
+#include <QtDebug>
 #include <QDir>
 #include <QDesktopServices>
 #include <QCoreApplication>

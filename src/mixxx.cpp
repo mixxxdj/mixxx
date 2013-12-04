@@ -16,13 +16,13 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
-#include <QtGui>
 #include <QTranslator>
 #include <QMenu>
 #include <QMenuBar>
 #include <QFileDialog>
 #include <QDesktopWidget>
+#include <QDesktopServices>
+#include <QUrl>
 
 #include "mixxx.h"
 
@@ -410,6 +410,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pControllerManager = new ControllerManager(m_pConfig);
 
     WaveformWidgetFactory::create();
+    WaveformWidgetFactory::instance()->startVSync(this);
     WaveformWidgetFactory::instance()->setConfig(m_pConfig);
 
     m_pSkinLoader = new SkinLoader(m_pConfig);
@@ -882,7 +883,7 @@ void MixxxApp::initActions()
     connect(m_pLibraryRescan, SIGNAL(triggered()),
             this, SLOT(slotScanLibrary()));
 
-    QString createPlaylistTitle = tr("Add &New Playlist");
+    QString createPlaylistTitle = tr("Create &New Playlist");
     QString createPlaylistText = tr("Create a new playlist");
     m_pPlaylistsNew = new QAction(createPlaylistTitle, this);
     m_pPlaylistsNew->setShortcut(
@@ -895,7 +896,7 @@ void MixxxApp::initActions()
     connect(m_pPlaylistsNew, SIGNAL(triggered()),
             m_pLibrary, SLOT(slotCreatePlaylist()));
 
-    QString createCrateTitle = tr("Add New &Crate");
+    QString createCrateTitle = tr("Create New &Crate");
     QString createCrateText = tr("Create a new crate");
     m_pCratesNew = new QAction(createCrateTitle, this);
     m_pCratesNew->setShortcut(
@@ -950,10 +951,17 @@ void MixxxApp::initActions()
     QString preferencesTitle = tr("&Preferences");
     QString preferencesText = tr("Change Mixxx settings (e.g. playback, MIDI, controls)");
     m_pOptionsPreferences = new QAction(preferencesTitle, this);
+#ifdef __APPLE__
+    m_pOptionsPreferences->setShortcut(
+        QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
+                                                  "OptionsMenu_Preferences"),
+                                                  tr("Ctrl+,"))));
+#else
     m_pOptionsPreferences->setShortcut(
         QKeySequence(m_pKbdConfig->getValueString(ConfigKey("[KeyboardShortcuts]",
                                                   "OptionsMenu_Preferences"),
                                                   tr("Ctrl+P"))));
+#endif
     m_pOptionsPreferences->setShortcutContext(Qt::ApplicationShortcut);
     m_pOptionsPreferences->setStatusTip(preferencesText);
     m_pOptionsPreferences->setWhatsThis(buildWhatsThis(preferencesTitle, preferencesText));
@@ -1470,7 +1478,6 @@ void MixxxApp::rebootMixxxView() {
 
     m_pView->hide();
 
-    WaveformWidgetFactory::instance()->stop();
     WaveformWidgetFactory::instance()->destroyWidgets();
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
@@ -1512,14 +1519,12 @@ void MixxxApp::rebootMixxxView() {
         //qDebug() << "view size" << m_pView->size() << size();
     }
 
-    if( wasFullScreen) {
+    if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
         move(initPosition.x() + (initSize.width() - m_pView->width()) / 2,
              initPosition.y() + (initSize.height() - m_pView->height()) / 2);
     }
-
-    WaveformWidgetFactory::instance()->start();
 
 #ifdef __APPLE__
     // Original the following line fixes issue on OSX where menu bar went away
