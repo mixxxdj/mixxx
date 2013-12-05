@@ -1,8 +1,10 @@
-#include <math.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include <QtDebug>
 #include <QApplication>
 #include <QUrl>
+#include <QMimeData>
 
 #include "mathstuff.h"
 #include "wimagestore.h"
