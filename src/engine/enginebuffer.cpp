@@ -655,8 +655,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             // The tempo adjustment in percentage of tempo (1.0 being normal
             // tempo).
             double tempo_adjust = 1.0;
-            // The pitch adjustment in percentage of pitch (1.0 being normal
-            // pitch -- note, this is not measured in octaves or semitones).
+            // The pitch adjustment in percentage of octaves (0.0 being normal
+            // pitch. 1.0 is a full octave shift up).
             double pitch_adjust = pitch;
 
             if (keylock_enabled && !is_scratching) {
