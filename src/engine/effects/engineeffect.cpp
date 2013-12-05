@@ -3,7 +3,6 @@
 EngineEffect::EngineEffect(const EffectManifest& manifest,
                            EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_pProcessor(pInstantiator->instantiate(this, manifest)),
           m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {
@@ -13,6 +12,9 @@ EngineEffect::EngineEffect(const EffectManifest& manifest,
         m_parameters[i] = pParameter;
         m_parametersById[parameter.id()] = pParameter;
     }
+
+    // Creating the processor must come last.
+    m_pProcessor = pInstantiator->instantiate(this, manifest);
 }
 
 EngineEffect::~EngineEffect() {
