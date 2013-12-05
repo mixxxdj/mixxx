@@ -16,7 +16,7 @@
 	Under the following conditions:
 	Attribution - You must attribute the work in the manner specified by the author or licensor
 	(but not in any way that suggests that they endorse you or your use of the work).
-	A attribution should include the following: The name of the author and/or licensor,
+	A attribution should include the following: The name of the author and/or licensor, 
 	the title of the work, the URL that is associated with the work.
 
 	Share Alike - If you alter, transform, or build upon this work, you may distribute
@@ -2243,7 +2243,7 @@
 
 				<!--Spacing between treeview and searchbar-->
 				QTreeView { margin: 6px 0px 0px 0px; }
-
+				
 				<!--triangle for closed/opened branches in treeview-->
 				QTreeView { show-decoration-selected: 0; } <!-- Suppresses that selected sidebar items branch indicator shows wrong color when out of focus ; lp:880588-->
 				QTreeView::branch:has-children:!has-siblings:closed,
@@ -2299,7 +2299,7 @@
 													-->
 													<Text>
 														<TooltipId>text</TooltipId>
-														<Style>QLabel {
+														<Style>QLabel { 
 														font: 11px/13px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
 														background-color: transparent;
 														color: #ACACAC;
@@ -2425,7 +2425,7 @@
 												border-bottom: 1px solid #656565;
 												background: transparent;
 												}
-												</Style>
+												</Style>												
 												<Children>
 												<!--
 												**********************************************
@@ -2442,7 +2442,7 @@
 														<ConfigKey>[PreviewDeck1],PeakIndicator</ConfigKey>
 													</Connection>
 												</StatusLight>
-
+					
 												<!--
 												**********************************************
 												Visual - Volume level display
@@ -2997,43 +2997,19 @@
 						<Style></Style>
 						<Handle>knob_pitch1.png</Handle>
 						<Slider>slider_pitch1.png</Slider>
-						<Pos>0,68</Pos>
+						<Pos>7,68</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Channel1],rate</ConfigKey>
 							<EmitOnDownPress>false</EmitOnDownPress>
 						</Connection>
 					</SliderComposed>
-                                        <SliderComposed>
-						<TooltipId>pitch</TooltipId>
-						<Style></Style>
-						<Handle>knob_pitch1.png</Handle>
-						<Slider>slider_pitch1.png</Slider>
-						<Pos>30,68</Pos>
-						<Horizontal>false</Horizontal>
-						<Connection>
-							<ConfigKey>[Channel1],pitch</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
-						</Connection>
-					</SliderComposed>
 					<SliderComposed>
-						<TooltipId>pitch</TooltipId>
-						<Style></Style>
-						<Handle>knob_pitch1.png</Handle>
-						<Slider>slider_pitch1.png</Slider>
-						<Pos>376,68</Pos>
-						<Horizontal>false</Horizontal>
-						<Connection>
-							<ConfigKey>[Channel2],pitch</ConfigKey>
-							<EmitOnDownPress>false</EmitOnDownPress>
-						</Connection>
-					</SliderComposed>
-                                        <SliderComposed>
 						<TooltipId>rate</TooltipId>
 						<Style></Style>
 						<Handle>knob_pitch1.png</Handle>
 						<Slider>slider_pitch1.png</Slider>
-						<Pos>406,68</Pos>
+						<Pos>393,68</Pos>
 						<Horizontal>false</Horizontal>
 						<Connection>
 							<ConfigKey>[Channel2],rate</ConfigKey>
@@ -3062,7 +3038,7 @@
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 						<Connection>
-							<ConfigKey>[Channel1],sync_key</ConfigKey>
+							<ConfigKey>[Channel1],beatsync_tempo</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>RightButton</ButtonState>
 						</Connection>
@@ -3083,7 +3059,7 @@
 							<ButtonState>LeftButton</ButtonState>
 						</Connection>
 						<Connection>
-							<ConfigKey>[Channel2],sync_key</ConfigKey>
+							<ConfigKey>[Channel2],beatsync_tempo</ConfigKey>
 							<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 							<ButtonState>RightButton</ButtonState>
 						</Connection>
@@ -4155,7 +4131,7 @@
 				<Property>title</Property>
 				<Channel>1</Channel>
 				<Pos>0,1</Pos>
-				<Size>215f,23</Size>
+				<Size>315f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -4193,26 +4169,6 @@
 					<ConfigKey>[Channel1],visual_bpm</ConfigKey>
 				</Connection>
 			</NumberBpm>
-
-			<!--
-			**********************************************
-			Text- Key display
-			**********************************************
-			-->
-			<Key>
-				<TooltipId>visual_key</TooltipId>
-				<Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #0099FF; text-align: left;padding-left: 1px; }
-				</Style>
-				<Channel>1</Channel>
-				<Pos>214,1</Pos>
-				<Size>100,23</Size>
-				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-				<Alignment>right</Alignment>
-				<Connection>
-					<ConfigKey>[Channel1],visual_key</ConfigKey>
-				</Connection>
-			</Key>
 
 			<!--
 			**********************************************
@@ -5273,7 +5229,7 @@
 				<Property>title</Property>
 				<Channel>2</Channel>
 				<Pos>0,1</Pos>
-				<Size>215f,23</Size>
+				<Size>315f,23</Size>
 			</TrackProperty>
 
 			<!--
@@ -5311,26 +5267,6 @@
 					<ConfigKey>[Channel2],visual_bpm</ConfigKey>
 				</Connection>
 			</NumberBpm>
-
-			<!--
-			**********************************************
-			Text- Key display
-			**********************************************
-			-->
-			<Key>
-				<TooltipId>visual_key</TooltipId>
-                                <Style>QLabel { font: bold 18px/20px Lucida Grande, Lucida Sans Unicode, Arial, Verdana, sans-serif;
-				background-color: transparent; color: #E17800; text-align: left;padding-left: 1px; }
-				</Style>
-				<Channel>2</Channel>
-				<Pos>214,1</Pos>
-				<Size>100,23</Size>
-				<!--CSS alignments not respected see bug lp:605530 , lets call <Alignment>-->
-				<Alignment>right</Alignment>
-				<Connection>
-					<ConfigKey>[Channel2],visual_key</ConfigKey>
-				</Connection>
-			</Key>
 
 			<!--
 			**********************************************
