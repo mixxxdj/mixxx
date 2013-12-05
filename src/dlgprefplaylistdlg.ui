@@ -57,6 +57,9 @@
       </item>
       <item row="1" column="0" rowspan="3">
        <widget class="QListView" name="dirList">
+        <property name="editTriggers">
+         <set>QAbstractItemView::NoEditTriggers</set>
+        </property>
         <property name="iconSize">
          <size>
           <width>16</width>
