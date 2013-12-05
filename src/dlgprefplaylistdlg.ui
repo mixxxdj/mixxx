@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string notr="true">Form3</string>
+   <string notr="true">Library Preferences</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -190,66 +190,75 @@
       <string>External Libraries</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <item row="0" column="0" alignment="Qt::AlignHCenter">
+      <item row="8" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>You will need to restart Mixxx for this to take effect</string>
+         <string>You will need to restart Mixxx for these settings to take effect</string>
         </property>
        </widget>
       </item>
-      <item row="1" column="0" alignment="Qt::AlignHCenter">
-       <widget class="QLabel" name="label_4">
+      <item row="0" column="0">
+       <widget class="QCheckBox" name="checkBox_show_rhythmbox">
         <property name="text">
-         <string>All external libraries are shown write protected</string>
+         <string>Show Rhythmbox Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0">
+       <widget class="QCheckBox" name="checkBox_show_banshee">
+        <property name="text">
+         <string>Show Banshee Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <layout class="QGridLayout" name="gridLayout_6">
-        <item row="0" column="0">
-         <widget class="QCheckBox" name="checkBox_show_rhythmbox">
-          <property name="text">
-           <string>Show Rhythmbox Library</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="0">
-         <widget class="QCheckBox" name="checkBox_show_itunes">
-          <property name="text">
-           <string>Show iTunes Library</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="0" column="1">
-         <widget class="QCheckBox" name="checkBox_show_banshee">
-          <property name="text">
-           <string>Show Banshee Library</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="1" column="1">
-         <widget class="QCheckBox" name="checkBox_show_traktor">
-          <property name="text">
-           <string>Show Traktor Library</string>
-          </property>
-          <property name="checked">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-       </layout>
+       <widget class="QCheckBox" name="checkBox_show_itunes">
+        <property name="text">
+         <string>Show iTunes Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QCheckBox" name="checkBox_show_traktor">
+        <property name="text">
+         <string>Show Traktor Library</string>
+        </property>
+        <property name="checked">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="6" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>All other libraries are shown write protected</string>
+        </property>
+       </widget>
       </item>
      </layout>
     </widget>
+   </item>
+   <item>
+    <spacer name="verticalSpacer">
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+     <property name="sizeHint" stdset="0">
+      <size>
+       <width>20</width>
+       <height>40</height>
+      </size>
+     </property>
+    </spacer>
    </item>
   </layout>
  </widget>
