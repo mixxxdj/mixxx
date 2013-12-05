@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>546</width>
-    <height>688</height>
+    <height>600</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -149,23 +149,6 @@
     </widget>
    </item>
    <item>
-    <widget class="QGroupBox" name="groupBoxBundledSongs">
-     <property name="title">
-      <string>Bundled Songs</string>
-     </property>
-     <layout class="QGridLayout" name="gridLayout_3">
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="checkBoxPromoStats">
-        <property name="text">
-         <string>Support Mixxx by counting and sharing bundled songs
-playback and outbound link statistics</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
     <widget class="QGroupBox" name="groupBox_2">
      <property name="title">
       <string>Miscellaneous</string>
@@ -278,7 +261,6 @@ playback and outbound link statistics</string>
   <tabstop>PushButtonRemoveDir</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>pushButtonExtraPlugins</tabstop>
-  <tabstop>checkBoxPromoStats</tabstop>
   <tabstop>checkBox_library_scan</tabstop>
   <tabstop>checkbox_ID3_sync</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
