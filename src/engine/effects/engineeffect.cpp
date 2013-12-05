@@ -1,8 +1,9 @@
 #include "engine/effects/engineeffect.h"
 
-EngineEffect::EngineEffect(const EffectManifest& manifest, EffectProcessor* pProcessor)
+EngineEffect::EngineEffect(const EffectManifest& manifest,
+                           EffectInstantiatorPointer pInstantiator)
         : m_manifest(manifest),
-          m_pProcessor(pProcessor),
+          m_pProcessor(pInstantiator->instantiate(this, manifest)),
           m_parameters(manifest.parameters().size()) {
     const QList<EffectManifestParameter>& parameters = m_manifest.parameters();
     for (int i = 0; i < parameters.size(); ++i) {

@@ -7,28 +7,11 @@
 #include <QString>
 
 #include "effects/effect.h"
+#include "effects/effectinstantiator.h"
 
 class EffectsManager;
 class EffectsBackend;
-class EffectInstantiator {
-  public:
-    virtual ~EffectInstantiator() {}
-    virtual EffectPointer instantiate(EffectsManager* pEffectsManager,
-                                      EffectsBackend* pEffectsBackend,
-                                      const EffectManifest& manifest) = 0;
-};
-
-template <typename T>
-class EffectProcessorInstantiator : public EffectInstantiator {
-  public:
-    EffectPointer instantiate(EffectsManager* pEffectsManager,
-                              EffectsBackend* pEffectsBackend,
-                              const EffectManifest& manifest) {
-        return EffectPointer(new Effect(pEffectsBackend, pEffectsManager,
-                                        manifest, new T(manifest)));
-    }
-};
-
+class EffectProcessor;
 
 // An EffectsBackend is an implementation of a provider of Effect's for use
 // within the rest of Mixxx. The job of the EffectsBackend is to both enumerate
@@ -50,18 +33,20 @@ class EffectsBackend : public QObject {
   protected:
     void registerEffect(const QString& id,
                         const EffectManifest& manifest,
-                        EffectInstantiator* pInstantiator);
+                        EffectInstantiatorPointer pInstantiator);
 
     template <typename EffectProcessorImpl>
     void registerEffect() {
-        registerEffect(EffectProcessorImpl::getId(),
-                       EffectProcessorImpl::getManifest(),
-                       new EffectProcessorInstantiator<EffectProcessorImpl>());
+        registerEffect(
+            EffectProcessorImpl::getId(),
+            EffectProcessorImpl::getManifest(),
+            EffectInstantiatorPointer(
+                new EffectProcessorInstantiator<EffectProcessorImpl>()));
     }
 
   private:
     QString m_name;
-    QMap<QString, QPair<EffectManifest, EffectInstantiator*> > m_registeredEffects;
+    QMap<QString, QPair<EffectManifest, EffectInstantiatorPointer> > m_registeredEffects;
 };
 
 #endif /* EFFECTSBACKEND_H */

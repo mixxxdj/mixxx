@@ -13,14 +13,11 @@
 
 class FilterEffect : public EffectProcessor {
   public:
-    FilterEffect(const EffectManifest& manifest);
+    FilterEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~FilterEffect();
 
     static QString getId();
     static EffectManifest getManifest();
-
-    // See effectprocessor.h
-    void initialize(EngineEffect* pEffect);
 
     // See effectprocessor.h
     void process(const QString& group,

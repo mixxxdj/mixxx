@@ -9,12 +9,14 @@
 
 #include "effects/effectmanifest.h"
 #include "effects/effectprocessor.h"
+#include "effects/effectinstantiator.h"
 #include "engine/effects/engineeffectparameter.h"
 #include "engine/effects/message.h"
 
 class EngineEffect : public EffectsRequestHandler {
   public:
-    EngineEffect(const EffectManifest& manifest, EffectProcessor* pProcessor);
+    EngineEffect(const EffectManifest& manifest,
+                 EffectInstantiatorPointer pInstantiator);
     virtual ~EngineEffect();
 
     const QString& name() const {

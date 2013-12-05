@@ -41,18 +41,14 @@ EffectManifest BitCrusherEffect::getManifest() {
     return manifest;
 }
 
-BitCrusherEffect::BitCrusherEffect(const EffectManifest& manifest)
-        : m_pBitDepthParameter(NULL),
-          m_pDownsampleParameter(NULL) {
+BitCrusherEffect::BitCrusherEffect(EngineEffect* pEffect,
+                                   const EffectManifest& manifest)
+        : m_pBitDepthParameter(pEffect->getParameterById("bit_depth")),
+          m_pDownsampleParameter(pEffect->getParameterById("downsample")) {
 }
 
 BitCrusherEffect::~BitCrusherEffect() {
     qDebug() << debugString() << "destroyed";
-}
-
-void BitCrusherEffect::initialize(EngineEffect* pEffect) {
-    m_pBitDepthParameter = pEffect->getParameterById("bit_depth");
-    m_pDownsampleParameter = pEffect->getParameterById("downsample");
 }
 
 void BitCrusherEffect::process(const QString& group,
@@ -60,6 +56,8 @@ void BitCrusherEffect::process(const QString& group,
                                const unsigned int numSamples) {
     GroupState& group_state = m_groupState[group];
 
+    // TODO(rryan) this is broken. it needs to take into account the sample
+    // rate.
     const CSAMPLE downsample = m_pDownsampleParameter ?
             m_pDownsampleParameter->value().toDouble() : 0.0;
     const CSAMPLE accumulate = 1.0 - downsample;

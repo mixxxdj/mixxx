@@ -9,12 +9,7 @@ EffectsBackend::EffectsBackend(QObject* pParent, QString name)
 }
 
 EffectsBackend::~EffectsBackend() {
-    for (QMap<QString, QPair<EffectManifest, EffectInstantiator*> >::iterator it =
-                 m_registeredEffects.begin();
-         it != m_registeredEffects.end();) {
-        delete it.value().second;
-        it = m_registeredEffects.erase(it);
-    }
+    m_registeredEffects.clear();
 }
 
 const QString EffectsBackend::getName() const {
@@ -23,13 +18,13 @@ const QString EffectsBackend::getName() const {
 
 void EffectsBackend::registerEffect(const QString& id,
                                     const EffectManifest& manifest,
-                                    EffectInstantiator* pInstantiator) {
+                                    EffectInstantiatorPointer pInstantiator) {
     if (m_registeredEffects.contains(id)) {
         qDebug() << "WARNING: Effect" << id << "already registered";
         return;
     }
 
-    m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiator*>(
+    m_registeredEffects[id] = QPair<EffectManifest, EffectInstantiatorPointer>(
         manifest, pInstantiator);
 }
 
@@ -55,9 +50,9 @@ EffectPointer EffectsBackend::instantiateEffect(EffectsManager* pEffectsManager,
         qDebug() << "WARNING: Effect" << effectId << "is not registered.";
         return EffectPointer();
     }
-    QPair<EffectManifest, EffectInstantiator*>& effectInfo =
+    QPair<EffectManifest, EffectInstantiatorPointer>& effectInfo =
             m_registeredEffects[effectId];
-    return effectInfo.second->instantiate(pEffectsManager,
-                                          this, effectInfo.first);
 
+    return EffectPointer(new Effect(this, pEffectsManager,
+                                    effectInfo.first, effectInfo.second));
 }

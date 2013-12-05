@@ -12,14 +12,11 @@
 
 class FlangerEffect : public EffectProcessor {
   public:
-    FlangerEffect(const EffectManifest& manifest);
+    FlangerEffect(EngineEffect* pEffect, const EffectManifest& manifest);
     virtual ~FlangerEffect();
 
     static QString getId();
     static EffectManifest getManifest();
-
-    // See effectprocessor.h
-    void initialize(EngineEffect* pEffect);
 
     // See effectprocessor.h
     void process(const QString& group,

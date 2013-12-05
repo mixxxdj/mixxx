@@ -11,8 +11,6 @@ class EffectProcessor {
   public:
     virtual ~EffectProcessor() { }
 
-    virtual void initialize(EngineEffect* pEffect) = 0;
-
     // Take a buffer of numSamples samples of audio from group, provided as
     // pInput, process the buffer according to Effect-specific logic, and output
     // it to the buffer pOutput. If pInput is equal to pOutput, then the

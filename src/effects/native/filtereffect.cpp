@@ -53,10 +53,13 @@ EffectManifest FilterEffect::getManifest() {
     return manifest;
 }
 
-FilterEffect::FilterEffect(const EffectManifest& manifest)
-        : m_pDepthParameter(NULL),
-          m_pBandpassWidthParameter(NULL),
-          m_pBandpassGainParameter(NULL) {
+FilterEffect::FilterEffect(EngineEffect* pEffect,
+                           const EffectManifest& manifest)
+        : m_pDepthParameter(pEffect->getParameterById("depth")),
+          m_pBandpassWidthParameter(
+              pEffect->getParameterById("bandpass_width")),
+          m_pBandpassGainParameter(
+              pEffect->getParameterById("bandpass_gain")) {
 }
 
 FilterEffect::~FilterEffect() {
@@ -66,12 +69,6 @@ FilterEffect::~FilterEffect() {
         delete it.value();
         it = m_groupState.erase(it);
     }
-}
-
-void FilterEffect::initialize(EngineEffect* pEffect) {
-    m_pDepthParameter = pEffect->getParameterById("depth");
-    m_pBandpassWidthParameter = pEffect->getParameterById("bandpass_width");
-    m_pBandpassGainParameter = pEffect->getParameterById("bandpass_gain");
 }
 
 double getLowFrequencyCorner(double depth) {

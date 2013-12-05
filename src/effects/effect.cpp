@@ -7,11 +7,11 @@
 
 Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
                const EffectManifest& manifest,
-               EffectProcessor* pProcessor)
+               EffectInstantiatorPointer pInstantiator)
         : QObject(pParent),
           m_pEffectsManager(pEffectsManager),
           m_manifest(manifest),
-          m_pEngineEffect(new EngineEffect(manifest, pProcessor)) {
+          m_pEngineEffect(new EngineEffect(manifest, pInstantiator)) {
     foreach (const EffectManifestParameter& parameter, m_manifest.parameters()) {
         EffectParameter* pParameter = new EffectParameter(
             this, pEffectsManager, m_parameters.size(), parameter);
@@ -21,7 +21,6 @@ Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
         }
         m_parametersById[parameter.id()] = pParameter;
     }
-    pProcessor->initialize(m_pEngineEffect);
 }
 
 Effect::~Effect() {

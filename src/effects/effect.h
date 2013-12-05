@@ -7,6 +7,7 @@
 #include "util.h"
 #include "effects/effectmanifest.h"
 #include "effects/effectparameter.h"
+#include "effects/effectinstantiator.h"
 
 class EffectProcessor;
 class EngineEffect;
@@ -23,7 +24,8 @@ class Effect : public QObject {
     Q_OBJECT
   public:
     Effect(QObject* pParent, EffectsManager* pEffectsManager,
-           const EffectManifest& manifest, EffectProcessor* pProcessor);
+           const EffectManifest& manifest,
+           EffectInstantiatorPointer pInstantiator);
     virtual ~Effect();
 
     const EffectManifest& getManifest() const;

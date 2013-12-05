@@ -61,20 +61,15 @@ EffectManifest FlangerEffect::getManifest() {
     return manifest;
 }
 
-FlangerEffect::FlangerEffect(const EffectManifest& manifest)
-        : m_pPeriodParameter(NULL),
-          m_pDepthParameter(NULL),
-          m_pDelayParameter(NULL) {
+FlangerEffect::FlangerEffect(EngineEffect* pEffect,
+                             const EffectManifest& manifest)
+        : m_pPeriodParameter(pEffect->getParameterById("period")),
+          m_pDepthParameter(pEffect->getParameterById("depth")),
+          m_pDelayParameter(pEffect->getParameterById("delay")) {
 }
 
 FlangerEffect::~FlangerEffect() {
     qDebug() << debugString() << "destroyed";
-}
-
-void FlangerEffect::initialize(EngineEffect* pEffect) {
-    m_pPeriodParameter = pEffect->getParameterById("period");
-    m_pDepthParameter = pEffect->getParameterById("depth");
-    m_pDelayParameter = pEffect->getParameterById("delay");
 }
 
 void FlangerEffect::process(const QString& group,
