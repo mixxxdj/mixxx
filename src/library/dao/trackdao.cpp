@@ -432,8 +432,8 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
     bindTrackToTrackLocationsInsert(pTrack);
 
     if (!m_pQueryTrackLocationInsert->exec()) {
-        qDebug() << "Location " << pTrack->getLocation() << " is already in the DB";
-        LOG_FAILED_QUERY(*m_pQueryTrackLocationInsert);
+        LOG_FAILED_QUERY(*m_pQueryTrackLocationInsert)
+            << "Location " << pTrack->getLocation() << " is already in the DB";
         // Inserting into track_locations failed, so the file already
         // exists. Query for its trackLocationId.
 
@@ -729,7 +729,7 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
 
     FieldEscaper escaper(m_database);
     QStringList locationList;
-    QStringList dirList;
+    QSet<QString> dirs;
     QSqlRecord queryRecord = query.record();
     const int locationColumn = queryRecord.indexOf("location");
     const int directoryColumn = queryRecord.indexOf("directory");
@@ -737,7 +737,7 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
         QString filePath = query.value(locationColumn).toString();
         locationList << escaper.escapeString(filePath);
         QString directory = query.value(directoryColumn).toString();
-        dirList << escaper.escapeString(directory);
+        dirs << escaper.escapeString(directory);
     }
 
     if (locationList.empty()) {
@@ -761,6 +761,7 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     // mark LibraryHash with needs_verification and invalidate the hash
     // in case the file was not deleted to detect it on a rescan
     // TODO(XXX) delegate to libraryHashDAO
+    QStringList dirList = QStringList::fromSet(dirs);
     query.prepare(QString("UPDATE LibraryHashes SET needs_verification=1, "
                           "hash=-1 WHERE directory_path in (%1)").arg(dirList.join(",")));
     if (!query.exec()) {
