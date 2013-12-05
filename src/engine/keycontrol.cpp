@@ -89,6 +89,23 @@ void KeyControl::slotRateChanged() {
     // caused by it.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     bool bKeylock = m_pKeylock->get() > 0;
+
+    // If we just turned keylock on or off, adjust the pitch so that the
+    // effective key stays the same. This is only relevant when m_dOldRate !=
+    // 1.0 because that's the only case when rate adjustment causes pitch
+    // change.
+    if (m_dOldRate != 1.0) {
+        if (bKeylock && !m_bOldKeylock) {
+            double pitch = m_pPitch->get();
+            double pitchAdjust = KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+            m_pPitch->set(pitch + pitchAdjust);
+        } else if (!bKeylock && m_bOldKeylock) {
+            double pitch = m_pPitch->get();
+            double pitchAdjust = KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+            m_pPitch->set(pitch - pitchAdjust);
+        }
+    }
+
     if (m_dOldRate != dRate || bKeylock != m_bOldKeylock) {
         m_dOldRate = dRate;
         m_bOldKeylock = bKeylock;
