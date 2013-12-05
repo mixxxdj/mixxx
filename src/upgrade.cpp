@@ -18,9 +18,12 @@
 #include <QPixmap>
 #include <QMessageBox>
 #include <QTranslator>
+
 #include "defs_version.h"
 #include "controllers/defs_controllers.h"
 #include "track/beat_preferences.h"
+#include "library/trackcollection.h"
+#include "library/library_preferences.h"
 #include "configobject.h"
 #include "upgrade.h"
 
@@ -324,12 +327,15 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Upgrade Failed";
         }
     }
-    // Next applicable release goes here
-    /*
     if (configVersion.startsWith("1.11")) {
         qDebug() << "Upgrading from v1.11.x...";
 
-        // Upgrade tasks go here
+        QString currentFolder = config->getValueString(PREF_LEGACY_LIBRARY_DIR);
+        // to migrate the DB just add the current directory to the new
+        // directories table
+        TrackCollection tc(config);
+        DirectoryDAO directoryDAO = tc.getDirectoryDAO();
+        bool successful = directoryDAO.addDirectory(currentFolder);
 
         if (successful) {
             configVersion = VERSION;
@@ -340,7 +346,6 @@ ConfigObject<ConfigValue>* Upgrade::versionUpgrade(const QString& settingsPath) 
             qDebug() << "Upgrade failed!\n";
         }
     }
-    */
 
     if (configVersion == VERSION) qDebug() << "Configuration file is now at the current version" << VERSION;
     else {

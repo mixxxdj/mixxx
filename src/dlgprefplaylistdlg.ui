@@ -6,12 +6,12 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>649</width>
-    <height>584</height>
+    <width>546</width>
+    <height>688</height>
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Library Preferences</string>
+   <string notr="true">Form3</string>
   </property>
   <layout class="QVBoxLayout" name="verticalLayout">
    <item>
@@ -41,30 +41,47 @@
          <bool>false</bool>
         </property>
         <property name="buddy">
-         <cstring>LineEditSongfiles</cstring>
+         <cstring>dirList</cstring>
         </property>
        </widget>
       </item>
-      <item row="0" column="1">
-       <widget class="QLineEdit" name="LineEditSongfiles">
-        <property name="minimumSize">
-         <size>
-          <width>100</width>
-          <height>10</height>
-         </size>
-        </property>
-        <property name="font">
-         <font/>
-        </property>
-       </widget>
-      </item>
-      <item row="0" column="2">
-       <widget class="QPushButton" name="PushButtonBrowsePlaylist">
+      <item row="3" column="1">
+       <widget class="QPushButton" name="PushButtonRemoveDir">
         <property name="font">
          <font/>
         </property>
         <property name="text">
-         <string>Browse...</string>
+         <string>Remove</string>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="0" rowspan="3">
+       <widget class="QListView" name="dirList">
+        <property name="iconSize">
+         <size>
+          <width>16</width>
+          <height>16</height>
+         </size>
+        </property>
+        <property name="uniformItemSizes">
+         <bool>true</bool>
+        </property>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QPushButton" name="PushButtonAddDir">
+        <property name="font">
+         <font/>
+        </property>
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QPushButton" name="PushButtonRelocateDir">
+        <property name="text">
+         <string>Relocate</string>
         </property>
        </widget>
       </item>
@@ -140,7 +157,8 @@
       <item row="0" column="0">
        <widget class="QCheckBox" name="checkBoxPromoStats">
         <property name="text">
-         <string>Support Mixxx by counting and sharing bundled song playback and outbound link statistics</string>
+         <string>Support Mixxx by counting and sharing bundled songs
+playback and outbound link statistics</string>
         </property>
        </widget>
       </item>
@@ -186,85 +204,78 @@
    <item>
     <widget class="QGroupBox" name="groupBox_3">
      <property name="title">
-      <string>Other Libraries </string>
+      <string>External Libraries</string>
      </property>
      <layout class="QGridLayout" name="gridLayout_5">
-      <item row="7" column="0">
+      <item row="0" column="0" alignment="Qt::AlignHCenter">
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>You will need to restart Mixxx for these settings to take effect</string>
+         <string>You will need to restart Mixxx for this to take effect</string>
         </property>
        </widget>
       </item>
-      <item row="0" column="0">
-       <widget class="QCheckBox" name="checkBox_show_rhythmbox">
+      <item row="1" column="0" alignment="Qt::AlignHCenter">
+       <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>Show Rhythmbox Library</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="1" column="0">
-       <widget class="QCheckBox" name="checkBox_show_banshee">
-        <property name="text">
-         <string>Show Banshee Library</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
+         <string>All external libraries are shown write protected</string>
         </property>
        </widget>
       </item>
       <item row="2" column="0">
-       <widget class="QCheckBox" name="checkBox_show_itunes">
-        <property name="text">
-         <string>Show iTunes Library</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="4" column="0">
-       <widget class="QCheckBox" name="checkBox_show_traktor">
-        <property name="text">
-         <string>Show Traktor Library</string>
-        </property>
-        <property name="checked">
-         <bool>true</bool>
-        </property>
-       </widget>
-      </item>
-      <item row="5" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>All other libraries are shown write protected</string>
-        </property>
-       </widget>
+       <layout class="QGridLayout" name="gridLayout_6">
+        <item row="0" column="0">
+         <widget class="QCheckBox" name="checkBox_show_rhythmbox">
+          <property name="text">
+           <string>Show Rhythmbox Library</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="0">
+         <widget class="QCheckBox" name="checkBox_show_itunes">
+          <property name="text">
+           <string>Show iTunes Library</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="1">
+         <widget class="QCheckBox" name="checkBox_show_banshee">
+          <property name="text">
+           <string>Show Banshee Library</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="1">
+         <widget class="QCheckBox" name="checkBox_show_traktor">
+          <property name="text">
+           <string>Show Traktor Library</string>
+          </property>
+          <property name="checked">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>
-   </item>
-   <item>
-    <spacer name="verticalSpacer">
-     <property name="orientation">
-      <enum>Qt::Vertical</enum>
-     </property>
-     <property name="sizeHint" stdset="0">
-      <size>
-       <width>20</width>
-       <height>40</height>
-      </size>
-     </property>
-    </spacer>
    </item>
   </layout>
  </widget>
  <layoutdefault spacing="6" margin="11"/>
  <tabstops>
-  <tabstop>LineEditSongfiles</tabstop>
-  <tabstop>PushButtonBrowsePlaylist</tabstop>
+  <tabstop>dirList</tabstop>
+  <tabstop>PushButtonAddDir</tabstop>
+  <tabstop>PushButtonRelocateDir</tabstop>
+  <tabstop>PushButtonRemoveDir</tabstop>
   <tabstop>pushButton</tabstop>
   <tabstop>pushButtonExtraPlugins</tabstop>
   <tabstop>checkBoxPromoStats</tabstop>
@@ -272,6 +283,7 @@
   <tabstop>checkbox_ID3_sync</tabstop>
   <tabstop>checkBox_use_relative_path</tabstop>
   <tabstop>checkBox_show_rhythmbox</tabstop>
+  <tabstop>checkBox_show_banshee</tabstop>
   <tabstop>checkBox_show_itunes</tabstop>
   <tabstop>checkBox_show_traktor</tabstop>
  </tabstops>
