@@ -2,9 +2,11 @@
 #define CONTROLVALUE_H
 
 #include <limits>
-#include "util/compatibility.h"
+
 #include <QAtomicInt>
 #include <QObject>
+
+#include "util/compatibility.h"
 
 // for look free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
