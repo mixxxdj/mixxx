@@ -18,10 +18,12 @@
 #ifndef DLGPREFPLAYLIST_H
 #define DLGPREFPLAYLIST_H
 
+#include <QStandardItemModel>
 #include <QWidget>
 
 #include "ui_dlgprefplaylistdlg.h"
 #include "configobject.h"
+#include "library/library.h"
 #include "preferences/dlgpreferencepage.h"
 
 /**
@@ -31,14 +33,17 @@
 class DlgPrefPlaylist : public DlgPreferencePage, public Ui::DlgPrefPlaylistDlg  {
     Q_OBJECT
   public:
-    DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *config);
+    DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *config,
+                    Library *pLibrary);
     virtual ~DlgPrefPlaylist();
 
   public slots:
     // Update widget
     void slotUpdate();
     // Dialog to browse for music file directory
-    void slotBrowseDir();
+    void slotAddDir();
+    void slotRemoveDir();
+    void slotRelocateDir();
     // Apply changes to widget
     void slotApply();
 
@@ -46,9 +51,15 @@ class DlgPrefPlaylist : public DlgPreferencePage, public Ui::DlgPrefPlaylistDlg 
 
   signals:
     void apply();
+    void requestAddDir(QString dir);
+    void requestRemoveDir(QString dir, bool removeAll);
+    void requestRelocateDir(QString currentDir, QString newDir);
 
   private:
+    void initialiseDirList();
+    QStandardItemModel m_dirListModel;
     ConfigObject<ConfigValue>* m_pconfig;
+    Library *m_pLibrary;
 };
 
 #endif
