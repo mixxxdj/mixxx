@@ -401,7 +401,6 @@ void TrackDAO::addTracksPrepare() {
             "timesplayed, channels, mixxx_deleted, header_parsed, "
             "beats_version, beats_sub_version, beats, bpm_lock, "
             "keys_version, keys_sub_version, keys) "
-            "beats_version, beats_sub_version, beats, bpm_lock) "
             "VALUES ("
             ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
             ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
