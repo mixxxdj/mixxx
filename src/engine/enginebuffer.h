@@ -35,6 +35,7 @@
 
 class EngineControl;
 class BpmControl;
+class KeyControl;
 class RateControl;
 class LoopingControl;
 class ClockControl;
@@ -52,6 +53,8 @@ class EngineBufferScale;
 class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
+class EngineBufferScaleRubberBand;
+class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
@@ -88,7 +91,8 @@ const int ENGINE_RAMP_UP = 1;
 class EngineBuffer : public EngineObject {
      Q_OBJECT
 public:
-    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
+    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config,
+                 EngineMaster* pMixingEngine);
     ~EngineBuffer();
     bool getPitchIndpTimeStretch(void);
 
