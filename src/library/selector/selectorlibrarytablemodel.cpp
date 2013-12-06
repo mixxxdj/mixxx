@@ -14,7 +14,6 @@
 
 #include "track/keyutils.h"
 #include "track/timbreutils.h"
-#include "track/tagutils.h"
 
 #include "util/timer.h"
 
@@ -100,7 +99,6 @@ void SelectorLibraryTableModel::setSeedTrack(TrackPointer pSeedTrack) {
         m_fSeedTrackBpm = m_pSeedTrack->getBpm();
         m_seedTrackKey = m_pSeedTrack->getKey();
         m_pSeedTrackTimbre = m_pSeedTrack->getTimbre();
-        m_seedTrackTags = m_pSeedTrack->getTags();
     } else {
         clearSeedTrackInfo();
     }
@@ -280,7 +278,6 @@ void SelectorLibraryTableModel::clearSeedTrackInfo() {
     m_fSeedTrackBpm = 0;
     m_seedTrackKey = mixxx::track::io::key::INVALID;
     m_pSeedTrackTimbre = TimbrePointer();
-    m_seedTrackTags = TagCounts();
 }
 
 void SelectorLibraryTableModel::updateFilterText() {

@@ -8,7 +8,6 @@
 #include "trackinfoobject.h"
 #include "library/libraryview.h"
 #include "library/trackmodel.h" // Can't forward declare enums
-#include "lastfm/lastfmtagfetcher.h"
 #include "dlgtagfetcher.h"
 #include "widget/wlibrarytableview.h"
 #include "dlgtagfetcher.h"
@@ -68,7 +67,6 @@ class WTrackTableView : public WLibraryTableView {
     void slotReloadTrackMetadata();
     void slotResetPlayed();
     void slotSetSeedTrack();
-    void slotFetchLastFmTags();
     void addSelectionToPlaylist(int iPlaylistId);
     void addSelectionToCrate(int iCrateId);
     void loadSelectionToGroup(QString group, bool play = false);
@@ -99,8 +97,6 @@ class WTrackTableView : public WLibraryTableView {
     ConfigObject<ConfigValue> * m_pConfig;
     TrackCollection* m_pTrackCollection;
 
-    LastFmTagFetcher m_LastFmTagFetcher;
-
     QSignalMapper m_loadTrackMapper;
 
     DlgTrackInfo* m_pTrackInfo;
@@ -119,9 +115,6 @@ class WTrackTableView : public WLibraryTableView {
     // Reload Track Metadata Action:
     QAction *m_pReloadMetadataAct;
     QAction *m_pReloadMetadataFromMusicBrainzAct;
-
-    // Last.fm download
-    QAction *m_pFetchLastFmTagsAct;
 
     // Use as seed track for selector
     QAction *m_pSetSeedTrack;

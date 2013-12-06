@@ -12,6 +12,5 @@
 #define FILTER_KEY_RELATIVE "FilterKeyRelative"
 #define TIMBRE_COEFFICIENT "TimbreCoefficient"
 #define RHYTHM_COEFFICIENT "RhythmCoefficient"
-#define LASTFM_COEFFICIENT "LastFmCoefficient"
 
 #endif // SELECTOR_PREFERENCES_H

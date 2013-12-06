@@ -64,7 +64,6 @@ class AnalysisDao;
 class CueDAO;
 class CrateDAO;
 class DirectoryDAO;
-class SocialTagDao;
 
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
@@ -74,7 +73,6 @@ class TrackDAO : public QObject, public virtual DAO {
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
              AnalysisDao& analysisDao, DirectoryDAO& directoryDao,
-             SocialTagDao& socialTagDao,
              ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~TrackDAO();
 
@@ -160,7 +158,6 @@ class TrackDAO : public QObject, public virtual DAO {
     CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
     DirectoryDAO& m_directoryDAO;
-    SocialTagDao& m_socialTagDao;
     ConfigObject<ConfigValue>* m_pConfig;
     static QHash<int, TrackWeakPointer> m_sTracks;
     static QMutex m_sTracksMutex;

@@ -4,7 +4,6 @@
 #include "trackinfoobject.h"
 #include "track/timbre.h"
 #include "track/keyutils.h"
-#include "track/tagutils.h"
 
 #include "library/selector/selector_preferences.h"
 

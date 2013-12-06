@@ -32,7 +32,6 @@
 #include "track/beats.h"
 #include "track/keys.h"
 #include "track/timbre.h"
-#include "track/tagutils.h"
 #include "proto/keys.pb.h"
 #include "proto/timbre.pb.h"
 #include "library/dao/cue.h"
@@ -268,8 +267,6 @@ public:
     TimbrePointer getTimbre() const;
     void setTimbre(TimbrePointer pTimbre);
 
-    TagCounts getTags() const;
-    void setTags(const TagCounts& pTags);
 
   public slots:
     void slotCueUpdated();
@@ -384,8 +381,6 @@ public:
     Keys m_keys;
 
     TimbrePointer m_pTimbre;
-
-    TagCounts m_pTagCounts;
 
     /** BPM lock **/
     bool m_bBpmLock;

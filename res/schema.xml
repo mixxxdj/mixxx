@@ -385,26 +385,12 @@ METADATA
   </revision>
    <revision version="24" min_compatible="3">
     <description>
-            Add timbre column and social tags table.
+            Add timbre column
     </description>
     <sql>
       ALTER TABLE Library ADD COLUMN timbre BLOB;
       ALTER TABLE Library ADD COLUMN timbre_version TEXT;
       ALTER TABLE Library ADD COLUMN timbre_sub_version TEXT;
-      CREATE TABLE IF NOT EXISTS social_tags (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        name TEXT,
-        source TEXT,
-        UNIQUE (name, source)
-      );
-      CREATE TABLE IF NOT EXISTS track_social_tags (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        track_id INTEGER NOT NULL REFERENCES track_locations(id),
-        tag_id INTEGER NOT NULL REFERENCES social_tags(id),
-        count INTEGER DEFAULT 0 NOT NULL,
-        last_updated DEFAULT CURRENT_TIMESTAMP,
-        UNIQUE (track_id, tag_id)
-      );
     </sql>
 
 </schema>

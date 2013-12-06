@@ -581,9 +581,6 @@ class MixxxCore(Feature):
                    "musicbrainz/chromaprinter.cpp",
                    "musicbrainz/musicbrainzclient.cpp",
 
-                   "lastfm/lastfmtagfetcher.cpp",
-                   "lastfm/lastfmclient.cpp",
-
                    "rotary.cpp",
                    "widget/wtracktableview.cpp",
                    "widget/wtracktableviewheader.cpp",
@@ -657,7 +654,6 @@ class MixxxCore(Feature):
                    "library/dao/libraryhashdao.cpp",
                    "library/dao/settingsdao.cpp",
                    "library/dao/analysisdao.cpp",
-                   "library/dao/socialtagdao.cpp",
 
                    "library/librarycontrol.cpp",
                    "library/schemamanager.cpp",
@@ -742,7 +738,6 @@ class MixxxCore(Feature):
                    "track/keys.cpp",
                    "track/keyfactory.cpp",
                    "track/keyutils.cpp",
-                   "track/tagutils.cpp",
                    "track/timbre.cpp",
                    "track/timbrefactory.cpp",
                    "track/timbreutils.cpp",

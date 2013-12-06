@@ -14,8 +14,6 @@
 #include <QXmlStreamReader>
 #include <QUrl>
 
-#include "track/tagutils.h"
-
 #include "musicbrainzclient.h"
 
 const QString MusicBrainzClient::m_TrackUrl = "http://musicbrainz.org/ws/2/recording/";
@@ -32,7 +30,7 @@ void MusicBrainzClient::start(int id, const QString& mbid) {
     typedef QPair<QString, QString> Param;
 
     QList<Param> parameters;
-    parameters << Param("inc", "artists+releases+media+tags");
+    parameters << Param("inc", "artists+releases+media");
 
     QUrl url(m_TrackUrl + mbid);
     url.setQueryItems(parameters);
@@ -109,8 +107,6 @@ MusicBrainzClient::ResultList MusicBrainzClient::parseTrack(QXmlStreamReader& re
                 parseArtist(reader, result.m_artist);
             } else if (name == "release") {
                 releases << parseRelease(reader);
-            } else if (name == "tag-list") {
-                result.m_tags = parseTags(reader);
             }
         }
 
@@ -132,28 +128,12 @@ void MusicBrainzClient::parseArtist(QXmlStreamReader& reader, QString& artist) {
 
         if (type == QXmlStreamReader::StartElement && reader.name() == "name") {
             artist = reader.readElementText();
+        }
+
+        if (type == QXmlStreamReader::EndElement && reader.name() == "artist") {
             return;
         }
     }
-}
-
-TagCounts MusicBrainzClient::parseTags(QXmlStreamReader &reader) {
-    TagCounts ret;
-    QString tag_name;
-
-    while (!reader.atEnd()) {
-        QXmlStreamReader::TokenType type = reader.readNext();
-
-        if (type == QXmlStreamReader::StartElement && reader.name() == "name") {
-            tag_name = reader.readElementText();
-            ret.insert(tag_name, 1);
-        }
-        if (type == QXmlStreamReader::EndElement &&
-                reader.name() == "tag-list") {
-            break;
-        }
-    }
-    return ret;
 }
 
 MusicBrainzClient::Release MusicBrainzClient::parseRelease(QXmlStreamReader& reader) {

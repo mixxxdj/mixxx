@@ -26,7 +26,6 @@ WTrackTableView::WTrackTableView(QWidget * parent,
                                       WTRACKTABLEVIEW_VSCROLLBARPOS_KEY)),
           m_pConfig(pConfig),
           m_pTrackCollection(pTrackCollection),
-          m_LastFmTagFetcher(NULL),
           m_DlgTagFetcher(NULL),
           m_sorting(sorting) {
     // Give a NULL parent because otherwise it inherits our style which can make
@@ -113,7 +112,6 @@ WTrackTableView::~WTrackTableView() {
     }
 
     delete m_pSetSeedTrack;
-    delete m_pFetchLastFmTagsAct;
     delete m_pReloadMetadataAct;
     delete m_pReloadMetadataFromMusicBrainzAct;
     delete m_pAddToPreviewDeck;
@@ -334,10 +332,6 @@ void WTrackTableView::createActions() {
     m_pSetSeedTrack = new QAction(tr("Get Follow-up Tracks"), this);
     connect(m_pSetSeedTrack, SIGNAL(triggered()),
             this, SLOT(slotSetSeedTrack()));
-
-    m_pFetchLastFmTagsAct = new QAction(tr("Fetch Tags from Last.fm"), this);
-    connect(m_pFetchLastFmTagsAct, SIGNAL(triggered()),
-            this, SLOT(slotFetchLastFmTags()));
 
     m_pAddToPreviewDeck = new QAction(tr("Load to Preview Deck"), this);
     // currently there is only one preview deck so just map it here.
@@ -769,8 +763,6 @@ void WTrackTableView::contextMenuEvent(QContextMenuEvent* event) {
 
         m_pSetSeedTrack->setEnabled(oneSongSelected);
         m_pMenu->addAction(m_pSetSeedTrack);
-        m_pFetchLastFmTagsAct->setEnabled(oneSongSelected);
-        m_pMenu->addAction(m_pFetchLastFmTagsAct);
 
     }
     // REMOVE and HIDE should not be at the first menu position to avoid accidental clicks
@@ -1263,23 +1255,6 @@ void WTrackTableView::slotSetSeedTrack() {
             emit(setSeedTrack(pTrack));
             emit(switchToSelector());
         }
-    }
-}
-
-void WTrackTableView::slotFetchLastFmTags() {
-    QModelIndexList indices = selectionModel()->selectedRows();
-    TrackModel* trackModel = getTrackModel();
-
-    if (trackModel == NULL) {
-        return;
-    }
-
-    foreach (QModelIndex index, indices) {
-        TrackPointer pTrack = trackModel->getTrack(index);
-        if (pTrack) {
-            m_LastFmTagFetcher.startFetch(pTrack);
-        }
-
     }
 }
 

@@ -58,7 +58,6 @@ class SelectorSimilarity : public QObject {
     // having to initiate a class instance
     static double timbreSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
     static double rhythmSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
-    static double tagSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
 
     SelectorFilters& m_selectorFilters;
 };

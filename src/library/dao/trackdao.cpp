@@ -17,7 +17,6 @@
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/directorydao.h"
-#include "library/dao/socialtagdao.h"
 
 QHash<int, TrackWeakPointer> TrackDAO::m_sTracks;
 QMutex TrackDAO::m_sTracksMutex;
@@ -37,7 +36,6 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
                    CrateDAO& crateDao,
                    AnalysisDao& analysisDao,
                    DirectoryDAO& directoryDao,
-                   SocialTagDao& socialTagDao,
                    ConfigObject<ConfigValue> * pConfig)
         : m_database(database),
           m_cueDao(cueDao),
@@ -45,7 +43,6 @@ TrackDAO::TrackDAO(QSqlDatabase& database,
           m_crateDao(crateDao),
           m_analysisDao(analysisDao),
           m_directoryDAO(directoryDao),
-          m_socialTagDao(socialTagDao),
           m_pConfig(pConfig),
           m_trackCache(TRACK_CACHE_SIZE),
           m_pQueryTrackLocationInsert(NULL),
@@ -560,7 +557,6 @@ bool TrackDAO::addTracksAdd(TrackInfoObject* pTrack, bool unremove) {
         pTrack->setId(trackId);
         m_analysisDao.saveTrackAnalyses(pTrack);
         m_cueDao.saveTrackCues(trackId, pTrack);
-        m_socialTagDao.saveTrackTags(trackId, pTrack);
         pTrack->setDirty(false);
     }
     m_tracksAddedSet.insert(trackId);
@@ -829,7 +825,6 @@ void TrackDAO::purgeTracks(const QList<int>& ids) {
     m_playlistDao.removeTracksFromPlaylists(ids);
     m_crateDao.removeTracksFromCrates(ids);
     m_analysisDao.deleteAnalysises(ids);
-    m_socialTagDao.clearTagsForTracks(ids);
 
     QSet<int> tracksRemovedSet = QSet<int>::fromList(ids);
     emit(tracksRemoved(tracksRemovedSet));
@@ -1024,7 +1019,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setLocation(location);
             pTrack->setHeaderParsed(header_parsed);
             pTrack->setCuePoints(m_cueDao.getCuesForTrack(id));
-            pTrack->setTags(m_socialTagDao.getTagsForTrack(id));
 
             // Normally we will set the track as clean but sometimes when
             // loading from the database we need to perform upkeep that ought to
@@ -1248,7 +1242,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     time.start();
     m_analysisDao.saveTrackAnalyses(pTrack);
     m_cueDao.saveTrackCues(trackId, pTrack);
-    m_socialTagDao.saveTrackTags(trackId, pTrack);
     transaction.commit();
 
     //qDebug() << "Update track in database took: " << time.elapsed() << "ms";

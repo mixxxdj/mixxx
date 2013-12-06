@@ -33,7 +33,6 @@
 #include "track/keyfactory.h"
 #include "track/keyutils.h"
 #include "util/compatibility.h"
-#include "track/tagutils.h"
 #include "mixxxutils.cpp"
 
 
@@ -838,17 +837,6 @@ TimbrePointer TrackInfoObject::getTimbre() const {
 void TrackInfoObject::setTimbre(TimbrePointer pTimbre) {
     QMutexLocker lock(&m_qMutex);
     m_pTimbre = pTimbre;
-    setDirty(true);
-}
-
-TagCounts TrackInfoObject::getTags() const {
-    QMutexLocker lock(&m_qMutex);
-    return m_pTagCounts;
-}
-
-void TrackInfoObject::setTags(const TagCounts& pTagCounts) {
-    QMutexLocker lock(&m_qMutex);
-    m_pTagCounts = pTagCounts;
     setDirty(true);
 }
 

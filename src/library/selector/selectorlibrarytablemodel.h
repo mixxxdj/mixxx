@@ -9,7 +9,6 @@
 #include "controlobjectthreadmain.h"
 #include "library/librarytablemodel.h"
 #include "track/timbre.h"
-#include "track/tagutils.h"
 #include "library/selector/scorepair.h"
 #include "library/selector/selectorfilters.h"
 #include "library/selector/selectorsimilarity.h"
@@ -72,7 +71,6 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     float m_fSeedTrackBpm;
     mixxx::track::io::key::ChromaticKey m_seedTrackKey;
     TimbrePointer m_pSeedTrackTimbre;
-    TagCounts m_seedTrackTags;
 
     QString m_pChannel;
     QString m_filterString;
