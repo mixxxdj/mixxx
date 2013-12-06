@@ -43,6 +43,7 @@ public:
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
+    QStringList getDirs();
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
@@ -64,6 +65,9 @@ public:
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
+    void slotRequestAddDir(QString);
+    void slotRequestRemoveDir(QString, bool);
+    void slotRequestRelocateDir(QString,QString);
     void onSkinLoadFinished();
 
   signals:

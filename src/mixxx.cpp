@@ -37,6 +37,7 @@
 #include "engine/enginemicrophone.h"
 #include "engine/enginepassthrough.h"
 #include "library/library.h"
+#include "library/library_preferences.h"
 #include "library/libraryscanner.h"
 #include "library/librarytablemodel.h"
 #include "controllers/controllermanager.h"
@@ -312,37 +313,12 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pEngine->addChannel(pPassthrough2);
     m_pSoundManager->registerInput(passthroughInput2, pPassthrough2);
 
-    // Get Music dir
-    bool hasChanged_MusicDir = false;
-    QDir dir(m_pConfig->getValueString(ConfigKey("[Playlist]","Directory")));
-    if (m_pConfig->getValueString(
-        ConfigKey("[Playlist]","Directory")).length() < 1 || !dir.exists())
-    {
-        // TODO this needs to be smarter, we can't distinguish between an empty
-        // path return value (not sure if this is normally possible, but it is
-        // possible with the Windows 7 "Music" library, which is what
-        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
-        // resolves to) and a user hitting 'cancel'. If we get a blank return
-        // but the user didn't hit cancel, we need to know this and let the
-        // user take some course of action -- bkgood
-        QString fd = QFileDialog::getExistingDirectory(
-            this, tr("Choose music library directory"),
-            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
-
-        if (fd != "")
-        {
-            m_pConfig->set(ConfigKey("[Playlist]","Directory"), fd);
-            m_pConfig->Save();
-            hasChanged_MusicDir = true;
-        }
-    }
     // Do not write meta data back to ID3 when meta data has changed
     // Because multiple TrackDao objects can exists for a particular track
     // writing meta data may ruine your MP3 file if done simultaneously.
     // see Bug #728197
     // For safety reasons, we deactivate this feature.
     m_pConfig->set(ConfigKey("[Library]","WriteAudioTags"), ConfigValue(0));
-
 
     // library dies in seemingly unrelated qtsql error about not having a
     // sqlite driver if this path doesn't exist. Normally config->Save()
@@ -388,24 +364,43 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
 
+    // Get Music dir
+    bool hasChanged_MusicDir = false;
+
+    QStringList dirs = m_pLibrary->getDirs();
+    if (dirs.size() < 1) {
+        // TODO(XXX) this needs to be smarter, we can't distinguish between an empty
+        // path return value (not sure if this is normally possible, but it is
+        // possible with the Windows 7 "Music" library, which is what
+        // QDesktopServices::storageLocation(QDesktopServices::MusicLocation)
+        // resolves to) and a user hitting 'cancel'. If we get a blank return
+        // but the user didn't hit cancel, we need to know this and let the
+        // user take some course of action -- bkgood
+        QString fd = QFileDialog::getExistingDirectory(
+            this, tr("Choose music library directory"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+        if (!fd.isEmpty()) {
+            //adds Folder to database
+            m_pLibrary->slotRequestAddDir(fd);
+            hasChanged_MusicDir = true;
+        }
+    }
+
     // Call inits to invoke all other construction parts
 
     // Intialize default BPM system values
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "BPMRangeStart"))
-            .length() < 1)
-    {
+            .length() < 1) {
         m_pConfig->set(ConfigKey("[BPM]", "BPMRangeStart"),ConfigValue(65));
     }
 
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "BPMRangeEnd"))
-            .length() < 1)
-    {
+            .length() < 1) {
         m_pConfig->set(ConfigKey("[BPM]", "BPMRangeEnd"),ConfigValue(135));
     }
 
     if (m_pConfig->getValueString(ConfigKey("[BPM]", "AnalyzeEntireSong"))
-            .length() < 1)
-    {
+            .length() < 1) {
         m_pConfig->set(ConfigKey("[BPM]", "AnalyzeEntireSong"),ConfigValue(1));
     }
 
@@ -426,7 +421,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 
     // Initialize preference dialog
     m_pPrefDlg = new DlgPreferences(this, m_pSkinLoader, m_pSoundManager, m_pPlayerManager,
-                                    m_pControllerManager, m_pVCManager, m_pConfig);
+                                    m_pControllerManager, m_pVCManager, m_pConfig, m_pLibrary);
     m_pPrefDlg->setWindowIcon(QIcon(":/images/ic_mixxx_window.png"));
     m_pPrefDlg->setHidden(true);
 
@@ -553,8 +548,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
             m_pLibrary, SLOT(slotRefreshLibraryModels()));
 
     if (rescan || hasChanged_MusicDir) {
-        m_pLibraryScanner->scan(
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")), this);
+        m_pLibraryScanner->scan(this);
     }
 }
 
@@ -1256,7 +1250,7 @@ void MixxxApp::slotFileLoadSongPlayer(int deck) {
         QFileDialog::getOpenFileName(
             this,
             loadTrackText,
-            m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),
+            m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR),
             QString("Audio (%1)")
                 .arg(SoundSourceProxy::supportedFileExtensionsString()));
 
@@ -1579,8 +1573,7 @@ void MixxxApp::closeEvent(QCloseEvent *event) {
 
 void MixxxApp::slotScanLibrary() {
     m_pLibraryRescan->setEnabled(false);
-    m_pLibraryScanner->scan(
-        m_pConfig->getValueString(ConfigKey("[Playlist]", "Directory")),this);
+    m_pLibraryScanner->scan(this);
 }
 
 void MixxxApp::slotEnableRescanLibraryAction() {

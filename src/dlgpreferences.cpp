@@ -56,7 +56,7 @@
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
-                               ConfigObject<ConfigValue>* pConfig)
+                               ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
         : m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated")) {
     setupUi(this);
@@ -83,7 +83,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #endif
     m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, pConfig);
     addPageWidget(m_wsound);
-    m_wplaylist = new DlgPrefPlaylist(this, pConfig);
+    m_wplaylist = new DlgPrefPlaylist(this, pConfig, pLibrary);
     addPageWidget(m_wplaylist);
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, pConfig);
     addPageWidget(m_wcontrols);

@@ -28,13 +28,20 @@ BrowseFeature::BrowseFeature(QObject* parent,
           m_pConfig(pConfig),
           m_browseModel(this, pTrackCollection, pRecordingManager),
           m_proxyModel(&m_browseModel),
-          m_pTrackCollection(pTrackCollection) {
+          m_pTrackCollection(pTrackCollection),
+          m_pLastRightClickedItem(NULL) {
+    connect(this, SIGNAL(requestAddDir(QString)),
+            parent, SLOT(slotRequestAddDir(QString)));
 
     m_pAddQuickLinkAction = new QAction(tr("Add to Quick Links"),this);
     connect(m_pAddQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotAddQuickLink()));
 
     m_pRemoveQuickLinkAction = new QAction(tr("Remove from Quick Links"),this);
     connect(m_pRemoveQuickLinkAction, SIGNAL(triggered()), this, SLOT(slotRemoveQuickLink()));
+
+    m_pAddtoLibraryAction = new QAction(tr("Add to Library"),this);
+    connect(m_pAddtoLibraryAction, SIGNAL(triggered()),
+            this, SLOT(slotAddToLibrary()));
 
     m_proxyModel.setFilterCaseSensitivity(Qt::CaseInsensitive);
     m_proxyModel.setSortCaseSensitivity(Qt::CaseInsensitive);
@@ -123,6 +130,14 @@ void BrowseFeature::slotAddQuickLink() {
     saveQuickLinks();
 }
 
+void BrowseFeature::slotAddToLibrary() {
+    if (!m_pLastRightClickedItem) {
+        return;
+    }
+    QString spath = m_pLastRightClickedItem->dataPath().toString();
+    emit(requestAddDir(spath));
+}
+
 void BrowseFeature::slotRemoveQuickLink() {
     if (!m_pLastRightClickedItem) {
         return;
@@ -199,6 +214,7 @@ void BrowseFeature::onRightClickChild(const QPoint& globalPos, QModelIndex index
      }
 
      menu.addAction(m_pAddQuickLinkAction);
+     menu.addAction(m_pAddtoLibraryAction);
      menu.exec(globalPos);
      onLazyChildExpandation(index);
 }
@@ -308,32 +324,38 @@ QString BrowseFeature::extractNameFromPath(QString spath) {
 
 QStringList BrowseFeature::getDefaultQuickLinks() const {
     //Default configuration
-    QString mixxx_music_dir = m_pConfig->getValueString(ConfigKey("[Playlist]","Directory"));
-    QString os_music_folder_dir = QDesktopServices::storageLocation(
+    QStringList mixxxMusicDirs = m_pTrackCollection->getDirectoryDAO().getDirs();
+    QString osMusicDir = QDesktopServices::storageLocation(
         QDesktopServices::MusicLocation);
-    QString os_documents_folder_dir = QDesktopServices::storageLocation(
+    QString osDocumentsDir = QDesktopServices::storageLocation(
         QDesktopServices::DocumentsLocation);
-    QString os_home_folder_dir = QDesktopServices::storageLocation(
+    QString osHomeDir = QDesktopServices::storageLocation(
         QDesktopServices::HomeLocation);
-    QString os_desktop_folder_dir = QDesktopServices::storageLocation(
+    QString osDesktopDir = QDesktopServices::storageLocation(
         QDesktopServices::DesktopLocation);
     QStringList result;
 
-    result << mixxx_music_dir+"/";
+    bool osMusicDirIncluded = false;
+    foreach (QString dir, mixxxMusicDirs) {
+        result << dir + "/";
+        if (dir == osMusicDir) {
+            osMusicDirIncluded = true;
+        }
+    }
 
-    if (mixxx_music_dir != os_music_folder_dir) {
-        result << os_music_folder_dir + "/";
+    if (osMusicDirIncluded) {
+        result << osMusicDir + "/";
     }
 
     // TODO(XXX) i18n -- no good way to get the download path. We could tr() it
     // but the translator may not realize we want the usual name of the
     // downloads folder.
-    QDir downloads(os_home_folder_dir);
+    QDir downloads(osHomeDir);
     if (downloads.cd("Downloads")) {
         result << downloads.absolutePath() + "/";
     }
-    result << os_desktop_folder_dir + "/";
-    result << os_documents_folder_dir + "/";
+    result << osDesktopDir + "/";
+    result << osDocumentsDir + "/";
 
     qDebug() << "Default quick links:" << result;
 
