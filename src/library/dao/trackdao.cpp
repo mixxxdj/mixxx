@@ -8,6 +8,7 @@
 #include "soundsourceproxy.h"
 #include "track/beatfactory.h"
 #include "track/beats.h"
+#include "track/keyfactory.h"
 #include "trackinfoobject.h"
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
@@ -314,7 +315,6 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":bpm_lock", pTrack->hasBpmLock()? 1 : 0);
 
     m_pQueryLibraryInsert->bindValue(":replaygain", pTrack->getReplayGain());
-    m_pQueryLibraryInsert->bindValue(":key", pTrack->getKey());
 
     // We no longer store the wavesummary in the library table.
     m_pQueryLibraryInsert->bindValue(":wavesummaryhex", QVariant(QVariant::ByteArray));
@@ -344,6 +344,30 @@ void TrackDAO::bindTrackToLibraryInsert(TrackInfoObject* pTrack, int trackLocati
     m_pQueryLibraryInsert->bindValue(":beats_sub_version", beatsSubVersion);
     m_pQueryLibraryInsert->bindValue(":beats", pBeatsBlob ? *pBeatsBlob : QVariant(QVariant::ByteArray));
     delete pBeatsBlob;
+
+    const Keys& keys = pTrack->getKeys();
+    QByteArray* pKeysBlob = NULL;
+    QString keysVersion = "";
+    QString keysSubVersion = "";
+    QString keyText = "";
+    mixxx::track::io::key::ChromaticKey key = mixxx::track::io::key::INVALID;
+
+    if (keys.isValid()) {
+        pKeysBlob = keys.toByteArray();
+        keysVersion = keys.getVersion();
+        keysSubVersion = keys.getSubVersion();
+        key = keys.getGlobalKey();
+        // TODO(rryan): Get this logic out of TIO.
+        keyText = pTrack->getKeyText();
+    }
+
+    m_pQueryLibraryInsert->bindValue(
+        ":keys", pKeysBlob ? *pKeysBlob : QVariant(QVariant::ByteArray));
+    m_pQueryLibraryInsert->bindValue(":keys_version", keysVersion);
+    m_pQueryLibraryInsert->bindValue(":keys_sub_version", keysSubVersion);
+    m_pQueryLibraryInsert->bindValue(":key", keyText);
+    m_pQueryLibraryInsert->bindValue(":key_id", static_cast<int>(key));
+    delete pKeysBlob;
 }
 
 void TrackDAO::addTracksPrepare() {
@@ -372,16 +396,19 @@ void TrackDAO::addTracksPrepare() {
 
     m_pQueryLibraryInsert->prepare("INSERT INTO library "
             "(artist, title, album, album_artist, year, genre, tracknumber, composer, "
-            "grouping, filetype, location, comment, url, duration, rating, key, "
+            "grouping, filetype, location, comment, url, duration, rating, key, key_id, "
             "bitrate, samplerate, cuepoint, bpm, replaygain, wavesummaryhex, "
             "timesplayed, channels, mixxx_deleted, header_parsed, "
+            "beats_version, beats_sub_version, beats, bpm_lock, "
+            "keys_version, keys_sub_version, keys) "
             "beats_version, beats_sub_version, beats, bpm_lock) "
             "VALUES ("
             ":artist, :title, :album, :album_artist, :year, :genre, :tracknumber, :composer, :grouping, "
-            ":filetype, :location, :comment, :url, :duration, :rating, :key, "
+            ":filetype, :location, :comment, :url, :duration, :rating, :key, :key_id, "
             ":bitrate, :samplerate, :cuepoint, :bpm, :replaygain, :wavesummaryhex, "
-            ":timesplayed, :channels, :mixxx_deleted, :header_parsed, :beats_version, "
-            ":beats_sub_version, :beats, :bpm_lock)");
+            ":timesplayed, :channels, :mixxx_deleted, :header_parsed, "
+            ":beats_version, :beats_sub_version, :beats, :bpm_lock, "
+            ":keys_version, :keys_sub_version, :keys)");
 
     m_pQueryLibraryUpdate->prepare("UPDATE library SET mixxx_deleted = 0 "
             "WHERE id = :id");
@@ -816,8 +843,9 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         "grouping, tracknumber, filetype, rating, key, track_locations.location as location, "
         "track_locations.filesize as filesize, comment, url, duration, bitrate, "
         "samplerate, cuepoint, bpm, replaygain, channels, "
-        "header_parsed, timesplayed, played, beats_version, beats_sub_version, beats, "
-        "datetime_added, bpm_lock "
+        "header_parsed, timesplayed, played, "
+        "beats_version, beats_sub_version, beats, datetime_added, bpm_lock "
+        "keys_version, keys_sub_version, keys "
         "FROM Library "
         "INNER JOIN track_locations "
             "ON library.location = track_locations.id "
@@ -859,6 +887,8 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
         const int beatsColumn = queryRecord.indexOf("beats");
 
         while (query.next()) {
+            bool shouldDirty = false;
+
             QString artist = query.value(artistColumn).toString();
             QString title = query.value(titleColumn).toString();
             QString album = query.value(albumColumn).toString();
@@ -870,7 +900,7 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             QString tracknumber = query.value(trackNumberColumn).toString();
             QString comment = query.value(commentColumn).toString();
             QString url = query.value(urlColumn).toString();
-            QString key = query.value(keyColumn).toString();
+            QString keyText = query.value(keyColumn).toString();
             int duration = query.value(durationColumn).toInt();
             int bitrate = query.value(bitrateColumn).toInt();
             int rating = query.value(ratingColumn).toInt();
@@ -904,7 +934,6 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setGrouping(grouping);
             pTrack->setTrackNumber(tracknumber);
             pTrack->setRating(rating);
-            pTrack->setKey(key);
 
             pTrack->setComment(comment);
             pTrack->setURL(url);
@@ -925,6 +954,25 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             }
             pTrack->setBpmLock(has_bpm_lock);
 
+            QString keysVersion = query.value(query.record().indexOf("keys_version")).toString();
+            QString keysSubVersion = query.value(query.record().indexOf("keys_sub_version")).toString();
+            QByteArray keysBlob = query.value(query.record().indexOf("keys")).toByteArray();
+            Keys keys = KeyFactory::loadKeysFromByteArray(
+                keysVersion, keysSubVersion, &keysBlob);
+
+            if (keys.isValid()) {
+                pTrack->setKeys(keys);
+            } else {
+                // Typically this happens if we are upgrading from an older
+                // (<1.12.0) version of Mixxx that didn't support Keys. We treat
+                // all legacy data as user-generated because that way it will be
+                // treated sensitively.
+                pTrack->setKeyText(keyText, mixxx::track::io::key::USER);
+                // The in-database data would change because of this. Mark the
+                // track dirty so we save it when it is deleted.
+                shouldDirty = true;
+            }
+
             pTrack->setTimesPlayed(timesplayed);
             pTrack->setDateAdded(datetime_added);
             pTrack->setPlayed(played);
@@ -934,7 +982,10 @@ TrackPointer TrackDAO::getTrackFromDB(const int id) const {
             pTrack->setHeaderParsed(header_parsed);
             pTrack->setCuePoints(m_cueDao.getCuesForTrack(id));
 
-            pTrack->setDirty(false);
+            // Normally we will set the track as clean but sometimes when
+            // loading from the database we need to perform upkeep that ought to
+            // be written back to the database when the track is deleted.
+            pTrack->setDirty(shouldDirty);
 
             // Listen to dirty and changed signals
             connect(pTrack.data(), SIGNAL(dirty(TrackInfoObject*)),
@@ -1041,15 +1092,19 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     //Update everything but "location", since that's what we identify the track by.
     query.prepare("UPDATE library "
                   "SET artist=:artist, "
-                  "title=:title, album=:album, album_artist=:album_artist, year=:year, genre=:genre, "
-                  "composer=:composer, grouping=:grouping, filetype=:filetype, tracknumber=:tracknumber, "
-                  "comment=:comment, url=:url, duration=:duration, rating=:rating, key=:key, "
+                  "title=:title, album=:album, album_artist=:album_artist, "
+                  "year=:year, genre=:genre, composer=:composer, "
+                  "grouping=:grouping, filetype=:filetype, "
+                  "tracknumber=:tracknumber, comment=:comment, url=:url, "
+                  "duration=:duration, rating=:rating, "
+                  "key=:key, key_id=:key_id, "
                   "bitrate=:bitrate, samplerate=:samplerate, cuepoint=:cuepoint, "
                   "bpm=:bpm, replaygain=:replaygain, "
                   "timesplayed=:timesplayed, played=:played, "
                   "channels=:channels, header_parsed=:header_parsed, "
                   "beats_version=:beats_version, beats_sub_version=:beats_sub_version, beats=:beats, "
-                  "bpm_lock=:bpm_lock "
+                  "bpm_lock=:bpm_lock, "
+                  "keys_version=:keys_version, keys_sub_version=:keys_sub_version, keys=:keys "
                   "WHERE id=:track_id");
     query.bindValue(":artist", pTrack->getArtist());
     query.bindValue(":title", pTrack->getTitle());
@@ -1069,7 +1124,6 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":cuepoint", pTrack->getCuePoint());
 
     query.bindValue(":replaygain", pTrack->getReplayGain());
-    query.bindValue(":key", pTrack->getKey());
     query.bindValue(":rating", pTrack->getRating());
     query.bindValue(":timesplayed", pTrack->getTimesPlayed());
     query.bindValue(":played", pTrack->getPlayed());
@@ -1097,6 +1151,29 @@ void TrackDAO::updateTrack(TrackInfoObject* pTrack) {
     query.bindValue(":beats_sub_version", beatsSubVersion);
     query.bindValue(":bpm", dBpm);
     delete pBeatsBlob;
+
+    const Keys& keys = pTrack->getKeys();
+    QByteArray* pKeysBlob = NULL;
+    QString keysVersion = "";
+    QString keysSubVersion = "";
+    QString keyText = "";
+    mixxx::track::io::key::ChromaticKey key = mixxx::track::io::key::INVALID;
+
+    if (keys.isValid()) {
+        pKeysBlob = keys.toByteArray();
+        keysVersion = keys.getVersion();
+        keysSubVersion = keys.getSubVersion();
+        key = keys.getGlobalKey();
+        // TODO(rryan): Get this logic out of TIO.
+        keyText = pTrack->getKeyText();
+    }
+
+    query.bindValue(":keys", pKeysBlob ? *pKeysBlob : QVariant(QVariant::ByteArray));
+    query.bindValue(":keys_version", keysVersion);
+    query.bindValue(":keys_sub_version", keysSubVersion);
+    query.bindValue(":key", keyText);
+    query.bindValue(":key_id", static_cast<int>(key));
+    delete pKeysBlob;
 
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
@@ -1388,7 +1465,7 @@ void TrackDAO::writeAudioMetaData(TrackInfoObject* pTrack){
         tagger.setComment(pTrack->getComment());
         tagger.setTracknumber(pTrack->getTrackNumber());
         tagger.setBpm(pTrack->getBpmStr());
-        tagger.setKey(pTrack->getKey());
+        tagger.setKey(pTrack->getKeyText());
         tagger.setComposer(pTrack->getComposer());
         tagger.setGrouping(pTrack->getGrouping());
 

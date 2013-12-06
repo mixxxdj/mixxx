@@ -318,7 +318,9 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(LIBRARYTABLE_RATING) == column) {
         trackValue.setValue(pTrack->getRating());
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
-        trackValue.setValue(pTrack->getKey());
+        trackValue.setValue(pTrack->getKeyText());
+    } else if (fieldIndex(LIBRARYTABLE_KEY_ID) == column) {
+        trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->hasBpmLock());
     }
