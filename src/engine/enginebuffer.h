@@ -52,7 +52,6 @@ class EngineBufferScale;
 class EngineBufferScaleDummy;
 class EngineBufferScaleLinear;
 class EngineBufferScaleST;
-class EngineSync;
 class EngineWorkerScheduler;
 class VisualPlayPosition;
 class EngineMaster;
@@ -89,8 +88,7 @@ const int ENGINE_RAMP_UP = 1;
 class EngineBuffer : public EngineObject {
      Q_OBJECT
 public:
-    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config,
-                 EngineMaster* pMixingEngine);
+    EngineBuffer(const char *_group, ConfigObject<ConfigValue> *_config);
     ~EngineBuffer();
     bool getPitchIndpTimeStretch(void);
 
@@ -163,7 +161,7 @@ public:
                              QString reason);
 
   private:
-    void setPitchIndpTimeStretch(bool b);
+    void enablePitchAndTimeScaling(bool bEnable);
 
     void updateIndicators(double rate, int iBufferSize);
 
@@ -181,22 +179,12 @@ public:
     const char* m_group;
     ConfigObject<ConfigValue>* m_pConfig;
 
-    // Pointer to the loop control object
     LoopingControl* m_pLoopingControl;
-
-    // Pointer to the master sync object
     EngineSync* m_pEngineSync;
-
-    // Pointer to the rate control object
     RateControl* m_pRateControl;
-
-    // Pointer to the BPM control object
     BpmControl* m_pBpmControl;
-
-    // Pointer to the clock control object
+    KeyControl* m_pKeyControl;
     ClockControl* m_pClockControl;
-
-    // Pointer to the cue control object
     CueControl* m_pCueControl;
 
     QList<EngineControl*> m_engineControls;
@@ -212,12 +200,28 @@ public:
 
     // The current sample to play in the file.
     double m_filepos_play;
+
+    // The previous callback's speed. Used to check if the scaler parameters
+    // need updating.
+    double m_speed_old;
+
+    // The previous callback's pitch. Used to check if the scaler parameters
+    // need updating.
+    double m_pitch_old;
+
+    // The previous callback's baserate. Used to check if the scaler parameters
+    // need updating.
+    double m_baserate_old;
+
     // Copy of rate_exchange, used to check if rate needs to be updated
     double m_rate_old;
+
     // Copy of length of file
     long int m_file_length_old;
+
     // Copy of file sample rate
     int m_file_srate_old;
+
     // Mutex controlling weather the process function is in pause mode. This happens
     // during seek and loading of a new track
     QMutex m_pause;
@@ -246,6 +250,7 @@ public:
 
     ControlObject* m_rateEngine;
     ControlObject* m_visualBpm;
+    ControlObject* m_visualKey;
     ControlObject* m_pQuantize;
     ControlObject* m_pMasterRate;
     ControlPotmeter* m_playposSlider;
@@ -270,6 +275,7 @@ public:
     EngineBufferScaleLinear* m_pScaleLinear;
     // Object used for pitch-indep time stretch (key lock) scaling of the audio
     EngineBufferScaleST* m_pScaleST;
+    EngineBufferScaleRubberBand* m_pScaleRB;
     EngineBufferScaleDummy* m_pScaleDummy;
     // Indicates whether the scaler has changed since the last process()
     bool m_bScalerChanged;

@@ -587,6 +587,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             if (scratchEnable) {
                 rate = scratchFactor;
             } else {
+
                 rate = 1. + getRawRate() + getTempRate();
                 rate += wheelFactor;
 
@@ -615,6 +616,7 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
             *isScratching = true;
         }
     }
+
     return rate;
 }
 
