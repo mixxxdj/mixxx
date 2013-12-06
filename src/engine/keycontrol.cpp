@@ -12,7 +12,9 @@ KeyControl::KeyControl(const char* pGroup,
                        ConfigObject<ConfigValue>* pConfig)
         : EngineControl(pGroup, pConfig),
           m_dOldRate(0.0),
-          m_bOldKeylock(false) {
+          m_bOldKeylock(false),
+          m_dPitchCompensation(0.0),
+          m_dPitchCompensationOldPitch(0.0) {
     m_pPitch = new ControlPotmeter(ConfigKey(pGroup, "pitch"), -1.f, 1.f);
     connect(m_pPitch, SIGNAL(valueChanged(double)),
             this, SLOT(slotPitchChanged(double)),
@@ -97,12 +99,26 @@ void KeyControl::slotRateChanged() {
     if (m_dOldRate != 1.0) {
         if (bKeylock && !m_bOldKeylock) {
             double pitch = m_pPitch->get();
-            double pitchAdjust = KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-            m_pPitch->set(pitch + pitchAdjust);
+            m_dPitchCompensation = pitch + KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+            m_dPitchCompensationOldPitch = pitch;
+            m_pPitch->set(m_dPitchCompensation);
         } else if (!bKeylock && m_bOldKeylock) {
             double pitch = m_pPitch->get();
-            double pitchAdjust = KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
-            m_pPitch->set(pitch - pitchAdjust);
+
+            // The pitch has not changed since we enabled keylock. Restore the
+            // old pitch.
+            if (pitch == m_dPitchCompensation) {
+                m_pPitch->set(m_dPitchCompensationOldPitch);
+            } else {
+                // Otherwise, compensate in the opposite direction to prevent
+                // pitch change. We know the user has a pitch control because
+                // they changed it.
+                double pitchAdjust = KeyUtils::powerOf2ToOctaveChange(m_dOldRate);
+                m_pPitch->set(pitch + pitchAdjust);
+            }
+
+            m_dPitchCompensationOldPitch = 0.0;
+            m_dPitchCompensation = 0.0;
         }
     }
 
