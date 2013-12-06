@@ -58,6 +58,7 @@ class BaseTrackPlayer : public BasePlayer {
     ControlObjectThread* m_pLoopOutPoint;
     ControlObject* m_pDuration;
     ControlObjectThread* m_pBPM;
+    ControlObjectThread* m_pKey;
     ControlObjectThread* m_pReplayGain;
     ControlObjectThread* m_pPlay;
     EngineDeck* m_pChannel;

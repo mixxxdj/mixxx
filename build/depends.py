@@ -372,6 +372,18 @@ class SoundTouch(Dependence):
         if self.sse_enabled(build):
             env.Append(CPPDEFINES='SOUNDTOUCH_ALLOW_X86_OPTIMIZATIONS')
 
+class RubberBand(Dependence):
+    def sources(self, build):
+        sources = ['engine/enginebufferscalerubberband.cpp',]
+        return sources
+
+    def configure(self, build, conf, env=None):
+        if env is None:
+            env = build.env
+        if not conf.CheckLib(['rubberband', 'librubberband']):
+            raise Exception("Could not find librubberband or its development headers.")
+
+
 class TagLib(Dependence):
     def configure(self, build, conf):
         libs = ['tag']
@@ -444,6 +456,7 @@ class MixxxCore(Feature):
                    "controllers/dlgprefcontrollers.cpp",
                    "dlgprefplaylist.cpp",
                    "dlgprefcontrols.cpp",
+                   "dlgprefkey.cpp",
                    "dlgprefreplaygain.cpp",
                    "dlgprefnovinyl.cpp",
                    "dlgabout.cpp",
@@ -511,6 +524,7 @@ class MixxxCore(Feature):
                    "engine/positionscratchcontroller.cpp",
                    "engine/loopingcontrol.cpp",
                    "engine/bpmcontrol.cpp",
+                   "engine/keycontrol.cpp",
                    "engine/cuecontrol.cpp",
                    "engine/quantizecontrol.cpp",
                    "engine/clockcontrol.cpp",
@@ -521,6 +535,7 @@ class MixxxCore(Feature):
                    "analyserrg.cpp",
                    "analyserqueue.cpp",
                    "analyserwaveform.cpp",
+                   "analyserkey.cpp",
 
                    "controllers/controller.cpp",
                    "controllers/controllerengine.cpp",
@@ -574,6 +589,7 @@ class MixxxCore(Feature):
                    "widget/wtrackproperty.cpp",
                    "widget/weffectchain.cpp",
                    "widget/wtime.cpp",
+                   "widget/wkey.cpp",
 
                    "mathstuff.cpp",
 
@@ -607,6 +623,7 @@ class MixxxCore(Feature):
                    "library/libraryfeature.cpp",
                    "library/analysisfeature.cpp",
                    "library/autodjfeature.cpp",
+                   "library/dao/directorydao.cpp",
                    "library/mixxxlibraryfeature.cpp",
                    "library/baseplaylistfeature.cpp",
                    "library/playlistfeature.cpp",
@@ -732,6 +749,9 @@ class MixxxCore(Feature):
                    "track/beatmap.cpp",
                    "track/beatfactory.cpp",
                    "track/beatutils.cpp",
+                   "track/keys.cpp",
+                   "track/keyfactory.cpp",
+                   "track/keyutils.cpp",
 
                    "baseplayer.cpp",
                    "basetrackplayer.cpp",
@@ -793,6 +813,7 @@ class MixxxCore(Feature):
             'dlgprefbeatsdlg.ui',
             'dlgprefcontrolsdlg.ui',
             'dlgprefcrossfaderdlg.ui',
+            'dlgprefkeydlg.ui',
             'dlgprefeqdlg.ui',
             'dlgpreferencesdlg.ui',
             'dlgprefnovinyldlg.ui',
@@ -955,7 +976,7 @@ class MixxxCore(Feature):
     def depends(self, build):
         return [SoundTouch, ReplayGain, PortAudio, PortMIDI, Qt,
                 FidLib, SndFile, FLAC, OggVorbis, OpenGL, TagLib, ProtoBuf,
-                Chromaprint]
+                Chromaprint, RubberBand]
 
     def post_dependency_check_configure(self, build, conf):
         """Sets up additional things in the Environment that must happen

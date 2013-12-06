@@ -205,9 +205,7 @@ bool PlaylistTableModel::isColumnInternal(int column) {
 }
 
 bool PlaylistTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
-        return true;
-    } else if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
+    if (column == fieldIndex(PLAYLISTTRACKSTABLE_DATETIMEADDED)) {
         return true;
     }
     return false;

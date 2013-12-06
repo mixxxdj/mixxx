@@ -4,9 +4,9 @@
 #include <QtDebug>
 
 #include "defs.h"
-#include "configobject.h"
 #include "engine/enginemaster.h"
 #include "engine/enginechannel.h"
+#include "test/mixxxtest.h"
 
 using ::testing::Return;
 using ::testing::_;
@@ -30,16 +30,14 @@ class EngineChannelMock : public EngineChannel {
     MOCK_METHOD3(process, void(const CSAMPLE* pIn, const CSAMPLE* pOut, const int iBufferSize));
 };
 
-class EngineMasterTest : public testing::Test {
+class EngineMasterTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        m_pConfig = new ConfigObject<ConfigValue>("");
-        m_pMaster = new EngineMaster(m_pConfig, "[Master]", NULL, false, false);
+        m_pMaster = new EngineMaster(config(), "[Master]", NULL, false, false);
     }
 
     virtual void TearDown() {
         delete m_pMaster;
-        delete m_pConfig;
     }
 
     void ClearBuffer(CSAMPLE* pBuffer, int length) {
@@ -64,7 +62,6 @@ class EngineMasterTest : public testing::Test {
         EXPECT_EQ(0, differences);
     }
 
-    ConfigObject<ConfigValue>* m_pConfig;
     EngineMaster* m_pMaster;
 };
 
