@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QtCore>
 #include <QtSql>
 
 #include "playerinfo.h"
@@ -57,7 +56,7 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
             }
 
             // Create the new active-tracks view.
-            if (!createActiveTracksView (bUseIgnoreTime)) {
+            if (!createActiveTracksView(bUseIgnoreTime)) {
                 return;
             }
 
@@ -197,9 +196,9 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
     // Be notified when tracks are loaded to, or unloaded from, a deck.
     // These count as auto-DJ references, i.e. prevent the track from being
     // selected randomly.
-    connect(&PlayerInfo::Instance(), SIGNAL(trackLoaded(QString,TrackPointer)),
+    connect(&PlayerInfo::instance(), SIGNAL(trackLoaded(QString,TrackPointer)),
             this, SLOT(slotPlayerInfoTrackLoaded(QString,TrackPointer)));
-    connect(&PlayerInfo::Instance(),
+    connect(&PlayerInfo::instance(),
             SIGNAL(trackUnloaded(QString,TrackPointer)),
             this, SLOT(slotPlayerInfoTrackUnloaded(QString,TrackPointer)));
 
@@ -285,7 +284,7 @@ bool AutoDJCratesDAO::updateAutoDjPlaylistReferences() {
     int iDecks = (int) PlayerManager::numDecks();
     for (int i = 0; i < iDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        TrackPointer pTrack = PlayerInfo::Instance().getTrackInfo(group);
+        TrackPointer pTrack = PlayerInfo::instance().getTrackInfo(group);
         if (pTrack) {
             int iTrackId = pTrack->getId();
             // UPDATE temp_autodj_crates SET autodjrefs = autodjrefs + 1 WHERE track_id IN (:track_id);
@@ -459,8 +458,8 @@ int AutoDJCratesDAO::getRandomTrackId(void) {
     // in a while.
     if (m_bUseIgnoreTime) {
         // Get the current time, in UTC (since that's what sqlite uses).
-        QDateTime timCurrent = QDateTime::currentDateTimeUtc();
-        
+        QDateTime timCurrent = QDateTime::currentDateTime().toUTC();
+
         // Subtract the replay age.
         QTime timIgnoreTime = (QTime::fromString(m_pConfig->getValueString
             (ConfigKey("[Auto DJ]", "IgnoreTime"), "23:59"), "hh:mm"));
@@ -646,7 +645,7 @@ void AutoDJCratesDAO::slotCrateAutoDjChanged(int crateId, bool added) {
 
         // Remove all tracks that no longer have crate references.
         //DELETE FROM temp_autodj_crates WHERE craterefs = 0;
-        oQuery.prepare("DELETE FROM "AUTODJCRATES_TABLE " WHERE "
+        oQuery.prepare("DELETE FROM " AUTODJCRATES_TABLE " WHERE "
             AUTODJCRATESTABLE_CRATEREFS " = 0");
         if (!oQuery.exec()) {
             LOG_FAILED_QUERY(oQuery);
@@ -746,7 +745,7 @@ void AutoDJCratesDAO::slotCrateTrackRemoved(int crateId, int trackId) {
 
     // Remove the track if it no longer has a crate reference.
     //DELETE FROM temp_autodj_crates WHERE track_id = :track_id AND craterefs = 0;
-    oQuery.prepare("DELETE FROM "AUTODJCRATES_TABLE " WHERE "
+    oQuery.prepare("DELETE FROM " AUTODJCRATES_TABLE " WHERE "
         AUTODJCRATESTABLE_TRACKID " = :track_id AND "
         AUTODJCRATESTABLE_CRATEREFS " = 0");
     oQuery.bindValue(":track_id", trackId);

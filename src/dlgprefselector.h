@@ -5,10 +5,11 @@
 #include <QHash>
 
 #include "ui_dlgprefselectordlg.h"
+#include "preferences/dlgpreferencepage.h"
 #include "configobject.h"
 
 
-class DlgPrefSelector : public QWidget, Ui::DlgPrefSelectorDlg {
+class DlgPrefSelector : public DlgPreferencePage, public Ui::DlgPrefSelectorDlg {
     Q_OBJECT
 
   public:

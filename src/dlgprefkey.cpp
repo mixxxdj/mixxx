@@ -15,19 +15,12 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <qlineedit.h>
-#include <qfiledialog.h>
-#include <qwidget.h>
-#include <qspinbox.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpushbutton.h>
-#include <QtCore>
-#include <QMessageBox>
-#include "track/key_preferences.h"
-
 #include "dlgprefkey.h"
+
+#include <QLineEdit>
+#include <QMessageBox>
+
+#include "track/key_preferences.h"
 #include "xmlparse.h"
 #include "controlobject.h"
 #include "vamp/vampanalyser.h"
@@ -40,7 +33,7 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
           Ui::DlgPrefKeyDlg(),
           m_pConfig(_config),
           m_bAnalyserEnabled(false),
@@ -83,7 +76,6 @@ DlgPrefKey::DlgPrefKey(QWidget* parent, ConfigObject<ConfigValue>* _config)
             this, SLOT(analyserEnabled(int)));
     connect(bfastAnalysisEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(fastAnalysisEnabled(int)));
-    // connect(reset, SIGNAL(clicked(bool)), this, SLOT(setDefaults()));
     connect(breanalyzeEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(reanalyzeEnabled(int)));
 
@@ -170,13 +162,13 @@ void DlgPrefKey::setDefaults() {
     radioNotationLancelot->setChecked(true);
     setNotationLancelot(true);
 
-    //slotApply();
     slotUpdate();
 }
 
 void DlgPrefKey::pluginSelected(int i){
-    if (i==-1)
+    if (i == -1) {
         return;
+    }
     m_selectedAnalyser = m_listIdentifier[i];
     slotUpdate();
 }
@@ -198,8 +190,9 @@ void DlgPrefKey::reanalyzeEnabled(int i){
 
 void DlgPrefKey::slotApply() {
     int selected = m_listIdentifier.indexOf(m_selectedAnalyser);
-    if (selected == -1)
+    if (selected == -1) {
         return;
+    }
 
     m_pConfig->set(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_KEY_LIBRARY),
@@ -261,9 +254,6 @@ void DlgPrefKey::slotApply() {
     }
 
     KeyUtils::setNotation(notation);
-    // TODO(rryan): Re-draw the whole GUI somehow to repaint every notation
-    // change?
-
     m_pConfig->Save();
 }
 
@@ -274,8 +264,9 @@ void DlgPrefKey::slotUpdate() {
     breanalyzeEnabled->setChecked(m_bReanalyzeEnabled);
     slotApply();
 
-    if (!m_bAnalyserEnabled)
+    if (!m_bAnalyserEnabled) {
         return;
+    }
 
     int comboselected = m_listIdentifier.indexOf(m_selectedAnalyser);
     if (comboselected == -1){
@@ -292,13 +283,13 @@ void DlgPrefKey::populate() {
    m_listLibrary.clear();
    plugincombo->clear();
    plugincombo->setDuplicatesEnabled(false);
-   VampPluginLoader *loader = VampPluginLoader::getInstance();
+   VampPluginLoader* loader = VampPluginLoader::getInstance();
    std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
    for (unsigned int iplugin=0; iplugin < plugins.size(); iplugin++) {
        // TODO(XXX): WTF, 48000
-       Plugin *plugin = loader->loadPlugin(plugins[iplugin], 48000);
-       //TODO: find a way to add key detectors only
+       Plugin* plugin = loader->loadPlugin(plugins[iplugin], 48000);
+       //TODO(XXX): find a general way to add key detectors only
        if (plugin) {
            Plugin::OutputList outputs = plugin->getOutputDescriptors();
            for (unsigned int ioutput=0; ioutput < outputs.size(); ioutput++) {

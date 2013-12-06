@@ -10,6 +10,7 @@
 #include "configobject.h"
 #include "controlobjectthread.h"
 #include "trackinfoobject.h"
+#include "control/controlvalue.h"
 
 class EngineMaster;
 class EngineBuffer;
@@ -89,7 +90,7 @@ class EngineControl : public QObject {
   private:
     const char* m_pGroup;
     ConfigObject<ConfigValue>* m_pConfig;
-    double m_dCurrentSample;
+    ControlValueAtomic<double> m_dCurrentSample;
     double m_dTotalSamples;
     EngineMaster* m_pEngineMaster;
     EngineBuffer* m_pEngineBuffer;

@@ -6,6 +6,8 @@
 #include <QAtomicInt>
 #include <QObject>
 
+#include "util/compatibility.h"
+
 // for look free access, this value has to be >= the number of value using threads
 // value must be a fraction of an integer
 const int cRingSize = 8;
@@ -66,8 +68,7 @@ class ControlValueAtomicBase {
   public:
     inline T getValue() const {
         T value = T();
-        unsigned int index = (unsigned int)m_readIndex
-                % (cRingSize);
+        unsigned int index = static_cast<unsigned int>(deref(m_readIndex)) % (cRingSize);
         while (m_ring[index].tryGet(&value) == false) {
             // We are here if
             // 1) there are more then cReaderSlotCnt reader (get) reading the same value or

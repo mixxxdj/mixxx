@@ -1,6 +1,5 @@
-#include <QtCore>
-#include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
@@ -82,7 +81,9 @@ bool MissingTableModel::isColumnInternal(int column) {
     }
     return false;
 }
+
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
+    Q_UNUSED(column);
     return false;
 }
 

@@ -2,8 +2,12 @@
 // Created 8/23/2009 by RJ Ryan (rryan@mit.edu)
 
 #include <QItemSelectionModel>
+#include <QMessageBox>
+#include <QTranslator>
+#include <QDir>
 
 #include "library/library.h"
+#include "library/library_preferences.h"
 #include "library/libraryfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/sidebarmodel.h"
@@ -12,15 +16,13 @@
 #include "library/browse/browsefeature.h"
 #include "library/cratefeature.h"
 #include "library/rhythmbox/rhythmboxfeature.h"
+#include "library/banshee/bansheefeature.h"
 #include "library/recording/recordingfeature.h"
 #include "library/itunes/itunesfeature.h"
 #include "library/mixxxlibraryfeature.h"
 #include "library/autodjfeature.h"
 #include "library/playlistfeature.h"
 #include "library/selector/selectorfeature.h"
-#ifdef __PROMO__
-#include "library/promotracksfeature.h"
-#endif
 #include "library/traktor/traktorfeature.h"
 #include "library/librarycontrol.h"
 #include "library/setlogfeature.h"
@@ -35,29 +37,19 @@
 // WLibrary
 const QString Library::m_sTrackViewName = QString("WTrackTableView");
 
-Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool firstRun,
+Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
                  RecordingManager* pRecordingManager) :
         m_pConfig(pConfig),
         m_pSidebarModel(new SidebarModel(parent)),
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
+    qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
     m_pMixxxLibraryFeature = new MixxxLibraryFeature(this, m_pTrackCollection,m_pConfig);
     addFeature(m_pMixxxLibraryFeature);
-
-#ifdef __PROMO__
-    if (PromoTracksFeature::isSupported(m_pConfig)) {
-        m_pPromoTracksFeature = new PromoTracksFeature(this, pConfig,
-                                                       m_pTrackCollection,
-                                                       firstRun);
-        addFeature(m_pPromoTracksFeature);
-    } else {
-        m_pPromoTracksFeature = NULL;
-    }
-#endif
 
     addFeature(new AutoDJFeature(this, pConfig, m_pTrackCollection));
     m_pPlaylistFeature = new PlaylistFeature(this, m_pTrackCollection, m_pConfig);
@@ -81,6 +73,12 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     if (RhythmboxFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt()) {
         addFeature(new RhythmboxFeature(this, m_pTrackCollection));
+	}
+    if (pConfig->getValueString(ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt()) {
+        BansheeFeature::prepareDbPath(pConfig);
+        if (BansheeFeature::isSupported()) {
+            addFeature(new BansheeFeature(this, m_pTrackCollection, pConfig));
+		}
     }
     if (ITunesFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt()) {
@@ -89,15 +87,6 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig, bool first
     if (TraktorFeature::isSupported() &&
         pConfig->getValueString(ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt()) {
         addFeature(new TraktorFeature(this, m_pTrackCollection));
-    }
-
-    //Show the promo tracks view on first run, otherwise show the library
-    if (firstRun) {
-        //qDebug() << "First Run, switching to PROMO view!";
-        //This doesn't trigger onShow()... argh
-        //m_pSidebarModel->setDefaultSelection(1);
-        //slotSwitchToView(tr("Bundled Songs"));
-        //Note the promo tracks item has index=1... hardcoded hack. :/
     }
 }
 
@@ -261,10 +250,68 @@ void Library::onSkinLoadFinished() {
     m_pSidebarModel->activateDefaultSelection();
 }
 
-QList<TrackPointer> Library::getTracksToAutoLoad() {
-#ifdef __PROMO__
-    if (m_pPromoTracksFeature)
-        return m_pPromoTracksFeature->getTracksToAutoLoad();
-#endif
-    return QList<TrackPointer>();
+void Library::slotRequestAddDir(QString dir) {
+    if (!m_pTrackCollection->getDirectoryDAO().addDirectory(dir)) {
+        QMessageBox::information(0, tr("Add Directory to Library"),
+                tr("This directory is already in your library."));
+    }
+    // set at least on directory in the config file so that it will be possible
+    // to downgrade from 1.12
+    if (m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR).length() < 1){
+        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dir);
+    }
+}
+
+void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
+    switch (removalType) {
+        case Library::HideTracks:
+            // Mark all tracks in this directory as deleted but DON'T purge them
+            // in case the user re-adds them manually.
+            m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
+            break;
+        case Library::PurgeTracks:
+            // The user requested that we purge all metadata.
+            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+            break;
+        case Library::LeaveTracksUnchanged:
+        default:
+            break;
+
+    }
+
+    // Remove the directory from the directory list.
+    m_pTrackCollection->getDirectoryDAO().removeDirectory(dir);
+
+    // Also update the config file if necessary so that downgrading is still
+    // possible.
+    QString confDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+
+    if (QDir(dir) == QDir(confDir)) {
+        QStringList dirList = m_pTrackCollection->getDirectoryDAO().getDirs();
+        if (!dirList.isEmpty()) {
+            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, dirList.first());
+        } else {
+            // Save empty string so that an old version of mixxx knows it has to
+            // ask for a new directory.
+            m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, QString());
+        }
+    }
+}
+
+void Library::slotRequestRelocateDir(QString oldDir, QString newDir) {
+    QSet<int> movedIds = m_pTrackCollection->getDirectoryDAO().relocateDirectory(oldDir, newDir);
+
+    // Clear cache to that all TIO with the old dir information get updated
+    m_pTrackCollection->getTrackDAO().clearCache();
+    m_pTrackCollection->getTrackDAO().databaseTracksMoved(movedIds, QSet<int>());
+    // also update the config file if necessary so that downgrading is still
+    // possible
+    QString conDir = m_pConfig->getValueString(PREF_LEGACY_LIBRARY_DIR);
+    if (oldDir == conDir) {
+        m_pConfig->set(PREF_LEGACY_LIBRARY_DIR, newDir);
+    }
+}
+
+QStringList Library::getDirs(){
+    return m_pTrackCollection->getDirectoryDAO().getDirs();
 }

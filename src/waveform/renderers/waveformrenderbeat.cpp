@@ -14,18 +14,18 @@
 
 WaveformRenderBeat::WaveformRenderBeat(WaveformWidgetRenderer* waveformWidgetRenderer)
         : WaveformRendererAbstract(waveformWidgetRenderer),
-          m_beatActive(0) {
+          m_pBeatActive(NULL) {
 }
 
 WaveformRenderBeat::~WaveformRenderBeat() {
-    if (m_beatActive)
-        delete m_beatActive;
+    if (m_pBeatActive)
+        delete m_pBeatActive;
 }
 
 bool WaveformRenderBeat::init() {
-    m_beatActive = new ControlObjectThreadMain(
-            m_waveformRenderer->getGroup(),"beat_active");
-    return m_beatActive->valid();
+    m_pBeatActive = new ControlObjectThread(
+            m_waveformRenderer->getGroup(), "beat_active");
+    return m_pBeatActive->valid();
 }
 
 void WaveformRenderBeat::setup(const QDomNode& node) {
@@ -70,18 +70,17 @@ void WaveformRenderBeat::draw(QPainter* painter, QPaintEvent* /*event*/) {
     painter->setRenderHint(QPainter::Antialiasing);
 
     QPen beatPen(m_beatColor);
-    beatPen.setWidth(1.5);
+    beatPen.setWidthF(1.5);
 
     while (it->hasNext()) {
         int beatPosition = it->next();
-        m_waveformRenderer->regulateVisualSample(beatPosition);
         double xBeatPoint = m_waveformRenderer->transformSampleIndexInRendererWorld(beatPosition);
 
         painter->setPen(beatPen);
 
         painter->drawLine(QPointF(xBeatPoint, 0.f),
                           QPointF(xBeatPoint,
-                                  (float)m_waveformRenderer->getHeight()));
+                          (float)m_waveformRenderer->getHeight()));
     }
 
     painter->restore();

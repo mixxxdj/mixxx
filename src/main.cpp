@@ -18,26 +18,35 @@
 #include <QThread>
 #include <QDir>
 #include <QtDebug>
-#include <qapplication.h>
-#include <qfont.h>
-#include <qstring.h>
-#include <qtextcodec.h>
-#include <qtranslator.h>
-#include <qmessagebox.h>
-#include <qiodevice.h>
-#include <qfile.h>
-#include <qstringlist.h>
+#include <QApplication>
+#include <QStringList>
+#include <QString>
+#include <QTextCodec>
+#include <QIODevice>
+#include <QFile>
+
 #include <stdio.h>
 #include <math.h>
+
 #include "mixxx.h"
 #include "soundsourceproxy.h"
-#include "qpixmap.h"
-#include "qsplashscreen.h"
 #include "errordialoghandler.h"
+#include "util/cmdlineargs.h"
 #include "util/version.h"
+
+#ifdef __FFMPEGFILE__
+extern "C" {
+#include <libavcodec/avcodec.h>
+#include <libavformat/avformat.h>
+}
+#endif
 
 #ifdef __LADSPA__
 #include <ladspa/ladspaloader.h>
+#endif
+
+#ifdef Q_WS_X11
+#include <X11/Xlib.h>
 #endif
 
 #ifdef __WINDOWS__
@@ -69,8 +78,6 @@ void InitDebugConsole() { // Open a Debug Console so we can printf
 #endif // DEBUGCONSOLE
 #endif // __WINDOWS__
 
-QApplication *a;
-
 QStringList plugin_paths; //yes this is global. sometimes global is good.
 
 //void qInitImages_mixxx();
@@ -81,8 +88,12 @@ QMutex mutexLogfile;
 /* Debug message handler which outputs to both a logfile and a
  * and prepends the thread the message came from too.
  */
-void MessageHandler(QtMsgType type, const char *input)
-{
+void MessageHandler(QtMsgType type,
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+                    const char* input) {
+#else
+                    const QMessageLogContext&, const QString& input) {
+#endif
     QMutexLocker locker(&mutexLogfile);
     QByteArray ba;
     QThread* thread = QThread::currentThread();
@@ -91,7 +102,11 @@ void MessageHandler(QtMsgType type, const char *input)
     } else {
         ba = "[?]: ";
     }
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     ba += input;
+#else
+    ba += input.toLocal8Bit();
+#endif
     ba += "\n";
 
     if (!Logfile.isOpen()) {
@@ -131,12 +146,22 @@ void MessageHandler(QtMsgType type, const char *input)
         Logfile.write("Fatal ");
         Logfile.write(ba);
         break; //NOTREACHED
+    default:
+        fprintf(stderr, "Unknown %s", ba.constData());
+        Logfile.write("Unknown ");
+        Logfile.write(ba);
+        break;
     }
     Logfile.flush();
 }
 
 int main(int argc, char * argv[])
 {
+
+#ifdef Q_WS_X11
+    XInitThreads();
+#endif
+
     // Check if an instance of Mixxx is already running
     // See http://qt.nokia.com/products/appdev/add-on-products/catalog/4/Utilities/qtsingleapplication
 
@@ -207,7 +232,12 @@ int main(int argc, char * argv[])
     InitDebugConsole();
   #endif
 #endif
+
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     qInstallMsgHandler(MessageHandler);
+#else
+    qInstallMessageHandler(MessageHandler);
+#endif
 
     // Other things depend on this name to enforce thread exclusivity,
     //  so if you change it here, change it also in:
@@ -215,11 +245,23 @@ int main(int argc, char * argv[])
     QThread::currentThread()->setObjectName("Main");
     QApplication a(argc, argv);
 
-    //Support utf-8 for all translation strings
+    // Support utf-8 for all translation strings. Not supported in Qt 5.
+    // TODO(rryan): Is this needed when we switch to qt5? Some sources claim it
+    // isn't.
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
     QTextCodec::setCodecForTr(QTextCodec::codecForName("UTF-8"));
+#endif
 
     //Enumerate and load SoundSource plugins
     SoundSourceProxy::loadPlugins();
+
+#ifdef __FFMPEGFILE__
+     av_register_all();
+     avcodec_register_all();
+#endif
+
+
+
 #ifdef __LADSPA__
     //LADSPALoader ladspaloader;
 #endif
@@ -305,7 +347,11 @@ int main(int argc, char * argv[])
 
     qDebug() << "Mixxx shutdown complete with code" << result;
 
-    qInstallMsgHandler(0); //Reset to default.
+#if QT_VERSION < QT_VERSION_CHECK(5, 0, 0)
+    qInstallMsgHandler(NULL);  // Reset to default.
+#else
+    qInstallMessageHandler(NULL);  // Reset to default.
+#endif
 
     // Don't make any more output after this
     //    or mixxx.log will get clobbered!
@@ -319,4 +365,3 @@ int main(int argc, char * argv[])
     //delete plugin_paths;
     return result;
 }
-

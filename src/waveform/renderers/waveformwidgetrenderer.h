@@ -14,14 +14,16 @@
 //#define WAVEFORMWIDGETRENDERER_DEBUG
 
 class TrackInfoObject;
-class ControlObjectThreadMain;
+class ControlObjectThread;
+class VisualPlayPosition;
+class VSyncThread;
 
 class WaveformWidgetRenderer {
-public:
+  public:
     static const int s_waveformMinZoom;
     static const int s_waveformMaxZoom;
 
-public:
+  public:
     explicit WaveformWidgetRenderer(const char* group);
     virtual ~WaveformWidgetRenderer();
 
@@ -29,7 +31,7 @@ public:
     virtual bool onInit() {return true;}
 
     void setup(const QDomNode& node);
-    void onPreRender();
+    void onPreRender(VSyncThread* vsyncThread);
     void draw(QPainter* painter, QPaintEvent* event);
 
     const char* getGroup() const { return m_group;}
@@ -56,6 +58,7 @@ public:
     double transformPositionInRendererWorld(double position) const;
 
     double getPlayPos() const { return m_playPos;}
+    double getPlayPosVSample() const { return m_playPosVSample;}
     double getZoomFactor() const { return m_zoomFactor;}
     double getRateAdjust() const { return m_rateAdjust;}
     double getGain() const { return m_gain;}
@@ -75,18 +78,17 @@ public:
 
     void setTrack(TrackPointer track);
 
-protected:
+  protected:
     const char* m_group;
     TrackPointer m_trackInfoObject;
-    QVector<WaveformRendererAbstract*> m_rendererStack;
+    QList<WaveformRendererAbstract*> m_rendererStack;
     int m_height;
     int m_width;
     WaveformSignalColors m_colors;
 
     double m_firstDisplayedPosition;
     double m_lastDisplayedPosition;
-    double m_rendererTransformationOffset;
-    double m_rendererTransformationGain;
+    double m_trackPixelCount;
 
     double m_zoomFactor;
     double m_rateAdjust;
@@ -95,17 +97,18 @@ protected:
 
     //TODO: vRince create some class to manage control/value
     //ControlConnection
-    ControlObjectThreadMain* m_playPosControlObject;
+    QSharedPointer<VisualPlayPosition> m_visualPlayPosition;
     double m_playPos;
-    ControlObjectThreadMain* m_rateControlObject;
+    int m_playPosVSample;
+    ControlObjectThread* m_pRateControlObject;
     double m_rate;
-    ControlObjectThreadMain* m_rateRangeControlObject;
+    ControlObjectThread* m_pRateRangeControlObject;
     double m_rateRange;
-    ControlObjectThreadMain* m_rateDirControlObject;
+    ControlObjectThread* m_pRateDirControlObject;
     double m_rateDir;
-    ControlObjectThreadMain* m_gainControlObject;
+    ControlObjectThread* m_pGainControlObject;
     double m_gain;
-    ControlObjectThreadMain* m_trackSamplesControlObject;
+    ControlObjectThread* m_pTrackSamplesControlObject;
     int m_trackSamples;
 
 #ifdef WAVEFORMWIDGETRENDERER_DEBUG
@@ -117,7 +120,6 @@ protected:
     int currentFrame;
 #endif
 
-    WaveformWidgetRenderer();
 private:
     DISALLOW_COPY_AND_ASSIGN(WaveformWidgetRenderer);
     friend class WaveformWidgetFactory;

@@ -59,49 +59,6 @@ QMutex KeyUtils::s_notationMutex;
 QMap<ChromaticKey, QString> KeyUtils::s_notation;
 QMap<QString, ChromaticKey> KeyUtils::s_reverseNotation;
 
-inline int keyToOpenKeyNumber(ChromaticKey key) {
-    switch (key) {
-        case mixxx::track::io::key::C_MAJOR:
-        case mixxx::track::io::key::A_MINOR:
-            return 1;
-        case mixxx::track::io::key::G_MAJOR:
-        case mixxx::track::io::key::E_MINOR:
-            return 2;
-        case mixxx::track::io::key::D_MAJOR:
-        case mixxx::track::io::key::B_MINOR:
-            return 3;
-        case mixxx::track::io::key::A_MAJOR:
-        case mixxx::track::io::key::F_SHARP_MINOR:
-            return 4;
-        case mixxx::track::io::key::E_MAJOR:
-        case mixxx::track::io::key::C_SHARP_MINOR:
-            return 5;
-        case mixxx::track::io::key::B_MAJOR:
-        case mixxx::track::io::key::G_SHARP_MINOR:
-            return 6;
-        case mixxx::track::io::key::F_SHARP_MAJOR:
-        case mixxx::track::io::key::E_FLAT_MINOR:
-            return 7;
-        case mixxx::track::io::key::D_FLAT_MAJOR:
-        case mixxx::track::io::key::B_FLAT_MINOR:
-            return 8;
-        case mixxx::track::io::key::A_FLAT_MAJOR:
-        case mixxx::track::io::key::F_MINOR:
-            return 9;
-        case mixxx::track::io::key::E_FLAT_MAJOR:
-        case mixxx::track::io::key::C_MINOR:
-            return 10;
-        case mixxx::track::io::key::B_FLAT_MAJOR:
-        case mixxx::track::io::key::G_MINOR:
-            return 11;
-        case mixxx::track::io::key::F_MAJOR:
-        case mixxx::track::io::key::D_MINOR:
-            return 12;
-        default:
-            return 0;
-    }
-}
-
 // Lancelot notation is OpenKey notation rotated counter-clockwise by 5.
 inline int openKeyNumberToLancelotNumber(const int okNumber)  {
     int lancelotNumber = okNumber - 5;
@@ -121,6 +78,11 @@ inline int lancelotNumberToOpenKeyNumber(const int lancelotNumber)  {
 }
 
 // static
+ChromaticKey KeyUtils::openKeyNumberToKey(int openKeyNumber, bool major) {
+        return s_openKeyToKeys[openKeyNumber][major ? 0 : 1];
+}
+
+// static
 const char* KeyUtils::keyDebugName(ChromaticKey key) {
     if (!ChromaticKey_IsValid(key)) {
         return s_traditionalKeyNames[0];
@@ -128,6 +90,7 @@ const char* KeyUtils::keyDebugName(ChromaticKey key) {
     return s_traditionalKeyNames[static_cast<int>(key)];
 }
 
+// static
 void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
     QMutexLocker locker(&s_notationMutex);
     s_notation = notation;
@@ -142,6 +105,7 @@ void KeyUtils::setNotation(const QMap<ChromaticKey, QString>& notation) {
     }
 }
 
+// static
 QString KeyUtils::keyToString(ChromaticKey key,
                               KeyNotation notation) {
     if (!ChromaticKey_IsValid(key) ||
@@ -183,39 +147,38 @@ ChromaticKey KeyUtils::guessKeyFromText(const QString& text) {
         }
     }
 
-
     QRegExp openKeyMatcher(s_openKeyPattern, Qt::CaseInsensitive);
     if (openKeyMatcher.exactMatch(trimmed)) {
         bool ok = false;
-        int tonic = openKeyMatcher.cap(1).toInt(&ok);
+        int openKeyNumber = openKeyMatcher.cap(1).toInt(&ok);
 
         // Regex should mean this never happens.
-        if (!ok || tonic < 1 || tonic > 12) {
+        if (!ok || openKeyNumber < 1 || openKeyNumber > 12) {
             return mixxx::track::io::key::INVALID;
         }
 
         bool major = openKeyMatcher.cap(2)
                 .compare("d", Qt::CaseInsensitive) == 0;
 
-        return s_openKeyToKeys[tonic][major ? 0 : 1];
+        return openKeyNumberToKey(openKeyNumber, major);
     }
 
     QRegExp lancelotKeyMatcher(s_lancelotKeyPattern, Qt::CaseInsensitive);
     if (lancelotKeyMatcher.exactMatch(trimmed)) {
         bool ok = false;
-        int tonic = lancelotKeyMatcher.cap(1).toInt(&ok);
+        int lancelotNumber = lancelotKeyMatcher.cap(1).toInt(&ok);
 
         // Regex should mean this never happens.
-        if (!ok || tonic < 1 || tonic > 12) {
+        if (!ok || lancelotNumber < 1 || lancelotNumber > 12) {
             return mixxx::track::io::key::INVALID;
         }
 
-        int openKeyTonic = lancelotNumberToOpenKeyNumber(tonic);
+        int openKeyNumber = lancelotNumberToOpenKeyNumber(lancelotNumber);
 
         bool major = lancelotKeyMatcher.cap(2)
                 .compare("b", Qt::CaseInsensitive) == 0;
 
-        return s_openKeyToKeys[openKeyTonic][major ? 0 : 1];
+        return openKeyNumberToKey(openKeyNumber, major);
     }
 
     QRegExp keyMatcher(s_keyPattern, Qt::CaseInsensitive);
@@ -291,11 +254,11 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
     }
 
     // We know the key is in the set of valid values. Save whether or not the
-    // value is minor.
-    bool minor = !keyIsMajor(key);
+    // value is major.
+    bool major = keyIsMajor(key);
 
     // Tonic, 0-indexed.
-    int tonic = static_cast<int>(key) - (minor ? 13 : 1);
+    int tonic = keyToTonic(key);
 
     // Add the key_changes, mod 12.
     tonic = (tonic + key_changes) % 12;
@@ -306,19 +269,17 @@ ChromaticKey KeyUtils::scaleKeySteps(ChromaticKey key, int key_changes) {
         tonic += 12;
     }
 
-    // Return the key, adding 12 to the tonic if it was minor and 1 to make it
-    // 1-indexed again.
-    return static_cast<ChromaticKey>(tonic + (minor ? 13 : 1));
+    return tonicToKey(tonic, major);
 }
 
-//static
-ChromaticKey KeyUtils::keyToRelativeMajorOrMinor(ChromaticKey key) {
-    bool major = keyIsMajor(key);
-    int tonic = keyToOpenKeyNumber(key);
-
-    // if the key was major, return relative minor and vice versa
-    return s_openKeyToKeys[tonic][major ? 1 : 0];
-}
+// //static
+// ChromaticKey KeyUtils::keyToRelativeMajorOrMinor(ChromaticKey key) {
+//     bool major = keyIsMajor(key);
+//     int tonic = keyToOpenKeyNumber(key);
+// 
+//     // if the key was major, return relative minor and vice versa
+//     return s_openKeyToKeys[tonic][major ? 1 : 0];
+// }
 
 
 // static
@@ -348,4 +309,69 @@ mixxx::track::io::key::ChromaticKey KeyUtils::calculateGlobalKey(
         }
     }
     return max_key;
+}
+
+// static
+int KeyUtils::shortestStepsToKey(
+    mixxx::track::io::key::ChromaticKey key,
+    mixxx::track::io::key::ChromaticKey target_key) {
+    // For invalid keys just return zero steps.
+    if (!ChromaticKey_IsValid(key) ||
+        key == mixxx::track::io::key::INVALID ||
+        !ChromaticKey_IsValid(target_key) ||
+        target_key == mixxx::track::io::key::INVALID) {
+        return 0;
+    }
+
+    // NOTE(rryan): Even though it's kind of meaningless to call this with keys
+    // that are not both major/minor, we are tolerant of that.
+
+    // Tonic, 0-indexed.
+    int tonic = keyToTonic(key);
+    int targetTonic = keyToTonic(target_key);
+    int steps = targetTonic - tonic;
+
+    int upSteps = targetTonic - tonic + 12;
+    if (abs(upSteps) < abs(steps)) {
+        steps = upSteps;
+    }
+
+    int downSteps = targetTonic - tonic - 12;
+    if (abs(downSteps) < abs(steps)) {
+        steps = downSteps;
+    }
+
+    return steps;
+}
+
+// static
+int KeyUtils::shortestStepsToCompatibleKey(
+    mixxx::track::io::key::ChromaticKey key,
+    mixxx::track::io::key::ChromaticKey target_key) {
+    // For invalid keys just return zero steps.
+    if (!ChromaticKey_IsValid(key) ||
+        key == mixxx::track::io::key::INVALID ||
+        !ChromaticKey_IsValid(target_key) ||
+        target_key == mixxx::track::io::key::INVALID) {
+        return 0;
+    }
+
+    // We know the key is in the set of valid values. Save whether or not the
+    // value is minor.
+    bool major = keyIsMajor(key);
+    bool targetMajor = keyIsMajor(target_key);
+
+    // If both keys are major/minor, then we just want to take the shortest
+    // number of steps to match the key.
+    if (major == targetMajor) {
+        return shortestStepsToKey(key, target_key);
+    }
+
+    int targetOpenKeyNumber = KeyUtils::keyToOpenKeyNumber(target_key);
+
+    // Get the key that matches target_key on the Circle of Fifths but is the
+    // same major/minor as key.
+    target_key = openKeyNumberToKey(targetOpenKeyNumber, major);
+
+    return shortestStepsToKey(key, target_key);
 }

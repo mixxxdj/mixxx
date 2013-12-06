@@ -24,6 +24,20 @@ class KeyUtils {
                 key < mixxx::track::io::key::C_MINOR;
     }
 
+    // Returns the tonic, 0-indexed.
+    static inline int keyToTonic(mixxx::track::io::key::ChromaticKey key) {
+        if (key == mixxx::track::io::key::INVALID) {
+            return mixxx::track::io::key::INVALID;
+        }
+        return static_cast<int>(key) - (keyIsMajor(key) ? 1 : 13);
+    }
+
+    // Takes a 0-indexed tonic and whether it is major/minor and produces a key.
+    static inline mixxx::track::io::key::ChromaticKey tonicToKey(int tonic, bool major) {
+        return static_cast<mixxx::track::io::key::ChromaticKey>(
+            tonic + (major ? 1 : 13));
+    }
+
     static QString keyToString(mixxx::track::io::key::ChromaticKey key,
                                KeyNotation notation=DEFAULT);
 
@@ -37,8 +51,15 @@ class KeyUtils {
     static mixxx::track::io::key::ChromaticKey scaleKeySteps(
         mixxx::track::io::key::ChromaticKey key, int steps);
 
-    static mixxx::track::io::key::ChromaticKey keyToRelativeMajorOrMinor(
-        mixxx::track::io::key::ChromaticKey key);
+    static inline double stepsToOctaveChange(int steps) {
+        return static_cast<double>(steps) / 12.0;
+    }
+
+    static int shortestStepsToKey(mixxx::track::io::key::ChromaticKey key,
+                                  mixxx::track::io::key::ChromaticKey target_key);
+
+    static int shortestStepsToCompatibleKey(mixxx::track::io::key::ChromaticKey key,
+                                            mixxx::track::io::key::ChromaticKey target_key);
 
     static mixxx::track::io::key::ChromaticKey guessKeyFromText(const QString& text);
 
@@ -68,6 +89,51 @@ class KeyUtils {
 #else
         return log2(power_of_2);
 #endif
+    }
+
+    static mixxx::track::io::key::ChromaticKey openKeyNumberToKey(int openKeyNumber, bool major);
+
+    static inline int keyToOpenKeyNumber(mixxx::track::io::key::ChromaticKey key) {
+        switch (key) {
+            case mixxx::track::io::key::C_MAJOR:
+            case mixxx::track::io::key::A_MINOR:
+                return 1;
+            case mixxx::track::io::key::G_MAJOR:
+            case mixxx::track::io::key::E_MINOR:
+                return 2;
+            case mixxx::track::io::key::D_MAJOR:
+            case mixxx::track::io::key::B_MINOR:
+                return 3;
+            case mixxx::track::io::key::A_MAJOR:
+            case mixxx::track::io::key::F_SHARP_MINOR:
+                return 4;
+            case mixxx::track::io::key::E_MAJOR:
+            case mixxx::track::io::key::C_SHARP_MINOR:
+                return 5;
+            case mixxx::track::io::key::B_MAJOR:
+            case mixxx::track::io::key::G_SHARP_MINOR:
+                return 6;
+            case mixxx::track::io::key::F_SHARP_MAJOR:
+            case mixxx::track::io::key::E_FLAT_MINOR:
+                return 7;
+            case mixxx::track::io::key::D_FLAT_MAJOR:
+            case mixxx::track::io::key::B_FLAT_MINOR:
+                return 8;
+            case mixxx::track::io::key::A_FLAT_MAJOR:
+            case mixxx::track::io::key::F_MINOR:
+                return 9;
+            case mixxx::track::io::key::E_FLAT_MAJOR:
+            case mixxx::track::io::key::C_MINOR:
+                return 10;
+            case mixxx::track::io::key::B_FLAT_MAJOR:
+            case mixxx::track::io::key::G_MINOR:
+                return 11;
+            case mixxx::track::io::key::F_MAJOR:
+            case mixxx::track::io::key::D_MINOR:
+                return 12;
+            default:
+                return 0;
+        }
     }
 
   private:

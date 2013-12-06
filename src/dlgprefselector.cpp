@@ -7,9 +7,9 @@
 
 DlgPrefSelector::DlgPrefSelector(QWidget *parent,
                                  ConfigObject<ConfigValue> *pConfig)
-    : QWidget(parent),
-      Ui::DlgPrefSelectorDlg(),
-      m_pConfig(pConfig) {
+        :  DlgPreferencePage(parent),
+        Ui::DlgPrefSelectorDlg(),
+        m_pConfig(pConfig) {
     setupUi(this);
     m_similaritySliders.insert("timbre", horizontalSliderTimbre);
     m_similaritySliders.insert("rhythm", horizontalSliderRhythm);
@@ -76,9 +76,6 @@ void DlgPrefSelector::slotApply() {
     m_pConfig->set(
         ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT),
         ConfigValue(m_similarityContributions.value("rhythm")));
-    m_pConfig->set(
-        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT),
-        ConfigValue(m_similarityContributions.value("lastfm")));
     m_pConfig->Save();
 }
 
@@ -223,8 +220,6 @@ void DlgPrefSelector::loadSettings() {
         ConfigKey(SELECTOR_CONFIG_KEY, TIMBRE_COEFFICIENT)).toInt());
     m_similarityContributions.insert("rhythm", m_pConfig->getValueString(
         ConfigKey(SELECTOR_CONFIG_KEY, RHYTHM_COEFFICIENT)).toInt());
-    m_similarityContributions.insert("lastfm", m_pConfig->getValueString(
-        ConfigKey(SELECTOR_CONFIG_KEY, LASTFM_COEFFICIENT)).toInt());
 
     slotUpdate();
 }

@@ -50,6 +50,13 @@ void MidiController::visit(const HidControllerPreset* preset) {
     // TODO(XXX): throw a hissy fit.
 }
 
+bool MidiController::isClockSignal(MidiKey &mappingKey) {
+    if ((mappingKey.key & MIDI_SYS_RT_MSG_MASK) == MIDI_SYS_RT_MSG_MASK) {
+        return true;
+    }
+    return false;
+}
+
 bool MidiController::matchPreset(const PresetInfo& preset) {
     // Product info mapping not implemented for MIDI devices yet
     Q_UNUSED(preset);
@@ -254,6 +261,12 @@ void MidiController::receive(unsigned char status, unsigned char control,
             QPair<MixxxControl, MidiOptions> target;
             target.first = control;
             target.second = options;
+
+            // Ignore all standard MIDI System Real-Time Messages because they
+            // are continuously sent and prevent mapping of the pressed key.
+            if (isClockSignal(mappingKey)) {
+                return;
+            }
 
             // TODO: store these in a temporary hash to be applied on learning
             //  success, or thrown away on cancel.
@@ -536,6 +549,5 @@ void MidiController::receive(QByteArray data) {
 void MidiController::sendShortMsg(unsigned char status, unsigned char byte1, unsigned char byte2) {
     unsigned int word = (((unsigned int)byte2) << 16) |
             (((unsigned int)byte1) << 8) | status;
-    send(word);
+    sendWord(word);
 }
-

@@ -24,12 +24,15 @@ EngineDelay::EngineDelay(const char * group)
 {
     m_pDelayBuffer = new CSAMPLE[kiMaxDelay];
     m_iDelayPos = 0;
-    new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
+    // TODO(rryan): EngineDelay doesn't use this control. Need to add support
+    // for it.
+    m_pPotmeter = new ControlPotmeter(ConfigKey(group, "delay"), 0, kiMaxDelay);
 }
 
 EngineDelay::~EngineDelay()
 {
     delete [] m_pDelayBuffer;
+    delete m_pPotmeter;
 }
 
 void EngineDelay::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int iBufferSize)
@@ -51,4 +54,3 @@ void EngineDelay::process(const CSAMPLE * pIn, const CSAMPLE * pOut, const int i
         iDelaySourcePos = (iDelaySourcePos+1)%kiMaxDelay;
     }
 }
-

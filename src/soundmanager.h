@@ -19,6 +19,9 @@
 
 #include <QObject>
 #include <QMutex>
+#include <QString>
+#include <QList>
+#include <QHash>
 
 #include "defs.h"
 #include "configobject.h"
@@ -89,17 +92,19 @@ class SoundManager : public QObject {
     void requestBuffer(
         const QList<AudioOutputBuffer>& outputs, float* outputBuffer,
         const unsigned long iFramesPerBuffer, const unsigned int iFrameSize,
-        SoundDevice *device, double streamTime = 0);
+        SoundDevice* device, double streamTime = 0);
 
     // Used by SoundDevices to "push" any audio from their inputs that they have
     // into the mixing engine.
-    void pushBuffer(const QList<AudioInputBuffer>& inputs, short *inputBuffer,
+    void pushBuffer(const QList<AudioInputBuffer>& inputs, short* inputBuffer,
                     const unsigned long iFramesPerBuffer, const unsigned int iFrameSize);
 
     void registerOutput(AudioOutput output, const AudioSource *src);
     void registerInput(AudioInput input, AudioDestination *dest);
     QList<AudioOutput> registeredOutputs() const;
     QList<AudioInput> registeredInputs() const;
+
+    bool isDeviceClkRef(SoundDevice* device);
 
   signals:
     void devicesUpdated(); // emitted when pointers to SoundDevices go stale
@@ -128,7 +133,6 @@ class SoundManager : public QObject {
     QHash<AudioOutput, const AudioSource*> m_registeredSources;
     QHash<AudioInput, AudioDestination*> m_registeredDestinations;
     ControlObject* m_pControlObjectSoundStatusCO;
-    ControlObjectThreadMain* m_pControlObjectVinylControlGain;
     ControlObject* m_pControlObjectVinylControlGainCO;
 };
 

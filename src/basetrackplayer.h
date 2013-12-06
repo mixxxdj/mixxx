@@ -10,7 +10,7 @@
 class EngineMaster;
 class ControlObject;
 class ControlPotmeter;
-class ControlObjectThreadMain;
+class ControlObjectThread;
 class AnalyserQueue;
 
 class BaseTrackPlayer : public BasePlayer {
@@ -52,15 +52,13 @@ class BaseTrackPlayer : public BasePlayer {
     ControlPotmeter* m_pWaveformZoom;
     ControlObject* m_pEndOfTrack;
 
-    ControlObjectThreadMain* m_pCuePoint;
-    ControlObjectThreadMain* m_pLoopInPoint;
-    ControlObjectThreadMain* m_pLoopOutPoint;
-    ControlObjectThreadMain* m_pPlayPosition;
+    ControlObjectThread* m_pLoopInPoint;
+    ControlObjectThread* m_pLoopOutPoint;
     ControlObject* m_pDuration;
-    ControlObjectThreadMain* m_pBPM;
-    ControlObjectThreadMain* m_pKey;
-    ControlObjectThreadMain* m_pReplayGain;
-    ControlObjectThreadMain* m_pPlay;
+    ControlObjectThread* m_pBPM;
+    ControlObjectThread* m_pKey;
+    ControlObjectThread* m_pReplayGain;
+    ControlObjectThread* m_pPlay;
     EngineDeck* m_pChannel;
 };
 

@@ -17,7 +17,6 @@
 
 
 #include <QtDebug>
-#include <QtGui>
 
 #include "stardelegate.h"
 #include "stareditor.h"
@@ -123,4 +122,3 @@ void StarDelegate::cellEntered(const QModelIndex &index) {
         m_currentEditedCellIndex = QModelIndex();
     }
 }
-

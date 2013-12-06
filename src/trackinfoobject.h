@@ -66,7 +66,6 @@ public:
     /** Returns true if the object contains valid information */
     bool isValid() const;
     int parse();
-    void writeToXML( QDomDocument &, QDomElement & );
 
     /** Returns the duration in seconds */
     int getDuration() const;
@@ -81,8 +80,10 @@ public:
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum)
+    Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist)
     Q_PROPERTY(QString genre READ getGenre WRITE setGenre)
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer)
+    Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping)
     Q_PROPERTY(QString year READ getYear WRITE setYear)
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
     Q_PROPERTY(int times_played READ getTimesPlayed)
@@ -167,6 +168,10 @@ public:
     QString getAlbum() const;
     /** Set album */
     void setAlbum(QString);
+    /** Return album artist */
+    QString getAlbumArtist() const;
+    /** Set album artist */
+    void setAlbumArtist(QString);
     /** Return Year */
     QString getYear() const;
     /** Set year */
@@ -179,6 +184,10 @@ public:
     QString getComposer() const;
     /** Set composer */
     void setComposer(QString);
+    /** Return grouping */
+    QString getGrouping() const;
+    /** Set grouping */
+    void setGrouping(QString);
     /** Return Track Number */
     QString getTrackNumber() const;
     /** Set Track Number */
@@ -324,12 +333,16 @@ public:
     QString m_sAlbum;
     /** Artist */
     QString m_sArtist;
+    /** Album Artist */
+    QString m_sAlbumArtist;
     /** Title */
     QString m_sTitle;
     /** Genre */
     QString m_sGenre;
     /** Composer */
     QString m_sComposer;
+    /** Grouping */
+    QString m_sGrouping;
     /** Year */
     QString m_sYear;
     /** Track Number */

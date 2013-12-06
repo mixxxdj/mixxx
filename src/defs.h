@@ -17,8 +17,6 @@
 #ifndef DEFS_H
 #define DEFS_H
 
-#define MIXXX_PROMO_DIR "promo"
-
 #include <math.h>
 #include <iostream>
 #include <stdlib.h>
@@ -56,7 +54,7 @@ const int MAX_PATH = 260;
 #endif
 // Use POSIX name for MAX_PATH
 enum {
-	PATH_MAX = MAX_PATH
+    PATH_MAX = MAX_PATH
 };
 #endif
 
@@ -85,15 +83,6 @@ inline double zap_denormal(double x)
 
 #ifndef math_min
 #define math_min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
-// MSVC 2005/2008 needs these
-#ifndef fmax
-#define fmax math_max
-#endif
-
-#ifndef fmin
-#define fmin math_min
 #endif
 
 #endif

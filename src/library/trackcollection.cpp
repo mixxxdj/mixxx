@@ -1,9 +1,7 @@
-#include <QtCore>
-#include <QtGui>
 #include <QtSql>
 #include <QtDebug>
 
-#include "trackcollection.h"
+#include "library/trackcollection.h"
 
 #include "defs.h"
 #include "library/librarytablemodel.h"
@@ -18,10 +16,11 @@ TrackCollection::TrackCollection(ConfigObject<ConfigValue>* pConfig)
           m_playlistDao(m_db),
           m_crateDao(m_db),
           m_cueDao(m_db),
+          m_directoryDao(m_db),
           m_analysisDao(m_db, pConfig),
           m_socialTagDao(m_db),
           m_trackDao(m_db, m_cueDao, m_playlistDao, m_crateDao,
-                     m_analysisDao, m_socialTagDao, pConfig),
+                     m_analysisDao, m_directoryDao, m_socialTagDao, pConfig),
           m_supportedFileExtensionsRegex(
               SoundSourceProxy::supportedFileExtensionsRegex(),
               Qt::CaseInsensitive) {
@@ -73,7 +72,7 @@ bool TrackCollection::checkForTables() {
         return false;
     }
 
-    int requiredSchemaVersion = 21;
+    int requiredSchemaVersion = 24;
     QString schemaFilename = m_pConfig->getResourcePath();
     schemaFilename.append("schema.xml");
     QString okToExit = tr("Click OK to exit.");
@@ -109,6 +108,7 @@ bool TrackCollection::checkForTables() {
     m_playlistDao.initialize();
     m_crateDao.initialize();
     m_cueDao.initialize();
+    m_directoryDao.initialize();
 
     return true;
 }
@@ -158,7 +158,6 @@ bool TrackCollection::importDirectory(const QString& directory, TrackDAO& trackD
 
             TrackPointer pTrack = TrackPointer(new TrackInfoObject(
                               absoluteFilePath), &QObject::deleteLater);
-
             if (trackDao.addTracksAdd(pTrack.data(), false)) {
                 // Successful added
                 // signal the main instance of TrackDao, that there is a
@@ -185,13 +184,17 @@ PlaylistDAO& TrackCollection::getPlaylistDAO() {
     return m_playlistDao;
 }
 
+DirectoryDAO& TrackCollection::getDirectoryDAO() {
+    return m_directoryDao;
+}
+
 QSharedPointer<BaseTrackCache> TrackCollection::getTrackSource(
-    const QString& name) {
+        const QString& name) {
     return m_trackSources.value(name, QSharedPointer<BaseTrackCache>());
 }
 
 void TrackCollection::addTrackSource(
-    const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
+        const QString& name, QSharedPointer<BaseTrackCache> trackSource) {
     Q_ASSERT(!m_trackSources.contains(name));
     m_trackSources[name] = trackSource;
 }

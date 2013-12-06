@@ -17,7 +17,6 @@ QtWaveformRendererFilteredSignal::QtWaveformRendererFilteredSignal(
 }
 
 QtWaveformRendererFilteredSignal::~QtWaveformRendererFilteredSignal() {
-
 }
 
 void QtWaveformRendererFilteredSignal::onSetup(const QDomNode& /*node*/) {
@@ -120,11 +119,19 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     const double firstVisualIndex = m_waveformRenderer->getFirstDisplayedPosition() * dataSize;
     const double lastVisualIndex = m_waveformRenderer->getLastDisplayedPosition() * dataSize;
-    int pointIndex = 0;
-    setPoint(m_polygon[0][pointIndex], 0.0, 0.0);
-    setPoint(m_polygon[1][pointIndex], 0.0, 0.0);
-    setPoint(m_polygon[2][pointIndex], 0.0, 0.0);
-    pointIndex++;
+
+    m_polygon[0].clear();
+    m_polygon[1].clear();
+    m_polygon[2].clear();
+
+    m_polygon[0].reserve(2 * m_waveformRenderer->getWidth() + 2);
+    m_polygon[1].reserve(2 * m_waveformRenderer->getWidth() + 2);
+    m_polygon[2].reserve(2 * m_waveformRenderer->getWidth() + 2);
+
+    QPointF point(0.0, 0.0);
+    m_polygon[0].append(point);
+    m_polygon[1].append(point);
+    m_polygon[2].append(point);
 
     const double offset = firstVisualIndex;
 
@@ -134,12 +141,12 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
 
     // Per-band gain from the EQ knobs.
     float lowGain(1.0), midGain(1.0), highGain(1.0);
-    if (m_lowFilterControlObject &&
-            m_midFilterControlObject &&
-            m_highFilterControlObject) {
-        lowGain = m_lowFilterControlObject->get();
-        midGain = m_midFilterControlObject->get();
-        highGain = m_highFilterControlObject->get();
+    if (m_pLowFilterControlObject &&
+            m_pMidFilterControlObject &&
+            m_pHighFilterControlObject) {
+        lowGain = m_pLowFilterControlObject->get();
+        midGain = m_pMidFilterControlObject->get();
+        highGain = m_pHighFilterControlObject->get();
     }
 
     //apply separate visual gain
@@ -171,26 +178,26 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
             direction = -1.0;
 
             // After preparing the first channel, insert the pivot point.
-            setPoint(m_polygon[0][pointIndex], m_waveformRenderer->getWidth(), 0.0);
-            setPoint(m_polygon[1][pointIndex], m_waveformRenderer->getWidth(), 0.0);
-            setPoint(m_polygon[2][pointIndex], m_waveformRenderer->getWidth(), 0.0);
-            pointIndex++;
+            point = QPointF(m_waveformRenderer->getWidth(), 0.0);
+            m_polygon[0].append(point);
+            m_polygon[1].append(point);
+            m_polygon[2].append(point);
         }
 
         for (int x = startPixel;
-             (startPixel < endPixel) ? (x <= endPixel) : (x >= endPixel);
-             x += delta) {
+                (startPixel < endPixel) ? (x <= endPixel) : (x >= endPixel);
+                x += delta) {
 
             // TODO(rryan) remove before 1.11 release. I'm seeing crashes
             // sometimes where the pointIndex is very very large. It hasn't come
             // back since adding locking, but I'm leaving this so that we can
             // get some info about it before crashing. (The crash usually
             // corrupts a lot of the stack).
-            if (pointIndex > 2*m_waveformRenderer->getWidth()+2) {
+            if (m_polygon[0].size() > 2 * m_waveformRenderer->getWidth() + 2) {
                 qDebug() << "OUT OF CONTROL"
-                         << 2*m_waveformRenderer->getWidth()+2
+                         << 2 * m_waveformRenderer->getWidth() + 2
                          << dataSize
-                         << channel << pointIndex << x;
+                         << channel << m_polygon[0].size() << x;
             }
 
             // Width of the x position in visual indices.
@@ -217,10 +224,10 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
             // point for this pixel.
             const int lastVisualFrame = dataSize / 2 - 1;
             if (visualFrameStop < 0 || visualFrameStart > lastVisualFrame) {
-                setPoint(m_polygon[0][pointIndex], x, 0.0);
-                setPoint(m_polygon[1][pointIndex], x, 0.0);
-                setPoint(m_polygon[2][pointIndex], x, 0.0);
-                pointIndex++;
+                point = QPointF(x, 0.0);
+                m_polygon[0].append(point);
+                m_polygon[1].append(point);
+                m_polygon[2].append(point);
                 continue;
             }
 
@@ -260,22 +267,21 @@ int QtWaveformRendererFilteredSignal::buildPolygon() {
                 maxHigh = math_max(maxHigh, high);
             }
 
-            setPoint(m_polygon[0][pointIndex], x, (float)maxLow*lowGain*direction);
-            setPoint(m_polygon[1][pointIndex], x, (float)maxBand*midGain*direction);
-            setPoint(m_polygon[2][pointIndex], x, (float)maxHigh*highGain*direction);
-            pointIndex++;
+            m_polygon[0].append(QPointF(x, (float)maxLow * lowGain * direction));
+            m_polygon[1].append(QPointF(x, (float)maxBand * midGain * direction));
+            m_polygon[2].append(QPointF(x, (float)maxHigh * highGain * direction));
         }
     }
 
     //If channel are not displayed separately we need to close the loop properly
     if (channelSeparation == 1) {
-        setPoint(m_polygon[0][pointIndex], m_waveformRenderer->getWidth(), 0.0);
-        setPoint(m_polygon[1][pointIndex], m_waveformRenderer->getWidth(), 0.0);
-        setPoint(m_polygon[2][pointIndex], m_waveformRenderer->getWidth(), 0.0);
-        pointIndex++;
+        point = QPointF(m_waveformRenderer->getWidth(), 0.0);
+        m_polygon[0].append(point);
+        m_polygon[1].append(point);
+        m_polygon[2].append(point);
     }
 
-    return pointIndex;
+    return m_polygon[0].size();
 }
 
 void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*event*/) {
@@ -312,32 +318,32 @@ void QtWaveformRendererFilteredSignal::draw(QPainter* painter, QPaintEvent* /*ev
 
     int numberOfPoints = buildPolygon();
 
-    if (m_lowKillControlObject && m_lowKillControlObject->get() > 0.1) {
+    if (m_pLowKillControlObject && m_pLowKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_lowKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {
         painter->setPen(QPen(m_lowBrush, 0.0));
         painter->setBrush(m_lowBrush);
     }
-    painter->drawPolygon(&m_polygon[0][0],numberOfPoints);
+    painter->drawPolygon(&m_polygon[0][0], numberOfPoints);
 
-    if (m_midKillControlObject && m_midKillControlObject->get() > 0.1) {
+    if (m_pMidKillControlObject && m_pMidKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_midKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {
         painter->setPen(QPen(m_midBrush, 0.0));
         painter->setBrush(m_midBrush);
     }
-    painter->drawPolygon(&m_polygon[1][0],numberOfPoints);
+    painter->drawPolygon(&m_polygon[1][0], numberOfPoints);
 
-    if (m_highKillControlObject && m_highKillControlObject->get() > 0.1) {
+    if (m_pHighKillControlObject && m_pHighKillControlObject->get() > 0.1) {
         painter->setPen(QPen(m_highKilledBrush, 0.0));
         painter->setBrush(QColor(150,150,150,20));
     } else {
         painter->setPen(QPen(m_highBrush, 0.0));
         painter->setBrush(m_highBrush);
     }
-    painter->drawPolygon(&m_polygon[2][0],numberOfPoints);
+    painter->drawPolygon(&m_polygon[2][0], numberOfPoints);
 
     painter->restore();
 }

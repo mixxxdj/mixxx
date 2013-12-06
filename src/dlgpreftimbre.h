@@ -5,9 +5,10 @@
 #include <QList>
 
 #include "configobject.h"
+#include "preferences/dlgpreferencepage.h"
 #include "ui_dlgpreftimbredlg.h"
 
-class DlgPrefTimbre : public QWidget, Ui::DlgPrefTimbreDlg {
+class DlgPrefTimbre : public DlgPreferencePage, public Ui::DlgPrefTimbreDlg {
     Q_OBJECT
   public:
     DlgPrefTimbre(QWidget *parent, ConfigObject<ConfigValue> *pConfig);

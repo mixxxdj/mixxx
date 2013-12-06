@@ -12,8 +12,10 @@
 //
 
 #include <QtDebug>
-#include <QStringList>
-#include "parser.h"
+#include <QFile>
+#include <QIODevice>
+
+#include "library/parser.h"
 
 /**
    @author Ingo Kossyk (kossyki@cs.tu-berlin.de)

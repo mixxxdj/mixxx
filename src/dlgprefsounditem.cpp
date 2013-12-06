@@ -37,13 +37,8 @@ DlgPrefSoundItem::DlgPrefSoundItem(QWidget *parent, AudioPathType type,
         , m_savedDevice("")
         , m_savedChannel(0) {
     setupUi(this);
-    if (AudioPath::isIndexed(type)) {
-        typeLabel->setText(
-            QString("%1 %2").arg(AudioPath::getTrStringFromType(type),
-                                 QString::number(index + 1)));
-    } else {
-        typeLabel->setText(AudioPath::getTrStringFromType(type));
-    }
+    typeLabel->setText(AudioPath::getTrStringFromType(type, index));
+
     deviceComboBox->addItem(tr("None"), "None");
     connect(deviceComboBox, SIGNAL(currentIndexChanged(int)),
             this, SLOT(deviceChanged(int)));
@@ -105,7 +100,7 @@ void DlgPrefSoundItem::deviceChanged(int index) {
     } else {
         unsigned char channelsForType =
             AudioPath::channelsNeededForType(m_type);
-        for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels; ++i) {
+        for (unsigned int i = 1; i + (channelsForType - 1) <= numChannels; i += channelsForType) {
             if (channelsForType == 1) {
                 channelComboBox->addItem(
                     QString(tr("Channel %1")).arg(i), i - 1);

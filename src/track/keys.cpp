@@ -48,7 +48,7 @@ QString Keys::getSubVersion() const {
     return m_subVersion;
 }
 
-void Keys::setSubVersion(QString subVersion) {
+void Keys::setSubVersion(const QString& subVersion) {
     QMutexLocker locker(&m_mutex);
     m_subVersion = subVersion;
 }

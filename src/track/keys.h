@@ -33,7 +33,7 @@ class Keys {
     // A sub-version can be used to represent the preferences used to generate
     // the keys object.
     virtual QString getSubVersion() const;
-    virtual void setSubVersion(QString subVersion);
+    virtual void setSubVersion(const QString& subVersion);
 
     bool isValid() const;
 

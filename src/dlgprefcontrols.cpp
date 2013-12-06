@@ -21,6 +21,7 @@
 #include <QDoubleSpinBox>
 #include <QWidget>
 #include <QLocale>
+#include <QDesktopWidget>
 
 #include "dlgprefcontrols.h"
 #include "qcombobox.h"
@@ -42,36 +43,34 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                                  SkinLoader* pSkinLoader,
                                  PlayerManager* pPlayerManager,
                                  ConfigObject<ConfigValue> * pConfig)
-        :  QWidget(parent) {
-    m_pConfig = pConfig;
-    m_timer = -1;
-    m_mixxx = mixxx;
-    m_pSkinLoader = pSkinLoader;
-    m_pPlayerManager = pPlayerManager;
-
+        :  DlgPreferencePage(parent),
+           m_pConfig(pConfig),
+           m_mixxx(mixxx),
+           m_pSkinLoader(pSkinLoader),
+           m_pPlayerManager(pPlayerManager) {
     setupUi(this);
 
-    for (unsigned int i = 0; i < m_pPlayerManager->numDecks(); ++i) {
+    for (unsigned int i = 0; i < PlayerManager::numDecks(); ++i) {
         QString group = PlayerManager::groupForDeck(i);
-        m_rateControls.push_back(new ControlObjectThreadMain(
+        m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlObjectThreadMain(
+        m_rateRangeControls.push_back(new ControlObjectThread(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlObjectThreadMain(
+        m_rateDirControls.push_back(new ControlObjectThread(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlObjectThreadMain(
+        m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
     }
 
     for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
         QString group = PlayerManager::groupForSampler(i);
-        m_rateControls.push_back(new ControlObjectThreadMain(
+        m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
-        m_rateRangeControls.push_back(new ControlObjectThreadMain(
+        m_rateRangeControls.push_back(new ControlObjectThread(
                 group, "rateRange"));
-        m_rateDirControls.push_back(new ControlObjectThreadMain(
+        m_rateDirControls.push_back(new ControlObjectThread(
                 group, "rate_dir"));
-        m_cueControls.push_back(new ControlObjectThreadMain(
+        m_cueControls.push_back(new ControlObjectThread(
                 group, "cue_mode"));
     }
 
@@ -326,16 +325,18 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
 
 DlgPrefControls::~DlgPrefControls()
 {
-    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+    delete m_pControlPositionDisplay;
+
+    foreach (ControlObjectThread* pControl, m_rateControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+    foreach (ControlObjectThread* pControl, m_rateDirControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+    foreach (ControlObjectThread* pControl, m_cueControls) {
         delete pControl;
     }
-    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+    foreach (ControlObjectThread* pControl, m_rateRangeControls) {
         delete pControl;
     }
 }
@@ -350,7 +351,7 @@ void DlgPrefControls::slotUpdateSchemes()
 
     if (schlist.size() == 0) {
         ComboBoxSchemeconf->setEnabled(false);
-        ComboBoxSchemeconf->addItem(tr("This skin does not support schemes", 0));
+        ComboBoxSchemeconf->addItem(tr("This skin does not support color schemes", 0));
         ComboBoxSchemeconf->setCurrentIndex(0);
     } else {
         ComboBoxSchemeconf->setEnabled(true);
@@ -415,12 +416,12 @@ void DlgPrefControls::slotSetRateRange(int pos)
         range = 0.08f;
 
     // Set rate range for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateRangeControls) {
+    foreach (ControlObjectThread* pControl, m_rateRangeControls) {
         pControl->slotSet(range);
     }
 
     // Reset rate for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateControls) {
+    foreach (ControlObjectThread* pControl, m_rateControls) {
         pControl->slotSet(0);
     }
 }
@@ -432,7 +433,7 @@ void DlgPrefControls::slotSetRateDir(int index)
         dir = -1.;
 
     // Set rate direction for every group
-    foreach (ControlObjectThreadMain* pControl, m_rateDirControls) {
+    foreach (ControlObjectThread* pControl, m_rateDirControls) {
         pControl->slotSet(dir);
     }
 }
@@ -448,7 +449,7 @@ void DlgPrefControls::slotSetCueDefault(int)
     m_pConfig->set(ConfigKey("[Controls]","CueDefault"), ConfigValue(cueIndex));
 
     // Set cue behavior for every group
-    foreach (ControlObjectThreadMain* pControl, m_cueControls) {
+    foreach (ControlObjectThread* pControl, m_cueControls) {
         pControl->slotSet(cueIndex);
     }
 }
@@ -657,24 +658,14 @@ void DlgPrefControls::slotSetNormalizeOverview( bool normalize) {
     WaveformWidgetFactory::instance()->setOverviewNormalized(normalize);
 }
 
-void DlgPrefControls::onShow() {
-    m_timer = startTimer(100); //refresh actual frame rate every 100 ms
+void DlgPrefControls::slotWaveformMeasured(float frameRate, int rtErrorCnt) {
+    frameRateAverage->setText(
+            QString::number((double)frameRate, 'f', 2) +
+            " e" +
+            QString::number(rtErrorCnt));
 }
 
-void DlgPrefControls::onHide() {
-    if (m_timer != -1) {
-        killTimer(m_timer);
-    }
-}
-
-void DlgPrefControls::timerEvent(QTimerEvent * /*event*/) {
-    //Just to refresh actual framrate any time the controller is modified
-    frameRateAverage->setText(QString::number(
-        WaveformWidgetFactory::instance()->getActualFrameRate()));
-}
-
-void DlgPrefControls::initWaveformControl()
-{
+void DlgPrefControls::initWaveformControl() {
     waveformTypeComboBox->clear();
     WaveformWidgetFactory* factory = WaveformWidgetFactory::instance();
 
@@ -686,15 +677,17 @@ void DlgPrefControls::initWaveformControl()
     WaveformWidgetType::Type currentType = factory->getType();
     int currentIndex = -1;
 
-    std::vector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
-    for (unsigned int i = 0; i < handles.size(); i++) {
+    QVector<WaveformWidgetAbstractHandle> handles = factory->getAvailableTypes();
+    for (int i = 0; i < handles.size(); i++) {
         waveformTypeComboBox->addItem(handles[i].getDisplayName());
-        if (handles[i].getType() == currentType)
+        if (handles[i].getType() == currentType) {
             currentIndex = i;
+        }
     }
 
-    if (currentIndex != -1)
+    if (currentIndex != -1) {
         waveformTypeComboBox->setCurrentIndex(currentIndex);
+    }
 
     frameRateSpinBox->setValue(factory->getFrameRate());
 
@@ -730,6 +723,9 @@ void DlgPrefControls::initWaveformControl()
             this,SLOT(slotSetVisualGainHigh(double)));
     connect(normalizeOverviewCheckBox,SIGNAL(toggled(bool)),
             this,SLOT(slotSetNormalizeOverview(bool)));
+
+    connect(WaveformWidgetFactory::instance(), SIGNAL(waveformMeasured(float,int)),
+            this, SLOT(slotWaveformMeasured(float,int)));
 
     // Waveform overview init
     waveformOverviewComboBox->addItem( tr("Filtered") ); // "0"

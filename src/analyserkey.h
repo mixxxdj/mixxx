@@ -11,7 +11,7 @@
 
 class AnalyserKey : public Analyser {
   public:
-    AnalyserKey(ConfigObject<ConfigValue> *_config);
+    AnalyserKey(ConfigObject<ConfigValue>* pConfig);
     virtual ~AnalyserKey();
 
     bool initialise(TrackPointer tio, int sampleRate, int totalSamples);
@@ -33,7 +33,6 @@ class AnalyserKey : public Analyser {
     bool m_bPreferencesKeyDetectionEnabled;
     bool m_bPreferencesFastAnalysisEnabled;
     bool m_bPreferencesReanalyzeEnabled;
-    bool m_bShouldAnalyze;
 };
 
 #endif /* ANALYSERKEY_H */

@@ -12,8 +12,9 @@
 #include "ui_dlgprefbeatsdlg.h"
 #include "vamp/vamppluginloader.h"
 #include "configobject.h"
+#include "preferences/dlgpreferencepage.h"
 
-class DlgPrefBeats : public QWidget, public Ui::DlgBeatsDlg {
+class DlgPrefBeats : public DlgPreferencePage, public Ui::DlgBeatsDlg {
     Q_OBJECT
   public:
     DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config);
@@ -35,12 +36,10 @@ class DlgPrefBeats : public QWidget, public Ui::DlgBeatsDlg {
     void maxBpmRangeChanged(int value);
     void slotReanalyzeChanged(int value);
 
-  signals:
-    void apply(const QString &);
-
   private:
     void populate();
     void loadSettings();
+
     // Pointer to config object
     ConfigObject<ConfigValue>* m_pconfig;
     QList<QString> m_listName;

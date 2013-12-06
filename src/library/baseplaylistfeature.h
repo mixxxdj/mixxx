@@ -2,12 +2,18 @@
 #define BASEPLAYLISTFEATURE_H
 
 #include <QAction>
+#include <QUrl>
+#include <QObject>
+#include <QModelIndex>
+#include <QAction>
+#include <QList>
+#include <QPair>
+#include <QString>
 
 #include "library/libraryfeature.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 
-class WLibrarySidebar;
 class WLibrary;
 class MixxxKeyboard;
 class PlaylistTableModel;
@@ -35,7 +41,7 @@ class BasePlaylistFeature : public LibraryFeature {
   public slots:
     virtual void activate();
     virtual void activateChild(const QModelIndex& index);
-    virtual void htmlLinkClicked(const QUrl & link);
+    virtual void htmlLinkClicked(const QUrl& link);
 
     virtual void slotPlaylistTableChanged(int playlistId) = 0;
     void slotPlaylistTableRenamed(int playlistId, QString a_strName);

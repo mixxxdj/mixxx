@@ -14,10 +14,10 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefTimbre::DlgPrefTimbre(QWidget *parent, ConfigObject<ConfigValue> *pConfig)
-             : QWidget(parent),
-               Ui::DlgPrefTimbreDlg(),
-               m_pConfig(pConfig),
-               m_bAnalyserEnabled(false) {
+        :  DlgPreferencePage(parent),
+        Ui::DlgPrefTimbreDlg(),
+        m_pConfig(pConfig),
+        m_bAnalyserEnabled(false) {
     setupUi(this);
 
     populate();

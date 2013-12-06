@@ -6,11 +6,12 @@
 
 class ControlObject;
 class ControlPotmeter;
+class ControlPushButton;
 
 class KeyControl : public EngineControl {
     Q_OBJECT
   public:
-    KeyControl(const char* _group, ConfigObject<ConfigValue>* _config);
+    KeyControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig);
     virtual ~KeyControl();
 
     // Returns a value describing the pitch adjustment measured in octaves. A
@@ -24,11 +25,16 @@ class KeyControl : public EngineControl {
     void slotFileKeyChanged(double);
     void slotPitchChanged(double);
     void slotRateChanged();
+    void slotSyncKey(double);
 
   private:
+    bool syncKey(EngineBuffer* pOtherEngineBuffer);
+
     // The previous rate slider rate.
     double m_dOldRate;
     bool m_bOldKeylock;
+    double m_dPitchCompensation;
+    double m_dPitchCompensationOldPitch;
 
     // ControlObjects that come from EngineBuffer
     ControlObject* m_pPlayButton;
@@ -37,6 +43,7 @@ class KeyControl : public EngineControl {
     ControlObject* m_pRateDir;
     ControlObject* m_pKeylock;
     ControlPotmeter* m_pPitch;
+    ControlPushButton* m_pButtonSyncKey;
 
     /** The current loaded file's detected key */
     ControlObject* m_pFileKey;

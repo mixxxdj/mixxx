@@ -1,15 +1,13 @@
 #include <QTreeWidget>
-#include <QDebug>
-#include <QDesktopServices>
-#include <QUrl>
+#include <QtDebug>
 
 #include "dlgtagfetcher.h"
 
 DlgTagFetcher::DlgTagFetcher(QWidget *parent)
-             : QWidget(parent),
-               m_track(NULL),
-               m_TagFetcher(parent),
-               m_networkError(NOERROR) {
+        : QWidget(parent),
+          m_track(NULL),
+          m_TagFetcher(parent),
+          m_networkError(NOERROR) {
     setupUi(this);
 
     connect(btnApply, SIGNAL(clicked()),

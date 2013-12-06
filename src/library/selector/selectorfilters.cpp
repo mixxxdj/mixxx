@@ -138,9 +138,9 @@ QList<ChromaticKey> SelectorFilters::getHarmonicKeys(ChromaticKey key) {
     if (m_bFilterKey5th) {
         keys.append(KeyUtils::scaleKeySteps(key, 7));
     }
-    if (m_bFilterKeyRelative) {
-        keys.append(KeyUtils::keyToRelativeMajorOrMinor(key));
-    }
+    // if (m_bFilterKeyRelative) {
+    //     keys.append(KeyUtils::keyToRelativeMajorOrMinor(key));
+    // }
 
     return keys;
 }

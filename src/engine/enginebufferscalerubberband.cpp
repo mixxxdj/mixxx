@@ -1,6 +1,5 @@
 #include <rubberband/RubberBandStretcher.h>
 
-#include <QMutexLocker>
 #include <QtDebug>
 
 #include "engine/enginebufferscalerubberband.h"
@@ -13,18 +12,22 @@
 
 using RubberBand::RubberBandStretcher;
 
-EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(ReadAheadManager* pReadAheadManager)
+// This is the default increment from RubberBand 1.8.1.
+static size_t kRubberBandBlockSize = 256;
+
+EngineBufferScaleRubberBand::EngineBufferScaleRubberBand(
+    ReadAheadManager* pReadAheadManager)
         : m_bBackwards(false),
           m_buffer_back(SampleUtil::alloc(MAX_BUFFER_LEN)),
           m_pRubberBand(NULL),
           m_pReadAheadManager(pReadAheadManager) {
+    qDebug() << "RubberBand version" << RUBBERBAND_VERSION;
+
     m_retrieve_buffer[0] = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_retrieve_buffer[1] = SampleUtil::alloc(MAX_BUFFER_LEN);
 
-    ControlObject* p = ControlObject::getControl(ConfigKey("[Master]", "samplerate"));
-    connect(p, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSetSamplerate(double)));
-    initializeRubberBand(p->get());
+    // m_iSampleRate defaults to 44100.
+    initializeRubberBand(m_iSampleRate);
 }
 
 EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
@@ -32,7 +35,6 @@ EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
     SampleUtil::free(m_retrieve_buffer[0]);
     SampleUtil::free(m_retrieve_buffer[1]);
 
-    QMutexLocker locker(&m_qMutex);
     if (m_pRubberBand) {
         delete m_pRubberBand;
         m_pRubberBand = NULL;
@@ -40,7 +42,6 @@ EngineBufferScaleRubberBand::~EngineBufferScaleRubberBand() {
 }
 
 void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
-    QMutexLocker locker(&m_qMutex);
     if (m_pRubberBand) {
         delete m_pRubberBand;
         m_pRubberBand = NULL;
@@ -48,11 +49,18 @@ void EngineBufferScaleRubberBand::initializeRubberBand(int iSampleRate) {
     m_pRubberBand = new RubberBandStretcher(
         iSampleRate, 2,
         RubberBandStretcher::OptionProcessRealTime);
+    m_pRubberBand->setMaxProcessSize(kRubberBandBlockSize);
 }
 
-void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
+void EngineBufferScaleRubberBand::setScaleParameters(int iSampleRate,
+                                                     double* rate_adjust,
                                                      double* tempo_adjust,
                                                      double* pitch_adjust) {
+    if (m_iSampleRate != iSampleRate) {
+        initializeRubberBand(iSampleRate);
+        m_iSampleRate = iSampleRate;
+    }
+
     // Assumes tempo_adjust and rate_adjust will never both be negative since
     // the way EngineBuffer calls setScaleParameters, either rate_adjust is
     // (speed * baserate) and tempo_adjust is 1.0 or rate_adjust is baserate and
@@ -67,8 +75,6 @@ void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
     bool tempo_changed = tempo_abs != m_dTempoAdjust;
     bool rate_changed = rate_abs != m_dRateAdjust;
     bool pitch_changed = *pitch_adjust != m_dPitchAdjust;
-
-    QMutexLocker locker(&m_qMutex);
 
     if ((tempo_changed || rate_changed)) {
         // Time ratio is the ratio of stretched to unstretched duration. So 1
@@ -98,20 +104,16 @@ void EngineBufferScaleRubberBand::setScaleParameters(double* rate_adjust,
     }
 }
 
-void EngineBufferScaleRubberBand::slotSetSamplerate(double dSampleRate) {
-    initializeRubberBand(dSampleRate);
-}
-
 void EngineBufferScaleRubberBand::clear() {
-    QMutexLocker locker(&m_qMutex);
     m_pRubberBand->reset();
 }
 
-size_t EngineBufferScaleRubberBand::retrieveAndDeinterleave(CSAMPLE* pBuffer, size_t frames) {
+size_t EngineBufferScaleRubberBand::retrieveAndDeinterleave(CSAMPLE* pBuffer,
+                                                            size_t frames) {
     size_t frames_available = m_pRubberBand->available();
     size_t frames_to_read = math_min(frames_available, frames);
-    size_t received_frames = m_pRubberBand->retrieve((float* const*)m_retrieve_buffer,
-                                                     frames_to_read);
+    size_t received_frames = m_pRubberBand->retrieve(
+        (float* const*)m_retrieve_buffer, frames_to_read);
 
     for (size_t i = 0; i < received_frames; ++i) {
         pBuffer[i*2] = m_retrieve_buffer[0][i];
@@ -129,7 +131,8 @@ void EngineBufferScaleRubberBand::deinterleaveAndProcess(
         m_retrieve_buffer[1][i] = pBuffer[i*2+1];
     }
 
-    m_pRubberBand->process((const float* const*)m_retrieve_buffer, frames, flush);
+    m_pRubberBand->process((const float* const*)m_retrieve_buffer,
+                           frames, flush);
 }
 
 
@@ -144,8 +147,6 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
         m_samplesRead = buf_size;
         return m_buffer;
     }
-
-    QMutexLocker locker(&m_qMutex);
 
     const int iNumChannels = 2;
     unsigned long total_received_frames = 0;
@@ -167,14 +168,28 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
         read += received_frames * iNumChannels;
 
         if (break_out_after_retrieve_and_reset_rubberband) {
+            //qDebug() << "break_out_after_retrieve_and_reset_rubberband";
             // If we break out early then we have flushed RubberBand and need to
             // reset it.
             m_pRubberBand->reset();
             break;
         }
 
-        if (remaining_frames > 0) {
-            unsigned long iLenFramesRequired = m_pRubberBand->getSamplesRequired();
+        size_t iLenFramesRequired = m_pRubberBand->getSamplesRequired();
+        if (iLenFramesRequired == 0) {
+            // rubberband 1.3 (packaged up through Ubuntu Quantal) has a bug
+            // where it can report 0 samples needed forever which leads us to an
+            // infinite loop. To work around this, we check if available() is
+            // zero. If it is, then we submit a fixed block size of
+            // kRubberBandBlockSize.
+            int available = m_pRubberBand->available();
+            if (available == 0) {
+                iLenFramesRequired = kRubberBandBlockSize;
+            }
+        }
+        //qDebug() << "iLenFramesRequired" << iLenFramesRequired;
+
+        if (remaining_frames > 0 && iLenFramesRequired > 0) {
             unsigned long iAvailSamples = m_pReadAheadManager
                     ->getNextSamples(
                         // The value doesn't matter here. All that matters is we
@@ -220,4 +235,3 @@ CSAMPLE* EngineBufferScaleRubberBand::getScaled(unsigned long buf_size) {
 
     return m_buffer;
 }
-

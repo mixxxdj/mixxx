@@ -46,6 +46,8 @@ class SoundManager;
 #include "util/cmdlineargs.h"
 #include "util/timer.h"
 
+class ControlObjectThread;
+
 // This Class is the base class for Mixxx. It sets up the main
 // window and providing a menubar.
 // For the main view, an instance of class MixxxView is
@@ -65,7 +67,7 @@ class MixxxApp : public QMainWindow {
     void resizeEvent(QResizeEvent *e) { qDebug() << "resize" << e->size();}
 
     void setToolTipsCfg(int tt);
-    inline int getToolTipsCgf() { return m_toolTipsCfg; };
+    inline int getToolTipsCgf() { return m_toolTipsCfg; }
     void rebootMixxxView();
 
   public slots:
@@ -237,6 +239,9 @@ class MixxxApp : public QMainWindow {
     Timer m_runtime_timer;
 
     const CmdlineArgs& m_cmdLineArgs;
+
+    ControlObjectThread* m_pVinylcontrol1Enabled;
+    ControlObjectThread* m_pVinylcontrol2Enabled;
 };
 
 #endif

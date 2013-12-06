@@ -10,11 +10,7 @@
 #include <errno.h>
 #endif
 
-#include <QtGui>
-#include <QDirModel>
-#include <QStringList>
 #include <QFileInfo>
-#include <QDesktopServices>
 
 #include "library/treeitem.h"
 #include "library/browse/foldertreemodel.h"

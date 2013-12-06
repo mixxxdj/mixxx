@@ -16,53 +16,42 @@
 ***************************************************************************/
 
 #include <QDesktopServices>
+#include <QDir>
 #include <QFileDialog>
+#include <QStringList>
 #include <QUrl>
 
 #include "dlgprefplaylist.h"
 #include "soundsourceproxy.h"
-#ifdef __PROMO__
-#include "library/promotracksfeature.h"
-#endif
-//#include "plugindownloader.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * config)
-            : QWidget(parent), 
-              m_pconfig(config) {
+DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent,
+        ConfigObject<ConfigValue> * config, Library *pLibrary)
+        :DlgPreferencePage(parent),
+        m_dirListModel(),
+        m_pconfig(config),
+        m_pLibrary(pLibrary) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
 
-    /*
-    m_pPluginDownloader = new PluginDownloader(this);
-
-    //Disable the M4A button if the plugin is present on disk.
-    setupM4AButton();
-
-    //Disable M4A Button after download completes successfully.
-    connect(m_pPluginDownloader, SIGNAL(downloadFinished()),
-            this, SLOT(slotM4ADownloadFinished()));
-
-    connect(m_pPluginDownloader, SIGNAL(downloadProgress(qint64, qint64)),
-            this, SLOT(slotM4ADownloadProgress(qint64, qint64)));
-    */
-
-    connect(PushButtonBrowsePlaylist, SIGNAL(clicked()),
-            this, SLOT(slotBrowseDir()));
+    connect(this, SIGNAL(requestAddDir(QString)),
+            m_pLibrary, SLOT(slotRequestAddDir(QString)));
+    connect(this, SIGNAL(requestRemoveDir(QString, Library::RemovalType)),
+            m_pLibrary, SLOT(slotRequestRemoveDir(QString, Library::RemovalType)));
+    connect(this, SIGNAL(requestRelocateDir(QString,QString)),
+            m_pLibrary, SLOT(slotRequestRelocateDir(QString,QString)));
+    connect(PushButtonAddDir, SIGNAL(clicked()),
+            this, SLOT(slotAddDir()));
+    connect(PushButtonRemoveDir, SIGNAL(clicked()),
+            this, SLOT(slotRemoveDir()));
+    connect(PushButtonRelocateDir, SIGNAL(clicked()),
+            this, SLOT(slotRelocateDir()));
     //connect(pushButtonM4A, SIGNAL(clicked()), this, SLOT(slotM4ACheck()));
     connect(pushButtonExtraPlugins, SIGNAL(clicked()),
             this, SLOT(slotExtraPlugins()));
-
-    bool enablePromoGroupbox = false;
-#ifdef __PROMO__
-    enablePromoGroupbox = PromoTracksFeature::isSupported(config);
-#endif
-    if (!enablePromoGroupbox) {
-        groupBoxBundledSongs->hide();
-    }
 
     // plugins are loaded in src/main.cpp way early in boot so this is safe
     // here, doesn't need done at every slotUpdate
@@ -75,79 +64,34 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent, ConfigObject<ConfigValue> * c
 DlgPrefPlaylist::~DlgPrefPlaylist() {
 }
 
+void DlgPrefPlaylist::initialiseDirList(){
+    // save which index was selected
+    const QString selected = dirList->currentIndex().data().toString();
+    // clear and fill model
+    m_dirListModel.clear();
+    QStringList dirs = m_pLibrary->getDirs();
+    foreach (QString dir, dirs) {
+        m_dirListModel.appendRow(new QStandardItem(dir));
+    }
+    dirList->setModel(&m_dirListModel);
+    dirList->setCurrentIndex(m_dirListModel.index(0, 0));
+    // reselect index if it still exists
+    for (int i=0 ; i<m_dirListModel.rowCount() ; ++i) {
+        const QModelIndex index = m_dirListModel.index(i, 0);
+        if (index.data().toString() == selected) {
+            dirList->setCurrentIndex(index);
+            break;
+        }
+    }
+}
+
 void DlgPrefPlaylist::slotExtraPlugins() {
     QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
 }
 
-/*
-void DlgPrefPlaylist::slotM4ADownloadProgress(qint64 bytesReceived,
-                                              qint64 bytesTotal)
-{
-    pushButtonM4A->setText(QString("%1\%").arg(100*(float)bytesReceived/bytesTotal, 0, 'g', 1));
-}
-void DlgPrefPlaylist::slotM4ADownloadFinished()
-{
-    //Disable the button after the download is finished.
-    //We force it to be disabled because on Linux, gdebi-gtk
-    //needs to be finished running before we know whether or not
-    //the plugin is actually installed. :(
-    setupM4AButton(true);
-}
-
-void DlgPrefPlaylist::setupM4AButton(bool forceInstalled)
-{
-    //If the M4A plugin is present on disk, disable the button
-    if (m_pPluginDownloader->checkForM4APlugin() || forceInstalled) {
-        pushButtonM4A->setChecked(true);
-        pushButtonM4A->setEnabled(false);
-        pushButtonM4A->setText(tr("Installed"));
-    }
-}
-
-void DlgPrefPlaylist::slotM4ACheck()
-{
-    qDebug() << "slotM4ACheck";
-
-#ifdef __LINUX__
-    QFile version("/proc/version");
-    bool isUbuntu = true;
-    if (version.open(QIODevice::ReadOnly))
-    {
-        QByteArray rawLine = version.readAll();
-        QString versionString(rawLine);
-        if (versionString.contains("Ubuntu", Qt::CaseInsensitive))
-        {
-            isUbuntu = true;
-        }
-    }
-    else {
-        isUbuntu = false;
-    }
-
-    if (!isUbuntu)
-    {
-        QMessageBox::information(this, tr("M4A Playback Plugin"),
-                                tr("The M4A playback plugin is currently"
-                                "unavailable for your Linux distribution."
-                                "Please download and compile Mixxx from "
-                                "source to enable M4A playback."));
-    }
-
-#endif
-
-    if (!m_pPluginDownloader->checkForM4APlugin())
-    {
-        m_pPluginDownloader->downloadM4APlugin();
-    }
-}*/
-
 void DlgPrefPlaylist::slotUpdate() {
-    // Library Path
-    LineEditSongfiles->setText(m_pconfig->getValueString(
-                               ConfigKey("[Playlist]","Directory")));
+    initialiseDirList();
     //Bundled songs stat tracking
-    checkBoxPromoStats->setChecked((bool)m_pconfig->getValueString(
-            ConfigKey("[Promo]","StatTracking")).toInt());
     checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","RescanOnStartup")).toInt());
     checkbox_ID3_sync->setChecked((bool)m_pconfig->getValueString(
@@ -156,24 +100,106 @@ void DlgPrefPlaylist::slotUpdate() {
             ConfigKey("[Library]","UseRelativePathOnExport")).toInt());
     checkBox_show_rhythmbox->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowRhythmboxLibrary"),"1").toInt());
+    checkBox_show_banshee->setChecked((bool)m_pconfig->getValueString(
+            ConfigKey("[Library]","ShowBansheeLibrary"),"1").toInt());
     checkBox_show_itunes->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowITunesLibrary"),"1").toInt());
     checkBox_show_traktor->setChecked((bool)m_pconfig->getValueString(
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
 }
 
-void DlgPrefPlaylist::slotBrowseDir() {
-    QString fd = QFileDialog::getExistingDirectory(this,
-                 tr("Choose music library directory"),
-                 m_pconfig->getValueString(ConfigKey("[Playlist]","Directory")));
-    if (fd != "") {
-        LineEditSongfiles->setText(fd);
+void DlgPrefPlaylist::slotAddDir() {
+    QString fd = QFileDialog::getExistingDirectory(
+        this, tr("Choose a music library directory"),
+        QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
+    if (!fd.isEmpty()) {
+        emit(requestAddDir(fd));
+        slotUpdate();
+    }
+}
+
+void DlgPrefPlaylist::slotRemoveDir() {
+    QModelIndex index = dirList->currentIndex();
+    QString fd = index.data().toString();
+    QMessageBox removeMsgBox;
+
+    removeMsgBox.setIcon(QMessageBox::Warning);
+    removeMsgBox.setWindowTitle(tr("Confirm Directory Removal"));
+
+    removeMsgBox.setText(tr(
+        "Mixxx will no longer watch this directory for new tracks. "
+        "What would you like to do with the tracks from this directory and "
+        "subdirectories?"
+        "<ul>"
+        "<li>Hide all tracks from this directory and subdirectories.</li>"
+        "<li>Delete all metadata for these tracks from Mixxx permanently.</li>"
+        "<li>Leave the tracks unchanged in your library.</li>"
+        "</ul>"
+        "Hiding tracks saves their metadata in case you re-add them in the "
+        "future."));
+    removeMsgBox.setInformativeText(tr(
+        "Metadata means all track details (artist, title, playcount, etc.) as "
+        "well as beatgrids, hotcues, and loops. This choice only affects the "
+        "Mixxx library. No files on disk will be changed or deleted."));
+
+    QPushButton* cancelButton =
+            removeMsgBox.addButton(QMessageBox::Cancel);
+    QPushButton* hideAllButton = removeMsgBox.addButton(
+        tr("Hide Tracks"), QMessageBox::AcceptRole);
+    QPushButton* deleteAllButton = removeMsgBox.addButton(
+        tr("Delete Track Metadata"), QMessageBox::AcceptRole);
+    QPushButton* leaveUnchangedButton = removeMsgBox.addButton(
+        tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
+    removeMsgBox.setDefaultButton(cancelButton);
+    removeMsgBox.exec();
+
+    if (removeMsgBox.clickedButton() == cancelButton) {
+        return;
+    }
+
+    bool deleteAll = removeMsgBox.clickedButton() == deleteAllButton;
+    bool hideAll = removeMsgBox.clickedButton() == hideAllButton;
+    bool leaveUnchanged = removeMsgBox.clickedButton() == leaveUnchangedButton;
+
+    Library::RemovalType removalType = Library::LeaveTracksUnchanged;
+    if (leaveUnchanged) {
+        removalType = Library::LeaveTracksUnchanged;
+    } else if (deleteAll) {
+        removalType = Library::PurgeTracks;
+    } else if (hideAll) {
+        removalType = Library::HideTracks;
+    }
+
+    emit(requestRemoveDir(fd, removalType));
+    slotUpdate();
+}
+
+void DlgPrefPlaylist::slotRelocateDir() {
+    QModelIndex index = dirList->currentIndex();
+    QString currentFd = index.data().toString();
+
+    // If the selected directory exists, use it. If not, go up one directory (if
+    // that directory exists). If neither exist, use the default music
+    // directory.
+    QString startDir = currentFd;
+    QDir dir(startDir);
+    if (!dir.exists() && dir.cdUp()) {
+        startDir = dir.absolutePath();
+    } else if (!dir.exists()) {
+        startDir = QDesktopServices::storageLocation(
+            QDesktopServices::MusicLocation);
+    }
+
+    QString fd = QFileDialog::getExistingDirectory(
+        this, tr("relocate to directory"), startDir);
+
+    if (!fd.isEmpty()) {
+        emit(requestRelocateDir(currentFd, fd));
+        slotUpdate();
     }
 }
 
 void DlgPrefPlaylist::slotApply() {
-    m_pconfig->set(ConfigKey("[Promo]","StatTracking"),
-                ConfigValue((int)checkBoxPromoStats->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),
@@ -182,15 +208,12 @@ void DlgPrefPlaylist::slotApply() {
                 ConfigValue((int)checkBox_use_relative_path->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowRhythmboxLibrary"),
                 ConfigValue((int)checkBox_show_rhythmbox->isChecked()));
+    m_pconfig->set(ConfigKey("[Library]","ShowBansheeLibrary"),
+                ConfigValue((int)checkBox_show_banshee->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowITunesLibrary"),
                 ConfigValue((int)checkBox_show_itunes->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","ShowTraktorLibrary"),
                 ConfigValue((int)checkBox_show_traktor->isChecked()));
 
-    if (LineEditSongfiles->text() !=
-            m_pconfig->getValueString(ConfigKey("[Playlist]","Directory"))) {
-        m_pconfig->set(ConfigKey("[Playlist]","Directory"), LineEditSongfiles->text());
-        emit(apply());
-    }
     m_pconfig->Save();
 }

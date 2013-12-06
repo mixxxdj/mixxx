@@ -34,7 +34,7 @@ class Waveform;
 class WOverview : public WWidget {
     Q_OBJECT
   public:
-    WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget *parent=NULL);
+    WOverview(const char* pGroup, ConfigObject<ConfigValue>* pConfig, QWidget* parent=NULL);
     virtual ~WOverview();
     void setup(QDomNode node);
 
@@ -85,19 +85,18 @@ class WOverview : public WWidget {
     virtual bool drawNextPixmapPart() = 0;
     void paintText(const QString &text, QPainter *painter);
     inline int valueToPosition(float value) const {
-        return (int)(m_a * value - m_b + 0.5);
+        return static_cast<int>(m_a * value - m_b + 0.5);
     }
     inline double positionToValue(int position) const {
-        return ((float)position + m_b) / m_a;
-
+        return (static_cast<float>(position) + m_b) / m_a;
     }
 
     const QString m_group;
     ConfigObject<ConfigValue>* m_pConfig;
-    ControlObjectThreadMain* m_endOfTrackControl;
+    ControlObjectThread* m_endOfTrackControl;
     double m_endOfTrack;
-    ControlObjectThreadMain* m_trackSamplesControl;
-    ControlObjectThreadMain* m_playControl;
+    ControlObjectThread* m_trackSamplesControl;
+    ControlObjectThread* m_playControl;
 
 
     // Current active track

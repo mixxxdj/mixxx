@@ -41,8 +41,6 @@ class VampAnalyser {
     // method appends to that.
     static void initializePluginPaths();
     void SelectOutput(const int outputnumber);
-  private:
-    
 
   private:
     Vamp::HostExt::PluginLoader::PluginKey m_key;

@@ -36,7 +36,7 @@ class Library : public QObject {
 public:
     Library(QObject* parent,
             ConfigObject<ConfigValue>* pConfig,
-            bool firstRun, RecordingManager* pRecordingManager);
+            RecordingManager* pRecordingManager);
     virtual ~Library();
 
     void bindWidget(WLibrary* libraryWidget,
@@ -44,7 +44,7 @@ public:
     void bindSidebarWidget(WLibrarySidebar* sidebarWidget);
 
     void addFeature(LibraryFeature* feature);
-    QList<TrackPointer> getTracksToAutoLoad();
+    QStringList getDirs();
 
     // TODO(rryan) Transitionary only -- the only reason this is here is so the
     // waveform widgets can signal to a player to load a track. This can be
@@ -56,6 +56,12 @@ public:
 
     //static Library* buildDefaultLibrary();
 
+    enum RemovalType {
+        LeaveTracksUnchanged = 0,
+        HideTracks,
+        PurgeTracks
+    };
+
   public slots:
     void slotShowTrackModel(QAbstractItemModel* model);
     void slotSwitchToView(const QString& view);
@@ -66,6 +72,9 @@ public:
     void slotRefreshLibraryModels();
     void slotCreatePlaylist();
     void slotCreateCrate();
+    void slotRequestAddDir(QString directory);
+    void slotRequestRemoveDir(QString directory, Library::RemovalType removalType);
+    void slotRequestRelocateDir(QString previousDirectory, QString newDirectory);
     void slotSetSeedTrack(TrackPointer pTrack);
     void slotSwitchToSelector();
     void slotCalculateAllSimilarities(const QString& filename);
@@ -91,10 +100,6 @@ public:
     MixxxLibraryFeature* m_pMixxxLibraryFeature;
     PlaylistFeature* m_pPlaylistFeature;
     CrateFeature* m_pCrateFeature;
-#ifdef __PROMO__
-    class PromoTracksFeature;
-    PromoTracksFeature* m_pPromoTracksFeature;
-#endif
     SelectorFeature* m_pSelectorFeature;
     AnalysisFeature* m_pAnalysisFeature;
     LibraryControl* m_pLibraryControl;

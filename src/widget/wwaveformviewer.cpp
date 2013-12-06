@@ -1,10 +1,11 @@
 
-#include <QDebug>
-#include <QtXml/QDomNode>
+#include <QtDebug>
+#include <QDomNode>
 #include <QEvent>
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QPainter>
+#include <QMimeData>
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
@@ -24,14 +25,14 @@ WWaveformViewer::WWaveformViewer(const char *group, ConfigObject<ConfigValue>* p
     m_bScratching = false;
     m_bBending = false;
 
-    m_pZoom = new ControlObjectThreadMain(group, "waveform_zoom");
+    m_pZoom = new ControlObjectThread(group, "waveform_zoom");
 
     connect(m_pZoom, SIGNAL(valueChanged(double)),
             this, SLOT(onZoomChange(double)));
 
-    m_pScratchPositionEnable = new ControlObjectThreadMain(
+    m_pScratchPositionEnable = new ControlObjectThread(
             group, "scratch_position_enable");
-    m_pScratchPosition = new ControlObjectThreadMain(
+    m_pScratchPosition = new ControlObjectThread(
             group, "scratch_position");
 
     setAttribute(Qt::WA_OpaquePaintEvent);

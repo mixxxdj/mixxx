@@ -10,9 +10,10 @@
 #ifndef LADSPALIBRARY_H
 #define LADSPALIBRARY_H
 
+#include <QString>
+#include <QList>
+#include <QLibrary>
 
-
-#include <QtCore>
 #include <ladspa.h>
 
 #include "ladspaplugin.h"
@@ -22,7 +23,7 @@ class LADSPALibrary
 public:
     LADSPALibrary(QString file);
     ~LADSPALibrary();
-    
+
     const LADSPAPluginList * pluginList();
     int pluginCount();
 

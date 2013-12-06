@@ -16,22 +16,25 @@
 *                                                                         *
 ***************************************************************************/
 
-
 #ifndef LIBRARYSCANNER_H
 #define LIBRARYSCANNER_H
 
 #include <QThread>
-#include <QtCore>
 #include <QList>
+#include <QString>
+#include <QList>
+#include <QWidget>
+#include <QSqlDatabase>
+#include <QStringList>
 
 #include "library/dao/cratedao.h"
 #include "library/dao/cuedao.h"
 #include "library/dao/libraryhashdao.h"
+#include "library/dao/directorydao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/trackdao.h"
 #include "library/dao/analysisdao.h"
 #include "library/dao/socialtagdao.h"
-
 #include "libraryscannerdlg.h"
 #include "trackcollection.h"
 
@@ -45,30 +48,30 @@ class LibraryScanner : public QThread {
     virtual ~LibraryScanner();
 
     void run();
-    void scan(const QString &libraryPath, QWidget *parent);
-    void scan();
-    bool recursiveScan(const QString &dirPath, QStringList& verifiedDirectories);
+    void scan(QWidget *parent);
+    
   public slots:
     void cancel();
     void resetCancel();
+
   signals:
     void scanFinished();
     void progressHashing(QString);
+
   private:
+    bool recursiveScan(const QString& dirPath, QStringList& verifiedDirectories);
     TrackCollection* m_pCollection; // The library trackcollection
     QSqlDatabase m_database; // Hang on to a different DB connection
-                             // since we run in a different thread */
-    QString m_qLibraryPath; // The path to the library on disk
+                             // since we run in a different thread
     LibraryScannerDlg* m_pProgress; // The library scanning window
-
     LibraryHashDAO m_libraryHashDao;
     CueDAO m_cueDao;
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
     AnalysisDao m_analysisDao;
+    DirectoryDAO m_directoryDao;
     SocialTagDao m_socialTagDao;
     TrackDAO m_trackDao;
-
     QStringList m_nameFilters;
     volatile bool m_bCancelLibraryScan;
     QStringList m_directoriesBlacklist;

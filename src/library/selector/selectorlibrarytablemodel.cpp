@@ -37,8 +37,8 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     setTableModel();
 
     // Detect when deck has changed
-    connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
-           this, SLOT(slotPlayingDeckChanged(int)));
+    // connect(&PlayerInfo::Instance(), SIGNAL(currentPlayingDeckChanged(int)),
+    //        this, SLOT(slotPlayingDeckChanged(int)));
 
     connect(this, SIGNAL(filtersChanged()),
             this, SLOT(slotFiltersChanged()));
@@ -234,7 +234,7 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
             SLOT(slotChannelKeyChanged(double)));
     }
 
-    m_pLoadedTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
+    // m_pLoadedTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
 
     setSeedTrack(m_pLoadedTrack);
 }

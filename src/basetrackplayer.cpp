@@ -1,4 +1,3 @@
-#include <QtCore>
 #include <QMessageBox>
 
 #include "basetrackplayer.h"
@@ -12,8 +11,6 @@
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
 #include "soundsourceproxy.h"
-#include "engine/cuecontrol.h"
-#include "engine/clockcontrol.h"
 #include "mathstuff.h"
 #include "track/beatgrid.h"
 #include "waveform/renderers/waveformwidgetrenderer.h"
@@ -25,10 +22,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
                                  EngineChannel::ChannelOrientation defaultOrientation,
                                  QString group,
                                  bool defaultMaster,
-                                 bool defaultHeadphones) :
-        BasePlayer(pParent, group),
-        m_pConfig(pConfig),
-        m_pLoadedTrack() {
+                                 bool defaultHeadphones)
+        : BasePlayer(pParent, group),
+          m_pConfig(pConfig),
+          m_pLoadedTrack() {
 
     // Need to strdup the string because EngineChannel will save the pointer,
     // but we might get deleted before the EngineChannel. TODO(XXX)
@@ -43,22 +40,9 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
 
     // Set the routing option defaults for the master and headphone mixes.
     {
-        ControlObjectThreadMain* pMaster = new ControlObjectThreadMain(
-                getGroup(), "master");
-        pMaster->slotSet(defaultMaster);
-        delete pMaster;
-
-        ControlObjectThreadMain* pHeadphones = new ControlObjectThreadMain(
-                getGroup(), "pfl");
-        pHeadphones->slotSet(defaultHeadphones);
-        delete pHeadphones;
+        ControlObject::set(ConfigKey(getGroup(), "master"), (double)defaultMaster);
+        ControlObject::set(ConfigKey(getGroup(), "pfl"), (double)defaultHeadphones);
     }
-
-    ClockControl* pClockControl = new ClockControl(pSafeGroupName, pConfig);
-    pEngineBuffer->addControl(pClockControl);
-
-    CueControl* pCueControl = new CueControl(pSafeGroupName, pConfig);
-    pEngineBuffer->addControl(pCueControl);
 
     // Connect our signals and slots with the EngineBuffer's signals and
     // slots. This will let us know when the reader is done loading a track, and
@@ -72,17 +56,11 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     connect(pEngineBuffer, SIGNAL(trackUnloaded(TrackPointer)),
             this, SLOT(slotUnloadTrack(TrackPointer)));
 
-    //Get cue point control object
-    m_pCuePoint = new ControlObjectThreadMain(
-            getGroup(),"cue_point");
     // Get loop point control objects
-    m_pLoopInPoint = new ControlObjectThreadMain(
+    m_pLoopInPoint = new ControlObjectThread(
             getGroup(),"loop_start_position");
-    m_pLoopOutPoint = new ControlObjectThreadMain(
+    m_pLoopOutPoint = new ControlObjectThread(
             getGroup(),"loop_end_position");
-    //Playback position within the currently loaded track (in this player).
-    m_pPlayPosition = new ControlObjectThreadMain(
-            getGroup(), "playposition");
 
     // Duration of the current song, we create this one because nothing else does.
     m_pDuration = new ControlObject(ConfigKey(getGroup(), "duration"));
@@ -99,11 +77,10 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     m_pEndOfTrack->set(0.);
 
     //BPM of the current song
-
-    m_pBPM = new ControlObjectThreadMain(group, "file_bpm");
-    m_pKey = new ControlObjectThreadMain(group, "file_key");
-    m_pReplayGain = new ControlObjectThreadMain(group, "replaygain");
-    m_pPlay = new ControlObjectThreadMain(group, "play");
+    m_pBPM = new ControlObjectThread(group, "file_bpm");
+    m_pKey = new ControlObjectThread(group, "file_key");
+    m_pReplayGain = new ControlObjectThread(group, "replaygain");
+    m_pPlay = new ControlObjectThread(group, "play");
 }
 
 BaseTrackPlayer::~BaseTrackPlayer()
@@ -113,16 +90,15 @@ BaseTrackPlayer::~BaseTrackPlayer()
         m_pLoadedTrack.clear();
     }
 
+    delete m_pDuration;
     delete m_pWaveformZoom;
     delete m_pEndOfTrack;
-    delete m_pCuePoint;
     delete m_pLoopInPoint;
     delete m_pLoopOutPoint;
-    delete m_pPlayPosition;
     delete m_pBPM;
-    delete m_pReplayGain;
-    delete m_pDuration;
     delete m_pKey;
+    delete m_pReplayGain;
+    delete m_pPlay;
 }
 
 void BaseTrackPlayer::slotLoadTrack(TrackPointer track, bool bPlay) {
@@ -218,7 +194,7 @@ void BaseTrackPlayer::slotUnloadTrack(TrackPointer) {
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
-    PlayerInfo::Instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 }
 
 void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
@@ -237,7 +213,7 @@ void BaseTrackPlayer::slotFinishLoading(TrackPointer pTrackInfoObject)
 
     // Update the PlayerInfo class that is used in EngineShoutcast to replace
     // the metadata of a stream
-    PlayerInfo::Instance().setTrackInfo(getGroup(), m_pLoadedTrack);
+    PlayerInfo::instance().setTrackInfo(getGroup(), m_pLoadedTrack);
 
     // Reset the loop points.
     m_pLoopInPoint->slotSet(-1);
