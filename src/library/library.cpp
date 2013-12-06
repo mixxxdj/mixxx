@@ -43,6 +43,7 @@ Library::Library(QObject* parent, ConfigObject<ConfigValue>* pConfig,
         m_pTrackCollection(new TrackCollection(pConfig)),
         m_pLibraryControl(new LibraryControl),
         m_pRecordingManager(pRecordingManager) {
+    qRegisterMetaType<Library::RemovalType>("Library::RemovalType");
 
     // TODO(rryan) -- turn this construction / adding of features into a static
     // method or something -- CreateDefaultLibrary
@@ -238,10 +239,22 @@ void Library::slotRequestAddDir(QString dir) {
     }
 }
 
-void Library::slotRequestRemoveDir(QString dir, bool removeMetadata) {
-    // Mark all tracks in this directory as deleted (but don't purge them in
-    // case the user re-adds them manually).
-    m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
+void Library::slotRequestRemoveDir(QString dir, RemovalType removalType) {
+    switch (removalType) {
+        case Library::HideTracks:
+            // Mark all tracks in this directory as deleted but DON'T purge them
+            // in case the user re-adds them manually.
+            m_pTrackCollection->getTrackDAO().markTracksAsMixxxDeleted(dir);
+            break;
+        case Library::PurgeTracks:
+            // The user requested that we purge all metadata.
+            m_pTrackCollection->getTrackDAO().purgeTracks(dir);
+            break;
+        case Library::LeaveTracksUnchanged:
+        default:
+            break;
+
+    }
 
     // Remove the directory from the directory list.
     m_pTrackCollection->getDirectoryDAO().removeDirectory(dir);
