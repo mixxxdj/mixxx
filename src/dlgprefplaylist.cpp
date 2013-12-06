@@ -39,8 +39,8 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent,
 
     connect(this, SIGNAL(requestAddDir(QString)),
             m_pLibrary, SLOT(slotRequestAddDir(QString)));
-    connect(this, SIGNAL(requestRemoveDir(QString, bool)),
-            m_pLibrary, SLOT(slotRequestRemoveDir(QString, bool)));
+    connect(this, SIGNAL(requestRemoveDir(QString, Library::RemovalType)),
+            m_pLibrary, SLOT(slotRequestRemoveDir(QString, Library::RemovalType)));
     connect(this, SIGNAL(requestRelocateDir(QString,QString)),
             m_pLibrary, SLOT(slotRequestRelocateDir(QString,QString)));
     connect(PushButtonAddDir, SIGNAL(clicked()),
@@ -122,23 +122,56 @@ void DlgPrefPlaylist::slotRemoveDir() {
     QModelIndex index = dirList->currentIndex();
     QString fd = index.data().toString();
     QMessageBox removeMsgBox;
-    removeMsgBox.setText(tr("Mixxx will hide any information about tracks in "
-                            "this directory. Once you re-add the directory all "
-                            "metadata will be restored"));
-    removeMsgBox.setInformativeText(tr("Do you want to remove this directory?"));
-    removeMsgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::Cancel);
-    QPushButton *removeAllButton = removeMsgBox.addButton(tr("Remove Metadata"),
-            QMessageBox::YesRole);
-    removeMsgBox.setDefaultButton(QMessageBox::Cancel);
 
-    int ret = removeMsgBox.exec();
-    bool removeAll = removeMsgBox.clickedButton() == removeAllButton;
+    removeMsgBox.setIcon(QMessageBox::Warning);
+    removeMsgBox.setWindowTitle(tr("Confirm Directory Removal"));
 
-    if (ret == QMessageBox::Yes || removeAll) {
-        emit(requestRemoveDir(fd, removeAll));
-        slotUpdate();
+    removeMsgBox.setText(tr(
+        "Mixxx will no longer watch this directory for new tracks. "
+        "What would you like to do with the tracks from this directory and "
+        "subdirectories?"
+        "<ul>"
+        "<li>Hide all tracks from this directory and subdirectories.</li>"
+        "<li>Delete all metadata for these tracks from Mixxx permanently.</li>"
+        "<li>Leave the tracks unchanged in your library.</li>"
+        "</ul>"
+        "Hiding tracks saves their metadata in case you re-add them in the "
+        "future."));
+    removeMsgBox.setInformativeText(tr(
+        "Metadata means all track details (artist, title, playcount, etc.) as "
+        "well as beatgrids, hotcues, and loops. This choice only affects the "
+        "Mixxx library. No files on disk will be changed or deleted."));
+
+    QPushButton* cancelButton =
+            removeMsgBox.addButton(QMessageBox::Cancel);
+    QPushButton* hideAllButton = removeMsgBox.addButton(
+        tr("Hide Tracks"), QMessageBox::AcceptRole);
+    QPushButton* deleteAllButton = removeMsgBox.addButton(
+        tr("Delete Track Metadata"), QMessageBox::AcceptRole);
+    QPushButton* leaveUnchangedButton = removeMsgBox.addButton(
+        tr("Leave Tracks Unchanged"), QMessageBox::AcceptRole);
+    removeMsgBox.setDefaultButton(cancelButton);
+    removeMsgBox.exec();
+
+    if (removeMsgBox.clickedButton() == cancelButton) {
+        return;
     }
 
+    bool deleteAll = removeMsgBox.clickedButton() == deleteAllButton;
+    bool hideAll = removeMsgBox.clickedButton() == hideAllButton;
+    bool leaveUnchanged = removeMsgBox.clickedButton() == leaveUnchangedButton;
+
+    Library::RemovalType removalType = Library::LeaveTracksUnchanged;
+    if (leaveUnchanged) {
+        removalType = Library::LeaveTracksUnchanged;
+    } else if (deleteAll) {
+        removalType = Library::PurgeTracks;
+    } else if (hideAll) {
+        removalType = Library::HideTracks;
+    }
+
+    emit(requestRemoveDir(fd, removalType));
+    slotUpdate();
 }
 
 void DlgPrefPlaylist::slotRelocateDir() {

@@ -57,6 +57,7 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wwidgetstack.h"
 #include "widget/wwidgetgroup.h"
+#include "widget/wkey.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -366,6 +367,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseLibrarySidebar(node);
     } else if (nodeName == "Library") {
         return parseLibrary(node);
+    } else if (nodeName == "Key") {
+        return parseKey(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -1180,6 +1183,25 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
     style.prepend(styleHack);
     return style;
 }
+
+QWidget* LegacySkinParser::parseKey(QDomElement node) {
+    WKey* p = new WKey(m_pParent);
+    setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
 
 QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     QString group = XmlParse::selectNodeQString(node, "Group");
