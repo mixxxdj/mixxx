@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <QDir>
 #include <QTemporaryFile>
 #include <QScopedPointer>
 
@@ -16,12 +17,30 @@ typedef QScopedPointer<ControlObject> ScopedControl;
 class MixxxTest : public testing::Test {
   public:
     MixxxTest() {
-        m_pConfig.reset(new ConfigObject<ConfigValue>(""));
+        static int argc = 1;
+        static char* argv[1] = { strdup("test") };
+        // start the app without the GUI so that we can generate and
+        // destroy it several times in one thread, see
+        // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
+        m_pApplication = new QApplication(argc, argv, false);
+        m_pConfig.reset(new ConfigObject<ConfigValue>(
+            QDir::currentPath().append("/src/test/test_data/test.cfg")));
+    }
+    virtual ~MixxxTest() {
+        delete m_pApplication;
     }
 
   protected:
     ControlObjectThread* getControlObjectThread(const ConfigKey& key) {
         return new ControlObjectThread(key);
+    }
+
+    ConfigObject<ConfigValue>* config() {
+        return m_pConfig.data();
+    }
+
+    QApplication* application() {
+        return m_pApplication;
     }
 
     QTemporaryFile* makeTemporaryFile(const QString contents) {
@@ -33,6 +52,7 @@ class MixxxTest : public testing::Test {
         return file;
     }
 
+    QApplication* m_pApplication;
     QScopedPointer<ConfigObject<ConfigValue> > m_pConfig;
 };
 

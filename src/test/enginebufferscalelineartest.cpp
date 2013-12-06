@@ -5,9 +5,9 @@
 #include <QVector>
 
 #include "defs.h"
-#include "configobject.h"
 #include "engine/readaheadmanager.h"
 #include "engine/enginebufferscalelinear.h"
+#include "test/mixxxtest.h"
 
 using ::testing::StrictMock;
 using ::testing::Return;
@@ -57,23 +57,24 @@ class ReadAheadManagerMock : public ReadAheadManager {
     int m_iSamplesRead;
 };
 
-class EngineBufferScaleLinearTest : public testing::Test {
+class EngineBufferScaleLinearTest : public MixxxTest {
   protected:
     virtual void SetUp() {
-        m_pConfig = new ConfigObject<ConfigValue>("");
         m_pReadAheadMock = new StrictMock<ReadAheadManagerMock>();
         m_pScaler = new EngineBufferScaleLinear(m_pReadAheadMock);
     }
 
     virtual void TearDown() {
-        delete m_pConfig;
         delete m_pScaler;
         delete m_pReadAheadMock;
     }
 
     void SetRate(double rate) {
-        m_pScaler->setTempo(1.0);
-        m_pScaler->setBaseRate(rate);
+        double rate_adjust = rate;
+        double tempo_adjust = 1.0;
+        double pitch_adjust = 0.0;
+        m_pScaler->setScaleParameters(
+            44100, &rate_adjust, &tempo_adjust, &pitch_adjust);
     }
 
     void SetRateNoLerp(double rate) {
@@ -125,7 +126,6 @@ class EngineBufferScaleLinearTest : public testing::Test {
         }
     }
 
-    ConfigObject<ConfigValue>* m_pConfig;
     StrictMock<ReadAheadManagerMock>* m_pReadAheadMock;
     EngineBufferScaleLinear* m_pScaler;
 };

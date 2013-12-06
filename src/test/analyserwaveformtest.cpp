@@ -3,8 +3,8 @@
 #include <QDir>
 
 #include "trackinfoobject.h"
-#include "configobject.h"
 #include "analyserwaveform.h"
+#include "test/mixxxtest.h"
 
 #define BIGBUF_SIZE (1024 * 1024)  //Megabyte
 #define CANARY_SIZE (1024*4)
@@ -13,11 +13,10 @@
 
 namespace {
 
-class AnalyserWaveformTest: public testing::Test {
+class AnalyserWaveformTest: public MixxxTest {
   protected:
     virtual void SetUp() {
-        config = new ConfigObject<ConfigValue>(QDir::homePath().append("/").append(SETTINGS_PATH).append(SETTINGS_FILE));
-        aw = new AnalyserWaveform(config);
+        aw = new AnalyserWaveform(config());
         tio = TrackPointer(new TrackInfoObject("foo"));
         tio->setSampleRate(44100);
 
@@ -44,7 +43,6 @@ class AnalyserWaveformTest: public testing::Test {
     }
 
     AnalyserWaveform* aw;
-    ConfigObject<ConfigValue>* config;
     TrackPointer tio;
     CSAMPLE* bigbuf;
     CSAMPLE* canaryBigBuf;

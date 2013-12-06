@@ -461,9 +461,6 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         }
     }
 
-    // Scale the rate by the engine samplerate
-    rate *= baserate;
-
     return rate;
 }
 

@@ -318,7 +318,9 @@ void BaseTrackCache::getTrackValueForColumn(TrackPointer pTrack,
     } else if (fieldIndex(LIBRARYTABLE_RATING) == column) {
         trackValue.setValue(pTrack->getRating());
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
-        trackValue.setValue(pTrack->getKey());
+        trackValue.setValue(pTrack->getKeyText());
+    } else if (fieldIndex(LIBRARYTABLE_KEY_ID) == column) {
+        trackValue.setValue(static_cast<int>(pTrack->getKey()));
     } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
         trackValue.setValue(pTrack->hasBpmLock());
     }
@@ -383,9 +385,8 @@ bool BaseTrackCache::trackMatches(const TrackPointer& pTrack,
 }
 
 bool BaseTrackCache::trackMatchesNumeric(const TrackPointer& pTrack,
-                                     const QStringList& numericMatchers) const {
-    foreach(QString numericMatcher, numericMatchers)
-    {
+                                         const QStringList& numericMatchers) const {
+    foreach(QString numericMatcher, numericMatchers) {
         QString field, expression;
         if (m_numericFilterMatcher.indexIn(numericMatcher) == -1) {
             continue;
@@ -393,31 +394,31 @@ bool BaseTrackCache::trackMatchesNumeric(const TrackPointer& pTrack,
         field = m_numericFilterMatcher.cap(1);
         expression = m_numericFilterMatcher.cap(2);
         if (field == "year") {
-            if (! evaluateNumeric(pTrack->getYear().toInt(), expression)) {
+            if (!evaluateNumeric(pTrack->getYear().toInt(), expression)) {
                 return false;
             }
         } else if (field == "track") {
-            if (! evaluateNumeric(pTrack->getTrackNumber().toInt(), expression)) {
+            if (!evaluateNumeric(pTrack->getTrackNumber().toInt(), expression)) {
                 return false;
             }
         } else if (field == "bpm") {
-            if (! evaluateNumeric((int)pTrack->getBpm(), expression)) {
+            if (!evaluateNumeric((int)pTrack->getBpm(), expression)) {
                 return false;
             }
         } else if (field == "duration") {
-            if (! evaluateNumeric(pTrack->getDuration(), expression)) {
+            if (!evaluateNumeric(pTrack->getDuration(), expression)) {
                 return false;
             }
         } else if (field == "played") {
-            if (! evaluateNumeric(pTrack->getTimesPlayed(), expression)) {
+            if (!evaluateNumeric(pTrack->getTimesPlayed(), expression)) {
                 return false;
             }
         } else if (field == "rating") {
-            if (! evaluateNumeric(pTrack->getRating(), expression)) {
+            if (!evaluateNumeric(pTrack->getRating(), expression)) {
                 return false;
             }
         } else if (field == "bitrate") {
-            if (! evaluateNumeric(pTrack->getBitrate(), expression)) {
+            if (!evaluateNumeric(pTrack->getBitrate(), expression)) {
                 return false;
             }
         }
@@ -493,31 +494,40 @@ bool BaseTrackCache::trackMatchesNamedString(const TrackPointer& pTrack,
             return false;
         }
         if (field == "artist") {
-            if (! (pTrack->getArtist().contains(expression, Qt::CaseInsensitive) || pTrack->getAlbumArtist().contains(expression, Qt::CaseInsensitive)) ) {
+            if (!(pTrack->getArtist().contains(expression, Qt::CaseInsensitive) ||
+                  pTrack->getAlbumArtist().contains(expression, Qt::CaseInsensitive)) ) {
+                return false;
+            }
+        } else if (field == "album_artist") {
+            if (!pTrack->getAlbumArtist().contains(expression, Qt::CaseInsensitive)) {
                 return false;
             }
         } else if (field == "album") {
-            if (! pTrack->getAlbum().contains(expression, Qt::CaseInsensitive)) {
+            if (!pTrack->getAlbum().contains(expression, Qt::CaseInsensitive)) {
                 return false;
             }
         } else if (field == "location") {
-            if (! pTrack->getLocation().contains(expression, Qt::CaseInsensitive)) {
+            if (!pTrack->getLocation().contains(expression, Qt::CaseInsensitive)) {
                 return false;
             }
         } else if (field == "grouping") {
-            if (! pTrack->getGrouping().contains(expression, Qt::CaseInsensitive)) {
+            if (!pTrack->getGrouping().contains(expression, Qt::CaseInsensitive)) {
                 return false;
             }
         } else if (field == "comment") {
-            if (! pTrack->getComment().contains(expression, Qt::CaseInsensitive)) {
+            if (!pTrack->getComment().contains(expression, Qt::CaseInsensitive)) {
                 return false;
             }
         } else if (field == "title") {
-            if (! pTrack->getTitle().contains(expression, Qt::CaseInsensitive)) {
+            if (!pTrack->getTitle().contains(expression, Qt::CaseInsensitive)) {
                 return false;
             }
         } else if (field == "genre") {
-            if (! pTrack->getGenre().contains(expression, Qt::CaseInsensitive)) {
+            if (!pTrack->getGenre().contains(expression, Qt::CaseInsensitive)) {
+                return false;
+            }
+        } else if (field == "key") {
+            if (!pTrack->getKeyText().contains(expression, Qt::CaseInsensitive)) {
                 return false;
             }
         }
