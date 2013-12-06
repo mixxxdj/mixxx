@@ -60,7 +60,7 @@ bool namesMatchPattern(const QString input_name,
                        const QString output_name) {
     // This is a broad pattern that matches a text blob followed by a numeral
     // potentially followed by non-numeric text. The non-numeric requirement is
-    // meant to avoid corenr cases around devices with names like "Hercules RMX
+    // meant to avoid corner cases around devices with names like "Hercules RMX
     // 2" where we would potentially confuse the number in the device name as
     // the ordinal index of the device.
     QRegExp deviceNamePattern("^(.*) (\\d+)( [^0-9]+)?$");
@@ -84,9 +84,6 @@ bool namesMatchPattern(const QString input_name,
 
 bool shouldLinkInputToOutput(const QString input_name,
                              const QString output_name) {
-
-    int offset = -1;
-
     // Early exit.
     if (input_name == output_name) {
         return true;
@@ -109,15 +106,19 @@ bool shouldLinkInputToOutput(const QString input_name,
     }
 
     if (output_name_stripped != input_name_stripped) {
-        // Ignore "input port" text in the device names
-        offset=input_name_stripped.indexOf(" input port ",0,Qt::CaseInsensitive);
-        if (offset!=-1)
-            input_name_stripped = input_name_stripped.replace(offset,12," ");
+        // Ignore " input " text in the device names
+        int offset = input_name_stripped.indexOf(" input ", 0,
+                                                 Qt::CaseInsensitive);
+        if (offset != -1) {
+            input_name_stripped = input_name_stripped.replace(offset, 7, " ");
+        }
 
-        // Ignore "output port" text in the device names
-        offset=output_name_stripped.indexOf(" output port ",0,Qt::CaseInsensitive);
-        if (offset!=-1)
-            output_name_stripped = output_name_stripped.replace(offset,13," ");
+        // Ignore " output " text in the device names
+        offset = output_name_stripped.indexOf(" output ", 0,
+                                              Qt::CaseInsensitive);
+        if (offset != -1) {
+            output_name_stripped = output_name_stripped.replace(offset, 8, " ");
+        }
     }
 
     if (input_name_stripped == output_name_stripped ||
@@ -127,6 +128,7 @@ bool shouldLinkInputToOutput(const QString input_name,
         namesMatchPattern(input_name, output_name)) {
         return true;
     }
+
     return false;
 }
 
