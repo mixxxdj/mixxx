@@ -373,4 +373,14 @@ METADATA
       ALTER TABLE itunes_library ADD COLUMN album_artist TEXT DEFAULT "";
     </sql>
   </revision>
+  <revision version="23" min_compatible="3">
+    <description>
+      Add directories table
+    </description>
+    <sql>
+      CREATE TABLE IF NOT EXISTS directories (
+        directory TEXT UNIQUE
+      );
+    </sql>
+  </revision>
 </schema>
