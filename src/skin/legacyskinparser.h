@@ -72,6 +72,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseSplitter(QDomElement node);
     QWidget* parseLibrary(QDomElement node);
     QWidget* parseLibrarySidebar(QDomElement node);
+    QWidget* parseKey(QDomElement node);
 
     void setupPosition(QDomNode node, QWidget* pWidget);
     void setupSize(QDomNode node, QWidget* pWidget);

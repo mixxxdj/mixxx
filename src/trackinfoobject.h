@@ -30,6 +30,8 @@
 
 #include "defs.h"
 #include "track/beats.h"
+#include "track/keys.h"
+#include "proto/keys.pb.h"
 #include "library/dao/cue.h"
 
 class QString;
@@ -85,7 +87,7 @@ public:
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
-    Q_PROPERTY(QString key READ getKey WRITE setKey)
+    Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
 
@@ -207,11 +209,6 @@ public:
     /** Sets rating */
     void setRating(int);
 
-    /** Returns KEY_CODE */
-    QString getKey() const;
-    /** Set KEY_CODE */
-    void setKey(QString);
-
     /** Get URL for track */
     QString getURL();
     /** Set URL for track */
@@ -256,6 +253,15 @@ public:
     // Set the track's Beats
     void setBeats(BeatsPointer beats);
 
+    void setKeys(Keys keys);
+    const Keys& getKeys() const;
+    double getNumericKey() const;
+    mixxx::track::io::key::ChromaticKey getKey() const;
+    QString getKeyText() const;
+    void setKey(mixxx::track::io::key::ChromaticKey key,
+                mixxx::track::io::key::Source source);
+    void setKeyText(QString key,
+                    mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
   public slots:
     void slotCueUpdated();
@@ -266,6 +272,8 @@ public:
     void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
+    void keyUpdated(double key);
+    void keysUpdated();
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
     void changed(TrackInfoObject* pTrack);
@@ -365,7 +373,7 @@ public:
     // Date the track was added to the library
     QDateTime m_dateAdded;
 
-    QString m_key;
+    Keys m_keys;
 
     /** BPM lock **/
     bool m_bBpmLock;
