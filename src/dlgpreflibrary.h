@@ -1,5 +1,5 @@
 /***************************************************************************
-                          dlgprefplaylist.h  -  description
+                          dlgpreflibrary.h  -  description
                              -------------------
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,13 +15,13 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFPLAYLIST_H
-#define DLGPREFPLAYLIST_H
+#ifndef DLGPREFLIBRARY_H
+#define DLGPREFLIBRARY_H
 
 #include <QStandardItemModel>
 #include <QWidget>
 
-#include "ui_dlgprefplaylistdlg.h"
+#include "ui_dlgpreflibrarydlg.h"
 #include "configobject.h"
 #include "library/library.h"
 #include "preferences/dlgpreferencepage.h"
@@ -30,12 +30,12 @@
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefPlaylist : public DlgPreferencePage, public Ui::DlgPrefPlaylistDlg  {
+class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
   public:
-    DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *config,
-                    Library *pLibrary);
-    virtual ~DlgPrefPlaylist();
+    DlgPrefLibrary(QWidget *parent, ConfigObject<ConfigValue> *config,
+                   Library *pLibrary);
+    virtual ~DlgPrefLibrary();
 
   public slots:
     // Update widget
