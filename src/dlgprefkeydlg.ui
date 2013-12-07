@@ -28,7 +28,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
    <item>
     <widget class="QGroupBox" name="groupPlugin">
      <property name="title">
-      <string>Choose Analyser</string>
+      <string>Choose Analyzer</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
@@ -49,7 +49,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </size>
         </property>
         <property name="text">
-         <string>Key Analyser:</string>
+         <string>Key Analyzer:</string>
         </property>
        </widget>
       </item>
@@ -68,7 +68,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
          </size>
         </property>
         <property name="toolTip">
-         <string>Choose between different algorithms to detect beats.</string>
+         <string>Choose between different algorithms to detect keys.</string>
         </property>
         <property name="layoutDirection">
          <enum>Qt::LeftToRight</enum>
@@ -94,7 +94,7 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
       <item>
        <widget class="QCheckBox" name="breanalyzeEnabled">
         <property name="text">
-         <string>Re-analyse keys when settings change or 3rd-party keys are present</string>
+         <string>Re-analyze keys when settings change or 3rd-party keys are present</string>
         </property>
        </widget>
       </item>

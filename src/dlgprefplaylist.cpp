@@ -191,7 +191,7 @@ void DlgPrefPlaylist::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("relocate to directory"), startDir);
+        this, tr("Relocate to directory"), startDir);
 
     if (!fd.isEmpty()) {
         emit(requestRelocateDir(currentFd, fd));
