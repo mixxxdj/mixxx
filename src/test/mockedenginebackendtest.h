@@ -29,8 +29,6 @@ class MockScaler : public EngineBufferScale {
 	MockScaler() : EngineBufferScale() {
 		SampleUtil::applyGain(m_buffer, 0, MAX_BUFFER_LEN);
 	}
-    void setBaseRate(double dBaseRate) { m_dBaseRate = dBaseRate; }
-    double setTempo(double dTempo) { return m_dTempo = dTempo; }
     void clear() { }
     CSAMPLE *getScaled(unsigned long buf_size) {
         m_samplesRead += buf_size;

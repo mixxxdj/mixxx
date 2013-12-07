@@ -65,11 +65,12 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             this, SLOT(slotInternalMasterChanged(double)),
             Qt::DirectConnection);
 
-    m_pSyncRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"), 40.0, 200.0);
-    connect(m_pSyncRateSlider, SIGNAL(valueChanged(double)),
+    m_pInternalRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"),
+                                                40.0, 200.0);
+    connect(m_pInternalRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
-    connect(m_pSyncRateSlider, SIGNAL(valueChangedFromEngine(double)),
+    connect(m_pInternalRateSlider, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
 
@@ -78,10 +79,10 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
 
 EngineSync::~EngineSync() {
     // We use the slider value because that is never set to 0.0.
-    m_pConfig->set(ConfigKey("[Master]", "sync_bpm"), ConfigValue(m_pSyncRateSlider->get()));
+    m_pConfig->set(ConfigKey("[Master]", "sync_bpm"), ConfigValue(m_pInternalRateSlider->get()));
     delete m_pMasterBpm;
     delete m_pMasterBeatDistance;
-    delete m_pSyncRateSlider;
+    delete m_pInternalRateSlider;
 }
 
 void EngineSync::addChannel(EngineChannel* pChannel) {
@@ -91,7 +92,8 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
             return;
         }
     }
-    qDebug() << "No RateControl found for group (probably not a playback deck) " << pChannel->getGroup();
+    qDebug() << "No RateControl found for group (probably not a playback deck) "
+             << pChannel->getGroup();
 }
 
 void EngineSync::addDeck(RateControl *pNewRate) {
@@ -155,8 +157,8 @@ void EngineSync::setInternalMaster() {
         return;
     }
     double master_bpm = m_pMasterBpm->get();
-    if (master_bpm != 0) {
-        m_pSyncRateSlider->set(master_bpm);
+    if (!qFuzzyCompare(master_bpm, 0)) {
+        m_pInternalRateSlider->set(master_bpm);
     }
     QString old_master = m_sSyncSource;
     resetInternalBeatDistance();
@@ -258,10 +260,9 @@ void EngineSync::chooseNewMaster(const QString& dontpick) {
 }
 
 void EngineSync::setChannelRateSlider(RateControl* pRateControl, double new_bpm) {
-    if (pRateControl->getMode() == SYNC_MASTER) {
-        m_pSyncRateSlider->set(new_bpm);
-        m_pMasterBpm->set(new_bpm);
-    }
+    // Note that this is not a slot.
+    m_pInternalRateSlider->set(new_bpm);
+    m_pMasterBpm->set(new_bpm);
 }
 
 void EngineSync::setChannelSyncMode(RateControl* pRateControl, int state) {
@@ -311,7 +312,7 @@ void EngineSync::slotSourceRateEngineChanged(double rate_engine) {
 void EngineSync::slotSourceBpmChanged(double bpm) {
     // Master buffer can be null due to timing issues
     if (m_pChannelMaster) {
-        m_pSyncRateSlider->set(bpm);
+        m_pInternalRateSlider->set(bpm);
     }
 }
 
@@ -323,13 +324,13 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
 
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
-    if (m_sSyncSource == kMasterSyncGroup && m_pMasterBpm->get() != new_bpm) {
+    if (m_sSyncSource == kMasterSyncGroup && !qFuzzyCompare(m_pMasterBpm->get(), new_bpm)) {
         m_pMasterBpm->set(new_bpm);
     }
 }
 
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
-    if (new_bpm != m_pMasterBpm->get()) {
+    if (!qFuzzyCompare(new_bpm, m_pMasterBpm->get())) {
 //        if (m_sSyncSource != kMasterSyncGroup) {
 //            // XXX(Owen):
 //            // it looks like this is Good Enough for preventing accidental
@@ -410,7 +411,7 @@ void EngineSync::updateSamplesPerBeat() {
     // that last term is 1 over bpm.
     double master_bpm = m_pMasterBpm->get();
     double sample_rate = m_pSampleRate->get();
-    if (master_bpm == 0) {
+    if (qFuzzyCompare(master_bpm, 0)) {
         m_dSamplesPerBeat = sample_rate;
         return;
     }

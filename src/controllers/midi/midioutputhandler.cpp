@@ -52,11 +52,8 @@ void MidiOutputHandler::controlChanged(double value) {
         return;
     }
 
-    // Don't send out of date messages.
-    if (value != m_cot.get()) {
-        return;
-    }
-
+    // Don't update with out of date messages.
+    value = m_cot.get();
     m_lastVal = value;
 
     unsigned char byte3 = m_off;
