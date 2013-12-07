@@ -40,7 +40,7 @@ protected:
     double tmp;
 #define FILTER_BUF_SIZE 16
     double buf1[FILTER_BUF_SIZE];
-	double buf2[FILTER_BUF_SIZE];
+    double buf2[FILTER_BUF_SIZE];
 private:
     double (*processSample)(void *buf, const double sample);
 
