@@ -39,8 +39,7 @@ class PortMIDI(Dependence):
         # linked with PortMidi. We treat either presence of the lib or the
         # header as success.
         if not conf.CheckLib(libs) and not conf.CheckHeader(headers):
-            raise Exception(
-                "Did not find PortTime or its development headers.")
+            raise Exception("Did not find PortTime or its development headers.")
 
         # Check for PortMidi
         libs = ['portmidi', 'libportmidi']
@@ -55,8 +54,7 @@ class PortMIDI(Dependence):
             else:
                 libs = ['portmidi_s', 'portmidi', 'libportmidi']
         if not conf.CheckLib(libs) or not conf.CheckHeader(headers):
-            raise Exception(
-                "Did not find PortMidi or its development headers.")
+            raise Exception("Did not find PortMidi or its development headers.")
 
     def sources(self, build):
         return ['controllers/midi/portmidienumerator.cpp', 'controllers/midi/portmidicontroller.cpp']
@@ -68,13 +66,13 @@ class OpenGL(Dependence):
         # Check for OpenGL (it's messy to do it for all three platforms) XXX
         # this should *NOT* have hardcoded paths like this
         if (not conf.CheckLib('GL') and
-            not conf.CheckLib('opengl32') and
-            not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and
+                not conf.CheckLib('opengl32') and
+                not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/gl.h') and
                 not conf.CheckCHeader('GL/gl.h')):
             raise Exception('Did not find OpenGL development files')
 
         if (not conf.CheckLib('GLU') and
-            not conf.CheckLib('glu32') and
+                not conf.CheckLib('glu32') and
                 not conf.CheckCHeader('/System/Library/Frameworks/OpenGL.framework/Versions/A/Headers/glu.h')):
             raise Exception('Did not find GLU development files')
 
@@ -265,8 +263,7 @@ class Qt(Dependence):
             # header include of QtCore/QObject.h looks for a QtCore.framework on
             # the search path and a QObject.h in QtCore.framework/Headers.
             build.env.Append(CCFLAGS=['-F%s' % os.path.join(framework_path)])
-            build.env.Append(
-                LINKFLAGS=['-F%s' % os.path.join(framework_path)])
+            build.env.Append(LINKFLAGS=['-F%s' % os.path.join(framework_path)])
         elif build.platform_is_windows:
             # This automatically converts QtCore to QtCore[45][d] where
             # appropriate.
@@ -849,10 +846,9 @@ class MixxxCore(Feature):
             if build.toolchain_is_msvs:
                 build.env.Append(LINKFLAGS="/MANIFEST")
         elif build.platform_is_osx:
+            #Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-headerpad=ffff")
-                             #Need extra room for code signing (App Store)
             build.env.Append(LINKFLAGS="-headerpad_max_install_names")
-                             #Need extra room for code signing (App Store)
 
         return sources
 
@@ -872,7 +868,8 @@ class MixxxCore(Feature):
             build.env.Append(CCFLAGS='-g')
 
             # Check that g++ is present (yeah, SCONS is a bit dumb here)
-            if os.system("which g++ > /dev/null"):  # Checks for non-zero return code
+            # returns a non zeros return code if g++ is found
+            if os.system("which g++ > /dev/null"):
                 raise Exception("Did not find g++.")
         elif build.toolchain_is_msvs:
             # Validate the specified winlib directory exists

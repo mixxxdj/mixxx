@@ -97,12 +97,12 @@ class MixxxBuild(object):
             else:
                 self.machine = 'x86_64'
         self.machine_is_64bit = self.machine.lower(
-        ) in ['x86_64', 'powerpc64', 'amd64', 'em64t', 'intel64']
+            ) in ['x86_64', 'powerpc64', 'amd64', 'em64t', 'intel64']
         self.bitwidth = 64 if self.machine_is_64bit else 32
         self.architecture_is_x86 = self.machine.lower(
-        ) in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t', 'intel64']
+            ) in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t', 'intel64']
         self.architecture_is_powerpc = self.machine.lower(
-        ) in ['powerpc', 'powerpc64']
+            ) in ['powerpc', 'powerpc64']
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 

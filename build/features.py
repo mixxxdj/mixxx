@@ -493,7 +493,7 @@ class Vamp(Feature):
         # FFTW3 support
         have_fftw3_h = conf.CheckHeader('fftw3.h')
         have_fftw3 = conf.CheckLib('fftw3', autoadd=False)
-        if(have_fftw3_h and have_fftw3 and build.platform_is_linux):
+        if have_fftw3_h and have_fftw3 and build.platform_is_linux:
             build.env.Append(CPPDEFINES='HAVE_FFTW3')
             build.env.ParseConfig(
                 'pkg-config fftw3 --silence-errors --cflags --libs')
@@ -663,16 +663,16 @@ class AsmLib(Feature):
 
         build.env.Append(LIBPATH='#/../asmlib')
         if build.platform_is_linux:
+            #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
-                             #Use ASMLIB's functions instead of the compiler's
             build.env.Prepend(LIBS='":alibelf%so.a"' % build.bitwidth)
         elif build.platform_is_osx:
+            #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='-fno-builtin')
-                             #Use ASMLIB's functions instead of the compiler's
             build.env.Prepend(LIBS='":alibmac%so.a"' % build.bitwidth)
         elif build.platform_is_windows:
+            #Use ASMLIB's functions instead of the compiler's
             build.env.Append(CCFLAGS='/Oi-')
-                             #Use ASMLIB's functions instead of the compiler's
             build.env.Prepend(LIBS='alibcof%so' % build.bitwidth)
 
 
