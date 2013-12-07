@@ -55,12 +55,6 @@ class WPushButton : public WWidget
   public slots:
     void setValue(double);
 
-  private slots:
-    void slotCheckSetLatching();
-
-  signals:
-    void valueChangedLatched(double);
-
   protected:
     virtual void paintEvent(QPaintEvent *);
     virtual void mousePressEvent(QMouseEvent *e);
@@ -78,11 +72,8 @@ class WPushButton : public WWidget
     QPixmap **m_pPixmaps;
     // Associated background pixmap
     QPixmap *m_pPixmapBack;
-    // short click toggle button long click push button.
     ControlPushButton::ButtonMode m_leftButtonMode, m_rightButtonMode;
     QTimer m_clickTimer;
-    // Keep track if latching is still valid.
-    bool m_bLatchActive;
 };
 
 #endif
