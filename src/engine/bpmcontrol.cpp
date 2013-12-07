@@ -641,7 +641,8 @@ void BpmControl::trackLoaded(TrackPointer pTrack) {
         trackUnloaded(m_pTrack);
     }
 
-    m_dUserOffset = 0.0; //reset for new track
+    // reset for new track
+    m_dUserOffset = 0.0;
     m_dSyncAdjustment = 1.0;
 
     if (pTrack) {
@@ -660,6 +661,8 @@ void BpmControl::trackUnloaded(TrackPointer pTrack) {
         m_pTrack.clear();
         m_pBeats.clear();
     }
+    m_dUserOffset = 0.0;
+    m_dSyncAdjustment = 1.0;
 }
 
 void BpmControl::slotUpdatedTrackBeats()
