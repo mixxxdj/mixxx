@@ -170,14 +170,6 @@ void WPushButton::setValue(double v) {
     update();
 }
 
-void WPushButton::slotCheckSetLatching() {
-    // If the left button is still being held, activate latching mode.
-    if (m_bPressed && m_bLatchActive) {
-        emit(valueChangedLatched(1.0));
-    }
-    m_bLatchActive = false;
-}
-
 void WPushButton::paintEvent(QPaintEvent *) {
     if (m_iNoStates>0)     {
         int idx = (((int)m_fValue % m_iNoStates) * 2) + m_bPressed;
@@ -213,12 +205,8 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
 
     if (leftLatchingStyle && m_iNoStates == 2) {
         if (leftClick) {
-            if (m_fValue == 0.0f) {
-                m_bLatchActive = true;
-                QTimer::singleShot(ControlPushButtonBehavior::kLatchingTimeMillis,
-                        this,
-                        SLOT(slotCheckSetLatching());
-            }
+            m_clickTimer.setSingleShot(true);
+            m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             m_fValue = 1.0f;
             m_bPressed = true;
             emit(valueChangedLeftDown(1.0f));
@@ -228,8 +216,6 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     }
 
     if (rightClick) {
-        // Right click cancels latching.
-        m_bLatchActive = false;
         // This is the secondary button function, it does not change m_fValue
         // due the leak of visual feedback we do not allow a toggle function
         if (m_bRightClickForcePush) {
@@ -283,12 +269,29 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
     const bool leftPowerWindowStyle = m_leftButtonMode == ControlPushButton::POWERWINDOW;
+    const bool leftLatchingStyle = m_leftButtonMode == ControlPushButton::LATCHING;
 
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
-                // Release Button after Timer, but not if right button is clicked
+                // Release button after Timer, but not if right button is clicked
+                m_fValue = 0.0f;
+                emit(valueChangedLeftUp(0.0f));
+            }
+            m_bPressed = false;
+        } else if (rightClick) {
+            m_bPressed = false;
+        }
+        update();
+        return;
+    }
+
+    if (leftLatchingStyle && m_iNoStates == 2) {
+        if (leftClick) {
+            const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
+            if (m_bPressed && m_clickTimer.isActive()) {
+                // Release button if timer is still running.
                 m_fValue = 0.0f;
                 emit(valueChangedLeftUp(0.0f));
             }

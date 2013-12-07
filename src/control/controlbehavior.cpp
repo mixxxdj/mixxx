@@ -188,6 +188,20 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
                 pControl->set(0.0, NULL);
             }
         }
+    } else if (m_buttonMode == LATCHING && m_iNumStates == 2) {
+        if (o == MIDI_NOTE_ON) {
+            if (dParam > 0.) {
+                double value = pControl->get();
+                pControl->set(!value, NULL);
+                m_pushTimer.setSingleShot(true);
+                m_pushTimer.start(kLatchingTimeMillis);
+            }
+        } else if (o == MIDI_NOTE_OFF) {
+            // Opposite of powerwindow -- only release the button if within time window.
+            if (m_pushTimer.isActive()) {
+                pControl->set(0.0, NULL);
+            }
+        }
     } else if (m_buttonMode == TOGGLE) {
         // This block makes push-buttons act as toggle buttons.
         if (m_iNumStates > 2) { // multistate button

@@ -85,7 +85,8 @@ class ControlPushButtonBehavior : public ControlNumericBehavior {
     enum ButtonMode {
          PUSH = 0,
          TOGGLE,
-         POWERWINDOW
+         POWERWINDOW,
+         LATCHING
     };
 
     ControlPushButtonBehavior(ButtonMode buttonMode, int iNumStates);
