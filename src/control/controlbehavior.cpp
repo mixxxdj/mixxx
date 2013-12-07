@@ -164,6 +164,7 @@ double ControlTTRotaryBehavior::widgetParameterToValue(double dParam) {
 
 // static
 const int ControlPushButtonBehavior::kPowerWindowTimeMillis = 300;
+const int ControlPushButtonBehavior::kLatchingTimeMillis = 500;
 
 ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
                                                      int iNumStates)

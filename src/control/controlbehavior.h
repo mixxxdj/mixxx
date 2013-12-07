@@ -78,6 +78,7 @@ class ControlTTRotaryBehavior : public ControlNumericBehavior {
 class ControlPushButtonBehavior : public ControlNumericBehavior {
   public:
     static const int kPowerWindowTimeMillis;
+    static const int kLatchingTimeMillis;
 
     // TODO(XXX) Duplicated from ControlPushButton. It's complicated and
     // annoying to share them so I just copied them.
