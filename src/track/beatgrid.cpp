@@ -7,8 +7,8 @@
 static const int kFrameSize = 2;
 
 struct BeatGridData {
-	double bpm;
-	double firstBeat;
+    double bpm;
+    double firstBeat;
 };
 
 class BeatGridIterator : public BeatIterator {
