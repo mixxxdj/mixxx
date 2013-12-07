@@ -396,8 +396,8 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     // This runs when ratecontrol wants to know what rate to use.
 
     if (m_pBeats == NULL) {
-        // No track loaded.
-        return m_dSyncAdjustment;
+        // No beat information.
+        return 1.0;
     }
 
     // This is the deck position at the start of the callback.
