@@ -451,18 +451,12 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
 }
 
 double BpmControl::getBeatDistance(double dThisPosition) const {
-    // returns absolute number of samples distance from current pos back to
-    // previous beat
-    if (m_pBeats == NULL) {
-        return 0;
+    double dBeatPercentage;
+    if (BpmControl::getBeatContext(m_pBeats, dThisPosition, NULL, NULL, NULL,
+                                   &dBeatPercentage, 0.01)) {
+        return dBeatPercentage;
     }
-    double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
-    double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
-    if (fabs(dNextBeat - dPrevBeat) < 0.01) {
-        // We are on a beat
-        return 0;
-    }
-    return (dThisPosition - dPrevBeat) / (dNextBeat - dPrevBeat);
+    return 0.0;
 }
 
 bool BpmControl::syncPhase() {
@@ -480,24 +474,74 @@ bool BpmControl::syncPhase() {
     return true;
 }
 
-double BpmControl::getPhaseOffset(double reference_position) {
+// static
+bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
+                                const double dPosition,
+                                double* dpPrevBeat,
+                                double* dpNextBeat,
+                                double* dpBeatLength,
+                                double* dpBeatPercentage,
+                                const double beatEpsilon) {
+    if (!pBeats) {
+        return false;
+    }
+
+    double dPrevBeat = pBeats->findPrevBeat(dPosition);
+    double dNextBeat = pBeats->findNextBeat(dPosition);
+
+    qDebug() << dPrevBeat << dNextBeat;
+
+    if (dPrevBeat == -1 || dNextBeat == -1) {
+        return false;
+    }
+
+    if (fabs(dPrevBeat - dNextBeat) <= beatEpsilon) {
+        dNextBeat = pBeats->findNthBeat(dPosition, 2);
+    }
+
+    qDebug() << dPrevBeat << dNextBeat;
+
+    if (dNextBeat == -1) {
+        return false;
+    }
+
+    if (dpPrevBeat != NULL) {
+        *dpPrevBeat = dPrevBeat;
+    }
+    if (dpNextBeat != NULL) {
+        *dpNextBeat = dNextBeat;
+    }
+
+    double dBeatLength = dNextBeat - dPrevBeat;
+    if (dpBeatLength != NULL) {
+        *dpBeatLength = dBeatLength;
+    }
+
+    if (dpBeatPercentage != NULL) {
+        *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
+                (dPosition - dPrevBeat) / dBeatLength;
+        qDebug() << *dpBeatPercentage;
+    }
+
+    qDebug() << dPrevBeat << dNextBeat << dBeatLength;
+
+    return true;
+}
+
+double BpmControl::getPhaseOffset(double dThisPosition) {
     // Without a beatgrid, we don't know the phase offset.
     if (!m_pBeats) {
         return 0;
     }
 
     // Get the current position of this deck.
-    double dThisPosition = reference_position;
-    double dThisPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
-    double dThisNextBeat = m_pBeats->findNextBeat(dThisPosition);
-
-    if (dThisPrevBeat == -1 || dThisNextBeat == -1) {
+    double dThisPrevBeat;
+    double dThisNextBeat;
+    double dThisBeatLength;
+    if (!getBeatContext(m_pBeats, dThisPosition,
+                        &dThisPrevBeat, &dThisNextBeat,
+                        &dThisBeatLength, NULL)) {
         return 0;
-    }
-
-    // Protect against the case where we are sitting exactly on the beat.
-    if (dThisPrevBeat == dThisNextBeat) {
-        dThisNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
     }
 
     double dOtherBeatFraction;
@@ -524,23 +568,13 @@ double BpmControl::getPhaseOffset(double reference_position) {
         double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
         double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
-        double dOtherPrevBeat = otherBeats->findPrevBeat(dOtherPosition);
-        double dOtherNextBeat = otherBeats->findNextBeat(dOtherPosition);
 
-        if (dOtherPrevBeat == -1 || dOtherNextBeat == -1) {
-            return 0;
+        if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
+                                        NULL, NULL, NULL, &dOtherBeatFraction)) {
+            return 0.0;
         }
-
-        // Protect against the case where we are sitting exactly on the beat.
-        if (dOtherPrevBeat == dOtherNextBeat) {
-            dOtherNextBeat = otherBeats->findNthBeat(dOtherPosition, 2);
-        }
-
-        double dOtherBeatLength = fabs(dOtherNextBeat - dOtherPrevBeat);
-        dOtherBeatFraction = (dOtherPosition - dOtherPrevBeat) / dOtherBeatLength;
     }
 
-    double dThisBeatLength = fabs(dThisNextBeat - dThisPrevBeat);
     bool this_near_next = dThisNextBeat - dThisPosition <= dThisPosition - dThisPrevBeat;
     bool other_near_next = dOtherBeatFraction >= 0.5;
 
