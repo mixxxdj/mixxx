@@ -356,6 +356,42 @@ void BpmControl::slotSetStatuses() {
     }
 }
 
+// static
+double BpmControl::shortestPercentageChange(const double& current_percentage,
+                                            const double& target_percentage) {
+    if (current_percentage == target_percentage) {
+        return 0.0;
+    } else if (current_percentage < target_percentage) {
+        // Invariant: forwardDistance - backwardsDistance == 1.0
+
+        // my: 0.01 target:0.99 forwards: 0.98
+        // my: 0.25 target: 0.5 forwards: 0.25
+        // my: 0.25 target: 0.75 forwards: 0.5
+        // my: 0.98 target: 0.99 forwards: 0.01
+        const double forwardDistance = target_percentage - current_percentage;
+
+        // my: 0.01 target:0.99 backwards: -0.02
+        // my: 0.25 target: 0.5 backwards: -0.75
+        // my: 0.25 target: 0.75 backwards: -0.5
+        // my: 0.98 target: 0.99 backwards: -0.99
+        const double backwardsDistance = target_percentage - current_percentage - 1.0;
+
+        return (fabs(forwardDistance) < fabs(backwardsDistance)) ?
+                forwardDistance : backwardsDistance;
+    } else { // current_percentage > target_percentage
+        // Invariant: forwardDistance - backwardsDistance == 1.0
+
+        // my: 0.99 target: 0.01 forwards: 0.02
+        const double forwardDistance = 1.0 - current_percentage + target_percentage;
+
+        // my: 0.99 target:0.01 backwards: -0.98
+        const double backwardsDistance = target_percentage - current_percentage;
+
+        return (fabs(forwardDistance) < fabs(backwardsDistance)) ?
+                forwardDistance : backwardsDistance;
+    }
+}
+
 double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     // This runs when ratecontrol wants to know what rate to use.
 

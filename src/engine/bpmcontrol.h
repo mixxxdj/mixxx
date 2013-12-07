@@ -48,6 +48,12 @@ class BpmControl : public EngineControl {
                                double* dpBeatPercentage,
                                const double beatEpsilon=0.0);
 
+    // Returns the shortest change in percentage needed to achieve
+    // target_percentage.
+    // Example: shortestPercentageChange(0.99, 0.01) == 0.02
+    static double shortestPercentageChange(const double& current_percentage,
+                                           const double& target_percentage);
+
   public slots:
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
