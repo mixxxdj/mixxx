@@ -402,57 +402,56 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
 
     // This is the deck position at the start of the callback.
     double dThisPosition = getCurrentSample();
-    double dPrevBeat = m_pBeats->findPrevBeat(dThisPosition);
-    double dNextBeat = m_pBeats->findNextBeat(dThisPosition);
-    double beat_length = dNextBeat - dPrevBeat;
-    if (fabs(beat_length) < 0.01) {
-        // close enough, we are on a beat
-        dNextBeat = m_pBeats->findNthBeat(dThisPosition, 2);
-        beat_length = dNextBeat - dPrevBeat;
+    double dPrevBeat;
+    double dNextBeat;
+    double dBeatLength;
+    double my_percentage;
+
+    if (!BpmControl::getBeatContext(m_pBeats, dThisPosition,
+                                    &dPrevBeat, &dNextBeat,
+                                    &dBeatLength, &my_percentage, 0.01)) {
+        return 1.0;
     }
 
-    // If we aren't quantized or looping, don't worry about offset
-    // We might be seeking outside the loop.
+    // If we aren't quantized or we are in a <1 beat loop, don't worry about
+    // offset.
     const bool loop_enabled = m_pLoopEnabled->get() > 0.0;
     const double loop_size = (m_pLoopEndPosition->get() -
-                                  m_pLoopStartPosition->get()) /
-                              beat_length;
+                              m_pLoopStartPosition->get()) /
+                              dBeatLength;
     if (!m_pQuantize->get() || (loop_enabled && loop_size < 1.0 && loop_size > 0)) {
         m_dSyncAdjustment = 1.0;
         return m_dSyncAdjustment;
     }
 
-    // my_distance is our percentage distance through the beat
-    double my_distance = (dThisPosition - dPrevBeat) / beat_length;
-    double master_distance = m_pMasterBeatDistance->get();
+    double master_percentage = m_pMasterBeatDistance->get();
 
-    if (my_distance - m_dUserOffset < 0) {
-        my_distance += 1.0;
-    }
+    // Either shortest distance is directly to the master or backwards.
 
-    // Beat wraparound -- any other way to account for this?
-    // if we're at .99% and the master is 0.1%, we are *not* 98% off!
-    // Don't do anything if we're at the edges of the beat (wraparound issues)
-    if (my_distance < 0.2 || my_distance > 0.8 ||
-        master_distance < 0.2 || master_distance > 0.8) {
-        // Intentionally return the previous value (adjustment is a slow process, and it's
-        // more important that it be steady).
-        return m_dSyncAdjustment;
-    }
+    // TODO(rryan): This is kind of backwards because we are measuring distance
+    // from master to my percentage. All of the control code below is based on
+    // this point of reference so I left it this way but I think we should think
+    // about things in terms of "my percentage-offset setpoint" that the control
+    // loop should aim to maintain.
+    // TODO(rryan): All of this code is based on the assumption that a track
+    // can't pass through multiple beats in one engine callback. Instead our
+    // setpoint should be tracking the true offset in "samples traveled" rather
+    // than modular 1.0 beat fractions. This will allow sync to work across loop
+    // boundaries too.
+    double shortest_distance = shortestPercentageChange(
+        master_percentage, my_percentage);
 
-    double percent_offset = my_distance - master_distance;
-
-    /*double sample_offset = beat_length * percent_offset;
-    qDebug() << "master beat distance:" << master_distance;
-    qDebug() << "my     beat distance:" << my_distance;
+    /*double sample_offset = beat_length * shortest_distance;
+    qDebug() << "master beat distance:" << master_percentage;
+    qDebug() << "my     beat distance:" << my_percentage;
     qDebug() << m_sGroup << sample_offset << m_dUserOffset;*/
 
     if (userTweakingSync) {
-        m_dSyncAdjustment = 1.0;
-        m_dUserOffset = percent_offset;
         // Don't do anything else, leave it
+        m_dSyncAdjustment = 1.0;
+        m_dUserOffset = shortest_distance;
     } else {
-        double error = percent_offset - m_dUserOffset;
+        double error = shortest_distance - m_dUserOffset;
         // Threshold above which we do sync adjustment.
         const double kErrorThreshold = 0.01;
         // Threshold above which sync is really, really bad, so much so that we
