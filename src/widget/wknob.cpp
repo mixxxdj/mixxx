@@ -140,14 +140,14 @@ void WKnob::mouseMoveEvent(QMouseEvent * e)
             dist = -dist;
         }
 
-        m_fValue += dist;
+        m_value += dist;
         QCursor::setPos(m_startPos);
 
-        if (m_fValue>127.)
-            m_fValue = 127.;
-        else if (m_fValue<0.)
-            m_fValue = 0.;
-        emit(valueChangedLeftDown(m_fValue));
+        if (m_value>127.)
+            m_value = 127.;
+        else if (m_value<0.)
+            m_value = 0.;
+        emit(valueChangedLeftDown(m_value));
         update();
     }
 }
@@ -176,7 +176,7 @@ void WKnob::mouseReleaseEvent(QMouseEvent * e)
     case Qt::MidButton:
         QCursor::setPos(m_startPos);
         QApplication::restoreOverrideCursor();
-        emit(valueChangedLeftUp(m_fValue));
+        emit(valueChangedLeftUp(m_value));
         break;
     case Qt::RightButton:
         m_bRightButtonPressed = false;
@@ -208,7 +208,7 @@ void WKnob::paintEvent(QPaintEvent *)
 {
     if (m_pPixmaps)
     {
-        int idx = (int)(((m_fValue-64.)*(((float)m_iNoPos-1.)/127.))+((float)m_iNoPos/2.));
+        int idx = (int)(((m_value-64.)*(((float)m_iNoPos-1.)/127.))+((float)m_iNoPos/2.));
         // Range check
         if (idx>(m_iNoPos-1))
             idx = m_iNoPos-1;
