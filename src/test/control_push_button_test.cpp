@@ -28,9 +28,10 @@ class ControlPushButtonTest : public MixxxTest {
 TEST_F(ControlPushButtonTest, QuickPressNoLatchTest) {
     m_pButton.reset(new WPushButton(NULL, ControlPushButton::LATCHING,
                                     ControlPushButton::PUSH));
+    m_pButton->setStates(2);
 
-    m_Events.addMousePress(Qt::LeftButton, 0, QPoint(), 100);
-    m_Events.addMouseRelease(Qt::LeftButton);
+    m_Events.addMousePress(Qt::LeftButton);
+    m_Events.addMouseRelease(Qt::LeftButton, 0, QPoint(), 100);
 
     m_Events.simulate(m_pButton.data());
 
@@ -40,9 +41,10 @@ TEST_F(ControlPushButtonTest, QuickPressNoLatchTest) {
 TEST_F(ControlPushButtonTest, LongPressLatchTest) {
     m_pButton.reset(new WPushButton(NULL, ControlPushButton::LATCHING,
                                     ControlPushButton::PUSH));
+    m_pButton->setStates(2);
 
-    m_Events.addMousePress(Qt::LeftButton, 0, QPoint(), 1000);
-    m_Events.addMouseRelease(Qt::LeftButton);
+    m_Events.addMousePress(Qt::LeftButton);
+    m_Events.addMouseRelease(Qt::LeftButton, 0, QPoint(), 1000);
 
     m_Events.simulate(m_pButton.data());
 
