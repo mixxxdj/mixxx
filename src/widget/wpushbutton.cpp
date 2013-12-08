@@ -31,18 +31,18 @@
 
 const int PB_SHORTKLICKTIME = 200;
 
-WPushButton::WPushButton(QWidget * parent) :
-        WWidget(parent),
-        m_pPixmaps(NULL),
-        m_pPixmapBack(NULL),
-        m_leftButtonMode(ControlPushButton::PUSH),
-        m_rightButtonMode(ControlPushButton::PUSH) {
+WPushButton::WPushButton(QWidget* parent)
+        : WWidget(parent),
+          m_pPixmaps(NULL),
+          m_pPixmapBack(NULL),
+          m_leftButtonMode(ControlPushButton::PUSH),
+          m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
     //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
 }
 
 WPushButton::~WPushButton() {
-    for (int i = 0; i < 2*m_iNoStates; i++) {
+    for (int i = 0; i < 2 * m_iNoStates; i++) {
         WPixmapStore::deletePixmap(m_pPixmaps[i]);
     }
 
@@ -87,17 +87,6 @@ void WPushButton::setup(QDomNode node) {
         configKey.group = key.left(key.indexOf(","));
         configKey.item = key.mid(key.indexOf(",")+1);
 
-        ControlPushButton* p = dynamic_cast<ControlPushButton*>(
-            ControlObject::getControl(configKey));
-
-        if (p == NULL) {
-            // A NULL here either means that this control is not a
-            // ControlPushButton or it does not exist. This logic is
-            // specific to push-buttons, so skip it either way.
-            con = con.nextSibling();
-            continue;
-        }
-
         bool isLeftButton = false;
         bool isRightButton = false;
         if (!selectNode(con, "ButtonState").isNull()) {
@@ -108,12 +97,21 @@ void WPushButton::setup(QDomNode node) {
             }
         }
 
-        // Based on whether the control is mapped to the left or right button,
-        // record the button mode.
-        if (isLeftButton) {
-            m_leftButtonMode = p->getButtonMode();
-        } else if (isRightButton) {
-            m_rightButtonMode = p->getButtonMode();
+        ControlPushButton* p = dynamic_cast<ControlPushButton*>(
+            ControlObject::getControl(configKey));
+
+        if (p) {
+            // A NULL here either means that this control is not a
+            // ControlPushButton or it does not exist. This logic is
+            // specific to push-buttons, so skip it either way.
+
+            // Based on whether the control is mapped to the left or right button,
+            // record the button mode.
+            if (isLeftButton) {
+                m_leftButtonMode = p->getButtonMode();
+            } else if (isRightButton) {
+                m_rightButtonMode = p->getButtonMode();
+            }
         }
         con = con.nextSibling();
     }
@@ -121,7 +119,7 @@ void WPushButton::setup(QDomNode node) {
 
 void WPushButton::setStates(int iStates) {
     m_iNoStates = iStates;
-    m_fValue = 0.;
+    m_value = 0.;
     m_bPressed = false;
 
     // If pixmap array is already allocated, delete it
@@ -158,10 +156,10 @@ void WPushButton::setPixmapBackground(const QString &filename) {
 }
 
 void WPushButton::setValue(double v) {
-    m_fValue = v;
+    m_value = v;
 
-    if (m_iNoStates==1) {
-        if (m_fValue==1.) {
+    if (m_iNoStates == 1) {
+        if (m_value == 1.) {
             m_bPressed = true;
         } else {
             m_bPressed = false;
@@ -171,8 +169,9 @@ void WPushButton::setValue(double v) {
 }
 
 void WPushButton::paintEvent(QPaintEvent *) {
-    if (m_iNoStates>0)     {
-        int idx = (((int)m_fValue % m_iNoStates) * 2) + m_bPressed;
+    double value = m_value;
+    if (m_iNoStates > 0)     {
+        int idx = (((int)value % m_iNoStates) * 2) + m_bPressed;
         if (m_pPixmaps[idx]) {
             QPainter p(this);
             if(m_pPixmapBack) {
@@ -190,11 +189,11 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     const bool leftPowerWindowStyle = m_leftButtonMode == ControlPushButton::POWERWINDOW;
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
-            if (m_fValue == 0.0f) {
+            if (m_value == 0.0f) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             }
-            m_fValue = 1.0f;
+            m_value = 1.0f;
             m_bPressed = true;
             emit(valueChangedLeftDown(1.0f));
             update();
@@ -211,7 +210,7 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             update();
         } else if (m_iNoStates == 1) {
             // This is a Pushbutton
-            m_fValue = 1.0f;
+            m_value = 1.0f;
             m_bPressed = true;
             emit(valueChangedRightDown(1.0f));
             update();
@@ -235,10 +234,10 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
             emitValue = 1.0f;
         } else if (m_iNoStates == 1) {
             // This is a Pushbutton
-            m_fValue = emitValue = 1.0f;
+            m_value = emitValue = 1.0f;
         } else {
             // Toggle thru the states
-            m_fValue = emitValue = (int)(m_fValue+1.)%m_iNoStates;
+            m_value = emitValue = (int)(m_value + 1.) % m_iNoStates;
         }
         m_bPressed = true;
         emit(valueChangedLeftDown(emitValue));
@@ -262,7 +261,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
                 // Release Button after Timer, but not if right button is clicked
-                m_fValue = 0.0f;
+                m_value = 0.0f;
                 emit(valueChangedLeftUp(0.0f));
             }
             m_bPressed = false;
@@ -290,14 +289,14 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     }
 
     if (leftClick) {
-        double emitValue = m_fValue;
+        double emitValue = m_value;
         if (m_bLeftClickForcePush) {
             // This may a klickButton with different functions on each mouse button
             // m_fValue is changed by a separate feedback connection
             emitValue = 0.0f;
         } else if (m_iNoStates == 1) {
             // This is a Pushbutton
-            m_fValue = emitValue = 0.0f;
+            m_value = emitValue = 0.0f;
         } else {
             // Nothing special happens when releasing a toggle button
         }

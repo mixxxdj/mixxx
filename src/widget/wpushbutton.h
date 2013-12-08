@@ -69,12 +69,15 @@ class WPushButton : public WWidget
     // Number of states associated with this button
     int m_iNoStates;
     // Array of associated pixmaps
-    QPixmap **m_pPixmaps;
+    QPixmap** m_pPixmaps;
     // Associated background pixmap
-    QPixmap *m_pPixmapBack;
-    /** short click toggle button long click push button **/
-    ControlPushButton::ButtonMode m_leftButtonMode, m_rightButtonMode;
+    QPixmap* m_pPixmapBack;
+    // short click toggle button long click push button
+    ControlPushButton::ButtonMode m_leftButtonMode;
+    ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
+    // to distinguish if the Button is painted by the indicator or the main value
+    bool m_indicatorConnected;
 };
 
 #endif
