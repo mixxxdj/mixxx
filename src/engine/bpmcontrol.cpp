@@ -101,12 +101,8 @@ BpmControl::BpmControl(const char* _group,
             this, SLOT(slotMasterSyncSliderChanged(double)),
             Qt::DirectConnection);
 
-    m_pSyncMasterEnabled = new ControlPushButton(ConfigKey(_group, "sync_master"));
-    m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
-
-    m_pSyncSlaveEnabled = new ControlPushButton(ConfigKey(_group, "sync_slave"));
-    m_pSyncSlaveEnabled->setButtonMode(ControlPushButton::TOGGLE);
-
+    m_pSyncMasterEnabled = ControlObject::getControl(ConfigKey(_group, "sync_master"));
+    m_pSyncEnabled = ControlObject::getControl(ConfigKey(_group, "sync_enabled"));
     m_pSyncMode = ControlObject::getControl(ConfigKey(_group, "sync_mode"));
     connect(m_pSyncMode, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncModeChanged(double)),
@@ -151,7 +147,7 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     m_pEngineBpm->set(bpm * dRate);
     if (m_pSyncMode->get() == SYNC_MASTER) {
         m_pMasterBpm->set(bpm * dRate);
-    } else if (m_pSyncMode->get() == SYNC_SLAVE) {
+    } else if (m_pSyncMode->get() == SYNC_FOLLOWER) {
         slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }
 }
@@ -338,7 +334,7 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
 
 void BpmControl::slotSyncModeChanged(double state) {
     slotSetStatuses();
-    if (state == SYNC_SLAVE) {
+    if (state == SYNC_FOLLOWER) {
         // Update the slider immediately.
         slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }
@@ -348,15 +344,15 @@ void BpmControl::slotSetStatuses() {
     switch (static_cast<int>(m_pSyncMode->get())) {
     case SYNC_NONE:
         m_pSyncMasterEnabled->set(false);
-        m_pSyncSlaveEnabled->set(false);
+        m_pSyncEnabled->set(false);
         break;
-    case SYNC_SLAVE:
+    case SYNC_FOLLOWER:
         m_pSyncMasterEnabled->set(false);
-        m_pSyncSlaveEnabled->set(true);
+        m_pSyncEnabled->set(true);
         break;
     case SYNC_MASTER:
         m_pSyncMasterEnabled->set(true);
-        m_pSyncSlaveEnabled->set(false);
+        m_pSyncEnabled->set(true);
     }
 }
 
@@ -578,7 +574,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     }
 
     double dOtherBeatFraction;
-    if (m_pSyncMode->get() == SYNC_SLAVE) {
+    if (m_pSyncMode->get() == SYNC_FOLLOWER) {
         // If we're a slave, it's easy to get the other beat fraction
         dOtherBeatFraction = m_pMasterBeatDistance->get();
     } else {
@@ -686,7 +682,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 }
 
 void BpmControl::onEngineRateChange(double rate) {
-    if (m_pSyncMode->get() == SYNC_SLAVE) {
+    if (m_pSyncMode->get() == SYNC_FOLLOWER) {
         m_pEngineBpm->set(rate * m_pFileBpm->get());
     }
 }

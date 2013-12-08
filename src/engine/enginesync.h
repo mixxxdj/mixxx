@@ -29,7 +29,7 @@ class RateControl;
 
 enum SYNC_MODE {
     SYNC_NONE = 0,
-    SYNC_SLAVE = 1,
+    SYNC_FOLLOWER = 1,
     SYNC_MASTER = 2
 };
 
@@ -46,8 +46,12 @@ class EngineSync : public EngineControl {
     void process(int bufferSize);
     RateControl* getRateControlForGroup(const QString& group);
     const QString getSyncSource() const { return m_sSyncSource; }
-    void setChannelSyncMode(RateControl*, int);
-    void setChannelRateSlider(RateControl*, double);
+    // Used by RateControl to tell the master sync it wants to be enabled.
+    void setChannelSyncMode(RateControl* pRateControl, int state);
+    // Similar, but will accept master or follower mode.
+    void setChannelSyncMode(RateControl* pRateControl);
+    void setChannelRateSlider(RateControl* pRateControl, double new_bpm);
+    void setDeckPlaying(RateControl* pRateControl, bool playing);
 
   private slots:
     void slotMasterBpmChanged(double);
@@ -59,6 +63,7 @@ class EngineSync : public EngineControl {
     void slotInternalMasterChanged(double);
 
   private:
+    int playingSyncDeckCount();
     void setMaster(const QString& group);
     bool setChannelMaster(RateControl* pRateControl);
     void setInternalMaster();
@@ -66,7 +71,8 @@ class EngineSync : public EngineControl {
     void disableCurrentMaster();
     void updateSamplesPerBeat();
     void setPseudoPosition(double percent);
-    void resetInternalBeatDistance();
+    void initializeInternalBeatDistance();
+    void initializeInternalBeatDistance(RateControl* pRateControl);
     double getInternalBeatDistance() const;
 
     ConfigObject<ConfigValue>* m_pConfig;
@@ -81,6 +87,7 @@ class EngineSync : public EngineControl {
 
     QList<RateControl*> m_ratecontrols;
     QString m_sSyncSource;
+    bool m_bExplicitMasterSelected;
     double m_dSamplesPerBeat;
 
     // Used for maintaining internal master sync.

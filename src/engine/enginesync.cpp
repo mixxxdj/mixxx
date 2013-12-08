@@ -34,6 +34,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
           m_pConfig(_config),
           m_pChannelMaster(NULL),
           m_sSyncSource(""),
+          m_bExplicitMasterSelected(false),
           m_dPseudoBufferPos(0.0f) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
@@ -99,6 +100,7 @@ void EngineSync::addChannel(EngineChannel* pChannel) {
 void EngineSync::addDeck(RateControl *pNewRate) {
     foreach (RateControl* pRate, m_ratecontrols) {
         if (pRate->getGroup() == pNewRate->getGroup()) {
+            // BUG -- pRate is local, this doesn't work.
             qDebug() << "EngineSync: already has channel for" << pRate->getGroup() << ", replacing";
             pRate = pNewRate;
             return;
@@ -130,7 +132,7 @@ void EngineSync::disableCurrentMaster() {
             disconnect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
                        this, SLOT(slotSourceBeatDistanceChanged(double)));
         }
-        pOldChannelMaster->setMode(SYNC_SLAVE);
+        pOldChannelMaster->setMode(SYNC_FOLLOWER);
     }
     m_sSyncSource = "";
     m_pChannelMaster = NULL;
@@ -161,7 +163,7 @@ void EngineSync::setInternalMaster() {
         m_pInternalRateSlider->set(master_bpm);
     }
     QString old_master = m_sSyncSource;
-    resetInternalBeatDistance();
+    initializeInternalBeatDistance();
     disableCurrentMaster();
     m_sSyncSource = kMasterSyncGroup;
     updateSamplesPerBeat();
@@ -175,10 +177,11 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
         return false;
     }
 
-    // If a channel is master, disable it.
+    // Already master, no need to do anything.
     if (m_sSyncSource == pRateControl->getGroup()) {
         return true;
     }
+    // If a channel is master, disable it.
     disableCurrentMaster();
 
     // Only accept channels with an EngineBuffer.
@@ -217,7 +220,7 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
             Qt::DirectConnection);
 
     // Reset internal beat distance to equal the new master
-    resetInternalBeatDistance();
+    initializeInternalBeatDistance();
 
     m_pSyncInternalEnabled->set(false);
     slotSourceRateEngineChanged(pSourceRateEngine->get());
@@ -226,7 +229,29 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     return true;
 }
 
+int EngineSync::playingSyncDeckCount() {
+    int playing_sync_decks = 0;
+
+    foreach (RateControl* pRateControl, m_ratecontrols) {
+        double sync_mode = pRateControl->getMode();
+        if (sync_mode == SYNC_NONE) {
+            continue;
+        }
+
+        ControlObject *playing = ControlObject::getControl(ConfigKey(pRateControl->getGroup(),
+                                                                     "play"));
+        if (playing && playing->get()) {
+            ++playing_sync_decks;
+        }
+    }
+    return playing_sync_decks;
+}
+
 void EngineSync::chooseNewMaster(const QString& dontpick) {
+    int playing_sync_decks = 0;
+    int paused_sync_decks = 0;
+    RateControl *new_master = NULL;
+
     foreach (RateControl* pRateControl, m_ratecontrols) {
         const QString& group = pRateControl->getGroup();
         if (group == dontpick) {
@@ -236,68 +261,135 @@ void EngineSync::chooseNewMaster(const QString& dontpick) {
         double sync_mode = pRateControl->getMode();
         if (sync_mode == SYNC_MASTER) {
             qDebug() << "Already have a new master" << group;
+            m_sSyncSource = group;
             return;
         } else if (sync_mode == SYNC_NONE) {
             continue;
         }
 
-        EngineChannel* pChannel = pRateControl->getChannel();
-        if (pChannel && pChannel->isActive() && pChannel->isMaster()) {
-            EngineBuffer* pBuffer = pChannel->getEngineBuffer();
-            if (pBuffer && pBuffer->getBpm() > 0) {
-                // If the channel is playing then go with it immediately.
-                if (fabs(pBuffer->getRate()) > 0) {
-                    pRateControl->setMode(SYNC_MASTER);
-                    setChannelSyncMode(pRateControl, SYNC_MASTER);
-                    return;
-                }
-            }
+        ControlObject *playing = ControlObject::getControl(ConfigKey(pRateControl->getGroup(),
+                                                                     "play"));
+        if (playing && playing->get()) {
+            ++playing_sync_decks;
+            new_master = pRateControl;
+        } else {
+            ++paused_sync_decks;
         }
     }
-    if (dontpick != kMasterSyncGroup) {
+
+    if (playing_sync_decks == 1) {
+        Q_ASSERT(new_master != NULL);
+        new_master->setMode(SYNC_MASTER);
+        setChannelSyncMode(new_master, SYNC_MASTER);
+    } else if (dontpick != kMasterSyncGroup) {
         setInternalMaster();
+    } else {
+        // Internal master was specifically disabled.  Just go with new_master if it exists,
+        // otherwise give up and pick nothing.
+        if (new_master != NULL) {
+            new_master->setMode(SYNC_MASTER);
+            setChannelSyncMode(new_master, SYNC_MASTER);
+        }
     }
+    // Even if we didn't successfully find a new master, unset this value.
+    m_bExplicitMasterSelected = false;
 }
 
 void EngineSync::setChannelRateSlider(RateControl* pRateControl, double new_bpm) {
+    Q_UNUSED(pRateControl);
     // Note that this is not a slot.
     m_pInternalRateSlider->set(new_bpm);
     m_pMasterBpm->set(new_bpm);
 }
 
 void EngineSync::setChannelSyncMode(RateControl* pRateControl, int state) {
-    if (!pRateControl) {
-        return;
-    }
+    // Based on the call hierarchy I don't think this is possible. (Famous last words.)
+    Q_ASSERT(pRateControl);
 
     const QString& group = pRateControl->getGroup();
     const bool channelIsMaster = m_sSyncSource == group;
 
     // In the following logic, m_sSyncSource acts like "previous sync source".
     if (state == SYNC_MASTER) {
-        // TODO(owilliams): should we reject requests to be master from
-        // non-playing decks?  If so, then that creates a weird situation on
-        // startup where the user can't turn on Master.
-
+        // RateControl is explicitly requesting master, so we'll honor that.
+        m_bExplicitMasterSelected = true;
         // If setting this channel as master fails, pick a new master.
         if (!setChannelMaster(pRateControl)) {
             chooseNewMaster(group);
         }
-    } else if (state == SYNC_SLAVE) {
+    } else if (state == SYNC_FOLLOWER) {
         // Was this deck master before?  If so do a handoff.
         if (channelIsMaster) {
             // Choose a new master, but don't pick the current one.
             chooseNewMaster(group);
-        } else if (m_sSyncSource == "") {
-            // If there is no current master, use internal master.
-            setInternalMaster();
+        } else if (m_bExplicitMasterSelected) {
+            // Do nothing.
+            return;
+        }
+        // Perhaps force master if beatgrid is non-constant?
+        //if (pRateControl->isNonConst????) { }
+        if (m_sSyncSource == "") {
+            // If there is no current master, set to master.
+            pRateControl->setMode(SYNC_MASTER);
+            if (!setChannelMaster(pRateControl)) {
+                chooseNewMaster(group);
+            }
+        } else if (!m_bExplicitMasterSelected) {
+            if (m_sSyncSource == kMasterSyncGroup) {
+                if (playingSyncDeckCount() == 1) {
+                    // We should be master now.
+                    pRateControl->setMode(SYNC_MASTER);
+                    if (!setChannelMaster(pRateControl)) {
+                        chooseNewMaster(group);
+                    }
+                }
+            } else {
+                // If there was a deck master, set to internal.
+                if (playingSyncDeckCount() > 1) {
+                    setInternalMaster();
+                }
+            }
         }
     } else {
         // if we were the master, choose a new one.
-        if (channelIsMaster) {
-            chooseNewMaster("");
-        }
+        chooseNewMaster("");
         pRateControl->setMode(SYNC_NONE);
+    }
+}
+
+void EngineSync::setChannelSyncMode(RateControl* pRateControl) {
+    if (m_sSyncSource == "") {
+        pRateControl->setMode(SYNC_MASTER);
+        if (!setChannelMaster(pRateControl)) {
+            chooseNewMaster(pRateControl->getGroup());
+        }
+    } else {
+        pRateControl->setMode(SYNC_FOLLOWER);
+        setChannelSyncMode(pRateControl, SYNC_FOLLOWER);
+    }
+}
+
+void EngineSync::setDeckPlaying(RateControl* pRateControl, bool playing) {
+    // For now we don't care if the deck is now playing or stopping.
+    if (pRateControl->getMode() != SYNC_NONE) {
+        int playing_deck_count = playingSyncDeckCount();
+
+        if (!m_bExplicitMasterSelected) {
+            if (playing_deck_count == 0) {
+                // Nothing was playing, so set self as master
+                if (setChannelMaster(pRateControl)) {
+                    pRateControl->setMode(SYNC_MASTER);
+                }
+            } if (playing_deck_count == 1) {
+                if (!playing && m_sSyncSource == kMasterSyncGroup) {
+                    // If a deck has stopped, and only one deck is now playing,
+                    // and we were internal, pick a new master (the playing deck).
+                    chooseNewMaster(kMasterSyncGroup);
+                }
+            } else {
+                setInternalMaster();
+            }
+        }
     }
 }
 
@@ -331,24 +423,6 @@ void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
 
 void EngineSync::slotMasterBpmChanged(double new_bpm) {
     if (!qFuzzyCompare(new_bpm, m_pMasterBpm->get())) {
-//        if (m_sSyncSource != kMasterSyncGroup) {
-//            // XXX(Owen):
-//            // it looks like this is Good Enough for preventing accidental
-//            // tweaking of rate.  But maybe it should set master to internal?
-
-//            // Changing to internal is weird, feels like a bug having master
-//            // designation turn off
-//            // setInternalMaster();
-
-//            // how about just setting the bpm value for the deck master?
-//            // problem with that is here we have bpm, but deck expects
-//            // a percentage.  Let's keep this to "no you can't do that" for now
-
-//            // TODO: Use CO validation instead of this pattern.
-//            qDebug() << "not master, reset " <<m_sSyncSource << " " << kMasterSyncGroup;
-//            m_pMasterBpm->set(m_dMasterBpm);
-//            return;
-//        }
         updateSamplesPerBeat();
 
         // This change could hypothetically push us over distance 1.0, so check
@@ -391,14 +465,22 @@ double EngineSync::getInternalBeatDistance() const {
     return m_dPseudoBufferPos / m_dSamplesPerBeat;
 }
 
-void EngineSync::resetInternalBeatDistance() {
-    ControlObject* pSourceBeatDistance = m_pChannelMaster ?
-            m_pChannelMaster->getBeatDistanceControl() : NULL;
+void EngineSync::initializeInternalBeatDistance() {
+    if (m_pChannelMaster) {
+        initializeInternalBeatDistance(m_pChannelMaster);
+    }
+}
+
+void EngineSync::initializeInternalBeatDistance(RateControl* pRateControl) {
+    ControlObject* pSourceBeatDistance = pRateControl->getBeatDistanceControl();
     double beat_distance = pSourceBeatDistance ? pSourceBeatDistance->get() : 0;
 
     m_dPseudoBufferPos = beat_distance * m_dSamplesPerBeat;
-    qDebug() << "Resetting internal beat distance to new master"
-             << m_dPseudoBufferPos << " " << beat_distance;
+    m_pMasterBeatDistance->set(beat_distance);
+    if (pSourceBeatDistance) {
+        qDebug() << "Resetting internal beat distance to " << pRateControl->getGroup()
+                 << m_dPseudoBufferPos << " " << beat_distance;
+    }
 }
 
 void EngineSync::updateSamplesPerBeat() {
