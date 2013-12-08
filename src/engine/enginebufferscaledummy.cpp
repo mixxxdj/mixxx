@@ -8,7 +8,7 @@ EngineBufferScaleDummy::EngineBufferScaleDummy(ReadAheadManager* pReadAheadManag
     : EngineBufferScale(),
       m_pReadAheadManager(pReadAheadManager)
 {
-	m_samplesRead = 0.0f;
+    m_samplesRead = 0.0f;
 }
 
 EngineBufferScaleDummy::~EngineBufferScaleDummy()
@@ -18,7 +18,7 @@ EngineBufferScaleDummy::~EngineBufferScaleDummy()
 
 double EngineBufferScaleDummy::getNewPlaypos()
 {
-	return m_samplesRead;
+    return m_samplesRead;
 }
 
 void EngineBufferScaleDummy::clear()
@@ -72,7 +72,7 @@ CSAMPLE *EngineBufferScaleDummy::getScaled(unsigned long buf_size) {
         */
         //END OF LINEAR INTERPOLATION CODE
 
-	//qDebug() << iBaseLength << playpos << new_playpos << buf_size << numSamplesToCopy;
+    //qDebug() << iBaseLength << playpos << new_playpos << buf_size << numSamplesToCopy;
 
-	return m_buffer;
+    return m_buffer;
 }
