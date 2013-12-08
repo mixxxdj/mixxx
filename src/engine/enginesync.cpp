@@ -369,18 +369,22 @@ void EngineSync::setChannelSyncMode(RateControl* pRateControl) {
     }
 }
 
-void EngineSync::setDeckPlaying(RateControl* pRateControl, bool state) {
+void EngineSync::setDeckPlaying(RateControl* pRateControl, bool playing) {
     // For now we don't care if the deck is now playing or stopping.
-    Q_UNUSED(state);
     if (pRateControl->getMode() != SYNC_NONE) {
         int playing_deck_count = playingSyncDeckCount();
-        if (playing_deck_count == 1) {
-            initializeInternalBeatDistance(pRateControl);
-        } else if (!m_bExplicitMasterSelected) {
+
+        if (!m_bExplicitMasterSelected) {
             if (playing_deck_count == 0) {
                 // Nothing was playing, so set self as master
                 if (setChannelMaster(pRateControl)) {
                     pRateControl->setMode(SYNC_MASTER);
+                }
+            } if (playing_deck_count == 1) {
+                if (!playing && m_sSyncSource == kMasterSyncGroup) {
+                    // If a deck has stopped, and only one deck is now playing,
+                    // and we were internal, pick a new master (the playing deck).
+                    chooseNewMaster(kMasterSyncGroup);
                 }
             } else {
                 setInternalMaster();

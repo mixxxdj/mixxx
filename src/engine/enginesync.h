@@ -51,7 +51,7 @@ class EngineSync : public EngineControl {
     // Similar, but will accept master or follower mode.
     void setChannelSyncMode(RateControl* pRateControl);
     void setChannelRateSlider(RateControl* pRateControl, double new_bpm);
-    void setDeckPlaying(RateControl* pRateControl, bool state);
+    void setDeckPlaying(RateControl* pRateControl, bool playing);
 
   private slots:
     void slotMasterBpmChanged(double);
