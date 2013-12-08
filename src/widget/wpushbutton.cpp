@@ -41,6 +41,16 @@ WPushButton::WPushButton(QWidget* parent)
     //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
 }
 
+WPushButton::WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
+                         ControlPushButton::ButtonMode rightButtonMode) :
+        WWidget(parent),
+        m_pPixmaps(NULL),
+        m_pPixmapBack(NULL),
+        m_leftButtonMode(leftButtonMode),
+        m_rightButtonMode(rightButtonMode) {
+    setStates(0);
+}
+
 WPushButton::~WPushButton() {
     for (int i = 0; i < 2 * m_iNoStates; i++) {
         WPixmapStore::deletePixmap(m_pPixmaps[i]);
@@ -267,7 +277,7 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
         if (leftClick) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
-                // Release Button after Timer, but not if right button is clicked
+                // Release button after timer, but not if right button is clicked
                 m_value = 0.0f;
                 emit(valueChangedLeftUp(0.0f));
             }

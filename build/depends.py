@@ -216,7 +216,8 @@ class Qt(Dependence):
                                      'QT_TABLET_SUPPORT'])
         qt_modules = [
             'QtCore', 'QtGui', 'QtOpenGL', 'QtXml', 'QtSvg',
-            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork'
+            'QtSql', 'QtScript', 'QtXmlPatterns', 'QtNetwork',
+            'QtTest'
         ]
 
         if qt5:
