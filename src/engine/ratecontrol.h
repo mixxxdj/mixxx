@@ -94,7 +94,7 @@ public:
     void slotSyncModeChanged(double);
     void slotSyncMasterChanged(double);
     void slotSyncSlaveChanged(double);
-    void slotChannelRateSliderChanged(double);
+    void slotRateSliderChanged(double);
 
   private:
     double getJogFactor() const;
@@ -188,19 +188,20 @@ public:
     //  The rate ramping buttons which are currently being pressed.
     int m_ePbPressed;
 
-    /** This is true if we've already started to ramp the rate */
+    // This is true if we've already started to ramp the rate
     bool m_bTempStarted;
-    /** Set to the rate change used for rate temp */
+    // Set to the rate change used for rate temp
     double m_dTempRateChange;
-    /** Set the Temporary Rate Change Mode */
+    // Set the Temporary Rate Change Mode
     static enum RATERAMP_MODE m_eRateRampMode;
-    /** The Rate Temp Sensitivity, the higher it is the slower it gets */
+    // The Rate Temp Sensitivity, the higher it is the slower it gets
     static int m_iRateRampSensitivity;
-    /** Temporary pitchrate, added to the permanent rate for calculateRate */
+    // Temporary pitchrate, added to the permanent rate for calculateRate
     double m_dRateTemp;
-    /** */
+    // Previously-known bpm value, used for determining if sync speed has actually changed.
+    double m_dOldBpm;
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
-    /** Return speed for temporary rate change */
+    // Return speed for temporary rate change
     double m_dRateTempRampbackChange;
 };
 

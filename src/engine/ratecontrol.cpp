@@ -43,6 +43,7 @@ RateControl::RateControl(const char* _group,
       m_bTempStarted(false),
       m_dTempRateChange(0.0),
       m_dRateTemp(0.0),
+      m_dOldBpm(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
       m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(_group);
@@ -56,14 +57,12 @@ RateControl::RateControl(const char* _group,
     // This value affects tests.
     m_pRateRange->set(2.0);
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
-    if (m_pRateSlider) {
-        connect(m_pRateSlider, SIGNAL(valueChanged(double)),
-                this, SLOT(slotChannelRateSliderChanged(double)),
-                Qt::DirectConnection);
-        connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
-                this, SLOT(slotChannelRateSliderChanged(double)),
-                Qt::DirectConnection);
-    }
+    connect(m_pRateSlider, SIGNAL(valueChanged(double)),
+            this, SLOT(slotRateSliderChanged(double)),
+            Qt::DirectConnection);
+    connect(m_pRateSlider, SIGNAL(valueChangedFromEngine(double)),
+            this, SLOT(slotRateSliderChanged(double)),
+            Qt::DirectConnection);
 
     m_pRateEngine = ControlObject::getControl(ConfigKey(_group, "rateEngine"));
     m_pBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
@@ -445,15 +444,17 @@ void RateControl::slotSyncSlaveChanged(double state) {
     }
 }
 
-void RateControl::slotChannelRateSliderChanged(double v) {
-    if (m_pSyncMode->get() == SYNC_SLAVE) {
-        // bpm control will override this value.
-        return;
-    }
+void RateControl::slotRateSliderChanged(double v) {
+    // Notify Master Sync of a change to the rate slider.
     if (!m_pFileBpm) {
        return;
     }
+
     const double new_bpm = m_pFileBpm->get() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
+    if (qFuzzyCompare(new_bpm, m_dOldBpm)) {
+        return;
+    }
+    m_dOldBpm = new_bpm;
     m_pEngineSync->setChannelRateSlider(this, new_bpm);
 }
 
@@ -527,8 +528,9 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
         bool scratchEnable = m_pScratchToggle->get() != 0 || bVinylControlEnabled;
 
-        // if master sync is on, respond to it -- but vinyl always overrides
-        if (m_pSyncMode->get() == SYNC_SLAVE && !paused && !bVinylControlEnabled)
+        // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+        if (m_pSyncMode->get() == SYNC_SLAVE && !paused &&
+            !bVinylControlEnabled && !m_pScratchController->isEnabled())
         {
             if (m_pBpmControl == NULL) {
                 qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";

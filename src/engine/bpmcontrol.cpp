@@ -29,12 +29,12 @@ BpmControl::BpmControl(const char* _group,
     m_pPlayButton = new ControlObjectSlave(_group, "play", this);
     m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)), Qt::DirectConnection);
     m_pRateSlider = new ControlObjectSlave(_group, "rate", this);
-    m_pRateSlider->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
+    m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
     m_pQuantize = ControlObject::getControl(_group, "quantize");
     m_pRateRange = new ControlObjectSlave(_group, "rateRange", this);
-    m_pRateRange->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
+    m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
     m_pRateDir = new ControlObjectSlave(_group, "rate_dir", this);
-    m_pRateDir->connectValueChanged(SLOT(slotAdjustBpm()), Qt::DirectConnection);
+    m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
 
 
     m_pLoopEnabled = new ControlObjectSlave(_group, "loop_enabled", this);
@@ -188,7 +188,7 @@ void BpmControl::slotTapFilter(double averageLength, int numSamples) {
     double averageBpm = 60.0 * 1000.0 / averageLength;
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pFileBpm->set(averageBpm / dRate);
-    slotAdjustBpm();
+    slotAdjustRateSlider();
 }
 
 void BpmControl::slotControlPlay(double v) {
@@ -325,7 +325,11 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
     if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
         return;
     }
-    if (m_pSyncMode->get() == SYNC_SLAVE) {
+    if (m_pSyncMode->get() != SYNC_NONE) {
+        // If the bpm is the same, nothing to do.
+        if (qFuzzyCompare(bpm, m_pEngineBpm->get())) {
+            return;
+        }
         double newRate = bpm / m_pFileBpm->get();
         m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
         m_pEngineBpm->set(bpm);
@@ -603,7 +607,6 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
         double dOtherEnginePlayPos = pOtherEngineBuffer->getVisualPlayPos();
         double dOtherPosition = dOtherLength * dOtherEnginePlayPos;
 
-
         if (!BpmControl::getBeatContext(otherBeats, dOtherPosition,
                                         NULL, NULL, NULL, &dOtherBeatFraction)) {
             return 0.0;
@@ -694,13 +697,8 @@ void BpmControl::onEngineRateChange(double rate) {
     }
 }
 
-void BpmControl::slotAdjustBpm() {
-    if (m_pSyncMode->get() == SYNC_SLAVE) {
-        // Override user-tweaked rate.
-        m_pRateSlider->set(((m_pMasterBpm->get() / m_pFileBpm->get()) - 1.0) /
-                           m_pRateDir->get() / m_pRateRange->get());
-        return;
-    }
+void BpmControl::slotAdjustRateSlider() {
+    // Adjust playback bpm in response to a change in the rate slider.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(m_pFileBpm->get() * dRate);
 }

@@ -348,8 +348,8 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
 }
 
 
-TEST_F(EngineSyncTest, RateChangeOverride) {
-    // This is like the test above, but the user loads the track after the slider has been tweaked.
+TEST_F(EngineSyncTest, SlaveRateChange) {
+    // Confirm that slaves can change master sync rate as well.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_MASTER);
@@ -376,10 +376,13 @@ TEST_F(EngineSyncTest, RateChangeOverride) {
             ConfigKey(m_sGroup2, "rate")));
     pSlider2->slotSet(getRateSliderValue(0.8));
 
-    // Rate should get reset back to where it was.
-    ASSERT_FLOAT_EQ(getRateSliderValue(1.6),
+    // Rates should still be changed even though it's a slave.
+    ASSERT_FLOAT_EQ(getRateSliderValue(0.8),
                     ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->get());
-    ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    ASSERT_FLOAT_EQ(96.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    ASSERT_FLOAT_EQ(getRateSliderValue(0.6),
+                    ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
+    ASSERT_FLOAT_EQ(96.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
 }
 
 TEST_F(EngineSyncTest, InternalRateChangeTest) {
