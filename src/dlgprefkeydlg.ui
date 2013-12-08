@@ -17,8 +17,8 @@
    <item>
     <widget class="QCheckBox" name="banalyserenabled">
      <property name="toolTip">
-      <string>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
-automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</string>
+      <string>When key detection is enabled, Mixxx detects the musical key of your tracks 
+and allows you to pitch adjust them for harmonic mixing.</string>
      </property>
      <property name="text">
       <string>Enable Key Detection</string>
