@@ -102,7 +102,7 @@ class BpmControl : public EngineControl {
     // Master Sync objects and values.
     ControlObject *m_pMasterBpm, *m_pMasterSyncSlider;
     ControlObject *m_pSyncInternalEnabled;
-    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncSlaveEnabled;
+    ControlObject *m_pSyncMasterEnabled, *m_pSyncEnabled;
     ControlObject *m_pSyncMode;
     ControlObject* m_pMasterBeatDistance;
     double m_dSyncAdjustment;

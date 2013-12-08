@@ -92,8 +92,8 @@ public:
   private slots:
     void slotControlPlay(double);
     void slotSyncModeChanged(double);
-    void slotSyncMasterChanged(double);
-    void slotSyncSlaveChanged(double);
+    void slotSyncMasterEnabledChanged(double);
+    void slotSyncEnabledChanged(double);
     void slotRateSliderChanged(double);
 
   private:
@@ -150,6 +150,7 @@ public:
 
     // For Master Sync
     BpmControl* m_pBpmControl;
+    ControlPushButton *m_pSyncMasterEnabled, *m_pSyncEnabled;
     ControlObject* m_pSyncMode;
 
     // The current loaded file's detected BPM
