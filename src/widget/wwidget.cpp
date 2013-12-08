@@ -24,11 +24,10 @@
 // Static member variable definition
 QString WWidget::m_qPath;
 
-WWidget::WWidget(QWidget * parent, Qt::WindowFlags flags) : QWidget(parent, flags)
-{
-
-    m_fValue = 0.;
-    m_bOff = false;
+WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
+        : QWidget(parent, flags),
+          m_value(0.0),
+          m_bOff(false) {
     connect(this, SIGNAL(valueChangedLeftDown(double)), this, SLOT(slotReEmitValueDown(double)));
     connect(this, SIGNAL(valueChangedRightDown(double)), this, SLOT(slotReEmitValueDown(double)));
     connect(this, SIGNAL(valueChangedLeftUp(double)), this, SLOT(slotReEmitValueUp(double)));
@@ -36,41 +35,34 @@ WWidget::WWidget(QWidget * parent, Qt::WindowFlags flags) : QWidget(parent, flag
 
     setAttribute(Qt::WA_StaticContents);
     setFocusPolicy(Qt::ClickFocus);
-    //setBackgroundMode(Qt::NoBackground); //this is deprecated, and commenting it out doesn't seem to change anything -kousu 2009/03
 }
 
-WWidget::~WWidget()
-{
+WWidget::~WWidget() {
 }
 
-void WWidget::setValue(double fValue)
-{
-    m_fValue = fValue;
+void WWidget::setValue(double value) {
+    m_value = value;
     update();
 }
 
-void WWidget::setOnOff(double d)
-{
-    if (d==0.)
+void WWidget::setOnOff(double d) {
+    if (d == 0.) {
         m_bOff = false;
-    else
+    } else {
         m_bOff = true;
-
+    }
     repaint();
 }
 
-void WWidget::slotReEmitValueDown(double fValue)
-{
-    emit(valueChangedDown(fValue));
+void WWidget::slotReEmitValueDown(double value) {
+    emit(valueChangedDown(value));
 }
 
-void WWidget::slotReEmitValueUp(double fValue)
-{
-    emit(valueChangedUp(fValue));
+void WWidget::slotReEmitValueUp(double value) {
+    emit(valueChangedUp(value));
 }
 
-int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode)
-{
+int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode) {
     QString text = selectNode(nodeHeader, sNode).toElement().text();
     bool ok;
     int conv = text.toInt(&ok, 0);
@@ -81,13 +73,11 @@ int WWidget::selectNodeInt(const QDomNode &nodeHeader, const QString sNode)
     }
 }
 
-float WWidget::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode)
-{
+float WWidget::selectNodeFloat(const QDomNode &nodeHeader, const QString sNode) {
     return selectNode(nodeHeader, sNode).toElement().text().toFloat();
 }
 
-QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNode)
-{
+QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNode) {
     QString ret;
     QDomNode node = selectNode(nodeHeader, sNode);
     if (!node.isNull())
@@ -97,8 +87,7 @@ QString WWidget::selectNodeQString(const QDomNode &nodeHeader, const QString sNo
     return ret;
 }
 
-QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode)
-{
+QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode) {
     QDomNode node = nodeHeader.firstChild();
     while (!node.isNull())
     {
@@ -109,24 +98,21 @@ QDomNode WWidget::selectNode(const QDomNode &nodeHeader, const QString sNode)
     return node;
 }
 
-const QString WWidget::getPath(QString location)
-{
+const QString WWidget::getPath(QString location) {
     QString l(location);
     return l.prepend(m_qPath);
 }
 
-void WWidget::setPixmapPath(QString qPath)
-{
+void WWidget::setPixmapPath(QString qPath) {
     m_qPath = qPath;
 }
 
 double WWidget::getValue() {
-   return m_fValue;
+   return m_value;
 }
 
-void WWidget::updateValue(double fValue)
-{
-    setValue(fValue);
-    emit(valueChangedUp(fValue));
-    emit(valueChangedDown(fValue));
+void WWidget::updateValue(double value) {
+    setValue(value);
+    emit(valueChangedUp(value));
+    emit(valueChangedDown(value));
 }
