@@ -184,12 +184,6 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
     // If a channel is master, disable it.
     disableCurrentMaster();
 
-    // Only accept channels with an EngineBuffer.
-    EngineChannel* pChannel = pRateControl->getChannel();
-    if (!pChannel || !pChannel->getEngineBuffer()) {
-        return false;
-    }
-
     const QString& group = pChannel->getGroup();
     m_sSyncSource = group;
 
