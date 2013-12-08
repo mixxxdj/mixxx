@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <portaudio.h>
+#include "util/performancetimer.h"
 
 class ControlObject;
 
@@ -15,14 +16,19 @@ class GuiTick : public QObject {
 
     static void setStreamTime(double streamTime);
     static double streamTime();
+    static double cpuTime();
 
   private:
     ControlObject* m_pCOStreamTime;
+    ControlObject* m_pCOCpuTime;
     ControlObject* m_pCOGuiTick50ms;
+
+    PerformanceTimer m_cpuTimer;
 
     double m_lastUpdateTime;
 
     static double m_streamTime; // Stream Time in seconds
+    static double m_cpuTime; // Stream Time in seconds
 };
 
 #endif // GUITICK_H
