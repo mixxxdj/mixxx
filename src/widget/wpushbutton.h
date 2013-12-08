@@ -65,7 +65,7 @@ class WPushButton : public WWidget
     bool m_bPressed;
 
   private:
-    bool m_bLeftClickForcePush;
+    bool m_bLeftClickForcePush, m_bRightClickForcePush;
     // Number of states associated with this button
     int m_iNoStates;
     // Array of associated pixmaps

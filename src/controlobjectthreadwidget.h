@@ -42,7 +42,6 @@ class ControlObjectThreadWidget : public ControlObjectThreadMain {
                    EmitOption emitOption=EMIT_ON_PRESS, Qt::MouseButton state=Qt::NoButton);
     // Associates a the enabled/disabled state of a widget with the state of a ControlObject. */
     void setWidgetOnOff(QWidget *widget);
-    void setIndicatorWidget(QWidget *widget);
 
     virtual double get();
 
