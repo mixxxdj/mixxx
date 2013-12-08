@@ -31,7 +31,7 @@
 
 const int PB_SHORTKLICKTIME = 200;
 
-WPushButton::WPushButton(QWidget * parent) :
+WPushButton::WPushButton(QWidget *parent) :
         WWidget(parent),
         m_pPixmaps(NULL),
         m_pPixmapBack(NULL),
@@ -39,6 +39,16 @@ WPushButton::WPushButton(QWidget * parent) :
         m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
     //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
+}
+
+WPushButton::WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
+                         ControlPushButton::ButtonMode rightButtonMode) :
+        WWidget(parent),
+        m_pPixmaps(NULL),
+        m_pPixmapBack(NULL),
+        m_leftButtonMode(leftButtonMode),
+        m_rightButtonMode(rightButtonMode) {
+    setStates(0);
 }
 
 WPushButton::~WPushButton() {
