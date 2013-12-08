@@ -24,7 +24,7 @@
 // Static member variable definition
 QString WWidget::m_qPath;
 
-WWidget::WWidget(QWidget* parent, Qt::WFlags flags)
+WWidget::WWidget(QWidget* parent, Qt::WindowFlags flags)
         : QWidget(parent, flags),
           m_value(0.0),
           m_indicatorValue(0.0),

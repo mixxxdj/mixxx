@@ -85,7 +85,7 @@ public:
     // Variable containing the path to the pixmaps
     static QString m_qPath;
     // Property used when connecting to ControlObject
-//    bool m_bEmitOnDownPress;
+    //bool m_bEmitOnDownPress;
 };
 
 #endif

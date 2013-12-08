@@ -38,6 +38,8 @@ class WPushButton : public WWidget
     Q_OBJECT
   public:
     WPushButton(QWidget *parent=0);
+    WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
+                ControlPushButton::ButtonMode rightButtonMode);
     ~WPushButton();
     void setup(QDomNode node);
 
@@ -66,6 +68,7 @@ class WPushButton : public WWidget
 
   private:
     bool m_bLeftClickForcePush;
+    bool m_bRightClickForcePush;
     // Number of states associated with this button
     int m_iNoStates;
     // Array of associated pixmaps
