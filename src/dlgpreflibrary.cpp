@@ -110,7 +110,7 @@ void DlgPrefLibrary::slotUpdate() {
 
 void DlgPrefLibrary::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("Choose a music library directory"),
+        this, tr("Choose a music directory"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
     if (!fd.isEmpty()) {
         emit(requestAddDir(fd));
@@ -191,7 +191,7 @@ void DlgPrefLibrary::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("Relocate to directory"), startDir);
+        this, tr("Relink to new location of moved music directory"), startDir);
 
     if (!fd.isEmpty()) {
         emit(requestRelocateDir(currentFd, fd));

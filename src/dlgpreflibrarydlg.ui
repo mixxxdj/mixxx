@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>546</width>
-    <height>600</height>
+    <height>615</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -35,7 +35,7 @@
          <font/>
         </property>
         <property name="text">
-         <string>Music Directory:</string>
+         <string>Music Directories:</string>
         </property>
         <property name="wordWrap">
          <bool>false</bool>
@@ -49,6 +49,9 @@
        <widget class="QPushButton" name="PushButtonRemoveDir">
         <property name="font">
          <font/>
+        </property>
+        <property name="toolTip">
+         <string>If removed, Mixxx will no longer watch this directory and its subdirectories for new tracks.</string>
         </property>
         <property name="text">
          <string>Remove</string>
@@ -76,6 +79,9 @@
         <property name="font">
          <font/>
         </property>
+        <property name="toolTip">
+         <string>Add a directory where your music is stored. Mixxx will watch this directory and its subdirectories for new tracks.</string>
+        </property>
         <property name="text">
          <string>Add</string>
         </property>
@@ -83,8 +89,11 @@
       </item>
       <item row="2" column="1">
        <widget class="QPushButton" name="PushButtonRelocateDir">
+        <property name="toolTip">
+         <string>If an existing music directory is moved, Mixxx doesn't know where to find the audio files in it. Choose Relink to select the music directory in its new location. &lt;br/&gt; This will re-establish the links to the audio files in the Mixxx library.</string>
+        </property>
         <property name="text">
-         <string>Relocate</string>
+         <string extracomment="This will re-establish the links to the audio files in the Mixxx database if you move an music directory to a new location.">Relink</string>
         </property>
        </widget>
       </item>
@@ -196,7 +205,7 @@
       <item row="8" column="0">
        <widget class="QLabel" name="label_10">
         <property name="text">
-         <string>You will need to restart Mixxx for these settings to take effect</string>
+         <string>You will need to restart Mixxx for these settings to take effect.</string>
         </property>
        </widget>
       </item>
@@ -243,7 +252,14 @@
       <item row="6" column="0">
        <widget class="QLabel" name="label_4">
         <property name="text">
-         <string>All other libraries are shown write protected</string>
+         <string>All external libraries shown are write protected.</string>
+        </property>
+       </widget>
+      </item>
+      <item row="5" column="0">
+       <widget class="Line" name="line">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
         </property>
        </widget>
       </item>
