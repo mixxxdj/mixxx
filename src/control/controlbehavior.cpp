@@ -164,6 +164,7 @@ double ControlTTRotaryBehavior::widgetParameterToValue(double dParam) {
 
 // static
 const int ControlPushButtonBehavior::kPowerWindowTimeMillis = 300;
+const int ControlPushButtonBehavior::kLatchingTimeMillis = 500;
 
 ControlPushButtonBehavior::ControlPushButtonBehavior(ButtonMode buttonMode,
                                                      int iNumStates)
@@ -184,6 +185,20 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
             }
         } else if (o == MIDI_NOTE_OFF) {
             if (!m_pushTimer.isActive()) {
+                pControl->set(0.0, NULL);
+            }
+        }
+    } else if (m_buttonMode == LATCHING && m_iNumStates == 2) {
+        if (o == MIDI_NOTE_ON) {
+            if (dParam > 0.) {
+                double value = pControl->get();
+                pControl->set(!value, NULL);
+                m_pushTimer.setSingleShot(true);
+                m_pushTimer.start(kLatchingTimeMillis);
+            }
+        } else if (o == MIDI_NOTE_OFF) {
+            // Opposite of powerwindow -- only release the button if within time window.
+            if (m_pushTimer.isActive()) {
                 pControl->set(0.0, NULL);
             }
         }

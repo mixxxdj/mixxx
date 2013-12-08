@@ -31,7 +31,7 @@
 
 const int PB_SHORTKLICKTIME = 200;
 
-WPushButton::WPushButton(QWidget * parent) :
+WPushButton::WPushButton(QWidget *parent) :
         WWidget(parent),
         m_pPixmaps(NULL),
         m_pPixmapBack(NULL),
@@ -39,6 +39,16 @@ WPushButton::WPushButton(QWidget * parent) :
         m_rightButtonMode(ControlPushButton::PUSH) {
     setStates(0);
     //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
+}
+
+WPushButton::WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
+                         ControlPushButton::ButtonMode rightButtonMode) :
+        WWidget(parent),
+        m_pPixmaps(NULL),
+        m_pPixmapBack(NULL),
+        m_leftButtonMode(leftButtonMode),
+        m_rightButtonMode(rightButtonMode) {
+    setStates(0);
 }
 
 WPushButton::~WPushButton() {
@@ -188,12 +198,25 @@ void WPushButton::mousePressEvent(QMouseEvent * e) {
     const bool rightClick = e->button() == Qt::RightButton;
 
     const bool leftPowerWindowStyle = m_leftButtonMode == ControlPushButton::POWERWINDOW;
+    const bool leftLatchingStyle = m_leftButtonMode == ControlPushButton::LATCHING;
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
             if (m_fValue == 0.0f) {
                 m_clickTimer.setSingleShot(true);
                 m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             }
+            m_fValue = 1.0f;
+            m_bPressed = true;
+            emit(valueChangedLeftDown(1.0f));
+            update();
+        }
+        return;
+    }
+
+    if (leftLatchingStyle && m_iNoStates == 2) {
+        if (leftClick) {
+            m_clickTimer.setSingleShot(true);
+            m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             m_fValue = 1.0f;
             m_bPressed = true;
             emit(valueChangedLeftDown(1.0f));
@@ -256,12 +279,29 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
     const bool leftClick = e->button() == Qt::LeftButton;
     const bool rightClick = e->button() == Qt::RightButton;
     const bool leftPowerWindowStyle = m_leftButtonMode == ControlPushButton::POWERWINDOW;
+    const bool leftLatchingStyle = m_leftButtonMode == ControlPushButton::LATCHING;
 
     if (leftPowerWindowStyle && m_iNoStates == 2) {
         if (leftClick) {
             const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
             if (m_bPressed && !m_clickTimer.isActive() && !rightButtonDown) {
-                // Release Button after Timer, but not if right button is clicked
+                // Release button after Timer, but not if right button is clicked
+                m_fValue = 0.0f;
+                emit(valueChangedLeftUp(0.0f));
+            }
+            m_bPressed = false;
+        } else if (rightClick) {
+            m_bPressed = false;
+        }
+        update();
+        return;
+    }
+
+    if (leftLatchingStyle && m_iNoStates == 2) {
+        if (leftClick) {
+            const bool rightButtonDown = QApplication::mouseButtons() & Qt::RightButton;
+            if (m_bPressed && m_clickTimer.isActive()) {
+                // Release button if timer is still running.
                 m_fValue = 0.0f;
                 emit(valueChangedLeftUp(0.0f));
             }

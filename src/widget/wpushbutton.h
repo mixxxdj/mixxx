@@ -38,6 +38,8 @@ class WPushButton : public WWidget
     Q_OBJECT
   public:
     WPushButton(QWidget *parent=0);
+    WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
+                ControlPushButton::ButtonMode rightButtonMode);
     ~WPushButton();
     void setup(QDomNode node);
 
@@ -72,7 +74,6 @@ class WPushButton : public WWidget
     QPixmap **m_pPixmaps;
     // Associated background pixmap
     QPixmap *m_pPixmapBack;
-    /** short click toggle button long click push button **/
     ControlPushButton::ButtonMode m_leftButtonMode, m_rightButtonMode;
     QTimer m_clickTimer;
 };
