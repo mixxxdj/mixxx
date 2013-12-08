@@ -30,7 +30,7 @@ class ControlIndicator : public ControlObject {
 
     enum BlinkValue m_blinkValue;
     double m_nextSwitchTime;
-    ControlObjectThread* m_pCOTCpuTime;
+    ControlObjectThread* m_pCOTGuiTickTime;
     ControlObjectThread* m_pCOTGuiTick50ms;
 };
 

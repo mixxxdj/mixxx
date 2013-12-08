@@ -5,7 +5,7 @@ ControlIndicator::ControlIndicator(ConfigKey key)
         : ControlObject(key, false),
           m_blinkValue(OFF),
           m_nextSwitchTime(0.0) {
-    m_pCOTCpuTime = new ControlObjectThread("[Master]", "cpuTime");
+    m_pCOTGuiTickTime = new ControlObjectThread("[Master]", "guiTickTime"); // Tick time in audio buffer resolution
     m_pCOTGuiTick50ms = new ControlObjectThread("[Master]", "guiTick50ms");
     connect(m_pCOTGuiTick50ms, SIGNAL(valueChanged(double)),
             this, SLOT(slotGuiTick50ms(double)));
@@ -13,7 +13,7 @@ ControlIndicator::ControlIndicator(ConfigKey key)
 }
 
 ControlIndicator::~ControlIndicator() {
-    delete m_pCOTCpuTime;
+    delete m_pCOTGuiTickTime;
     delete m_pCOTGuiTick50ms;
 }
 
@@ -29,11 +29,11 @@ void ControlIndicator::setBlinkValue(enum BlinkValue bv) {
             break;
         case RATIO1TO1_500MS:
             toggle();
-            m_nextSwitchTime = m_pCOTCpuTime->get() + 0.5;
+            m_nextSwitchTime = m_pCOTGuiTickTime->get() + 0.5;
             break;
         case RATIO1TO1_250MS:
             toggle();
-            m_nextSwitchTime = m_pCOTCpuTime->get() + 0.25;
+            m_nextSwitchTime = m_pCOTGuiTickTime->get() + 0.25;
             break;
         default:
             // nothing to do

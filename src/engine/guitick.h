@@ -20,7 +20,7 @@ class GuiTick : public QObject {
     void slotBackupTimerExpired();
 
   private:
-    ControlObject* m_pCOCpuTime;
+    ControlObject* m_pCOGuiTickTime; // in audio buffer resolution
     ControlObject* m_pCOGuiTick50ms;
 
     PerformanceTimer m_cpuTimer;
