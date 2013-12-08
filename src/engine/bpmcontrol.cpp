@@ -528,8 +528,6 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
     double dPrevBeat = pBeats->findPrevBeat(dPosition);
     double dNextBeat = pBeats->findNextBeat(dPosition);
 
-    qDebug() << dPrevBeat << dNextBeat;
-
     if (dPrevBeat == -1 || dNextBeat == -1) {
         return false;
     }
@@ -538,8 +536,6 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
         dNextBeat = pBeats->findNthBeat(dPosition, 2);
     }
 
-    qDebug() << dPrevBeat << dNextBeat;
-
     if (dNextBeat == -1) {
         return false;
     }
@@ -547,6 +543,7 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
     if (dpPrevBeat != NULL) {
         *dpPrevBeat = dPrevBeat;
     }
+
     if (dpNextBeat != NULL) {
         *dpNextBeat = dNextBeat;
     }
@@ -559,10 +556,7 @@ bool BpmControl::getBeatContext(const BeatsPointer& pBeats,
     if (dpBeatPercentage != NULL) {
         *dpBeatPercentage = dBeatLength == 0.0 ? 0.0 :
                 (dPosition - dPrevBeat) / dBeatLength;
-        qDebug() << *dpBeatPercentage;
     }
-
-    qDebug() << dPrevBeat << dNextBeat << dBeatLength;
 
     return true;
 }
