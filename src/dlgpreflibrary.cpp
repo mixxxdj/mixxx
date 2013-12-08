@@ -191,7 +191,7 @@ void DlgPrefLibrary::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("Relink to new location of moved music directory"), startDir);
+        this, tr("Relink music directory to new location"), startDir);
 
     if (!fd.isEmpty()) {
         emit(requestRelocateDir(currentFd, fd));
