@@ -33,6 +33,8 @@ const int PB_SHORTKLICKTIME = 200;
 
 WPushButton::WPushButton(QWidget* parent)
         : WWidget(parent),
+          m_bLeftClickForcePush(false),
+          m_bRightClickForcePush(false),
           m_pPixmaps(NULL),
           m_pPixmapBack(NULL),
           m_leftButtonMode(ControlPushButton::PUSH),
@@ -42,12 +44,14 @@ WPushButton::WPushButton(QWidget* parent)
 }
 
 WPushButton::WPushButton(QWidget *parent, ControlPushButton::ButtonMode leftButtonMode,
-                         ControlPushButton::ButtonMode rightButtonMode) :
-        WWidget(parent),
-        m_pPixmaps(NULL),
-        m_pPixmapBack(NULL),
-        m_leftButtonMode(leftButtonMode),
-        m_rightButtonMode(rightButtonMode) {
+                         ControlPushButton::ButtonMode rightButtonMode)
+        : WWidget(parent),
+          m_bLeftClickForcePush(false),
+          m_bRightClickForcePush(false),
+          m_pPixmaps(NULL),
+          m_pPixmapBack(NULL),
+          m_leftButtonMode(leftButtonMode),
+          m_rightButtonMode(rightButtonMode) {
     setStates(0);
 }
 
