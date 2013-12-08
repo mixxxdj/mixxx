@@ -322,8 +322,6 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
             if (leftLongPressLatchingStyle && m_clickTimer.isActive() && m_value >= 1.0) {
                 // revert toggle if button is released too early
                 m_value = emitValue = (int)(m_value - 1.0) % m_iNoStates;
-                m_clickTimer.setSingleShot(true);
-                m_clickTimer.start(ControlPushButtonBehavior::kPowerWindowTimeMillis);
             } else {
                 // Nothing special happens when releasing a normal toggle button
             }
