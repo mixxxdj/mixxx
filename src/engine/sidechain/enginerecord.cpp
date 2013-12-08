@@ -194,7 +194,7 @@ void EngineRecord::process(const CSAMPLE* pBuffer, const int iBufferSize) {
             }
             m_cueSamplePos += iBufferSize;
         }
-  	}
+    }
 }
 
 void EngineRecord::writeCueLine() {

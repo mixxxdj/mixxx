@@ -42,7 +42,7 @@
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "controllers/dlgprefcontrollers.h"
-#include "dlgprefplaylist.h"
+#include "dlgpreflibrary.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
@@ -83,8 +83,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #endif
     m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, pConfig);
     addPageWidget(m_wsound);
-    m_wplaylist = new DlgPrefPlaylist(this, pConfig, pLibrary);
-    addPageWidget(m_wplaylist);
+    m_wlibrary = new DlgPrefLibrary(this, pConfig, pLibrary);
+    addPageWidget(m_wlibrary);
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, pConfig);
     addPageWidget(m_wcontrols);
     m_weq = new DlgPrefEQ(this, pConfig);
@@ -141,11 +141,11 @@ void DlgPreferences::createIcons() {
     m_pControllerTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pControllerTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pPlaylistButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pPlaylistButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
-    m_pPlaylistButton->setText(0, tr("Library"));
-    m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pLibraryButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pLibraryButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
+    m_pLibraryButton->setText(0, tr("Library"));
+    m_pLibraryButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pLibraryButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
@@ -234,10 +234,10 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         current = previous;
 
     if (current == m_pSoundButton) {
-    	m_wsound->slotUpdate();
+        m_wsound->slotUpdate();
       switchToPage(m_wsound);
-    } else if (current == m_pPlaylistButton) {
-        switchToPage(m_wplaylist);
+    } else if (current == m_pLibraryButton) {
+        switchToPage(m_wlibrary);
     } else if (current == m_pControlsButton) {
         switchToPage(m_wcontrols);
     } else if (current == m_pEqButton) {

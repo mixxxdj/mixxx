@@ -1,5 +1,5 @@
 /***************************************************************************
-                          dlgprefplaylist.cpp  -  description
+                          dlgpreflibrary.cpp  -  description
                              -------------------
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -21,18 +21,18 @@
 #include <QStringList>
 #include <QUrl>
 
-#include "dlgprefplaylist.h"
+#include "dlgpreflibrary.h"
 #include "soundsourceproxy.h"
 
 #define MIXXX_ADDONS_URL "http://www.mixxx.org/wiki/doku.php/add-ons"
 
 
-DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent,
-        ConfigObject<ConfigValue> * config, Library *pLibrary)
-        :DlgPreferencePage(parent),
-        m_dirListModel(),
-        m_pconfig(config),
-        m_pLibrary(pLibrary) {
+DlgPrefLibrary::DlgPrefLibrary(QWidget * parent,
+                               ConfigObject<ConfigValue> * config, Library *pLibrary)
+        : DlgPreferencePage(parent),
+          m_dirListModel(),
+          m_pconfig(config),
+          m_pLibrary(pLibrary) {
     setupUi(this);
     slotUpdate();
     checkbox_ID3_sync->setVisible(false);
@@ -61,10 +61,10 @@ DlgPrefPlaylist::DlgPrefPlaylist(QWidget * parent,
     }
 }
 
-DlgPrefPlaylist::~DlgPrefPlaylist() {
+DlgPrefLibrary::~DlgPrefLibrary() {
 }
 
-void DlgPrefPlaylist::initialiseDirList(){
+void DlgPrefLibrary::initialiseDirList(){
     // save which index was selected
     const QString selected = dirList->currentIndex().data().toString();
     // clear and fill model
@@ -85,11 +85,11 @@ void DlgPrefPlaylist::initialiseDirList(){
     }
 }
 
-void DlgPrefPlaylist::slotExtraPlugins() {
+void DlgPrefLibrary::slotExtraPlugins() {
     QDesktopServices::openUrl(QUrl(MIXXX_ADDONS_URL));
 }
 
-void DlgPrefPlaylist::slotUpdate() {
+void DlgPrefLibrary::slotUpdate() {
     initialiseDirList();
     //Bundled songs stat tracking
     checkBox_library_scan->setChecked((bool)m_pconfig->getValueString(
@@ -108,7 +108,7 @@ void DlgPrefPlaylist::slotUpdate() {
             ConfigKey("[Library]","ShowTraktorLibrary"),"1").toInt());
 }
 
-void DlgPrefPlaylist::slotAddDir() {
+void DlgPrefLibrary::slotAddDir() {
     QString fd = QFileDialog::getExistingDirectory(
         this, tr("Choose a music library directory"),
         QDesktopServices::storageLocation(QDesktopServices::MusicLocation));
@@ -118,7 +118,7 @@ void DlgPrefPlaylist::slotAddDir() {
     }
 }
 
-void DlgPrefPlaylist::slotRemoveDir() {
+void DlgPrefLibrary::slotRemoveDir() {
     QModelIndex index = dirList->currentIndex();
     QString fd = index.data().toString();
     QMessageBox removeMsgBox;
@@ -174,7 +174,7 @@ void DlgPrefPlaylist::slotRemoveDir() {
     slotUpdate();
 }
 
-void DlgPrefPlaylist::slotRelocateDir() {
+void DlgPrefLibrary::slotRelocateDir() {
     QModelIndex index = dirList->currentIndex();
     QString currentFd = index.data().toString();
 
@@ -191,7 +191,7 @@ void DlgPrefPlaylist::slotRelocateDir() {
     }
 
     QString fd = QFileDialog::getExistingDirectory(
-        this, tr("relocate to directory"), startDir);
+        this, tr("Relocate to directory"), startDir);
 
     if (!fd.isEmpty()) {
         emit(requestRelocateDir(currentFd, fd));
@@ -199,7 +199,7 @@ void DlgPrefPlaylist::slotRelocateDir() {
     }
 }
 
-void DlgPrefPlaylist::slotApply() {
+void DlgPrefLibrary::slotApply() {
     m_pconfig->set(ConfigKey("[Library]","RescanOnStartup"),
                 ConfigValue((int)checkBox_library_scan->isChecked()));
     m_pconfig->set(ConfigKey("[Library]","WriteAudioTags"),

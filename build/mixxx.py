@@ -14,6 +14,7 @@ from SCons import Script
 
 import util
 
+
 class MixxxBuild(object):
 
     def __init__(self, target, machine, build, toolchain, available_features=[]):
@@ -30,7 +31,8 @@ class MixxxBuild(object):
 
         if toolchain is None:
             if self.host_platform == 'windows':
-                raise Exception('must specify toolchain on Windows (msvs or gnu)')
+                raise Exception(
+                    'must specify toolchain on Windows (msvs or gnu)')
             else:
                 toolchain = 'gnu'
 
@@ -57,7 +59,8 @@ class MixxxBuild(object):
             raise Exception('invalid toolchain type')
 
         if toolchain == 'msvs' and self.host_platform != 'windows':
-            raise Exception('cannot use msvs toolchain on non-windows platform')
+            raise Exception(
+                'cannot use msvs toolchain on non-windows platform')
 
         self.platform = target
         self.platform_is_posix = self.platform in ['linux', 'osx', 'bsd']
@@ -93,10 +96,13 @@ class MixxxBuild(object):
                 self.machine = 'powerpc64'
             else:
                 self.machine = 'x86_64'
-        self.machine_is_64bit = self.machine.lower() in ['x86_64', 'powerpc64', 'amd64', 'em64t', 'intel64']
+        self.machine_is_64bit = self.machine.lower(
+            ) in ['x86_64', 'powerpc64', 'amd64', 'em64t', 'intel64']
         self.bitwidth = 64 if self.machine_is_64bit else 32
-        self.architecture_is_x86 = self.machine.lower() in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t', 'intel64']
-        self.architecture_is_powerpc = self.machine.lower() in ['powerpc', 'powerpc64']
+        self.architecture_is_x86 = self.machine.lower(
+            ) in ['x86', 'x86_64', 'i386', 'i486', 'i586', 'i686', 'em64t', 'intel64']
+        self.architecture_is_powerpc = self.machine.lower(
+            ) in ['powerpc', 'powerpc64']
 
         self.build_dir = util.get_build_dir(self.platform, self.bitwidth)
 
@@ -108,17 +114,21 @@ class MixxxBuild(object):
         logging.info("Target Machine: %s" % self.machine)
         logging.info("Build: %s" % self.build)
         logging.info("Toolchain: %s" % self.toolchain)
-        logging.info("Crosscompile: %s" % ("YES" if self.crosscompile else "NO"))
+        logging.info(
+            "Crosscompile: %s" % ("YES" if self.crosscompile else "NO"))
         if self.platform_is_windows:
-            logging.info("Static dependencies: %s" % ("YES" if self.static_dependencies else "NO"))
-            logging.info("MSVC Debug build: %s" % ("YES" if self.msvcdebug else "NO"))
+            logging.info("Static dependencies: %s" % (
+                "YES" if self.static_dependencies else "NO"))
+            logging.info(
+                "MSVC Debug build: %s" % ("YES" if self.msvcdebug else "NO"))
 
         if self.crosscompile:
             logging.info("Host Platform: %s" % self.host_platform)
             logging.info("Host Machine: %s" % self.host_machine)
 
         if self.crosscompile and self.host_platform != 'linux':
-            raise Exception('Cross-compiling on a non-Linux host not currently supported')
+            raise Exception(
+                'Cross-compiling on a non-Linux host not currently supported')
 
         tools = ['default']
         toolpath = ['#build/']
@@ -127,9 +137,11 @@ class MixxxBuild(object):
         if int(Script.ARGUMENTS.get('qt5', 0)):
             tools.append('qt5')
             if self.machine_is_64bit:
-                default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(self.platform, '')
+                default_qtdir = depends.Qt.DEFAULT_QT5DIRS64.get(
+                    self.platform, '')
             else:
-                default_qtdir = depends.Qt.DEFAULT_QT5DIRS32.get(self.platform, '')
+                default_qtdir = depends.Qt.DEFAULT_QT5DIRS32.get(
+                    self.platform, '')
         else:
             tools.append('qt4')
             default_qtdir = depends.Qt.DEFAULT_QT4DIRS.get(self.platform, '')
@@ -137,12 +149,13 @@ class MixxxBuild(object):
 
         # Ugly hack to check the qtdir argument
         qtdir = Script.ARGUMENTS.get('qtdir',
-                                    os.environ.get('QTDIR', default_qtdir))
+                                     os.environ.get('QTDIR', default_qtdir))
 
         # Validate the specified qtdir exists
         if not os.path.exists(qtdir):
             logging.error("QT path does not exist or QT4 is not installed.")
-            logging.error("Please specify your QT path by running 'scons qtdir=[path]'")
+            logging.error(
+                "Please specify your QT path by running 'scons qtdir=[path]'")
             Script.Exit(1)
         # And that it doesn't contain qt3
         elif qtdir.find("qt3") != -1 or qtdir.find("qt/3") != -1:
@@ -159,7 +172,8 @@ class MixxxBuild(object):
             toolpath.append('#/build/osx/')
         if self.platform_is_windows and self.toolchain_is_msvs:
             toolpath.append('msvs')
-            extra_arguments['VCINSTALLDIR'] = os.getenv('VCInstallDir')  # TODO(XXX) Why?
+            extra_arguments['VCINSTALLDIR'] = os.getenv(
+                'VCInstallDir')  # TODO(XXX) Why?
             extra_arguments['QT_LIB'] = ''  # TODO(XXX) Why?
 
         # Setup the appropriate toolchains for cross-compiling
@@ -169,28 +183,29 @@ class MixxxBuild(object):
             if self.platform_is_osx:
                 tools.append('crossosx')
 
-        self.env = Script.Environment(tools=tools, toolpath=toolpath, ENV=os.environ,
-                                     **extra_arguments)
+        self.env = Script.Environment(
+            tools=tools, toolpath=toolpath, ENV=os.environ,
+            **extra_arguments)
         self.read_environment_variables()
         self.virtualize_build_dir()
 
         if self.toolchain_is_gnu:
             if flags_force32:
-                self.env.Append(CCFLAGS = '-m32')
+                self.env.Append(CCFLAGS='-m32')
             elif flags_force64:
-                self.env.Append(CCFLAGS = '-m64')
+                self.env.Append(CCFLAGS='-m64')
 
         if self.platform_is_osx:
             if self.architecture_is_powerpc:
-                self.env.Append(CCFLAGS = '-arch ppc')
-                self.env.Append(LINKFLAGS = '-arch ppc')
+                self.env.Append(CCFLAGS='-arch ppc')
+                self.env.Append(LINKFLAGS='-arch ppc')
             else:
                 if self.bitwidth == 32:
-                    self.env.Append(CCFLAGS = '-arch i386')
-                    self.env.Append(LINKFLAGS = '-arch i386')
+                    self.env.Append(CCFLAGS='-arch i386')
+                    self.env.Append(LINKFLAGS='-arch i386')
                 elif self.bitwidth == 64:
-                    self.env.Append(CCFLAGS = '-arch x86_64')
-                    self.env.Append(LINKFLAGS = '-arch x86_64')
+                    self.env.Append(CCFLAGS='-arch x86_64')
+                    self.env.Append(LINKFLAGS='-arch x86_64')
 
         if self.crosscompile:
             crosscompile_root = Script.ARGUMENTS.get('crosscompile_root', '')
@@ -227,15 +242,15 @@ class MixxxBuild(object):
         # Import environment variables from the terminal. Note that some
         # variables correspond to variables inside the SCons env with different
         # names, eg. the shell's "CFLAGS" ---> SCons' "CCFLAGS".
-        if os.environ.has_key('CC'):
+        if 'CC' in os.environ:
             self.env['CC'] = os.environ['CC']
-        if os.environ.has_key('CFLAGS'):
+        if 'CFLAGS' in os.environ:
             self.env['CFLAGS'] += SCons.Util.CLVar(os.environ['CFLAGS'])
-        if os.environ.has_key('CXX'):
+        if 'CXX' in os.environ:
             self.env['CXX'] = os.environ['CXX']
-        if os.environ.has_key('CXXFLAGS'):
+        if 'CXXFLAGS' in os.environ:
             self.env['CXXFLAGS'] += SCons.Util.CLVar(os.environ['CXXFLAGS'])
-        if os.environ.has_key('LDFLAGS'):
+        if 'LDFLAGS' in os.environ:
             self.env['LINKFLAGS'] += SCons.Util.CLVar(os.environ['LDFLAGS'])
 
         # Initialize this as a list, fixes a bug where first CPPDEFINE would get
@@ -247,16 +262,17 @@ class MixxxBuild(object):
     def get_cache_dir(self):
         # Global cache directory Put all project files in it so a rm -rf cache
         # will clean up the config
-        if not self.env.has_key('CACHEDIR'):
+        if 'CACHEDIR' not in self.env:
             self.env['CACHEDIR'] = str(Script.Dir('#cache/'))
         if not os.path.isdir(self.env['CACHEDIR']):
             os.mkdir(self.env['CACHEDIR'])
 
         ## Avoid spreading .sconsign files everywhere
-        #env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
+        # env.SConsignFile(env['CACHEDIR']+'/scons_signatures')
         ## WARNING - We found that the above line causes SCons to randomly not find
         ##           dependencies for some reason. It might not happen right away, but
-        ##           a good number of users found that it caused weird problems - Albert (May 15/08)
+        # a good number of users found that it caused weird problems - Albert
+        # (May 15/08)
 
         return str(self.env['CACHEDIR'])
 
@@ -264,15 +280,20 @@ class MixxxBuild(object):
         cachefile = os.path.join(self.get_cache_dir(), 'custom.py')
         vars = Script.Variables(cachefile)
         vars.Add('prefix', 'Set to your install prefix', '/usr/local')
-        vars.Add('virtualize', 'Dynamically swap out the build directory when switching Git branches.', 1)
+        vars.Add('virtualize',
+                 'Dynamically swap out the build directory when switching Git branches.', 1)
         vars.Add('qtdir', 'Set to your QT4 directory', '/usr/share/qt4')
         if self.platform_is_windows:
             vars.Add('sqlitedll', 'Set to 1 to enable including QSQLite.dll.\
 \n           Set to 0 if SQLite support is compiled into QtSQL.dll.', 1)
-        vars.Add('target', 'Set the build target for cross-compiling (windows, osx, linux, bsd).', '')
-        vars.Add('machine', 'Set the machine type for cross-compiling (x86_64, x86, powerpc, powerpc64).', '')
-        vars.Add('toolchain', 'Specify the toolchain to use for building (gnu, msvs). Default is gnu.', 'gnu')
-        vars.Add('crosscompile_root', 'Set the path to the root of a cross-compile sandbox.', '')
+        vars.Add('target',
+                 'Set the build target for cross-compiling (windows, osx, linux, bsd).', '')
+        vars.Add(
+            'machine', 'Set the machine type for cross-compiling (x86_64, x86, powerpc, powerpc64).', '')
+        vars.Add('toolchain',
+                 'Specify the toolchain to use for building (gnu, msvs). Default is gnu.', 'gnu')
+        vars.Add('crosscompile_root',
+                 'Set the path to the root of a cross-compile sandbox.', '')
         vars.Add('force32', 'Force a 32-bit compile', 0)
         vars.Add('force64', 'Force a 64-bit compile', 0)
 
@@ -312,7 +333,8 @@ class MixxxBuild(object):
         cache_dir = self.get_cache_dir()
         branch_build_dir = os.path.join(cache_dir, branch_name)
         virtual_build_dir = os.path.join(branch_build_dir, self.build_dir)
-        virtual_sconsign_file = os.path.join(branch_build_dir, 'sconsign.dblite')
+        virtual_sconsign_file = os.path.join(
+            branch_build_dir, 'sconsign.dblite')
         virtual_custom_file = os.path.join(branch_build_dir, 'custom.py')
         old_branch_build_dir = ''
         old_virtual_build_dir = ''
@@ -334,7 +356,8 @@ class MixxxBuild(object):
                 sconsign_branch = f.readline()
                 sconsign_branch = sconsign_branch.strip()
 
-        # Check if there was a checkout of a different branch since the last build.
+        # Check if there was a checkout of a different branch since the last
+        # build.
         is_branch_different = sconsign_branch != branch_name
         if not is_branch_different:
             # nothing to do
@@ -344,16 +367,20 @@ class MixxxBuild(object):
 
         if sconsign_branch:
             old_branch_build_dir = os.path.join(cache_dir, sconsign_branch)
-            old_virtual_build_dir = os.path.join(old_branch_build_dir, self.build_dir)
-            old_virtual_sconsign_file = os.path.join(old_branch_build_dir, 'sconsign.dblite')
-            old_virtual_custom_file = os.path.join(old_branch_build_dir, 'custom.py')
+            old_virtual_build_dir = os.path.join(
+                old_branch_build_dir, self.build_dir)
+            old_virtual_sconsign_file = os.path.join(
+                old_branch_build_dir, 'sconsign.dblite')
+            old_virtual_custom_file = os.path.join(
+                old_branch_build_dir, 'custom.py')
             if os.path.isdir(self.build_dir):
                 if os.path.isdir(old_virtual_build_dir):
                     raise Exception('%s already exists. '
                                     'build virtualization cannot continue. Please '
                                     'move or delete it.' % old_virtual_build_dir)
                 print "shutil.move", self.build_dir, old_virtual_build_dir
-                # move build dir from last build to cache, named with the old branch name
+                # move build dir from last build to cache, named with the old
+                # branch name
                 shutil.move(self.build_dir, old_virtual_build_dir)
 
             if os.path.isfile(sconsign_file):
@@ -432,6 +459,7 @@ class MixxxBuild(object):
     def get_features(self):
         return self.available_features
 
+
 class Dependence(object):
 
     def _get_name(self):
@@ -452,6 +480,7 @@ class Dependence(object):
 
     def post_dependency_check_configure(self, build, conf):
         pass
+
 
 class Feature(Dependence):
 

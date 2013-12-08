@@ -783,7 +783,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // If playbutton is pressed, check if we are at start or end of track
         if ((m_playButton->get() || (m_fwdButton->get() || m_backButton->get()))
-            	&& end_of_track) {
+                && end_of_track) {
             if (repeat_enabled) {
                 double seekPosition = at_start ? m_file_length_old : 0;
                 slotControlSeek(seekPosition);

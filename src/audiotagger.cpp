@@ -22,7 +22,7 @@
 #include <taglib/textidentificationframe.h>
 
 AudioTagger::AudioTagger(QString file)
-	: m_file(file) {
+    : m_file(file) {
 }
 
 AudioTagger::~AudioTagger() {
@@ -161,7 +161,7 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 
     TagLib::ID3v2::FrameList albumArtistFrame = id3v2->frameListMap()["TPE2"];
     if (!albumArtistFrame.isEmpty()) {
-    	albumArtistFrame.front()->setText(m_albumArtist.toStdString());
+        albumArtistFrame.front()->setText(m_albumArtist.toStdString());
     } else {
         //add new frame
         TagLib::ID3v2::TextIdentificationFrame* newFrame =
@@ -211,7 +211,7 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 
     TagLib::ID3v2::FrameList groupingFrame = id3v2->frameListMap()["TIT1"];
     if (!groupingFrame.isEmpty()) {
-    	groupingFrame.front()->setText(m_grouping.toStdString());
+        groupingFrame.front()->setText(m_grouping.toStdString());
     } else {
         //add new frame
         TagLib::ID3v2::TextIdentificationFrame* newFrame =
@@ -263,10 +263,10 @@ void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph) {
 }
 
 void AudioTagger::processMP4Tag(TagLib::MP4::Tag* mp4) {
-	mp4->itemListMap()["aART"] = TagLib::StringList(m_albumArtist.toStdString());
-	mp4->itemListMap()["tmpo"] = TagLib::StringList(m_bpm.toStdString());
-	mp4->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(m_bpm.toStdString());
-	mp4->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(m_key.toStdString());
-	mp4->itemListMap()["\251wrt"] = TagLib::StringList(m_composer.toStdString());
-	mp4->itemListMap()["\251grp"] = TagLib::StringList(m_grouping.toStdString());
+    mp4->itemListMap()["aART"] = TagLib::StringList(m_albumArtist.toStdString());
+    mp4->itemListMap()["tmpo"] = TagLib::StringList(m_bpm.toStdString());
+    mp4->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(m_bpm.toStdString());
+    mp4->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(m_key.toStdString());
+    mp4->itemListMap()["\251wrt"] = TagLib::StringList(m_composer.toStdString());
+    mp4->itemListMap()["\251grp"] = TagLib::StringList(m_grouping.toStdString());
 }
