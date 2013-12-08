@@ -1,6 +1,5 @@
 #include <gtest/gtest.h>
 
-#include <QApplication>
 #include <QTestEventList>
 #include <QScopedPointer>
 
@@ -12,10 +11,7 @@
 class ControlPushButtonTest : public MixxxTest {
   public:
     ControlPushButtonTest()
-          : m_pGroup("[Channel1]"),
-            m_argc(1),
-            m_argv("testApp") {
-        m_pApplication.reset(new QApplication(m_argc, m_argv));
+          : m_pGroup("[Channel1]"){
     }
 
   protected:
@@ -24,9 +20,6 @@ class ControlPushButtonTest : public MixxxTest {
         m_pButton->setStates(2);
     }
 
-    int m_argc;
-    const char* m_argv;
-    QScopedPointer<QApplication> m_pApplication;
     QScopedPointer<WPushButton> m_pButton;
     QTestEventList m_Events;
     const char* m_pGroup;
