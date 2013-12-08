@@ -533,10 +533,8 @@ double RateControl::calculateRate(double baserate, bool paused, int iSamplesPerB
 
             rate = m_pBpmControl->getSyncedRate();
             double userTweak = getTempRate() + wheelFactor + jogFactor;
-            bool userTweakingSync = (userTweak != 0.0);
-            if (userTweakingSync) {
-                rate += userTweak;
-            }
+            bool userTweakingSync = userTweak != 0.0;
+            rate += userTweak;
 
             rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
             return rate;

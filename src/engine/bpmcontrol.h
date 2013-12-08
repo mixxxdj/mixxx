@@ -36,6 +36,24 @@ class BpmControl : public EngineControl {
                    const double dTotalSamples,
                    const int iBufferSize);
 
+    // Calculates contextual information about beats: the previous beat, the
+    // next beat, the current beat length, and the beat ratio (how far dPosition
+    // lies within the current beat). Returns false if a previous or next beat
+    // does not exist. NULL arguments are safe and ignored.
+    static bool getBeatContext(const BeatsPointer& pBeats,
+                               const double dPosition,
+                               double* dpPrevBeat,
+                               double* dpNextBeat,
+                               double* dpBeatLength,
+                               double* dpBeatPercentage,
+                               const double beatEpsilon=0.0);
+
+    // Returns the shortest change in percentage needed to achieve
+    // target_percentage.
+    // Example: shortestPercentageChange(0.99, 0.01) == 0.02
+    static double shortestPercentageChange(const double& current_percentage,
+                                           const double& target_percentage);
+
   public slots:
     virtual void trackLoaded(TrackPointer pTrack);
     virtual void trackUnloaded(TrackPointer pTrack);
