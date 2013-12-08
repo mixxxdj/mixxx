@@ -1,3 +1,5 @@
+#include <QTimer>
+
 #include "engine/guitick.h"
 #include "controlobject.h"
 
@@ -13,6 +15,11 @@ GuiTick::GuiTick(QObject* pParent)
      m_pCOCpuTime = new ControlObject(ConfigKey("[Master]", "cpuTime"));
      m_pCOGuiTick50ms = new ControlObject(ConfigKey("[Master]", "guiTick50ms"));
      m_cpuTimer.start();
+
+     m_backupTimer = new QTimer(this);
+     connect(m_backupTimer, SIGNAL(timeout()), this, SLOT(slotBackupTimerExpired()));
+     m_backupTimer->setSingleShot(true);
+     m_backupTimer->start(100);
 }
 
 GuiTick::~GuiTick() {
@@ -32,6 +39,12 @@ void GuiTick::process() {
     }
 
     m_pCOStreamTime->set(m_streamTime);
+
+    // Start backuptimer just in case there is no audio callback.
+    // Normally this should not happen, because Qt tries best to deliver the
+    // timeout() signal in time. But since this does not yield the waveform
+    // renderere timer, it is not want we need for this non real-time GUI tick
+    m_backupTimer->start(100);
 }
 
 // static
@@ -47,6 +60,11 @@ double GuiTick::streamTime() {
 // static
 double GuiTick::cpuTime() {
     return m_cpuTime;
+}
+
+void GuiTick::slotBackupTimerExpired() {
+    //qDebug() << "GuiTick::slotBackupTimerExpired()";
+    process();
 }
 
 
