@@ -281,12 +281,17 @@ void WPushButton::mouseReleaseEvent(QMouseEvent * e) {
 
     if (rightClick) {
         // This is the secondary clickButton function, it does not change
-        // m_value due the leak of visual feedback we do not allow a toggle
-        // function. It is always a pushbutton, so "RightClickIsPushButton"
-        // is obsolete
-        m_bPressed = false;
-        emit(valueChangedRightUp(0.0f));
-        update();
+        // m_fValue due the leak of visual feedback we do not allow a toggle
+        // function
+        if (m_bRightClickForcePush) {
+            m_bPressed = false;
+            emit(valueChangedRightUp(0.0f));
+            update();
+        } else if (m_iNoStates == 1) {
+            m_bPressed = false;
+            emit(valueChangedRightUp(0.0f));
+            update();
+        }
         return;
     }
 

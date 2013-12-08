@@ -76,8 +76,6 @@ class WPushButton : public WWidget
     ControlPushButton::ButtonMode m_leftButtonMode;
     ControlPushButton::ButtonMode m_rightButtonMode;
     QTimer m_clickTimer;
-    // to distinguish if the Button is painted by the indicator or the main value
-    bool m_indicatorConnected;
 };
 
 #endif
