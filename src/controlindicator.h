@@ -21,7 +21,7 @@ class ControlIndicator : public ControlObject {
     void setBlinkValue(enum BlinkValue bv);
 
   private slots:
-    void slotGuiTick50ms(double streamTime);
+    void slotGuiTick50ms(double cpuTime);
 
   private:
     void toggle();
@@ -30,7 +30,7 @@ class ControlIndicator : public ControlObject {
 
     enum BlinkValue m_blinkValue;
     double m_nextSwitchTime;
-    ControlObjectThread* m_pCOTStreamTime;
+    ControlObjectThread* m_pCOTCpuTime;
     ControlObjectThread* m_pCOTGuiTick50ms;
 };
 

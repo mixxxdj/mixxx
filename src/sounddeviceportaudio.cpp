@@ -34,7 +34,6 @@
 #include "visualplayposition.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
-#include "engine/guitick.h"
 
 SoundDevicePortAudio::SoundDevicePortAudio(ConfigObject<ConfigValue> *config, SoundManager *sm,
                                            const PaDeviceInfo *deviceInfo, unsigned int devIndex)
@@ -295,7 +294,6 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
  
     if (m_pSoundManager->isDeviceClkRef(this)) {
         VisualPlayPosition::setTimeInfo(timeInfo);
-        GuiTick::setStreamTime((double)timeInfo->outputBufferDacTime);    
     }
 
     if (!m_undeflowUpdateCount) {

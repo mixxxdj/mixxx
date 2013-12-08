@@ -5,7 +5,7 @@ ControlIndicator::ControlIndicator(ConfigKey key)
         : ControlObject(key, false),
           m_blinkValue(OFF),
           m_nextSwitchTime(0.0) {
-    m_pCOTStreamTime = new ControlObjectThread("[Master]", "streamTime");
+    m_pCOTCpuTime = new ControlObjectThread("[Master]", "cpuTime");
     m_pCOTGuiTick50ms = new ControlObjectThread("[Master]", "guiTick50ms");
     connect(m_pCOTGuiTick50ms, SIGNAL(valueChanged(double)),
             this, SLOT(slotGuiTick50ms(double)));
@@ -13,7 +13,7 @@ ControlIndicator::ControlIndicator(ConfigKey key)
 }
 
 ControlIndicator::~ControlIndicator() {
-    delete m_pCOTStreamTime;
+    delete m_pCOTCpuTime;
     delete m_pCOTGuiTick50ms;
 }
 
@@ -29,11 +29,11 @@ void ControlIndicator::setBlinkValue(enum BlinkValue bv) {
             break;
         case RATIO1TO1_500MS:
             toggle();
-            m_nextSwitchTime = m_pCOTStreamTime->get() + 0.5;
+            m_nextSwitchTime = m_pCOTCpuTime->get() + 0.5;
             break;
         case RATIO1TO1_250MS:
             toggle();
-            m_nextSwitchTime = m_pCOTStreamTime->get() + 0.25;
+            m_nextSwitchTime = m_pCOTCpuTime->get() + 0.25;
             break;
         default:
             // nothing to do
@@ -42,16 +42,16 @@ void ControlIndicator::setBlinkValue(enum BlinkValue bv) {
     }
 }
 
-void ControlIndicator::slotGuiTick50ms(double streamTime) {
-    if (m_nextSwitchTime <= streamTime) {
+void ControlIndicator::slotGuiTick50ms(double cpuTime) {
+    if (m_nextSwitchTime <= cpuTime) {
         switch (m_blinkValue) {
         case RATIO1TO1_500MS:
             toggle();
-            m_nextSwitchTime = streamTime + 0.5;
+            m_nextSwitchTime = cpuTime + 0.5;
             break;
         case RATIO1TO1_250MS:
             toggle();
-            m_nextSwitchTime = streamTime + 0.25;
+            m_nextSwitchTime = cpuTime + 0.25;
             break;
         case OFF: // fall through
         case ON: // fall through

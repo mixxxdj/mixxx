@@ -5,13 +5,11 @@
 
 
 // static
-double GuiTick::m_streamTime = 0.0;
 double GuiTick::m_cpuTime = 0.0;
 
 GuiTick::GuiTick(QObject* pParent)
         : QObject(pParent),
           m_lastUpdateTime(0.0) {
-     m_pCOStreamTime = new ControlObject(ConfigKey("[Master]", "streamTime"));
      m_pCOCpuTime = new ControlObject(ConfigKey("[Master]", "cpuTime"));
      m_pCOGuiTick50ms = new ControlObject(ConfigKey("[Master]", "guiTick50ms"));
      m_cpuTimer.start();
@@ -23,7 +21,6 @@ GuiTick::GuiTick(QObject* pParent)
 }
 
 GuiTick::~GuiTick() {
-    delete m_pCOStreamTime;
     delete m_pCOGuiTick50ms;
 }
 
@@ -35,26 +32,14 @@ void GuiTick::process() {
 
     if (m_lastUpdateTime + 0.05 < m_cpuTime) {
         m_lastUpdateTime = m_cpuTime;
-        m_pCOGuiTick50ms->set(m_streamTime);
+        m_pCOGuiTick50ms->set(m_cpuTime);
     }
 
-    m_pCOStreamTime->set(m_streamTime);
-
-    // Start backuptimer just in case there is no audio callback.
+    // Start backup timer just in case there is no audio callback.
     // Normally this should not happen, because Qt tries best to deliver the
     // timeout() signal in time. But since this does not yield the waveform
-    // renderere timer, it is not want we need for this non real-time GUI tick
+    // renderer timer, it is not want we need for this non real-time GUI tick
     m_backupTimer->start(100);
-}
-
-// static
-void GuiTick::setStreamTime(double streamTime) {
-    m_streamTime = streamTime;
-}
-
-// static
-double GuiTick::streamTime() {
-    return m_streamTime;
 }
 
 // static
@@ -63,7 +48,7 @@ double GuiTick::cpuTime() {
 }
 
 void GuiTick::slotBackupTimerExpired() {
-    //qDebug() << "GuiTick::slotBackupTimerExpired()";
+    qDebug() << "GuiTick::slotBackupTimerExpired()";
     process();
 }
 
