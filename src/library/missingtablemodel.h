@@ -3,7 +3,8 @@
 
 #include <QtSql>
 #include <QItemDelegate>
-#include <QtCore>
+#include <QModelIndex>
+#include <QObject>
 
 #include "trackmodel.h"
 #include "library/basesqltablemodel.h"
@@ -16,7 +17,7 @@ class MissingTableModel : public BaseSqlTableModel {
     MissingTableModel(QObject* parent, TrackCollection* pTrackCollection);
     virtual ~MissingTableModel();
 
-    void setTableModel(int id=-1);
+    void setTableModel(int id = -1);
     bool isColumnInternal(int column);
     bool isColumnHiddenByDefault(int column);
     void purgeTracks(const QModelIndexList& indices);

@@ -1,12 +1,17 @@
-#include <math.h>
+#define _USE_MATH_DEFINES
+#include <cmath>
 
 #include <QtDebug>
+#include <QApplication>
+#include <QUrl>
+#include <QMimeData>
 
 #include "mathstuff.h"
 #include "wimagestore.h"
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
 #include "sharedglcontext.h"
+#include "visualplayposition.h"
 #include "widget/wspinny.h"
 #include "vinylcontrol/vinylcontrolmanager.h"
 #include "vinylcontrol/vinylcontrol.h"
@@ -49,6 +54,9 @@ WSpinny::WSpinny(QWidget* parent, VinylControlManager* pVCMan)
 }
 
 WSpinny::~WSpinny() {
+#ifdef __VINYLCONTROL__
+    m_pVCManager->removeSignalQualityListener(this);
+#endif
     // No need to delete anything if m_group is empty because setup() was not called.
     if (!m_group.isEmpty()) {
         WImageStore::deleteImage(m_pBgImage);
@@ -56,7 +64,6 @@ WSpinny::~WSpinny() {
         WImageStore::deleteImage(m_pGhostImage);
         delete m_pPlay;
         delete m_pPlayPos;
-        delete m_pVisualPlayPos;
         delete m_pTrackSamples;
         delete m_pTrackSampleRate;
         delete m_pScratch;
@@ -132,8 +139,8 @@ void WSpinny::setup(QDomNode node, QString group) {
             group, "play");
     m_pPlayPos = new ControlObjectThread(
             group, "playposition");
-    m_pVisualPlayPos = new ControlObjectThread(
-            group, "visual_playposition");
+    m_pVisualPlayPos = VisualPlayPosition::getVisualPlayPosition(group);
+
     m_pTrackSamples = new ControlObjectThread(
             group, "track_samples");
     m_pTrackSampleRate = new ControlObjectThread(
@@ -213,8 +220,9 @@ void WSpinny::paintEvent(QPaintEvent *e) {
         p.save();
     }
 
-    double playPosition = m_pVisualPlayPos->get();
-    double slipPosition = m_pSlipPosition->get();
+    double playPosition = -1;
+    double slipPosition = -1;
+    m_pVisualPlayPos->getPlaySlipAt(0, &playPosition, &slipPosition);
 
     if (playPosition != m_dAngleLastPlaypos) {
         m_fAngle = calculateAngle(playPosition);

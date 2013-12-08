@@ -13,7 +13,7 @@ class PreviewButtonDelegate : public QStyledItemDelegate {
   Q_OBJECT
 
   public:
-    explicit PreviewButtonDelegate(QObject *parent = NULL, int column=0);
+    explicit PreviewButtonDelegate(QObject* parent = NULL, int column = 0);
     virtual ~PreviewButtonDelegate();
 
     QWidget* createEditor(QWidget *parent,

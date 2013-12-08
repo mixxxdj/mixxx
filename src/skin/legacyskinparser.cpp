@@ -1,14 +1,17 @@
 // legacyskinparser.cpp
 // Created 9/19/2010 by RJ Ryan (rryan@mit.edu)
 
-#include <QtGlobal>
-#include <QtDebug>
+#include "skin/legacyskinparser.h"
+
 #include <QDir>
+#include <QGridLayout>
+#include <QLabel>
+#include <QMutexLocker>
+#include <QSplitter>
 #include <QStackedWidget>
 #include <QVBoxLayout>
-#include <QLabel>
-#include <QGridLayout>
-#include <QMutexLocker>
+#include <QtDebug>
+#include <QtGlobal>
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"
@@ -22,7 +25,6 @@
 #include "controllers/controllerlearningeventfilter.h"
 #include "controllers/controllermanager.h"
 
-#include "skin/legacyskinparser.h"
 #include "skin/colorschemeparser.h"
 #include "skin/propertybinder.h"
 
@@ -53,6 +55,7 @@
 #include "widget/wpixmapstore.h"
 #include "widget/wwidgetstack.h"
 #include "widget/wwidgetgroup.h"
+#include "widget/wkey.h"
 
 using mixxx::skin::SkinManifest;
 
@@ -358,6 +361,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseLibrarySidebar(node);
     } else if (nodeName == "Library") {
         return parseLibrary(node);
+    } else if (nodeName == "Key") {
+        return parseKey(node);
     } else {
         qDebug() << "Invalid node name in skin:" << nodeName;
     }
@@ -1141,6 +1146,25 @@ QString LegacySkinParser::getLibraryStyle(QDomNode node) {
     return style;
 }
 
+QWidget* LegacySkinParser::parseKey(QDomElement node) {
+    WKey* p = new WKey(m_pParent);
+    setupWidget(node, p);
+    // NOTE(rryan): To support color schemes, the WWidget::setup() call must
+    // come first. This is because WNumber/WLabel both change the palette based
+    // on the node and setupWidget() will set the widget style. If the style is
+    // set before the palette is set then the custom palette will not take
+    // effect which breaks color scheme support.
+    p->setup(node);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+
 QString LegacySkinParser::lookupNodeGroup(QDomElement node) {
     QString group = XmlParse::selectNodeQString(node, "Group");
 
@@ -1495,4 +1519,3 @@ void LegacySkinParser::addShortcutToToolTip(QWidget* pWidget, const QString& sho
     tooltip += nativeShortcut;
     pWidget->setToolTip(tooltip);
 }
-

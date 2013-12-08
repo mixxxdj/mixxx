@@ -8,9 +8,11 @@
 #ifndef VINYLCONTROLSIGNALWIDGET_H
 #define VINYLCONTROLSIGNALWIDGET_H
 
-#include <QtGui>
+#include <QImage>
+#include <QPaintEvent>
 #include <QPainter>
 #include <QTimerEvent>
+#include <QWidget>
 
 #include "vinylcontrol/vinylsignalquality.h"
 

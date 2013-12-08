@@ -3,17 +3,6 @@
  *      Author: vittorio
  */
 
-#include <qlineedit.h>
-#include <qwidget.h>
-#include <qcheckbox.h>
-#include <qlabel.h>
-#include <qstring.h>
-#include <qpushbutton.h>
-#include <qcombobox.h>
-#include <qspinbox.h>
-#include <QVector>
-#include <QList>
-#include <QtCore>
 #include <vamp-hostsdk/vamp-hostsdk.h>
 
 #include "track/beat_preferences.h"
@@ -28,7 +17,7 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
-        : QWidget(parent),
+        : DlgPreferencePage(parent),
           m_pconfig(_config) {
     setupUi(this);
 
@@ -56,7 +45,6 @@ DlgPrefBeats::DlgPrefBeats(QWidget *parent, ConfigObject<ConfigValue> *_config)
 
     connect(bReanalyse,SIGNAL(stateChanged(int)),
             this, SLOT(slotReanalyzeChanged(int)));
-
 }
 
 DlgPrefBeats::~DlgPrefBeats() {
@@ -270,4 +258,3 @@ void DlgPrefBeats::populate() {
         }
     }
 }
-

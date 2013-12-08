@@ -554,9 +554,9 @@ void ControllerEngine::scriptErrorDialog(QString detailedError) {
     props->setType(DLG_WARNING);
     props->setTitle(tr("Controller script error"));
     props->setText(tr("A control you just used is not working properly."));
-    props->setInfoText(tr("<html>(The script code needs to be fixed.)"
-        "<br>For now, you can:<ul><li>Ignore this error for this session but you may experience erratic behavior</li>"
-        "<li>Try to recover by resetting your controller</li></ul></html>"));
+    props->setInfoText("<html>"+tr("The script code needs to be fixed.")+
+        "<p>"+tr("For now, you can: Ignore this error for this session but you may experience erratic behavior.")+
+        "<br>"+tr("Try to recover by resetting your controller.")+"</p>"+"</html>");
     props->setDetails(detailedError);
     props->setKey(detailedError);   // To prevent multiple windows for the same error
 
@@ -687,7 +687,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
     }
 
     if (m_pEngine == NULL) {
-        return QScriptValue(FALSE);
+        return QScriptValue(false);
     }
 
     if (callback.isString()) {
@@ -697,13 +697,13 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
 
         if (disconnect) {
             disconnectControl(cb);
-            return QScriptValue(TRUE);
+            return QScriptValue(true);
         }
 
         function = m_pEngine->evaluate(callback.toString());
         if (checkException() || !function.isFunction()) {
             qWarning() << "Could not evaluate callback function:" << callback.toString();
-            return QScriptValue(FALSE);
+            return QScriptValue(false);
         } else if (m_connectedControls.contains(key, cb)) {
             // Do not allow multiple connections to named functions
 
@@ -734,7 +734,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
     }
     else {
         qWarning() << "Invalid callback";
-        return QScriptValue(FALSE);
+        return QScriptValue(false);
     }
 
     if (function.isFunction()) {
@@ -775,7 +775,7 @@ QScriptValue ControllerEngine::connectControl(QString group, QString name,
             QScriptEngine::ScriptOwnership);
     }
 
-    return QScriptValue(FALSE);
+    return QScriptValue(false);
 }
 
 /* -------- ------------------------------------------------------
@@ -1385,7 +1385,7 @@ void ControllerEngine::brake(int deck, bool activate, float factor, float rate) 
         cot->slotSet(activate ? 1 : 0);
     }
 
-    // used in scratchProcess for the different timer behaviour we need
+    // used in scratchProcess for the different timer behavior we need
     m_brakeActive[deck] = activate;
 
     if (activate) {

@@ -1,10 +1,11 @@
 
-#include <QDebug>
-#include <QtXml/QDomNode>
+#include <QtDebug>
+#include <QDomNode>
 #include <QEvent>
 #include <QDragEnterEvent>
 #include <QUrl>
 #include <QPainter>
+#include <QMimeData>
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"

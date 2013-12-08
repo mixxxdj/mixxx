@@ -113,13 +113,14 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtTrackName->setText(pTrack->getTitle());
     txtArtist->setText(pTrack->getArtist());
     txtAlbum->setText(pTrack->getAlbum());
+    txtAlbumArtist->setText(pTrack->getAlbumArtist());
     txtGenre->setText(pTrack->getGenre());
     txtComposer->setText(pTrack->getComposer());
+    txtGrouping->setText(pTrack->getGrouping());
     txtYear->setText(pTrack->getYear());
     txtTrackNumber->setText(pTrack->getTrackNumber());
     txtComment->setText(pTrack->getComment());
     spinBpm->setValue(pTrack->getBpm());
-
     // Non-editable fields
     txtDuration->setText(pTrack->getDurationStr());
     txtFilepath->setText(pTrack->getFilename());
@@ -127,7 +128,7 @@ void DlgTrackInfo::populateFields(TrackPointer pTrack) {
     txtType->setText(pTrack->getType());
     txtBitrate->setText(QString(pTrack->getBitrateStr()) + (" ") + tr("kbps"));
     txtBpm->setText(pTrack->getBpmStr());
-
+    txtKey->setText(pTrack->getKeyText());
     BeatsPointer pBeats = pTrack->getBeats();
     bool beatsSupportsSet = !pBeats || (pBeats->getCapabilities() & Beats::BEATSCAP_SET);
     bool enableBpmEditing = !pTrack->hasBpmLock() && beatsSupportsSet;
@@ -221,8 +222,10 @@ void DlgTrackInfo::unloadTrack(bool save) {
         m_pLoadedTrack->setTitle(txtTrackName->text());
         m_pLoadedTrack->setArtist(txtArtist->text());
         m_pLoadedTrack->setAlbum(txtAlbum->text());
+        m_pLoadedTrack->setAlbumArtist(txtAlbumArtist->text());
         m_pLoadedTrack->setGenre(txtGenre->text());
         m_pLoadedTrack->setComposer(txtComposer->text());
+        m_pLoadedTrack->setGrouping(txtGrouping->text());
         m_pLoadedTrack->setYear(txtYear->text());
         m_pLoadedTrack->setTrackNumber(txtTrackNumber->text());
         m_pLoadedTrack->setComment(txtComment->toPlainText());
@@ -278,8 +281,10 @@ void DlgTrackInfo::clear() {
     txtTrackName->setText("");
     txtArtist->setText("");
     txtAlbum->setText("");
+    txtAlbumArtist->setText("");
     txtGenre->setText("");
     txtComposer->setText("");
+    txtGrouping->setText("");
     txtYear->setText("");
     txtTrackNumber->setText("");
     txtComment->setText("");

@@ -1,6 +1,6 @@
 /**
   * @file hidcontroller.cpp
-  * @author Sean M. Pappalardo	spappalardo@mixxx.org
+  * @author Sean M. Pappalardo  spappalardo@mixxx.org
   * @date Sun May 1 2011
   * @brief HID controller backend
   *
@@ -12,6 +12,7 @@
 #include "defs.h" // for PATH_MAX on Windows
 #include "controllers/hid/hidcontroller.h"
 #include "controllers/defs_controllers.h"
+#include "util/compatibility.h"
 
 HidReader::HidReader(hid_device* device)
         : QThread(),
@@ -24,7 +25,7 @@ HidReader::~HidReader() {
 void HidReader::run() {
     m_stop = 0;
     unsigned char *data = new unsigned char[255];
-    while (m_stop == 0) {
+    while (deref(m_stop) == 0) {
         // Blocked polling: The only problem with this is that we can't close
         // the device until the block is released, which means the controller
         // has to send more data

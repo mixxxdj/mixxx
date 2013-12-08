@@ -4,7 +4,12 @@
 #ifndef PLAYLISTFEATURE_H
 #define PLAYLISTFEATURE_H
 
-#include <QSqlTableModel>
+#include <QVariant>
+#include <QIcon>
+#include <QModelIndex>
+#include <QUrl>
+#include <QObject>
+#include <QPoint>
 
 #include "library/baseplaylistfeature.h"
 #include "configobject.h"
@@ -22,7 +27,7 @@ class PlaylistFeature : public BasePlaylistFeature {
     QVariant title();
     QIcon getIcon();
 
-    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QWidget *pSource);
+    bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls, QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
   public slots:

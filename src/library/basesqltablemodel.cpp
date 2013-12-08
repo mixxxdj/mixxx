@@ -3,6 +3,7 @@
 #include <QtAlgorithms>
 #include <QtDebug>
 #include <QTime>
+#include <QUrl>
 
 #include "library/basesqltablemodel.h"
 
@@ -14,6 +15,7 @@
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 #include "playerinfo.h"
+#include "track/keyutils.h"
 
 const bool sDebug = false;
 
@@ -51,10 +53,14 @@ void BaseSqlTableModel::initHeaderData() {
                   Qt::Horizontal, tr("Title"));
     setHeaderData(fieldIndex(LIBRARYTABLE_ALBUM),
                   Qt::Horizontal, tr("Album"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_ALBUMARTIST),
+                  Qt::Horizontal, tr("Album Artist"));
     setHeaderData(fieldIndex(LIBRARYTABLE_GENRE),
                   Qt::Horizontal, tr("Genre"));
     setHeaderData(fieldIndex(LIBRARYTABLE_COMPOSER),
                   Qt::Horizontal, tr("Composer"));
+    setHeaderData(fieldIndex(LIBRARYTABLE_GROUPING),
+                  Qt::Horizontal, tr("Grouping"));
     setHeaderData(fieldIndex(LIBRARYTABLE_YEAR),
                   Qt::Horizontal, tr("Year"));
     setHeaderData(fieldIndex(LIBRARYTABLE_FILETYPE),
@@ -158,7 +164,6 @@ void BaseSqlTableModel::select() {
     if (!m_bInitialized) {
         return;
     }
-
     // We should be able to detect when a select() would be a no-op. The DAO's
     // do not currently broadcast signals for when common things happen. In the
     // future, we can turn this check on and avoid a lot of needless
@@ -473,17 +478,35 @@ QVariant BaseSqlTableModel::data(const QModelIndex& index, int role) const {
                 value = gmtDate.toLocalTime();
             } else if (column == fieldIndex(LIBRARYTABLE_BPM_LOCK)) {
                 value = value.toBool();
+            } else if (column == fieldIndex(LIBRARYTABLE_KEY)) {
+                // If we know the semantic key via the LIBRARYTABLE_KEY_ID
+                // column (as opposed to the string representation of the key
+                // currently stored in the DB) then lookup the key and render it
+                // using the user's selected notation.
+                int keyIdColumn = fieldIndex(LIBRARYTABLE_KEY_ID);
+                if (keyIdColumn != -1) {
+                    mixxx::track::io::key::ChromaticKey key =
+                            KeyUtils::keyFromNumericValue(
+                                index.sibling(row, keyIdColumn).data().toInt());
+
+                    if (key != mixxx::track::io::key::INVALID) {
+                        // Render this key with the user-provided notation.
+                        value = KeyUtils::keyToString(key);
+                    }
+                }
+                // Otherwise, just use the column value.
             }
             break;
         case Qt::EditRole:
             if (column == fieldIndex(LIBRARYTABLE_BPM)) {
-                return value.toDouble();
+                value = value.toDouble();
             } else if (column == fieldIndex(LIBRARYTABLE_TIMESPLAYED)) {
-                return index.sibling(
+                value = index.sibling(
                     row, fieldIndex(LIBRARYTABLE_PLAYED)).data().toBool();
             } else if (column == fieldIndex(LIBRARYTABLE_RATING)) {
-                if (qVariantCanConvert<int>(value))
+                if (qVariantCanConvert<int>(value)) {
                     value = qVariantFromValue(StarRating(value.toInt()));
+                }
             }
             break;
         case Qt::CheckStateRole:
@@ -680,12 +703,16 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         pTrack->setTitle(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_ALBUM) == column) {
         pTrack->setAlbum(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_ALBUMARTIST) == column) {
+        pTrack->setAlbumArtist(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_YEAR) == column) {
         pTrack->setYear(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_GENRE) == column) {
         pTrack->setGenre(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_COMPOSER) == column) {
         pTrack->setComposer(value.toString());
+    } else if (fieldIndex(LIBRARYTABLE_GROUPING) == column) {
+        pTrack->setGrouping(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_FILETYPE) == column) {
         pTrack->setType(value.toString());
     } else if (fieldIndex(LIBRARYTABLE_TRACKNUMBER) == column) {
@@ -709,7 +736,8 @@ void BaseSqlTableModel::setTrackValueForColumn(TrackPointer pTrack, int column,
         StarRating starRating = qVariantValue<StarRating>(value);
         pTrack->setRating(starRating.starCount());
     } else if (fieldIndex(LIBRARYTABLE_KEY) == column) {
-        pTrack->setKey(value.toString());
+        pTrack->setKeyText(value.toString(),
+                           mixxx::track::io::key::USER);
     } else if (fieldIndex(LIBRARYTABLE_BPM_LOCK) == column) {
         pTrack->setBpmLock(value.toBool());
     }

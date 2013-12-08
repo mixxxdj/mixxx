@@ -30,6 +30,8 @@
 
 #include "defs.h"
 #include "track/beats.h"
+#include "track/keys.h"
+#include "proto/keys.pb.h"
 #include "library/dao/cue.h"
 
 class QString;
@@ -75,15 +77,17 @@ public:
     Q_PROPERTY(QString artist READ getArtist WRITE setArtist)
     Q_PROPERTY(QString title READ getTitle WRITE setTitle)
     Q_PROPERTY(QString album READ getAlbum WRITE setAlbum)
+    Q_PROPERTY(QString albumArtist READ getAlbumArtist WRITE setAlbumArtist)
     Q_PROPERTY(QString genre READ getGenre WRITE setGenre)
     Q_PROPERTY(QString composer READ getComposer WRITE setComposer)
+    Q_PROPERTY(QString grouping READ getGrouping WRITE setGrouping)
     Q_PROPERTY(QString year READ getYear WRITE setYear)
     Q_PROPERTY(QString track_number READ getTrackNumber WRITE setTrackNumber)
     Q_PROPERTY(int times_played READ getTimesPlayed)
     Q_PROPERTY(QString comment READ getComment WRITE setComment)
     Q_PROPERTY(double bpm READ getBpm WRITE setBpm)
     Q_PROPERTY(QString bpmFormatted READ getBpmStr STORED false)
-    Q_PROPERTY(QString key READ getKey WRITE setKey)
+    Q_PROPERTY(QString key READ getKeyText WRITE setKeyText)
     Q_PROPERTY(int duration READ getDuration WRITE setDuration)
     Q_PROPERTY(QString durationFormatted READ getDurationStr STORED false)
 
@@ -161,6 +165,10 @@ public:
     QString getAlbum() const;
     /** Set album */
     void setAlbum(QString);
+    /** Return album artist */
+    QString getAlbumArtist() const;
+    /** Set album artist */
+    void setAlbumArtist(QString);
     /** Return Year */
     QString getYear() const;
     /** Set year */
@@ -173,6 +181,10 @@ public:
     QString getComposer() const;
     /** Set composer */
     void setComposer(QString);
+    /** Return grouping */
+    QString getGrouping() const;
+    /** Set grouping */
+    void setGrouping(QString);
     /** Return Track Number */
     QString getTrackNumber() const;
     /** Set Track Number */
@@ -196,11 +208,6 @@ public:
     int getRating() const;
     /** Sets rating */
     void setRating(int);
-
-    /** Returns KEY_CODE */
-    QString getKey() const;
-    /** Set KEY_CODE */
-    void setKey(QString);
 
     /** Get URL for track */
     QString getURL();
@@ -246,6 +253,15 @@ public:
     // Set the track's Beats
     void setBeats(BeatsPointer beats);
 
+    void setKeys(Keys keys);
+    const Keys& getKeys() const;
+    double getNumericKey() const;
+    mixxx::track::io::key::ChromaticKey getKey() const;
+    QString getKeyText() const;
+    void setKey(mixxx::track::io::key::ChromaticKey key,
+                mixxx::track::io::key::Source source);
+    void setKeyText(QString key,
+                    mixxx::track::io::key::Source source=mixxx::track::io::key::USER);
 
   public slots:
     void slotCueUpdated();
@@ -256,6 +272,8 @@ public:
     void analyserProgress(int progress);
     void bpmUpdated(double bpm);
     void beatsUpdated();
+    void keyUpdated(double key);
+    void keysUpdated();
     void ReplayGainUpdated(double replaygain);
     void cuesUpdated();
     void changed(TrackInfoObject* pTrack);
@@ -307,12 +325,16 @@ public:
     QString m_sAlbum;
     /** Artist */
     QString m_sArtist;
+    /** Album Artist */
+    QString m_sAlbumArtist;
     /** Title */
     QString m_sTitle;
     /** Genre */
     QString m_sGenre;
     /** Composer */
     QString m_sComposer;
+    /** Grouping */
+    QString m_sGrouping;
     /** Year */
     QString m_sYear;
     /** Track Number */
@@ -351,7 +373,7 @@ public:
     // Date the track was added to the library
     QDateTime m_dateAdded;
 
-    QString m_key;
+    Keys m_keys;
 
     /** BPM lock **/
     bool m_bBpmLock;

@@ -5,6 +5,10 @@
 #include <QList>
 #include <QPair>
 #include <QAction>
+#include <QVariant>
+#include <QUrl>
+#include <QIcon>
+#include <QPoint>
 
 #include "library/libraryfeature.h"
 #include "library/cratetablemodel.h"
@@ -17,8 +21,8 @@ class TrackCollection;
 class CrateFeature : public LibraryFeature {
     Q_OBJECT
   public:
-    CrateFeature(QObject* parent, 
-                 TrackCollection* pTrackCollection, 
+    CrateFeature(QObject* parent,
+                 TrackCollection* pTrackCollection,
                  ConfigObject<ConfigValue>* pConfig);
     virtual ~CrateFeature();
 
@@ -26,7 +30,7 @@ class CrateFeature : public LibraryFeature {
     QIcon getIcon();
 
     bool dropAcceptChild(const QModelIndex& index, QList<QUrl> urls,
-                         QWidget *pSource);
+                         QObject* pSource);
     bool dragMoveAcceptChild(const QModelIndex& index, QUrl url);
 
     void bindWidget(WLibrary* libraryWidget,

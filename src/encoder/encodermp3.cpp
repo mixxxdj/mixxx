@@ -117,26 +117,26 @@ EncoderMp3::EncoderMp3(EncoderCallback* pCallback)
 
 
     //initalize function pointers
-    lame_init 					= (lame_init__)m_library->resolve("lame_init");
-    lame_set_num_channels 		= (lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
-    lame_set_in_samplerate 		= (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
-    lame_set_out_samplerate		= (lame_set_out_samplerate__)m_library->resolve("lame_set_out_samplerate");
-    lame_close 					= (lame_close__)m_library->resolve("lame_close");
-    lame_set_brate				= (lame_set_brate__)m_library->resolve("lame_set_brate");
-    lame_set_mode 				= (lame_set_mode__)m_library->resolve("lame_set_mode");
-    lame_set_quality			= (lame_set_quality__)m_library->resolve("lame_set_quality");
-    lame_set_bWriteVbrTag		= (lame_set_bWriteVbrTag__)m_library->resolve("lame_set_bWriteVbrTag");
-    lame_encode_buffer_float 	= (lame_encode_buffer_float__)m_library->resolve("lame_encode_buffer_float");
-    lame_init_params 			= (lame_init_params__)m_library->resolve("lame_init_params");
-    lame_encode_flush 			= (lame_encode_flush__)m_library->resolve("lame_encode_flush");
+    lame_init                   = (lame_init__)m_library->resolve("lame_init");
+    lame_set_num_channels       = (lame_set_num_channels__)m_library->resolve("lame_set_num_channels");
+    lame_set_in_samplerate      = (lame_set_in_samplerate__)m_library->resolve("lame_set_in_samplerate");
+    lame_set_out_samplerate     = (lame_set_out_samplerate__)m_library->resolve("lame_set_out_samplerate");
+    lame_close                  = (lame_close__)m_library->resolve("lame_close");
+    lame_set_brate              = (lame_set_brate__)m_library->resolve("lame_set_brate");
+    lame_set_mode               = (lame_set_mode__)m_library->resolve("lame_set_mode");
+    lame_set_quality            = (lame_set_quality__)m_library->resolve("lame_set_quality");
+    lame_set_bWriteVbrTag       = (lame_set_bWriteVbrTag__)m_library->resolve("lame_set_bWriteVbrTag");
+    lame_encode_buffer_float    = (lame_encode_buffer_float__)m_library->resolve("lame_encode_buffer_float");
+    lame_init_params            = (lame_init_params__)m_library->resolve("lame_init_params");
+    lame_encode_flush           = (lame_encode_flush__)m_library->resolve("lame_encode_flush");
 
-    id3tag_init					= (id3tag_init__)m_library->resolve("id3tag_init");
-    id3tag_set_title	 		= (id3tag_set_title__)m_library->resolve("id3tag_set_title");
-    id3tag_set_artist	 		= (id3tag_set_artist__)m_library->resolve("id3tag_set_artist");
-    id3tag_set_album 	 		= (id3tag_set_album__)m_library->resolve("id3tag_set_album");
+    id3tag_init                 = (id3tag_init__)m_library->resolve("id3tag_init");
+    id3tag_set_title            = (id3tag_set_title__)m_library->resolve("id3tag_set_title");
+    id3tag_set_artist           = (id3tag_set_artist__)m_library->resolve("id3tag_set_artist");
+    id3tag_set_album            = (id3tag_set_album__)m_library->resolve("id3tag_set_album");
 
 
-	  /*
+      /*
      * Check if all function pointers are not NULL
      * Otherwise, the lame_enc.dll, libmp3lame.so or libmp3lame.mylib do not comply with the official header lame.h
      * Indicates a modified lame version

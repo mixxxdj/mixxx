@@ -1,5 +1,9 @@
 #include "library/baseplaylistfeature.h"
 
+#include <QInputDialog>
+#include <QFileDialog>
+#include <QDesktopServices>
+
 #include "library/parser.h"
 #include "library/parserm3u.h"
 #include "library/parserpls.h"
@@ -15,14 +19,14 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
                                          ConfigObject<ConfigValue>* pConfig,
                                          TrackCollection* pTrackCollection,
                                          QString rootViewName)
-                    : LibraryFeature(parent),
-                      m_pConfig(pConfig),
-                      m_pTrackCollection(pTrackCollection),
-                      m_playlistDao(pTrackCollection->getPlaylistDAO()),
-                      m_trackDao(pTrackCollection->getTrackDAO()),
-                      m_pPlaylistTableModel(NULL),
-                      m_rootViewName(rootViewName) {
-    m_pCreatePlaylistAction = new QAction(tr("New Playlist"),this);
+        : LibraryFeature(parent),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection),
+          m_playlistDao(pTrackCollection->getPlaylistDAO()),
+          m_trackDao(pTrackCollection->getTrackDAO()),
+          m_pPlaylistTableModel(NULL),
+          m_rootViewName(rootViewName) {
+    m_pCreatePlaylistAction = new QAction(tr("Create New Playlist"),this);
     connect(m_pCreatePlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotCreatePlaylist()));
 
@@ -46,13 +50,13 @@ BasePlaylistFeature::BasePlaylistFeature(QObject* parent,
     connect(m_pLockPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotTogglePlaylistLock()));
 
+    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate"), this);
+    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
+            this, SLOT(slotDuplicatePlaylist()));
+
     m_pImportPlaylistAction = new QAction(tr("Import Playlist"),this);
     connect(m_pImportPlaylistAction, SIGNAL(triggered()),
             this, SLOT(slotImportPlaylist()));
-
-    m_pDuplicatePlaylistAction = new QAction(tr("Duplicate Playlist"), this);
-    connect(m_pDuplicatePlaylistAction, SIGNAL(triggered()),
-            this, SLOT(slotDuplicatePlaylist()));
 
     m_pExportPlaylistAction = new QAction(tr("Export Playlist"), this);
     connect(m_pExportPlaylistAction, SIGNAL(triggered()),
@@ -116,7 +120,6 @@ void BasePlaylistFeature::slotRenamePlaylist() {
                  << "is locked.";
         return;
     }
-
     QString newName;
     bool validNameGiven = false;
 
@@ -124,11 +127,10 @@ void BasePlaylistFeature::slotRenamePlaylist() {
         bool ok = false;
         newName = QInputDialog::getText(NULL,
                                         tr("Rename Playlist"),
-                                        tr("New playlist name:"),
+                                        tr("Enter new name for playlist:"),
                                         QLineEdit::Normal,
                                         oldName,
                                         &ok).trimmed();
-
         if (!ok || oldName == newName) {
             return;
         }
@@ -167,13 +169,12 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
     while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
-                                        tr("Duplicate Playlist"),
-                                        tr("Playlist name:"),
-                                        QLineEdit::Normal,
-                                        //: Appendix to default name when duplicating a playlist
-                                        oldName + tr("_copy" , "[noun]"),
-                                        &ok).trimmed();
-
+                                     tr("Duplicate Playlist"),
+                                     tr("Enter name for new playlist:"),
+                                     QLineEdit::Normal,
+                                     //: Appendix to default name when duplicating a playlist
+                                     oldName + tr("_copy" , "[noun]"),
+                                     &ok).trimmed();
         if (!ok || oldName == name) {
             return;
         }
@@ -182,12 +183,12 @@ void BasePlaylistFeature::slotDuplicatePlaylist() {
 
         if (existingId != -1) {
             QMessageBox::warning(NULL,
-                                tr("Playlist Creation Failed"),
-                                tr("A playlist by that name already exists."));
+                                 tr("Playlist Creation Failed"),
+                                 tr("A playlist by that name already exists."));
         } else if (name.isEmpty()) {
             QMessageBox::warning(NULL,
-                                tr("Playlist Creation Failed"),
-                                tr("A playlist cannot have a blank name."));
+                                 tr("Playlist Creation Failed"),
+                                 tr("A playlist cannot have a blank name."));
         } else {
             validNameGiven = true;
         }
@@ -222,12 +223,11 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     while (!validNameGiven) {
         bool ok = false;
         name = QInputDialog::getText(NULL,
-                                     tr("New Playlist"),
-                                     tr("Playlist name:"),
+                                     tr("Create New Playlist"),
+                                     tr("Enter name for new playlist:"),
                                      QLineEdit::Normal,
                                      tr("New Playlist"),
                                      &ok).trimmed();
-
         if (!ok)
             return;
 
@@ -258,7 +258,6 @@ void BasePlaylistFeature::slotCreatePlaylist() {
     }
 }
 
-
 void BasePlaylistFeature::slotDeletePlaylist() {
     //qDebug() << "slotDeletePlaylist() row:" << m_lastRightClickedIndex.data();
     int playlistId = m_playlistDao.getPlaylistIdFromName(m_lastRightClickedIndex.data().toString());
@@ -286,10 +285,10 @@ void BasePlaylistFeature::slotImportPlaylist() {
     }
 
     QString playlist_file = QFileDialog::getOpenFileName(
-        NULL,
-        tr("Import Playlist"),
-        QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
-        tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
+            NULL,
+            tr("Import Playlist"),
+            QDesktopServices::storageLocation(QDesktopServices::MusicLocation),
+            tr("Playlist Files (*.m3u *.m3u8 *.pls *.csv)"));
     // Exit method if user cancelled the open dialog.
     if (playlist_file.isNull() || playlist_file.isEmpty()) {
         return;
@@ -298,7 +297,7 @@ void BasePlaylistFeature::slotImportPlaylist() {
     Parser* playlist_parser = NULL;
 
     if (playlist_file.endsWith(".m3u", Qt::CaseInsensitive) ||
-        playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
+            playlist_file.endsWith(".m3u8", Qt::CaseInsensitive)) {
         playlist_parser = new ParserM3u();
     } else if (playlist_file.endsWith(".pls", Qt::CaseInsensitive)) {
         playlist_parser = new ParserPls();
@@ -322,7 +321,6 @@ void BasePlaylistFeature::slotExportPlaylist() {
     if (!m_pPlaylistTableModel) {
         return;
     }
-
     qDebug() << "Export playlist" << m_lastRightClickedIndex.data();
     // Open a dialog to let the user choose the file location for playlist export.
     // By default, the directory is set to the OS's Music directory and the file
@@ -330,11 +328,11 @@ void BasePlaylistFeature::slotExportPlaylist() {
     QString playlist_filename = m_lastRightClickedIndex.data().toString();
     QString music_directory = QDesktopServices::storageLocation(QDesktopServices::MusicLocation);
     QString file_location = QFileDialog::getSaveFileName(
-        NULL,
-        tr("Export Playlist"),
-        music_directory.append("/").append(playlist_filename),
-        tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
-           "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
+            NULL,
+            tr("Export Playlist"),
+            music_directory.append("/").append(playlist_filename),
+            tr("M3U Playlist (*.m3u);;M3U8 Playlist (*.m3u8);;"
+            "PLS Playlist (*.pls);;Text CSV (*.csv);;Readable Text (*.txt)"));
     // Exit method if user cancelled the open dialog.
     if (file_location.isNull() || file_location.isEmpty()) {
         return;
@@ -400,13 +398,12 @@ void BasePlaylistFeature::slotAddToAutoDJTop() {
 
 void BasePlaylistFeature::addToAutoDJ(bool bTop) {
     //qDebug() << "slotAddToAutoDJ() row:" << m_lastRightClickedIndex.data();
-
     if (m_lastRightClickedIndex.isValid()) {
         int playlistId = m_playlistDao.getPlaylistIdFromName(
                 m_lastRightClickedIndex.data().toString());
         if (playlistId >= 0) {
             // Insert this playlist
-            m_playlistDao.addToAutoDJQueue(playlistId, bTop);
+            m_playlistDao.addPlaylistToAutoDJQueue(playlistId, bTop);
         }
     }
 }
@@ -432,9 +429,8 @@ void BasePlaylistFeature::bindWidget(WLibrary* libraryWidget,
     WLibraryTextBrowser* edit = new WLibraryTextBrowser(libraryWidget);
     edit->setHtml(getRootViewHtml());
     edit->setOpenLinks(false);
-    connect(edit,SIGNAL(anchorClicked(const QUrl)),
-        this,SLOT(htmlLinkClicked(const QUrl))
-    );
+    connect(edit, SIGNAL(anchorClicked(const QUrl)),
+            this, SLOT(htmlLinkClicked(const QUrl)));
     libraryWidget->registerView(m_rootViewName, edit);
 }
 
@@ -451,8 +447,7 @@ void BasePlaylistFeature::htmlLinkClicked(const QUrl & link) {
   * we require the sidebar model not to reset.
   * This method queries the database and does dynamic insertion
 */
-QModelIndex BasePlaylistFeature::constructChildModel(int selected_id)
-{
+QModelIndex BasePlaylistFeature::constructChildModel(int selected_id) {
     buildPlaylistList();
     QList<TreeItem*> data_list;
     int selected_row = -1;
@@ -491,4 +486,3 @@ QModelIndex BasePlaylistFeature::constructChildModel(int selected_id)
 void BasePlaylistFeature::clearChildModel() {
     m_childModel.removeRows(0, m_playlistList.size());
 }
-

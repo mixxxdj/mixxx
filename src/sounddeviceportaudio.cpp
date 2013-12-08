@@ -18,7 +18,11 @@
 #include <portaudio.h>
 
 #include <QtDebug>
-#include <QtCore>
+#include <QThread>
+
+#ifdef __LINUX__
+#include <QLibrary>
+#endif
 
 #include "sounddeviceportaudio.h"
 
@@ -27,6 +31,7 @@
 #include "sounddevice.h"
 #include "soundmanagerutil.h"
 #include "controlobject.h"
+#include "visualplayposition.h"
 #include "util/timer.h"
 #include "vinylcontrol/defs_vinylcontrol.h"
 #include "engine/guitick.h"
@@ -287,7 +292,11 @@ int SoundDevicePortAudio::callbackProcess(unsigned long framesPerBuffer,
         m_bSetThreadPriority = true;
     }
 
-    GuiTick::setStreamTime((double)timeInfo->outputBufferDacTime);
+ 
+    if (m_pSoundManager->isDeviceClkRef(this)) {
+        VisualPlayPosition::setTimeInfo(timeInfo);
+        GuiTick::setStreamTime((double)timeInfo->outputBufferDacTime);    
+    }
 
     if (!m_undeflowUpdateCount) {
         if (statusFlags & (paOutputUnderflow | paInputOverflow)) {

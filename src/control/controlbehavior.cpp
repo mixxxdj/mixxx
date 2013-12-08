@@ -93,7 +93,7 @@ ControlLogpotmeterBehavior::ControlLogpotmeterBehavior(double dMaxValue)
 ControlLogpotmeterBehavior::~ControlLogpotmeterBehavior() {
 }
 
-double ControlLogpotmeterBehavior::defaultValue(double dDefault) {
+double ControlLogpotmeterBehavior::defaultValue(double dDefault) const {
     Q_UNUSED(dDefault);
     return 1.0;
 }
@@ -222,4 +222,3 @@ void ControlPushButtonBehavior::setValueFromMidiParameter(
         }
     }
 }
-

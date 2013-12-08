@@ -15,14 +15,11 @@
 *                                                                         *
 ***************************************************************************/
 
-
-#include <QtGui>
 #include <QtDebug>
 
-#include "wwidget.h"
+#include "widget/wwidget.h"
 #include "controlobject.h"
 #include "controlobjectthreadwidget.h"
-
 
 // Static member variable definition
 QString WWidget::m_qPath;

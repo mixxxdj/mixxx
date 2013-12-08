@@ -13,17 +13,17 @@ class GLWaveformWidget : public QGLWidget, public WaveformWidgetAbstract {
 
     virtual WaveformWidgetType::Type getType() const { return WaveformWidgetType::GLWaveform; }
 
-    static inline QString getWaveformWidgetName() { return tr("Filtered");}
-    static inline bool useOpenGl() { return true;}
-    static inline bool useOpenGLShaders() { return false;}
+    static inline QString getWaveformWidgetName() { return tr("Filtered"); }
+    static inline bool useOpenGl() { return true; }
+    static inline bool useOpenGLShaders() { return false; }
+    static inline bool developerOnly() { return false; }
 
   protected:
     virtual void castToQWidget();
     virtual void paintEvent(QPaintEvent* event);
-    virtual void postRender();
+    virtual int render();
 
   private:
-    GLWaveformWidget() {}
     friend class WaveformWidgetFactory;
 };
 

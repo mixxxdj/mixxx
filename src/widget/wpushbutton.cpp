@@ -15,17 +15,21 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wpushbutton.h"
-#include "wpixmapstore.h"
-#include "controlobject.h"
-#include "controlpushbutton.h"
-#include "control/controlbehavior.h"
-//Added by qt3to4:
+#include "widget/wpushbutton.h"
+
+#include <QPainter>
 #include <QPixmap>
 #include <QtDebug>
 #include <QMouseEvent>
 #include <QPaintEvent>
 #include <QApplication>
+
+#include "widget/wpixmapstore.h"
+#include "controlobject.h"
+#include "controlpushbutton.h"
+#include "control/controlbehavior.h"
+
+const int PB_SHORTKLICKTIME = 200;
 
 WPushButton::WPushButton(QWidget* parent)
         : WWidget(parent),
@@ -33,7 +37,7 @@ WPushButton::WPushButton(QWidget* parent)
           m_pPixmapBack(NULL),
           m_leftButtonMode(ControlPushButton::PUSH),
           m_rightButtonMode(ControlPushButton::PUSH),
-          m_indicatorConnected(false) {
+          m_indicatorConnected(false) {    
     setStates(0);
     //setBackgroundMode(Qt::NoBackground); //obsolete? removal doesn't seem to change anything on the GUI --kousu 2009/03
 }

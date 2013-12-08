@@ -7,7 +7,9 @@
 #ifndef VINYLCONTROLMANAGER_H
 #define VINYLCONTROLMANAGER_H
 
-#include <QtCore>
+#include <QObject>
+#include <QString>
+#include <QTimerEvent>
 
 #include "soundmanagerutil.h"
 #include "configobject.h"

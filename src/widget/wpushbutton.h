@@ -18,12 +18,13 @@
 #ifndef WPUSHBUTTON_H
 #define WPUSHBUTTON_H
 
-#include <qpainter.h>
-#include <qpixmap.h>
-#include <qstring.h>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QString>
 #include <QPaintEvent>
 #include <QMouseEvent>
 #include <QFocusEvent>
+#include <QTimer>
 
 #include "widget/wwidget.h"
 #include "controlpushbutton.h"

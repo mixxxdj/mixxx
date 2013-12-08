@@ -22,9 +22,11 @@ const QString LIBRARYTABLE_ID = "id";
 const QString LIBRARYTABLE_ARTIST = "artist";
 const QString LIBRARYTABLE_TITLE = "title";
 const QString LIBRARYTABLE_ALBUM = "album";
+const QString LIBRARYTABLE_ALBUMARTIST = "album_artist";
 const QString LIBRARYTABLE_YEAR = "year";
 const QString LIBRARYTABLE_GENRE = "genre";
 const QString LIBRARYTABLE_COMPOSER = "composer";
+const QString LIBRARYTABLE_GROUPING = "grouping";
 const QString LIBRARYTABLE_TRACKNUMBER = "tracknumber";
 const QString LIBRARYTABLE_FILETYPE = "filetype";
 const QString LIBRARYTABLE_LOCATION = "location";
@@ -45,6 +47,7 @@ const QString LIBRARYTABLE_TIMESPLAYED = "timesplayed";
 const QString LIBRARYTABLE_PLAYED = "played";
 const QString LIBRARYTABLE_RATING = "rating";
 const QString LIBRARYTABLE_KEY = "key";
+const QString LIBRARYTABLE_KEY_ID = "key_id";
 const QString LIBRARYTABLE_BPM_LOCK = "bpm_lock";
 
 const QString TRACKLOCATIONSTABLE_ID = "id";
@@ -60,6 +63,7 @@ class PlaylistDAO;
 class AnalysisDao;
 class CueDAO;
 class CrateDAO;
+class DirectoryDAO;
 
 class TrackDAO : public QObject, public virtual DAO {
     Q_OBJECT
@@ -68,12 +72,12 @@ class TrackDAO : public QObject, public virtual DAO {
     // synchronized on track metadata change
     TrackDAO(QSqlDatabase& database, CueDAO& cueDao,
              PlaylistDAO& playlistDao, CrateDAO& crateDao,
-             AnalysisDao& analysisDao,
-             ConfigObject<ConfigValue>* pConfig);
+             AnalysisDao& analysisDao, DirectoryDAO& directoryDao,
+             ConfigObject<ConfigValue>* pConfig = NULL);
     virtual ~TrackDAO();
 
     void finish();
-    void setDatabase(QSqlDatabase& database) { m_database = database; };
+    void setDatabase(QSqlDatabase& database) { m_database = database; }
 
     void initialize();
     int getTrackId(const QString& absoluteFilePath);
@@ -84,24 +88,26 @@ class TrackDAO : public QObject, public virtual DAO {
     int addTrack(const QFileInfo& fileInfo, bool unremove);
     void addTracksPrepare();
     bool addTracksAdd(TrackInfoObject* pTrack, bool unremove);
-    void addTracksFinish();
+    void addTracksFinish(bool rollback=false);
     QList<int> addTracks(const QList<QFileInfo>& fileInfoList, bool unremove);
     void hideTracks(const QList<int>& ids);
     void purgeTracks(const QList<int>& ids);
+    void purgeTracks(const QString& dir);
     void unhideTracks(const QList<int>& ids);
     TrackPointer getTrack(const int id, const bool cacheOnly=false) const;
     bool isDirty(int trackId);
+    void markTracksAsMixxxDeleted(const QString& dir);
 
     // Scanning related calls. Should be elsewhere or private somehow.
     void markTrackLocationAsVerified(const QString& location);
     void markTracksInDirectoriesAsVerified(QStringList& directories);
-    void invalidateTrackLocationsInLibrary(QString libraryPath);
+    void invalidateTrackLocationsInLibrary();
     void markUnverifiedTracksAsDeleted();
     void markTrackLocationsAsDeleted(const QString& directory);
-    void detectMovedFiles(QSet<int>* pTracksMovedSetNew, QSet<int>* pTracksMovedSetOld);
+    void detectMovedFiles(QSet<int>* tracksMovedSetNew, QSet<int>* tracksMovedSetOld);
     void databaseTrackAdded(TrackPointer pTrack);
     void databaseTracksMoved(QSet<int> tracksMovedSetOld, QSet<int> tracksMovedSetNew);
-    void verifyTracksOutside(const QString& libraryPath, volatile bool* pCancel);
+    bool verifyRemainingTracks(volatile bool* pCancel);
 
   signals:
     void trackDirty(int trackId);
@@ -146,15 +152,16 @@ class TrackDAO : public QObject, public virtual DAO {
     // Called when the TIO reference count drops to 0
     static void deleteTrack(TrackInfoObject* pTrack);
 
-    QSqlDatabase &m_database;
-    CueDAO &m_cueDao;
-    PlaylistDAO &m_playlistDao;
-    CrateDAO &m_crateDao;
+    QSqlDatabase& m_database;
+    CueDAO& m_cueDao;
+    PlaylistDAO& m_playlistDao;
+    CrateDAO& m_crateDao;
     AnalysisDao& m_analysisDao;
-    ConfigObject<ConfigValue> * m_pConfig;
+    DirectoryDAO& m_directoryDAO;
+    ConfigObject<ConfigValue>* m_pConfig;
     static QHash<int, TrackWeakPointer> m_sTracks;
     static QMutex m_sTracksMutex;
-    mutable QCache<int,TrackPointer> m_trackCache;
+    mutable QCache<int, TrackPointer> m_trackCache;
 
     QSqlQuery* m_pQueryTrackLocationInsert;
     QSqlQuery* m_pQueryTrackLocationSelect;

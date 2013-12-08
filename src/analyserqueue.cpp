@@ -1,3 +1,5 @@
+#include <typeinfo>
+
 #include <QtDebug>
 #include <QMutexLocker>
 
@@ -11,15 +13,15 @@
 #include "analyserwaveform.h"
 #include "analyserrg.h"
 #include "analyserbeats.h"
+#include "analyserkey.h"
 #include "vamp/vampanalyser.h"
+#include "util/compatibility.h"
 
-#include <typeinfo>
-
-#define FINALIZE_PERCENT 1 // in 0.1%,
-                           // 0 for no progress during finalize
-                           // 1 to display the text "finalizing"
-                           // 100 for 10% step after finalize
-
+// Measured in 0.1%,
+// 0 for no progress during finalize
+// 1 to display the text "finalizing"
+// 100 for 10% step after finalize
+#define FINALIZE_PERCENT 1
 
 AnalyserQueue::AnalyserQueue(TrackCollection* pTrackCollection) :
         m_aq(),
@@ -212,7 +214,7 @@ bool AnalyserQueue::doAnalysis(TrackPointer tio, SoundSourceProxy* pSoundSource)
         //QThread::usleep(10);
 
         //has something new entered the queue?
-        if (m_aiCheckPriorities) {
+        if (deref(m_aiCheckPriorities)) {
             m_aiCheckPriorities = false;
             if (isLoadedTrackWaiting(tio)) {
                 qDebug() << "Interrupting analysis to give preference to a loaded track.";
@@ -338,7 +340,7 @@ void AnalyserQueue::run() {
 
 // This is called from the AnalyserQueue thread
 void AnalyserQueue::emitUpdateProgress(TrackPointer tio, int progress) {
-    if (!m_exit) {    
+    if (!m_exit) {
         // First tryAcqire will have always success because sema is initialized with on
         // The following tries will success if the previous signal was processed in the GUI Thread
         // This prevent the AnalysisQueue from filling up the GUI Thread event Queue
@@ -389,14 +391,14 @@ void AnalyserQueue::queueAnalyseTrack(TrackPointer tio) {
 
 // static
 AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
-        ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection) {
+        ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-    ret->addAnalyser(new AnalyserWaveform(_config));
-    ret->addAnalyser(new AnalyserGain(_config));
+    ret->addAnalyser(new AnalyserWaveform(pConfig));
+    ret->addAnalyser(new AnalyserGain(pConfig));
     VampAnalyser::initializePluginPaths();
-    ret->addAnalyser(new AnalyserBeats(_config));
-    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+    ret->addAnalyser(new AnalyserBeats(pConfig));
+    ret->addAnalyser(new AnalyserKey(pConfig));
 
     ret->start(QThread::IdlePriority);
     return ret;
@@ -404,14 +406,14 @@ AnalyserQueue* AnalyserQueue::createDefaultAnalyserQueue(
 
 // static
 AnalyserQueue* AnalyserQueue::createAnalysisFeatureAnalyserQueue(
-        ConfigObject<ConfigValue>* _config, TrackCollection* pTrackCollection) {
+        ConfigObject<ConfigValue>* pConfig, TrackCollection* pTrackCollection) {
     AnalyserQueue* ret = new AnalyserQueue(pTrackCollection);
 
-    ret->addAnalyser(new AnalyserWaveform(_config));
-    ret->addAnalyser(new AnalyserGain(_config));
+    ret->addAnalyser(new AnalyserWaveform(pConfig));
+    ret->addAnalyser(new AnalyserGain(pConfig));
     VampAnalyser::initializePluginPaths();
-    ret->addAnalyser(new AnalyserBeats(_config));
-    //ret->addAnalyser(new AnalyserVampKeyTest(_config));
+    ret->addAnalyser(new AnalyserBeats(pConfig));
+    ret->addAnalyser(new AnalyserKey(pConfig));
 
     ret->start(QThread::IdlePriority);
     return ret;
