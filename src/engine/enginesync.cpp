@@ -177,14 +177,16 @@ bool EngineSync::setChannelMaster(RateControl* pRateControl) {
         return false;
     }
 
+    const QString& group = pRateControl->getGroup();
+
     // Already master, no need to do anything.
-    if (m_sSyncSource == pRateControl->getGroup()) {
+    if (m_sSyncSource == group) {
         return true;
     }
+
     // If a channel is master, disable it.
     disableCurrentMaster();
 
-    const QString& group = pChannel->getGroup();
     m_sSyncSource = group;
 
     // Only consider channels that have a track loaded and are in the master
