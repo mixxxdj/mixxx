@@ -16,19 +16,8 @@ typedef QScopedPointer<ControlObject> ScopedControl;
 
 class MixxxTest : public testing::Test {
   public:
-    MixxxTest() {
-        static int argc = 1;
-        static char* argv[1] = { strdup("test") };
-        // start the app without the GUI so that we can generate and
-        // destroy it several times in one thread, see
-        // http://stackoverflow.com/questions/14243858/qapplication-segfaults-in-googletest
-        m_pApplication = new QApplication(argc, argv, false);
-        m_pConfig.reset(new ConfigObject<ConfigValue>(
-            QDir::currentPath().append("/src/test/test_data/test.cfg")));
-    }
-    virtual ~MixxxTest() {
-        delete m_pApplication;
-    }
+    MixxxTest();
+    virtual ~MixxxTest();
 
   protected:
     ControlObjectThread* getControlObjectThread(const ConfigKey& key) {
