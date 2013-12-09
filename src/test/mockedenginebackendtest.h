@@ -151,7 +151,7 @@ class MockedEngineBackendTest : public MixxxTest {
 };
 
 const char* MockedEngineBackendTest::m_sMasterGroup = "[Master]";
-const char* MockedEngineBackendTest::m_sInternalClockGroup = "[Internal]";
+const char* MockedEngineBackendTest::m_sInternalClockGroup = "[InternalClock]";
 const char* MockedEngineBackendTest::m_sGroup1 = "[Test1]";
 const char* MockedEngineBackendTest::m_sGroup2 = "[Test2]";
 const char* MockedEngineBackendTest::m_sGroup3 = "[Test3]";

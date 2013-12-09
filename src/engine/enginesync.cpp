@@ -28,7 +28,7 @@
 #include "engine/ratecontrol.h"
 
 static const char* kMasterSyncGroup = "[Master]";
-static const char* kInternalClockGroup = "[Internal]";
+static const char* kInternalClockGroup = "[InternalClock]";
 
 EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
         : EngineControl(kMasterSyncGroup, _config),
