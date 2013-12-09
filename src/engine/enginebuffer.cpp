@@ -770,7 +770,7 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
 
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
-        updateIndicators(rate, iBufferSize);
+        updateIndicators(speed, iBufferSize);
 
         // Handle repeat mode
         at_start = m_filepos_play <= 0;
