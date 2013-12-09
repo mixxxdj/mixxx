@@ -75,6 +75,9 @@ class BpmControl : public EngineControl {
     void slotSetStatuses();
 
   private:
+    EngineSync::SyncMode getSyncMode() const {
+        return EngineSync::syncModeFromDouble(m_pSyncMode->get());
+    }
     double getBeatDistance(double dThisPosition) const;
     bool syncTempo();
     bool syncPhase();

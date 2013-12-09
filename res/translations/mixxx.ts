@@ -2440,8 +2440,8 @@ Often results in higher quality beatgrids, but will not do well on tracks that h
     </message>
     <message>
         <location filename="../../src/dlgprefkeydlg.ui" line="20"/>
-        <source>When beat detection is enabled, Mixxx detects the beats per minute and beats of your tracks, 
-automatically shows a beat-grid for them, and allows you to synchronize tracks using their beat information.</source>
+        <source>When key detection is enabled, Mixxx detects the musical key of your tracks 
+and allows you to pitch adjust them for harmonic mixing.</source>
         <translation type="unfinished"></translation>
     </message>
     <message>
@@ -2622,6 +2622,183 @@ automatically shows a beat-grid for them, and allows you to synchronize tracks u
     <message>
         <location filename="../../src/dlgprefkeydlg.ui" line="682"/>
         <source>G#m</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DlgPrefLibrary</name>
+    <message>
+        <location filename="../../src/dlgpreflibrary.cpp" line="113"/>
+        <source>Choose a music directory</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrary.cpp" line="127"/>
+        <source>Confirm Directory Removal</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrary.cpp" line="129"/>
+        <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrary.cpp" line="140"/>
+        <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrary.cpp" line="148"/>
+        <source>Hide Tracks</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrary.cpp" line="150"/>
+        <source>Delete Track Metadata</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrary.cpp" line="152"/>
+        <source>Leave Tracks Unchanged</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrary.cpp" line="194"/>
+        <source>Relink music directory to new location</source>
+        <translation type="unfinished"></translation>
+    </message>
+</context>
+<context>
+    <name>DlgPrefLibraryDlg</name>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="20"/>
+        <source>Library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="38"/>
+        <source>Music Directories:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="54"/>
+        <source>If removed, Mixxx will no longer watch this directory and its subdirectories for new tracks.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="57"/>
+        <source>Remove</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="83"/>
+        <source>Add a directory where your music is stored. Mixxx will watch this directory and its subdirectories for new tracks.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="86"/>
+        <source>Add</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="93"/>
+        <source>If an existing music directory is moved, Mixxx doesn&apos;t know where to find the audio files in it. Choose Relink to select the music directory in its new location. &lt;br/&gt; This will re-establish the links to the audio files in the Mixxx library.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="96"/>
+        <source>Relink</source>
+        <extracomment>This will re-establish the links to the audio files in the Mixxx database if you move an music directory to a new location.</extracomment>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="106"/>
+        <source>Audio File Formats</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="115"/>
+        <source>Additional Format Plugins:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="122"/>
+        <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="135"/>
+        <source>Built-in</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="142"/>
+        <source>Available Online...</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="149"/>
+        <source>Loaded Plugins:</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="156"/>
+        <source>None</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="166"/>
+        <source>Miscellaneous</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="175"/>
+        <source>Synchronize ID3 tags on track modifications</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="182"/>
+        <source>Rescan library on start-up</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="192"/>
+        <source>Use relative paths for playlist export if possible</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="202"/>
+        <source>External Libraries</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="208"/>
+        <source>You will need to restart Mixxx for these settings to take effect.</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="215"/>
+        <source>Show Rhythmbox Library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="225"/>
+        <source>Show Banshee Library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="235"/>
+        <source>Show iTunes Library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="245"/>
+        <source>Show Traktor Library</source>
+        <translation type="unfinished"></translation>
+    </message>
+    <message>
+        <location filename="../../src/dlgpreflibrarydlg.ui" line="255"/>
+        <source>All external libraries shown are write protected.</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
@@ -2952,167 +3129,6 @@ Apply settings and continue?</source>
     <message>
         <location filename="../../src/dlgprefnovinyldlg.ui" line="416"/>
         <source>&lt;b&gt;This version of Mixxx does not support vinyl control.&lt;/b&gt; &lt;br&gt; Please visit &lt;a href=&quot;http://mixxx.org&quot;&gt;Mixxx.org&lt;/a&gt; for more information.</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DlgPrefPlaylist</name>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="113"/>
-        <source>Choose a music library directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="127"/>
-        <source>Confirm Directory Removal</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="129"/>
-        <source>Mixxx will no longer watch this directory for new tracks. What would you like to do with the tracks from this directory and subdirectories?&lt;ul&gt;&lt;li&gt;Hide all tracks from this directory and subdirectories.&lt;/li&gt;&lt;li&gt;Delete all metadata for these tracks from Mixxx permanently.&lt;/li&gt;&lt;li&gt;Leave the tracks unchanged in your library.&lt;/li&gt;&lt;/ul&gt;Hiding tracks saves their metadata in case you re-add them in the future.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="140"/>
-        <source>Metadata means all track details (artist, title, playcount, etc.) as well as beatgrids, hotcues, and loops. This choice only affects the Mixxx library. No files on disk will be changed or deleted.</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="148"/>
-        <source>Hide Tracks</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="150"/>
-        <source>Delete Track Metadata</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="152"/>
-        <source>Leave Tracks Unchanged</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylist.cpp" line="194"/>
-        <source>relocate to directory</source>
-        <translation type="unfinished"></translation>
-    </message>
-</context>
-<context>
-    <name>DlgPrefPlaylistDlg</name>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="97"/>
-        <source>Audio File Formats</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="106"/>
-        <source>Additional Format Plugins:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="113"/>
-        <source>MP3, Ogg Vorbis, FLAC, WAVe, AIFF</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="140"/>
-        <source>Loaded Plugins:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="147"/>
-        <source>None</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="157"/>
-        <source>Miscellaneous</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="166"/>
-        <source>Synchronize ID3 tags on track modifications</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="173"/>
-        <source>Rescan library on start-up</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="183"/>
-        <source>Use relative paths for playlist export if possible</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="206"/>
-        <source>Show Rhythmbox Library</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="216"/>
-        <source>Show Banshee Library</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="226"/>
-        <source>Show iTunes Library</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="236"/>
-        <source>Show Traktor Library</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="199"/>
-        <source>You will need to restart Mixxx for these settings to take effect</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="20"/>
-        <source>Library</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="38"/>
-        <source>Music Directory:</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="54"/>
-        <source>Remove</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="80"/>
-        <source>Add</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="87"/>
-        <source>Relocate</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="126"/>
-        <source>Built-in</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="133"/>
-        <source>Available Online...</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="193"/>
-        <source>External Libraries</source>
-        <translation type="unfinished"></translation>
-    </message>
-    <message>
-        <location filename="../../src/dlgprefplaylistdlg.ui" line="246"/>
-        <source>All other libraries are shown write protected</source>
         <translation type="unfinished"></translation>
     </message>
 </context>
