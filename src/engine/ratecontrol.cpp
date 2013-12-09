@@ -191,7 +191,7 @@ RateControl::RateControl(const char* _group,
             Qt::DirectConnection);
 
     m_pSyncEnabled = new ControlPushButton(ConfigKey(_group, "sync_enabled"));
-    m_pSyncEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncEnabled->setButtonMode(ControlPushButton::LONGPRESSLATCHING);
     connect(m_pSyncEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncEnabledChanged(double)),
             Qt::DirectConnection);
@@ -447,7 +447,7 @@ void RateControl::slotRateSliderChanged(double v) {
         return;
     }
     m_dOldBpm = new_bpm;
-    m_pEngineSync->setChannelRateSlider(this, new_bpm);
+    m_pEngineSync->channelRateSliderChanged(this, new_bpm);
 }
 
 
@@ -503,7 +503,6 @@ double RateControl::getMode() const {
 }
 
 void RateControl::setMode(double mode) {
-    qDebug() << getGroup() << "rate control asked to set mode" << mode;
     m_pSyncMode->set(mode);
     m_pSyncMasterEnabled->set(mode == SYNC_MASTER);
 }

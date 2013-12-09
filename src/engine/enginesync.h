@@ -50,7 +50,7 @@ class EngineSync : public EngineControl {
     void setChannelSyncMode(RateControl* pRateControl, int state);
     // Similar, but will accept master or follower mode.
     void setChannelSyncMode(RateControl* pRateControl);
-    void setChannelRateSlider(RateControl* pRateControl, double new_bpm);
+    void channelRateSliderChanged(RateControl* pRateControl, double new_bpm);
     void setDeckPlaying(RateControl* pRateControl, bool playing);
 
   private slots:
