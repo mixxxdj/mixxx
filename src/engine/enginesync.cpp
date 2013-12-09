@@ -65,7 +65,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             new ControlPushButton(ConfigKey(kInternalClockGroup, "sync_master"));
     m_pInternalClockMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
     connect(m_pInternalClockMasterEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotClockSyncModeChanged(double)),
+            this, SLOT(slotInternalClockModeChanged(double)),
             Qt::DirectConnection);
 
     m_pMasterRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"),
