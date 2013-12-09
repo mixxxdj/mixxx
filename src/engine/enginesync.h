@@ -26,6 +26,7 @@ class ControlObject;
 class ControlPushButton;
 class ControlPotmeter;
 class RateControl;
+class InternalClock;
 
 class EngineSync : public EngineControl {
     Q_OBJECT
@@ -70,7 +71,6 @@ class EngineSync : public EngineControl {
     void slotSourceRateEngineChanged(double);
     void slotSourceBpmChanged(double);
     void slotSourceBeatDistanceChanged(double);
-    void slotSampleRateChanged(double);
     void slotInternalClockModeChanged(double);
 
   private:
@@ -84,16 +84,13 @@ class EngineSync : public EngineControl {
     // Unhooks the current master's signals and resets EngineSync state so it has no master.
     // Does not actually set the sync_master CO!
     void disconnectCurrentMaster();
-    // Updates the speed of the internal clock.
-    void updateInternalClockRate();
-    void setInternalClockPosition(double percent);
     // Align the clock's beat distance with the given ratecontrol.
     void initializeInternalClockBeatDistance(RateControl* pRateControl);
-    // Align the clock's beat distance with the current master, if any.
-    void initializeInternalClockBeatDistance();
     double getInternalClockBeatDistance() const;
 
     ConfigObject<ConfigValue>* m_pConfig;
+
+    InternalClock* m_pInternalClock;
 
     RateControl* m_pChannelMaster;
 
@@ -106,12 +103,6 @@ class EngineSync : public EngineControl {
     QList<RateControl*> m_ratecontrols;
     QString m_sSyncSource;
     bool m_bExplicitMasterSelected;
-    // The internal clock rate is stored in terms of samples per beat.  Fractional values are
-    // allowed.
-    double m_dInternalClockRate;
-
-    // Used for maintaining internal clock master sync.
-    double m_dInternalClockPosition;
 };
 
 #endif
