@@ -74,6 +74,7 @@ EngineSync::~EngineSync() {
     delete m_pMasterBpm;
     delete m_pMasterBeatDistance;
     delete m_pMasterRateSlider;
+    delete m_pInternalClock;
 }
 
 void EngineSync::addChannel(EngineChannel* pChannel) {
