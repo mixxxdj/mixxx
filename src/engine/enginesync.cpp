@@ -144,7 +144,7 @@ void EngineSync::requestSyncMode(RateControl* pRateControl, SyncMode mode) {
                 findNewMaster(group);
             }
         } else if (!m_bExplicitMasterSelected) {
-            if (m_sSyncSource == kMasterSyncGroup) {
+            if (m_sSyncSource == kInternalClockGroup) {
                 if (playingSyncDeckCount() == 1) {
                     // We should be master now.
                     pRateControl->notifyModeChanged(SYNC_MASTER);
@@ -217,10 +217,10 @@ void EngineSync::notifyDeckPlaying(RateControl* pRateControl, bool playing) {
                     disconnectCurrentMaster();
                 }
             } else if (playing_deck_count == 1) {
-                if (!playing && m_sSyncSource == kMasterSyncGroup) {
+                if (!playing && m_sSyncSource == kInternalClockGroup) {
                     // If a deck has stopped, and only one deck is now playing,
                     // and we were internal clock, pick a new master (the playing deck).
-                    findNewMaster(kMasterSyncGroup);
+                    findNewMaster(kInternalClockGroup);
                 }
             } else {
                 activateInternalClockMaster();
@@ -257,7 +257,7 @@ int EngineSync::playingSyncDeckCount() const {
 
 void EngineSync::disconnectCurrentMaster() {
     RateControl* pOldChannelMaster = m_pChannelMaster;
-    if (m_sSyncSource == kMasterSyncGroup) {
+    if (m_sSyncSource == kInternalClockGroup) {
         m_pInternalClockMasterEnabled->set(false);
     }
     if (pOldChannelMaster) {
@@ -286,7 +286,7 @@ void EngineSync::disconnectCurrentMaster() {
 }
 
 void EngineSync::activateInternalClockMaster() {
-    if (m_sSyncSource == kMasterSyncGroup) {
+    if (m_sSyncSource == kInternalClockGroup) {
         return;
     }
     double master_bpm = m_pMasterBpm->get();
@@ -300,7 +300,7 @@ void EngineSync::activateInternalClockMaster() {
     if (pOldChannelMaster) {
         pOldChannelMaster->notifyModeChanged(SYNC_FOLLOWER);
     }
-    m_sSyncSource = kMasterSyncGroup;
+    m_sSyncSource = kInternalClockGroup;
     updateInternalClockRate();
 
     // This is all we have to do, we'll start using the clock position right away.
@@ -400,7 +400,7 @@ void EngineSync::findNewMaster(const QString& dontpick) {
         Q_ASSERT(new_master != NULL);
         new_master->notifyModeChanged(SYNC_MASTER);
         requestSyncMode(new_master, SYNC_MASTER);
-    } else if (dontpick != kMasterSyncGroup) {
+    } else if (dontpick != kInternalClockGroup) {
         // If there are no more synced decks, there is no need for a master.
         if (playing_sync_decks + paused_sync_decks > 0) {
             activateInternalClockMaster();
@@ -439,7 +439,7 @@ void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
 }
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
-    if (m_sSyncSource == kMasterSyncGroup && !qFuzzyCompare(m_pMasterBpm->get(), new_bpm)) {
+    if (m_sSyncSource == kInternalClockGroup && !qFuzzyCompare(m_pMasterBpm->get(), new_bpm)) {
         m_pMasterBpm->set(new_bpm);
     }
 }
@@ -475,7 +475,7 @@ void EngineSync::slotInternalClockModeChanged(double state) {
     } else {
         // Internal has been turned off. Pick a slave.
         m_sSyncSource = "";
-        findNewMaster(kMasterSyncGroup);
+        findNewMaster(kInternalClockGroup);
     }
 }
 
@@ -535,7 +535,7 @@ void EngineSync::onCallbackStart(int sampleRate, int bufferSize) {
     // clock position is a double because we want to be precise, and beats may
     // not line up exactly with samples.
 
-    if (m_sSyncSource != kMasterSyncGroup) {
+    if (m_sSyncSource != kInternalClockGroup) {
         // We don't care, it will get set in setClockPosition.
         return;
     }
