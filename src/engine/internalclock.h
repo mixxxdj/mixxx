@@ -9,6 +9,7 @@
 class ControlObject;
 
 class InternalClock : public QObject, public Clock {
+    Q_OBJECT
   public:
     InternalClock(const char* pGroup);
     virtual ~InternalClock();
