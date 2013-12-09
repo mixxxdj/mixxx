@@ -51,7 +51,7 @@ class EngineSync : public EngineControl {
     void addChannel(EngineChannel* pChannel);
     void addDeck(RateControl* pRate);
     EngineChannel* getMaster() const;
-    void process(int bufferSize);
+    void onCallbackStart(int sampleRate, int bufferSize);
     RateControl* getRateControlForGroup(const QString& group);
     const QString getSyncSource() const { return m_sSyncSource; }
     // Used by RateControl to tell EngineSync it wants to be enabled in a specific mode.

@@ -277,8 +277,9 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
     }
     ScopedTimer t("EngineMaster::process");
 
-    // Update internal master sync if necessary.
-    m_pMasterSync->process(iBufferSize);
+    int iSampleRate = static_cast<int>(m_pMasterSampleRate->get());
+    // Update internal master sync.
+    m_pMasterSync->onCallbackStart(iSampleRate, iBufferSize);
 
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);

@@ -529,7 +529,7 @@ void EngineSync::updateInternalClockRate() {
     }
 }
 
-void EngineSync::process(int bufferSize) {
+void EngineSync::onCallbackStart(int sampleRate, int bufferSize) {
     // EngineMaster calls this function, it is used to keep track of the
     // clock (when there is no other master like a deck or MIDI) the
     // clock position is a double because we want to be precise, and beats may
