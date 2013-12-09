@@ -63,7 +63,7 @@ class EngineSync : public EngineControl {
     void slotSourceBpmChanged(double);
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
-    void slotClockModeChanged(double);
+    void slotInternalClockModeChanged(double);
 
   private:
     // Choices about master selection often hinge on how many decks are playing back.
@@ -71,16 +71,16 @@ class EngineSync : public EngineControl {
     // Activate a specific channel as Master.
     bool activateChannelMaster(RateControl* pRateControl);
     // Activate the internal clock as master.
-    void activateClockMaster();
+    void activateInternalClockMaster();
     void findNewMaster(const QString& dontpick);
     void disableCurrentMaster();
     void updateSamplesPerBeat();
-    void setClockPosition(double percent);
+    void setInternalClockPosition(double percent);
     // Align the clock's beat distance with the given ratecontrol.
-    void initializeClockBeatDistance(RateControl* pRateControl);
+    void initializeInternalClockBeatDistance(RateControl* pRateControl);
     // Align the clock's beat distance with the current master, if any.
-    void initializeClockBeatDistance();
-    double getClockBeatDistance() const;
+    void initializeInternalClockBeatDistance();
+    double getInternalClockBeatDistance() const;
 
     ConfigObject<ConfigValue>* m_pConfig;
 
@@ -89,7 +89,7 @@ class EngineSync : public EngineControl {
     ControlObject* m_pMasterBpm;
     ControlObject* m_pMasterBeatDistance;
     ControlObject* m_pSampleRate;
-    ControlPushButton* m_pClockMasterEnabled;
+    ControlPushButton* m_pInternalClockMasterEnabled;
     ControlPotmeter* m_pMasterRateSlider;
 
     QList<RateControl*> m_ratecontrols;
@@ -98,7 +98,7 @@ class EngineSync : public EngineControl {
     double m_dSamplesPerBeat;
 
     // Used for maintaining internal clock master sync.
-    double m_dClockPosition;
+    double m_dInternalClockPosition;
 };
 
 #endif

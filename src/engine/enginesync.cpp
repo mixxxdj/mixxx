@@ -35,7 +35,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
           m_pChannelMaster(NULL),
           m_sSyncSource(""),
           m_bExplicitMasterSelected(false),
-          m_dClockPosition(0.0f) {
+          m_dInternalClockPosition(0.0f) {
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
     m_pSampleRate = ControlObject::getControl(ConfigKey(kMasterSyncGroup, "samplerate"));
@@ -60,9 +60,10 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             this, SLOT(slotMasterBpmChanged(double)),
             Qt::DirectConnection);
 
-    m_pClockMasterEnabled = new ControlPushButton(ConfigKey(kMasterSyncGroup, "sync_master"));
-    m_pClockMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pClockMasterEnabled, SIGNAL(valueChanged(double)),
+    m_pInternalClockMasterEnabled =
+            new ControlPushButton(ConfigKey(kMasterSyncGroup, "sync_master"));
+    m_pInternalClockMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    connect(m_pInternalClockMasterEnabled, SIGNAL(valueChanged(double)),
             this, SLOT(slotClockSyncModeChanged(double)),
             Qt::DirectConnection);
 
@@ -152,7 +153,7 @@ void EngineSync::requestSyncMode(RateControl* pRateControl, int state) {
             } else {
                 // If there was a deck master, set to internal clock.
                 if (playingSyncDeckCount() > 1) {
-                    activateClockMaster();
+                    activateInternalClockMaster();
                 }
             }
         }
@@ -220,7 +221,7 @@ void EngineSync::notifyDeckPlaying(RateControl* pRateControl, bool playing) {
                     findNewMaster(kMasterSyncGroup);
                 }
             } else {
-                activateClockMaster();
+                activateInternalClockMaster();
             }
         }
     }
@@ -255,7 +256,7 @@ int EngineSync::playingSyncDeckCount() const {
 void EngineSync::disableCurrentMaster() {
     RateControl* pOldChannelMaster = m_pChannelMaster;
     if (m_sSyncSource == kMasterSyncGroup) {
-        m_pClockMasterEnabled->set(false);
+        m_pInternalClockMasterEnabled->set(false);
     }
     if (pOldChannelMaster) {
         ControlObject* pSourceRateEngine =
@@ -282,7 +283,7 @@ void EngineSync::disableCurrentMaster() {
     m_pChannelMaster = NULL;
 }
 
-void EngineSync::activateClockMaster() {
+void EngineSync::activateInternalClockMaster() {
     if (m_sSyncSource == kMasterSyncGroup) {
         return;
     }
@@ -291,7 +292,7 @@ void EngineSync::activateClockMaster() {
         m_pMasterRateSlider->set(master_bpm);
     }
     QString old_master = m_sSyncSource;
-    initializeClockBeatDistance();
+    initializeInternalClockBeatDistance();
     RateControl* pOldChannelMaster = m_pChannelMaster;
     disableCurrentMaster();
     if (pOldChannelMaster) {
@@ -301,7 +302,7 @@ void EngineSync::activateClockMaster() {
     updateSamplesPerBeat();
 
     // This is all we have to do, we'll start using the clock position right away.
-    m_pClockMasterEnabled->set(true);
+    m_pInternalClockMasterEnabled->set(true);
 }
 
 bool EngineSync::activateChannelMaster(RateControl* pRateControl) {
@@ -353,9 +354,9 @@ bool EngineSync::activateChannelMaster(RateControl* pRateControl) {
             Qt::DirectConnection);
 
     // Reset internal beat distance to equal the new master
-    initializeClockBeatDistance();
+    initializeInternalClockBeatDistance();
 
-    m_pClockMasterEnabled->set(false);
+    m_pInternalClockMasterEnabled->set(false);
     slotSourceRateEngineChanged(pSourceRateEngine->get());
     slotSourceBpmChanged(pSourceBpm->get());
 
@@ -400,7 +401,7 @@ void EngineSync::findNewMaster(const QString& dontpick) {
     } else if (dontpick != kMasterSyncGroup) {
         // If there are no more synced decks, there is no need for a master.
         if (playing_sync_decks + paused_sync_decks > 0) {
-            activateClockMaster();
+            activateInternalClockMaster();
         }
     } else {
         // Clock master was specifically disabled.  Just go with new_master if it exists,
@@ -432,7 +433,7 @@ void EngineSync::slotSourceBpmChanged(double bpm) {
 void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
     // Pass it on to slaves and update clock position marker.
     m_pMasterBeatDistance->set(beat_dist);
-    setClockPosition(beat_dist);
+    setInternalClockPosition(beat_dist);
 }
 
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
@@ -452,23 +453,23 @@ void EngineSync::slotMasterBpmChanged(double new_bpm) {
                      << "setting to about 124bpm at 44.1Khz.";
             m_dSamplesPerBeat = 21338;
         }
-        while (m_dClockPosition >= m_dSamplesPerBeat) {
-            m_dClockPosition -= m_dSamplesPerBeat;
+        while (m_dInternalClockPosition >= m_dSamplesPerBeat) {
+            m_dInternalClockPosition -= m_dSamplesPerBeat;
         }
     }
 }
 
 void EngineSync::slotSampleRateChanged(double srate) {
     int new_rate = static_cast<int>(srate);
-    double internal_position = getClockBeatDistance();
+    double internal_position = getInternalClockBeatDistance();
     // Recalculate clock buffer position based on new sample rate.
-    m_dClockPosition = new_rate * internal_position / m_dSamplesPerBeat;
+    m_dInternalClockPosition = new_rate * internal_position / m_dSamplesPerBeat;
     updateSamplesPerBeat();
 }
 
-void EngineSync::slotClockModeChanged(double state) {
+void EngineSync::slotInternalClockModeChanged(double state) {
     if (state) {
-        activateClockMaster();
+        activateInternalClockMaster();
     } else {
         // Internal has been turned off. Pick a slave.
         m_sSyncSource = "";
@@ -476,31 +477,31 @@ void EngineSync::slotClockModeChanged(double state) {
     }
 }
 
-double EngineSync::getClockBeatDistance() const {
+double EngineSync::getInternalClockBeatDistance() const {
     // Returns number of samples distance from the last beat.
-    if (m_dClockPosition < 0) {
+    if (m_dInternalClockPosition < 0) {
         qDebug() << "ERROR: Internal beat distance should never be less than zero";
         return 0.0;
     }
-    return m_dClockPosition / m_dSamplesPerBeat;
+    return m_dInternalClockPosition / m_dSamplesPerBeat;
 }
 
-void EngineSync::initializeClockBeatDistance() {
+void EngineSync::initializeInternalClockBeatDistance() {
     if (m_pChannelMaster) {
-        initializeClockBeatDistance(m_pChannelMaster);
+        initializeInternalClockBeatDistance(m_pChannelMaster);
     }
 }
 
-void EngineSync::initializeClockBeatDistance(RateControl* pRateControl) {
+void EngineSync::initializeInternalClockBeatDistance(RateControl* pRateControl) {
     ControlObject* pSourceBeatDistance =
             ControlObject::getControl(ConfigKey(pRateControl->getGroup(), "beat_distance"));
     double beat_distance = pSourceBeatDistance ? pSourceBeatDistance->get() : 0;
 
-    m_dClockPosition = beat_distance * m_dSamplesPerBeat;
+    m_dInternalClockPosition = beat_distance * m_dSamplesPerBeat;
     m_pMasterBeatDistance->set(beat_distance);
     if (pSourceBeatDistance) {
         qDebug() << "Resetting clock beat distance to " << pRateControl->getGroup()
-                 << m_dClockPosition << " " << beat_distance;
+                 << m_dInternalClockPosition << " " << beat_distance;
     }
 }
 
@@ -536,7 +537,7 @@ void EngineSync::process(int bufferSize) {
         return;
     }
 
-    m_dClockPosition += bufferSize / 2; // stereo samples, so divide by 2
+    m_dInternalClockPosition += bufferSize / 2; // stereo samples, so divide by 2
 
     // Can't use mod because we're in double land.
     if (m_dSamplesPerBeat <= 0) {
@@ -544,15 +545,15 @@ void EngineSync::process(int bufferSize) {
                  << "setting to about 124 bpm at 44.1Khz.";
         m_dSamplesPerBeat = 21338;
     }
-    while (m_dClockPosition >= m_dSamplesPerBeat) {
-        m_dClockPosition -= m_dSamplesPerBeat;
+    while (m_dInternalClockPosition >= m_dSamplesPerBeat) {
+        m_dInternalClockPosition -= m_dSamplesPerBeat;
     }
 
-    m_pMasterBeatDistance->set(getClockBeatDistance());
+    m_pMasterBeatDistance->set(getInternalClockBeatDistance());
 }
 
-void EngineSync::setClockPosition(double percent) {
-    m_dClockPosition = percent * m_dSamplesPerBeat;
+void EngineSync::setInternalClockPosition(double percent) {
+    m_dInternalClockPosition = percent * m_dSamplesPerBeat;
 }
 
 EngineChannel* EngineSync::getMaster() const {
