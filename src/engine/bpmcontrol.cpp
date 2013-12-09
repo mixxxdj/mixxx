@@ -759,8 +759,6 @@ double BpmControl::process(const double dRate,
     Q_UNUSED(iBufferSize);
     // It doesn't make sense to me to use the position before update, but this
     // results in better sync.
-    if (getSyncMode() == EngineSync::SYNC_MASTER) {
-        m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
-    }
+    m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
     return kNoTrigger;
 }
