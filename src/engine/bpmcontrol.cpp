@@ -145,9 +145,9 @@ void BpmControl::slotFileBpmChanged(double bpm) {
     // engine BPM.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
     m_pEngineBpm->set(bpm * dRate);
-    if (m_pSyncMode->get() == SYNC_MASTER) {
+    if (getSyncMode() == EngineSync::SYNC_MASTER) {
         m_pMasterBpm->set(bpm * dRate);
-    } else if (m_pSyncMode->get() == SYNC_FOLLOWER) {
+    } else if (getSyncMode() == EngineSync::SYNC_FOLLOWER) {
         slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }
 }
@@ -321,7 +321,7 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
     if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
         return;
     }
-    if (m_pSyncMode->get() != SYNC_NONE) {
+    if (getSyncMode() != EngineSync::SYNC_NONE) {
         // If the bpm is the same, nothing to do.
         if (qFuzzyCompare(bpm, m_pEngineBpm->get())) {
             return;
@@ -334,25 +334,28 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
 
 void BpmControl::slotSyncModeChanged(double state) {
     slotSetStatuses();
-    if (state == SYNC_FOLLOWER) {
+    if (state == EngineSync::SYNC_FOLLOWER) {
         // Update the slider immediately.
         slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }
 }
 
 void BpmControl::slotSetStatuses() {
-    switch (static_cast<int>(m_pSyncMode->get())) {
-    case SYNC_NONE:
-        m_pSyncMasterEnabled->set(false);
-        m_pSyncEnabled->set(false);
-        break;
-    case SYNC_FOLLOWER:
-        m_pSyncMasterEnabled->set(false);
-        m_pSyncEnabled->set(true);
-        break;
-    case SYNC_MASTER:
-        m_pSyncMasterEnabled->set(true);
-        m_pSyncEnabled->set(true);
+    switch (static_cast<int>(getSyncMode())) {
+        case EngineSync::SYNC_NONE:
+            m_pSyncMasterEnabled->set(false);
+            m_pSyncEnabled->set(false);
+            break;
+        case EngineSync::SYNC_FOLLOWER:
+            m_pSyncMasterEnabled->set(false);
+            m_pSyncEnabled->set(true);
+            break;
+        case EngineSync::SYNC_MASTER:
+            m_pSyncMasterEnabled->set(true);
+            m_pSyncEnabled->set(true);
+            break;
+        default:
+            qDebug() << "WARNING: Invalid SyncMode in BpmControl::slotSetStatuses";
     }
 }
 
@@ -495,7 +498,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
 }
 
 bool BpmControl::syncPhase() {
-    if (m_pSyncMode->get() == SYNC_MASTER) {
+    if (getSyncMode() == EngineSync::SYNC_MASTER) {
         return true;
     }
     double dThisPosition = getCurrentSample();
@@ -574,7 +577,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     }
 
     double dOtherBeatFraction;
-    if (m_pSyncMode->get() == SYNC_FOLLOWER) {
+    if (getSyncMode() == EngineSync::SYNC_FOLLOWER) {
         // If we're a slave, it's easy to get the other beat fraction
         dOtherBeatFraction = m_pMasterBeatDistance->get();
     } else {
@@ -682,7 +685,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 }
 
 void BpmControl::onEngineRateChange(double rate) {
-    if (m_pSyncMode->get() == SYNC_FOLLOWER) {
+    if (getSyncMode() == EngineSync::SYNC_FOLLOWER) {
         m_pEngineBpm->set(rate * m_pFileBpm->get());
     }
 }
@@ -756,7 +759,7 @@ double BpmControl::process(const double dRate,
     Q_UNUSED(iBufferSize);
     // It doesn't make sense to me to use the position before update, but this
     // results in better sync.
-    if (m_pSyncMode->get() == SYNC_MASTER) {
+    if (getSyncMode() == EngineSync::SYNC_MASTER) {
         m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
     }
     return kNoTrigger;

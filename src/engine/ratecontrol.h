@@ -53,8 +53,8 @@ public:
     double calculateRate(double baserate, bool paused, int iSamplesPerBuffer, bool* isScratching);
     double getRawRate() const;
     ControlObject* getBeatDistanceControl();
-    double getMode() const;
-    void notifyModeChanged(double state);
+    EngineSync::SyncMode getMode() const;
+    void notifyModeChanged(EngineSync::SyncMode state);
     double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
     EngineChannel* getChannel() { Q_ASSERT(m_pChannel); return m_pChannel; }
     const QString getGroup() const { return m_sGroup; }

@@ -37,6 +37,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
           m_sSyncSource(""),
           m_bExplicitMasterSelected(false),
           m_dInternalClockPosition(0.0f) {
+    qRegisterMetaType<EngineSync::SyncMode>("EngineSync::SyncMode");
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
     m_pSampleRate = ControlObject::getControl(ConfigKey(kMasterSyncGroup, "samplerate"));
@@ -69,7 +70,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
             Qt::DirectConnection);
 
     m_pMasterRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"),
-                                                40.0, 200.0);
+                                              40.0, 200.0);
     connect(m_pMasterRateSlider, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
@@ -111,7 +112,7 @@ void EngineSync::addDeck(RateControl *pNewRate) {
     m_ratecontrols.append(pNewRate);
 }
 
-void EngineSync::requestSyncMode(RateControl* pRateControl, int state) {
+void EngineSync::requestSyncMode(RateControl* pRateControl, SyncMode mode) {
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
     Q_ASSERT(pRateControl);
 
@@ -119,14 +120,14 @@ void EngineSync::requestSyncMode(RateControl* pRateControl, int state) {
     const bool channelIsMaster = m_sSyncSource == group;
 
     // In the following logic, m_sSyncSource acts like "previous sync source".
-    if (state == SYNC_MASTER) {
+    if (mode == SYNC_MASTER) {
         // RateControl is explicitly requesting master, so we'll honor that.
         m_bExplicitMasterSelected = true;
         // If setting this channel as master fails, pick a new master.
         if (!activateChannelMaster(pRateControl)) {
             findNewMaster(group);
         }
-    } else if (state == SYNC_FOLLOWER) {
+    } else if (mode == SYNC_FOLLOWER) {
         // Was this deck master before?  If so do a handoff.
         if (channelIsMaster) {
             // Choose a new master, but don't pick the current one.
@@ -240,7 +241,7 @@ int EngineSync::playingSyncDeckCount() const {
     int playing_sync_decks = 0;
 
     foreach (const RateControl* pRateControl, m_ratecontrols) {
-        double sync_mode = pRateControl->getMode();
+        SyncMode sync_mode = pRateControl->getMode();
         if (sync_mode == SYNC_NONE) {
             continue;
         }
@@ -375,7 +376,7 @@ void EngineSync::findNewMaster(const QString& dontpick) {
             continue;
         }
 
-        double sync_mode = pRateControl->getMode();
+        SyncMode sync_mode = pRateControl->getMode();
         if (sync_mode == SYNC_NONE) {
             continue;
         }

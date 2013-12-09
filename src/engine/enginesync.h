@@ -27,16 +27,24 @@ class ControlPushButton;
 class ControlPotmeter;
 class RateControl;
 
-enum SYNC_MODE {
-    SYNC_NONE = 0,
-    SYNC_FOLLOWER = 1,
-    SYNC_MASTER = 2
-};
-
 class EngineSync : public EngineControl {
     Q_OBJECT
-
   public:
+    enum SyncMode {
+        SYNC_NONE = 0,
+        SYNC_FOLLOWER = 1,
+        SYNC_MASTER = 2,
+        SYNC_NUM_MODES
+    };
+
+    static inline SyncMode syncModeFromDouble(double value) {
+        SyncMode mode = static_cast<SyncMode>(value);
+        if (mode >= SYNC_NUM_MODES || mode < 0) {
+            return SYNC_NONE;
+        }
+        return mode;
+    }
+
     explicit EngineSync(ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineSync();
 
@@ -48,7 +56,7 @@ class EngineSync : public EngineControl {
     const QString getSyncSource() const { return m_sSyncSource; }
     // Used by RateControl to tell EngineSync it wants to be enabled in a specific mode.
     // EngineSync can override this selection.
-    void requestSyncMode(RateControl* pRateControl, int state);
+    void requestSyncMode(RateControl* pRateControl, SyncMode state);
     // Used by RateControl to tell EngineSync it wants to be enabled in any mode (master/follower).
     void notifySyncModeEnabled(RateControl* pRateControl);
     // RateControl notifies EngineSync directly about slider updates instead of using a CO.
