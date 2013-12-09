@@ -85,7 +85,7 @@ BpmControl::BpmControl(const char* _group,
             Qt::DirectConnection);
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
-    m_pThisBeatDistance = ControlObject::getControl(ConfigKey(_group, "beat_distance"));
+    m_pThisBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
 
     m_pMasterBeatDistance = ControlObject::getControl(ConfigKey("[Master]", "beat_distance"));
 
@@ -134,6 +134,7 @@ BpmControl::~BpmControl() {
     delete m_pButtonSyncPhase;
     delete m_pButtonSyncTempo;
     delete m_pTranslateBeats;
+    delete m_pThisBeatDistance;
 }
 
 double BpmControl::getBpm() const {
