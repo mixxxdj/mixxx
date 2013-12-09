@@ -26,15 +26,23 @@ using ::testing::_;
 
 class MockScaler : public EngineBufferScale {
   public:
-	MockScaler() : EngineBufferScale() {
-		SampleUtil::applyGain(m_buffer, 0, MAX_BUFFER_LEN);
-	}
+    MockScaler() : EngineBufferScale() {
+        SampleUtil::applyGain(m_buffer, 0, MAX_BUFFER_LEN);
+    }
+    void setScaleParameters(int iSampleRate,
+                            double* rate_adjust,
+                            double* tempo_adjust,
+                            double* pitch_adjust) {
+        m_iSampleRate = m_iSampleRate;
+        m_dRateAdjust = *rate_adjust;
+        m_dTempoAdjust = *tempo_adjust;
+        m_dPitchAdjust = *pitch_adjust;
+    }
     void clear() { }
     CSAMPLE *getScaled(unsigned long buf_size) {
         m_samplesRead += buf_size;
         return m_buffer;
     }
-
 };
 
 
