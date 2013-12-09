@@ -73,8 +73,11 @@ class EngineSync : public EngineControl {
     // Activate the internal clock as master.
     void activateInternalClockMaster();
     void findNewMaster(const QString& dontpick);
-    void disableCurrentMaster();
-    void updateSamplesPerBeat();
+    // Unhooks the current master's signals and resets EngineSync state so it has no master.
+    // Does not actually set the sync_master CO!
+    void disconnectCurrentMaster();
+    // Updates the speed of the internal clock.
+    void updateInternalClockRate();
     void setInternalClockPosition(double percent);
     // Align the clock's beat distance with the given ratecontrol.
     void initializeInternalClockBeatDistance(RateControl* pRateControl);
@@ -95,7 +98,9 @@ class EngineSync : public EngineControl {
     QList<RateControl*> m_ratecontrols;
     QString m_sSyncSource;
     bool m_bExplicitMasterSelected;
-    double m_dSamplesPerBeat;
+    // The internal clock rate is stored in terms of samples per beat.  Fractional values are
+    // allowed.
+    double m_dInternalClockRate;
 
     // Used for maintaining internal clock master sync.
     double m_dInternalClockPosition;

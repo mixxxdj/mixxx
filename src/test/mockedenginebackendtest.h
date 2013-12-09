@@ -146,10 +146,12 @@ class MockedEngineBackendTest : public MixxxTest {
     static const char* m_sGroup2;
     static const char* m_sGroup3;
     static const char* m_sMasterGroup;
+    static const char* m_sInternalClockGroup;
     static const double kRateRangeDivisor;
 };
 
 const char* MockedEngineBackendTest::m_sMasterGroup = "[Master]";
+const char* MockedEngineBackendTest::m_sInternalClockGroup = "[Internal]";
 const char* MockedEngineBackendTest::m_sGroup1 = "[Test1]";
 const char* MockedEngineBackendTest::m_sGroup2 = "[Test2]";
 const char* MockedEngineBackendTest::m_sGroup3 = "[Test3]";
