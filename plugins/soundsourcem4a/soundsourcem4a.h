@@ -30,7 +30,7 @@
 #include "m4a/ip.h"
 
 //As per QLibrary docs: http://doc.trolltech.com/4.6/qlibrary.html#resolve
-#ifdef Q_WS_WIN
+#ifdef Q_OS_WIN
 #define MY_EXPORT __declspec(dllexport)
 #else
 #define MY_EXPORT
