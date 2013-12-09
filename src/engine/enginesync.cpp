@@ -464,6 +464,12 @@ void EngineSync::initializeInternalClockBeatDistance(RateControl* pRateControl) 
 
 void EngineSync::onCallbackStart(int sampleRate, int bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
+
+    // If the InternalClock is the master, set the master beat distance to the
+    // clock's current beat distance.
+    if (m_sSyncSource == kInternalClockGroup) {
+        m_pMasterBeatDistance->set(m_pInternalClock->getBeatDistance());
+    }
 }
 
 EngineChannel* EngineSync::getMaster() const {
