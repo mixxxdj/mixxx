@@ -54,11 +54,10 @@ public:
     double getRawRate() const;
     ControlObject* getBeatDistanceControl();
     double getMode() const;
-    void setMode(double state);
+    void notifyModeChanged(double state);
     double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
     EngineChannel* getChannel() { Q_ASSERT(m_pChannel); return m_pChannel; }
     const QString getGroup() const { return m_sGroup; }
-
 
     // Set rate change when temp rate button is pressed
     static void setTemp(double v);
@@ -121,8 +120,7 @@ public:
         *buttonRateTempUp, *buttonRateTempUpSmall;
     ControlPushButton *buttonRatePermDown, *buttonRatePermDownSmall,
         *buttonRatePermUp, *buttonRatePermUpSmall;
-    ControlObject *m_pRateDir, *m_pRateRange, *m_pRateEngine;
-    ControlObject* m_pBeatDistance;
+    ControlObject *m_pRateDir, *m_pRateRange;
     ControlPotmeter* m_pRateSlider;
     ControlPotmeter* m_pRateSearch;
     ControlPushButton* m_pReverseButton;

@@ -46,12 +46,15 @@ class EngineSync : public EngineControl {
     void process(int bufferSize);
     RateControl* getRateControlForGroup(const QString& group);
     const QString getSyncSource() const { return m_sSyncSource; }
-    // Used by RateControl to tell the master sync it wants to be enabled.
-    void setChannelSyncMode(RateControl* pRateControl, int state);
-    // Similar, but will accept master or follower mode.
-    void setChannelSyncMode(RateControl* pRateControl);
-    void channelRateSliderChanged(RateControl* pRateControl, double new_bpm);
-    void setDeckPlaying(RateControl* pRateControl, bool playing);
+    // Used by RateControl to tell EngineSync it wants to be enabled in a specific mode.
+    // EngineSync can override this selection.
+    void requestSyncMode(RateControl* pRateControl, int state);
+    // Used by RateControl to tell EngineSync it wants to be enabled in any mode (master/follower).
+    void notifySyncModeEnabled(RateControl* pRateControl);
+    // RateControl notifies EngineSync directly about slider updates instead of using a CO.
+    void notifyRateSliderChanged(RateControl* pRateControl, double new_bpm);
+    // RateControl notifies EngineSync about play status changes.
+    void notifyDeckPlaying(RateControl* pRateControl, bool playing);
 
   private slots:
     void slotMasterBpmChanged(double);
@@ -60,20 +63,24 @@ class EngineSync : public EngineControl {
     void slotSourceBpmChanged(double);
     void slotSourceBeatDistanceChanged(double);
     void slotSampleRateChanged(double);
-    void slotInternalMasterChanged(double);
+    void slotClockModeChanged(double);
 
   private:
-    int playingSyncDeckCount();
-    void setMaster(const QString& group);
-    bool setChannelMaster(RateControl* pRateControl);
-    void setInternalMaster();
-    void chooseNewMaster(const QString& dontpick);
+    // Choices about master selection often hinge on how many decks are playing back.
+    int playingSyncDeckCount() const;
+    // Activate a specific channel as Master.
+    bool activateChannelMaster(RateControl* pRateControl);
+    // Activate the internal clock as master.
+    void activateClockMaster();
+    void findNewMaster(const QString& dontpick);
     void disableCurrentMaster();
     void updateSamplesPerBeat();
-    void setPseudoPosition(double percent);
-    void initializeInternalBeatDistance();
-    void initializeInternalBeatDistance(RateControl* pRateControl);
-    double getInternalBeatDistance() const;
+    void setClockPosition(double percent);
+    // Align the clock's beat distance with the given ratecontrol.
+    void initializeClockBeatDistance(RateControl* pRateControl);
+    // Align the clock's beat distance with the current master, if any.
+    void initializeClockBeatDistance();
+    double getClockBeatDistance() const;
 
     ConfigObject<ConfigValue>* m_pConfig;
 
@@ -82,16 +89,16 @@ class EngineSync : public EngineControl {
     ControlObject* m_pMasterBpm;
     ControlObject* m_pMasterBeatDistance;
     ControlObject* m_pSampleRate;
-    ControlPushButton* m_pSyncInternalEnabled;
-    ControlPotmeter* m_pInternalRateSlider;
+    ControlPushButton* m_pClockMasterEnabled;
+    ControlPotmeter* m_pMasterRateSlider;
 
     QList<RateControl*> m_ratecontrols;
     QString m_sSyncSource;
     bool m_bExplicitMasterSelected;
     double m_dSamplesPerBeat;
 
-    // Used for maintaining internal master sync.
-    double m_dPseudoBufferPos;
+    // Used for maintaining internal clock master sync.
+    double m_dClockPosition;
 };
 
 #endif

@@ -64,9 +64,6 @@ RateControl::RateControl(const char* _group,
             this, SLOT(slotRateSliderChanged(double)),
             Qt::DirectConnection);
 
-    m_pRateEngine = ControlObject::getControl(ConfigKey(_group, "rateEngine"));
-    m_pBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
-
     // Search rate. Rate used when searching in sound. This overrules the
     // playback rate
     m_pRateSearch = new ControlPotmeter(ConfigKey(_group, "rateSearch"), -300., 300.);
@@ -201,7 +198,6 @@ RateControl::~RateControl() {
     delete m_pRateSlider;
     delete m_pRateRange;
     delete m_pRateDir;
-    delete m_pBeatDistance;
     delete m_pSyncMasterEnabled;
     delete m_pSyncEnabled;
 
@@ -397,11 +393,11 @@ void RateControl::slotControlRateTempUpSmall(double)
 }
 
 void RateControl::slotControlPlay(double state) {
-    m_pEngineSync->setDeckPlaying(this, state);
+    m_pEngineSync->notifyDeckPlaying(this, state);
 }
 
 void RateControl::slotSyncModeChanged(double state) {
-    m_pEngineSync->setChannelSyncMode(this, state);
+    m_pEngineSync->requestSyncMode(this, state);
 }
 
 void RateControl::slotSyncMasterEnabledChanged(double state) {
@@ -425,7 +421,7 @@ void RateControl::slotSyncMasterEnabledChanged(double state) {
 void RateControl::slotSyncEnabledChanged(double v) {
     if (v) {
         if (m_pSyncMode->get() == SYNC_NONE) {
-            m_pEngineSync->setChannelSyncMode(this);
+            m_pEngineSync->notifySyncModeEnabled(this);
         }
     } else {
         if (m_pSyncMode->get() != SYNC_NONE) {
@@ -447,7 +443,7 @@ void RateControl::slotRateSliderChanged(double v) {
         return;
     }
     m_dOldBpm = new_bpm;
-    m_pEngineSync->channelRateSliderChanged(this, new_bpm);
+    m_pEngineSync->notifyRateSliderChanged(this, new_bpm);
 }
 
 
@@ -494,15 +490,11 @@ double RateControl::getJogFactor() const {
     return jogFactor;
 }
 
-ControlObject* RateControl::getBeatDistanceControl() {
-    return m_pBeatDistance;
-}
-
 double RateControl::getMode() const {
     return m_pSyncMode->get();
 }
 
-void RateControl::setMode(double mode) {
+void RateControl::notifyModeChanged(double mode) {
     m_pSyncMode->set(mode);
     m_pSyncMasterEnabled->set(mode == SYNC_MASTER);
 }
