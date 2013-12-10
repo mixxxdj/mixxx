@@ -6,7 +6,7 @@
 
 InternalClock::InternalClock(const char* pGroup)
         : m_group(pGroup),
-          m_iOldSampleRate(0),
+          m_iOldSampleRate(44100),
           m_dOldBpm(0.0),
           m_dBeatLength(0),
           m_dClockPosition(0) {

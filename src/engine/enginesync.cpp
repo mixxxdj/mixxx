@@ -161,8 +161,8 @@ void EngineSync::requestSyncMode(RateControl* pRateControl, SyncMode mode) {
 void EngineSync::notifySyncModeEnabled(RateControl* pRateControl) {
     if (m_sSyncSource == "") {
         // There is no sync source.  If any other deck is playing we will match the first
-        // available bpm even if sync is not enabled, although we will still be a master,
-        RateControl* sync_source = NULL;
+        // available bpm even if sync is not enabled, although we will still be a master
+        // in case latching is activated.
         foreach (RateControl* other_deck, m_ratecontrols) {
             if (other_deck->getGroup() == pRateControl->getGroup()) {
                 continue;
@@ -170,7 +170,6 @@ void EngineSync::notifySyncModeEnabled(RateControl* pRateControl) {
             ControlObject *playing = ControlObject::getControl(ConfigKey(other_deck->getGroup(),
                                                                          "play"));
             if (playing && playing->get()) {
-                sync_source = other_deck;
                 ControlObject *other_bpm =
                         ControlObject::getControl(ConfigKey(other_deck->getGroup(), "bpm"));
                 m_pMasterRateSlider->set(other_bpm->get());
@@ -356,6 +355,7 @@ bool EngineSync::activateChannelMaster(RateControl* pRateControl) {
     m_pInternalClockMasterEnabled->set(false);
     slotSourceRateEngineChanged(pSourceRateEngine->get());
     slotSourceBpmChanged(pSourceBpm->get());
+    m_pMasterBpm->set(pSourceBpm->get());
 
     return true;
 }
