@@ -8,9 +8,9 @@
 #include "controlpushbutton.h"
 #include "widget/wpushbutton.h"
 
-class ControlPushButtonTest : public MixxxTest {
+class WPushButtonTest : public MixxxTest {
   public:
-    ControlPushButtonTest()
+    WPushButtonTest()
           : m_pGroup("[Channel1]"){
     }
 
@@ -25,7 +25,7 @@ class ControlPushButtonTest : public MixxxTest {
     const char* m_pGroup;
 };
 
-TEST_F(ControlPushButtonTest, QuickPressNoLatchTest) {
+TEST_F(WPushButtonTest, QuickPressNoLatchTest) {
     m_pButton.reset(new WPushButton(NULL, ControlPushButton::LONGPRESSLATCHING,
                                     ControlPushButton::PUSH));
     m_pButton->setStates(2);
@@ -38,7 +38,7 @@ TEST_F(ControlPushButtonTest, QuickPressNoLatchTest) {
     ASSERT_EQ(0.0, m_pButton->getValue());
 }
 
-TEST_F(ControlPushButtonTest, LongPressLatchTest) {
+TEST_F(WPushButtonTest, LongPressLatchTest) {
     m_pButton.reset(new WPushButton(NULL, ControlPushButton::LONGPRESSLATCHING,
                                     ControlPushButton::PUSH));
     m_pButton->setStates(2);
@@ -50,5 +50,3 @@ TEST_F(ControlPushButtonTest, LongPressLatchTest) {
 
     ASSERT_EQ(1.0, m_pButton->getValue());
 }
-
-
