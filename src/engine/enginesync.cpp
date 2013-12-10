@@ -21,6 +21,7 @@
 #include "controlobject.h"
 #include "controlpotmeter.h"
 #include "controlpushbutton.h"
+#include "engine/bpmcontrol.h"
 #include "engine/enginebuffer.h"
 #include "engine/enginechannel.h"
 #include "engine/enginecontrol.h"
@@ -222,6 +223,13 @@ void EngineSync::notifyRateSliderChanged(RateControl* pRateControl, double new_b
     if (pRateControl->getMode() != SYNC_NONE) {
         m_pMasterRateSlider->set(new_bpm);
         m_pMasterBpm->set(new_bpm);
+
+        // If this call came from the non-master, explicitly notify the master of the update.
+        if (pRateControl->getMode() != SYNC_MASTER) {
+            if (m_pChannelMaster) {
+                m_pChannelMaster->getBpmControl()->notifyMasterSyncSliderChanged(new_bpm);
+            }
+        }
     }
 }
 

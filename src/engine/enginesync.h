@@ -39,6 +39,8 @@ class EngineSync : public EngineControl {
     };
 
     static inline SyncMode syncModeFromDouble(double value) {
+        // Value is not actually unused, but the compiler thinks it is.
+        Q_UNUSED(value);
         SyncMode mode = static_cast<SyncMode>(value);
         if (mode >= SYNC_NUM_MODES || mode < 0) {
             return SYNC_NONE;
@@ -96,7 +98,6 @@ class EngineSync : public EngineControl {
 
     ControlObject* m_pMasterBpm;
     ControlObject* m_pMasterBeatDistance;
-    ControlObject* m_pSampleRate;
     ControlPushButton* m_pInternalClockMasterEnabled;
     ControlPotmeter* m_pMasterRateSlider;
 

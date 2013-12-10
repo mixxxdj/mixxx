@@ -107,9 +107,6 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pSyncMode, SIGNAL(valueChanged(double)),
             this, SLOT(slotSyncModeChanged(double)),
             Qt::DirectConnection);
-    connect(m_pSyncMode, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotSyncModeChanged(double)),
-            Qt::DirectConnection);
 
 #ifdef __VINYLCONTROL__
     m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
@@ -318,30 +315,41 @@ double BpmControl::getSyncedRate() const {
 }
 
 void BpmControl::slotMasterSyncSliderChanged(double bpm) {
+    if (getSyncMode() == EngineSync::SYNC_FOLLOWER) {
+        notifyMasterSyncSliderChanged(bpm);
+    }
+}
+
+void BpmControl::notifyMasterSyncSliderChanged(double bpm) {
     // Vinyl overrides
     if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
         return;
     }
-    if (getSyncMode() != EngineSync::SYNC_NONE) {
-        // If the bpm is the same, nothing to do.
-        if (floatCompare(bpm, m_pEngineBpm->get())) {
-            return;
-        }
 
-        if (m_pFileBpm->get() > 0.0) {
-            double newRate = bpm / m_pFileBpm->get();
-            m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
-            m_pEngineBpm->set(bpm);
-        } else {
-            m_pRateSlider->set(0);
-            m_pEngineBpm->set(0);
-        }
+    // If the bpm is the same, nothing to do.
+    // (TODO(owilliams): this comparison appears to not be necessary any more to prevent
+    // signal loops.
+    if (floatCompare(bpm, m_pEngineBpm->get())) {
+        return;
+    }
+
+    if (m_pFileBpm->get() > 0.0) {
+        double newRate = bpm / m_pFileBpm->get();
+        m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
+        m_pEngineBpm->set(bpm);
+    } else {
+        m_pRateSlider->set(0);
+        m_pEngineBpm->set(0);
     }
 }
 
 void BpmControl::slotSyncModeChanged(double state) {
+    notifyModeChanged(EngineSync::syncModeFromDouble(state));
+}
+
+void BpmControl::notifyModeChanged(EngineSync::SyncMode mode) {
     slotSetStatuses();
-    if (state == EngineSync::SYNC_FOLLOWER) {
+    if (mode == EngineSync::SYNC_FOLLOWER) {
         // Update the slider immediately.
         slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
     }

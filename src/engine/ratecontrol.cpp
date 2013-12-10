@@ -281,6 +281,12 @@ void RateControl::setPermSmall(double v) {
     m_dPermSmall = v;
 }
 
+void RateControl::setMode(EngineSync::SyncMode mode) {
+    m_pSyncMode->set(mode);
+    slotSyncModeChanged(mode);
+    m_pBpmControl->notifyModeChanged(mode);
+}
+
 void RateControl::slotControlFastForward(double v)
 {
     //qDebug() << "slotControlFastForward(" << v << ")";
@@ -397,9 +403,9 @@ void RateControl::slotControlPlay(double state) {
         this, EngineSync::syncModeFromDouble(state));
 }
 
-void RateControl::slotSyncModeChanged(double state) {
+void RateControl::slotSyncModeChanged(double mode) {
     m_pEngineSync->requestSyncMode(
-        this, EngineSync::syncModeFromDouble(state));
+            this, EngineSync::syncModeFromDouble(mode));
 }
 
 void RateControl::slotSyncMasterEnabledChanged(double state) {
@@ -407,16 +413,14 @@ void RateControl::slotSyncMasterEnabledChanged(double state) {
         if (getMode() == EngineSync::SYNC_MASTER) {
             return;
         }
-        m_pSyncMode->set(EngineSync::SYNC_MASTER);
-        slotSyncModeChanged(EngineSync::SYNC_MASTER);
+        setMode(EngineSync::SYNC_MASTER);
     } else {
         // Turning off master goes back to follower mode.
         if (getMode() != EngineSync::SYNC_MASTER) {
             return;
         }
         // Unset ourselves
-        m_pSyncMode->set(EngineSync::SYNC_FOLLOWER);
-        slotSyncModeChanged(EngineSync::SYNC_FOLLOWER);
+        setMode(EngineSync::SYNC_FOLLOWER);
     }
 }
 
@@ -428,8 +432,7 @@ void RateControl::slotSyncEnabledChanged(double v) {
     } else {
         if (getMode() != EngineSync::SYNC_NONE) {
             // Turning off slave turns off syncing
-            m_pSyncMode->set(EngineSync::SYNC_NONE);
-            slotSyncModeChanged(EngineSync::SYNC_NONE);
+            setMode(EngineSync::SYNC_NONE);
         }
     }
 }
@@ -499,6 +502,7 @@ EngineSync::SyncMode RateControl::getMode() const {
 void RateControl::notifyModeChanged(EngineSync::SyncMode mode) {
     m_pSyncMode->set(mode);
     m_pSyncMasterEnabled->set(mode == EngineSync::SYNC_MASTER);
+    m_pBpmControl->notifyModeChanged(mode);
 }
 
 double RateControl::calculateRate(double baserate, bool paused,
@@ -766,6 +770,6 @@ void RateControl::checkTrackPosition(double fractionalPlaypos) {
     // If we're close to the end, and master, disable master so we don't stop the party.
     if (getMode() == EngineSync::SYNC_MASTER &&
         fractionalPlaypos > TRACK_POSITION_MASTER_HANDOFF) {
-        slotSyncModeChanged(EngineSync::SYNC_NONE);
+        setMode(EngineSync::SYNC_NONE);
     }
 }

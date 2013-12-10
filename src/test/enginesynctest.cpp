@@ -593,7 +593,7 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     // There should be no master, and deck2 should match rate of deck1.  Sync slider should be
     // updated with the value, however.
     assertNoMaster();
-    ASSERT_FLOAT_EQ(130.0,
+    EXPECT_FLOAT_EQ(130.0,
                     ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
     assertSyncOff(m_sGroup2);
     ASSERT_FLOAT_EQ(getRateSliderValue(1.3),

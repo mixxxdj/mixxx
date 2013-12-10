@@ -30,6 +30,9 @@ class BpmControl : public EngineControl {
     // Get the phase offset from the specified position.
     double getPhaseOffset(double reference_position);
 
+    void notifyModeChanged(EngineSync::SyncMode mode);
+    void notifyMasterSyncSliderChanged(double bpm);
+
     void setCurrentSample(const double dCurrentSample, const double dTotalSamples);
     double process(const double dRate,
                    const double dCurrentSample,

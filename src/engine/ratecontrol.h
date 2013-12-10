@@ -39,6 +39,7 @@ public:
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
+    BpmControl* getBpmControl() { return m_pBpmControl; }
     void setEngineChannel(EngineChannel* pChannel);
 #ifdef __VINYLCONTROL__
     void setVinylControlControl(VinylControlControl* vinylcontrolcontrol);
@@ -109,6 +110,9 @@ public:
     void resetRateTemp(void);
     /** Get the 'Raw' Temp Rate */
     double getTempRate(void);
+
+    // For internally setting a new mode -- notifies bpmcontrol as well.
+    void setMode(EngineSync::SyncMode mode);
 
     /** Values used when temp and perm rate buttons are pressed */
     static double m_dTemp, m_dTempSmall, m_dPerm, m_dPermSmall;
