@@ -68,8 +68,8 @@ class EngineSync : public EngineControl, public SyncableListener {
     // Choices about master selection often hinge on how many decks are playing back.
     int playingSyncDeckCount() const;
 
-    // Activate a specific channel as master.
-    bool activateChannelMaster(Syncable* pSyncable);
+    // Activate a specific syncable as master.
+    void activateMaster(Syncable* pSyncable);
 
     // Activate a specific channel as Follower. Sets the syncable's bpm and
     // beat_distance to match the master.

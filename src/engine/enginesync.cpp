@@ -79,10 +79,7 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     if (mode == SYNC_MASTER) {
         // Syncable is explicitly requesting master, so we'll honor that.
         m_bExplicitMasterSelected = true;
-        // If setting this channel as master fails, pick a new master.
-        if (!activateChannelMaster(pSyncable)) {
-            findNewMaster(pSyncable);
-        }
+        activateMaster(pSyncable);
     } else if (mode == SYNC_FOLLOWER) {
         // Was this deck master before?  If so do a handoff.
         if (channelIsMaster) {
@@ -100,21 +97,17 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
             // If there is no current master, set to master.
             // TODO(rryan): Really? User asked to become a follower. We should
             // probably just enable internal clock, no?
-            if (!activateChannelMaster(pSyncable)) {
-                findNewMaster(pSyncable);
-            }
+            activateMaster(pSyncable);
         } else if (!m_bExplicitMasterSelected) {
             if (m_pMasterSyncable == m_pInternalClock) {
                 if (playingSyncDeckCount() == 1) {
                     // We should be master now.
-                    if (!activateChannelMaster(pSyncable)) {
-                        findNewMaster(pSyncable);
-                    }
+                    activateMaster(pSyncable);
                 }
             } else {
                 // If there was a deck master, set to internal clock.
                 if (playingSyncDeckCount() > 1) {
-                    activateChannelMaster(m_pInternalClock);
+                    activateMaster(m_pInternalClock);
                 }
             }
         }
@@ -158,14 +151,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 }
             }
 
-            if (!activateChannelMaster(pSyncable)) {
-                // Enabling as master failed but the user request is to be
-                // sync-enabled. Enable as a follower.
-                activateFollower(pSyncable);
-
-                // Since there is no master, find a master.
-                findNewMaster(pSyncable);
-            }
+            activateMaster(pSyncable);
 
             if (foundTargetBpm) {
                 m_pMasterRateSlider->set(targetBpm);
@@ -186,9 +172,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 // clock BPM.
                 double targetBpm = m_pMasterSyncable->getBpm();
 
-                if (!activateChannelMaster(pSyncable)) {
-                    activateFollower(pSyncable);
-                }
+                activateMaster(pSyncable);
 
                 m_pMasterRateSlider->set(targetBpm);
                 m_pInternalClock->setBpm(targetBpm);
@@ -229,7 +213,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
             if (playing_deck_count == 0) {
                 if (playing) {
                     // Nothing was playing, so set self as master
-                    activateChannelMaster(pSyncable);
+                    activateMaster(pSyncable);
                     // TODO(rryan): What if this fails? Do nothing?
                 } else {
                     // Everything has now stopped.
@@ -243,7 +227,7 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
             } else {
                 // TODO(rryan): playing_deck_count > 1, no master explicitly
                 // selected. Why set internal clock?
-                activateChannelMaster(m_pInternalClock);
+                activateMaster(m_pInternalClock);
             }
         }
     }
@@ -343,9 +327,10 @@ void EngineSync::activateFollower(Syncable* pSyncable) {
     pSyncable->setBeatDistance(m_pMasterBeatDistance->get());
 }
 
-bool EngineSync::activateChannelMaster(Syncable* pSyncable) {
-    if (!pSyncable) {
-        return false;
+void EngineSync::activateMaster(Syncable* pSyncable) {
+    if (pSyncable == NULL) {
+        qDebug() << "WARNING: Logic Error: Called activateMaster on a NULL Syncable.";
+        return;
     }
 
     // Already master, no need to do anything.
@@ -354,7 +339,7 @@ bool EngineSync::activateChannelMaster(Syncable* pSyncable) {
         if (m_pMasterSyncable->getSyncMode() != SYNC_MASTER) {
             qDebug() << "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
         }
-        return true;
+        return;
     }
 
     // If a channel is master, disable it.
@@ -375,7 +360,6 @@ bool EngineSync::activateChannelMaster(Syncable* pSyncable) {
     // other method that does exactly this.
     notifyBpmChanged(pSyncable, pSyncable->getBpm());
     notifyBeatDistanceChanged(pSyncable, pSyncable->getBeatDistance());
-    return true;
 }
 
 void EngineSync::findNewMaster(Syncable* pDontPick) {
@@ -414,18 +398,19 @@ void EngineSync::findNewMaster(Syncable* pDontPick) {
     }
 
     if (playing_sync_decks == 1) {
-        Q_ASSERT(new_master != NULL);
-        activateChannelMaster(new_master);
+        if (new_master != NULL) {
+            activateMaster(new_master);
+        }
     } else if (pDontPick != m_pInternalClock) {
         // If there are no more synced decks, there is no need for a master.
         if (playing_sync_decks + paused_sync_decks > 0) {
-            activateChannelMaster(m_pInternalClock);
+            activateMaster(m_pInternalClock);
         }
     } else {
         // Clock master was specifically disabled. Just go with new_master if it
         // exists, otherwise give up and pick nothing.
         if (new_master != NULL) {
-            activateChannelMaster(new_master);
+            activateMaster(new_master);
         }
     }
     // Even if we didn't successfully find a new master, unset this value.
