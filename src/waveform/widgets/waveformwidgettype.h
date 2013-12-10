@@ -14,6 +14,7 @@ class WaveformWidgetType {
         GLSLWaveform,
         HSVWaveform,
         GLVSyncTest,
+        RGBWaveform,
         Count_WaveformwidgetType // Also used as invalid value
     };
 };

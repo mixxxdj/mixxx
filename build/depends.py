@@ -747,6 +747,7 @@ class MixxxCore(Feature):
 
                    "waveform/renderers/waveformrendererfilteredsignal.cpp",
                    "waveform/renderers/waveformrendererhsv.cpp",
+                   "waveform/renderers/waveformrendererrgb.cpp",
                    "waveform/renderers/qtwaveformrendererfilteredsignal.cpp",
                    "waveform/renderers/qtwaveformrenderersimplesignal.cpp",
                    "waveform/renderers/glwaveformrendererfilteredsignal.cpp",
@@ -765,6 +766,7 @@ class MixxxCore(Feature):
                    "waveform/widgets/emptywaveformwidget.cpp",
                    "waveform/widgets/softwarewaveformwidget.cpp",
                    "waveform/widgets/hsvwaveformwidget.cpp",
+                   "waveform/widgets/rgbwaveformwidget.cpp",
                    "waveform/widgets/qtwaveformwidget.cpp",
                    "waveform/widgets/qtsimplewaveformwidget.cpp",
                    "waveform/widgets/glwaveformwidget.cpp",
