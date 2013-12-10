@@ -327,9 +327,15 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
         if (floatCompare(bpm, m_pEngineBpm->get())) {
             return;
         }
-        double newRate = bpm / m_pFileBpm->get();
-        m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
-        m_pEngineBpm->set(bpm);
+
+        if (m_pFileBpm->get() > 0.0) {
+            double newRate = bpm / m_pFileBpm->get();
+            m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
+            m_pEngineBpm->set(bpm);
+        } else {
+            m_pRateSlider->set(0);
+            m_pEngineBpm->set(0);
+        }
     }
 }
 
