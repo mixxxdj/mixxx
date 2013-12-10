@@ -3,18 +3,39 @@
 
 #include <QObject>
 #include <QString>
+#include <QScopedPointer>
 
 #include "engine/clock.h"
+#include "engine/syncable.h"
+#include "engine/enginechannel.h"
 
 class ControlObject;
+class ControlPushButton;
+class EngineSync;
 
-class InternalClock : public QObject, public Clock {
+class InternalClock : public QObject, public Clock, public Syncable {
     Q_OBJECT
   public:
-    InternalClock(const char* pGroup);
+    InternalClock(const char* pGroup, EngineSync* pEngineSync);
     virtual ~InternalClock();
 
-    void onCallbackStart(int sampleRate, int bufferSize);
+    const QString& getGroup() const {
+        return m_group;
+    }
+    EngineChannel* getChannel() const {
+        return NULL;
+    }
+
+    void notifySyncModeChanged(SyncMode mode);
+    SyncMode getSyncMode() const {
+        return m_mode;
+    }
+
+    // The clock is always "playing" in a sense but this specifically refers to
+    // decks so always return false.
+    bool isPlaying() const {
+        return false;
+    }
 
     double getBeatDistance() const;
     void setBeatDistance(double beatDistance);
@@ -22,14 +43,20 @@ class InternalClock : public QObject, public Clock {
     void setBpm(double bpm);
     double getBpm() const;
 
+    void onCallbackStart(int sampleRate, int bufferSize);
+
   private slots:
     void slotBpmChanged(double bpm);
+    void slotSyncMasterEnabledChangeRequest(double state);
 
   private:
     void updateBeatLength(int sampleRate, double bpm);
 
     QString m_group;
-    ControlObject* m_pClockBpm;
+    EngineSync* m_pEngineSync;
+    QScopedPointer<ControlObject> m_pClockBpm;
+    QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
+    SyncMode m_mode;
 
     int m_iOldSampleRate;
     double m_dOldBpm;

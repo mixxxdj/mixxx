@@ -26,7 +26,6 @@
 #include "engine/enginechannel.h"
 #include "engine/enginecontrol.h"
 #include "engine/enginesync.h"
-#include "engine/ratecontrol.h"
 #include "engine/internalclock.h"
 
 static const char* kMasterSyncGroup = "[Master]";
@@ -35,36 +34,20 @@ static const char* kInternalClockGroup = "[InternalClock]";
 EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
         : EngineControl(kMasterSyncGroup, _config),
           m_pConfig(_config),
-          m_pInternalClock(new InternalClock(kInternalClockGroup)),
-          m_pChannelMaster(NULL),
-          m_sSyncSource(""),
+          m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
+          m_pMasterSyncable(NULL),
           m_bExplicitMasterSelected(false) {
-    qRegisterMetaType<EngineSync::SyncMode>("EngineSync::SyncMode");
+    qRegisterMetaType<SyncMode>("SyncMode");
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
     m_pMasterBpm = new ControlObject(ConfigKey(kMasterSyncGroup, "sync_bpm"));
     // Initialize with a default value (will get overridden by config).
     m_pMasterBpm->set(124.0);
-    connect(m_pMasterBpm, SIGNAL(valueChanged(double)),
-            this, SLOT(slotMasterBpmChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pMasterBpm, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotMasterBpmChanged(double)),
-            Qt::DirectConnection);
-
-    m_pInternalClockMasterEnabled =
-            new ControlPushButton(ConfigKey(kInternalClockGroup, "sync_master"));
-    m_pInternalClockMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
-    connect(m_pInternalClockMasterEnabled, SIGNAL(valueChanged(double)),
-            this, SLOT(slotInternalClockModeChanged(double)),
-            Qt::DirectConnection);
+    m_pInternalClock->setBpm(124.0);
 
     m_pMasterRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"),
                                               40.0, 200.0);
     connect(m_pMasterRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSyncRateSliderChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pMasterRateSlider, SIGNAL(valueChangedFromEngine(double)),
             this, SLOT(slotSyncRateSliderChanged(double)),
             Qt::DirectConnection);
 }
@@ -78,156 +61,261 @@ EngineSync::~EngineSync() {
     delete m_pInternalClock;
 }
 
-void EngineSync::addChannel(EngineChannel* pChannel) {
-    foreach (RateControl* pRate, m_ratecontrols) {
-        if (pRate->getGroup() == pChannel->getGroup()) {
-            pRate->setEngineChannel(pChannel);
-            return;
-        }
+void EngineSync::addSyncableDeck(Syncable* pSyncable) {
+    if (m_syncables.contains(pSyncable)) {
+        qDebug() << "EngineSync: already has" << pSyncable;
+        return;
     }
-    qDebug() << "No RateControl found for group (probably not a playback deck) "
-             << pChannel->getGroup();
+    m_syncables.append(pSyncable);
 }
 
-void EngineSync::addDeck(RateControl *pNewRate) {
-    foreach (RateControl* pRate, m_ratecontrols) {
-        if (pRate->getGroup() == pNewRate->getGroup()) {
-            // BUG -- pRate is local, this doesn't work.
-            qDebug() << "EngineSync: already has channel for" << pRate->getGroup() << ", replacing";
-            pRate = pNewRate;
-            return;
-        }
-    }
-    m_ratecontrols.append(pNewRate);
-}
-
-void EngineSync::requestSyncMode(RateControl* pRateControl, SyncMode mode) {
+void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
+    qDebug() << "EngineSync::requestSyncMode" << pSyncable->getGroup() << mode;
     // Based on the call hierarchy I don't think this is possible. (Famous last words.)
-    Q_ASSERT(pRateControl);
+    Q_ASSERT(pSyncable);
 
-    const QString& group = pRateControl->getGroup();
-    const bool channelIsMaster = m_sSyncSource == group;
+    const bool channelIsMaster = m_pMasterSyncable == pSyncable;
 
-    // In the following logic, m_sSyncSource acts like "previous sync source".
     if (mode == SYNC_MASTER) {
-        // RateControl is explicitly requesting master, so we'll honor that.
+        // Syncable is explicitly requesting master, so we'll honor that.
         m_bExplicitMasterSelected = true;
         // If setting this channel as master fails, pick a new master.
-        if (!activateChannelMaster(pRateControl)) {
-            findNewMaster(group);
+        if (!activateChannelMaster(pSyncable)) {
+            findNewMaster(pSyncable);
         }
     } else if (mode == SYNC_FOLLOWER) {
         // Was this deck master before?  If so do a handoff.
         if (channelIsMaster) {
+            m_pMasterSyncable = NULL;
+            activateFollower(pSyncable);
             // Choose a new master, but don't pick the current one.
-            findNewMaster(group);
+            findNewMaster(pSyncable);
         } else if (m_bExplicitMasterSelected) {
             // Do nothing.
+            activateFollower(pSyncable);
             return;
         }
 
-        if (m_sSyncSource == "") {
+        if (m_pMasterSyncable == NULL) {
             // If there is no current master, set to master.
-            pRateControl->notifyModeChanged(SYNC_MASTER);
-            if (!activateChannelMaster(pRateControl)) {
-                findNewMaster(group);
+            // TODO(rryan): Really? User asked to become a follower. We should
+            // probably just enable internal clock, no?
+            if (!activateChannelMaster(pSyncable)) {
+                findNewMaster(pSyncable);
             }
         } else if (!m_bExplicitMasterSelected) {
-            if (m_sSyncSource == kInternalClockGroup) {
+            if (m_pMasterSyncable == m_pInternalClock) {
                 if (playingSyncDeckCount() == 1) {
                     // We should be master now.
-                    pRateControl->notifyModeChanged(SYNC_MASTER);
-                    if (!activateChannelMaster(pRateControl)) {
-                        findNewMaster(group);
+                    if (!activateChannelMaster(pSyncable)) {
+                        findNewMaster(pSyncable);
                     }
                 }
             } else {
                 // If there was a deck master, set to internal clock.
                 if (playingSyncDeckCount() > 1) {
-                    activateInternalClockMaster();
+                    activateChannelMaster(m_pInternalClock);
                 }
             }
         }
     } else {
+        pSyncable->notifySyncModeChanged(SYNC_NONE);
         // if we were the master, choose a new one.
         if (channelIsMaster) {
-            disconnectCurrentMaster();
+            m_pMasterSyncable = NULL;
+            findNewMaster(NULL);
         }
-        pRateControl->notifyModeChanged(SYNC_NONE);
-        findNewMaster("");
     }
 }
 
-void EngineSync::notifySyncModeEnabled(RateControl* pRateControl) {
-    if (m_sSyncSource == "") {
-        // There is no sync source.  If any other deck is playing we will match the first
-        // available bpm even if sync is not enabled, although we will still be a master
-        // in case latching is activated.
-        foreach (RateControl* other_deck, m_ratecontrols) {
-            if (other_deck->getGroup() == pRateControl->getGroup()) {
-                continue;
-            }
-            ControlObject *playing = ControlObject::getControl(ConfigKey(other_deck->getGroup(),
-                                                                         "play"));
-            if (playing && playing->get()) {
-                ControlObject *other_bpm =
-                        ControlObject::getControl(ConfigKey(other_deck->getGroup(), "bpm"));
-                m_pMasterRateSlider->set(other_bpm->get());
-                pRateControl->notifyModeChanged(SYNC_FOLLOWER);
-                break;
-            }
-        }
+void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
+    qDebug() << "EngineSync::requestEnableSync" << pSyncable->getGroup() << bEnabled;
 
-        pRateControl->notifyModeChanged(SYNC_MASTER);
-        if (!activateChannelMaster(pRateControl)) {
-            findNewMaster(pRateControl->getGroup());
+    SyncMode syncMode = pSyncable->getSyncMode();
+    bool syncEnabled = syncMode != SYNC_NONE;
+    // Already enabled.
+    if (syncEnabled == bEnabled) {
+        return;
+    }
+
+    if (bEnabled) {
+        if (m_pMasterSyncable == NULL) {
+            // There is no sync source.  If any other deck is playing we will
+            // match the first available bpm even if sync is not enabled,
+            // although we will still be a master,
+            bool foundTargetBpm = false;
+            double targetBpm = 0.0;
+
+            foreach (Syncable* other_deck, m_syncables) {
+                if (other_deck == pSyncable) {
+                    continue;
+                }
+
+                if (other_deck->isPlaying()) {
+                    foundTargetBpm = true;
+                    targetBpm = other_deck->getBpm();
+                    break;
+                }
+            }
+
+            if (!activateChannelMaster(pSyncable)) {
+                // Enabling as master failed but the user request is to be
+                // sync-enabled. Enable as a follower.
+                activateFollower(pSyncable);
+
+                // Since there is no master, find a master.
+                findNewMaster(pSyncable);
+            }
+
+            if (foundTargetBpm) {
+                m_pMasterRateSlider->set(targetBpm);
+                m_pInternalClock->setBpm(targetBpm);
+                foreach (Syncable* pSyncable, m_syncables) {
+                    if (pSyncable->getSyncMode() != SYNC_NONE) {
+                        pSyncable->setBpm(targetBpm);
+                    }
+                }
+            }
+        } else if (m_pMasterSyncable == m_pInternalClock) {
+            // If there are no playing decks and the internal clock is master
+            // then we take over as master.
+
+            int playing_sync_decks = playingSyncDeckCount();
+            if (playing_sync_decks == 0) {
+                // We also require that the deck take on the current internal
+                // clock BPM.
+                double targetBpm = m_pMasterSyncable->getBpm();
+
+                if (!activateChannelMaster(pSyncable)) {
+                    activateFollower(pSyncable);
+                }
+
+                m_pMasterRateSlider->set(targetBpm);
+                m_pInternalClock->setBpm(targetBpm);
+                foreach (Syncable* pSyncable, m_syncables) {
+                    if (pSyncable->getSyncMode() != SYNC_NONE) {
+                        pSyncable->setBpm(targetBpm);
+                    }
+                }
+            } else {
+                activateFollower(pSyncable);
+            }
+        } else {
+            activateFollower(pSyncable);
         }
     } else {
-        pRateControl->notifyModeChanged(SYNC_FOLLOWER);
-        requestSyncMode(pRateControl, SYNC_FOLLOWER);
+        pSyncable->notifySyncModeChanged(SYNC_NONE);
+        // It was the master.
+        if (syncMode == SYNC_MASTER) {
+            m_pMasterSyncable = NULL;
+            findNewMaster(pSyncable);
+        } else if (!m_bExplicitMasterSelected &&
+                   m_pMasterSyncable == m_pInternalClock) {
+            // If no explicit master exists, we are using the internal clock,
+            // and a follower has dropped out (switched to NONE) then we may
+            // potentially elect a playing deck as a master.
+            m_pMasterSyncable = NULL;
+            findNewMaster(pSyncable);
+        }
     }
 }
 
-void EngineSync::notifyDeckPlaying(RateControl* pRateControl, bool playing) {
+void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
+    qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
-    if (pRateControl->getMode() != SYNC_NONE) {
+    if (pSyncable->getSyncMode() != SYNC_NONE) {
         int playing_deck_count = playingSyncDeckCount();
-
         if (!m_bExplicitMasterSelected) {
             if (playing_deck_count == 0) {
                 if (playing) {
                     // Nothing was playing, so set self as master
-                    if (activateChannelMaster(pRateControl)) {
-                        pRateControl->notifyModeChanged(SYNC_MASTER);
-                    }
+                    activateChannelMaster(pSyncable);
+                    // TODO(rryan): What if this fails? Do nothing?
                 } else {
                     // Everything has now stopped.
-                    disconnectCurrentMaster();
                 }
             } else if (playing_deck_count == 1) {
-                if (!playing && m_sSyncSource == kInternalClockGroup) {
+                if (!playing && m_pMasterSyncable == m_pInternalClock) {
                     // If a deck has stopped, and only one deck is now playing,
                     // and we were internal clock, pick a new master (the playing deck).
-                    findNewMaster(kInternalClockGroup);
+                    findNewMaster(m_pInternalClock);
                 }
             } else {
-                activateInternalClockMaster();
+                // TODO(rryan): playing_deck_count > 1, no master explicitly
+                // selected. Why set internal clock?
+                activateChannelMaster(m_pInternalClock);
             }
         }
     }
 }
 
-void EngineSync::notifyRateSliderChanged(RateControl* pRateControl, double new_bpm) {
-    // Note that this is not a slot.
-    if (pRateControl->getMode() != SYNC_NONE) {
-        m_pMasterRateSlider->set(new_bpm);
-        m_pMasterBpm->set(new_bpm);
+void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged) {
+    qDebug() << "EngineSync::notifyBpmChanged" << pSyncable->getGroup() << bpm;
 
-        // If this call came from the non-master, explicitly notify the master of the update.
-        if (pRateControl->getMode() != SYNC_MASTER) {
-            if (m_pChannelMaster) {
-                m_pChannelMaster->getBpmControl()->notifyMasterSyncSliderChanged(new_bpm);
-            }
+    SyncMode syncMode = pSyncable->getSyncMode();
+    if (syncMode == SYNC_NONE) {
+        return;
+    }
+
+    // EngineSyncTest.SlaveRateChange dictates this must not happen in general,
+    // but it is required when the file BPM changes because it's not a true BPM
+    // change, so we set the follower back to the master BPM.
+    if (syncMode == SYNC_FOLLOWER && fileChanged) {
+        pSyncable->setBpm(m_pMasterRateSlider->get());
+        return;
+    }
+
+    m_pMasterBpm->set(bpm);
+    m_pMasterRateSlider->set(bpm);
+
+    if (pSyncable != m_pInternalClock) {
+        m_pInternalClock->setBpm(bpm);
+    }
+
+    foreach (Syncable* pOther, m_syncables) {
+        if (pSyncable == pOther) {
+            continue;
+        }
+
+        if (pOther->getSyncMode() != SYNC_NONE) {
+            pOther->setBpm(bpm);
+        }
+    }
+}
+
+void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
+    //qDebug() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
+
+    SyncMode syncMode = pSyncable->getSyncMode();
+
+    if (syncMode != SYNC_MASTER) {
+        return;
+    }
+
+    // Do not update the master rate slider because instantaneous changes are
+    // not user visible.
+    m_pMasterBpm->set(bpm);
+}
+
+void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
+    qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
+    if (pSyncable->getSyncMode() == SYNC_NONE) {
+        return;
+    }
+
+    m_pMasterBeatDistance->set(beat_distance);
+
+    if (pSyncable != m_pInternalClock) {
+        m_pInternalClock->setBeatDistance(beat_distance);
+    }
+
+    foreach (Syncable* pOther, m_syncables) {
+        if (pSyncable == pOther) {
+            continue;
+        }
+
+        if (pOther->getSyncMode() != SYNC_NONE) {
+            pOther->setBeatDistance(beat_distance);
         }
     }
 }
@@ -235,157 +323,91 @@ void EngineSync::notifyRateSliderChanged(RateControl* pRateControl, double new_b
 int EngineSync::playingSyncDeckCount() const {
     int playing_sync_decks = 0;
 
-    foreach (const RateControl* pRateControl, m_ratecontrols) {
-        SyncMode sync_mode = pRateControl->getMode();
+    foreach (const Syncable* pSyncable, m_syncables) {
+        SyncMode sync_mode = pSyncable->getSyncMode();
         if (sync_mode == SYNC_NONE) {
             continue;
         }
 
-        const ControlObject *playing = ControlObject::getControl(ConfigKey(pRateControl->getGroup(),
-                                                                     "play"));
-        if (playing && playing->get()) {
+        if (pSyncable->isPlaying()) {
             ++playing_sync_decks;
         }
     }
+
     return playing_sync_decks;
 }
 
-void EngineSync::disconnectCurrentMaster() {
-    RateControl* pOldChannelMaster = m_pChannelMaster;
-    if (m_sSyncSource == kInternalClockGroup) {
-        m_pInternalClockMasterEnabled->set(false);
-    }
-    if (pOldChannelMaster) {
-        ControlObject* pSourceRateEngine =
-                ControlObject::getControl(ConfigKey(pOldChannelMaster->getGroup(), "rateEngine"));
-        if (pSourceRateEngine) {
-            disconnect(pSourceRateEngine, SIGNAL(valueChangedFromEngine(double)),
-                       this, SLOT(slotSourceRateEngineChanged(double)));
-        }
-        ControlObject* pSourceBpm =
-                ControlObject::getControl(ConfigKey(pOldChannelMaster->getGroup(), "bpm"));
-        if (pSourceBpm) {
-            disconnect(pSourceBpm, SIGNAL(valueChangedFromEngine(double)),
-                       this, SLOT(slotSourceBpmChanged(double)));
-        }
-        ControlObject* pSourceBeatDistance =
-                ControlObject::getControl(ConfigKey(pOldChannelMaster->getGroup(),
-                                                    "beat_distance"));
-        if (pSourceBeatDistance) {
-            disconnect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
-                       this, SLOT(slotSourceBeatDistanceChanged(double)));
-        }
-    }
-    m_sSyncSource = "";
-    m_pChannelMaster = NULL;
+void EngineSync::activateFollower(Syncable* pSyncable) {
+    pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
+    pSyncable->setBpm(m_pMasterRateSlider->get());
+    pSyncable->setBeatDistance(m_pMasterBeatDistance->get());
 }
 
-void EngineSync::activateInternalClockMaster() {
-    if (m_sSyncSource == kInternalClockGroup) {
-        return;
-    }
-    double master_bpm = m_pMasterBpm->get();
-    if (!qFuzzyCompare(master_bpm, 0)) {
-        m_pMasterRateSlider->set(master_bpm);
-    }
-    QString old_master = m_sSyncSource;
-    initializeInternalClockBeatDistance(m_pChannelMaster);
-    RateControl* pOldChannelMaster = m_pChannelMaster;
-    disconnectCurrentMaster();
-    if (pOldChannelMaster) {
-        pOldChannelMaster->notifyModeChanged(SYNC_FOLLOWER);
-    }
-    m_sSyncSource = kInternalClockGroup;
-
-    // This is all we have to do, we'll start using the clock position right away.
-    m_pInternalClockMasterEnabled->set(true);
-}
-
-bool EngineSync::activateChannelMaster(RateControl* pRateControl) {
-    if (!pRateControl) {
+bool EngineSync::activateChannelMaster(Syncable* pSyncable) {
+    if (!pSyncable) {
         return false;
     }
 
-    const QString& group = pRateControl->getGroup();
-
     // Already master, no need to do anything.
-    if (m_sSyncSource == group) {
+    if (m_pMasterSyncable == pSyncable) {
+        // Sanity check.
+        if (m_pMasterSyncable->getSyncMode() != SYNC_MASTER) {
+            qDebug() << "WARNING: Logic Error: m_pMasterSyncable is a syncable that does not think it is master.";
+        }
         return true;
     }
 
     // If a channel is master, disable it.
-    RateControl* pOldChannelMaster = m_pChannelMaster;
-    disconnectCurrentMaster();
-    if (pOldChannelMaster) {
-        pOldChannelMaster->notifyModeChanged(SYNC_FOLLOWER);
-    }
+    Syncable* pOldChannelMaster = m_pMasterSyncable;
 
-    m_sSyncSource = group;
+    m_pMasterSyncable = NULL;
+    if (pOldChannelMaster) {
+        activateFollower(pOldChannelMaster);
+    }
 
     // Only consider channels that have a track loaded and are in the master
     // mix.
-    m_pChannelMaster = pRateControl;
-
-    qDebug() << "Setting up master " << m_sSyncSource;
-
-    ControlObject *pSourceRateEngine =
-            ControlObject::getControl(ConfigKey(pRateControl->getGroup(), "rateEngine"));
-    Q_ASSERT(pSourceRateEngine);
-    connect(pSourceRateEngine, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotSourceRateEngineChanged(double)),
-            Qt::DirectConnection);
-
-    ControlObject *pSourceBpm =
-            ControlObject::getControl(ConfigKey(pRateControl->getGroup(), "bpm"));
-    Q_ASSERT(pSourceBpm);
-    connect(pSourceBpm, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotSourceBpmChanged(double)),
-            Qt::DirectConnection);
-
-    ControlObject *pSourceBeatDistance =
-            ControlObject::getControl(ConfigKey(pRateControl->getGroup(), "beat_distance"));
-    Q_ASSERT(pSourceBeatDistance);
-    connect(pSourceBeatDistance, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotSourceBeatDistanceChanged(double)),
-            Qt::DirectConnection);
-
-    // Reset internal beat distance to equal the new master
-    initializeInternalClockBeatDistance(m_pChannelMaster);
-
-    m_pInternalClockMasterEnabled->set(false);
-    slotSourceRateEngineChanged(pSourceRateEngine->get());
-    slotSourceBpmChanged(pSourceBpm->get());
-    m_pMasterBpm->set(pSourceBpm->get());
-
+    // TODO(rryan): We don't actually do what this comment describes.
+    qDebug() << "Setting up master " << pSyncable->getGroup();
+    m_pMasterSyncable = pSyncable;
+    pSyncable->notifySyncModeChanged(SYNC_MASTER);
+    // TODO(rryan): Iffy? We should not be calling these methods. But there's no
+    // other method that does exactly this.
+    notifyBpmChanged(pSyncable, pSyncable->getBpm());
+    notifyBeatDistanceChanged(pSyncable, pSyncable->getBeatDistance());
     return true;
 }
 
-void EngineSync::findNewMaster(const QString& dontpick) {
+void EngineSync::findNewMaster(Syncable* pDontPick) {
+    qDebug() << "EngineSync::findNewMaster" << (pDontPick ? pDontPick->getGroup() : "(null)");
     int playing_sync_decks = 0;
     int paused_sync_decks = 0;
-    RateControl *new_master = NULL;
+    Syncable *new_master = NULL;
 
-    foreach (RateControl* pRateControl, m_ratecontrols) {
-        const QString& group = pRateControl->getGroup();
-        if (group == dontpick) {
+    if (m_pMasterSyncable != NULL) {
+        qDebug() << "WARNING: Logic Error: findNewMaster called when a master is selected.";
+    }
+
+    foreach (Syncable* pSyncable, m_syncables) {
+        if (pSyncable == pDontPick) {
+            qDebug() << "findNewMaster: Skipping" << pSyncable->getGroup() << "because DONTPICK";
             continue;
         }
 
-        SyncMode sync_mode = pRateControl->getMode();
+        SyncMode sync_mode = pSyncable->getSyncMode();
         if (sync_mode == SYNC_NONE) {
+            qDebug() << "findNewMaster: Skipping" << pSyncable->getGroup() << "because SYNC_NONE";
             continue;
         }
+
         if (sync_mode == SYNC_MASTER) {
-            qDebug() << "Already have a new master" << group;
-            m_sSyncSource = group;
+            qDebug() << "WARNING: Logic Error: findNewMaster: A Syncable with SYNC_MASTER exists.";
             return;
         }
 
-        ControlObject *playing = ControlObject::getControl(ConfigKey(pRateControl->getGroup(),
-                                                                     "play"));
-        if (playing && playing->get()) {
+        if (pSyncable->isPlaying()) {
             ++playing_sync_decks;
-            new_master = pRateControl;
+            new_master = pSyncable;
         } else {
             ++paused_sync_decks;
         }
@@ -393,102 +415,46 @@ void EngineSync::findNewMaster(const QString& dontpick) {
 
     if (playing_sync_decks == 1) {
         Q_ASSERT(new_master != NULL);
-        new_master->notifyModeChanged(SYNC_MASTER);
-        requestSyncMode(new_master, SYNC_MASTER);
-    } else if (dontpick != kInternalClockGroup) {
+        activateChannelMaster(new_master);
+    } else if (pDontPick != m_pInternalClock) {
         // If there are no more synced decks, there is no need for a master.
         if (playing_sync_decks + paused_sync_decks > 0) {
-            activateInternalClockMaster();
+            activateChannelMaster(m_pInternalClock);
         }
     } else {
-        // Clock master was specifically disabled.  Just go with new_master if it exists,
-        // otherwise give up and pick nothing.
+        // Clock master was specifically disabled. Just go with new_master if it
+        // exists, otherwise give up and pick nothing.
         if (new_master != NULL) {
-            new_master->notifyModeChanged(SYNC_MASTER);
-            requestSyncMode(new_master, SYNC_MASTER);
+            activateChannelMaster(new_master);
         }
     }
     // Even if we didn't successfully find a new master, unset this value.
     m_bExplicitMasterSelected = false;
 }
 
-void EngineSync::slotSourceRateEngineChanged(double rate_engine) {
-    // Master buffer can be null due to timing issues
-    if (m_pChannelMaster) {
-        // This will trigger all of the slaves to change rateEngine.
-        m_pMasterBpm->set(rate_engine * m_pChannelMaster->getFileBpm());
-    }
-}
-
-void EngineSync::slotSourceBpmChanged(double bpm) {
-    // Master buffer can be null due to timing issues
-    if (m_pChannelMaster) {
-        m_pMasterRateSlider->set(bpm);
-    }
-}
-
-void EngineSync::slotSourceBeatDistanceChanged(double beat_dist) {
-    // Pass it on to slaves and update clock position marker.
-    m_pMasterBeatDistance->set(beat_dist);
-    m_pInternalClock->setBeatDistance(beat_dist);
-}
-
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
-    if (m_sSyncSource == kInternalClockGroup && !qFuzzyCompare(m_pMasterBpm->get(), new_bpm)) {
-        m_pMasterBpm->set(new_bpm);
-    }
-}
-
-void EngineSync::slotMasterBpmChanged(double new_bpm) {
-    // TODO(rryan): Set the enabled master's BPM, if allowed. Re-set master BPM
-    // with the master's new BPM (if it rejects it).
+    qDebug() << "EngineSync::slotSyncRateSliderChanged" << new_bpm;
+    // Only called by external changes to sync_slider.
     m_pInternalClock->setBpm(new_bpm);
-}
-
-void EngineSync::slotInternalClockModeChanged(double state) {
-    if (state) {
-        activateInternalClockMaster();
-    } else {
-        // Internal has been turned off. Pick a slave.
-        m_sSyncSource = "";
-        findNewMaster(kInternalClockGroup);
-    }
-}
-
-void EngineSync::initializeInternalClockBeatDistance(RateControl* pRateControl) {
-    if (pRateControl == NULL) {
-        return;
-    }
-    ControlObject* pSourceBeatDistance =
-            ControlObject::getControl(ConfigKey(pRateControl->getGroup(), "beat_distance"));
-    double beat_distance = pSourceBeatDistance ? pSourceBeatDistance->get() : 0;
-
-    m_pInternalClock->setBeatDistance(beat_distance);
-    m_pMasterBeatDistance->set(beat_distance);
-    if (pSourceBeatDistance) {
-        qDebug() << "Reset clock beat distance to " << pRateControl->getGroup()
-                 << beat_distance;
+    foreach (Syncable* pSyncable, m_syncables) {
+        if (pSyncable->getSyncMode() != SYNC_NONE) {
+            pSyncable->setBpm(new_bpm);
+        }
     }
 }
 
 void EngineSync::onCallbackStart(int sampleRate, int bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
-
-    // If the InternalClock is the master, set the master beat distance to the
-    // clock's current beat distance.
-    if (m_sSyncSource == kInternalClockGroup) {
-        m_pMasterBeatDistance->set(m_pInternalClock->getBeatDistance());
-    }
 }
 
 EngineChannel* EngineSync::getMaster() const {
-    return m_pChannelMaster ? m_pChannelMaster->getChannel() : NULL;
+    return m_pMasterSyncable ? m_pMasterSyncable->getChannel() : NULL;
 }
 
-RateControl* EngineSync::getRateControlForGroup(const QString& group) {
-    foreach (RateControl* pChannel, m_ratecontrols) {
-        if (pChannel->getGroup() == group) {
-            return pChannel;
+Syncable* EngineSync::getSyncableForGroup(const QString& group) {
+    foreach (Syncable* pSyncable, m_syncables) {
+        if (pSyncable->getGroup() == group) {
+            return pSyncable;
         }
     }
     return NULL;

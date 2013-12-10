@@ -21,11 +21,11 @@ BpmControl::BpmControl(const char* _group,
                        ConfigObject<ConfigValue>* _config) :
         EngineControl(_group, _config),
         m_dPreviousSample(0),
+        m_dSyncTargetBeatDistance(0.0),
         m_dSyncAdjustment(1.0),
         m_dUserOffset(0.0),
         m_tapFilter(this, filterLength, maxInterval),
         m_sGroup(_group) {
-
     m_pPlayButton = new ControlObjectSlave(_group, "play", this);
     m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)), Qt::DirectConnection);
     m_pRateSlider = new ControlObjectSlave(_group, "rate", this);
@@ -35,7 +35,6 @@ BpmControl::BpmControl(const char* _group,
     m_pRateRange->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
     m_pRateDir = new ControlObjectSlave(_group, "rate_dir", this);
     m_pRateDir->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
-
 
     m_pLoopEnabled = new ControlObjectSlave(_group, "loop_enabled", this);
     m_pLoopStartPosition = new ControlObjectSlave(_group, "loop_start_position", this);
@@ -85,28 +84,11 @@ BpmControl::BpmControl(const char* _group,
             Qt::DirectConnection);
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
-    m_pThisBeatDistance = new ControlObject(ConfigKey(_group, "beat_distance"));
+    m_pThisBeatDistance = new ControlObjectSlave(_group, "beat_distance", this);
 
-    m_pMasterBeatDistance = ControlObject::getControl(ConfigKey("[Master]", "beat_distance"));
+    m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"));
 
-    // TODO: should we only hook these up if we are a slave?  beat distance
-    // is updated on every iteration so it may be heavy.
-    m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]","sync_bpm"));
-
-    m_pMasterSyncSlider = ControlObject::getControl(ConfigKey("[Master]","sync_slider"));
-    connect(m_pMasterSyncSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotMasterSyncSliderChanged(double)),
-            Qt::DirectConnection);
-    connect(m_pMasterSyncSlider, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotMasterSyncSliderChanged(double)),
-            Qt::DirectConnection);
-
-    m_pSyncMasterEnabled = ControlObject::getControl(ConfigKey(_group, "sync_master"));
-    m_pSyncEnabled = ControlObject::getControl(ConfigKey(_group, "sync_enabled"));
     m_pSyncMode = ControlObject::getControl(ConfigKey(_group, "sync_mode"));
-    connect(m_pSyncMode, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSyncModeChanged(double)),
-            Qt::DirectConnection);
 
 #ifdef __VINYLCONTROL__
     m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
@@ -140,13 +122,11 @@ double BpmControl::getBpm() const {
 
 void BpmControl::slotFileBpmChanged(double bpm) {
     // Adjust the file-bpm with the current setting of the rate to get the
-    // engine BPM.
-    double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-    m_pEngineBpm->set(bpm * dRate);
-    if (getSyncMode() == EngineSync::SYNC_MASTER) {
-        m_pMasterBpm->set(bpm * dRate);
-    } else if (getSyncMode() == EngineSync::SYNC_FOLLOWER) {
-        slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
+    // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
+    // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
+    if (getSyncMode() == SYNC_NONE) {
+        double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
+        m_pEngineBpm->set(bpm * dRate);
     }
 }
 
@@ -314,21 +294,17 @@ double BpmControl::getSyncedRate() const {
     }
 }
 
-void BpmControl::slotMasterSyncSliderChanged(double bpm) {
-    if (getSyncMode() == EngineSync::SYNC_FOLLOWER) {
-        notifyMasterSyncSliderChanged(bpm);
-    }
-}
-
-void BpmControl::notifyMasterSyncSliderChanged(double bpm) {
+void BpmControl::setBpmFromMaster(double bpm) {
     // Vinyl overrides
     if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
         return;
     }
 
+    if (getSyncMode() == SYNC_NONE) {
+        return;
+    }
+
     // If the bpm is the same, nothing to do.
-    // (TODO(owilliams): this comparison appears to not be necessary any more to prevent
-    // signal loops.
     if (floatCompare(bpm, m_pEngineBpm->get())) {
         return;
     }
@@ -340,37 +316,6 @@ void BpmControl::notifyMasterSyncSliderChanged(double bpm) {
     } else {
         m_pRateSlider->set(0);
         m_pEngineBpm->set(0);
-    }
-}
-
-void BpmControl::slotSyncModeChanged(double state) {
-    notifyModeChanged(EngineSync::syncModeFromDouble(state));
-}
-
-void BpmControl::notifyModeChanged(EngineSync::SyncMode mode) {
-    slotSetStatuses();
-    if (mode == EngineSync::SYNC_FOLLOWER) {
-        // Update the slider immediately.
-        slotMasterSyncSliderChanged(m_pMasterSyncSlider->get());
-    }
-}
-
-void BpmControl::slotSetStatuses() {
-    switch (static_cast<int>(getSyncMode())) {
-        case EngineSync::SYNC_NONE:
-            m_pSyncMasterEnabled->set(false);
-            m_pSyncEnabled->set(false);
-            break;
-        case EngineSync::SYNC_FOLLOWER:
-            m_pSyncMasterEnabled->set(false);
-            m_pSyncEnabled->set(true);
-            break;
-        case EngineSync::SYNC_MASTER:
-            m_pSyncMasterEnabled->set(true);
-            m_pSyncEnabled->set(true);
-            break;
-        default:
-            qDebug() << "WARNING: Invalid SyncMode in BpmControl::slotSetStatuses";
     }
 }
 
@@ -442,7 +387,7 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
         return m_dSyncAdjustment;
     }
 
-    double master_percentage = m_pMasterBeatDistance->get();
+    double master_percentage = m_dSyncTargetBeatDistance;
 
     // Either shortest distance is directly to the master or backwards.
 
@@ -513,7 +458,7 @@ double BpmControl::getBeatDistance(double dThisPosition) const {
 }
 
 bool BpmControl::syncPhase() {
-    if (getSyncMode() == EngineSync::SYNC_MASTER) {
+    if (getSyncMode() == SYNC_MASTER) {
         return true;
     }
     double dThisPosition = getCurrentSample();
@@ -592,9 +537,9 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     }
 
     double dOtherBeatFraction;
-    if (getSyncMode() == EngineSync::SYNC_FOLLOWER) {
+    if (getSyncMode() == SYNC_FOLLOWER) {
         // If we're a slave, it's easy to get the other beat fraction
-        dOtherBeatFraction = m_pMasterBeatDistance->get();
+        dOtherBeatFraction = m_dSyncTargetBeatDistance;
     } else {
         // If not, we have to figure it out
         EngineBuffer* pOtherEngineBuffer = pickSyncTarget();
@@ -700,7 +645,7 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
 }
 
 void BpmControl::onEngineRateChange(double rate) {
-    if (getSyncMode() == EngineSync::SYNC_FOLLOWER) {
+    if (getSyncMode() == SYNC_FOLLOWER) {
         m_pEngineBpm->set(rate * m_pFileBpm->get());
     }
 }
@@ -776,4 +721,8 @@ double BpmControl::process(const double dRate,
     // results in better sync.
     m_pThisBeatDistance->set(getBeatDistance(m_dPreviousSample));
     return kNoTrigger;
+}
+
+void BpmControl::setTargetBeatDistance(double beatDistance) {
+    m_dSyncTargetBeatDistance = beatDistance;
 }

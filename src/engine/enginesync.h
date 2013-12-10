@@ -20,89 +20,73 @@
 #define ENGINESYNC_H
 
 #include "engine/enginecontrol.h"
+#include "engine/syncable.h"
 
 class EngineChannel;
 class ControlObject;
 class ControlPushButton;
 class ControlPotmeter;
-class RateControl;
 class InternalClock;
 
-class EngineSync : public EngineControl {
+class EngineSync : public EngineControl, public SyncableListener {
     Q_OBJECT
   public:
-    enum SyncMode {
-        SYNC_NONE = 0,
-        SYNC_FOLLOWER = 1,
-        SYNC_MASTER = 2,
-        SYNC_NUM_MODES
-    };
-
-    static inline SyncMode syncModeFromDouble(double value) {
-        // Value is not actually unused, but the compiler thinks it is.
-        Q_UNUSED(value);
-        SyncMode mode = static_cast<SyncMode>(value);
-        if (mode >= SYNC_NUM_MODES || mode < 0) {
-            return SYNC_NONE;
-        }
-        return mode;
-    }
-
     explicit EngineSync(ConfigObject<ConfigValue>* pConfig);
     virtual ~EngineSync();
 
-    void addChannel(EngineChannel* pChannel);
-    void addDeck(RateControl* pRate);
+    void addSyncableDeck(Syncable* pSyncable);
     EngineChannel* getMaster() const;
     void onCallbackStart(int sampleRate, int bufferSize);
-    RateControl* getRateControlForGroup(const QString& group);
-    const QString getSyncSource() const { return m_sSyncSource; }
-    // Used by RateControl to tell EngineSync it wants to be enabled in a specific mode.
-    // EngineSync can override this selection.
-    void requestSyncMode(RateControl* pRateControl, SyncMode state);
-    // Used by RateControl to tell EngineSync it wants to be enabled in any mode (master/follower).
-    void notifySyncModeEnabled(RateControl* pRateControl);
-    // RateControl notifies EngineSync directly about slider updates instead of using a CO.
-    void notifyRateSliderChanged(RateControl* pRateControl, double new_bpm);
-    // RateControl notifies EngineSync about play status changes.
-    void notifyDeckPlaying(RateControl* pRateControl, bool playing);
+
+    // Only for testing. Do not use.
+    Syncable* getSyncableForGroup(const QString& group);
+    Syncable* getMasterSyncable() {
+        return m_pMasterSyncable;
+    }
+
+    // Used by Syncables to tell EngineSync it wants to be enabled in a
+    // specific mode. If the state change is accepted, EngineSync calls
+    // Syncable::notifySyncModeChanged.
+    void requestSyncMode(Syncable* pSyncable, SyncMode state);
+
+    // Used by Syncables to tell EngineSync it wants to be enabled in any mode
+    // (master/follower).
+    void requestEnableSync(Syncable* pSyncable, bool enabled);
+
+    // Syncables notify EngineSync directly about various events. EngineSync
+    // does not have a say in whether these succeed or not, they are simply
+    // notifications.
+    void notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChanged=false);
+    void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm);
+    void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance);
+    void notifyPlaying(Syncable* pSyncable, bool playing);
 
   private slots:
-    void slotMasterBpmChanged(double);
     void slotSyncRateSliderChanged(double);
-    void slotSourceRateEngineChanged(double);
-    void slotSourceBpmChanged(double);
-    void slotSourceBeatDistanceChanged(double);
-    void slotInternalClockModeChanged(double);
 
   private:
     // Choices about master selection often hinge on how many decks are playing back.
     int playingSyncDeckCount() const;
-    // Activate a specific channel as Master.
-    bool activateChannelMaster(RateControl* pRateControl);
-    // Activate the internal clock as master.
-    void activateInternalClockMaster();
-    void findNewMaster(const QString& dontpick);
-    // Unhooks the current master's signals and resets EngineSync state so it has no master.
-    // Does not actually set the sync_master CO!
-    void disconnectCurrentMaster();
-    // Align the clock's beat distance with the given ratecontrol.
-    void initializeInternalClockBeatDistance(RateControl* pRateControl);
-    double getInternalClockBeatDistance() const;
+
+    // Activate a specific channel as master.
+    bool activateChannelMaster(Syncable* pSyncable);
+
+    // Activate a specific channel as Follower. Sets the syncable's bpm and
+    // beat_distance to match the master.
+    void activateFollower(Syncable* pSyncable);
+
+    // Picks a new master (does not pick pDontPick) and calls
+    // activateChannelMaster on it. Clears m_bExplicitMasterSelected because the
+    // master it picks is not explicitly selected by the user.
+    void findNewMaster(Syncable* pDontPick);
 
     ConfigObject<ConfigValue>* m_pConfig;
-
     InternalClock* m_pInternalClock;
-
-    RateControl* m_pChannelMaster;
-
+    Syncable* m_pMasterSyncable;
     ControlObject* m_pMasterBpm;
     ControlObject* m_pMasterBeatDistance;
-    ControlPushButton* m_pInternalClockMasterEnabled;
     ControlPotmeter* m_pMasterRateSlider;
-
-    QList<RateControl*> m_ratecontrols;
-    QString m_sSyncSource;
+    QList<Syncable*> m_syncables;
     bool m_bExplicitMasterSelected;
 };
 

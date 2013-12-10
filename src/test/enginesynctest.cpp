@@ -5,7 +5,7 @@
 // * Flinging tracks with the waveform should work.
 // * vinyl??
 
-
+#include <string>
 #include <gtest/gtest.h>
 #include <gmock/gmock.h>
 
@@ -21,28 +21,35 @@ namespace {
 
 class EngineSyncTest : public MockedEngineBackendTest {
   public:
+    std::string getMasterGroup() {
+        Syncable* pMasterSyncable = m_pEngineSync->getMasterSyncable();
+        if (pMasterSyncable) {
+            return pMasterSyncable->getGroup().toStdString();
+        }
+        return "";
+    }
     void assertIsMaster(QString group) {
         if (group == m_sInternalClockGroup){
             ASSERT_EQ(1,
                       ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                           "sync_master"))->get());
             ASSERT_EQ(NULL, m_pEngineSync->getMaster());
-            ASSERT_EQ(m_sInternalClockGroup, m_pEngineSync->getSyncSource().toStdString());
+            ASSERT_EQ(m_sInternalClockGroup, getMasterGroup());
         } else {
             if (group == m_sGroup1) {
                 ASSERT_EQ(m_pChannel1, m_pEngineSync->getMaster());
             } else if (group == m_sGroup2) {
                 ASSERT_EQ(m_pChannel2, m_pEngineSync->getMaster());
             }
-            ASSERT_EQ(group.toStdString(), m_pEngineSync->getSyncSource().toStdString());
-            ASSERT_EQ(EngineSync::SYNC_MASTER, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
+            ASSERT_EQ(group.toStdString(), getMasterGroup());
+            ASSERT_EQ(SYNC_MASTER, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
             ASSERT_EQ(1, ControlObject::getControl(ConfigKey(group, "sync_enabled"))->get());
             ASSERT_EQ(1, ControlObject::getControl(ConfigKey(group, "sync_master"))->get());
         }
     }
 
     void assertIsFollower(QString group) {
-        ASSERT_EQ(EngineSync::SYNC_FOLLOWER, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
+        ASSERT_EQ(SYNC_FOLLOWER, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
         ASSERT_EQ(1, ControlObject::getControl(ConfigKey(group, "sync_enabled"))->get());
         ASSERT_EQ(0, ControlObject::getControl(ConfigKey(group, "sync_master"))->get());
     }
@@ -53,7 +60,7 @@ class EngineSyncTest : public MockedEngineBackendTest {
                       ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                           "sync_master"))->get());
         } else {
-            ASSERT_EQ(EngineSync::SYNC_NONE, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
+            ASSERT_EQ(SYNC_NONE, ControlObject::getControl(ConfigKey(group, "sync_mode"))->get());
             ASSERT_EQ(0, ControlObject::getControl(ConfigKey(group, "sync_enabled"))->get());
             ASSERT_EQ(0, ControlObject::getControl(ConfigKey(group, "sync_master"))->get());
         }
@@ -61,13 +68,12 @@ class EngineSyncTest : public MockedEngineBackendTest {
 
     void assertNoMaster() {
         ASSERT_EQ(NULL, m_pEngineSync->getMaster());
-        ASSERT_EQ("", m_pEngineSync->getSyncSource().toStdString());
+        ASSERT_EQ(NULL, m_pEngineSync->getMasterSyncable());
     }
 };
 
 TEST_F(EngineSyncTest, ControlObjectsExist) {
     // This isn't exhaustive, but certain COs have a habit of not being set up properly.
-    ASSERT_TRUE(m_pRateControl1 != NULL);
     ASSERT_TRUE(ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm")) != NULL);
     ASSERT_TRUE(ControlObject::getControl(ConfigKey(m_sGroup1, "rateEngine")) != NULL);
 }
@@ -79,33 +85,33 @@ TEST_F(EngineSyncTest, SetMasterSuccess) {
     // and not just ValueChangedFromEngine.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
 
     // The master sync should now be channel 1.
     assertIsMaster(m_sGroup1);
 
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
 
     assertIsFollower(m_sGroup2);
 
     // Now set channel 2 to be master.
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync2->slotSet(SYNC_MASTER);
 
     // Now channel 2 should be master, and channel 1 should be a slave.
     assertIsMaster(m_sGroup2);
     assertIsFollower(m_sGroup1);
 
     // Now back again.
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
 
     // Now channel 1 should be master, and channel 2 should be a slave.
     assertIsMaster(m_sGroup1);
     assertIsFollower(m_sGroup2);
 
     // Now set channel 1 to slave, internal will be master because no track loaded.
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
 
     assertIsMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
@@ -121,13 +127,13 @@ TEST_F(EngineSyncTest, SetMasterWhilePlaying) {
 
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync3(getControlObjectThread(
             ConfigKey(m_sGroup3, "sync_mode")));
-    pButtonMasterSync3->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync3->slotSet(SYNC_FOLLOWER);
 
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -135,7 +141,7 @@ TEST_F(EngineSyncTest, SetMasterWhilePlaying) {
 
     ProcessBuffer();
 
-    pButtonMasterSync3->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync3->slotSet(SYNC_MASTER);
 
     ProcessBuffer();
 
@@ -148,7 +154,7 @@ TEST_F(EngineSyncTest, SetEnabledBecomesMaster) {
     // If we set the first channel to slave, it should be master.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
 
     // The master sync should now be channel 1.
     assertIsMaster(m_sGroup1);
@@ -160,7 +166,7 @@ TEST_F(EngineSyncTest, DisableInternalMasterWhilePlaying) {
     pButtonMasterSync->slotSet(1.0);
     QScopedPointer<ControlObjectThread> pButtonSyncMode1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonSyncMode1->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonSyncMode1->slotSet(SYNC_FOLLOWER);
 
     // The master sync should now be Internal.
     assertIsMaster(m_sInternalClockGroup);
@@ -175,14 +181,14 @@ TEST_F(EngineSyncTest, DisableInternalMasterWhilePlaying) {
 
     // Master sync should be the channel again.
     assertIsMaster(m_sGroup1);
-    ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "sync_master"))->get());
+    ASSERT_EQ(0, pButtonMasterSync->get());
 }
 
 TEST_F(EngineSyncTest, DisableSyncOnMaster) {
     // Channel 1 follower, channel 2 master.
     QScopedPointer<ControlObjectThread> pButtonSyncMode1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonSyncMode1->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonSyncMode1->slotSet(SYNC_FOLLOWER);
 
     QScopedPointer<ControlObjectThread> pButtonSyncMaster2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_master")));
@@ -207,14 +213,16 @@ TEST_F(EngineSyncTest, InternalMasterSetSlaveSliderMoves) {
             ConfigKey(m_sInternalClockGroup, "sync_master")));
     pButtonMasterSyncInternal->slotSet(1);
     ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->set(100.0);
-    ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->set(100.0);
+    QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
+            ConfigKey(m_sMasterGroup, "sync_slider")));
+    pMasterSyncSlider->set(100.0);
 
-	// Set the file bpm of channel 1 to 160bpm.
+    // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(80.0);
 
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
 
     ASSERT_FLOAT_EQ(getRateSliderValue(1.25),
                     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
@@ -331,10 +339,10 @@ TEST_F(EngineSyncTest, SetExplicitMasterByLights) {
 TEST_F(EngineSyncTest, RateChangeTest) {
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
 
     // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
@@ -364,10 +372,10 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     // This is like the test above, but the user loads the track after the slider has been tweaked.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
 
     // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
@@ -400,10 +408,10 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     // Turn on Master and Slave.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
 
     // Slave should immediately set its slider.
     ASSERT_FLOAT_EQ(getRateSliderValue(1.3333333333),
@@ -418,10 +426,10 @@ TEST_F(EngineSyncTest, SlaveRateChange) {
     // Confirm that slaves can change master sync rate as well.
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
 
     // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
@@ -454,13 +462,17 @@ TEST_F(EngineSyncTest, SlaveRateChange) {
 TEST_F(EngineSyncTest, InternalRateChangeTest) {
     QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
             ConfigKey(m_sInternalClockGroup, "sync_master")));
-    pButtonMasterSyncInternal->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSyncInternal->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync1->slotSet(SYNC_FOLLOWER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
+
+    assertIsMaster(m_sInternalClockGroup);
+    assertIsFollower(m_sGroup1);
+    assertIsFollower(m_sGroup2);
 
     // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
@@ -471,9 +483,15 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ASSERT_FLOAT_EQ(120.0, ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->get());
 
     // Set the internal rate to 150.
-    ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->set(150.0);
-    ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->get());
-
+    QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
+            ConfigKey(m_sMasterGroup, "sync_slider")));
+    pMasterSyncSlider->set(150.0);
+    // TODO(rryan): This used to test [Master],sync_bpm. What I think this meant
+    // to test is that the internal clock BPM changes to match the sync
+    // slider. Changing sync_bpm as a result of changing the sync_slider means
+    // that if all decks are stopped due to a stopped master they would suddenly
+    // lurch forward when the slider changed.
+    ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     // Set decks playing, and process a buffer to update all the COs.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
@@ -491,7 +509,7 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     ASSERT_FLOAT_EQ(1.25, ControlObject::getControl(ConfigKey(m_sGroup2, "rateEngine"))->get());
 
     // Set the internal rate to 80.
-    ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->set(80.0);
+    pMasterSyncSlider->set(80.0);
 
     // Update COs again.
     ProcessBuffer();
@@ -511,21 +529,24 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
 }
 
 TEST_F(EngineSyncTest, MasterStopSliderCheck) {
-	// If the master is playing, and stop is pushed, the sliders should stay the same.
-	ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(120.0);
-	ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(128.0);
+    // If the master is playing, and stop is pushed, the sliders should stay the same.
+    ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(120.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(128.0);
 
-	QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
+    QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
-    pButtonMasterSync1->slotSet(EngineSync::SYNC_MASTER);
+    pButtonMasterSync1->slotSet(SYNC_MASTER);
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
-    pButtonMasterSync2->slotSet(EngineSync::SYNC_FOLLOWER);
+    pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
 
-	QScopedPointer<ControlObjectThread> pChannel1Play(getControlObjectThread(
+    assertIsMaster(m_sGroup1);
+    assertIsFollower(m_sGroup2);
+
+    QScopedPointer<ControlObjectThread> pChannel1Play(getControlObjectThread(
             ConfigKey(m_sGroup1, "play")));
-	pChannel1Play->set(1.0);
-	QScopedPointer<ControlObjectThread> pChannel2Play(getControlObjectThread(
+    pChannel1Play->set(1.0);
+    QScopedPointer<ControlObjectThread> pChannel2Play(getControlObjectThread(
             ConfigKey(m_sGroup2, "play")));
     pChannel2Play->set(1.0);
 
@@ -561,8 +582,8 @@ TEST_F(EngineSyncTest, EnableOneDeckBecomesMaster) {
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
     // Set internal to master.
-    ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->set(124.0);
-    pButtonMasterSyncInternal->slotSet(EngineSync::SYNC_MASTER);
+    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->set(124.0);
+    pButtonMasterSyncInternal->slotSet(SYNC_MASTER);
 
     // Set the deck to play.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
@@ -574,7 +595,7 @@ TEST_F(EngineSyncTest, EnableOneDeckBecomesMaster) {
     assertIsMaster(m_sGroup1);
 
     // Internal clock rate should be set.
-    ASSERT_FLOAT_EQ(124.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->get());
+    ASSERT_FLOAT_EQ(124.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     ASSERT_FLOAT_EQ(124.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
 }
 
@@ -641,8 +662,8 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     ASSERT_FLOAT_EQ(100.0,
                     ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
     ASSERT_EQ(NULL, m_pEngineSync->getMaster());
-    ASSERT_EQ("", m_pEngineSync->getSyncSource().toStdString());
-    ASSERT_EQ(EngineSync::SYNC_NONE, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->get());
+    ASSERT_EQ(NULL, m_pEngineSync->getMasterSyncable());
+    ASSERT_EQ(SYNC_NONE, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_mode"))->get());
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_enabled"))->get());
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup1, "sync_master"))->get());
     ASSERT_FLOAT_EQ(getRateSliderValue(100.0 / 130.0),
@@ -663,8 +684,8 @@ TEST_F(EngineSyncTest, SyncToNonSyncDeck) {
     ASSERT_FLOAT_EQ(100.0,
                     ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
     ASSERT_EQ(NULL, m_pEngineSync->getMaster());
-    ASSERT_EQ("", m_pEngineSync->getSyncSource().toStdString());
-    ASSERT_EQ(EngineSync::SYNC_NONE, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->get());
+    ASSERT_EQ(NULL, m_pEngineSync->getMasterSyncable());
+    ASSERT_EQ(SYNC_NONE, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_mode"))->get());
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_enabled"))->get());
     ASSERT_EQ(0, ControlObject::getControl(ConfigKey(m_sGroup2, "sync_master"))->get());
     ASSERT_FLOAT_EQ(getRateSliderValue(1.0),
