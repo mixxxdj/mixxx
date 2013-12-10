@@ -441,7 +441,7 @@ void RateControl::slotRateSliderChanged(double v) {
     }
 
     const double new_bpm = m_pFileBpm->get() * (1.0 + m_pRateDir->get() * m_pRateRange->get() * v);
-    if (qFuzzyCompare(new_bpm, m_dOldBpm)) {
+    if (floatCompare(new_bpm, m_dOldBpm)) {
         return;
     }
     m_dOldBpm = new_bpm;

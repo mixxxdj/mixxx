@@ -324,7 +324,7 @@ void BpmControl::slotMasterSyncSliderChanged(double bpm) {
     }
     if (getSyncMode() != EngineSync::SYNC_NONE) {
         // If the bpm is the same, nothing to do.
-        if (qFuzzyCompare(bpm, m_pEngineBpm->get())) {
+        if (floatCompare(bpm, m_pEngineBpm->get())) {
             return;
         }
         double newRate = bpm / m_pFileBpm->get();
