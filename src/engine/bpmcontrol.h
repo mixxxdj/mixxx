@@ -24,7 +24,6 @@ class BpmControl : public EngineControl {
 
     double getBpm() const;
     double getFileBpm() const { return m_pFileBpm ? m_pFileBpm->get() : 0.0; }
-    void onEngineRateChange(double rate);
     double getSyncAdjustment(bool userTweakingSync);
     double getSyncedRate() const;
     // Get the phase offset from the specified position.

@@ -644,12 +644,6 @@ double BpmControl::getPhaseOffset(double dThisPosition) {
     return dNewPlaypos - dThisPosition;
 }
 
-void BpmControl::onEngineRateChange(double rate) {
-    if (getSyncMode() == SYNC_FOLLOWER) {
-        m_pEngineBpm->set(rate * m_pFileBpm->get());
-    }
-}
-
 void BpmControl::slotAdjustRateSlider() {
     // Adjust playback bpm in response to a change in the rate slider.
     double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
