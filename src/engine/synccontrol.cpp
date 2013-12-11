@@ -14,7 +14,9 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
         : EngineControl(pGroup, pConfig),
           m_sGroup(pGroup),
           m_pChannel(pChannel),
-          m_pEngineSync(pEngineSync) {
+          m_pEngineSync(pEngineSync),
+          m_pBpmControl(NULL),
+          m_pRateControl(NULL) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton.reset(new ControlObjectSlave(pGroup, "play", this));
@@ -45,6 +47,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
     connect(m_pSyncBeatDistance.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBeatDistanceChanged(double)),
             Qt::DirectConnection);
+
+    // BPMControl and RateControl will be initialized later.
 }
 
 SyncControl::~SyncControl() {
