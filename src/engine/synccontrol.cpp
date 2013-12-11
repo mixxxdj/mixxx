@@ -96,7 +96,7 @@ double SyncControl::getBeatDistance() const {
 }
 
 void SyncControl::setBeatDistance(double beatDistance) {
-    qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
+    //qDebug() << "SyncControl::setBeatDistance" << getGroup() << beatDistance;
     // Set the BpmControl target beat distance to beatDistance.
     m_pBpmControl->setTargetBeatDistance(beatDistance);
 }
