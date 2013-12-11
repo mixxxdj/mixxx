@@ -284,6 +284,7 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
     qDebug() << "EngineSync::notifyBeatDistanceChanged" << pSyncable->getGroup() << beat_distance;
     if (pSyncable->getSyncMode() == SYNC_NONE) {
+    if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
     }
 
