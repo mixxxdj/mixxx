@@ -432,8 +432,6 @@ void EngineMaster::addChannel(EngineChannel* pChannel) {
         pBuffer->bindWorkers(m_pWorkerScheduler);
         pBuffer->setEngineMaster(this);
     }
-
-    m_pMasterSync->addChannel(pChannel);
 }
 
 EngineChannel* EngineMaster::getChannel(QString group) {

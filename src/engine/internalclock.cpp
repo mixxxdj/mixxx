@@ -1,23 +1,60 @@
 #include <QtDebug>
 
 #include "engine/internalclock.h"
+
+#include "engine/enginesync.h"
 #include "controlobject.h"
+#include "controlpushbutton.h"
 #include "configobject.h"
 
-InternalClock::InternalClock(const char* pGroup)
+InternalClock::InternalClock(const char* pGroup, EngineSync* pEngineSync)
         : m_group(pGroup),
+          m_pEngineSync(pEngineSync),
+          m_mode(SYNC_NONE),
           m_iOldSampleRate(44100),
           m_dOldBpm(0.0),
           m_dBeatLength(0),
           m_dClockPosition(0) {
-    m_pClockBpm = new ControlObject(ConfigKey(m_group, "bpm"));
-    connect(m_pClockBpm, SIGNAL(valueChanged(double)),
+    m_pClockBpm.reset(new ControlObject(ConfigKey(m_group, "bpm")));
+    connect(m_pClockBpm.data(), SIGNAL(valueChanged(double)),
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);
+
+    m_pSyncMasterEnabled.reset(
+        new ControlPushButton(ConfigKey(pGroup, "sync_master")));
+    m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
+    m_pSyncMasterEnabled->connectValueChangeRequest(
+        this, SLOT(slotSyncMasterEnabledChangeRequest(double)),
+        Qt::DirectConnection);
 }
 
 InternalClock::~InternalClock() {
-    delete m_pClockBpm;
+}
+
+void InternalClock::notifySyncModeChanged(SyncMode mode) {
+    // Syncable has absolutely no say in the matter. This is what EngineSync
+    // requires. Bypass confirmation by using setAndConfirm.
+    m_mode = mode;
+    m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
+}
+
+void InternalClock::slotSyncMasterEnabledChangeRequest(double state) {
+    bool currentlyMaster = getSyncMode() == SYNC_MASTER;
+
+    if (state > 0.0) {
+        if (currentlyMaster) {
+            // Already master.
+            return;
+        }
+        m_pEngineSync->requestSyncMode(this, SYNC_MASTER);
+    } else {
+        // Turning off master goes back to follower mode.
+        if (!currentlyMaster) {
+            // Already not master.
+            return;
+        }
+        m_pEngineSync->requestSyncMode(this, SYNC_FOLLOWER);
+    }
 }
 
 double InternalClock::getBeatDistance() const {
@@ -29,6 +66,7 @@ double InternalClock::getBeatDistance() const {
 }
 
 void InternalClock::setBeatDistance(double beatDistance) {
+    //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
 }
 
@@ -37,12 +75,14 @@ double InternalClock::getBpm() const {
 }
 
 void InternalClock::setBpm(double bpm) {
+    qDebug() << "InternalClock::setBpm" << bpm;
     m_pClockBpm->set(bpm);
     updateBeatLength(m_iOldSampleRate, bpm);
 }
 
 void InternalClock::slotBpmChanged(double bpm) {
     updateBeatLength(m_iOldSampleRate, bpm);
+    m_pEngineSync->notifyBpmChanged(this, bpm);
 }
 
 void InternalClock::updateBeatLength(int sampleRate, double bpm) {
@@ -96,4 +136,7 @@ void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
     while (m_dClockPosition >= m_dBeatLength) {
         m_dClockPosition -= m_dBeatLength;
     }
+
+    m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
+    m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }

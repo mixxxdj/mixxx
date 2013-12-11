@@ -25,6 +25,7 @@
 #include "configobject.h"
 #include "controlpotmeter.h"
 #include "controllinpotmeter.h"
+#include "engine/enginechannel.h"
 #include "engine/enginebufferscalest.h"
 #include "engine/enginebufferscalerubberband.h"
 #include "engine/enginebufferscalelinear.h"
@@ -38,6 +39,7 @@
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
 #include "engine/keycontrol.h"
+#include "engine/synccontrol.h"
 #include "engine/quantizecontrol.h"
 #include "visualplayposition.h"
 #include "engine/cuecontrol.h"
@@ -58,11 +60,12 @@ const double kMaxPlayposRange = 1.14;
 const double kMinPlayposRange = -0.14;
 
 EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _config,
-                           EngineMaster* pMixingEngine) :
+                           EngineChannel* pChannel, EngineMaster* pMixingEngine) :
     m_engineLock(QMutex::Recursive),
     m_group(_group),
     m_pConfig(_config),
     m_pLoopingControl(NULL),
+    m_pSyncControl(NULL),
     m_pRateControl(NULL),
     m_pBpmControl(NULL),
     m_pKeyControl(NULL),
@@ -213,8 +216,11 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     m_pLoopingControl = new LoopingControl(_group, _config);
     addControl(m_pLoopingControl);
 
-    m_pRateControl = new RateControl(_group, _config, pMixingEngine->getEngineSync());
-    pMixingEngine->getEngineSync()->addDeck(m_pRateControl);
+    m_pSyncControl = new SyncControl(_group, _config, pChannel,
+                                     pMixingEngine->getEngineSync());
+    addControl(m_pSyncControl);
+
+    m_pRateControl = new RateControl(_group, _config);
     // Add the Rate Controller
     addControl(m_pRateControl);
 #ifdef __VINYLCONTROL__
@@ -226,8 +232,11 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
     addControl(m_pBpmControl);
-    m_pRateControl->setBpmControl(m_pBpmControl);
 
+    // TODO(rryan) remove this dependence?
+    m_pRateControl->setBpmControl(m_pBpmControl);
+    m_pSyncControl->setEngineControls(m_pRateControl, m_pBpmControl);
+    pMixingEngine->getEngineSync()->addSyncableDeck(m_pSyncControl);
 
     m_fwdButton = ControlObject::getControl(ConfigKey(_group, "fwd"));
     m_backButton = ControlObject::getControl(ConfigKey(_group, "back"));
@@ -414,7 +423,7 @@ void EngineBuffer::slotTrackLoading() {
 }
 
 void EngineBuffer::loadFakeTrack() {
-	TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
+    TrackPointer pTrack(new TrackInfoObject(), &QObject::deleteLater);
     slotTrackLoaded(pTrack, 44100, 44100 * 10);
 }
 
@@ -935,7 +944,7 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
             (double)iBufferSize/m_file_length_old,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
     m_rateEngine->set(rate);
-    m_pRateControl->checkTrackPosition(fFractionalPlaypos);
+    m_pSyncControl->checkTrackPosition(fFractionalPlaypos);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
