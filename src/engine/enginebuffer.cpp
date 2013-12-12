@@ -801,6 +801,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         }
         m_engineLock.unlock();
 
+        // Report our speed to SyncControl. If we are the master then it will
+        // broadcast this update to followers.
+        m_pSyncControl->reportPlayerSpeed(speed);
 
         // Update all the indicators that EngineBuffer publishes to allow
         // external parts of Mixxx to observe its status.
@@ -831,6 +834,9 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     } else { // if (!bTrackLoading && m_pause.tryLock()) {
         // If we can't get the pause lock then this buffer will be silence.
         bCurBufferPaused = true;
+
+        // We are stopped. Report a speed of 0 to SyncControl.
+        m_pSyncControl->reportPlayerSpeed(0.0);
     }
 
     if (!bTrackLoading) {

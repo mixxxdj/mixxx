@@ -80,10 +80,6 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pRateRange->connectValueChanged(this, SLOT(slotRateChanged()),
                                       Qt::DirectConnection);
 
-    m_pRateEngine.reset(new ControlObjectSlave(getGroup(), "rateEngine", this));
-    m_pRateEngine->connectValueChanged(this, SLOT(slotRateEngineChanged(double)),
-                                       Qt::DirectConnection);
-
 #ifdef __VINYLCONTROL__
     m_pVCEnabled.reset(new ControlObjectSlave(
         getGroup(), "vinylcontrol_enabled", this));
@@ -212,7 +208,7 @@ void SyncControl::slotBeatDistanceChanged(double beatDistance) {
     m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
 }
 
-void SyncControl::slotRateEngineChanged(double rateEngine) {
-    double instantaneous_bpm = m_pFileBpm->get() * rateEngine;
+void SyncControl::reportPlayerSpeed(double speed) {
+    double instantaneous_bpm = m_pFileBpm->get() * speed;
     m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
 }

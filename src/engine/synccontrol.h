@@ -41,6 +41,8 @@ class SyncControl : public EngineControl, public Syncable {
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
     void checkTrackPosition(double fractionalPlaypos);
 
+    void reportPlayerSpeed(double speed);
+
   private slots:
     // Fired by changes in play.
     void slotControlPlay(double v);
@@ -54,8 +56,6 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired by changed to beat_distance (typically only from BpmControl during
     // BpmControl::process()).
     void slotBeatDistanceChanged(double beatDistance);
-
-    void slotRateEngineChanged(double rate);
 
     // Change request handlers for sync properties.
     void slotSyncModeChangeRequest(double state);
@@ -83,7 +83,6 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlObjectSlave> m_pRateSlider;
     QScopedPointer<ControlObjectSlave> m_pRateDirection;
     QScopedPointer<ControlObjectSlave> m_pRateRange;
-    QScopedPointer<ControlObjectSlave> m_pRateEngine;
     QScopedPointer<ControlObjectSlave> m_pVCEnabled;
 };
 
