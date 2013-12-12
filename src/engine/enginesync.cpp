@@ -249,7 +249,6 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
         return;
     }
 
-    m_pMasterBpm->set(bpm);
     m_pMasterRateSlider->set(bpm);
 
     if (pSyncable != m_pInternalClock) {

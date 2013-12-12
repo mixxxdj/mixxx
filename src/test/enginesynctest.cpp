@@ -212,7 +212,6 @@ TEST_F(EngineSyncTest, InternalMasterSetSlaveSliderMoves) {
     QScopedPointer<ControlObjectThread> pButtonMasterSyncInternal(getControlObjectThread(
             ConfigKey(m_sInternalClockGroup, "sync_master")));
     pButtonMasterSyncInternal->slotSet(1);
-    ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->set(100.0);
     QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
             ConfigKey(m_sMasterGroup, "sync_slider")));
     pMasterSyncSlider->set(100.0);
@@ -347,7 +346,7 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
     ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->get());
-    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->get());
+    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
 
     // Set the rate of channel 1 to 1.2.
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.2));
@@ -365,7 +364,7 @@ TEST_F(EngineSyncTest, RateChangeTest) {
     ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
     // Internal master should also be 192.
-    ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->get());
+    ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
 }
 
 TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
@@ -379,7 +378,7 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
 
     // Set the file bpm of channel 1 to 160bpm.
     ControlObject::getControl(ConfigKey(m_sGroup1, "file_bpm"))->set(160.0);
-    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->get());
+    ASSERT_FLOAT_EQ(160.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
 
     // Set the file bpm of channel 2 to 120bpm.
     ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(120.0);
@@ -393,7 +392,7 @@ TEST_F(EngineSyncTest, RateChangeTestWeirdOrder) {
     ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
 
     // Internal Master BPM should read the same.
-    ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->get());
+    ASSERT_FLOAT_EQ(192.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
 }
 
 TEST_F(EngineSyncTest, RateChangeTestOrder3) {
@@ -486,11 +485,6 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
     QScopedPointer<ControlObjectThread> pMasterSyncSlider(getControlObjectThread(
             ConfigKey(m_sMasterGroup, "sync_slider")));
     pMasterSyncSlider->set(150.0);
-    // TODO(rryan): This used to test [Master],sync_bpm. What I think this meant
-    // to test is that the internal clock BPM changes to match the sync
-    // slider. Changing sync_bpm as a result of changing the sync_slider means
-    // that if all decks are stopped due to a stopped master they would suddenly
-    // lurch forward when the slider changed.
     ASSERT_FLOAT_EQ(150.0, ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     // Set decks playing, and process a buffer to update all the COs.
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
@@ -513,8 +507,6 @@ TEST_F(EngineSyncTest, InternalRateChangeTest) {
 
     // Update COs again.
     ProcessBuffer();
-
-    ASSERT_FLOAT_EQ(80.0, ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->get());
 
     // Rate sliders for channels 1 and 2 should change appropriately.
     ASSERT_FLOAT_EQ(getRateSliderValue(0.5),
@@ -615,8 +607,6 @@ TEST_F(EngineSyncTest, EnableOneDeckMasterSliderUpdates) {
     assertIsMaster(m_sGroup1);
 
     // Internal clock rate should be set.
-    ASSERT_FLOAT_EQ(130.0,
-                    ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_bpm"))->get());
     ASSERT_FLOAT_EQ(130.0,
                     ControlObject::getControl(ConfigKey(m_sMasterGroup, "sync_slider"))->get());
 }
