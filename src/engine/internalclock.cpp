@@ -20,6 +20,11 @@ InternalClock::InternalClock(const char* pGroup, EngineSync* pEngineSync)
             this, SLOT(slotBpmChanged(double)),
             Qt::DirectConnection);
 
+    m_pClockBeatDistance.reset(new ControlObject(ConfigKey(m_group, "beat_distance")));
+    connect(m_pClockBeatDistance.data(), SIGNAL(valueChanged(double)),
+            this, SLOT(slotBeatDistanceChanged(double)),
+            Qt::DirectConnection);
+
     m_pSyncMasterEnabled.reset(
         new ControlPushButton(ConfigKey(pGroup, "sync_master")));
     m_pSyncMasterEnabled->setButtonMode(ControlPushButton::TOGGLE);
@@ -91,6 +96,13 @@ void InternalClock::slotBpmChanged(double bpm) {
     m_pEngineSync->notifyBpmChanged(this, bpm);
 }
 
+void InternalClock::slotBeatDistanceChanged(double beat_distance) {
+    if (beat_distance < 0.0 || beat_distance > 1.0) {
+        return;
+    }
+    setBeatDistance(beat_distance);
+}
+
 void InternalClock::updateBeatLength(int sampleRate, double bpm) {
     if (m_iOldSampleRate == sampleRate && bpm == m_dOldBpm) {
         return;
@@ -143,6 +155,8 @@ void InternalClock::onCallbackStart(int sampleRate, int bufferSize) {
         m_dClockPosition -= m_dBeatLength;
     }
 
-    m_pEngineSync->notifyBeatDistanceChanged(this, getBeatDistance());
+    double beat_distance = getBeatDistance();
+    m_pClockBeatDistance->set(beat_distance);
+    m_pEngineSync->notifyBeatDistanceChanged(this, beat_distance);
     m_pEngineSync->notifyInstantaneousBpmChanged(this, getBpm());
 }

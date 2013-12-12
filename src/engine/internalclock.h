@@ -48,6 +48,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
 
   private slots:
     void slotBpmChanged(double bpm);
+    void slotBeatDistanceChanged(double beat_distance);
     void slotSyncMasterEnabledChangeRequest(double state);
 
   private:
@@ -56,6 +57,7 @@ class InternalClock : public QObject, public Clock, public Syncable {
     QString m_group;
     EngineSync* m_pEngineSync;
     QScopedPointer<ControlObject> m_pClockBpm;
+    QScopedPointer<ControlObject> m_pClockBeatDistance;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;
     SyncMode m_mode;
 
