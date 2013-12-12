@@ -178,7 +178,7 @@ void SyncControl::slotFileBpmChanged() {
 }
 
 void SyncControl::slotRateChanged() {
-    // This slot is fired by rate, rate_dir, rateRange, and file_bpm.
+    // This slot is fired by rate, rate_dir, and rateRange changes.
     const double rate = 1.0 + m_pRateSlider->get() * m_pRateRange->get() * m_pRateDirection->get();
     double bpm = m_pFileBpm ? m_pFileBpm->get() * rate : 0.0;
     m_pEngineSync->notifyBpmChanged(this, bpm, false);
