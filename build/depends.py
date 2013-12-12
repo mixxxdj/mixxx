@@ -289,6 +289,7 @@ class Qt(Dependence):
                 'QtGui'      : ['QT_GUI_LIB'],
                 'QtNetwork'  : ['QT_NETWORK_LIB'],
                 'QtCore'     : ['QT_CORE_LIB'],
+                'QtWidgets'  : ['QT_WIDGETS_LIB'],
             }
 
             module_defines = qt5_module_defines if qt5 else qt4_module_defines

@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <QApplication>
 #include <QDir>
 #include <QTemporaryFile>
 #include <QScopedPointer>
