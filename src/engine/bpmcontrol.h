@@ -35,7 +35,6 @@ class BpmControl : public EngineControl {
                    const double dTotalSamples,
                    const int iBufferSize);
     void setTargetBeatDistance(double beatDistance);
-    void setBpmFromMaster(double);
 
     // Calculates contextual information about beats: the previous beat, the
     // next beat, the current beat length, and the beat ratio (how far dPosition
@@ -86,9 +85,6 @@ class BpmControl : public EngineControl {
     ControlObject* m_pQuantize;
     ControlObjectSlave* m_pRateRange;
     ControlObjectSlave* m_pRateDir;
-
-    // Is vinyl control enabled?
-    ControlObject* m_pVCEnabled;
 
     // ControlObjects that come from LoopingControl
     ControlObjectSlave* m_pLoopEnabled;

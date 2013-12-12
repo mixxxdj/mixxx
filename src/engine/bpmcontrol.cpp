@@ -89,13 +89,6 @@ BpmControl::BpmControl(const char* _group,
     m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"));
 
     m_pSyncMode = ControlObject::getControl(ConfigKey(_group, "sync_mode"));
-
-#ifdef __VINYLCONTROL__
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(_group, "vinylcontrol_enabled"));
-    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
-    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
-    Q_ASSERT(m_pVCEnabled);
-#endif
 }
 
 BpmControl::~BpmControl() {
@@ -291,31 +284,6 @@ double BpmControl::getSyncedRate() const {
         return 1.0;
     } else {
         return m_pMasterBpm->get() / m_pFileBpm->get();
-    }
-}
-
-void BpmControl::setBpmFromMaster(double bpm) {
-    // Vinyl overrides
-    if (m_pVCEnabled && m_pVCEnabled->get() > 0) {
-        return;
-    }
-
-    if (getSyncMode() == SYNC_NONE) {
-        return;
-    }
-
-    // If the bpm is the same, nothing to do.
-    if (floatCompare(bpm, m_pEngineBpm->get())) {
-        return;
-    }
-
-    if (m_pFileBpm->get() > 0.0) {
-        double newRate = bpm / m_pFileBpm->get();
-        m_pRateSlider->set((newRate - 1.0) / m_pRateDir->get() / m_pRateRange->get());
-        m_pEngineBpm->set(bpm);
-    } else {
-        m_pRateSlider->set(0);
-        m_pEngineBpm->set(0);
     }
 }
 

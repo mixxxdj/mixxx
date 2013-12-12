@@ -84,6 +84,13 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
     m_pRateEngine->connectValueChanged(this, SLOT(slotRateEngineChanged(double)),
                                        Qt::DirectConnection);
 
+#ifdef __VINYLCONTROL__
+    m_pVCEnabled.reset(new ControlObjectSlave(
+        getGroup(), "vinylcontrol_enabled", this));
+    // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
+    // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
+    Q_ASSERT(m_pVCEnabled->valid());
+#endif
 }
 
 void SyncControl::notifySyncModeChanged(SyncMode mode) {
@@ -111,8 +118,25 @@ double SyncControl::getBpm() const {
 
 void SyncControl::setBpm(double bpm) {
     qDebug() << "SyncControl::setBpm" << getGroup() << bpm;
-    // Sets the effective BPM in BpmControl (results in changes to rate and
-    m_pBpmControl->setBpmFromMaster(bpm);
+
+    if (getSyncMode() == SYNC_NONE) {
+        qDebug() << "WARNING: Logic Error: setBpm called on SYNC_NONE syncable.";
+        return;
+    }
+
+    // Vinyl Control overrides.
+    if (m_pVCEnabled->get() > 0.0) {
+        return;
+    }
+
+    double fileBpm = m_pFileBpm->get();
+    if (fileBpm > 0.0) {
+        double newRate = (bpm / m_pFileBpm->get() - 1.0)
+                / m_pRateDirection->get() / m_pRateRange->get();
+        m_pRateSlider->set(newRate);
+    } else {
+        m_pRateSlider->set(0);
+    }
 }
 
 void SyncControl::checkTrackPosition(double fractionalPlaypos) {

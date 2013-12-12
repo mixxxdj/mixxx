@@ -29,9 +29,13 @@ class SyncControl : public EngineControl, public Syncable {
     bool isPlaying() const;
 
     double getBeatDistance() const;
+    // Must never result in a call to
+    // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     void setBeatDistance(double beatDistance);
 
     double getBpm() const;
+    // Must never result in a call to
+    // SyncableListener::notifyBpmChanged or signal loops could occur.
     void setBpm(double bpm);
 
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
@@ -80,6 +84,7 @@ class SyncControl : public EngineControl, public Syncable {
     QScopedPointer<ControlObjectSlave> m_pRateDirection;
     QScopedPointer<ControlObjectSlave> m_pRateRange;
     QScopedPointer<ControlObjectSlave> m_pRateEngine;
+    QScopedPointer<ControlObjectSlave> m_pVCEnabled;
 };
 
 
