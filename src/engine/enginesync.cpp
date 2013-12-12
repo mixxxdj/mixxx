@@ -155,12 +155,7 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
             if (foundTargetBpm) {
                 m_pMasterRateSlider->set(targetBpm);
-                m_pInternalClock->setBpm(targetBpm);
-                foreach (Syncable* pSyncable, m_syncables) {
-                    if (pSyncable->getSyncMode() != SYNC_NONE) {
-                        pSyncable->setBpm(targetBpm);
-                    }
-                }
+                setMasterBpm(NULL, targetBpm);
             }
         } else if (m_pMasterSyncable == m_pInternalClock) {
             // If there are no playing decks and the internal clock is master
@@ -171,16 +166,9 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 // We also require that the deck take on the current internal
                 // clock BPM.
                 double targetBpm = m_pMasterSyncable->getBpm();
-
                 activateMaster(pSyncable);
-
                 m_pMasterRateSlider->set(targetBpm);
-                m_pInternalClock->setBpm(targetBpm);
-                foreach (Syncable* pSyncable, m_syncables) {
-                    if (pSyncable->getSyncMode() != SYNC_NONE) {
-                        pSyncable->setBpm(targetBpm);
-                    }
-                }
+                setMasterBpm(NULL, targetBpm);
             } else {
                 activateFollower(pSyncable);
             }
@@ -250,28 +238,12 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     }
 
     m_pMasterRateSlider->set(bpm);
-
-    if (pSyncable != m_pInternalClock) {
-        m_pInternalClock->setBpm(bpm);
-    }
-
-    foreach (Syncable* pOther, m_syncables) {
-        if (pSyncable == pOther) {
-            continue;
-        }
-
-        if (pOther->getSyncMode() != SYNC_NONE) {
-            pOther->setBpm(bpm);
-        }
-    }
+    setMasterBpm(pSyncable, bpm);
 }
 
 void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) {
     //qDebug() << "EngineSync::notifyInstantaneousBpmChanged" << pSyncable->getGroup() << bpm;
-
-    SyncMode syncMode = pSyncable->getSyncMode();
-
-    if (syncMode != SYNC_MASTER) {
+    if (pSyncable->getSyncMode() != SYNC_MASTER) {
         return;
     }
 
@@ -287,21 +259,9 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_dist
     }
 
     m_pMasterBeatDistance->set(beat_distance);
-
-    if (pSyncable != m_pInternalClock) {
-        m_pInternalClock->setBeatDistance(beat_distance);
-    }
-
-    foreach (Syncable* pOther, m_syncables) {
-        if (pSyncable == pOther) {
-            continue;
-        }
-
-        if (pOther->getSyncMode() != SYNC_NONE) {
-            pOther->setBeatDistance(beat_distance);
-        }
-    }
+    setMasterBeatDistance(pSyncable, beat_distance);
 }
+
 
 int EngineSync::playingSyncDeckCount() const {
     int playing_sync_decks = 0;
@@ -322,8 +282,8 @@ int EngineSync::playingSyncDeckCount() const {
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
     pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
-    pSyncable->setBpm(m_pMasterRateSlider->get());
-    pSyncable->setBeatDistance(m_pMasterBeatDistance->get());
+    pSyncable->setBpm(masterBpm());
+    pSyncable->setBeatDistance(masterBeatDistance());
 }
 
 void EngineSync::activateMaster(Syncable* pSyncable) {
@@ -419,12 +379,7 @@ void EngineSync::findNewMaster(Syncable* pDontPick) {
 void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
     qDebug() << "EngineSync::slotSyncRateSliderChanged" << new_bpm;
     // Only called by external changes to sync_slider.
-    m_pInternalClock->setBpm(new_bpm);
-    foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable->getSyncMode() != SYNC_NONE) {
-            pSyncable->setBpm(new_bpm);
-        }
-    }
+    setMasterBpm(NULL, new_bpm);
 }
 
 void EngineSync::onCallbackStart(int sampleRate, int bufferSize) {
@@ -442,4 +397,40 @@ Syncable* EngineSync::getSyncableForGroup(const QString& group) {
         }
     }
     return NULL;
+}
+
+// TODO(rryan): Replace with m_pMasterSyncable->getBpm().
+double EngineSync::masterBpm() const {
+    return m_pMasterRateSlider->get();
+}
+
+// TODO(rryan): Replace with m_pMasterSyncable->getBeatDistance().
+double EngineSync::masterBeatDistance() const {
+    return m_pMasterBeatDistance->get();
+}
+
+void EngineSync::setMasterBpm(Syncable* pSource, double bpm) {
+    if (pSource != m_pInternalClock) {
+        m_pInternalClock->setBpm(bpm);
+    }
+    foreach (Syncable* pSyncable, m_syncables) {
+        if (pSyncable == pSource ||
+                pSyncable->getSyncMode() == SYNC_NONE) {
+            continue;
+        }
+        pSyncable->setBpm(bpm);
+    }
+}
+
+void EngineSync::setMasterBeatDistance(Syncable* pSource, double beat_distance) {
+    if (pSource != m_pInternalClock) {
+        m_pInternalClock->setBeatDistance(beat_distance);
+    }
+    foreach (Syncable* pSyncable, m_syncables) {
+        if (pSyncable == pSource ||
+                pSyncable->getSyncMode() == SYNC_NONE) {
+            continue;
+        }
+        pSyncable->setBeatDistance(beat_distance);
+    }
 }

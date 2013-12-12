@@ -80,6 +80,14 @@ class EngineSync : public EngineControl, public SyncableListener {
     // master it picks is not explicitly selected by the user.
     void findNewMaster(Syncable* pDontPick);
 
+    double masterBpm() const;
+    double masterBeatDistance() const;
+
+    // Set the master BPM.
+    void setMasterBpm(Syncable* pSource, double bpm);
+    // Set the master beat distance.
+    void setMasterBeatDistance(Syncable* pSource, double beat_distance);
+
     ConfigObject<ConfigValue>* m_pConfig;
     InternalClock* m_pInternalClock;
     Syncable* m_pMasterSyncable;
