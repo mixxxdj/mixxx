@@ -68,9 +68,9 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     m_pMasterSync = new EngineSync(_config);
 
     // The last-used bpm value is saved in the destructor of EngineSync.
-    double default_bpm = _config->getValueString(ConfigKey("[Master]", "sync_bpm"),
+    double default_bpm = _config->getValueString(ConfigKey("[InternalClock]", "bpm"),
                                                  "124.0").toDouble();
-    ControlObject::getControl(ConfigKey("[Master]","sync_slider"))->set(default_bpm);
+    ControlObject::getControl(ConfigKey("[InternalClock]","bpm"))->set(default_bpm);
 
 #ifdef __LADSPA__
     // LADSPA

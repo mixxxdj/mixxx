@@ -61,9 +61,6 @@ class EngineSync : public EngineControl, public SyncableListener {
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance);
     void notifyPlaying(Syncable* pSyncable, bool playing);
 
-  private slots:
-    void slotSyncRateSliderChanged(double);
-
   private:
     // Choices about master selection often hinge on how many decks are playing back.
     int playingSyncDeckCount() const;
@@ -93,7 +90,6 @@ class EngineSync : public EngineControl, public SyncableListener {
     ConfigObject<ConfigValue>* m_pConfig;
     InternalClock* m_pInternalClock;
     Syncable* m_pMasterSyncable;
-    ControlPotmeter* m_pMasterRateSlider;
     QList<Syncable*> m_syncables;
     bool m_bExplicitMasterSelected;
 };

@@ -39,18 +39,12 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
           m_bExplicitMasterSelected(false) {
     qRegisterMetaType<SyncMode>("SyncMode");
     m_pInternalClock->setBpm(124.0);
-
-    m_pMasterRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"),
-                                              40.0, 200.0);
-    connect(m_pMasterRateSlider, SIGNAL(valueChanged(double)),
-            this, SLOT(slotSyncRateSliderChanged(double)),
-            Qt::DirectConnection);
 }
 
 EngineSync::~EngineSync() {
     // We use the slider value because that is never set to 0.0.
-    m_pConfig->set(ConfigKey("[Master]", "sync_slider"), ConfigValue(m_pMasterRateSlider->get()));
-    delete m_pMasterRateSlider;
+    m_pConfig->set(ConfigKey("[InternalClock]", "bpm"), ConfigValue(
+        m_pInternalClock->getBpm()));
     delete m_pInternalClock;
 }
 
@@ -147,7 +141,6 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
             activateMaster(pSyncable);
 
             if (foundTargetBpm) {
-                m_pMasterRateSlider->set(targetBpm);
                 setMasterBpm(NULL, targetBpm);
             }
         } else if (m_pMasterSyncable == m_pInternalClock) {
@@ -160,7 +153,6 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 // clock BPM.
                 double targetBpm = m_pMasterSyncable->getBpm();
                 activateMaster(pSyncable);
-                m_pMasterRateSlider->set(targetBpm);
                 setMasterBpm(NULL, targetBpm);
             } else {
                 activateFollower(pSyncable);
@@ -226,11 +218,10 @@ void EngineSync::notifyBpmChanged(Syncable* pSyncable, double bpm, bool fileChan
     // but it is required when the file BPM changes because it's not a true BPM
     // change, so we set the follower back to the master BPM.
     if (syncMode == SYNC_FOLLOWER && fileChanged) {
-        pSyncable->setBpm(m_pMasterRateSlider->get());
+        pSyncable->setBpm(masterBpm());
         return;
     }
 
-    m_pMasterRateSlider->set(bpm);
     setMasterBpm(pSyncable, bpm);
 }
 
@@ -368,12 +359,6 @@ void EngineSync::findNewMaster(Syncable* pDontPick) {
     m_bExplicitMasterSelected = false;
 }
 
-void EngineSync::slotSyncRateSliderChanged(double new_bpm) {
-    qDebug() << "EngineSync::slotSyncRateSliderChanged" << new_bpm;
-    // Only called by external changes to sync_slider.
-    setMasterBpm(NULL, new_bpm);
-}
-
 void EngineSync::onCallbackStart(int sampleRate, int bufferSize) {
     m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
 }
@@ -391,9 +376,11 @@ Syncable* EngineSync::getSyncableForGroup(const QString& group) {
     return NULL;
 }
 
-// TODO(rryan): Replace with m_pMasterSyncable->getBpm().
 double EngineSync::masterBpm() const {
-    return m_pMasterRateSlider->get();
+    if (m_pMasterSyncable) {
+        return m_pMasterSyncable->getBpm();
+    }
+    return m_pInternalClock->getBpm();
 }
 
 double EngineSync::masterBeatDistance() const {

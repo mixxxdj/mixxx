@@ -146,7 +146,6 @@ ControlValueDelegate::ControlValueDelegate(QObject *parent)
         m_masterControlValues.append("balance");
         m_masterControlValues.append("crossfader");
         m_masterControlValues.append("volume");
-        m_masterControlValues.append("sync_slider");
     }
     if (m_playlistControlValues.isEmpty())
     {
