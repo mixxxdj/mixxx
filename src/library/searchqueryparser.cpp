@@ -5,13 +5,15 @@
 SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
         : m_database(database) {
     m_textFilters << "artist"
+                  << "album_artist"
                   << "album"
                   << "title"
                   << "genre"
                   << "composer"
                   << "grouping"
                   << "comment"
-                  << "key";
+                  << "key"
+                  << "location";
     m_numericFilters << "year"
                      << "track"
                      << "bpm"
@@ -24,6 +26,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     //m_specialFilters << "key";
 
     m_fieldToSqlColumns["artist"] << "artist" << "album_artist";
+    m_fieldToSqlColumns["album_artist"] << "album_artist";
     m_fieldToSqlColumns["album"] << "album";
     m_fieldToSqlColumns["title"] << "title";
     m_fieldToSqlColumns["genre"] << "genre";
@@ -38,6 +41,7 @@ SearchQueryParser::SearchQueryParser(QSqlDatabase& database)
     m_fieldToSqlColumns["key"] << "key";
     m_fieldToSqlColumns["played"] << "timesplayed";
     m_fieldToSqlColumns["rating"] << "rating";
+    m_fieldToSqlColumns["location"] << "location";
 
     m_allFilters.append(m_textFilters);
     m_allFilters.append(m_numericFilters);
@@ -149,7 +153,9 @@ bool SearchQueryParser::parseTextFilter(QString field, QString argument,
     foreach (const QString sqlColumn, sqlColumns) {
         searchClauses << QString("(%1 LIKE %2)").arg(sqlColumn, escapedFilter);
     }
-    *output << QString("(%1)").arg(searchClauses.join(" OR "));
+    *output << (searchClauses.length() > 1 ?
+                QString("(%1)").arg(searchClauses.join(" OR ")) :
+                searchClauses[0]);
     return true;
 }
 
@@ -182,7 +188,9 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
         foreach (const QString sqlColumn, sqlColumns) {
             searchClauses << QString("(%1 %2 %3)").arg(sqlColumn, op, filter);
         }
-        *output << QString("(%1)").arg(searchClauses.join(" OR "));
+        *output << (searchClauses.length() > 1 ?
+                QString("(%1)").arg(searchClauses.join(" OR ")) :
+                searchClauses[0]);
         return true;
     }
 
@@ -207,7 +215,10 @@ bool SearchQueryParser::parseNumericFilter(QString field, QString argument,
         foreach (const QString sqlColumn, sqlColumns) {
             searchClauses << QString("(%1 >= %2 AND %1 <= %3)").arg(sqlColumn, rangeArgs[0], rangeArgs[1]);
         }
-        *output << QString("(%1)").arg(searchClauses.join(" OR "));
+
+        *output << (searchClauses.length() > 1 ?
+                QString("(%1)").arg(searchClauses.join(" OR ")) :
+                searchClauses[0]);
         return true;
     }
     return false;

@@ -39,7 +39,7 @@ class PortMidiController : public MidiController {
     virtual bool poll();
 
   private:
-    void send(unsigned int word);
+    void sendWord(unsigned int word);
     // The sysex data must already contain the start byte 0xf0 and the end byte
     // 0xf.7
     void send(QByteArray data);

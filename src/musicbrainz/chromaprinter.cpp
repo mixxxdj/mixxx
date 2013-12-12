@@ -1,5 +1,6 @@
-#include <QtCore>
 #include <chromaprint.h>
+
+#include <QtDebug>
 
 #include "musicbrainz/chromaprinter.h"
 #include "soundsourceproxy.h"

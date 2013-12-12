@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 import os
-import sys
 import SCons
 import shutil
 import subprocess
@@ -375,7 +374,9 @@ if build.platform_is_osx and 'bundle' in COMMAND_LINE_TARGETS:
                    File("#README"),
                    File("#LICENSE")]
         bundle = env.App(
-                "Mixxx",
+                # Bug #1258435. This must be lower case as it is the binary
+                # name.
+                "mixxx",
                 sources,
                 PLUGINS=plugins, ##XXX test what happens if we don't pass any plugins
                 #Qt plugins ((Qt *NEEDS* its plugins in specific locations or it refuses to find them, however this is clearly awkward to write out like this.. maybe))

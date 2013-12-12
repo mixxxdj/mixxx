@@ -7,9 +7,6 @@
 *                                                                         *
 ***************************************************************************/
 
-#include <QtCore>
-#include <QtGui>
-
 #include "ladspaview.h"
 #include "ladspa/ladspapresetmanager.h"
 #include "ladspa/ladspapresetinstance.h"
@@ -48,7 +45,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     //bg->lower();
     //this->setFixedSize(background->width(), background->height());
     //parent->setMinimumSize(background->width(), background->height());
-    
+
     QDomElement bgColorNode = docElement.firstChildElement("BgColor");
     QDomElement fgColorNode = docElement.firstChildElement("FgColor");
 
@@ -82,7 +79,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     }
     if (y < 0)
     {
-	y = this->height() + y;
+    y = this->height() + y;
     }
     //m_pPresetList->move(x, y);
 
@@ -97,28 +94,28 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     if (height <= 0)
     {
         height = this->height() + height;
-    }    
-    
+    }
+
     //m_pPresetList->resize(width, height);
     m_pPresetList->setMinimumSize(65, 200);
     m_pPresetList->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::MinimumExpanding);
-    
-    
+
+
     m_pPresetManager = new LADSPAPresetManager();
 
     for (unsigned int i = 0; i < m_pPresetManager->getPresetCount(); i++)
     {
-	LADSPAPreset *preset = m_pPresetManager->getPreset(i);
-	if (preset->isValid())
-	    m_pPresetList->addItem(preset->getName());
-	else
-	    m_pPresetList->addItem("-" + preset->getName());	    
+    LADSPAPreset *preset = m_pPresetManager->getPreset(i);
+    if (preset->isValid())
+        m_pPresetList->addItem(preset->getName());
+    else
+        m_pPresetList->addItem("-" + preset->getName());
     }
 
     m_pSlotTable = new QWidget(this);
-    
+
     QDomElement slotTableElement = docElement.firstChildElement("SlotTable");
-    
+
     posElement = slotTableElement.firstChildElement("Pos");
     pos = posElement.text();
     x = pos.left(pos.indexOf(",")).toInt();
@@ -144,7 +141,7 @@ LADSPAView::LADSPAView(QWidget * parent) : QWidget(parent)
     if (height <= 0)
     {
         height = this->height() + height;
-    }    
+    }
     //m_pSlotTable->resize(width, height);
     m_pSlotTable->setMinimumSize(400, 200);
     m_pSlotTable->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);

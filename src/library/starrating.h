@@ -2,7 +2,7 @@
                            starrating.h
                               -------------------
      copyright            : (C) 2010 Tobias Rafreider
-	 copyright            : (C) 2009 Nokia Corporation
+     copyright            : (C) 2009 Nokia Corporation
 
 ***************************************************************************/
 

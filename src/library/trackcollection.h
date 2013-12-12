@@ -31,6 +31,7 @@
 #include "library/dao/cuedao.h"
 #include "library/dao/playlistdao.h"
 #include "library/dao/analysisdao.h"
+#include "library/dao/directorydao.h"
 
 class TrackInfoObject;
 
@@ -50,8 +51,8 @@ class TrackCollection : public QObject
     bool checkForTables();
 
     /** Import the files in a given diretory, without recursing into subdirectories */
-    bool importDirectory(const QString &directory, TrackDAO &trackDao,
-                         const QStringList & nameFilters, volatile bool* cancel);
+    bool importDirectory(const QString& directory, TrackDAO& trackDao,
+                         const QStringList& nameFilters, volatile bool* cancel);
 
     void resetLibaryCancellation();
     QSqlDatabase& getDatabase();
@@ -59,6 +60,7 @@ class TrackCollection : public QObject
     CrateDAO& getCrateDAO();
     TrackDAO& getTrackDAO();
     PlaylistDAO& getPlaylistDAO();
+    DirectoryDAO& getDirectoryDAO();
     QSharedPointer<BaseTrackCache> getTrackSource(const QString& name);
     void addTrackSource(const QString& name, QSharedPointer<BaseTrackCache> trackSource);
     void cancelLibraryScan();
@@ -79,6 +81,7 @@ class TrackCollection : public QObject
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
     CueDAO m_cueDao;
+    DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
     const QRegExp m_supportedFileExtensionsRegex;

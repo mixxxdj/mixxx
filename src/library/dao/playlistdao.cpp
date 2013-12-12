@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QtCore>
 #include <QtSql>
 
 #include "trackinfoobject.h"
@@ -662,10 +661,10 @@ int PlaylistDAO::getMaxPosition(const int playlistId) const {
 void PlaylistDAO::removeTracksFromPlaylists(const QList<int>& trackIds) {
     QStringList trackIdList;
     foreach (int id, trackIds) {
-        if (trackIdList.count() >= 255) { 
+        if (trackIdList.count() >= 255) {
             // Avoid that the resulting SQL query to exceed the maximum length
-            // The maximum number of bytes in the text of an SQL statement is 
-            // limited to SQLITE_MAX_SQL_LENGTH which defaults to 1000000 
+            // The maximum number of bytes in the text of an SQL statement is
+            // limited to SQLITE_MAX_SQL_LENGTH which defaults to 1000000
             // (from http://www.sqlite.org/limits.html)
             removeTracksFromPlaylistsInner(trackIdList);
             trackIdList.clear();
@@ -808,4 +807,3 @@ void PlaylistDAO::shuffleTracks(const int playlistId, const QList<int>& position
     transaction.commit();
     emit(changed(playlistId));
 }
-

@@ -45,13 +45,13 @@ QString BeatFactory::getPreferredVersion(const bool bEnableFixedTempoCorrection)
     return BEAT_MAP_VERSION;
 }
 
-const char* kSubVersionKeyValueSeparator = "=";
-const char* kSubVersionFragmentSeparator = "|";
 QString BeatFactory::getPreferredSubVersion(
     const bool bEnableFixedTempoCorrection,
     const bool bEnableOffsetCorrection,
     const int iMinBpm, const int iMaxBpm,
     const QHash<QString, QString> extraVersionInfo) {
+    const char* kSubVersionKeyValueSeparator = "=";
+    const char* kSubVersionFragmentSeparator = "|";
     QStringList fragments;
 
     // min/max BPM limits only apply to fixed-tempo assumption

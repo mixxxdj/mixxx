@@ -1,5 +1,4 @@
 #include <QtDebug>
-#include <QtCore>
 #include <QtSql>
 
 #include "playerinfo.h"
@@ -57,7 +56,7 @@ void AutoDJCratesDAO::createAutoDjCratesDatabase() {
             }
 
             // Create the new active-tracks view.
-            if (!createActiveTracksView (bUseIgnoreTime)) {
+            if (!createActiveTracksView(bUseIgnoreTime)) {
                 return;
             }
 

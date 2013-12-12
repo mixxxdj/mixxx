@@ -100,10 +100,10 @@ void PositionScratchController::process(double currentSample, double releaseRate
         int iBufferSize, double baserate) {
     bool scratchEnable = m_pScratchEnable->get() != 0;
 
-   	if (!m_bScratching && !scratchEnable) {
+    if (!m_bScratching && !scratchEnable) {
         // We were not previously in scratch mode are still not in scratch
         // mode. Do nothing
-   	    return;
+        return;
     }
 
     // The latency or time difference between process calls.
@@ -119,10 +119,10 @@ void PositionScratchController::process(double currentSample, double releaseRate
     const int callsPerDt = ceil(m_dMouseSampeIntervall/dt);
     double scratchPosition = 0;
     m_dMouseSampeTime += dt;
-   	if (m_dMouseSampeTime >= m_dMouseSampeIntervall || !m_bScratching) {
-   	    scratchPosition = m_pScratchPosition->get();
-   	    m_dMouseSampeTime = 0;
-   	}
+    if (m_dMouseSampeTime >= m_dMouseSampeIntervall || !m_bScratching) {
+        scratchPosition = m_pScratchPosition->get();
+        m_dMouseSampeTime = 0;
+    }
 
     // Tweak PD controller for different latencies
     double p = 0.3;

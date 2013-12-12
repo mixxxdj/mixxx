@@ -14,10 +14,11 @@
 #include <QtDebug>
 #include <QMouseEvent>
 #include <QPaintEvent>
-#include <qpainter.h>
+#include <QPainter>
 #include <QtDebug>
-#include <qpixmap.h>
-#include <qapplication.h>
+#include <QPixmap>
+#include <QUrl>
+#include <QMimeData>
 
 #include "controlobject.h"
 #include "controlobjectthreadmain.h"

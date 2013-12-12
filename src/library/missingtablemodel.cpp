@@ -1,6 +1,5 @@
-#include <QtCore>
-#include <QtGui>
 #include <QtSql>
+
 #include "library/trackcollection.h"
 #include "library/missingtablemodel.h"
 #include "library/librarytablemodel.h"
@@ -38,7 +37,7 @@ void MissingTableModel::setTableModel(int id) {
 
     //Print out any SQL error, if there was one.
     if (query.lastError().isValid()) {
-     	qDebug() << __FILE__ << __LINE__ << query.lastError();
+        qDebug() << __FILE__ << __LINE__ << query.lastError();
     }
 
     QStringList tableColumns;
@@ -82,10 +81,9 @@ bool MissingTableModel::isColumnInternal(int column) {
     }
     return false;
 }
+
 bool MissingTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY)) {
-        return true;
-    }
+    Q_UNUSED(column);
     return false;
 }
 

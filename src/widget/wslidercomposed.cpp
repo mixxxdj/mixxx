@@ -15,16 +15,13 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "wslidercomposed.h"
-#include <qpixmap.h>
+#include "widget/wslidercomposed.h"
+
 #include <QtDebug>
-#include <qpainter.h>
-//Added by qt3to4:
-#include <QMouseEvent>
-#include <QPaintEvent>
 #include <QPainter>
+
 #include "defs.h"
-#include "wpixmapstore.h"
+#include "widget/wpixmapstore.h"
 
 WSliderComposed::WSliderComposed(QWidget * parent)
     : WAbstractControl(parent),
@@ -88,7 +85,7 @@ void WSliderComposed::setPixmaps(bool bHorizontal, const QString &filenameSlider
             setFixedSize(m_pSlider->size());
         }
 
-        setValue(m_fValue);
+        setValue(m_value);
 
         repaint();
     }
@@ -123,17 +120,17 @@ void WSliderComposed::mouseMoveEvent(QMouseEvent * e) {
         }
 
         // value ranges from 0 to 127
-        m_fValue = (double)m_iPos * (127. / (double)(m_iSliderLength - m_iHandleLength));
+        m_value = (double)m_iPos * (127. / (double)(m_iSliderLength - m_iHandleLength));
         if (!m_bHorizontal) {
-            m_fValue = 127. - m_fValue;
+            m_value = 127. - m_value;
         }
 
         // Emit valueChanged signal
         if (m_bEventWhileDrag) {
             if (e->button() == Qt::RightButton) {
-                emit(valueChangedRightUp(m_fValue));
+                emit(valueChangedRightUp(m_value));
             } else {
-                emit(valueChangedLeftUp(m_fValue));
+                emit(valueChangedLeftUp(m_value));
             }
         }
 
@@ -157,9 +154,9 @@ void WSliderComposed::mouseReleaseEvent(QMouseEvent * e) {
         mouseMoveEvent(e);
 
         if (e->button() == Qt::RightButton) {
-            emit(valueChangedRightUp(m_fValue));
+            emit(valueChangedRightUp(m_value));
         } else {
-            emit(valueChangedLeftUp(m_fValue));
+            emit(valueChangedLeftUp(m_value));
         }
 
         m_bDrag = false;
@@ -210,10 +207,10 @@ void WSliderComposed::paintEvent(QPaintEvent *) {
 }
 
 void WSliderComposed::setValue(double fValue) {
-    if (!m_bDrag && m_fValue != fValue) {
+    if (!m_bDrag && m_value != fValue) {
         // Set value without emitting a valueChanged signal
         // and force display update
-        m_fValue = fValue;
+        m_value = fValue;
 
         // Calculate handle position
         if (!m_bHorizontal) {

@@ -803,6 +803,28 @@ HerculesRMX.init = function (id) {    // called when the MIDI device is opened &
 
    engine.connectControl("[Channel1]","rate","HerculesRMX.rateChange");
    engine.connectControl("[Channel2]","rate","HerculesRMX.rateChange");
+   
+   // Enable soft-takeover for all direct hardware controls
+   engine.softTakeover("[Channel1]","rate",true);
+   engine.softTakeover("[Channel1]","volume",true);
+   engine.softTakeover("[Channel1]","pregain",true);
+   engine.softTakeover("[Channel1]","filterHigh",true);
+   engine.softTakeover("[Channel1]","filterMed",true);
+   engine.softTakeover("[Channel1]","filterLow",true);
+   engine.softTakeover("[Channel2]","rate",true);
+   engine.softTakeover("[Channel2]","volume",true);
+   engine.softTakeover("[Channel2]","pregain",true);
+   engine.softTakeover("[Channel2]","filterHigh",true);
+   engine.softTakeover("[Channel2]","filterMed",true);
+   engine.softTakeover("[Channel2]","filterLow",true);
+   engine.softTakeover("[Master]","crossfader",true);
+   engine.softTakeover("[Master]","headVolume",true);
+   engine.softTakeover("[Master]","headMix",true);
+   engine.softTakeover("[Master]","volume",true);
+   engine.softTakeover("[Master]","balance",true);
+   // does not work, because whole Mic volume and "Talk" button of the skin
+   // does not seem to be matched to controller
+   // engine.softTakeover("[Microphone]","volume",true);
 
    print ("HerculesRMX id: \""+id+"\" initialized.");
 };

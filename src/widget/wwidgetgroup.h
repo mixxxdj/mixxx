@@ -1,8 +1,13 @@
 #ifndef WWIDGETGROUP_H
 #define WWIDGETGROUP_H
 
-#include <QGroupBox>
 #include <QDomNode>
+#include <QGroupBox>
+#include <QPaintEvent>
+#include <QPixmap>
+#include <QResizeEvent>
+#include <QString>
+#include <QWidget>
 
 class WWidgetGroup : public QGroupBox {
     Q_OBJECT

@@ -18,7 +18,6 @@
 #include <QTabWidget>
 #include <QTabBar>
 #include <QDialog>
-#include <QtGui>
 #include <QEvent>
 #include <QScrollArea>
 #include <QDesktopWidget>
@@ -32,7 +31,9 @@
 #ifdef __SHOUTCAST__
 #include "dlgprefshoutcast.h"
 #endif
+
 #include "dlgprefbeats.h"
+#include "dlgprefkey.h"
 
 #ifdef __MODPLUG__
 #include "dlgprefmodplug.h"
@@ -41,7 +42,7 @@
 #include "dlgpreferences.h"
 #include "dlgprefsound.h"
 #include "controllers/dlgprefcontrollers.h"
-#include "dlgprefplaylist.h"
+#include "dlgpreflibrary.h"
 #include "dlgprefcontrols.h"
 #include "dlgprefeq.h"
 #include "dlgprefcrossfader.h"
@@ -55,7 +56,7 @@
 DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
                                SoundManager * soundman, PlayerManager* pPlayerManager,
                                ControllerManager * controllers, VinylControlManager *pVCManager,
-                               ConfigObject<ConfigValue>* pConfig)
+                               ConfigObject<ConfigValue>* pConfig, Library *pLibrary)
         : m_pageSizeHint(QSize(0, 0)),
           m_preferencesUpdated(ConfigKey("[Preferences]", "updated")) {
     setupUi(this);
@@ -82,8 +83,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 #endif
     m_wsound = new DlgPrefSound(this, soundman, pPlayerManager, pConfig);
     addPageWidget(m_wsound);
-    m_wplaylist = new DlgPrefPlaylist(this, pConfig);
-    addPageWidget(m_wplaylist);
+    m_wlibrary = new DlgPrefLibrary(this, pConfig, pLibrary);
+    addPageWidget(m_wlibrary);
     m_wcontrols = new DlgPrefControls(this, mixxx, pSkinLoader, pPlayerManager, pConfig);
     addPageWidget(m_wcontrols);
     m_weq = new DlgPrefEQ(this, pConfig);
@@ -93,6 +94,8 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
 
     m_wbeats = new DlgPrefBeats(this, pConfig);
     addPageWidget (m_wbeats);
+    m_wkey = new DlgPrefKey(this, pConfig);
+    addPageWidget(m_wkey);
     m_wreplaygain = new DlgPrefReplayGain(this, pConfig);
     addPageWidget(m_wreplaygain);
     m_wrecord = new DlgPrefRecord(this, pConfig);
@@ -138,11 +141,11 @@ void DlgPreferences::createIcons() {
     m_pControllerTreeItem->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pControllerTreeItem->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pPlaylistButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pPlaylistButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
-    m_pPlaylistButton->setText(0, tr("Library"));
-    m_pPlaylistButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pPlaylistButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pLibraryButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pLibraryButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_library.png"));
+    m_pLibraryButton->setText(0, tr("Library"));
+    m_pLibraryButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pLibraryButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
     m_pControlsButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pControlsButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_interface.png"));
@@ -169,11 +172,18 @@ void DlgPreferences::createIcons() {
     m_pRecordingButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
 
-    m_pAnalysersButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pAnalysersButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
-    m_pAnalysersButton->setText(0, tr("Beat Detection"));
-    m_pAnalysersButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
-    m_pAnalysersButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+    m_pBeatDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pBeatDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_bpmdetect.png"));
+    m_pBeatDetectionButton->setText(0, tr("Beat Detection"));
+    m_pBeatDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pBeatDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
+    m_pKeyDetectionButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
+    m_pKeyDetectionButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pKeyDetectionButton->setText(0, tr("Key Detection"));
+    m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
+    m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+
     m_pReplayGainButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
     m_pReplayGainButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_replaygain.png"));
     m_pReplayGainButton->setText(0, tr("Normalization"));
@@ -224,10 +234,10 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         current = previous;
 
     if (current == m_pSoundButton) {
-    	m_wsound->slotUpdate();
+        m_wsound->slotUpdate();
       switchToPage(m_wsound);
-    } else if (current == m_pPlaylistButton) {
-        switchToPage(m_wplaylist);
+    } else if (current == m_pLibraryButton) {
+        switchToPage(m_wlibrary);
     } else if (current == m_pControlsButton) {
         switchToPage(m_wcontrols);
     } else if (current == m_pEqButton) {
@@ -236,8 +246,10 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
         switchToPage(m_wcrossfader);
     } else if (current == m_pRecordingButton) {
         switchToPage(m_wrecord);
-    } else if (current == m_pAnalysersButton ) {
+    } else if (current == m_pBeatDetectionButton) {
         switchToPage(m_wbeats);
+    } else if (current == m_pKeyDetectionButton) {
+        switchToPage(m_wkey);
     } else if (current == m_pReplayGainButton) {
         switchToPage(m_wreplaygain);
 #ifdef __VINYLCONTROL__

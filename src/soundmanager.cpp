@@ -15,10 +15,10 @@
 ***************************************************************************/
 
 #include <QtDebug>
-#include <QtCore>
 #include <cstring> // for memcpy and strcmp
 
 #ifdef __PORTAUDIO__
+#include <QLibrary>
 #include <portaudio.h>
 #endif // ifdef __PORTAUDIO__
 
@@ -235,16 +235,16 @@ void SoundManager::queryDevices() {
         if (!deviceInfo)
             continue;
         /* deviceInfo fields for quick reference:
-            int 	structVersion
-            const char * 	name
-            PaHostApiIndex 	hostApi
-            int 	maxInputChannels
-            int 	maxOutputChannels
-            PaTime 	defaultLowInputLatency
-            PaTime 	defaultLowOutputLatency
-            PaTime 	defaultHighInputLatency
-            PaTime 	defaultHighOutputLatency
-            double 	defaultSampleRate
+            int     structVersion
+            const char *    name
+            PaHostApiIndex  hostApi
+            int     maxInputChannels
+            int     maxOutputChannels
+            PaTime  defaultLowInputLatency
+            PaTime  defaultLowOutputLatency
+            PaTime  defaultHighInputLatency
+            PaTime  defaultHighOutputLatency
+            double  defaultSampleRate
          */
         SoundDevicePortAudio *currentDevice = new SoundDevicePortAudio(m_pConfig, this, deviceInfo, i);
         m_devices.push_back(currentDevice);
@@ -595,4 +595,8 @@ void SoundManager::setJACKName() const {
     }
 #endif
 #endif
+}
+
+bool SoundManager::isDeviceClkRef(SoundDevice* device) {
+    return (device == m_pClkRefDevice);
 }

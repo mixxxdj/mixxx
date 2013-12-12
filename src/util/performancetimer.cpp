@@ -54,7 +54,7 @@
 #include <sys/time.h>
 #include <time.h>
 #include <unistd.h>
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
 #include <windows.h>
 #endif
 
@@ -226,7 +226,7 @@ qint64 PerformanceTimer::difference(PerformanceTimer* timer)
 }
 
 ////////////////////////////// Windows //////////////////////////////
-#elif defined(Q_WS_WIN)
+#elif defined(Q_OS_WIN)
 
 static qint64 getTimeFromTick(quint64 elapsed)
 {

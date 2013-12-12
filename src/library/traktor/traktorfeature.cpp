@@ -25,8 +25,7 @@ TraktorTrackModel::TraktorTrackModel(QObject* parent,
 }
 
 bool TraktorTrackModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY) ||
-        column == fieldIndex(LIBRARYTABLE_BITRATE)) {
+    if (column == fieldIndex(LIBRARYTABLE_BITRATE)) {
         return true;
     }
     return false;
@@ -42,8 +41,7 @@ TraktorPlaylistModel::TraktorPlaylistModel(QObject* parent,
 }
 
 bool TraktorPlaylistModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY) ||
-        column == fieldIndex(LIBRARYTABLE_BITRATE)) {
+    if (column == fieldIndex(LIBRARYTABLE_BITRATE)) {
         return true;
     }
     return false;
@@ -542,7 +540,7 @@ void TraktorFeature::clearTable(QString table_name) {
         qDebug() << "Could not delete remove old entries from table "
                  << table_name << " : " << query.lastError();
     else
-        qDebug() << "Traktor table entries of '" << table_name <<"' have been cleared.";
+        qDebug() << "Traktor table entries of '" << table_name << "' have been cleared.";
 }
 
 QString TraktorFeature::getTraktorMusicDatabase() {

@@ -1,5 +1,5 @@
 /***************************************************************************
-                          dlgprefplaylist.h  -  description
+                          dlgpreflibrary.h  -  description
                              -------------------
     begin                : Thu Apr 17 2003
     copyright            : (C) 2003 by Tue & Ken Haste Andersen
@@ -15,30 +15,35 @@
  *                                                                         *
  ***************************************************************************/
 
-#ifndef DLGPREFPLAYLIST_H
-#define DLGPREFPLAYLIST_H
+#ifndef DLGPREFLIBRARY_H
+#define DLGPREFLIBRARY_H
 
+#include <QStandardItemModel>
 #include <QWidget>
 
-#include "ui_dlgprefplaylistdlg.h"
+#include "ui_dlgpreflibrarydlg.h"
 #include "configobject.h"
+#include "library/library.h"
 #include "preferences/dlgpreferencepage.h"
 
 /**
   *@author Tue & Ken Haste Andersen
   */
 
-class DlgPrefPlaylist : public DlgPreferencePage, public Ui::DlgPrefPlaylistDlg  {
+class DlgPrefLibrary : public DlgPreferencePage, public Ui::DlgPrefLibraryDlg  {
     Q_OBJECT
   public:
-    DlgPrefPlaylist(QWidget *parent, ConfigObject<ConfigValue> *config);
-    virtual ~DlgPrefPlaylist();
+    DlgPrefLibrary(QWidget *parent, ConfigObject<ConfigValue> *config,
+                   Library *pLibrary);
+    virtual ~DlgPrefLibrary();
 
   public slots:
     // Update widget
     void slotUpdate();
     // Dialog to browse for music file directory
-    void slotBrowseDir();
+    void slotAddDir();
+    void slotRemoveDir();
+    void slotRelocateDir();
     // Apply changes to widget
     void slotApply();
 
@@ -46,9 +51,15 @@ class DlgPrefPlaylist : public DlgPreferencePage, public Ui::DlgPrefPlaylistDlg 
 
   signals:
     void apply();
+    void requestAddDir(QString dir);
+    void requestRemoveDir(QString dir, Library::RemovalType removalType);
+    void requestRelocateDir(QString currentDir, QString newDir);
 
   private:
+    void initialiseDirList();
+    QStandardItemModel m_dirListModel;
     ConfigObject<ConfigValue>* m_pconfig;
+    Library *m_pLibrary;
 };
 
 #endif

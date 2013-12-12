@@ -10,7 +10,7 @@
 #include "mixxxutils.cpp"
 #include "playermanager.h"
 
-CrateTableModel::CrateTableModel(QObject* pParent, 
+CrateTableModel::CrateTableModel(QObject* pParent,
                                  TrackCollection* pTrackCollection)
         : BaseSqlTableModel(pParent, pTrackCollection,
                             "mixxx.db.model.crate"),
@@ -34,7 +34,7 @@ void CrateTableModel::setTableModel(int crateId) {
     FieldEscaper escaper(m_database);
     QString filter = "library.mixxx_deleted = 0";
     QStringList columns;
-    columns << "crate_tracks."+CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
+    columns << "crate_tracks." + CRATETRACKSTABLE_TRACKID + " as " + LIBRARYTABLE_ID
             << "'' as preview";
 
     // We drop files that have been explicitly deleted from mixxx
@@ -95,7 +95,7 @@ bool CrateTableModel::addTrack(const QModelIndex& index, QString location) {
 }
 
 int CrateTableModel::addTracks(const QModelIndex& index,
-                               const QList<QString> &locations) {
+                               const QList<QString>& locations) {
     Q_UNUSED(index);
     // If a track is dropped but it isn't in the library, then add it because
     // the user probably dropped a file from outside Mixxx into this crate.
@@ -146,8 +146,7 @@ bool CrateTableModel::isColumnInternal(int column) {
 }
 
 bool CrateTableModel::isColumnHiddenByDefault(int column) {
-    if (column == fieldIndex(LIBRARYTABLE_KEY))
-        return true;
+    Q_UNUSED(column);
     return false;
 }
 

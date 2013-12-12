@@ -21,62 +21,62 @@
 #include <taglib/wavfile.h>
 #include <taglib/textidentificationframe.h>
 
-AudioTagger::AudioTagger (QString file)
-	: m_file( file ) {
+AudioTagger::AudioTagger(QString file)
+    : m_file(file) {
 }
 
-AudioTagger::~AudioTagger ( ) {
+AudioTagger::~AudioTagger() {
 }
 
-void AudioTagger::setArtist (QString artist ) {
+void AudioTagger::setArtist(QString artist) {
     m_artist = artist;
 }
 
-void AudioTagger::setTitle (QString title ) {
+void AudioTagger::setTitle(QString title) {
     m_title = title;
 }
 
-void AudioTagger::setAlbum (QString album ) {
+void AudioTagger::setAlbum(QString album) {
     m_album = album;
 }
 
-void AudioTagger::setAlbumArtist (QString albumArtist ) {
+void AudioTagger::setAlbumArtist (QString albumArtist) {
     m_albumArtist = albumArtist;
 }
 
-void AudioTagger::setGenre (QString genre ) {
+void AudioTagger::setGenre (QString genre) {
     m_genre = genre;
 }
 
-void AudioTagger::setComposer (QString composer ) {
+void AudioTagger::setComposer(QString composer) {
     m_composer = composer;
 }
 
-void AudioTagger::setGrouping (QString grouping ) {
+void AudioTagger::setGrouping (QString grouping) {
     m_grouping = grouping;
 }
 
-void AudioTagger::setYear (QString year ) {
+void AudioTagger::setYear (QString year) {
     m_year = year;
 }
 
-void AudioTagger::setComment (QString comment ) {
+void AudioTagger::setComment(QString comment) {
     m_comment = comment;
 }
 
-void AudioTagger::setKey (QString key ) {
-m_key = key;
+void AudioTagger::setKey(QString key) {
+    m_key = key;
 }
 
-void AudioTagger::setBpm (QString bpm ) {
+void AudioTagger::setBpm(QString bpm) {
     m_bpm = bpm;
 }
 
-void AudioTagger::setTracknumber (QString tracknumber ) {
+void AudioTagger::setTracknumber(QString tracknumber) {
     m_tracknumber = tracknumber;
 }
 
-bool AudioTagger::save () {
+bool AudioTagger::save() {
     TagLib::File* file = NULL;
 
     if (m_file.endsWith(".mp3", Qt::CaseInsensitive)) {
@@ -84,9 +84,9 @@ bool AudioTagger::save () {
         //process special ID3 fields, APEv2 fiels, etc
 
         //If the mp3 has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        addID3v2Tag( ((TagLib::MPEG::File*) file)->ID3v2Tag(true)  );
+        addID3v2Tag(((TagLib::MPEG::File*) file)->ID3v2Tag(true));
         //If the mp3 has an APE tag, we update
-        addAPETag( ((TagLib::MPEG::File*) file)->APETag(false)  );
+        addAPETag(((TagLib::MPEG::File*) file)->APETag(false));
 
     }
     if (m_file.endsWith(".m4a", Qt::CaseInsensitive)) {
@@ -98,28 +98,28 @@ bool AudioTagger::save () {
     if (m_file.endsWith(".ogg", Qt::CaseInsensitive)) {
         file =  new TagLib::Ogg::Vorbis::File(m_file.toUtf8().constData());
         //process special ID3 fields, APEv2 fiels, etc
-        addXiphComment( ((TagLib::Ogg::Vorbis::File*) file)->tag()   );
+        addXiphComment(((TagLib::Ogg::Vorbis::File*) file)->tag());
 
     }
     if (m_file.endsWith(".wav", Qt::CaseInsensitive)) {
         file =  new TagLib::RIFF::WAV::File(m_file.toUtf8().constData());
         //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        addID3v2Tag( ((TagLib::RIFF::WAV::File*) file)->tag()  );
+        addID3v2Tag(((TagLib::RIFF::WAV::File*) file)->tag());
 
     }
     if (m_file.endsWith(".flac", Qt::CaseInsensitive)) {
         file =  new TagLib::FLAC::File(m_file.toUtf8().constData());
 
         //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        addID3v2Tag( ((TagLib::FLAC::File*) file)->ID3v2Tag(true)  );
+        addID3v2Tag(((TagLib::FLAC::File*) file)->ID3v2Tag(true) );
         //If the flac has no APE tag, we create a new one and add the TBPM and TKEY frame
-        addXiphComment( ((TagLib::FLAC::File*) file)->xiphComment (true)   );
+        addXiphComment(((TagLib::FLAC::File*) file)->xiphComment(true));
 
     }
     if (m_file.endsWith(".aif", Qt::CaseInsensitive) || m_file.endsWith(".aiff", Qt::CaseInsensitive)) {
         file =  new TagLib::RIFF::AIFF::File(m_file.toUtf8().constData());
         //If the flac has no ID3v2 tag, we create a new one and add the TBPM and TKEY frame
-        addID3v2Tag( ((TagLib::RIFF::AIFF::File*) file)->tag()  );
+        addID3v2Tag(((TagLib::RIFF::AIFF::File*) file)->tag());
 
     }
 
@@ -161,7 +161,7 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 
     TagLib::ID3v2::FrameList albumArtistFrame = id3v2->frameListMap()["TPE2"];
     if (!albumArtistFrame.isEmpty()) {
-    	albumArtistFrame.front()->setText(m_albumArtist.toStdString());
+        albumArtistFrame.front()->setText(m_albumArtist.toStdString());
     } else {
         //add new frame
         TagLib::ID3v2::TextIdentificationFrame* newFrame =
@@ -211,7 +211,7 @@ void AudioTagger::addID3v2Tag(TagLib::ID3v2::Tag* id3v2) {
 
     TagLib::ID3v2::FrameList groupingFrame = id3v2->frameListMap()["TIT1"];
     if (!groupingFrame.isEmpty()) {
-    	groupingFrame.front()->setText(m_grouping.toStdString());
+        groupingFrame.front()->setText(m_grouping.toStdString());
     } else {
         //add new frame
         TagLib::ID3v2::TextIdentificationFrame* newFrame =
@@ -263,10 +263,10 @@ void AudioTagger::addXiphComment(TagLib::Ogg::XiphComment* xiph) {
 }
 
 void AudioTagger::processMP4Tag(TagLib::MP4::Tag* mp4) {
-	mp4->itemListMap()["aART"] = TagLib::StringList(m_albumArtist.toStdString());
-	mp4->itemListMap()["tmpo"] = TagLib::StringList(m_bpm.toStdString());
-	mp4->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(m_bpm.toStdString());
-	mp4->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(m_key.toStdString());
-	mp4->itemListMap()["\251wrt"] = TagLib::StringList(m_composer.toStdString());
-	mp4->itemListMap()["\251grp"] = TagLib::StringList(m_grouping.toStdString());
+    mp4->itemListMap()["aART"] = TagLib::StringList(m_albumArtist.toStdString());
+    mp4->itemListMap()["tmpo"] = TagLib::StringList(m_bpm.toStdString());
+    mp4->itemListMap()["----:com.apple.iTunes:BPM"] = TagLib::StringList(m_bpm.toStdString());
+    mp4->itemListMap()["----:com.apple.iTunes:KEY"] = TagLib::StringList(m_key.toStdString());
+    mp4->itemListMap()["\251wrt"] = TagLib::StringList(m_composer.toStdString());
+    mp4->itemListMap()["\251grp"] = TagLib::StringList(m_grouping.toStdString());
 }

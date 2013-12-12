@@ -13,7 +13,7 @@
 #include <QDomNode>
 #include <QDir>
 #include <QFile>
-#include <QDebug>
+#include <QtDebug>
 #include "trackinfoobject.h" //needed for importing 1.7.x library
 #include "xmlparse.h" //needed for importing 1.7.x library
 #include "legacylibraryimporter.h"
@@ -110,7 +110,7 @@ void LegacyLibraryImporter::import() {
                 trackInfo17.setYear(trackInfoNew.getYear());
                 trackInfo17.setType(trackInfoNew.getType());
                 trackInfo17.setTrackNumber(trackInfoNew.getTrackNumber());
-                trackInfo17.setKey(trackInfoNew.getKey());
+                trackInfo17.setKeys(trackInfoNew.getKeys());
                 trackInfo17.setHeaderParsed(true);
 
                 // Import the track's saved cue point if it is non-zero.
