@@ -38,9 +38,13 @@ class Syncable {
     virtual bool isPlaying() const = 0;
 
     virtual double getBeatDistance() const = 0;
+    // Must never result in a call to
+    // SyncableListener::notifyBeatDistanceChanged or signal loops could occur.
     virtual void setBeatDistance(double beatDistance) = 0;
 
     virtual double getBpm() const = 0;
+    // Must never result in a call to SyncableListener::notifyBpmChanged or
+    // signal loops could occur.
     virtual void setBpm(double bpm) = 0;
 };
 
@@ -48,11 +52,18 @@ class SyncableListener {
   public:
     virtual void requestSyncMode(Syncable* pSyncable, SyncMode mode) = 0;
     virtual void requestEnableSync(Syncable* pSyncable, bool enabled) = 0;
+
+    // A Syncable must never call notifyBpmChanged in respnse to a setBpm()
+    // call.
     virtual void notifyBpmChanged(Syncable* pSyncable, double bpm,
                                   bool fileChanged=false) = 0;
     virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
+
+    // A Syncable must never call notifyBeatDistanceChanged in respnse to a
+    // setBeatDistance() call.
     virtual void notifyBeatDistanceChanged(
         Syncable* pSyncable, double beatDistance) = 0;
+
     virtual void notifyPlaying(Syncable* pSyncable, bool playing) = 0;
 };
 
