@@ -85,13 +85,14 @@ class EngineSync : public EngineControl, public SyncableListener {
 
     // Set the master BPM.
     void setMasterBpm(Syncable* pSource, double bpm);
+    // Set the master instantaneous BPM.
+    void setMasterInstantaneousBpm(Syncable* pSource, double bpm);
     // Set the master beat distance.
     void setMasterBeatDistance(Syncable* pSource, double beat_distance);
 
     ConfigObject<ConfigValue>* m_pConfig;
     InternalClock* m_pInternalClock;
     Syncable* m_pMasterSyncable;
-    ControlObject* m_pMasterBpm;
     ControlObject* m_pMasterBeatDistance;
     ControlPotmeter* m_pMasterRateSlider;
     QList<Syncable*> m_syncables;

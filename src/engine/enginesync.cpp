@@ -40,9 +40,6 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
     qRegisterMetaType<SyncMode>("SyncMode");
     m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
 
-    m_pMasterBpm = new ControlObject(ConfigKey(kMasterSyncGroup, "sync_bpm"));
-    // Initialize with a default value (will get overridden by config).
-    m_pMasterBpm->set(124.0);
     m_pInternalClock->setBpm(124.0);
 
     m_pMasterRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"),
@@ -54,8 +51,7 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
 
 EngineSync::~EngineSync() {
     // We use the slider value because that is never set to 0.0.
-    m_pConfig->set(ConfigKey("[Master]", "sync_bpm"), ConfigValue(m_pMasterRateSlider->get()));
-    delete m_pMasterBpm;
+    m_pConfig->set(ConfigKey("[Master]", "sync_slider"), ConfigValue(m_pMasterRateSlider->get()));
     delete m_pMasterBeatDistance;
     delete m_pMasterRateSlider;
     delete m_pInternalClock;
@@ -249,7 +245,7 @@ void EngineSync::notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) 
 
     // Do not update the master rate slider because instantaneous changes are
     // not user visible.
-    m_pMasterBpm->set(bpm);
+    setMasterInstantaneousBpm(pSyncable, bpm);
 }
 
 void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_distance) {
@@ -419,6 +415,19 @@ void EngineSync::setMasterBpm(Syncable* pSource, double bpm) {
             continue;
         }
         pSyncable->setBpm(bpm);
+    }
+}
+
+void EngineSync::setMasterInstantaneousBpm(Syncable* pSource, double bpm) {
+    if (pSource != m_pInternalClock) {
+        m_pInternalClock->setInstantaneousBpm(bpm);
+    }
+    foreach (Syncable* pSyncable, m_syncables) {
+        if (pSyncable == pSource ||
+                pSyncable->getSyncMode() == SYNC_NONE) {
+            continue;
+        }
+        pSyncable->setInstantaneousBpm(bpm);
     }
 }
 

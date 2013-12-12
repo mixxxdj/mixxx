@@ -46,6 +46,11 @@ class Syncable {
     // Must never result in a call to SyncableListener::notifyBpmChanged or
     // signal loops could occur.
     virtual void setBpm(double bpm) = 0;
+
+    // Must never result in a call to
+    // SyncableListener::notifyInstantaneousBpmChanged or signal loops could
+    // occur.
+    virtual void setInstantaneousBpm(double bpm) = 0;
 };
 
 class SyncableListener {

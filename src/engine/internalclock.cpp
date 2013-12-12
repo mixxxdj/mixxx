@@ -80,6 +80,12 @@ void InternalClock::setBpm(double bpm) {
     updateBeatLength(m_iOldSampleRate, bpm);
 }
 
+void InternalClock::setInstantaneousBpm(double bpm) {
+    //qDebug() << "InternalClock::setInstantaneousBpm" << bpm;
+    // Do nothing.
+    Q_UNUSED(bpm);
+}
+
 void InternalClock::slotBpmChanged(double bpm) {
     updateBeatLength(m_iOldSampleRate, bpm);
     m_pEngineSync->notifyBpmChanged(this, bpm);

@@ -22,6 +22,7 @@ BpmControl::BpmControl(const char* _group,
         EngineControl(_group, _config),
         m_dPreviousSample(0),
         m_dSyncTargetBeatDistance(0.0),
+        m_dSyncInstantaneousBpm(0.0),
         m_dSyncAdjustment(1.0),
         m_dUserOffset(0.0),
         m_tapFilter(this, filterLength, maxInterval),
@@ -85,9 +86,6 @@ BpmControl::BpmControl(const char* _group,
 
     // Measures distance from last beat in percentage: 0.5 = half-beat away.
     m_pThisBeatDistance = new ControlObjectSlave(_group, "beat_distance", this);
-
-    m_pMasterBpm = ControlObject::getControl(ConfigKey("[Master]", "sync_bpm"));
-
     m_pSyncMode = ControlObject::getControl(ConfigKey(_group, "sync_mode"));
 }
 
@@ -283,7 +281,7 @@ double BpmControl::getSyncedRate() const {
         // XXX TODO: what to do about this case
         return 1.0;
     } else {
-        return m_pMasterBpm->get() / m_pFileBpm->get();
+        return m_dSyncInstantaneousBpm / m_pFileBpm->get();
     }
 }
 
@@ -687,4 +685,8 @@ double BpmControl::process(const double dRate,
 
 void BpmControl::setTargetBeatDistance(double beatDistance) {
     m_dSyncTargetBeatDistance = beatDistance;
+}
+
+void BpmControl::setInstantaneousBpm(double instantaneousBpm) {
+    m_dSyncInstantaneousBpm = instantaneousBpm;
 }

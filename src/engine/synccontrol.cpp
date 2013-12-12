@@ -135,6 +135,10 @@ void SyncControl::setBpm(double bpm) {
     }
 }
 
+void SyncControl::setInstantaneousBpm(double bpm) {
+    m_pBpmControl->setInstantaneousBpm(bpm);
+}
+
 void SyncControl::checkTrackPosition(double fractionalPlaypos) {
     // If we're close to the end, and master, disable master so we don't stop
     // the party.
