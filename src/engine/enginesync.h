@@ -93,7 +93,6 @@ class EngineSync : public EngineControl, public SyncableListener {
     ConfigObject<ConfigValue>* m_pConfig;
     InternalClock* m_pInternalClock;
     Syncable* m_pMasterSyncable;
-    ControlObject* m_pMasterBeatDistance;
     ControlPotmeter* m_pMasterRateSlider;
     QList<Syncable*> m_syncables;
     bool m_bExplicitMasterSelected;

@@ -38,8 +38,6 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
           m_pMasterSyncable(NULL),
           m_bExplicitMasterSelected(false) {
     qRegisterMetaType<SyncMode>("SyncMode");
-    m_pMasterBeatDistance = new ControlObject(ConfigKey(kMasterSyncGroup, "beat_distance"));
-
     m_pInternalClock->setBpm(124.0);
 
     m_pMasterRateSlider = new ControlPotmeter(ConfigKey(kMasterSyncGroup, "sync_slider"),
@@ -52,7 +50,6 @@ EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
 EngineSync::~EngineSync() {
     // We use the slider value because that is never set to 0.0.
     m_pConfig->set(ConfigKey("[Master]", "sync_slider"), ConfigValue(m_pMasterRateSlider->get()));
-    delete m_pMasterBeatDistance;
     delete m_pMasterRateSlider;
     delete m_pInternalClock;
 }
@@ -254,7 +251,6 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_dist
         return;
     }
 
-    m_pMasterBeatDistance->set(beat_distance);
     setMasterBeatDistance(pSyncable, beat_distance);
 }
 
@@ -400,9 +396,11 @@ double EngineSync::masterBpm() const {
     return m_pMasterRateSlider->get();
 }
 
-// TODO(rryan): Replace with m_pMasterSyncable->getBeatDistance().
 double EngineSync::masterBeatDistance() const {
-    return m_pMasterBeatDistance->get();
+    if (m_pMasterSyncable) {
+        return m_pMasterSyncable->getBeatDistance();
+    }
+    return m_pInternalClock->getBeatDistance();
 }
 
 void EngineSync::setMasterBpm(Syncable* pSource, double bpm) {
