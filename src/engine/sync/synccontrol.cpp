@@ -208,6 +208,8 @@ void SyncControl::slotRateChanged() {
 }
 
 void SyncControl::slotBeatDistanceChanged(double beatDistance) {
+    // TODO(rryan): This update should not be received over a CO -- BpmControl
+    // should call directly.
     m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
 }
 
