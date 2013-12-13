@@ -68,11 +68,11 @@ double Rotary::filter(double dValue)
 
 double Rotary::fillBuffer(double dValue)
 {
-	for (int i=0; i<m_iFilterLength; ++i)
-	{
-		m_pFilter[i] = dValue/m_dCalibration;
-	}
-	return dValue/m_dCalibration;
+    for (int i=0; i<m_iFilterLength; ++i)
+    {
+        m_pFilter[i] = dValue/m_dCalibration;
+    }
+    return dValue/m_dCalibration;
 }
 
 void Rotary::calibrate(double dValue)

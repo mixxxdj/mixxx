@@ -39,7 +39,7 @@ EngineSideChain::EngineSideChain(ConfigObject<ConfigValue> * pConfig)
           m_sampleFifo(SIDECHAIN_BUFFER_SIZE),
           m_pWorkBuffer(SampleUtil::alloc(SIDECHAIN_BUFFER_SIZE)) {
     // Starts the thread and goes to the "run()" function below.
-   	start(QThread::LowPriority);
+    start(QThread::LowPriority);
 }
 
 EngineSideChain::~EngineSideChain() {

@@ -212,6 +212,10 @@ void Tooltips::addStandardTooltips() {
             << tr("Tempo")
             << tempoDisplay;
 
+    add("visual_key")
+            << tr("Key")
+            << tr("Displays the harmonic key of the loaded track.");
+
     add("bpm_tap")
             << tr("BPM Tap")
             << tr("When tapped repeatedly, adjusts the BPM to match the tapped BPM.");
@@ -296,8 +300,13 @@ void Tooltips::addStandardTooltips() {
             << tr("Decks can't sync to samplers and samplers can only sync to decks.");
 
     add("rate")
+            << tr("Speed Control")
+            << tr("Changes the track playback speed (affects both the tempo and the pitch). If key-lock is enabled, only the tempo is affected.")
+            << QString("%1: %2").arg(rightClick, resetToDefault);
+
+    add("pitch")
             << tr("Pitch Control")
-            << tr("Changes the track playback rate.")
+            << tr("Changes the track pitch independent of the tempo.")
             << QString("%1: %2").arg(rightClick, resetToDefault);
 
     add("rate_display")

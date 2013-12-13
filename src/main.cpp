@@ -41,7 +41,7 @@ extern "C" {
 }
 #endif
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
 #include <X11/Xlib.h>
 #endif
 
@@ -154,7 +154,7 @@ void MessageHandler(QtMsgType type,
 int main(int argc, char * argv[])
 {
 
-#ifdef Q_WS_X11
+#ifdef Q_OS_LINUX
     XInitThreads();
 #endif
 

@@ -41,6 +41,7 @@ class EngineSideChain;
 class EffectsManager;
 class EngineEffectsManager;
 class SyncWorker;
+class EngineSync;
 
 class EngineMaster : public EngineObject, public AudioSource {
     Q_OBJECT
@@ -83,6 +84,11 @@ class EngineMaster : public EngineObject, public AudioSource {
             default:
                 return centerGain;
         }
+    }
+
+    // Provide access to the master sync so enginebuffers can know what their rate controller is.
+    EngineSync* getEngineSync() const{
+        return m_pMasterSync;
     }
 
     // These are really only exposed for tests to use.
@@ -128,8 +134,7 @@ class EngineMaster : public EngineObject, public AudioSource {
             const double orientationGain = EngineMaster::gainForOrientation(
                 pChannelInfo->m_pChannel->getOrientation(),
                 m_dLeftGain, m_dCenterGain, m_dRightGain);
-            const double gain = m_dVolume * channelVolume * orientationGain;
-            return gain;
+            return m_dVolume * channelVolume * orientationGain;
         }
 
         inline void setGains(double dVolume, double leftGain, double centerGain, double rightGain) {
@@ -143,9 +148,21 @@ class EngineMaster : public EngineObject, public AudioSource {
         double m_dVolume, m_dLeftGain, m_dCenterGain, m_dRightGain;
     };
 
+    void mixChannels(unsigned int channelBitvector, unsigned int maxChannels,
+                     CSAMPLE* pOutput, unsigned int iBufferSize, GainCalculator* pGainCalculator);
+
+    // Processes active channels. The master sync channel (if any) is processed
+    // first and all others are processed after. Sets the i'th bit of
+    // masterOutput and headphoneOutput if the i'th channel is enabled for the
+    // master output or headphone output, respectively.
+    void processChannels(unsigned int* busChannelConnectionFlags,
+                         unsigned int* headphoneOutput,
+                         int iBufferSize);
+
     EngineEffectsManager* m_pEngineEffectsManager;
     bool m_bRampingGain;
     QList<ChannelInfo*> m_channels;
+    QList<CSAMPLE> m_channelMasterGainCache;
     QList<CSAMPLE> m_channelHeadphoneGainCache;
 
     struct OutputBus {
@@ -157,6 +174,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     CSAMPLE* m_pHead;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
+    EngineSync* m_pMasterSync;
 
     ControlObject* m_pMasterVolume;
     ControlObject* m_pHeadVolume;

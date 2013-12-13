@@ -31,6 +31,7 @@ class EnginePregain;
 class EngineBuffer;
 class EngineFilterBlock;
 class EngineClipping;
+class EngineMaster;
 class EngineVuMeter;
 class EngineVinylSoundEmu;
 class EffectsManager;
@@ -41,7 +42,7 @@ class EngineDeck : public EngineChannel, public AudioDestination {
     Q_OBJECT
   public:
     EngineDeck(const char *group, ConfigObject<ConfigValue>* pConfig,
-               EffectsManager* pEffectsManager,
+               EngineMaster* pMixingEngine, EffectsManager* pEffectsManager,
                EngineChannel::ChannelOrientation defaultOrientation = CENTER);
     virtual ~EngineDeck();
 

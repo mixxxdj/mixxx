@@ -33,8 +33,8 @@ BaseTrackPlayer::BaseTrackPlayer(QObject* pParent,
     // pSafeGroupName is leaked. It's like 5 bytes so whatever.
     const char* pSafeGroupName = strdup(getGroup().toAscii().constData());
 
-    m_pChannel = new EngineDeck(pSafeGroupName, pConfig, pEffectsManager,
-                                defaultOrientation);
+    m_pChannel = new EngineDeck(pSafeGroupName, pConfig, pMixingEngine,
+                                pEffectsManager, defaultOrientation);
 
     EngineBuffer* pEngineBuffer = m_pChannel->getEngineBuffer();
     pMixingEngine->addChannel(m_pChannel);
