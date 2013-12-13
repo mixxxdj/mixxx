@@ -220,7 +220,7 @@ SkinManifest LegacySkinParser::getSkinManifest(QDomElement skinDocument) {
     QDomNode attributes_node = manifest_node.namedItem("attributes");
     if (!attributes_node.isNull() && attributes_node.isElement()) {
         QDomNodeList attribute_nodes = attributes_node.toElement().elementsByTagName("attribute");
-        for (unsigned int i = 0; i < attribute_nodes.length(); ++i) {
+        for (int i = 0; i < attribute_nodes.length(); ++i) {
             QDomNode attribute_node = attribute_nodes.item(i);
             if (attribute_node.isElement()) {
                 QDomElement attribute_element = attribute_node.toElement();
