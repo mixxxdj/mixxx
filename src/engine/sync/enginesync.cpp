@@ -24,6 +24,7 @@
 
 EngineSync::EngineSync(ConfigObject<ConfigValue>* pConfig)
         : BaseSyncableListener(pConfig),
+          m_pScratchingPreviousMaster(NULL),
           m_bExplicitMasterSelected(false) {
 }
 
@@ -176,6 +177,43 @@ void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
                 // selected. Why set internal clock?
                 activateMaster(m_pInternalClock);
             }
+        }
+    }
+}
+
+void EngineSync::notifyScratching(Syncable* pSyncable, bool scratching) {
+    SyncMode mode = pSyncable->getSyncMode();
+
+    // Ignore decks that aren't part of the sync group.
+    if (mode == SYNC_NONE) {
+        return;
+    }
+
+    // Syncable started scratching.
+    if (scratching) {
+        // If there is no explicit master.
+        if (!m_bExplicitMasterSelected) {
+            // If the syncable is not the master, become the master.
+            if (mode != SYNC_MASTER) {
+                // TODO(rryan): This is kind of janky when multiple decks
+                // scratch at once. For now, the last "previous master" always
+                // wins.
+                m_pScratchingPreviousMaster = m_pMasterSyncable;
+                activateMaster(pSyncable);
+            }
+        } else {
+            // The master is explicitly not us. Don't do anything.
+        }
+    } else {
+        // Syncable stopped scratching.
+        if (!m_bExplicitMasterSelected) {
+            // There was a previous master.
+            if (m_pScratchingPreviousMaster) {
+                activateMaster(m_pScratchingPreviousMaster);
+                m_pScratchingPreviousMaster = NULL;
+            }
+        } else {
+            // The master is explicitly set. Don't do anything.
         }
     }
 }

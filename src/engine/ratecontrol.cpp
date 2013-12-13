@@ -401,24 +401,6 @@ double RateControl::calculateRate(double baserate, bool paused,
         bool bVinylControlEnabled = m_pVCEnabled && m_pVCEnabled->get() > 0.0;
         bool scratchEnable = m_pScratchToggle->get() != 0 || bVinylControlEnabled;
 
-        // If master sync is on, respond to it -- but vinyl and scratch mode always override.
-        if (getSyncMode() == SYNC_FOLLOWER && !paused &&
-            !bVinylControlEnabled && !m_pScratchController->isEnabled())
-        {
-            if (m_pBpmControl == NULL) {
-                qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
-                return 1.0;
-            }
-
-            rate = m_pBpmControl->getSyncedRate();
-            double userTweak = getTempRate() + wheelFactor + jogFactor;
-            bool userTweakingSync = userTweak != 0.0;
-            rate += userTweak;
-
-            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
-            return rate;
-        }
-
         double scratchFactor = m_pScratch->get();
         // Don't trust values from m_pScratch
         if (isnan(scratchFactor)) {
@@ -487,6 +469,22 @@ double RateControl::calculateRate(double baserate, bool paused,
         if (m_pScratchController->isEnabled()) {
             rate = m_pScratchController->getRate();
             *isScratching = true;
+        }
+
+        // If master sync is on, respond to it -- but vinyl and scratch mode always override.
+        if (getSyncMode() == SYNC_FOLLOWER && !paused &&
+            !bVinylControlEnabled && !*isScratching) {
+            if (m_pBpmControl == NULL) {
+                qDebug() << "ERROR: calculateRate m_pBpmControl is null during master sync";
+                return 1.0;
+            }
+
+            rate = m_pBpmControl->getSyncedRate();
+            double userTweak = getTempRate() + wheelFactor + jogFactor;
+            bool userTweakingSync = userTweak != 0.0;
+            rate += userTweak;
+
+            rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
         }
     }
 

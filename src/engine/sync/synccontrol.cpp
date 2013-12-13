@@ -15,7 +15,8 @@ SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
           m_pChannel(pChannel),
           m_pEngineSync(pEngineSync),
           m_pBpmControl(NULL),
-          m_pRateControl(NULL) {
+          m_pRateControl(NULL),
+          m_bOldScratching(false) {
     // Play button.  We only listen to this to disable master if the deck is
     // stopped.
     m_pPlayButton.reset(new ControlObjectSlave(pGroup, "play", this));
@@ -213,7 +214,11 @@ void SyncControl::slotBeatDistanceChanged(double beatDistance) {
     m_pEngineSync->notifyBeatDistanceChanged(this, beatDistance);
 }
 
-void SyncControl::reportPlayerSpeed(double speed) {
+void SyncControl::reportPlayerSpeed(double speed, bool scratching) {
+    if (m_bOldScratching ^ scratching) {
+        m_pEngineSync->notifyScratching(this, scratching);
+        m_bOldScratching = scratching;
+    }
     double instantaneous_bpm = m_pFileBpm->get() * speed;
     m_pEngineSync->notifyInstantaneousBpmChanged(this, instantaneous_bpm);
 }

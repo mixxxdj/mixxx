@@ -45,7 +45,7 @@ class SyncControl : public EngineControl, public Syncable {
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
 
     void reportTrackPosition(double fractionalPlaypos);
-    void reportPlayerSpeed(double speed);
+    void reportPlayerSpeed(double speed, bool scratching);
 
   private slots:
     // Fired by changes in play.
@@ -75,6 +75,7 @@ class SyncControl : public EngineControl, public Syncable {
     SyncableListener* m_pEngineSync;
     BpmControl* m_pBpmControl;
     RateControl* m_pRateControl;
+    bool m_bOldScratching;
 
     QScopedPointer<ControlObject> m_pSyncMode;
     QScopedPointer<ControlPushButton> m_pSyncMasterEnabled;

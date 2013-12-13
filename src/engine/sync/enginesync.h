@@ -44,6 +44,7 @@ class EngineSync : public BaseSyncableListener {
     void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm);
     void notifyBeatDistanceChanged(Syncable* pSyncable, double beatDistance);
     void notifyPlaying(Syncable* pSyncable, bool playing);
+    void notifyScratching(Syncable* pSyncable, bool scratching);
 
   private:
     // Activate a specific syncable as master.
@@ -58,7 +59,7 @@ class EngineSync : public BaseSyncableListener {
     // master it picks is not explicitly selected by the user.
     void findNewMaster(Syncable* pDontPick);
 
-
+    Syncable* m_pScratchingPreviousMaster;
     bool m_bExplicitMasterSelected;
 };
 

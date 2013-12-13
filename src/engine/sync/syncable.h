@@ -64,6 +64,9 @@ class SyncableListener {
                                   bool fileChanged=false) = 0;
     virtual void notifyInstantaneousBpmChanged(Syncable* pSyncable, double bpm) = 0;
 
+    // Notify Syncable that the Syncable's scratching state changed.
+    virtual void notifyScratching(Syncable* pSyncable, bool scratching) = 0;
+
     // A Syncable must never call notifyBeatDistanceChanged in respnse to a
     // setBeatDistance() call.
     virtual void notifyBeatDistanceChanged(
