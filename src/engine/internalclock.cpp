@@ -7,7 +7,7 @@
 #include "controlpushbutton.h"
 #include "configobject.h"
 
-InternalClock::InternalClock(const char* pGroup, EngineSync* pEngineSync)
+InternalClock::InternalClock(const char* pGroup, SyncableListener* pEngineSync)
         : m_group(pGroup),
           m_pEngineSync(pEngineSync),
           m_mode(SYNC_NONE),

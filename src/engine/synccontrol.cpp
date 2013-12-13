@@ -10,7 +10,7 @@
 const double kTrackPositionMasterHandoff = 0.99;
 
 SyncControl::SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
-                         EngineChannel* pChannel, EngineSync* pEngineSync)
+                         EngineChannel* pChannel, SyncableListener* pEngineSync)
         : EngineControl(pGroup, pConfig),
           m_sGroup(pGroup),
           m_pChannel(pChannel),

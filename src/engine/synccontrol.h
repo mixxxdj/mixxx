@@ -18,7 +18,7 @@ class SyncControl : public EngineControl, public Syncable {
     Q_OBJECT
   public:
     SyncControl(const char* pGroup, ConfigObject<ConfigValue>* pConfig,
-                EngineChannel* pChannel, EngineSync* pEngineSync);
+                EngineChannel* pChannel, SyncableListener* pEngineSync);
     virtual ~SyncControl();
 
     const QString& getGroup() const { return m_sGroup; }
@@ -73,7 +73,7 @@ class SyncControl : public EngineControl, public Syncable {
     // EngineSync can ask us what our EngineChannel is. EngineMaster in turn
     // asks EngineSync what EngineChannel is the "master" channel.
     EngineChannel* m_pChannel;
-    EngineSync* m_pEngineSync;
+    SyncableListener* m_pEngineSync;
     BpmControl* m_pBpmControl;
     RateControl* m_pRateControl;
 
