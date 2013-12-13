@@ -1,7 +1,7 @@
 #ifndef BASESYNCABLELISTENER_H
 #define BASESYNCABLELISTENER_H
 
-#include "engine/syncable.h"
+#include "engine/sync/syncable.h"
 #include "configobject.h"
 
 class InternalClock;

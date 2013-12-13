@@ -1,8 +1,8 @@
 #include <QtDebug>
 
-#include "engine/internalclock.h"
+#include "engine/sync/internalclock.h"
 
-#include "engine/enginesync.h"
+#include "engine/sync/enginesync.h"
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "configobject.h"

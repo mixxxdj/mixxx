@@ -1,11 +1,10 @@
-#include "engine/synccontrol.h"
+#include "engine/sync/synccontrol.h"
 
 #include "controlobject.h"
 #include "controlpushbutton.h"
 #include "controlobjectslave.h"
 #include "engine/ratecontrol.h"
 #include "engine/bpmcontrol.h"
-#include "engine/enginesync.h"
 
 const double kTrackPositionMasterHandoff = 0.99;
 

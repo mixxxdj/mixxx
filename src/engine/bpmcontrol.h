@@ -7,7 +7,7 @@
 
 #include "controlobject.h"
 #include "engine/enginecontrol.h"
-#include "engine/syncable.h"
+#include "engine/sync/syncable.h"
 #include "tapfilter.h"
 
 class ControlObject;

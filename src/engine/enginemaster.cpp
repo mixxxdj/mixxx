@@ -32,7 +32,7 @@
 #include "enginevumeter.h"
 #include "enginexfader.h"
 #include "engine/sidechain/enginesidechain.h"
-#include "engine/enginesync.h"
+#include "engine/sync/enginesync.h"
 #include "sampleutil.h"
 #include "util/timer.h"
 #include "playermanager.h"

@@ -19,13 +19,9 @@
 #ifndef ENGINESYNC_H
 #define ENGINESYNC_H
 
-#include "engine/enginecontrol.h"
-#include "engine/syncable.h"
-#include "engine/basesyncablelistener.h"
-
-class ControlObject;
-class ControlPushButton;
-class ControlPotmeter;
+#include "configobject.h"
+#include "engine/sync/syncable.h"
+#include "engine/sync/basesyncablelistener.h"
 
 class EngineSync : public BaseSyncableListener {
   public:

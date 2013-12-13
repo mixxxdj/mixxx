@@ -533,6 +533,11 @@ class MixxxCore(Feature):
                    "dlghidden.cpp",
                    "dlgmissing.cpp",
 
+                   "engine/sync/basesyncablelistener.cpp",
+                   "engine/sync/enginesync.cpp",
+                   "engine/sync/synccontrol.cpp",
+                   "engine/sync/internalclock.cpp",
+
                    "engine/engineworker.cpp",
                    "engine/engineworkerscheduler.cpp",
                    "engine/enginebuffer.cpp",
@@ -547,10 +552,6 @@ class MixxxCore(Feature):
                    "engine/enginepregain.cpp",
                    "engine/enginechannel.cpp",
                    "engine/enginemaster.cpp",
-                   "engine/basesyncablelistener.cpp",
-                   "engine/enginesync.cpp",
-                   "engine/synccontrol.cpp",
-                   "engine/internalclock.cpp",
                    "engine/enginedelay.cpp",
                    "engine/engineflanger.cpp",
                    "engine/enginefiltereffect.cpp",

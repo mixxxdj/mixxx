@@ -9,7 +9,7 @@
 #include "configobject.h"
 #include "controlobject.h"
 #include "engine/enginecontrol.h"
-#include "engine/syncable.h"
+#include "engine/sync/syncable.h"
 
 const int RATE_TEMP_STEP = 500;
 const int RATE_TEMP_STEP_SMALL = RATE_TEMP_STEP * 10.;

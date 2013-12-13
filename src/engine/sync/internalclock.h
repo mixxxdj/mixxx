@@ -5,8 +5,8 @@
 #include <QString>
 #include <QScopedPointer>
 
-#include "engine/clock.h"
-#include "engine/syncable.h"
+#include "engine/sync/clock.h"
+#include "engine/sync/syncable.h"
 #include "engine/enginechannel.h"
 
 class ControlObject;

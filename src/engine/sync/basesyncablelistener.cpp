@@ -1,6 +1,6 @@
-#include "engine/basesyncablelistener.h"
+#include "engine/sync/basesyncablelistener.h"
 
-#include "engine/internalclock.h"
+#include "engine/sync/internalclock.h"
 
 static const char* kInternalClockGroup = "[InternalClock]";
 

@@ -15,7 +15,7 @@
 #include "engine/enginechannel.h"
 #include "engine/enginedeck.h"
 #include "engine/enginemaster.h"
-#include "engine/enginesync.h"
+#include "engine/sync/enginesync.h"
 #include "engine/ratecontrol.h"
 #include "sampleutil.h"
 

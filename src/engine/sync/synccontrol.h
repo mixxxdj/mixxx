@@ -4,10 +4,9 @@
 #include <QScopedPointer>
 
 #include "engine/enginecontrol.h"
-#include "engine/syncable.h"
+#include "engine/sync/syncable.h"
 
 class EngineChannel;
-class EngineSync;
 class BpmControl;
 class RateControl;
 class ControlObject;

@@ -16,11 +16,11 @@
 *                                                                         *
 ***************************************************************************/
 
-#include "engine/enginesync.h"
+#include "engine/sync/enginesync.h"
 
 #include <QStringList>
 
-#include "engine/internalclock.h"
+#include "engine/sync/internalclock.h"
 
 EngineSync::EngineSync(ConfigObject<ConfigValue>* pConfig)
         : BaseSyncableListener(pConfig),
