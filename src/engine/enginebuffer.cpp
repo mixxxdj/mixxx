@@ -293,6 +293,7 @@ EngineBuffer::~EngineBuffer()
     delete m_rateEngine;
     delete m_playposSlider;
     delete m_visualBpm;
+    delete m_visualKey;
 
     delete m_pSlipButton;
     delete m_pRepeat;
