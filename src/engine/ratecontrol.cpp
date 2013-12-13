@@ -10,7 +10,6 @@
 #include "mathstuff.h"
 
 #include "engine/bpmcontrol.h"
-#include "engine/enginechannel.h"
 #include "engine/enginecontrol.h"
 #include "engine/ratecontrol.h"
 #include "engine/positionscratchcontroller.h"
@@ -39,19 +38,12 @@ RateControl::RateControl(const char* _group,
       m_bTempStarted(false),
       m_dTempRateChange(0.0),
       m_dRateTemp(0.0),
-      m_dOldBpm(0.0),
       m_eRampBackMode(RATERAMP_RAMPBACK_NONE),
       m_dRateTempRampbackChange(0.0) {
     m_pScratchController = new PositionScratchController(_group);
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
-    // For testing, make sure there is a sane, non-zero default direction.
-    // This value affects tests.
-    m_pRateDir->set(2.0);
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
-    // For testing, make sure there is a sane, non-zero default range.
-    // This value affects tests.
-    m_pRateRange->set(2.0);
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
 
     // Search rate. Rate used when searching in sound. This overrules the
@@ -354,9 +346,7 @@ void RateControl::trackLoaded(TrackPointer pTrack) {
     if (m_pTrack) {
         trackUnloaded(m_pTrack);
     }
-    if (pTrack) {
-        m_pTrack = pTrack;
-    }
+    m_pTrack = pTrack;
 }
 
 void RateControl::trackUnloaded(TrackPointer pTrack) {

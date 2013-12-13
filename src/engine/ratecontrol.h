@@ -7,7 +7,6 @@
 #include <QObject>
 
 #include "configobject.h"
-#include "controlobject.h"
 #include "engine/enginecontrol.h"
 #include "engine/sync/syncable.h"
 
@@ -177,8 +176,6 @@ public:
     static int m_iRateRampSensitivity;
     // Temporary pitchrate, added to the permanent rate for calculateRate
     double m_dRateTemp;
-    // Previously-known bpm value, used for determining if sync speed has actually changed.
-    double m_dOldBpm;
     enum RATERAMP_RAMPBACK_MODE m_eRampBackMode;
     // Return speed for temporary rate change
     double m_dRateTempRampbackChange;

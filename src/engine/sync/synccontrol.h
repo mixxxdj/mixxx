@@ -43,8 +43,8 @@ class SyncControl : public EngineControl, public Syncable {
     void setInstantaneousBpm(double bpm);
 
     void setEngineControls(RateControl* pRateControl, BpmControl* pBpmControl);
-    void checkTrackPosition(double fractionalPlaypos);
 
+    void reportTrackPosition(double fractionalPlaypos);
     void reportPlayerSpeed(double speed);
 
   private slots:

@@ -45,9 +45,6 @@ BpmControl::BpmControl(const char* _group,
     connect(m_pFileBpm, SIGNAL(valueChanged(double)),
             this, SLOT(slotFileBpmChanged(double)),
             Qt::DirectConnection);
-    connect(m_pFileBpm, SIGNAL(valueChangedFromEngine(double)),
-            this, SLOT(slotFileBpmChanged(double)),
-            Qt::DirectConnection);
 
     m_pEngineBpm = new ControlObject(ConfigKey(_group, "bpm"));
     connect(m_pEngineBpm, SIGNAL(valueChanged(double)),
@@ -112,12 +109,12 @@ double BpmControl::getBpm() const {
 }
 
 void BpmControl::slotFileBpmChanged(double bpm) {
+    Q_UNUSED(bpm);
     // Adjust the file-bpm with the current setting of the rate to get the
     // engine BPM. We only do this for SYNC_NONE decks because EngineSync will
     // set our BPM if the file BPM changes. See SyncControl::fileBpmChanged().
     if (getSyncMode() == SYNC_NONE) {
-        double dRate = 1.0 + m_pRateDir->get() * m_pRateRange->get() * m_pRateSlider->get();
-        m_pEngineBpm->set(bpm * dRate);
+        slotAdjustRateSlider();
     }
 }
 

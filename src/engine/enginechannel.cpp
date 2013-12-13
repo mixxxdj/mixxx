@@ -44,6 +44,9 @@ EngineChannel::~EngineChannel() {
     delete m_pMaster;
     delete m_pPFL;
     delete m_pOrientation;
+    delete m_pOrientationLeft;
+    delete m_pOrientationRight;
+    delete m_pOrientationCenter;
 }
 
 const QString& EngineChannel::getGroup() const {

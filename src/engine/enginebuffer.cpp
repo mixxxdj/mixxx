@@ -918,20 +918,30 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_iLastBufferSize = iBufferSize;
 }
 
-void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
+void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 
     // Increase samplesCalculated by the buffer size
     m_iSamplesCalculated += iBufferSize;
 
     double fFractionalPlaypos = fractionalPlayposFromAbsolute(m_filepos_play);
-    if(rate > 0 && fFractionalPlaypos == 1.0) {
-        rate = 0;
+    if(speed > 0 && fFractionalPlaypos == 1.0) {
+        speed = 0;
     }
+
+    // Report fractional playpos to SyncControl.
+    // TODO(rryan) It's kind of hacky that this is in updateIndicators but it
+    // prevents us from computing fFractionalPlaypos multiple times per
+    // EngineBuffer::process().
+    m_pSyncControl->reportTrackPosition(fFractionalPlaypos);
 
     // Update indicators that are only updated after every
     // sampleRate/kiUpdateRate samples processed.
     if (m_iSamplesCalculated > (m_pSampleRate->get()/kiUpdateRate)) {
         m_playposSlider->set(fFractionalPlaypos);
+
+        if (speed != m_rateEngine->get()) {
+            m_rateEngine->set(speed);
+        }
 
         //Update the BPM even more slowly
         m_iUiSlowTick = (m_iUiSlowTick + 1) % kiBpmUpdateRate;
@@ -946,11 +956,9 @@ void EngineBuffer::updateIndicators(double rate, int iBufferSize) {
 
     // Update visual control object, this needs to be done more often than the
     // rateEngine and playpos slider
-    m_visualPlayPos->set(fFractionalPlaypos, rate,
+    m_visualPlayPos->set(fFractionalPlaypos, speed,
             (double)iBufferSize/m_file_length_old,
             fractionalPlayposFromAbsolute(m_dSlipPosition));
-    m_rateEngine->set(rate);
-    m_pSyncControl->checkTrackPosition(fFractionalPlaypos);
 }
 
 void EngineBuffer::hintReader(const double dRate) {
@@ -1044,7 +1052,7 @@ void EngineBuffer::setReader(CachingReader* pReader) {
 */
 
 void EngineBuffer::setScalerForTest(EngineBufferScale* pScale) {
-	m_pScale = pScale;
-	// This bool is permanently set and can't be undone.
-	m_bScalerOverride = true;
+    m_pScale = pScale;
+    // This bool is permanently set and can't be undone.
+    m_bScalerOverride = true;
 }
