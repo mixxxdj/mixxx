@@ -547,6 +547,7 @@ class MixxxCore(Feature):
                    "engine/enginepregain.cpp",
                    "engine/enginechannel.cpp",
                    "engine/enginemaster.cpp",
+                   "engine/basesyncablelistener.cpp",
                    "engine/enginesync.cpp",
                    "engine/synccontrol.cpp",
                    "engine/internalclock.cpp",

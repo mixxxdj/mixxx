@@ -16,44 +16,18 @@
 *                                                                         *
 ***************************************************************************/
 
+#include "engine/enginesync.h"
+
 #include <QStringList>
 
-#include "controlobject.h"
-#include "controlpotmeter.h"
-#include "controlpushbutton.h"
-#include "engine/bpmcontrol.h"
-#include "engine/enginebuffer.h"
-#include "engine/enginechannel.h"
-#include "engine/enginecontrol.h"
-#include "engine/enginesync.h"
 #include "engine/internalclock.h"
 
-static const char* kMasterSyncGroup = "[Master]";
-static const char* kInternalClockGroup = "[InternalClock]";
-
-EngineSync::EngineSync(ConfigObject<ConfigValue>* _config)
-        : EngineControl(kMasterSyncGroup, _config),
-          m_pConfig(_config),
-          m_pInternalClock(new InternalClock(kInternalClockGroup, this)),
-          m_pMasterSyncable(NULL),
+EngineSync::EngineSync(ConfigObject<ConfigValue>* pConfig)
+        : BaseSyncableListener(pConfig),
           m_bExplicitMasterSelected(false) {
-    qRegisterMetaType<SyncMode>("SyncMode");
-    m_pInternalClock->setBpm(124.0);
 }
 
 EngineSync::~EngineSync() {
-    // We use the slider value because that is never set to 0.0.
-    m_pConfig->set(ConfigKey("[InternalClock]", "bpm"), ConfigValue(
-        m_pInternalClock->getBpm()));
-    delete m_pInternalClock;
-}
-
-void EngineSync::addSyncableDeck(Syncable* pSyncable) {
-    if (m_syncables.contains(pSyncable)) {
-        qDebug() << "EngineSync: already has" << pSyncable;
-        return;
-    }
-    m_syncables.append(pSyncable);
 }
 
 void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
@@ -245,24 +219,6 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_dist
     setMasterBeatDistance(pSyncable, beat_distance);
 }
 
-
-int EngineSync::playingSyncDeckCount() const {
-    int playing_sync_decks = 0;
-
-    foreach (const Syncable* pSyncable, m_syncables) {
-        SyncMode sync_mode = pSyncable->getSyncMode();
-        if (sync_mode == SYNC_NONE) {
-            continue;
-        }
-
-        if (pSyncable->isPlaying()) {
-            ++playing_sync_decks;
-        }
-    }
-
-    return playing_sync_decks;
-}
-
 void EngineSync::activateFollower(Syncable* pSyncable) {
     pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
     pSyncable->setBpm(masterBpm());
@@ -357,74 +313,4 @@ void EngineSync::findNewMaster(Syncable* pDontPick) {
     }
     // Even if we didn't successfully find a new master, unset this value.
     m_bExplicitMasterSelected = false;
-}
-
-void EngineSync::onCallbackStart(int sampleRate, int bufferSize) {
-    m_pInternalClock->onCallbackStart(sampleRate, bufferSize);
-}
-
-EngineChannel* EngineSync::getMaster() const {
-    return m_pMasterSyncable ? m_pMasterSyncable->getChannel() : NULL;
-}
-
-Syncable* EngineSync::getSyncableForGroup(const QString& group) {
-    foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable->getGroup() == group) {
-            return pSyncable;
-        }
-    }
-    return NULL;
-}
-
-double EngineSync::masterBpm() const {
-    if (m_pMasterSyncable) {
-        return m_pMasterSyncable->getBpm();
-    }
-    return m_pInternalClock->getBpm();
-}
-
-double EngineSync::masterBeatDistance() const {
-    if (m_pMasterSyncable) {
-        return m_pMasterSyncable->getBeatDistance();
-    }
-    return m_pInternalClock->getBeatDistance();
-}
-
-void EngineSync::setMasterBpm(Syncable* pSource, double bpm) {
-    if (pSource != m_pInternalClock) {
-        m_pInternalClock->setBpm(bpm);
-    }
-    foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable == pSource ||
-                pSyncable->getSyncMode() == SYNC_NONE) {
-            continue;
-        }
-        pSyncable->setBpm(bpm);
-    }
-}
-
-void EngineSync::setMasterInstantaneousBpm(Syncable* pSource, double bpm) {
-    if (pSource != m_pInternalClock) {
-        m_pInternalClock->setInstantaneousBpm(bpm);
-    }
-    foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable == pSource ||
-                pSyncable->getSyncMode() == SYNC_NONE) {
-            continue;
-        }
-        pSyncable->setInstantaneousBpm(bpm);
-    }
-}
-
-void EngineSync::setMasterBeatDistance(Syncable* pSource, double beat_distance) {
-    if (pSource != m_pInternalClock) {
-        m_pInternalClock->setBeatDistance(beat_distance);
-    }
-    foreach (Syncable* pSyncable, m_syncables) {
-        if (pSyncable == pSource ||
-                pSyncable->getSyncMode() == SYNC_NONE) {
-            continue;
-        }
-        pSyncable->setBeatDistance(beat_distance);
-    }
 }
