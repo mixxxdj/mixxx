@@ -283,7 +283,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     // Internal should still be master.
     assertIsMaster(m_sInternalClockGroup);
 
-    // The rate should not have changed -- deck 1 now matches deck 2.
+    // The rate should not have changed -- deck 1 still matches deck 2.
     ASSERT_FLOAT_EQ(getRateSliderValue(1.3),
                     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
 
