@@ -140,8 +140,8 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
 
     QStringList dirs = directoryDao.getDirs();
     ASSERT_EQ(2, dirs.size());
-    EXPECT_QSTRING_EQ(QString("/Test2"), dirs.at(0));
-    EXPECT_QSTRING_EQ(QString("/new"), dirs.at(1));
+    EXPECT_QSTRING_EQ("/new", dirs.at(0));
+    EXPECT_QSTRING_EQ("/Test2", dirs.at(1));
 }
 
 }  // namespace
