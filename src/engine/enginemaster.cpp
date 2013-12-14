@@ -233,6 +233,7 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                     needsProcessing = true;
                 }
 
+                //TODO(carl): Integrate with Mastersync changes
                 // Copy audio from input to loop recorder buffer.
 //                if (m_pLoopRecorder != NULL && pChannel->getGroup().contains(loopSource)) {
 //                    SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
@@ -276,12 +277,12 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             *headphoneOutput |= (1 << channel_number);
             needsProcessing = true;
         }
-
+        //TODO(carl): Integrate with Mastersync changes
         // Copy audio from input to loop recorder buffer.
-        if (m_pLoopRecorder != NULL && pChannel->getGroup().contains(loopSource)) {
-            SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
-            bLoopCopied = true;
-        }
+//        if (m_pLoopRecorder != NULL && pChannel->getGroup().contains(loopSource)) {
+//            SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
+//            bLoopCopied = true;
+//        }
 
         // Process the buffer if necessary
         if (needsProcessing) {
