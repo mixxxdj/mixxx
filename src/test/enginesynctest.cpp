@@ -256,7 +256,7 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     // Set up decks so they can be playing, and start deck 1.
     QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
         ConfigKey(m_sGroup1, "file_bpm")));
-    pFileBpm1->set(128.0);
+    pFileBpm1->set(100.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
     ControlObject::getControl(ConfigKey(m_sGroup1, "play"))->set(1.0);
     QScopedPointer<ControlObjectThread> pFileBpm2(getControlObjectThread(
@@ -269,10 +269,10 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     // Set channel 1 to be enabled
     pButtonSyncEnabled1->slotSet(1.0);
 
-    // The master sync should now be internal and the speed should match deck 1.
+    // The master sync should now be internal and the speed should match deck 2.
     assertIsMaster(m_sInternalClockGroup);
     assertIsFollower(m_sGroup1);
-    ASSERT_FLOAT_EQ(128.0,
+    ASSERT_FLOAT_EQ(130.0,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
 
     // Set channel 2 to be enabled.
@@ -283,8 +283,8 @@ TEST_F(EngineSyncTest, InternalClockFollowsFirstPlayingDeck) {
     // Internal should still be master.
     assertIsMaster(m_sInternalClockGroup);
 
-    // The rate should not have changed.
-    ASSERT_FLOAT_EQ(getRateSliderValue(1.0),
+    // The rate should not have changed -- deck 1 now matches deck 2.
+    ASSERT_FLOAT_EQ(getRateSliderValue(1.3),
                     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->get());
 
     // Reset channel 2 rate, set channel 2 to play, and process a buffer.
