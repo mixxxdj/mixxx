@@ -505,7 +505,8 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    if (m_pQuantize->get() > 0.0) {
+    // If we are playing and quantize is on, match phase when syncing.
+    if (m_pQuantize->get() > 0.0 && m_playButton->get()) {
         int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
         if (!even(offset)) {
             offset--;
