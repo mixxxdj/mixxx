@@ -99,6 +99,11 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                     targetBpm = other_deck->getBpm();
                     targetBeatDistance = other_deck->getBeatDistance();
                     break;
+                } else if (other_deck->getBpm() > 0) {
+                    // Last ditch effort -- pick ANYTHING with a pulse.
+                    foundTargetBpm = true;
+                    targetBpm = other_deck->getBpm();
+                    targetBeatDistance = other_deck->getBeatDistance();
                 }
             }
 
