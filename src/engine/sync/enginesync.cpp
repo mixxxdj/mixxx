@@ -41,31 +41,34 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         setMasterBpm(pSyncable, pSyncable->getBpm());
         setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
     } else if (mode == SYNC_FOLLOWER) {
-        if (pSyncable == m_pInternalClock && m_pMasterSyncable == m_pInternalClock &&
-            syncDeckExists()) {
-           // Internal cannot be set to follower if there are other decks with sync on.
-           return;
-        }
-        // Was this deck master before?  If so do a handoff.
-        if (channelIsMaster) {
+        if (pSyncable == m_pInternalClock && channelIsMaster &&
+                syncDeckExists()) {
+            // Internal clock cannot be set to follower if there are other decks
+            // with sync on.
+        } else if (channelIsMaster) {
+            // Was this deck master before? If so do a handoff.
             m_pMasterSyncable = NULL;
             activateFollower(pSyncable);
-            // Hand off to the internal clock.
+            // Hand off to the internal clock and keep the current BPM and beat
+            // distance.
             activateMaster(m_pInternalClock);
+            activateFollower(pSyncable);
         } else if (m_pMasterSyncable == NULL) {
             // If no master active, activate the internal clock.
             activateMaster(m_pInternalClock);
             setMasterBpm(pSyncable, pSyncable->getBpm());
             setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
+            activateFollower(pSyncable);
+        } else {
+            activateFollower(pSyncable);
         }
-        activateFollower(pSyncable);
     } else {
-        if (pSyncable == m_pInternalClock && m_pMasterSyncable == m_pInternalClock &&
-           syncDeckExists()) {
+        if (pSyncable == m_pInternalClock && channelIsMaster &&
+                syncDeckExists()) {
            // Internal cannot be disabled if there are other decks with sync on.
-           return;
+        } else {
+            deactivateSync(pSyncable);
         }
-        deactivateSync(pSyncable);
     }
 }
 
