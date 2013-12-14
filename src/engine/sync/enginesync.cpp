@@ -77,16 +77,17 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 
     SyncMode syncMode = pSyncable->getSyncMode();
     bool syncEnabled = syncMode != SYNC_NONE;
-    // Already enabled.
+
+    // Already in the desired state.
     if (syncEnabled == bEnabled) {
         return;
     }
 
     if (bEnabled) {
         if (m_pMasterSyncable == NULL) {
-            // There is no sync source.  If any other deck is playing we will
-            // match the first available bpm -- sync won't be enabled on these decks,
-            // otherwise there would have been a sync source.
+            // There is no master. If any other deck is playing we will match
+            // the first available bpm -- sync won't be enabled on these decks,
+            // otherwise there would have been a master.
 
             bool foundTargetBpm = false;
             double targetBpm = 0.0;
@@ -121,8 +122,10 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                 setMasterBpm(pSyncable, pSyncable->getBpm());
                 setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
             }
-        } else if (m_pMasterSyncable == m_pInternalClock && playingSyncDeckCount() == 0) {
-            // If there are no active followers, reset the internal clock beat distance.
+        } else if (m_pMasterSyncable == m_pInternalClock &&
+                   playingSyncDeckCount() == 0) {
+            // If there are no active followers, reset the internal clock beat
+            // distance.
             setMasterBeatDistance(pSyncable, pSyncable->getBeatDistance());
         }
         activateFollower(pSyncable);
@@ -202,6 +205,11 @@ void EngineSync::notifyBeatDistanceChanged(Syncable* pSyncable, double beat_dist
 }
 
 void EngineSync::activateFollower(Syncable* pSyncable) {
+    if (pSyncable == NULL) {
+        qDebug() << "WARNING: Logic Error: Called activateFollower on a NULL Syncable.";
+        return;
+    }
+
     pSyncable->notifySyncModeChanged(SYNC_FOLLOWER);
     pSyncable->setBpm(masterBpm());
     pSyncable->setBeatDistance(masterBeatDistance());
@@ -234,7 +242,8 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
     m_pMasterSyncable = pSyncable;
     pSyncable->notifySyncModeChanged(SYNC_MASTER);
 
-    // It is up to callers of this function to initialize bpm and beat_distance if necessary.
+    // It is up to callers of this function to initialize bpm and beat_distance
+    // if necessary.
 }
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
