@@ -129,24 +129,24 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
 void EngineSync::notifyPlaying(Syncable* pSyncable, bool playing) {
     qDebug() << "EngineSync::notifyPlaying" << pSyncable->getGroup() << playing;
     // For now we don't care if the deck is now playing or stopping.
-    if (pSyncable->getSyncMode() != SYNC_NONE) {
-        if (m_pMasterSyncable == m_pInternalClock) {
-            if (!syncDeckExists()) {
-                deactivateSync(m_pInternalClock);
-            } else {
-                // If there is only one deck playing, set internal clock beat distance to match it.
-                Syncable* uniqueSyncable = NULL;
-                int playing_sync_decks = 0;
-                foreach (Syncable* pOtherSyncable, m_syncables) {
-                    if (pOtherSyncable->isPlaying()) {
-                        uniqueSyncable = pOtherSyncable;
-                        ++playing_sync_decks;
-                    }
-                }
-                if (playing_sync_decks == 1) {
-                    m_pInternalClock->setBeatDistance(uniqueSyncable->getBeatDistance());
-                }
+    if (pSyncable->getSyncMode() == SYNC_NONE) {
+        return;
+    }
+
+    if (m_pMasterSyncable == m_pInternalClock) {
+        // If there is only one deck playing, set internal clock beat distance
+        // to match it.
+        const Syncable* uniqueSyncable = NULL;
+        int playing_sync_decks = 0;
+        foreach (const Syncable* pOtherSyncable, m_syncables) {
+            if (pOtherSyncable->getSyncMode() != SYNC_NONE &&
+                    pOtherSyncable->isPlaying()) {
+                uniqueSyncable = pOtherSyncable;
+                ++playing_sync_decks;
             }
+        }
+        if (playing_sync_decks == 1) {
+            m_pInternalClock->setBeatDistance(uniqueSyncable->getBeatDistance());
         }
     }
 }
