@@ -94,16 +94,18 @@ void EngineSync::requestEnableSync(Syncable* pSyncable, bool bEnabled) {
                     continue;
                 }
 
-                if (other_deck->isPlaying()) {
+                double otherDeckBpm = other_deck->getBpm();
+                if (otherDeckBpm > 0.0) {
                     foundTargetBpm = true;
-                    targetBpm = other_deck->getBpm();
+                    targetBpm = otherDeckBpm;
                     targetBeatDistance = other_deck->getBeatDistance();
-                    break;
-                } else if (other_deck->getBpm() > 0) {
-                    // Last ditch effort -- pick ANYTHING with a pulse.
-                    foundTargetBpm = true;
-                    targetBpm = other_deck->getBpm();
-                    targetBeatDistance = other_deck->getBeatDistance();
+
+                    // If the other deck is playing we stop looking
+                    // immediately. Otherwise continue looking for a playign
+                    // deck with bpm > 0.0.
+                    if (other_deck->isPlaying()) {
+                        break;
+                    }
                 }
             }
 
