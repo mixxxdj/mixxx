@@ -38,9 +38,6 @@ public:
     virtual ~RateControl();
 
     void setBpmControl(BpmControl* bpmcontrol);
-#ifdef __VINYLCONTROL__
-    void setVinylControlControl(VinylControlControl* vinylcontrolcontrol);
-#endif
     // Must be called during each callback of the audio thread so that
     // RateControl has a chance to update itself.
     double process(const double dRate,

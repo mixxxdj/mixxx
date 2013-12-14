@@ -220,14 +220,13 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
                                      pMixingEngine->getEngineSync());
     addControl(m_pSyncControl);
 
+#ifdef __VINYLCONTROL__
+    addControl(new VinylControlControl(_group, _config));
+#endif
+
     m_pRateControl = new RateControl(_group, _config);
     // Add the Rate Controller
     addControl(m_pRateControl);
-#ifdef __VINYLCONTROL__
-    VinylControlControl *vcc = new VinylControlControl(_group, _config);
-    addControl(vcc);
-    m_pRateControl->setVinylControlControl(vcc);
-#endif
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
@@ -505,15 +504,6 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    // If we are playing and quantize is on, match phase when syncing.
-    if (m_pQuantize->get() > 0.0 && m_playButton->get()) {
-        int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
-        if (!even(offset)) {
-            offset--;
-        }
-        new_playpos += offset;
-    }
-
     queueNewPlaypos(new_playpos);
 }
 
@@ -651,6 +641,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
         if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
+            // If we are playing and quantize is on, match phase when seeking.
+            if (!paused && m_pQuantize->get() > 0.0) {
+                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
+                if (!even(offset)) {
+                    offset--;
+                }
+                m_dQueuedPosition += offset;
+            }
             setNewPlaypos(m_dQueuedPosition);
         }
 

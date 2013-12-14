@@ -82,6 +82,7 @@ class BpmControl : public EngineControl {
 
     // ControlObjects that come from EngineBuffer
     ControlObjectSlave* m_pPlayButton;
+    ControlObjectSlave* m_pReverseButton;
     ControlObjectSlave* m_pRateSlider;
     ControlObject* m_pQuantize;
     ControlObjectSlave* m_pRateRange;

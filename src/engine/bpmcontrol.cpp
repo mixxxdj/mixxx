@@ -29,6 +29,7 @@ BpmControl::BpmControl(const char* _group,
         m_sGroup(_group) {
     m_pPlayButton = new ControlObjectSlave(_group, "play", this);
     m_pPlayButton->connectValueChanged(SLOT(slotControlPlay(double)), Qt::DirectConnection);
+    m_pReverseButton = new ControlObjectSlave(_group, "reverse", this);
     m_pRateSlider = new ControlObjectSlave(_group, "rate", this);
     m_pRateSlider->connectValueChanged(SLOT(slotAdjustRateSlider()), Qt::DirectConnection);
     m_pQuantize = ControlObject::getControl(_group, "quantize");
@@ -324,6 +325,11 @@ double BpmControl::getSyncAdjustment(bool userTweakingSync) {
     if (m_pBeats == NULL) {
         // No beat information.
         return 1.0;
+    }
+    if (m_pReverseButton->get()) {
+        // If we are going backwards, we can't do the math correctly.
+        m_dSyncAdjustment = 1.0;
+        return m_dSyncAdjustment;
     }
 
     // This is the deck position at the start of the callback.
