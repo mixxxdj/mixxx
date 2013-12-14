@@ -44,7 +44,8 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
         if (pSyncable == m_pInternalClock && channelIsMaster &&
                 syncDeckExists()) {
             // Internal clock cannot be set to follower if there are other decks
-            // with sync on.
+            // with sync on. Notify them that their mode has not changed.
+            pSyncable->notifySyncModeChanged(SYNC_MASTER);
         } else if (channelIsMaster) {
             // Was this deck master before? If so do a handoff.
             m_pMasterSyncable = NULL;
@@ -65,7 +66,9 @@ void EngineSync::requestSyncMode(Syncable* pSyncable, SyncMode mode) {
     } else {
         if (pSyncable == m_pInternalClock && channelIsMaster &&
                 syncDeckExists()) {
-           // Internal cannot be disabled if there are other decks with sync on.
+           // Internal cannot be disabled if there are other decks with sync
+           // on. Notify them that their mode has not changed.
+            pSyncable->notifySyncModeChanged(SYNC_MASTER);
         } else {
             deactivateSync(pSyncable);
         }
