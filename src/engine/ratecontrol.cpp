@@ -188,7 +188,6 @@ void RateControl::setBpmControl(BpmControl* bpmcontrol) {
 
 #ifdef __VINYLCONTROL__
 void RateControl::setVinylControlControl(VinylControlControl* vinylcontrolcontrol) {
-    m_pVinylControlControl = vinylcontrolcontrol;
     m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
     m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
 }

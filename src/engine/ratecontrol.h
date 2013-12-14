@@ -118,9 +118,6 @@ public:
     ControlObject* m_pJog;
     ControlObject* m_pVCEnabled;
     ControlObject* m_pVCScratching;
-#ifdef __VINYLCONTROL__
-    VinylControlControl *m_pVinylControlControl;
-#endif
     Rotary* m_pJogFilter;
 
     ControlObject *m_pSampleRate;

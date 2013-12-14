@@ -51,6 +51,9 @@ class SyncControl : public EngineControl, public Syncable {
     // Fired by changes in play.
     void slotControlPlay(double v);
 
+    // Fired by changes in vinyl control status.
+    void slotVinylControlChanged(double v);
+
     // Fired by changes in rate, rate_dir, rateRange.
     void slotRateChanged();
 
