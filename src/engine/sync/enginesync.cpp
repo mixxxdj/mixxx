@@ -238,21 +238,22 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
 }
 
 void EngineSync::deactivateSync(Syncable* pSyncable) {
-    SyncMode prev_mode = pSyncable->getSyncMode();
+    bool wasMaster = pSyncable->getSyncMode() == SYNC_MASTER;
 
-    pSyncable->notifySyncModeChanged(SYNC_NONE);
-
-    if (prev_mode == SYNC_MASTER) {
+    if (wasMaster) {
         m_pMasterSyncable = NULL;
-        if (pSyncable != m_pInternalClock && syncDeckExists()) {
-            // Hand off to internal clock
-            activateMaster(m_pInternalClock);
-            return;
-        }
     }
 
-    if (pSyncable != m_pInternalClock && !syncDeckExists()) {
-        // Also deactivate the internal clock if there are no more sync decks left.
+    // Notifications happen after-the-fact.
+    pSyncable->notifySyncModeChanged(SYNC_NONE);
+
+    bool bSyncDeckExists = syncDeckExists();
+
+    if (wasMaster && pSyncable != m_pInternalClock && bSyncDeckExists) {
+        // Hand off to internal clock
+        activateMaster(m_pInternalClock);
+    } else if (pSyncable != m_pInternalClock && !bSyncDeckExists) {
+        // Deactivate the internal clock if there are no more sync decks left.
         m_pMasterSyncable = NULL;
         m_pInternalClock->notifySyncModeChanged(SYNC_NONE);
     }
