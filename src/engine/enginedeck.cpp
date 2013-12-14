@@ -31,6 +31,7 @@
 
 EngineDeck::EngineDeck(const char* group,
                              ConfigObject<ConfigValue>* pConfig,
+                             EngineMaster* pMixingEngine,
                              EngineChannel::ChannelOrientation defaultOrientation)
         : EngineChannel(group, defaultOrientation),
           m_pConfig(pConfig),
@@ -56,7 +57,7 @@ EngineDeck::EngineDeck(const char* group,
     m_pFlanger = new EngineFlanger(group);
     m_pFilterEffect = new EngineFilterEffect(group);
     m_pClipping = new EngineClipping(group);
-    m_pBuffer = new EngineBuffer(group, pConfig);
+    m_pBuffer = new EngineBuffer(group, pConfig, this, pMixingEngine);
     m_pVinylSoundEmu = new EngineVinylSoundEmu(pConfig, group);
     m_pVUMeter = new EngineVuMeter(group);
 }
@@ -202,4 +203,3 @@ bool EngineDeck::isPassthroughActive() {
 void EngineDeck::slotPassingToggle(double v) {
     m_bPassthroughIsActive = v > 0;
 }
-

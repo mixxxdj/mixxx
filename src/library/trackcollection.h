@@ -81,9 +81,9 @@ class TrackCollection : public QObject
     PlaylistDAO m_playlistDao;
     CrateDAO m_crateDao;
     CueDAO m_cueDao;
+    DirectoryDAO m_directoryDao;
     AnalysisDao m_analysisDao;
     TrackDAO m_trackDao;
-    DirectoryDAO m_directoryDao;
     const QRegExp m_supportedFileExtensionsRegex;
 };
 

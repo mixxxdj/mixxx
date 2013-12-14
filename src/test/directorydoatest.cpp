@@ -37,7 +37,7 @@ class DirectoryDAOTest : public MixxxTest {
         delete m_pTrackCollection;
     }
 
-    TrackCollection *m_pTrackCollection;
+    TrackCollection* m_pTrackCollection;
 };
 
 TEST_F(DirectoryDAOTest, addDirTest) {
@@ -54,19 +54,24 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 
     // check if directory doa adds and thinks everything is ok
     int success = m_DirectoryDao.addDirectory(testdir);
-    EXPECT_EQ(success, ALL_FINE );
+    EXPECT_EQ(ALL_FINE, success);
 
     // check that we don't add the directory again
     success = m_DirectoryDao.addDirectory(testdir);
-    EXPECT_EQ(success, SQL_ERROR );
+    EXPECT_EQ(ALREADY_WATCHING, success);
+
+    // check that we don't add the directory again also if the string ends with
+    // "/".
+    success = m_DirectoryDao.addDirectory(testdir + "/");
+    EXPECT_EQ(ALREADY_WATCHING, success);
 
     // check that we don't add a child directory
     success = m_DirectoryDao.addDirectory(testChild);
-    EXPECT_EQ(success, ALREADY_WATCHING );
+    EXPECT_EQ(ALREADY_WATCHING, success);
 
     // check that we add the parent dir
     success = m_DirectoryDao.addDirectory(testParent);
-    EXPECT_EQ(success, ALL_FINE);
+    EXPECT_EQ(ALL_FINE, success);
 
     QSqlQuery query(m_pTrackCollection->getDatabase());
     query.prepare("SELECT " % DIRECTORYDAO_DIR % " FROM " % DIRECTORYDAO_TABLE);
@@ -79,10 +84,8 @@ TEST_F(DirectoryDAOTest, addDirTest) {
     }
 
     // the test db should be always empty when tests are started.
-    EXPECT_TRUE(dirs.size() == 1);
-    if (dirs.size() > 0) {
-        EXPECT_TRUE(dirs.at(0) == testParent);
-    }
+    ASSERT_EQ(1, dirs.size());
+    EXPECT_QSTRING_EQ(testParent, dirs.at(0));
 }
 
 TEST_F(DirectoryDAOTest, removeDirTest) {
@@ -93,7 +96,7 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
     m_DirectoryDao.addDirectory(testdir);
 
     int success = m_DirectoryDao.removeDirectory(testdir);
-    EXPECT_EQ(success, ALL_FINE);
+    EXPECT_EQ(ALL_FINE, success);
 
     // we do not trust what directory dao thinks and better check up on it
     QSqlQuery query(m_pTrackCollection->getDatabase());
@@ -105,7 +108,7 @@ TEST_F(DirectoryDAOTest, removeDirTest) {
     }
 
     // the db should have now no entries left anymore
-    EXPECT_TRUE(dirs.size() == 0);
+    EXPECT_EQ(0, dirs.size());
 }
 
 TEST_F(DirectoryDAOTest, getDirTest) {
@@ -118,11 +121,9 @@ TEST_F(DirectoryDAOTest, getDirTest) {
 
     QStringList dirs = m_DirectoryDao.getDirs();
 
-    EXPECT_TRUE(dirs.size() == 2);
-    if (dirs.size() == 2) {
-        EXPECT_TRUE(dirs.at(0) == testdir);
-        EXPECT_TRUE(dirs.at(1) == testdir2);
-    }
+    ASSERT_EQ(2, dirs.size());
+    EXPECT_QSTRING_EQ(testdir, dirs.at(0));
+    EXPECT_QSTRING_EQ(testdir2, dirs.at(1));
 }
 
 TEST_F(DirectoryDAOTest, relocateDirTest) {
@@ -143,11 +144,9 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
     EXPECT_EQ(ids.size(), 2);
 
     QStringList dirs = directoryDao.getDirs();
-    EXPECT_TRUE(dirs.size() == 2);
-    if (dirs.size() == 2) {
-        EXPECT_TRUE(dirs.at(0) == "/new");
-        EXPECT_TRUE(dirs.at(1) == "/Test2");
-    }
+    ASSERT_EQ(2, dirs.size());
+    EXPECT_QSTRING_EQ("/new", dirs.at(0));
+    EXPECT_QSTRING_EQ("/Test2", dirs.at(1));
 }
 
 }  // namespace
