@@ -680,7 +680,7 @@ TEST_F(EngineSyncTest, EnableOneDeckInitializesMaster) {
                                                         "beat_distance"))->get());
 }
 
-TEST_F(EngineSyncTest, EnableOneDeckMasterSliderUpdates) {
+TEST_F(EngineSyncTest, EnableOneDeckSliderUpdates) {
     // If we enable a deck to be master, the internal slider should immediately update.
     QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_enabled")));
@@ -690,11 +690,11 @@ TEST_F(EngineSyncTest, EnableOneDeckMasterSliderUpdates) {
     pFileBpm1->set(130.0);
     ControlObject::getControl(ConfigKey(m_sGroup1, "rate"))->set(getRateSliderValue(1.0));
 
-    // Set the deck to master.
+    // Set the deck to sync enabled.
     pButtonSyncEnabled1->slotSet(1.0);
 
-    // Deck should now be master (only one playing deck).
-    assertIsMaster(m_sGroup1);
+    // Internal should now be master (only one sync deck).
+    assertIsMaster(m_sInternalClockGroup);
 
     // Internal clock rate should be set.
     ASSERT_FLOAT_EQ(130.0,

@@ -271,18 +271,24 @@ void EngineSync::activateMaster(Syncable* pSyncable) {
     // other method that does exactly this.
 
     // If there is no existing master, and this is the internal clock, pick up BPM from
-    // the playing deck.
+    // the playing deck, or any deck if it comes to that.
     if (pOldChannelMaster == NULL && pSyncable == m_pInternalClock) {
         // Should we use PlayerInfo / getCurrentPlayingDeck()? It returns an int which is
         // hard to convert to a Syncable.
+        Syncable* pInternalInitSyncable = NULL;
         foreach (Syncable* pOtherSyncable, m_syncables) {
-            //SyncMode sync_mode = pOtherSyncable->getSyncMode();
             if (pOtherSyncable->isPlaying()) {
-                //notifyBpmChanged(pOtherSyncable, pOtherSyncable->getBpm());
-                m_pInternalClock->setBpm(pOtherSyncable->getBpm());
-                m_pInternalClock->setBeatDistance(pOtherSyncable->getBeatDistance());
+                // We prefer decks that are playing.
+                pInternalInitSyncable = pOtherSyncable;
                 break;
+            } else if (pOtherSyncable->getBpm() != 0) {
+                // We will also accept a deck that simply has a non-zero bpm.
+                pInternalInitSyncable = pOtherSyncable;
             }
+        }
+        if (pInternalInitSyncable != NULL) {
+            m_pInternalClock->setBpm(pInternalInitSyncable->getBpm());
+            m_pInternalClock->setBeatDistance(pInternalInitSyncable->getBeatDistance());
         }
     } else {
         notifyBpmChanged(pSyncable, pSyncable->getBpm());
