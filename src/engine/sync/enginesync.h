@@ -59,6 +59,9 @@ class EngineSync : public BaseSyncableListener {
     // master it picks is not explicitly selected by the user.
     void findNewMaster(Syncable* pDontPick);
 
+    // Unsets all sync state on a Syncable.
+    void deactivateSync(Syncable* pSyncable);
+
     Syncable* m_pScratchingPreviousMaster;
     bool m_bExplicitMasterSelected;
 };
