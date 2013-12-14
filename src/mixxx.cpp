@@ -46,6 +46,7 @@
 #include "recording/defs_recording.h"
 #include "recording/recordingmanager.h"
 #include "shoutcast/shoutcastmanager.h"
+#include "looprecording/looprecordingmanager.h"
 #include "skin/legacyskinparser.h"
 #include "skin/skinloader.h"
 #include "soundmanager.h"
@@ -261,6 +262,10 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
 #ifdef __SHOUTCAST__
     m_pShoutcastManager = NULL;
 #endif
+    m_pLoopRecordingManager = NULL;
+    bool bLoopRecordEnabled = m_cmdLineArgs.getLoopRecorder();
+
+    qDebug() << "!~!~!~!~!~!~!~!~! Loop Recorder Command Line Arg: " << bLoopRecordEnabled;
 
     // Check to see if this is the first time this version of Mixxx is run
     // after an upgrade and make any needed changes.
@@ -280,7 +285,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     initializeKeyboard();
 
     // Starting the master (mixing of the channels and effects):
-    m_pEngine = new EngineMaster(m_pConfig, "[Master]", true);
+    m_pEngine = new EngineMaster(m_pConfig, "[Master]", true, true, bLoopRecordEnabled);
 
     m_pRecordingManager = new RecordingManager(m_pConfig, m_pEngine);
 #ifdef __SHOUTCAST__
@@ -347,6 +352,8 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addSampler();
     m_pPlayerManager->addPreviewDeck();
+    m_pPlayerManager->addLoopRecorderDeck();
+    m_pPlayerManager->addLoopRecorderDeck();
 
 #ifdef __VINYLCONTROL__
     m_pVCManager->init();
@@ -363,6 +370,12 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     m_pLibrary = new Library(this, m_pConfig,
                              m_pRecordingManager);
     m_pPlayerManager->bindToLibrary(m_pLibrary);
+
+    // Initialize loop recording manager.
+    if (bLoopRecordEnabled) {
+        m_pLoopRecordingManager = new LoopRecordingManager(m_pConfig, m_pEngine);
+        m_pPlayerManager->bindToLoopRecorder(m_pLoopRecordingManager);
+    }
 
     // Get Music dir
     bool hasChanged_MusicDir = false;
@@ -475,7 +488,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     // Loads the skin as a child of m_pView
     // assignment intentional in next line
     if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
-        m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pVCManager))) {
+        m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager, m_pLibrary, m_pLoopRecordingManager, m_pVCManager))) {
         reportCriticalErrorAndQuit("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         //TODO (XXX) add dialog to warn user and launch skin choice page
@@ -612,6 +625,10 @@ MixxxApp::~MixxxApp() {
     delete m_pShoutcastManager;
 #endif
 
+    // LoopRecordingManager depends on config, engine
+    qDebug() << "delete LoopRecordingManager " << qTime.elapsed();
+    delete m_pLoopRecordingManager;
+    
     // EngineMaster depends on Config
     qDebug() << "delete m_pEngine " << qTime.elapsed();
     delete m_pEngine;
@@ -1499,6 +1516,7 @@ void MixxxApp::rebootMixxxView() {
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
                                                            m_pLibrary,
+                                                           m_pLoopRecordingManager,
                                                            m_pVCManager))) {
 
         QMessageBox::critical(this,

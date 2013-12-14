@@ -19,6 +19,7 @@
 
 #include "mixxxkeyboard.h"
 #include "playermanager.h"
+#include "looprecording/looprecordingmanager.h"
 #include "basetrackplayer.h"
 #include "library/library.h"
 #include "xmlparse.h"
@@ -37,6 +38,7 @@
 #include "widget/wvumeter.h"
 #include "widget/wstatuslight.h"
 #include "widget/wlabel.h"
+#include "widget/wlooptext.h"
 #include "widget/wtime.h"
 #include "widget/wtracktext.h"
 #include "widget/wtrackproperty.h"
@@ -91,12 +93,14 @@ LegacySkinParser::LegacySkinParser(ConfigObject<ConfigValue>* pConfig,
                                    PlayerManager* pPlayerManager,
                                    ControllerManager* pControllerManager,
                                    Library* pLibrary,
+                                   LoopRecordingManager* pLoopRecordingManager,
                                    VinylControlManager* pVCMan)
     : m_pConfig(pConfig),
       m_pKeyboard(pKeyboard),
       m_pPlayerManager(pPlayerManager),
       m_pControllerManager(pControllerManager),
       m_pLibrary(pLibrary),
+      m_pLoopRecordingManager(pLoopRecordingManager),
       m_pVCManager(pVCMan),
       m_pParent(NULL) {
 }
@@ -339,6 +343,8 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
         return parseNumber(node);
     } else if (nodeName == "Label") {
         return parseLabel(node);
+    } else if (nodeName == "LoopRecorderText") {
+        return parseLoopText(node);
     } else if (nodeName == "Knob") {
         return parseKnob(node);
     } else if (nodeName == "TableView") {
@@ -854,6 +860,38 @@ QWidget* LegacySkinParser::parseNumber(QDomElement node) {
     setupConnections(node, p);
     p->installEventFilter(m_pKeyboard);
     p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+    return p;
+}
+
+QWidget* LegacySkinParser::parseLoopText(QDomElement node) {
+
+    WLoopText* p = new WLoopText(m_pParent);
+    setupWidget(node, p);
+    p->setup(node);
+    if (p->getComposedWidget()) {
+        setupWidget(node, p->getComposedWidget(), false);
+    }
+    setupConnections(node, p);
+    p->installEventFilter(m_pKeyboard);
+    p->installEventFilter(m_pControllerManager->getControllerLearningEventFilter());
+
+    QString loopProperty = p->getProperty();
+
+    if (m_pLoopRecordingManager == NULL) {
+        p->slotUpdateLabel("Loop Rec Disabled");
+    } else if(loopProperty == "source") {
+        connect(m_pLoopRecordingManager, SIGNAL(sourceChanged(QString)),
+                p, SLOT(slotUpdateLabel(QString)));
+
+        QString source = m_pLoopRecordingManager->getLoopSource();
+        p->slotUpdateLabel(source);
+    } else if (loopProperty == "destination") {
+        connect(m_pLoopRecordingManager, SIGNAL(destinationChanged(QString)),
+                p, SLOT(slotUpdateLabel(QString)));
+
+        QString destination = m_pLoopRecordingManager->getLoopDestination();
+        p->slotUpdateLabel(destination);
+    }
     return p;
 }
 

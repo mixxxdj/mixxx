@@ -36,6 +36,7 @@ class MixxxKeyboard;
 class PlayerManager;
 class RecordingManager;
 class ShoutcastManager;
+class LoopRecordingManager;
 class SkinLoader;
 class VinylControlManager;
 
@@ -156,7 +157,10 @@ class MixxxApp : public QMainWindow {
 #ifdef __SHOUTCAST__
     ShoutcastManager* m_pShoutcastManager;
 #endif
-    ControllerManager* m_pControllerManager;
+
+    LoopRecordingManager* m_pLoopRecordingManager;
+    
+    ControllerManager *m_pControllerManager;
 
     ConfigObject<ConfigValue>* m_pConfig;
 

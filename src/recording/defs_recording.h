@@ -1,5 +1,5 @@
-#ifndef __RECORDING_DEFS_H__
-#define __RECORDING_DEFS_H__
+#ifndef __DEFS_RECORDING_H__
+#define __DEFS_RECORDING_H__
 
 #define RECORDING_PREF_KEY "[Recording]"
 #define ENCODING_WAVE "WAV"
@@ -27,5 +27,8 @@
 #define SIZE_1GB    Q_UINT64_C(1000000000)
 #define SIZE_2GB    Q_UINT64_C(2000000000)
 #define SIZE_4GB    Q_UINT64_C(4000000000)
+
+#define LOOP_RECORDING_PREF_KEY "[Loop_Recording]"
+#define LOOP_TEMP_DIR "/temp"
 
 #endif

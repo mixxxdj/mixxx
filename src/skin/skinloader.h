@@ -9,6 +9,7 @@ class MixxxKeyboard;
 class PlayerManager;
 class ControllerManager;
 class Library;
+class LoopRecordingManager;
 class MixxxView;
 class VinylControlManager;
 
@@ -21,6 +22,7 @@ class SkinLoader {
                              PlayerManager* pPlayerManager,
                              ControllerManager* pControllerManager,
                              Library* pLibrary,
+                             LoopRecordingManager* pLoopRecordingManager,
                              VinylControlManager* pVCMan);
 
     QString getConfiguredSkinPath();

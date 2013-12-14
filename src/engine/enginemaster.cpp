@@ -35,6 +35,7 @@
 #include "engine/sync/enginesync.h"
 #include "sampleutil.h"
 #include "util/timer.h"
+#include "engine/looprecorder/enginelooprecorder.h"
 #include "playermanager.h"
 #include "engine/channelmixer.h"
 
@@ -45,7 +46,8 @@
 EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
                            const char * group,
                            bool bEnableSidechain,
-                           bool bRampingGain)
+                           bool bRampingGain,
+                           bool bEnableLoopRecord)
         : m_bRampingGain(bRampingGain),
           m_headphoneMasterGainOld(0.0),
           m_headphoneVolumeOld(1.0) {
@@ -106,8 +108,10 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
     // Allocate buffers
     m_pHead = SampleUtil::alloc(MAX_BUFFER_LEN);
     m_pMaster = SampleUtil::alloc(MAX_BUFFER_LEN);
+    m_pLoop = SampleUtil::alloc(MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pHead, 0, MAX_BUFFER_LEN);
     SampleUtil::applyGain(m_pMaster, 0, MAX_BUFFER_LEN);
+    SampleUtil::applyGain(m_pLoop, 0, MAX_BUFFER_LEN);
 
     // Setup the output buses
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; ++o) {
@@ -122,6 +126,8 @@ EngineMaster::EngineMaster(ConfigObject<ConfigValue> * _config,
 
     // Starts a thread for recording and shoutcast
     m_pSideChain = bEnableSidechain ? new EngineSideChain(_config) : NULL;
+
+    m_pLoopRecorder = bEnableLoopRecord ? new EngineLoopRecorder() : NULL;
 
     // X-Fader Setup
     m_pXFaderMode = new ControlPotmeter(
@@ -145,7 +151,8 @@ EngineMaster::~EngineMaster() {
     delete m_pVumeter;
     delete m_pHeadClipping;
     delete m_pSideChain;
-
+    delete m_pLoopRecorder;
+    
     delete m_pXFaderReverse;
     delete m_pXFaderCalibration;
     delete m_pXFaderCurve;
@@ -160,6 +167,8 @@ EngineMaster::~EngineMaster() {
 
     SampleUtil::free(m_pHead);
     SampleUtil::free(m_pMaster);
+    SampleUtil::free(m_pLoop);
+
     for (int o = EngineChannel::LEFT; o <= EngineChannel::RIGHT; o++) {
         SampleUtil::free(m_outputBus[o].m_pBuffer);
     }
@@ -185,11 +194,12 @@ const CSAMPLE* EngineMaster::getHeadphoneBuffer() const {
     return m_pHead;
 }
 
+
 void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                                    unsigned int* headphoneOutput,
                                    int iBufferSize) {
-    ScopedTimer timer("EngineMaster::processChannels");
 
+    ScopedTimer timer("EngineMaster::processChannels");
     QList<ChannelInfo*>::iterator it = m_channels.begin();
     QList<ChannelInfo*>::iterator master_it = NULL;
 
@@ -222,6 +232,13 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
                     *headphoneOutput |= (1 << channel_number);
                     needsProcessing = true;
                 }
+
+                //TODO(carl): Integrate with Mastersync changes
+                // Copy audio from input to loop recorder buffer.
+//                if (m_pLoopRecorder != NULL && pChannel->getGroup().contains(loopSource)) {
+//                    SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
+//                    bLoopCopied = true;
+//                }
 
                 // Process the buffer if necessary, which it damn well better be
                 if (needsProcessing) {
@@ -260,6 +277,12 @@ void EngineMaster::processChannels(unsigned int* busChannelConnectionFlags,
             *headphoneOutput |= (1 << channel_number);
             needsProcessing = true;
         }
+        //TODO(carl): Integrate with Mastersync changes
+        // Copy audio from input to loop recorder buffer.
+//        if (m_pLoopRecorder != NULL && pChannel->getGroup().contains(loopSource)) {
+//            SampleUtil::copyWithGain(m_pLoop, pChannelInfo->m_pBuffer, 1.0, iBufferSize);
+//            bLoopCopied = true;
+//        }
 
         // Process the buffer if necessary
         if (needsProcessing) {
@@ -282,6 +305,14 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
 
     CSAMPLE **pOutput = (CSAMPLE**)pOut;
     Q_UNUSED(pOutput);
+
+    QString loopSource = "";
+
+    if (m_pLoopRecorder != NULL) {
+        loopSource = m_pLoopRecorder->getLoopSource();
+    }
+    bool bLoopCopied = false;
+    SampleUtil::applyGain(m_pLoop, 0.0f, iBufferSize);
 
     // Bitvector of enabled channels
     const unsigned int maxChannels = 32;
@@ -376,6 +407,20 @@ void EngineMaster::process(const CSAMPLE *, const CSAMPLE *pOut, const int iBuff
         m_pVumeter->process(m_pMaster, m_pMaster, iBufferSize);
     }
 
+    // Loop Recorder: Send master/headphone mix to loop recorder if selected.
+    if(m_pLoopRecorder != NULL) {
+        if (loopSource == "Master") {
+            SampleUtil::copyWithGain(m_pLoop, m_pMaster, 1.0, iBufferSize);
+            bLoopCopied = true;
+        } else if (loopSource == "Headphones") {
+            SampleUtil::copyWithGain(m_pLoop, m_pHead, 1.0, iBufferSize);
+            bLoopCopied = true;
+        }
+        if (bLoopCopied) {
+            m_pLoopRecorder->writeSamples(m_pLoop, iBufferSize);
+        }
+    }
+    
     // Submit master samples to the side chain to do shoutcasting, recording,
     // etc. (cpu intensive non-realtime tasks)
     if (m_pSideChain != NULL) {

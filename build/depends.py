@@ -612,6 +612,7 @@ class MixxxCore(Feature):
                    "widget/wwidgetstack.cpp",
                    "widget/wlabel.cpp",
                    "widget/wtracktext.cpp",
+                   "widget/wlooptext.cpp",
                    "widget/wnumber.cpp",
                    "widget/wnumberpos.cpp",
                    "widget/wnumberrate.cpp",
@@ -683,6 +684,11 @@ class MixxxCore(Feature):
                    "dlgrecording.cpp",
                    "recording/recordingmanager.cpp",
                    "engine/sidechain/enginerecord.cpp",
+                   "looprecording/looprecordingmanager.cpp",
+                   "looprecording/looplayertracker.cpp",
+                   "looprecording/loopfilemixer.cpp",
+                   "engine/looprecorder/enginelooprecorder.cpp",
+                   "engine/looprecorder/loopwriter.cpp",
 
                    # External Library Features
                    "library/baseexternallibraryfeature.cpp",
@@ -803,6 +809,7 @@ class MixxxCore(Feature):
                    "deck.cpp",
                    "sampler.cpp",
                    "previewdeck.cpp",
+                   "looprecorderdeck.cpp",
                    "playermanager.cpp",
                    "samplerbank.cpp",
                    "sounddevice.cpp",

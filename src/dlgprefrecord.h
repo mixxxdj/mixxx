@@ -49,6 +49,9 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
   signals:
     void apply(const QString &);
 
+  private slots:
+    void slotLoopEncoding();
+
   private:
     void setRecordingFolder();
     void setMetaData();
@@ -61,11 +64,14 @@ class DlgPrefRecord : public DlgPreferencePage, public Ui::DlgPrefRecordDlg  {
     ControlObjectThread* m_pRecordControl;
     bool m_bConfirmOverwrite;
     QString fileTypeExtension;
+
     QRadioButton* m_pRadioOgg;
     QRadioButton* m_pRadioMp3;
     QRadioButton* m_pRadioAiff;
     QRadioButton* m_pRadioFlac;
     QRadioButton* m_pRadioWav;
+    QRadioButton* m_pRadioLoopAiff;
+    QRadioButton* m_pRadioLoopWav;
 };
 
 #endif

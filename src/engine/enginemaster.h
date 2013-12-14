@@ -38,6 +38,7 @@ class ControlPushButton;
 class EngineVinylSoundEmu;
 class EngineSideChain;
 class SyncWorker;
+class EngineLoopRecorder;
 class EngineSync;
 
 class EngineMaster : public EngineObject, public AudioSource {
@@ -46,7 +47,8 @@ class EngineMaster : public EngineObject, public AudioSource {
     EngineMaster(ConfigObject<ConfigValue>* pConfig,
                  const char* pGroup,
                  bool bEnableSidechain,
-                 bool bRampingGain=true);
+                 bool bRampingGain=true,
+                 bool bEnableLoopRecord=false);
     virtual ~EngineMaster();
 
     // Get access to the sample buffers. None of these are thread safe. Only to
@@ -88,6 +90,10 @@ class EngineMaster : public EngineObject, public AudioSource {
 
     EngineSideChain* getSideChain() const {
         return m_pSideChain;
+    }
+    
+    EngineLoopRecorder* getLoopRecorder() const {
+        return m_pLoopRecorder;
     }
 
     struct ChannelInfo {
@@ -159,6 +165,7 @@ class EngineMaster : public EngineObject, public AudioSource {
     } m_outputBus[3];
     CSAMPLE* m_pMaster;
     CSAMPLE* m_pHead;
+    CSAMPLE* m_pLoop;
 
     EngineWorkerScheduler* m_pWorkerScheduler;
     EngineSync* m_pMasterSync;
@@ -187,6 +194,8 @@ class EngineMaster : public EngineObject, public AudioSource {
     ControlPotmeter* m_pXFaderCalibration;
     ControlPotmeter* m_pXFaderReverse;
 
+    EngineLoopRecorder* m_pLoopRecorder;
+    
     ConstantGainCalculator m_headphoneGain;
     OrientationVolumeGainCalculator m_masterGain;
     CSAMPLE m_headphoneMasterGainOld;

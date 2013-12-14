@@ -32,7 +32,9 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
           m_pRadioMp3(NULL),
           m_pRadioAiff(NULL),
           m_pRadioFlac(NULL),
-          m_pRadioWav(NULL) {
+          m_pRadioWav(NULL),
+          m_pRadioLoopAiff(NULL),
+          m_pRadioLoopWav(NULL) {
     setupUi(this);
 
     // See RECORD_* #defines in defs_recording.h
@@ -78,6 +80,7 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
     horizontalLayout->addWidget(m_pRadioFlac);
 #endif
 
+
     // Read config and check radio button.
     QString format = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Encoding"));
     if (format == ENCODING_WAVE) {
@@ -98,6 +101,31 @@ DlgPrefRecord::DlgPrefRecord(QWidget* parent, ConfigObject<ConfigValue>* pConfig
         m_pRadioWav->setChecked(true);
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
     }
+
+    // Loop Recording format
+    // AIFF and WAVE are supported by default
+    m_pRadioLoopWav = new QRadioButton(ENCODING_WAVE);
+    connect(m_pRadioLoopWav, SIGNAL(clicked()),
+            this, SLOT(slotApply()));
+    horizontalLoopLayout->addWidget(m_pRadioLoopWav);
+
+    m_pRadioLoopAiff = new QRadioButton(ENCODING_AIFF);
+    connect(m_pRadioLoopAiff, SIGNAL(clicked()),
+            this, SLOT(slotApply()));
+    horizontalLoopLayout->addWidget(m_pRadioLoopAiff);
+
+    // Read config and check radio button
+    QString loopFormat = m_pConfig->getValueString(ConfigKey(LOOP_RECORDING_PREF_KEY,"Encoding"));
+    if(loopFormat == ENCODING_WAVE)
+        m_pRadioLoopWav->setChecked(true);
+    else if (loopFormat == ENCODING_AIFF)
+        m_pRadioLoopAiff->setChecked(true);
+    else {
+        // If no config was available, set to WAVE as default
+        m_pRadioLoopWav->setChecked(true);
+        m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
+    }
+
 
     loadMetaData();
 
@@ -189,6 +217,18 @@ void DlgPrefRecord::slotEncoding() {
     }
 }
 
+void DlgPrefRecord::slotLoopEncoding() {
+
+    if (m_pRadioLoopWav && m_pRadioLoopWav->isChecked()) {
+        m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
+    }
+    else if(m_pRadioLoopAiff && m_pRadioLoopAiff->isChecked()){
+        m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
+    } else {
+        qDebug() << "Invalid loop recording encoding type.";
+    }
+}
+
 void DlgPrefRecord::setMetaData() {
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Title"), ConfigValue(LineEditTitle->text()));
     m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Author"), ConfigValue(LineEditAuthor->text()));
@@ -216,6 +256,7 @@ void DlgPrefRecord::slotUpdate() {
     QString recordingsPath = m_pConfig->getValueString(ConfigKey(RECORDING_PREF_KEY, "Directory"));
     LineEditRecordings->setText(recordingsPath);
 
+
     if (m_pRadioWav && m_pRadioWav->isChecked()) {
         m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
     } else if (m_pRadioAiff && m_pRadioAiff->isChecked()) {
@@ -227,6 +268,13 @@ void DlgPrefRecord::slotUpdate() {
     } else if (m_pRadioMp3 && m_pRadioMp3->isChecked()) {
        m_pConfig->set(ConfigKey(RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_MP3));
     }
+
+    if (m_pRadioLoopWav && m_pRadioLoopWav->isChecked()) {
+        m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_WAVE));
+    } else if (m_pRadioLoopAiff && m_pRadioLoopAiff->isChecked()) {
+        m_pConfig->set(ConfigKey(LOOP_RECORDING_PREF_KEY, "Encoding"), ConfigValue(ENCODING_AIFF));
+    }
+    
     loadMetaData();
 }
 
@@ -243,6 +291,8 @@ void DlgPrefRecord::slotApply() {
     setRecordingFolder();
     setMetaData();
     slotEncoding();
+
+    slotLoopEncoding();
 }
 
 void DlgPrefRecord::setRecordingFolder() {
