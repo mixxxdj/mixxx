@@ -453,6 +453,11 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
             QDomNode node = children.at(i);
             if (node.isElement()) {
                 QWidget* pChild = parseNode(node.toElement(), pGroup);
+
+                if (pChild == NULL) {
+                    continue;
+                }
+
                 pGroup->addWidget(pChild);
             }
         }
@@ -1199,7 +1204,10 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
 QWidget* LegacySkinParser::parseStyle(QDomElement node) {
     QString style = node.text();
     m_pParent->setStyleSheet(style);
-    return m_pParent;
+    // This doesn't actually create a widget. If you return m_pParent then you
+    // risk creating loops in the widget hierarchy if someone makes <Style> in
+    // e.g. a WidgetGroup <Children> block.
+    return NULL;
 }
 
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
