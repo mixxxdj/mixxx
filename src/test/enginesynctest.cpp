@@ -439,6 +439,9 @@ TEST_F(EngineSyncTest, RateChangeTestOrder3) {
     QScopedPointer<ControlObjectThread> pButtonMasterSync1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_mode")));
     pButtonMasterSync1->slotSet(SYNC_MASTER);
+
+    assertIsMaster(m_sGroup1);
+
     QScopedPointer<ControlObjectThread> pButtonMasterSync2(getControlObjectThread(
             ConfigKey(m_sGroup2, "sync_mode")));
     pButtonMasterSync2->slotSet(SYNC_FOLLOWER);
@@ -613,8 +616,6 @@ TEST_F(EngineSyncTest, EnableOneDeckFollowsMaster) {
             ConfigKey(m_sInternalClockGroup, "sync_master")));
     QScopedPointer<ControlObjectThread> pButtonSyncEnabled1(getControlObjectThread(
             ConfigKey(m_sGroup1, "sync_enabled")));
-    QScopedPointer<ControlObjectThread> pButtonSyncMasterEnabled1(getControlObjectThread(
-            ConfigKey(m_sGroup1, "sync_master")));
     QScopedPointer<ControlObjectThread> pFileBpm1(getControlObjectThread(
         ConfigKey(m_sGroup1, "file_bpm")));
 
@@ -640,6 +641,24 @@ TEST_F(EngineSyncTest, EnableOneDeckFollowsMaster) {
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
     ASSERT_FLOAT_EQ(124.0, ControlObject::getControl(ConfigKey(m_sGroup1, "bpm"))->get());
     ASSERT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup1, "beat_distance"))->get());
+    ASSERT_FLOAT_EQ(0.2,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
+                                                        "beat_distance"))->get());
+
+    // Enable second deck, beat distance should still match original setting.
+    QScopedPointer<ControlObjectThread> pButtonSyncEnabled2(getControlObjectThread(
+            ConfigKey(m_sGroup2, "sync_enabled")));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "file_bpm"))->set(140.0);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "rate"))->set(getRateSliderValue(1.0));
+    ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->set(0.2);
+    ControlObject::getControl(ConfigKey(m_sGroup2, "play"))->set(1.0);
+
+    pButtonSyncEnabled2->slotSet(1.0);
+
+    ASSERT_FLOAT_EQ(124.0,
+                    ControlObject::getControl(ConfigKey(m_sInternalClockGroup, "bpm"))->get());
+    ASSERT_FLOAT_EQ(124.0, ControlObject::getControl(ConfigKey(m_sGroup2, "bpm"))->get());
+    ASSERT_FLOAT_EQ(0.2, ControlObject::getControl(ConfigKey(m_sGroup2, "beat_distance"))->get());
     ASSERT_FLOAT_EQ(0.2,
                     ControlObject::getControl(ConfigKey(m_sInternalClockGroup,
                                                         "beat_distance"))->get());
