@@ -68,6 +68,13 @@ RateControl::RateControl(const char* _group,
             Qt::DirectConnection);
     m_pBackButton->set(0);
 
+    m_pReverseRollButton = new ControlPushButton(ConfigKey(_group, "reverseroll"));
+    connect(m_pReverseRollButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotReverseRollActivate(double)),
+            Qt::DirectConnection);
+
+    m_pSlipEnabled = new ControlObjectSlave(_group, "slip_enabled", this);
+
     // Permanent rate-change buttons
     buttonRatePermDown =
         new ControlPushButton(ConfigKey(_group,"rate_perm_down"));
@@ -161,6 +168,7 @@ RateControl::~RateControl() {
     delete m_pRateSearch;
 
     delete m_pReverseButton;
+    delete m_pReverseRollButton;
     delete m_pForwardButton;
     delete m_pBackButton;
 
@@ -228,6 +236,16 @@ void RateControl::setPerm(double v) {
 
 void RateControl::setPermSmall(double v) {
     m_dPermSmall = v;
+}
+
+void RateControl::slotReverseRollActivate(double v) {
+    if (v > 0.0) {
+        m_pSlipEnabled->set(1);
+        m_pReverseButton->set(1);
+    } else {
+        m_pReverseButton->set(0);
+        m_pSlipEnabled->set(0);
+    }
 }
 
 void RateControl::slotControlFastForward(double v)
