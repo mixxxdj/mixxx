@@ -239,17 +239,6 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     if (m_pParent) {
         qDebug() << "ERROR: Somehow a parent already exists -- you are probably re-using a LegacySkinParser which is not advisable!";
     }
-    /*
-     * Long explaination because this took too long to figure:
-     * Parent all the mixxx widgets (subclasses of wwidget) to
-     * some anonymous QWidget (this was MixxxView in <=1.8, MixxxView
-     * was a subclass of QWidget), and then feed its parent to the background
-     * tag parser. The background tag parser does stuff to the anon widget, as
-     * everything else does, but then it colors the parent widget with some
-     * color that shows itself in fullscreen. Having all these mixxx widgets
-     * with their own means they're easy to move to boot -- bkgood
-     */
-    m_pParent = new QWidget; // this'll get deleted with pParent
     QDomElement skinDocument = openSkin(skinPath);
 
     if (skinDocument.isNull()) {
@@ -286,12 +275,11 @@ QWidget* LegacySkinParser::parseSkin(QString skinPath, QWidget* pParent) {
     // I'm disregarding this return value because I want to return the
     // created parent so MixxxApp can use it for nefarious purposes (
     // fullscreen mostly) --bkgood
-    parseNode(skinDocument, pParent);
-    m_pParent->setParent(pParent);
-    return m_pParent;
+    m_pParent = pParent;
+    return parseNode(skinDocument);
 }
 
-QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
+QWidget* LegacySkinParser::parseNode(QDomElement node) {
     QString nodeName = node.nodeName();
     //qDebug() << "parseNode" << node.nodeName();
 
@@ -299,19 +287,40 @@ QWidget* LegacySkinParser::parseNode(QDomElement node, QWidget *pGrandparent) {
 
     // Root of the document
     if (nodeName == "skin") {
-        // Descend children, should only happen for the root node
+        // Parent all the skin widgets to an inner QWidget (this was MixxxView
+        // in <=1.8, MixxxView was a subclass of QWidget), and then wrap it in
+        // an outer widget. The Background parser parents the background image
+        // to the inner widget but then sets the fill color of the outer widget
+        // so that fullscreen will expand with the right color to fill in the
+        // non-background areas. We put the inner widget in a layout inside the
+        // outer widget so that it stays centered in fullscreen mode.
+        QWidget* pOuterWidget = new QWidget(m_pParent);
+        QWidget* pInnerWidget = new QWidget(pOuterWidget);
+
+        // Background is only valid at the top level.
+        QDomElement background = XmlParse::selectElement(node, "Background");
+        if (!background.isNull()) {
+            parseBackground(background, pOuterWidget, pInnerWidget);
+        }
+
+        m_pParent = pInnerWidget;
+
+        // Descend children, should only happen for the root node.
         QDomNodeList children = node.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                parseNode(node.toElement(), pGrandparent);
+                parseNode(node.toElement());
             }
         }
-        return pGrandparent;
-    } else if (nodeName == "Background") {
-        return parseBackground(node, pGrandparent);
+
+        // Keep innerWidget centered (for fullscreen).
+        pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
+        pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
+        pOuterWidget->layout()->addWidget(pInnerWidget);
+        return pOuterWidget;
     } else if (nodeName == "SliderComposed") {
         return parseSliderComposed(node);
     } else if (nodeName == "PushButton") {
@@ -398,7 +407,7 @@ QWidget* LegacySkinParser::parseSplitter(QDomElement node) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                QWidget* pChild = parseNode(node.toElement(), pSplitter);
+                QWidget* pChild = parseNode(node.toElement());
 
                 if (pChild == NULL)
                     continue;
@@ -452,7 +461,7 @@ QWidget* LegacySkinParser::parseWidgetGroup(QDomElement node) {
         for (int i = 0; i < children.count(); ++i) {
             QDomNode node = children.at(i);
             if (node.isElement()) {
-                QWidget* pChild = parseNode(node.toElement(), pGroup);
+                QWidget* pChild = parseNode(node.toElement());
 
                 if (pChild == NULL) {
                     continue;
@@ -514,7 +523,7 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
             }
             QDomElement element = node.toElement();
 
-            QWidget* pChild = parseNode(element, pStack);
+            QWidget* pChild = parseNode(element);
             if (pChild == NULL)
                 continue;
 
@@ -537,8 +546,10 @@ QWidget* LegacySkinParser::parseWidgetStack(QDomElement node) {
     return pStack;
 }
 
-QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandparent) {
-    QLabel* bg = new QLabel(m_pParent);
+QWidget* LegacySkinParser::parseBackground(QDomElement node,
+                                           QWidget* pOuterWidget,
+                                           QWidget* pInnerWidget) {
+    QLabel* bg = new QLabel(pInnerWidget);
 
     QString filename = XmlParse::selectNodeQString(node, "Path");
     QPixmap* background = WPixmapStore::getPixmapNoCache(WWidget::getPath(filename));
@@ -550,23 +561,24 @@ QWidget* LegacySkinParser::parseBackground(QDomElement node, QWidget* pGrandpare
 
     bg->lower();
 
-    // yes, this is confusing. Sorry. See ::parseSkin.
-    m_pParent->move(0,0);
+    pInnerWidget->move(0,0);
     if (background != NULL && !background->isNull()) {
-        m_pParent->setFixedSize(background->width(), background->height());
-        pGrandparent->setMinimumSize(background->width(), background->height());
+        pInnerWidget->setFixedSize(background->width(), background->height());
+        pOuterWidget->setMinimumSize(background->width(), background->height());
     }
 
-    QColor c(0,0,0); // Default background color is now black, if people want to do <invert/> filters they'll have to figure something out for this.
+    // Default background color is now black, if people want to do <invert/>
+    // filters they'll have to figure something out for this.
+    QColor c(0,0,0);
     if (!XmlParse::selectNode(node, "BgColor").isNull()) {
         c.setNamedColor(XmlParse::selectNodeQString(node, "BgColor"));
     }
 
     QPalette palette;
     palette.setBrush(QPalette::Window, WSkinColor::getCorrectColor(c));
-    pGrandparent->setBackgroundRole(QPalette::Window);
-    pGrandparent->setPalette(palette);
-    pGrandparent->setAutoFillBackground(true);
+    pOuterWidget->setBackgroundRole(QPalette::Window);
+    pOuterWidget->setPalette(palette);
+    pOuterWidget->setAutoFillBackground(true);
 
     // WPixmapStore::getPixmapNoCache() allocated background and gave us
     // ownership. QLabel::setPixmap makes a copy, so we have to delete this.
