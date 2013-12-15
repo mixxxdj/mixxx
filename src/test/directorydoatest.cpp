@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <QtDebug>
 #include <QtSql>
@@ -6,12 +7,15 @@
 #include <QStringBuilder>
 #include <QDir>
 #include <QFileInfo>
+#include <QtAlgorithms>
 
 #include "configobject.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
 #include "test/mixxxtest.h"
+
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -145,8 +149,8 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
 
     QStringList dirs = directoryDao.getDirs();
     ASSERT_EQ(2, dirs.size());
-    EXPECT_QSTRING_EQ("/new", dirs.at(0));
-    EXPECT_QSTRING_EQ("/Test2", dirs.at(1));
+    qSort(dirs);
+    EXPECT_THAT(dirs, ElementsAre(QString("/Test2"), QString("/new")));
 }
 
 }  // namespace
