@@ -94,8 +94,14 @@ inline float hermite4(float frac_pos, float xm1, float x0, float x1, float x2)
 /** Determine if we're changing directions (scratching) and then perform
     a stretch */
 CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
+    float rate_add_old;
+    if (m_bClear) {
+        rate_add_old = m_dRate;  // If cleared, don't interpolate rate.
+        m_bClear = false;
+    } else {
+        rate_add_old = m_dOldRate;  //Smoothly interpolate to new playback rate
+    }
     float rate_add_new = m_dRate;
-    float rate_add_old = m_dOldRate; //Smoothly interpolate to new playback rate
     int samples_read = 0;
     m_samplesRead = 0;
 
@@ -111,7 +117,7 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         //first half: rate goes from old rate to zero
         m_dOldRate = rate_add_old;
         m_dRate = 0.0;
-        m_buffer = do_scale(m_buffer, buf_size/2, &samples_read);
+        m_buffer = do_scale(m_buffer, buf_size/2, &samples_read, m_dOldRate, m_dRate);
 
         // reset prev sample so we can now read in the other direction (may not
         // be necessary?)
@@ -143,23 +149,20 @@ CSAMPLE * EngineBufferScaleLinear::getScaled(unsigned long buf_size) {
         m_dOldRate = 0.0;
         m_dRate = rate_add_new;
         //pass the address of the sample at the halfway point
-        do_scale(&m_buffer[buf_size/2], buf_size/2, &samples_read);
+        do_scale(&m_buffer[buf_size/2], buf_size/2, &samples_read, m_dOldRate, m_dRate);
 
         m_samplesRead = samples_read;
         return m_buffer;
     }
 
-    CSAMPLE* result = do_scale(m_buffer, buf_size, &samples_read);
+    CSAMPLE* result = do_scale(m_buffer, buf_size, &samples_read, rate_add_old, rate_add_new);
     m_samplesRead = samples_read;
     return result;
 }
 
 /** Stretch a specified buffer worth of audio using linear interpolation */
 CSAMPLE * EngineBufferScaleLinear::do_scale(CSAMPLE* buf,
-        unsigned long buf_size, int* samples_read) {
-    float rate_add_new = m_dRate;
-    // Smoothly interpolate to new playback rate
-    float rate_add_old = m_dOldRate;
+        unsigned long buf_size, int* samples_read, float rate_add_old, float rate_add_new) {
     float rate_add_diff = rate_add_new - rate_add_old;
 
     //Update the old base rate because we only need to
