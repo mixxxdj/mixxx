@@ -165,6 +165,8 @@ bool TrackInfoObject::isValid() const {
 
 
 int TrackInfoObject::parse() {
+    m_sFilename = m_sFilename.replace("_", " ");
+
     // Add basic information derived from the filename:
     parseFilename();
 
@@ -187,10 +189,10 @@ void TrackInfoObject::parseFilename() {
     else
     {
         m_sTitle = m_sFilename.section('.',0,-2).trimmed(); // Remove the ending;
-        m_sType = m_sFilename.section('.',-1).trimmed(); // Get the ending
     }
 
     if (m_sTitle.length() == 0) {
+        m_sArtist = "";
         m_sTitle = m_sFilename.section('.',0,-2).trimmed();
     }
 
