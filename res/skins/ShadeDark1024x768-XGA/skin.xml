@@ -858,7 +858,7 @@
                                 <TooltipId>beatsync_beatsync_tempo</TooltipId>
                                 <Style></Style>
                                 <NumberStates>1</NumberStates>
-                                <State>
+        						<State>
                                     <Number>0</Number>
                                     <Pressed>btn_sync_sampler_overdown.png</Pressed>
                                     <Unpressed>btn_sync_sampler.png</Unpressed>
@@ -1372,7 +1372,7 @@
                                 <TooltipId>beatsync_beatsync_tempo</TooltipId>
                                 <Style></Style>
                                 <NumberStates>1</NumberStates>
-                                <State>
+        						<State>
                                     <Number>0</Number>
                                     <Pressed>btn_sync_sampler_overdown.png</Pressed>
                                     <Unpressed>btn_sync_sampler.png</Unpressed>
@@ -1886,7 +1886,7 @@
                                 <TooltipId>beatsync_beatsync_tempo</TooltipId>
                                 <Style></Style>
                                 <NumberStates>1</NumberStates>
-                                <State>
+        						<State>
                                     <Number>0</Number>
                                     <Pressed>btn_sync_sampler_overdown.png</Pressed>
                                     <Unpressed>btn_sync_sampler.png</Unpressed>

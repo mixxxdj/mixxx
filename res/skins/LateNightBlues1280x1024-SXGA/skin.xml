@@ -4555,14 +4555,14 @@
 						<TooltipId>reverse</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
-                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_reverse1_overdown.png</Pressed>
 							<Unpressed>btn_reverse1.png</Unpressed>
 						</State>
-                        <State>
+						<State>
 							<Number>1</Number>
 							<Pressed>btn_reverse1_overdown.png</Pressed>
 							<Unpressed>btn_reverse1_over.png</Unpressed>
@@ -5549,14 +5549,14 @@
 						<TooltipId>reverse</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
-                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
 							<Pressed>btn_reverse2_overdown.png</Pressed>
 							<Unpressed>btn_reverse2.png</Unpressed>
 						</State>
-                        <State>
+						<State>
 							<Number>1</Number>
 							<Pressed>btn_reverse2_overdown.png</Pressed>
 							<Unpressed>btn_reverse2_over.png</Unpressed>

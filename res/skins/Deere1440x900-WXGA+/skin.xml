@@ -4431,7 +4431,7 @@
 						<TooltipId>reverse</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
-                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
@@ -5541,7 +5541,7 @@
 						<TooltipId>reverse</TooltipId>
 						<Style></Style>
 						<NumberStates>2</NumberStates>
-                        <LeftClickIsPushButton>true</LeftClickIsPushButton>
+						<LeftClickIsPushButton>true</LeftClickIsPushButton>
 						<RightClickIsPushButton>true</RightClickIsPushButton>
 						<State>
 							<Number>0</Number>
