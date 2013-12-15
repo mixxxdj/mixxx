@@ -278,7 +278,7 @@ void Tooltips::addStandardTooltips() {
 
     add("pfl")
             << tr("Headphone")
-            << tr("Sends the selected channel's audio to the headphone output.")
+            << tr("Sends the selected channel's audio to the headphone output,")
             << tr("selected in Preferences -> Sound Hardware.");
 
     add("back_start")
