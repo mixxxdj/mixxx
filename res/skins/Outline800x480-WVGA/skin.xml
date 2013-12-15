@@ -47,7 +47,7 @@
 	<manifest>
 	<title>Outline800x480-WVGA</title>
 	<author>jus</author>
-	<version>1.11.0.11</version>
+	<version>1.12.0.01</version>
 	<description>A 2-deck parallel waveform skin with 3 samplers.</description>
 	<language>en</language>
 	<license>GNU General Public License, version 2 or later</license>
@@ -3717,18 +3717,25 @@
 	</PushButton>
 
 	<!--
-    ****************************************
-    Button- Reverse playback
-    ****************************************
-    -->
+	****************************************
+	Button- Reverse playback & Censor
+	****************************************
+	-->
 	<PushButton>
 		<TooltipId>reverse</TooltipId>
 		<Style></Style>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_reverse1_over.png</Pressed>
 			<Unpressed>btn_reverse1.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_reverse1_over.png</Pressed>
+			<Unpressed>btn_reverse1_over.png</Unpressed>
 		</State>
 		<Pos>41,50</Pos>
 		<Connection>
@@ -3736,21 +3743,38 @@
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
 		</Connection>
+		<Connection>
+			<ConfigKey>[Channel1],reverseroll</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
+		</Connection>
 	</PushButton>
 	<PushButton>
 		<TooltipId>reverse</TooltipId>
 		<Style></Style>
-		<NumberStates>1</NumberStates>
+		<NumberStates>2</NumberStates>
+		<LeftClickIsPushButton>true</LeftClickIsPushButton>
+		<RightClickIsPushButton>true</RightClickIsPushButton>
 		<State>
 			<Number>0</Number>
 			<Pressed>btn_reverse2_over.png</Pressed>
 			<Unpressed>btn_reverse2.png</Unpressed>
+		</State>
+		<State>
+			<Number>1</Number>
+			<Pressed>btn_reverse2_over.png</Pressed>
+			<Unpressed>btn_reverse2_over.png</Unpressed>
 		</State>
 		<Pos>762,50</Pos>
 		<Connection>
 			<ConfigKey>[Channel2],reverse</ConfigKey>
 			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
 			<ButtonState>LeftButton</ButtonState>
+		</Connection>
+		<Connection>
+			<ConfigKey>[Channel2],reverseroll</ConfigKey>
+			<EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			<ButtonState>RightButton</ButtonState>
 		</Connection>
 	</PushButton>
 
