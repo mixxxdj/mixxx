@@ -297,6 +297,20 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
         QWidget* pOuterWidget = new QWidget(m_pParent);
         QWidget* pInnerWidget = new QWidget(pOuterWidget);
 
+        QString layout = XmlParse::selectNodeQString(node, "Layout");
+        QLayout* pInnerLayout = NULL;
+        if (layout == "vertical") {
+            pInnerLayout = new QVBoxLayout(pInnerWidget);
+            pInnerLayout->setSpacing(0);
+            pInnerLayout->setContentsMargins(0, 0, 0, 0);
+            pInnerWidget->setLayout(pInnerLayout);
+        } else if (layout == "horizontal") {
+            pInnerLayout = new QHBoxLayout(pInnerWidget);
+            pInnerLayout->setSpacing(0);
+            pInnerLayout->setContentsMargins(0, 0, 0, 0);
+            pInnerWidget->setLayout(pInnerLayout);
+        }
+
         // Background is only valid at the top level.
         QDomElement background = XmlParse::selectElement(node, "Background");
         if (!background.isNull()) {
@@ -307,7 +321,6 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
         setupWidget(node, pInnerWidget, false);
 
         m_pParent = pInnerWidget;
-
 
         QDomNode childrenNode = XmlParse::selectNode(node, "Children");
 
@@ -320,7 +333,10 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
             QDomNode node = children.at(i);
 
             if (node.isElement()) {
-                parseNode(node.toElement());
+                QWidget* pChild = parseNode(node.toElement());
+                if (pChild != NULL && pInnerLayout != NULL) {
+                    pInnerLayout->addWidget(pChild);
+                }
             }
         }
 
