@@ -1,0 +1,518 @@
+<!DOCTYPE skin>
+<skin>
+  <manifest>
+    <title>Test1280x800-WXGA</title>
+    <author>rryan</author>
+    <version>1.12.0.01</version>
+    <description>A test skin.</description>
+    <language>en</language>
+    <license>Creative Commons Attribution, Share-Alike 3.0 Unported</license>
+    <attributes>
+      <attribute config_key="[Master],num_decks">4</attribute>
+      <attribute config_key="[Master],num_samplers">4</attribute>
+      <attribute config_key="[Master],num_preview_decks">1</attribute>
+      <!--Optionally, make elements visible on skin load-->
+      <attribute config_key="[Spinny1],show_spinny">1</attribute>
+      <attribute config_key="[Spinny2],show_spinny">1</attribute>
+      <attribute config_key="[Samplers],show_samplers">0</attribute>
+      <attribute config_key="[Microphone],show_microphone">0</attribute>
+      <attribute config_key="[Vinylcontrol],show_vinylcontrol">0</attribute>
+      <attribute config_key="[PreviewDeck],show_previewdeck">0</attribute>
+      <attribute config_key="[Library],show_library">1</attribute>
+    </attributes>
+  </manifest>
+
+  <Style>
+    #Mixer {
+      background-color: green;
+    }
+
+    #Deck1 {
+      background-color: blue;
+    }
+
+    #Deck2 {
+      background-color: white;
+    }
+
+    #Deck3 {
+      background-color: orange;
+    }
+
+    #Deck4 {
+      background-color: pink;
+    }
+
+    #MainDeckContainer {
+      background-color: red;
+    }
+
+    #LibraryContainer {
+      background-color: green;
+    }
+
+    #EffectRack {
+      background-color: pink;
+    }
+
+    #SampleDecks {
+      background-color: orange;
+    }
+  </Style>
+
+  <MinimumSize>1200,700</MinimumSize>
+  <SizePolicy>me,max</SizePolicy>
+  <Layout>vertical</Layout>
+
+  <Children>
+    <WidgetGroup>
+      <ObjectName>MainDeckContainer</ObjectName>
+      <Layout>horizontal</Layout>
+      <MinimumSize>-1,400</MinimumSize>
+      <MaximumSize>-1,400</MaximumSize>
+      <Children>
+
+        <WidgetGroup>
+          <ObjectName>LeftGutter</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,p</SizePolicy>
+          <Children>
+
+            <WidgetGroup>
+              <ObjectName>Deck1</ObjectName>
+              <Layout>horizontal</Layout>
+              <SizePolicy>me,p</SizePolicy>
+              <MinimumSize>400,200</MinimumSize>
+              <Children>
+
+                <WidgetGroup>
+                  <ObjectName>DeckRows</ObjectName>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <WidgetGroup>
+                      <ObjectName>VisualRow</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <MinimumSize>-1,119</MinimumSize>
+                      <Children>
+                        <Visual>
+                          <Group>[Channel1]</Group>
+                        </Visual>
+                        <WidgetGroup>
+                          <ObjectName>SpinnyHolder</ObjectName>
+                          <Layout>horizontal</Layout>
+                          <SizePolicy>max,max</SizePolicy>
+                          <Children>
+                            <Spinny>
+                              <Group>[Channel1]</Group>
+                              <PathBackground>vinyl_spinny1_background.png</PathBackground>
+			      <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+			      <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+                            </Spinny>
+                          </Children>
+                          <Connection>
+			    <ConfigKey>[Spinny1],show_spinny</ConfigKey>
+			    <BindProperty>visible</BindProperty>
+			  </Connection>
+                        </WidgetGroup>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- End VisualRow -->
+
+                    <WidgetGroup>
+                      <ObjectName>ButtonRow</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <Children>
+                        <PushButton>
+			  <NumberStates>2</NumberStates>
+			  <State>
+			    <Number>0</Number>
+			    <Pressed>btn_spinny1.png</Pressed>
+			    <Unpressed>btn_spinny1.png</Unpressed>
+			  </State>
+			  <State>
+			    <Number>1</Number>
+			    <Pressed>btn_spinny1_over.png</Pressed>
+			    <Unpressed>btn_spinny1_over.png</Unpressed>
+			  </State>
+			  <Connection>
+			    <ConfigKey>[Spinny1],show_spinny</ConfigKey>
+			    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			    <ButtonState>LeftButton</ButtonState>
+			  </Connection>
+			</PushButton>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- End ButtonRow -->
+                  </Children>
+                </WidgetGroup>
+                <!-- End DeckRows -->
+
+
+              </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+              <ObjectName>Deck3</ObjectName>
+              <Layout>horizontal</Layout>
+              <SizePolicy>me,p</SizePolicy>
+              <MinimumSize>400,200</MinimumSize>
+              <Children>
+
+                <WidgetGroup>
+                  <ObjectName>DeckRows</ObjectName>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <WidgetGroup>
+                      <ObjectName>VisualRow</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <MinimumSize>-1,119</MinimumSize>
+                      <Children>
+                        <Visual>
+                          <Group>[Channel3]</Group>
+                        </Visual>
+                        <WidgetGroup>
+                          <ObjectName>SpinnyHolder</ObjectName>
+                          <Layout>horizontal</Layout>
+                          <SizePolicy>max,max</SizePolicy>
+                          <Children>
+                            <Spinny>
+                              <Group>[Channel3]</Group>
+                              <PathBackground>vinyl_spinny1_background.png</PathBackground>
+			      <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+			      <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+                            </Spinny>
+                          </Children>
+                          <Connection>
+			    <ConfigKey>[Spinny3],show_spinny</ConfigKey>
+			    <BindProperty>visible</BindProperty>
+			  </Connection>
+                        </WidgetGroup>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- End VisualRow -->
+
+                    <WidgetGroup>
+                      <ObjectName>ButtonRow</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <Children>
+                        <PushButton>
+			  <NumberStates>2</NumberStates>
+			  <State>
+			    <Number>0</Number>
+			    <Pressed>btn_spinny1.png</Pressed>
+			    <Unpressed>btn_spinny1.png</Unpressed>
+			  </State>
+			  <State>
+			    <Number>1</Number>
+			    <Pressed>btn_spinny1_over.png</Pressed>
+			    <Unpressed>btn_spinny1_over.png</Unpressed>
+			  </State>
+			  <Connection>
+			    <ConfigKey>[Spinny3],show_spinny</ConfigKey>
+			    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			    <ButtonState>LeftButton</ButtonState>
+			  </Connection>
+			</PushButton>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- End ButtonRow -->
+                  </Children>
+                </WidgetGroup>
+                <!-- End DeckRows -->
+
+              </Children>
+            </WidgetGroup>
+
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>Mixer</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>f,f</SizePolicy>
+          <MinimumSize>400,400</MinimumSize>
+          <MaximumSize>400,400</MaximumSize>
+          <Size>400f,800f</Size>
+          <Children>
+
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>RightGutter</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,p</SizePolicy>
+          <Children>
+
+            <WidgetGroup>
+              <ObjectName>Deck2</ObjectName>
+              <Layout>horizontal</Layout>
+              <SizePolicy>me,p</SizePolicy>
+              <MinimumSize>400,200</MinimumSize>
+              <Children>
+
+                <WidgetGroup>
+                  <ObjectName>DeckRows</ObjectName>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <WidgetGroup>
+                      <ObjectName>VisualRow</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <MinimumSize>-1,119</MinimumSize>
+                      <Children>
+                        <WidgetGroup>
+                          <ObjectName>SpinnyHolder</ObjectName>
+                          <Layout>horizontal</Layout>
+                          <SizePolicy>max,max</SizePolicy>
+                          <Children>
+                            <Spinny>
+                              <Group>[Channel2]</Group>
+                              <PathBackground>vinyl_spinny1_background.png</PathBackground>
+			      <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+			      <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+                            </Spinny>
+                          </Children>
+                          <Connection>
+			    <ConfigKey>[Spinny2],show_spinny</ConfigKey>
+			    <BindProperty>visible</BindProperty>
+			  </Connection>
+                        </WidgetGroup>
+                        <Visual>
+                          <Group>[Channel2]</Group>
+                        </Visual>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- End VisualRow -->
+
+                    <WidgetGroup>
+                      <ObjectName>ButtonRow</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <Children>
+                        <PushButton>
+			  <NumberStates>2</NumberStates>
+			  <State>
+			    <Number>0</Number>
+			    <Pressed>btn_spinny1.png</Pressed>
+			    <Unpressed>btn_spinny1.png</Unpressed>
+			  </State>
+			  <State>
+			    <Number>1</Number>
+			    <Pressed>btn_spinny1_over.png</Pressed>
+			    <Unpressed>btn_spinny1_over.png</Unpressed>
+			  </State>
+			  <Connection>
+			    <ConfigKey>[Spinny2],show_spinny</ConfigKey>
+			    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			    <ButtonState>LeftButton</ButtonState>
+			  </Connection>
+			</PushButton>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- End ButtonRow -->
+                  </Children>
+                </WidgetGroup>
+                <!-- End DeckRows -->
+
+              </Children>
+            </WidgetGroup>
+
+            <WidgetGroup>
+              <ObjectName>Deck4</ObjectName>
+              <Layout>horizontal</Layout>
+              <SizePolicy>me,p</SizePolicy>
+              <MinimumSize>400,200</MinimumSize>
+              <Children>
+
+                <WidgetGroup>
+                  <ObjectName>DeckRows</ObjectName>
+                  <Layout>vertical</Layout>
+                  <Children>
+                    <WidgetGroup>
+                      <ObjectName>VisualRow</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <SizePolicy>me,max</SizePolicy>
+                      <MinimumSize>-1,119</MinimumSize>
+                      <Children>
+                        <WidgetGroup>
+                          <ObjectName>SpinnyHolder</ObjectName>
+                          <Layout>horizontal</Layout>
+                          <SizePolicy>max,max</SizePolicy>
+                          <Children>
+                            <Spinny>
+                              <Group>[Channel4]</Group>
+                              <PathBackground>vinyl_spinny1_background.png</PathBackground>
+			      <PathForeground>vinyl_spinny1_foreground.png</PathForeground>
+			      <PathGhost>vinyl_spinny1_foreground_ghost.png</PathGhost>
+                            </Spinny>
+                          </Children>
+                          <Connection>
+			    <ConfigKey>[Spinny4],show_spinny</ConfigKey>
+			    <BindProperty>visible</BindProperty>
+			  </Connection>
+                        </WidgetGroup>
+                        <Visual>
+                          <Group>[Channel4]</Group>
+                        </Visual>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- End VisualRow -->
+
+                    <WidgetGroup>
+                      <ObjectName>ButtonRow</ObjectName>
+                      <Layout>horizontal</Layout>
+                      <Children>
+                        <PushButton>
+			  <NumberStates>2</NumberStates>
+			  <State>
+			    <Number>0</Number>
+			    <Pressed>btn_spinny1.png</Pressed>
+			    <Unpressed>btn_spinny1.png</Unpressed>
+			  </State>
+			  <State>
+			    <Number>1</Number>
+			    <Pressed>btn_spinny1_over.png</Pressed>
+			    <Unpressed>btn_spinny1_over.png</Unpressed>
+			  </State>
+			  <Connection>
+			    <ConfigKey>[Spinny4],show_spinny</ConfigKey>
+			    <EmitOnPressAndRelease>true</EmitOnPressAndRelease>
+			    <ButtonState>LeftButton</ButtonState>
+			  </Connection>
+			</PushButton>
+                      </Children>
+                    </WidgetGroup>
+                    <!-- End ButtonRow -->
+                  </Children>
+                </WidgetGroup>
+                <!-- End DeckRows -->
+
+              </Children>
+            </WidgetGroup>
+
+          </Children>
+        </WidgetGroup>
+
+      </Children>
+    </WidgetGroup>
+
+    <WidgetGroup>
+      <ObjectName>SampleDecks</ObjectName>
+      <SizePolicy>me,max</SizePolicy>
+      <Layout>horizontal</Layout>
+      <Children>
+        <WidgetGroup>
+          <ObjectName>Sampler1</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <MinimumSize>300,100</MinimumSize>
+          <Children>
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>Sampler2</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <MinimumSize>300,100</MinimumSize>
+          <Children>
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>Sampler3</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <MinimumSize>300,100</MinimumSize>
+          <Children>
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>Sampler4</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <MinimumSize>300,100</MinimumSize>
+          <Children>
+          </Children>
+        </WidgetGroup>
+      </Children>
+      <Connection>
+	<ConfigKey>[Samplers],show_samplers</ConfigKey>
+	<BindProperty>visible</BindProperty>
+      </Connection>
+    </WidgetGroup>
+
+    <WidgetGroup>
+      <ObjectName>EffectRack</ObjectName>
+      <SizePolicy>me,max</SizePolicy>
+      <Layout>horizontal</Layout>
+      <Children>
+        <WidgetGroup>
+          <ObjectName>EffectChain1</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <MinimumSize>300,100</MinimumSize>
+          <Children>
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>EffectChain2</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <MinimumSize>300,100</MinimumSize>
+          <Children>
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>EffectChain3</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <MinimumSize>300,100</MinimumSize>
+          <Children>
+          </Children>
+        </WidgetGroup>
+
+        <WidgetGroup>
+          <ObjectName>EffectChain4</ObjectName>
+          <Layout>vertical</Layout>
+          <SizePolicy>me,f</SizePolicy>
+          <MinimumSize>300,100</MinimumSize>
+          <Children>
+          </Children>
+        </WidgetGroup>
+      </Children>
+    </WidgetGroup>
+
+    <WidgetGroup>
+      <ObjectName>LibraryContainer</ObjectName>
+      <Layout>vertical</Layout>
+      <Size>me,i</Size>
+      <Children>
+        <Splitter>
+          <ObjectName>LibrarySplitter</ObjectName>
+          <Orientation>horizontal</Orientation>
+          <SizePolicy>me,me</SizePolicy>
+          <Children>
+            <WidgetGroup>
+              <Layout>vertical</Layout>
+              <Children>
+                <SearchBox>
+                </SearchBox>
+                <LibrarySidebar>
+                </LibrarySidebar>
+              </Children>
+            </WidgetGroup>
+            <Library>
+            </Library>
+          </Children>
+        </Splitter>
+      </Children>
+    </WidgetGroup>
+  </Children>
+
+</skin>
