@@ -1403,6 +1403,12 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
 }
 
 void LegacySkinParser::setupWidget(QDomNode node, QWidget* pWidget, bool setPosition) {
+    // Override the widget object name.
+    QString objectName = XmlParse::selectNodeQString(node, "ObjectName");
+    if (!objectName.isEmpty()) {
+        pWidget->setObjectName(objectName);
+    }
+
     if (setPosition) {
         setupPosition(node, pWidget);
     }
