@@ -61,7 +61,7 @@
   </Style>
 
   <MinimumSize>1200,700</MinimumSize>
-  <SizePolicy>me,max</SizePolicy>
+  <SizePolicy>me,me</SizePolicy>
   <Layout>vertical</Layout>
 
   <Children>
