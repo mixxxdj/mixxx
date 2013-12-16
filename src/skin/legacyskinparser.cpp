@@ -294,27 +294,43 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
         // so that fullscreen will expand with the right color to fill in the
         // non-background areas. We put the inner widget in a layout inside the
         // outer widget so that it stays centered in fullscreen mode.
-        QWidget* pOuterWidget = new QWidget(m_pParent);
-        QWidget* pInnerWidget = new QWidget(pOuterWidget);
 
+        // If the root widget has a layout we are loading a "new style" skin.
         QString layout = XmlParse::selectNodeQString(node, "Layout");
-        QLayout* pInnerLayout = NULL;
-        if (layout == "vertical") {
-            pInnerLayout = new QVBoxLayout(pInnerWidget);
-            pInnerLayout->setSpacing(0);
-            pInnerLayout->setContentsMargins(0, 0, 0, 0);
-            pInnerWidget->setLayout(pInnerLayout);
-        } else if (layout == "horizontal") {
-            pInnerLayout = new QHBoxLayout(pInnerWidget);
-            pInnerLayout->setSpacing(0);
-            pInnerLayout->setContentsMargins(0, 0, 0, 0);
-            pInnerWidget->setLayout(pInnerLayout);
-        }
+        bool newStyle = !layout.isEmpty();
 
-        // Background is only valid at the top level.
-        QDomElement background = XmlParse::selectElement(node, "Background");
-        if (!background.isNull()) {
-            parseBackground(background, pOuterWidget, pInnerWidget);
+        qDebug() << "Skin is a" << (newStyle ? ">=1.12.0" : "<1.12.0") << "style skin.";
+
+        // pOuterWidget is only for old-style skins.
+        QWidget* pOuterWidget = NULL;
+        QWidget* pInnerWidget = NULL;
+        QLayout* pInnerLayout = NULL;
+
+        if (newStyle) {
+            pInnerWidget = new QWidget(m_pParent);
+
+            if (layout == "vertical") {
+                pInnerLayout = new QVBoxLayout(pInnerWidget);
+                pInnerLayout->setSpacing(0);
+                pInnerLayout->setContentsMargins(0, 0, 0, 0);
+                pInnerWidget->setLayout(pInnerLayout);
+            } else if (layout == "horizontal") {
+                pInnerLayout = new QHBoxLayout(pInnerWidget);
+                pInnerLayout->setSpacing(0);
+                pInnerLayout->setContentsMargins(0, 0, 0, 0);
+                pInnerWidget->setLayout(pInnerLayout);
+            } else {
+                qDebug() << "Could not parse root skin Layout:" << layout;
+            }
+        } else {
+            pOuterWidget = new QWidget(m_pParent);
+            pInnerWidget = new QWidget(pOuterWidget);
+
+            // <Background> is only valid for old-style skins.
+            QDomElement background = XmlParse::selectElement(node, "Background");
+            if (!background.isNull()) {
+                parseBackground(background, pOuterWidget, pInnerWidget);
+            }
         }
 
         // Interpret <Size>, <SizePolicy>, <Style>, etc. tags for the root node.
@@ -340,11 +356,15 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
             }
         }
 
-        // Keep innerWidget centered (for fullscreen).
-        pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
-        pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
-        pOuterWidget->layout()->addWidget(pInnerWidget);
-        return pOuterWidget;
+        if (pOuterWidget) {
+            // Keep innerWidget centered (for fullscreen).
+            pOuterWidget->setLayout(new QHBoxLayout(pOuterWidget));
+            pOuterWidget->layout()->setContentsMargins(0, 0, 0, 0);
+            pOuterWidget->layout()->addWidget(pInnerWidget);
+            return pOuterWidget;
+        } else {
+            return pInnerWidget;
+        }
     } else if (nodeName == "SliderComposed") {
         return parseSliderComposed(node);
     } else if (nodeName == "PushButton") {
