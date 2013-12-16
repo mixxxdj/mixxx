@@ -168,7 +168,7 @@ int TrackInfoObject::parse() {
     // Add basic information derived from the filename:
     parseFilename();
 
-    // Parse the using information stored in the sound file
+    // Parse the information stored in the sound file
     int result = SoundSourceProxy::ParseHeader(this);
     m_bIsValid = result == OK;
     return result;
