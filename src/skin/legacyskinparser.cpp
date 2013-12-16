@@ -1272,9 +1272,14 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
 
-        if (widthOk && heightOk) {
+        // -1 means do not set.
+        if (widthOk && heightOk && x >= 0 && y >= 0) {
             pWidget->setMinimumSize(x, y);
-        } else {
+        } else if (widthOk && x >= 0) {
+            pWidget->setMinimumWidth(x);
+        } else if (heightOk && y >= 0) {
+            pWidget->setMinimumHeight(y);
+        } else if (!widthOk && !heightOk) {
             qDebug() << "Could not parse widget MinimumSize:" << size;
         }
     }
@@ -1291,9 +1296,14 @@ void LegacySkinParser::setupSize(QDomNode node, QWidget* pWidget) {
         bool heightOk = false;
         int y = ys.toInt(&heightOk);
 
-        if (widthOk && heightOk) {
+        // -1 means do not set.
+        if (widthOk && heightOk && x >= 0 && y >= 0) {
             pWidget->setMaximumSize(x, y);
-        } else {
+        } else if (widthOk && x >= 0) {
+            pWidget->setMaximumWidth(x);
+        } else if (heightOk && y >= 0) {
+            pWidget->setMaximumHeight(y);
+        } else if (!widthOk && !heightOk) {
             qDebug() << "Could not parse widget MaximumSize:" << size;
         }
     }
