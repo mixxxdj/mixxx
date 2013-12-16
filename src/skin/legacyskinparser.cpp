@@ -308,8 +308,13 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
 
         m_pParent = pInnerWidget;
 
-        // Descend children, should only happen for the root node.
-        QDomNodeList children = node.childNodes();
+
+        QDomNode childrenNode = XmlParse::selectNode(node, "Children");
+
+        // For backwards compatibility, allow children to be specified outside
+        // of a <Children> block.
+        QDomNodeList children = childrenNode.isNull() ? node.childNodes() :
+                childrenNode.childNodes();
 
         for (int i = 0; i < children.count(); ++i) {
             QDomNode node = children.at(i);
