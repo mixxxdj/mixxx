@@ -165,8 +165,6 @@ bool TrackInfoObject::isValid() const {
 
 
 int TrackInfoObject::parse() {
-    m_sFilename = m_sFilename.replace("_", " ");
-
     // Add basic information derived from the filename:
     parseFilename();
 
@@ -195,6 +193,10 @@ void TrackInfoObject::parseFilename() {
         m_sArtist = "";
         m_sTitle = m_sFilename.section('.',0,-2).trimmed();
     }
+
+    // Replace underscores with spaces for Artist and Title
+    m_sArtist = m_sArtist.replace("_", " ");
+    m_sTitle = m_sTitle.replace("_", " ");
 
     // Add no comment
     m_sComment = QString("");
