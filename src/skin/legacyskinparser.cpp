@@ -303,6 +303,9 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
             parseBackground(background, pOuterWidget, pInnerWidget);
         }
 
+        // Interpret <Size>, <SizePolicy>, <Style>, etc. tags for the root node.
+        setupWidget(node, pInnerWidget, false);
+
         m_pParent = pInnerWidget;
 
         // Descend children, should only happen for the root node.
@@ -358,8 +361,6 @@ QWidget* LegacySkinParser::parseNode(QDomElement node) {
         return parseWidgetGroup(node);
     } else if (nodeName == "WidgetStack") {
         return parseWidgetStack(node);
-    } else if (nodeName == "Style") {
-        return parseStyle(node);
     } else if (nodeName == "Spinny") {
         return parseSpinny(node);
     } else if (nodeName == "Time") {
@@ -1211,15 +1212,6 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     while ((safe[i] = qba[i])) ++i;
     s_channelStrs.append(safe);
     return safe;
-}
-
-QWidget* LegacySkinParser::parseStyle(QDomElement node) {
-    QString style = node.text();
-    m_pParent->setStyleSheet(style);
-    // This doesn't actually create a widget. If you return m_pParent then you
-    // risk creating loops in the widget hierarchy if someone makes <Style> in
-    // e.g. a WidgetGroup <Children> block.
-    return NULL;
 }
 
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
