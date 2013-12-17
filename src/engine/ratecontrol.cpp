@@ -47,13 +47,12 @@ RateControl::RateControl(const char* _group,
 
     // Load the default direction and range from the config.
     // Yes it is really this bad. 1 means -1, and 0 means 1.
-    int direction_index = _config->getValueString(ConfigKey("[Controls]","RateDir")).toInt();
+    int direction_index = _config->getValueString(ConfigKey("[Controls]", "RateDir")).toInt();
     m_pRateDir->set(direction_index == 1 ? -1 : 1);
 
     // Oh god kill me now.
     int range_value = _config->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
-    float range =
-            static_cast<float>(range_value - 1) / 10.;
+    float range = static_cast<float>(range_value - 1) / 10.;
     if (range_value == 0) {
         range = 0.06f;
     }
