@@ -178,17 +178,14 @@ int TrackInfoObject::parse() {
 void TrackInfoObject::parseFilename() {
     QMutexLocker lock(&m_qMutex);
 
-    if (m_sFilename.indexOf('-') != -1) {
+    // If the file name has the following form: "Artist - Title.type", extract
+    // Artist, Title and type fields
+    if (m_sFilename.count('-') == 1) {
         m_sArtist = m_sFilename.section('-',0,0).trimmed(); // Get the first part
         m_sTitle = m_sFilename.section('-',1,1); // Get the second part
         m_sTitle = m_sTitle.section('.',0,-2).trimmed(); // Remove the ending
     } else {
         m_sTitle = m_sFilename.section('.',0,-2).trimmed(); // Remove the ending;
-    }
-
-    if (m_sTitle.length() == 0) {
-        m_sArtist = "";
-        m_sTitle = m_sFilename.section('.',0,-2).trimmed();
     }
 
     // Replace underscores with spaces for Artist and Title
