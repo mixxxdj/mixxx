@@ -213,6 +213,7 @@ void Tooltips::addStandardTooltips() {
             << tempoDisplay;
 
     add("visual_key")
+            //: The musical key of a track
             << tr("Key")
             << tr("Displays the current musical key of the loaded track after pitch shifting.");
 
