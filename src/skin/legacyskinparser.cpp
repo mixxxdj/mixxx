@@ -1261,13 +1261,6 @@ const char* LegacySkinParser::safeChannelString(QString channelStr) {
     return safe;
 }
 
-<<<<<<< HEAD
-QWidget* LegacySkinParser::parseStyle(QDomElement node) {
-    QString style = node.text();
-    m_pParent->setStyleSheet(style);
-    return m_pParent;
-}
-
 QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
     WEffectChain* pEffectChain = new WEffectChain(m_pParent);
 
@@ -1291,8 +1284,6 @@ QWidget* LegacySkinParser::parseEffectChainName(QDomElement node) {
     return pEffectChain;
 }
 
-=======
->>>>>>> master
 void LegacySkinParser::setupPosition(QDomNode node, QWidget* pWidget) {
     if (!XmlParse::selectNode(node, "Pos").isNull()) {
         QString pos = XmlParse::selectNodeQString(node, "Pos");
