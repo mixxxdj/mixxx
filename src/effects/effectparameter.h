@@ -26,6 +26,8 @@ class EffectParameter : public QObject {
     // Parameter Information
     ///////////////////////////////////////////////////////////////////////////
 
+    const EffectManifestParameter& manifest() const;
+    const QString id() const;
     const QString name() const;
     const QString description() const;
 

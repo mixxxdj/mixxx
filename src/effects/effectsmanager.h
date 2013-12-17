@@ -7,6 +7,7 @@
 #include <QSet>
 #include <QScopedPointer>
 
+#include "configobject.h"
 #include "util.h"
 #include "util/fifo.h"
 #include "effects/effect.h"
@@ -22,7 +23,7 @@ class EffectChainManager;
 class EffectsManager : public QObject {
     Q_OBJECT
   public:
-    EffectsManager(QObject* pParent);
+    EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig);
     virtual ~EffectsManager();
 
     EngineEffectsManager* getEngineEffectsManager() {

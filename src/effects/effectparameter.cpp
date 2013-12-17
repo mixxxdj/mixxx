@@ -89,6 +89,14 @@ EffectParameter::~EffectParameter() {
     qDebug() << debugString() << "destroyed";
 }
 
+const EffectManifestParameter& EffectParameter::manifest() const {
+    return m_parameter;
+}
+
+const QString EffectParameter::id() const {
+    return m_parameter.id();
+}
+
 const QString EffectParameter::name() const {
     return m_parameter.name();
 }

@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QList>
 
+#include "configobject.h"
 #include "util.h"
 #include "effects/effectchain.h"
 #include "effects/effectrack.h"
@@ -16,7 +17,8 @@ class EffectsManager;
 class EffectChainManager : public QObject {
     Q_OBJECT
   public:
-    EffectChainManager(EffectsManager* pEffectsManager);
+    EffectChainManager(ConfigObject<ConfigValue>* pConfig,
+                       EffectsManager* pEffectsManager);
     virtual ~EffectChainManager();
 
     void registerGroup(const QString& group);
@@ -37,14 +39,15 @@ class EffectChainManager : public QObject {
     EffectChainPointer getNextEffectChain(EffectChainPointer pEffectChain);
     EffectChainPointer getPrevEffectChain(EffectChainPointer pEffectChain);
 
-    void saveEffectChains();
-    void loadEffectChains();
+    bool saveEffectChains();
+    bool loadEffectChains();
 
   private:
     QString debugString() const {
         return "EffectChainManager";
     }
 
+    ConfigObject<ConfigValue>* m_pConfig;
     EffectsManager* m_pEffectsManager;
     QList<EffectRackPointer> m_effectRacks;
     QList<EffectChainPointer> m_effectChains;

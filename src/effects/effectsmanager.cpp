@@ -3,9 +3,9 @@
 #include "effects/effectchainmanager.h"
 #include "engine/effects/engineeffectsmanager.h"
 
-EffectsManager::EffectsManager(QObject* pParent)
+EffectsManager::EffectsManager(QObject* pParent, ConfigObject<ConfigValue>* pConfig)
         : QObject(pParent),
-          m_pEffectChainManager(new EffectChainManager(this)),
+          m_pEffectChainManager(new EffectChainManager(pConfig, this)),
           m_nextRequestId(0) {
     QPair<EffectsRequestPipe*, EffectsResponsePipe*> requestPipes =
             TwoWayMessagePipe<EffectsRequest*, EffectsResponse>::makeTwoWayMessagePipe(
@@ -16,12 +16,13 @@ EffectsManager::EffectsManager(QObject* pParent)
 }
 
 EffectsManager::~EffectsManager() {
+    m_pEffectChainManager->saveEffectChains();
     processEffectsResponses();
+    delete m_pEffectChainManager;
     while (!m_effectsBackends.isEmpty()) {
         EffectsBackend* pBackend = m_effectsBackends.takeLast();
         delete pBackend;
     }
-    delete m_pEffectChainManager;
     for (QHash<qint64, EffectsRequest*>::iterator it = m_activeRequests.begin();
          it != m_activeRequests.end();) {
         delete it.value();
@@ -79,6 +80,8 @@ EffectRackPointer EffectsManager::getDefaultEffectRack() {
 }
 
 void EffectsManager::setupDefaults() {
+    m_pEffectChainManager->loadEffectChains();
+
     EffectRackPointer pRack = m_pEffectChainManager->addEffectRack();
     pRack->addEffectChainSlot();
     pRack->addEffectChainSlot();

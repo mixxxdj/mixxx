@@ -52,7 +52,7 @@ class MockedEngineBackendTest : public MixxxTest {
     virtual void SetUp() {
         m_pBuffer = SampleUtil::alloc(MAX_BUFFER_LEN);
         m_pNumDecks = new ControlObject(ConfigKey("[Master]", "num_decks"));
-        m_pEffectsManager = new EffectsManager(NULL);
+        m_pEffectsManager = new EffectsManager(NULL, config());
         m_pEngineMaster = new EngineMaster(m_pConfig.data(), "[Master]",
                                            m_pEffectsManager, false, false);
 

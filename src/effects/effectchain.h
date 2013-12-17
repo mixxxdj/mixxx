@@ -4,6 +4,7 @@
 #include <QObject>
 #include <QMap>
 #include <QList>
+#include <QDomDocument>
 
 #include "util.h"
 #include "effects/effect.h"
@@ -49,9 +50,31 @@ class EffectChain : public QObject {
     void setMix(const double& dMix);
 
     enum InsertionType {
-        INSERT = 0,
-        SEND = 1
+        UNKNOWN_INSERTION_TYPE = 0,
+        INSERT = 1,
+        SEND = 2
     };
+    static QString insertionTypeToString(InsertionType type) {
+        switch (type) {
+            case INSERT:
+                return "INSERT";
+            case SEND:
+                return "SEND";
+            default:
+                return "UNKNOWN";
+        }
+    }
+    static InsertionType insertionTypeFromString(const QString& typeStr) {
+        if (typeStr == "INSERT") {
+            return INSERT;
+        } else if (typeStr == "SEND") {
+            return SEND;
+        } else {
+            return UNKNOWN_INSERTION_TYPE;
+        }
+    }
+
+
     InsertionType insertionType() const;
     void setInsertionType(InsertionType type);
 
@@ -62,6 +85,10 @@ class EffectChain : public QObject {
     unsigned int numEffects() const;
 
     EngineEffectChain* getEngineEffectChain();
+
+    QDomElement toXML(QDomDocument* doc) const;
+    static EffectChainPointer fromXML(EffectsManager* pEffectsManager,
+                                      const QDomElement& element);
 
   signals:
     // Signal that indicates that an effect has been added or removed.

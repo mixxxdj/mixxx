@@ -3,6 +3,7 @@
 #include "engine/effects/message.h"
 #include "engine/effects/engineeffectchain.h"
 #include "sampleutil.h"
+#include "xmlparse.h"
 
 EffectChain::EffectChain(EffectsManager* pEffectsManager, const QString& id)
         : QObject(pEffectsManager),
@@ -188,4 +189,70 @@ void EffectChain::removeEffectFromEngine(EffectPointer pEffect) {
     request->pTargetChain = m_pEngineEffectChain;
     request->RemoveEffectFromChain.pEffect = pEffect->getEngineEffect();
     m_pEffectsManager->writeRequest(request);
+}
+
+QDomElement EffectChain::toXML(QDomDocument* doc) const {
+    QDomElement element = doc->createElement("EffectChain");
+
+    XmlParse::addElement(*doc, element, "Id", m_id);
+    XmlParse::addElement(*doc, element, "Name", m_name);
+    XmlParse::addElement(*doc, element, "InsertionType",
+                         insertionTypeToString(m_insertionType));
+    XmlParse::addElement(*doc, element, "Mix",
+                         QString::number(m_dMix));
+    XmlParse::addElement(*doc, element, "Parameter",
+                         QString::number(m_dParameter));
+
+    QDomElement effectsNode = doc->createElement("Effects");
+    foreach (EffectPointer pEffect, m_effects) {
+        QDomElement effectNode = pEffect->toXML(doc);
+        effectsNode.appendChild(effectNode);
+    }
+    element.appendChild(effectsNode);
+
+    return element;
+}
+
+// static
+EffectChainPointer EffectChain::fromXML(EffectsManager* pEffectsManager,
+                                        const QDomElement& element) {
+    QString id = XmlParse::selectNodeQString(element, "Id");
+    QString name = XmlParse::selectNodeQString(element, "Name");
+    QString insertionTypeStr = XmlParse::selectNodeQString(element, "InsertionType");
+    QString mixStr = XmlParse::selectNodeQString(element, "Mix");
+    QString parameterStr = XmlParse::selectNodeQString(element, "ParameterStr");
+
+    EffectChain* pChain = new EffectChain(pEffectsManager, id);
+    pChain->setName(name);
+    InsertionType insertionType = insertionTypeFromString(insertionTypeStr);
+    if (insertionType != UNKNOWN_INSERTION_TYPE) {
+        pChain->setInsertionType(insertionType);
+    }
+    bool ok = false;
+    double mix = mixStr.toDouble(&ok);
+    if (ok) {
+        pChain->setMix(mix);
+    }
+
+    ok = false;
+    double parameter = parameterStr.toDouble(&ok);
+    if (ok) {
+        pChain->setParameter(parameter);
+    }
+
+    QDomElement effects = XmlParse::selectElement(element, "Effects");
+    QDomNodeList effectChildren = effects.childNodes();
+
+    for (int i = 0; i < effectChildren.count(); ++i) {
+        QDomNode effect = effectChildren.at(i);
+        if (effect.isElement()) {
+            EffectPointer pEffect = Effect::fromXML(
+                pEffectsManager, effect.toElement());
+            if (pEffect) {
+                pChain->addEffect(pEffect);
+            }
+        }
+    }
+
+    return EffectChainPointer(pChain);
 }

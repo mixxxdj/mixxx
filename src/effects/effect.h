@@ -2,6 +2,7 @@
 #define EFFECT_H
 
 #include <QSharedPointer>
+#include <QDomDocument>
 
 #include "defs.h"
 #include "util.h"
@@ -36,6 +37,10 @@ class Effect : public QObject {
     EngineEffect* getEngineEffect();
 
     void updateEngineState();
+
+    QDomElement toXML(QDomDocument* doc) const;
+    static EffectPointer fromXML(EffectsManager* pEffectsManager,
+                                 const QDomElement& element);
 
   private:
     QString debugString() const {

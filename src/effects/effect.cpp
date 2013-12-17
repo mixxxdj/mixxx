@@ -4,6 +4,7 @@
 #include "effects/effectprocessor.h"
 #include "effects/effectsmanager.h"
 #include "engine/effects/engineeffect.h"
+#include "xmlparse.h"
 
 Effect::Effect(QObject* pParent, EffectsManager* pEffectsManager,
                const EffectManifest& manifest,
@@ -66,4 +67,35 @@ EffectParameter* Effect::getParameter(unsigned int parameterNumber) {
         qDebug() << debugString() << "WARNING: Invalid parameter index.";
     }
     return pParameter;
+}
+
+QDomElement Effect::toXML(QDomDocument* doc) const {
+    QDomElement element = doc->createElement("Effect");
+    XmlParse::addElement(*doc, element, "Id", m_manifest.id());
+    XmlParse::addElement(*doc, element, "Version", m_manifest.version());
+
+    QDomElement parameters = doc->createElement("Parameters");
+    foreach (EffectParameter* pParameter, m_parameters) {
+        const EffectManifestParameter& parameterManifest =
+                pParameter->manifest();
+        QDomElement parameter = doc->createElement("Parameter");
+        XmlParse::addElement(*doc, parameter, "Id", parameterManifest.id());
+        // TODO(rryan): Do smarter QVariant formatting?
+        XmlParse::addElement(*doc, parameter, "Value",
+                             pParameter->getValue().toString());
+        // TODO(rryan): Output link state, etc.
+        parameters.appendChild(parameter);
+    }
+    element.appendChild(parameters);
+
+    return element;
+}
+
+// static
+EffectPointer Effect::fromXML(EffectsManager* pEffectsManager,
+                              const QDomElement& element) {
+    QString effectId = XmlParse::selectNodeQString(element, "Id");
+    EffectPointer pEffect = pEffectsManager->instantiateEffect(effectId);
+    // TODO(rryan): Load parameter values / etc. from element.
+    return pEffect;
 }

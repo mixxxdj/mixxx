@@ -290,7 +290,7 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     initializeKeyboard();
 
     // Create the Effects subsystem.
-    m_pEffectsManager = new EffectsManager(this);
+    m_pEffectsManager = new EffectsManager(this, m_pConfig);
 
     // Starting the master (mixing of the channels and effects):
     m_pEngine = new EngineMaster(m_pConfig, "[Master]", m_pEffectsManager, true, true);
