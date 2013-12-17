@@ -44,23 +44,6 @@ RateControl::RateControl(const char* _group,
 
     m_pRateDir = new ControlObject(ConfigKey(_group, "rate_dir"));
     m_pRateRange = new ControlObject(ConfigKey(_group, "rateRange"));
-
-    // Load the default direction and range from the config.
-    // Yes it is really this bad. 1 means -1, and 0 means 1.
-    int direction_index = _config->getValueString(ConfigKey("[Controls]", "RateDir")).toInt();
-    m_pRateDir->set(direction_index == 1 ? -1 : 1);
-
-    // Oh god kill me now.
-    int range_value = _config->getValueString(ConfigKey("[Controls]", "RateRange")).toInt();
-    float range = static_cast<float>(range_value - 1) / 10.;
-    if (range_value == 0) {
-        range = 0.06f;
-    }
-    if (range_value == 1) {
-        range = 0.08f;
-    }
-    m_pRateRange->set(range);
-
     m_pRateSlider = new ControlPotmeter(ConfigKey(_group, "rate"), -1.f, 1.f);
 
     // Search rate. Rate used when searching in sound. This overrules the

@@ -27,6 +27,7 @@
 #include "qcombobox.h"
 #include "configobject.h"
 #include "controlobject.h"
+#include "controlobjectslave.h"
 #include "controlobjectthreadmain.h"
 #include "widget/wnumberpos.h"
 #include "engine/enginebuffer.h"
@@ -50,7 +51,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
            m_pPlayerManager(pPlayerManager) {
     setupUi(this);
 
-    for (unsigned int i = 0; i < PlayerManager::numDecks(); ++i) {
+    m_pNumDecks = new ControlObjectSlave("[Master]", "num_decks", this);
+    m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)), Qt::DirectConnection);
+    m_iNumConfiguredDecks = m_pNumDecks->get();
+    m_pNumSamplers = new ControlObjectSlave("[Master]", "num_preview_decks", this);
+    m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)), Qt::DirectConnection);
+    m_iNumConfiguredSamplers = m_pNumSamplers->get();
+
+    for (int i = 0; i < m_iNumConfiguredDecks; ++i) {
         QString group = PlayerManager::groupForDeck(i);
         m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
@@ -62,7 +70,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
                 group, "cue_mode"));
     }
 
-    for (unsigned int i = 0; i < m_pPlayerManager->numSamplers(); ++i) {
+    for (int i = 0; i < m_iNumConfiguredSamplers; ++i) {
         QString group = PlayerManager::groupForSampler(i);
         m_rateControls.push_back(new ControlObjectThread(
                 group, "rate"));
@@ -98,12 +106,14 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateDir"),ConfigValue(0));
 
+    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
     connect(ComboBoxRateDir,   SIGNAL(activated(int)), this, SLOT(slotSetRateDir(int)));
 
     // Set default range as stored in config file
     if (m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).length() == 0)
         m_pConfig->set(ConfigKey("[Controls]","RateRange"),ConfigValue(2));
 
+    slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
     connect(ComboBoxRateRange, SIGNAL(activated(int)), this, SLOT(slotSetRateRange(int)));
 
     //
@@ -749,4 +759,51 @@ bool DlgPrefControls::checkSkinResolution(QString skin)
     QString skinHeight = res.right(res.count()-skinWidth.count()-1);
 
     return !(skinWidth.toInt() > screenWidth || skinHeight.toInt() > screenHeight);
+}
+
+void DlgPrefControls::slotNumDecksChanged(double new_count) {
+    int numdecks = static_cast<int>(new_count);
+    if (numdecks <= m_iNumConfiguredDecks) {
+        // TODO(owilliams): If we implement deck deletion, shrink the size of configured decks.
+        return;
+    }
+
+    for (int i = m_iNumConfiguredDecks; i < numdecks; ++i) {
+        QString group = PlayerManager::groupForDeck(i);
+        m_rateControls.push_back(new ControlObjectThread(
+                group, "rate"));
+        m_rateRangeControls.push_back(new ControlObjectThread(
+                group, "rateRange"));
+        m_rateDirControls.push_back(new ControlObjectThread(
+                group, "rate_dir"));
+        m_cueControls.push_back(new ControlObjectThread(
+                group, "cue_mode"));
+    }
+
+    m_iNumConfiguredDecks = numdecks;
+    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
+    slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
+}
+
+void DlgPrefControls::slotNumSamplersChanged(double new_count) {
+    int numsamplers = static_cast<int>(new_count);
+    if (numsamplers <= m_iNumConfiguredSamplers) {
+        return;
+    }
+
+    for (int i = m_rateControls.size(); i < m_iNumConfiguredSamplers; ++i) {
+        QString group = PlayerManager::groupForSampler(i);
+        m_rateControls.push_back(new ControlObjectThread(
+                group, "rate"));
+        m_rateRangeControls.push_back(new ControlObjectThread(
+                group, "rateRange"));
+        m_rateDirControls.push_back(new ControlObjectThread(
+                group, "rate_dir"));
+        m_cueControls.push_back(new ControlObjectThread(
+                group, "cue_mode"));
+    }
+
+    m_iNumConfiguredSamplers = numsamplers;
+    slotSetRateDir(m_pConfig->getValueString(ConfigKey("[Controls]","RateDir")).toInt());
+    slotSetRateRange(m_pConfig->getValueString(ConfigKey("[Controls]","RateRange")).toInt());
 }
