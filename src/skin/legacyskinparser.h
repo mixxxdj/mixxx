@@ -41,7 +41,7 @@ class LegacySkinParser : public QObject, public SkinParser {
   private:
     static QDomElement openSkin(QString skinPath);
 
-    QWidget* parseNode(QDomElement node, QWidget* pGrandparent);
+    QWidget* parseNode(QDomElement node);
 
     // Support for various legacy behavior
     void parseColorSchemes(QDomElement node);
@@ -50,7 +50,7 @@ class LegacySkinParser : public QObject, public SkinParser {
     // Parsers for each node
     QWidget* parseWidgetGroup(QDomElement node);
     QWidget* parseWidgetStack(QDomElement node);
-    QWidget* parseBackground(QDomElement node, QWidget* pGrandparent);
+    QWidget* parseBackground(QDomElement node, QWidget* pOuterWidget, QWidget* pInnerWidget);
     QWidget* parsePushButton(QDomElement node);
     QWidget* parseSliderComposed(QDomElement node);
     QWidget* parseVisual(QDomElement node);
@@ -68,7 +68,6 @@ class LegacySkinParser : public QObject, public SkinParser {
     QWidget* parseLabel(QDomElement node);
     QWidget* parseKnob(QDomElement node);
     QWidget* parseTableView(QDomElement node);
-    QWidget* parseStyle(QDomElement node);
     QWidget* parseEffectChainName(QDomElement node);
     QWidget* parseSpinny(QDomElement node);
     QWidget* parseSearchBox(QDomElement node);

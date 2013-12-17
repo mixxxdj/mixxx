@@ -295,6 +295,11 @@ class Qt(Dependence):
             module_defines = qt5_module_defines if qt5 else qt4_module_defines
             for module in qt_modules:
                 build.env.AppendUnique(CPPDEFINES=module_defines.get(module, []))
+
+            if qt5:
+                build.env["QT5_MOCCPPPATH"] = build.env["CPPPATH"]
+            else:
+                build.env["QT4_MOCCPPPATH"] = build.env["CPPPATH"]
         elif build.platform_is_windows:
             # This automatically converts QtCore to QtCore[45][d] where
             # appropriate.

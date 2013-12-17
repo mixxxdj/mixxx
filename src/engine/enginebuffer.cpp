@@ -220,14 +220,13 @@ EngineBuffer::EngineBuffer(const char* _group, ConfigObject<ConfigValue>* _confi
                                      pMixingEngine->getEngineSync());
     addControl(m_pSyncControl);
 
+#ifdef __VINYLCONTROL__
+    addControl(new VinylControlControl(_group, _config));
+#endif
+
     m_pRateControl = new RateControl(_group, _config);
     // Add the Rate Controller
     addControl(m_pRateControl);
-#ifdef __VINYLCONTROL__
-    VinylControlControl *vcc = new VinylControlControl(_group, _config);
-    addControl(vcc);
-    m_pRateControl->setVinylControlControl(vcc);
-#endif
 
     // Create the BPM Controller
     m_pBpmControl = new BpmControl(_group, _config);
@@ -372,7 +371,7 @@ void EngineBuffer::queueNewPlaypos(double newpos) {
 // WARNING: This method is not thread safe and must not be called from outside
 // the engine callback!
 void EngineBuffer::setNewPlaypos(double newpos) {
-    //qDebug() << "engine new pos " << newpos;
+    //qDebug() << m_group << "engine new pos " << newpos;
 
     // Before seeking, read extra buffer for crossfading
     CSAMPLE* fadeout = m_pScale->getScaled(m_iLastBufferSize);
@@ -385,8 +384,9 @@ void EngineBuffer::setNewPlaypos(double newpos) {
     m_iSamplesCalculated = 1000000;
 
     // The right place to do this?
-    if (m_pScale)
+    if (m_pScale) {
         m_pScale->clear();
+    }
     m_pReadAheadManager->notifySeek(m_filepos_play);
 
     // Must hold the engineLock while using m_engineControls
@@ -505,14 +505,6 @@ void EngineBuffer::slotControlSeek(double change)
     if (!even((int)new_playpos))
         new_playpos--;
 
-    if (m_pQuantize->get() > 0.0) {
-        int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(new_playpos));
-        if (!even(offset)) {
-            offset--;
-        }
-        new_playpos += offset;
-    }
-
     queueNewPlaypos(new_playpos);
 }
 
@@ -585,17 +577,7 @@ void EngineBuffer::slotControlSlip(double v)
     }
 
     m_bSlipEnabled = enabled;
-
-    if (enabled) {
-        // TODO(rryan): Should this filepos instead be the RAMAN current
-        // position? filepos_play could be out of date.
-        m_dSlipPosition = m_filepos_play;
-        m_dSlipRate = m_rate_old;
-    } else {
-        // TODO(owen) assuming that looping will get canceled properly
-        slotControlSeekAbs(m_dSlipPosition);
-        m_dSlipPosition = 0;
-    }
+    m_bSlipToggled = true;
 }
 
 
@@ -637,10 +619,8 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
             baserate, paused, iBufferSize, &is_scratching);
         double pitch = m_pKeyControl->getPitchAdjustOctaves();
 
-        // Update the slipped position
-        if (m_bSlipEnabled) {
-            m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
-        }
+        // Update the slipped position and seek if it was disabled.
+        processSlip(iBufferSize);
 
         // If either keylock is enabled or the pitch slider is non-zero then we
         // need to use pitch and time scaling. Scratching always disables
@@ -650,6 +630,14 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
         enablePitchAndTimeScaling(use_pitch_and_time_scaling);
 
         if (m_bSeekQueued.testAndSetAcquire(1, 0)) {
+            // If we are playing and quantize is on, match phase when seeking.
+            if (!paused && m_pQuantize->get() > 0.0) {
+                int offset = static_cast<int>(m_pBpmControl->getPhaseOffset(m_dQueuedPosition));
+                if (!even(offset)) {
+                    offset--;
+                }
+                m_dQueuedPosition += offset;
+            }
             setNewPlaypos(m_dQueuedPosition);
         }
 
@@ -918,6 +906,26 @@ void EngineBuffer::process(const CSAMPLE *, const CSAMPLE * pOut, const int iBuf
     m_bLastBufferPaused = bCurBufferPaused;
     m_iLastBufferSize = iBufferSize;
 }
+
+void EngineBuffer::processSlip(int iBufferSize) {
+    if (m_bSlipToggled) {
+        if (m_bSlipEnabled) {
+            m_dSlipPosition = m_filepos_play;
+            m_dSlipRate = m_rate_old;
+        } else {
+            // TODO(owen) assuming that looping will get canceled properly
+            slotControlSeekAbs(m_dSlipPosition);
+            m_dSlipPosition = 0;
+        }
+        m_bSlipToggled = false;
+    }
+
+    // Increment slip position even if it was just toggled -- this ensures the position is correct.
+    if (m_bSlipEnabled) {
+        m_dSlipPosition += static_cast<double>(iBufferSize) * m_dSlipRate;
+    }
+}
+
 
 void EngineBuffer::updateIndicators(double speed, int iBufferSize) {
 

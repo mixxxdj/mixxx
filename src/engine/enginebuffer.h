@@ -120,6 +120,8 @@ public:
 
     void process(const CSAMPLE *pIn, const CSAMPLE *pOut, const int iBufferSize);
 
+    void processSlip(int iBufferSize);
+
     const char* getGroup();
     bool isTrackLoaded();
     TrackPointer getLoadedTrack() const;
@@ -242,6 +244,8 @@ public:
     double m_dSlipRate;
     // Slip Status
     bool m_bSlipEnabled;
+    bool m_bSlipToggled;
+
 
     ControlObject* m_pTrackSamples;
     ControlObject* m_pTrackSampleRate;

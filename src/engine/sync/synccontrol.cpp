@@ -83,9 +83,13 @@ void SyncControl::setEngineControls(RateControl* pRateControl,
 #ifdef __VINYLCONTROL__
     m_pVCEnabled.reset(new ControlObjectSlave(
         getGroup(), "vinylcontrol_enabled", this));
+
     // Throw a hissy fit if somebody moved us such that the vinylcontrol_enabled
     // control doesn't exist yet. This will blow up immediately, won't go unnoticed.
     Q_ASSERT(m_pVCEnabled->valid());
+
+    m_pVCEnabled->connectValueChanged(this, SLOT(slotVinylControlChanged(double)),
+                                      Qt::DirectConnection);
 #endif
 }
 
@@ -96,6 +100,10 @@ void SyncControl::notifySyncModeChanged(SyncMode mode) {
     m_pSyncMode->setAndConfirm(mode);
     m_pSyncEnabled->setAndConfirm(mode != SYNC_NONE);
     m_pSyncMasterEnabled->setAndConfirm(mode == SYNC_MASTER);
+    if (mode == SYNC_FOLLOWER && m_pVCEnabled->get()) {
+        // If follower mode is enabled, disable vinyl control.
+        m_pVCEnabled->set(0.0);
+    }
 }
 
 double SyncControl::getBeatDistance() const {
@@ -154,6 +162,13 @@ bool SyncControl::isPlaying() const {
 
 void SyncControl::slotControlPlay(double play) {
     m_pEngineSync->notifyPlaying(this, play > 0.0);
+}
+
+void SyncControl::slotVinylControlChanged(double enabled) {
+    if (enabled && getSyncMode() == SYNC_FOLLOWER) {
+        // If vinyl control was enabled and we're a follower, disable sync mode.
+        m_pEngineSync->requestSyncMode(this, SYNC_NONE);
+    }
 }
 
 void SyncControl::slotSyncModeChangeRequest(double state) {

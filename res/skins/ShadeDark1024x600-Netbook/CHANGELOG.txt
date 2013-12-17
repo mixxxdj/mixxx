@@ -1,6 +1,6 @@
-ShadeDark , Skin for Mixxx 1.11.x
+ShadeDark , Skin for Mixxx 1.12.x
 www.mixxx.org
-Copyright (C) 2010-2012 jus <s.brandt@mixxx.org>
+Copyright (C) 2010-2014 jus <s.brandt@mixxx.org>
 This file is part of the "ShadeDark" Skin for Mixxx
 "ShadeDark" is licensed under the Creative Commons Attribution-ShareAlike 3.0 Unported license.
 http://creativecommons.org/licenses/by-sa/3.0/
@@ -22,6 +22,10 @@ Share Alike - If you alter, transform, or build upon this work, you may distribu
 the resulting work only under the same or similar license to this one.
 
 CHANGELOG
+v1.12.0.01  (15/12/2013)
+* Feature: Added <reverseroll> as right-click option to the Reverse button 
+  Puts a track into reverse while being held, resumes the track and disables slip when released (Censor).
+
 v1.11.0.15  (13/04/2013)
 * Fix: Removes <BeatHighlightColor> from the waveforms, which blinks for a brief about of
   time to indicate when the beat is near the playposition. Fixes lp:1112396

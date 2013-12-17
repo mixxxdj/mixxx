@@ -248,7 +248,8 @@ void MixxxApp::initializeKeyboard() {
 }
 
 MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
-        : m_runtime_timer("MixxxApp::runtime"),
+        : m_pWidgetParent(NULL),
+          m_runtime_timer("MixxxApp::runtime"),
           m_cmdLineArgs(args),
           m_pVinylcontrol1Enabled(NULL),
           m_pVinylcontrol2Enabled(NULL) {
@@ -490,29 +491,24 @@ MixxxApp::MixxxApp(QApplication *pApp, const CmdlineArgs& args)
     pContextWidget->hide();
     SharedGLContext::setWidget(pContextWidget);
 
-    // Use frame as container for view, needed for fullscreen display
-    m_pView = new QFrame();
-
-    m_pWidgetParent = NULL;
-    // Loads the skin as a child of m_pView
-    // assignment intentional in next line
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(
-        m_pView, m_pKeyboard, m_pPlayerManager, m_pControllerManager,
-        m_pLibrary, m_pVCManager, m_pEffectsManager))) {
-        reportCriticalErrorAndQuit("default skin cannot be loaded see <b>mixxx</b> trace for more information.");
+    // Load skin to a QWidget that we set as the central widget. Assignment
+    // intentional in next line.
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this, m_pKeyboard,
+                                                           m_pPlayerManager,
+                                                           m_pControllerManager,
+                                                           m_pLibrary,
+                                                           m_pVCManager,
+                                                           m_pEffectsManager))) {
+        reportCriticalErrorAndQuit(
+            "default skin cannot be loaded see <b>mixxx</b> trace for more information.");
 
         //TODO (XXX) add dialog to warn user and launch skin choice page
         resize(640,480);
     } else {
-        // keep gui centered (esp for fullscreen)
-        m_pView->setLayout( new QHBoxLayout(m_pView));
-        m_pView->layout()->setContentsMargins(0,0,0,0);
-        m_pView->layout()->addWidget(m_pWidgetParent);
-
         // this has to be after the OpenGL widgets are created or depending on a
         // million different variables the first waveform may be horribly
         // corrupted. See bug 521509 -- bkgood ?? -- vrince
-        setCentralWidget(m_pView);
+        setCentralWidget(m_pWidgetParent);
     }
 
     //move the app in the center of the primary screen
@@ -591,9 +587,9 @@ MixxxApp::~MixxxApp() {
     qDebug() << "delete soundmanager " << qTime.elapsed();
     delete m_pSoundManager;
 
-    // View depends on MixxxKeyboard, PlayerManager, Library
+    // GUI depends on MixxxKeyboard, PlayerManager, Library
     qDebug() << "delete view " << qTime.elapsed();
-    delete m_pView;
+    delete m_pWidgetParent;
 
     // SkinLoader depends on Config
     qDebug() << "delete SkinLoader " << qTime.elapsed();
@@ -1493,18 +1489,17 @@ void MixxxApp::setToolTipsCfg(int tt) {
 }
 
 void MixxxApp::rebootMixxxView() {
-
-    if (!m_pWidgetParent || !m_pView)
-        return;
-
     qDebug() << "Now in rebootMixxxView...";
 
     QPoint initPosition = pos();
     QSize initSize = size();
 
-    m_pView->hide();
-
-    WaveformWidgetFactory::instance()->destroyWidgets();
+    if (m_pWidgetParent) {
+        m_pWidgetParent->hide();
+        WaveformWidgetFactory::instance()->destroyWidgets();
+        delete m_pWidgetParent;
+        m_pWidgetParent = NULL;
+    }
 
     // Workaround for changing skins while fullscreen, just go out of fullscreen
     // mode. If you change skins while in fullscreen (on Linux, at least) the
@@ -1513,14 +1508,9 @@ void MixxxApp::rebootMixxxView() {
     bool wasFullScreen = m_pViewFullScreen->isChecked();
     slotViewFullScreen(false);
 
-    //delete the view cause swaping central widget do not remove the old one !
-    if (m_pView) {
-        delete m_pView;
-    }
-    m_pView = new QFrame();
-
-    // assignment in next line intentional
-    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(m_pView,
+    // Load skin to a QWidget that we set as the central widget. Assignment
+    // intentional in next line.
+    if (!(m_pWidgetParent = m_pSkinLoader->loadDefaultSkin(this,
                                                            m_pKeyboard,
                                                            m_pPlayerManager,
                                                            m_pControllerManager,
@@ -1531,25 +1521,19 @@ void MixxxApp::rebootMixxxView() {
         QMessageBox::critical(this,
                               tr("Error in skin file"),
                               tr("The selected skin cannot be loaded."));
-    } else {
-        // keep gui centered (esp for fullscreen)
-        m_pView->setLayout( new QHBoxLayout(m_pView));
-        m_pView->layout()->setContentsMargins(0,0,0,0);
-        m_pView->layout()->addWidget(m_pWidgetParent);
-
-        // don't move this before loadDefaultSkin above. bug 521509 --bkgood
-        // NOTE: (vrince) I don't know this comment is relevant now ...
-        setCentralWidget(m_pView);
-        update();
-        adjustSize();
-        //qDebug() << "view size" << m_pView->size() << size();
+        // m_pWidgetParent is NULL, we can't continue.
+        return;
     }
+
+    setCentralWidget(m_pWidgetParent);
+    update();
+    adjustSize();
 
     if (wasFullScreen) {
         slotViewFullScreen(true);
     } else {
-        move(initPosition.x() + (initSize.width() - m_pView->width()) / 2,
-             initPosition.y() + (initSize.height() - m_pView->height()) / 2);
+        move(initPosition.x() + (initSize.width() - m_pWidgetParent->width()) / 2,
+             initPosition.y() + (initSize.height() - m_pWidgetParent->height()) / 2);
     }
 
 #ifdef __APPLE__
@@ -1615,15 +1599,15 @@ void MixxxApp::slotOptionsMenuShow() {
 }
 
 void MixxxApp::slotToCenterOfPrimaryScreen() {
-    if (!m_pView)
+    if (!m_pWidgetParent)
         return;
 
     QDesktopWidget* desktop = QApplication::desktop();
     int primaryScreen = desktop->primaryScreen();
     QRect primaryScreenRect = desktop->availableGeometry(primaryScreen);
 
-    move(primaryScreenRect.left() + (primaryScreenRect.width() - m_pView->width()) / 2,
-         primaryScreenRect.top() + (primaryScreenRect.height() - m_pView->height()) / 2);
+    move(primaryScreenRect.left() + (primaryScreenRect.width() - m_pWidgetParent->width()) / 2,
+         primaryScreenRect.top() + (primaryScreenRect.height() - m_pWidgetParent->height()) / 2);
 }
 
 void MixxxApp::checkDirectRendering() {

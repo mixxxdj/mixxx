@@ -54,13 +54,8 @@ class EngineSync : public BaseSyncableListener {
     // beat_distance to match the master.
     void activateFollower(Syncable* pSyncable);
 
-    // Picks a new master (does not pick pDontPick) and calls
-    // activateChannelMaster on it. Clears m_bExplicitMasterSelected because the
-    // master it picks is not explicitly selected by the user.
-    void findNewMaster(Syncable* pDontPick);
-
-    Syncable* m_pScratchingPreviousMaster;
-    bool m_bExplicitMasterSelected;
+    // Unsets all sync state on a Syncable.
+    void deactivateSync(Syncable* pSyncable);
 };
 
 #endif

@@ -73,6 +73,7 @@ double InternalClock::getBeatDistance() const {
 void InternalClock::setBeatDistance(double beatDistance) {
     //qDebug() << "InternalClock::setBeatDistance" << beatDistance;
     m_dClockPosition = beatDistance * m_dBeatLength;
+    m_pClockBeatDistance->set(beatDistance);
 }
 
 double InternalClock::getBpm() const {

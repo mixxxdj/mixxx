@@ -68,6 +68,16 @@ RateControl::RateControl(const char* _group,
             Qt::DirectConnection);
     m_pBackButton->set(0);
 
+    m_pReverseRollButton = new ControlPushButton(ConfigKey(_group, "reverseroll"));
+    connect(m_pReverseRollButton, SIGNAL(valueChanged(double)),
+            this, SLOT(slotReverseRollActivate(double)),
+            Qt::DirectConnection);
+
+    m_pSlipEnabled = new ControlObjectSlave(_group, "slip_enabled", this);
+
+    m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
+    m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
+
     // Permanent rate-change buttons
     buttonRatePermDown =
         new ControlPushButton(ConfigKey(_group,"rate_perm_down"));
@@ -161,6 +171,7 @@ RateControl::~RateControl() {
     delete m_pRateSearch;
 
     delete m_pReverseButton;
+    delete m_pReverseRollButton;
     delete m_pForwardButton;
     delete m_pBackButton;
 
@@ -185,14 +196,6 @@ RateControl::~RateControl() {
 void RateControl::setBpmControl(BpmControl* bpmcontrol) {
     m_pBpmControl = bpmcontrol;
 }
-
-#ifdef __VINYLCONTROL__
-void RateControl::setVinylControlControl(VinylControlControl* vinylcontrolcontrol) {
-    m_pVinylControlControl = vinylcontrolcontrol;
-    m_pVCEnabled = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_enabled"));
-    m_pVCScratching = ControlObject::getControl(ConfigKey(getGroup(), "vinylcontrol_scratching"));
-}
-#endif
 
 void RateControl::setRateRamp(bool linearMode)
 {
@@ -229,6 +232,16 @@ void RateControl::setPerm(double v) {
 
 void RateControl::setPermSmall(double v) {
     m_dPermSmall = v;
+}
+
+void RateControl::slotReverseRollActivate(double v) {
+    if (v > 0.0) {
+        m_pSlipEnabled->set(1);
+        m_pReverseButton->set(1);
+    } else {
+        m_pReverseButton->set(0);
+        m_pSlipEnabled->set(0);
+    }
 }
 
 void RateControl::slotControlFastForward(double v)
@@ -456,10 +469,6 @@ double RateControl::calculateRate(double baserate, bool paused,
 
             rate += jogFactor;
 
-            // If we are reversing (and not scratching,) flip the rate.
-            if (!scratchEnable && m_pReverseButton->get()) {
-                rate = -rate;
-            }
         }
 
         double currentSample = getCurrentSample();
@@ -485,6 +494,10 @@ double RateControl::calculateRate(double baserate, bool paused,
             rate += userTweak;
 
             rate *= m_pBpmControl->getSyncAdjustment(userTweakingSync);
+        }
+        // If we are reversing (and not scratching,) flip the rate.  This is ok even when syncing.
+        if (!scratchEnable && m_pReverseButton->get()) {
+            rate = -rate;
         }
     }
 

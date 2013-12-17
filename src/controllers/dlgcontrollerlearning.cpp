@@ -60,6 +60,7 @@ DlgControllerLearning::DlgControllerLearning(QWidget * parent,
     addDeckAndSamplerAndPreviewDeckControl("start", tr("Jump to start of track"), transportMenu);
     addDeckControl("end", tr("Jump to end of track"), transportMenu);
     addDeckControl("reverse", tr("Play reverse button"), transportMenu);
+    addDeckControl("reverseroll", tr("Reverse roll (Censor) button"), transportMenu);
     addDeckAndSamplerAndPreviewDeckControl("pregain", tr("Gain knob"), transportMenu, true);
     addDeckAndSamplerControl("pfl", tr("Headphone listen button"), transportMenu);
     addDeckAndSamplerControl("repeat", tr("Toggle repeat mode"), transportMenu);

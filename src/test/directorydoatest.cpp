@@ -1,4 +1,5 @@
 #include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 #include <QtDebug>
 #include <QtSql>
@@ -6,12 +7,15 @@
 #include <QStringBuilder>
 #include <QDir>
 #include <QFileInfo>
+#include <QtAlgorithms>
 
 #include "configobject.h"
 #include "library/dao/directorydao.h"
 #include "library/dao/trackdao.h"
 #include "library/trackcollection.h"
 #include "test/mixxxtest.h"
+
+using ::testing::ElementsAre;
 
 namespace {
 
@@ -58,7 +62,12 @@ TEST_F(DirectoryDAOTest, addDirTest) {
 
     // check that we don't add the directory again
     success = m_DirectoryDao.addDirectory(testdir);
-    EXPECT_EQ(SQL_ERROR, success);
+    EXPECT_EQ(ALREADY_WATCHING, success);
+
+    // check that we don't add the directory again also if the string ends with
+    // "/".
+    success = m_DirectoryDao.addDirectory(testdir + "/");
+    EXPECT_EQ(ALREADY_WATCHING, success);
 
     // check that we don't add a child directory
     success = m_DirectoryDao.addDirectory(testChild);
@@ -140,8 +149,8 @@ TEST_F(DirectoryDAOTest, relocateDirTest) {
 
     QStringList dirs = directoryDao.getDirs();
     ASSERT_EQ(2, dirs.size());
-    EXPECT_QSTRING_EQ(QString("/Test2"), dirs.at(0));
-    EXPECT_QSTRING_EQ(QString("/new"), dirs.at(1));
+    qSort(dirs);
+    EXPECT_THAT(dirs, ElementsAre(QString("/Test2"), QString("/new")));
 }
 
 }  // namespace
