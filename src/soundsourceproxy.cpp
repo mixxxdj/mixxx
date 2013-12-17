@@ -331,7 +331,7 @@ int SoundSourceProxy::ParseHeader(TrackInfoObject* p)
 
     if (sndsrc->parseHeader() == OK) {
         //Dump the metadata from the soundsource into the TIO
-        //qDebug() << "Album:" << sndsrc->getAlbum(); //Sanity check to make setType(ure we've actually parsed metadata and not the filename
+        //qDebug() << "Album:" << sndsrc->getAlbum(); //Sanity check to make sure we've actually parsed metadata and not the filename
 
         // If Artist, Title and Type fields are not blank, modify them.
         // Otherwise, keep the values extracted by the function TrackInfoObject::parseFilename()
