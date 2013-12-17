@@ -214,7 +214,7 @@ void Tooltips::addStandardTooltips() {
 
     add("visual_key")
             << tr("Key")
-            << tr("Displays the harmonic key of the loaded track.");
+            << tr("Displays the current musical key of the loaded track after pitch shifting.");
 
     add("bpm_tap")
             << tr("BPM Tap")
