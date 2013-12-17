@@ -57,7 +57,7 @@ DlgPrefControls::DlgPrefControls(QWidget * parent, MixxxApp * mixxx,
     m_pNumDecks->connectValueChanged(SLOT(slotNumDecksChanged(double)), Qt::DirectConnection);
     slotNumDecksChanged(m_pNumDecks->get());
 
-    m_pNumSamplers = new ControlObjectSlave("[Master]", "num_preview_decks", this);
+    m_pNumSamplers = new ControlObjectSlave("[Master]", "num_samplers", this);
     m_pNumSamplers->connectValueChanged(SLOT(slotNumSamplersChanged(double)), Qt::DirectConnection);
     slotNumSamplersChanged(m_pNumSamplers->get());
 
