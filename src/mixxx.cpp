@@ -1152,8 +1152,6 @@ void MixxxApp::initActions()
     QString calcSimilaritiesTitle = tr("&Calculate similarities");
     QString calcSimilaritiesText = tr("Calculate similarities");
     m_pDeveloperCalculateSimilarities = new QAction(calcSimilaritiesText, this);
-//    m_pDeveloperCalculateSimilarities->setShortcut(QKeySequence(tr("Ctrl+Shift+C")));
-//    m_pDeveloperCalculateSimilarities->setShortcutContext(Qt::ApplicationShortcut);
     m_pDeveloperCalculateSimilarities->setCheckable(true);
     m_pDeveloperCalculateSimilarities->setChecked(false);
     m_pDeveloperCalculateSimilarities->setStatusTip(calcSimilaritiesText);
@@ -1306,6 +1304,7 @@ void MixxxApp::slotDeveloperReloadSkin(bool toggle) {
 void MixxxApp::slotDeveloperCalculateSimilarities(bool toggle) {
     Q_UNUSED(toggle);
     QString filename =
+        // TODO (kain88) change this to home as default
         QFileDialog::getSaveFileName(this,
                                      tr("Save Comparison CSV File"),
                                      "/Users/chrisjr/ismir04/comparisons.csv",

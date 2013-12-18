@@ -7,7 +7,7 @@
 
 DlgPrefSelector::DlgPrefSelector(QWidget *parent,
                                  ConfigObject<ConfigValue> *pConfig)
-        :  DlgPreferencePage(parent),
+        : DlgPreferencePage(parent),
         Ui::DlgPrefSelectorDlg(),
         m_pConfig(pConfig) {
     setupUi(this);
@@ -97,9 +97,7 @@ void DlgPrefSelector::slotUpdate() {
 }
 
 void DlgPrefSelector::setDefaults() {
-    m_pConfig->set(
-        ConfigKey(SELECTOR_CONFIG_KEY, HAS_RUN),
-        ConfigValue(1));
+    m_pConfig->set(ConfigKey(SELECTOR_CONFIG_KEY, HAS_RUN), ConfigValue(1));
     m_bFilterGenre = false;
     m_bFilterBpm = false;
     m_iFilterBpmRange = 5;
@@ -153,6 +151,9 @@ void DlgPrefSelector::setLastFmContribution(int value) {
 }
 
 void DlgPrefSelector::setContribution(QString key, int value) {
+    // this is to ensure that if one contribution is changed they always
+    // sum up to 100%
+    // TODO (kain88) word smithing required
     m_similarityContributions.insert(key, value);
     double scale = 0.0;
     foreach (int contribution, m_similarityContributions.values()) {
@@ -164,9 +165,10 @@ void DlgPrefSelector::setContribution(QString key, int value) {
         if (otherKey != key) {
             int otherValue = m_similarityContributions.value(otherKey);
             otherValue = (int) (otherValue * scale);
-            if (otherValue < 1) otherValue = 1;
+            if (otherValue < 1) {
+                otherValue = 1;
+            }
             m_similarityContributions.insert(otherKey, otherValue);
-
             QSlider* pSlider = m_similaritySliders.value(otherKey);
             pSlider->setValue(otherValue);
         }

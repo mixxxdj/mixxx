@@ -15,8 +15,8 @@ using mixxx::track::io::key::ChromaticKey_IsValid;
 
 SelectorFilters::SelectorFilters(QObject* pParent,
                                  ConfigObject<ConfigValue>* pConfig)
-               : QObject(pParent),
-                 m_pConfig(pConfig) {
+        : QObject(pParent),
+        m_pConfig(pConfig) {
     loadStoredFilterSettings();
 }
 
@@ -76,52 +76,51 @@ void SelectorFilters::setKeyRelativeFilter(bool value) {
 }
 
 QString SelectorFilters::getFilterString(TrackPointer pSeedTrack) {
-    QString filterString;
-    if (pSeedTrack) {
-        QString sSeedTrackGenre = pSeedTrack->getGenre();
-        float fSeedTrackBpm = pSeedTrack->getBpm();
-        ChromaticKey seedTrackKey = pSeedTrack->getKey();
-        TimbrePointer pSeedTrackTimbre = pSeedTrack->getTimbre();
-
-        QStringList filters;
-
-        // Genre
-        if (m_bFilterGenre) {
-            if (!sSeedTrackGenre.isEmpty())
-                filters << "Genre == '" % sSeedTrackGenre % "'";
-        }
-
-        // BPM
-        if (m_bFilterBpm) {
-            if (fSeedTrackBpm > 0)
-                filters << "(Bpm > " % QString::number(
-                               floor(fSeedTrackBpm - m_iFilterBpmRange)) %
-                           " AND Bpm < " % QString::number(
-                               ceil(fSeedTrackBpm + m_iFilterBpmRange)) %
-                           ")";
-        }
-
-        // Keys
-
-        if (m_bFilterKey || m_bFilterKey4th ||
-                m_bFilterKey5th || m_bFilterKeyRelative) {
-
-            QList<ChromaticKey> hKeys = getHarmonicKeys(seedTrackKey);
-            QStringList keyNames;
-            foreach(ChromaticKey key, hKeys) {
-                QString keyName = "'" % KeyUtils::keyToString(key) % "'";
-                keyNames << keyName;
-            }
-
-            QString keyString = keyNames.join(",");
-            if (!keyString.isEmpty()) {
-                    qDebug() << "Match keys " << keyString;
-                    filters << "Key in (" % keyString % ")";
-            }
-        }
-
-        filterString = filters.join(" AND ");
+    if (!pSeedTrack) {
+        return QString();
     }
+
+    QString filterString;
+    QString sSeedTrackGenre = pSeedTrack->getGenre();
+    float fSeedTrackBpm = pSeedTrack->getBpm();
+    ChromaticKey seedTrackKey = pSeedTrack->getKey();
+    TimbrePointer pSeedTrackTimbre = pSeedTrack->getTimbre();
+    QStringList filters;
+
+    // Genre
+    if (m_bFilterGenre) {
+        if (!sSeedTrackGenre.isEmpty()) {
+            filters << "Genre == '" % sSeedTrackGenre % "'";
+        }
+    }
+    // BPM
+    if (m_bFilterBpm) {
+        if (fSeedTrackBpm > 0) {
+            filters <<
+                "(Bpm > " %
+                QString::number(floor(fSeedTrackBpm - m_iFilterBpmRange)) %
+                " AND Bpm < " %
+                QString::number(ceil(fSeedTrackBpm + m_iFilterBpmRange)) %
+                ")";
+        }
+    }
+    // Keys
+    if (m_bFilterKey || m_bFilterKey4th ||
+            m_bFilterKey5th || m_bFilterKeyRelative) {
+        QList<ChromaticKey> hKeys = getHarmonicKeys(seedTrackKey);
+        QStringList keyNames;
+        foreach(ChromaticKey key, hKeys) {
+            QString keyName = "'" % KeyUtils::keyToString(key) % "'";
+            keyNames << keyName;
+        }
+        QString keyString = keyNames.join(",");
+        if (!keyString.isEmpty()) {
+                qDebug() << "Match keys " << keyString;
+                filters << "Key in (" % keyString % ")";
+        }
+    }
+
+    filterString = filters.join(" AND ");
     return filterString;
 }
 

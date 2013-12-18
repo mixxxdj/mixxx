@@ -1,10 +1,9 @@
-#include <vamp-hostsdk/vamp-hostsdk.h>
 #include <qcheckbox.h>
+#include <vamp-hostsdk/vamp-hostsdk.h>
 
-
-#include "vamp/vampanalyser.h"
-#include "track/timbre_preferences.h"
 #include "dlgpreftimbre.h"
+#include "track/timbre_preferences.h"
+#include "vamp/vampanalyser.h"
 #include "ui_dlgpreftimbredlg.h"
 
 using Vamp::Plugin;
@@ -14,7 +13,7 @@ using Vamp::HostExt::PluginWrapper;
 using Vamp::HostExt::PluginInputDomainAdapter;
 
 DlgPrefTimbre::DlgPrefTimbre(QWidget *parent, ConfigObject<ConfigValue> *pConfig)
-        :  DlgPreferencePage(parent),
+        : DlgPreferencePage(parent),
         Ui::DlgPrefTimbreDlg(),
         m_pConfig(pConfig),
         m_bAnalyserEnabled(false) {
@@ -27,7 +26,6 @@ DlgPrefTimbre::DlgPrefTimbre(QWidget *parent, ConfigObject<ConfigValue> *pConfig
             this, SLOT(pluginSelected(int)));
     connect(checkBoxAnalyserEnabled, SIGNAL(stateChanged(int)),
             this, SLOT(analyserEnabled(int)));
-
 }
 
 DlgPrefTimbre::~DlgPrefTimbre() {
@@ -88,7 +86,6 @@ void DlgPrefTimbre::setDefaults() {
     slotUpdate();
 }
 
-
 void DlgPrefTimbre::populate() {
     VampAnalyser::initializePluginPaths();
     m_listIdentifier.clear();
@@ -98,19 +95,22 @@ void DlgPrefTimbre::populate() {
     comboBoxPlugin->setDuplicatesEnabled(false);
     VampPluginLoader *loader = VampPluginLoader::getInstance();
     std::vector<PluginLoader::PluginKey> plugins = loader->listPlugins();
-    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size() << "plugins";
+    qDebug() << "VampPluginLoader::listPlugins() returned" << plugins.size()
+             << "plugins";
     for (unsigned int iPlugin=0; iPlugin < plugins.size(); iPlugin++) {
         Plugin *plugin = loader->loadPlugin(plugins[iPlugin], 48000);
         if (plugin) {
             Plugin::OutputList outputs = plugin->getOutputDescriptors();
             for (unsigned int iOutput=0; iOutput < outputs.size(); iOutput++) {
-                QString displayName = QString::fromStdString(plugin->getIdentifier()) + ":"
-                                            + QString::number(iOutput);
+                QString displayName = QString::fromStdString(plugin->getIdentifier())
+                    + ":" + QString::number(iOutput);
                 QString displayNameText = QString::fromStdString(plugin->getName());
-                bool isTimbreDetector = displayName.contains(VAMP_ANALYSER_TIMBRE_DEFAULT_PLUGIN_ID);
+                bool isTimbreDetector = displayName.contains(
+                    VAMP_ANALYSER_TIMBRE_DEFAULT_PLUGIN_ID);
                 if (isTimbreDetector) {
                     m_listName << displayNameText;
-                    QString pluginlibrary = QString::fromStdString(plugins[iPlugin]).section(":",0,0);
+                    QString pluginlibrary = QString::fromStdString(
+                        plugins[iPlugin]).section(":",0,0);
                     m_listLibrary << pluginlibrary;
                     m_listIdentifier << displayName;
                     comboBoxPlugin->addItem(displayNameText, displayName);

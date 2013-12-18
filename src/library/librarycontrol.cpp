@@ -166,7 +166,6 @@ void LibraryControl::bindWidget(WLibrary* pLibraryWidget, MixxxKeyboard* pKeyboa
         disconnect(m_pLibraryWidget, 0, this, 0);
     }
     m_pLibraryWidget = pLibraryWidget;
-
     connect(m_pLibraryWidget, SIGNAL(destroyed()),
             this, SLOT(libraryWidgetDeleted()));
 }

@@ -8,26 +8,24 @@ using mixxx::track::io::timbre::TimbreModel;
 using mixxx::track::io::timbre::BeatSpectrum;
 
 double TimbreUtils::klDivergence(TimbrePointer pTimbre,
-                                 TimbrePointer pTimbre2) {
+        TimbrePointer pTimbre2) {
     return modelDistance(pTimbre, pTimbre2, distanceKL);
 }
 
 double TimbreUtils::symmetricKlDivergence(TimbrePointer pTimbre,
-                                          TimbrePointer pTimbre2) {
+        TimbrePointer pTimbre2) {
     return modelDistance(pTimbre, pTimbre2, distanceSymmetricKL);
 }
 
 double TimbreUtils::hellingerDistance(TimbrePointer pTimbre,
-                                      TimbrePointer pTimbre2) {
+        TimbrePointer pTimbre2) {
     return modelDistance(pTimbre, pTimbre2, distanceHellinger);
 }
 
 double TimbreUtils::modelDistance(TimbrePointer pTimbre,
-                                  TimbrePointer pTimbre2,
-                                  DistanceFunc distanceFunc) {
+        TimbrePointer pTimbre2, DistanceFunc distanceFunc) {
     const TimbreModel& model1 = pTimbre->getTimbreModel();
     const TimbreModel& model2 = pTimbre2->getTimbreModel();
-
     int m_size = model1.mean_size();
 
     std::vector<double> m1(m_size);
@@ -46,7 +44,7 @@ double TimbreUtils::modelDistance(TimbrePointer pTimbre,
 }
 
 double TimbreUtils::modelDistanceBeats(TimbrePointer pTimbre,
-                                       TimbrePointer pTimbre2) {
+        TimbrePointer pTimbre2) {
     const TimbreModel& model1 = pTimbre->getTimbreModel();
     const TimbreModel& model2 = pTimbre2->getTimbreModel();
 
@@ -70,39 +68,30 @@ double TimbreUtils::modelDistanceBeats(TimbrePointer pTimbre,
 }
 
 double TimbreUtils::distanceKL(const std::vector<double> &m1,
-                               const std::vector<double> &v1,
-                               const std::vector<double> &m2,
-                               const std::vector<double> &v2) {
+        const std::vector<double> &v1, const std::vector<double> &m2,
+        const std::vector<double> &v2) {
     // copied from QM DSP library - KLDivergence.cpp
     int sz = m1.size();
-
     double d = -2.0 * sz;
     double small = 1e-20;
 
     for (int k = 0; k < sz; ++k) {
-
         double kv1 = v1[k] + small;
         double kv2 = v2[k] + small;
         double km = (m1[k] - m2[k]) + small;
-
         d += kv1 / kv2 + kv2 / kv1;
         d += km * (1.0 / kv1 + 1.0 / kv2) * km;
     }
 
     d /= 2.0;
-
     return d;
 }
 
-
 double TimbreUtils::distanceSymmetricKL(const std::vector<double> &m1,
-                                        const std::vector<double> &v1,
-                                        const std::vector<double> &m2,
-                                        const std::vector<double> &v2) {
+        const std::vector<double> &v1, const std::vector<double> &m2,
+        const std::vector<double> &v2) {
     int dim = m1.size();
-
     double small = 1e-20;
-
     double cov_term = 0.0;
     double mean_term = 0.0;
 
@@ -111,11 +100,8 @@ double TimbreUtils::distanceSymmetricKL(const std::vector<double> &m1,
         double qv = v2[k] + small;
         double inv_pv = 1.0 / pv;
         double inv_qv = 1.0 / qv;
-
         cov_term += (pv * inv_qv) + (qv * inv_pv);
-
         double diff_mean = (m1[k] - m2[k]) + small;
-
         mean_term += diff_mean * (inv_pv + inv_qv) * diff_mean;
     }
 
@@ -123,17 +109,13 @@ double TimbreUtils::distanceSymmetricKL(const std::vector<double> &m1,
 }
 
 double TimbreUtils::distanceHellinger(const std::vector<double> &m1,
-                                      const std::vector<double> &v1,
-                                      const std::vector<double> &m2,
-                                      const std::vector<double> &v2) {
+        const std::vector<double> &v1, const std::vector<double> &m2,
+        const std::vector<double> &v2) {
     int dim = m1.size();
-
     double small = 1e-20;
-
     double det_p = 1.0;
     double det_q = 1.0;
     double det_combined = 1.0;
-
     double exp_term = 0.0;
 
     for (int k = 0; k < dim; k++) {
@@ -143,9 +125,7 @@ double TimbreUtils::distanceHellinger(const std::vector<double> &m1,
         det_q *= qv;
         double combined_v = 0.5 * (pv + qv);
         det_combined *= combined_v;
-
         double diff_mean = (m1[k] - m2[k]) + small;
-
         exp_term += diff_mean * (1.0/combined_v) * diff_mean;
     }
 
@@ -155,7 +135,7 @@ double TimbreUtils::distanceHellinger(const std::vector<double> &m1,
 }
 
 double TimbreUtils::distanceCosine(const std::vector<double> &v1,
-                                   const std::vector<double> &v2) {
+        const std::vector<double> &v2) {
     // copied from QM DSP library -- CosineDistance.cpp
     double dist = 1.0;
     double dDenTot = 0;
@@ -166,11 +146,9 @@ double TimbreUtils::distanceCosine(const std::vector<double> &v1,
 
     //check if v1, v2 same size
     if (v1.size() != v2.size()) {
-        qDebug() << "TimbreUtils::distanceCosine: "
-               << "ERROR: vectors not the same size.";
+        qDebug() << "TimbreUtils::distanceCosine:ERROR: vectors not the same size.";
         return 1.0;
-    }
-    else {
+    } else {
         for (int i=0; i < v1.size(); i++) {
             dSum1 += v1[i]*v2[i];
             dDen1 += v1[i]*v1[i];

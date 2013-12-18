@@ -1,26 +1,23 @@
 #include <QStringBuilder>
 
-#include "trackinfoobject.h"
-
-#include "track/timbreutils.h"
-
-#include "util/timer.h"
 #include "library/queryutil.h"
-
 #include "library/selector/selector_preferences.h"
 #include "library/selector/selectorfilters.h"
 #include "library/selector/selectorsimilarity.h"
+#include "trackinfoobject.h"
+#include "track/timbreutils.h"
+#include "util/timer.h"
 
 SelectorSimilarity::SelectorSimilarity(QObject* parent,
                                        TrackCollection* pTrackCollection,
                                        ConfigObject<ConfigValue>* pConfig,
                                        SelectorFilters& selectorFilters)
-                  : QObject(parent),
-                    m_pConfig(pConfig),
-                    m_pTrackCollection(pTrackCollection),
-                    m_database(m_pTrackCollection->getDatabase()),
-                    m_trackDAO(m_pTrackCollection->getTrackDAO()),
-                    m_selectorFilters(selectorFilters) {
+        : QObject(parent),
+          m_pConfig(pConfig),
+          m_pTrackCollection(pTrackCollection),
+          m_database(m_pTrackCollection->getDatabase()),
+          m_trackDAO(m_pTrackCollection->getTrackDAO()),
+          m_selectorFilters(selectorFilters) {
     m_similarityFunctions.insert("timbre", &timbreSimilarity);
     m_similarityFunctions.insert("rhythm", &rhythmSimilarity);
 }
@@ -29,7 +26,7 @@ SelectorSimilarity::~SelectorSimilarity() {
 }
 
 QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
-                                                           QList<int> trackIds) {
+        QList<int> trackIds) {
     QTime timer;
     timer.start();
 
@@ -41,7 +38,6 @@ QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
     foreach (int trackId, trackIds) {
         double score = 0.0;
         TrackPointer pTrack = m_trackDAO.getTrack(trackId);
-
         foreach (QString key, contributions.keys()) {
             double contribution = contributions.value(key);
             if (contribution != 0.0) {
@@ -49,7 +45,6 @@ QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
                 score += simFunc(pSeedTrack, pTrack) * contribution;
             }
         }
-
         scores << ScorePair(trackId, score);
     }
 
@@ -58,8 +53,10 @@ QList<ScorePair> SelectorSimilarity::calculateSimilarities(int iSeedTrackId,
 }
 
 QHash<QString, double> SelectorSimilarity::compareTracks(TrackPointer pTrack1,
-                                                         TrackPointer pTrack2) {
+        TrackPointer pTrack2) {
     QHash<QString, double> scores;
+    // TODO (kain88) also add contributions scheck here. maybe call this method
+    // in the one above
     foreach (QString key, m_similarityFunctions.keys()) {
         SimilarityFunc simFunc = m_similarityFunctions[key];
         scores.insert(key, simFunc(pTrack1, pTrack2));
@@ -84,8 +81,7 @@ QList<int> SelectorSimilarity::getFollowupTracks(int iSeedTrackId, int n) {
     QString filterString = m_selectorFilters.getFilterString(pSeedTrack);
     QSqlQuery query(m_database);
     query.prepare("SELECT id FROM library WHERE "
-                  "mixxx_deleted=0 AND " %
-                  filterString);
+                  "mixxx_deleted=0 AND " % filterString);
     if (!query.exec()) {
         LOG_FAILED_QUERY(query);
         return QList<int>();
@@ -120,7 +116,7 @@ int SelectorSimilarity::getTopFollowupTrack(int iSeedTrackId) {
     if (results.isEmpty()) {
         return -1; // invalid track Id
     }
-    // TODO(chrisjr): ensure that follow-up has not been played recently
+    // TODO (XXX): ensure that follow-up has not been played recently
     return results.first();
 }
 
@@ -141,6 +137,7 @@ void SelectorSimilarity::loadStoredSimilarityContributions() {
     setSimilarityContributions(contributions);
 }
 
+// ensure non-zero items sum to 1
 QHash<QString, double> SelectorSimilarity::normalizeContributions(
         TrackPointer pSeedTrack) {
     QHash<QString, double> contributions(m_similarityContributions);
@@ -149,13 +146,10 @@ QHash<QString, double> SelectorSimilarity::normalizeContributions(
         contributions["timbre"] = 0.0;
         contributions["beat"] = 0.0;
     }
-    // ensure non-zero items sum to 1
     double total = 0.0;
-
     foreach (double value, contributions.values()) {
         total += value;
     }
-
     if (total > 0.0) {
         foreach (QString key, contributions.keys()) {
             contributions[key] /= total;

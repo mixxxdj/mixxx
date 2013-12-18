@@ -1,10 +1,10 @@
 // selectorfeature.h
 // Created 8/23/2012 by Keith Salisbury (keith@globalkeith.com)
-
 #ifndef SELECTORFEATURE_H
 #define SELECTORFEATURE_H
 
 #include <QStringListModel>
+
 #include "library/libraryfeature.h"
 #include "library/treeitemmodel.h"
 #include "configobject.h"
@@ -26,10 +26,8 @@ class SelectorFeature : public LibraryFeature {
 
     bool dropAccept(QList<QUrl> urls,QWidget *pSource);
     bool dragMoveAccept(QUrl url);
-
     void bindWidget(WLibrary* libraryWidget,
                     MixxxKeyboard* keyboard);
-
     TreeItemModel* getChildModel();
 
   public slots:
@@ -44,6 +42,4 @@ class SelectorFeature : public LibraryFeature {
     TreeItemModel m_childModel;
     DlgSelector* m_pSelectorView;
 };
-
-
 #endif /* SELECTORFEATURE_H */

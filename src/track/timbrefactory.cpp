@@ -8,9 +8,8 @@ using mixxx::track::io::timbre::TimbreModel;
 using mixxx::track::io::timbre::BeatSpectrum;
 
 TimbrePointer TimbreFactory::loadTimbreFromByteArray(TrackPointer pTrack,
-                                                     QString timbreVersion,
-                                                     QString timbreSubVersion,
-                                                     QByteArray* timbreSerialized) {
+        QString timbreVersion,QString timbreSubVersion,
+        QByteArray* timbreSerialized) {
     if (timbreVersion == TIMBRE_MODEL_VERSION) {
         Timbre* pTimbre = new Timbre(timbreSerialized);
         pTimbre->moveToThread(pTrack->thread());
@@ -19,7 +18,8 @@ TimbrePointer TimbreFactory::loadTimbreFromByteArray(TrackPointer pTrack,
         qDebug() << "Successfully deserialized TimbreModel";
         return TimbrePointer(pTimbre, &TimbreFactory::deleteTimbre);
     }
-    qDebug() << "TimbreFactory::loadTimbreFromByteArray could not parse serialized timbre model.";
+    qDebug() << "TimbreFactory::loadTimbreFromByteArray could not parse"
+                "serialized timbre model.";
     return TimbrePointer();
 }
 
@@ -28,6 +28,7 @@ TimbrePointer TimbreFactory::makeTimbreModel(std::vector<double> mean,
                                              std::vector<double> beatSpectrum) {
     TimbreModel timbre_model;
     BeatSpectrum* beat_spectrum = timbre_model.mutable_beat_spectrum();
+    // TODO (kain88) use foreach
     for (std::vector<double>::iterator it = mean.begin(); it != mean.end(); ++it) {
         timbre_model.add_mean(*it);
     }
@@ -40,6 +41,7 @@ TimbrePointer TimbreFactory::makeTimbreModel(std::vector<double> mean,
     Timbre* pTimbre = new Timbre(timbre_model);
     return TimbrePointer(pTimbre, &TimbreFactory::deleteTimbre);
 }
+
 TimbrePointer TimbreFactory::makeTimbreModelFromVamp(QVector<double> timbreVector) {
     TimbreModel timbre_model;
     BeatSpectrum* beat_spectrum = timbre_model.mutable_beat_spectrum();
@@ -48,9 +50,7 @@ TimbrePointer TimbreFactory::makeTimbreModelFromVamp(QVector<double> timbreVecto
     int varianceIndex = timbreVector[1] + meanIndex;
     int beatSpectrumIndex = timbreVector[2] + varianceIndex;
 
-    int i = 3, n = timbreVector.size();
-
-    for(; i < n; i++) {
+    for(int i = 3; i < timbreVector.size(); i++) {
         double val = timbreVector[i];
         if (i < meanIndex)
             timbre_model.add_mean(val);
@@ -94,10 +94,8 @@ QString TimbreFactory::getPreferredSubVersion(
 }
 
 TimbrePointer TimbreFactory::makePreferredTimbreModel(TrackPointer pTrack,
-                                                      QVector<double> timbreVector,
-                                                      const QHash<QString, QString> extraVersionInfo,
-                                                      const int iSampleRate,
-                                                      const int iTotalSamples) {
+        QVector<double> timbreVector, const QHash<QString, QString> extraVersionInfo,
+        const int iSampleRate, const int iTotalSamples) {
     Q_UNUSED(pTrack);
     Q_UNUSED(iSampleRate);
     const QString version = getPreferredVersion();

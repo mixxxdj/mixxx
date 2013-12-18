@@ -21,12 +21,10 @@ class SelectorSimilarity : public QObject {
 
     QList<ScorePair> calculateSimilarities(int iSeedTrackId,
                                            QList<int> trackIds);
-
     // compare two tracks using every similarity function; used
     // for similarity diagnostics
     QHash<QString, double> compareTracks(TrackPointer pTrack1,
                                          TrackPointer pTrack2);
-
     QStringList getSimilarityTypes();
 
   public slots:
@@ -34,14 +32,12 @@ class SelectorSimilarity : public QObject {
     // according to current settings. (n defaults to -1, which returns all results.)
     QList<int> getFollowupTracks(int iSeedTrackId, int n = -1);
     int getTopFollowupTrack(int iSeedTrackId);
-    void setSimilarityContributions(
-            const QHash<QString, double>& contributions);
+    void setSimilarityContributions(const QHash<QString, double>& contributions);
 
   private:
     void loadStoredSimilarityContributions();
     QHash<QString, double> normalizeContributions(TrackPointer pSeedTrack);
     QHash<QString, double> m_similarityContributions;
-
     static bool similaritySort(const ScorePair s1,
                                const ScorePair s2);
 
@@ -49,7 +45,6 @@ class SelectorSimilarity : public QObject {
     TrackCollection* m_pTrackCollection;
     QSqlDatabase& m_database;
     TrackDAO& m_trackDAO;
-
     // typedef to store similarity functions in a QHash
     typedef double (*SimilarityFunc)(TrackPointer pTrack1,
                                      TrackPointer pTrack2);
@@ -58,7 +53,6 @@ class SelectorSimilarity : public QObject {
     // having to initiate a class instance
     static double timbreSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
     static double rhythmSimilarity(TrackPointer pTrack1, TrackPointer pTrack2);
-
     SelectorFilters& m_selectorFilters;
 };
 

@@ -884,6 +884,9 @@ class MixxxCore(Feature):
             'dlgrecording.ui',
             'dlgtagfetcher.ui',
             'dlgtrackinfo.ui',
+            'dlgpreftimbredlg.ui',
+            'dlgprefselectordlg.ui',
+            'dlgselector.ui'
         ]
         map(Qt.uic(build), ui_files)
 

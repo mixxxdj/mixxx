@@ -8,10 +8,10 @@
 
 #include "controlobjectthreadmain.h"
 #include "library/librarytablemodel.h"
-#include "track/timbre.h"
 #include "library/selector/scorepair.h"
 #include "library/selector/selectorfilters.h"
 #include "library/selector/selectorsimilarity.h"
+#include "track/timbre.h"
 
 #define SELECTOR_TABLE "selector_table"
 
@@ -26,12 +26,9 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     ~SelectorLibraryTableModel();
 
     void setTableModel(int id = -1);
-
     void search(const QString& searchText);
     void active(bool value);
-
     void setSeedTrack(TrackPointer pSeedTrack);
-
     // The following functions are called by DlgSelector to update the UI
     // and determine which filter checkboxes should be enabled.
     QString getSeedTrackInfo();
@@ -59,12 +56,10 @@ class SelectorLibraryTableModel : public LibraryTableModel {
   private:
     // Override BaseSqlTableModel method to add "Score" column.
     void initHeaderData();
-
     void clearSeedTrackInfo();
     void updateFilterText();
 
     bool m_bActive;
-
     // Current Track Properties
     QString m_sSeedTrackInfo;
     QString m_sSeedTrackGenre;
@@ -78,16 +73,10 @@ class SelectorLibraryTableModel : public LibraryTableModel {
     TrackPointer m_pLoadedTrack;
     ControlObjectThreadMain* m_channelBpm;
     ControlObjectThreadMain* m_channelKey;
-
     ConfigObject<ConfigValue>* m_pConfig;
-
     SelectorFilters m_selectorFilters;
     SelectorSimilarity m_selectorSimilarity;
 };
-
-
-
-
 #endif
 
 

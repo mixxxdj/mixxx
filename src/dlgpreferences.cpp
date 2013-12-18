@@ -124,6 +124,7 @@ DlgPreferences::DlgPreferences(MixxxApp * mixxx, SkinLoader* pSkinLoader,
     // If we don't call this explicitly, then we default to showing the sound
     // hardware page but the tree item is not selected.
     showSoundHardwarePage();
+    //TODO (kain88) check where the other pref widgets have this
     connect(this, SIGNAL(showDlg()), m_wselector,  SLOT(slotUpdate()));
     connect(this, SIGNAL(showDlg()),
             m_wtimbre, SLOT(slotUpdate()));
@@ -158,8 +159,10 @@ void DlgPreferences::createIcons() {
     m_pLibraryButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pLibraryButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pSelectorButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pSelectorButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_selector.png"));
+    m_pSelectorButton = new QTreeWidgetItem(contentsTreeWidget,
+        QTreeWidgetItem::Type);
+    m_pSelectorButton->setIcon(0,
+        QIcon(":/images/preferences/ic_preferences_selector.png"));
     m_pSelectorButton->setText(0, tr("Selector"));
     m_pSelectorButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pSelectorButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -202,8 +205,10 @@ void DlgPreferences::createIcons() {
     m_pKeyDetectionButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pKeyDetectionButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 
-    m_pTimbreAnalysisButton = new QTreeWidgetItem(contentsTreeWidget, QTreeWidgetItem::Type);
-    m_pTimbreAnalysisButton->setIcon(0, QIcon(":/images/preferences/ic_preferences_keydetect.png"));
+    m_pTimbreAnalysisButton = new QTreeWidgetItem(contentsTreeWidget,
+        QTreeWidgetItem::Type);
+    m_pTimbreAnalysisButton->setIcon(0,
+        QIcon(":/images/preferences/ic_preferences_keydetect.png"));
     m_pTimbreAnalysisButton->setText(0, tr("Timbre Analysis"));
     m_pTimbreAnalysisButton->setTextAlignment(0, Qt::AlignLeft | Qt::AlignVCenter);
     m_pTimbreAnalysisButton->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
@@ -263,6 +268,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
     } else if (current == m_pLibraryButton) {
         switchToPage(m_wlibrary);
     } else if (current == m_pSelectorButton) {
+        //TODO (kain88) also use `switchToPage` here
         pagesWidget->setCurrentWidget(m_wselector->parentWidget()->parentWidget());
     } else if (current == m_pControlsButton) {
         switchToPage(m_wcontrols);
@@ -277,6 +283,7 @@ void DlgPreferences::changePage(QTreeWidgetItem* current, QTreeWidgetItem* previ
     } else if (current == m_pKeyDetectionButton) {
         switchToPage(m_wkey);
     } else if (current == m_pTimbreAnalysisButton) {
+        //TODO (kain88) also use `switchToPage` here
         pagesWidget->setCurrentWidget(m_wtimbre->parentWidget()->parentWidget());
     } else if (current == m_pReplayGainButton) {
         switchToPage(m_wreplaygain);

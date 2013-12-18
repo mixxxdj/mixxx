@@ -36,7 +36,7 @@ class DlgPrefSelector : public DlgPreferencePage, public Ui::DlgPrefSelectorDlg 
     void setTimbreContribution(int value);
     void setRhythmContribution(int value);
     void setLastFmContribution(int value);
-    // sets similarity contribution, adjusts sliders so that they sum to 100
+    // sets similarity contribution, adjusts sliders so that they sum to 100%
     void setContribution(QString key, int value);
     void displayTimbreDescription();
     void displayRhythmDescription();
@@ -55,7 +55,6 @@ class DlgPrefSelector : public DlgPreferencePage, public Ui::DlgPrefSelectorDlg 
     bool m_bFilterKeyRelative;
     QHash<QString, double> m_similarityContributions;
     QHash<QString, QSlider*> m_similaritySliders;
-
 };
 
 #endif // DLGPREFSELECTOR_H

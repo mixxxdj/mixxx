@@ -362,6 +362,7 @@ QVector<double> VampAnalyser::GetValuesVector() {
          fli != m_Results.end(); ++fli) {
         std::vector<float> vec = fli->values;
         if (!vec.empty()) {
+            //TODO (kain88) use foreach
             for (std::vector<float>::iterator it = vec.begin(); it != vec.end(); ++it) {
                 vectout << *it;
             }

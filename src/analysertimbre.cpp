@@ -15,6 +15,7 @@ AnalyserTimbre::AnalyserTimbre(ConfigObject<ConfigValue> *pConfig)
       m_bShouldAnalyze(false),
       m_bPreferencesFastAnalysis(false) {
 }
+
 AnalyserTimbre::~AnalyserTimbre() {
 }
 
@@ -26,12 +27,12 @@ bool AnalyserTimbre::initialise(TrackPointer tio, int sampleRate, int totalSampl
     bool bPreferencesTimbreAnalysisEnabled = static_cast<bool>(
         m_pConfig->getValueString(
             ConfigKey(TIMBRE_CONFIG_KEY, TIMBRE_ANALYSIS_ENABLED)).toInt());
-
     if (!bPreferencesTimbreAnalysisEnabled) {
         qDebug() << "Timbre analysis is deactivated";
         m_bShouldAnalyze = false;
         return false;
     }
+
     QString library = m_pConfig->getValueString(
         ConfigKey(VAMP_CONFIG_KEY, VAMP_ANALYSER_TIMBRE_LIBRARY));
     QString pluginID = m_pConfig->getValueString(
@@ -40,7 +41,6 @@ bool AnalyserTimbre::initialise(TrackPointer tio, int sampleRate, int totalSampl
     m_pluginId = pluginID;
     m_iSampleRate = sampleRate;
     m_iTotalSamples = totalSamples;
-
     m_bShouldAnalyze = !checkStoredTimbre(tio);
 
     if (!m_bShouldAnalyze) {
@@ -51,8 +51,9 @@ bool AnalyserTimbre::initialise(TrackPointer tio, int sampleRate, int totalSampl
     qDebug() << "Timbre analysis started with plugin" << pluginID;
 
     m_pVamp = new VampAnalyser(m_pConfig);
-    m_bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate, totalSamples,
-                                     m_bPreferencesFastAnalysis);
+    m_bShouldAnalyze = m_pVamp->Init(library, pluginID, m_iSampleRate,
+        totalSamples, m_bPreferencesFastAnalysis);
+
     if (!m_bShouldAnalyze) {
         delete m_pVamp;
         m_pVamp = NULL;
@@ -69,6 +70,7 @@ void AnalyserTimbre::process(const CSAMPLE *pIn, const int iLen) {
         m_pVamp = NULL;
     }
 }
+
 bool AnalyserTimbre::loadStored(TrackPointer tio) const {
     return checkStoredTimbre(tio);
 }
@@ -78,6 +80,7 @@ void AnalyserTimbre::cleanup(TrackPointer tio) {
     delete m_pVamp;
     m_pVamp = NULL;
 }
+
 void AnalyserTimbre::finalise(TrackPointer tio) {
     if (!m_bShouldAnalyze || m_pVamp == NULL) {
         return;
@@ -98,16 +101,13 @@ void AnalyserTimbre::finalise(TrackPointer tio) {
         m_pluginId, m_bPreferencesFastAnalysis);
 
     TimbrePointer pTimbre = TimbreFactory::makePreferredTimbreModel(tio,
-                                                                    timbreVector,
-                                                                    extraVersionInfo,
-                                                                    m_iSampleRate,
-                                                                    m_iTotalSamples);
-//    qDebug() << "Timbre version" << pTimbre->getVersion();
+        timbreVector,extraVersionInfo,m_iSampleRate,m_iTotalSamples);
+    // qDebug() << "Timbre version" << pTimbre->getVersion();
     tio->setTimbre(pTimbre);
 }
 
 QHash<QString, QString> AnalyserTimbre::getExtraVersionInfo(
-    QString pluginId, bool bPreferencesFastAnalysis) {
+        QString pluginId, bool bPreferencesFastAnalysis) {
     QHash<QString, QString> extraVersionInfo;
     extraVersionInfo["vamp_plugin_id"] = pluginId;
     if (bPreferencesFastAnalysis) {
@@ -125,12 +125,15 @@ bool AnalyserTimbre::checkStoredTimbre(TrackPointer tio) const {
         QHash<QString, QString> extraVersionInfo = getExtraVersionInfo(
             m_pluginId, m_bPreferencesFastAnalysis);
         QString newVersion = TimbreFactory::getPreferredVersion();
-        QString newSubVersion = TimbreFactory::getPreferredSubVersion(extraVersionInfo);
+        QString newSubVersion = TimbreFactory::getPreferredSubVersion(
+            extraVersionInfo);
 
         if (version == newVersion && subVersion == newSubVersion) {
-            qDebug() << "Timbre version/sub-version unchanged since previous analysis. Not analyzing.";
+            qDebug() << "Timbre version/sub-version unchanged since previous"
+                        "analysis. Not analyzing.";
             isStored = true;
         } else {
+            // TODO(kain88) check if we really have these user settings in place
             qDebug() << "Track has previous timbre model that is not up"
                      << "to date with latest settings, but user preferences"
                      << "indicate we should not re-analyze it.";

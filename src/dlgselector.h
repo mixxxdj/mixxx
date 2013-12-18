@@ -2,13 +2,12 @@
 #define DLGSELECTOR_H
 
 #include <QItemSelection>
+
 #include "configobject.h"
 #include "library/libraryview.h"
 #include "library/trackcollection.h"
-#include "mixxxkeyboard.h"
-
 #include "library/selector/selectorfilters.h"
-
+#include "mixxxkeyboard.h"
 #include "ui_dlgselector.h"
 
 class SelectorLibraryTableModel;

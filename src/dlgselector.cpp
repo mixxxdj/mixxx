@@ -1,6 +1,7 @@
 #include <QSqlTableModel>
 
 #include "configobject.h"
+#include "dlgselector.h"
 #include "library/selector/selectorlibrarytablemodel.h"
 #include "library/selector/selector_preferences.h"
 #include "library/trackcollection.h"
@@ -8,20 +9,18 @@
 #include "widget/wtracktableview.h"
 #include "widget/wwidget.h"
 
-#include "dlgselector.h"
-
-DlgSelector::DlgSelector(QWidget* parent,
-                         ConfigObject<ConfigValue>* pConfig,
+DlgSelector::DlgSelector(QWidget* parent, ConfigObject<ConfigValue>* pConfig,
                          TrackCollection* pTrackCollection,
                          MixxxKeyboard* pKeyboard)
-        : QWidget(parent), Ui::DlgSelector(),
-          m_pConfig(pConfig),
-          m_pTrackCollection(pTrackCollection),
-          m_pTrackTableView(
-              new WTrackTableView(this, pConfig, m_pTrackCollection, true)),
-          m_pSelectorLibraryTableModel(
-              new SelectorLibraryTableModel(this, pConfig, pTrackCollection)),
-          m_pSelectorFilters(&(m_pSelectorLibraryTableModel->getFilters())) {
+        : QWidget(parent),
+        Ui::DlgSelector(),
+        m_pConfig(pConfig),
+        m_pTrackCollection(pTrackCollection),
+        m_pTrackTableView(
+            new WTrackTableView(this, pConfig, m_pTrackCollection, true)),
+        m_pSelectorLibraryTableModel(
+            new SelectorLibraryTableModel(this, pConfig, pTrackCollection)),
+        m_pSelectorFilters(&(m_pSelectorLibraryTableModel->getFilters())) {
     setupUi(this);
 
     m_pTrackTableView->installEventFilter(pKeyboard);
@@ -31,11 +30,12 @@ DlgSelector::DlgSelector(QWidget* parent,
             this, SIGNAL(loadTrackToPlayer(TrackPointer, QString)));
 
     QBoxLayout* box = dynamic_cast<QBoxLayout*>(layout());
+    // TODO (kain88) is this really needed here? the dynamic cast should do that
     Q_ASSERT(box); //Assumes the form layout is a QVBox/QHBoxLayout!
+    // TODO (kain88) I think we solved this better in the other library views
     box->removeWidget(m_pTrackTablePlaceholder);
     m_pTrackTablePlaceholder->hide();
     box->insertWidget(2, m_pTrackTableView);
-
     m_pTrackTableView->loadTrackModel(m_pSelectorLibraryTableModel);
 
     connect(checkBoxGenre, SIGNAL(clicked(bool)),
@@ -62,7 +62,6 @@ DlgSelector::DlgSelector(QWidget* parent,
             this, SLOT(slotSeedTrackInfoChanged()));
 
     loadStoredFilterSettings();
-
 }
 
 DlgSelector::~DlgSelector() {
@@ -77,6 +76,7 @@ void DlgSelector::onHide() {
     m_pSelectorLibraryTableModel->active(false);
 }
 
+// TODO (kain88) that smells like highly duplicated code
 void DlgSelector::onSearch(const QString& text) {
     m_pSelectorLibraryTableModel->search(text);
 }
@@ -163,7 +163,9 @@ void DlgSelector::slotFiltersChanged() {
     int count = m_pSelectorLibraryTableModel->rowCount();
     QString pluralize = ((count > 1 || count == 0) ? QString("s") : QString(""));
     QString labelMatchText =
-            QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
+        // TODO(kain88) I think Qt strings have something better then two times
+        // calling arg
+        QString(tr("%1 Track%2 Found ")).arg(count).arg(pluralize);
     labelMatchCount->setText(labelMatchText);
 }
 

@@ -25,14 +25,14 @@ using mixxx::track::io::key::ChromaticKey;
 using mixxx::track::io::key::ChromaticKey_IsValid;
 
 SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
-                                                     ConfigObject<ConfigValue>* pConfig,
-                                                     TrackCollection* pTrackCollection)
-                         : LibraryTableModel(parent, pTrackCollection,
-                                             "mixxx.db.model.selector"),
-                           m_pConfig(pConfig),
-                           m_selectorFilters(parent, pConfig),
-                           m_selectorSimilarity(parent, pTrackCollection,
-                                                pConfig, m_selectorFilters) {
+            ConfigObject<ConfigValue>* pConfig,
+            TrackCollection* pTrackCollection)
+        : LibraryTableModel(parent, pTrackCollection,
+                "mixxx.db.model.selector"),
+        m_pConfig(pConfig),
+        m_selectorFilters(parent, pConfig),
+        m_selectorSimilarity(parent, pTrackCollection,
+                             pConfig, m_selectorFilters) {
     setTableModel();
 
     // Detect when deck has changed
@@ -45,13 +45,11 @@ SelectorLibraryTableModel::SelectorLibraryTableModel(QObject* parent,
     m_channelBpm = NULL;
     m_channelKey = NULL;
     m_bActive = false;
-
     clearSeedTrackInfo();
 }
 
 SelectorLibraryTableModel::~SelectorLibraryTableModel() {
 }
-
 
 void SelectorLibraryTableModel::setTableModel(int id){
     Q_UNUSED(id);
@@ -59,17 +57,20 @@ void SelectorLibraryTableModel::setTableModel(int id){
     QStringList columns;
     columns << "library." % LIBRARYTABLE_ID << "'' as preview" << "0.0 as score";
 
+    // clear library from old runs
     QSqlQuery query(m_pTrackCollection->getDatabase());
-    QString queryStringClear = "DROP TABLE IF EXISTS " SELECTOR_TABLE;
-    QString queryStringCreate = "CREATE TEMPORARY TABLE " SELECTOR_TABLE " AS "
+    QString queryString = "DROP TABLE IF EXISTS " SELECTOR_TABLE;
+    if (!query.exec(queryString)) {
+        LOG_FAILED_QUERY(query);
+    }
+
+    // set up temporary table to store all calculations
+    queryString = "CREATE TEMPORARY TABLE " SELECTOR_TABLE " AS "
             "SELECT " % columns.join(", ") %
             " FROM library INNER JOIN track_locations "
             "ON library.location = track_locations.id "
             "WHERE (" % LibraryTableModel::DEFAULT_LIBRARYFILTER % ")";
-    if (!query.exec(queryStringClear)) {
-        LOG_FAILED_QUERY(query);
-    }
-    if (!query.exec(queryStringCreate)) {
+    if (!query.exec(queryString)) {
         LOG_FAILED_QUERY(query);
     }
 
@@ -81,7 +82,6 @@ void SelectorLibraryTableModel::setTableModel(int id){
              m_pTrackCollection->getTrackSource("default"));
 
     initHeaderData();
-
     setSearch("");
     setDefaultSort(fieldIndex("score"), Qt::DescendingOrder);
 }
@@ -125,8 +125,7 @@ bool SelectorLibraryTableModel::seedTrackKeyExists() {
 
 void SelectorLibraryTableModel::calculateSimilarity() {
     if (!m_pSeedTrack.isNull()) {
-//        qDebug() << m_selectorSimilarity.getTopFollowupTrack(m_pSeedTrack->getId());
-
+        // qDebug() << m_selectorSimilarity.getTopFollowupTrack(m_pSeedTrack->getId());
 
         QList<int> trackIds;
         for (int i = 0, n = rowCount(); i < n; i++) {
@@ -159,6 +158,9 @@ void SelectorLibraryTableModel::calculateSimilarity() {
 
 void SelectorLibraryTableModel::calculateAllSimilarities(
         const QString& filename) {
+    // This function exists only to benchmark our similarity measures
+    // you can use create a csv file containing a score for each trackpair
+    // in the database
     QTime timer;
     timer.start();
 
@@ -179,18 +181,14 @@ void SelectorLibraryTableModel::calculateAllSimilarities(
             QString sTrack_j = pTrack_j->getFilename();
             QHash<QString, double> comparison =
                     m_selectorSimilarity.compareTracks(pTrack_i, pTrack_j);
-
             QStringList scores;
             foreach (QString similarityType, similarityTypes) {
                 scores << QString::number(comparison[similarityType]);
             }
-
-            out << sTrack_i % "," % sTrack_j % "," %
-                   scores.join(",") % "\n";
+            out << sTrack_i % "," % sTrack_j % "," % scores.join(",") % "\n";
             if (i % 100 == 0 && j % 100 == 0) {
                 qDebug() << QString::number(i*j) << "/" <<
-                            QString::number(rowCount()*rowCount()) <<
-                            "processed";
+                            QString::number(rowCount()*rowCount()) << "processed";
             }
         }
     }
@@ -208,7 +206,6 @@ void SelectorLibraryTableModel::applyFilters() {
 }
 
 // PRIVATE SLOTS
-
 void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     m_pChannel = QString("[Channel%1]").arg(deck + 1);
 
@@ -224,7 +221,6 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     if (deck >= 0) {
         m_channelBpm = new ControlObjectThreadMain(m_pChannel, "bpm");
         m_channelKey = new ControlObjectThreadMain(m_pChannel, "key");
-
         // listen for slider change events
         connect(m_channelBpm, SIGNAL(valueChanged(double)), this,
             SLOT(slotChannelBpmChanged(double)));
@@ -233,7 +229,6 @@ void SelectorLibraryTableModel::slotPlayingDeckChanged(int deck) {
     }
 
     // m_pLoadedTrack = PlayerInfo::Instance().getCurrentPlayingTrack();
-
     setSeedTrack(m_pLoadedTrack);
 }
 
@@ -258,13 +253,13 @@ void SelectorLibraryTableModel::slotFiltersChanged() {
     search("");
 }
 
+// TODO (kain88) I thought I got rid of this stuff
 void SelectorLibraryTableModel::search(const QString& text) {
     setSearch(text, m_filterString);
     select();
 }
 
 // PRIVATE METHODS
-
 void SelectorLibraryTableModel::initHeaderData() {
     // call the base class method first
     BaseSqlTableModel::initHeaderData();

@@ -3,14 +3,14 @@
 
 #include <QtDebug>
 
+#include "dlgselector.h"
 #include "library/selector/selectorfeature.h"
 #include "library/librarytablemodel.h"
 #include "library/trackcollection.h"
-#include "dlgselector.h"
-#include "widget/wlibrary.h"
-#include "widget/wlibrarysidebar.h"
 #include "mixxxkeyboard.h"
 #include "soundsourceproxy.h"
+#include "widget/wlibrary.h"
+#include "widget/wlibrarysidebar.h"
 
 const QString SelectorFeature::m_sSelectorViewName = QString("Selector");
 
@@ -36,10 +36,8 @@ QIcon SelectorFeature::getIcon() {
 
 void SelectorFeature::bindWidget(WLibrary* libraryWidget,
                                  MixxxKeyboard* keyboard) {
-    m_pSelectorView = new DlgSelector(libraryWidget,
-                                      m_pConfig,
-                                      m_pTrackCollection,
-                                      keyboard);
+    m_pSelectorView = new DlgSelector(libraryWidget, m_pConfig,
+        m_pTrackCollection, keyboard);
     libraryWidget->registerView(m_sSelectorViewName, m_pSelectorView);
 
     connect(m_pSelectorView, SIGNAL(loadTrack(TrackPointer)),
@@ -67,20 +65,18 @@ void SelectorFeature::calculateAllSimilarities(const QString& filename) {
 
 bool SelectorFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
     TrackDAO &trackDao = m_pTrackCollection->getTrackDAO();
-
-    //If a track is dropped onto the selector name, but the track isn't in the library,
-    //then add the track to the library before using it as a seed.
+    // We can only seed one track so don't accept if there are more dropped
+    if (urls.size() != 1) {
+        return false;
+    }
+    // If a track is dropped onto the selector name, but the track isn't in the
+    // library, then add the track to the library before using it as a seed.
     QList<QFileInfo> files;
     foreach (QUrl url, urls) {
         QFileInfo file = url.toLocalFile();
         if (SoundSourceProxy::isFilenameSupported(file.fileName())) {
             files.append(file);
         }
-    }
-
-    // We can only seed one track so don't accept if there are more dropped
-    if (files.size() != 1) {
-        return false;
     }
 
     QList<int> trackIds;
@@ -90,12 +86,10 @@ bool SelectorFeature::dropAccept(QList<QUrl> urls, QWidget *pSource) {
         trackIds = trackDao.addTracks(files, true);
     }
 
-//    qDebug() << "Track ID: " << trackIds.first();
-
+    // qDebug() << "Track ID: " << trackIds.first();
     if (trackIds.first() > 0) {
         m_pSelectorView->setSeedTrack(trackDao.getTrack(trackIds.first()));
     }
-
     return true;
 }
 
